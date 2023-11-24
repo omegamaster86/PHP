@@ -1,0 +1,38 @@
+/*************************************************************************
+ *  Project name: JARA
+ *  File name: style.css
+ *  File extension: .css
+ *  Description: This is the main custom css file
+ *************************************************************************
+ *  Author: DEY PRASHANTA KUMAR
+ *  Created At: 2023/11/02
+ *  Updated At: 2023/11/09
+ *************************************************************************
+ *
+ *  Copyright 2023 by DPT INC.
+ *
+ ************************************************************************/
+
+  
+#userInfo {
+    display: none;
+}
+
+#emailInfo {
+    display: none;
+}
+.error-css {
+    margin: 1rem; 
+    padding:1rem;
+    background-color:pink ;
+    border-radius:5px;
+    font-weight:bold; 
+    width:100%;
+}
+.system-error-css {
+    margin: 1rem; 
+    padding:1rem;
+    background-color:pink ;
+    border-radius:5px;
+    font-weight:bold; 
+}
