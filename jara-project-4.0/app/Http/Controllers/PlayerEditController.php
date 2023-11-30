@@ -1,18 +1,36 @@
 <?php
-
+/*************************************************************************
+*  Project name: JARA
+*  File name: PlayerEditController.php
+*  File extension: .php
+*  Description: This is the controller file to manage player edit request
+*************************************************************************
+*  Author: DEY PRASHANTA KUMAR
+*  Created At: 2023/11/04
+*  Updated At: 2023/11/09
+*************************************************************************
+*
+*  Copyright 2023 by DPT INC.
+*
+************************************************************************/
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Http\RedirectResponse;
+use App\Services\FileUploadService;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\FileUploadRequest;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\ValidationException;
 
 class PlayerEditController extends Controller
 {
+
     /**
      * Display the edit view.
      */
@@ -20,9 +38,10 @@ class PlayerEditController extends Controller
     {
         $retrive_player_ID = DB::select('select * from t_player where userId = ?', [Auth::user()->userId]);
 
-        
+        if(empty($retrive_player_ID[0]))
+            return view('player.register',["pageMode"=>"register"]);
         if($retrive_player_ID[0]->deleteFlag)
-        return view('player.register',["pageMode"=>"register"]);
+            return view('player.register',["pageMode"=>"register"]);
         $playerID = $retrive_player_ID[0]->playerId;
         $JARAPlayerCode = $retrive_player_ID[0]->JARAPlayerCode;
         $playerName = $retrive_player_ID[0]->playerName;
@@ -51,9 +70,33 @@ class PlayerEditController extends Controller
     public function store(Request $request, ): RedirectResponse
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
+        if ($request->hasFile('photo')) {
+            
+            // Storage::disk('local')->put('example.txt', $request->file('photo'));
+            
+            $file = $request->file('photo');
+            // $file->store('toPath', ['disk' => 'public']);
+
+            
+            $fileName = DB::table('t_player')->where('userId', Auth::user()->userId)->value('playerId'). '.' . $request->file('photo')->getClientOriginalExtension();
+            // Storage::disk('public')->put($fileName, $file);
+
+
+
+            // Storage::disk('public')->putFileAs('uploads', $file, $fileName);
+
+            $destinationPath = public_path().'/images/players/' ;
+            $file->move($destinationPath,$fileName);
+
+
+            // You can now save the $filePath to the database or use it as needed
+            // ...
+            // return response()->json(['message' => 'File uploaded successfully']);
+        }
+        
         $request->validate([
             'playerCode' => ['required', 'string', 'regex:/^[0-9a-zA-Z]+$/'],
-            'playerName' => ['required', 'string', 'regex:/^[0-9a-zA-ZＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ]+$/'],
+            'playerName' => ['required', 'string', 'regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]+$/'],
             'dateOfBirth' => ['required'],
             'sex' => ['required','regex:/^[1-3]+$/'],
             'height' => ['required'],
@@ -76,6 +119,15 @@ class PlayerEditController extends Controller
             $retrive_player = DB::select('select * from t_player where userId = ?', [Auth::user()->userId]);
             if($retrive_player[0]->JARAPlayerCode===$request->playerCode){
                 $playerInfo = $request->all();
+                if ($request->hasFile('photo')){
+                    $playerInfo['photo']=DB::table('t_player')->where('userId', Auth::user()->userId)->value('playerId'). '.' . $request->file('photo')->getClientOriginalExtension();
+                }
+                else{
+                    if($request->playerPictureStatus==="delete")
+                        $playerInfo['photo']="";
+                    else
+                        $playerInfo['photo']=DB::table('t_player')->where('userId', Auth::user()->userId)->value('photo');
+                }
                 $sideInfo_xor = "00000000";
                 foreach($request->sideInfo as $sideInfo){
                     $sideInfo_xor = $sideInfo_xor ^ $sideInfo;
@@ -84,6 +136,7 @@ class PlayerEditController extends Controller
                     $sideInfo_xor= $sideInfo_xor ^ "00000000";
                 $playerInfo['sideInfo'] = $sideInfo_xor; 
                 $playerInfo['playerId'] = $retrive_player[0]->playerId;
+                // dd($playerInfo['photo']);
                 return redirect('player/edit/confirm')->with('playerInfo', $playerInfo);
             }
             $retrive_player_name = DB::select('select playerName from t_player where JARAPlayerCode = ?', [$request->playerCode]);
@@ -96,9 +149,12 @@ class PlayerEditController extends Controller
         else{
 
         }
-        $retrive_player_ID = DB::select('select playerId from t_player where userId = ?', [Auth::user()->userId]);
+        $retrive_player_ID = DB::select('select * from t_player where userId = ?', [Auth::user()->userId]);
 
         $playerInfo = $request->all();
+        
+        
+        
         $sideInfo_xor = "00000000";
         foreach($request->sideInfo as $sideInfo){
             $sideInfo_xor = $sideInfo_xor ^ $sideInfo;

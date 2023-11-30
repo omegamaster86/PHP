@@ -1,5 +1,18 @@
 <?php
-
+/*************************************************************************
+*  Project name: JARA
+*  File name: DeleteVerifiCationController.php
+*  File extension: .php
+*  Description: This is the controller file to manage verification request of user delete
+*************************************************************************
+*  Author: DEY PRASHANTA KUMAR
+*  Created At: 2023/11/04
+*  Updated At: 2023/11/09
+*************************************************************************
+*
+*  Copyright 2023 by DPT INC.
+*
+************************************************************************/
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
@@ -15,7 +28,7 @@ class DeleteVerifiCationController extends Controller
     //
     public function create(Request $request): View
     {
-        return view('profile.delete.verification');
+        return view('user.delete.verification');
     }
     public function store(Request $request): RedirectResponse
     {
@@ -37,7 +50,10 @@ class DeleteVerifiCationController extends Controller
 
                 DB::beginTransaction();
             try {
-                DB::delete('delete from t_user where mailAddress = ?',[Auth::user()->mailAddress]);
+                DB::update(
+                    'update t_user set deleteFlag = ?  where mailAddress = ?',
+                    [ "1",Auth::user()->mailAddress]
+                );
 
                 // Logout Function
                 Auth::guard('web')->logout();
@@ -47,9 +63,6 @@ class DeleteVerifiCationController extends Controller
 
                 //Destroy current  token
                 $request->session()->regenerateToken();
-
-                //Store log data of the new registered user.
-                Log::channel('delete')->info("$request->mailAddress は削除されました。");
 
                 DB::commit();
             } catch (\Throwable $e) {
@@ -65,8 +78,8 @@ class DeleteVerifiCationController extends Controller
                 $e_connectionName = $e->connectionName;
 
 
-                //Store error message in the register log file.
-                Log::channel('delete')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
+                //Store error message in the user delete log file.
+                Log::channel('user_delete')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
                 if($e_errorCode == 1213||$e_errorCode == 1205)
                 {
                     throw ValidationException::withMessages([
@@ -80,9 +93,12 @@ class DeleteVerifiCationController extends Controller
                 }
             }
                 
-                
-
-                return redirect('register');
+            $page_status = "退会の件、完了しました。";
+            $page_url = route('register');
+            $page_url_text = "仮登録ページ";
+            
+            //Redirect to registered user to the login page with success status.
+            return redirect('status')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
             }
         }
         else{

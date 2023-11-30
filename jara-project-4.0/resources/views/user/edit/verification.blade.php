@@ -2,7 +2,7 @@
 * Project name: JARA
 * File name: verification.blade.php
 * File extension: .blade.php
-* Description: This is the ui of profile edit page
+* Description: This is the ui of user edit page
 *************************************************************************
 * Author: DEY PRASHANTA KUMAR
 * Created At: 2023/11/14
@@ -19,13 +19,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Profile Edit</title>
+    <title>User Edit Verification</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
         integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
     <link rel="stylesheet" type="text/css" href="{{ asset('/font-awesome/css/font-awesome.min.css') }}">
 
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/profile-edit.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/user-edit.css') }}">
 
     {{-- Date Picker --}}
     <link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
@@ -37,7 +37,7 @@
         <h1 class="text-center">認証番号</h1>
         <hr>
 
-        <form action="{{route('profile.edit.verification')}}" method="POST">
+        <form action="{{route('user.edit.verification')}}" method="POST">
             @csrf
             <div class="form-group" style="text-align: center">
                 <label for="certificationNumber">受信したメールに記載されているコードを入力してください。</label>
@@ -51,25 +51,26 @@
             </div>
             {{-- {{ ((session('message')['status'] ?? '') === 'success') ? 'done' : '' . isActive(
             'admin.installer.complete' ) }} --}}
-            <input id="photo" name="photo" class="form-control" type="hidden"
-                value="{{(session()->get('userInfo')['photo']??'')?session()->get('userInfo')['photo']:old('photo')}}">
-            <input name="userName" class="form-control" type="hidden"
-                value="{{ old('userName')?old('userName'):session()->get('userInfo')['userName']}}">
-            <input name="mailAddressStatus" class="form-control" type="hidden"
-                value="{{ old('mailAddressStatus')?old('mailAddressStatus'):session()->get('userInfo')['mailAddressStatus']}}">
-            <input name="mailAddress" class="form-control" type="hidden"
-                value="{{ old('mailAddress')?old('mailAddress'):session()->get('userInfo')['mailAddress']}}">
-            <input name="sex" class="form-control" type="hidden"
-                value="{{ old('sex')?session()->get('userInfo')['sex']:old('sex')}}">
+            <input name="photo"  type="hidden"
+                value="{{ session()->get('userInfo')['photo'] ??'' }}">
+            <input name="userName" type="hidden"
+                value="{{ session()->get('userInfo')['userName'] ?? '' }}">
+            <input name="mailAddressStatus" type="hidden"
+                value="{{ session()->get('userInfo')['mailAddressStatus'] ?? '' }}">
+            <input name="mailAddress" type="hidden"
+                value="{{ session()->get('userInfo')['mailAddress'] ?? '' }}">
+            <input name="sex" type="hidden"
+                value="{{ session()->get('userInfo')['sex'] ?? '' }}">
+            <input name="dateOfBirth" type="hidden"
+                value="{{ session()->get('userInfo')['dateOfBirth'] ?? '' }}">
             <input name="residenceCountry" class="form-control" type="hidden"
-                value="{{  old('residenceCountry')?old('residenceCountry'):session()->get('userInfo')['residenceCountry']}}">
+                value="{{  session()->get('userInfo')['residenceCountry'] ?? '' }}">
             <input name="residencePrefecture" class="form-control" type="hidden"
-                value="{{ old('residencePrefecture')?old('residencePrefecture'):session()->get('userInfo')['residencePrefecture']}}">
-
+                value="{{ session()->get('userInfo')['residencePrefecture'] ?? '' }}">
             <input name="height" class="form-control" type="hidden"
-                value="{{(session()->get('userInfo')['height']??'')?session()->get('userInfo')['height']:old('height')}}">
+                value="{{ session()->get('userInfo')['height'] ?? '' }}">
             <input name="weight" class="form-control" type="hidden"
-                value="{{(session()->get('userInfo')['weight']??'')?session()->get('userInfo')['weight']:old('weight')}}">
+                value="{{ session()->get('userInfo')['weight'] ?? '' }}">
 
 
             <div class="form-group" style="display: flex; margin-top:2rem;gap: 4rem;">
@@ -80,7 +81,7 @@
                     </button>
                 </div>
                 <div class="col-lg-5" style="text-align: right">
-                    <a class="btn btn-danger btn-lg btn-block" href="../../profile" role="button">Cancel</a>
+                    <a class="btn btn-danger btn-lg btn-block" href={{route('user.edit')}} role="button">Cancel</a>
                 </div>
             </div>
         </form>

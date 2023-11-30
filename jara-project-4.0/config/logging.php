@@ -131,29 +131,29 @@ return [
             'path' => storage_path('logs/custom.log'),
             'level' => env('LOG_LEVEL', 'debug')
         ],
-        'register' => [
+        'user_register' => [
             'driver' => 'single',
-            'path' => storage_path('logs/register.log'),
+            'path' => storage_path('logs/user_register.log'),
             'level' => env('LOG_LEVEL', 'debug')
         ],
-        'login' => [
+        'user_password_change' => [
             'driver' => 'single',
-            'path' => storage_path('logs/login.log'),
+            'path' => storage_path('logs/user_password_change.log'),
             'level' => env('LOG_LEVEL', 'debug')
         ],
-        'logout' => [
+        'user_login_access_log' => [
             'driver' => 'single',
-            'path' => storage_path('logs/logout.log'),
+            'path' => storage_path('logs/user_login_access_log.log'),
             'level' => env('LOG_LEVEL', 'debug')
         ],
-        'update' => [
+        'user_update' => [
             'driver' => 'single',
-            'path' => storage_path('logs/update.log'),
+            'path' => storage_path('logs/user_update.log'),
             'level' => env('LOG_LEVEL', 'debug')
         ],
-        'delete' => [
+        'user_delete' => [
             'driver' => 'single',
-            'path' => storage_path('logs/delete.log'),
+            'path' => storage_path('logs/user_delete.log'),
             'level' => env('LOG_LEVEL', 'debug')
         ],
         'player_register' => [

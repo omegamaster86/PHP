@@ -1,8 +1,8 @@
 {{--*************************************************************************
 * Project name: JARA
-* File name: profile-edit.blade.php
+* File name: edit.blade.php
 * File extension: .blade.php
-* Description: This is the ui of profile edit page
+* Description: This is the ui of user edit page
 *************************************************************************
 * Author: DEY PRASHANTA KUMAR
 * Created At: 2023/11/07
@@ -19,13 +19,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Profile Edit</title>
+    <title>User Edit</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
         integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
     <link rel="stylesheet" type="text/css" href="{{ asset('/font-awesome/css/font-awesome.min.css') }}">
 
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/profile-edit.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/nav.css') }}">
 
     {{-- Date Picker --}}
@@ -36,23 +36,31 @@
 <body>
     {{-- background-color: #9FD9F6; --}}
     <div class="container-fluid bootstrap snippets bootdey"
-        style="background: linear-gradient(to right,#1991FC,  #45b796);padding:0;color: #000;font-weight:500">
+        style="background: linear-gradient(to right,#1991FC,  #45b796);padding:0;color: #000;font-weight:500;min-height:100vh; width:100vw">
         <div id="mySidenav" class="sidenav">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <a href="#">ダッシュボード</a>
-            <a href="#">情報更新</a>
-            <a href="#">情報参照</a>
-            <a href="#">アカウント削除</a>
+            <a href={{route('my-page')}}>マイページ</a>
+            <a href={{route('user.edit')}}>情報更新</a>
+            <a href={{route('user.details')}}>情報参照</a>
+            <a href={{route('user.delete')}}>退会</a>
+            <a href={{route('user.password-change')}}>パスワード変更</a>
+            <a href={{route('player.register')}}>選手情報登録</a>
+            <a href={{route('player.edit')}}>選手情報更新</a>
+            <a href={{route('player.delete')}}>選手情報削除</a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+    
+                <a href="route('logout')" onclick="event.preventDefault();
+                                    this.closest('form').submit();">
+                    ログアウト
+                </a>
+            </form>
         </div>
         <div style="background: linear-gradient(to right,#1991FC,  #45b796); color:#fff;padding-top:15px;">
             <span class="col-md-3 " style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; メニュー</span>
-            @if(Session::has('fromLoginPage'))
-            <h1 class="text-right col-md-9">{{ Session::get('fromLoginPage') }}</h1>
-            @else
             <h1 style="display: inline;margin-left:25%" class="text-right col-md-9">
                 ユーザー情報変更画面
             </h1>
-            @endif
         </div>
         <hr style="height:1px;border-width:0;color:#9AF8FD;background-color:#9AF8FD">
 
@@ -60,54 +68,40 @@
             style="background: linear-gradient(to right,#1991FC,  #45b796); color:#fff;padding:30px 0px;width: 100%;">
             <div class="col-md-9 ">
 
-                {{-- <div class="alert alert-info alert-dismissable">
-                    <a class="panel-close close" data-dismiss="alert">×</a>
-                    <i class="fa fa-coffee"></i>
-                    This is an <strong>.alert</strong>. Use this to show important messages to the user.
-                </div> --}}
-
-                <form class="form-horizontal" enctype="multipart/form-data" role="form" style="display: flex"
-                    method="POST" action="{{route('profile.edit')}}">
+                <form class="form-horizontal" onsubmit="return validateProfileEditForm();" enctype="multipart/form-data" role="form" style="display: flex"
+                    method="POST" action="{{route('user.edit')}}">
                     @csrf
 
                     <div class="col-md-5 ">
                         <div class=" col-md-5" style="margin-left: 17%;">
-                            <div style="margin: 0px 0px 5px 15px; text-align:center">写真　<span id="photoDeleteButton"
-                                    onclick="photoDelete()" style="display: none" class=" btn btn-danger btn-sm"
-                                    type="button"> 取消
-                                </span>
-                                <img src="{{ asset('images/'.((Auth::user()->photo??"")?Auth::user()->photo:'no-image.png')) }}"
-                                    class="avatar img-circle img-thumbnail" alt="avatar">
+                            <div style="margin: 0px 20px 5px 15px; text-align:center">写真　
+                                @if(($photo))
+                                    <span id="userPictureDeleteButton" onclick="userPictureDelete()"  class=" btn btn-danger btn-sm" type="button"> 取消
+                                    </span>
+                                @endif
+                                <input name="userPictureStatus" id="userPictureStatus" type="hidden" value="">
                             </div>
+                            @if(($photo))
+                            <img id= "userPicture" src="{{ asset('images/users/'.$photo) }}"
+                            class="avatar img-circle img-thumbnail" alt="avatar">
+                            @else
+                            <img id= "userPicture" src="{{ asset('images/no-image.png') }}"
+                            class="avatar img-circle img-thumbnail" alt="avatar">
+                            @endif
+                           
                             <div style="margin: 0px 0px 5px 15px" id="photoStatus"></div>
 
                         </div>
                         <div class="col-md-10 text-center">
 
                             <h6>アップロードする画像</h6>
-
-                            {{-- <form method="post" enctype="multipart/form-data">
-                                <div>
-                                    <label for="profile_pic">アップロードするファイルを選択してください</label>
-                                    <input type="file" id="profile_pic" name="profile_pic" accept=".jpg, .jpeg, .png" />
-                                </div>
-                                <div>
-                                    <button>送信</button>
-                                </div>
-                            </form> --}}
-                            {{-- image/png, image/jpeg, image/jpeg //image format--}}
-
-                            <input type="text" id="photoFileName" readonly="readonly" class="form-control"
-                                style="width: 70%;display:inline ">
-                            <input type="file" id="photo" name="photo" accept="image/*" class="form-control"
-                                style="width: 80%; display:none">
-                            <i onclick="document.getElementById('photo').click();" style="cursor:pointer"
-                                class="fa fa-file" aria-hidden="true"></i>
-                            <i style="cursor:pointer" onclick="details('uploadInfo')" class="fa fa-question-circle"
-                                aria-hidden="true"></i>
-
-                            <div id="uploadInfo" style="margin-left: 15px">ああああああああああ</div>
-                            <p style="font-size:14px;margin-top:5px">ドラッグ＆ドロップで貼り付けることができます。</p>
+                            <div style="vertical-align: middle ">
+                                <input type="file"  accept="image/png, image/jpeg, image/jpeg, image/svg " name="photo" id="input-file-03">
+                                <label id="dropzone-03" >ファイルをここにドロップ</label>
+                                <p id="bt-file-03" role="button" class="btn btn-secondary " style="margin-right:5px ;"  aria-hidden="true">参照</p>
+                                <i class="fa fa-times" onclick="deleteUploadedPhoto()" id="deleteUploadedPhoto"  style="color:#6c757d;font-size:40px;display:none;cursor:pointer" aria-hidden="true"></i>
+                            </div>
+                            <div id="output-03" style="margin-left:70px;text-align:left" class="output"></div>
                         </div>
                     </div>
                     <div class="col-md-1"></div>
@@ -136,29 +130,27 @@
                             <i onclick="details('userInfo')" style="cursor:pointer" class=" fa fa-question-circle"
                                 aria-hidden="true"></i>
                             <div id="userInfo" style="margin-left:1rem">あああああああああああああああああああ</div>
-                            @if ($errors->has('userName'))
+                            
                             <div class="col-lg-12">
-                                <input id="userName" name="userName" class="form-control border "
-                                    style="border-radius: 50px" type="text" value="{{old('userName')}}">
+                                @if (old('userName')??"" or $errors->has('userName'))
+                                <input id="userName" name="userName" class="form-control border " type="text" value="{{old('userName')}}">
+                                @else
+                                    <input id="userName" name="userName" class="form-control " type="text"
+                                        value="{{Auth::user()->userName}}">
+                                @endif
+                                @if ($errors->has('userName'))
+                                    <p class="error-css text-danger" style="margin: 1rem 0rem">{{
+                                    $errors->first('userName') }}</p>
+                                @endif
+
                             </div>
-                            @else
-                            <div class="col-lg-12">
-                                <input id="userName" name="userName" class="form-control " type="text"
-                                    value="{{old('userName')?old('userName'):Auth::user()->userName}}">
-                            </div>
-                            @endif
-                            @if ($errors->has('userName'))
-                            <p style="margin: 1rem; font-weight:bold; color:red;">{{
-                                $errors->first('userName') }}</p>
-                            @endif
+                            
                         </div>
                         <div class="form-group">
                             <div style="display:none">
                                 <input type="text" id="mailAddressStatus" name="mailAddressStatus"
                                     value="{{old('mailAddressStatus')}}" />
                             </div>
-                            {{-- <input type="hidden" display="none;" id="mailAddressStatus" name="mailAddressStatus"
-                                value=0 /> --}}
                             <p class="col-lg-12 control-label" id="emailChange">＊メールアドレス :　
                                 @if(Auth::user()->tempPasswordFlag==0)
                                 <span onclick="emailChangeBox()" class=" btn btn-secondary btn-sm" type="button">
@@ -177,28 +169,26 @@
                                 <label for="mailAddress" class="col-lg-12 control-label">＊メールアドレス :
                                 </label>
                                 <div class="col-lg-12">
-                                    <input id="mailAddress" name="mailAddress" class="form-control" type="text"
-                                        value="{{old('mailAddress')}}">
+                                    <input id="mailAddress" name="mailAddress" class="form-control" type="text" value="{{old('mailAddress')}}">
+                                    @if ($errors->has('mailAddress'))
+                                    <p id="emailStatus" class="error-css text-danger" style="margin: 1rem 0rem">{{$errors->first('mailAddress')}}</p>
+                                    @endif
                                 </div>
 
-                                @if ($errors->has('mailAddress'))
-                                <p id="emailStatus" style="margin: 1rem; font-weight:bold; color:red;">{{
-                                    $errors->first('mailAddress')
-                                    }}</p>
-                                @endif
+                                
                             </div>
                             <div class="form-group">
                                 <label for="confirm_email" class="col-lg-12 control-label">＊メールアドレス確認 :
                                 </label>
                                 <div class="col-lg-12">
-                                    <input id="confirm_email" name="confirm_email" class="form-control" type="text"
-                                        value="{{old('confirm_email')}}">
+                                    <input id="confirm_email" name="confirm_email" class="form-control" type="text" value="{{old('confirm_email')}}">
+                                    @if ($errors->has('confirm_email'))
+                                    <p id="confirmEmailStatus" class="error-css text-danger" style="margin: 1rem 0rem">{{
+                                        $errors->first('confirm_email')
+                                        }}</p>
+                                    @endif
                                 </div>
-                                @if ($errors->has('confirm_email'))
-                                <p id="confirmEmailStatus" style="margin: 1rem; font-weight:bold; color:red;">{{
-                                    $errors->first('confirm_email')
-                                    }}</p>
-                                @endif
+                                
                             </div>
                             <div class="col-lg-12" style=" text-align:right">
                                 <span id="mailChange" onclick="emailChangeBox()" class="  btn btn-danger btn-sm"
@@ -206,7 +196,6 @@
                                     取消
                                 </span>
                             </div>
-
                         </div>
                         @endif
                         <div class="form-group">
@@ -215,68 +204,104 @@
 
                             <div class="col-lg-12">
 
-                                <select id="sex" name="sex" class="form-control" value=>
-                                    @if((old('sex')??"")?old('sex'):Auth::user()->sex===1)
-                                    <option value=1>男</option>
-                                    <option value=2>女</option>
-                                    @elseif((old('sex')??"")?old('sex'):Auth::user()->sex===2)
-                                    <option value=2>女</option>
-                                    <option value=1>男</option>
-                                    @else
-                                    <option value=0>-</option>
-                                    <option value=1>男</option>
-                                    <option value=2>女</option>
-                                    @endif
-
+                                @if (old('sex')??"" or $errors->has('sex'))
+                                <select id="sex" name="sex" class="form-control" >
+                                    <option value="" >--</option>
+                                    <option value=1 {{(old('sex')===1) ? "selected" : ""}} >男</option>
+                                    <option value=2 {{(old('sex')===2) ? "selected" : ""}}>女</option>
                                 </select>
+                                @else
+                                <select id="sex" name="sex" class="form-control" >
+                                    <option value="" selected >--</option>
+                                    <option value=1 {{($sex===1) ? "selected" : ""}} >男</option>
+                                    <option value=2 {{($sex===2) ? "selected" : ""}}>女</option>
+                                </select>
+                                @endif
+
+                                
+                                @if ($errors->has('sex'))
+                                    <p class="error-css text-danger" style="margin: 1rem 0rem">{{
+                                        $errors->first('sex') }}</p>
+                                @endif
                             </div>
                         </div>
                         <div class="form-group">
-                            <label onclick="details('birthDayInfo')" class=" control-label"
-                                style="margin-left:1rem; cursor:pointer">生年月日 :
+                            <label onclick="details('birthDayInfo')" class=" control-label" style="margin-left:1rem; cursor:pointer">＊生年月日 :
                             </label>
-                            <i onclick="details('birthDayInfo')" style="cursor:pointer" class=" fa fa-question-circle"
-                                aria-hidden="true"></i>
+                            <i onclick="details('birthDayInfo')" style="cursor:pointer" class=" fa fa-question-circle" aria-hidden="true"></i>
                             <div id="birthDayInfo" style="margin-left:1rem">あああああああああああああああああああ</div>
                             <div class="col-lg-12">
-                                {{-- {{ old('dateOfBirth', date('Y/m/d')) }} --}}
-                                {{-- {{request()->has('dateOfBirth')?old('dateOfBirth',
-                                date('Y/m/d')):Auth::user()->dateOfBirth}} --}}
-
-                                <input id="dateOfBirth" name="dateOfBirth" type="text"
-                                    style="color: #000;background-color: #fff;" class="lib-flatpickr3 form-control"
-                                    value="{{old('dateOfBirth')?old('dateOfBirth'):Auth::user()->dateOfBirth}}">
+                                <input id="dateOfBirth" name="dateOfBirth" type="text" style="color: #000;background-color: #fff;" class="lib-flatpickr3 form-control"
+                                    value="{{(old('dateOfBirth')?old('dateOfBirth'):($birthDate??"年/月/日") )}}">
                             </div>
+                            @if ($errors->has('dateOfBirth'))
+                            <div class="col-lg-12">
+                                <p class="error-css text-danger" style="margin: 1rem 0rem">{{ $errors->first('dateOfBirth') }}</p>
+                            </div>
+                            @endif
                         </div>
                         <div class="form-group">
-                            <label class="col-lg-3 control-label">＊居住地 :
+                            <label class="control-label" style="margin-left: 1rem">＊居住地 :
                             </label>
                             <div class="col-lg-12">
+                                @if (old('residenceCountry')??"" or ($errors->has('residenceCountry')))
+                                
                                 <select id="residenceCountry" name="residenceCountry" class="form-control">
-                                    <option value="日本" selected>日本</option>
-                                    <option value="アメリカ">アメリカ</option>
-                                    <option value="インド">インド</option>
+                                    <option value="" selected>--</option>
+                                    <option value="日本"  {{(old('residenceCountry')==="日本") ? "selected" : ""}}>日本</option>
+                                    <option value="アメリカ" {{(old('residenceCountry')==="アメリカ") ? "selected" : ""}}>アメリカ</option>
+                                    <option value="インド" {{(old('residenceCountry')==="インド") ? "selected" : ""}}>インド</option>
                                 </select>
+                                @else
+                                <select id="residenceCountry" name="residenceCountry" class="form-control">
+                                    <option value="" selected>--</option>
+                                    <option value="日本"  {{($residenceCountry==="日本")?"selected" : ""}}>日本</option>
+                                    <option value="アメリカ" {{($residenceCountry==="アメリカ")?"selected" : ""}}>アメリカ</option>
+                                    <option value="インド" {{($residenceCountry==="インド")?"selected" : ""}}>インド</option>
+                                </select>
+                                @endif
+                                @if ($errors->has('residenceCountry'))
+                                
+                                    <p class="error-css text-danger" style="margin: 1rem 0rem">{{
+                                        $errors->first('residenceCountry') }}</p>
+                                @endif
                             </div>
+                            
                         </div>
-                        <div class="form-group" id="residencePrefectures">
+                        <div class="form-group" id="residencePrefectures" style="display: none">
                             <label class="col-lg-6 control-label">＊都道府県 :
                             </label>
                             <div class="col-lg-12">
+                                @if (old('residencePrefecture')??"" or ($errors->has('residencePrefecture')))
                                 <select id="residencePrefecture" name="residencePrefecture" class="form-control">
-                                    <option value="愛知">愛知</option>
-                                    <option value="宮崎">宮崎</option>
+                                    <option value="" selected>--</option>
+                                    <option value="愛知" {{(old('residencePrefecture')==="愛知") ? "selected" : ""}}>愛知</option>
+                                    <option value="宮崎" {{(old('residencePrefecture')==="宮崎") ? "selected" : ""}}>宮崎</option>
                                 </select>
+                               
+                                @else
+                                <select id="residencePrefecture"  name="residencePrefecture" class="form-control">
+                                    <option value="">--</option>
+                                    <option value="愛知" {{($residencePrefecture==="愛知")?"selected" : ""}}>愛知</option>
+                                    <option value="宮崎" {{($residencePrefecture==="宮崎")?"selected" : ""}}>宮崎</option>
+                                </select>
+                                @endif
+                                @if ($errors->has('residencePrefecture'))
+                                    <p class="error-css text-danger"  style="margin: 1rem 0rem">{{
+                                        $errors->first('residencePrefecture') }}</p>
+                                @endif
+                               
                             </div>
+                            
                         </div>
                         <div class="form-group" style="display: flex">
                             <div class="col-lg-6">
-                                <label onclick="details('hightInfo')" style="cursor:pointer" class=" control-label">身長
+                                <label onclick="details('heightInfo')" style="cursor:pointer" class=" control-label">身長
                                     :
                                 </label>
-                                <i onclick="details('hightInfo')" style="cursor:pointer" class=" fa fa-question-circle"
+                                <i onclick="details('heightInfo')" style="cursor:pointer" class=" fa fa-question-circle"
                                     aria-hidden="true"></i>
-                                <div id="hightInfo" style="margin-left:1rem">あああああ</div>
+                                <div id="heightInfo" style="margin-left:1rem">あああああ</div>
                                 <div class="col-lg-12 " style="display: flex; margin-left:-1rem">
                                     <input class="form-control" id="height" name="height" type="text" maxlength=6
                                         style="float: left" value={{old('height')?old('height'):Auth::user()->height}}>
@@ -302,15 +327,12 @@
                         <div class="form-group" style="display: flex; margin-top:2rem;gap: 4rem;">
 
                             <div class="col-lg-5" style="text-align: right">
-                                <x-primary-button class=" btn btn-success btn-lg btn-block">
-                                    {{ __('確認') }}
-                                </x-primary-button>
-
-                                {{-- <input class="btn btn-success btn-lg btn-block" type="submit" value="確認">
-                                --}}
+                                <button class=" btn btn-success btn-lg btn-block">
+                                    確認
+                                </button>
                             </div>
                             <div class="col-lg-5" style="text-align: right">
-                                <a class="btn btn-danger btn-lg btn-block" href="./dashboard" role="button">戻る</a>
+                                <a class="btn btn-danger btn-lg btn-block" href="javascript:history.back()" role="button">戻る</a>
                             </div>
                         </div>
                     </div>
@@ -321,10 +343,10 @@
             </div>
             <div class="col-md-3" style="text-align: right">
                 <p class="col-lg-9 control-label" style="font-weight: bold">ユーザーID :
-                    {{Auth::user()->userId}}
+                    {{ str_pad(Auth::user()->userId, 7, "0", STR_PAD_LEFT)}}
                 </p>
                 <p class="col-lg-9 control-label" style="font-weight: bold">ユーザー種別 :
-                    {{Auth::user()->userType}}
+                    {{str_pad(Auth::user()->userType, 8, "0", STR_PAD_LEFT)}}
                 </p>
                 @if(Auth::user()->tempPasswordFlag==0)
                 <p id="passwordChangeButton" onclick="passwordChangeConfirm()" class="col-lg-9 control-label"
@@ -351,11 +373,20 @@
         $(".lib-flatpickr3").flatpickr({
             "locale": "ja",
             dateFormat: 'Y/m/d',
-            allowInput: true,
             defaultDate: 'null',
+            "maxDate": "today",
         });
     </script>
     {{-- Date Picker End --}}
+    <script>
+        function validateProfileEditForm()
+        {
+            const dateOfBirth = document.getElementById("dateOfBirth");
+            if(dateOfBirth.value==="年/月/日")
+                dateOfBirth.value = "";
+            return true;
+        }
+    </script>
 
     <script src="{{ asset('js/nav.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>

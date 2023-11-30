@@ -1,6 +1,6 @@
 {{--*************************************************************************
 * Project name: JARA
-* File name: register.blade.php
+* File name: register-confirm.blade.php
 * File extension: .blade.php
 * Description: This is the ui of player register page
 *************************************************************************
@@ -38,15 +38,26 @@
 </head>
 
 <body>
-    {{-- background-color: #9FD9F6; --}}
     <div class="container-fluid bootstrap snippets bootdey"
-        style="background: linear-gradient(to right,#1991FC,  #45b796);padding:0;color: #000;font-weight:500">
+        style="background: linear-gradient(to right,#1991FC,  #45b796);padding:0;color: #000;font-weight:500;min-height:100vh; width:100vw">
         <div id="mySidenav" class="sidenav">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <a href="#">ダッシュボード</a>
-            <a href="#">情報更新</a>
-            <a href="#">情報参照</a>
-            <a href="#">アカウント削除</a>
+            <a href={{route('my-page')}}>マイページ</a>
+            <a href={{route('user.edit')}}>情報更新</a>
+            <a href={{route('user.details')}}>情報参照</a>
+            <a href={{route('user.delete')}}>退会</a>
+            <a href={{route('user.password-change')}}>パスワード変更</a>
+            <a href={{route('player.register')}}>選手情報登録</a>
+            <a href={{route('player.edit')}}>選手情報更新</a>
+            <a href={{route('player.delete')}}>選手情報削除</a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+    
+                <a href="route('logout')" onclick="event.preventDefault();
+                                    this.closest('form').submit();">
+                    ログアウト
+                </a>
+            </form>
         </div>
         <div style="background: linear-gradient(to right,#1991FC,  #45b796); color:#fff;padding-top:15px;">
             <span class="col-md-3 " style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; メニュー</span>
@@ -99,21 +110,25 @@
                                     写真
 
                                 </div>
-                                <img style="margin: 0px 0px 5px 15px; text-align:center"
-                                    src="{{asset('images/no-image.png')}}" class="avatar img-circle img-thumbnail"
-                                    alt="avatar">
-                                {{-- <div style="margin: 0px 0px 5px 15px" id="photoStatus"></div> --}}
+                                @if(session()->get('playerInfo')['photo']??"")
+                                <img id = "playerPicture" src="{{ asset('images/players/'.session()->get('playerInfo')['photo']) }}" class="avatar img-circle img-thumbnail" alt="avatar">
+                                @else
+                                    @if($playerInfo->photo??"")
+                                    <img id = "playerPicture" src="{{ asset('images/players/'.$playerInfo->photo) }}"
+                                class="avatar img-circle img-thumbnail" alt="avatar">
+                                    @else
+                                    <img id = "playerPicture" src="{{ asset('images/no-image.png') }}"
+                                class="avatar img-circle img-thumbnail" alt="avatar">
+                                    @endif
+                                @endif
 
                             </div>
-                            <input type="hidden" name="photo" value="" style="display:none">
+                            <input type="hidden" name="photo" value="{{session()->get('playerInfo')['photo']??($playerInfo->photo??"")}}" style="display:none">
                         </div>
                         <div class="col-md-1"></div>
 
                         <div class="col-md-5 "
                             style="background-color:#005BFC;padding:2rem ; border-radius: 10px ; color:#fff">
-                            {{-- @dd($playerInfo->playerId) --}}
-                            {{--
-                            <x-input-error :messages="$errors->get('system_error')" class="mt-2" /> --}}
                             @if($pageMode==="edit-confirm" or $pageMode==="delete")
                             <div class="form-group row ">
                                 <label style="cursor:pointer;text-align:right" for="playerCode"
@@ -179,7 +194,6 @@
                                 <label style="cursor:pointer;text-align:right" for="sex"
                                     class="col-sm-5  col-form-label">性別
                                 </label>
-                                {{-- {{(old('sex')?old('sex'):$sex??"")=="" ? "selected" : "" }} --}}
                                 <div class="col-sm-7 col-form-label">
                                     @if($pageMode==="delete")
                                     {{$playerInfo->sex??""}}
@@ -191,10 +205,6 @@
                                     @else
                                     ""
                                     @endif
-                                    {{-- {{(session()->get('playerInfo')['sex']??"")}} , {{
-                                    ((session()->get('playerInfo')['sex']??"")==="1"?"男":(session()->get('playerInfo')['sex']??"")==="2")
-
-                                    }} --}}
                                     <input name="sex" type="hidden" value="{{
                                         session()->get('playerInfo')['sex']??""
                                         }}">
@@ -245,37 +255,13 @@
                                     @if($pageMode==="delete")
                                     {{((str_pad(($playerInfo->sideInfo??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'S　' : '' }}
                                     {{((str_pad(($playerInfo->sideInfo??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'B　' : '' }}
-                                    {{((str_pad(($playerInfo->sideInfo??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'SB　' : '' }}
-                                    {{((str_pad(($playerInfo->sideInfo??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'X　' : '' }}
-                                    {{((str_pad(($playerInfo->sideInfo??""), 8, "0", STR_PAD_LEFT)&"00010000")==="00010000")? 'COX' : '' }}
+                                    {{((str_pad(($playerInfo->sideInfo??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
+                                    {{((str_pad(($playerInfo->sideInfo??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
                                     @else
                                     {{((str_pad((session()->get('playerInfo')['sideInfo']??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'S　' : '' }}
                                     {{((str_pad((session()->get('playerInfo')['sideInfo']??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'B　' : '' }}
-                                    {{((str_pad((session()->get('playerInfo')['sideInfo']??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'SB　' : '' }}
-                                    {{((str_pad((session()->get('playerInfo')['sideInfo']??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'X　' : '' }}
-                                    {{((str_pad((session()->get('playerInfo')['sideInfo']??""), 8, "0", STR_PAD_LEFT)&"00010000")==="00010000")? 'COX' : '' }}
-
-
-                                    {{-- Method-2 --}}
-                                    {{-- @if(session()->get('playerInfo')['sideInfo'][0]??"")
-                                    @foreach(session()->get('playerInfo')['sideInfo'] as $sideInfo)
-                                    @if((str_pad(($sideInfo??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001") 
-                                    S　
-                                    @endif
-                                    @if((str_pad(($sideInfo), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010") 
-                                    B　
-                                    @endif
-                                    @if((str_pad(($sideInfo), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100") 
-                                    SB　
-                                    @endif
-                                    @if((str_pad(($sideInfo), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000") 
-                                    X　
-                                    @endif
-                                    @if((str_pad(($sideInfo), 8, "0", STR_PAD_LEFT)&"00010000")==="00010000") 
-                                    COX　
-                                    @endif
-                                    @endforeach
-                                    @endif --}}
+                                    {{((str_pad((session()->get('playerInfo')['sideInfo']??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
+                                    {{((str_pad((session()->get('playerInfo')['sideInfo']??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
                                    
                                     <input name="sideInfo" type="hidden" value="{{
                                         session()->get('playerInfo')['sideInfo']??""}}">
@@ -368,8 +354,8 @@
                                 <div class="col-sm-2"></div>
                                 <div class="col-sm-4">
                                     @if(($pageMode==="register-confirm")||($pageMode==="edit-confirm"))
-                                    <a class="btn btn-danger btn-lg btn-block" href="javascript:history.go(-1)" role="button">戻る</a>
-                                    @else(($pageMode==="register-confirm")||($pageMode==="edit-confirm"))
+                                    <a class="btn btn-danger btn-lg btn-block" href="javascript:history.back()" role="button">戻る</a>
+                                    @else
                                     <a class="btn btn-danger btn-lg btn-block" href="{{route('player.edit')}}" role="button">戻る</a>
                                     @endif
                                 </div>
@@ -520,10 +506,6 @@
                 document.getElementById("confirmPrefectures").style.display='flex';
             }
         })();
-        // (function(){
-            
-            
-        // })()
         
         
 
@@ -549,15 +531,6 @@
             else
             document.getElementById("checkeWarningMessage").click();
             return false;
-        // if(check if your conditions are not satisfying)
-        // { 
-        //     alert("validation failed false");
-        //     returnToPreviousPage();
-        //     return false;
-        // }
-
-        // alert("validations passed");
-        // return true;
         }
     </script>
 

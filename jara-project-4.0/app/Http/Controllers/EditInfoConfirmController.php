@@ -1,7 +1,19 @@
 <?php
-
+/*************************************************************************
+*  Project name: JARA
+*  File name: EditInfoConfirmController.php
+*  File extension: .php
+*  Description: This is the controller file to manage edit user request
+*************************************************************************
+*  Author: DEY PRASHANTA KUMAR
+*  Created At: 2023/11/04
+*  Updated At: 2023/11/09
+*************************************************************************
+*
+*  Copyright 2023 by DPT INC.
+*
+************************************************************************/
 namespace App\Http\Controllers;
-// use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +30,7 @@ class EditInfoConfirmController extends Controller
 {
     public function create(Request $request): View
     {
-        return view('profile.edit.confirm');
+        return view('user.edit.confirm');
     }
     public function store(Request $request): RedirectResponse
     {
@@ -26,7 +38,7 @@ class EditInfoConfirmController extends Controller
             
                 $certification_number = Str::random(6); // For Creating random password
                 $date = date('Y-m-d H:i:s');
-                $newDate = date('Y-m-d H:i:s', strtotime($date. ' + 24 hours'));
+                $newDate = date('Y-m-d H:i:s', strtotime($date. ' + 30 minutes'));
                 
                 DB::beginTransaction();
                 try {
@@ -34,8 +46,6 @@ class EditInfoConfirmController extends Controller
                         'update t_user set  certification = ? , expiryTimeOfCertification = ? where userId = ?',
                         [ $certification_number, $newDate, Auth::user()->userId]
                     );
-                    //Store log data of the new registered user.
-                    Log::channel('update')->info("$request->mailAddress は更新されました。");
 
                     DB::commit();
                 } catch (\Throwable $e) {
@@ -52,7 +62,7 @@ class EditInfoConfirmController extends Controller
 
 
                     //Store error message in the register log file.
-                    Log::channel('update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
+                    Log::channel('user_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
                     if($e_errorCode == 1213||$e_errorCode == 1205)
                     {
                         throw ValidationException::withMessages([
@@ -68,7 +78,7 @@ class EditInfoConfirmController extends Controller
                 
                 //Sending mail to the user
                 $mailDate = date('Y/m/d H:i');
-                $newmailDate = date('Y/m/d H:i', strtotime($mailDate. ' + 24 hours'));
+                $newmailDate = date('Y/m/d H:i', strtotime($mailDate. ' + 30 minutes'));
                 $mailData = [
                     'name' => $request->userName,
                     'email' => $request->mailAddress,
@@ -78,7 +88,7 @@ class EditInfoConfirmController extends Controller
                 Mail::to($request->get('mailAddress'))->send(new VerificationMail($mailData));
 
                 $userInfo = $request->all();
-                return redirect('profile/edit/verification')->with('userInfo', $userInfo);
+                return redirect('user/edit/verification')->with('userInfo', $userInfo);
                 dd("mail sent");
 
             }
@@ -94,14 +104,19 @@ class EditInfoConfirmController extends Controller
                     DB::commit();
                 } catch (\Throwable $e) {
                     DB::rollBack();
-                     //Store error message in the register log file.
-                     Log::channel('update')->info("email -> $value , error-message  -> $update_failed");
+                     //Store error message in the user update log file.
+                    Log::channel('user_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
                      throw ValidationException::withMessages([
                          'datachecked_error' => $update_failed
                      ]); 
                 }
+                $page_status = "更新の件、完了になりました。";
+                $page_url = route('my-page');
+                $page_url_text = "マイページ";
                 
-                return redirect('profile')->with('status', "更新の件、完了になりました。");
+                return redirect('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+                
+                // return redirect('profile')->with('status', "更新の件、完了になりました。");
             }
     }
 }

@@ -55,11 +55,18 @@ class LoginRequest extends FormRequest
     {
         include('ErrorMessages/ErrorMessages.php');
         $this->ensureIsNotRateLimited();
+        if (DB::table('t_user')->where('mailAddress', $this->only('mailAddress'))->where('deleteFlag', '=', 1)->exists()) {
+            throw ValidationException::withMessages([
+                'datachecked_error' => $this_mail_deleted
+            ]); 
+        }
+        
         if (DB::table('t_user')->where('mailAddress', $this->only('mailAddress'))->where('expiryTimeOfTempPassword', '<', date('Y-m-d H:i:s'))->exists()) {
             throw ValidationException::withMessages([
                 'datachecked_error' => $temp_password_timed_out
             ]); 
         }
+        
         if (! Auth::attempt($this->only('mailAddress', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
             if (DB::table('t_user')->where('mailAddress', $this->only('mailAddress'))->exists()) {
@@ -75,19 +82,32 @@ class LoginRequest extends FormRequest
                 
             }
         }
+
+        
         $userid = DB::table('t_user')->where('mailAddress', $this->only('mailAddress'))->value('userId');
 
-        DB::table('t_access_log')->insert([
-            'userid'=>$userid,
-            'accesstime' => now(),
-            'ip' => request()->host(),
-            'host' => request()->getHttpHost(),
-            'browser' => request()->userAgent(),
-            'registered_time' => now(),
-            'registered_userid' => $userid,
-            'update_time' => now(),
-            'update_userid' => $userid,
-        ]);
+        DB::beginTransaction();
+        try {
+            $user = DB::insert('insert into t_access_log (userid, accesstime, ip, host, browser, registered_time, registered_userid,update_time, update_userid) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', [$userid, now(), request()->host(), request()->getHttpHost(), request()->userAgent(),now(),$userid, now(), $userid]);
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            $e_message = $e->getMessage();
+            $e_code = $e->getCode();
+            $e_file = $e->getFile();
+            $e_line = $e->getLine();
+            $e_sql = $e->getSql();
+            $e_errorCode = $e->errorInfo[1];
+            $e_bindings = implode(", ",$e->getBindings());
+            $e_connectionName = $e->connectionName;
+
+            //Store log data of the logged in user.
+            Log::channel('user_login_access_log')->info("  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
+            
+        }
+        
 
         RateLimiter::clear($this->throttleKey());
     }

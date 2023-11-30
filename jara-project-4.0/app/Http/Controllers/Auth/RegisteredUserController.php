@@ -24,15 +24,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-// use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Mail\Mailer;
 use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 use Illuminate\Validation\ValidationException;
-use League\CommonMark\Node\Inline\Newline;
 
 
 
@@ -55,69 +54,19 @@ class RegisteredUserController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        include('ErrorMessages/ErrorMessages.php');
         
-        //'unique:' . T_user::class //for unique email check
+        include('ErrorMessages/ErrorMessages.php');
+
         $request->validate([
             // Username validation rule
-            'userName' => ['required', 'string', 'max:32','regex:/^[0-9a-zA-Z-_]+$/'], 
+            'userName' => ['required', 'max:32','regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'], 
             // Mail address validation rule
-            'mailAddress' => ['required','email', 'string', 'lowercase',  'max:255',
-            function($attribute,$value,$fail) {
-                include('ErrorMessages/ErrorMessages.php');
-                if (DB::table('t_user')->where('mailAddress',$value)->exists()){
-                    if (DB::table('t_user')->where('mailAddress',$value)->where('deleteFlag',0)->exists()){
-                        if (DB::table('t_user')->where('mailAddress',$value)->where('tempPasswordFlag',0)->exists()){
-                            // $fail('write message here');//To show error message beside the same field.
-
-                            //Store error message in the register log file.
-                            Log::channel('register')->info("email -> $value , error-message  -> $email_register_check");
-
-                            //Display error message to the client
-                            throw ValidationException::withMessages([
-                                'datachecked_error' => $email_register_check
-                            ]); 
-                        }
-                        else{
-                            if (DB::table('t_user')->where('mailAddress', $value)->where('expiryTimeOfTempPassword', '<', date('Y-m-d H:i:s'))->exists()) {
-
-                                //Store error message in the register log file.
-                                Log::channel('register')->info("email -> $value , error-message  -> $registration_failed");
-
-                                //Display error message to the client
-                                throw ValidationException::withMessages([
-                                    'datachecked_error' => $registration_failed
-                                ]); 
-                            }
-                            else{
-                                //Store error message in the register log file.
-                                Log::channel('register')->info("email -> $value , error-message  -> $already_registered");
-
-                                //Display error message to the client
-                                throw ValidationException::withMessages([
-                                    'datachecked_error' => $already_registered,
-                                ]); 
-                            }
-                        }
-                    }
-                    else {
-
-                        //Store error message in the register log file.
-                        Log::channel('register')->info("email -> $value , error-message  -> $registration_failed");
-
-                        //Display error message to the client
-                        throw ValidationException::withMessages([
-                            'datachecked_error' => $registration_failed,
-                        ]);
-                    }
-                }
-            }],
+            'mailAddress' => ['required','email', 'string', 'lowercase',  'max:255'],
             // Confirm mail address validation rule
             'confirm_email' => ['required','email', 'string', 'lowercase',  'max:255', 'same:mailAddress'],
 
             // terms of service validation rule
-            'terms_of_service' => ['accepted']
-            // 'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'terms_of_service' => ['accepted'],
         ],
         [
             //Error message for Username validation rule 
@@ -140,7 +89,37 @@ class RegisteredUserController extends Controller
             //Error message for terms of service validation rule 
             'terms_of_service.accepted' => $terms_of_service,
         ]);
-        
+
+        if (DB::table('t_user')->where('mailAddress',$request->mailAddress)->exists()){
+            if (DB::table('t_user')->where('mailAddress',$request->mailAddress)->where('deleteFlag',0)->exists()){
+                if (DB::table('t_user')->where('mailAddress',$request->mailAddress)->where('tempPasswordFlag',0)->exists()){
+                    //Display error message to the client
+                    throw ValidationException::withMessages([
+                        'datachecked_error' => $email_register_check
+                    ]); 
+                }
+                else {
+                    if (DB::table('t_user')->where('mailAddress', $request->mailAddress)->where('expiryTimeOfTempPassword', '<', date('Y-m-d H:i:s'))->exists()) {
+                        //Display error message to the client
+                        throw ValidationException::withMessages([
+                            'datachecked_error' => $registration_failed
+                        ]); 
+                    }
+                    else {
+                        //Display error message to the client
+                        throw ValidationException::withMessages([
+                            'datachecked_error' => $already_registered,
+                        ]); 
+                    }
+                }
+            }
+            else {
+                //Display error message to the client
+                throw ValidationException::withMessages([
+                    'datachecked_error' => $registration_failed,
+                ]);
+            }
+        }
         
         // For Generate random password
         $temp_password = Str::random(8); 
@@ -153,11 +132,8 @@ class RegisteredUserController extends Controller
 
         DB::beginTransaction();
         try {
-            $user = DB::insert('insert into t_user (userName, mailAddress,password,expiryTimeOfTempPassword,created_at,updated_at) values (?, ?, ?, ?, ?, ?)', [$request->userName, $request->mailAddress, Hash::make($temp_password),$newDate,$newDate,$newDate ]);
-
-            
-            //Store log data of the new registered user.
-            Log::channel('register')->info("$request->mailAddress は登録されました。");
+            $hashed_password = Hash::make($temp_password);
+            $user = DB::insert('insert into t_user (userName, mailAddress, password, tempPassword, expiryTimeOfTempPassword, tempPasswordFlag, created_at, updated_at) values (?, ?, ?, ?, ?, ?, ?, ?)', [$request->userName, $request->mailAddress, $hashed_password , $hashed_password , $newDate, 1, now(), now() ]);
 
             DB::commit();
         } catch (\Throwable $e) {
@@ -174,21 +150,20 @@ class RegisteredUserController extends Controller
 
 
             //Store error message in the register log file.
-            Log::channel('register')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
+            Log::channel('user_register')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
             if($e_errorCode == 1213||$e_errorCode == 1205)
             {
                 throw ValidationException::withMessages([
-                    'datachecked_error' => $database_registration_failed_try_again
+                    'datachecked_error' => $registration_failed
                 ]); 
             }
             else{
                 throw ValidationException::withMessages([
-                    'datachecked_error' => $database_registration_failed
+                    'datachecked_error' => $registration_failed
                 ]); 
             }
         }
         
-
         //For getting current time
         $mailDate = date('Y/m/d H:i');
         //For adding 24hour with current time
@@ -202,18 +177,32 @@ class RegisteredUserController extends Controller
             'temporary_password_expiration_date'=> $newmailDate
         ];
 
+        
         //Sending mail to the user
-        Mail::to($request->get('mailAddress'))->send(new WelcomeMail($mailData));
+        
+        try {
+            Mail::to($request->get('mailAddress'))->send(new WelcomeMail($mailData));
+        } catch (Exception $e) {
+            DB::delete('delete from t_user where mailAddress = ?', [$request->mailAddress ]);
+            //Store error message in the user_register log file.
+            Log::channel('user_register')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「EMAIL_SENT_ERROR_MESSAGE」  ： $e\r\n  \r\n ============================================================ \r\n \r\n");
+            //Display error message to the client
+            throw ValidationException::withMessages([
+                'datachecked_error' => $mail_sent_failed,
+            ]);
+        }
 
-         
-        //event(new Registered($user));
         //Refresh the requested data
         $request->merge(['userName' => '']);
         $request->merge(['mailAddress' => '']);
         $request->merge(['confirm_email' => '']);
         $request->merge(['terms_of_service' => false]);
 
+        $page_status = "入力されたメールアドレスに、「仮パスワード通知メール」を送信しました。<br/><br/>メール本文に記載された「仮パスワード」を使用して、ログイン画面よりログインしてください。";
+        $page_url = route('login');
+        $page_url_text = "OK";
+        
         //Redirect to registered user to the login page with success status.
-        return redirect('login')->with('status', "入力されたメールアドレスに、<br/>「仮パスワード通知メール」を送信しました。<br/>メール本文に記載された「仮パスワード」を使用して、<br/>ログイン画面よりログインしてください。");
+        return redirect('status')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
     }
 }

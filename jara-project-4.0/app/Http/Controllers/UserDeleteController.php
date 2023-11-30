@@ -1,5 +1,18 @@
 <?php
-
+/*************************************************************************
+*  Project name: JARA
+*  File name: UserDeleteController.php
+*  File extension: .php
+*  Description: This is the controller file to manage user delete request
+*************************************************************************
+*  Author: DEY PRASHANTA KUMAR
+*  Created At: 2023/11/04
+*  Updated At: 2023/11/09
+*************************************************************************
+*
+*  Copyright 2023 by DPT INC.
+*
+************************************************************************/
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
@@ -13,12 +26,12 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VerificationMail;
 
-class ProfileDeleteController extends Controller
+class UserDeleteController extends Controller
 {
     //
     public function create(Request $request): View
     {
-        return view('profile.details',);
+        return view('user.details');
     }
     public function store(Request $request) : RedirectResponse
     {
@@ -33,8 +46,6 @@ class ProfileDeleteController extends Controller
                 'update t_user set  certification = ? , expiryTimeOfCertification = ? where userId = ?',
                 [ $certification_number, $newDate, Auth::user()->userId]
             );
-            //Store log data of the new registered user.
-            Log::channel('update')->info("$request->mailAddress は更新されました。");
 
             DB::commit();
         } catch (\Throwable $e) {
@@ -51,7 +62,7 @@ class ProfileDeleteController extends Controller
 
 
             //Store error message in the register log file.
-            Log::channel('update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
+            Log::channel('user_delete')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
             if($e_errorCode == 1213||$e_errorCode == 1205)
             {
                 throw ValidationException::withMessages([
@@ -76,6 +87,6 @@ class ProfileDeleteController extends Controller
         ];
         Mail::to( Auth::user()->mailAddress)->send(new VerificationMail($mailData));
 
-        return redirect('profile/delete/verification');
+        return redirect('user/delete/verification');
     }
 }

@@ -1,5 +1,18 @@
 <?php
-
+/*************************************************************************
+*  Project name: JARA
+*  File name: PlayerEditConfirmController.php
+*  File extension: .php
+*  Description: This is the controller file to manage edit player request
+*************************************************************************
+*  Author: DEY PRASHANTA KUMAR
+*  Created At: 2023/11/04
+*  Updated At: 2023/11/30
+*************************************************************************
+*
+*  Copyright 2023 by DPT INC.
+*
+************************************************************************/
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
@@ -47,7 +60,11 @@ class PlayerEditConfirmController extends Controller
                     );
 
                     DB::commit();
-                    return redirect('player/edit')->with('status', "選手情報の更新が正常に完了しました。");
+                    $page_status = "選手情報の更新が正常に完了しました。";
+                    $page_url = route('my-page');
+                    $page_url_text = "マイページ";
+                    
+                    return redirect('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
                 } catch (\Throwable $e) {
                     dd($request->all());
                     dd("stop");
@@ -59,7 +76,11 @@ class PlayerEditConfirmController extends Controller
                      ]); 
                 }
                 
-                return redirect('player/edit')->with('status', "選手情報の更新が正常に完了しました。");
+                $page_status = "選手情報の更新が正常に完了しました。";
+                    $page_url = route('my-page');
+                    $page_url_text = "マイページ";
+                    
+                    return redirect('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
             }
         }
         else{
@@ -71,19 +92,25 @@ class PlayerEditConfirmController extends Controller
                     );
 
                     DB::commit();
-                    return redirect('player/edit')->with('status', "選手情報の更新が正常に完了しました。");
+                    $page_status = "選手情報の更新が正常に完了しました。";
+                    $page_url = route('my-page');
+                    $page_url_text = "マイページ";
+                    
+                    return redirect('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
                 } catch (\Throwable $e) {
-                    dd($request->all());
-                    dd("stop");
                     DB::rollBack();
-                     //Store error message in the register log file.
-                     Log::channel('player_update')->info(" error-message  -> $update_failed");
+                    //Store error message in the player update log file.
+                    Log::channel('player_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
                      throw ValidationException::withMessages([
                          'datachecked_error' => $update_failed
                      ]); 
                 }
                 
-                return redirect('player/edit')->with('status', "選手情報の更新が正常に完了しました。");
+                $page_status = "選手情報の更新が正常に完了しました。";
+                    $page_url = route('my-page');
+                    $page_url_text = "マイページ";
+                    
+                    return redirect('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
         }
         return redirect('player/edit');
     }

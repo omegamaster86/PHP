@@ -1,5 +1,18 @@
 <?php
-
+/*************************************************************************
+*  Project name: JARA
+*  File name: PlayerDeleteController.php
+*  File extension: .php
+*  Description: This is the controller file to manage player delete request
+*************************************************************************
+*  Author: DEY PRASHANTA KUMAR
+*  Created At: 2023/11/04
+*  Updated At: 2023/11/09
+*************************************************************************
+*
+*  Copyright 2023 by DPT INC.
+*
+************************************************************************/
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
@@ -17,17 +30,23 @@ class PlayerDeleteController extends Controller
     public function create(): View
     {
         $retrive_player_ID = DB::select('select * from t_player where userId = ?', [Auth::user()->userId]);
-
+        if(empty($retrive_player_ID)){
+            return view('player.register',["pageMode"=>"register"]);
+        }
         $playerInfo = $retrive_player_ID[0];
         
-        if($playerInfo->deleteFlag)
-        return view('player.register',["pageMode"=>"register"]);
-        if($playerInfo->sex===1)
-        $playerInfo->sex = "男";
-        elseif($playerInfo->sex===2)
-        $playerInfo->sex = "女";
-        else
-        $playerInfo->sex = "";
+        if($playerInfo->deleteFlag){
+            return view('player.register',["pageMode"=>"register"]);
+        }
+        if($playerInfo->sex===1){
+            $playerInfo->sex = "男";
+        }
+        elseif($playerInfo->sex===2){
+            $playerInfo->sex = "女";
+        }
+        else{
+            $playerInfo->sex = "";
+        }
         return view('player.register-confirm',["pageMode"=>"delete","playerInfo"=>$playerInfo]);
     }
 
@@ -40,22 +59,26 @@ class PlayerDeleteController extends Controller
 
     public function store(Request $request, ): RedirectResponse
     {
+        include('Auth/ErrorMessages/ErrorMessages.php');
 
         DB::beginTransaction();
-                try {
-                    DB::update(
-                        'update t_player set deleteFlag = ?  where userId = ?',
-                        [ "1",Auth::user()->userId]
-                    );
+        try {
+            DB::update(
+                'update t_player set deleteFlag = ?  where userId = ?',
+                [ "1",Auth::user()->userId]
+            );
 
-                    DB::commit();
-                    return redirect('player/register')->with('status', "選手情報の削除が完了しました。");
-                } catch (\Throwable $e) {
-                    dd($request->all());
-                    dd("stop");
-                    DB::rollBack();
-                     //Store error message in the register log file.
-                     $e_message = $e->getMessage();
+            DB::commit();
+            $page_status = "選手情報の削除が完了しました。";
+            $page_url = route('my-page');
+            $page_url_text = "マイページ";
+            
+            return redirect('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+        } catch (\Throwable $e) {
+            dd($request->all());
+            dd("stop");
+            DB::rollBack();
+            $e_message = $e->getMessage();
             $e_code = $e->getCode();
             $e_file = $e->getFile();
             $e_line = $e->getLine();
@@ -64,11 +87,10 @@ class PlayerDeleteController extends Controller
             $e_connectionName = $e->connectionName;
 
             $userId = Auth::user()->userId;
-            //Store error message in the register log file.
+            //Store error message in the player delete log file.
             Log::channel('player_delete')->info("\r\n \r\n ＊＊＊「USER_ID」 ：  $userId,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-                }
+        }
                 
-                return redirect('player/register')->with('status', "選手情報の削除が完了しました。"); 
-        dd("delete");
+        return redirect('player/register')->with('status', "選手情報の削除が完了しました。"); 
     }
 }

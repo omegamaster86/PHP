@@ -25,10 +25,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use App\Services\FileUploadService;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\FileUploadRequest;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 use Illuminate\Validation\ValidationException;
 use League\CommonMark\Node\Inline\Newline;
@@ -38,11 +41,40 @@ use League\CommonMark\Node\Inline\Newline;
 class PlayerRegisterController extends Controller
 {
     /**
-     * Display the registration view.
+     * Display the player registration view.
      */
     public function create(): View
     {
-        return view('player.register',["pageMode"=>"register"]);
+        $retrive_player_ID = DB::select('select * from t_player where userId = ?', [Auth::user()->userId]);
+
+        if(empty($retrive_player_ID[0])){
+            return view('player.register',["pageMode"=>"register"]);
+        }
+        else {
+            if($retrive_player_ID[0]->deleteFlag){
+                return view('player.register',["pageMode"=>"register"]);
+            }
+            else {
+                $playerID = $retrive_player_ID[0]->playerId;
+                $JARAPlayerCode = $retrive_player_ID[0]->JARAPlayerCode;
+                $playerName = $retrive_player_ID[0]->playerName;
+                $birthDate = date('Y/m/d', strtotime($retrive_player_ID[0]->birthDate));
+                $sex = $retrive_player_ID[0]->sex;
+                $height = $retrive_player_ID[0]->height;
+                $weight = $retrive_player_ID[0]->weight;
+                $sideInfo = $retrive_player_ID[0]->sideInfo;
+                $birthCountry = $retrive_player_ID[0]->birthCountry;
+                $birthPrefecture = $retrive_player_ID[0]->birthPrefecture;
+                $birthPrefecture = $retrive_player_ID[0]->birthPrefecture;
+                $residenceCountry = $retrive_player_ID[0]->residenceCountry;
+                $residencePrefecture = $retrive_player_ID[0]->residencePrefecture;
+                $photo = $retrive_player_ID[0]->photo;
+
+                return view('player.register',["pageMode"=>"edit","playerId"=>$playerID,"JARAPlayerCode"=>$JARAPlayerCode,"playerName"=>$playerName,"birthDate"=>$birthDate,"sex"=>$sex,"height"=>$height,"weight"=>$weight,"sideInfo"=>$sideInfo,"birthCountry"=>$birthCountry,"birthPrefecture"=>$birthPrefecture,"residenceCountry"=>$residenceCountry,"residencePrefecture"=>$residencePrefecture,"photo"=>$photo]);
+            }
+        }
+            
+        
     }
 
     /**
@@ -55,9 +87,19 @@ class PlayerRegisterController extends Controller
     public function store( Request $request): RedirectResponse
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
+        $random_file_name = Str::random(12);
+        if ($request->hasFile('photo')) {
+            
+            $file = $request->file('photo');
+            
+            $fileName = $random_file_name. '.' . $request->file('photo')->getClientOriginalExtension();
+
+            $destinationPath = public_path().'/images/players/' ;
+            $file->move($destinationPath,$fileName);
+        }
         $request->validate([
             'playerCode' => ['required', 'string', 'regex:/^[0-9a-zA-Z]+$/'],
-            'playerName' => ['required', 'string', 'regex:/^[0-9a-zA-ZＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ]+$/'],
+            'playerName' => ['required', 'string', 'regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'],
             'dateOfBirth' => ['required','regex:/^[0-9\/]+$/'],
             'sex' => ['required','regex:/^[1-3]+$/'],
             'height' => ['required'],
@@ -88,6 +130,15 @@ class PlayerRegisterController extends Controller
 
         }
         $playerInfo = $request->all();
+        if ($request->hasFile('photo')){
+            $playerInfo['photo']=$random_file_name. '.' . $request->file('photo')->getClientOriginalExtension();
+        }
+        else{
+            if($request->playerPictureStatus==="delete")
+                $playerInfo['photo']="";
+            else
+                $playerInfo['photo']=DB::table('t_player')->where('userId', Auth::user()->userId)->value('photo');
+        }
         $sideInfo_xor = "00000000";
         foreach($request->sideInfo as $sideInfo){
             $sideInfo_xor = $sideInfo_xor ^ $sideInfo;
@@ -97,8 +148,6 @@ class PlayerRegisterController extends Controller
         $playerInfo['sideInfo'] = $sideInfo_xor; 
         $playerInfo['previousPageStatus'] = "success"; 
         return redirect('player/register/confirm')->with('playerInfo', $playerInfo);
-
-        dd("stop");
-        // INSERT INTO `t_player`(`playerId`, `userId`, `JARAPlayerId`, `playerName`, `birthDate`, `sex`, `height`, `weight`, `sideInfo`, `birthCountry`, `birthPrefecture`, `residenceCountry`, `residencePrefecture`, `photo`, `registeredTime`, `registeredUserId`, `UpdatedTime`, `UpdatedUserId`, `deleteFlag`) VALUES ('[value-1]','[value-2]','[value-3]','[value-4]','[value-5]','[value-6]','[value-7]','[value-8]','[value-9]','[value-10]','[value-11]','[value-12]','[value-13]','[value-14]','[value-15]','[value-16]','[value-17]','[value-18]','[value-19]')
+        
     }
 }

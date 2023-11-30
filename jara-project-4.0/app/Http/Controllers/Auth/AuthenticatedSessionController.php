@@ -22,11 +22,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-
-// use App\Http\Controllers\Auth\Carbon;
-// use App\Http\Controllers\Auth\LoginHistory;
-// use App\Models\T_user;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -46,13 +43,13 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();  
 
         $request->session()->regenerate();
-        
-        // Store log data of logged user with email address information.
-        Log::channel('login')->info($request->mailAddress.' はログインされました。');
 
-        //Redirect the logged user to the dashboard page
-        // return redirect()->intended(RouteServiceProvider::HOME);
-        return redirect()->intended(RouteServiceProvider::HOME)->with('fromLoginPage', "ユーザ登録画面");
+        //Redirect the logged user to the my page or password change page
+        $tempPasswordFlag = DB::table('t_user')->where('mailAddress', $request->mailAddress)->value('tempPasswordFlag');
+        if($tempPasswordFlag)
+            return redirect('user/password-change');
+        else
+            return redirect('my-page');
     }
 
     /**
@@ -60,9 +57,6 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        // Store log data of logout user with email address information.
-        Log::channel('logout')->info(Auth::user()->mailAddress." はログアウトされました。");
-
         // Logout Function
         Auth::guard('web')->logout();
 

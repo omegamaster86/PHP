@@ -16,50 +16,75 @@
     <div>
         <h1 style="text-align:center;font-weight:bold;font-size:24px">仮登録</h1>
 
-        <x-input-error :messages="$errors->get('status')" class="mt-2" style="color: green;font-weight:bold;" />
-        <x-input-error :messages="$errors->get('datachecked_error')" class="mt-2" />
+        @if ($errors->has('terms_of_service'))
+            <p  class="error-css " style="color: red;margin:1.25rem 0rem 0rem 0rem">{!!$errors->first('terms_of_service') !!}</p>
+        @else
+            @if ($errors->has('datachecked_error'))
+                <p  class="error-css " style="color: red;margin:1.25rem 0rem 0rem 0rem">{!!$errors->first('datachecked_error') !!}</p>
+            @endif
+            {{-- <x-input-error :messages="$errors->get('datachecked_error')" class="mt-2" /> --}}
+        @endif
+        {{-- <x-input-error :messages="$errors->get('status')" class="mt-2" style="color: green;font-weight:bold;" /> --}}
+        
 
-        <x-input-error style="text-align: right" :messages="$errors->first('terms_of_service')" class="mt-2" />
+        {{-- <x-input-error style="text-align: right" :messages="$errors->first('terms_of_service')" class="mt-2" /> --}}
         <br />
     </div>
+    {{-- @dd(old('userName')) --}}
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
         <!-- Name -->
         <div>
-            <div flex items-center justify-starSt mt-4 style="text-align: right;">
+            <div style="text-align: right;">
 
                 <x-input-label for="name" :value="__('ユーザー名')" onclick="details ('userInfo')"
                     style="display: inline;" />
                 <i onclick="details('userInfo')" class="fa fa-question-circle " aria-hidden="true"></i>
-                <x-text-input style="display: inline; width:55%; margin-left: 2%;" id="name" class=" mt-1 " type="text"
-                    name="userName" :value="old('userName')" autofocus />
+                <input style="display: inline; width:55%; margin-left: 2%;" id="name" class="border-gray-300
+                dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600
+                focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 " type="text" maxLength="32" name="userName" value="{{old('userName')}}"  />
             </div>
             <div id="userInfo" style="margin-left: 15%">あああああああああああああああああああ</div>
 
-            <x-input-error :messages="$errors->get('userName')" class="mt-2" style="text-align: right" />
+            @if ($errors->has('userName'))
+                <p  class="error-css " style="color: red;margin:1.25rem 0rem 0rem 0rem">{!! $errors->first('userName') !!}</p>
+            @endif
+            {{-- <x-input-error :messages="$errors->get('userName')" class="mt-2" style="text-align: right" /> --}}
         </div>
 
         <!-- Email Address -->
-        <div class="mt-4" style="text-align: right;">
-            <x-input-label onclick="details('emailInfo')" for="email" :value="__('メールアドレス')" style="display: inline;" />
-            <i onclick="details('emailInfo')" class="fa fa-question-circle" aria-hidden="true"></i>
-            <x-text-input id="email" style="display: inline; width:55%; margin-left: 2%" class="mt-1 "
-                name="mailAddress" :value="old('mailAddress')" />
-            <x-input-error :messages="$errors->get('mailAddress')" class="mt-2" />
+        <div class="mt-4" >
+            <div style="text-align: right;">
+                <x-input-label onclick="details('emailInfo')" for="email" :value="__('メールアドレス')" style="display: inline;" />
+                <i onclick="details('emailInfo')" class="fa fa-question-circle" aria-hidden="true"></i>
+                <x-text-input id="email" style="display: inline; width:55%; margin-left: 2%" class="mt-1 "
+                    name="mailAddress" :value="old('mailAddress')" />
+            </div>
+            <div id="emailInfo" style="margin-left: 15%">あああああああああああああああああああ</div>
+            
+            @if ($errors->has('mailAddress'))
+                <p  class="error-css" style="color: red;margin:1.25rem 0rem 0rem 0rem">{!! $errors->first('mailAddress') !!}</p>
+            @endif
+            {{-- <x-input-error :messages="$errors->get('mailAddress')" class="mt-2" /> --}}
         </div>
 
-        <div id="emailInfo" style="margin-left: 15%">あああああああああああああああああああ</div>
+        
 
         <!-- Confirm Email -->
-        <div class="mt-4" style="text-align: right;">
-            <x-input-label style="display: inline;" name="confirm_email" for="confirm_email"
+        <div class="mt-4" >
+            <div style="text-align: right;">
+                <x-input-label style="display: inline;" name="confirm_email" for="confirm_email"
                 :value="__('メールアドレスの確認入力')" />
 
-            <x-text-input id="confirm_email" style="display: inline; width:55%; margin-left: 2%" class="mt-1 "
-                name="confirm_email" :value="old('confirm_email')" />
+                <x-text-input id="confirm_email" style="display: inline; width:55%; margin-left: 2%" class="mt-1 "
+                    name="confirm_email" :value="old('confirm_email')" />
+            </div>
 
-            <x-input-error :messages="$errors->get('confirm_email')" class="mt-2" />
+            @if ($errors->has('confirm_email'))
+                <p  class="error-css" style="color: red;margin:1.25rem 0rem 0rem 0rem">{!! $errors->first('confirm_email') !!}</p>
+            @endif
+            {{-- <x-input-error :messages="$errors->get('confirm_email')" class="mt-2" /> --}}
         </div>
 
         <!-- Confirm Password -->

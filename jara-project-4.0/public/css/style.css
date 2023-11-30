@@ -14,13 +14,9 @@
  ************************************************************************/
 
   
-#userInfo {
-    display: none;
-}
 
-#emailInfo {
-    display: none;
-}
+
+
 .error-css {
     margin: 1rem; 
     padding:1rem;
@@ -35,4 +31,103 @@
     background-color:pink ;
     border-radius:5px;
     font-weight:bold; 
+}
+
+
+/* Drag and Drop style start */
+#input-file-03{
+    display: none;
+  }
+  /* #bt-file-03{
+    padding: 4px 8px;
+    border: none;
+    background-color: #3498DB;
+    color: #fff;
+  }
+  #bt-file-03:hover{
+    background-color: #2980B9;
+  }
+  #bt-file-03.s-dragover{
+    background-color: #2980B9;
+  } */
+  #dropzone-03{
+    box-sizing: border-box;
+    border-radius:5px; 
+    /* background-color:#ddd;  */
+    color:#000; 
+    width:130px; 
+    height:auto;
+    margin-right:5px;
+    padding:5px ;
+
+    
+    
+    /* padding: 24px 12px;
+    margin: 12px; */
+    border: 3px dashed #aaa;
+    /* border-radius: 8px; */
+    background-color: #f2faff;
+    text-align: center;
+  }
+  #dropzone-03.s-dragover{
+    border-color: #3498DB;
+    background-color: #d9f0ff;
+    color: #3498DB;
+    font-weight: bold;
+  }
+/* Drag and Drop style end */
+
+#email {
+  display: block;
+}
+#emailInfo {
+  display: none;
+}
+#emailChangeBox {
+  display: none;
+}
+#prefectures {
+  display: none;
+}
+#userInfo {
+  display: none;
+}
+#sexInfo {
+  display: none;
+}
+#playerCodeInfo {
+  display: none;
+}
+#playerNameInfo {
+  display: none;
+}
+#birthDayInfo {
+  display: none;
+}
+#heightInfo {
+  display: none;
+}
+#weightInfo {
+  display: none;
+}
+#sideInfo {
+  display: none;
+}
+#uploadInfo {
+  display: none;
+}
+#countryInfo {
+  display: none;
+}
+#birthCountryInfo {
+  display: none;
+}
+#residencePrefectureInfo {
+  display: none;
+}
+#birthPrefectureInfo {
+  display: none;
+}
+#playerIdInfo {
+  display: none;
 }

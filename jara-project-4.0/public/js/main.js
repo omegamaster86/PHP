@@ -6,13 +6,131 @@
  *************************************************************************
  *  Author: DEY PRASHANTA KUMAR
  *  Created At: 2023/11/02
- *  Updated At: 2023/11/09
+ *  Updated At: 2023/11/30
  *************************************************************************
  *
  *  Copyright 2023 by DPT INC.
  *
  ************************************************************************/
+//
 
+//  Drag and drop start
+const el_input_file_03 = document.getElementById('input-file-03');
+const bt_file_03 = document.getElementById('bt-file-03');
+const el_dropzone_03 = document.getElementById('dropzone-03');
+const el_output_03 = document.getElementById('output-03');
+
+
+
+const photo = document.getElementById('photo');
+const mailAddressStatus = document.getElementById("mailAddressStatus");
+const prefectures = document.getElementById("prefectures");
+const prefecture = document.getElementById("prefecture");
+const country = document.getElementById("country");
+const birthCountry = document.getElementById("birthCountry");
+const birthPrefectures = document.getElementById("birthPrefectures");
+const birthPrefecture = document.getElementById("birthPrefecture");
+const residenceCountry = document.getElementById("residenceCountry");
+const residencePrefectures = document.getElementById("residencePrefectures");
+const residencePrefecture = document.getElementById("residencePrefecture");
+
+
+
+
+
+//ボタンへのクリックをinput[type="file"]へ送る。
+if(bt_file_03){
+    bt_file_03.addEventListener('click',()=>{
+        el_input_file_03.click();
+    })
+}
+
+//ボタンへのdragenter
+if(bt_file_03){
+    bt_file_03.addEventListener('dragenter',()=>{
+        bt_file_03.classList.add('s-dragover');
+    });
+}
+//ボタンへのdragover
+if(bt_file_03){
+    bt_file_03.addEventListener('dragover',e=>{
+        e.preventDefault();
+    });
+}
+
+//ボタンからのdragleave
+if(bt_file_03){
+    bt_file_03.addEventListener('dragleave',()=>{
+        bt_file_03.classList.remove('s-dragover');
+    });
+}
+
+//ボタンへのdrop => ファイル処理
+if(bt_file_03){
+    bt_file_03.addEventListener('drop',e=>{
+        e.preventDefault();
+        bt_file_03.classList.remove('s-dragover');
+        const files = e.dataTransfer.files;
+        filesInformation(files);
+    });
+}
+
+//ボタンクリック => ファイル処理
+if(el_input_file_03){
+    el_input_file_03.addEventListener('change',e=>{
+        const files = e.target.files;
+        filesInformation(files);
+    });
+}
+
+//ファイル情報を表示する関数
+function filesInformation(files){
+if(files.length===0) return;
+const array_output = [
+    //escHtml(str)はエスケープ処理をする関数
+    // 'name: ' + escHtml(files[0].name),
+    'name: ' + files[0].name,
+    'type: ' + files[0].type,
+    'size: ' + files[0].size + 'byte'
+];
+    document.getElementById("deleteUploadedPhoto").style.display = "inline";
+    el_output_03.innerHTML = array_output.join('<br>');
+}
+
+//※ドロップゾーンに関する処理　ボタンへの処理と同じ
+//ドロップゾーンへのdragenter
+if(el_dropzone_03){
+    el_dropzone_03.addEventListener('dragenter',()=>{
+    el_dropzone_03.classList.add('s-dragover');
+    });
+}
+//ドロップゾーンへのdragover
+if(el_dropzone_03) {
+    el_dropzone_03.addEventListener('dragover',e=>{
+        e.preventDefault();
+    });
+}
+
+//ドロップゾーンからのdragleave
+if(el_dropzone_03) {
+    el_dropzone_03.addEventListener('dragleave',()=>{
+        el_dropzone_03.classList.remove('s-dragover');
+    });
+}
+
+//ドロップゾーンへのdrop => ファイル処理
+if(el_dropzone_03) {
+    el_dropzone_03.addEventListener('drop',e=>{
+        e.preventDefault();
+        el_input_file_03.files = e.dataTransfer.files;
+        el_dropzone_03.classList.remove('s-dragover');
+        const files = e.dataTransfer.files;
+        filesInformation(files);
+    });
+}
+
+
+// Drag and Drop end
 
 //This function will show or hide the details after button is clicked
 function details($idName) {
@@ -25,39 +143,35 @@ function details($idName) {
     }
     
 }
-function photoDelete(){
-    document.getElementById("photo").value= null;
-    document.getElementById("photoFileName").value= "";
-    document.getElementById('photoStatus').innerHTML="";
-    document.getElementById("photoDeleteButton").style.display = "none";
+
+function deleteUploadedPhoto() {
+    document.getElementById("input-file-03").value= null;
+    // document.getElementById("photoFileName").innerText= "　　　";
+    document.getElementById("deleteUploadedPhoto").style.display = "none";
+    document.getElementById("output-03").innerText = "";
 }
-
-document.getElementById('photo').addEventListener('change', function() {
-    let file = document.getElementById("photo").files[0];
-    document.getElementById("photoFileName").value = file.name;
-    const statusElement = document.getElementById('photoStatus');
-    // const maxFileSizeInMB = 1;
-    const maxFileSizeInKB = 1024 * 1024 ;
-    if (file.size > maxFileSizeInKB) {
-        statusElement.innerHTML = "Please select a photo less than 1MB.";
-        statusElement.style.color = "red";
-        statusElement.style.fontWeight = "bold";
-        document.getElementById("photoDeleteButton").style.display = "none";
-    } else {
-        statusElement.innerHTML = 'Photo uploaded successfully!';
-        document.getElementById("photoDeleteButton").style.display = "inline";
-        statusElement.style.color = "green";
-        statusElement.style.fontWeight = "bold";
-
-        // upload file to remote server here
-    }
-    // if(photoEl.files[0].name){
-        
-    // } 
-});
-window.addEventListener('load', (event) => {
-
-    if(document.getElementById("mailAddressStatus").value==="1"){
+if(photo) {
+    photo.addEventListener('change', function() {
+        let file = document.getElementById("photo").files[0];
+        document.getElementById("photoFileName").innerText = file.name;
+        document.getElementById("deleteUploadedPhoto").style.display = "inline";
+        const statusElement = document.getElementById('photoStatus');
+        const maxFileSizeInKB = 1024 * 1024 ;
+        if (file.size > maxFileSizeInKB) {
+            statusElement.innerHTML = "Please select a photo less than 1MB.";
+            statusElement.style.color = "red";
+            statusElement.style.fontWeight = "bold";
+            document.getElementById("photoDeleteButton").style.display = "none";
+        } else {
+            statusElement.innerHTML = 'Photo uploaded successfully!';
+            document.getElementById("photoDeleteButton").style.display = "inline";
+            statusElement.style.color = "green";
+            statusElement.style.fontWeight = "bold";
+        }
+    });
+}
+if(mailAddressStatus) {
+    if(mailAddressStatus.value==="1"){
         let emailChangeBox = document.getElementById("emailChangeBox");
         let emailChangeButton = document.getElementById("emailChangeButton");
         let emailChange = document.getElementById("emailChange");
@@ -65,11 +179,10 @@ window.addEventListener('load', (event) => {
         emailChangeButton.style.display='none';
         emailChange.style.display='none';
     }
-    
-});
+}
 
 
-//This function will show or hide the email change box after email change button is clicked in the profile-edit page
+//This function will show or hide the email change box after email change button is clicked in the user-edit page
 function emailChangeBox() {
     let emailChangeBox = document.getElementById("emailChangeBox");
     let emailChangeButton = document.getElementById("emailChangeButton");
@@ -96,91 +209,100 @@ function emailChangeBox() {
     
 }
 
-//This function will show the prefectures input option if the country is  after email change button is clicked in the profile-edit page
-
-if(document.getElementById("country").value==="日本"){
-    document.getElementById("prefectures").style.display='flex';
+//This function will show the prefectures input option if the country is  after email change button is clicked in the user-edit page
+if(country)
+{
+    if(country.value==="日本"){
+    
+        prefectures.style.display='flex';
+    }
+    else{
+        prefectures.style.display='none';
+        prefecture.value='';
+    }
 }
-else{
-    document.getElementById("prefectures").style.display='none';
-    document.getElementById("prefecture").value='';
-}
-if(document.getElementById("birthCountry").value==="日本"){
-    document.getElementById("birthPrefectures").style.display='flex';
-}
-else{
-    document.getElementById("birthPrefectures").style.display='none';
-    document.getElementById("birthPrefecture").value='';
-}
-
-document.getElementById('birthCountry').addEventListener('change', function() {
-    let birthCountry = document.getElementById("birthCountry");
-    let birthPrefecture = document.getElementById("birthPrefectures");
+if(birthCountry)
+{
     if(birthCountry.value==="日本"){
-        birthPrefecture.style.display='flex'
+        birthPrefectures.style.display='flex';
     }
     else{
-        birthPrefecture.style.display='none';
-        document.getElementById("birthPrefecture").value='';
+        birthPrefectures.style.display='none';
+        birthPrefecture.value='';
     }
-});
-document.getElementById('country').addEventListener('change', function() {
-    let country = document.getElementById("country");
-    let prefecture = document.getElementById("prefectures");
-    if(country.value==="日本"){
-        prefecture.style.display='flex'
-    }
-    else{
-        prefecture.style.display='none';
-        document.getElementById("prefecture").value='';
-    }
-});
-
-
-if(document.getElementById("residenceCountry").value==="日本"){
-    document.getElementById("residencePrefectures").style.display='none';
 }
-else{
-    document.getElementById("residencePrefectures").style.display='none';
-    document.getElementById("residencePrefecture").value='';
+if(birthCountry){
+    birthCountry.addEventListener('change', function() {
+        let birthCountry = document.getElementById("birthCountry");
+        let birthPrefecture = document.getElementById("birthPrefectures");
+        if(birthCountry.value==="日本"){
+            birthPrefecture.style.display='flex'
+        }
+        else{
+            birthPrefecture.style.display='none';
+            document.getElementById("birthPrefecture").value='';
+        }
+    });
 }
-document.getElementById('residenceCountry').addEventListener('change', function() {
-    console.log(document.getElementById("residenceCountry").value)
-    let country = document.getElementById("residenceCountry");
-    let prefecture = document.getElementById("residencePrefectures");
-    if(country.value==="日本"){
-        prefecture.style.display='block'
+if(country) {
+    country.addEventListener('change', function() {
+        let country = document.getElementById("country");
+        let prefecture = document.getElementById("prefectures");
+        if(country.value==="日本"){
+            prefecture.style.display='flex'
+        }
+        else{
+            prefecture.style.display='none';
+            document.getElementById("prefecture").value='';
+        }
+    });
+}
+
+setTimeout(() => {
+    if(residenceCountry){
+        console.log(residenceCountry.value);
+        if(residenceCountry.value==="日本"){
+            residencePrefectures.style.display='block';
+        }
+        else{
+            residencePrefectures.style.display='none';
+            residencePrefecture.value='';
+        }
     }
-    else{
-        prefecture.style.display='none';
-        document.getElementById("residencePrefecture").value='';
-    }
-});
+}, "10");
 
 
-// function passwordChangeConfirm(){
-//     // let passwordChangeButtonEl = document.getElementById("passwordChangeButton");
-//     let text = "パスワードを変更しますか?";
-//     if (confirm(text) == true) {
-//         window.location.replace('./dashboard');
-//     } 
+if(residenceCountry) {
+    residenceCountry.addEventListener('change', function() {
+        console.log(residenceCountry.value);
+        let country = document.getElementById("residenceCountry");
+        let prefecture = document.getElementById("residencePrefectures");
+        if(country.value==="日本"){
+            prefecture.style.display='block'
+        }
+        else{
+            prefecture.style.display='none';
+            document.getElementById("residencePrefecture").value='';
+        }
+    });
+    
+}
 
-// }
-// function clickThenSubmit(form) {
-
-//     document.getElementById("verificationCodeSend").click();
-//     return true;
-// }
 function changeConfirm($message,$page){
-    // let passwordChangeButtonEl = document.getElementById("passwordChangeButton");
     let text = $message;
     if (confirm(text) === true) {
         window.location.replace($page);
     } 
 
 }
-// function clickThenSubmit(form) {
 
-//     document.getElementById("verificationCodeSend").click();
-//     return true;
-// }
+function playerPictureDelete(){
+    document.getElementById('playerPicture').src = 'http://127.0.0.1:8000/images/no-image.png';
+    document.getElementById('playerPictureStatus').value = "delete";
+    document.getElementById('playerPictureDeleteButton').style.display = "none";
+}
+function userPictureDelete(){
+    document.getElementById('userPicture').src = 'http://127.0.0.1:8000/images/no-image.png';
+    document.getElementById('userPictureStatus').value = "delete";
+    document.getElementById('userPictureDeleteButton').style.display = "none";
+}

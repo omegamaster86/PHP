@@ -1,5 +1,18 @@
 <?php
-
+/*************************************************************************
+*  Project name: JARA
+*  File name: PlayerRegisterConfirmController.php
+*  File extension: .php
+*  Description: This is the controller file to manage register request
+*************************************************************************
+*  Author: DEY PRASHANTA KUMAR
+*  Created At: 2023/11/04
+*  Updated At: 2023/11/09
+*************************************************************************
+*
+*  Copyright 2023 by DPT INC.
+*
+************************************************************************/
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
@@ -38,44 +51,43 @@ class PlayerRegisterConfirmController extends Controller
         }
         else{
             // Insert new user info in the database.(t_user table)
-        $userId = (string) (Auth::user()->userId);
-        DB::beginTransaction();
-        try {
-            $user = DB::insert('insert into t_player (userId,JARAPlayerCode, playerName,birthDate,sex,height,weight,sideInfo,birthCountry,birthPrefecture,residenceCountry,residencePrefecture,photo) values (?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?)', [$userId,$request->playerCode, $request->playerName,$request->dateOfBirth,$request->sex,$request->height,$request->weight,$request->sideInfo,$request->birthCountry,$request->birthPrefecture,$request->residenceCountry,$request->residencePrefecture,$request->photo ]);
-            DB::commit();
-            return redirect('player/register')->with('status', "選手情報の登録が正常に完了しました。");
-        } catch (\Throwable $e) {
-            dd($request->all());
-            dd("stop");
-            DB::rollBack();
+            $userId = (string) (Auth::user()->userId);
+            DB::beginTransaction();
+            try {
+                $user = DB::insert('insert into t_player (userId,JARAPlayerCode, playerName,birthDate,sex,height,weight,sideInfo,birthCountry,birthPrefecture,residenceCountry,residencePrefecture,photo,registeredTime,registeredUserId,UpdatedTime,UpdatedUserId) values (?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$userId,$request->playerCode, $request->playerName,$request->dateOfBirth,$request->sex,$request->height,$request->weight,$request->sideInfo,$request->birthCountry,$request->birthPrefecture,$request->residenceCountry,$request->residencePrefecture,$request->photo, now(), Auth::user()->userId , now(), Auth::user()->userId ]);
+                DB::commit();
+                $page_status = "選手情報の登録が正常に完了しました。";
+                $page_url = route('my-page');
+                $page_url_text = "マイページ";
+                
+                return redirect('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+            } catch (\Throwable $e) {
+                DB::rollBack();
 
-            $e_message = $e->getMessage();
-            $e_code = $e->getCode();
-            $e_file = $e->getFile();
-            $e_line = $e->getLine();
-            $e_errorCode = $e->errorInfo[1];
-            $e_bindings = implode(", ",$e->getBindings());
-            $e_connectionName = $e->connectionName;
+                $e_message = $e->getMessage();
+                $e_code = $e->getCode();
+                $e_file = $e->getFile();
+                $e_line = $e->getLine();
+                $e_errorCode = $e->errorInfo[1];
+                $e_bindings = implode(", ",$e->getBindings());
+                $e_connectionName = $e->connectionName;
 
-            $userId = Auth::user()->userId;
-            //Store error message in the register log file.
-            Log::channel('register_update')->info("\r\n \r\n ＊＊＊「USER_ID」 ：  $userId,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-            if($e_errorCode == 1213||$e_errorCode == 1205)
-            {
-                throw ValidationException::withMessages([
-                    'datachecked_error' => $database_registration_failed_try_again
-                ]); 
+                $userId = Auth::user()->userId;
+                //Store error message in the player register log file.
+                Log::channel('player_register')->info("\r\n \r\n ＊＊＊「USER_ID」 ：  $userId,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
+                if($e_errorCode == 1213||$e_errorCode == 1205)
+                {
+                    throw ValidationException::withMessages([
+                        'datachecked_error' => $database_registration_failed
+                    ]); 
+                }
+                else{
+                    throw ValidationException::withMessages([
+                        'datachecked_error' => $database_registration_failed
+                    ]); 
+                }
             }
-            else{
-                throw ValidationException::withMessages([
-                    'datachecked_error' => $database_registration_failed
-                ]); 
-            }
-        }
-        
-
             
-            dd("stop");
         }
     }
 }

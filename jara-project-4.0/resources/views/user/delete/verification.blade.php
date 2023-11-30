@@ -2,7 +2,7 @@
 * Project name: JARA
 * File name: verification.blade.php
 * File extension: .blade.php
-* Description: This is the ui of profile edit page
+* Description: This is the ui of user delete verification page
 *************************************************************************
 * Author: DEY PRASHANTA KUMAR
 * Created At: 2023/11/14
@@ -19,13 +19,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Profile Edit</title>
+    <title>User Delete Verification</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
         integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
     <link rel="stylesheet" type="text/css" href="{{ asset('/font-awesome/css/font-awesome.min.css') }}">
 
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/profile-edit.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/user-edit.css') }}">
 
     {{-- Date Picker --}}
     <link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
@@ -37,7 +37,7 @@
         <h1 class="text-center">認証番号</h1>
         <hr>
 
-        <form action="{{route('profile.delete.verification')}}" method="POST">
+        <form action="{{route('user.delete.verification')}}" method="POST">
             @csrf
             <div class="form-group" style="text-align: center">
                 <label for="certificationNumber">受信したメールに記載されているコードを入力してください。</label>
@@ -60,7 +60,7 @@
                     </button>
                 </div>
                 <div class="col-lg-5" style="text-align: right">
-                    <a class="btn btn-danger btn-lg btn-block" href="../../profile" role="button">Cancel</a>
+                    <a class="btn btn-danger btn-lg btn-block" href={{route('user.edit')}} role="button">Cancel</a>
                 </div>
             </div>
         </form>
