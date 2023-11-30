@@ -14,6 +14,7 @@ use App\Http\Controllers\PlayerEditConfirmController;
 use App\Http\Controllers\PlayerEditController;
 use App\Http\Controllers\PlayerDeleteController;
 use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\TournamentController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {

@@ -98,7 +98,7 @@
                 @elseif($pageMode==="edit")
                 <form class="form-horizontal" enctype="multipart/form-data" role="form" style="display: flex" method="POST" action="{{route('tournament.edit')}}">
                 @elseif($pageMode==="confirm")
-                <form class="form-horizontal" enctype="multipart/form-data" role="form" style="display: flex" method="POST" action="{{route('tournament.register')}}">
+                <form class="form-horizontal" enctype="multipart/form-data" role="form" style="display: flex" method="POST" action="{{route('tournament.confirm')}}">
                 @elseif($pageMode==="delete")
                 <form class="form-horizontal" enctype="multipart/form-data" role="form" style="display: flex" method="POST" action="{{route('tournament.register')}}">
                 @endif
@@ -126,7 +126,7 @@
                         @if($pageMode!="register")
                         <div class="form-group ">
                             <label for="entrySystem" class=" control-label">大会ID :</label>
-                            <label for="entrySystem" class=" control-label">XXXXXXXXXXXXXXX</label>
+                            <label for="entrySystem" class=" control-label">00001</label>
                         </div>
                         @endif
 

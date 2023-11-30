@@ -137,11 +137,16 @@ class TournamentController extends Controller
         //$userId = (string) (Auth::user()->userId);
         DB::beginTransaction();
         try {
-            DB::insert('insert into t_tournaments (tourn_id, tourn_name, sponsor_org_id, event_start_date, event_end_date, venue_id, venue_name,tourn_type,tourn_url,tourn_info_faile_path,entrysystem_tourn_id,registered_time,registered_user_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$userId,$request->tournamentName,$request->sponsoreTeamId,$request->startDay,$request->endDay,null,null,null,null,null,null,null,null]);
+            DB::insert('insert into t_tournaments (tourn_id, tourn_name, sponsor_org_id, event_start_date, event_end_date, venue_id, venue_name,tourn_type,tourn_url,tourn_info_faile_path,entrysystem_tourn_id,registered_time,registered_user_id,updated_time,updated_user_id,delete_flag) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [200,$request->tournamentName,$request->sponsoreTeamId,$request->startDay,$request->endDay,0001,0001,0001,0001,0001,0001,now(),0001,now(),0001,000]);
             DB::commit();
-            return redirect('tournament/register')->with('status', "大会情報の登録が正常に完了しました。");
+            $page_status = "完了しました";
+            $page_url = route('my-page');
+            $page_url_text = "マイページ";
+                
+            return redirect('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
         } catch (\Throwable $e) {
-            dd($request->all());
+            dd($e);
+            // dd($request->all());
             dd("stop");
             DB::rollBack();
         }
