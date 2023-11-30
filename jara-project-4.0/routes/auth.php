@@ -97,5 +97,23 @@ Route::middleware('auth')->group(function () {
     Route::get('player/delete', [PlayerDeleteController::class, 'create'])->name('player.delete');
     Route::post('player/delete', [PlayerDeleteController::class, 'store']);
 
+    //20231129
+    //-----大会関連-----
+    // 大会登録
+    Route::get('tournament/register', [TournamentController::class, 'create']) ->name('tournament.register'); //大会登録画面
+    Route::post('tournament/register', [TournamentController::class, 'storeRegister']); //大会登録画面の確認ボタン押下時の処理
+    // 大会変更画面
+    Route::get('tournament/edit', [TournamentController::class, 'create01']) ->name('tournament.edit'); //大会更新画面    
+    Route::post('tournament/edit', [TournamentController::class, 'storeEdit']); //大会変更画面の確認ボタン押下時の処理
+    // 大会確認画面
+    Route::get('tournament/register/confirm', [TournamentController::class, 'create02']) ->name('tournament.confirm');
+    Route::get('tournament/edit/confirm', [TournamentController::class, 'create02']);
+    Route::post('tournament/register/confirm', [TournamentController::class, 'storeRegisterConfirm']);
+    // 大会削除画面
+    Route::get('tournament/delete', [TournamentController::class, 'create03']) ->name('tournament.delete'); //大会削除画面
+    // 大会情報参照画面
+    Route::get('tournament/reference', [TournamentController::class, 'createReference']) ->name('tournament.reference'); //大会削除画面
+    
+    
     
 });

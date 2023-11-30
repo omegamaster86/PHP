@@ -91,3 +91,27 @@ $weight_required = '体重を入力してください。';
 $sideInfo_required = 'サイド情報を入力してください。';
 
 $system_player_registration_failed = "この既存選手IDは既に別の選手と紐づいています。<br>入力した既存選手IDを確認してください。<br>紐づいていた選手I：[選手ID] [選手名]";
+
+// 20231130
+// 大会関連
+$tournament_name_required = "大会名を入力してください";
+$tournament_id= "主催団体IDを入力してください";
+$tournament_startDay = "開始日時を選択してください";
+$tournament_endDay = "修了日時を選択してください";
+$tournament_venueSelect = "開催場所を選択して下さい";
+$tournament_venueSelectTxt = "開催場所を入力して下さい";
+$tournament_c = "URLが正しいことを確認してください";
+$tournament_raceNo = "レースNo.を入力してください";
+$tournament_syumoku ="種目を入力してください";
+$tournament_sosiki = "組織を入力してください";
+$tournament_kyori = "距離を入力してください";
+$tournament_hattei = "発艇日時を入力してください";
+//大会登録　レース登録リスト
+$tournament_races_No = "レースNo.を入力してください";
+$tournament_races_event = "種目を入力してください";
+$tournament_races_name = "レース名を入力してください";
+$tournament_races_group = "組別を入力してください";
+$tournament_races_distance = "距離を入力してください";
+$tournament_races_dayTime = "発艇日時を入力してください";
+
+
