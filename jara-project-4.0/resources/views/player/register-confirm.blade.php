@@ -353,11 +353,7 @@
                                 </div>
                                 <div class="col-sm-2"></div>
                                 <div class="col-sm-4">
-                                    @if(($pageMode==="register-confirm")||($pageMode==="edit-confirm"))
                                     <a class="btn btn-danger btn-lg btn-block" href="javascript:history.back()" role="button">戻る</a>
-                                    @else
-                                    <a class="btn btn-danger btn-lg btn-block" href="{{route('player.edit')}}" role="button">戻る</a>
-                                    @endif
                                 </div>
                             </div>
                         </div>

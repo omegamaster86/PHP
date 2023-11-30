@@ -327,14 +327,14 @@
                                 <div class="col-sm-6">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="sideInfo[]"
-                                            value="00001000" {{((str_pad(($sideInfo??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00001000")? 'checked' : '' }} id="checkX">
+                                            value="00000100" {{((str_pad(($sideInfo??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'checked' : '' }} id="checkX">
                                         <label class="form-check-label" for="checkX">
                                             : X
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="sideInfo[]"
-                                            value="00010000" {{((str_pad(($sideInfo??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00010000")? 'checked' : '' }} id="checkCOX">
+                                            value="00001000" {{((str_pad(($sideInfo??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'checked' : '' }} id="checkCOX">
                                         <label class="form-check-label" for="checkCOX">
                                             : COX
                                         </label>
@@ -425,7 +425,7 @@
                             </div>
                             <div class="col-sm-2"></div>
                             <div class="col-sm-4">
-                                <a class="btn btn-danger btn-lg btn-block" href="../../dashboard" role="button">戻る</a>
+                                <a class="btn btn-danger btn-lg btn-block" href="javascript:history.back()" role="button">戻る</a>
                             </div>
                         </div>
                     </div>

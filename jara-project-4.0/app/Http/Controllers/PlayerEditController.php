@@ -37,25 +37,25 @@ class PlayerEditController extends Controller
     public function create(): View
     {
         $retrive_player_ID = DB::select('select * from t_player where userId = ?', [Auth::user()->userId]);
-
         if(empty($retrive_player_ID[0]))
             return view('player.register',["pageMode"=>"register"]);
-        if($retrive_player_ID[0]->deleteFlag)
+        $recent_player_array = count($retrive_player_ID)-1;
+        if($retrive_player_ID[$recent_player_array]->deleteFlag)
             return view('player.register',["pageMode"=>"register"]);
-        $playerID = $retrive_player_ID[0]->playerId;
-        $JARAPlayerCode = $retrive_player_ID[0]->JARAPlayerCode;
-        $playerName = $retrive_player_ID[0]->playerName;
-        $birthDate = date('Y/m/d', strtotime($retrive_player_ID[0]->birthDate));
-        $sex = $retrive_player_ID[0]->sex;
-        $height = $retrive_player_ID[0]->height;
-        $weight = $retrive_player_ID[0]->weight;
-        $sideInfo = $retrive_player_ID[0]->sideInfo;
-        $birthCountry = $retrive_player_ID[0]->birthCountry;
-        $birthPrefecture = $retrive_player_ID[0]->birthPrefecture;
-        $birthPrefecture = $retrive_player_ID[0]->birthPrefecture;
-        $residenceCountry = $retrive_player_ID[0]->residenceCountry;
-        $residencePrefecture = $retrive_player_ID[0]->residencePrefecture;
-        $photo = $retrive_player_ID[0]->photo;
+        $playerID = $retrive_player_ID[$recent_player_array]->playerId;
+        $JARAPlayerCode = $retrive_player_ID[$recent_player_array]->JARAPlayerCode;
+        $playerName = $retrive_player_ID[$recent_player_array]->playerName;
+        $birthDate = date('Y/m/d', strtotime($retrive_player_ID[$recent_player_array]->birthDate));
+        $sex = $retrive_player_ID[$recent_player_array]->sex;
+        $height = $retrive_player_ID[$recent_player_array]->height;
+        $weight = $retrive_player_ID[$recent_player_array]->weight;
+        $sideInfo = $retrive_player_ID[$recent_player_array]->sideInfo;
+        $birthCountry = $retrive_player_ID[$recent_player_array]->birthCountry;
+        $birthPrefecture = $retrive_player_ID[$recent_player_array]->birthPrefecture;
+        $birthPrefecture = $retrive_player_ID[$recent_player_array]->birthPrefecture;
+        $residenceCountry = $retrive_player_ID[$recent_player_array]->residenceCountry;
+        $residencePrefecture = $retrive_player_ID[$recent_player_array]->residencePrefecture;
+        $photo = $retrive_player_ID[$recent_player_array]->photo;
 
         return view('player.register',["pageMode"=>"edit","playerId"=>$playerID,"JARAPlayerCode"=>$JARAPlayerCode,"playerName"=>$playerName,"birthDate"=>$birthDate,"sex"=>$sex,"height"=>$height,"weight"=>$weight,"sideInfo"=>$sideInfo,"birthCountry"=>$birthCountry,"birthPrefecture"=>$birthPrefecture,"residenceCountry"=>$residenceCountry,"residencePrefecture"=>$residencePrefecture,"photo"=>$photo]);
     }
@@ -117,7 +117,7 @@ class PlayerEditController extends Controller
         ]);
         if (DB::table('t_player')->where('JARAPlayerCode',$request->playerCode)->where('deleteFlag',0)->exists()){
             $retrive_player = DB::select('select * from t_player where userId = ?', [Auth::user()->userId]);
-            if($retrive_player[0]->JARAPlayerCode===$request->playerCode){
+            if($retrive_player[count($retrive_player)-1]->JARAPlayerCode===$request->playerCode){
                 $playerInfo = $request->all();
                 if ($request->hasFile('photo')){
                     $playerInfo['photo']=DB::table('t_player')->where('userId', Auth::user()->userId)->value('playerId'). '.' . $request->file('photo')->getClientOriginalExtension();

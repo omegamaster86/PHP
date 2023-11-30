@@ -51,24 +51,24 @@ class PlayerRegisterController extends Controller
             return view('player.register',["pageMode"=>"register"]);
         }
         else {
-            if($retrive_player_ID[0]->deleteFlag){
+            if($retrive_player_ID[count($retrive_player_ID)-1]->deleteFlag){
                 return view('player.register',["pageMode"=>"register"]);
             }
             else {
-                $playerID = $retrive_player_ID[0]->playerId;
-                $JARAPlayerCode = $retrive_player_ID[0]->JARAPlayerCode;
-                $playerName = $retrive_player_ID[0]->playerName;
-                $birthDate = date('Y/m/d', strtotime($retrive_player_ID[0]->birthDate));
-                $sex = $retrive_player_ID[0]->sex;
-                $height = $retrive_player_ID[0]->height;
-                $weight = $retrive_player_ID[0]->weight;
-                $sideInfo = $retrive_player_ID[0]->sideInfo;
-                $birthCountry = $retrive_player_ID[0]->birthCountry;
-                $birthPrefecture = $retrive_player_ID[0]->birthPrefecture;
-                $birthPrefecture = $retrive_player_ID[0]->birthPrefecture;
-                $residenceCountry = $retrive_player_ID[0]->residenceCountry;
-                $residencePrefecture = $retrive_player_ID[0]->residencePrefecture;
-                $photo = $retrive_player_ID[0]->photo;
+                $playerID = $retrive_player_ID[count($retrive_player_ID)-1]->playerId;
+                $JARAPlayerCode = $retrive_player_ID[count($retrive_player_ID)-1]->JARAPlayerCode;
+                $playerName = $retrive_player_ID[count($retrive_player_ID)-1]->playerName;
+                $birthDate = date('Y/m/d', strtotime($retrive_player_ID[count($retrive_player_ID)-1]->birthDate));
+                $sex = $retrive_player_ID[count($retrive_player_ID)-1]->sex;
+                $height = $retrive_player_ID[count($retrive_player_ID)-1]->height;
+                $weight = $retrive_player_ID[count($retrive_player_ID)-1]->weight;
+                $sideInfo = $retrive_player_ID[count($retrive_player_ID)-1]->sideInfo;
+                $birthCountry = $retrive_player_ID[count($retrive_player_ID)-1]->birthCountry;
+                $birthPrefecture = $retrive_player_ID[count($retrive_player_ID)-1]->birthPrefecture;
+                $birthPrefecture = $retrive_player_ID[count($retrive_player_ID)-1]->birthPrefecture;
+                $residenceCountry = $retrive_player_ID[count($retrive_player_ID)-1]->residenceCountry;
+                $residencePrefecture = $retrive_player_ID[count($retrive_player_ID)-1]->residencePrefecture;
+                $photo = $retrive_player_ID[count($retrive_player_ID)-1]->photo;
 
                 return view('player.register',["pageMode"=>"edit","playerId"=>$playerID,"JARAPlayerCode"=>$JARAPlayerCode,"playerName"=>$playerName,"birthDate"=>$birthDate,"sex"=>$sex,"height"=>$height,"weight"=>$weight,"sideInfo"=>$sideInfo,"birthCountry"=>$birthCountry,"birthPrefecture"=>$birthPrefecture,"residenceCountry"=>$residenceCountry,"residencePrefecture"=>$residencePrefecture,"photo"=>$photo]);
             }

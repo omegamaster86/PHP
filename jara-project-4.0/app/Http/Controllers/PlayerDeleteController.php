@@ -33,7 +33,8 @@ class PlayerDeleteController extends Controller
         if(empty($retrive_player_ID)){
             return view('player.register',["pageMode"=>"register"]);
         }
-        $playerInfo = $retrive_player_ID[0];
+
+        $playerInfo = $retrive_player_ID[count($retrive_player_ID)-1];
         
         if($playerInfo->deleteFlag){
             return view('player.register',["pageMode"=>"register"]);
