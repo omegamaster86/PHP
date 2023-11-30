@@ -117,6 +117,10 @@ Route::middleware('auth')->group(function () {
     Route::get('tournament/reference', [TournamentController::class, 'createReference']) ->name('tournament.reference'); //大会削除画面
     
     //Organizations
+    //団体情報登録・更新画面
     Route::get('organization/register', [OrganizationController::class, 'create'])->name('organizations.register-edit');
     Route::post('organization/register', [OrganizationController::class, 'store'])->name('organizations.register-edit');
+
+    //団体情報登録・更新確認画面
+    Route::get('organization/register/confirm', [OrganizationController::class, 'createConfirm'])->name('organizations.register-comfirm');
 });

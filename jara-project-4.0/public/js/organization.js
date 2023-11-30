@@ -11,10 +11,11 @@ $add_acting_manager_count = 0;
 //監督代理のユーザID追加ボタンをクリック
 function actingManagerAddButtonClick(){
     let elements = document.getElementById("target");
-    let copied = elements.lastElementChild.cloneNode(true);
+    let actingManager = document.getElementById("actingManagerUser");
+    let copied = elements.cloneNode(true);
 
     if($add_acting_manager_count < 2){
-        elements.appendChild(copied);
+        actingManager.appendChild(copied);        
         $add_acting_manager_count++;
     }
 }
