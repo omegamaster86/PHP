@@ -13,6 +13,7 @@ use App\Http\Controllers\PlayerRegisterConfirmController;
 use App\Http\Controllers\PlayerEditConfirmController;
 use App\Http\Controllers\PlayerEditController;
 use App\Http\Controllers\PlayerDeleteController;
+use App\Http\Controllers\OrganizationController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -114,6 +115,7 @@ Route::middleware('auth')->group(function () {
     // 大会情報参照画面
     Route::get('tournament/reference', [TournamentController::class, 'createReference']) ->name('tournament.reference'); //大会削除画面
     
-    
-    
+    //Organizations
+    Route::get('organization/register', [OrganizationController::class, 'create'])->name('organizations.register-edit');
+    Route::post('organization/register', [OrganizationController::class, 'store'])->name('organizations.register-edit');
 });
