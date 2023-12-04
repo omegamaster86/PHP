@@ -24,7 +24,7 @@ class OrganizationController extends Controller
         return view('organizations.register-confirm',["pagemode"=>"register"]);
     }
 
-    public function store(Request $request)
+    public function storeRegister(Request $request)
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
         $request->validate([
@@ -50,5 +50,9 @@ class OrganizationController extends Controller
            'orgClass.required' => $orgClass_required,
            'managerUserId.required' => $managerUserId_required,
         ]);
+         $organizationInfo = $request->all();
+         $organizationInfo['previousPageStatus'] = "success";
+         $pagemode = "register";         
+         return view('organizations.register-confirm')->with(['organizationInfo' => $organizationInfo,'pagemode' => $pagemode,]);         
     }
 }

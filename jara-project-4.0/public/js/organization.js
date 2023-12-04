@@ -1,3 +1,6 @@
+$acting_manager_add_count = 0; //監督代理を追加した数
+const acting_manager_add_count_max = 2; //監督代理を追加できる最大数
+
 function todayGet() {
     var today = new Date();
     today.setDate(today.getDate());
@@ -7,16 +10,15 @@ function todayGet() {
     document.getElementById("today").value=yyyy+'-'+mm+'-'+dd;
 }
 
-$add_acting_manager_count = 0;
 //監督代理のユーザID追加ボタンをクリック
 function actingManagerAddButtonClick(){
     let elements = document.getElementById("target");
     let actingManager = document.getElementById("actingManagerUser");
     let copied = elements.cloneNode(true);
 
-    if($add_acting_manager_count < 2){
+    if($acting_manager_add_count < acting_manager_add_count_max){
         actingManager.appendChild(copied);        
-        $add_acting_manager_count++;
+        $acting_manager_add_count++;
     }
 }
 

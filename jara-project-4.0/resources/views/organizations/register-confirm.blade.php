@@ -70,71 +70,83 @@
                 <div class="col-md-10">
                     <div class="form-group">
                         <label for="entrysystemOrgId" class="col-md-6" style="text-align: right"><b>エントリーシステムの団体ID：</b></label>
-                        <label>*ここに入力内容を表示する*</label>
+                        <label>{{$organizationInfo['entrysystemOrgId']}}</label>
                     </div>
                     <div class="form-group">
                         <label for="orgName" class="col-md-6" style="text-align: right"><b>団体名：</b></label>
-                        <label>*ここに入力内容を表示する*</label>
+                        <label>{{$organizationInfo['orgName']}}</label>
                     </div>
                     <div class="form-group">
                         <label for="foundingYear" class="col-md-6" style="text-align: right"><b>創立年：</b></label>
-                        <label>*ここに入力内容を表示する*</label>
+                        <label>{{$organizationInfo['foundingYear']}}年</label>
                     </div>
                     <div class="form-group">
-                        <label for="location" class="col-md-6" style="text-align: right"><b>所在地：</b></label>
-                        <label>*ここに入力内容を表示する*</label>
+                        <label for="location" class="col-md-6" style="text-align: right"><b>所在地(都道府県)：</b></label>
+                        <label>{{$organizationInfo['prefecture']}}</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="location" class="col-md-6" style="text-align: right"><b>所在地(市区町村)：</b></label>
+                        <label>{{$organizationInfo['municipalities']}}</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="location" class="col-md-6" style="text-align: right"><b>所在地(町字番地)：</b></label>
+                        <label>{{$organizationInfo['streetAddress']}}</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="location" class="col-md-6" style="text-align: right"><b>所在地(建物)：</b></label>
+                        <label>{{$organizationInfo['apartment']}}</label>
                     </div>
                     <div class="form-group">
                         <label for="orgClass" class="col-md-6" style="text-align: right"><b>団体区分：</b></label>
-                        <label>*ここに入力内容を表示する*</label>
+                        <label>{{$organizationInfo['orgClass']}}</label>
                     </div>
                     <div class="form-group">
                         <div class="row">
                             <label for="jaraOrgRegTrail" class="col-md-6" style="text-align: right"><b>証跡：</b></label>
                             <label class="col-md-1" style="text-align: right">JARA：</label>
-                            <label>*ここに入力内容を表示する*</label>
+                            <label>{{$organizationInfo['jaraOrgRegTrail']}}</label>
                         </div>
                         <div class="row">
                             <label for="prefOrgRegTrail" class="col-md-6" style="text-align: right"></label>
                             <label class="col-md-1" style="text-align: right">県ボ：</label>
-                            <label>*ここに入力内容を表示する*</label>
+                            <label>{{$organizationInfo['prefOrgRegTrail']}}</label>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="row">
                             <label for="jaraOrgType" class="col-md-6" style="text-align: right"><b>団体種別：</b></label>
                             <label class="col-md-1" style="text-align: right">JARA：</label>
-                            <label>*ここに入力内容を表示する*</label>
+                            <label>{{$organizationInfo['jaraOrgType']}}</label>
                         </div>
                         <div class="row">
                             <label for="prefOrgType" class="col-md-6" style="text-align: right"></label>
                             <label class="col-md-1" style="text-align: right">県ボ：</label>
-                            <label>*ここに入力内容を表示する*</label>
+                            <label>{{$organizationInfo['prefOrgType']}}</label>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="managerUser" class="col-md-6" style="text-align: right"><b>管理者（監督）：</b></label>
-                        <label>*ここに入力内容を表示する*</label>
+                        <label>{{$organizationInfo['managerUserId']}}</label>
                     </div>
                     <div class="form-group">
                         <label for="headUser" class="col-md-6" style="text-align: right"><b>部長：</b></label>
-                        <label>*ここに入力内容を表示する*</label>
+                        <label>{{$organizationInfo['headUserId']}}</label>
                     </div>
                     <div class="form-group">
                         <label for="coachUser" class="col-md-6" style="text-align: right"><b>コーチ：</b></label>
-                        <label>*ここに入力内容を表示する*</label>
+                        <label>{{$organizationInfo['coachUserId']}}</label>
                     </div>
                     <div class="form-group">
                         <label for="actingManagerUser1" class="col-md-6" style="text-align: right"><b>監督代行１：</b></label>
-                        <label>*ここに入力内容を表示する*</label>
+                        <label>{{$organizationInfo['actingManagerUserId']}}</label>
                     </div>
                     <div class="form-group">
                         <label for="actingManagerUser2" class="col-md-6" style="text-align: right"><b>監督代行２：</b></label>
-                        <label>*ここに入力内容を表示する*</label>
+                        <label>{{$organizationInfo['actingManagerUserId']}}</label>
                     </div>
                     <div class="form-group">
                         <label for="actingManagerUser3" class="col-md-6" style="text-align: right"><b>監督代行３：</b></label>
-                        <label>*ここに入力内容を表示する*</label>
+                        <label>{{$organizationInfo['actingManagerUserId']}}</label>
                     </div>
                     <!-- 確認・戻るボタン -->
                     <div class="form-group row" style="padding: 2rem">
