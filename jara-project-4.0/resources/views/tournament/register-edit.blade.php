@@ -130,6 +130,17 @@
                         </div>
                         @endif
 
+                        <!-- デバッグ用 -->
+                        <p>
+                            {{$tournamentData->pluck('tourn_id')->implode('')}}
+                            {{$tournamentData->pluck('tourn_name')->implode('')}}
+                            {{$tournamentData->pluck('sponsor_org_id')->implode('')}}
+                            {{$tournamentData->pluck('event_start_date')->implode('')}}
+                            {{$tournamentData->pluck('event_end_date')->implode('')}}
+                            {{$tournamentData->pluck('venue_id')->implode('')}}
+                            {{$tournamentData->pluck('venue_name')->implode('')}}
+                        </p>
+
                         <!-- エントリーシステムの大会ID -->
                         <div class="form-group ">
                         <div id="entrySystemInfo" style="display:none;">エントリーシステムの大会IDの情報</div>
@@ -149,7 +160,12 @@
                             @if($pageMode=="register" || $pageMode=="edit")
                             <label onclick="details('tournamentNameInfo')" class=" control-label">＊大会名 :</label>
                             <i onclick="details('tournamentNameInfo')" style="cursor:pointer" class=" fa fa-question-circle" aria-hidden="true"></i>
+                            <!-- バリデーションチェックチェック後に値が残るようにする -->
+                            @if ( (old('tournamentName') ?? "") or $errors->has('tournamentName') )
+                            <input id="tournamentName" name="tournamentName" type="text" value="{{old('tournamentName')}}">
+                            @else
                             <input id="tournamentName" name="tournamentName" type="text" value="">
+                            @endif
                             <select>
                             <option value=1 selected>非公式</option>
                             <option value=2>公式</option>
@@ -243,12 +259,26 @@
                             @if($pageMode=="register" || $pageMode=="edit")
                             <label class="control-label">＊開催場所 :</label>
                             <i onclick="details('venueInfo')" style="cursor:pointer" class=" fa fa-question-circle" aria-hidden="true"></i>
+
+                            @if ( (old('venueSelect') ?? "" ) or ($errors->has('venueSelect')))
                             <select id="venueSelect" name="venueSelect" onchange="venueTxtVisibilityChange()">
-                                <option value="" selected></option>
-                                <option value="jp">日本</option>
-                                <option value="other">その他</option>
+                                <option value="" selected>--</option>
+                                <option value="jp" {{(old('venueSelect')==="jp") ? "selected" : ""}}>日本</option>
+                                <option value="other" {{(old('venueSelect')==="other") ? "selected" : ""}}>その他</option>
                             </select>
+                            @else
+                            <select id="venueSelect" name="venueSelect" onchange="venueTxtVisibilityChange()">
+                                <option value="" selected>--</option>
+                                <option value="jp" >日本</option>
+                                <option value="other" >その他</option>
+                            </select>
+                            @endif
+                            @if ( (old('venueTxt') ?? "" ) or ($errors->has('venueTxt')))
                             <input id="venueTxt" name="venueTxt" type="text" value="" style="display:none;">
+                            @else
+                            <input id="venueTxt" name="venueTxt" type="text" value="" style="display:none;">
+                            @endif
+                            
                             @elseif($pageMode=="confirm" || $pageMode=="delete")
                             <label class="control-label">開催場所 :</label>
                                 @if($pageMode==="delete")

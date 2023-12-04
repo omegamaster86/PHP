@@ -95,6 +95,8 @@ $system_player_registration_failed = "この既存選手IDは既に別の選手�
 // 20231130
 // 大会関連
 $tournament_name_required = "大会名を入力してください";
+$tournament_name_max_limit = '入力制限は 32 文字です。';
+$tournament_name_regex = '大会名に使用できる文字は以下になります。【 日本語, A-Z, a-z, 0-9, -, _ 】';
 $tournament_id= "主催団体IDを入力してください";
 $tournament_startDay = "開始日時を選択してください";
 $tournament_endDay = "修了日時を選択してください";
