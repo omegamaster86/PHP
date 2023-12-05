@@ -84,11 +84,11 @@ class LoginRequest extends FormRequest
         }
 
         
-        $userid = DB::table('t_users')->where('mailaddress', $this->only('mailaddress'))->value('user_id');
+        $user_id = DB::table('t_users')->where('mailaddress','=', $this->only('mailaddress'))->value('user_id');
 
         DB::beginTransaction();
         try {
-            $user = DB::insert('insert into t_access_log (userid, accesstime, ip, host, browser, registered_time, registered_userid,update_time, update_userid) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', [$user_id, now(), request()->host(), request()->getHttpHost(), request()->userAgent(),now(),$user_id, now(), $user_id]);
+            DB::insert('insert into t_access_log (user_id, access_time, ip, host, browser, registered_time, registered_user_id,update_time, update_user_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', [$user_id, now(), request()->host(), request()->getHttpHost(), request()->userAgent(),now(),$user_id, now(), $user_id]);
 
             DB::commit();
         } catch (\Throwable $e) {
@@ -128,7 +128,7 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'mailAddress' => trans('auth.throttle', [
+            'mailaddress' => trans('auth.throttle', [
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
             ]),

@@ -43,10 +43,11 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();  
 
         $request->session()->regenerate();
-
+        
         //Get the status of registered user
         $temp_password_flag = DB::table('t_users')->where('mailaddress', "=" ,$request->mailaddress)->value('temp_password_flag');
-
+        
+        dd("stop");
         //Redirect the temporary registered user to the my password change page
         if($temp_password_flag) {
             return redirect('user/password-change');
