@@ -16,7 +16,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\T_user;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -45,13 +44,13 @@ class PlayerRegisterController extends Controller
      */
     public function create(): View
     {
-        $retrive_player_ID = DB::select('select * from t_player where userId = ?', [Auth::user()->userId]);
+        $retrive_player_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
 
         if(empty($retrive_player_ID[0])){
             return view('player.register',["pageMode"=>"register"]);
         }
         else {
-            if($retrive_player_ID[count($retrive_player_ID)-1]->deleteFlag){
+            if($retrive_player_ID[count($retrive_player_ID)-1]->delete_flag){
                 return view('player.register',["pageMode"=>"register"]);
             }
             else {
@@ -118,9 +117,9 @@ class PlayerRegisterController extends Controller
             'weight.required' => $weight_required,
             'sideInfo.required_without_all' => $sideInfo_required,
         ]);
-        if (DB::table('t_player')->where('JARAPlayerCode',$request->playerCode)->where('deleteFlag',0)->exists()){
-            $retrive_player_name = DB::select('select playerName from t_player where JARAPlayerCode = ?', [$request->playerCode]);
-            $existing_player_name = $retrive_player_name[0]->playerName;
+        if (DB::table('t_players')->where('jara_player_id',$request->playerCode)->where('delete_flag',0)->exists()){
+            $retrive_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->playerCode]);
+            $existing_player_name = $retrive_player_name[0]->player_name;
             //Display error message to the client
             throw ValidationException::withMessages([
                 'system_error' => "この既存選手IDは既に別の選手と紐づいています。入力した既存選手IDを確認してください。紐づいていた選手I：[$request->playerCode] [$existing_player_name]"
@@ -137,7 +136,7 @@ class PlayerRegisterController extends Controller
             if($request->playerPictureStatus==="delete")
                 $playerInfo['photo']="";
             else
-                $playerInfo['photo']=DB::table('t_player')->where('userId', Auth::user()->userId)->value('photo');
+                $playerInfo['photo']=DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('photo');
         }
         $sideInfo_xor = "00000000";
         foreach($request->sideInfo as $sideInfo){
@@ -145,7 +144,7 @@ class PlayerRegisterController extends Controller
         }
         if(count($request->sideInfo)%2)
             $sideInfo_xor= $sideInfo_xor ^ "00000000";
-        $playerInfo['sideInfo'] = $sideInfo_xor; 
+        $playerInfo['side_info'] = $sideInfo_xor; 
         $playerInfo['previousPageStatus'] = "success"; 
         return redirect('player/register/confirm')->with('playerInfo', $playerInfo);
         

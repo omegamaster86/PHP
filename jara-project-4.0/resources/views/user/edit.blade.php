@@ -29,7 +29,8 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/nav.css') }}">
 
     {{-- Date Picker --}}
-    <link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
 
 </head>
 
@@ -231,8 +232,7 @@
                             <i onclick="details('birthDayInfo')" style="cursor:pointer" class=" fa fa-question-circle" aria-hidden="true"></i>
                             <div id="birthDayInfo" style="margin-left:1rem">あああああああああああああああああああ</div>
                             <div class="col-lg-12">
-                                <input id="dateOfBirth" name="dateOfBirth" type="text" style="color: #000;background-color: #fff;" class="lib-flatpickr3 form-control"
-                                    value="{{(old('dateOfBirth')?old('dateOfBirth'):($birthDate??"年/月/日") )}}">
+                                <input id="dateOfBirth" name="dateOfBirth" type="text" style="color: #000;background-color: #fff;" class="flatpickr form-control" value="{{old('dateOfBirth')?old('dateOfBirth'):$birthDate??"年/月/日"}}" readonly="readonly">
                             </div>
                             @if ($errors->has('dateOfBirth'))
                             <div class="col-lg-12">
@@ -357,24 +357,17 @@
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous">
     </script>
     {{-- Date Picker Start --}}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="https://unpkg.com/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
-
-    <script>
-        // date Picker
-        $(".lib-flatpickr3").flatpickr({
-            "locale": "ja",
+    <script>    
+        flatpickr('.flatpickr', {
+            locale: "ja",
             dateFormat: 'Y/m/d',
-            defaultDate: 'null',
-            "maxDate": "today",
+            maxDate: "today",
+            // defaultDate: "年/月/日" //'null',
         });
     </script>
     {{-- Date Picker End --}}

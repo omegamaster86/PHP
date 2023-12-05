@@ -7,7 +7,7 @@
 *************************************************************************
 *  Author: DEY PRASHANTA KUMAR
 *  Created At: 2023/11/02
-*  Updated At: 2023/11/09
+*  Updated At: 2023/12/04
 *************************************************************************
 *
 *  Copyright 2023 by DPT INC.
@@ -28,7 +28,7 @@ use Illuminate\Support\Facades\Log;
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * Display the login page view.
      */
     public function create(): View
     {
@@ -44,12 +44,17 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        //Redirect the logged user to the my page or password change page
-        $tempPasswordFlag = DB::table('t_user')->where('mailAddress', $request->mailAddress)->value('tempPasswordFlag');
-        if($tempPasswordFlag)
+        //Get the status of registered user
+        $temp_password_flag = DB::table('t_users')->where('mailaddress', "=" ,$request->mailaddress)->value('temp_password_flag');
+
+        //Redirect the temporary registered user to the my password change page
+        if($temp_password_flag) {
             return redirect('user/password-change');
-        else
+        }
+        //Redirect the registered user to the my page
+        else {
             return redirect('my-page');
+        }
     }
 
     /**

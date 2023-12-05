@@ -7,7 +7,7 @@
 *************************************************************************
 *  Author: DEY PRASHANTA KUMAR
 *  Created At: 2023/11/04
-*  Updated At: 2023/11/09
+*  Updated At: 2023/12/04
 *************************************************************************
 *
 *  Copyright 2023 by DPT INC.
@@ -16,7 +16,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\T_user;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -38,7 +37,7 @@ use Illuminate\Validation\ValidationException;
 class RegisteredUserController extends Controller
 {
     /**
-     * Display the registration view.
+     * Display the user registration view.
      */
     public function create(): View
     {
@@ -58,27 +57,27 @@ class RegisteredUserController extends Controller
         include('ErrorMessages/ErrorMessages.php');
 
         $request->validate([
-            // Username validation rule
-            'userName' => ['required', 'max:32','regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'], 
+            // User name validation rule
+            'user_name' => ['required', 'max:32', 'regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'], 
             // Mail address validation rule
-            'mailAddress' => ['required','email', 'string', 'lowercase',  'max:255'],
+            'mailaddress' => ['required', 'email', 'string', 'lowercase',  'max:255'],
             // Confirm mail address validation rule
-            'confirm_email' => ['required','email', 'string', 'lowercase',  'max:255', 'same:mailAddress'],
+            'confirm_email' => ['required', 'email', 'string', 'lowercase',  'max:255', 'same:mailaddress'],
 
-            // terms of service validation rule
+            // Terms of service validation rule
             'terms_of_service' => ['accepted'],
         ],
         [
             //Error message for Username validation rule 
-            'userName.required' => $userName_required,
-            'userName.max' => $userName_max_limit,
-            'userName.regex' => $userName_regex,
+            'user_name.required' => $userName_required,
+            'user_name.max' => $userName_max_limit,
+            'user_name.regex' => $userName_regex,
 
             //Error message for mail address validation rule 
-            'mailAddress.required' => $mailAddress_required,
-            'mailAddress.email' => $email_validation,
-            'mailAddress.lowercase' =>$mailAddress_lowercase,
-            'mailAddress.unique' => $mailAddress_unique,
+            'mailaddress.required' => $mailAddress_required,
+            'mailaddress.email' => $email_validation,
+            'mailaddress.lowercase' =>$mailAddress_lowercase,
+            'mailaddress.unique' => $mailAddress_unique,
 
             //Error message for confirm mail address validation rule 
             'confirm_email.required' => $confirm_email_required,
@@ -90,16 +89,16 @@ class RegisteredUserController extends Controller
             'terms_of_service.accepted' => $terms_of_service,
         ]);
 
-        if (DB::table('t_user')->where('mailAddress',$request->mailAddress)->exists()){
-            if (DB::table('t_user')->where('mailAddress',$request->mailAddress)->where('deleteFlag',0)->exists()){
-                if (DB::table('t_user')->where('mailAddress',$request->mailAddress)->where('tempPasswordFlag',0)->exists()){
+        if (DB::table('t_users')->where('mailaddress', '=', $request->mailaddress)->exists()){
+            if (DB::table('t_users')->where('mailaddress', '=', $request->mailaddress)->where('delete_flag',0)->exists()){
+                if (DB::table('t_users')->where('mailaddress', '=', $request->mailaddress)->where('temp_password_flag', '=', 0)->exists()){
                     //Display error message to the client
                     throw ValidationException::withMessages([
                         'datachecked_error' => $email_register_check
                     ]); 
                 }
                 else {
-                    if (DB::table('t_user')->where('mailAddress', $request->mailAddress)->where('expiryTimeOfTempPassword', '<', date('Y-m-d H:i:s'))->exists()) {
+                    if (DB::table('t_users')->where('mailaddress', '=', $request->mailaddress)->where('expiry_time_of_temp_password', '<', date('Y-m-d H:i:s'))->exists()) {
                         //Display error message to the client
                         throw ValidationException::withMessages([
                             'datachecked_error' => $registration_failed
@@ -133,7 +132,7 @@ class RegisteredUserController extends Controller
         DB::beginTransaction();
         try {
             $hashed_password = Hash::make($temp_password);
-            $user = DB::insert('insert into t_user (userName, mailAddress, password, tempPassword, expiryTimeOfTempPassword, tempPasswordFlag, created_at, updated_at) values (?, ?, ?, ?, ?, ?, ?, ?)', [$request->userName, $request->mailAddress, $hashed_password , $hashed_password , $newDate, 1, now(), now() ]);
+            $user = DB::insert('insert into t_users (user_name, mailaddress, password, temp_password, expiry_time_of_temp_password, temp_password_flag, registered_time, registered_user_id, updated_time, updated_user_id, delete_flag) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$request->user_name, $request->mailaddress, $hashed_password, $hashed_password , $newDate, 1, now(), 9999999,now(), 9999999, 0 ]);
 
             DB::commit();
         } catch (\Throwable $e) {
@@ -165,27 +164,27 @@ class RegisteredUserController extends Controller
         }
         
         //For getting current time
-        $mailDate = date('Y/m/d H:i');
+        $mail_date = date('Y/m/d H:i');
         //For adding 24hour with current time
-        $newmailDate = date('Y/m/d H:i', strtotime($mailDate. ' + 24 hours'));
+        $new_mail_date = date('Y/m/d H:i', strtotime($mail_date. ' + 24 hours'));
 
         //Store user information for sending email.
-        $mailData = [
-            'name' => $request->userName,
-            'email' => $request->mailAddress,
+        $mail_data = [
+            'user_name' => $request->user_name,
+            'mailaddress' => $request->mailaddress,
             'temporary_password' => $temp_password,
-            'temporary_password_expiration_date'=> $newmailDate
+            'temporary_password_expiration_date'=> $new_mail_date
         ];
 
         
         //Sending mail to the user
         
         try {
-            Mail::to($request->get('mailAddress'))->send(new WelcomeMail($mailData));
+            Mail::to($request->get('mailaddress'))->send(new WelcomeMail($mail_data));
         } catch (Exception $e) {
-            DB::delete('delete from t_user where mailAddress = ?', [$request->mailAddress ]);
+            DB::delete('delete from t_users where mailaddress = ?', [$request->mailaddress ]);
             //Store error message in the user_register log file.
-            Log::channel('user_register')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「EMAIL_SENT_ERROR_MESSAGE」  ： $e\r\n  \r\n ============================================================ \r\n \r\n");
+            Log::channel('user_register')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「EMAIL_SENT_ERROR_MESSAGE」  ： $e\r\n  \r\n ============================================================ \r\n \r\n");
             //Display error message to the client
             throw ValidationException::withMessages([
                 'datachecked_error' => $mail_sent_failed,
@@ -193,8 +192,8 @@ class RegisteredUserController extends Controller
         }
 
         //Refresh the requested data
-        $request->merge(['userName' => '']);
-        $request->merge(['mailAddress' => '']);
+        $request->merge(['user_name' => '']);
+        $request->merge(['mailaddress' => '']);
         $request->merge(['confirm_email' => '']);
         $request->merge(['terms_of_service' => false]);
 

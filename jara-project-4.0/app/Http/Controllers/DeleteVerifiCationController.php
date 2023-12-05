@@ -33,14 +33,14 @@ class DeleteVerifiCationController extends Controller
     public function store(Request $request): RedirectResponse
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
-        if($request->certificationNumber===""){
+        if($request->certification_number === ""){
             throw ValidationException::withMessages([
                 'verification_error' => $code_not_found
             ]); 
         }
         
-        if (DB::table('t_user')->where('mailAddress', Auth::user()->mailAddress)->where('certification', '=', $request->certificationNumber)->exists()){
-            if (DB::table('t_user')->where('mailAddress', Auth::user()->mailAddress)->where('expiryTimeOfCertification', '<', date('Y-m-d H:i:s'))->exists()) {
+        if (DB::table('t_users')->where('mailaddress', '=', Auth::user()->mailaddress)->where('certification_number', '=', $request->certification_number)->exists()){
+            if (DB::table('t_users')->where('mailaddress', '=', Auth::user()->mailaddress)->where('expiry_time_of_certification_number', '<', date('Y-m-d H:i:s'))->exists()) {
                 throw ValidationException::withMessages([
                     'verification_error' => $code_timed_out
                 ]); 
@@ -51,8 +51,8 @@ class DeleteVerifiCationController extends Controller
                 DB::beginTransaction();
             try {
                 DB::update(
-                    'update t_user set deleteFlag = ?  where mailAddress = ?',
-                    [ "1",Auth::user()->mailAddress]
+                    'update t_users set delete_flag = ?  where mailaddress = ?',
+                    [ "1",Auth::user()->mailaddress]
                 );
 
                 // Logout Function
@@ -68,7 +68,7 @@ class DeleteVerifiCationController extends Controller
             } catch (\Throwable $e) {
                 DB::rollBack();
 
-                $e_message = $e->getMessage();
+                $e_message = $e->getMessage(                                        );
                 $e_code = $e->getCode();
                 $e_file = $e->getFile();
                 $e_line = $e->getLine();

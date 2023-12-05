@@ -17,25 +17,25 @@ class T_user extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $table = 't_user';
-    protected $primaryKey = 'userId';
+    // protected $table = 't_users';
+    // protected $primaryKey = 'user_id';
 
-    protected $fillable = [
-        'userName',
-        'mailAddress',
-        'sex',
-        'residenceCountry',
-        'residencePrefecture',
-        'dateOfBirth',
-        'height',
-        'weight',
-        'photo',
-        'password',
-        'tempPassword',
-        'expiryTimeOfTempPassword',
-        'certification',
-        'expiryTimeOfCertification'
-    ];
+    // protected $fillable = [
+    //     'userName',
+    //     'mailAddress',
+    //     'sex',
+    //     'residenceCountry',
+    //     'residencePrefecture',
+    //     'dateOfBirth',
+    //     'height',
+    //     'weight',
+    //     'photo',
+    //     'password',
+    //     'tempPassword',
+    //     'expiryTimeOfTempPassword',
+    //     'certification',
+    //     'expiryTimeOfCertification'
+    // ];
 
     /**
      * The attributes that should be hidden for serialization.

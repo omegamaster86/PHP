@@ -150,11 +150,11 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
                                     @if($pageMode==="delete")
-                                    {{$playerInfo->JARAPlayerCode??""}}
+                                    {{$playerInfo->jara_player_id??""}}
                                     @else
-                                    {{session()->get('playerInfo')['playerCode']??""}}
+                                    {{session()->get('playerInfo')['jara_player_id']??""}}
                                     <input name="playerCode" type="hidden"
-                                        value="{{session()->get('playerInfo')['playerCode']??""}}">
+                                        value="{{session()->get('playerInfo')['jara_player_id']??""}}">
                                     @endif
                                 </div>
 
@@ -180,11 +180,11 @@
 
                                 <div class="col-sm-7 col-form-label">
                                     @if($pageMode==="delete")
-                                    {{date('Y/m/d', strtotime($playerInfo->birthDate))}}
+                                    {{date('Y/m/d', strtotime($playerInfo->date_of_birth))}}
                                     @else
-                                    {{session()->get('playerInfo')['dateOfBirth']??""}}
-                                    <input name="dateOfBirth" type="hidden"
-                                        value="{{session()->get('playerInfo')['dateOfBirth']??""}}">
+                                    {{session()->get('playerInfo')['date_of_birth']??""}}
+                                    <input name="date_of_birth" type="hidden"
+                                        value="{{session()->get('playerInfo')['date_of_birth']??""}}">
                                     @endif
                                 </div>
 
@@ -195,18 +195,18 @@
                                     class="col-sm-5  col-form-label">性別
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    @if($pageMode==="delete")
-                                    {{$playerInfo->sex??""}}
+                                    @if($page_mode==="delete")
+                                    {{$player_info->sex??""}}
                                     @else
-                                    @if((session()->get('playerInfo')['sex']??"")==="1")
+                                    @if((session()->get('player_info')['sex']??"")==="1")
                                     男
-                                    @elseif((session()->get('playerInfo')['sex']??"")==="2")
+                                    @elseif((session()->get('player_info')['sex']??"")==="2")
                                     女
                                     @else
                                     ""
                                     @endif
                                     <input name="sex" type="hidden" value="{{
-                                        session()->get('playerInfo')['sex']??""
+                                        session()->get('player_info')['sex']??""
                                         }}">
                                     @endif
                                 </div>
@@ -216,14 +216,14 @@
                                 </label>
 
                                 <div class="col-sm-7 col-form-label">
-                                    @if($pageMode==="delete")
-                                    {{$playerInfo->height??""}} cm
+                                    @if($page_mode==="delete")
+                                    {{$player_info->height??""}} cm
                                     @else
                                     {{
-                                    session()->get('playerInfo')['height']??""
+                                    session()->get('player_info')['height']??""
                                     }} cm
                                     <input name="height" type="hidden" value="{{
-                                        session()->get('playerInfo')['height']??""
+                                        session()->get('player_info')['height']??""
                                         }}">
                                     @endif
                                 </div>
@@ -233,15 +233,15 @@
                                 </label>
 
                                 <div class="col-sm-7 col-form-label">
-                                    @if($pageMode==="delete")
-                                    {{$playerInfo->weight??""}} kg
+                                    @if($page_mode === "delete")
+                                    {{$player_info->weight??""}} kg
                                     @else
                                     
                                     {{
-                                    session()->get('playerInfo')['weight']??""
+                                    session()->get('player_info')['weight']??""
                                     }} kg
                                     <input name="weight" type="hidden" value="{{
-                                        session()->get('playerInfo')['weight']??""
+                                        session()->get('player_info')['weight']??""
                                         }}">
                                     @endif
                                 </div>
@@ -252,19 +252,19 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
                                     
-                                    @if($pageMode==="delete")
-                                    {{((str_pad(($playerInfo->sideInfo??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'S　' : '' }}
-                                    {{((str_pad(($playerInfo->sideInfo??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'B　' : '' }}
-                                    {{((str_pad(($playerInfo->sideInfo??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
-                                    {{((str_pad(($playerInfo->sideInfo??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
+                                    @if($page_mode === "delete")
+                                    {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'S　' : '' }}
+                                    {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'B　' : '' }}
+                                    {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
+                                    {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
                                     @else
-                                    {{((str_pad((session()->get('playerInfo')['sideInfo']??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'S　' : '' }}
-                                    {{((str_pad((session()->get('playerInfo')['sideInfo']??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'B　' : '' }}
-                                    {{((str_pad((session()->get('playerInfo')['sideInfo']??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
-                                    {{((str_pad((session()->get('playerInfo')['sideInfo']??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
+                                    {{((str_pad((session()->get('player_info')['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'S　' : '' }}
+                                    {{((str_pad((session()->get('player_info')['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'B　' : '' }}
+                                    {{((str_pad((session()->get('player_info')['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
+                                    {{((str_pad((session()->get('player_info')['side_info']??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
                                    
-                                    <input name="sideInfo" type="hidden" value="{{
-                                        session()->get('playerInfo')['sideInfo']??""}}">
+                                    <input name="side_info" type="hidden" value="{{
+                                        session()->get('player_info')['side_info']??""}}">
                                     @endif
                                 </div>
                             </div>
@@ -275,16 +275,16 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
                                     
-                                    @if($pageMode==="delete")
-                                    {{$playerInfo->birthCountry??""}}
+                                    @if($page_mode === "delete")
+                                    {{$player_info->birth_country??""}}
                                     @else
                                     {{
-                                    session()->get('playerInfo')['birthCountry']??""
+                                    session()->get('player_info')['birthCountry']??""
                                     }}
                                     
                                     @endif
-                                    <input name="birthCountry" id="confirmBirthCountry" type="hidden" value="{{($playerInfo->birthCountry??"")?$playerInfo->birthCountry :
-                                        (session()->get('playerInfo')['birthCountry']??"")
+                                    <input name="birth_country" id="confirmBirthCountry" type="hidden" value="{{($player_info->birth_country??"")?$player_info->birth_country :
+                                        (session()->get('playerInfo')['birth_country']??"")
                                         }}">
                                 </div>
 
@@ -294,15 +294,15 @@
                                 </label>
 
                                 <div class="col-sm-7 col-form-label">
-                                    @if($pageMode==="delete")
-                                    {{$playerInfo->birthPrefecture??""}}
+                                    @if($page_mode === "delete")
+                                    {{$player_info->birth_prefecture??""}}
                                     @else
                                     {{
-                                    session()->get('playerInfo')['birthPrefecture']??""}}
+                                    session()->get('player_info')['birth_prefecture']??""}}
                                     
                                     @endif
-                                    <input name="birthPrefecture" type="hidden" value="{{($playerInfo->birthPrefecture??"")?$playerInfo->birthPrefecture :
-                                        session()->get('playerInfo')['birthPrefecture']??""}}">
+                                    <input name="birth_prefecture" type="hidden" value="{{($player_info->birth_prefecture??"")?$player_info->birth_prefecture :
+                                        session()->get('player_info')['birth_prefecture']??""}}">
                                 </div>
 
                             </div>
@@ -312,13 +312,13 @@
                                 <div class="col-sm-7 col-form-label">
                                     
                                     @if($pageMode==="delete")
-                                    {{$playerInfo->residenceCountry??""}}
+                                    {{$player_info->residence_country??""}}
                                     @else
                                     {{
-                                    session()->get('playerInfo')['residenceCountry']??""}}
+                                    session()->get('player_info')['residence_country']??""}}
                                     @endif
-                                    <input id="confirmCountry" name="residenceCountry" type="hidden" value="{{
-                                        ($playerInfo->residenceCountry??"")?$playerInfo->residenceCountry : (session()->get('playerInfo')['residenceCountry']??"")}}">
+                                    <input id="confirmCountry" name="residence_country" type="hidden" value="{{
+                                        ($player_info->residence_country??"")?$player_info->residence_country : (session()->get('player_info')['residence_country']??"")}}">
                                 </div>
 
                             </div>
@@ -326,14 +326,14 @@
                                 <label style="text-align:right" class="col-sm-5  col-form-label">都道府県
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    @if($pageMode==="delete")
-                                    {{$playerInfo->residencePrefecture??""}}
+                                    @if($page_mode === "delete")
+                                    {{$playerInfo->residence_prefecture??""}}
                                     @else
                                     {{
-                                    session()->get('playerInfo')['residencePrefecture']??""}}
+                                    session()->get('player_info')['residence_prefecture']??""}}
                                     @endif
-                                    <input name="residencePrefecture" type="hidden" value="{{($playerInfo->residencePrefecture??"")?$playerInfo->residencePrefecture :
-                                        (session()->get('playerInfo')['residencePrefecture']??"")}}">
+                                    <input name="residence_prefecture" type="hidden" value="{{($player_info->residence_prefecture??"")?$player_info->residence_prefecture :
+                                        (session()->get('player_info')['residence_prefecture']??"")}}">
                                 </div>
 
                             </div>
@@ -342,11 +342,11 @@
                                 <div class="col-sm-2"></div>
                                 <div class="col-sm-4">
                                     <button class="btn btn-success btn-lg btn-block">
-                                        @if($pageMode==="register-confirm")
+                                        @if($page_mode==="register-confirm")
                                         登録
-                                        @elseif($pageMode==="edit-confirm")
+                                        @elseif($page_mode==="edit-confirm")
                                         変更
-                                        @elseif($pageMode==="delete")
+                                        @elseif($page_mode==="delete")
                                         削除
                                         @endif
                                     </button>
@@ -363,7 +363,7 @@
                     </form>
             </div>
             <div class="col-md-3" style="text-align: right">
-                @if($pageMode==="delete")
+                @if($page_mode==="delete")
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-secondary btn-lg" data-toggle="modal" id="checkeWarningMessage"
                     data-target="#staticBackdrop" style="display: none">
@@ -393,7 +393,7 @@
                 </div>
                 @endif
 
-                @if((session()->get('playerInfo')['previousPageStatus']??"")==="success")
+                @if((session()->get('player_info')['previous_page_status']??"")==="success")
                 <!-- Button trigger modal -->
                 <button style="display: none" type="button" id="idCheckedMessage" class="btn btn-secondary btn-lg"
                     data-toggle="modal" data-target="#staticBackdrop">
@@ -481,24 +481,16 @@
     </script>
     {{-- Date Picker End --}}
     <script>
-        // for page reloading when using back button is click from web page
-        // (function () {
-        // window.onpageshow = function(event) {
-        //     if (event.persisted) {
-        //         window.location.reload();
-        //     }
-        // };
-        // })();
 
         // For showing warning message
 
         (function (){
             document.getElementById("idCheckedMessage").click();
 
-            if(document.getElementById("confirmBirthCountry").value==="日本"){
+            if(document.getElementById("confirmBirthCountry").value === "日本"){
                 document.getElementById("confirmBirthPrefectures").style.display='flex';
             }
-            if(document.getElementById("confirmCountry").value==="日本"){
+            if(document.getElementById("confirmCountry").value === "日本"){
                 document.getElementById("confirmPrefectures").style.display='flex';
             }
         })();

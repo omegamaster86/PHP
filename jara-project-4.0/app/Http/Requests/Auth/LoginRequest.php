@@ -30,7 +30,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'mailAddress' => ['required', 'string','email'],
+            'mailaddress' => ['required', 'string','email'],
             'password' => ['required', 'string'],
         ];
     }
@@ -38,8 +38,8 @@ class LoginRequest extends FormRequest
     {
         include('ErrorMessages/ErrorMessages.php');
         return [
-            'mailAddress.required' => $mailAddress_required,
-            'mailAddress.email'=> $email_validation,
+            'mailaddress.required' => $mailAddress_required,
+            'mailaddress.email'=> $email_validation,
             'password.required' => $password_required 
         ];
     }
@@ -55,21 +55,21 @@ class LoginRequest extends FormRequest
     {
         include('ErrorMessages/ErrorMessages.php');
         $this->ensureIsNotRateLimited();
-        if (DB::table('t_user')->where('mailAddress', $this->only('mailAddress'))->where('deleteFlag', '=', 1)->exists()) {
+        if (DB::table('t_users')->where('mailaddress', '=', $this->only('mailaddress'))->where('delete_flag', '=', 1)->exists()) {
             throw ValidationException::withMessages([
                 'datachecked_error' => $this_mail_deleted
             ]); 
         }
         
-        if (DB::table('t_user')->where('mailAddress', $this->only('mailAddress'))->where('expiryTimeOfTempPassword', '<', date('Y-m-d H:i:s'))->exists()) {
+        if (DB::table('t_users')->where('mailaddress', $this->only('mailaddress'))->where('expiry_time_of_temp_password', '<', date('Y-m-d H:i:s'))->exists()) {
             throw ValidationException::withMessages([
                 'datachecked_error' => $temp_password_timed_out
             ]); 
         }
         
-        if (! Auth::attempt($this->only('mailAddress', 'password'), $this->boolean('remember'))) {
+        if (! Auth::attempt($this->only('mailaddress', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
-            if (DB::table('t_user')->where('mailAddress', $this->only('mailAddress'))->exists()) {
+            if (DB::table('t_users')->where('mailaddress', $this->only('mailaddress'))->exists()) {
                 throw ValidationException::withMessages([
                     'datachecked_error' => $password_compare
                 ]);
@@ -84,11 +84,11 @@ class LoginRequest extends FormRequest
         }
 
         
-        $userid = DB::table('t_user')->where('mailAddress', $this->only('mailAddress'))->value('userId');
+        $userid = DB::table('t_users')->where('mailaddress', $this->only('mailaddress'))->value('user_id');
 
         DB::beginTransaction();
         try {
-            $user = DB::insert('insert into t_access_log (userid, accesstime, ip, host, browser, registered_time, registered_userid,update_time, update_userid) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', [$userid, now(), request()->host(), request()->getHttpHost(), request()->userAgent(),now(),$userid, now(), $userid]);
+            $user = DB::insert('insert into t_access_log (userid, accesstime, ip, host, browser, registered_time, registered_userid,update_time, update_userid) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', [$user_id, now(), request()->host(), request()->getHttpHost(), request()->userAgent(),now(),$user_id, now(), $user_id]);
 
             DB::commit();
         } catch (\Throwable $e) {

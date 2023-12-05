@@ -6,7 +6,7 @@
 *************************************************************************
 * Author: DEY PRASHANTA KUMAR
 * Created At: 2023/11/07
-* Updated At: 2023/11/09
+* Updated At: 2023/12/05
 *************************************************************************
 *
 * Copyright 2023 by DPT INC.
@@ -25,23 +25,23 @@
     <p>
         件名: 【日本ローイング協会】仮パスワードが発行されました<br />
         送信元: xxxxx@jara.or.jp<br />
-        宛先: {{$mailData['email']}}<br /><br />
+        宛先: {{$mail_data['mailaddress']}}<br /><br />
 
         ※本メールはシステムから自動送信されています。<br /><br />
 
-        {{$mailData['name']}} 様<br />
-        {{$mailData['email']}}<br /><br />
+        {{$mail_data['user_name']}} 様<br />
+        {{$mail_data['mailaddress']}}<br /><br />
 
         日本ローイング協会のポータルサイトに登録いただき有難うございます。<br />
         仮パスワードが新規発行されました。<br /><br />
 
         --------------------<br />
         [ログインID]<br />
-        {{$mailData['email']}}<br /><br />
+        {{$mail_data['mailaddress']}}<br /><br />
 
         [仮パスワード]<br />
-        {{$mailData['temporary_password']}}<br />
-        {{$mailData['temporary_password_expiration_date']}} まで有効<br /><br />
+        {{$mail_data['temporary_password']}}<br />
+        {{$mail_data['temporary_password_expiration_date']}} まで有効<br /><br />
 
         [ログイン用URL]<br />
         https://www.[ポータルサイトのURL]/login/<br />

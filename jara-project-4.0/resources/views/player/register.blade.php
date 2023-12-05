@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
 
     {{-- Date Picker --}}
-    <link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 </head>
 
@@ -230,8 +230,8 @@
                             <div class="col-sm-7">
                                 <input id="dateOfBirth" name="dateOfBirth" type="text"
                                     style="color: #000;background-color: #fff;"
-                                    class="lib-flatpickr3 form-control rounded  col-form-label"
-                                    value="{{(old('dateOfBirth')?old('dateOfBirth'):$birthDate??"年/月/日" )}}">
+                                    class="flatpickr form-control rounded  col-form-label"
+                                    value="{{(old('dateOfBirth')?old('dateOfBirth'):$birthDate??"年/月/日" )}}" readonly="readonly">
                             </div>
 
                             <div id="birthDayInfo" style="margin-left:5rem;">あああああああああああああああああああ</div>
@@ -508,17 +508,14 @@
         integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous">
     </script>
     {{-- Date Picker Start --}}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="https://unpkg.com/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
-
-    <script>
-        // date Picker
-        $(".lib-flatpickr3").flatpickr({
-            "locale": "ja",
+    <script>    
+        flatpickr('.flatpickr', {
+            locale: "ja",
             dateFormat: 'Y/m/d',
-            defaultDate: 'null',
-            "maxDate": "today",
+            maxDate: "today",
+            // defaultDate: "年/月/日" //'null',
         });
     </script>
     {{-- Date Picker End --}}

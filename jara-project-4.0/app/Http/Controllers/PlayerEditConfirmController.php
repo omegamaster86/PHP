@@ -34,7 +34,7 @@ class PlayerEditConfirmController extends Controller
     }
 
     /**
-     * Handle an incoming registration request.
+     * Handle an incoming edit request.
      *
      * @throws \Illuminate\Validation\ValidationException
      */
@@ -42,11 +42,11 @@ class PlayerEditConfirmController extends Controller
 
     public function store( Request $request): RedirectResponse
     {
-        if (DB::table('t_player')->where('JARAPlayerCode',$request->playerCode)->where('deleteFlag',0)->exists()){
-            $retrive_player = DB::select('select * from t_player where userId = ?', [Auth::user()->userId]);
+        if (DB::table('t_players')->where('jara_player_id', '=', $request->playerCode)->where('delete_flag', '=', 0)->exists()){
+            $retrive_player = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
             if(empty($retrive_player)){
                 dd("stop");
-                $retrive_player_name = DB::select('select playerName from t_player where JARAPlayerCode = ?', [$request->playerCode]);
+                $retrive_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->playerCode]);
                 $existing_player_name = $retrive_player_name[0]->playerName;
                 //Display error message to the client
                 return redirect('player/edit')->with('system_error', "登録に失敗しました。別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：[$request->playerCode] [$existing_player_name]");
@@ -55,8 +55,8 @@ class PlayerEditConfirmController extends Controller
                 DB::beginTransaction();
                 try {
                     DB::update(
-                        'update t_player set JARAPlayerCode = ? , playerName = ?, birthDate = ?, sex = ?, height = ?,   weight = ?,sideInfo = ?,birthCountry = ?,birthPrefecture = ?,residenceCountry = ?,residencePrefecture = ?,photo = ? where userId = ?',
-                        [ $request->playerCode, $request->playerName,$request->dateOfBirth,$request->sex,$request->height,$request->weight,$request->sideInfo,$request->birthCountry,$request->birthPrefecture,$request->residenceCountry,$request->residencePrefecture,$request->photo,Auth::user()->userId]
+                        'update t_players set jara_player_id = ? , player_name = ?, date_of_birth = ?, sex = ?, height = ?, weight = ?,side_info = ?,birth_country = ?,birth_prefecture = ?,residence_country = ?,residence_prefecture = ?,photo = ? where user_id = ?',
+                        [ $request->playerCode, $request->playerName,$request->dateOfBirth,$request->sex,$request->height,$request->weight,$request->sideInfo,$request->birthCountry,$request->birthPrefecture,$request->residenceCountry,$request->residencePrefecture,$request->photo,Auth::user()->user_id]
                     );
 
                     DB::commit();
@@ -87,8 +87,8 @@ class PlayerEditConfirmController extends Controller
             DB::beginTransaction();
                 try {
                     DB::update(
-                        'update t_player set JARAPlayerCode = ? , playerName = ?, birthDate = ?, sex = ?, height = ?,   weight = ?,sideInfo = ?,birthCountry = ?,birthPrefecture = ?,residenceCountry = ?,residencePrefecture = ?,photo = ? where userId = ?',
-                        [ $request->playerCode, $request->playerName,$request->dateOfBirth,$request->sex,$request->height,$request->weight,$request->sideInfo,$request->birthCountry,$request->birthPrefecture,$request->residenceCountry,$request->residencePrefecture,$request->photo,Auth::user()->userId]
+                        'update t_players set jara_player_id = ? , player_name = ?, date_of_birth = ?, sex = ?, height = ?, weight = ?,side_info = ?,birth_country = ?,birth_prefecture = ?,residence_country = ?,residence_prefecture = ?,photo = ? where user_id = ?',
+                        [ $request->playerCode, $request->playerName,$request->dateOfBirth,$request->sex,$request->height,$request->weight,$request->sideInfo,$request->birthCountry,$request->birthPrefecture,$request->residenceCountry,$request->residencePrefecture,$request->photo,Auth::user()->user_id]
                     );
 
                     DB::commit();
@@ -100,7 +100,7 @@ class PlayerEditConfirmController extends Controller
                 } catch (\Throwable $e) {
                     DB::rollBack();
                     //Store error message in the player update log file.
-                    Log::channel('player_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
+                    Log::channel('player_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
                      throw ValidationException::withMessages([
                          'datachecked_error' => $update_failed
                      ]); 

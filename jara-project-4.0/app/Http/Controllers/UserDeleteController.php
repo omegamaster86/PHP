@@ -38,13 +38,13 @@ class UserDeleteController extends Controller
         include('Auth/ErrorMessages/ErrorMessages.php');
         $certification_number = Str::random(6); // For Creating random password
         $date = date('Y-m-d H:i:s');
-        $newDate = date('Y-m-d H:i:s', strtotime($date. ' + 24 hours'));
+        $new_date = date('Y-m-d H:i:s', strtotime($date. ' + 24 hours'));
                 
         DB::beginTransaction();
         try {
             DB::update(
-                'update t_user set  certification = ? , expiryTimeOfCertification = ? where userId = ?',
-                [ $certification_number, $newDate, Auth::user()->userId]
+                'update t_users set  certification_number = ? , expiry_time_of_certification = ? where user_id = ?',
+                [ $certification_number, $new_date, Auth::user()->user_id]
             );
 
             DB::commit();
@@ -62,7 +62,7 @@ class UserDeleteController extends Controller
 
 
             //Store error message in the register log file.
-            Log::channel('user_delete')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
+            Log::channel('user_delete')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
             if($e_errorCode == 1213||$e_errorCode == 1205)
             {
                 throw ValidationException::withMessages([
@@ -77,15 +77,15 @@ class UserDeleteController extends Controller
         }
         
         //Sending mail to the user
-        $mailDate = date('Y/m/d H:i');
-        $newmailDate = date('Y/m/d H:i', strtotime($mailDate. ' + 24 hours'));
-        $mailData = [
-            'name' => Auth::user()->userName,
-            'email' => Auth::user()->mailAddress,
+        $mail_date = date('Y/m/d H:i');
+        $new_mail_date = date('Y/m/d H:i', strtotime($mail_date. ' + 24 hours'));
+        $mail_data = [
+            'name' => Auth::user()->user_name,
+            'email' => Auth::user()->mailaddress,
             'certification' => $certification_number,
-            'expiryTimeOfCertification'=> $newmailDate
+            'expiryTimeOfCertification'=> $new_mail_date
         ];
-        Mail::to( Auth::user()->mailAddress)->send(new VerificationMail($mailData));
+        Mail::to( Auth::user()->mailaddress)->send(new VerificationMail($mail_data));
 
         return redirect('user/delete/verification');
     }

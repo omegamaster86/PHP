@@ -18,7 +18,7 @@
             @if(session('status'))
             {!!session('status')!!}
             @else
-            <script>window.location = "./register";</script>
+            <script>window.location = {{route('register')}};</script>
             @endif
         </p><br>
         <a href="{{ (session('url')??"") }}"　>

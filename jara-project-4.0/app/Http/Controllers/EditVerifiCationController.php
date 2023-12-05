@@ -22,7 +22,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Validation\ValidationException;
-use App\Models\T_user;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -37,15 +36,14 @@ class EditVerifiCationController extends Controller
     public function store(Request $request): RedirectResponse
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
-        // dd(DB::table('t_user')->where('mailAddress', $this->only('mailAddress'))->value('certification'));
-        if($request->certificationNumber===""){
+        if($request->certification_number === ""){
             throw ValidationException::withMessages([
                 'verification_error' => $code_not_found
             ]); 
         }
-        if($request->mailAddressStatus=="1"){
-            if (DB::table('t_user')->where('mailAddress', Auth::user()->mailAddress)->where('certification', '=', $request->certificationNumber)->exists()){
-                if (DB::table('t_user')->where('mailAddress', Auth::user()->mailAddress)->where('expiryTimeOfCertification', '<', date('Y-m-d H:i:s'))->exists()) {
+        if($request->mailaddress_status=="1"){
+            if (DB::table('t_users')->where('mailaddress', Auth::user()->mailaddress)->where('certification_number', '=', $request->certification_number)->exists()){
+                if (DB::table('t_users')->where('mailaddress', Auth::user()->mailaddress)->where('expiry_time_of_certification_number', '<', date('Y-m-d H:i:s'))->exists()) {
                     throw ValidationException::withMessages([
                         'verification_error' => $code_timed_out
                     ]); 
@@ -56,8 +54,8 @@ class EditVerifiCationController extends Controller
                     try {
                         
                         DB::update(
-                            'update t_user set photo = ? , userName = ? , mailAddress = ?, sex = ?, residenceCountry = ?, residencePrefecture = ?, dateOfBirth = ?, height = ?, weight = ?, certification = ?,expiryTimeOfCertification=?  where userId = ?',
-                            [$request->photo, $request->userName, $request->mailAddress,$request->sex,$request->residenceCountry,$request->residencePrefecture,$request->dateOfBirth,$request->height,$request->weight,NULL,NULL,Auth::user()->userId]
+                            'update t_users set photo = ? , user_name = ? , mailaddress = ?, sex = ?, residence_country = ?, residence_prefecture = ?, date_of_birth = ?, height = ?, weight = ?, certification_number = ?,expiry_time_of_certification_number=?  where user_id = ?',
+                            [$request->photo, $request->user_name, $request->mailaddress,$request->sex,$request->residence_country,$request->residence_prefecture,$request->date_of_birth,$request->height,$request->weight,NULL,NULL,Auth::user()->user_id]
                         );
 
                         DB::commit();

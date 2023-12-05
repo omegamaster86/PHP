@@ -18,7 +18,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\T_user;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Illuminate\Validation\ValidationException;
@@ -38,35 +37,31 @@ class UserEditController extends Controller
         else{
             $sex = "";
         }
-        if(Auth::user()->residenceCountry??"")
-            $residenceCountry = Auth::user()->residenceCountry;
+        if(Auth::user()->residence_country??"")
+            $residence_country = Auth::user()->residence_country;
         else
-            $residenceCountry = "";
-        if($residenceCountry==="日本"){
-            if(Auth::user()->residencePrefecture??"")
-                $residencePrefecture = Auth::user()->residencePrefecture;
+            $residence_country = "";
+        if($residence_country==="日本"){
+            if(Auth::user()->residence_prefecture??"")
+                $residence_prefecture = Auth::user()->residence_prefecture;
             else
-                $residencePrefecture = "";
+                $residence_prefecture = "";
         }
         else
-            $residencePrefecture = "";
+            $residence_prefecture = "";
         if(Auth::user()->photo??"")
             $photo = Auth::user()->photo;
         else
             $photo = "";
         
-        if(Auth::user()->dateOfBirth??"")
-            $birthDate = date('Y/m/d', strtotime(Auth::user()->dateOfBirth));
+        if(Auth::user()->date_of_birth??"")
+            $date_of_birth = date('Y/m/d', strtotime(Auth::user()->date_of_birth));
         else
-            $birthDate = "";
-        return view('user.edit',["birthDate"=>$birthDate,"sex"=>$sex,"residenceCountry" => $residenceCountry,"residencePrefecture" => $residencePrefecture, "photo"=>$photo]);
+            $date_of_birth = "";
+        return view('user.edit',["date_of_birth"=>$date_of_birth,"sex"=>$sex,"residence_country" => $residence_country,"residence_prefecture" => $residence_prefecture, "photo"=>$photo]);
     }
     public function store(Request $request) : RedirectResponse
     {
-        // if($request->hasFile('photo'))
-        //     $photo = ($request->photo->getClientOriginalName());
-        // else
-        //     $photo = "";
 
         include('Auth/ErrorMessages/ErrorMessages.php');
         // dd($request->photo);
@@ -76,13 +71,13 @@ class UserEditController extends Controller
             
             $file = $request->file('photo');
             // $file->store('toPath', ['disk' => 'public']);
-            $fileName = DB::table('t_user')->where('mailAddress', Auth::user()->mailAddress)->value('userId'). '.' . $request->file('photo')->getClientOriginalExtension();
+            $file_name = DB::table('t_users')->where('mailaddress', Auth::user()->mailaddress)->value('user_id'). '.' . $request->file('photo')->getClientOriginalExtension();
             // Storage::disk('public')->put($fileName, $file);
 
             // Storage::disk('public')->putFileAs('uploads', $file, $fileName);
 
-            $destinationPath = public_path().'/images/users/' ;
-            $file->move($destinationPath,$fileName);
+            $destination_path = public_path().'/images/users/' ;
+            $file->move($destination_path,$file_name);
 
             // You can now save the $filePath to the database or use it as needed
             // ...
@@ -100,17 +95,17 @@ class UserEditController extends Controller
                 // [^\x01-\x7E]
                 // ^[0-9a-zA-Z-_]+$
                 // Username validation rule
-                'userName' => ['required', 'string', 'max:32','regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'],   
+                'username' => ['required', 'string', 'max:32','regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'],   
 
                 // Mail address validation rule
-                'mailAddress' => ['required','email', 'string', 'lowercase',  'max:255','unique:' . T_user::class],
+                'mailaddress' => ['required','email', 'string', 'lowercase',  'max:255','unique:' . T_user::class],
                 //Confirm mail address validation rule
                 'confirm_email' => ['required','email', 'string', 'lowercase',  'max:255', 'same:mailAddress'],
 
                 'sex' => ['required','string'],
-                'dateOfBirth' => ['required','string'],
-                'residenceCountry' => ['required','string'],
-                'residencePrefecture' => ['nullable','required_if:residenceCountry,日本','string'
+                'date_of_birth' => ['required','string'],
+                'residence_country' => ['required','string'],
+                'residence_prefecture' => ['nullable','required_if:residence_country,日本','string'
                 
                 // function($attribute,$value,$fail) {
                     //     include('ErrorMessages/ErrorMessages.php');
@@ -120,14 +115,14 @@ class UserEditController extends Controller
                 ], 
                 [
                 //Error message for Username validation rule 
-                'userName.required' => $userName_required,
-                'userName.max' => $userName_max_limit,
-                'userName.regex' => $userName_regex,
+                'user_name.required' => $user_name_required,
+                'user_name.max' => $user_name_max_limit,
+                'user_name.regex' => $userName_regex,
                 //Error message for mail address validation rule 
-                'mailAddress.required' => $mailAddress_required,
-                'mailAddress.email' => $email_validation,
-                'mailAddress.lowercase' => $mailAddress_lowercase,
-                'mailAddress.unique' => $mailAddress_unique,
+                'mailaddress.required' => $mailAddress_required,
+                'mailaddress.email' => $email_validation,
+                'mailaddress.lowercase' => $mailAddress_lowercase,
+                'mailaddress.unique' => $mailAddress_unique,
 
                 //Error message for confirm mail address validation rule 
                 'confirm_email.required' => $confirm_email_required ,
@@ -136,31 +131,31 @@ class UserEditController extends Controller
                 'confirm_email.same' => $confirm_email_compare,
                 //Error message for date of birth validation rule 
                 'sex.required' => $sex_required,
-                'dateOfBirth.required' => $dateOfBirth_required,
-                'residenceCountry.required' => $residenceCountry_required,
-                'residencePrefecture.required_if' => $residencePrefecture_required_if,
+                'date_of_birth.required' => $dateOfBirth_required,
+                'residence_country.required' => $residenceCountry_required,
+                'residence_prefecture.required_if' => $residencePrefecture_required_if,
             ]);
         }
         else{
             $request->validate([
                 // Username validation rule
-                'userName' => ['required', 'string', 'max:32','regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'],
+                'user_name' => ['required', 'string', 'max:32','regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'],
                 'sex' => ['required','string'],
-                'dateOfBirth' => ['required','string'],
-                'residenceCountry' => ['required','string'],
-                'residencePrefecture' => ['nullable','required_if:residenceCountry,日本','string']
+                'date_of_birth' => ['required','string'],
+                'residence_country' => ['required','string'],
+                'residence_prefecture' => ['nullable','required_if:residence_country,日本','string']
 
             ],
                 [
                     //Error message for Username validation rule 
-                    'userName.required' => $userName_required,
-                    'userName.max' => $userName_max_limit,
-                    'userName.regex' => $userName_regex,
+                    'user_name.required' => $userName_required,
+                    'user_name.regex' => $userName_regex,
+                    'user_name.max' => $userName_max_limit,
                     'sex.required' => $sex_required,
                     //Error message for date of birth validation rule 
-                    'dateOfBirth.required' => $dateOfBirth_required,
-                    'residenceCountry.required' => $residenceCountry_required,
-                    'residencePrefecture.required_if' => $residencePrefecture_required_if,
+                    'date_of_birth.required' => $dateOfBirth_required,
+                    'residence_country.required' => $residenceCountry_required,
+                    'residence_prefecture.required_if' => $residencePrefecture_required_if,
                 ]
             );
         }
@@ -173,7 +168,7 @@ class UserEditController extends Controller
         $userInfo = $request->all();
         
         if ($request->hasFile('photo')){
-            $userInfo['photo']=DB::table('t_user')->where('mailAddress', Auth::user()->mailAddress)->value('userId'). '.' . $request->file('photo')->getClientOriginalExtension();
+            $userInfo['photo']=DB::table('t_users')->where('mailaddress', '=', Auth::user()->mailaddress)->value('user_id'). '.' . $request->file('photo')->getClientOriginalExtension();
         }
         else{
             if($request->userPictureStatus==="delete")

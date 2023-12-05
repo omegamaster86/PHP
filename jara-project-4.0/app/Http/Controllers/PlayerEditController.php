@@ -67,7 +67,7 @@ class PlayerEditController extends Controller
      */
     
 
-    public function store(Request $request, ): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
         if ($request->hasFile('photo')) {
@@ -78,7 +78,7 @@ class PlayerEditController extends Controller
             // $file->store('toPath', ['disk' => 'public']);
 
             
-            $fileName = DB::table('t_player')->where('userId', Auth::user()->userId)->value('playerId'). '.' . $request->file('photo')->getClientOriginalExtension();
+            $fileName = DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('player_id'). '.' . $request->file('photo')->getClientOriginalExtension();
             // Storage::disk('public')->put($fileName, $file);
 
 
@@ -115,18 +115,18 @@ class PlayerEditController extends Controller
             'weight.required' => $weight_required,
             'sideInfo.required_without_all' => $sideInfo_required,
         ]);
-        if (DB::table('t_player')->where('JARAPlayerCode',$request->playerCode)->where('deleteFlag',0)->exists()){
-            $retrive_player = DB::select('select * from t_player where userId = ?', [Auth::user()->userId]);
+        if (DB::table('t_players')->where('jara_player_id',$request->playerCode)->where('delete_flag',0)->exists()){
+            $retrive_player = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
             if($retrive_player[count($retrive_player)-1]->JARAPlayerCode===$request->playerCode){
                 $playerInfo = $request->all();
                 if ($request->hasFile('photo')){
-                    $playerInfo['photo']=DB::table('t_player')->where('userId', Auth::user()->userId)->value('playerId'). '.' . $request->file('photo')->getClientOriginalExtension();
+                    $playerInfo['photo']=DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('player_id'). '.' . $request->file('photo')->getClientOriginalExtension();
                 }
                 else{
                     if($request->playerPictureStatus==="delete")
                         $playerInfo['photo']="";
                     else
-                        $playerInfo['photo']=DB::table('t_player')->where('userId', Auth::user()->userId)->value('photo');
+                        $playerInfo['photo']=DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('photo');
                 }
                 $sideInfo_xor = "00000000";
                 foreach($request->sideInfo as $sideInfo){
@@ -139,8 +139,8 @@ class PlayerEditController extends Controller
                 // dd($playerInfo['photo']);
                 return redirect('player/edit/confirm')->with('playerInfo', $playerInfo);
             }
-            $retrive_player_name = DB::select('select playerName from t_player where JARAPlayerCode = ?', [$request->playerCode]);
-            $existing_player_name = $retrive_player_name[0]->playerName;
+            $retrive_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->playerCode]);
+            $existing_player_name = $retrive_player_name[0]->player_name;
             //Display error message to the client
             throw ValidationException::withMessages([
                 'system_error' => "この既存選手IDは既に別の選手と紐づいています。入力した既存選手IDを確認してください。紐づいていた選手I：[$request->playerCode] [$existing_player_name]"

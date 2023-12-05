@@ -29,26 +29,26 @@ class PlayerDeleteController extends Controller
     //
     public function create(): View
     {
-        $retrive_player_ID = DB::select('select * from t_player where userId = ?', [Auth::user()->userId]);
+        $retrive_player_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
         if(empty($retrive_player_ID)){
             return view('player.register',["pageMode"=>"register"]);
         }
 
-        $playerInfo = $retrive_player_ID[count($retrive_player_ID)-1];
+        $player_info = $retrive_player_ID[count($retrive_player_ID)-1];
         
-        if($playerInfo->deleteFlag){
+        if($playerInfo->delete_flag){
             return view('player.register',["pageMode"=>"register"]);
         }
-        if($playerInfo->sex===1){
-            $playerInfo->sex = "男";
+        if($player_info->sex===1){
+            $player_info->sex = "男";
         }
-        elseif($playerInfo->sex===2){
+        elseif($player_info->sex===2){
             $playerInfo->sex = "女";
         }
         else{
-            $playerInfo->sex = "";
+            $player_info->sex = "";
         }
-        return view('player.register-confirm',["pageMode"=>"delete","playerInfo"=>$playerInfo]);
+        return view('player.register-confirm',["pageMode"=>"delete","player_info"=>$player_info]);
     }
 
     /**
@@ -65,8 +65,8 @@ class PlayerDeleteController extends Controller
         DB::beginTransaction();
         try {
             DB::update(
-                'update t_player set deleteFlag = ?  where userId = ?',
-                [ "1",Auth::user()->userId]
+                'update t_players set delete_flag = ?  where user_id = ?',
+                [ "1",Auth::user()->user_id]
             );
 
             DB::commit();

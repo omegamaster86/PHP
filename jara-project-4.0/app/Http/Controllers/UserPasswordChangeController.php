@@ -39,51 +39,51 @@ class UserPasswordChangeController extends Controller
         include('Auth/ErrorMessages/ErrorMessages.php');
         $request->validate([
             // previousPassword validation rule
-            'previousPassword' => ['required', 'min:8', 'max:16','regex:/^.*(?=.{8,})(?=.*[a-zA-Z0-9!"#$%&\'()*+,-.:;<=>?@_`{|}~^]).*$/'], 
+            'previous_password' => ['required', 'min:8', 'max:16','regex:/^.*(?=.{8,})(?=.*[a-zA-Z0-9!"#$%&\'()*+,-.:;<=>?@_`{|}~^]).*$/'], 
             // newPassword validation rule
-            'newPassword' => ['required','min:8', 'max:16','regex:/^.*(?=.{8,})(?=.*[a-zA-Z0-9!"#$%&\'()*+,-.:;<=>?@_`{|}~^]).*$/'],
+            'new_password' => ['required','min:8', 'max:16','regex:/^.*(?=.{8,})(?=.*[a-zA-Z0-9!"#$%&\'()*+,-.:;<=>?@_`{|}~^]).*$/'],
             // Confirm new Password validation rule
-            'newPasswordConfirm' => ['required','min:8', 'max:16','regex:/^.*(?=.{8,})(?=.*[a-zA-Z0-9!"#$%&\'()*+,-.:;<=>?@_`{|}~^]).*$/', 'same:newPassword'],
+            'new_password_confirm' => ['required','min:8', 'max:16','regex:/^.*(?=.{8,})(?=.*[a-zA-Z0-9!"#$%&\'()*+,-.:;<=>?@_`{|}~^]).*$/', 'same:new_password'],
         ],
         [
             //Error message for previousPassword validation rule 
-            'previousPassword.required' => $previous_password_required,
-            'previousPassword.min' => $password_condition,
-            'previousPassword.max' => $password_condition,
-            'previousPassword.regex' => $password_condition,
+            'previous_password.required' => $previous_password_required,
+            'previous_password.min' => $password_condition,
+            'previous_password.max' => $password_condition,
+            'previous_password.regex' => $password_condition,
 
             //Error message for newPassword validation rule 
-            'newPassword.required' => $new_password_required,
-            'newPassword.min' => $password_condition,
-            'newPassword.max' => $password_condition,
-            'newPassword.regex' => $password_condition,
+            'new_password.required' => $new_password_required,
+            'new_password.min' => $password_condition,
+            'new_password.max' => $password_condition,
+            'new_password.regex' => $password_condition,
 
             
             //Error message for confirm new password validation rule 
-            'newPasswordConfirm.required' => $new_password_confirm_required,
-            'newPasswordConfirm.min' => $password_condition,
-            'newPasswordConfirm.max' => $password_condition,
-            'newPasswordConfirm.regex' => $password_condition,
-            'newPasswordConfirm.same' => $password_compare,
+            'new_password_confirm.required' => $new_password_confirm_required,
+            'new_password_confirm.min' => $password_condition,
+            'new_password_confirm.max' => $password_condition,
+            'new_password_confirm.regex' => $password_condition,
+            'new_password_confirm.same' => $password_compare,
 
            
         ]);
-        if($request->previousPassword === $request->new_password_required){
+        if($request->previous_password === $request->new_password_required){
             throw ValidationException::withMessages([
                 'system_error' => $previous_and_new_password_compare
             ]); 
         }
         //When logged with a temporary flag
-        if(Auth::user()->tempPassword){
+        if(Auth::user()->temp_password){
             //If the entered password does matched with the database information
-            if(Hash::check($request->previousPassword, Auth::user()->tempPassword)){
+            if(Hash::check($request->previous_password, Auth::user()->temp_password)){
                 
                 DB::beginTransaction();
                     try {
                         
                         DB::update(
-                            'update t_user set password = ? , tempPassword = ? , expiryTimeOfTempPassword = ?, tempPasswordFlag = ?,created_at = ?, updated_at =?  where userId = ?',
-                            [Hash::make($request->newPassword), NULL, NULL, 0, now(), now(), Auth::user()->userId]
+                            'update t_users set password = ? , temp_password = ? , expiry_time_of_temp_password = ?, temp_password_flag = ?,registered_time = ?, updated_time =?  where user_id = ?',
+                            [Hash::make($request->new_password), NULL, NULL, 0, now(), now(), Auth::user()->user_id]
                         );
 
                         DB::commit();
@@ -139,8 +139,8 @@ class UserPasswordChangeController extends Controller
                     try {
                         
                         DB::update(
-                            'update t_user set password = ?,created_at = ?,updated_at =?  where userId = ?',
-                            [Hash::make($request->newPassword), now(), now(),  Auth::user()->userId]
+                            'update t_users set password = ?, registered_time = ?,updated_time =?  where user_id = ?',
+                            [Hash::make($request->new_password), now(), now(),  Auth::user()->user_id]
                         );
 
                         DB::commit();

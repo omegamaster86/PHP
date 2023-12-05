@@ -9,19 +9,17 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-use App\Models\T_user;
-
 class WelcomeMail extends Mailable
 {
     use Queueable, SerializesModels;
-    public $mailData;
+    public $mail_data;
     /**
      * Create a new message instance.
      */
-    public function __construct($mailData)
+    public function __construct($mail_data)
     {
         //
-        $this->mailData = $mailData;
+        $this->mail_data = $mail_data;
     }
 
     /**

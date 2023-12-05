@@ -12,7 +12,9 @@ use App\Http\Controllers\PlayerRegisterController;
 use App\Http\Controllers\PlayerRegisterConfirmController;
 use App\Http\Controllers\PlayerEditConfirmController;
 use App\Http\Controllers\PlayerEditController;
+use App\Http\Controllers\PlayerDetailsController;
 use App\Http\Controllers\PlayerDeleteController;
+use App\Http\Controllers\TournamentController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -96,6 +98,10 @@ Route::middleware('auth')->group(function () {
     // Player Delete
     Route::get('player/delete', [PlayerDeleteController::class, 'create'])->name('player.delete');
     Route::post('player/delete', [PlayerDeleteController::class, 'store']);
+
+    //Player Details
+    
+    Route::get('player/details', [PlayerDetailsController::class, 'create'])->name('player.details');
 
     //20231129
     //-----大会関連-----

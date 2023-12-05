@@ -42,19 +42,19 @@ class PlayerRegisterConfirmController extends Controller
 
     public function store( Request $request): RedirectResponse
     {
-        if (DB::table('t_player')->where('JARAPlayerCode',$request->playerCode)->where('deleteFlag',0)->exists()){
-            $retrive_player_name = DB::select('select playerName from t_player where JARAPlayerCode = ?', [$request->playerCode]);
-            $existing_player_name = $retrive_player_name[0]->playerName;
+        if (DB::table('t_players')->where('jara_player_id',$request->playerCode)->where('delete_flag',0)->exists()){
+            $retrive_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->playerCode]);
+            $existing_player_name = $retrive_player_name[0]->player_name;
             //Display error message to the client
             return redirect('player/register')->with('system_error', "登録に失敗しました。別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：[$request->playerCode] [$existing_player_name]");
             dd("stop");
         }
         else{
             // Insert new user info in the database.(t_user table)
-            $userId = (string) (Auth::user()->userId);
+            $user_id = (string) (Auth::user()->user_id);
             DB::beginTransaction();
             try {
-                $user = DB::insert('insert into t_player (userId,JARAPlayerCode, playerName,birthDate,sex,height,weight,sideInfo,birthCountry,birthPrefecture,residenceCountry,residencePrefecture,photo,registeredTime,registeredUserId,UpdatedTime,UpdatedUserId) values (?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$userId,$request->playerCode, $request->playerName,$request->dateOfBirth,$request->sex,$request->height,$request->weight,$request->sideInfo,$request->birthCountry,$request->birthPrefecture,$request->residenceCountry,$request->residencePrefecture,$request->photo, now(), Auth::user()->userId , now(), Auth::user()->userId ]);
+                $user = DB::insert('insert into t_players ( user_id, jara_player_id,  player_name, date_of_birth, sex, height, weight, side_info, birth_country, birth_prefecture, residence_country,residence_prefecture, photo, registered_time, registered_user_id,updated_time,updated_user_id) values (?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$user_id,$request->jara_player_id, $request->player_name,$request->date_of_birth, $request->sex, $request->height, $request->weight, $request->side_info, $request->birth_country,$request->birth_prefecture, $request->residence_country,$request->residence_prefecture, $request->photo, now(), Auth::user()->user_id , now(), Auth::user()->user_id ]);
                 DB::commit();
                 $page_status = "選手情報の登録が正常に完了しました。";
                 $page_url = route('my-page');
@@ -72,7 +72,7 @@ class PlayerRegisterConfirmController extends Controller
                 $e_bindings = implode(", ",$e->getBindings());
                 $e_connectionName = $e->connectionName;
 
-                $userId = Auth::user()->userId;
+                $userId = Auth::user()->user_id;
                 //Store error message in the player register log file.
                 Log::channel('player_register')->info("\r\n \r\n ＊＊＊「USER_ID」 ：  $userId,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
                 if($e_errorCode == 1213||$e_errorCode == 1205)
