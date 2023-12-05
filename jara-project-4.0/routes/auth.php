@@ -14,6 +14,7 @@ use App\Http\Controllers\PlayerEditConfirmController;
 use App\Http\Controllers\PlayerEditController;
 use App\Http\Controllers\PlayerDetailsController;
 use App\Http\Controllers\PlayerDeleteController;
+use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\TournamentController;
 use Illuminate\Support\Facades\Route;
 
@@ -120,6 +121,12 @@ Route::middleware('auth')->group(function () {
     // 大会情報参照画面
     Route::get('tournament/reference', [TournamentController::class, 'createReference']) ->name('tournament.reference'); //大会削除画面
     
-    
-    
+    //Organizations
+    //団体情報登録・更新画面
+    Route::get('organization/register', [OrganizationController::class, 'create'])->name('organizations.register-edit');
+    Route::post('organization/register', [OrganizationController::class, 'storeRegister'])->name('organizations.register-edit');
+
+    //団体情報登録・更新確認画面
+    Route::get('organization/register/confirm', [OrganizationController::class, 'createConfirm'])->name('organizations.register-comfirm');
+    Route::post('organization/register/confirm', [OrganizationController::class, 'storeConfirmRegister'])->name('organizations.register-edit');
 });
