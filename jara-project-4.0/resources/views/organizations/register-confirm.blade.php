@@ -70,18 +70,19 @@
                 <div class="col-md-10">
                     <div class="form-group">
                         <label for="entrysystemOrgId" class="col-md-6" style="text-align: right"><b>エントリーシステムの団体ID：</b></label>
-                        <label>{{$organizationInfo['entrysystemOrgId']}}</label>
+                        <label name="entrysystemOrgId">{{$organizationInfo['entrysystemOrgId']}}</label>
                     </div>
                     <div class="form-group">
                         <label for="orgName" class="col-md-6" style="text-align: right"><b>団体名：</b></label>
-                        <label>{{$organizationInfo['orgName']}}</label>
+                        <label name="orgName">{{$organizationInfo['orgName']}}</label>
                     </div>
                     <div class="form-group">
                         <label for="foundingYear" class="col-md-6" style="text-align: right"><b>創立年：</b></label>
-                        <label>{{$organizationInfo['foundingYear']}}年</label>
+                        <label name="foundingYear">{{$organizationInfo['foundingYear']}}年</label>
                     </div>
                     <div class="form-group">
                         <label for="location" class="col-md-6" style="text-align: right"><b>所在地(都道府県)：</b></label>
+                        <input type="hidden" name="prefecture" value="{{$organizationInfo['prefecture']}}">
                         <label>{{$organizationInfo['prefecture']}}</label>
                     </div>
                     <div class="form-group">

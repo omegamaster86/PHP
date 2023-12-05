@@ -57,7 +57,10 @@
                 @endif
             @endif            
         </div>
-        <hr style="height:1px;border-width:0;color:#9AF8FD;background-color:#9AF8FD">        
+        <hr style="height:1px;border-width:0;color:#9AF8FD;background-color:#9AF8FD">
+        
+        <!--19.マイページ -->
+        <input type="submit" value="マイページ" id="mypageButton">
         <form class="form-horizontal" enctype="multipart/form-data" role="form" style="display: flex" method="POST">
             @csrf
             {{-- <div class="alert alert-info alert-dismissable">
@@ -72,7 +75,7 @@
                             <label>2.複数要因によるエラーメッセージ表示エリア</label>
                         </div> -->
                         <!--3.エントリーシステムの団体ID -->
-                        <label for="entrysystemOrgId" class="col-md-5" style="text-align: right">*エントリーシステムの団体ID</label>
+                        <label for="entrysystemOrgId" class="col-md-5" style="text-align: right">エントリーシステムの団体ID</label>
                         <input type="text" id="entrysystemOrgId" name="entrysystemOrgId" size="10">                        
                     </div>
                     <!--5.団体名 -->
@@ -86,7 +89,7 @@
                     </div>
                     <div class="form-group">
                         <label for="foundingYear" class="col-md-5" style="text-align: right">*創立年</label>
-                        <input type="number" name="foundingYear" id="foundingYear" min="1855" value="2000">
+                        <input type="number" name="foundingYear" id="foundingYear" min="1855" max="2100" value="2000">
                         <!--8.エラーメッセージ表示エリア -->
                         @if ($errors->has('foundingYear'))
                             <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('foundingYear') }}</p>
@@ -106,10 +109,9 @@
                     <div class="form-group">
                         <label for="prefecture" class="col-md-6" style="text-align: right">都道府県</label>
                         <select id="prefecture" name="prefecture">
-                            <option>東京</option>
-                            <option>大阪</option>
-                            <option>愛知</option>
-                            <option>鹿児島</option>
+                        @foreach($prefectures as $prefecture)
+                            <option value="{{$prefecture->pref_id}}">{{$prefecture->pref_name}}</option>
+                        @endforeach
                         </select>
                         <label for="municipalities" style="margin-left:1rem;">市区町村</label>
                         <input type="text" id="municipalities" name="municipalities"  class="col-md-4" style="margin-left:1rem;">
@@ -139,12 +141,9 @@
                     <div class="form-group">
                         <label for="orgClass" class="col-md-5" style="text-align: right">*団体区分</label>
                         <select id="orgClass" name="orgClass">
-                            <option>一般</option>
-                            <option>大学</option>
-                            <option>高等学校</option>
-                            <option>高等専門</option>
-                            <option>中学</option>
-                            <option>中高一貫</option>
+                        @foreach($organizationClass as $class)
+                            <option value="{{$class->org_class_id}}">{{$class->org_class_name}}</option>
+                        @endforeach
                         </select>
                         <!--12.エラーメッセージ表示エリア -->
                         @if ($errors->has('orgClass'))
@@ -178,16 +177,53 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <!--14.追加ボタン -->
-                            <div class="col-md-1 offset-md-5">
-                                <input type="button" value="追加" onclick=actingManagerAddButtonClick()>
-                            </div>
-                        <!--15.エラーメッセージ表示エリア -->
-                        @if($errors->has('managerUserId'))
-                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('managerUserId') }}</p>
-                        @endif
+                    <!--14.追加ボタン -->
+                        <div class="col-md-1 offset-md-5">
+                            <input type="button" value="追加" onclick=actingManagerAddButtonClick()>
+                        </div>
+                    <!--15.エラーメッセージ表示エリア -->
+                    @if($errors->has('managerUserId'))
+                        <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('managerUserId') }}</p>
+                    @endif
                     </div>
-                    <!-- 確認・戻るボタン -->
+                </div>
+                <div class="col-md-3">
+                    <div class="row">
+                        <fieldset>
+                            <legend>証跡</legend>
+                            <p for="jaraOrg">
+                                <div class='form-group'>
+                                    <label for="jaraOrgRegTrail">JARA証跡</label>
+                                    <input type="text" id="jaraOrgRegTrail" name="jaraOrgRegTrail">
+                                </div>
+                                <div class='form-group'>
+                                    <label for="jaraOrgType">JARA団体種別</label>
+                                    <select id="jaraOrgType" name="jaraOrgType">
+                                    @foreach($organizationType as $type)
+                                        <option value="{{$type->org_type}}">{{$type->org_type_display_name}}</option>
+                                    @endforeach
+                                    </select>
+                                </div>
+                            </p>
+                            <p for="prefOrg">
+                                <div class='form-group'>
+                                    <label for="prefOrgRegTrail">県ボ証跡</label>
+                                    <input type="text" id="prefOrgRegTrail" name="prefOrgRegTrail">
+                                </dr>
+                                <div class='form-group'>
+                                    <label for="prefOrgType">県ボ団体種別</label>
+                                    <select id="prefOrgType" name="prefOrgType">
+                                    @foreach($organizationType as $type)
+                                        <option value="{{$type->org_type}}">{{$type->org_type_display_name}}</option>
+                                    @endforeach
+                                    </select>
+                                </dr>
+                            </p>
+                        </fieldset>
+                    </div>
+                </div>
+                <!-- 確認・戻るボタン -->
+                <div class="col-md-8 offset-md-1">
                     <div class="form-group row" style="padding: 2rem">
                         <div class="col-sm-2 offset-sm-4">
                             <button class="btn btn-success btn-lg btn-block">確認</button>
@@ -195,33 +231,6 @@
                         <div class="col-sm-2">
                             <a class="btn btn-danger btn-lg btn-block" href="../../dashboard" role="button">戻る</a>
                         </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <!--19.マイページ -->
-                    <input type="submit" value="マイページ" id="mypageButton">
-                    <div class="row">
-                        <fieldset>
-                            <legend>証跡</legend>
-                            <p for="jaraOrg">
-                                <label for="jaraOrgRegTrail">JARA証跡</label>
-                                <input type="text" id="jaraOrgRegTrail" name="jaraOrgRegTrail" size="12">
-                                <label for="jaraOrgType">JARA団体種別</label>
-                                <select id="jaraOrgType" name="jaraOrgType">
-                                    <option>正式</option>
-                                    <option>任意</option>
-                                </select>
-                            </p>
-                            <p for="prefOrg">
-                                <label for="prefOrgRegTrail">県ボ証跡</label>
-                                <input type="text" id="prefOrgRegTrail" name="prefOrgRegTrail" size="12">
-                                <label for="prefOrgType">県ボ団体種別</label>                            
-                                <select id="prefOrgType" name="prefOrgType">
-                                    <option>正式</option>
-                                    <option>任意</option>
-                                </select>
-                            </p>
-                        </fieldset>
                     </div>
                 </div>
             </div>
