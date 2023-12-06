@@ -212,7 +212,7 @@ function emailChangeBox() {
 //This function will show the prefectures input option if the country is  after email change button is clicked in the user-edit page
 if(country)
 {
-    if(country.value==="日本"){
+    if(country.value==="1"){
     
         prefectures.style.display='flex';
     }
@@ -223,7 +223,7 @@ if(country)
 }
 if(birthCountry)
 {
-    if(birthCountry.value==="日本"){
+    if(birthCountry.value==="1"){
         birthPrefectures.style.display='flex';
     }
     else{
@@ -235,7 +235,7 @@ if(birthCountry){
     birthCountry.addEventListener('change', function() {
         let birthCountry = document.getElementById("birthCountry");
         let birthPrefecture = document.getElementById("birthPrefectures");
-        if(birthCountry.value==="日本"){
+        if(birthCountry.value==="1"){
             birthPrefecture.style.display='flex'
         }
         else{
@@ -248,7 +248,7 @@ if(country) {
     country.addEventListener('change', function() {
         let country = document.getElementById("country");
         let prefecture = document.getElementById("prefectures");
-        if(country.value==="日本"){
+        if(country.value==="1"){
             prefecture.style.display='flex'
         }
         else{
@@ -261,12 +261,11 @@ if(country) {
 setTimeout(() => {
     if(residenceCountry){
         console.log(residenceCountry.value);
-        if(residenceCountry.value==="日本"){
+        if(residenceCountry.value==="1"){
             residencePrefectures.style.display='block';
         }
         else{
             residencePrefectures.style.display='none';
-            residencePrefecture.value='';
         }
     }
 }, "10");
@@ -277,7 +276,7 @@ if(residenceCountry) {
         console.log(residenceCountry.value);
         let country = document.getElementById("residenceCountry");
         let prefecture = document.getElementById("residencePrefectures");
-        if(country.value==="日本"){
+        if(country.value==="1"){
             prefecture.style.display='block'
         }
         else{

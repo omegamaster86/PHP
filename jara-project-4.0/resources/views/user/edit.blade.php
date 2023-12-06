@@ -241,19 +241,19 @@
                             </label>
                             <div class="col-lg-12">
                                 @if (old('residence_country')??"" or ($errors->has('residence_country')))
-                                
+                                value=1 {{(old('sex')===1) ? "selected" : ""}}
                                 <select id="residenceCountry" name="residence_country" class="form-control">
                                     <option value="" selected>--</option>
-                                    <option value="日本"  {{(old('residence_country')==="日本") ? "selected" : ""}}>日本</option>
-                                    <option value="アメリカ" {{(old('residence_country')==="アメリカ") ? "selected" : ""}}>アメリカ</option>
-                                    <option value="インド" {{(old('residence_country')==="インド") ? "selected" : ""}}>インド</option>
+                                    <option value=1  {{(old('residence_country')===1) ? "selected" : ""}}>日本</option>
+                                    <option value=2 {{(old('residence_country')===2) ? "selected" : ""}}>アメリカ</option>
+                                    <option value=3 {{(old('residence_country')===3) ? "selected" : ""}}>インド</option>
                                 </select>
                                 @else
                                 <select id="residenceCountry" name="residence_country" class="form-control">
                                     <option value="" selected>--</option>
-                                    <option value="日本"  {{($user['residence_country']==="日本")?"selected" : ""}}>日本</option>
-                                    <option value="アメリカ" {{($user['residence_country']==="アメリカ")?"selected" : ""}}>アメリカ</option>
-                                    <option value="インド" {{($user['residence_country']==="インド")?"selected" : ""}}>インド</option>
+                                    <option value=1  {{($user['residence_country']===1)?"selected" : ""}}>日本</option>
+                                    <option value=2 {{($user['residence_country']===2)?"selected" : ""}}>アメリカ</option>
+                                    <option value=3 {{($user['residence_country']===3)?"selected" : ""}}>インド</option>
                                 </select>
                                 @endif
                                 @if ($errors->has('residence_country'))
@@ -271,15 +271,15 @@
                                 @if (old('residence_prefecture')??"" or ($errors->has('residence_prefecture')))
                                 <select id="residencePrefecture" name="residence_prefecture" class="form-control">
                                     <option value="" selected>--</option>
-                                    <option value="愛知" {{(old('residence_prefecture')==="愛知") ? "selected" : ""}}>愛知</option>
-                                    <option value="宮崎" {{(old('residence_prefecture')==="宮崎") ? "selected" : ""}}>宮崎</option>
+                                    <option value=1 {{(old('residence_prefecture')===1) ? "selected" : ""}}>愛知</option>
+                                    <option value=2 {{(old('residence_prefecture')===2) ? "selected" : ""}}>宮崎</option>
                                 </select>
                                
                                 @else
                                 <select id="residencePrefecture"  name="residence_prefecture" class="form-control">
                                     <option value="">--</option>
-                                    <option value="愛知" {{($user['residence_prefecture']==="愛知")?"selected" : ""}}>愛知</option>
-                                    <option value="宮崎" {{($user['residence_prefecture']==="宮崎")?"selected" : ""}}>宮崎</option>
+                                    <option value=1 {{($user['residence_prefecture']===1)?"selected" : ""}}>愛知</option>
+                                    <option value=2 {{($user['residence_prefecture']===2)?"selected" : ""}}>宮崎</option>
                                 </select>
                                 @endif
                                 @if ($errors->has('residence_prefecture'))

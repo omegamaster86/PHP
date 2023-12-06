@@ -105,6 +105,16 @@ class EditInfoConfirmController extends Controller
                     DB::commit();
                 } catch (\Throwable $e) {
                     DB::rollBack();
+                    // dd($request->all());
+                    $e_message = $e->getMessage();
+                    $e_code = $e->getCode();
+                    $e_file = $e->getFile();
+                    $e_line = $e->getLine();
+                    $e_sql = $e->getSql();
+                    $e_errorCode = $e->errorInfo[1];
+                    $e_bindings = implode(", ",$e->getBindings());
+                    $e_connectionName = $e->connectionName;
+
                      //Store error message in the user update log file.
                     Log::channel('user_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
                      throw ValidationException::withMessages([
@@ -115,7 +125,7 @@ class EditInfoConfirmController extends Controller
                 $page_url = route('my-page');
                 $page_url_text = "マイページ";
                 
-                return redirect('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+                return view('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
                 
                 // return redirect('profile')->with('status', "更新の件、完了になりました。");
             }

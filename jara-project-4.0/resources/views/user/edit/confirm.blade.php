@@ -103,7 +103,7 @@
                             <label  class=" control-label">ユーザー名
                                 : {{ $user_info['user_name']}}
                             </label>
-                            <input name="userName" class="form-control" type="hidden"
+                            <input name="user_name" class="form-control" type="hidden"
                                 value="{{ $user_info['user_name']}}">
                         </div>
                         <div style="display:none">
@@ -115,12 +115,13 @@
                                 {{ $user_info['mailaddress']? $user_info['mailaddress'] : Auth::user()->mailaddress}}
                             </p>
                             <input name="mailaddress" class="form-control" type="hidden"
-                                value="{{ $user_info['mailaddress'] }}">
+                                value="{{ $user_info['mailaddress']? $user_info['mailaddress'] : Auth::user()->mailaddress }}">
 
 
                         </div>
                         <div class="form-group">
-                            <label class="control-label">性別 : @if($user_info['sex']=="1")
+                            <label class="control-label">性別 : 
+                                @if($user_info['sex']=="1")
                                 男
                                 @elseif ($user_info['sex']=="2")
                                 女
@@ -141,17 +142,27 @@
                         </div>
                         <div class="form-group">
                             <label class="control-label">居住地 :
-                                {{$user_info['residence_country']}}
+                                @if($user_info['residence_country']=="1")
+                                日本
+                                @elseif ($user_info['residence_country']=="2")
+                                アメリカ
+                                @elseif ($user_info['residence_country']=="3")
+                                インド
+                                @endif
                             </label>
 
 
                             <input id="residenceCountry" name="residence_country" class="form-control" type="hidden"
                                 value="{{$user_info['residence_country']}}">
                         </div>
-                        @if($user_info['residence_country']=="日本")
+                        @if($user_info['residence_country']=="1")
                         <div class="form-group">
                             <label class="control-label">都道府県 :
-                                {{$user_info['residence_prefecture']}}
+                                @if($user_info['residence_prefecture']=="1")
+                                愛知
+                                @elseif ($user_info['residence_prefecture']=="2")
+                                宮崎
+                                @endif
                             </label>
 
                             <input id="residencePrefecture" name="residence_prefecture" class="form-control"
