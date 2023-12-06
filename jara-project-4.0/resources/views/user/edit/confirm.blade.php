@@ -71,14 +71,16 @@
                             <div style="margin: 0px 0px 5px 15px">写真
                             </div>
                             <div class="text-center">
-                                @if(session()->get('userInfo')['photo']??"")
+                                
+                                
+                                @if($user_info['photo'])
                                 <img class="avatar img-circle img-thumbnail"
-                                    src="{{ asset('images/users/' .session()->get('userInfo')['photo']) }}"
+                                    src="{{ asset('images/users/' . $user_info['photo']) }}"
                                     alt="avatar" />
                                 @else
-                                    @if(Auth::user()->photo??"")
+                                    @if($user_info['photo'])
                                     <img class="avatar img-circle img-thumbnail"
-                                    src="{{ asset('images/users/' . Auth::user()->photo) }}"
+                                    src="{{ asset('images/users/' .$user_info['photo']) }}"
                                     alt="avatar" />
                                     @else
                                     <img class="avatar img-circle img-thumbnail"
@@ -88,7 +90,7 @@
                                 @endif
                                 <div style="display: none">
                                     <input type="text" id="photo" name="photo"
-                                        value="{{session()->get('userInfo')['photo']}}" class="form-control">
+                                        value="{{$user_info['photo']}}" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -99,83 +101,83 @@
 
                         <div class="form-group ">
                             <label  class=" control-label">ユーザー名
-                                : {{ session()->get('userInfo')['userName']}}
+                                : {{ $user_info['user_name']}}
                             </label>
                             <input name="userName" class="form-control" type="hidden"
-                                value="{{ session()->get('userInfo')['userName']}}">
+                                value="{{ $user_info['user_name']}}">
                         </div>
                         <div style="display:none">
-                            <input type="text" id="mailAddressStatus" name="mailAddressStatus"
-                                value="{{session()->get('userInfo')['mailAddressStatus']}}" />
+                            <input type="text" id="mailAddressStatus" name="mailaddress_status"
+                                value="{{$user_info['mailaddress_status']}}" />
                         </div>
                         <div class="form-group">
                             <p class="control-label" id="emailChange">メールアドレス :
-                                {{(session()->get('userInfo')['mailAddress']??"")?session()->get('userInfo')['mailAddress']:Auth::user()->mailAddress}}
+                                {{ $user_info['mailaddress']? $user_info['mailaddress'] : Auth::user()->mailaddress}}
                             </p>
-                            <input name="mailAddress" class="form-control" type="hidden"
-                                value="{{(session()->get('userInfo')['mailAddress']??"")?session()->get('userInfo')['mailAddress']:Auth::user()->mailAddress}}">
+                            <input name="mailaddress" class="form-control" type="hidden"
+                                value="{{ $user_info['mailaddress'] }}">
 
 
                         </div>
                         <div class="form-group">
-                            <label class="control-label">性別 : @if(session()->get('userInfo')['sex']=="1")
+                            <label class="control-label">性別 : @if($user_info['sex']=="1")
                                 男
-                                @elseif (session()->get('userInfo')['sex']=="2")
+                                @elseif ($user_info['sex']=="2")
                                 女
                                 @else
                                 @endif
                             </label>
 
                             <input name="sex" class="form-control" type="hidden"
-                                value="{{session()->get('userInfo')['sex']}}">
+                                value="{{$user_info['sex']}}">
                         </div>
                         <div class="form-group">
-                            @if(session()->get('userInfo')['dateOfBirth']!="")
+                            @if($user_info['date_of_birth']!="")
                             <label class="control-label" >生年月日:</label>
                             @endif
-                            {{session()->get('userInfo')['dateOfBirth']}}
-                            <input name="dateOfBirth" class="form-control" type="hidden"
-                                value="{{session()->get('userInfo')['dateOfBirth']}}">
+                            {{$user_info['date_of_birth']}}
+                            <input name="date_of_birth" class="form-control" type="hidden"
+                                value="{{$user_info['date_of_birth']}}">
                         </div>
                         <div class="form-group">
                             <label class="control-label">居住地 :
-                                {{session()->get('userInfo')['residenceCountry']}}
+                                {{$user_info['residence_country']}}
                             </label>
 
 
-                            <input id="residenceCountry" name="residenceCountry" class="form-control" type="hidden"
-                                value="{{session()->get('userInfo')['residenceCountry']}}">
+                            <input id="residenceCountry" name="residence_country" class="form-control" type="hidden"
+                                value="{{$user_info['residence_country']}}">
                         </div>
-                        @if(session()->get('userInfo')['residenceCountry']=="日本")
+                        @if($user_info['residence_country']=="日本")
                         <div class="form-group">
                             <label class="control-label">都道府県 :
-                                {{session()->get('userInfo')['residencePrefecture']}}
+                                {{$user_info['residence_prefecture']}}
                             </label>
 
-                            <input id="residencePrefecture" name="residencePrefecture" class="form-control"
-                                type="hidden" value="{{session()->get('userInfo')['residencePrefecture']}}">
+                            <input id="residencePrefecture" name="residence_prefecture" class="form-control"
+                                type="hidden" value="{{$user_info['residence_prefecture']}}">
                         </div>
                         @endif
                         <div class="form-group" style="display: flex">
                             <div class="col-lg-6" style="margin: 0rem 0rem 0rem -1rem;">
                                 <label class=" control-label">身長 :
                                 </label>
-                                {{session()->get('userInfo')['height']?session()->get('userInfo')['height']:0}} cm
+                                {{$user_info['height']?$user_info['height']:0}} cm
 
                                 <input name="height" class="form-control" type="hidden"
-                                    value="{{session()->get('userInfo')['height']}}">
+                                    value="{{$user_info['height']}}">
 
                             </div>
                             <div class="col-lg-6">
                                 <label class=" control-label">体重 :</label>
-                                {{session()->get('userInfo')['weight']?session()->get('userInfo')['weight']:0}} kg
+                                {{$user_info['weight']?$user_info['weight']:0}} kg
 
                                 <input name="weight" class="form-control" type="hidden"
-                                    value="{{session()->get('userInfo')['weight']}}">
+                                    value="{{$user_info['weight']}}">
                             </div>
 
                         </div>
-                        @if(session()->get('userInfo')['mailAddressStatus'])
+                        @if($user_info['mailaddress_status'])
                         <div class="form-group alert alert-success" role="alert">
                             メールアドレスが変更されている為、表示されている<br />
                             メールアドレス宛に6桁の認証番号が送られます。<br />
@@ -200,10 +202,10 @@
             </div>
             <div class="col-md-3" style="text-align: right">
                 <p class="col-lg-9 control-label" style="font-weight: bold">ユーザーID :
-                    {{ str_pad(Auth::user()->userId, 7, "0", STR_PAD_LEFT)}}
+                    {{ str_pad(Auth::user()->user_id, 7, "0", STR_PAD_LEFT)}}
                 </p>
                 <p class="col-lg-9 control-label" style="font-weight: bold">ユーザー種別 :
-                    {{str_pad(Auth::user()->userType, 8, "0", STR_PAD_LEFT)}}
+                    {{str_pad(Auth::user()->user_type, 8, "0", STR_PAD_LEFT)}}
                 </p>
             </div>
         </div>
@@ -228,17 +230,6 @@
         });
     </script>
     {{-- Date Picker End --}}
-    {{-- <script>
-        // Get the modal
-        var modal = document.getElementById('id01');
-        
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function(event) {
-          if (event.target == modal) {
-            modal.style.display = "none";
-          }
-        }
-    </script> --}}
     <script src="{{ asset('js/main.js') }}"></script>
     <script src="{{ asset('js/nav.js') }}"></script>
 </body>

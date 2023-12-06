@@ -87,8 +87,8 @@
                                 <div style="margin: 0px 0px 5px 15px; text-align:center">
                                     写真
                                 </div>
-                                @if($playerInfo->photo??"")
-                                    <img id = "playerPicture" src="{{ asset('images/players/'.$playerInfo->photo) }}" class="avatar img-circle img-thumbnail" alt="avatar">
+                                @if($player_Info->photo??"")
+                                    <img id = "playerPicture" src="{{ asset('images/players/'.$player_Info->photo) }}" class="avatar img-circle img-thumbnail" alt="avatar">
                                 @else
                                     <img id = "playerPicture" src="{{ asset('images/no-image.png') }}" class="avatar img-circle img-thumbnail" alt="avatar">
                                 @endif
@@ -102,7 +102,7 @@
                                 <label style="cursor:pointer;text-align:right" for="jara_player_id" class="col-sm-5  col-form-label">選手ID
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{str_pad(($playerInfo->player_id??""), 8, "0", STR_PAD_LEFT)}}
+                                    {{str_pad(($player_Info->player_id??""), 8, "0", STR_PAD_LEFT)}}
                                 </div>
                             </div>
 
@@ -110,7 +110,7 @@
                                 <label style="cursor:pointer;text-align:right" class="col-sm-5  col-form-label">JARA選手コード
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{$playerInfo->jara_player_id??""}}
+                                    {{$player_Info->jara_player_id??""}}
                                 </div>
                             </div>
                             <div class="form-group row ">
@@ -118,7 +118,7 @@
                                     選手名
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{$playerInfo->player_name??""}}
+                                    {{$player_Info->player_name??""}}
                                 </div>
                             </div>
 
@@ -127,7 +127,7 @@
                                     生年月日
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{date('Y/m/d', strtotime($playerInfo->date_of_birth))}}
+                                    {{date('Y/m/d', strtotime($player_Info->date_of_birth))}}
                                 </div>
 
                             </div>
@@ -137,7 +137,7 @@
                                     性別
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{$playerInfo->sex??""}}
+                                    {{$player_Info->sex??""}}
                                 </div>
                             </div>
                             <div class="form-group row ">
@@ -146,8 +146,8 @@
 
                                 <div class="col-sm-7 col-form-label">
 
-                                    {{$playerInfo->height??""}} 
-                                    {{($playerInfo->height??"") ? "cm" : ""}}
+                                    {{$player_Info->height??""}} 
+                                    {{($player_Info->height??"") ? "cm" : ""}}
                                     
                                 </div>
                             </div>
@@ -157,7 +157,7 @@
                                 </label>
 
                                 <div class="col-sm-7 col-form-label">
-                                    {{$playerInfo->weight??""}} {{($playerInfo->weight??"") ? "kg" : ""}}
+                                    {{$player_Info->weight??""}} {{($player_Info->weight??"") ? "kg" : ""}}
                                 </div>
 
                             </div>
@@ -165,10 +165,10 @@
                                 <label style="cursor:pointer;text-align:right" class="col-sm-5  col-form-label">サイド情報
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{((str_pad(($playerInfo->side_info??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'S　' : '' }}
-                                    {{((str_pad(($playerInfo->side_info??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'B　' : '' }}
-                                    {{((str_pad(($playerInfo->side_info??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
-                                    {{((str_pad(($playerInfo->side_info??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
+                                    {{((str_pad(($player_Info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'S　' : '' }}
+                                    {{((str_pad(($player_Info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'B　' : '' }}
+                                    {{((str_pad(($player_Info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
+                                    {{((str_pad(($player_Info->side_info??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
                                 </div>
                             </div>
 
@@ -178,7 +178,7 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
 
-                                    {{$playerInfo->birth_country??""}}
+                                    {{$player_Info->birth_country??""}}
                                     
                                 </div>
 
@@ -189,7 +189,7 @@
                                 </label>
 
                                 <div class="col-sm-7 col-form-label">
-                                    {{$playerInfo->birth_prefecture??""}}
+                                    {{$player_Info->birth_prefecture??""}}
                                 </div>
 
                             </div>
@@ -197,7 +197,7 @@
                                 <label style="text-align:right" for="sex" class="col-sm-5  col-form-label">居住地
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{$playerInfo->residence_country??""}}
+                                    {{$player_Info->residence_country??""}}
                                 </div>
 
                             </div>
@@ -205,7 +205,7 @@
                                 <label style="text-align:right" class="col-sm-5  col-form-label">都道府県
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{$playerInfo->residence_prefecture??""}}
+                                    {{$player_Info->residence_prefecture??""}}
                                 </div>
 
                             </div>

@@ -80,7 +80,7 @@
                                     <span id="userPictureDeleteButton" onclick="userPictureDelete()"  class=" btn btn-danger btn-sm" type="button"> 取消
                                     </span>
                                 @endif
-                                <input name="userPictureStatus" id="userPictureStatus" type="hidden" value="">
+                                <input name="user_picture_status" id="userPictureStatus" type="hidden" value="">
                             </div>
                             @if(($user['photo']))
                             <img id= "userPicture" src="{{ asset('images/users/'.$user['photo']) }}"
@@ -149,8 +149,8 @@
                         </div>
                         <div class="form-group">
                             <div style="display:none">
-                                <input type="text" id="mailAddressStatus" name="mailAddressStatus"
-                                    value="{{old('mailAddressStatus')}}" />
+                                <input type="text" id="mailAddressStatus" name="mailaddress_status"
+                                    value="{{old('mailaddress_status')}}" />
                             </div>
                             <p class="col-lg-12 control-label" id="emailChange">＊メールアドレス :　
                                 <span onclick="emailChangeBox()" class=" btn btn-secondary btn-sm" type="button">

@@ -110,11 +110,11 @@
                                     写真
 
                                 </div>
-                                @if(session()->get('playerInfo')['photo']??"")
-                                <img id = "playerPicture" src="{{ asset('images/players/'.session()->get('playerInfo')['photo']) }}" class="avatar img-circle img-thumbnail" alt="avatar">
+                                @if($player_Info['photo']??"")
+                                <img id = "playerPicture" src="{{ asset('images/players/'.$player_Info['photo']) }}" class="avatar img-circle img-thumbnail" alt="avatar">
                                 @else
-                                    @if($playerInfo->photo??"")
-                                    <img id = "playerPicture" src="{{ asset('images/players/'.$playerInfo->photo) }}"
+                                    @if($player_Info->photo??"")
+                                    <img id = "playerPicture" src="{{ asset('images/players/'.$player_Info->photo) }}"
                                 class="avatar img-circle img-thumbnail" alt="avatar">
                                     @else
                                     <img id = "playerPicture" src="{{ asset('images/no-image.png') }}"
@@ -123,7 +123,7 @@
                                 @endif
 
                             </div>
-                            <input type="hidden" name="photo" value="{{session()->get('playerInfo')['photo']??($playerInfo->photo??"")}}" style="display:none">
+                            <input type="hidden" name="photo" value="{{$player_Info['photo']??($player_Info->photo??"")}}" style="display:none">
                         </div>
                         <div class="col-md-1"></div>
 
@@ -136,9 +136,9 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
                                     @if($pageMode==="delete")
-                                    {{str_pad(($playerInfo->playerId??""), 8, "0", STR_PAD_LEFT)}}
+                                    {{str_pad(($player_Info->playerId??""), 8, "0", STR_PAD_LEFT)}}
                                     @else
-                                    {{ str_pad((session()->get('playerInfo')['playerId']??""), 8, "0", STR_PAD_LEFT)}}
+                                    {{ str_pad(($player_Info['playerId']??""), 8, "0", STR_PAD_LEFT)}}
                                     @endif
                                 </div>
                             </div>
@@ -150,11 +150,11 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
                                     @if($pageMode==="delete")
-                                    {{$playerInfo->jara_player_id??""}}
+                                    {{$player_Info->jara_player_id??""}}
                                     @else
-                                    {{session()->get('playerInfo')['jara_player_id']??""}}
+                                    {{$player_Info['jara_player_id']??""}}
                                     <input name="playerCode" type="hidden"
-                                        value="{{session()->get('playerInfo')['jara_player_id']??""}}">
+                                        value="{{$player_Info['jara_player_id']??""}}">
                                     @endif
                                 </div>
 
@@ -165,11 +165,11 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
                                     @if($pageMode==="delete")
-                                    {{$playerInfo->playerName??""}}
+                                    {{$player_Info->playerName??""}}
                                     @else
-                                    {{session()->get('playerInfo')['playerName']??""}}
+                                    {{$player_Info['playerName']??""}}
                                     <input name="playerName" type="hidden"
-                                        value="{{session()->get('playerInfo')['playerName']??""}}">
+                                        value="{{$player_Info['playerName']??""}}">
                                     @endif
                                 </div>
                             </div>
@@ -180,11 +180,11 @@
 
                                 <div class="col-sm-7 col-form-label">
                                     @if($pageMode==="delete")
-                                    {{date('Y/m/d', strtotime($playerInfo->date_of_birth))}}
+                                    {{date('Y/m/d', strtotime($player_Info->date_of_birth))}}
                                     @else
-                                    {{session()->get('playerInfo')['date_of_birth']??""}}
+                                    {{$player_Info['date_of_birth']??""}}
                                     <input name="date_of_birth" type="hidden"
-                                        value="{{session()->get('playerInfo')['date_of_birth']??""}}">
+                                        value="{{$player_Info['date_of_birth']??""}}">
                                     @endif
                                 </div>
 
@@ -198,15 +198,15 @@
                                     @if($page_mode==="delete")
                                     {{$player_info->sex??""}}
                                     @else
-                                    @if((session()->get('player_info')['sex']??"")==="1")
+                                    @if(($player_Info['sex']??"")==="1")
                                     男
-                                    @elseif((session()->get('player_info')['sex']??"")==="2")
+                                    @elseif(($player_Info['sex']??"")==="2")
                                     女
                                     @else
                                     ""
                                     @endif
                                     <input name="sex" type="hidden" value="{{
-                                        session()->get('player_info')['sex']??""
+                                        $player_Info['sex']??""
                                         }}">
                                     @endif
                                 </div>
@@ -220,10 +220,10 @@
                                     {{$player_info->height??""}} cm
                                     @else
                                     {{
-                                    session()->get('player_info')['height']??""
+                                    $player_Info['height']??""
                                     }} cm
                                     <input name="height" type="hidden" value="{{
-                                        session()->get('player_info')['height']??""
+                                        $player_Info['height']??""
                                         }}">
                                     @endif
                                 </div>
@@ -238,10 +238,10 @@
                                     @else
                                     
                                     {{
-                                    session()->get('player_info')['weight']??""
+                                    $player_Info['weight']??""
                                     }} kg
                                     <input name="weight" type="hidden" value="{{
-                                        session()->get('player_info')['weight']??""
+                                        $player_Info['weight']??""
                                         }}">
                                     @endif
                                 </div>
@@ -258,13 +258,13 @@
                                     {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
                                     {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
                                     @else
-                                    {{((str_pad((session()->get('player_info')['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'S　' : '' }}
-                                    {{((str_pad((session()->get('player_info')['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'B　' : '' }}
-                                    {{((str_pad((session()->get('player_info')['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
-                                    {{((str_pad((session()->get('player_info')['side_info']??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
+                                    {{((str_pad(($player_Info['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'S　' : '' }}
+                                    {{((str_pad(($player_Info['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'B　' : '' }}
+                                    {{((str_pad(($player_Info['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
+                                    {{((str_pad(($player_Info['side_info']??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
                                    
                                     <input name="side_info" type="hidden" value="{{
-                                        session()->get('player_info')['side_info']??""}}">
+                                        $player_Info['side_info']??""}}">
                                     @endif
                                 </div>
                             </div>
@@ -279,12 +279,12 @@
                                     {{$player_info->birth_country??""}}
                                     @else
                                     {{
-                                    session()->get('player_info')['birthCountry']??""
+                                    $player_Info['birthCountry']??""
                                     }}
                                     
                                     @endif
                                     <input name="birth_country" id="confirmBirthCountry" type="hidden" value="{{($player_info->birth_country??"")?$player_info->birth_country :
-                                        (session()->get('playerInfo')['birth_country']??"")
+                                        ($player_Info['birth_country']??"")
                                         }}">
                                 </div>
 
@@ -298,11 +298,11 @@
                                     {{$player_info->birth_prefecture??""}}
                                     @else
                                     {{
-                                    session()->get('player_info')['birth_prefecture']??""}}
+                                    $player_Info['birth_prefecture']??""}}
                                     
                                     @endif
                                     <input name="birth_prefecture" type="hidden" value="{{($player_info->birth_prefecture??"")?$player_info->birth_prefecture :
-                                        session()->get('player_info')['birth_prefecture']??""}}">
+                                        $player_Info['birth_prefecture']??""}}">
                                 </div>
 
                             </div>
@@ -315,10 +315,10 @@
                                     {{$player_info->residence_country??""}}
                                     @else
                                     {{
-                                    session()->get('player_info')['residence_country']??""}}
+                                    $player_Info['residence_country']??""}}
                                     @endif
                                     <input id="confirmCountry" name="residence_country" type="hidden" value="{{
-                                        ($player_info->residence_country??"")?$player_info->residence_country : (session()->get('player_info')['residence_country']??"")}}">
+                                        ($player_info->residence_country??"")?$player_info->residence_country : ($player_Info['residence_country']??"")}}">
                                 </div>
 
                             </div>
@@ -327,13 +327,13 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
                                     @if($page_mode === "delete")
-                                    {{$playerInfo->residence_prefecture??""}}
+                                    {{$player_Info->residence_prefecture??""}}
                                     @else
                                     {{
-                                    session()->get('player_info')['residence_prefecture']??""}}
+                                    $player_Info['residence_prefecture']??""}}
                                     @endif
                                     <input name="residence_prefecture" type="hidden" value="{{($player_info->residence_prefecture??"")?$player_info->residence_prefecture :
-                                        (session()->get('player_info')['residence_prefecture']??"")}}">
+                                        ($player_Info['residence_prefecture']??"")}}">
                                 </div>
 
                             </div>
@@ -393,7 +393,7 @@
                 </div>
                 @endif
 
-                @if((session()->get('player_info')['previous_page_status']??"")==="success")
+                @if(($player_Info['previous_page_status']??"")==="success")
                 <!-- Button trigger modal -->
                 <button style="display: none" type="button" id="idCheckedMessage" class="btn btn-secondary btn-lg"
                     data-toggle="modal" data-target="#staticBackdrop">

@@ -31,7 +31,7 @@ class EditInfoConfirmController extends Controller
     {
         return view('user.edit.confirm');
     }
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): View
     {
             if((int)$request->mailaddress_status===1){ 
             
@@ -42,7 +42,7 @@ class EditInfoConfirmController extends Controller
                 DB::beginTransaction();
                 try {
                     DB::update(
-                        'update t_user set  certification = ? , expiryTimeOfCertification = ? where userId = ?',
+                        'update t_users set  certification = ? , expiryTimeOfCertification = ? where userId = ?',
                         [ $certification_number, $new_date, Auth::user()->user_id]
                     );
 
@@ -87,7 +87,9 @@ class EditInfoConfirmController extends Controller
                 Mail::to($request->get('mailaddress'))->send(new VerificationMail($mail_data));
 
                 $user_info = $request->all();
-                return redirect('user/edit/verification')->with('userInfo', $user_info);
+                
+                // return redirect('user/edit/verification')->with('user_info', $user_info);
+                return view('user/edit/verification')->with(compact('user_info'));
                 dd("mail sent");
 
             }
@@ -96,7 +98,7 @@ class EditInfoConfirmController extends Controller
                 DB::beginTransaction();
                 try {
                     DB::update(
-                        'update t_user set photo = ? , user_name = ? , mailaddress = ?, sex = ?, residence_country = ?, residence_prefecture = ?, date_of_birth = ?, height = ?, weight = ? where user_id = ?',
+                        'update t_users set photo = ? , user_name = ? , mailaddress = ?, sex = ?, residence_country = ?, residence_prefecture = ?, date_of_birth = ?, height = ?, weight = ? where user_id = ?',
                         [$request->photo, $request->user_name, $request->mailaddress,$request->sex,$request->residence_country,$request->residence_prefecture,$request->date_of_birth,$request->height,$request->weight,Auth::user()->user_id]
                     );
 

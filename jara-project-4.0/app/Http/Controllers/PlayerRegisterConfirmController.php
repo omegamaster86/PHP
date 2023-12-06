@@ -30,7 +30,7 @@ class PlayerRegisterConfirmController extends Controller
      */
     public function create(): View
     {
-        return view('player.register-confirm',["pageMode"=>"register-confirm"]);
+        return view('player.register-confirm',["page_mode"=>"register-confirm"]);
     }
 
     /**
@@ -42,11 +42,11 @@ class PlayerRegisterConfirmController extends Controller
 
     public function store( Request $request): RedirectResponse
     {
-        if (DB::table('t_players')->where('jara_player_id',$request->playerCode)->where('delete_flag',0)->exists()){
-            $retrive_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->playerCode]);
+        if (DB::table('t_players')->where('jara_player_id',$request->jar_player_id)->where('delete_flag',0)->exists()){
+            $retrive_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->jara_player_id]);
             $existing_player_name = $retrive_player_name[0]->player_name;
             //Display error message to the client
-            return redirect('player/register')->with('system_error', "登録に失敗しました。別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：[$request->playerCode] [$existing_player_name]");
+            return redirect('player/register')->with('system_error', "登録に失敗しました。別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：[$request->jara_player_id] [$existing_player_name]");
             dd("stop");
         }
         else{

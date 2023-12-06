@@ -30,26 +30,7 @@ use Illuminate\Http\UploadedFile;
 class UserEditController extends Controller
 {
     public function create(Request $request): View
-    {
-        // if(Auth::user()->sex??""){
-        //     $sex = Auth::user()->sex;
-        // }
-        // else{
-        //     $sex = "";
-        // }
-        // if(Auth::user()->residence_country??"")
-        //     $residence_country = Auth::user()->residence_country;
-        // else
-        //     $residence_country = "";
-        // if($residence_country==="日本"){
-        //     if(Auth::user()->residence_prefecture??"")
-        //         $residence_prefecture = Auth::user()->residence_prefecture;
-        //     else
-        //         $residence_prefecture = "";
-        // }
-        // else
-        //     $residence_prefecture = "";
-        
+    {   
         if(Auth::user()->date_of_birth)
             $date_of_birth = date('Y/m/d', strtotime(Auth::user()->date_of_birth));
         else
@@ -69,7 +50,7 @@ class UserEditController extends Controller
 
         return view('user.edit')->with(compact('user'));
     }
-    public function store(Request $request) : RedirectResponse
+    public function store(Request $request) : View
     {
 
         include('Auth/ErrorMessages/ErrorMessages.php');
@@ -80,7 +61,7 @@ class UserEditController extends Controller
             
             $file = $request->file('photo');
             // $file->store('toPath', ['disk' => 'public']);
-            $file_name = DB::table('t_users')->where('mailaddress', Auth::user()->mailaddress)->value('user_id'). '.' . $request->file('photo')->getClientOriginalExtension();
+            $file_name = DB::table('t_users')->where('mailaddress', '=', Auth::user()->mailaddress)->value('user_id'). '.' . $request->file('photo')->getClientOriginalExtension();
             // Storage::disk('public')->put($fileName, $file);
 
             // Storage::disk('public')->putFileAs('uploads', $file, $fileName);
@@ -95,16 +76,16 @@ class UserEditController extends Controller
         
         
         // Type Conversion
-        $request->mailAddressStatus = (int)$request->mailAddressStatus;
+        $request->mailaddress_status = (int)$request->mailaddress_status;
         $request->height = doubleval($request->height);
         $request->weight = (int)$request->weight;
 
-        if((int)$request->mailAddressStatus===1){
+        if((int)$request->mailaddress_status===1){
             $request->validate([
                 // [^\x01-\x7E]
                 // ^[0-9a-zA-Z-_]+$
                 // Username validation rule
-                'username' => ['required', 'string', 'max:32','regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'],   
+                'user_name' => ['required', 'string', 'max:32','regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'],   
 
                 // Mail address validation rule
                 'mailaddress' => ['required','email', 'string', 'lowercase',  'max:255','unique:' . T_user::class],
@@ -171,23 +152,22 @@ class UserEditController extends Controller
         //For getting current time
         $date = date('Y-m-d H:i:s');
         //For adding 24hour with current time
-        $newDate = date('Y-m-d H:i:s', strtotime($date. ' + 24 hours'));
+        $new_date = date('Y-m-d H:i:s', strtotime($date. ' + 24 hours'));
 
         
-        $userInfo = $request->all();
+        $user_info = $request->all();
         
         if ($request->hasFile('photo')){
-            $userInfo['photo']=DB::table('t_users')->where('mailaddress', '=', Auth::user()->mailaddress)->value('user_id'). '.' . $request->file('photo')->getClientOriginalExtension();
+            $user_info['photo']=DB::table('t_users')->where('mailaddress', '=', Auth::user()->mailaddress)->value('user_id'). '.' . $request->file('photo')->getClientOriginalExtension();
         }
         else{
-            if($request->userPictureStatus==="delete")
-                $userInfo['photo']="";
+            if($request->user_picture_status==="delete")
+                $user_info['photo']="";
             else
-                $userInfo['photo']=DB::table('t_user')->where('mailAddress', Auth::user()->mailAddress)->value('photo');
+                $user_info['photo']=DB::table('t_users')->where('mailaddress', '=', Auth::user()->mailaddress)->value('photo');
         }
-        // dd($userInfo['photo']);
-        return redirect('user/edit/confirm')->with('userInfo', $userInfo);
-        
+        // dd($userInfo['photo']);->with(compact('user')->with('user_info', $user_info)
+        return view('user/edit/confirm')->with(compact('user_info'));       
         
     }
 }

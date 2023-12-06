@@ -42,21 +42,21 @@ class PlayerEditConfirmController extends Controller
 
     public function store( Request $request): RedirectResponse
     {
-        if (DB::table('t_players')->where('jara_player_id', '=', $request->playerCode)->where('delete_flag', '=', 0)->exists()){
+        if (DB::table('t_players')->where('jara_player_id', '=', $request->jara_player_id)->where('delete_flag', '=', 0)->exists()){
             $retrive_player = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
             if(empty($retrive_player)){
                 dd("stop");
-                $retrive_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->playerCode]);
-                $existing_player_name = $retrive_player_name[0]->playerName;
+                $retrive_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->jara_player_id]);
+                $existing_player_name = $retrive_player_name[0]->player_name;
                 //Display error message to the client
-                return redirect('player/edit')->with('system_error', "登録に失敗しました。別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：[$request->playerCode] [$existing_player_name]");
+                return redirect('player/edit')->with('system_error', "登録に失敗しました。別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：[$request->jara_player_id] [$existing_player_name]");
             }
             else{
                 DB::beginTransaction();
                 try {
                     DB::update(
                         'update t_players set jara_player_id = ? , player_name = ?, date_of_birth = ?, sex = ?, height = ?, weight = ?,side_info = ?,birth_country = ?,birth_prefecture = ?,residence_country = ?,residence_prefecture = ?,photo = ? where user_id = ?',
-                        [ $request->playerCode, $request->playerName,$request->dateOfBirth,$request->sex,$request->height,$request->weight,$request->sideInfo,$request->birthCountry,$request->birthPrefecture,$request->residenceCountry,$request->residencePrefecture,$request->photo,Auth::user()->user_id]
+                        [ $request->jara_player_id, $request->player_name,$request->date_of_birth,$request->sex,$request->height,$request->weight,$request->side_info,$request->birth_country,$request->birth_prefecture,$request->residence_country,$request->residence_prefecture,$request->photo,Auth::user()->user_id]
                     );
 
                     DB::commit();
@@ -88,7 +88,7 @@ class PlayerEditConfirmController extends Controller
                 try {
                     DB::update(
                         'update t_players set jara_player_id = ? , player_name = ?, date_of_birth = ?, sex = ?, height = ?, weight = ?,side_info = ?,birth_country = ?,birth_prefecture = ?,residence_country = ?,residence_prefecture = ?,photo = ? where user_id = ?',
-                        [ $request->playerCode, $request->playerName,$request->dateOfBirth,$request->sex,$request->height,$request->weight,$request->sideInfo,$request->birthCountry,$request->birthPrefecture,$request->residenceCountry,$request->residencePrefecture,$request->photo,Auth::user()->user_id]
+                        [ $request->jara_player_id, $request->player_name,$request->date_of_birth,$request->sex,$request->height,$request->weight,$request->side_info,$request->birth_country,$request->birth_prefecture,$request->residence_country,$request->residence_prefecture,$request->photo,Auth::user()->user_id]
                     );
 
                     DB::commit();

@@ -46,23 +46,23 @@
                 <p style="margin: 1rem; font-weight:bold; color:red;text-align:center">{{
                     $errors->first('verification_error') }}</p>
                 @endif
-                <input type="text" maxlength="6" name="certificationNumber" class="form-control"
+                <input type="text" maxlength="6" name="certification_number" class="form-control"
                     id="certificationNumber" required>
             </div>
             {{-- {{ ((session('message')['status'] ?? '') === 'success') ? 'done' : '' . isActive(
             'admin.installer.complete' ) }} --}}
             <input name="photo"  type="hidden"
-                value="{{ session()->get('userInfo')['photo'] ??'' }}">
-            <input name="userName" type="hidden"
-                value="{{ session()->get('userInfo')['userName'] ?? '' }}">
-            <input name="mailAddressStatus" type="hidden"
-                value="{{ session()->get('userInfo')['mailAddressStatus'] ?? '' }}">
-            <input name="mailAddress" type="hidden"
-                value="{{ session()->get('userInfo')['mailAddress'] ?? '' }}">
+                value="{{ session()->get('user_info')['photo'] ??'' }}">
+            <input name="user_name" type="hidden"
+                value="{{ session()->get('user_info')['user_name'] ?? '' }}">
+            <input name="mailaddress_status" type="hidden"
+                value="{{ session()->get('user_info')['mailaddress_status'] ?? '' }}">
+            <input name="mailaddress" type="hidden"
+                value="{{ session()->get('user_info')['mailaddress'] ?? '' }}">
             <input name="sex" type="hidden"
-                value="{{ session()->get('userInfo')['sex'] ?? '' }}">
-            <input name="dateOfBirth" type="hidden"
-                value="{{ session()->get('userInfo')['dateOfBirth'] ?? '' }}">
+                value="{{ session()->get('user_info')['sex'] ?? '' }}">
+            <input name="date_of_birth" type="hidden"
+                value="{{ session()->get('userInfo')['date_of_birth'] ?? '' }}">
             <input name="residenceCountry" class="form-control" type="hidden"
                 value="{{  session()->get('userInfo')['residenceCountry'] ?? '' }}">
             <input name="residencePrefecture" class="form-control" type="hidden"
