@@ -119,10 +119,12 @@ Route::middleware('auth')->group(function () {
     
     //Organizations
     //団体情報登録・更新画面
-    Route::get('organization/register', [OrganizationController::class, 'create'])->name('organizations.register-edit');
-    Route::post('organization/register', [OrganizationController::class, 'storeRegister']);
+    Route::get('organization/register', [OrganizationController::class, 'create'])->name('organizations.register');
+    Route::post('organization/register', [OrganizationController::class, 'storeConfirm']);
+
+    Route::get('organization/edit', [OrganizationController::class, 'createEditPage'])->name('organizations.edit');
 
     //団体情報登録・更新確認画面
-    Route::get('organization/register/confirm', [OrganizationController::class, 'createConfirm'])->name('organizations.register-comfirm');
+    Route::get('organization/register/confirm', [OrganizationController::class, 'createConfirm'])->name('organizations.register-confirm');
     Route::post('organization/register/confirm', [OrganizationController::class, 'storeConfirmRegister']);
 });
