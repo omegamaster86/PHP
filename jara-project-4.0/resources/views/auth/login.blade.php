@@ -22,8 +22,7 @@
 
         <br />
     </div>
-    <form method="POST" action="{{ route('login') }}" 
-        class="px-4 py-2 font-semibold text-sm bg-white text-slate-700 dark:bg-slate-700 dark:text-white rounded-md shadow-sm ring-1 ring-black border-black dark:border-black border-2 border-solid">
+    <form method="POST" action="{{ route('login') }}" class="px-4 py-2 font-semibold text-sm bg-white text-slate-700 dark:bg-slate-700 dark:text-white rounded-md shadow-sm ring-1 ring-black border-black dark:border-black border-2 border-solid">
         
         @csrf
         
@@ -44,7 +43,7 @@
 
             <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" maxLength="32" value="{{old('password')}}" />
             @if ($errors->has('password'))
-                <p  class="error-css " style="color: red;margin:1.25rem 0rem 0rem 0rem">{!! $errors->first('password') !!}</p>
+                <p  class="error-css" style="color: red;margin:1.25rem 0rem 0rem 0rem">{!! $errors->first('password') !!}</p>
             @endif
             
         </div>
@@ -75,7 +74,8 @@
             日本ローイング協会　サポートデスク<br />
             <a href="#" class="underline py-2 pl-2 font-mono text-xs text-indigo-600 whitespace-pre dark:text-indigo-300  ">
                 お問い合わせはこちらへ
-            </a><br />
+            </a>
+            <br />
             営業時間　：土・日・祝日・弊社休業日を除く<br />
             月曜～金曜 9：00～12：00　13：00～17：00
         </p>

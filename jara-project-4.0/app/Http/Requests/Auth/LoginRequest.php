@@ -11,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\T_user;
 
 class LoginRequest extends FormRequest
 {
@@ -88,7 +89,7 @@ class LoginRequest extends FormRequest
 
         DB::beginTransaction();
         try {
-            DB::insert('insert into t_access_log (user_id, access_time, ip, host, browser, registered_time, registered_user_id,update_time, update_user_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', [$user_id, now(), request()->host(), request()->getHttpHost(), request()->userAgent(),now(),$user_id, now(), $user_id]);
+           DB::insert('insert into t_access_log (user_id, access_time, ip, host, browser, registered_time, registered_user_id,update_time, update_user_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', [$user_id, now(), request()->host(), request()->getHttpHost(), request()->userAgent(),now(),$user_id, now(), $user_id]);
 
             DB::commit();
         } catch (\Throwable $e) {

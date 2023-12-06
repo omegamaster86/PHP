@@ -25,13 +25,10 @@ Route::middleware('guest')->group(function () {
     Route::get('status', function () {
         return view('auth.guest_user_status');
     })->name('guest_user_status');
-    
-    
 
     Route::post('register', [RegisteredUserController::class, 'store']);
 
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
-                ->name('login');
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
@@ -44,13 +41,11 @@ Route::middleware('auth')->group(function () {
     })->name('change-notification');
     
     //User
-    Route::get('user/edit', [UserEditController::class, 'create'])
-                ->name('user.edit');
+    Route::get('user/edit', [UserEditController::class, 'create'])->name('user.edit');
 
     Route::post('user/edit', [UserEditController::class, 'store']);
 
-    Route::get('user/edit/confirm', [EditInfoConfirmController::class, 'create'])
-                ->name('user.edit.confirm');
+    Route::get('user/edit/confirm', [EditInfoConfirmController::class, 'create'])->name('user.edit.confirm');
 
     Route::post('user/edit/confirm', [EditInfoConfirmController::class, 'store']);
     Route::get('user/edit/verification', [EditVerifiCationController::class, 'create'])->name('user.edit.verification');
@@ -68,9 +63,10 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
     //Password Change
-    Route::get('user/password-change', function () {
-        return view('password-change');
-    })->name('user.password-change');
+    Route::get('user/password-change',[UserPasswordChangeController::class, 'create'])->name('user.password-change');
+    // Route::get('user/password-change', function () {
+    //     return view('user.password-change');
+    // })->name('user.password-change');
     
     Route::post('user/password-change',[UserPasswordChangeController::class, 'store']);
     
@@ -124,9 +120,9 @@ Route::middleware('auth')->group(function () {
     //Organizations
     //団体情報登録・更新画面
     Route::get('organization/register', [OrganizationController::class, 'create'])->name('organizations.register-edit');
-    Route::post('organization/register', [OrganizationController::class, 'storeRegister'])->name('organizations.register-edit');
+    Route::post('organization/register', [OrganizationController::class, 'storeRegister']);
 
     //団体情報登録・更新確認画面
     Route::get('organization/register/confirm', [OrganizationController::class, 'createConfirm'])->name('organizations.register-comfirm');
-    Route::post('organization/register/confirm', [OrganizationController::class, 'storeConfirmRegister'])->name('organizations.register-edit');
+    Route::post('organization/register/confirm', [OrganizationController::class, 'storeConfirmRegister']);
 });

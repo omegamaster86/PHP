@@ -36,7 +36,7 @@
         style="background: linear-gradient(to right,#1991FC,  #45b796);padding:0;color: #000;font-weight:500;min-height:100vh; width:100vw">
         <div id="mySidenav" class="sidenav">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            @if(Auth::user()->tempPasswordFlag===0)
+            @if($user['temp_password_flag']===0)
                 <a href={{route('my-page')}}>マイページ</a>
                 <a href={{route('user.edit')}}>情報更新</a>
                 <a href={{route('user.details')}}>情報参照</a>
@@ -60,16 +60,16 @@
                 <h1 >
                     パスワード変更
                 </h1>
-                <p >ユーザー名　：　{{Auth::user()->userName}}</p>
+                <p >ユーザー名　：　{{$user['user_name']}}</p>
             </div>
             
             <div class="col-md-1"></div>
             <div class="col-md-2" style="text-align: right">
                 <p class="col-lg-12 control-label" style="font-weight: bold">ユーザーID :
-                    {{ str_pad(Auth::user()->userId, 7, "0", STR_PAD_LEFT)}}
+                    {{ str_pad($user['user_id'], 7, "0", STR_PAD_LEFT)}}
                 </p>
                 <p class="col-lg-12 control-label" style="font-weight: bold">ユーザー種別 :
-                    {{str_pad(Auth::user()->userType, 8, "0", STR_PAD_LEFT)}}
+                    {{str_pad($user['user_type'], 8, "0", STR_PAD_LEFT)}}
                 </p>
             </div>
         </div>
@@ -89,44 +89,44 @@
                         @endif
                         <div class="col-lg-12 d-flex form-group ">
                             <label  class="col-lg-4 control-label">＊旧パスワード　:　</label>
-                            <input id="previousPassword" name="previousPassword" class="col-lg-8 form-control" type="password" maxlength="16" value="{{old('previousPassword')}}">
+                            <input id="previousPassword" name="previous_password" class="col-lg-8 form-control" type="password" maxlength="16" value="{{old('previous_password')}}">
                         </div>
-                        @if ($errors->has('previousPassword'))
+                        @if ($errors->has('previous_password'))
                             <div  class="col-lg-12 form-group " >
                                 <p class="error-css" style="color: red;margin:0rem">
-                                    {!! $errors->first('previousPassword') !!}
+                                    {!! $errors->first('previous_password') !!}
                                 </p>
                             </div>
                         @endif
                         <div class=" col-lg-12 form-group d-flex" >
                             <p class="col-lg-4 control-label" >＊新パスワード　:　
                             </p>
-                            <input name="newPassword" id="newPassword" class=" col-lg-8 form-control" type="password" maxlength="16"
-                            value="{{old('newPassword')}}">
+                            <input name="new_password" id="newPassword" class=" col-lg-8 form-control" type="password" maxlength="16"
+                            value="{{old('new_password')}}">
                         </div>
-                        @if ($errors->has('newPassword'))
+                        @if ($errors->has('new_password'))
                             <div  class="col-lg-12 form-group " >
                                 <p class="error-css" style="color: red;margin:0rem">
-                                    {!! $errors->first('newPassword') !!}
+                                    {!! $errors->first('new_password') !!}
                                 </p>
                             </div>
                         @endif
                         <div class=" col-lg-12 form-group d-flex" >
                             <p class="col-lg-4 control-label" >＊パスワード確認　:　
                             </p>
-                            <input name="newPasswordConfirm" id="newPasswordConfirm" class=" col-lg-8 form-control" type="password" maxlength="16"
-                            value="{{old('newPasswordConfirm')}}">
+                            <input name="new_password_confirm" id="newPasswordConfirm" class=" col-lg-8 form-control" type="password" maxlength="16"
+                            value="{{old('new_password_confirm')}}">
                         </div>
-                        @if ($errors->has('newPasswordConfirm'))
+                        @if ($errors->has('new_password_confirm'))
                             <div  class="col-lg-12 form-group " >
                                 <p class="error-css" style="color: red;margin:0rem">
-                                    {!! $errors->first('newPasswordConfirm') !!}
+                                    {!! $errors->first('new_password_confirm') !!}
                                 </p>
                             </div>
                         @endif
                         
                         <div class="col-lg-12 d-flex mt-4" class="form-group" >
-                            @if(Auth::user()->tempPasswordFlag===1)
+                            @if($user['temp_password_flag']===1)
                             <div class="col-lg-8"></div>
                             <div class="col-lg-4" style="text-align: left">
                                 <button type="submit" class=" btn btn-success btn-lg btn-block ">

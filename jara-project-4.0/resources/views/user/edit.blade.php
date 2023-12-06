@@ -76,14 +76,14 @@
                     <div class="col-md-5 ">
                         <div class=" col-md-5" style="margin-left: 17%;">
                             <div style="margin: 0px 20px 5px 15px; text-align:center">写真　
-                                @if(($photo))
+                                @if(($user['photo']))
                                     <span id="userPictureDeleteButton" onclick="userPictureDelete()"  class=" btn btn-danger btn-sm" type="button"> 取消
                                     </span>
                                 @endif
                                 <input name="userPictureStatus" id="userPictureStatus" type="hidden" value="">
                             </div>
-                            @if(($photo))
-                            <img id= "userPicture" src="{{ asset('images/users/'.$photo) }}"
+                            @if(($user['photo']))
+                            <img id= "userPicture" src="{{ asset('images/users/'.$user['photo']) }}"
                             class="avatar img-circle img-thumbnail" alt="avatar">
                             @else
                             <img id= "userPicture" src="{{ asset('images/no-image.png') }}"
@@ -133,15 +133,15 @@
                             <div id="userInfo" style="margin-left:1rem">あああああああああああああああああああ</div>
                             
                             <div class="col-lg-12">
-                                @if (old('userName')??"" or $errors->has('userName'))
-                                <input id="userName" name="userName" class="form-control border " type="text" value="{{old('userName')}}">
+                                @if (old('user_name')??"" or $errors->has('user_name'))
+                                <input id="userName" name="user_name" class="form-control border " type="text" value="{{old('user_name')}}">
                                 @else
-                                    <input id="userName" name="userName" class="form-control " type="text"
-                                        value="{{Auth::user()->userName}}">
+                                    <input id="userName" name="user_name" class="form-control " type="text"
+                                        value="{{$user['user_name']}}">
                                 @endif
-                                @if ($errors->has('userName'))
+                                @if ($errors->has('user_name'))
                                     <p class="error-css text-danger" style="margin: 1rem 0rem">{{
-                                    $errors->first('userName') }}</p>
+                                    $errors->first('user_name') }}</p>
                                 @endif
 
                             </div>
@@ -153,26 +153,23 @@
                                     value="{{old('mailAddressStatus')}}" />
                             </div>
                             <p class="col-lg-12 control-label" id="emailChange">＊メールアドレス :　
-                                @if(Auth::user()->tempPasswordFlag==0)
                                 <span onclick="emailChangeBox()" class=" btn btn-secondary btn-sm" type="button">
                                     変更
                                 </span>
-                                @endif
                             </p>
                             <p id="emailChangeButton" class="col-lg-12" style="margin-left:1rem">
-                                {{Auth::user()->mailAddress}}
+                                {{$user['mailaddress']}}
                             </p>
 
                         </div>
-                        @if(Auth::user()->tempPasswordFlag==0)
                         <div class="form-group" id="emailChangeBox" style="border: 1px solid #000;margin:1rem">
                             <div class="form-group" style="margin-top:1rem">
                                 <label for="mailAddress" class="col-lg-12 control-label">＊メールアドレス :
                                 </label>
                                 <div class="col-lg-12">
-                                    <input id="mailAddress" name="mailAddress" class="form-control" type="text" value="{{old('mailAddress')}}">
-                                    @if ($errors->has('mailAddress'))
-                                    <p id="emailStatus" class="error-css text-danger" style="margin: 1rem 0rem">{{$errors->first('mailAddress')}}</p>
+                                    <input id="mailAddress" name="mailaddress" class="form-control" type="text" value="{{old('mailaddress')}}">
+                                    @if ($errors->has('mailaddress'))
+                                    <p id="emailStatus" class="error-css text-danger" style="margin: 1rem 0rem">{{$errors->first('mailaddress')}}</p>
                                     @endif
                                 </div>
 
@@ -198,7 +195,6 @@
                                 </span>
                             </div>
                         </div>
-                        @endif
                         <div class="form-group">
                             <label class="col-lg-3 control-label">＊性別 :
                             </label>
@@ -214,8 +210,8 @@
                                 @else
                                 <select id="sex" name="sex" class="form-control" >
                                     <option value="" selected >--</option>
-                                    <option value=1 {{($sex===1) ? "selected" : ""}} >男</option>
-                                    <option value=2 {{($sex===2) ? "selected" : ""}}>女</option>
+                                    <option value=1 {{($user['sex']===1) ? "selected" : ""}} >男</option>
+                                    <option value=2 {{($user['sex']===2) ? "selected" : ""}}>女</option>
                                 </select>
                                 @endif
 
@@ -232,11 +228,11 @@
                             <i onclick="details('birthDayInfo')" style="cursor:pointer" class=" fa fa-question-circle" aria-hidden="true"></i>
                             <div id="birthDayInfo" style="margin-left:1rem">あああああああああああああああああああ</div>
                             <div class="col-lg-12">
-                                <input id="dateOfBirth" name="dateOfBirth" type="text" style="color: #000;background-color: #fff;" class="flatpickr form-control" value="{{old('dateOfBirth')?old('dateOfBirth'):$birthDate??"年/月/日"}}" readonly="readonly">
+                                <input id="dateOfBirth" name="date_of_birth" type="text" style="color: #000;background-color: #fff;" class="flatpickr form-control" value="{{old('date_of_birth')?old('date_of_birth'):($user['date_of_birth']??"年/月/日")}}" readonly="readonly">
                             </div>
-                            @if ($errors->has('dateOfBirth'))
+                            @if ($errors->has('date_of_birth'))
                             <div class="col-lg-12">
-                                <p class="error-css text-danger" style="margin: 1rem 0rem">{{ $errors->first('dateOfBirth') }}</p>
+                                <p class="error-css text-danger" style="margin: 1rem 0rem">{{ $errors->first('date_of_birth') }}</p>
                             </div>
                             @endif
                         </div>
@@ -244,26 +240,26 @@
                             <label class="control-label" style="margin-left: 1rem">＊居住地 :
                             </label>
                             <div class="col-lg-12">
-                                @if (old('residenceCountry')??"" or ($errors->has('residenceCountry')))
+                                @if (old('residence_country')??"" or ($errors->has('residence_country')))
                                 
-                                <select id="residenceCountry" name="residenceCountry" class="form-control">
+                                <select id="residenceCountry" name="residence_country" class="form-control">
                                     <option value="" selected>--</option>
-                                    <option value="日本"  {{(old('residenceCountry')==="日本") ? "selected" : ""}}>日本</option>
-                                    <option value="アメリカ" {{(old('residenceCountry')==="アメリカ") ? "selected" : ""}}>アメリカ</option>
-                                    <option value="インド" {{(old('residenceCountry')==="インド") ? "selected" : ""}}>インド</option>
+                                    <option value="日本"  {{(old('residence_country')==="日本") ? "selected" : ""}}>日本</option>
+                                    <option value="アメリカ" {{(old('residence_country')==="アメリカ") ? "selected" : ""}}>アメリカ</option>
+                                    <option value="インド" {{(old('residence_country')==="インド") ? "selected" : ""}}>インド</option>
                                 </select>
                                 @else
-                                <select id="residenceCountry" name="residenceCountry" class="form-control">
+                                <select id="residenceCountry" name="residence_country" class="form-control">
                                     <option value="" selected>--</option>
-                                    <option value="日本"  {{($residenceCountry==="日本")?"selected" : ""}}>日本</option>
-                                    <option value="アメリカ" {{($residenceCountry==="アメリカ")?"selected" : ""}}>アメリカ</option>
-                                    <option value="インド" {{($residenceCountry==="インド")?"selected" : ""}}>インド</option>
+                                    <option value="日本"  {{($user['residence_country']==="日本")?"selected" : ""}}>日本</option>
+                                    <option value="アメリカ" {{($user['residence_country']==="アメリカ")?"selected" : ""}}>アメリカ</option>
+                                    <option value="インド" {{($user['residence_country']==="インド")?"selected" : ""}}>インド</option>
                                 </select>
                                 @endif
-                                @if ($errors->has('residenceCountry'))
+                                @if ($errors->has('residence_country'))
                                 
                                     <p class="error-css text-danger" style="margin: 1rem 0rem">{{
-                                        $errors->first('residenceCountry') }}</p>
+                                        $errors->first('residence_country') }}</p>
                                 @endif
                             </div>
                             
@@ -272,23 +268,23 @@
                             <label class="col-lg-6 control-label">＊都道府県 :
                             </label>
                             <div class="col-lg-12">
-                                @if (old('residencePrefecture')??"" or ($errors->has('residencePrefecture')))
-                                <select id="residencePrefecture" name="residencePrefecture" class="form-control">
+                                @if (old('residence_prefecture')??"" or ($errors->has('residence_prefecture')))
+                                <select id="residencePrefecture" name="residence_prefecture" class="form-control">
                                     <option value="" selected>--</option>
-                                    <option value="愛知" {{(old('residencePrefecture')==="愛知") ? "selected" : ""}}>愛知</option>
-                                    <option value="宮崎" {{(old('residencePrefecture')==="宮崎") ? "selected" : ""}}>宮崎</option>
+                                    <option value="愛知" {{(old('residence_prefecture')==="愛知") ? "selected" : ""}}>愛知</option>
+                                    <option value="宮崎" {{(old('residence_prefecture')==="宮崎") ? "selected" : ""}}>宮崎</option>
                                 </select>
                                
                                 @else
-                                <select id="residencePrefecture"  name="residencePrefecture" class="form-control">
+                                <select id="residencePrefecture"  name="residence_prefecture" class="form-control">
                                     <option value="">--</option>
-                                    <option value="愛知" {{($residencePrefecture==="愛知")?"selected" : ""}}>愛知</option>
-                                    <option value="宮崎" {{($residencePrefecture==="宮崎")?"selected" : ""}}>宮崎</option>
+                                    <option value="愛知" {{($user['residence_prefecture']==="愛知")?"selected" : ""}}>愛知</option>
+                                    <option value="宮崎" {{($user['residence_prefecture']==="宮崎")?"selected" : ""}}>宮崎</option>
                                 </select>
                                 @endif
-                                @if ($errors->has('residencePrefecture'))
+                                @if ($errors->has('residence_prefecture'))
                                     <p class="error-css text-danger"  style="margin: 1rem 0rem">{{
-                                        $errors->first('residencePrefecture') }}</p>
+                                        $errors->first('residence_prefecture') }}</p>
                                 @endif
                                
                             </div>
@@ -304,7 +300,7 @@
                                 <div id="heightInfo" style="margin-left:1rem">あああああ</div>
                                 <div class="col-lg-12 " style="display: flex; margin-left:-1rem">
                                     <input class="form-control" id="height" name="height" type="text" maxlength=6
-                                        style="float: left" value={{old('height')?old('height'):Auth::user()->height}}>
+                                        style="float: left" value={{old('height')?old('height'):$user['height']}}>
                                     <span>cm</span>
                                 </div>
 
@@ -318,7 +314,7 @@
                                 <div id="weightInfo" style="margin-left:1rem">ああああああ</div>
                                 <div class="col-lg-12" style="display: flex;margin-left:-1rem">
                                     <input maxlength=6 class="form-control" id="weight" name="weight" type="text"
-                                        style="float: left" value={{old('weight')?old('weight'):Auth::user()->weight}}>
+                                        style="float: left" value={{old('weight')?old('weight'):$user['weight']}}>
                                     <span>kg</span>
                                 </div>
                             </div>
@@ -343,17 +339,15 @@
             </div>
             <div class="col-md-3" style="text-align: right">
                 <p class="col-lg-9 control-label" style="font-weight: bold">ユーザーID :
-                    {{ str_pad(Auth::user()->userId, 7, "0", STR_PAD_LEFT)}}
+                    {{ str_pad($user['user_id'], 7, "0", STR_PAD_LEFT)}}
                 </p>
                 <p class="col-lg-9 control-label" style="font-weight: bold">ユーザー種別 :
-                    {{str_pad(Auth::user()->userType, 8, "0", STR_PAD_LEFT)}}
+                    {{str_pad($user['user_type'], 8, "0", STR_PAD_LEFT)}}
                 </p>
-                @if(Auth::user()->tempPasswordFlag==0)
                 <p id="passwordChangeButton" onclick="passwordChangeConfirm()" class="col-lg-9 control-label"
                     style="font-weight: bold; text-decoration:underline; color:blue;cursor: pointer">
                     パスワードの変更
                 </p>
-                @endif
             </div>
         </div>
     </div>
@@ -366,8 +360,7 @@
         flatpickr('.flatpickr', {
             locale: "ja",
             dateFormat: 'Y/m/d',
-            maxDate: "today",
-            // defaultDate: "年/月/日" //'null',
+            maxDate: "today"
         });
     </script>
     {{-- Date Picker End --}}

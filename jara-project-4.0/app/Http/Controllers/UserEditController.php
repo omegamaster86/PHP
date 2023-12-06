@@ -31,34 +31,43 @@ class UserEditController extends Controller
 {
     public function create(Request $request): View
     {
-        if(Auth::user()->sex??""){
-            $sex = Auth::user()->sex;
-        }
-        else{
-            $sex = "";
-        }
-        if(Auth::user()->residence_country??"")
-            $residence_country = Auth::user()->residence_country;
-        else
-            $residence_country = "";
-        if($residence_country==="日本"){
-            if(Auth::user()->residence_prefecture??"")
-                $residence_prefecture = Auth::user()->residence_prefecture;
-            else
-                $residence_prefecture = "";
-        }
-        else
-            $residence_prefecture = "";
-        if(Auth::user()->photo??"")
-            $photo = Auth::user()->photo;
-        else
-            $photo = "";
+        // if(Auth::user()->sex??""){
+        //     $sex = Auth::user()->sex;
+        // }
+        // else{
+        //     $sex = "";
+        // }
+        // if(Auth::user()->residence_country??"")
+        //     $residence_country = Auth::user()->residence_country;
+        // else
+        //     $residence_country = "";
+        // if($residence_country==="日本"){
+        //     if(Auth::user()->residence_prefecture??"")
+        //         $residence_prefecture = Auth::user()->residence_prefecture;
+        //     else
+        //         $residence_prefecture = "";
+        // }
+        // else
+        //     $residence_prefecture = "";
         
-        if(Auth::user()->date_of_birth??"")
+        if(Auth::user()->date_of_birth)
             $date_of_birth = date('Y/m/d', strtotime(Auth::user()->date_of_birth));
         else
-            $date_of_birth = "";
-        return view('user.edit',["date_of_birth"=>$date_of_birth,"sex"=>$sex,"residence_country" => $residence_country,"residence_prefecture" => $residence_prefecture, "photo"=>$photo]);
+            $date_of_birth = "年/月/日";
+
+        $user = array(
+            "user_name" => Auth::user()->user_name, 
+            "user_id" => Auth::user()->user_id, 
+            "user_type" => Auth::user()->user_type, 
+            "mailaddress" => Auth::user()->mailaddress, 
+            "sex" => Auth::user()->sex, 
+            "residence_country" => Auth::user()->residence_country, "residence_prefecture" => Auth::user()->residence_prefecture ,
+            "photo" => Auth::user()->photo, 
+            "date_of_birth" => $date_of_birth, 
+            "height" => Auth::user()->height, 
+            "weight" => Auth::user()->weight );
+
+        return view('user.edit')->with(compact('user'));
     }
     public function store(Request $request) : RedirectResponse
     {
