@@ -267,6 +267,8 @@
                         <div class="form-group" id="residencePrefectures" style="display: none">
                             <label class="col-lg-6 control-label">＊都道府県 :
                             </label>
+                            
+                            
                             <div class="col-lg-12">
                                 @if (old('residence_prefecture')??"" or ($errors->has('residence_prefecture')))
                                 <select id="residencePrefecture" name="residence_prefecture" class="form-control">
@@ -277,9 +279,9 @@
                                
                                 @else
                                 <select id="residencePrefecture"  name="residence_prefecture" class="form-control">
-                                    <option value="">--</option>
-                                    <option value=1 {{($user['residence_prefecture']===1)?"selected" : ""}}>愛知</option>
-                                    <option value=2 {{($user['residence_prefecture']===2)?"selected" : ""}}>宮崎</option>
+                                    <option value="" selected>--</option>
+                                    <option value=1 {{($user['residence_prefecture']==="1") ? "selected" : ""}}>愛知</option>
+                                    <option value=2 {{($user['residence_prefecture']==="2") ? "selected" : ""}}>宮崎</option>
                                 </select>
                                 @endif
                                 @if ($errors->has('residence_prefecture'))
@@ -287,6 +289,7 @@
                                         $errors->first('residence_prefecture') }}</p>
                                 @endif
                                
+                                
                             </div>
                             
                         </div>

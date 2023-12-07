@@ -63,14 +63,15 @@
         <hr style="height:1px;border-width:0;color:#9AF8FD;background-color:#9AF8FD">
         <div style="background: linear-gradient(to right,#1991FC,  #45b796); color:#fff;padding:30px 0px;width: 100%;text-align:center;font-size:36px">
             <p style="">
-                @if(session('status'))
-                {!!session('status')!!}
+
+                @if($status)
+                {{ $status }} 
                 @else
                 <script>window.location = "http://127.0.0.1:8000/my-page";</script>
                 @endif
             </p><br>
-            <a href="{{ (session('url')??"") }}" role="button" class="btn btn-secondary btn-lg">
-                    {{session('url_text')??""}}
+            <a href="{{ $url }}" role="button" class="btn btn-secondary btn-lg">
+                    {{$url_text}}
             </a>
         </div>
         

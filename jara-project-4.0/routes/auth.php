@@ -125,4 +125,10 @@ Route::middleware('auth')->group(function () {
     //団体情報登録・更新確認画面
     Route::get('organization/register/confirm', [OrganizationController::class, 'createConfirm'])->name('organizations.register-comfirm');
     Route::post('organization/register/confirm', [OrganizationController::class, 'storeConfirmRegister']);
+
+    //Organization Management
+    Route::get('organization/management', function(){
+        return view('organization.management');
+    })->name('organization.management');
+
 });

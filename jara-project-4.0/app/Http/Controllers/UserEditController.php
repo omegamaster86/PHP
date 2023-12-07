@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Illuminate\Validation\ValidationException;
 use App\Services\FileUploadService;
+use App\Models\T_user;
 use App\Http\Requests\FileUploadRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -105,8 +106,8 @@ class UserEditController extends Controller
                 ], 
                 [
                 //Error message for Username validation rule 
-                'user_name.required' => $user_name_required,
-                'user_name.max' => $user_name_max_limit,
+                'user_name.required' => $userName_required,
+                'user_name.max' => $userName_max_limit,
                 'user_name.regex' => $userName_regex,
                 //Error message for mail address validation rule 
                 'mailaddress.required' => $mailAddress_required,

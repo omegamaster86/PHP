@@ -260,7 +260,6 @@ if(country) {
 
 setTimeout(() => {
     if(residenceCountry){
-        console.log(residenceCountry.value);
         if(residenceCountry.value==="1"){
             residencePrefectures.style.display='block';
         }
@@ -277,7 +276,7 @@ if(residenceCountry) {
         let country = document.getElementById("residenceCountry");
         let prefecture = document.getElementById("residencePrefectures");
         if(country.value==="1"){
-            prefecture.style.display='block'
+            prefecture.style.display='block';
         }
         else{
             prefecture.style.display='none';
