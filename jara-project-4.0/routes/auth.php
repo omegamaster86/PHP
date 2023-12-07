@@ -2,18 +2,20 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\UserEditController;
-use App\Http\Controllers\UserPasswordChangeController;
-use App\Http\Controllers\UserDeleteController;
-use App\Http\Controllers\EditInfoConfirmController;
-use App\Http\Controllers\EditVerifiCationController;
-use App\Http\Controllers\DeleteVerifiCationController;
-use App\Http\Controllers\PlayerRegisterController;
-use App\Http\Controllers\PlayerRegisterConfirmController;
-use App\Http\Controllers\PlayerEditConfirmController;
-use App\Http\Controllers\PlayerEditController;
-use App\Http\Controllers\PlayerDetailsController;
-use App\Http\Controllers\PlayerDeleteController;
+// use App\Http\Controllers\UserEditController;
+use App\Http\Controllers\UserController;
+// use App\Http\Controllers\UserPasswordChangeController;
+// use App\Http\Controllers\UserDeleteController;
+// use App\Http\Controllers\EditInfoConfirmController;
+// use App\Http\Controllers\EditVerifiCationController;
+// use App\Http\Controllers\DeleteVerifiCationController;
+// use App\Http\Controllers\PlayerRegisterController;
+use App\Http\Controllers\PlayerController;
+// use App\Http\Controllers\PlayerRegisterConfirmController;
+// use App\Http\Controllers\PlayerEditConfirmController;
+// use App\Http\Controllers\PlayerEditController;
+// use App\Http\Controllers\PlayerDetailsController;
+// use App\Http\Controllers\PlayerDeleteController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\TournamentController;
 use Illuminate\Support\Facades\Route;
@@ -41,34 +43,28 @@ Route::middleware('auth')->group(function () {
     })->name('change-notification');
     
     //User
-    Route::get('user/edit', [UserEditController::class, 'create'])->name('user.edit');
+    Route::get('user/edit', [UserController::class, 'createEdit'])->name('user.edit');
 
-    Route::post('user/edit', [UserEditController::class, 'store']);
+    Route::post('user/edit', [UserController::class, 'storeEdit']);
 
-    Route::get('user/edit/confirm', [EditInfoConfirmController::class, 'create'])->name('user.edit.confirm');
+    Route::get('user/edit/confirm', [UserController::class, 'createEditConfirm'])->name('user.edit.confirm');
 
-    Route::post('user/edit/confirm', [EditInfoConfirmController::class, 'store']);
-    Route::get('user/edit/verification', [EditVerifiCationController::class, 'create'])->name('user.edit.verification');
-    Route::post('user/edit/verification', [EditVerifiCationController::class, 'store']);
-    Route::get('user/delete/verification', [DeleteVerifiCationController::class, 'create'])->name('user.delete.verification');
-    Route::post('user/delete/verification', [DeleteVerifiCationController::class, 'store']);
+    Route::post('user/edit/confirm', [UserController::class, 'storeEditConfirm']);
+    Route::get('user/edit/verification', [UserController::class, 'createEditVerifiCation'])->name('user.edit.verification');
+    Route::post('user/edit/verification', [UserController::class, 'storeEditVerifiCation']);
+    Route::get('user/delete/verification', [UserController::class, 'createDeleteVerifiCation'])->name('user.delete.verification');
+    Route::post('user/delete/verification', [UserController::class, 'storeDeleteVerifiCation']);
 
-    Route::get('user/details', function () {
-        return view('user.details',['pageMode' => 'details']);
-    })->name('user.details');
-    Route::get('user/delete', function () {
-        return view('user.details',['pageMode' => 'delete']);
-    })->name('user.delete');
-    Route::post('user/delete',  [UserDeleteController::class, 'store']);
+    Route::get('user/details', [UserController::class, 'createDetails'])->name('user.details');
+
+    Route::get('user/delete', [UserController::class, 'createDelete'])->name('user.delete');
+    Route::post('user/delete',  [UserController::class, 'storeDelete']);
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
     //Password Change
-    Route::get('user/password-change',[UserPasswordChangeController::class, 'create'])->name('user.password-change');
-    // Route::get('user/password-change', function () {
-    //     return view('user.password-change');
-    // })->name('user.password-change');
+    Route::get('user/password-change',[UserController::class, 'createPasswordChange'])->name('user.password-change');
     
-    Route::post('user/password-change',[UserPasswordChangeController::class, 'store']);
+    Route::post('user/password-change',[UserController::class, 'storePasswordChange']);
     
     // My page 
     Route::get('my-page', function () {
@@ -78,27 +74,27 @@ Route::middleware('auth')->group(function () {
 
     // Player Register
     
-    Route::get('player/register', [PlayerRegisterController::class, 'create'])->name('player.register');
-    Route::post('player/register', [PlayerRegisterController::class, 'store']);
+    Route::get('player/register', [PlayerController::class, 'createRegister'])->name('player.register');
+    Route::post('player/register', [PlayerController::class, 'storeRegister']);
 
-    Route::get('player/register/confirm', [PlayerRegisterConfirmController::class, 'create'])->name('player.register.confirm');
-    Route::post('player/register/confirm', [PlayerRegisterConfirmController::class, 'store']);
+    Route::get('player/register/confirm', [PlayerController::class, 'createRegisterConfirm'])->name('player.register.confirm');
+    Route::post('player/register/confirm', [PlayerController::class, 'storeRegisterConfirm']);
 
     // Player Edit
 
-    Route::get('player/edit', [PlayerEditController::class, 'create'])->name('player.edit');
-    Route::post('player/edit', [PlayerEditController::class, 'store']);
+    Route::get('player/edit', [PlayerController::class, 'createEdit'])->name('player.edit');
+    Route::post('player/edit', [PlayerController::class, 'storeEdit']);
 
-    Route::get('player/edit/confirm', [PlayerEditConfirmController::class, 'create'])->name('player.edit.confirm');
-    Route::post('player/edit/confirm', [PlayerEditConfirmController::class, 'store']);
+    Route::get('player/edit/confirm', [PlayerController::class, 'createEditConfirm'])->name('player.edit.confirm');
+    Route::post('player/edit/confirm', [PlayerController::class, 'storeEditConfirm']);
 
     // Player Delete
-    Route::get('player/delete', [PlayerDeleteController::class, 'create'])->name('player.delete');
-    Route::post('player/delete', [PlayerDeleteController::class, 'store']);
+    Route::get('player/delete', [PlayerController::class, 'createDelete'])->name('player.delete');
+    Route::post('player/delete', [PlayerController::class, 'storeDelete']);
 
     //Player Details
     
-    Route::get('player/details', [PlayerDetailsController::class, 'create'])->name('player.details');
+    Route::get('player/details', [PlayerController::class, 'createDetails'])->name('player.details');
 
     //20231129
     //-----大会関連-----
@@ -130,7 +126,7 @@ Route::middleware('auth')->group(function () {
 
     //Organization Management
     Route::get('organization/management', function(){
-        return view('organization.management');
+        return view('organizations.management');
     })->name('organization.management');
 
 });

@@ -15,7 +15,7 @@ class PlayerDetailsController extends Controller
     /**
      * Display the edit confirm view.
      */
-    public function create(): View
+    public function createDetails(): View
     {
         $retrive_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
 
@@ -40,9 +40,4 @@ class PlayerDetailsController extends Controller
      * @throws \Illuminate\Validation\ValidationException
      */
     
-
-    public function store( Request $request): RedirectResponse
-    {
-        dd($request->all());
-    }
 }

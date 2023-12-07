@@ -29,14 +29,14 @@ use Illuminate\Validation\ValidationException;
 class UserPasswordChangeController extends Controller
 {
     //
-    public function create(Request $request): View
+    public function createPasswordChange(Request $request): View
     {
 		$user = array("user_name" => Auth::user()->user_name, "user_id" => Auth::user()->user_id, "user_type" => Auth::user()->user_type, "temp_password_flag" => Auth::user()->temp_password_flag);
         
         return view('user.password-change')->with(compact('user'));
 
     }
-    public function store(Request $request) : RedirectResponse
+    public function storePasswordChange(Request $request) : RedirectResponse
     {
         // dd($request->all());
         include('Auth/ErrorMessages/ErrorMessages.php');

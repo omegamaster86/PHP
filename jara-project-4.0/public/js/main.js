@@ -210,27 +210,31 @@ function emailChangeBox() {
 }
 
 //This function will show the prefectures input option if the country is  after email change button is clicked in the user-edit page
-if(country)
-{
-    if(country.value==="1"){
-    
-        prefectures.style.display='flex';
+
+setTimeout(() => {
+    if(country) {
+        if(country.value==="1"){
+        
+            prefectures.style.display='flex';
+        }
+        else{
+            prefectures.style.display='none';
+            prefecture.value='';
+        }
     }
-    else{
-        prefectures.style.display='none';
-        prefecture.value='';
+}, "10");
+
+setTimeout(() => {
+    if(birthCountry) {
+        if(birthCountry.value==="1"){
+            birthPrefectures.style.display='flex';
+        }
+        else{
+            birthPrefectures.style.display='none';
+        }
     }
-}
-if(birthCountry)
-{
-    if(birthCountry.value==="1"){
-        birthPrefectures.style.display='flex';
-    }
-    else{
-        birthPrefectures.style.display='none';
-        birthPrefecture.value='';
-    }
-}
+}, "10");
+
 if(birthCountry){
     birthCountry.addEventListener('change', function() {
         let birthCountry = document.getElementById("birthCountry");
@@ -244,6 +248,7 @@ if(birthCountry){
         }
     });
 }
+
 if(country) {
     country.addEventListener('change', function() {
         let country = document.getElementById("country");

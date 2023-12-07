@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Auth;
 class PlayerDeleteController extends Controller
 {
     //
-    public function create(): View
+    public function createDelete(): View
     {
         $retrive_player_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
         if(empty($retrive_player_ID)){
@@ -58,7 +58,7 @@ class PlayerDeleteController extends Controller
      */
     
 
-    public function store(Request $request, ): RedirectResponse
+    public function storeDelete(Request $request, ): RedirectResponse
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
 

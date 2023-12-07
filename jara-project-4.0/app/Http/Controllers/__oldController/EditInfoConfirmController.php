@@ -27,11 +27,11 @@ use Illuminate\Support\Facades\Log;
 
 class EditInfoConfirmController extends Controller
 {
-    public function create(Request $request): View
+    public function createUserEditInfoController(Request $request): View
     {
         return view('user.edit.confirm');
     }
-    public function store(Request $request): View
+    public function storeUserEditInfoController(Request $request): View
     {
             if((int)$request->mailaddress_status===1){ 
             

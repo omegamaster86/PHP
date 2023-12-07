@@ -42,7 +42,7 @@ class PlayerRegisterController extends Controller
     /**
      * Display the player registration view.
      */
-    public function create(): View
+    public function createRegisterEdit(): View
     {
         $retrive_player_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
 
@@ -71,7 +71,7 @@ class PlayerRegisterController extends Controller
      */
     
 
-    public function store( Request $request): RedirectResponse
+    public function storeRegisterEdit( Request $request): RedirectResponse
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
         $random_file_name = Str::random(12);

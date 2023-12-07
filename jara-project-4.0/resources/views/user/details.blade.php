@@ -55,10 +55,10 @@
     </div>
     <div style="background: linear-gradient(to right,#1991FC,  #45b796); color:#fff;padding-top:15px;">
         <span class="col-md-3 " style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; メニュー</span>
-        @if($pageMode=="details")
+        @if($page_mode=="details")
         <h1 style="display: inline;margin-left:25%" class="text-right col-md-9" class="text-center">ユーザー情報参照
         </h1>
-        @elseif($pageMode=="delete")
+        @elseif($page_mode=="delete")
         <h1  style="display: inline;margin-left:30%" class="text-right col-md-9" class="text-center">退会
         </h1>
         @endif
@@ -90,44 +90,43 @@
                     <div class="col-md-1"></div>
                     <div class="col-md-5" style="background-color: #005BFC;padding-top: 15px;border-radius: 10px; color: #fff;padding:3rem">
                         <x-input-error :messages="$errors->get('datachecked')" class="mt-2" />
-
                         <div class="form-group ">
-                            <label  for="userName" class=" control-label">ユーザー名
-                                : {{Auth::user()->userName}}
+                            <label  class=" control-label">ユーザー名
+                                : {{$user['user_name']}}
                             </label>
 
                         </div>
                         <div class="form-group">
                             <p class="control-label" id="emailChange">メールアドレス :
-                                {{Auth::user()->mailAddress}}
+                                {{$user['mailaddress']}}
                             </p>
 
 
                         </div>
                         <div class="form-group">
-                            <label class="control-label">性別 : @if(Auth::user()->sex=="1")
+                            <label class="control-label">性別 : 
+                                @if($user['sex']=="1")
                                 男
-                                @elseif (Auth::user()->sex=="2")
+                                @elseif ($user['sex']=="2")
                                 女
-                                @else
                                 @endif
                             </label>
 
                         </div>
                         <div class="form-group">
                             <label class=" control-label" >生年月日:</label>
-                            {{Auth::user()->dateOfBirth}}
+                            {{$user['date_of_birth']}}
 
                         </div>
                         <div class="form-group">
                             <label class="control-label">居住地 :
-                                {{Auth::user()->residenceCountry}}
+                                {{$user['residence_country']}}
                             </label>
                         </div>
-                        @if(Auth::user()->residenceCountry=="日本")
+                        @if($user['residence_country']=="日本")
                         <div class="form-group">
                             <label class="control-label">都道府県 :
-                                {{Auth::user()->residencePrefecture }}
+                                {{$user['residence_prefecture']}}
                             </label>
                         </div>
                         @endif
@@ -136,23 +135,23 @@
                                 <label style="cursor:pointer" class=" control-label">身長
                                     :
                                 </label>
-                                @if(Auth::user()->height)
-                                {{Auth::user()->height}} cm
+                                @if($user['height'])
+                                {{$user['height']}} cm
                                 @endif
                             </div>
                             <div class="col-lg-6">
                                 <label style="cursor:pointer" class=" control-label">体重
                                     :
                                 </label>
-                                @if(Auth::user()->weight)
-                                {{Auth::user()->weight}} kg
+                                @if($user['weight'])
+                                {{$user['weight']}} kg
                                 @endif
 
                             </div>
 
                         </div>
                         <div class="form-group col-lg-12" style="display: flex;  margin: 2rem 0rem 0rem -1rem;">
-                            @if($pageMode=="delete")
+                            @if($page_mode=="delete")
                             <div class="col-lg-5" style="text-align: right">
                                 <button type="submit" class=" btn btn-danger btn-lg btn-block ">
                                     {{ __('退会') }}
@@ -161,7 +160,7 @@
                             @endif
                             <div class="col-lg-7" style="text-align: right">
                                 <a class="btn btn-success btn-lg btn-block" href="javascript:history.go(-1)" role="button">
-                                    @if($pageMode=="details")
+                                    @if($page_mode=="details")
                                     戻る
                                     @else
                                     キャンセル
@@ -180,7 +179,7 @@
                 <p class="col-lg-9 control-label" style="font-weight: bold">ユーザー種別 :
                     {{str_pad(Auth::user()->userType, 8, "0", STR_PAD_LEFT)}}
                 </p>
-                @if($pageMode=="details")
+                @if($page_mode=="details")
                 <p class="col-lg-9 control-label"
                     style="font-weight: bold; text-decoration:underline; color:blue;cursor: pointer">
                     <a href={{route('user.edit')}}>ユーザー情報更新</a>

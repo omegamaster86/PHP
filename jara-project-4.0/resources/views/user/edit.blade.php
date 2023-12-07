@@ -77,7 +77,7 @@
                         <div class=" col-md-5" style="margin-left: 17%;">
                             <div style="margin: 0px 20px 5px 15px; text-align:center">写真　
                                 @if(($user['photo']))
-                                    <span id="userPictureDeleteButton" onclick="userPictureDelete()"  class=" btn btn-danger btn-sm" type="button"> 取消
+                                    <span id="userPictureDeleteButton" onclick="userPictureDelete()"  class=" btn btn-danger btn-sm" type="button"> 削除
                                     </span>
                                 @endif
                                 <input name="user_picture_status" id="userPictureStatus" type="hidden" value="">

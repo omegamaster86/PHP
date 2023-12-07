@@ -26,11 +26,11 @@ use Illuminate\Http\RedirectResponse;
 class DeleteVerifiCationController extends Controller
 {
     //
-    public function create(Request $request): View
+    public function createUserDeleteVerification(Request $request): View
     {
         return view('user.delete.verification');
     }
-    public function store(Request $request): RedirectResponse
+    public function storeUserDeleteVerification(Request $request): RedirectResponse
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
         if($request->certification_number === ""){

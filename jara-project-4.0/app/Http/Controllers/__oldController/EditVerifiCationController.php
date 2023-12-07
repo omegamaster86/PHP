@@ -29,11 +29,11 @@ use Illuminate\Support\Facades\Log;
 class EditVerifiCationController extends Controller
 {
     
-    public function create(Request $request): View
+    public function createUserEditVerifiCation(Request $request): View
     {
         return view('user.edit.verification');
     }
-    public function store(Request $request): RedirectResponse
+    public function storeUserEditVerifiCation(Request $request): RedirectResponse
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
         if($request->certification_number === ""){

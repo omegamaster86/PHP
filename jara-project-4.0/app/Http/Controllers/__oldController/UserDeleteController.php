@@ -29,11 +29,11 @@ use App\Mail\VerificationMail;
 class UserDeleteController extends Controller
 {
     //
-    public function create(Request $request): View
+    public function createUserDelete(Request $request): View
     {
         return view('user.details');
     }
-    public function store(Request $request) : RedirectResponse
+    public function storeUserDelete(Request $request) : RedirectResponse
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
         $certification_number = Str::random(6); // For Creating random password

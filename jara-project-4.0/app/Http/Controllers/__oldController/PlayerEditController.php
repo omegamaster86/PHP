@@ -34,7 +34,7 @@ class PlayerEditController extends Controller
     /**
      * Display the edit view.
      */
-    public function create(): View
+    public function createEdit(): View
     {
         $retrive_player_by_ID = DB::select('select * from t_player where userId = ?', [Auth::user()->userId]);
 
@@ -60,7 +60,7 @@ class PlayerEditController extends Controller
      */
     
 
-    public function store(Request $request): RedirectResponse
+    public function storeEdit(Request $request): RedirectResponse
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
         if ($request->hasFile('photo')) {

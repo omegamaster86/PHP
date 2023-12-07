@@ -27,7 +27,7 @@ class PlayerEditConfirmController extends Controller
     /**
      * Display the edit confirm view.
      */
-    public function create(): View
+    public function createEditConfirm(): View
     {
         
         return view('player.register-confirm',["pageMode"=>"edit-confirm"]);
@@ -40,7 +40,7 @@ class PlayerEditConfirmController extends Controller
      */
     
 
-    public function store( Request $request): RedirectResponse
+    public function storeEditConfirm( Request $request): RedirectResponse
     {
         if (DB::table('t_players')->where('jara_player_id', '=', $request->jara_player_id)->where('delete_flag', '=', 0)->exists()){
             $retrive_player = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);

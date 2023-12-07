@@ -19,9 +19,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    @if($pageMode==="register-confirm")
+    @if($page_mode==="register-confirm")
     <title>Player Registration</title>
-    @elseif($pageMode==="edit-confirm")
+    @elseif($page_mode==="edit-confirm")
     <title>Player Edit</title>
     @endif
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
@@ -62,7 +62,7 @@
         <div style="background: linear-gradient(to right,#1991FC,  #45b796); color:#fff;padding-top:15px;">
             <span class="col-md-3 " style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; メニュー</span>
             <h1 style="display: inline;margin-left:28%" class="text-right col-md-9">
-                @if($pageMode==="delete")
+                @if($page_mode==="delete")
                 選手情報削除
                 @else
                 選手情報入力確認
@@ -90,18 +90,18 @@
         <div class="row"
             style="background: linear-gradient(to right,#1991FC,  #45b796); color:#fff;padding:30px 0px;width: 100%;">
             <div class="col-md-9 ">
-                @if($pageMode==="register-confirm")
+                @if($page_mode==="register-confirm")
                 <form class="form-horizontal"  role="form" style="display: flex"
                     method="POST" action="{{route('player.register.confirm')}}">
-                    @elseif($pageMode==="edit-confirm")
+                    @elseif($page_mode==="edit-confirm")
                     <form class="form-horizontal"  role="form" style="display: flex"
                         method="POST" action="{{route('player.edit.confirm')}}">
-                    @elseif($pageMode==="delete")
+                    @elseif($page_mode==="delete")
                     <form class="form-horizontal" id="editForm" onsubmit="return validateEditForm();"  role="form" style="display: flex"
                         method="POST" action="{{route('player.delete')}}">
                         @endif
                         @csrf
-                        @if($pageMode==="delete")
+                        @if($page_mode==="delete")
                         <input type="hidden" id="status" value=""/>
                         @endif
                         <div class="col-md-5 ">
@@ -129,13 +129,13 @@
 
                         <div class="col-md-5 "
                             style="background-color:#005BFC;padding:2rem ; border-radius: 10px ; color:#fff">
-                            @if($pageMode==="edit-confirm" or $pageMode==="delete")
+                            @if($page_mode==="edit-confirm" or $page_mode==="delete")
                             <div class="form-group row ">
                                 <label style="cursor:pointer;text-align:right" for="playerCode"
                                     class="col-sm-5  col-form-label">選手ID
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    @if($pageMode==="delete")
+                                    @if($page_mode==="delete")
                                     {{str_pad(($player_Info->playerId??""), 8, "0", STR_PAD_LEFT)}}
                                     @else
                                     {{ str_pad(($player_Info['playerId']??""), 8, "0", STR_PAD_LEFT)}}
@@ -149,7 +149,7 @@
                                     class="col-sm-5  col-form-label">JARA選手コード
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    @if($pageMode==="delete")
+                                    @if($page_mode==="delete")
                                     {{$player_Info->jara_player_id??""}}
                                     @else
                                     {{$player_Info['jara_player_id']??""}}
@@ -164,7 +164,7 @@
                                     class="col-sm-5  col-form-label">選手名
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    @if($pageMode==="delete")
+                                    @if($page_mode==="delete")
                                     {{$player_Info->playerName??""}}
                                     @else
                                     {{$player_Info['playerName']??""}}
@@ -179,7 +179,7 @@
                                 </label>
 
                                 <div class="col-sm-7 col-form-label">
-                                    @if($pageMode==="delete")
+                                    @if($page_mode==="delete")
                                     {{date('Y/m/d', strtotime($player_Info->date_of_birth))}}
                                     @else
                                     {{$player_Info['date_of_birth']??""}}
@@ -311,7 +311,7 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
                                     
-                                    @if($pageMode==="delete")
+                                    @if($page_mode==="delete")
                                     {{$player_info->residence_country??""}}
                                     @else
                                     {{
@@ -416,9 +416,9 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
-                                @if($pageMode==="register-confirm")
+                                @if($page_mode==="register-confirm")
                                 <a href="../register" role="button" class="btn btn-danger">Cancel</a>
-                                @elseif($pageMode==="edit-confirm")
+                                @elseif($page_mode==="edit-confirm")
                                 <a href="../edit" role="button" class="btn btn-danger">Cancel</a>
                                 @endif
                             </div>
@@ -427,7 +427,7 @@
                 </div>
                 @endif
 
-                @if($pageMode==="delete")
+                @if($page_mode==="delete")
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-secondary btn-lg" data-toggle="modal"
                     data-target="#staticBackdrop">

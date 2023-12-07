@@ -30,7 +30,7 @@ use Illuminate\Http\UploadedFile;
 
 class UserEditController extends Controller
 {
-    public function create(Request $request): View
+    public function createUserEdit(Request $request): View
     {   
         if(Auth::user()->date_of_birth)
             $date_of_birth = date('Y/m/d', strtotime(Auth::user()->date_of_birth));
@@ -51,7 +51,7 @@ class UserEditController extends Controller
 
         return view('user.edit')->with(compact('user'));
     }
-    public function store(Request $request) : View
+    public function storeUserEdit(Request $request) : View
     {
 
         include('Auth/ErrorMessages/ErrorMessages.php');
