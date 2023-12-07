@@ -72,7 +72,6 @@
                 <form class="form-horizontal" onsubmit="return validateProfileEditForm();" enctype="multipart/form-data" role="form" style="display: flex"
                     method="POST" action="{{route('user.edit')}}">
                     @csrf
-
                     <div class="col-md-5 ">
                         <div class=" col-md-5" style="margin-left: 17%;">
                             <div style="margin: 0px 20px 5px 15px; text-align:center">写真　
@@ -241,7 +240,6 @@
                             </label>
                             <div class="col-lg-12">
                                 @if (old('residence_country')??"" or ($errors->has('residence_country')))
-                                value=1 {{(old('sex')===1) ? "selected" : ""}}
                                 <select id="residenceCountry" name="residence_country" class="form-control">
                                     <option value="" selected>--</option>
                                     <option value=1  {{(old('residence_country')===1) ? "selected" : ""}}>日本</option>

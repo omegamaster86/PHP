@@ -39,6 +39,7 @@
 
         <form action="{{route('user.edit.verification')}}" method="POST">
             @csrf
+            
             <div class="form-group" style="text-align: center">
                 <label for="certificationNumber">受信したメールに記載されているコードを入力してください。</label>
 
@@ -52,25 +53,25 @@
             {{-- {{ ((session('message')['status'] ?? '') === 'success') ? 'done' : '' . isActive(
             'admin.installer.complete' ) }} --}}
             <input name="photo"  type="hidden"
-                value="{{ session()->get('user_info')['photo'] ??'' }}">
+                value="{{ $user_info['photo'] }}">
             <input name="user_name" type="hidden"
-                value="{{ session()->get('user_info')['user_name'] ?? '' }}">
+                value="{{ $user_info['user_name'] ?? '' }}">
             <input name="mailaddress_status" type="hidden"
-                value="{{ session()->get('user_info')['mailaddress_status'] ?? '' }}">
+                value="{{ $user_info['mailaddress_status'] ?? '' }}">
             <input name="mailaddress" type="hidden"
-                value="{{ session()->get('user_info')['mailaddress'] ?? '' }}">
+                value="{{ $user_info['mailaddress'] ?? '' }}">
             <input name="sex" type="hidden"
-                value="{{ session()->get('user_info')['sex'] ?? '' }}">
+                value="{{ $user_info['sex'] ?? '' }}">
             <input name="date_of_birth" type="hidden"
-                value="{{ session()->get('userInfo')['date_of_birth'] ?? '' }}">
+                value="{{ $user_info['date_of_birth'] ?? '' }}">
             <input name="residenceCountry" class="form-control" type="hidden"
-                value="{{  session()->get('userInfo')['residenceCountry'] ?? '' }}">
+                value="{{  $user_info['residenceCountry'] ?? '' }}">
             <input name="residencePrefecture" class="form-control" type="hidden"
-                value="{{ session()->get('userInfo')['residencePrefecture'] ?? '' }}">
+                value="{{ $user_info['residencePrefecture'] ?? '' }}">
             <input name="height" class="form-control" type="hidden"
-                value="{{ session()->get('userInfo')['height'] ?? '' }}">
+                value="{{ $user_info['height'] ?? '' }}">
             <input name="weight" class="form-control" type="hidden"
-                value="{{ session()->get('userInfo')['weight'] ?? '' }}">
+                value="{{ $user_info['weight'] ?? '' }}">
 
 
             <div class="form-group" style="display: flex; margin-top:2rem;gap: 4rem;">

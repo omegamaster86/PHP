@@ -13,14 +13,14 @@ use Illuminate\Queue\SerializesModels;
 class VerificationMail extends Mailable
 {
     use Queueable, SerializesModels;
-    public $mailData;
+    public $mail_data;
     /**
      * Create a new message instance.
      */
-    public function __construct($mailData)
+    public function __construct($mail_data)
     {
         //
-        $this->mailData = $mailData;
+        $this->mail_data = $mail_data;
     }
 
     /**

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 
 use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
 use App\Models\T_organization;
 use App\Models\M_organization_type;
 use App\Models\M_organization_class;
@@ -114,5 +116,10 @@ class OrganizationController extends Controller
                 
             return redirect('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
         }
+    }
+    public function createManagement(): View
+    {
+        $organizations = DB::select('select * from t_organizations');
+        return view('organizations.management', ['organizations' => $organizations]);
     }
 }

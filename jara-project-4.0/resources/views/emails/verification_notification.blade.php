@@ -40,7 +40,7 @@
 
         [認証番号]<br />
         {{$mail_data['certification_number']}}<br />
-        {{$mail_data['expiry_time_of_certification']}} まで有効<br />
+        {{$mail_data['expiry_time_of_certification_number']}} まで有効<br />
         --------------------<br /><br />
 
         有効期限が切れた場合は、再度ユーザー情報の更新を行ってください。<br /><br />

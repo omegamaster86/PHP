@@ -66,6 +66,7 @@
                 <form class="form-horizontal" style="display: flex" method="POST"
                     action="{{route('user.edit.confirm')}}">
                     @csrf
+                    
                     <div class=" col-md-5">
                         <div class=" col-md-5" style="margin-left: 17%;">
                             <div style="margin: 0px 0px 5px 15px">写真

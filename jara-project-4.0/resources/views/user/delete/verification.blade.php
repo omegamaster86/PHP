@@ -46,7 +46,7 @@
                 <p style="margin: 1rem; font-weight:bold; color:red;text-align:center">{{
                     $errors->first('verification_error') }}</p>
                 @endif
-                <input type="text" maxlength="6" name="certificationNumber" class="form-control"
+                <input type="text" maxlength="6" name="certification_number" class="form-control"
                     id="certificationNumber" required>
             </div>
 

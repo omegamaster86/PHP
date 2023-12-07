@@ -252,7 +252,7 @@
                                     @elseif($pagemode==="edit")
                                         <input type="text" id="prefOrgRegTrail" name="prefOrgRegTrail" value="{{$organization->pref_org_reg_trail}}">
                                     @endif
-                                </dr>
+                                </div>
                                 <div class='form-group'>
                                     <label for="prefOrgType">県ボ団体種別</label>
                                     <select id="prefOrgType" name="prefOrgType">
@@ -264,7 +264,7 @@
                                         @endif
                                     @endforeach
                                     </select>
-                                </dr>
+                                </div>
                             </p>
                         </fieldset>
                     </div>

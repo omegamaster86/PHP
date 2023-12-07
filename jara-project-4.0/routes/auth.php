@@ -18,6 +18,7 @@ use App\Http\Controllers\PlayerController;
 // use App\Http\Controllers\PlayerDeleteController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\TournamentController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -125,8 +126,6 @@ Route::middleware('auth')->group(function () {
     Route::post('organization/register/confirm', [OrganizationController::class, 'storeConfirmRegister']);
 
     //Organization Management
-    Route::get('organization/management', function(){
-        return view('organizations.management');
-    })->name('organization.management');
+    Route::get('organization/management', [OrganizationController::class, 'createManagement'])->name('organization.management');
 
 });
