@@ -50,9 +50,9 @@
             @if(Session::has('fromLoginPage'))
                 <h1 class="text-right col-md-8">{{ Session::get('fromLoginPage') }}</h1>            
             @else
-                @if($pagemode=="register")
+                @if($pagemode == "register")
                     <h1 style="display: inline;margin-left:25%" class="text-right col-md-9">確認</h1>
-                @elseif($pagemode=="edit")
+                @elseif($pagemode == "edit")
                     <h1 style="display: inline;margin-left:25%" class="text-right col-md-9">確認［団体名］</h1>
                 @endif
             @endif
@@ -70,89 +70,90 @@
                 <div class="col-md-10">
                     <div class="form-group">
                         <label for="entrysystemOrgId" class="col-md-6" style="text-align: right"><b>エントリーシステムの団体ID：</b></label>
-                        <label name="entrysystemOrgId">{{$organizationInfo['entrysystemOrgId']}}</label>
+                        <input id="entrysystemOrgId" name="entrysystemOrgId" value="{{session()->get('organizationInfo')['entrysystemOrgId']}}" readonly>
                     </div>
                     <div class="form-group">
                         <label for="orgName" class="col-md-6" style="text-align: right"><b>団体名：</b></label>
-                        <label name="orgName">{{$organizationInfo['orgName']}}</label>
+                        <input id="orgName" name="orgName" value="{{session()->get('organizationInfo')['orgName']}}" readonly>
                     </div>
                     <div class="form-group">
                         <label for="foundingYear" class="col-md-6" style="text-align: right"><b>創立年：</b></label>
-                        <label name="foundingYear">{{$organizationInfo['foundingYear']}}年</label>
+                        <input id="foundingYear" name="foundingYear" value="{{session()->get('organizationInfo')['foundingYear']}}" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="location" class="col-md-6" style="text-align: right"><b>所在地(都道府県)：</b></label>
-                        <input type="hidden" name="prefecture" value="{{$organizationInfo['prefecture']}}">
-                        <label>{{$organizationInfo['prefecture']}}</label>
+                        <label for="prefecture" class="col-md-6" style="text-align: right"><b>所在地(都道府県)：</b></label>
+                        <input id="prefecture" name="prefecture" value="{{session()->get('organizationInfo')['prefecture']}}" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="location" class="col-md-6" style="text-align: right"><b>所在地(市区町村)：</b></label>
-                        <label>{{$organizationInfo['municipalities']}}</label>
+                        <label for="municipalities" class="col-md-6" style="text-align: right"><b>所在地(市区町村)：</b></label>
+                        <input id="municipalities" name="municipalities" value="{{session()->get('organizationInfo')['municipalities']}}" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="location" class="col-md-6" style="text-align: right"><b>所在地(町字番地)：</b></label>
-                        <label>{{$organizationInfo['streetAddress']}}</label>
+                        <label for="streetAddress" class="col-md-6" style="text-align: right"><b>所在地(町字番地)：</b></label>
+                        <input id="streetAddress" name="streetAddress" value="{{session()->get('organizationInfo')['streetAddress']}}" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="location" class="col-md-6" style="text-align: right"><b>所在地(建物)：</b></label>
-                        <label>{{$organizationInfo['apartment']}}</label>
+                        <label for="apartment" class="col-md-6" style="text-align: right"><b>所在地(建物)：</b></label>
+                        <input id="apartment" name="apartment" value="{{session()->get('organizationInfo')['apartment']}}" readonly>
                     </div>
                     <div class="form-group">
                         <label for="orgClass" class="col-md-6" style="text-align: right"><b>団体区分：</b></label>
-                        <label>{{$organizationInfo['orgClass']}}</label>
+                        <input id="orgClass" name="orgClass" value="{{session()->get('organizationInfo')['orgClass']}}" readonly>
                     </div>
                     <div class="form-group">
                         <div class="row">
                             <label for="jaraOrgRegTrail" class="col-md-6" style="text-align: right"><b>証跡：</b></label>
                             <label class="col-md-1" style="text-align: right">JARA：</label>
-                            <label>{{$organizationInfo['jaraOrgRegTrail']}}</label>
+                            <input id="jaraOrgRegTrail" name="jaraOrgRegTrail" value="{{session()->get('organizationInfo')['jaraOrgRegTrail']}}" readonly>
                         </div>
                         <div class="row">
                             <label for="prefOrgRegTrail" class="col-md-6" style="text-align: right"></label>
                             <label class="col-md-1" style="text-align: right">県ボ：</label>
-                            <label>{{$organizationInfo['prefOrgRegTrail']}}</label>
+                            <input id="prefOrgRegTrail" name="prefOrgRegTrail" value="{{session()->get('organizationInfo')['prefOrgRegTrail']}}" readonly>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="row">
                             <label for="jaraOrgType" class="col-md-6" style="text-align: right"><b>団体種別：</b></label>
                             <label class="col-md-1" style="text-align: right">JARA：</label>
-                            <label>{{$organizationInfo['jaraOrgType']}}</label>
+                            <input id="jaraOrgType" name="jaraOrgType" value="{{session()->get('organizationInfo')['jaraOrgType']}}" readonly>
                         </div>
                         <div class="row">
                             <label for="prefOrgType" class="col-md-6" style="text-align: right"></label>
                             <label class="col-md-1" style="text-align: right">県ボ：</label>
-                            <label>{{$organizationInfo['prefOrgType']}}</label>
+                            <input id="prefOrgType" name="prefOrgType" value="{{session()->get('organizationInfo')['prefOrgType']}}" readonly>
                         </div>
                     </div>
+<!--      
                     <div class="form-group">
                         <label for="managerUser" class="col-md-6" style="text-align: right"><b>管理者（監督）：</b></label>
-                        <label>{{$organizationInfo['managerUserId']}}</label>
+
                     </div>
                     <div class="form-group">
                         <label for="headUser" class="col-md-6" style="text-align: right"><b>部長：</b></label>
-                        <label>{{$organizationInfo['headUserId']}}</label>
+                        
                     </div>
                     <div class="form-group">
                         <label for="coachUser" class="col-md-6" style="text-align: right"><b>コーチ：</b></label>
-                        <label>{{$organizationInfo['coachUserId']}}</label>
+                        
                     </div>
                     <div class="form-group">
                         <label for="actingManagerUser1" class="col-md-6" style="text-align: right"><b>監督代行１：</b></label>
-                        <label>{{$organizationInfo['actingManagerUserId']}}</label>
+                        
                     </div>
                     <div class="form-group">
                         <label for="actingManagerUser2" class="col-md-6" style="text-align: right"><b>監督代行２：</b></label>
-                        <label>{{$organizationInfo['actingManagerUserId']}}</label>
+                        
                     </div>
                     <div class="form-group">
                         <label for="actingManagerUser3" class="col-md-6" style="text-align: right"><b>監督代行３：</b></label>
-                        <label>{{$organizationInfo['actingManagerUserId']}}</label>
+                        
                     </div>
+                     -->
                     <!-- 確認・戻るボタン -->
                     <div class="form-group row" style="padding: 2rem">
                         <div class="col-sm-2 offset-sm-4">
-                            <button class="btn btn-success btn-lg btn-block">確認</button>
+                            <button class="btn btn-success btn-lg btn-block">登録</button>
                         </div>                        
                         <div class="col-sm-2">
                             <a class="btn btn-danger btn-lg btn-block" href="../../dashboard" role="button">戻る</a>

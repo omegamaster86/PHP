@@ -26,15 +26,31 @@ class OrganizationController extends Controller
                                                 ]);
     }
 
-    //団体情報更新画面を開く
-    public function createEditPage(/*$targetOrgId,*/
-                                    T_organization $tOrganization,
+    public function createEditPage(T_organization $tOrganization,
                                     M_organization_type $mOrganizationType,
                                     M_organization_class $mOrganizationClass,
                                     M_prefectures $mPrefectures)
     {
         $tOrg = $tOrganization->getOrganization(1);
-        //$tOrg = $tOrganization->getOrganization($targetOrgId);
+        $mOrgType = $mOrganizationType->getOrganizationType();
+        $mOrgClass = $mOrganizationClass->getOrganizationClass();
+        $mPref = $mPrefectures->getPrefecures();
+        return view('organizations.register-edit',["pagemode"=>"edit"
+                                                    ,"organization"=>$tOrg
+                                                    ,"organizationType"=>$mOrgType
+                                                    ,"organizationClass"=>$mOrgClass
+                                                    ,"prefectures"=>$mPref]
+                                                );
+    }
+
+    //団体情報更新画面を開く
+    public function createEdit($targetOrgId,
+                                    T_organization $tOrganization,
+                                    M_organization_type $mOrganizationType,
+                                    M_organization_class $mOrganizationClass,
+                                    M_prefectures $mPrefectures)
+    {
+        $tOrg = $tOrganization->getOrganization($targetOrgId);
         $mOrgType = $mOrganizationType->getOrganizationType();
         $mOrgClass = $mOrganizationClass->getOrganizationClass();
         $mPref = $mPrefectures->getPrefecures();
@@ -52,7 +68,7 @@ class OrganizationController extends Controller
         return view('organizations.register-confirm',["pagemode"=>"register"]);
     }
 
-    public function storeRegister(Request $request)
+    public function storeConfirm(Request $request)
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
         // $request->validate([
@@ -80,13 +96,23 @@ class OrganizationController extends Controller
         // ]);
          $organizationInfo = $request->all();
          $organizationInfo['previousPageStatus'] = "success";
-         $pagemode = "register";
-         //dd($organizationInfo);
-         return view('organizations.register-confirm')->with(['organizationInfo' => $organizationInfo,'pagemode' => $pagemode,]);         
+         return redirect('organization/register/confirm')->with('organizationInfo',$organizationInfo);
     }
 
-    public function storeConfirm(Request $request)
+    public function storeConfirmRegister(Request $request,T_organization $tOrganization,)
     {
         //確認画面から登録
+        $organizationInfo = $request->all();
+        
+        $result = $tOrganization->insertOrganization($organizationInfo);
+
+        if($result == "success")
+        {
+            $page_status = "完了しました";
+            $page_url = route('my-page');
+            $page_url_text = "マイページ";
+                
+            return redirect('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+        }
     }
 }
