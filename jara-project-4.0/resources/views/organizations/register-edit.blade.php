@@ -48,7 +48,7 @@
         <div style="background: linear-gradient(to right,#1991FC,  #45b796); color:#fff;padding-top:15px;">
             <span class="col-md-3 " style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; メニュー</span>
             @if(Session::has('fromLoginPage'))
-                <h1 class="text-right col-md-8">{{ Session::get('fromLoginPage') }}</h1>            
+                <h1 class="text-right col-md-8">{{ Session::get('fromLoginPage') }}</h1>
             @else
                 @if($pagemode=="register")
                     <h1 style="display: inline;margin-left:25%" class="text-right col-md-9">団体登録</h1>
@@ -61,7 +61,7 @@
         
         <!--19.マイページ -->
         <input type="submit" value="マイページ" id="mypageButton">
-        <form class="form-horizontal" enctype="multipart/form-data" role="form" style="display: flex" method="POST">
+        <form class="form-horizontal" enctype="multipart/form-data" role="form" style="display: flex" method="POST" action="#">
             @csrf
             {{-- <div class="alert alert-info alert-dismissable">
                         <a class="panel-close close" data-dismiss="alert">×</a>
@@ -83,6 +83,9 @@
                             <input type="text" id="entrysystemOrgId" name="entrysystemOrgId" size="10">
                         @elseif($pagemode==="edit")
                             <input type="text" id="entrysystemOrgId" name="entrysystemOrgId" value="{{$organization->entrysystem_org_id}}" size="10">
+                        @endif
+                        @if ($errors->has('entrysystemOrgId'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('entrysystemOrgId') }}</p>
                         @endif
                     </div>
                     <!--5.団体名 -->
@@ -113,16 +116,26 @@
                     <div class="form-group">
                         <label for="postCode" class="col-md-5" style="text-align: right">*所在地</label>
                         <label>〒</label>
-                        <input type="text" name="postCodeUpper" id="postCodeUpper" size="3" maxlength="3">
+                        @if($pagemode==="register")
+                            <input type="text" name="postCodeUpper" id="postCodeUpper" size="3" maxlength="3">
+                        @elseif($pagemode==="edit")
+                            <input type="text" name="postCodeUpper" id="postCodeUpper" size="3" maxlength="3" value="{{$organization->post_code_upper}}">
+                        @endif
                         <label>－</label>
-                        <input type="text" name="postCodeLower" id="postCodeLower" size="4" maxlength="4">
-                        <input type="submit" value="住所検索" id="addressSerchButton" style="margin-left:1rem;">
+                        @if($pagemode==="register")
+                            <input type="text" name="postCodeLower" id="postCodeLower" size="4" maxlength="4">
+                        @elseif($pagemode==="edit")
+                            <input type="text" name="postCodeLower" id="postCodeLower" size="4" maxlength="4" value="{{$organization->post_code_lower}}">
+                        @endif
+                            <input type="button" value="住所検索" onclick=getAddressFromPostCode()>                            
                         @if ($errors->has('postCodeUpper') or $errors->has('postCodeLower'))
                             <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('postCodeUpper') }}</p>
                         @endif
                     </div>
                     <div class="form-group">
                         <label for="prefecture" class="col-md-6" style="text-align: right">都道府県</label>
+                        <input type="text" id="preftest" name="preftest">
+                        <input type="text" id="prefview" name="prefview">
                         <select id="prefecture" name="prefecture">
                         @foreach($prefectures as $prefecture)
                             @if($pagemode==="register")
@@ -132,24 +145,22 @@
                             @endif
                         @endforeach
                         </select>
-                        <label for="municipalities" style="margin-left:1rem;">市区町村</label>
-                        @if($pagemode==="register")
-                            <input type="text" id="municipalities" name="municipalities"  class="col-md-4" style="margin-left:1rem;">
-                        @elseif($pagemode==="edit")
-                            <input type="text" id="municipalities" name="municipalities" value="{{$organization->address1}}" class="col-md-4" style="margin-left:1rem;">
-                        @endif
-                    </div>
-                    <div class="form-group">
-                        <input type="text" id="streetAddress" name="streetAddress" class="col-md-4 offset-md-6">
-                        <label for="streetAddress" style="margin-left:1rem;">町字番地</label>
                     </div>
                     <div class="form-group">
                         @if($pagemode==="register")
-                            <input type="text" id="apartment" name="apartment" class="col-md-4 offset-md-6">    
+                            <input type="text" id="address1" name="address1" class="col-md-4 offset-md-6">
                         @elseif($pagemode==="edit")
-                            <input type="text" id="apartment" name="apartment" value="{{$organization->address2}}" class="col-md-4 offset-md-6">
+                            <input type="text" id="address1" name="address1" class="col-md-4 offset-md-6" value="{{$organization->address1}}">
                         @endif
-                        <label for="apartment" style="margin-left:1rem;">マンション・アパート</label>
+                        <label for="address1" style="margin-left:1rem;">市区町村・町字番地</label>
+                    </div>
+                    <div class="form-group">
+                        @if($pagemode==="register")
+                            <input type="text" id="address2" name="address2" class="col-md-4 offset-md-6">    
+                        @elseif($pagemode==="edit")
+                            <input type="text" id="address2" name="address2" value="{{$organization->address2}}" class="col-md-4 offset-md-6">
+                        @endif
+                        <label for="address2" style="margin-left:1rem;">マンション・アパート</label>
                         <!--10.エラーメッセージ表示エリア -->                        
                         @if ($errors->has('prefecture'))
                             <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('prefecture') }}</p>
@@ -268,15 +279,15 @@
                             </p>
                         </fieldset>
                     </div>
-                </div>
+                </div>      
                 <!-- 確認・戻るボタン -->
                 <div class="col-md-8 offset-md-1">
                     <div class="form-group row" style="padding: 2rem">
                         <div class="col-sm-2 offset-sm-4">
-                            <button class="btn btn-success btn-lg btn-block">確認</button>
+                            <button name="confirmButton" class="btn btn-success btn-lg btn-block">確認</button>
                         </div>                        
                         <div class="col-sm-2">
-                            <a class="btn btn-danger btn-lg btn-block" href="../../dashboard" role="button">戻る</a>
+                            <a class="btn btn-danger btn-lg btn-block" href="javascript:history.back()" role="button">戻る</a>
                         </div>
                     </div>
                 </div>

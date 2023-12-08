@@ -22,7 +22,26 @@ function actingManagerAddButtonClick(){
     }
 }
 
-//確認ボタンをクリック
-function confirmButtonClick(){
+//郵便番号から住所を取得する
+function getAddressFromPostCode(){
 
+    // 住所検索ボタンを押すと外部apiを叩く処理が走る。
+    $.getJSON('http://zipcloud.ibsnet.co.jp/api/search?callback=?',
+        {
+            zipcode: ($('#postCodeUpper').val() + $('#postCodeLower').val())
+        }
+    )
+    .done(function(data) {
+        if (!data.results) {
+            alert('該当の住所がありません');
+        } else {
+            let result = data.results[0];
+            //$('#prefecture').val(result.address1);
+            $('#preftest').val(result.prefcode);
+            $('#prefview').val(result.address1);
+            $('#address1').val(result.address2 + result.address3);
+        }
+    }).fail(function(){
+        alert('入力値を確認してください。');
+    })
 }

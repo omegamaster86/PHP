@@ -124,9 +124,8 @@ $foundingYear_failed = '不正な値です。適切な日付を入力してく�
 $postCode_required = '郵便番号を入力してください。';
 $postCode_failed = '不正な郵便番号です。適切な郵便番号を入力してください。(数字３桁-数字４桁)';
 $prefecture_required = '都道府県を入力してください。';
-$municipalities_required = '市区町村を入力してください。';
-$streetAddress_required = '町字番地を入力してください。';
-$apartment_required = '建物名を入力してください。';
+$address1_required = '市区町村・町字番地を入力してください。';
+$address2_required = '建物名を入力してください。';
 $orgClass_required = '団体区分を入力してください。';
 $managerUserId_required = '管理者のユーザIDを入力してください。';
 
@@ -140,3 +139,5 @@ $entrysystemOrgId_registered = '入力されたエントリーシステムの団
 $userId_not_found = '[対象項目名]のユーザーは、既にシステムより削除されているか、本登録されていないユーザーIDが入力されています。';
 
 $postCode_invalid = '郵便番号が無効です。';
+
+$entrysystemOrgId_unique = '入力されたエントリーシステムの団体IDは、既に別の団体で使用されています。[団体ID]：[団体名]';

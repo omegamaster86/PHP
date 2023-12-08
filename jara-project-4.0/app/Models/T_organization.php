@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class T_organization extends Model
 {
@@ -23,14 +24,14 @@ class T_organization extends Model
                                         and org_id = ?'
                                     ,[$orgId]
                                 );
-        //org_idに一致する情報を返したいので、配列の先頭を返す
-        $targetOrg = array_shift($organization);
+        //1つの団体IDを取得するため0番目だけを返す
+        $targetOrg = $organization[0];
         return $targetOrg;
     }
 
     public function insertOrganization($organizationInfo)
     {
-        $result = "success";
+        $result = true;
         DB::beginTransaction();
         try{
                 DB::insert('insert into t_organizations
@@ -42,7 +43,8 @@ class T_organization extends Model
                                     pref_org_type,
                                     pref_org_reg_trail,
                                     org_class,
-                                    founding_year,		
+                                    founding_year,
+                                    post_code,
                                     location_country,
                                     location_prefecture,
                                     address1,
@@ -52,7 +54,7 @@ class T_organization extends Model
                                     updated_time,
                                     updated_user_id,
                                     delete_flag
-                                )values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                )values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                                 [
                                     $organizationInfo['entrysystemOrgId'],
                                     $organizationInfo['orgName'],
@@ -62,14 +64,16 @@ class T_organization extends Model
                                     $organizationInfo['prefOrgRegTrail'],
                                     $organizationInfo['orgClass'],
                                     $organizationInfo['foundingYear'],
+                                    $organizationInfo['post_code'],
+                                    //$organizationInfo['country'],
                                     112,                        //country=日本
                                     $organizationInfo['prefecture'],
-                                    (($organizationInfo['municipalities']).($organizationInfo['streetAddress'])),
-                                    $organizationInfo['apartment'],
+                                    $organizationInfo['address1'],
+                                    $organizationInfo['address2'],
                                     NOW(),
-                                    9001,
+                                    Auth::user()->user_id,
                                     NOW(),
-                                    9001,
+                                    Auth::user()->user_id,
                                     0
                                 ]
                             );
@@ -78,12 +82,79 @@ class T_organization extends Model
         }
         catch (\Throwable $e){
                 dd($e);
-                // dd($request->all());
                 dd("stop");
                 DB::rollBack();
                 
-                $result = "failed";
+                $result = false;
                 return $result;
         }
+    }
+
+    //任意の団体情報を更新する
+    public function updateOrganization($organizationInfo)
+    {
+        $result = true;
+        DB::beginTransaction();
+        try{
+                DB::update('update t_organizations
+                            set entrysystem_org_id = ?,
+                                org_name = ?,
+                                jara_org_type = ?,
+                                jara_org_reg_trail = ?,
+                                pref_org_type = ?,
+                                pref_org_reg_trail = ?,
+                                org_class = ?,
+                                founding_year = ?,
+                                post_code = ?,
+                                location_country = ?,
+                                location_prefecture = ?,
+                                address1 = ?,
+                                address2 = ?,                                
+                                updated_time = ?,
+                                updated_user_id = ?
+                                where org_id = ?
+                            ',[
+                                    $organizationInfo['entrysystemOrgId'],
+                                    $organizationInfo['orgName'],
+                                    $organizationInfo['jaraOrgType'],
+                                    $organizationInfo['jaraOrgRegTrail'],
+                                    $organizationInfo['prefOrgType'],
+                                    $organizationInfo['prefOrgRegTrail'],
+                                    $organizationInfo['orgClass'],
+                                    $organizationInfo['foundingYear'],
+                                    $organizationInfo['post_code'],
+                                    112,                                    //country=日本
+                                    $organizationInfo['prefecture'],
+                                    $organizationInfo['address1'],
+                                    $organizationInfo['address2'],
+                                    NOW(),
+                                    Auth::user()->user_id,
+                                    $organizationInfo['org_id'],
+                                ]
+                            );
+                DB::commit();
+                return $result;
+        }
+        catch (\Throwable $e){
+                dd($e);
+                dd("stop");
+                DB::rollBack();
+                
+                $result = false;
+                return $result;
+        }
+    }
+
+    //エントリーシステムの団体IDの数を取得する
+    //重複有無を確認するため
+    public function getEntrysystemOrgIdCount($entrySystemOrgId)
+    {
+        $count = DB::select('select count(*)
+                                    from t_organizations
+                                    where delete_flag=0
+                                    and entrysystem_org_id = ?'
+                                ,[$entrySystemOrgId]
+                            );
+        return $count;
     }
 }

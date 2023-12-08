@@ -53,7 +53,7 @@
                 @if($pagemode == "register")
                     <h1 style="display: inline;margin-left:25%" class="text-right col-md-9">確認</h1>
                 @elseif($pagemode == "edit")
-                    <h1 style="display: inline;margin-left:25%" class="text-right col-md-9">確認［団体名］</h1>
+                    <h1 style="display: inline;margin-left:25%" class="text-right col-md-9">確認[{{session()->get('organizationInfo')['orgName']}}]</h1>
                 @endif
             @endif
         </div>
@@ -65,6 +65,10 @@
                         <i class="fa fa-coffee"></i>
                         This is an <strong>.alert</strong>. Use this to show important messages to the user.
                 </div> --}}
+            @if($pagemode == "edit")
+                <input id="org_id" name="org_id" type="hidden" value="{{session()->get('organizationInfo')['org_id']}}">
+            @endif
+            <input id="pagemode" name="pagemode" type="hidden" value="{{$pagemode}}">
             <div class="row" style="padding:10px 0px;width: 100%;">
                 <!-- 複数要因によるエラーメッセージ表示エリア -->
                 <div class="col-md-10">
@@ -81,20 +85,22 @@
                         <input id="foundingYear" name="foundingYear" value="{{session()->get('organizationInfo')['foundingYear']}}" readonly>
                     </div>
                     <div class="form-group">
+                        <label for="post_code" class="col-md-6" style="text-align: right"><b>郵便番号：</b></label>
+                        <input id="post_code" name="post_code" type="hidden" value="{{session()->get('organizationInfo')['post_code']}}" readonly>
+                        <label>〒</label>
+                        <input id="post_code_display" name="post_code_display" value="{{session()->get('organizationInfo')['postCodeUpper']}}-{{session()->get('organizationInfo')['postCodeLower']}}" readonly size=17>
+                    </div>
+                    <div class="form-group">
                         <label for="prefecture" class="col-md-6" style="text-align: right"><b>所在地(都道府県)：</b></label>
                         <input id="prefecture" name="prefecture" value="{{session()->get('organizationInfo')['prefecture']}}" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="municipalities" class="col-md-6" style="text-align: right"><b>所在地(市区町村)：</b></label>
-                        <input id="municipalities" name="municipalities" value="{{session()->get('organizationInfo')['municipalities']}}" readonly>
+                        <label for="address1" class="col-md-6" style="text-align: right"><b>所在地(市区町村・町字番地)：</b></label>
+                        <input id="address1" name="address1" value="{{session()->get('organizationInfo')['address1']}}" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="streetAddress" class="col-md-6" style="text-align: right"><b>所在地(町字番地)：</b></label>
-                        <input id="streetAddress" name="streetAddress" value="{{session()->get('organizationInfo')['streetAddress']}}" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="apartment" class="col-md-6" style="text-align: right"><b>所在地(建物)：</b></label>
-                        <input id="apartment" name="apartment" value="{{session()->get('organizationInfo')['apartment']}}" readonly>
+                        <label for="address2" class="col-md-6" style="text-align: right"><b>所在地(建物)：</b></label>
+                        <input id="address2" name="address2" value="{{session()->get('organizationInfo')['address2']}}" readonly>
                     </div>
                     <div class="form-group">
                         <label for="orgClass" class="col-md-6" style="text-align: right"><b>団体区分：</b></label>
@@ -153,10 +159,14 @@
                     <!-- 確認・戻るボタン -->
                     <div class="form-group row" style="padding: 2rem">
                         <div class="col-sm-2 offset-sm-4">
-                            <button class="btn btn-success btn-lg btn-block">登録</button>
+                            @if($pagemode == "register")
+                                <button class="btn btn-success btn-lg btn-block">登録</button>
+                            @elseif($pagemode == "edit")
+                                <button class="btn btn-success btn-lg btn-block">更新</button>
+                            @endif
                         </div>                        
                         <div class="col-sm-2">
-                            <a class="btn btn-danger btn-lg btn-block" href="../../dashboard" role="button">戻る</a>
+                            <a class="btn btn-danger btn-lg btn-block" href="javascript:history.back()" role="button">戻る</a>
                         </div>
                     </div>
                 </div>
