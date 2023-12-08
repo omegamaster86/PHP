@@ -36,9 +36,7 @@ function getAddressFromPostCode(){
             alert('該当の住所がありません');
         } else {
             let result = data.results[0];
-            //$('#prefecture').val(result.address1);
-            $('#preftest').val(result.prefcode);
-            $('#prefview').val(result.address1);
+            $('#prefecture').val(result.prefcode);
             $('#address1').val(result.address2 + result.address3);
         }
     }).fail(function(){

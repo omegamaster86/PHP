@@ -66,26 +66,8 @@ class OrganizationController extends Controller
         return view('organizations.register-confirm',["pagemode"=>"edit"]);
     }
 
-    //登録画面でボタンを押したとき
-    public function submitRegister(Request $request)
-    {
-        if($request->has('confirmButton'))
-        {
-            $this->storeConfirm($request);
-        }
-    }
-
-    //更新画面でボタンを押したとき
-    public function submitEdit(Request $request)
-    {
-        if($request->has('confirmButton'))
-        {
-            storeConfirmEdit($request);
-        }
-    }
-
     //団体情報登録画面で確認ボタンを押したときに発生するイベント
-    private function storeConfirm(Request $request)
+    public function storeConfirm(Request $request,M_prefectures $m_prefectures)
     {
         $organizationInfo = $request->all();
         include('Auth/ErrorMessages/ErrorMessages.php');
@@ -113,39 +95,42 @@ class OrganizationController extends Controller
             'managerUserId.required' => $managerUserId_required,
         ]);
          
-         $organizationInfo['post_code'] = $organizationInfo['postCodeUpper'].$organizationInfo['postCodeLower'];
-         $organizationInfo['previousPageStatus'] = "success";
-         return redirect('organization/register/confirm')->with('organizationInfo',$organizationInfo);
+        $organizationInfo['pref_id'] = $m_prefectures->getPrefIdFromPrefCodeJis($organizationInfo['pref_code_jis']);
+        $organizationInfo['post_code'] = $organizationInfo['postCodeUpper'].$organizationInfo['postCodeLower'];
+        $organizationInfo['previousPageStatus'] = "success";
+        dd($organizationInfo);
+        return redirect('organization/register/confirm')->with('organizationInfo',$organizationInfo);
     }
 
     //団体更新画面で確認ボタンを押下したときに発生するイベント
-    private function storeEditConfirm(Request $request)
+    public function storeEditConfirm(Request $request,M_prefectures $m_prefectures)
     {
+        $organizationInfo = $request->all();
         include('Auth/ErrorMessages/ErrorMessages.php');
         $request->validate([
+            'entrysystemOrgId' => ['unique:t_organizations,entrysystem_org_id'],    //エントリー団体ID
             'orgName' => ['required'],          //団体名
             'foundingYear' => ['required'],     //創立年
             'postCodeUpper' => ['required'],    //郵便番号
             'postCodeLower' => ['required'],    //郵便番号
             'prefecture' => ['required'],       //都道府県
-            'municipalities' => ['required'],   //市区町村
-            'streetAddress' => ['required'],    //町字番地
-            'apartment' => ['required'],        //建物名 マンション・アパート
+            'address1' => ['required'],         //市区町村・町字番地
+            'address2' => ['required'],         //建物名 マンション・アパート
             'orgClass' => ['required'],         //団体区分
             'managerUserId' => ['required'],    //管理者のユーザID
         ],[
-           'orgName.required' => $orgName_required, 
-           'foundingYear.required' => $foundingYear_required,
-           'postCodeUpper.required' => $postCode_required,
-           'postCodeLower.required' => $postCode_required,
-           'prefecture.required' => $prefecture_required,
-           'municipalities.required' => $municipalities_required,
-           'streetAddress.required' => $streetAddress_required,
-           'apartment.required' => $apartment_required,
-           'orgClass.required' => $orgClass_required,
-           'managerUserId.required' => $managerUserId_required,
+            'entrysystemOrgId.unique' => str_replace('[団体ID]', $organizationInfo['entrysystemOrgId'],$entrysystemOrgId_unique),
+            'orgName.required' => $orgName_required, 
+            'foundingYear.required' => $foundingYear_required,
+            'postCodeUpper.required' => $postCode_required,
+            'postCodeLower.required' => $postCode_required,
+            'prefecture.required' => $prefecture_required,
+            'address1.required' => $address1_required,
+            'address2.required' => $address2_required,
+            'orgClass.required' => $orgClass_required,
+            'managerUserId.required' => $managerUserId_required,
         ]);
-        $organizationInfo = $request->all();
+        $organizationInfo['pref_id'] = $m_prefectures->getPrefIdFromPrefCodeJis($organizationInfo['pref_code_jis']);
         $organizationInfo['post_code'] = $organizationInfo['postCodeUpper'].$organizationInfo['postCodeLower'];
         $organizationInfo['previousPageStatus'] = "success";        
         return redirect('organization/edit/confirm')->with('organizationInfo',$organizationInfo);

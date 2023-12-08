@@ -80,9 +80,9 @@
                         <!--3.エントリーシステムの団体ID -->
                         <label for="entrysystemOrgId" class="col-md-5" style="text-align: right">エントリーシステムの団体ID</label>
                         @if($pagemode==="register")
-                            <input type="text" id="entrysystemOrgId" name="entrysystemOrgId" size="10">
+                            <input type="text" id="entrysystemOrgId" name="entrysystemOrgId" value="{{old('entrysystemOrgId')}}" size="10">
                         @elseif($pagemode==="edit")
-                            <input type="text" id="entrysystemOrgId" name="entrysystemOrgId" value="{{$organization->entrysystem_org_id}}" size="10">
+                            <input type="text" id="entrysystemOrgId" name="entrysystemOrgId" value="{{ old('entrysystemOrgId',$organization->entrysystem_org_id) }}" size="10">
                         @endif
                         @if ($errors->has('entrysystemOrgId'))
                             <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('entrysystemOrgId') }}</p>
@@ -92,9 +92,9 @@
                     <div class="form-group">
                         <label for="orgName" class="col-md-5" style="text-align: right">*団体名</label>                        
                         @if($pagemode==="register")
-                            <input type="text" name="orgName" id="orgName">    
+                            <input type="text" name="orgName" id="orgName" value="{{old('orgName')}}">    
                         @elseif($pagemode==="edit")
-                            <input type="text" name="orgName" id="orgName" value="{{$organization->org_name}}">
+                            <input type="text" name="orgName" id="orgName" value="{{old('orgName',$organization->org_name)}}">
                         @endif
                         <!--6.エラーメッセージ表示エリア -->
                         @if ($errors->has('orgName'))
@@ -104,9 +104,9 @@
                     <div class="form-group">
                         <label for="foundingYear" class="col-md-5" style="text-align: right">*創立年</label>
                         @if($pagemode==="register")
-                            <input type="number" name="foundingYear" id="foundingYear" min="1855" max="2100" value="2000">    
+                            <input type="number" name="foundingYear" id="foundingYear" min="1855" max="2100" value="{{old('foundingYear',2000)}}">
                         @elseif($pagemode==="edit")
-                            <input type="number" name="foundingYear" id="foundingYear" min="1855" max="2100" value="{{$organization->founding_year}}">
+                            <input type="number" name="foundingYear" id="foundingYear" min="1855" max="2100" value="{{old('foundingYear',$organization->founding_year)}}">
                         @endif
                         <!--8.エラーメッセージ表示エリア -->
                         @if ($errors->has('foundingYear'))
@@ -117,15 +117,15 @@
                         <label for="postCode" class="col-md-5" style="text-align: right">*所在地</label>
                         <label>〒</label>
                         @if($pagemode==="register")
-                            <input type="text" name="postCodeUpper" id="postCodeUpper" size="3" maxlength="3">
+                            <input type="text" name="postCodeUpper" id="postCodeUpper" size="3" maxlength="3" value="{{old('postCodeUpper')}}">
                         @elseif($pagemode==="edit")
-                            <input type="text" name="postCodeUpper" id="postCodeUpper" size="3" maxlength="3" value="{{$organization->post_code_upper}}">
+                            <input type="text" name="postCodeUpper" id="postCodeUpper" size="3" maxlength="3" value="{{old('postCodeUpper',$organization->post_code_upper)}}">
                         @endif
                         <label>－</label>
                         @if($pagemode==="register")
-                            <input type="text" name="postCodeLower" id="postCodeLower" size="4" maxlength="4">
+                            <input type="text" name="postCodeLower" id="postCodeLower" size="4" maxlength="4" value="{{old('postCodeLower')}}">
                         @elseif($pagemode==="edit")
-                            <input type="text" name="postCodeLower" id="postCodeLower" size="4" maxlength="4" value="{{$organization->post_code_lower}}">
+                            <input type="text" name="postCodeLower" id="postCodeLower" size="4" maxlength="4" value="{{old('postCodeLower',$organization->post_code_lower)}}">
                         @endif
                             <input type="button" value="住所検索" onclick=getAddressFromPostCode()>                            
                         @if ($errors->has('postCodeUpper') or $errors->has('postCodeLower'))
@@ -134,45 +134,44 @@
                     </div>
                     <div class="form-group">
                         <label for="prefecture" class="col-md-6" style="text-align: right">都道府県</label>
-                        <input type="text" id="preftest" name="preftest">
-                        <input type="text" id="prefview" name="prefview">
                         <select id="prefecture" name="prefecture">
                         @foreach($prefectures as $prefecture)
                             @if($pagemode==="register")
-                                <option value="{{$prefecture->pref_id}}">{{$prefecture->pref_name}}</option>
-                            @elseif($pagemode==="edit")
-                                <option value="{{$prefecture->pref_id}}" {{ $organization->location_prefecture === $prefecture->pref_id ? "selected" : ""}}>{{$prefecture->pref_name}}</option>
+                                <option value="{{$prefecture->pref_code_jis}}" {{ old('prefecture') == $prefecture->pref_code_jis ? "selected" : ""}}>{{$prefecture->pref_name}}</option>
+                            @elseif($pagemode==="edit")                                
+                                @if(empty(old('prefecture')))
+                                    <option value="{{$prefecture->pref_code_jis}}" {{ $organization->location_prefecture === $prefecture->pref_id ? "selected" : ""}}>{{$prefecture->pref_name}}</option>
+                                @else
+                                    <option value="{{$prefecture->pref_code_jis}}" {{ old('prefecture') == $prefecture->pref_code_jis ? "selected" : ""}}>{{$prefecture->pref_name}}</option>
+                                @endif
                             @endif
                         @endforeach
                         </select>
                     </div>
                     <div class="form-group">
                         @if($pagemode==="register")
-                            <input type="text" id="address1" name="address1" class="col-md-4 offset-md-6">
+                            <input type="text" id="address1" name="address1" class="col-md-4 offset-md-6" value="{{old('address1')}}">
                         @elseif($pagemode==="edit")
-                            <input type="text" id="address1" name="address1" class="col-md-4 offset-md-6" value="{{$organization->address1}}">
+                            <input type="text" id="address1" name="address1" class="col-md-4 offset-md-6" value="{{old('address1',$organization->address1)}}">
                         @endif
                         <label for="address1" style="margin-left:1rem;">市区町村・町字番地</label>
                     </div>
                     <div class="form-group">
                         @if($pagemode==="register")
-                            <input type="text" id="address2" name="address2" class="col-md-4 offset-md-6">    
+                            <input type="text" id="address2" name="address2" class="col-md-4 offset-md-6" value="{{old('address2')}}">
                         @elseif($pagemode==="edit")
-                            <input type="text" id="address2" name="address2" value="{{$organization->address2}}" class="col-md-4 offset-md-6">
+                            <input type="text" id="address2" name="address2" value="{{old('address2',$organization->address2)}}" class="col-md-4 offset-md-6">
                         @endif
                         <label for="address2" style="margin-left:1rem;">マンション・アパート</label>
                         <!--10.エラーメッセージ表示エリア -->                        
                         @if ($errors->has('prefecture'))
                             <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('prefecture') }}</p>
                         @endif
-                        @if ($errors->has('municipalities'))
-                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('municipalities') }}</p>
+                        @if ($errors->has('address1'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('address1') }}</p>
                         @endif
-                        @if($errors->has('streetAddress'))
-                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('streetAddress') }}</p>
-                        @endif
-                        @if($errors->has('apartment'))
-                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('apartment') }}</p>
+                        @if($errors->has('address2'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('address2') }}</p>
                         @endif
                     </div>
                     <!-- 11.団体区分 -->
@@ -181,9 +180,14 @@
                         <select id="orgClass" name="orgClass">
                         @foreach($organizationClass as $class)                            
                             @if($pagemode==="register")
-                                <option value="{{$class->org_class_id}}">{{$class->org_class_name}}</option>
+                                <!-- <option value="{{$class->org_class_id}}">{{$class->org_class_name}}</option> -->
+                                <option value="{{$class->org_class_id}}" {{ old('orgClass') == $class->org_class_id ? "selected" : ""}}>{{$class->org_class_name}}</option>
                             @elseif($pagemode==="edit")
-                                <option value="{{$class->org_class_id}}" {{ $organization->org_class === $class->org_class_id ? "selected" : ""}}>{{$class->org_class_name}}</option>
+                                @if(empty(old('orgClass')))
+                                    <option value="{{$class->org_class_id}}" {{ $organization->org_class === $class->org_class_id ? "selected" : ""}}>{{$class->org_class_name}}</option>
+                                @else
+                                    <option value="{{$class->org_class_id}}" {{ old('orgClass') == $class->org_class_id ? "selected" : ""}}>{{$class->org_class_name}}</option>
+                                @endif
                             @endif
                         @endforeach
                         </select>
@@ -237,9 +241,9 @@
                                 <div class='form-group'>
                                     <label for="jaraOrgRegTrail">JARA証跡</label>
                                     @if($pagemode==="register")
-                                        <input type="text" id="jaraOrgRegTrail" name="jaraOrgRegTrail">
+                                        <input type="text" id="jaraOrgRegTrail" name="jaraOrgRegTrail" value="{{old('jaraOrgRegTrail')}}">
                                     @elseif($pagemode==="edit")
-                                        <input type="text" id="jaraOrgRegTrail" name="jaraOrgRegTrail" value="{{$organization->jara_org_reg_trail}}">
+                                        <input type="text" id="jaraOrgRegTrail" name="jaraOrgRegTrail" value="{{old('jaraOrgRegTrail',$organization->jara_org_reg_trail)}}">
                                     @endif
                                 </div>
                                 <div class='form-group'>
@@ -247,9 +251,13 @@
                                     <select id="jaraOrgType" name="jaraOrgType">
                                     @foreach($organizationType as $type)
                                         @if($pagemode==="register")
-                                            <option value="{{$type->org_type}}">{{$type->org_type_display_name}}</option>
+                                            <option value="{{$type->org_type}}" {{ old('jaraOrgType') == $type->org_type ? "selected" : ""}}>{{$type->org_type_display_name}}</option>
                                         @elseif($pagemode==="edit")
-                                            <option value="{{$type->org_type}}" {{ $organization->jara_org_type === $type->org_type ? "selected" : ""}}>{{$type->org_type_display_name}}</option>
+                                            @if(empty(old('jaraOrgType')))
+                                                <option value="{{$type->org_type}}" {{ $organization->jara_org_type === $type->org_type ? "selected" : ""}}>{{$type->org_type_display_name }}</option>
+                                            @else
+                                                <option value="{{$type->org_type}}" {{ old('jaraOrgType') == $type->org_type ? "selected" : ""}}>{{$type->org_type_display_name}}</option>
+                                            @endif
                                         @endif
                                     @endforeach
                                     </select>
@@ -259,9 +267,9 @@
                                 <div class='form-group'>
                                     <label for="prefOrgRegTrail">県ボ証跡</label>
                                     @if($pagemode==="register")
-                                        <input type="text" id="prefOrgRegTrail" name="prefOrgRegTrail">
+                                        <input type="text" id="prefOrgRegTrail" name="prefOrgRegTrail" value="{{old('prefOrgRegTrail')}}">
                                     @elseif($pagemode==="edit")
-                                        <input type="text" id="prefOrgRegTrail" name="prefOrgRegTrail" value="{{$organization->pref_org_reg_trail}}">
+                                        <input type="text" id="prefOrgRegTrail" name="prefOrgRegTrail" value="{{old('prefOrgRegTrail',$organization->pref_org_reg_trail)}}">
                                     @endif
                                 </div>
                                 <div class='form-group'>
@@ -269,9 +277,13 @@
                                     <select id="prefOrgType" name="prefOrgType">
                                     @foreach($organizationType as $type)                                        
                                         @if($pagemode==="register")
-                                            <option value="{{$type->org_type}}">{{$type->org_type_display_name}}</option>
+                                            <option value="{{$type->org_type}}" {{ old('prefOrgType') == $type->org_type ? "selected" : ""}}>{{$type->org_type_display_name}}</option>
                                         @elseif($pagemode==="edit")
-                                            <option value="{{$type->org_type}}" {{ $organization->pref_org_type === $type->org_type ? "selected" : ""}}>{{$type->org_type_display_name}}</option>
+                                            @if(empty(old('prefOrgType')))
+                                                <option value="{{$type->org_type}}" {{ $organization->pref_org_type === $type->org_type ? "selected" : ""}}>{{$type->org_type_display_name}}</option>
+                                            @else
+                                                <option value="{{$type->org_type}}" {{ old('prefOrgType') == $type->org_type ? "selected" : ""}}>{{$type->org_type_display_name}}</option>
+                                            @endif
                                         @endif
                                     @endforeach
                                     </select>

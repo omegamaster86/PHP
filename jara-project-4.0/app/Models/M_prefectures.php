@@ -17,6 +17,8 @@ class M_prefectures extends Model
     //全カラムの変更を許可しない
     protected $guarded = [
         'pref_id',
+        'pref_code',
+        'pref_code_jis',
         'pref_name',
         'display_order',
         'registered_time',
@@ -30,6 +32,7 @@ class M_prefectures extends Model
     public function getPrefecures()
     {
         $prefectures = DB::select('select pref_id
+                                        ,pref_code_jis
                                         ,pref_name
                                         from m_prefectures
                                         where delete_flag=0
@@ -38,16 +41,16 @@ class M_prefectures extends Model
         return $prefectures;
     }
 
-    //pref_idに該当するpref_Nameを取得
-    public function getPrefecureName($prefId)
+    public function getPrefIdFromPrefCodeJis($pref_code_jis)
     {
-        $prefectureName = DB::select('select pref_name
-                                        from m_prefectures
-                                        where delete_flag=0
-                                        and pref_id = ?
-                                        order by display_order'
-                                        ,[$prefId]
-                                    );
-        return $prefectureName;
+        $pref_ids = DB::select('select pref_id                                        
+                                from m_prefectures
+                                where delete_flag=0
+                                and pref_code_jis = ?'
+                                ,[$pref_code_jis]
+                            );
+        //pref_idは一意に決まるため0番目を返す
+        $pref_id = $pref_ids[0];
+        return $pref_id;
     }
 }
