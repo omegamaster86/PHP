@@ -175,4 +175,19 @@ class T_organization extends Model
         $count = $counts[0]->count;
         return $count;
     }
+
+    //エントリー団体IDから団体名を取得する
+    public function getOrgInfoFromEntrySystemOrgId($entrySystemOrgId)
+    {
+        $orgInfos = DB::select('select 
+                                org_id
+                                ,org_name
+                                from t_organizations
+                                where delete_flag=0
+                                and entrysystem_org_id = ?'
+                                ,[$entrySystemOrgId]
+                            );
+        $orgInfo = $orgInfos[0];
+        return $orgInfo;
+    }
 }

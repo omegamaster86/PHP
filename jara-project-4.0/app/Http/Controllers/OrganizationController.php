@@ -68,6 +68,16 @@ class OrganizationController extends Controller
         return view('organizations.register-confirm',["pagemode"=>"edit"]);
     }
 
+    public function createRefecence()
+    {
+        return view('organizations.reference',["pagemode"=>"refer"]);
+    }
+
+    public function createDelete()
+    {
+        return view('organizations.reference',["pagemode"=>"delete"]);
+    }
+
     //団体情報登録画面で確認ボタンを押したときに発生するイベント
     public function storeConfirm(Request $request,T_organization $t_organization, M_prefectures $m_prefectures)
     {
@@ -112,8 +122,11 @@ class OrganizationController extends Controller
         $duplicateCount = $t_organization->getEntrysystemOrgIdCount($entrysystemOrgId);
         if($duplicateCount > 0)
         {
-            $validator->errors()->add('entrysystemOrgId', 
-                                        str_replace('[団体ID]', $organizationInfo['entrysystemOrgId'],$entrysystemOrgId_registered));
+            //エントリー団体IDから団体名を取得
+            $duplicateOrgName = $t_organization->getOrgNameFromEntrySystemOrgId($entrysystemOrgId);
+            //エラーメッセージを整形
+            $errorMessage = str_replace('[団体名]',$duplicateOrgName,str_replace('[団体ID]', $organizationInfo['entrysystemOrgId'],$entrysystemOrgId_registered));
+            $validator->errors()->add('entrysystemOrgId', $errorMessage);
         }
 
         //創立年が、数値ではない、1750年より前、現在より後、のいずれかの場合エラー
@@ -205,8 +218,11 @@ class OrganizationController extends Controller
         $duplicateCount = $t_organization->getEntrysystemOrgIdCountWithOrgId($entrysystemOrgId,$org_id);
         if($duplicateCount > 0)
         {
-            $validator->errors()->add('entrysystemOrgId', 
-                                        str_replace('[団体ID]', $organizationInfo['entrysystemOrgId'],$entrysystemOrgId_registered));
+            //エントリー団体IDから団体名を取得
+            $duplicateOrgInfo = $t_organization->getOrgInfoFromEntrySystemOrgId($entrysystemOrgId);
+            //エラーメッセージを整形
+            $errorMessage = str_replace('[団体名]',$duplicateOrgInfo->org_name,str_replace('[団体ID]', $duplicateOrgInfo->org_id,$entrysystemOrgId_registered));
+            $validator->errors()->add('entrysystemOrgId', $errorMessage);
         }
 
         //創立年が、数値ではない、1750年より前、現在より後、のいずれかの場合エラー
