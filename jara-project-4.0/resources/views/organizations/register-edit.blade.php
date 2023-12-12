@@ -102,15 +102,15 @@
                         @endif
                     </div>
                     <div class="form-group">
-                        <label for="foundingYear" class="col-md-5" style="text-align: right">*創立年</label>
+                        <label for="foundingYear" class="col-md-5" style="text-align: right">創立年</label>
                         @if($pagemode==="register")
-                            <input type="number" name="foundingYear" id="foundingYear" min="1855" max="2100" value="{{old('foundingYear',2000)}}">
+                            <input type="input" name="foundingYear" id="foundingYear" value="{{old('foundingYear')}}">
                         @elseif($pagemode==="edit")
-                            <input type="number" name="foundingYear" id="foundingYear" min="1855" max="2100" value="{{old('foundingYear',$organization->founding_year)}}">
+                            <input type="input" name="foundingYear" id="foundingYear" value="{{old('foundingYear',$organization->founding_year)}}">
                         @endif
                         <!--8.エラーメッセージ表示エリア -->
-                        @if ($errors->has('foundingYear'))
-                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('foundingYear') }}</p>
+                        @if ($errors->has('foundingYear_failed'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('foundingYear_failed') }}</p>
                         @endif
                     </div>
                     <div class="form-group">
@@ -127,10 +127,7 @@
                         @elseif($pagemode==="edit")
                             <input type="text" name="postCodeLower" id="postCodeLower" size="4" maxlength="4" value="{{old('postCodeLower',$organization->post_code_lower)}}">
                         @endif
-                            <input type="button" value="住所検索" onclick=getAddressFromPostCode()>                            
-                        @if ($errors->has('postCodeUpper') or $errors->has('postCodeLower'))
-                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('postCodeUpper') }}</p>
-                        @endif
+                            <input type="button" value="住所検索" onclick=getAddressFromPostCode()>
                     </div>
                     <div class="form-group">
                         <label for="prefecture" class="col-md-6" style="text-align: right">都道府県</label>
@@ -164,6 +161,14 @@
                         @endif
                         <label for="address2" style="margin-left:1rem;">マンション・アパート</label>
                         <!--10.エラーメッセージ表示エリア -->                        
+                        @if ($errors->has('postCodeUpper'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('postCodeUpper') }}</p>
+                        @elseif(!$errors->has('postCodeUpper') && $errors->has('postCodeLower'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('postCodeLower') }}</p>
+                        @elseif ($errors->has('postCode_failed'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('postCode_failed') }}</p>
+                        @endif
+
                         @if ($errors->has('prefecture'))
                             <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('prefecture') }}</p>
                         @endif
@@ -235,6 +240,16 @@
                 </div>
                 <div class="col-md-3">
                     <div class="row">
+                        @if($errors->has('jaraOrgType_official_failed'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('jaraOrgType_official_failed') }}</p>
+                        @elseif($errors->has('jaraOrgType_private_failed'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('jaraOrgType_private_failed') }}</p>
+                        @endif
+                        @if($errors->has('prefOrgType_official_failed'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('prefOrgType_official_failed') }}</p>
+                        @elseif($errors->has('prefOrgType_private_failed'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('prefOrgType_private_failed') }}</p>
+                        @endif
                         <fieldset>
                             <legend>証跡</legend>
                             <p for="jaraOrg">

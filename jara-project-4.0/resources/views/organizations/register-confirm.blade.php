@@ -71,6 +71,9 @@
             <input id="pagemode" name="pagemode" type="hidden" value="{{$pagemode}}">
             <div class="row" style="padding:10px 0px;width: 100%;">
                 <!-- 複数要因によるエラーメッセージ表示エリア -->
+                @if ($errors->has('organization_commit_failed'))
+                    <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('organization_commit_failed') }}</p>
+                @endif
                 <div class="col-md-10">
                     <div class="form-group">
                         <label for="entrysystemOrgId" class="col-md-6" style="text-align: right"><b>エントリーシステムの団体ID：</b></label>
@@ -92,7 +95,7 @@
                     </div>
                     <div class="form-group">
                         <label for="prefecture" class="col-md-6" style="text-align: right"><b>所在地(都道府県)：</b></label>
-                        <input id="prefecture" name="prefecture" value="{{session()->get('organizationInfo')['prefecture']}}" readonly>
+                        <input id="prefecture" name="prefecture" value="{{session()->get('organizationInfo')['pref_id']}}" readonly>
                     </div>
                     <div class="form-group">
                         <label for="address1" class="col-md-6" style="text-align: right"><b>所在地(市区町村・町字番地)：</b></label>

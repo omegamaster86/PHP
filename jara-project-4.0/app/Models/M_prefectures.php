@@ -50,7 +50,7 @@ class M_prefectures extends Model
                                 ,[$pref_code_jis]
                             );
         //pref_idは一意に決まるため0番目を返す
-        $pref_id = $pref_ids[0];
+        $pref_id = $pref_ids[0]->pref_id;
         return $pref_id;
     }
 }
