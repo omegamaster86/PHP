@@ -56,6 +56,7 @@
             <a href={{route('player.register')}}>選手情報登録</a>
             <a href={{route('player.edit')}}>選手情報更新</a>
             <a href={{route('player.delete')}}>選手情報削除</a>
+            <a href={{route('organization.management')}}>団体管理</a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
     
@@ -72,44 +73,65 @@
             </h1>
         </div>
         <hr style="height:1px;border-width:0;color:#9AF8FD;background-color:#9AF8FD">
-        
+        <div></div>
         <div class="container">
             <div class="row">
-              <div class="col-12" >
-                <table class="table table-striped table-bordered" >
-                  <thead>
-                    <tr>
-                      <th scope="col">団体種別</th>
-                      <th scope="col">エントリーシステムのID</th>
-                      <th scope="col">団体ID</th>
-                      <th scope="col">団体名</th>
-                      <th scope="col" colspan="2">操作</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @foreach($organizations as $organization)
-                    <tr>
-                    {{-- <th>{{$user->id}}</th>
-                    <th>{{$user->name}}</th> --}}
-                    {{-- <th scope="row">公式</th> --}}
-                    <td>{{$organization->jara_org_type}}</td>
-                    <td>{{$organization->entrysystem_org_id}}</td>
-                    <td>{{$organization->org_id }}</td>
-                    <td>{{$organization->org_name}}</td>
-                    <td>
-                        <button type="button" class="btn btn-primary">更新</button>
-                      </td>
-                      <td>
-                        <button type="button" class="btn btn-danger">削除</button>
-                    </td>
-                    </tr>
-                    @endforeach
-                  </tbody>
-                </table>
-              </div>
-              <div class="col-12" style="text-align: right" >
-                <button type="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary">戻る</button>
-              </div>
+                <div class="col-12" style="text-align: right;margin:2rem 0rem" >
+                    <a role="button" style="width: 150px;height:60px; font-size:28px" class="btn btn-success" href="{{route('organizations.register')}}">
+                        団体登録
+                    </a>
+                </div>
+                <div class="col-12" >
+                    <table class="table table-striped table-bordered" >
+                        <thead>
+                            <tr>
+                            <th scope="col">団体種別</th>
+                            <th scope="col">エントリーシステムのID</th>
+                            <th scope="col">団体ID</th>
+                            <th scope="col">団体名</th>
+                            <th scope="col" colspan="2">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($organizations as $organization)
+                            <tr>
+                                {{-- <th>{{$user->id}}</th>
+                                <th>{{$user->name}}</th> --}}
+                                {{-- <th scope="row">公式</th> --}}
+                                <td>
+                                    {{$organization->jara_org_type}}
+                                </td>
+                                <td>
+                                    <a target="_blank" style="text-decoration: underline" href="{{route('organizations.edit',['targetOrgId' => $organization->org_id])}}">
+                                        {{$organization->entrysystem_org_id}}
+                                    </a>
+                                </td>
+                                <td>    
+                                    <a target="_blank" style="text-decoration: underline" href="{{route('organizations.edit',['targetOrgId' => $organization->org_id])}}">
+                                        {{$organization->org_id }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a target="_blank" style="text-decoration: underline" href="{{route('organizations.edit',['targetOrgId' => $organization->org_id])}}">
+                                        {{$organization->org_name}}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{route('organizations.edit',['targetOrgId' => $organization->org_id])}}" role="button" class="btn btn-primary" >更新</a>
+                                </td>
+                                <td>
+                                    {{-- {{route('organizations.delete',['targetOrgId' => $organization->org_id])}} --}}
+                                    <a role = "button" href="#" class="btn btn-danger" >削除</a>
+                                    
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-12" style="text-align: right;margin:2rem 0rem" >
+                    <a role="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary" href="javascript:history.back()">戻る</a>
+                </div>
             </div>
         </div>
 

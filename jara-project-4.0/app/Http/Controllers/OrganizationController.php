@@ -53,6 +53,7 @@ class OrganizationController extends Controller
                                                     ,"prefectures"=>$mPref]
                                                 );
     }
+    
 
     //団体情報登録・更新確認画面を開く
     public function createConfirm()
