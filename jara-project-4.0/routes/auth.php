@@ -18,6 +18,7 @@ use App\Http\Controllers\PlayerController;
 // use App\Http\Controllers\PlayerDeleteController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\TournamentController;
+use App\Http\Controllers\PlayerInfoAlignmentController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -138,5 +139,11 @@ Route::middleware('auth')->group(function () {
 
     //Organization Management
     Route::get('organization/management', [OrganizationController::class, 'createManagement'])->name('organization.management');
+    
+    
+    // 20231207
+    // 選手情報連携画面
+    Route::get('PlayerInfoAlignment/', [PlayerInfoAlignmentController::class, 'createInfoAlignment'])->name('PlayerInfoAlignment');
+    Route::post('PlayerInfoAlignment/', [PlayerInfoAlignmentController::class, 'csvread'])->name('csv.upload');
 
 });
