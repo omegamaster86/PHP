@@ -15,7 +15,7 @@ return [
 
     'defaults' => [
         'guard' => 'web',
-        'passwords' => 't_user',
+        'passwords' => 't_users',
     ],
 
     /*
@@ -38,7 +38,7 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 't_user',
+            'provider' => 't_users',
         ],
     ],
 
@@ -60,9 +60,9 @@ return [
     */
 
     'providers' => [
-        't_user' => [
+        't_users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\T_user::class,
+            'model' => App\Models\T_users::class,
         ],
 
         // 'users' => [
@@ -91,8 +91,8 @@ return [
     */
 
     'passwords' => [
-        't_user' => [
-            'provider' => 't_user',
+        't_users' => [
+            'provider' => 't_users',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,

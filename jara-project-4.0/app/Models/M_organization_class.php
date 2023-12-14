@@ -48,6 +48,10 @@ class M_organization_class extends Model
                                             order by display_order'
                                             ,[$org_class_id]
                                         );
-        return $organizationClassName;
+        //区分名は1つに決まるため0番目を取得して返す.
+        if(isset($organizationClassName[0])){
+            $targetName = $organizationClassName[0]->org_class_name;
+        }
+        return $targetName;
     }
 }

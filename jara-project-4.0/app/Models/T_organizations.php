@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
-class T_organization extends Model
+class T_organizations extends Model
 {
     use HasFactory;
 

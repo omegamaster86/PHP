@@ -59,11 +59,6 @@
         <hr style="height:1px;border-width:0;color:#9AF8FD;background-color:#9AF8FD">
         <form class="form-horizontal" enctype="multipart/form-data" role="form" style="display: flex" method="POST">
             @csrf
-            {{-- <div class="alert alert-info alert-dismissable">
-                        <a class="panel-close close" data-dismiss="alert">×</a>
-                        <i class="fa fa-coffee"></i>
-                        This is an <strong>.alert</strong>. Use this to show important messages to the user.
-                </div> --}}            
             <!--19.マイページ -->
             <input type="submit" value="マイページ" id="mypageButton">
             <div class="row" style="padding:10px 0px;width: 100%;">

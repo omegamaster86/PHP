@@ -13,7 +13,8 @@ class M_staff_type extends Model
     protected $table = 'm_staff_type';
     protected $primaryKey = 'staff_type_id';
 
-    //都道府県マスタを取得
+    //スタッフ種別タイプマスタを取得
+    //セレクトボックス要素作成用
     public function getStaffType()
     {
         $staff_types = DB::select('select 
@@ -24,5 +25,23 @@ class M_staff_type extends Model
                                     order by display_order'
                                 );
         return $staff_types;
+    }
+
+    //スタッフ種別IDに対するスタッフ種別名を取得する
+    public function getStaffTypeName($staff_type_id)
+    {
+        $staff_types = DB::select('select                                     
+                                    staff_type_name                                    
+                                    from m_staff_type
+                                    where delete_flag=0
+                                    and staff_type_id = ?'
+                                    ,[$staff_type_id]
+                                );
+        //1つに決まるので0番目を取得して返す
+        if(isset($staff_types[0]))
+        {
+            $staff_type_name = $staff_types[0]->staff_type_name;
+        }
+        return $staff_type_name;
     }
 }

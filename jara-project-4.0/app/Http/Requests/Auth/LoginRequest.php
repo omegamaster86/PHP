@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Models\T_user;
+//use App\Models\T_users;
 
 class LoginRequest extends FormRequest
 {

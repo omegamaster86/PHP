@@ -63,11 +63,6 @@
         <input type="submit" value="マイページ" id="mypageButton">
         <form class="form-horizontal" enctype="multipart/form-data" role="form" style="display: flex" method="POST">        
             @csrf
-            {{-- <div class="alert alert-info alert-dismissable">
-                        <a class="panel-close close" data-dismiss="alert">×</a>
-                        <i class="fa fa-coffee"></i>
-                        This is an <strong>.alert</strong>. Use this to show important messages to the user.
-                </div> --}}
             @if($pagemode==="edit")
                 <input name="org_id" type="hidden" value="{{$organization->org_id}}">
             @endif
@@ -183,7 +178,7 @@
                     <div class="form-group">
                         <label for="orgClass" class="col-md-5" style="text-align: right">*団体区分</label>
                         <select id="orgClass" name="orgClass">
-                        @foreach($organizationClass as $class)                            
+                        @foreach($organizationClass as $class)
                             @if($pagemode==="register")
                                 <!-- <option value="{{$class->org_class_id}}">{{$class->org_class_name}}</option> -->
                                 <option value="{{$class->org_class_id}}" {{ old('orgClass') == $class->org_class_id ? "selected" : ""}}>{{$class->org_class_name}}</option>
@@ -201,34 +196,9 @@
                             <p style="margin: 1rem; font-weight:bold; color:red;">{{ $errors->first('orgClass') }}</p>
                         @endif
                     </div>
-                    <!--13.管理者（監督）のユーザID -->
-                    <div class="form-group row">
-                        <label for="managerUserId" class="col-md-5" style="text-align: right">*管理者（監督）のユーザID</label>
-                        <input type="text" name="managerUserId" id="managerUserId" size="10">
-                        <label for="managerUserName" style="margin-left:3px;">ユーザ名</label><!--入力されたIDのユーザ名を表示するエリア-->
-                    </div>
-                    <!--13.部長のユーザID -->
-                    <div class="form-group row">
-                        <label for="headUserId" class="col-md-5" style="text-align: right">部長のユーザID</label>
-                        <input type="text" name="headUserId" id="headUserId" size="10">
-                        <label for="headUserName"style="margin-left:3px;">ユーザ名</label><!--入力されたIDのユーザ名を表示するエリア-->
-                    </div>
-                    <!--13.コーチのユーザID -->
-                    <div class="form-group row">                        
-                        <label for="coachUserId" class="col-md-5" style="text-align: right">コーチのユーザID</label>
-                        <input type="text" name="coachUserId" id="coachUserId" size="10">
-                        <label for="coachUserName" style="margin-left:3px;">ユーザ名</label><!--入力されたIDのユーザ名を表示するエリア-->                       
-                    </div>
-                    <!--13.監督代理のユーザID -->
-                    <div class="form-group row" id="actingManagerUser">                        
-                        <label for="actingManagerUserId" class="col-md-5" style="text-align: right">監督代理のユーザID</label>
-                        <div id="target">                            
-                                <input type="text" name="actingManagerUserId" id="actingManagerUserId" size="10">
-                                <label id="actingManagerUserName" style="margin-left:3px; margin-right:3px;">ユーザ名</label>
-                        </div>
-                    </div>
                     <div class="form-group">
                         {!! $staff_tag !!}
+                        {!!Session::put('staff_tag', $staff_tag);!!}
                     <!--14.追加ボタン -->
                         <!-- <div class="col-md-1 offset-md-5">
                             <input type="button" value="追加" onclick=actingManagerAddButtonClick()>

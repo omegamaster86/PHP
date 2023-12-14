@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Illuminate\Validation\ValidationException;
 use App\Services\FileUploadService;
-use App\Models\T_user;
+use App\Models\T_users;
 use App\Http\Requests\FileUploadRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -89,7 +89,7 @@ class UserEditController extends Controller
                 'user_name' => ['required', 'string', 'max:32','regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'],   
 
                 // Mail address validation rule
-                'mailaddress' => ['required','email', 'string', 'lowercase',  'max:255','unique:' . T_user::class],
+                'mailaddress' => ['required','email', 'string', 'lowercase',  'max:255','unique:' . T_users::class],
                 //Confirm mail address validation rule
                 'confirm_email' => ['required','email', 'string', 'lowercase',  'max:255', 'same:mailAddress'],
 

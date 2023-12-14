@@ -61,11 +61,6 @@
         
         <form class="form-horizontal" enctype="multipart/form-data" role="form" style="display: flex" method="POST">
             @csrf
-            {{-- <div class="alert alert-info alert-dismissable">
-                        <a class="panel-close close" data-dismiss="alert">×</a>
-                        <i class="fa fa-coffee"></i>
-                        This is an <strong>.alert</strong>. Use this to show important messages to the user.
-                </div> --}}
             @if($pagemode == "edit")
                 <input id="org_id" name="org_id" type="hidden" value="{{session()->get('organizationInfo')['org_id']}}">
             @endif
@@ -138,32 +133,36 @@
                             <input id="prefOrgTypeDisplay" name="prefOrgTypeDisplay" value="{{session()->get('organizationInfo')['prefOrgType']  == 0 ? "任意" : "正式"}}" readonly>
                         </div>
                     </div>
-<!--      
                     <div class="form-group">
-                        <label for="managerUser" class="col-md-6" style="text-align: right"><b>管理者（監督）：</b></label>
-
+                        <div class="row">
+                            <label for="staff1" class="col-md-6" style="text-align: right"><b>スタッフ1：</b></label>
+                            <input id="staff1_user_id" name="staff1_user_id" value="{{session()->get('organizationInfo')['staff1_user_id']}}" size="5" readonly>
+                            <input id="staff1_user_name" name="staff1_user_name" value="{{session()->get('organizationInfo')['staff1_user_name']}}" readonly>
+                            <input id="staff1_type" name="staff1_type" value="{{session()->get('organizationInfo')['staff1_type']}}" size="5" readonly>
+                            <input id="staff1_type_display" name="staff1_type_display" value="{{session()->get('organizationInfo')['staff1_type_display']}}" readonly>
+                        </div>
+                        <div class="row">
+                            <label for="staff2" class="col-md-6" style="text-align: right"><b>スタッフ2：</b></label>
+                            <input id="staff2_user_id" name="staff2_user_id" value="{{session()->get('organizationInfo')['staff2_user_id']}}" size="5" readonly>
+                            <input id="staff2_user_name" name="staff2_user_name" value="{{session()->get('organizationInfo')['staff2_user_name']}}" readonly>
+                            <input id="staff2_type" name="staff2_type" value="{{session()->get('organizationInfo')['staff2_type']}}" size="5" readonly>
+                            <input id="staff2_type_display" name="staff2_type_display" value="{{session()->get('organizationInfo')['staff2_type_display']}}" readonly>
+                        </div>
+                        <div class="row">
+                            <label for="staff3" class="col-md-6" style="text-align: right"><b>スタッフ3：</b></label>                            
+                            <input id="staff3_user_id" name="staff3_user_id" value="{{session()->get('organizationInfo')['staff3_user_id']}}" size="5" readonly>
+                            <input id="staff3_user_name" name="staff3_user_name" value="{{session()->get('organizationInfo')['staff3_user_name']}}" readonly>
+                            <input id="staff3_type" name="staff3_type" value="{{session()->get('organizationInfo')['staff3_type']}}" size="5" readonly>
+                            <input id="staff3_type_display" name="staff3_type_display" value="{{session()->get('organizationInfo')['staff3_type_display']}}" readonly>
+                        </div>
+                        <div class="row">
+                            <label for="staff4" class="col-md-6" style="text-align: right"><b>スタッフ4：</b></label>
+                            <input id="staff4_user_id" name="staff4_user_id" value="{{session()->get('organizationInfo')['staff4_user_id']}}" size="5" readonly>
+                            <input id="staff4_user_name" name="staff4_user_name" value="{{session()->get('organizationInfo')['staff4_user_name']}}" readonly>
+                            <input id="staff4_type" name="staff4_type" value="{{session()->get('organizationInfo')['staff4_type']}}" size="5" readonly>
+                            <input id="staff4_type_display" name="staff4_type_display" value="{{session()->get('organizationInfo')['staff4_type_display']}}" readonly>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="headUser" class="col-md-6" style="text-align: right"><b>部長：</b></label>
-                        
-                    </div>
-                    <div class="form-group">
-                        <label for="coachUser" class="col-md-6" style="text-align: right"><b>コーチ：</b></label>
-                        
-                    </div>
-                    <div class="form-group">
-                        <label for="actingManagerUser1" class="col-md-6" style="text-align: right"><b>監督代行１：</b></label>
-                        
-                    </div>
-                    <div class="form-group">
-                        <label for="actingManagerUser2" class="col-md-6" style="text-align: right"><b>監督代行２：</b></label>
-                        
-                    </div>
-                    <div class="form-group">
-                        <label for="actingManagerUser3" class="col-md-6" style="text-align: right"><b>監督代行３：</b></label>
-                        
-                    </div>
-                     -->
                     <!-- 確認・戻るボタン -->
                     <div class="form-group row" style="padding: 2rem">
                         <div class="col-sm-2 offset-sm-4">
