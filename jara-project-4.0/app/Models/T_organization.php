@@ -12,9 +12,9 @@ class T_organization extends Model
 {
     use HasFactory;
 
-    //テーブルがm_prefecturesと結びつくように指定する
-    protected $table = 'm_prefectures';
-    protected $primaryKey = 'pref_id';
+    //テーブルがt_organizationsと結びつくように指定する
+    protected $table = 't_organizations';
+    protected $primaryKey = 'org_id';
 
     public function getOrganization($orgId)
     {
@@ -25,7 +25,10 @@ class T_organization extends Model
                                     ,[$orgId]
                                 );
         //1つの団体IDを取得するため0番目だけを返す
-        $targetOrg = $organization[0];
+        $targetOrg = null;
+        if(!empty($organization)){
+            $targetOrg = $organization[0];
+        }
         return $targetOrg;
     }
 
@@ -67,7 +70,7 @@ class T_organization extends Model
                                     $organizationInfo['post_code'],
                                     //$organizationInfo['country'],
                                     112,                        //country=日本
-                                    $organizationInfo['prefecture'],
+                                    $organizationInfo['pref_id'],
                                     $organizationInfo['address1'],
                                     $organizationInfo['address2'],
                                     NOW(),
@@ -124,7 +127,7 @@ class T_organization extends Model
                                     $organizationInfo['foundingYear'],
                                     $organizationInfo['post_code'],
                                     112,                                    //country=日本
-                                    $organizationInfo['prefecture'],
+                                    $organizationInfo['pref_id'],
                                     $organizationInfo['address1'],
                                     $organizationInfo['address2'],
                                     NOW(),
@@ -147,14 +150,47 @@ class T_organization extends Model
 
     //エントリーシステムの団体IDの数を取得する
     //重複有無を確認するため
+    //org_idが一致するレコードを除く（更新画面用）
+    public function getEntrysystemOrgIdCountWithOrgId($entrySystemOrgId,$org_id)
+    {
+        $counts = DB::select('select count(*) as "count"
+                                    from t_organizations
+                                    where delete_flag=0
+                                    and entrysystem_org_id = ?
+                                    and org_id <> ?'
+                                ,[$entrySystemOrgId,$org_id]
+                            );
+        $count = $counts[0]->count;
+        return $count;
+    }
+
+    //エントリーシステムの団体IDの数を取得する
+    //重複有無を確認するため
+    //（登録画面用）
     public function getEntrysystemOrgIdCount($entrySystemOrgId)
     {
-        $count = DB::select('select count(*)
+        $counts = DB::select('select count(*) as "count"
                                     from t_organizations
                                     where delete_flag=0
                                     and entrysystem_org_id = ?'
                                 ,[$entrySystemOrgId]
                             );
+        $count = $counts[0]->count;
         return $count;
+    }
+
+    //エントリー団体IDから団体名を取得する
+    public function getOrgInfoFromEntrySystemOrgId($entrySystemOrgId)
+    {
+        $orgInfos = DB::select('select 
+                                org_id
+                                ,org_name
+                                from t_organizations
+                                where delete_flag=0
+                                and entrysystem_org_id = ?'
+                                ,[$entrySystemOrgId]
+                            );
+        $orgInfo = $orgInfos[0];
+        return $orgInfo;
     }
 }

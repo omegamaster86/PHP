@@ -120,7 +120,7 @@ $tournament_races_dayTime = "発艇日時を入力してください";
 //Organization
 $orgName_required = '団体名を入力してください。';
 $foundingYear_required = '創立年を入力してください。';
-$foundingYear_failed = '不正な値です。適切な日付を入力してください。';
+$foundingYear_failed = '不正な値です。適切な西暦を入力してください。';
 $postCode_required = '郵便番号を入力してください。';
 $postCode_failed = '不正な郵便番号です。適切な郵便番号を入力してください。(数字３桁-数字４桁)';
 $prefecture_required = '都道府県を入力してください。';
@@ -128,16 +128,11 @@ $address1_required = '市区町村・町字番地を入力してください。'
 $address2_required = '建物名を入力してください。';
 $orgClass_required = '団体区分を入力してください。';
 $managerUserId_required = '管理者のユーザIDを入力してください。';
-
 $jaraOrgType_official_failed = 'JARA証跡を設定しない場合、JARA団体種別は"任意"を選択してください。';
 $jaraOrgType_private_failed = 'JARA証跡を設定する場合、JARA団体種別は"正式"を選択してください。';
 $prefOrgType_official_failed = '県ボ証跡を設定しない場合、県ボ団体種別は"任意"を選択してください。';
 $prefOrgType_private_failed = '県ボ証跡を設定する場合、県ボ団体種別は"正式"を選択してください。';
-
 $entrysystemOrgId_registered = '入力されたエントリーシステムの団体IDは、既に別の団体で使用されています。[団体ID]：[団体名]';
 //管理者、部長、コーチ、マネージャー、監督代行の全て共通
 $userId_not_found = '[対象項目名]のユーザーは、既にシステムより削除されているか、本登録されていないユーザーIDが入力されています。';
-
-$postCode_invalid = '郵便番号が無効です。';
-
-$entrysystemOrgId_unique = '入力されたエントリーシステムの団体IDは、既に別の団体で使用されています。[団体ID]：[団体名]';
+$organization_commit_failed = '団体情報の登録に失敗しました。ユーザーサポートにお問い合わせください。';

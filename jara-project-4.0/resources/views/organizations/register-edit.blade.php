@@ -25,7 +25,7 @@
 
     <link rel="stylesheet" type="text/css" href="{{ asset('/font-awesome/css/font-awesome.min.css') }}">
 
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/organization-edit.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/organization.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/nav.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
 
@@ -61,7 +61,7 @@
         
         <!--19.マイページ -->
         <input type="submit" value="マイページ" id="mypageButton">
-        <form class="form-horizontal" enctype="multipart/form-data" role="form" style="display: flex" method="POST" action="#">
+        <form class="form-horizontal" enctype="multipart/form-data" role="form" style="display: flex" method="POST">        
             @csrf
             {{-- <div class="alert alert-info alert-dismissable">
                         <a class="panel-close close" data-dismiss="alert">×</a>
@@ -102,15 +102,15 @@
                         @endif
                     </div>
                     <div class="form-group">
-                        <label for="foundingYear" class="col-md-5" style="text-align: right">*創立年</label>
+                        <label for="foundingYear" class="col-md-5" style="text-align: right">創立年</label>
                         @if($pagemode==="register")
-                            <input type="number" name="foundingYear" id="foundingYear" min="1855" max="2100" value="{{old('foundingYear',2000)}}">
+                            <input type="input" name="foundingYear" id="foundingYear" value="{{old('foundingYear')}}">
                         @elseif($pagemode==="edit")
-                            <input type="number" name="foundingYear" id="foundingYear" min="1855" max="2100" value="{{old('foundingYear',$organization->founding_year)}}">
+                            <input type="input" name="foundingYear" id="foundingYear" value="{{old('foundingYear',$organization->founding_year)}}">
                         @endif
                         <!--8.エラーメッセージ表示エリア -->
-                        @if ($errors->has('foundingYear'))
-                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('foundingYear') }}</p>
+                        @if ($errors->has('foundingYear_failed'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('foundingYear_failed') }}</p>
                         @endif
                     </div>
                     <div class="form-group">
@@ -127,10 +127,7 @@
                         @elseif($pagemode==="edit")
                             <input type="text" name="postCodeLower" id="postCodeLower" size="4" maxlength="4" value="{{old('postCodeLower',$organization->post_code_lower)}}">
                         @endif
-                            <input type="button" value="住所検索" onclick=getAddressFromPostCode()>                            
-                        @if ($errors->has('postCodeUpper') or $errors->has('postCodeLower'))
-                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('postCodeUpper') }}</p>
-                        @endif
+                            <input type="button" value="住所検索" onclick=getAddressFromPostCode()>
                     </div>
                     <div class="form-group">
                         <label for="prefecture" class="col-md-6" style="text-align: right">都道府県</label>
@@ -140,9 +137,9 @@
                                 <option value="{{$prefecture->pref_code_jis}}" {{ old('prefecture') == $prefecture->pref_code_jis ? "selected" : ""}}>{{$prefecture->pref_name}}</option>
                             @elseif($pagemode==="edit")                                
                                 @if(empty(old('prefecture')))
-                                    <option value="{{$prefecture->pref_code_jis}}" {{ $organization->location_prefecture === $prefecture->pref_id ? "selected" : ""}}>{{$prefecture->pref_name}}</option>
+                                    <option value="{{$prefecture->pref_code_jis}}" {{ $organization->location_prefecture === $prefecture->pref_id ? "selected" : ""}}>{{$prefecture->pref_name}}</option>                                    
                                 @else
-                                    <option value="{{$prefecture->pref_code_jis}}" {{ old('prefecture') == $prefecture->pref_code_jis ? "selected" : ""}}>{{$prefecture->pref_name}}</option>
+                                    <option value="{{$prefecture->pref_code_jis}}" {{ old('prefecture') == $prefecture->pref_code_jis ? "selected" : ""}}>{{$prefecture->pref_name}}</option>                                    
                                 @endif
                             @endif
                         @endforeach
@@ -164,6 +161,14 @@
                         @endif
                         <label for="address2" style="margin-left:1rem;">マンション・アパート</label>
                         <!--10.エラーメッセージ表示エリア -->                        
+                        @if ($errors->has('postCodeUpper'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('postCodeUpper') }}</p>
+                        @elseif(!$errors->has('postCodeUpper') && $errors->has('postCodeLower'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('postCodeLower') }}</p>
+                        @elseif ($errors->has('postCode_failed'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('postCode_failed') }}</p>
+                        @endif
+
                         @if ($errors->has('prefecture'))
                             <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('prefecture') }}</p>
                         @endif
@@ -223,10 +228,11 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        {!! $staff_tag !!}
                     <!--14.追加ボタン -->
-                        <div class="col-md-1 offset-md-5">
+                        <!-- <div class="col-md-1 offset-md-5">
                             <input type="button" value="追加" onclick=actingManagerAddButtonClick()>
-                        </div>
+                        </div> -->
                     <!--15.エラーメッセージ表示エリア -->
                     @if($errors->has('managerUserId'))
                         <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('managerUserId') }}</p>
@@ -235,6 +241,16 @@
                 </div>
                 <div class="col-md-3">
                     <div class="row">
+                        @if($errors->has('jaraOrgType_official_failed'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('jaraOrgType_official_failed') }}</p>
+                        @elseif($errors->has('jaraOrgType_private_failed'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('jaraOrgType_private_failed') }}</p>
+                        @endif
+                        @if($errors->has('prefOrgType_official_failed'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('prefOrgType_official_failed') }}</p>
+                        @elseif($errors->has('prefOrgType_private_failed'))
+                            <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('prefOrgType_private_failed') }}</p>
+                        @endif
                         <fieldset>
                             <legend>証跡</legend>
                             <p for="jaraOrg">
@@ -295,8 +311,8 @@
                 <!-- 確認・戻るボタン -->
                 <div class="col-md-8 offset-md-1">
                     <div class="form-group row" style="padding: 2rem">
-                        <div class="col-sm-2 offset-sm-4">
-                            <button name="confirmButton" class="btn btn-success btn-lg btn-block">確認</button>
+                        <div class="col-sm-2 offset-sm-4">                            
+                            <button class="btn btn-success btn-lg btn-block">確認</button>
                         </div>                        
                         <div class="col-sm-2">
                             <a class="btn btn-danger btn-lg btn-block" href="javascript:history.back()" role="button">戻る</a>

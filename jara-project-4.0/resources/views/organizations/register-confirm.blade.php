@@ -25,7 +25,7 @@
 
     <link rel="stylesheet" type="text/css" href="{{ asset('/font-awesome/css/font-awesome.min.css') }}">
 
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/organization-edit.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/organization.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/nav.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
 
@@ -58,6 +58,7 @@
             @endif
         </div>
         <hr style="height:1px;border-width:0;color:#9AF8FD;background-color:#9AF8FD">
+        
         <form class="form-horizontal" enctype="multipart/form-data" role="form" style="display: flex" method="POST">
             @csrf
             {{-- <div class="alert alert-info alert-dismissable">
@@ -71,6 +72,9 @@
             <input id="pagemode" name="pagemode" type="hidden" value="{{$pagemode}}">
             <div class="row" style="padding:10px 0px;width: 100%;">
                 <!-- 複数要因によるエラーメッセージ表示エリア -->
+                @if ($errors->has('organization_commit_failed'))
+                    <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('organization_commit_failed') }}</p>
+                @endif
                 <div class="col-md-10">
                     <div class="form-group">
                         <label for="entrysystemOrgId" class="col-md-6" style="text-align: right"><b>エントリーシステムの団体ID：</b></label>
@@ -92,7 +96,8 @@
                     </div>
                     <div class="form-group">
                         <label for="prefecture" class="col-md-6" style="text-align: right"><b>所在地(都道府県)：</b></label>
-                        <input id="prefecture" name="prefecture" value="{{session()->get('organizationInfo')['prefecture']}}" readonly>
+                        <input id="pref_id" name="pref_id" type="hidden" value="{{session()->get('organizationInfo')['pref_id']}}" readonly>
+                        <input id="prefecture" name="prefecture" value="{{session()->get('organizationInfo')['pref_name']}}" readonly>
                     </div>
                     <div class="form-group">
                         <label for="address1" class="col-md-6" style="text-align: right"><b>所在地(市区町村・町字番地)：</b></label>
@@ -104,7 +109,8 @@
                     </div>
                     <div class="form-group">
                         <label for="orgClass" class="col-md-6" style="text-align: right"><b>団体区分：</b></label>
-                        <input id="orgClass" name="orgClass" value="{{session()->get('organizationInfo')['orgClass']}}" readonly>
+                        <input id="orgClass" name="orgClass" type="hidden" value="{{session()->get('organizationInfo')['orgClass']}}" readonly>
+                        <input id="org_class_name" name="org_class_name" value="{{session()->get('organizationInfo')['org_class_name']}}" readonly>
                     </div>
                     <div class="form-group">
                         <div class="row">
@@ -122,12 +128,14 @@
                         <div class="row">
                             <label for="jaraOrgType" class="col-md-6" style="text-align: right"><b>団体種別：</b></label>
                             <label class="col-md-1" style="text-align: right">JARA：</label>
-                            <input id="jaraOrgType" name="jaraOrgType" value="{{session()->get('organizationInfo')['jaraOrgType']}}" readonly>
+                            <input id="jaraOrgType" name="jaraOrgType" type="hidden" value="{{session()->get('organizationInfo')['jaraOrgType']}}" readonly>
+                            <input id="jaraOrgTypeDisplay" name="jaraOrgTypeDisplay" value="{{session()->get('organizationInfo')['jaraOrgType'] == 0 ? "任意" : "正式"}}" readonly>
                         </div>
                         <div class="row">
                             <label for="prefOrgType" class="col-md-6" style="text-align: right"></label>
                             <label class="col-md-1" style="text-align: right">県ボ：</label>
-                            <input id="prefOrgType" name="prefOrgType" value="{{session()->get('organizationInfo')['prefOrgType']}}" readonly>
+                            <input id="prefOrgType" name="prefOrgType" type="hidden" value="{{session()->get('organizationInfo')['prefOrgType']}}" readonly>
+                            <input id="prefOrgTypeDisplay" name="prefOrgTypeDisplay" value="{{session()->get('organizationInfo')['prefOrgType']  == 0 ? "任意" : "正式"}}" readonly>
                         </div>
                     </div>
 <!--      

@@ -43,14 +43,31 @@ class M_prefectures extends Model
 
     public function getPrefIdFromPrefCodeJis($pref_code_jis)
     {
-        $pref_ids = DB::select('select pref_id                                        
+        $pref_ids = DB::select('select pref_id
                                 from m_prefectures
                                 where delete_flag=0
                                 and pref_code_jis = ?'
                                 ,[$pref_code_jis]
                             );
         //pref_idは一意に決まるため0番目を返す
-        $pref_id = $pref_ids[0];
+        $pref_id = $pref_ids[0]->pref_id;
         return $pref_id;
+    }
+
+    public function getPrefInfoFromPrefCodeJis($pref_code_jis)
+    {
+        $pred_info = DB::select('select
+                                pref_id
+                                ,pref_name
+                                from m_prefectures
+                                where delete_flag=0
+                                and pref_code_jis = ?'
+                                ,[$pref_code_jis]
+                            );
+        //pref_infoは一意に決まるため0番目を返す
+        if(!empty($pred_info)){
+            $target_pref = $pred_info[0];
+        }
+        return $target_pref;
     }
 }
