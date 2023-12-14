@@ -17,7 +17,7 @@ function actingManagerAddButtonClick(){
     let copied = elements.cloneNode(true);
 
     if($acting_manager_add_count < acting_manager_add_count_max){
-        actingManager.appendChild(copied);        
+        actingManager.appendChild(copied);
         $acting_manager_add_count++;
     }
 }

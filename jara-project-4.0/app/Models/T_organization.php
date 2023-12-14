@@ -12,9 +12,9 @@ class T_organization extends Model
 {
     use HasFactory;
 
-    //テーブルがm_prefecturesと結びつくように指定する
-    protected $table = 'm_prefectures';
-    protected $primaryKey = 'pref_id';
+    //テーブルがt_organizationsと結びつくように指定する
+    protected $table = 't_organizations';
+    protected $primaryKey = 'org_id';
 
     public function getOrganization($orgId)
     {
@@ -25,7 +25,10 @@ class T_organization extends Model
                                     ,[$orgId]
                                 );
         //1つの団体IDを取得するため0番目だけを返す
-        $targetOrg = $organization[0];
+        $targetOrg = null;
+        if(!empty($organization)){
+            $targetOrg = $organization[0];
+        }
         return $targetOrg;
     }
 
@@ -67,7 +70,7 @@ class T_organization extends Model
                                     $organizationInfo['post_code'],
                                     //$organizationInfo['country'],
                                     112,                        //country=日本
-                                    $organizationInfo['prefecture'],
+                                    $organizationInfo['pref_id'],
                                     $organizationInfo['address1'],
                                     $organizationInfo['address2'],
                                     NOW(),
@@ -124,7 +127,7 @@ class T_organization extends Model
                                     $organizationInfo['foundingYear'],
                                     $organizationInfo['post_code'],
                                     112,                                    //country=日本
-                                    $organizationInfo['prefecture'],
+                                    $organizationInfo['pref_id'],
                                     $organizationInfo['address1'],
                                     $organizationInfo['address2'],
                                     NOW(),

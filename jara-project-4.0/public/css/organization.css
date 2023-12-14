@@ -41,7 +41,3 @@ fieldset {
 	border-radius: 2px;
     float: right;
 }
-
-#tablecaption {
-	caption-side: top;
-}

@@ -61,7 +61,7 @@
         
         <!--19.マイページ -->
         <input type="submit" value="マイページ" id="mypageButton">
-        <form class="form-horizontal" enctype="multipart/form-data" role="form" style="display: flex" method="POST" action="#">
+        <form class="form-horizontal" enctype="multipart/form-data" role="form" style="display: flex" method="POST">        
             @csrf
             {{-- <div class="alert alert-info alert-dismissable">
                         <a class="panel-close close" data-dismiss="alert">×</a>
@@ -137,9 +137,9 @@
                                 <option value="{{$prefecture->pref_code_jis}}" {{ old('prefecture') == $prefecture->pref_code_jis ? "selected" : ""}}>{{$prefecture->pref_name}}</option>
                             @elseif($pagemode==="edit")                                
                                 @if(empty(old('prefecture')))
-                                    <option value="{{$prefecture->pref_code_jis}}" {{ $organization->location_prefecture === $prefecture->pref_id ? "selected" : ""}}>{{$prefecture->pref_name}}</option>
+                                    <option value="{{$prefecture->pref_code_jis}}" {{ $organization->location_prefecture === $prefecture->pref_id ? "selected" : ""}}>{{$prefecture->pref_name}}</option>                                    
                                 @else
-                                    <option value="{{$prefecture->pref_code_jis}}" {{ old('prefecture') == $prefecture->pref_code_jis ? "selected" : ""}}>{{$prefecture->pref_name}}</option>
+                                    <option value="{{$prefecture->pref_code_jis}}" {{ old('prefecture') == $prefecture->pref_code_jis ? "selected" : ""}}>{{$prefecture->pref_name}}</option>                                    
                                 @endif
                             @endif
                         @endforeach
@@ -228,10 +228,11 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        {!! $staff_tag !!}
                     <!--14.追加ボタン -->
-                        <div class="col-md-1 offset-md-5">
+                        <!-- <div class="col-md-1 offset-md-5">
                             <input type="button" value="追加" onclick=actingManagerAddButtonClick()>
-                        </div>
+                        </div> -->
                     <!--15.エラーメッセージ表示エリア -->
                     @if($errors->has('managerUserId'))
                         <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('managerUserId') }}</p>
@@ -310,8 +311,8 @@
                 <!-- 確認・戻るボタン -->
                 <div class="col-md-8 offset-md-1">
                     <div class="form-group row" style="padding: 2rem">
-                        <div class="col-sm-2 offset-sm-4">
-                            <button name="confirmButton" class="btn btn-success btn-lg btn-block">確認</button>
+                        <div class="col-sm-2 offset-sm-4">                            
+                            <button class="btn btn-success btn-lg btn-block">確認</button>
                         </div>                        
                         <div class="col-sm-2">
                             <a class="btn btn-danger btn-lg btn-block" href="javascript:history.back()" role="button">戻る</a>

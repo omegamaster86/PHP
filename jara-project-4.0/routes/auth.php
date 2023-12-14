@@ -126,8 +126,8 @@ Route::middleware('auth')->group(function () {
     Route::get('organization/register/confirm', [OrganizationController::class, 'createConfirm'])->name('organizations.register.confirm');
     Route::post('organization/register/confirm', [OrganizationController::class, 'storeConfirmRegister']);
 
-    Route::get('organization/edit/confirm', [OrganizationController::class, 'createEditConfirm'])->name('organizations.edit.confirm');
-    Route::post('organization/edit/confirm', [OrganizationController::class, 'storeConfirmEdit']);
+    Route::get('organization/edit/{targetOrgId}/confirm', [OrganizationController::class, 'createEditConfirm'])->name('organizations.edit.confirm');
+    Route::post('organization/edit/{targetOrgId}/confirm', [OrganizationController::class, 'storeConfirmEdit']);
 
     //団体情報参照・削除画面
     Route::get('organization/reference', [OrganizationController::class, 'createRefecence'])->name('organizations.reference');

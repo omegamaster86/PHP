@@ -6,24 +6,32 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
+use Validator;
+use Illuminate\Support\Facades\Session;
 
 use App\Models\T_organization;
 use App\Models\M_organization_type;
 use App\Models\M_organization_class;
 use App\Models\M_prefectures;
-use Illuminate\Support\Str;
-use Validator;
+use App\Models\T_organization_staff;
+use App\Models\M_staff_type;
 
 class OrganizationController extends Controller
 {
+    private $t_organization_staff;
+
     //団体情報登録画面を開く
     public function create(M_organization_type $mOrganizationType,
                             M_organization_class $mOrganizationClass,
-                            M_prefectures $mPrefectures)
+                            M_prefectures $mPrefectures,
+                            M_staff_type $mStaffType)
     {
         $mOrgType = $mOrganizationType->getOrganizationType();
         $mOrgClass = $mOrganizationClass->getOrganizationClass();
         $mPref = $mPrefectures->getPrefecures();
+        $mStfType = $mStaffType->getStaffType();
         return view('organizations.register-edit',["pagemode"=>"register"
                                                     ,"organizationType"=>$mOrgType
                                                     ,"organizationClass"=>$mOrgClass
@@ -36,25 +44,59 @@ class OrganizationController extends Controller
                                     T_organization $tOrganization,
                                     M_organization_type $mOrganizationType,
                                     M_organization_class $mOrganizationClass,
-                                    M_prefectures $mPrefectures)
+                                    M_prefectures $mPrefectures,
+                                    T_organization_staff $tOrganizationStaff,
+                                    M_staff_type $mStaffType)
     {
         $tOrg = $tOrganization->getOrganization($targetOrgId);
         $mOrgType = $mOrganizationType->getOrganizationType();
         $mOrgClass = $mOrganizationClass->getOrganizationClass();
         $mPref = $mPrefectures->getPrefecures();
-
+        $tStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId);
+        $t_organization_staff = $tStaff;
+        $mStfType = $mStaffType->getStaffType();
         //郵便番号を分割して持たせておく
         $post_code = $tOrg->post_code;
         $tOrg->post_code_upper = Str::substr($post_code,0,3);
         $tOrg->post_code_lower = Str::substr($post_code,3,4);
+
+        $staff_tag = $this->createStaffTag($tStaff,$mStfType);        
+        //Session::put('staff_tag',$staff_tag);
         return view('organizations.register-edit',["pagemode"=>"edit"
                                                     ,"organization"=>$tOrg
                                                     ,"organizationType"=>$mOrgType
                                                     ,"organizationClass"=>$mOrgClass
-                                                    ,"prefectures"=>$mPref]
+                                                    ,"prefectures"=>$mPref
+                                                    ,"staff_tag"=>$staff_tag]
                                                 );
     }
     
+    private function createStaffTag($tStaff, $mStaffType)
+    {
+        $staff_count = 0;
+        $tag = "";
+
+        foreach($tStaff as $staff){            
+            $tag .= '<input type="text" id="staff'.($staff_count+1).' name="'.($staff_count+1).' size="10" value="'.$staff->user_id.'">';
+            $tag .= '<label for="staff'.($staff_count+1).'">'.$staff->user_name.'</label>';
+            $tag .= '<select id="staff'.($staff_count+1).'_type" name="staff'.($staff_count+1).'_type">';
+
+            //<option value="{{$type->org_type}}" {{ old('jaraOrgType') == $type->org_type ? "selected" : ""}}>{{$type->org_type_display_name}}</option>
+            foreach($mStaffType as $type)
+            {
+                if($type->staff_type_id === $staff->staff_type_id){
+                    $tag .= '<option value='.$type->staff_type_id.' selected>'.$type->staff_type_name.'</option>';
+                }
+                else{
+                    $tag .= '<option value='.$type->staff_type_id.'>'.$type->staff_type_name.'</option>';
+                }
+            }
+            $tag .= '</select>';
+            $staff_count +=1;
+        }
+
+        return $tag;
+    }
 
     //団体情報登録・更新確認画面を開く
     public function createConfirm()
@@ -89,7 +131,6 @@ class OrganizationController extends Controller
             'postCodeLower' => ['required'],    //郵便番号            
             'prefecture' => ['required'],       //都道府県
             'address1' => ['required'],         //市区町村・町字番地
-            'address2' => ['required'],         //建物名 マンション・アパート
             'orgClass' => ['required'],         //団体区分
             'managerUserId' => ['required'],    //管理者のユーザID
         ];
@@ -101,7 +142,6 @@ class OrganizationController extends Controller
             'postCodeLower.required' => $postCode_required,            
             'prefecture.required' => $prefecture_required,
             'address1.required' => $address1_required,
-            'address2.required' => $address2_required,
             'orgClass.required' => $orgClass_required,
             'managerUserId.required' => $managerUserId_required,
         ];
@@ -166,15 +206,20 @@ class OrganizationController extends Controller
         if ($validator->errors()->count() > 0) {
             return back()->withInput()->withErrors($validator);
         }
+        //都道府県コードを以て、都道府県情報をDBから取得
+        $targetPref = $m_prefectures->getPrefInfoFromPrefCodeJis($organizationInfo['prefecture']);
+        $organizationInfo['pref_id'] = $targetPref->pref_id;
+        $organizationInfo['pref_name'] = $targetPref->pref_name;
 
-        $organizationInfo['pref_id'] = $m_prefectures->getPrefIdFromPrefCodeJis($organizationInfo['prefecture']);
         $organizationInfo['post_code'] = $organizationInfo['postCodeUpper'].$organizationInfo['postCodeLower'];
         $organizationInfo['previousPageStatus'] = "success";
+
+        dd($organizationInfo);
         return redirect('organization/register/confirm')->with('organizationInfo',$organizationInfo);
     }
 
     //団体更新画面で確認ボタンを押下したときに発生するイベント
-    public function storeEditConfirm(Request $request,T_organization $t_organization,M_prefectures $m_prefectures)
+    public function storeEditConfirm(Request $request,T_organization $t_organization,M_prefectures $m_prefectures) : RedirectResponse
     {
         $organizationInfo = $request->all();
         include('Auth/ErrorMessages/ErrorMessages.php');
@@ -184,7 +229,6 @@ class OrganizationController extends Controller
             'postCodeLower' => ['required'],    //郵便番号
             'prefecture' => ['required'],       //都道府県
             'address1' => ['required'],         //市区町村・町字番地
-            'address2' => ['required'],         //建物名 マンション・アパート
             'orgClass' => ['required'],         //団体区分
             'managerUserId' => ['required'],    //管理者のユーザID
         ];
@@ -196,7 +240,6 @@ class OrganizationController extends Controller
             'postCodeLower.required' => $postCode_required,
             'prefecture.required' => $prefecture_required,
             'address1.required' => $address1_required,
-            'address2.required' => $address2_required,
             'orgClass.required' => $orgClass_required,
             'managerUserId.required' => $managerUserId_required,
         ];
@@ -260,12 +303,16 @@ class OrganizationController extends Controller
         if ($validator->errors()->count() > 0) {
             return back()->withInput()->withErrors($validator);
         }
+        //都道府県コードを以て、都道府県情報をDBから取得
+        $targetPref = $m_prefectures->getPrefInfoFromPrefCodeJis($organizationInfo['prefecture']);
+        $organizationInfo['pref_id'] = $targetPref->pref_id;
+        $organizationInfo['pref_name'] = $targetPref->pref_name;
         
-        //入力エラーがなければ確認画面に遷移する
-        $organizationInfo['pref_id'] = $m_prefectures->getPrefIdFromPrefCodeJis($organizationInfo['prefecture']);
         $organizationInfo['post_code'] = $organizationInfo['postCodeUpper'].$organizationInfo['postCodeLower'];
         $organizationInfo['previousPageStatus'] = "success";
-        return redirect('organization/edit/confirm')->with('organizationInfo',$organizationInfo);
+
+        $targetUrl = 'organization/edit/'.$organizationInfo['org_id'].'/confirm';
+        return redirect($targetUrl)->with(['organizationInfo'=>$organizationInfo]);
     }
 
     //登録（挿入）実行
