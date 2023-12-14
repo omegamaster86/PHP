@@ -24,20 +24,20 @@
 <body>
     <p>
         件名: 【日本ローイング協会】仮パスワードが発行されました<br />
-        送信元: xxxxx@jara.or.jp<br />
-        宛先: {{$mail_data['mailaddress']}}<br /><br />
+        送信元: {{$mail_data['from_mailaddress']}} <br />
+        宛先: {{$mail_data['to_mailaddress']}}<br /><br />
 
         ※本メールはシステムから自動送信されています。<br /><br />
 
         {{$mail_data['user_name']}} 様<br />
-        {{$mail_data['mailaddress']}}<br /><br />
+        {{$mail_data['to_mailaddress']}}<br /><br />
 
         日本ローイング協会のポータルサイトに登録いただき有難うございます。<br />
         仮パスワードが新規発行されました。<br /><br />
 
         --------------------<br />
         [ログインID]<br />
-        {{$mail_data['mailaddress']}}<br /><br />
+        {{$mail_data['to_mailaddress']}}<br /><br />
 
         [仮パスワード]<br />
         {{$mail_data['temporary_password']}}<br />

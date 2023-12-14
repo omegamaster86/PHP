@@ -99,15 +99,15 @@ class PlayerController extends Controller
         else{
 
         }
-        $playerInfo = $request->all();
+        $player_info = $request->all();
         if ($request->hasFile('photo')){
-            $playerInfo['photo']=$random_file_name. '.' . $request->file('photo')->getClientOriginalExtension();
+            $player_info['photo']=$random_file_name. '.' . $request->file('photo')->getClientOriginalExtension();
         }
         else{
             if($request->playerPictureStatus==="delete")
-                $playerInfo['photo']="";
+                $player_info['photo']="";
             else
-                $playerInfo['photo']=DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('photo');
+                $player_info['photo']=DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('photo');
         }
         $sideInfo_xor = "00000000";
         foreach($request->sideInfo as $sideInfo){
@@ -115,9 +115,9 @@ class PlayerController extends Controller
         }
         if(count($request->sideInfo)%2)
             $sideInfo_xor= $sideInfo_xor ^ "00000000";
-        $playerInfo['side_info'] = $sideInfo_xor; 
-        $playerInfo['previousPageStatus'] = "success"; 
-        return redirect('player/register/confirm')->with('playerInfo', $playerInfo);
+        $player_info['side_info'] = $sideInfo_xor; 
+        $player_info['previousPageStatus'] = "success"; 
+        return redirect('player/register/confirm')->with('player_info', $player_info);
         
     }
     /**
@@ -125,7 +125,7 @@ class PlayerController extends Controller
      */
     public function createEdit(): View
     {
-        $retrive_player_by_ID = DB::select('select * from t_player where userId = ?', [Auth::user()->userId]);
+        $retrive_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
 
         if(!count($retrive_player_by_ID))
             return view('player.register-edit',["page_mode"=>"register"]);
@@ -135,11 +135,11 @@ class PlayerController extends Controller
         if($retrive_player_by_ID[$recent_player_array]->delete_flag)
             return view('player.register-edit',["page_mode"=>"register"]);
 
-        $player_info = $retrive_player_by_ID[$recent_player_array]->all();
+        $player_info = $retrive_player_by_ID[$recent_player_array];
 
         $player_info->date_of_birth = date('Y/m/d', strtotime($retrive_player_by_ID[$recent_player_array]->date_of_birth));
 
-        return view('player.register-edit',["page_mode"=>"edit",["player_info"=>$player_info]]);
+        return view('player.register-edit',["page_mode"=>"edit","player_info"=>$player_info]);
     }
 
     /**
@@ -200,15 +200,15 @@ class PlayerController extends Controller
         if (DB::table('t_players')->where('jara_player_id',$request->playerCode)->where('delete_flag',0)->exists()){
             $retrive_player = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
             if($retrive_player[count($retrive_player)-1]->JARAPlayerCode===$request->playerCode){
-                $playerInfo = $request->all();
+                $player_info = $request->all();
                 if ($request->hasFile('photo')){
-                    $playerInfo['photo']=DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('player_id'). '.' . $request->file('photo')->getClientOriginalExtension();
+                    $player_info['photo']=DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('player_id'). '.' . $request->file('photo')->getClientOriginalExtension();
                 }
                 else{
                     if($request->playerPictureStatus==="delete")
-                        $playerInfo['photo']="";
+                        $player_info['photo']="";
                     else
-                        $playerInfo['photo']=DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('photo');
+                        $player_info['photo']=DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('photo');
                 }
                 $sideInfo_xor = "00000000";
                 foreach($request->sideInfo as $sideInfo){
@@ -216,10 +216,10 @@ class PlayerController extends Controller
                 }
                 if(count($request->sideInfo)%2)
                     $sideInfo_xor= $sideInfo_xor ^ "00000000";
-                $playerInfo['sideInfo'] = $sideInfo_xor; 
-                $playerInfo['playerId'] = $retrive_player[0]->playerId;
-                // dd($playerInfo['photo']);
-                return redirect('player/edit/confirm')->with('playerInfo', $playerInfo);
+                $player_info['sideInfo'] = $sideInfo_xor; 
+                $player_info['playerId'] = $retrive_player[0]->playerId;
+                // dd($player_info['photo']);
+                return redirect('player/edit/confirm')->with('player_info', $player_info);
             }
             $retrive_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->playerCode]);
             $existing_player_name = $retrive_player_name[0]->player_name;
@@ -231,9 +231,9 @@ class PlayerController extends Controller
         else{
 
         }
-        $retrive_player_by_ID = DB::select('select * from t_player where userId = ?', [Auth::user()->userId]);
+        $retrive_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
 
-        $playerInfo = $request->all();
+        $player_info = $request->all();
         
         
         
@@ -243,10 +243,10 @@ class PlayerController extends Controller
         }
         if(count($request->sideInfo)%2)
             $sideInfo_xor= $sideInfo_xor ^ "00000000";
-        $playerInfo['sideInfo'] = $sideInfo_xor; 
-        $playerInfo['playerId'] = $retrive_player_by_ID[0]->playerId;
-        $playerInfo['previousPageStatus'] = "success"; 
-        return redirect('player/edit/confirm')->with('playerInfo', $playerInfo);
+        $player_info['sideInfo'] = $sideInfo_xor; 
+        $player_info['playerId'] = $retrive_player_by_ID[0]->playerId;
+        $player_info['previousPageStatus'] = "success"; 
+        return redirect('player/edit/confirm')->with('player_info', $player_info);
         dd("stop");
     }
     /**
@@ -296,9 +296,9 @@ class PlayerController extends Controller
                 $e_bindings = implode(", ",$e->getBindings());
                 $e_connectionName = $e->connectionName;
 
-                $userId = Auth::user()->user_id;
+                $user_id = Auth::user()->user_id;
                 //Store error message in the player register log file.
-                Log::channel('player_register')->info("\r\n \r\n ＊＊＊「USER_ID」 ：  $userId,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
+                Log::channel('player_register')->info("\r\n \r\n ＊＊＊「USER_ID」 ：  $user_id,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
                 if($e_errorCode == 1213||$e_errorCode == 1205)
                 {
                     throw ValidationException::withMessages([
@@ -421,7 +421,7 @@ class PlayerController extends Controller
         if($retrive_player_by_ID[$recent_player_array]->delete_flag)
             return view('player.register-edit',["page_mode"=>"register"]);
 
-        $player_info = $retrive_player_by_ID[$recent_player_array]->all();
+        $player_info = $retrive_player_by_ID[$recent_player_array];
        
         $player_info->date_of_birth = date('Y/m/d', strtotime($retrive_player_by_ID[$recent_player_array]->date_of_birth));
 
@@ -436,14 +436,14 @@ class PlayerController extends Controller
 
         $player_info = $retrive_player_ID[count($retrive_player_ID)-1];
         
-        if($playerInfo->delete_flag){
+        if($player_info->delete_flag){
             return view('player.register-edit',["page_mode"=>"register"]);
         }
         if($player_info->sex===1){
             $player_info->sex = "男";
         }
         elseif($player_info->sex===2){
-            $playerInfo->sex = "女";
+            $player_info->sex = "女";
         }
         else{
             $player_info->sex = "";
@@ -487,9 +487,9 @@ class PlayerController extends Controller
             $e_bindings = implode(", ",$e->getBindings());
             $e_connectionName = $e->connectionName;
 
-            $userId = Auth::user()->userId;
+            $user_id = Auth::user()->user_id;
             //Store error message in the player delete log file.
-            Log::channel('player_delete')->info("\r\n \r\n ＊＊＊「USER_ID」 ：  $userId,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
+            Log::channel('player_delete')->info("\r\n \r\n ＊＊＊「USER_ID」 ：  $user_id,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
         }
                 
         return redirect('player/register')->with('status', "選手情報の削除が完了しました。"); 

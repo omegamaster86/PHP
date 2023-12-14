@@ -111,11 +111,11 @@
                                     写真
 
                                 </div>
-                                @if($player_Info['photo']??"")
-                                <img id = "playerPicture" src="{{ asset('images/players/'.$player_Info['photo']) }}" class="avatar img-circle img-thumbnail" alt="avatar">
+                                @if($player_info['photo']??"")
+                                <img id = "playerPicture" src="{{ asset('images/players/'.$player_info['photo']) }}" class="avatar img-circle img-thumbnail" alt="avatar">
                                 @else
-                                    @if($player_Info->photo??"")
-                                    <img id = "playerPicture" src="{{ asset('images/players/'.$player_Info->photo) }}"
+                                    @if($player_info->photo??"")
+                                    <img id = "playerPicture" src="{{ asset('images/players/'.$player_info->photo) }}"
                                 class="avatar img-circle img-thumbnail" alt="avatar">
                                     @else
                                     <img id = "playerPicture" src="{{ asset('images/no-image.png') }}"
@@ -124,7 +124,7 @@
                                 @endif
 
                             </div>
-                            <input type="hidden" name="photo" value="{{$player_Info['photo']??($player_Info->photo??"")}}" style="display:none">
+                            <input type="hidden" name="photo" value="{{$player_info['photo']??($player_info->photo??"")}}" style="display:none">
                         </div>
                         <div class="col-md-1"></div>
 
@@ -137,9 +137,9 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
                                     @if($page_mode==="delete")
-                                    {{str_pad(($player_Info->playerId??""), 8, "0", STR_PAD_LEFT)}}
+                                    {{str_pad(($player_info->playerId??""), 8, "0", STR_PAD_LEFT)}}
                                     @else
-                                    {{ str_pad(($player_Info['playerId']??""), 8, "0", STR_PAD_LEFT)}}
+                                    {{ str_pad(($player_info['playerId']??""), 8, "0", STR_PAD_LEFT)}}
                                     @endif
                                 </div>
                             </div>
@@ -151,11 +151,11 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
                                     @if($page_mode==="delete")
-                                    {{$player_Info->jara_player_id??""}}
+                                    {{$player_info->jara_player_id??""}}
                                     @else
-                                    {{$player_Info['jara_player_id']??""}}
+                                    {{$player_info['jara_player_id']??""}}
                                     <input name="playerCode" type="hidden"
-                                        value="{{$player_Info['jara_player_id']??""}}">
+                                        value="{{$player_info['jara_player_id']??""}}">
                                     @endif
                                 </div>
 
@@ -166,11 +166,11 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
                                     @if($page_mode==="delete")
-                                    {{$player_Info->playerName??""}}
+                                    {{$player_info->playerName??""}}
                                     @else
-                                    {{$player_Info['playerName']??""}}
+                                    {{$player_info['playerName']??""}}
                                     <input name="playerName" type="hidden"
-                                        value="{{$player_Info['playerName']??""}}">
+                                        value="{{$player_info['playerName']??""}}">
                                     @endif
                                 </div>
                             </div>
@@ -181,11 +181,11 @@
 
                                 <div class="col-sm-7 col-form-label">
                                     @if($page_mode==="delete")
-                                    {{date('Y/m/d', strtotime($player_Info->date_of_birth))}}
+                                    {{date('Y/m/d', strtotime($player_info->date_of_birth))}}
                                     @else
-                                    {{$player_Info['date_of_birth']??""}}
+                                    {{$player_info['date_of_birth']??""}}
                                     <input name="date_of_birth" type="hidden"
-                                        value="{{$player_Info['date_of_birth']??""}}">
+                                        value="{{$player_info['date_of_birth']??""}}">
                                     @endif
                                 </div>
 
@@ -199,15 +199,15 @@
                                     @if($page_mode==="delete")
                                     {{$player_info->sex??""}}
                                     @else
-                                    @if(($player_Info['sex']??"")==="1")
+                                    @if(($player_info['sex']??"")==="1")
                                     男
-                                    @elseif(($player_Info['sex']??"")==="2")
+                                    @elseif(($player_info['sex']??"")==="2")
                                     女
                                     @else
                                     ""
                                     @endif
                                     <input name="sex" type="hidden" value="{{
-                                        $player_Info['sex']??""
+                                        $player_info['sex']??""
                                         }}">
                                     @endif
                                 </div>
@@ -221,10 +221,10 @@
                                     {{$player_info->height??""}} cm
                                     @else
                                     {{
-                                    $player_Info['height']??""
+                                    $player_info['height']??""
                                     }} cm
                                     <input name="height" type="hidden" value="{{
-                                        $player_Info['height']??""
+                                        $player_info['height']??""
                                         }}">
                                     @endif
                                 </div>
@@ -239,10 +239,10 @@
                                     @else
                                     
                                     {{
-                                    $player_Info['weight']??""
+                                    $player_info['weight']??""
                                     }} kg
                                     <input name="weight" type="hidden" value="{{
-                                        $player_Info['weight']??""
+                                        $player_info['weight']??""
                                         }}">
                                     @endif
                                 </div>
@@ -259,13 +259,13 @@
                                     {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
                                     {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
                                     @else
-                                    {{((str_pad(($player_Info['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'S　' : '' }}
-                                    {{((str_pad(($player_Info['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'B　' : '' }}
-                                    {{((str_pad(($player_Info['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
-                                    {{((str_pad(($player_Info['side_info']??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
+                                    {{((str_pad(($player_info['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'S　' : '' }}
+                                    {{((str_pad(($player_info['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'B　' : '' }}
+                                    {{((str_pad(($player_info['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
+                                    {{((str_pad(($player_info['side_info']??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
                                    
                                     <input name="side_info" type="hidden" value="{{
-                                        $player_Info['side_info']??""}}">
+                                        $player_info['side_info']??""}}">
                                     @endif
                                 </div>
                             </div>
@@ -280,12 +280,12 @@
                                     {{$player_info->birth_country??""}}
                                     @else
                                     {{
-                                    $player_Info['birthCountry']??""
+                                    $player_info['birthCountry']??""
                                     }}
                                     
                                     @endif
                                     <input name="birth_country" id="confirmBirthCountry" type="hidden" value="{{($player_info->birth_country??"")?$player_info->birth_country :
-                                        ($player_Info['birth_country']??"")
+                                        ($player_info['birth_country']??"")
                                         }}">
                                 </div>
 
@@ -299,11 +299,11 @@
                                     {{$player_info->birth_prefecture??""}}
                                     @else
                                     {{
-                                    $player_Info['birth_prefecture']??""}}
+                                    $player_info['birth_prefecture']??""}}
                                     
                                     @endif
                                     <input name="birth_prefecture" type="hidden" value="{{($player_info->birth_prefecture??"")?$player_info->birth_prefecture :
-                                        $player_Info['birth_prefecture']??""}}">
+                                        $player_info['birth_prefecture']??""}}">
                                 </div>
 
                             </div>
@@ -316,10 +316,10 @@
                                     {{$player_info->residence_country??""}}
                                     @else
                                     {{
-                                    $player_Info['residence_country']??""}}
+                                    $player_info['residence_country']??""}}
                                     @endif
                                     <input id="confirmCountry" name="residence_country" type="hidden" value="{{
-                                        ($player_info->residence_country??"")?$player_info->residence_country : ($player_Info['residence_country']??"")}}">
+                                        ($player_info->residence_country??"")?$player_info->residence_country : ($player_info['residence_country']??"")}}">
                                 </div>
 
                             </div>
@@ -328,13 +328,13 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
                                     @if($page_mode === "delete")
-                                    {{$player_Info->residence_prefecture??""}}
+                                    {{$player_info->residence_prefecture??""}}
                                     @else
                                     {{
-                                    $player_Info['residence_prefecture']??""}}
+                                    $player_info['residence_prefecture']??""}}
                                     @endif
                                     <input name="residence_prefecture" type="hidden" value="{{($player_info->residence_prefecture??"")?$player_info->residence_prefecture :
-                                        ($player_Info['residence_prefecture']??"")}}">
+                                        ($player_info['residence_prefecture']??"")}}">
                                 </div>
 
                             </div>
@@ -394,7 +394,7 @@
                 </div>
                 @endif
 
-                @if(($player_Info['previous_page_status']??"")==="success")
+                @if(($player_info['previous_page_status']??"")==="success")
                 <!-- Button trigger modal -->
                 <button style="display: none" type="button" id="idCheckedMessage" class="btn btn-secondary btn-lg"
                     data-toggle="modal" data-target="#staticBackdrop">

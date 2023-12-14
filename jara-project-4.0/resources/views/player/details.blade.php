@@ -29,7 +29,35 @@
 
     {{-- Date Picker --}}
     <link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
+    <style>
+        .container {
+            padding: 2rem 0rem;
+        }
 
+        h4 {
+            margin: 2rem 0rem 1rem;
+        }
+
+        .table-image {
+            td, th {
+                vertical-align: middle;
+            }
+        }
+        .table{
+            background-color: #f1f1f1;
+            margin: 0rem
+            
+        }
+        .table thead th,td{ text-align: center; vertical-align: middle;}
+        .table-striped>tbody>tr:nth-of-type(odd) {
+            background-color: #f9f9f9;
+        }
+        .do-scroll{
+            width: 100%
+            height: 650px; 
+            overflow-y: auto;    /* Trigger vertical scroll    */
+        }
+    </style>
 </head>
 
 <body>
@@ -82,14 +110,14 @@
         <div class="row"
             style="background: linear-gradient(to right,#1991FC,  #45b796); color:#fff; padding:30px 0px; width: 100%;">
             <div class="col-md-9 ">
-                    <form action="">
+                    <form class="d-flex" action="">
                         <div class="col-md-5 ">
                             <div class=" col-md-5" style="margin-left: 17%;">
                                 <div style="margin: 0px 0px 5px 15px; text-align:center">
                                     写真
                                 </div>
-                                @if($player_Info->photo??"")
-                                    <img id = "playerPicture" src="{{ asset('images/players/'.$player_Info->photo) }}" class="avatar img-circle img-thumbnail" alt="avatar">
+                                @if($player_info->photo??"")
+                                    <img id = "playerPicture" src="{{ asset('images/players/'.$player_info->photo) }}" class="avatar img-circle img-thumbnail" alt="avatar">
                                 @else
                                     <img id = "playerPicture" src="{{ asset('images/no-image.png') }}" class="avatar img-circle img-thumbnail" alt="avatar">
                                 @endif
@@ -103,7 +131,7 @@
                                 <label style="cursor:pointer;text-align:right" for="jara_player_id" class="col-sm-5  col-form-label">選手ID
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{str_pad(($player_Info->player_id??""), 8, "0", STR_PAD_LEFT)}}
+                                    {{str_pad(($player_info->player_id), 8, "0", STR_PAD_LEFT)}}
                                 </div>
                             </div>
 
@@ -111,7 +139,7 @@
                                 <label style="cursor:pointer;text-align:right" class="col-sm-5  col-form-label">JARA選手コード
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{$player_Info->jara_player_id??""}}
+                                    {{$player_info->jara_player_id??""}}
                                 </div>
                             </div>
                             <div class="form-group row ">
@@ -119,7 +147,7 @@
                                     選手名
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{$player_Info->player_name??""}}
+                                    {{$player_info->player_name??""}}
                                 </div>
                             </div>
 
@@ -128,7 +156,7 @@
                                     生年月日
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{date('Y/m/d', strtotime($player_Info->date_of_birth))}}
+                                    {{date('Y/m/d', strtotime($player_info->date_of_birth))}}
                                 </div>
 
                             </div>
@@ -138,7 +166,7 @@
                                     性別
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{$player_Info->sex??""}}
+                                    {{$player_info->sex??""}}
                                 </div>
                             </div>
                             <div class="form-group row ">
@@ -147,8 +175,8 @@
 
                                 <div class="col-sm-7 col-form-label">
 
-                                    {{$player_Info->height??""}} 
-                                    {{($player_Info->height??"") ? "cm" : ""}}
+                                    {{$player_info->height??""}} 
+                                    {{($player_info->height??"") ? "cm" : ""}}
                                     
                                 </div>
                             </div>
@@ -158,7 +186,7 @@
                                 </label>
 
                                 <div class="col-sm-7 col-form-label">
-                                    {{$player_Info->weight??""}} {{($player_Info->weight??"") ? "kg" : ""}}
+                                    {{$player_info->weight??""}} {{($player_info->weight??"") ? "kg" : ""}}
                                 </div>
 
                             </div>
@@ -166,10 +194,10 @@
                                 <label style="cursor:pointer;text-align:right" class="col-sm-5  col-form-label">サイド情報
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{((str_pad(($player_Info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'S　' : '' }}
-                                    {{((str_pad(($player_Info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'B　' : '' }}
-                                    {{((str_pad(($player_Info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
-                                    {{((str_pad(($player_Info->side_info??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
+                                    {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'S　' : '' }}
+                                    {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'B　' : '' }}
+                                    {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
+                                    {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
                                 </div>
                             </div>
 
@@ -179,7 +207,7 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
 
-                                    {{$player_Info->birth_country??""}}
+                                    {{$player_info->birth_country??""}}
                                     
                                 </div>
 
@@ -190,7 +218,7 @@
                                 </label>
 
                                 <div class="col-sm-7 col-form-label">
-                                    {{$player_Info->birth_prefecture??""}}
+                                    {{$player_info->birth_prefecture??""}}
                                 </div>
 
                             </div>
@@ -198,7 +226,7 @@
                                 <label style="text-align:right" for="sex" class="col-sm-5  col-form-label">居住地
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{$player_Info->residence_country??""}}
+                                    {{$player_info->residence_country??""}}
                                 </div>
 
                             </div>
@@ -206,7 +234,7 @@
                                 <label style="text-align:right" class="col-sm-5  col-form-label">都道府県
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{$player_Info->residence_prefecture??""}}
+                                    {{$player_info->residence_prefecture??""}}
                                 </div>
 
                             </div>
@@ -223,6 +251,114 @@
                 </button>
             </div>
         </div>
+        <div class="row" style="margin: 0rem 2rem">
+            <div class="col-12" id="scrollableTable" style="width: 100%; overflow-x: auto; " >
+                <div class="col-12" style="margin:0rem -1rem" >
+                    <a role="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary" href="javascript:history.back()">すべて</a>
+                    <a role="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary" href="javascript:history.back()">公式</a>
+                    <a role="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary" href="javascript:history.back()">非公式</a>
+                </div>
+                <table class="table table-striped table-bordered" >
+                    <thead >
+                        <tr>
+                            <th scope="col">大会名</th>
+                            <th scope="col">公式／非公式</th>
+                            <th scope="col">開催日</th>
+                            <th scope="col">団体所属</th>
+                            <th scope="col">レースNo.</th>
+                            <th scope="col">種目</th>
+                            <th scope="col">レース名</th>
+                            <th scope="col">組別</th>
+                            <th scope="col">クルー名</th>
+                            <th scope="col">順位</th>
+                            <th scope="col">500m</th>
+                            <th scope="col">1000m</th>
+                            <th scope="col">1500m</th>
+                            <th scope="col">2000m</th>
+                            <th scope="col">最終タイム</th>
+                            <th scope="col">ストロークレート（平均）</th>
+                            <th scope="col">500mlapストロークレート</th>
+                            <th scope="col">1000mlapストロークレート</th>
+                            <th scope="col">1500mlapストロークレート</th>
+                            <th scope="col">2000mlapストロークレート</th>
+                            <th scope="col">立ち合い有無</th>
+                            <th scope="col">エルゴ体重</th>
+                            <th scope="col">選手身長（出漕時点）</th>
+                            <th scope="col">選手体重（出漕時点）</th>
+                            <th scope="col">シート番号（出漕時点）</th>
+                            <th scope="col">出漕結果記録名</th>
+                            <th scope="col">発艇日時</th>
+                            <th scope="col">ゴール地点風速</th>
+                            <th scope="col">ゴール地点風向</th>
+                            <th scope="col">スタート地点風速</th>
+                            <th scope="col">スタート地点風向</th>
+                        </tr>
+                    </thead>
+                    <tbody class=" ">
+                        {{-- @foreach($organizations as $organization) --}}
+                        <tr>
+                            {{-- <th>{{$user->id}}</th>
+                            <th>{{$user->name}}</th> --}}
+                            {{-- <th scope="row">公式</th> --}}
+                            <td>
+                                {{-- @if($organization->jara_org_type)
+                                正規
+                                @else
+                                任意
+                                @endif --}}
+                            </td>
+                            <td>
+                                {{-- <a target="_blank" style="text-decoration: underline" href="{{route('organizations.edit',['targetOrgId' => $organization->org_id])}}">
+                                    {{$organization->entrysystem_org_id}}
+                                </a> --}}
+                            </td>
+                            <td>    
+                                {{-- <a target="_blank" style="text-decoration: underline" href="{{route('organizations.edit',['targetOrgId' => $organization->org_id])}}">
+                                    D{{ str_pad($organization->org_id, 4, "0", STR_PAD_LEFT)}}
+                                </a> --}}
+                            </td>
+                            <td>
+                                {{-- <a target="_blank" style="text-decoration: underline" href="{{route('organizations.edit',['targetOrgId' => $organization->org_id])}}">
+                                    {{$organization->org_name}}
+                                </a> --}}
+                            </td>
+                            <td>
+                                {{-- <a href="{{route('organizations.edit',['targetOrgId' => $organization->org_id])}}" role="button" class="btn btn-primary" >更新</a> --}}
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            
+                        </tr>
+                        {{-- @endforeach --}}
+                        
+                    </tbody>
+                </table>
+            </div>    
+        </div> 
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous">
     </script>
@@ -266,6 +402,15 @@
             document.getElementById("checkeWarningMessage").click();
             return false;
         }
+    </script>
+    <script>
+        $(document).ready(function(){
+        var rowCount = $('tbody tr').length;
+        if(rowCount > 10){
+            console.log(rowCount);
+            $('#scrollableTable').addClass('do-scroll');
+        }
+        });
     </script>
 
     <script src="{{ asset('js/nav.js') }}"></script>

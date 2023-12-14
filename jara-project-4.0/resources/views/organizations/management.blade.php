@@ -34,10 +34,9 @@
             background-color: #f9f9f9;
         }
         .do-scroll{
-            width: 100%;
-            height: 220px; 
-            display: -moz-grid;
-            overflow-y: scroll;
+            height: 650px; 
+            overflow-y: auto;    /* Trigger vertical scroll    */
+            overflow-x: hidden;  /* Hide the horizontal scroll */
         }
     </style>
     
@@ -81,9 +80,9 @@
                         団体登録
                     </a>
                 </div>
-                <div class="col-12" >
+                <div class="col-12" id="scrollableTable">
                     <table class="table table-striped table-bordered" >
-                        <thead>
+                        <thead class=" ">
                             <tr>
                             <th scope="col">団体種別</th>
                             <th scope="col">エントリーシステムのID</th>
@@ -92,14 +91,18 @@
                             <th scope="col" colspan="2">操作</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class=" ">
                             @foreach($organizations as $organization)
                             <tr>
                                 {{-- <th>{{$user->id}}</th>
                                 <th>{{$user->name}}</th> --}}
                                 {{-- <th scope="row">公式</th> --}}
                                 <td>
-                                    {{$organization->jara_org_type}}
+                                    @if($organization->jara_org_type)
+                                    正規
+                                    @else
+                                    任意
+                                    @endif
                                 </td>
                                 <td>
                                     <a target="_blank" style="text-decoration: underline" href="{{route('organizations.edit',['targetOrgId' => $organization->org_id])}}">
@@ -108,7 +111,7 @@
                                 </td>
                                 <td>    
                                     <a target="_blank" style="text-decoration: underline" href="{{route('organizations.edit',['targetOrgId' => $organization->org_id])}}">
-                                        {{$organization->org_id }}
+                                        D{{ str_pad($organization->org_id, 4, "0", STR_PAD_LEFT)}}
                                     </a>
                                 </td>
                                 <td>
@@ -126,6 +129,7 @@
                                 </td>
                             </tr>
                             @endforeach
+                            
                         </tbody>
                     </table>
                 </div>
@@ -145,9 +149,9 @@
     <script>
         $(document).ready(function(){
         var rowCount = $('tbody tr').length;
-        if(rowCount > 1){
+        if(rowCount > 10){
             console.log(rowCount);
-            $('table').addClass('do-scroll');
+            $('#scrollableTable').addClass('do-scroll');
         }
         });
     </script>

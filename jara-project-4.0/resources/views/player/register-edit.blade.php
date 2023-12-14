@@ -169,14 +169,13 @@
                                 {!! Session::get('message')!!}
                             </div>
                         </div>
-
                         @if($page_mode==="edit")
                         <div class="form-group row ">
                             <label onclick="details('playerIdInfo')" style="cursor:pointer;text-align:right"
                                 for="playerCode" class="col-sm-5  col-form-label">選手ID　<span><i
                                         class="fa fa-question-circle" aria-hidden="true"></i></span>
                             </label>
-                            <div class="col-sm-7 col-form-label">{{ str_pad($playerId, 8, "0", STR_PAD_LEFT)}}</div>
+                            <div class="col-sm-7 col-form-label">{{ str_pad($player_info->player_id, 8, "0", STR_PAD_LEFT)}}</div>
                             <div id="playerIdInfo" style="margin-left:6rem">あああああああああああ</div>
                         </div>
                         @endif
@@ -189,9 +188,9 @@
                             <div class="col-sm-7">
                                 <input id="playerCode" class="form-control rounded  col-form-label"
                                     name="jara_player_id" maxlength="12" type="text"
-                                    value="{{old('jara_player_id')?old('jara_player_id'):$jara_player_id??""}}">
+                                    value="{{old('jara_player_id')?old('jara_player_id'):$player_info->jara_player_id??""}}">
                                 <input id="registeredPlayerCode"  type="hidden"
-                                    value="{{$jara_player_id??""}}">
+                                    value="{{$player_info->jara_player_id??""}}">
                                 
                             </div>
 
@@ -211,7 +210,7 @@
                             <div class="col-sm-7">
                                 <input id="playerName" maxlength="50" class="form-control rounded  col-form-label"
                                     name="player_name" type="text"
-                                    value="{{old('player_name')?old('player_name'):$player_name??""}}">
+                                    value="{{old('player_name')?old('player_name'):$player_info->player_name??""}}">
                             </div>
 
                             <div id="playerNameInfo" style="margin-left:6rem">あああああああああああああああああああ</div>
@@ -232,7 +231,7 @@
                                 <input id="dateOfBirth" name="date_of_birth" type="text"
                                     style="color: #000;background-color: #fff;"
                                     class="flatpickr form-control rounded  col-form-label"
-                                    value="{{(old('date_of_birth')?old('date_of_birth'):$date_of_birth??"年/月/日" )}}" readonly="readonly">
+                                    value="{{(old('date_of_birth')?old('date_of_birth'):$player_info->date_of_birth??"年/月/日" )}}" readonly="readonly">
                             </div>
 
                             <div id="birthDayInfo" style="margin-left:5rem;">あああああああああああああああああああ</div>
@@ -251,9 +250,9 @@
                             </label>
                             <div class="col-sm-7">
                                 <select id="sex" name="sex" class="form-control rounded">
-                                    <option value="" {{(old('sex')?old('sex'):$sex??"")=="" ? "selected" : "" }}></option>
-                                    <option value=1 {{(old('sex')?old('sex'):$sex??"")=="1" ? "selected" : "" }}>男</option>
-                                    <option value=2 {{(old('sex')?old('sex'):$sex??"")=="2" ? "selected" : "" }}>女</option>
+                                    <option value="" {{(old('sex')?old('sex'):$player_info->sex??"")=="" ? "selected" : "" }}></option>
+                                    <option value=1 {{(old('sex')?old('sex'):$player_info->sex??"")=="1" ? "selected" : "" }}>男</option>
+                                    <option value=2 {{(old('sex')?old('sex'):$player_info->sex??"")=="2" ? "selected" : "" }}>女</option>
 
                                 </select>
                             </div>
@@ -272,7 +271,7 @@
                             </label>
                             <div class="col-sm-5">
                                 <input class="form-control" id="height" name="height" type="text" maxlength=6
-                                    style="float: left" value={{old('height')?old('height'):$height??""}}>
+                                    style="float: left" value={{old('height')?old('height'):$player_info->height??""}}>
                             </div>
                             <label class="col-form-label">
                                 cm
@@ -290,7 +289,7 @@
                             </label>
                             <div class="col-sm-5">
                                 <input class="form-control" id="weight" name="weight" type="text" maxlength=6
-                                    style="float: left" value={{old('weight')?old('weight'):$weight??""}}>
+                                    style="float: left" value={{old('weight')?old('weight'):$player_info->weight??""}}>
                             </div>
 
                             <label class="col-form-label">
@@ -312,14 +311,14 @@
                                 <div class="col-sm-6">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="side_info[]"
-                                            value="00000001" {{((str_pad(($side_info??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'checked' : '' }} id="checkS">
+                                            value="00000001" {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'checked' : '' }} id="checkS">
                                         <label class="form-check-label" for="checkS">
                                             : S
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="side_info[]"
-                                            value="00000010" {{((str_pad(($side_info??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'checked' : '' }} id="checkbox">
+                                            value="00000010" {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'checked' : '' }} id="checkbox">
                                         <label class="form-check-label" for="checkB">
                                             : B
                                         </label>
@@ -328,14 +327,14 @@
                                 <div class="col-sm-6">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="side_info[]"
-                                            value="00000100" {{((str_pad(($side_info??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'checked' : '' }} id="checkX">
+                                            value="00000100" {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'checked' : '' }} id="checkX">
                                         <label class="form-check-label" for="checkX">
                                             : X
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="side_info[]"
-                                            value="00001000" {{((str_pad(($side_info??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'checked' : '' }} id="checkCOX">
+                                            value="00001000" {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'checked' : '' }} id="checkCOX">
                                         <label class="form-check-label" for="checkCOX">
                                             : COX
                                         </label>
@@ -359,9 +358,9 @@
                             </label>
                             <div class="col-sm-7">
                                 <select id="birthCountry" name="birth_country" class="form-control" value="">
-                                    <option value=1 {{(old('birth_country')?old('birth_country'):$birth_country??"")==1 ? "selected" : "" }}>日本</option>
-                                    <option value=2 {{(old('birth_country')?old('birth_country'):$birth_country??"")==2 ? "selected" : "" }}>アメリカ</option>
-                                    <option value=3 {{(old('birth_country')?old('birth_country'):$birth_country??"")==3 ? "selected" : "" }}>インド</option>
+                                    <option value=1 {{(old('birth_country')?old('birth_country'):$player_info->birth_country??"")==1 ? "selected" : "" }}>日本</option>
+                                    <option value=2 {{(old('birth_country')?old('birth_country'):$player_info->birth_country??"")==2 ? "selected" : "" }}>アメリカ</option>
+                                    <option value=3 {{(old('birth_country')?old('birth_country'):$player_info->birth_country??"")==3 ? "selected" : "" }}>インド</option>
                                 </select>
                             </div>
 
@@ -375,9 +374,9 @@
                             </label>
                             <div class="col-sm-7">
                                 <select id="birthPrefecture" name="birth_prefecture" class="form-control">
-                                    <option value=1 {{(old('birth_prefecture')?old('birth_prefecture'):$birth_prefecture??"")==1 ? "selected" : "" }}>東京</option>
-                                    <option value=2 {{(old('birth_prefecture')?old('birth_prefecture'):$birth_prefecture??"")==2 ? "selected" : "" }}>愛知</option>
-                                    <option value=3  {{(old('birth_prefecture')?old('birth_prefecture'):$birth_prefecture??"")==3 ? "selected" : "" }}>宮崎</option>
+                                    <option value=1 {{(old('birth_prefecture')?old('birth_prefecture'):$player_info->birth_prefecture??"")==1 ? "selected" : "" }}>東京</option>
+                                    <option value=2 {{(old('birth_prefecture')?old('birth_prefecture'):$player_info->birth_prefecture??"")==2 ? "selected" : "" }}>愛知</option>
+                                    <option value=3  {{(old('birth_prefecture')?old('birth_prefecture'):$player_info->birth_prefecture??"")==3 ? "selected" : "" }}>宮崎</option>
                                 </select>
                             </div>
 
@@ -391,9 +390,9 @@
                             </label>
                             <div class="col-sm-7">
                                 <select id="country" name="residence_country" class="form-control">
-                                    <option value=1 {{(old('residence_country')?old('residence_country'):$residence_country??"")==1 ? "selected" : "" }}>日本</option>
-                                    <option value=2 {{(old('residence_country')?old('residence_country'):$residence_country??"")==2 ? "selected" : "" }}>アメリカ</option>
-                                    <option value=3 {{(old('residence_country')?old('residence_country'):$residence_country??"")==3 ? "selected" : "" }}>インド</option>
+                                    <option value=1 {{(old('residence_country')?old('residence_country'):$player_info->residence_country??"")==1 ? "selected" : "" }}>日本</option>
+                                    <option value=2 {{(old('residence_country')?old('residence_country'):$player_info->residence_country??"")==2 ? "selected" : "" }}>アメリカ</option>
+                                    <option value=3 {{(old('residence_country')?old('residence_country'):$player_info->residence_country??"")==3 ? "selected" : "" }}>インド</option>
                                 </select>
                             </div>
 
@@ -408,9 +407,9 @@
                             </label>
                             <div class="col-sm-7">
                                 <select id="prefecture" name="residencePrefecture" class="form-control">
-                                    <option value=1 {{(old('residenceCountry')?old('residenceCountry'):$residenceCountry??"")==1 ? "selected" : "" }}>東京</option>
-                                    <option value=2 {{(old('residenceCountry')?old('residenceCountry'):$residenceCountry??"")==2 ? "selected" : "" }}>愛知</option>
-                                    <option value=3 {{(old('residenceCountry')?old('residenceCountry'):$residenceCountry??"")==3 ? "selected" : "" }}>宮崎</option>
+                                    <option value=1 {{(old('residenceCountry')?old('residenceCountry'):$player_info->residenceCountry??"")==1 ? "selected" : "" }}>東京</option>
+                                    <option value=2 {{(old('residenceCountry')?old('residenceCountry'):$player_info->residenceCountry??"")==2 ? "selected" : "" }}>愛知</option>
+                                    <option value=3 {{(old('residenceCountry')?old('residenceCountry'):$player_info->residenceCountry??"")==3 ? "selected" : "" }}>宮崎</option>
                                 </select>
                             </div>
 

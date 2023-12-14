@@ -171,7 +171,8 @@ class RegisteredUserController extends Controller
         //Store user information for sending email.
         $mail_data = [
             'user_name' => $request->user_name,
-            'mailaddress' => $request->mailaddress,
+            'to_mailaddress' => $request->mailaddress,
+            'from_mailaddress' => 'xxxxx@jara.or.jp',
             'temporary_password' => $temp_password,
             'temporary_password_expiration_date'=> $new_mail_date
         ];
