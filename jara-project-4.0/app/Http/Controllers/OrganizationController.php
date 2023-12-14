@@ -346,4 +346,10 @@ class OrganizationController extends Controller
             return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
         }
     }
+    public function createManagement(): View
+    {
+        $organizations = DB::select('select * from t_organizations');
+        return view('organizations.management', ['organizations' => $organizations]);
+    }
+
 }
