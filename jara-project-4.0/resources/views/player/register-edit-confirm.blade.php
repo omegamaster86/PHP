@@ -49,11 +49,11 @@
             <a href={{route('user.password-change')}}>パスワード変更</a>
             <a href={{route('player.register')}}>選手情報登録</a>
             <a href={{route('player.edit')}}>選手情報更新</a>
+            <a href={{route('player.details')}}>選手情報参照</a>
             <a href={{route('player.delete')}}>選手情報削除</a>
             <a href={{route('organization.management')}}>団体管理</a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-    
                 <a href="route('logout')" onclick="event.preventDefault();
                                     this.closest('form').submit();">
                     ログアウト

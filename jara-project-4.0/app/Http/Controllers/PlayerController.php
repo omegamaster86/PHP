@@ -37,7 +37,7 @@ class PlayerController extends Controller
                 return view('player.register-edit',["page_mode"=>"register"]);
             }
             else {
-                $player_info = $retrive_player_ID[count($retrive_player_ID)-1]->all();
+                $player_info = $retrive_player_ID[count($retrive_player_ID)-1];
                 $player_info->date_of_birth = date('Y/m/d', strtotime($retrive_player_ID[count($retrive_player_ID)-1]->date_of_birth));
 
                 return view('player.register-edit',["page_mode"=>"edit","player_info"=>$player_info]);
@@ -413,6 +413,15 @@ class PlayerController extends Controller
     {
         $retrive_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
 
+
+        $retrieve_all_race_records = DB::select('select * from t_race_result_record');
+        // $retrieve_all_race_record->event_name = DB::select('select event_name from t_races where race_id = ?', [$retrieve_all_race_record->race_id]);
+        foreach($retrieve_all_race_records as $retrieve_all_race_record){
+            // dd($retrieve_all_race_record->{'500m_laptime'});
+            $retrieve_all_race_record->event_name = DB::table('t_races')->where('race_id', $retrieve_all_race_record->race_id)->value('event_name');
+            $retrieve_all_race_record->event_start_date = DB::table('t_tournaments')->where('tourn_id', $retrieve_all_race_record->tourn_id)->value('event_start_date');
+        }
+
         if(!count($retrive_player_by_ID))
             return view('player.register-edit',["page_mode"=>"register"]);
 
@@ -424,8 +433,26 @@ class PlayerController extends Controller
         $player_info = $retrive_player_by_ID[$recent_player_array];
        
         $player_info->date_of_birth = date('Y/m/d', strtotime($retrive_player_by_ID[$recent_player_array]->date_of_birth));
+        if($player_info->sex===1){
+            $player_info->sex = "男";
+        }
+        elseif($player_info->sex===2){
+            $player_info->sex = "女";
+        }
+        else{
+            $player_info->sex = "";
+        }
+        if($player_info->birth_country==="1"){
+            $player_info->birth_country = "日本";
+        }
+        elseif($player_info->birth_country==="2"){
+            $player_info->birth_country = "アメリカ";
+        }
+        elseif($player_info->birth_country==="3"){
+            $player_info->birth_country = "インド";
+        }
 
-        return view('player.details',["player_info"=>$player_info]);
+        return view('player.details',["player_info"=>$player_info, 'all_race_records' => $retrieve_all_race_records]);
     }
     public function createDelete(): View
     {

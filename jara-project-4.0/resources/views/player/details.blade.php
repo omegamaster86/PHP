@@ -73,6 +73,7 @@
             <a href={{route('user.password-change')}}>パスワード変更</a>
             <a href={{route('player.register')}}>選手情報登録</a>
             <a href={{route('player.edit')}}>選手情報更新</a>
+            <a href={{route('player.details')}}>選手情報参照</a>
             <a href={{route('player.delete')}}>選手情報削除</a>
             <a href={{route('organization.management')}}>団体管理</a>
             <form method="POST" action="{{ route('logout') }}">
@@ -108,7 +109,7 @@
 
         </div>
         <div class="row"
-            style="background: linear-gradient(to right,#1991FC,  #45b796); color:#fff; padding:30px 0px; width: 100%;">
+            style="background: linear-gradient(to right,#1991FC,  #45b796); color:#fff; padding:30px 0px; width: 100%; ">
             <div class="col-md-9 ">
                     <form class="d-flex" action="">
                         <div class="col-md-5 ">
@@ -194,10 +195,38 @@
                                 <label style="cursor:pointer;text-align:right" class="col-sm-5  col-form-label">サイド情報
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'S　' : '' }}
-                                    {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'B　' : '' }}
-                                    {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
-                                    {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="side_info[]"
+                                            value="00000001" {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'checked' : '' }} id="checkS">
+                                        <label class="form-check-label" for="checkS">
+                                            : S
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="side_info[]"
+                                            value="00000010" {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'checked' : '' }} id="checkB">
+                                        <label class="form-check-label" for="checkB">
+                                            : B
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="side_info[]"
+                                            value="00000100" {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'checked' : '' }} id="checkX">
+                                        <label class="form-check-label" for="checkX">
+                                            : X
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="side_info[]"
+                                            value="00001000" {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'checked' : '' }} id="checkC">
+                                        <label class="form-check-label" for="checkC">
+                                            : C
+                                        </label>
+                                    </div>
+                                    
+                                    
+                                    
+                                    
                                 </div>
                             </div>
 
@@ -207,12 +236,13 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
 
-                                    {{$player_info->birth_country??""}}
+                                    {{$player_info->birth_country}}
+                                    <input type="hidden" id = "birthCountry" value="{{$player_info->birth_country}}"/>
                                     
                                 </div>
 
                             </div>
-                            <div class="form-group row " id="confirmBirthPrefectures" style="display: none">
+                            <div class="form-group row " id="birthPrefectures" style="display: none">
                                 <label style="cursor:pointer;text-align:right" class="col-sm-5  col-form-label">
                                     都道府県
                                 </label>
@@ -226,11 +256,12 @@
                                 <label style="text-align:right" for="sex" class="col-sm-5  col-form-label">居住地
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{$player_info->residence_country??""}}
+                                    {{$player_info->residence_country}}
+                                    <input type="hidden" id = "residenceCountry" value="{{$player_info->residence_country}}"/>
                                 </div>
 
                             </div>
-                            <div class="form-group row " id="confirmPrefectures" style="display: none">
+                            <div class="form-group row " id="prefectures" style="display: none">
                                 <label style="text-align:right" class="col-sm-5  col-form-label">都道府県
                                 </label>
                                 <div class="col-sm-7 col-form-label">
@@ -245,19 +276,25 @@
                     </form>
             </div>
             <div class="col-md-3" style="text-align: right">
-                <button type="button" class="btn btn-secondary btn-lg" data-toggle="modal"
-                    data-target="#staticBackdrop">
+                <a class="btn btn-secondary btn-lg" href="#" >
                     マイページ
-                </button>
+                </a>
             </div>
-        </div>
-        <div class="row" style="margin: 0rem 2rem">
-            <div class="col-12" id="scrollableTable" style="width: 100%; overflow-x: auto; " >
-                <div class="col-12" style="margin:0rem -1rem" >
-                    <a role="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary" href="javascript:history.back()">すべて</a>
-                    <a role="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary" href="javascript:history.back()">公式</a>
-                    <a role="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary" href="javascript:history.back()">非公式</a>
+            <br/>
+            <br/>
+            <div class="col-12 d-flex" style="margin:5rem 0rem 0rem 2rem ; background-color:#00c77b;">
+                <div class="col-4" style="margin: 0rem 0rem 0rem -2rem" >
+                    <a role="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary" href="#">すべて</a>
+                    <a role="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary" href="#">公式</a>
+                    <a role="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary" href="#">非公式</a>
                 </div>
+                <div class="col-4" style="text-align: center;font-size:28px" >個人記録</div>
+                <div class="col-4" style="text-align:right;margin-left:2rem" >
+                    <a role="button" style="width: 400px;height:60px; font-size:28px" class="btn btn-secondary" href="#">個人記録の追加・編集</a>
+                </div>
+            </div>
+            <div class="col-12" id="scrollableTable" style="padding :0rem 2rem 0rem 2rem; width:100%; overflow-x: auto; " >
+                
                 <table class="table table-striped table-bordered" >
                     <thead >
                         <tr>
@@ -287,122 +324,95 @@
                             <th scope="col">選手体重（出漕時点）</th>
                             <th scope="col">シート番号（出漕時点）</th>
                             <th scope="col">出漕結果記録名</th>
-                            <th scope="col">発艇日時</th>
+                            {{-- <th scope="col">発艇日時</th>
                             <th scope="col">ゴール地点風速</th>
                             <th scope="col">ゴール地点風向</th>
                             <th scope="col">スタート地点風速</th>
-                            <th scope="col">スタート地点風向</th>
+                            <th scope="col">スタート地点風向</th> --}}
                         </tr>
                     </thead>
                     <tbody class=" ">
-                        {{-- @foreach($organizations as $organization) --}}
-                        <tr>
-                            {{-- <th>{{$user->id}}</th>
-                            <th>{{$user->name}}</th> --}}
-                            {{-- <th scope="row">公式</th> --}}
+                        {{-- @dd($all_race_records) --}}
+                        @foreach($all_race_records as $race_record)
+                        <tr >
                             <td>
-                                {{-- @if($organization->jara_org_type)
-                                正規
-                                @else
-                                任意
-                                @endif --}}
+                                {{$race_record->tourn_name}}
                             </td>
                             <td>
-                                {{-- <a target="_blank" style="text-decoration: underline" href="{{route('organizations.edit',['targetOrgId' => $organization->org_id])}}">
-                                    {{$organization->entrysystem_org_id}}
-                                </a> --}}
+                                @if($race_record->official)
+                                公式
+                                @else
+                                非公式
+                                @endif
                             </td>
                             <td>    
-                                {{-- <a target="_blank" style="text-decoration: underline" href="{{route('organizations.edit',['targetOrgId' => $organization->org_id])}}">
-                                    D{{ str_pad($organization->org_id, 4, "0", STR_PAD_LEFT)}}
-                                </a> --}}
+                                {{$race_record->event_start_date}}
                             </td>
                             <td>
-                                {{-- <a target="_blank" style="text-decoration: underline" href="{{route('organizations.edit',['targetOrgId' => $organization->org_id])}}">
-                                    {{$organization->org_name}}
-                                </a> --}}
+                                {{$race_record->org_name}}
                             </td>
                             <td>
-                                {{-- <a href="{{route('organizations.edit',['targetOrgId' => $organization->org_id])}}" role="button" class="btn btn-primary" >更新</a> --}}
+                                {{$race_record->race_number}}
                             </td>
+                            <td>{{$race_record->event_name}}</td>
+                            <td>{{$race_record->race_name}}</td>
+                            <td>{{$race_record->by_group}}</td>
+                            <td>{{$race_record->crew_name}}</td>
+                            <td>{{$race_record->rank}}</td>
+                            <td>{{$race_record->laptime_500m}}</td>
+                            <td>{{$race_record->laptime_1000m}}</td>
+                            <td>{{$race_record->laptime_1500m}}</td>
+                            <td>{{$race_record->laptime_2000m}}</td>
+                            <td>{{$race_record->final_time}}</td>
+                            <td>{{$race_record->stroke_rate_avg}}</td>
+                            <td>{{$race_record->stroke_rat_500m}}</td>
+                            <td>{{$race_record->stroke_rat_1000m}}</td>
+                            <td>{{$race_record->stroke_rat_1500m}}</td>
+                            <td>{{$race_record->stroke_rat_2000m}}</td>
+                            <td>{{$race_record->attendance}}</td>
+                            <td>{{$race_record->ergo_weight}}</td>
+                            <td>{{$race_record->player_height}}</td>
+                            <td>{{$race_record->player_weight}}</td>
+                            <td>{{$race_record->sheet_name}}</td>
+                            <td>{{$race_record->race_result_record_name}}</td>
+                            {{-- <td></td>
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            <td></td> --}}
                             
                         </tr>
-                        {{-- @endforeach --}}
+                        @endforeach
                         
                     </tbody>
                 </table>
             </div>    
+            
+        </div>
+        <div class="row" style="margin: 1rem ">
+            
         </div> 
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous">
     </script>
     <script>
 
-        // For showing warning message
+        
 
         (function (){
-            document.getElementById("idCheckedMessage").click();
-
-            if(document.getElementById("confirmBirthCountry").value === "日本"){
-                document.getElementById("confirmBirthPrefectures").style.display='flex';
+            console.log(document.getElementById("birthCountry").value);
+            if(document.getElementById("birthCountry").value === "日本"){
+                document.getElementById("birthPrefectures").style.display='flex';
             }
-            if(document.getElementById("confirmCountry").value === "日本"){
-                document.getElementById("confirmPrefectures").style.display = 'flex';
+            if(document.getElementById("residenceCountry").value === "日本"){
+                document.getElementById("prefectures").style.display = 'flex';
             }
         })();
         
         
 
     </script>
-       <script>
-        //for page reloading when using back button is click from web page
-        (function () {
-        window.onpageshow = function(event) {
-            if (event.persisted) {
-                window.location.reload();
-            }
-        };
-        })();
-        function changeStatus()
-        {
-            document.getElementById("status").value = "true";
-            document.getElementById("editForm").submit();
-        }
-        function validateEditForm()
-        {
-            if(document.getElementById("status").value === "true")
-                return true;
-            else
-            document.getElementById("checkeWarningMessage").click();
-            return false;
-        }
-    </script>
+
     <script>
         $(document).ready(function(){
         var rowCount = $('tbody tr').length;
