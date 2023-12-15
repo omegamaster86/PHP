@@ -18,36 +18,21 @@ class T_tournaments extends Model
         try {
             DB::insert(
                 'insert into t_tournaments
-                                (
-                                    tourn_id,
-                                    tourn_name,
-                                    sponsor_org_id,
-                                    event_start_date,
-                                    event_end_date,
-                                    venue_id,
-                                    venue_name,
-                                    tourn_type,		
-                                    tourn_url,
-                                    tourn_info_faile_path,
-                                    entrysystem_tourn_id,
-                                    registered_time,
-                                    registered_user_id,
-                                    updated_time,
-                                    updated_user_id,
-                                    delete_flag,
-                                )values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                (`tourn_id`, `tourn_name`, `sponsor_org_id`, `event_start_date`, `event_end_date`, `venue_id`, `venue_name`, `tourn_type`, `tourn_url`,
+                 `tourn_info_faile_path`, `entrysystem_tourn_id`, `registered_time`, `registered_user_id`, `updated_time`, `updated_user_id`, `delete_flag`)
+                values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 [
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
+                    $tournamentsInfo['tourn_id'],
+                    $tournamentsInfo['tourn_name'],
+                    $tournamentsInfo['sponsor_org_id'],
+                    $tournamentsInfo['event_start_date'],
+                    $tournamentsInfo['event_end_date'],
+                    $tournamentsInfo['venue_id'],
+                    $tournamentsInfo['venue_name'],
+                    $tournamentsInfo['tourn_type'],
+                    $tournamentsInfo['tourn_url'],
+                    $tournamentsInfo['tourn_info_faile_path'],
+                    $tournamentsInfo['entrysystem_tourn_id'],
                     NOW(),
                     Auth::user()->user_id,
                     NOW(),
@@ -73,12 +58,30 @@ class T_tournaments extends Model
         $result = "success";
         DB::beginTransaction();
         try {
-            // DB::update(
-            //     'update t_tournaments set jara_player_id = ?, updated_time = ?, updated_user_id = ? where user_id = ?',
-            //     [$tournamentsInfo['jaraPlayerId'], now(), Auth::user()->user_id, $tournamentsInfo['playerId']]
-            // );
+            DB::update(
+                'update t_tournaments set `tourn_id`=?,`tourn_name`=?,`sponsor_org_id`=?,`event_start_date`=?,`event_end_date`=?,`venue_id`=?,`venue_name`=?,`tourn_type`=?,`tourn_url`=?,`tourn_info_faile_path`=?,`entrysystem_tourn_id`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where tourn_id = ?',
+                [
+                    $tournamentsInfo['tourn_id'],
+                    $tournamentsInfo['tourn_name'],
+                    $tournamentsInfo['sponsor_org_id'],
+                    $tournamentsInfo['event_start_date'],
+                    $tournamentsInfo['event_end_date'],
+                    $tournamentsInfo['venue_id'],
+                    $tournamentsInfo['venue_name'],
+                    $tournamentsInfo['tourn_type'],
+                    $tournamentsInfo['tourn_url'],
+                    $tournamentsInfo['tourn_info_faile_path'],
+                    $tournamentsInfo['entrysystem_tourn_id'],
+                    NOW(),
+                    Auth::user()->user_id,
+                    NOW(),
+                    Auth::user()->user_id,
+                    0,
+                    1, //$raceResultRecordInfo['playerId'] //where条件
+                ]
+            );
 
-            // DB::commit();
+            DB::commit();
             return $result;
         } catch (\Throwable $e) {
             dd($e);

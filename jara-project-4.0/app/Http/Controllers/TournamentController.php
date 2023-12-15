@@ -20,6 +20,7 @@ use Illuminate\Validation\ValidationException;
 use League\CommonMark\Node\Inline\Newline;
 
 use App\Models\T_tournaments;
+use App\Models\T_raceResultRecord;
 use Illuminate\Support\Facades\Validator;
 
 /*
@@ -32,6 +33,72 @@ use Illuminate\Support\Facades\Validator;
 
 class TournamentController extends Controller
 {
+    public $tournamentInfo = [
+        'tourn_id' => null,
+        'tourn_name' => "testName",
+        'sponsor_org_id' => null,
+        'event_start_date' => null,
+        'event_end_date' => null,
+        'venue_id' => null,
+        'venue_name' => null,
+        'tourn_type' => null,
+        'tourn_url' => null,
+        'tourn_info_faile_path' => null,
+        'entrysystem_tourn_id' => null,
+    ];
+
+    public $raceResultRecordInfo = [
+        'race_result_record_id' => null,
+        'user_id' => null,
+        'jara_player_id' => null,
+        'player_name' => null,
+        'entrysystem_tourn_id' => null,
+        'tourn_id' => null,
+        'tourn_name' => null,
+        'race_id' => null,
+        'entrysystem_race_id' => null,
+        'race_number' => null,
+        'race_name' => null,
+        'org_id' => null,
+        'entrysystem_org_id' => null,
+        'org_name' => null,
+        'crew_name' => null,
+        'by_group' => null,
+        'event_id' => null,
+        'event_name' => null,
+        'range' => null,
+        'rank' => null,
+        'laptime_500m' => null,
+        'laptime_1000m' => null,
+        'laptime_1500m' => null,
+        'laptime_2000m' => null,
+        'final_time' => null,
+        'stroke_rate_avg' => null,
+        'stroke_rat_500m' => null,
+        'stroke_rat_1000m' => null,
+        'stroke_rat_1500m' => null,
+        'stroke_rat_2000m' => null,
+        'heart_rate_avg' => null,
+        'heart_rate_500m' => null,
+        'heart_rate_1000m' => null,
+        'heart_rate_1500m' => null,
+        'heart_rate_2000m' => null,
+        'official' => null,
+        'attendance' => null,
+        'ergo_weight' => null,
+        'crew_rep_record_flag' => null,
+        'player_height' => null,
+        'player_weight' => null,
+        'm_sheet_number' => null,
+        'sheet_name' => null,
+        'race_result_record_name' => null,
+        'start_datetime' => null,
+        'wind_speed_2000m_point' => null,
+        'wind_direction_2000m_point' => null,
+        'wind_speed_1000m_point' => null,
+        'wind_direction_1000m_point' => null,
+    ];
+
     // 大会登録画面呼び出し
     public function create(Request $request): View
     {
@@ -154,11 +221,15 @@ class TournamentController extends Controller
     }
 
     //登録（挿入）実行
-    public function storeConfirmRegister(Request $request, T_tournaments $tTournament,)
+    public function storeConfirmRegister(Request $request, T_tournaments $tTournament, T_raceResultRecord $tRaceResultRecord)
     {
         //確認画面から登録
-        $tournamentInfo = $request->all();
-        $result = $tTournament->insertTournaments($tournamentInfo);
+        //$tournamentInfo = $request->all();
+        $result = $tTournament->insertTournaments($this->tournamentInfo);
+        $ListCout = 2; //レース登録リスト行数分更新する
+        for ($i = 0; $i < $ListCout; $i++) {
+            $result = $tRaceResultRecord->insertRaceResultRecord($this->raceResultRecordInfo);
+        }
 
         if ($result == "success") {
             $page_status = "完了しました";
@@ -170,11 +241,16 @@ class TournamentController extends Controller
     }
 
     //更新実行
-    public function storeConfirmEdit(Request $request, T_tournaments $tTournament)
+    public function storeConfirmEdit(Request $request, T_tournaments $tTournament, T_raceResultRecord $tRaceResultRecord)
     {
         //確認画面から登録
-        $tournamentInfo = $request->all();
-        $result = $tTournament->updateTournaments($tournamentInfo);
+        //$tournamentInfo = $request->all();
+        $result = $tTournament->updateTournaments($this->tournamentInfo);
+
+        $ListCout = 2; //レース登録リスト行数分更新する
+        for ($i = 0; $i < $ListCout; $i++) {
+            $result = $tRaceResultRecord->updateRaceResultRecord($this->raceResultRecordInfo);
+        }
         if ($result == "success") {
             $page_status = "完了しました";
             $page_url = route('my-page');
@@ -183,116 +259,9 @@ class TournamentController extends Controller
         }
     }
 
-    // 大会情報確認画面呼び出し
-    public function create02(Request $request): View
-    {
-        return view('tournament.register-edit', ["pagemode" => "confirm"]);
-    }
-    // 大会情報削除画面呼び出し
-    public function create03(Request $request): View
-    {
-        return view('tournament.register-edit', ["pagemode" => "delete"]);
-    }
     // 大会情報参照画面呼び出し
     public function createReference(Request $request): View
     {
         return view('tournament.register-edit', ["pagemode" => "reference"]);
-    }
-
-    //登録画面から確認画面に遷移する際に呼ばれる
-    public function storeRegister(Request $request): RedirectResponse
-    {
-        include('Auth/ErrorMessages/ErrorMessages.php');
-        $request->validate([
-            'tournamentName' => ['required', 'string', 'max:32', 'regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'],
-            'sponsoreTeamId' => ['required'],
-            'startDay' => ['required'],
-            'endDay' => ['required'],
-            'venueSelect' => ['required'],
-            'venueTxt' => ['nullable', 'required_if:venueSelect,other', 'string'],
-            'race_number' => ['required'],
-            'races_event' => ['required'],
-            'races_name' => ['required'],
-            'races_group' => ['required'],
-            'races_distance' => ['required'],
-            'races_dayTime' => ['required'],
-        ], [
-            'tournamentName.required' => $tournament_name_required,
-            'tournamentName.max' => $tournament_name_max_limit,
-            'tournamentName.regex' => $tournament_name_regex,
-            'sponsoreTeamId.required' => $tournament_id,
-            'startDay.required' => $tournament_startDay,
-            'endDay.required' => $tournament_endDay,
-            'venueSelect.required' => $tournament_venueSelect,
-            'venueTxt.required_if' => $tournament_venueSelectTxt,
-            'race_number.required' => $tournament_races_No,
-            'races_event.required' => $tournament_races_event,
-            'races_name.required' => $tournament_races_name,
-            'races_group.required' => $tournament_races_group,
-            'races_distance.required' => $tournament_races_distance,
-            'races_dayTime.required' => $tournament_races_dayTime,
-        ]);
-
-        $tournamentInfo = $request->all();
-        $tournamentInfo['previousPageStatus'] = "success";
-        return redirect('tournament/register/confirm')->with('tournamentInfo', $tournamentInfo);
-    }
-
-    //変更画面から確認画面に遷移する際に呼ばれる
-    public function storeEdit(Request $request): RedirectResponse
-    {
-        include('Auth/ErrorMessages/ErrorMessages.php');
-        $request->validate([
-            'tournamentName' => ['required'],
-            'sponsoreTeamId' => ['required'],
-            'startDay' => ['required'],
-            'endDay' => ['required'],
-            'venueSelect' => ['required'],
-
-            'race_number' => ['required'],
-            'races_event' => ['required'],
-            'races_name' => ['required'],
-            'races_group' => ['required'],
-            'races_distance' => ['required'],
-            'races_dayTime' => ['required'],
-        ], [
-            'tournamentName.required' => $tournament_name_required,
-            'sponsoreTeamId.required' => $tournament_id,
-            'startDay.required' => $tournament_startDay,
-            'endDay.required' => $tournament_endDay,
-            'venueSelect.required' => $tournament_venueSelect,
-
-            'race_number.required' => $tournament_races_No,
-            'races_event.required' => $tournament_races_event,
-            'races_name.required' => $tournament_races_name,
-            'races_group.required' => $tournament_races_group,
-            'races_distance.required' => $tournament_races_distance,
-            'races_dayTime.required' => $tournament_races_dayTime,
-        ]);
-
-        $tournamentInfo = $request->all();
-        $tournamentInfo['previousPageStatus'] = "success";
-        return redirect('tournament/edit/confirm')->with('tournamentInfo', $tournamentInfo);
-    }
-
-    public function storeRegisterConfirm(Request $request): RedirectResponse
-    {
-        // Insert new tournament info in the database.(t_tournaments table)
-        //$userId = (string) (Auth::user()->userId);
-        DB::beginTransaction();
-        try {
-            DB::insert('insert into t_tournaments (tourn_id, tourn_name, sponsor_org_id, event_start_date, event_end_date, venue_id, venue_name,tourn_type,tourn_url,tourn_info_faile_path,entrysystem_tourn_id,registered_time,registered_user_id,updated_time,updated_user_id,delete_flag) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [210, $request->tournamentName, $request->sponsoreTeamId, $request->startDay, $request->endDay, 0001, 0001, 0001, 0001, 0001, 0001, now(), 0001, now(), 0001, 000]);
-            DB::commit();
-            $page_status = "完了しました";
-            $page_url = route('my-page');
-            $page_url_text = "マイページ";
-
-            return redirect('change-notification')->with(['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-        } catch (\Throwable $e) {
-            dd($e);
-            // dd($request->all());
-            dd("stop");
-            DB::rollBack();
-        }
     }
 }

@@ -38,6 +38,15 @@
         <!--style="background: linear-gradient(to right,#1991FC,  #45b796);padding:0;color: #000;font-weight:500">-->
         <div id="mySidenav" class="sidenav">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            @if($pagemode==="register")
+                <a href="{{route('tournament.edit')}}">大会更新画面(デバッグ)</a>
+                <a href="{{route('tournament.register.confirm')}}">大会確認画面(デバッグ)</a>
+                <a href="{{route('tournament.delete')}}">大会削除画面(デバッグ)</a>
+            @elseif($pagemode==="edit")
+                <a href="{{route('tournament.register')}}">大会登録画面(デバッグ)</a>
+                <a href="{{route('tournament.edit.confirm')}}">大会確認画面(デバッグ)</a>
+                <a href="{{route('tournament.delete')}}">大会削除画面(デバッグ)</a>
+            @endif
             <a href="#">ダッシュボード</a>
             <a href="#">情報更新</a>
             <a href="#">情報参照</a>
@@ -85,7 +94,7 @@
                     @if($pagemode==="register")
                     <input id="tName" name="tName" type="text" value="{{old('tName')}}">
                     @elseif($pagemode==="edit")
-                    <input id="tName" name="tName" type="text" value="{{old('tName',$tournamentInfo->tName)}}">
+                    <input id="tName" name="tName" type="text" value="{{old('tName')}}">
                     @endif
                     <select>
                         <option value=1 selected>非公式</option>
@@ -105,7 +114,7 @@
                     @if($pagemode==="register")
                     <input id="tId" name="tId" type="text" value="{{old('tId')}}">
                     @elseif($pagemode==="edit")
-                    <input id="tId" name="tId" type="text" value="{{old('tId',$tournamentInfo->tId)}}">
+                    <input id="tId" name="tId" type="text" value="{{old('tId')}}">
                     @endif
                     <!--エラーメッセージ表示エリア -->
                     @if ($errors->has('tId'))
@@ -121,7 +130,7 @@
                     @if($pagemode==="register")
                     <input id="tStartDay" name="tStartDay" type="text" value="{{old('tStartDay')}}">
                     @elseif($pagemode==="edit")
-                    <input id="tStartDay" name="tStartDay" type="text" value="{{old('tStartDay',$tournamentInfo->tStartDay)}}">
+                    <input id="tStartDay" name="tStartDay" type="text" value="{{old('tStartDay')}}">
                     @endif
                     <!--エラーメッセージ表示エリア -->
                     @if ($errors->has('tStartDay'))
@@ -136,7 +145,7 @@
                     @if($pagemode==="register")
                     <input id="tEndDay" name="tEndDay" type="text" value="{{old('tEndDay')}}">
                     @elseif($pagemode==="edit")
-                    <input id="tEndDay" name="tEndDay" type="text" value="{{old('tEndDay',$tournamentInfo->tEndDay)}}">
+                    <input id="tEndDay" name="tEndDay" type="text" value="{{old('tEndDay')}}">
                     @endif
                     <!--エラーメッセージ表示エリア -->
                     @if ($errors->has('tEndDay'))
