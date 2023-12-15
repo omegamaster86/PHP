@@ -129,7 +129,7 @@ class TournamentController extends Controller
         return view('tournament.register-confirm', ["pagemode" => "edit"]);
     }
 
-    public function createRefecence()
+    public function createReference()
     {
         return view('tournament.reference', ["pagemode" => "refer"]);
     }
@@ -137,6 +137,13 @@ class TournamentController extends Controller
     public function createDelete()
     {
         return view('tournament.reference', ["pagemode" => "delete"]);
+    }
+
+    // 大会情報参照画面呼び出し
+    public function dbDelete(Request $request): View
+    {
+        //DB::delete('delete from t_users where mailaddress = ?', [$request->mailaddress ]);
+        return view('tournament.register-edit', ["pagemode" => "reference"]);
     }
 
     //団体情報登録画面で確認ボタンを押したときに発生するイベント
@@ -257,11 +264,5 @@ class TournamentController extends Controller
             $page_url_text = "マイページ";
             return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
         }
-    }
-
-    // 大会情報参照画面呼び出し
-    public function createReference(Request $request): View
-    {
-        return view('tournament.register-edit', ["pagemode" => "reference"]);
     }
 }

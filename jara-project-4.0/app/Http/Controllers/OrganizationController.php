@@ -14,6 +14,7 @@ use App\Models\M_prefectures;
 use App\Models\T_organization_staff;
 use App\Models\M_staff_type;
 use App\Models\T_users;
+use Illuminate\Support\Facades\DB;
 
 class OrganizationController extends Controller
 {

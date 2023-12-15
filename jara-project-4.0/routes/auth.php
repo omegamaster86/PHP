@@ -115,9 +115,11 @@ Route::middleware('auth')->group(function () {
     
     // 大会削除画面
     Route::get('tournament/delete', [TournamentController::class, 'createDelete']) ->name('tournament.delete'); //大会削除画面
+    Route::post('tournament/delete', [TournamentController::class, 'dbDelete']); //大会削除画面
     // 大会情報参照画面
     Route::get('tournament/reference', [TournamentController::class, 'createReference']) ->name('tournament.reference'); //大会削除画面
-    
+    //-----大会関連ここまで-----
+
     //Organizations
     //団体情報登録・更新画面
     Route::get('organization/register', [OrganizationController::class, 'create'])->name('organizations.register');
