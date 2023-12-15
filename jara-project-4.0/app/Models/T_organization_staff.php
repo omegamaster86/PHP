@@ -32,54 +32,90 @@ class T_organization_staff extends Model
         return $orgStaffs;
     }
 
-    public function updateOrganizationStaff($organizationInfo)
+    //団体所属スタッフテーブルの削除フラグを更新する
+    public function updateDeleteFlagInOrganizationStaff($condition,$org_id)
     {
-        //example
-        // update `t_organization_staff`
-        // set delete_flag = 1
-        // where 1=1
-        // and org_staff_id not in
-        // (
-        //     SELECT org_staff_id
-        //     FROM `t_organization_staff`
-        //     where 1=1
-        //     and org_id = 1
-        //     and
-        //     (
-        //         (user_id = 1 and staff_type_id = 1)
-        //         or (user_id = 2 and staff_type_id = 2)
-        //     )
-        // )
+        $sqlString = 'update `t_organization_staff`
+                        set `delete_flag` = 1
+                        where 1=1
+                        and `delete_flag` = 0
+                        and `org_id` = #OrgIdReplace#
+                        and `org_staff_id` not in
+                        (
+                            SELECT `org_staff_id`
+                            FROM `t_organization_staff`
+                            where 1=1
+                            and
+                            (
+                                #ConditionReplace#
+                            )
+                        )';
+        $sqlString = str_replace('#ConditionReplace#',$condition,$sqlString);
+        $sqlString = str_replace('#OrgIdReplace#',$org_id,$sqlString);
+        $result = true;
+        DB::beginTransaction();
+        try{
+                DB::update($sqlString);
+                DB::commit();
+                return $result;
+        }
+        catch (\Throwable $e){
+                dd($e);
+                dd("stop");
+                DB::rollBack();
+                
+                $result = false;
+                return $result;
+        }
     }
 
-    public function insertOrganizationStaff($organizationInfo)
+    //団体所属スタッフテーブルに挿入する
+    public function insertOrganizationStaff($values,$orgId)
     {
-        // INSERT INTO `t_organization_staff`(
-                                        //     `org_staff_id`,
-                                        //     `org_id`,
-                                        //     `user_id`,
-                                        //     `staff_type_id`,
-                                        //     `appointment_date`,
-                                        //     `retirement_date`,
-                                        //     `registered_time`,
-                                        //     `registered_user_id`,
-                                        //     `updated_time`,
-                                        //     `updated_user_id`,
-                                        //     `delete_flag`
-                                        // )
-                                        // VALUES
-                                        //(
-                                        //     '[value-1]',
-                                        //     '[value-2]',
-                                        //     '[value-3]',
-                                        //     '[value-4]',
-                                        //     '[value-5]',
-                                        //     '[value-6]',
-                                        //     '[value-7]',
-                                        //     '[value-8]',
-                                        //     '[value-9]',
-                                        //     '[value-10]',
-                                        //     '[value-11]'
-                                        // )
+        $sqlString = "insert into `t_organization_staff`
+                    (
+                        `org_id`,
+                        `user_id`,
+                        `staff_type_id`,
+                        `registered_time`,
+                        `registered_user_id`,
+                        `updated_time`,
+                        `updated_user_id`,
+                        `delete_flag`
+                    )
+                    select *                    
+                    FROM
+                    (
+                        SELECT
+                        #ValuesReplace#
+                    ) as `value_table`
+                    where 1=1
+                    and not EXISTS
+                    (
+                        select *
+                        from `t_organization_staff`
+                        where 1=1
+                        and `delete_flag` = 0
+                        and `org_id` = #OrgIdCondition#
+                        and `t_organization_staff`.`user_id` = `value_table`.`user_id`
+                        and `t_organization_staff`.`staff_type_id` = `value_table`.`staff_type_id`
+                    )";
+        $sqlString = str_replace("#ValuesReplace#",$values,$sqlString);
+        $sqlString = str_replace("#OrgIdCondition#",$orgId,$sqlString);
+        $result = true;
+        DB::beginTransaction();
+        try{
+                DB::insert($sqlString);
+                DB::commit();
+                return $result;
+        }
+        catch (\Throwable $e){
+                dd($e);
+                dd("stop");
+                DB::rollBack();
+                
+                $result = false;
+                return $result;
+        }
     }
 }

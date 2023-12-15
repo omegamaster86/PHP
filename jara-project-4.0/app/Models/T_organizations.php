@@ -32,64 +32,64 @@ class T_organizations extends Model
         return $targetOrg;
     }
 
+    //Insertを実行して、InsertしたレコードのID（主キー）を返す
     public function insertOrganization($organizationInfo)
     {
-        $result = true;
         DB::beginTransaction();
         try{
                 DB::insert('insert into t_organizations
-                                (
-                                    entrysystem_org_id,
-                                    org_name,
-                                    jara_org_type,
-                                    jara_org_reg_trail,
-                                    pref_org_type,
-                                    pref_org_reg_trail,
-                                    org_class,
-                                    founding_year,
-                                    post_code,
-                                    location_country,
-                                    location_prefecture,
-                                    address1,
-                                    address2,
-                                    registered_time,
-                                    registered_user_id,
-                                    updated_time,
-                                    updated_user_id,
-                                    delete_flag
-                                )values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                                [
-                                    $organizationInfo['entrysystemOrgId'],
-                                    $organizationInfo['orgName'],
-                                    $organizationInfo['jaraOrgType'],
-                                    $organizationInfo['jaraOrgRegTrail'],
-                                    $organizationInfo['prefOrgType'],
-                                    $organizationInfo['prefOrgRegTrail'],
-                                    $organizationInfo['orgClass'],
-                                    $organizationInfo['foundingYear'],
-                                    $organizationInfo['post_code'],
-                                    //$organizationInfo['country'],
-                                    112,                        //country=日本
-                                    $organizationInfo['pref_id'],
-                                    $organizationInfo['address1'],
-                                    $organizationInfo['address2'],
-                                    NOW(),
-                                    Auth::user()->user_id,
-                                    NOW(),
-                                    Auth::user()->user_id,
-                                    0
-                                ]
-                            );
+                            (
+                                entrysystem_org_id,
+                                org_name,
+                                jara_org_type,
+                                jara_org_reg_trail,
+                                pref_org_type,
+                                pref_org_reg_trail,
+                                org_class,
+                                founding_year,
+                                post_code,
+                                location_country,
+                                location_prefecture,
+                                address1,
+                                address2,
+                                registered_time,
+                                registered_user_id,
+                                updated_time,
+                                updated_user_id,
+                                delete_flag
+                            )values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                            [
+                                $organizationInfo['entrysystemOrgId'],
+                                $organizationInfo['orgName'],
+                                $organizationInfo['jaraOrgType'],
+                                $organizationInfo['jaraOrgRegTrail'],
+                                $organizationInfo['prefOrgType'],
+                                $organizationInfo['prefOrgRegTrail'],
+                                $organizationInfo['orgClass'],
+                                $organizationInfo['foundingYear'],
+                                $organizationInfo['post_code'],
+                                //$organizationInfo['country'],
+                                112,                        //country=日本
+                                $organizationInfo['pref_id'],
+                                $organizationInfo['address1'],
+                                $organizationInfo['address2'],
+                                NOW(),
+                                Auth::user()->user_id,
+                                NOW(),
+                                Auth::user()->user_id,
+                                0
+                            ]
+                        );
+                //挿入したIDを取得
+                //コミットする前に取得しないと0になる
+                $insertId =  DB::getPdo()->lastInsertId();
                 DB::commit();
-                return $result;
+                return $insertId;
         }
         catch (\Throwable $e){
                 dd($e);
                 dd("stop");
                 DB::rollBack();
-                
-                $result = false;
-                return $result;
         }
     }
 

@@ -158,7 +158,7 @@
                         <div class="row">
                             <label for="staff4" class="col-md-6" style="text-align: right"><b>スタッフ4：</b></label>
                             <input id="staff4_user_id" name="staff4_user_id" value="{{session()->get('organizationInfo')['staff4_user_id']}}" size="5" readonly>
-                            <input id="staff4_user_name" name="staff4_user_name" value="{{session()->get('organizationInfo')['staff4_user_name']}}" readonly>
+                            <input id="staff4_user_name" name="staff4_user_name" value="{{ old(session()->get('organizationInfo')['staff4_user_name'])}}" readonly>
                             <input id="staff4_type" name="staff4_type" value="{{session()->get('organizationInfo')['staff4_type']}}" size="5" readonly>
                             <input id="staff4_type_display" name="staff4_type_display" value="{{session()->get('organizationInfo')['staff4_type_display']}}" readonly>
                         </div>

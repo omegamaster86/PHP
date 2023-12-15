@@ -93,4 +93,17 @@ class T_tournaments extends Model
             return $result;
         }
     }
+
+    //20231215 団体IDをキーとして大会情報を取得する
+    public function getTournamentsFromOrgId($target_org_id)
+    {
+        $tournaments = DB::select('select *
+                                        from `t_tournaments`
+                                        where `delete_flag` =0
+                                        and `sponsor_org_id` = ?
+                                        order by 並び順を決めるフィールド名を書く'
+                                    ,[$target_org_id]
+                                );
+        return $tournaments;
+    }
 }

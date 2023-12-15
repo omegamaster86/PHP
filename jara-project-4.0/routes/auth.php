@@ -136,11 +136,10 @@ Route::middleware('auth')->group(function () {
     Route::post('organization/edit/{targetOrgId}/confirm', [OrganizationController::class, 'storeConfirmEdit']);
 
     //団体情報参照・削除画面
-    Route::get('organization/reference', [OrganizationController::class, 'createRefecence'])->name('organizations.reference');
-    // Route::post('organization/reference', [OrganizationController::class, 'storeConfirm']);
+    Route::get('organization/reference/{targetOrgId}', [OrganizationController::class, 'createReference'])->name('organizations.reference');
 
-    // Route::get('organization/delete/{targetOrgId}', [OrganizationController::class, 'createDelete'])->name('organizations.reference');
-    // Route::post('organization/delete/{targetOrgId}', [OrganizationController::class, 'storeDelete']);
+    // Route::get('organization/delete/{targetOrgId}', [OrganizationController::class, 'createDeleteView'])->name('organizations.reference');
+    // Route::post('organization/delete/{targetOrgId}', [OrganizationController::class, 'deleteOrganization']);
 
     //Organization Management
     Route::get('organization/management', [OrganizationController::class, 'createManagement'])->name('organization.management');

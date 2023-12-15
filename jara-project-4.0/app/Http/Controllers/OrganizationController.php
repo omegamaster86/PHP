@@ -15,6 +15,9 @@ use App\Models\T_organization_staff;
 use App\Models\M_staff_type;
 use App\Models\T_users;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Models\T_tournaments;
+use App\Models\T_organization_players;
 
 class OrganizationController extends Controller
 {
@@ -47,11 +50,17 @@ class OrganizationController extends Controller
                                     T_organization_staff $tOrganizationStaff,
                                     M_staff_type $mStaffType)
     {
+        //団体情報を取得 20231215 t_futamura
         $tOrg = $tOrganization->getOrganization($targetOrgId);
+         //団体種別マスターを取得 20231215 t_futamura
         $mOrgType = $mOrganizationType->getOrganizationType();
+        //団体区分マスターを取得 20231215 t_futamura
         $mOrgClass = $mOrganizationClass->getOrganizationClass();
+        //都道府県マスターを取得 20231215 t_futamura
         $mPref = $mPrefectures->getPrefecures();
+        //団体所属スタッフテーブルを取得 20231215 t_futamura
         $tStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId);
+        //スタッフ種別マスターを取得 20231215 t_futamura
         $mStfType = $mStaffType->getStaffType();
         //郵便番号を分割して持たせておく
         $post_code = $tOrg->post_code;
@@ -59,12 +68,13 @@ class OrganizationController extends Controller
         $tOrg->post_code_lower = Str::substr($post_code,3,4);
 
         $staff_tag = $this->generateStaffTag($tStaff,$mStfType);
-        return view('organizations.register-edit',["pagemode"=>"edit"
-                                                    ,"organization"=>$tOrg
-                                                    ,"organizationType"=>$mOrgType
-                                                    ,"organizationClass"=>$mOrgClass
-                                                    ,"prefectures"=>$mPref
-                                                    ,"staff_tag"=>$staff_tag]
+        //各データをViewに渡して開く
+        return view('organizations.register-edit',["pagemode"=>"edit",
+                                                    "organization"=>$tOrg,
+                                                    "organizationType"=>$mOrgType,
+                                                    "organizationClass"=>$mOrgClass,
+                                                    "prefectures"=>$mPref,
+                                                    "staff_tag"=>$staff_tag]
                                                 );
     }
     
@@ -127,12 +137,45 @@ class OrganizationController extends Controller
         return view('organizations.register-confirm',["pagemode"=>"edit"]);
     }
 
-    public function createRefecence()
+    //団体情報参照画面を開く
+    public function createRefecence($targetOrgId,
+                                    T_organizations $tOrganizations,
+                                    T_tournaments $tTournaments,
+                                    T_organization_players $tOrganizationPlayers,
+                                    M_organization_class $mOrganizationClass,
+                                    M_prefectures $mPrefectures,
+                                    T_organization_staff $tOrganizationStaff,
+                                    M_staff_type $mStaffType)
     {
-        return view('organizations.reference',["pagemode"=>"refer"]);
+        //団体情報を取得 20231215 t_futamura
+        $tOrg = $tOrganizations->getOrganization($targetOrgId);
+        //大会情報を取得
+        $tTours = $tTournaments->getTournamentsFromOrgId($targetOrgId);
+        //団体所属選手情報を取得
+        $tOrgPlayers = $tOrganizationPlayers->getOrganizationPlayers($targetOrgId);
+        //エントリー大会情報を取得
+        //$entryTournaments = ・・・
+        //団体区分マスターを取得 20231215 t_futamura
+        $mOrgClass = $mOrganizationClass->getOrganizationClass();
+        //都道府県マスターを取得 20231215 t_futamura
+        $mPref = $mPrefectures->getPrefecures();
+        //団体所属スタッフテーブルを取得 20231215 t_futamura
+        $tStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId);
+        //スタッフ種別マスターを取得 20231215 t_futamura
+        $mStfType = $mStaffType->getStaffType();
+
+        return view('organizations.reference',["pagemode"=>"refer",
+                                                "organization_info"=>$tOrg,
+                                                "tournaments"=>$tTours,
+                                                //"entryTournaments"=>$entryTournaments
+                                                "organization_players"=>$tOrgPlayers,
+                                                "organizationClass"=>$mOrgClass,
+                                                "prefectures"=>$mPref,
+                                            ]);
     }
 
-    public function createDelete()
+    //団体情報削除画面を開く
+    public function createDeleteView()
     {
         return view('organizations.reference',["pagemode"=>"delete"]);
     }
@@ -185,7 +228,7 @@ class OrganizationController extends Controller
         if($duplicateCount > 0)
         {
             //エントリー団体IDから団体名を取得
-            $duplicateOrgName = $t_organizations->getOrgNameFromEntrySystemOrgId($entrysystemOrgId);
+            $duplicateOrgName = $t_organizations->getEntrysystemOrgIdCount($entrysystemOrgId);
             //エラーメッセージを整形
             $errorMessage = str_replace('[団体名]',$duplicateOrgName,str_replace('[団体ID]', $organizationInfo['entrysystemOrgId'],$entrysystemOrgId_registered));
             $validator->errors()->add('entrysystemOrgId', $errorMessage);
@@ -264,7 +307,10 @@ class OrganizationController extends Controller
     //団体更新画面で確認ボタンを押下したときに発生するイベント
     public function storeEditConfirm(Request $request,
                                         T_organizations $t_organizations,
-                                        M_prefectures $m_prefectures) : RedirectResponse
+                                        M_prefectures $m_prefectures,
+                                        T_users $t_users,
+                                        M_organization_class $m_organization_class,
+                                        M_staff_type $mStaffType) : RedirectResponse
     {
         $organizationInfo = $request->all();
         include('Auth/ErrorMessages/ErrorMessages.php');
@@ -358,54 +404,129 @@ class OrganizationController extends Controller
         $organizationInfo['org_class_name'] = $m_organization_class->getOrganizationClassName($organizationInfo['orgClass']);
         $organizationInfo['previousPageStatus'] = "success";
 
+        //スタッフ名の取得
+        $staff_index = 1;
+        while(true){
+            //無限に繰り返す処理を記載
+            if(isset($organizationInfo['staff'.$staff_index.'_user_id'])){
+                //取得できているのでユーザー名を取得
+                $user_name = $t_users->getUserName($organizationInfo['staff'.$staff_index.'_user_id']);
+                //ユーザー名を取得できたら「staff_user_nameX」で$organizationInfoに追加
+                //ユーザーID、ユーザー名がセットで入ってたら存在するユーザーとする
+                $organizationInfo['staff'.$staff_index.'_user_name'] = $user_name;
+                //スタッフ種別を取得する
+                $target_staff_type_id = $organizationInfo['staff'.$staff_index.'_type'];
+                $organizationInfo['staff'.$staff_index.'_type_display'] = $mStaffType->getStaffTypeName($target_staff_type_id);
+            }
+            else{
+                //スタッフが入力されていなかったらループを抜ける
+                break;
+            }
+            $staff_index++;
+        }
+
         $targetUrl = 'organization/edit/'.$organizationInfo['org_id'].'/confirm';
         return redirect($targetUrl)->with(['organizationInfo'=>$organizationInfo]);
     }
 
     //登録（挿入）実行
-    public function storeConfirmRegister(Request $request,T_organizations $tOrganizations,)
+    public function storeConfirmRegister(Request $request,T_organizations $tOrganizations,T_organization_staff $tOrganizationStaff)
     {
         //確認画面から登録
         $organizationInfo = $request->all();
-        $result = $tOrganizations->insertOrganization($organizationInfo);
-        //1:前のスタッフをupdateする。
-        //2:新しく入力されたスタッフをInsertする
+        $lastInsertId = $tOrganizations->insertOrganization($organizationInfo);
+        //新しく入力されたスタッフをInsertする
+        $insertValues = $this->generateInsertStaffValues($organizationInfo,$lastInsertId);
+        $tOrganizationStaff->insertOrganizationStaff($insertValues,$lastInsertId);
 
-        if($result == "success")
-        {
-            $page_status = "完了しました";
-            $page_url = route('my-page');
-            $page_url_text = "マイページ";
-                
-            return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
-        }
+        $page_status = "完了しました";
+        $page_url = route('my-page');
+        $page_url_text = "マイページ";
+            
+        return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
     }
 
     //団体所属スタッフテーブルを更新するための条件文を生成する
     private function generateUpdateStaffCondition($organizationInfo)
     {
-    
+        $staff_index = 1;        
+        $condition = "";
+        while(true)
+        {
+            if(empty($organizationInfo["staff".$staff_index."_user_id"]))
+            {
+                break;
+            }
+
+            if(isset($organizationInfo["staff".$staff_index."_user_id"])
+                && isset($organizationInfo["staff".$staff_index."_user_name"]))
+            {
+                $condition .= "or ( `user_id`='".$organizationInfo["staff".$staff_index."_user_id"]
+                                        ."' and `staff_type_id`='".$organizationInfo["staff".$staff_index."_type"]."')";
+            }
+
+            $staff_index++;
+        }
+        $condition = ltrim($condition,"or ");
+        return $condition;
     }
 
     //団体所属スタッフテーブルに挿入するValueを生成する
-    private function generateInsertStaffValues($organizationInfo)
-    {
+    private function generateInsertStaffValues($organizationInfo,$org_id)
+    {   
+        $staff_index = 1;
+        $currentDatetime = NOW();
+        $values = "";
+        while(true)
+        {
+            if(empty($organizationInfo["staff".$staff_index."_user_id"]))
+            {
+                break;
+            }
 
+            if(isset($organizationInfo["staff".$staff_index."_user_id"])
+                && isset($organizationInfo["staff".$staff_index."_user_name"]))
+            {
+                $values .= "union select '".$org_id."' AS `org_id`,";
+                $values .= "'".$organizationInfo["staff".$staff_index."_user_id"]."' AS `user_id`,";
+                $values .= "'".$organizationInfo["staff".$staff_index."_type"]."' AS `staff_type_id`,";
+                $values .= "'".$currentDatetime."' AS `registered_time`,";
+                $values .= "'".Auth::user()->user_id."' AS `registered_user_id`,";
+                $values .= "'".$currentDatetime."' AS `updated_time`,";
+                $values .= "'".Auth::user()->user_id."' AS `updated_user_id`,";
+                $values .= "'0' AS `delete_flag`";
+            }
+            $staff_index++;
+        }
+        
+        $values = ltrim($values,"union select ");
+        return $values;
+    }
+
+    //削除画面の[削除]ボタンで、団体情報の削除を実行
+    public function deleteOrganization()
+    {
+        
     }
 
     //更新実行
-    public function storeConfirmEdit(Request $request,T_organizations $tOrganizations)
+    public function storeConfirmEdit(Request $request,T_organizations $tOrganizations,T_organization_staff $tOrganizationStaff)
     {
         //確認画面から登録
         $organizationInfo = $request->all();
-        $result = $tOrganizations->updateOrganization($organizationInfo);
-        if($result == "success")
-        {
-            $page_status = "完了しました";
-            $page_url = route('my-page');
-            $page_url_text = "マイページ";            
-            return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
-        }
+        $tOrganizations->updateOrganization($organizationInfo);
+
+        //前のスタッフをupdateする。
+        $updateCondition = $this->generateUpdateStaffCondition($organizationInfo);
+        $tOrganizationStaff->updateDeleteFlagInOrganizationStaff($updateCondition,$organizationInfo['org_id']);
+        //新しく入力されたスタッフをInsertする
+        $insertValues = $this->generateInsertStaffValues($organizationInfo,$organizationInfo['org_id']);
+        $tOrganizationStaff->insertOrganizationStaff($insertValues,$organizationInfo['org_id']);
+        
+        $page_status = "完了しました";
+        $page_url = route('my-page');
+        $page_url_text = "マイページ";            
+        return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
     }
     
     public function createManagement(): View
