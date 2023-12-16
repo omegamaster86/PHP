@@ -11,6 +11,59 @@ class T_raceResultRecord extends Model
 {
     use HasFactory;
 
+    public static $raceResultRecordInfo = [
+        'race_result_record_id' => null,
+        'user_id' => null,
+        'jara_player_id' => null,
+        'player_name' => null,
+        'entrysystem_tourn_id' => null,
+        'tourn_id' => null,
+        'tourn_name' => null,
+        'race_id' => null,
+        'entrysystem_race_id' => null,
+        'race_number' => null,
+        'race_name' => null,
+        'org_id' => null,
+        'entrysystem_org_id' => null,
+        'org_name' => null,
+        'crew_name' => null,
+        'by_group' => null,
+        'event_id' => null,
+        'event_name' => null,
+        'range' => null,
+        'rank' => null,
+        'laptime_500m' => null,
+        'laptime_1000m' => null,
+        'laptime_1500m' => null,
+        'laptime_2000m' => null,
+        'final_time' => null,
+        'stroke_rate_avg' => null,
+        'stroke_rat_500m' => null,
+        'stroke_rat_1000m' => null,
+        'stroke_rat_1500m' => null,
+        'stroke_rat_2000m' => null,
+        'heart_rate_avg' => null,
+        'heart_rate_500m' => null,
+        'heart_rate_1000m' => null,
+        'heart_rate_1500m' => null,
+        'heart_rate_2000m' => null,
+        'official' => null,
+        'attendance' => null,
+        'ergo_weight' => null,
+        'crew_rep_record_flag' => null,
+        'player_height' => null,
+        'player_weight' => null,
+        'm_sheet_number' => null,
+        'sheet_name' => null,
+        'race_result_record_name' => null,
+        'start_datetime' => null,
+        'wind_speed_2000m_point' => null,
+        'wind_direction_2000m_point' => null,
+        'wind_speed_1000m_point' => null,
+        'wind_direction_1000m_point' => null,
+        'delete_flag' => 0,
+    ];
+
     public function insertRaceResultRecord($raceResultRecordInfo)
     {
         $result = "success";
@@ -72,7 +125,7 @@ class T_raceResultRecord extends Model
                     Auth::user()->user_id,
                     NOW(),
                     Auth::user()->user_id,
-                    0
+                    $raceResultRecordInfo['delete_flag']
                 ]
             );
             DB::commit();
@@ -90,13 +143,13 @@ class T_raceResultRecord extends Model
 
     public function updateRaceResultRecord($raceResultRecordInfo)
     {
+        //dd($raceResultRecordInfo['tourn_id'],$raceResultRecordInfo['delete_flag']);
         $result = "success";
         DB::beginTransaction();
         try {
             DB::update(
-                'update t_race_result_record set `race_result_record_id`=?,`user_id`=?,`jara_player_id`=?,`player_name`=?,`entrysystem_tourn_id`=?,`tourn_id`=?,`tourn_name`=?,`race_id`=?,`entrysystem_race_id`=?,`race_number`=?,`race_name`=?,`org_id`=?, `entrysystem_org_id`=?,`org_name`=?,`crew_name`=?,`by_group`=?,`event_id`=?,`event_name`=?,`range`=?,`rank`=?,`laptime_500m`=?,`laptime_1000m`=?,`laptime_1500m`=?,`laptime_2000m`=?,`final_time`=?, `stroke_rate_avg`=?,`stroke_rat_500m`=?,`stroke_rat_1000m`=?,`stroke_rat_1500m`=?,`stroke_rat_2000m`=?,`heart_rate_avg`=?,`heart_rate_500m`=?,`heart_rate_1000m`=?,`heart_rate_1500m`=?,`heart_rate_2000m`=?, `official`=?,`attendance`=?,`ergo_weight`=?,`crew_rep_record_flag`=?,`player_height`=?,`player_weight`=?,`m_sheet_number`=?,`sheet_name`=?,`race_result_record_name`=?,`start_datetime`=?,`wind_speed_2000m_point`=?,`wind_direction_2000m_point`=?,`wind_speed_1000m_point`=?,`wind_direction_1000m_point`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where user_id = ?',
+                'update t_race_result_record set `user_id`=?,`jara_player_id`=?,`player_name`=?,`entrysystem_tourn_id`=?,`tourn_id`=?,`tourn_name`=?,`race_id`=?,`entrysystem_race_id`=?,`race_number`=?,`race_name`=?,`org_id`=?, `entrysystem_org_id`=?,`org_name`=?,`crew_name`=?,`by_group`=?,`event_id`=?,`event_name`=?,`range`=?,`rank`=?,`laptime_500m`=?,`laptime_1000m`=?,`laptime_1500m`=?,`laptime_2000m`=?,`final_time`=?, `stroke_rate_avg`=?,`stroke_rat_500m`=?,`stroke_rat_1000m`=?,`stroke_rat_1500m`=?,`stroke_rat_2000m`=?,`heart_rate_avg`=?,`heart_rate_500m`=?,`heart_rate_1000m`=?,`heart_rate_1500m`=?,`heart_rate_2000m`=?, `official`=?,`attendance`=?,`ergo_weight`=?,`crew_rep_record_flag`=?,`player_height`=?,`player_weight`=?,`m_sheet_number`=?,`sheet_name`=?,`race_result_record_name`=?,`start_datetime`=?,`wind_speed_2000m_point`=?,`wind_direction_2000m_point`=?,`wind_speed_1000m_point`=?,`wind_direction_1000m_point`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? WHERE `tourn_id` = ?',
                 [
-                    $raceResultRecordInfo['race_result_record_id'],
                     $raceResultRecordInfo['user_id'],
                     $raceResultRecordInfo['jara_player_id'],
                     $raceResultRecordInfo['player_name'],
@@ -149,12 +202,12 @@ class T_raceResultRecord extends Model
                     Auth::user()->user_id,
                     NOW(),
                     Auth::user()->user_id,
-                    0,
-                    1, //$raceResultRecordInfo['playerId'] //where条件
+                    $raceResultRecordInfo['delete_flag'],
+                    $raceResultRecordInfo['tourn_id'], //where条件
                 ]
             );
 
-            // DB::commit();
+            DB::commit();
             return $result;
         } catch (\Throwable $e) {
             dd($e);
