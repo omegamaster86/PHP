@@ -226,4 +226,16 @@ class T_raceResultRecord extends Model
             return $result;
         }
     }
+
+    //団体IDを条件として出漕結果記録テーブル内の大会IDを取得する
+    public function getTournamentIdForResultsRecord($targetOrgId)
+    {
+        $tournamentIds = DB::select('select `tourn_id`
+                                        from `t_race_result_record`
+                                        where `delete_flag`=0
+                                        and `org_id`=?'
+                                    ,[$targetOrgId]
+                                );
+        return $tournamentIds;
+    }
 }

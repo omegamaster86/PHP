@@ -96,4 +96,17 @@ class T_players extends Model
             return $result;
         }
     }
+
+    //20231218 選手IDに一致する全ての選手情報を取得
+    //選手IDの条件はin句に置き換える
+    public function getPlayers($PlayerIdCondition)
+    {
+        $sqlString = 'select *
+                        from `t_players`
+                        where `delete_flag`=0
+                        and `player_id` in (#PlayerIdCondition#)';        
+        $sqlString = str_replace('#PlayerIdCondition#',$PlayerIdCondition,$sqlString);
+        $players = DB::select($sqlString);
+        return $players;
+    }
 }

@@ -18,10 +18,24 @@ class T_organizations extends Model
 
     public function getOrganization($orgId)
     {
-        $organization = DB::select('select *
-                                        from t_organizations
-                                        where delete_flag=0
-                                        and org_id = ?'
+        $organization = DB::select('select 
+                                        `org_id`,
+                                        `entrysystem_org_id`,
+                                        `org_name`,
+                                        `jara_org_type`,
+                                        `jara_org_reg_trail`,
+                                        `pref_org_type`,
+                                        `pref_org_reg_trail`,
+                                        `org_class`,
+                                        `founding_year`,
+                                        `post_code`,
+                                        `location_country`,
+                                        `location_prefecture`,
+                                        `address1`,
+                                        `address2`                                        
+                                        from `t_organizations`
+                                        where `delete_flag`=0
+                                        and `org_id`=?'
                                     ,[$orgId]
                                 );
         //1つの団体IDを取得するため0番目だけを返す
@@ -37,26 +51,26 @@ class T_organizations extends Model
     {
         DB::beginTransaction();
         try{
-                DB::insert('insert into t_organizations
+                DB::insert('insert into `t_organizations`
                             (
-                                entrysystem_org_id,
-                                org_name,
-                                jara_org_type,
-                                jara_org_reg_trail,
-                                pref_org_type,
-                                pref_org_reg_trail,
-                                org_class,
-                                founding_year,
-                                post_code,
-                                location_country,
-                                location_prefecture,
-                                address1,
-                                address2,
-                                registered_time,
-                                registered_user_id,
-                                updated_time,
-                                updated_user_id,
-                                delete_flag
+                                `entrysystem_org_id`,
+                                `org_name`,
+                                `jara_org_type`,
+                                `jara_org_reg_trail`,
+                                `pref_org_type`,
+                                `pref_org_reg_trail`,
+                                `org_class`,
+                                `founding_year`,
+                                `post_code`,
+                                `location_country`,
+                                `location_prefecture`,
+                                `address1`,
+                                `address2`,
+                                `registered_time`,
+                                `registered_user_id`,
+                                `updated_time`,
+                                `updated_user_id`,
+                                `delete_flag`
                             )values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                             [
                                 $organizationInfo['entrysystemOrgId'],
@@ -99,23 +113,23 @@ class T_organizations extends Model
         $result = true;
         DB::beginTransaction();
         try{
-                DB::update('update t_organizations
-                            set entrysystem_org_id = ?,
-                                org_name = ?,
-                                jara_org_type = ?,
-                                jara_org_reg_trail = ?,
-                                pref_org_type = ?,
-                                pref_org_reg_trail = ?,
-                                org_class = ?,
-                                founding_year = ?,
-                                post_code = ?,
-                                location_country = ?,
-                                location_prefecture = ?,
-                                address1 = ?,
-                                address2 = ?,                                
-                                updated_time = ?,
-                                updated_user_id = ?
-                                where org_id = ?
+                DB::update('update `t_organizations`
+                            set `entrysystem_org_id` = ?,
+                                `org_name` = ?,
+                                `jara_org_type` = ?,
+                                `jara_org_reg_trail` = ?,
+                                `pref_org_type` = ?,
+                                `pref_org_reg_trail` = ?,
+                                `org_class` = ?,
+                                `founding_year` = ?,
+                                `post_code` = ?,
+                                `location_country` = ?,
+                                `location_prefecture` = ?,
+                                `address1` = ?,
+                                `address2` = ?,                                
+                                `updated_time` = ?,
+                                `updated_user_id` = ?
+                                where `org_id` = ?
                             ',[
                                     $organizationInfo['entrysystemOrgId'],
                                     $organizationInfo['orgName'],
@@ -154,10 +168,10 @@ class T_organizations extends Model
     public function getEntrysystemOrgIdCountWithOrgId($entrySystemOrgId,$org_id)
     {
         $counts = DB::select('select count(*) as "count"
-                                    from t_organizations
-                                    where delete_flag=0
-                                    and entrysystem_org_id = ?
-                                    and org_id <> ?'
+                                    from `t_organizations`
+                                    where `delete_flag`=0
+                                    and `entrysystem_org_id` = ?
+                                    and `org_id` <> ?'
                                 ,[$entrySystemOrgId,$org_id]
                             );
         $count = $counts[0]->count;
@@ -170,9 +184,9 @@ class T_organizations extends Model
     public function getEntrysystemOrgIdCount($entrySystemOrgId)
     {
         $counts = DB::select('select count(*) as "count"
-                                    from t_organizations
-                                    where delete_flag=0
-                                    and entrysystem_org_id = ?'
+                                    from `t_organizations`
+                                    where `delete_flag`=0
+                                    and `entrysystem_org_id` = ?'
                                 ,[$entrySystemOrgId]
                             );
         $count = $counts[0]->count;
@@ -183,11 +197,11 @@ class T_organizations extends Model
     public function getOrgInfoFromEntrySystemOrgId($entrySystemOrgId)
     {
         $orgInfos = DB::select('select 
-                                org_id
-                                ,org_name
-                                from t_organizations
-                                where delete_flag=0
-                                and entrysystem_org_id = ?'
+                                `org_id`
+                                ,`org_name`
+                                from `t_organizations`
+                                where `delete_flag`=0
+                                and `entrysystem_org_id`=?'
                                 ,[$entrySystemOrgId]
                             );
         $orgInfo = $orgInfos[0];

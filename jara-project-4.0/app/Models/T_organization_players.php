@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class T_organization_players extends Model
 {
@@ -19,7 +20,7 @@ class T_organization_players extends Model
                                 from `t_organization_players`
                                 where `delete_flag` =0
                                 and `org_id` = ?
-                                order by 並び順を決めるフィールド名を書く'
+                                order by org_player_id'
                                 ,[$target_org_id]
                             );
         return $players;

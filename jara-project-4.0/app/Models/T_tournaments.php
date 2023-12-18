@@ -127,14 +127,26 @@ class T_tournaments extends Model
     //20231215 団体IDをキーとして大会情報を取得する
     public function getTournamentsFromOrgId($target_org_id)
     {
-        $tournaments = DB::select(
-            'select *
+        $tournaments = DB::select('select *
                                         from `t_tournaments`
                                         where `delete_flag` =0
                                         and `sponsor_org_id` = ?
-                                        order by 並び順を決めるフィールド名を書く',
-            [$target_org_id]
-        );
+                                        order by event_start_date'
+                                    ,[$target_org_id]
+                                );
         return $tournaments;
+    }
+
+    //20231218 エントリー大会情報を取得
+    //出漕結果記録の大会IDから大会情報を取得
+    public function getEntryTournaments($tournamentIdCondition)
+    {
+        $sqlString = 'select *
+                        from `t_tournaments`
+                        where `delete_flag`=0
+                        and `tourn_id` in (#TournamentIdCondition#)';
+        $sqlString = str_replace('#TournamentIdCondition#',$tournamentIdCondition,$sqlString);
+        $entryTournaments = DB::select($sqlString);
+        return $entryTournaments;
     }
 }

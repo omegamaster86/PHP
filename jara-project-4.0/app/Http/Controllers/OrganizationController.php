@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\T_tournaments;
 use App\Models\T_organization_players;
+use App\Models\T_players;
+use App\Models\T_raceResultRecord;
 
 class OrganizationController extends Controller
 {
@@ -138,39 +140,54 @@ class OrganizationController extends Controller
     }
 
     //団体情報参照画面を開く
-    public function createRefecence($targetOrgId,
+    public function createReference($targetOrgId,
                                     T_organizations $tOrganizations,
-                                    T_tournaments $tTournaments,
+                                    T_tournaments $tTournaments,                                    
                                     T_organization_players $tOrganizationPlayers,
+                                    T_players $tPlayers,
+                                    T_raceResultRecord $tRaceResultRecord,
                                     M_organization_class $mOrganizationClass,
                                     M_prefectures $mPrefectures,
                                     T_organization_staff $tOrganizationStaff,
                                     M_staff_type $mStaffType)
     {
         //団体情報を取得 20231215 t_futamura
-        $tOrg = $tOrganizations->getOrganization($targetOrgId);
-        //大会情報を取得
-        $tTours = $tTournaments->getTournamentsFromOrgId($targetOrgId);
+        $organizations = $tOrganizations->getOrganization($targetOrgId);
+        //主催大会情報を取得
+        $organizedTournaments = $tTournaments->getTournamentsFromOrgId($targetOrgId);
         //団体所属選手情報を取得
-        $tOrgPlayers = $tOrganizationPlayers->getOrganizationPlayers($targetOrgId);
+        $orgPlayers = $tOrganizationPlayers->getOrganizationPlayers($targetOrgId);
+        //選手情報取得のための条件文を生成する
+        $playerIdColumnName = 'player_id';
+        $organizedPlayerIdCondition = $this->generateIdCondition($orgPlayers,$playerIdColumnName);        
+        //選手情報を取得
+        $players = $tPlayers->getPlayers($organizedPlayerIdCondition);
+        //出漕結果記録情報を取得
+        $tournamentIds = $tRaceResultRecord->getTournamentIdForResultsRecord($targetOrgId);
+        dd($tournamentIds);
+        //エントリー大会情報取得のための条件文を生成する
+        $tournamentIdColumnName = 'tourn_id';
+        $tournamentsIdCondition = $this->generateIdCondition($tournamentIds,$tournamentIdColumnName);
         //エントリー大会情報を取得
-        //$entryTournaments = ・・・
+        $entryTournaments = $tTournaments->getEntryTournaments($tournamentsIdCondition);
         //団体区分マスターを取得 20231215 t_futamura
         $mOrgClass = $mOrganizationClass->getOrganizationClass();
         //都道府県マスターを取得 20231215 t_futamura
         $mPref = $mPrefectures->getPrefecures();
         //団体所属スタッフテーブルを取得 20231215 t_futamura
-        $tStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId);
+        $organizedStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId);
         //スタッフ種別マスターを取得 20231215 t_futamura
         $mStfType = $mStaffType->getStaffType();
 
         return view('organizations.reference',["pagemode"=>"refer",
-                                                "organization_info"=>$tOrg,
-                                                "tournaments"=>$tTours,
-                                                //"entryTournaments"=>$entryTournaments
-                                                "organization_players"=>$tOrgPlayers,
+                                                "organization_info"=>$organizations,
+                                                "organized_tournaments"=>$organizedTournaments,                                                
+                                                "organized_players"=>$players,
+                                                "entryTournaments"=>$entryTournaments,
                                                 "organizationClass"=>$mOrgClass,
                                                 "prefectures"=>$mPref,
+                                                "organized_staff"=>$organizedStaff,
+                                                "staffType"=>$mStfType
                                             ]);
     }
 
@@ -501,6 +518,19 @@ class OrganizationController extends Controller
         
         $values = ltrim($values,"union select ");
         return $values;
+    }
+
+    //in句に置き換えられるような選手IDの条件文を生成する
+    //id1,id2,・・・
+    private function generateIdCondition($ids,$idName)
+    {
+        $conditionStr = "";
+        foreach($ids as $id)
+        {
+            $conditionStr .= $id->$idName.',';
+        }
+        $conditionStr = rtrim($conditionStr,",");
+        return $conditionStr;
     }
 
     //削除画面の[削除]ボタンで、団体情報の削除を実行
