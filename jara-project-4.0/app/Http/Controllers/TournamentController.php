@@ -272,4 +272,23 @@ class TournamentController extends Controller
             return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
         }
     }
+
+    //----------------大会検索で使用　ここから----------------------------
+    public function getTournaments($searchInfo,T_tournaments $tTournaments)
+    {
+        $searchCondition = $this->generateSearchCondition($searchInfo);
+        $tournaments = $tTournaments($searchCondition);
+    }
+ 
+    private function generateSearchCondition($searchInfo)
+    {
+        $condition = "";
+        if(isset($searchInfo->jara_player_id))
+        {
+            $condition .= "and `t_race_result_record`.`jara_player_id`=".$searchInfo->jara_player_id;
+        }
+        //検索条件の入力によって、条件の文字列を増やしていく
+ 
+        return $condition;
+    }
 }
