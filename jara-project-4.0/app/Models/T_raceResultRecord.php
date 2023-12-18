@@ -64,6 +64,13 @@ class T_raceResultRecord extends Model
         'delete_flag' => 0,
     ];
 
+    public function getRaceResultRecord_receId($raceId)
+    {
+        $racesResultRecord = DB::select('select `race_result_record_id`, `user_id`, `jara_player_id`, `player_name`, `entrysystem_tourn_id`, `tourn_id`, `tourn_name`, `race_id`, `entrysystem_race_id`, `race_number`, `race_name`, `org_id`, `entrysystem_org_id`, `org_name`, `crew_name`, `by_group`, `event_id`, `event_name`, `range`, `rank`, `laptime_500m`, `laptime_1000m`, `laptime_1500m`, `laptime_2000m`, `final_time`, `stroke_rate_avg`, `stroke_rat_500m`, `stroke_rat_1000m`, `stroke_rat_1500m`, `stroke_rat_2000m`, `heart_rate_avg`, `heart_rate_500m`, `heart_rate_1000m`, `heart_rate_1500m`, `heart_rate_2000m`, `official`, `attendance`, `ergo_weight`, `crew_rep_record_flag`, `player_height`, `player_weight`, `m_sheet_number`, `sheet_name`, `race_result_record_name`, `start_datetime`, `wind_speed_2000m_point`, `wind_direction_2000m_point`, `wind_speed_1000m_point`, `wind_direction_1000m_point`, `registered_time`, `registered_user_id`, `updated_time`, `updated_user_id`, `delete_flag` FROM `t_race_result_record` where delete_flag=0 and race_id = ?', [$raceId]);
+
+        return $racesResultRecord;
+    }
+
     public function insertRaceResultRecord($raceResultRecordInfo)
     {
         $result = "success";
