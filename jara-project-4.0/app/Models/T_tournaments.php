@@ -149,4 +149,17 @@ class T_tournaments extends Model
         $entryTournaments = DB::select($sqlString);
         return $entryTournaments;
     }
+
+    public function getTournamentWithSearchCondition($searchCondition)
+    {
+        $sqlString = 'select *
+                        from `t_tournaments`
+                        left join `t_race_result_record`
+                        on `t_tournaments`.`tourn_id`=`t_race_result_record`.`tourn_id`
+                        where `delete_flag`=0
+                        #SearchCondition#';
+        $sqlString = str_replace('#SearchCondition#',$searchCondition,$sqlString);
+        $tournaments = DB::select($sqlString);
+        return $tournaments;
+    }
 }
