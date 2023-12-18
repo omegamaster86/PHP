@@ -78,6 +78,12 @@ class TournamentController extends Controller
         return view('tournament.reference', ["pagemode" => "delete", "TournamentData" => $tTours, "RaceData" => $tRaceData]);
     }
 
+    //大会検索画面に遷移した時
+    public function createSearch(T_tournaments $tTournaments, T_races $tRace)
+    {
+        return view('tournament.search', ["pagemode" => "search"]);
+    }
+
     //大会情報登録画面で確認ボタンを押した時
     public function storeConfirm(Request $request, T_tournaments $t_organization, T_organizations $tOrganization)
     {
