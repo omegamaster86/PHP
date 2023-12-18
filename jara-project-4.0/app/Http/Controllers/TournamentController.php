@@ -22,6 +22,7 @@ use League\CommonMark\Node\Inline\Newline;
 use App\Models\T_tournaments;
 use App\Models\T_races;
 use App\Models\T_raceResultRecord;
+use App\Models\T_organizations;
 use Illuminate\Support\Facades\Validator;
 
 /*
@@ -46,37 +47,39 @@ class TournamentController extends Controller
         //大会情報更新に必要な、大会IDなどを取得
         $tTours = $tTournaments->getTournament(1); //大会情報を取得
         $tRaceData = $tRace->getRace(1); //レース情報を取得
-        return view('tournament.register-edit', ["pagemode" => "edit"]);
+        return view('tournament.register-edit', ["pagemode" => "edit", "TournamentData" => $tTours, "RaceData" => $tRaceData]);
     }
 
-    //団体情報登録・更新確認画面を開く
+    //大会登録確認画面を開く
     public function createConfirm()
     {
         return view('tournament.register-confirm', ["pagemode" => "register"]);
     }
 
-    //団体情報登録・更新確認画面を開く
+    //大会更新確認画面を開く
     public function createEditConfirm()
     {
         return view('tournament.register-confirm', ["pagemode" => "edit"]);
     }
 
+    //大会情報参照画面に遷移した時
     public function createReference(T_tournaments $tTournaments, T_races $tRace)
     {
         $tTours = $tTournaments->getTournament(1); //大会情報を取得
         $tRaceData = $tRace->getRace(1); //レース情報を取得
-        return view('tournament.reference', ["pagemode" => "refer"]);
+        return view('tournament.reference', ["pagemode" => "refer", "TournamentData" => $tTours, "RaceData" => $tRaceData]);
     }
 
+    //大会情報削除画面に遷移した時
     public function createDelete(T_tournaments $tTournaments, T_races $tRace)
     {
         $tTours = $tTournaments->getTournament(1); //大会情報を取得
         $tRaceData = $tRace->getRace(1); //レース情報を取得
-        return view('tournament.reference', ["pagemode" => "delete"]);
+        return view('tournament.reference', ["pagemode" => "delete", "TournamentData" => $tTours, "RaceData" => $tRaceData]);
     }
 
-    //団体情報登録画面で確認ボタンを押したときに発生するイベント
-    public function storeConfirm(Request $request, T_tournaments $t_organization)
+    //大会情報登録画面で確認ボタンを押した時
+    public function storeConfirm(Request $request, T_tournaments $t_organization, T_organizations $tOrganization)
     {
         $tournamentInfo = $request->all();
         include('Auth/ErrorMessages/ErrorMessages.php');
@@ -100,11 +103,22 @@ class TournamentController extends Controller
         //
         $validator = Validator::make($request->all(), $rules, $errMessages);
 
-        // $validator->errors()->add('entrysystemOrgId', $errorMessage);
-        // $validator->errors()->add('entrysystemOrgId', $errorMessage);
-        // $validator->errors()->add('entrysystemOrgId', $errorMessage);
-        // $validator->errors()->add('entrysystemOrgId', $errorMessage);
-        // $validator->errors()->add('entrysystemOrgId', $errorMessage);
+        //追加でチェックを行う        
+        //主催団体が「任意団体」で大会種別が「公式」だった場合エラーメッセージを表示
+        if (!empty($tournamentInfo['tId'])) {
+            $orgDataList = $tOrganization->getOrganization((int)$tournamentInfo['tId']); //団体IDを元に団体情報を取得
+            $officialFlag = $tournamentInfo['officialFlag'];
+            if (($orgDataList->jara_org_type == 0 && $orgDataList->pref_org_type == 0) &&  $officialFlag == "2") {
+                $validator->errors()->add('officialFlag', $tournament_official);
+            }
+        }
+
+        //開催開始年月日と終了年月日のチェックを行う
+        $tStartDay = (int)str_replace('-', '', $tournamentInfo['tStartDay']);
+        $tEndDay = (int)str_replace('-', '', $tournamentInfo['tEndDay']);
+        if (!empty($tStartDay) && !empty($tEndDay) && ($tEndDay < $tStartDay)) {
+            $validator->errors()->add('tEndDay', $tournament_endDayRange);
+        }
 
         //バリデーション失敗時、セッションにエラーメッセージをフラッシュデータとして保存
         if ($validator->errors()->count() > 0) {
@@ -115,8 +129,8 @@ class TournamentController extends Controller
     }
 
 
-    //団体情報登録画面で確認ボタンを押したときに発生するイベント
-    public function storeEditConfirm(Request $request, T_tournaments $t_organization)
+    //大会情報更新画面で確認ボタンを押した時
+    public function storeEditConfirm(Request $request, T_tournaments $t_organization, T_organizations $tOrganization)
     {
         $tournamentInfo = $request->all();
         include('Auth/ErrorMessages/ErrorMessages.php');
@@ -140,11 +154,22 @@ class TournamentController extends Controller
         //
         $validator = Validator::make($request->all(), $rules, $errMessages);
 
-        // $validator->errors()->add('entrysystemOrgId', $errorMessage);
-        // $validator->errors()->add('entrysystemOrgId', $errorMessage);
-        // $validator->errors()->add('entrysystemOrgId', $errorMessage);
-        // $validator->errors()->add('entrysystemOrgId', $errorMessage);
-        // $validator->errors()->add('entrysystemOrgId', $errorMessage);
+        //追加でチェックを行う
+        //主催団体が「任意団体」で大会種別が「公式」だった場合エラーメッセージを表示
+        if (!empty($tournamentInfo['tId'])) {
+            $orgDataList = $tOrganization->getOrganization((int)$tournamentInfo['tId']); //団体IDを元に団体情報を取得
+            $officialFlag = $tournamentInfo['officialFlag'];
+            if (($orgDataList->jara_org_type == 0 && $orgDataList->pref_org_type == 0) &&  $officialFlag == "2") {
+                $validator->errors()->add('officialFlag', $tournament_official);
+            }
+        }
+
+        //開催開始年月日と終了年月日のチェックを行う
+        $tStartDay = (int)str_replace('-', '', $tournamentInfo['tStartDay']);
+        $tEndDay = (int)str_replace('-', '', $tournamentInfo['tEndDay']);
+        if (!empty($tStartDay) && !empty($tEndDay) && ($tEndDay < $tStartDay)) {
+            $validator->errors()->add('tEndDay', $tournament_endDayRange);
+        }
 
         //バリデーション失敗時、セッションにエラーメッセージをフラッシュデータとして保存
         if ($validator->errors()->count() > 0) {
@@ -154,18 +179,18 @@ class TournamentController extends Controller
         return redirect('tournament/edit/confirm')->with('tournamentInfo', $tournamentInfo);
     }
 
-    //登録
+    //登録ボタンを押した時
     public function storeConfirmRegister(Request $request, T_tournaments $tTournament, T_races $tRace, T_raceResultRecord $tRaceResultRecord)
     {
         //確認画面から登録
         //$tournamentInfo = $request->all();
         $tTournament::$tournamentInfo['tourn_id'] = 1;
-        $tTournament::$tournamentInfo['tourn_name'] = "nameRegister";
+        $tTournament::$tournamentInfo['tourn_name'] = "Register";
         $result = $tTournament->insertTournaments($tTournament::$tournamentInfo);
         $ListCout = 3; //レース登録リスト行数分更新する
         for ($i = 0; $i < $ListCout; $i++) {
             $tRace::$racesData['race_number'] = $i;
-            $tRace::$racesData['tourn_id'] = 1;
+            $tRace::$racesData['tourn_id'] = $result[1]; //大会IDに紐づける
             $tRace::$racesData['race_name'] = $i;
             $tRace::$racesData['event_id'] = $i;
             $tRace->insertRaces($tRace::$racesData); //レーステーブルの挿入
@@ -185,7 +210,7 @@ class TournamentController extends Controller
         }
     }
 
-    //更新
+    //更新ボタンを押した時
     public function storeConfirmEdit(Request $request, T_tournaments $tTournament, T_races $tRace, T_raceResultRecord $tRaceResultRecord)
     {
         $targetTournamentId = 1;
@@ -193,10 +218,11 @@ class TournamentController extends Controller
 
         //$tournamentInfo = $request->all();
         $tTournament::$tournamentInfo['tourn_id'] = $targetTournamentId;
+        $tTournament::$tournamentInfo['tourn_name'] = "Update";
         $result = $tTournament->updateTournaments($tTournament::$tournamentInfo); //大会テーブルの更新
 
         $tRace::$racesData['tourn_id'] = $targetTournamentId;
-        $tRace::$racesData['race_name'] = "nameUpdate";
+        $tRace::$racesData['race_name'] = "Update";
         $tRace::$racesData['event_id'] = 9;
         $result = $tRace->updateRaces($tRace::$racesData); //レーステーブルの更新
 
@@ -211,7 +237,7 @@ class TournamentController extends Controller
         }
     }
 
-    //削除（削除フラグの更新）
+    //削除ボタンを押した時（削除フラグの更新）
     public function deleteTournament(Request $request, T_tournaments $tTournament, T_races $tRace, T_raceResultRecord $tRaceResultRecord): View
     {
         $targetTournamentId = 1;
@@ -219,6 +245,7 @@ class TournamentController extends Controller
 
         //$tournamentInfo = $request->all();
         $tTournament::$tournamentInfo['tourn_id'] = $targetTournamentId;
+        $tTournament::$tournamentInfo['tourn_name'] = "Delete";
         $tTournament::$tournamentInfo['delete_flag'] = 1;
         $result = $tTournament->updateTournaments($tTournament::$tournamentInfo); //大会テーブルの更新
 

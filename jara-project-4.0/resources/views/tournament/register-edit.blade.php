@@ -96,13 +96,16 @@
                     @elseif($pagemode==="edit")
                     <input id="tName" name="tName" type="text" value="{{old('tName')}}">
                     @endif
-                    <select>
-                        <option value=1 selected>非公式</option>
-                        <option value=2>公式</option>
+                    <select id="officialFlag" name="officialFlag">
+                        <option value=1 {{ old('officialFlag') == 1 ? "selected" : ""}}>非公式</option>
+                        <option value=2 {{ old('officialFlag') == 2 ? "selected" : ""}}>公式</option>
                     </select>
                     <!--エラーメッセージ表示エリア -->
                     @if ($errors->has('tName'))
                     <p style="color:red;">{{ $errors->first('tName') }}</p>
+                    @endif
+                    @if ($errors->has('officialFlag'))
+                    <p style="color:red;">{{ $errors->first('officialFlag') }}</p>
                     @endif
                 </div>
 
@@ -128,9 +131,9 @@
                     <label onclick="details('startDayInfo')" class=" control-label">＊開催開始年月日 :</label>
                     <i onclick="details('startDayInfo')" style="cursor:pointer" class=" fa fa-question-circle" aria-hidden="true"></i>
                     @if($pagemode==="register")
-                    <input id="tStartDay" name="tStartDay" type="text" value="{{old('tStartDay')}}">
+                    <input id="tStartDay" name="tStartDay" type="date" value="{{old('tStartDay')}}">
                     @elseif($pagemode==="edit")
-                    <input id="tStartDay" name="tStartDay" type="text" value="{{old('tStartDay')}}">
+                    <input id="tStartDay" name="tStartDay" type="date" value="{{old('tStartDay')}}">
                     @endif
                     <!--エラーメッセージ表示エリア -->
                     @if ($errors->has('tStartDay'))
@@ -143,9 +146,9 @@
                     <label onclick="details('endDayInfo')" class=" control-label">＊開催修了年月日 : </label>
                     <i onclick="details('endDayInfo')" style="cursor:pointer" class=" fa fa-question-circle" aria-hidden="true"></i>
                     @if($pagemode==="register")
-                    <input id="tEndDay" name="tEndDay" type="text" value="{{old('tEndDay')}}">
+                    <input id="tEndDay" name="tEndDay" type="date" value="{{old('tEndDay')}}">
                     @elseif($pagemode==="edit")
-                    <input id="tEndDay" name="tEndDay" type="text" value="{{old('tEndDay')}}">
+                    <input id="tEndDay" name="tEndDay" type="date" value="{{old('tEndDay')}}">
                     @endif
                     <!--エラーメッセージ表示エリア -->
                     @if ($errors->has('tEndDay'))

@@ -52,7 +52,7 @@
             @if($pagemode == "delete")
             <h1 style="display: inline;margin-left:25%" class="text-right col-md-9">大会情報削除</h1>
             @elseif($pagemode == "refer")
-            <h1 style="display: inline;margin-left:25%" class="text-right col-md-9">[大会名]</h1>
+            <h1 style="display: inline;margin-left:25%" class="text-right col-md-9">大会情報参照</h1>
             @endif
             @endif
         </div>

@@ -108,6 +108,8 @@ $tournament_syumoku ="種目を入力してください";
 $tournament_sosiki = "組織を入力してください";
 $tournament_kyori = "距離を入力してください";
 $tournament_hattei = "発艇日時を入力してください";
+$tournament_official = "[団体ID]：[団体名]は、任意団体の為、公式大会を主催することはできません";
+$tournament_endDayRange = "開催終了年月日の値が不正です。開催開始年月日より前の日付を選択することはできません。";
 //大会登録　レース登録リスト
 $tournament_races_No = "レースNo.を入力してください";
 $tournament_races_event = "種目を入力してください";
