@@ -101,9 +101,17 @@ class T_players extends Model
     //選手IDの条件はin句に置き換える
     public function getPlayers($PlayerIdCondition)
     {
-        $sqlString = 'select *
+        $sqlString = 'select 
+                        `player_id`
+                        ,`user_id`
+                        ,`player_name`
+                        ,`country_name`
+                        ,`height`
+                        ,`weight`
                         from `t_players`
-                        where `delete_flag`=0
+                        left join `m_countries`
+                        on `t_players`.`birth_country` = `m_countries`.`country_id`
+                        where `t_players`.`delete_flag`=0
                         and `player_id` in (#PlayerIdCondition#)';        
         $sqlString = str_replace('#PlayerIdCondition#',$PlayerIdCondition,$sqlString);
         $players = DB::select($sqlString);

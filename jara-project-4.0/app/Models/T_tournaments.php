@@ -127,11 +127,30 @@ class T_tournaments extends Model
     //20231215 団体IDをキーとして大会情報を取得する
     public function getTournamentsFromOrgId($target_org_id)
     {
-        $tournaments = DB::select('select *
-                                        from `t_tournaments`
-                                        where `delete_flag` =0
-                                        and `sponsor_org_id` = ?
-                                        order by event_start_date'
+        $tournaments = DB::select('select 
+                                    `tourn_id`,
+                                    `tourn_name`,
+                                    `sponsor_org_id`,
+                                    `event_start_date`,
+                                    `event_end_date`,
+                                    `t_tournaments`.`venue_id`,
+                                    case `m_venue`.`venue_name`
+                                        when "その他" then `t_tournaments`.`venue_name`
+                                        else `m_venue`.`venue_name`
+                                        end as `venue_name`,
+                                    `tourn_type`,
+                                    case `tourn_type`
+                                        when 0 then "非公式"
+                                        when 1 then "公式"
+                                        else ""
+                                        end as `tourn_type_display`,
+                                    `tourn_url`
+                                    from `t_tournaments`
+                                    left join `m_venue`
+                                    on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
+                                    where `t_tournaments`.`delete_flag` =0
+                                    and `sponsor_org_id` = ?
+                                    order by `event_start_date`'
                                     ,[$target_org_id]
                                 );
         return $tournaments;
@@ -141,10 +160,31 @@ class T_tournaments extends Model
     //出漕結果記録の大会IDから大会情報を取得
     public function getEntryTournaments($tournamentIdCondition)
     {
-        $sqlString = 'select *
+        $sqlString = 'select
+                        `tourn_id`,
+                        `tourn_name`,
+                        `sponsor_org_id`,
+                        `event_start_date`,
+                        `event_end_date`,
+                        `t_tournaments`.`venue_id`,
+                        case `m_venue`.`venue_name`
+                            when "その他" then `t_tournaments`.`venue_name`
+                            else `m_venue`.`venue_name`
+                            end as `venue_name`,
+                        `tourn_type`,
+                        case `tourn_type`
+                            when 0 then "非公式"
+                            when 1 then "公式"
+                            else ""
+                            end as `tourn_type_display`,
+                        `tourn_url`
                         from `t_tournaments`
-                        where `delete_flag`=0
-                        and `tourn_id` in (#TournamentIdCondition#)';
+                        left join `m_venue`
+                        on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
+                        where `t_tournaments`.`delete_flag`=0
+                        and `tourn_id` in (#TournamentIdCondition#)
+                        order by event_start_date'
+                        ;
         $sqlString = str_replace('#TournamentIdCondition#',$tournamentIdCondition,$sqlString);
         $entryTournaments = DB::select($sqlString);
         return $entryTournaments;

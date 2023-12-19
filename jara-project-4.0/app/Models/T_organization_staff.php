@@ -17,16 +17,19 @@ class T_organization_staff extends Model
     public function getOrganizationStaffFromOrgId($orgId)
     {
         $orgStaffs = DB::select('select 
-                                    org_staff_id
-                                    ,staff.user_id
-                                    ,staff.staff_type_id
-                                    ,user.user_name
-                                    from t_organization_staff staff
-                                    join t_users user
-                                    on staff.user_id = user.user_id
-                                    where staff.delete_flag = 0
-                                    and user.delete_flag = 0
-                                    and staff.org_id = ?'
+                                    `org_staff_id`,
+                                    `staff`.`user_id`,
+                                    `staff`.`staff_type_id`,
+                                    `staff_type_name`,
+                                    `user`.`user_name`
+                                    from `t_organization_staff` `staff`
+                                    join `t_users` `user`
+                                    on `staff`.`user_id` = `user`.`user_id`
+                                    left join `m_staff_type`
+                                    on `staff`.`staff_type_id` = `m_staff_type`.`staff_type_id`
+                                    where `staff`.`delete_flag` = 0
+                                    and `user`.`delete_flag` = 0
+                                    and `staff`.`org_id` = ?'
                                     ,[$orgId]
                                 );
         return $orgStaffs;
@@ -106,6 +109,31 @@ class T_organization_staff extends Model
         DB::beginTransaction();
         try{
                 DB::insert($sqlString);
+                DB::commit();
+                return $result;
+        }
+        catch (\Throwable $e){
+                dd($e);
+                dd("stop");
+                DB::rollBack();
+                
+                $result = false;
+                return $result;
+        }
+    }
+
+    //団体削除による団体所属スタッフの削除
+    //org_idをキーとして、該当所属スタッフのdelete_flagを1にする
+    public function updateDeleteFlagByOrganizationDeletion($org_id)
+    {
+        $result = true;   
+        try{
+                DB::beginTransaction();
+                DB::update('update `t_organization_staff`
+                            set `delete_flag` = 1
+                            where 1=1
+                            and `org_id` = ?'
+                            ,[$org_id]);
                 DB::commit();
                 return $result;
         }

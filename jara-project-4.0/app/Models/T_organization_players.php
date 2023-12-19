@@ -25,4 +25,29 @@ class T_organization_players extends Model
                             );
         return $players;
     }
+
+    //団体削除による団体所属選手の削除
+    //org_idをキーとして、該当所属選手のdelete_flagを1にする
+    public function updateDeleteFlagByOrganizationDeletion($org_id)
+    {
+        $result = true;   
+        try{
+                DB::beginTransaction();
+                DB::update('update `t_organization_players`
+                            set `delete_flag` = 1
+                            where 1=1
+                            and `org_id` = ?'
+                            ,[$org_id]);
+                DB::commit();
+                return $result;
+        }
+        catch (\Throwable $e){
+                dd($e);
+                dd("stop");
+                DB::rollBack();
+                
+                $result = false;
+                return $result;
+        }
+    }
 }

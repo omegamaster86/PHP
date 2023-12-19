@@ -20,6 +20,7 @@ use App\Models\T_tournaments;
 use App\Models\T_organization_players;
 use App\Models\T_players;
 use App\Models\T_raceResultRecord;
+use App\Models\M_countries;
 
 class OrganizationController extends Controller
 {
@@ -145,11 +146,55 @@ class OrganizationController extends Controller
                                     T_tournaments $tTournaments,                                    
                                     T_organization_players $tOrganizationPlayers,
                                     T_players $tPlayers,
-                                    T_raceResultRecord $tRaceResultRecord,
-                                    M_organization_class $mOrganizationClass,
-                                    M_prefectures $mPrefectures,
-                                    T_organization_staff $tOrganizationStaff,
-                                    M_staff_type $mStaffType)
+                                    T_raceResultRecord $tRaceResultRecord,                                    
+                                    T_organization_staff $tOrganizationStaff)
+    {
+        //団体情報を取得 20231215 t_futamura
+        $organizations = $tOrganizations->getOrganization($targetOrgId);
+        //主催大会情報を取得
+        $organizedTournaments = $tTournaments->getTournamentsFromOrgId($targetOrgId);        
+        //団体所属選手情報を取得
+        $orgPlayers = $tOrganizationPlayers->getOrganizationPlayers($targetOrgId);
+        //選手情報取得のための条件文を生成する
+        $playerIdColumnName = 'player_id';
+        $organizedPlayerIdCondition = $this->generateIdCondition($orgPlayers,$playerIdColumnName);
+        //選手情報を取得
+        $organizedPlayers = [];
+        if(!empty($organizedPlayerIdCondition))
+        {
+            $organizedPlayers = $tPlayers->getPlayers($organizedPlayerIdCondition);
+        }
+        //出漕結果記録情報を取得
+        $tournamentIds = $tRaceResultRecord->getTournamentIdForResultsRecord($targetOrgId);
+        //エントリー大会情報取得のための条件文を生成する
+        $tournamentIdColumnName = 'tourn_id';
+        $tournamentsIdCondition = $this->generateIdCondition($tournamentIds,$tournamentIdColumnName);        
+        //エントリー大会情報を取得
+        $entryTournaments = [];
+        if(!empty($tournamentsIdCondition))
+        {
+            $entryTournaments = $tTournaments->getEntryTournaments($tournamentsIdCondition);
+        }
+        //団体所属スタッフテーブルを取得 20231215 t_futamura
+        $organizedStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId);
+
+        return view('organizations.reference',["pagemode"=>"refer",
+                                                "organization_info"=>$organizations,
+                                                "organized_tournaments"=>$organizedTournaments,
+                                                "organized_players"=>$organizedPlayers,
+                                                "entryTournaments"=>$entryTournaments,
+                                                "organized_staff"=>$organizedStaff
+                                            ]);
+    }
+
+    //団体情報削除画面を開く
+    public function createDeleteView($targetOrgId,
+                                        T_organizations $tOrganizations,
+                                        T_tournaments $tTournaments,
+                                        T_organization_players $tOrganizationPlayers,
+                                        T_players $tPlayers,
+                                        T_raceResultRecord $tRaceResultRecord,
+                                        T_organization_staff $tOrganizationStaff)
     {
         //団体情報を取得 20231215 t_futamura
         $organizations = $tOrganizations->getOrganization($targetOrgId);
@@ -159,42 +204,54 @@ class OrganizationController extends Controller
         $orgPlayers = $tOrganizationPlayers->getOrganizationPlayers($targetOrgId);
         //選手情報取得のための条件文を生成する
         $playerIdColumnName = 'player_id';
-        $organizedPlayerIdCondition = $this->generateIdCondition($orgPlayers,$playerIdColumnName);        
+        $organizedPlayerIdCondition = $this->generateIdCondition($orgPlayers,$playerIdColumnName);
         //選手情報を取得
-        $players = $tPlayers->getPlayers($organizedPlayerIdCondition);
+        $organizedPlayers = [];
+        if(!empty($organizedPlayerIdCondition))
+        {
+            $organizedPlayers = $tPlayers->getPlayers($organizedPlayerIdCondition);
+        }
         //出漕結果記録情報を取得
         $tournamentIds = $tRaceResultRecord->getTournamentIdForResultsRecord($targetOrgId);
-        dd($tournamentIds);
         //エントリー大会情報取得のための条件文を生成する
         $tournamentIdColumnName = 'tourn_id';
         $tournamentsIdCondition = $this->generateIdCondition($tournamentIds,$tournamentIdColumnName);
         //エントリー大会情報を取得
-        $entryTournaments = $tTournaments->getEntryTournaments($tournamentsIdCondition);
-        //団体区分マスターを取得 20231215 t_futamura
-        $mOrgClass = $mOrganizationClass->getOrganizationClass();
-        //都道府県マスターを取得 20231215 t_futamura
-        $mPref = $mPrefectures->getPrefecures();
+        $entryTournaments = [];
+        if(!empty($tournamentsIdCondition))
+        {
+            $entryTournaments = $tTournaments->getEntryTournaments($tournamentsIdCondition);
+        }
         //団体所属スタッフテーブルを取得 20231215 t_futamura
         $organizedStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId);
-        //スタッフ種別マスターを取得 20231215 t_futamura
-        $mStfType = $mStaffType->getStaffType();
 
-        return view('organizations.reference',["pagemode"=>"refer",
+        return view('organizations.reference',["pagemode"=>"delete",
                                                 "organization_info"=>$organizations,
-                                                "organized_tournaments"=>$organizedTournaments,                                                
-                                                "organized_players"=>$players,
+                                                "organized_tournaments"=>$organizedTournaments,
+                                                "organized_players"=>$organizedPlayers,
                                                 "entryTournaments"=>$entryTournaments,
-                                                "organizationClass"=>$mOrgClass,
-                                                "prefectures"=>$mPref,
-                                                "organized_staff"=>$organizedStaff,
-                                                "staffType"=>$mStfType
-                                            ]);
+                                                "organized_staff"=>$organizedStaff]);
     }
 
-    //団体情報削除画面を開く
-    public function createDeleteView()
+    //団体検索画面を開く
+    public function createSearchView(M_prefectures $mPrefectures,
+                                        M_organization_type $mOrganizationType,
+                                        M_organization_class $mOrganizationClass,
+                                        M_countries $mCountries) : View
     {
-        return view('organizations.reference',["pagemode"=>"delete"]);
+        //国マスタを取得
+        $countries = $mCountries->getCountries();
+        //都道府県マスタを取得
+        $prefectures = $mPrefectures->getPrefecures();
+        //団体区分マスタを取得
+        $organizationClass = $mOrganizationClass->getOrganizationClass();
+        //団体種別マスタを取得
+        $organizationType = $mOrganizationType->getOrganizationType();
+        return view('organizations.search',['countries'=>$countries,
+                                            'prefectures'=>$prefectures,
+                                            'organization_class'=>$organizationClass,
+                                            'organization_type'=>$organizationType
+                                            ]);
     }
 
     //団体情報登録画面で確認ボタンを押したときに発生するイベント
@@ -534,9 +591,26 @@ class OrganizationController extends Controller
     }
 
     //削除画面の[削除]ボタンで、団体情報の削除を実行
-    public function deleteOrganization()
+    public function deleteOrganization(Request $request,
+                                        T_organizations $tOrganization,
+                                        T_organization_players $tOrganizationPlayers,
+                                        T_organization_staff $tOrganizationStaff)
     {
-        
+        $organizationInfo = $request->all();
+        $org_id = $organizationInfo['org_id'];
+
+        //団体所属スタッフを削除
+        $tOrganizationStaff->updateDeleteFlagByOrganizationDeletion($org_id);
+        //団体所属選手を削除
+        $tOrganizationPlayers->updateDeleteFlagByOrganizationDeletion($org_id);
+        //団体を削除
+        $tOrganization->updateDeleteFlag($org_id);
+
+        $page_status = "完了しました";
+        $page_url = route('my-page');
+        $page_url_text = "マイページ";
+            
+        return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
     }
 
     //更新実行
@@ -557,6 +631,76 @@ class OrganizationController extends Controller
         $page_url = route('my-page');
         $page_url_text = "マイページ";            
         return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+    }
+
+    //団体検索を実行
+    public function searchOrganization(Request $request,T_organizations $tOrganizations) : View
+    {
+        $searchInfo = $request->all();
+        //dd($searchInfo);
+        $searchCondition = $this->generateOrganizationSearchCondition($searchInfo);
+        //dd($searchCondition);
+        $organizations = $tOrganizations->getOrganizationWithSearchCondition($searchCondition);
+        dd($organizations);
+    }
+
+    private function generateOrganizationSearchCondition($searchInfo)
+    {
+        $condition = "";
+        //エントリーシステムの団体IDの条件
+        if(isset($searchInfo['entrysystemOrgId']))
+        {
+            $condition .= " and `t_organizations`.`entrysystem_org_id`=".$searchInfo['entrysystemOrgId'];
+        }
+        //団体IDの条件
+        if(isset($searchInfo['org_id']))
+        {
+            $condition .= " and `t_organizations`.`org_id`=".$searchInfo['org_id'];
+        }
+        //団体名の条件
+        if(isset($searchInfo['org_name']))
+        {
+            $condition .= " and `t_organizations`.`org_name` like \"%".$searchInfo['org_name']."%\"";
+        }
+        //団体種別の条件
+        if(isset($searchInfo['org_type']))
+        {
+            if($searchInfo['org_type'] === "1")
+            {
+                $condition .= " and (`t_organizations`.`jara_org_type`= 1 or `t_organizations`.`pref_org_type`= 1)";
+            }
+            elseif($searchInfo['org_type'] === "0")
+            {
+                $condition .= " and (`t_organizations`.`jara_org_type`= 0 and `t_organizations`.`pref_org_type`= 0)";
+            }
+        }
+        //団体区分の条件
+        if(isset($searchInfo['org_class']))
+        {
+            $condition .= " and `t_organizations`.`org_class`=".$searchInfo['org_class'];
+        }
+        //創立年開始の条件
+        if(isset($searchInfo['foundingYear_start']))
+        {
+            $condition .= " and `t_organizations`.`founding_year`>=".$searchInfo['foundingYear_start'];
+        }
+        //創立年終了の条件
+        if(isset($searchInfo['foundingYear_end']))
+        {
+            $condition .= " and `t_organizations`.`founding_year`<=".$searchInfo['foundingYear_end'];
+        }
+        //国の条件
+        if(isset($searchInfo['country']))
+        {
+            $condition .= " and `t_organizations`.`location_country`=".$searchInfo['country'];
+        }
+        //都道府県の条件
+        $japanCode = "112";   //日本の国コード
+        if(isset($searchInfo['prefecture']) && ($searchInfo['country'] === $japanCode))
+        {
+            $condition .= " and `t_organizations`.`location_prefecture`=".$searchInfo['prefecture'];
+        }
+        return $condition;
     }
     
     public function createManagement(): View

@@ -140,9 +140,13 @@ Route::middleware('auth')->group(function () {
 
     //団体情報参照・削除画面
     Route::get('organization/reference/{targetOrgId}', [OrganizationController::class, 'createReference'])->name('organizations.reference');
-
-    // Route::get('organization/delete/{targetOrgId}', [OrganizationController::class, 'createDeleteView'])->name('organizations.reference');
-    // Route::post('organization/delete/{targetOrgId}', [OrganizationController::class, 'deleteOrganization']);
+    
+    Route::get('organization/delete/{targetOrgId}', [OrganizationController::class, 'createDeleteView'])->name('organizations.delete');
+    Route::post('organization/delete/{targetOrgId}', [OrganizationController::class, 'deleteOrganization']);
+    
+    //団体検索画面
+    Route::get('organization/search', [OrganizationController::class, 'createSearchView'])->name('organizations.search');
+    Route::post('organization/search', [OrganizationController::class, 'searchOrganization']);
 
     //Organization Management
     Route::get('organization/management', [OrganizationController::class, 'createManagement'])->name('organization.management');

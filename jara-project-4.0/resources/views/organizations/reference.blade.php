@@ -50,9 +50,10 @@
             @if(Session::has('fromLoginPage'))
                 <h1 class="text-right col-md-8">{{ Session::get('fromLoginPage') }}</h1>            
             @else
-                @if($pagemode == "delete")                    
+                @if($pagemode == "delete")
+                    <h1 style="display: inline;margin-left:25%" class="text-right col-md-9">{{ "削除：".$organization_info->org_name }}</h1>
                 @elseif($pagemode == "refer")                    
-                    <h1 style="display: inline;margin-left:25%" class="text-right col-md-9">[団体名]</h1>
+                    <h1 style="display: inline;margin-left:25%" class="text-right col-md-9">{{ $organization_info->org_name }}</h1>
                 @endif
             @endif
         </div>
@@ -67,6 +68,7 @@
                             <label>2.複数要因によるエラーメッセージ表示エリア</label>
                         </div> -->
                     <div class="form-group">
+                        <input id="org_id" name="org_id" type="hidden" value="{{ $organization_info->org_id }}">
                         <label class="col-md-6" style="text-align: right"><b>エントリーシステムの団体ID：</b></label>
                         <label for="entrysystem_org_id">XXXXXXXX</label>
                         <label class="col-md-6" style="text-align: right"><b>団体名：</b></label>
@@ -208,6 +210,8 @@
                             <a class="btn btn-danger btn-lg btn-block" href="javascript:history.back()" role="button">戻る</a>
                         </div>
                     </div>
+                    <!-- デバッグ用 -->
+                    <!-- {{ dd($organization_info,$organized_tournaments,$organized_players,$entryTournaments,$organized_staff) }} -->
                 </div>
             </div>
         </form>

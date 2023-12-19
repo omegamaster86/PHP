@@ -27,14 +27,23 @@ class T_organizations extends Model
                                         `pref_org_type`,
                                         `pref_org_reg_trail`,
                                         `org_class`,
+                                        `org_class_name`,
                                         `founding_year`,
                                         `post_code`,
                                         `location_country`,
+                                        `country_name`,
                                         `location_prefecture`,
+                                        `pref_name`,
                                         `address1`,
-                                        `address2`                                        
+                                        `address2`
                                         from `t_organizations`
-                                        where `delete_flag`=0
+                                        left join `m_countries`
+                                        on `t_organizations`.`location_country` = `m_countries`.`country_id`
+                                        left join `m_prefectures`
+                                        on `t_organizations`.`location_prefecture` = `m_prefectures`.`pref_id`
+                                        left join `m_organization_class`
+                                        on `t_organizations`.`org_class` = `m_organization_class`.`org_class_id`
+                                        where `t_organizations`.`delete_flag`=0
                                         and `org_id`=?'
                                     ,[$orgId]
                                 );
@@ -206,5 +215,55 @@ class T_organizations extends Model
                             );
         $orgInfo = $orgInfos[0];
         return $orgInfo;
+    }
+
+    //団体の削除
+    //org_idをキーとして、delete_flagを1にする
+    public function updateDeleteFlag($org_id)
+    {
+        $result = true;   
+        try{
+                DB::beginTransaction();
+                DB::update('update `t_organizations`
+                            set `delete_flag` = 1
+                            where 1=1
+                            and `org_id` = ?'
+                            ,[$org_id]);
+                DB::commit();
+                return $result;
+        }
+        catch (\Throwable $e){
+                dd($e);
+                dd("stop");
+                DB::rollBack();
+                
+                $result = false;
+                return $result;
+        }
+    }
+
+    //検索条件を受け取って、t_organizationを検索し、その結果を返す
+    public function getOrganizationWithSearchCondition($searchCondition)
+    {
+        $sqlString = 'select
+                        `org_id`,
+                        `entrysystem_org_id`,
+                        `org_name`,
+                        `founding_year`,
+                        case
+                            when `jara_org_type` = 1 and `pref_org_type` then "JARA・県ボ"
+                            when `jara_org_type` = 1 then "JARA"
+                            when `pref_org_type` = 1 then "県ボ"
+                            else "任意"
+                        end as `org_type`,
+                        `org_class`                        
+                        from `t_organizations`
+                        where 1=1
+                        and `t_organizations`.`delete_flag`=0
+                        #SearchCondition#
+                        order by `org_id`';
+        $sqlString = str_replace('#SearchCondition#',$searchCondition,$sqlString);
+        $organizations = DB::select($sqlString);
+        return $organizations;
     }
 }
