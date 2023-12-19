@@ -152,11 +152,16 @@ class T_tournaments extends Model
 
     public function getTournamentWithSearchCondition($searchCondition)
     {
-        $sqlString = 'select *
+        //大会種別(公式・非公式)　大会名　開催開始年月日　開催終了年月日　開催場所　主催団体ID　主催団体名　を取得
+        $sqlString = 'select `t_tournaments`.`tourn_id`, `t_tournaments`.`tourn_type`,
+                        `t_tournaments`.`tourn_name`, `t_tournaments`.`event_start_date`, `t_tournaments`.`event_end_date`,
+                        `t_tournaments`.`venue_name`, `t_tournaments`.`sponsor_org_id`, `t_organizations`.`org_name`
                         from `t_tournaments`
                         left join `t_race_result_record`
                         on `t_tournaments`.`tourn_id`=`t_race_result_record`.`tourn_id`
-                        where `delete_flag`=0
+                        left join `t_organizations`
+                        on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
+                        where `t_tournaments`.`delete_flag` = 0
                         #SearchCondition#';
         $sqlString = str_replace('#SearchCondition#',$searchCondition,$sqlString);
         $tournaments = DB::select($sqlString);

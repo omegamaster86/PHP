@@ -120,6 +120,7 @@ Route::middleware('auth')->group(function () {
     Route::get('tournament/reference', [TournamentController::class, 'createReference']) ->name('tournament.reference');
     // 大会検索画面
     Route::get('tournament/search', [TournamentController::class, 'createSearch']) ->name('tournament.search');
+    Route::post('tournament/search', [TournamentController::class, 'searchTournament']);
     //-----大会関連ここまで-----------------------------
 
     //Organizations

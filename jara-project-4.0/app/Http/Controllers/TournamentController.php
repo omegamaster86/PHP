@@ -81,7 +81,9 @@ class TournamentController extends Controller
     //大会検索画面に遷移した時
     public function createSearch(T_tournaments $tTournaments, T_races $tRace)
     {
-        return view('tournament.search', ["pagemode" => "search"]);
+        $tournamentInfo = "";
+        $tournamentList = "";
+        return view('tournament.search', ["pagemode" => "search", "tournamentInfo" => $tournamentInfo, "tournamentList" => $tournamentList]);
     }
 
     //大会情報登録画面で確認ボタンを押した時
@@ -274,21 +276,47 @@ class TournamentController extends Controller
     }
 
     //----------------大会検索で使用　ここから----------------------------
-    public function getTournaments($searchInfo,T_tournaments $tTournaments)
-    {
-        $searchCondition = $this->generateSearchCondition($searchInfo);
-        $tournaments = $tTournaments($searchCondition);
-    }
- 
     private function generateSearchCondition($searchInfo)
     {
         $condition = "";
-        if(isset($searchInfo->jara_player_id))
-        {
-            $condition .= "and `t_race_result_record`.`jara_player_id`=".$searchInfo->jara_player_id;
+        if (isset($searchInfo['jaraPId'])) {
+            //$condition .= " and `t_race_result_record`.`jara_player_id`=" . $searchInfo['jaraPId'];
+        }
+        if (isset($searchInfo['pId'])) {
+            $condition .= " and `t_tournaments`.`jara_player_id`=" . $searchInfo['pId'];
+        }
+        if (isset($searchInfo['pName'])) {
+            //$condition .= " nd `t_race_result_record`.`jara_player_id`=" . $searchInfo['pName'];
+        }
+        if (isset($searchInfo['tName'])) {
+            $condition .= " and `t_tournaments`.`tourn_name` like " . "\"%" . $searchInfo['tName'] . "%\"";
+        }
+        if (isset($searchInfo['startDay'])) {
+            $condition .= " and `t_tournaments`.`event_start_date`=" . $searchInfo['startDay'];
+        }
+        if (isset($searchInfo['endDay'])) {
+            $condition .= " and `t_tournaments`.`event_end_date`=" . $searchInfo['endDay'];
+        }
+        if (isset($searchInfo['tVenueSelect'])) {
+            $condition .= " and `t_tournaments`.`venue_id`=" . $searchInfo['tVenueSelect'];
+        }
+        if (isset($searchInfo['sponsorOrgId'])) {
+            $condition .= " and `t_tournaments`.`sponsor_org_id`=" . $searchInfo['sponsorOrgId'];
+        }
+        if (isset($searchInfo['sponsorOrgName'])) {
+            //$condition .= " and `t_tournaments`.`sponsor_org_id`=" . $searchInfo['sponsorOrgId'];
         }
         //検索条件の入力によって、条件の文字列を増やしていく
- 
+
         return $condition;
+    }
+
+    public function searchTournament(Request $request, T_tournaments $tTournaments)
+    {
+        $searchInfo = $request->all();
+        $searchCondition = $this->generateSearchCondition($searchInfo);
+        $tournamentList =  $tTournaments->getTournamentWithSearchCondition($searchCondition);
+
+        return view('tournament.search', ["pagemode" => "search", "tournamentInfo" => $searchInfo, "tournamentList" => $tournamentList]);
     }
 }

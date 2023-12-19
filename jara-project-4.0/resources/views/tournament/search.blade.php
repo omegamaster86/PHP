@@ -64,37 +64,40 @@
                 @endif
                 <div class="col-md-10">
                     <div class="form-group">
-                        <label for="entrysystemOrgId" class="col-md-6" style="text-align: right"><b>JARA選手コード</b></label>
-                        <input id="entrysystemOrgId" name="entrysystemOrgId" value="" readonly>
+                        <label for="jaraPId" class="col-md-6" style="text-align: right"><b>JARA選手コード</b></label>
+                        <input id="jaraPId" name="jaraPId" value="">
                     </div>
                     <div class="form-group">
-                        <label for="entrysystemOrgId" class="col-md-6" style="text-align: right"><b>選手ID</b></label>
-                        <input id="entrysystemOrgId" name="entrysystemOrgId" value="" readonly>
+                        <label for="pId" class="col-md-6" style="text-align: right"><b>選手ID</b></label>
+                        <input id="pId" name="pId" value="">
                     </div>
                     <div class="form-group">
-                        <label for="orgName" class="col-md-6" style="text-align: right"><b>選手名</b></label>
-                        <input id="orgName" name="orgName" value="" readonly>
+                        <label for="pName" class="col-md-6" style="text-align: right"><b>選手名</b></label>
+                        <input id="pName" name="pName" value="">
                     </div>
                     <div class="form-group">
-                        <label for="foundingYear" class="col-md-6" style="text-align: right"><b>大会名</b></label>
-                        <input id="foundingYear" name="foundingYear" value="" readonly>
+                        <label for="tName" class="col-md-6" style="text-align: right"><b>大会名</b></label>
+                        <input id="tName" name="tName" value="">
                     </div>
                     <div class="form-group">
-                        <label for="prefecture" class="col-md-6" style="text-align: right"><b>開催開始年月日：</b></label>
-                        <input id="pref_id" name="pref_id" type="hidden" value="" readonly>
-                        <input id="prefecture" name="prefecture" value="" readonly>
+                        <label for="startDay" class="col-md-6" style="text-align: right"><b>開催開始年月日：</b></label>
+                        <input id="startDay" name="startDay" value="">
                     </div>
                     <div class="form-group">
-                        <label for="address1" class="col-md-6" style="text-align: right"><b>開催終了年月日：</b></label>
-                        <input id="address1" name="address1" value="" readonly>
+                        <label for="endDay" class="col-md-6" style="text-align: right"><b>開催終了年月日：</b></label>
+                        <input id="endDay" name="endDay" value="">
                     </div>
                     <div class="form-group">
-                        <label for="address2" class="col-md-6" style="text-align: right"><b>開催場所：</b></label>
-                        <input id="address2" name="address2" value="" readonly>
+                        <label for="tVenueSelect" class="col-md-6" style="text-align: right"><b>開催場所：</b></label>
+                        <input id="tVenueSelect" name="tVenueSelect" value="">
                     </div>
                     <div class="form-group">
-                        <label for="address2" class="col-md-6" style="text-align: right"><b>主催団体ID</b></label>
-                        <input id="address2" name="address2" value="" readonly>
+                        <label for="sponsorOrgId" class="col-md-6" style="text-align: right"><b>主催団体ID</b></label>
+                        <input id="sponsorOrgId" name="sponsorOrgId" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="sponsorOrgName" class="col-md-6" style="text-align: right"><b>主催団体名</b></label>
+                        <input id="sponsorOrgName" name="sponsorOrgName" value="">
                     </div>
 
                     <!-- 確認・戻るボタン -->
@@ -103,6 +106,7 @@
                             <button class="btn btn-success btn-lg btn-block">検索</button>
                         </div>
                     </div>
+                    @dd($tournamentInfo,$tournamentList)
                 </div>
                 <div class="col-md-2">
                     <!--19.マイページ -->
