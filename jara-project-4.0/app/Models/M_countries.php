@@ -14,6 +14,20 @@ class M_countries extends Model
     protected $table = 'm_countries';
     protected $primaryKey = 'country_id';
 
+    //全カラムの変更を許可しない
+    protected $guarded = [
+        'country_id',
+        'country_code',
+        'country_name',
+        'abbr_name',
+        'display_order',
+        'registered_time',
+        'registered_user_id',
+        'updated_time',
+        'updated_user_id',
+        'delete_flag'
+    ];
+
     //国マスタを取得
     public function getCountries()
     {
