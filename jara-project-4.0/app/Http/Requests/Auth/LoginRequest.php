@@ -62,7 +62,6 @@ class LoginRequest extends FormRequest
             ]); 
         }
         
-        
         if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and expiry_time_of_temp_password < ? ',[$this->only('mailaddress')['mailaddress'], date('Y-m-d H:i:s')]))) {
             throw ValidationException::withMessages([
                 'datachecked_error' => $temp_password_timed_out
