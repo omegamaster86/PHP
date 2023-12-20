@@ -60,10 +60,12 @@
                 <p style="margin: 1rem; font-weight:bold; color:red; text-align: center"></p>
                 @endif
                 <div class="col-md-10">
+                    @if(bindec($user_type) >= 128)
                     <div class="form-group">
                         <label for="entrysystemOrgId" class="col-md-6" style="text-align: right"><b>エントリーシステムの団体ID</b></label>
                         <input id="entrysystemOrgId" name="entrysystemOrgId" value="">
                     </div>
+                    @endif
                     <div class="form-group">
                         <label for="org_id" class="col-md-6" style="text-align: right"><b>団体ID</b></label>
                         <input id="org_id" name="org_id" value="">

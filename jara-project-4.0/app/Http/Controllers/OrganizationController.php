@@ -177,13 +177,16 @@ class OrganizationController extends Controller
         }
         //団体所属スタッフテーブルを取得 20231215 t_futamura
         $organizedStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId);
-
+        
+        //ユーザー種別を取得
+        $user_type = Auth::user()->user_type;
         return view('organizations.reference',["pagemode"=>"refer",
                                                 "organization_info"=>$organizations,
                                                 "organized_tournaments"=>$organizedTournaments,
                                                 "organized_players"=>$organizedPlayers,
                                                 "entryTournaments"=>$entryTournaments,
-                                                "organized_staff"=>$organizedStaff
+                                                "organized_staff"=>$organizedStaff,
+                                                "user_type"=>$user_type
                                             ]);
     }
 
@@ -225,12 +228,16 @@ class OrganizationController extends Controller
         //団体所属スタッフテーブルを取得 20231215 t_futamura
         $organizedStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId);
 
+        //ユーザー種別を取得
+        $user_type = Auth::user()->user_type;
         return view('organizations.reference',["pagemode"=>"delete",
                                                 "organization_info"=>$organizations,
                                                 "organized_tournaments"=>$organizedTournaments,
                                                 "organized_players"=>$organizedPlayers,
                                                 "entryTournaments"=>$entryTournaments,
-                                                "organized_staff"=>$organizedStaff]);
+                                                "organized_staff"=>$organizedStaff,
+                                                "user_type"=>$user_type
+                                            ]);
     }
 
     //団体検索画面を開く
@@ -247,10 +254,13 @@ class OrganizationController extends Controller
         $organizationClass = $mOrganizationClass->getOrganizationClass();
         //団体種別マスタを取得
         $organizationType = $mOrganizationType->getOrganizationType();
+        //ユーザー種別を取得
+        $user_type = Auth::user()->user_type;
         return view('organizations.search',['countries'=>$countries,
                                             'prefectures'=>$prefectures,
                                             'organization_class'=>$organizationClass,
-                                            'organization_type'=>$organizationType
+                                            'organization_type'=>$organizationType,
+                                            'user_type'=>$user_type
                                             ]);
     }
 

@@ -48,7 +48,7 @@
         <div style="background: linear-gradient(to right,#1991FC,  #45b796); color:#fff;padding-top:15px;">
             <span class="col-md-3 " style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; メニュー</span>
             @if(Session::has('fromLoginPage'))
-                <h1 class="text-right col-md-8">{{ Session::get('fromLoginPage') }}</h1>            
+                <h1 class="text-right col-md-8">{{ Session::get('fromLoginPage') }}</h1>
             @else
                 @if($pagemode == "delete")
                     <h1 style="display: inline;margin-left:25%" class="text-right col-md-9">{{ "削除：".$organization_info->org_name }}</h1>
@@ -69,8 +69,10 @@
                         </div> -->
                     <div class="form-group">
                         <input id="org_id" name="org_id" type="hidden" value="{{ $organization_info->org_id }}">
-                        <label class="col-md-6" style="text-align: right"><b>エントリーシステムの団体ID：</b></label>
+                        @if(bindec($user_type) >= 128)
+                        <label class="col-md-6" style="text-align: right"><b>エントリーシステムの団体ID：</b></label>                        
                         <label for="entrysystem_org_id">XXXXXXXX</label>
+                        @endif
                         <label class="col-md-6" style="text-align: right"><b>団体名：</b></label>
                         <label for="org_name">XXXXXXXX</label>
                         <label class="col-md-6" style="text-align: right"><b>団体代表者名：</b></label>
@@ -211,7 +213,7 @@
                         </div>
                     </div>
                     <!-- デバッグ用 -->
-                    <!-- {{ dd($organization_info,$organized_tournaments,$organized_players,$entryTournaments,$organized_staff) }} -->
+                    {{ dd($organization_info,$organized_tournaments,$organized_players,$entryTournaments,$organized_staff) }}
                 </div>
             </div>
         </form>

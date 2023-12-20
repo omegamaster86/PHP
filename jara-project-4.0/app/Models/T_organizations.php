@@ -256,8 +256,11 @@ class T_organizations extends Model
                             when `pref_org_type` = 1 then "県ボ"
                             else "任意"
                         end as `org_type`,
-                        `org_class`                        
+                        `org_class`,
+                        `m_organization_class`.`org_class_name`
                         from `t_organizations`
+                        left join `m_organization_class`
+                        on `t_organizations`.`org_class` = `m_organization_class`.`org_class_id`
                         where 1=1
                         and `t_organizations`.`delete_flag`=0
                         #SearchCondition#
