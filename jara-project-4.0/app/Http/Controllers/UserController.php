@@ -21,10 +21,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\UploadedFile;
 
+
+use App\Models\M_sex;
+use App\Models\M_countries;
+use App\Models\M_prefectures;
+
 class UserController extends Controller
 {
     //
-    public function createEdit(Request $request): View
+    public function createEdit(Request $request, M_sex $sex, M_countries $countries, M_prefectures $prefectures ): View
     {   
         if(Auth::user()->date_of_birth)
             $date_of_birth = date('Y/m/d', strtotime(Auth::user()->date_of_birth));
@@ -42,10 +47,17 @@ class UserController extends Controller
             "date_of_birth" => $date_of_birth, 
             "height" => Auth::user()->height, 
             "weight" => Auth::user()->weight );
+        
+        //Fetch sex list from master table
+        $sex_list = $sex->getSexList();
+        //Fetch country list from master table
+        $countries = $countries->getCountries();
+        //Fetch prefecture list from master table
+        $prefectures = $prefectures->getPrefecures();
 
-        return view('user.edit',["user" => (object)$user]);
+        return view('user.edit',["user" => (object)$user, "sex_list" => $sex_list, "countries" => $countries, "prefectures" => $prefectures]);
     }
-    public function storeEdit(Request $request) : View
+    public function storeEdit(Request $request, M_sex $sex, M_countries $countries, M_prefectures $prefectures) : View
     {
         
         include('Auth/ErrorMessages/ErrorMessages.php');
@@ -62,7 +74,7 @@ class UserController extends Controller
             // Storage::disk('public')->putFileAs('uploads', $file, $fileName);
 
             $destination_path = public_path().'/images/users/' ;
-            $file->move($destination_path,$file_name);
+            $file->move($destination_path, $file_name);
 
             // You can now save the $filePath to the database or use it as needed
             // ...
@@ -170,16 +182,19 @@ class UserController extends Controller
         $new_date = date('Y-m-d H:i:s', strtotime($date. ' + 24 hours'));
 
         
-        $user_info = $request->all();
+        $user = $request->all();
+        $user['sex_name'] = $sex->getSexName($user['sex']);
+        $user['country_name'] = $countries->getCountryName($user['residence_country']);
+        $user['pref_name'] = $prefectures->getPrefName($user['residence_prefecture']);
         
         if ($request->hasFile('photo')){
-            $user_info['photo'] = Auth::user()->user_id. '.' . $request->file('photo')->getClientOriginalExtension();
+            $user['photo'] = Auth::user()->user_id. '.' . $request->file('photo')->getClientOriginalExtension();
         }
         else{
             if($request->user_picture_status==="delete")
-                $user_info['photo'] = "";
+                $user['photo'] = "";
             else
-                $user_info['photo'] = Auth::user()->photo;
+                $user['photo'] = Auth::user()->photo;
         }
         return view('user/edit/confirm',[ "user" => (object)$user]);       
         
@@ -246,7 +261,7 @@ class UserController extends Controller
 
                 $user = $request->all();
                 
-                // return redirect('user/edit/verification')->with('user_info', $user_info);
+                // return redirect('user/edit/verification')->with('user', $user);
                 return view('user/edit/verification',["user" => (object)$user]);
 
             }
@@ -374,7 +389,28 @@ class UserController extends Controller
         }
     }
 
-    public function createDetails(Request $request): View
+    public function createDetails(Request $request, M_sex $sex, M_countries $countries, M_prefectures $prefectures): View
+    {
+        $user = array(
+            "user_name" => Auth::user()->user_name, 
+            "user_id" => Auth::user()->user_id, 
+            "user_type" => Auth::user()->user_type, 
+            "mailaddress" => Auth::user()->mailaddress, 
+            "sex" => Auth::user()->sex, 
+            "residence_country" => Auth::user()->residence_country, "residence_prefecture" => Auth::user()->residence_prefecture ,
+            "photo" => Auth::user()->photo, 
+            "date_of_birth" => Auth::user()->date_of_birth, 
+            "height" => Auth::user()->height, 
+            "weight" => Auth::user()->weight );
+        
+        
+        $user['sex_name'] = $sex->getSexName($user['sex']);
+        $user['country_name'] = $countries->getCountryName($user['residence_country']);
+        $user['pref_name'] = $prefectures->getPrefName($user['residence_prefecture']);
+
+        return view('user.details',["page_mode" => "details", "user" => (object)$user]);
+    }
+    public function createDelete(Request $request, M_sex $sex, M_countries $countries, M_prefectures $prefectures): View
     {
         $user = array(
             "user_name" => Auth::user()->user_name, 
@@ -388,21 +424,10 @@ class UserController extends Controller
             "height" => Auth::user()->height, 
             "weight" => Auth::user()->weight );
 
-        return view('user.details',["page_mode" => "details", "user" => (object)$user]);
-    }
-    public function createDelete(Request $request): View
-    {
-        $user = array(
-            "user_name" => Auth::user()->user_name, 
-            "user_id" => Auth::user()->user_id, 
-            "user_type" => Auth::user()->user_type, 
-            "mailaddress" => Auth::user()->mailaddress, 
-            "sex" => Auth::user()->sex, 
-            "residence_country" => Auth::user()->residence_country, "residence_prefecture" => Auth::user()->residence_prefecture ,
-            "photo" => Auth::user()->photo, 
-            "date_of_birth" => Auth::user()->date_of_birth, 
-            "height" => Auth::user()->height, 
-            "weight" => Auth::user()->weight );
+        
+            $user['sex_name'] = $sex->getSexName($user['sex']);
+            $user['country_name'] = $countries->getCountryName($user['residence_country']);
+            $user['pref_name'] = $prefectures->getPrefName($user['residence_prefecture']);
 
         return view('user.details',["page_mode" => "delete", "user" => (object)$user]);
     }
@@ -556,7 +581,7 @@ class UserController extends Controller
     {
 		$user = array("user_name" => Auth::user()->user_name, "user_id" => Auth::user()->user_id, "user_type" => Auth::user()->user_type, "temp_password_flag" => Auth::user()->temp_password_flag);
         
-        return view('user.password-change',["user" => $user]);
+        return view('user.password-change',["user" => (object)$user]);
 
     }
     public function storePasswordChange(Request $request) : View

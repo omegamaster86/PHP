@@ -171,7 +171,7 @@
                                     性別
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{$player_info->sex??""}}
+                                    {{$player_info->sex_name}}
                                 </div>
                             </div>
                             <div class="form-group row ">
@@ -203,7 +203,7 @@
                                         <input class="form-check-input" type="checkbox" name="side_info[]"
                                             value="00000001" {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'checked' : '' }} id="checkS">
                                         <label class="form-check-label" for="checkS">
-                                            : S　（ストロークサイド）
+                                            : S（ストロークサイド）
                                         </label>
                                     </div>
                                     <div class="form-check">

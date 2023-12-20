@@ -151,12 +151,6 @@
 
                     <div class="col-md-5 "
                         style="background-color:#005BFC;padding:1rem 0.75rem; border-radius: 10px ; color:#fff">
-                        @if(Session::has('status'))
-                        <div class="alert alert-success" role="alert">
-                            <a class="panel-close close" data-dismiss="alert" style="cursor: pointer">×</a>
-                            {!! Session::get('status') !!}
-                        </div>
-                        @endif
                         @if(Session::has('system_error'))
                         <div class="alert alert-danger" style="color: red; font-weight:bold" role="alert">
                             <a class="panel-close close" data-dismiss="alert" style="cursor: pointer">×</a>
@@ -173,8 +167,7 @@
                         @if($page_mode==="edit")
                         <div class="form-group row ">
                             <label onclick="details('playerIdInfo')" style="cursor:pointer;text-align:right"
-                                for="playerCode" class="col-sm-5  col-form-label">選手ID　<span><i
-                                        class="fa fa-question-circle" aria-hidden="true"></i></span>
+                                for="playerCode" class="col-sm-5  col-form-label">選手ID　<span><i class="fa fa-question-circle" aria-hidden="true"></i></span>
                             </label>
                             <div class="col-sm-7 col-form-label">{{ str_pad($player_info->player_id, 8, "0", STR_PAD_LEFT)}}</div>
                             <div id="playerIdInfo" style="margin-left:6rem">あああああああああああ</div>

@@ -415,9 +415,9 @@ class PlayerController extends Controller
     public function createDetails($user_id): View
     {
         //searching player info from database
-        $retreive_player_by_ID = DB::select('SELECT sex.sex, birth_country.birth_country_name,residence_country.residence_country_name, birth_prefecture.birth_prefecture_name, residence_prefecture.residence_prefecture_name, player.photo, player.player_id, player.jara_player_id, player.player_name, player.date_of_birth, player.sex, player.height, player.weight, player.side_info, player.birth_country, player.birth_prefecture, player.residence_country, player.residence_prefecture FROM t_players as player
+        $retreive_player_by_ID = DB::select('SELECT sex.sex_name, birth_country.birth_country_name,residence_country.residence_country_name, birth_prefecture.birth_prefecture_name, residence_prefecture.residence_prefecture_name, player.photo, player.player_id, player.jara_player_id, player.player_name, player.date_of_birth, player.sex, player.height, player.weight, player.side_info, player.birth_country, player.birth_prefecture, player.residence_country, player.residence_prefecture FROM t_players as player
 
-        Left join (select sex_id, sex from m_sex where delete_flag = ? ) as sex on player.sex = sex.sex_id
+        Left join (select sex_id, sex as sex_name from m_sex where delete_flag = ? ) as sex on player.sex = sex.sex_id
         
         Left join (select country_id, country_name as birth_country_name from m_countries where delete_flag = ?)  as birth_country on player.birth_country = birth_country.country_id
         
@@ -428,6 +428,7 @@ class PlayerController extends Controller
         Left join (select pref_id, pref_name as residence_prefecture_name from m_prefectures where delete_flag = ?)  as residence_prefecture on player.residence_prefecture = residence_prefecture.pref_id
         
         where player.user_id = ? AND player.delete_flag = ?', [0, 0, 0, 0, 0, $user_id, 0] );
+
 
 
         //searching race record info from database
@@ -499,7 +500,7 @@ class PlayerController extends Controller
             $page_url = route('my-page');
             $page_url_text = "マイページ";
             
-            return redirect('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+            return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
         } catch (\Throwable $e) {
             dd($request->all());
             dd("stop");
@@ -516,8 +517,16 @@ class PlayerController extends Controller
             //Store error message in the player delete log file.
             Log::channel('player_delete')->info("\r\n \r\n ＊＊＊「USER_ID」 ：  $user_id,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
         }
-                
-        return redirect('player/register')->with('status', "選手情報の削除が完了しました。"); 
+        
+        $page_status = "選手情報の削除が完了しました。";
+        $page_url = route('my-page');
+        $page_url_text = "マイページ";
+        
+        return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+    }
+    public function createSearch(): View
+    {
+        return view('player.search');
     }
 
 }

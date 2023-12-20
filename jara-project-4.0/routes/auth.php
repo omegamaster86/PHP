@@ -62,6 +62,7 @@ Route::middleware('auth')->group(function () {
     })->name('my-page');
 
 
+    
     // Player Register
     
     Route::get('player/register', [PlayerController::class, 'createRegister'])->name('player.register');
@@ -71,6 +72,7 @@ Route::middleware('auth')->group(function () {
     Route::post('player/register/confirm', [PlayerController::class, 'storeRegisterConfirm']);
 
     // Player Edit
+
 
     Route::get('player/edit', [PlayerController::class, 'createEdit'])->name('player.edit');
     Route::post('player/edit', [PlayerController::class, 'storeEdit']);
@@ -82,9 +84,16 @@ Route::middleware('auth')->group(function () {
     Route::get('player/delete', [PlayerController::class, 'createDelete'])->name('player.delete');
     Route::post('player/delete', [PlayerController::class, 'storeDelete']);
 
+
+    //Player search 
+    Route::get('player/search', [PlayerController::class, 'createSearch'])->name('player.search');
+
     //Player Details
     
     Route::get('player/{user_id}', [PlayerController::class, 'createDetails'])->name('player.details');
+
+    
+
 
     //20231129
     //-----大会関連-----

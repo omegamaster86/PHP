@@ -213,7 +213,7 @@ function emailChangeBox() {
 
 setTimeout(() => {
     if(country) {
-        if(country.value==="1"){
+        if(country.value==="112"){
         
             prefectures.style.display='flex';
         }
@@ -226,7 +226,7 @@ setTimeout(() => {
 
 setTimeout(() => {
     if(birthCountry) {
-        if(birthCountry.value==="1"){
+        if(birthCountry.value==="112"){
             birthPrefectures.style.display='flex';
         }
         else{
@@ -239,7 +239,7 @@ if(birthCountry){
     birthCountry.addEventListener('change', function() {
         let birthCountry = document.getElementById("birthCountry");
         let birthPrefecture = document.getElementById("birthPrefectures");
-        if(birthCountry.value==="1"){
+        if(birthCountry.value==="112"){
             birthPrefecture.style.display='flex'
         }
         else{
@@ -253,7 +253,7 @@ if(country) {
     country.addEventListener('change', function() {
         let country = document.getElementById("country");
         let prefecture = document.getElementById("prefectures");
-        if(country.value==="1"){
+        if(country.value==="112"){
             prefecture.style.display='flex'
         }
         else{
@@ -265,7 +265,7 @@ if(country) {
 
 setTimeout(() => {
     if(residenceCountry){
-        if(residenceCountry.value==="1"){
+        if(residenceCountry.value==="112"){
             residencePrefectures.style.display='block';
         }
         else{
@@ -280,7 +280,7 @@ if(residenceCountry) {
         console.log(residenceCountry.value);
         let country = document.getElementById("residenceCountry");
         let prefecture = document.getElementById("residencePrefectures");
-        if(country.value==="1"){
+        if(country.value==="112"){
             prefecture.style.display='block';
         }
         else{
