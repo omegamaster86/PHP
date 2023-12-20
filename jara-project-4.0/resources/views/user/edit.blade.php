@@ -47,6 +47,7 @@
             <a href={{route('user.password-change')}}>パスワード変更</a>
             <a href={{route('player.register')}}>選手情報登録</a>
             <a href={{route('player.edit')}}>選手情報更新</a>
+            <a href={{route('player.details',["user_id"=>Auth::user()->user_id])}}>選手情報参照</a>
             <a href={{route('player.delete')}}>選手情報削除</a>
             <a href={{route('organization.management')}}>団体管理</a>
             <form method="POST" action="{{ route('logout') }}">
@@ -73,17 +74,18 @@
                 <form class="form-horizontal" onsubmit="return validateProfileEditForm();" enctype="multipart/form-data" role="form" style="display: flex"
                     method="POST" action="{{route('user.edit')}}">
                     @csrf
+                    
                     <div class="col-md-5 ">
                         <div class=" col-md-5" style="margin-left: 17%;">
                             <div style="margin: 0px 20px 5px 15px; text-align:center">写真　
-                                @if(($user['photo']))
+                                @if(($user->photo))
                                     <span id="userPictureDeleteButton" onclick="userPictureDelete()"  class=" btn btn-danger btn-sm" type="button"> 削除
                                     </span>
                                 @endif
                                 <input name="user_picture_status" id="userPictureStatus" type="hidden" value="">
                             </div>
-                            @if(($user['photo']))
-                            <img id= "userPicture" src="{{ asset('images/users/'.$user['photo']) }}"
+                            @if(($user->photo))
+                            <img id= "userPicture" src="{{ asset('images/users/'.$user->photo) }}"
                             class="avatar img-circle img-thumbnail" alt="avatar">
                             @else
                             <img id= "userPicture" src="{{ asset('images/no-image.png') }}"
@@ -109,19 +111,6 @@
 
                     <div class="col-md-5 "
                         style="background-color:#005BFC;padding-top:15px; border-radius: 10px ; color:#fff">
-                        @if(Session::has('status'))
-                        <div class="alert alert-success" role="alert">
-                            <a class="panel-close close" data-dismiss="alert" style="cursor: pointer">×</a>
-                            {!! Session::get('status') !!}
-                        </div>
-                        @endif
-                        <div style="margin-right: 0.75rem;display:none;">
-                            <div class=" alert alert-info alert-dismissable text-success"
-                                style="font-weight: bold; margin-left:1rem">
-                                <a class="panel-close close" data-dismiss="alert" style="cursor: pointer">×</a>
-                                {!! Session::get('message')!!}
-                            </div>
-                        </div>
                         <x-input-error :messages="$errors->get('datachecked')" class="mt-2" />
 
                         <div class="form-group ">
@@ -131,13 +120,12 @@
                             <i onclick="details('userInfo')" style="cursor:pointer" class=" fa fa-question-circle"
                                 aria-hidden="true"></i>
                             <div id="userInfo" style="margin-left:1rem">あああああああああああああああああああ</div>
-                            
                             <div class="col-lg-12">
                                 @if (old('user_name')??"" or $errors->has('user_name'))
                                 <input id="userName" name="user_name" class="form-control border " type="text" value="{{old('user_name')}}">
                                 @else
                                     <input id="userName" name="user_name" class="form-control " type="text"
-                                        value="{{$user['user_name']}}">
+                                        value="{{$user->user_name}}">
                                 @endif
                                 @if ($errors->has('user_name'))
                                     <p class="error-css text-danger" style="margin: 1rem 0rem">{{
@@ -158,7 +146,7 @@
                                 </span>
                             </p>
                             <p id="emailChangeButton" class="col-lg-12" style="margin-left:1rem">
-                                {{$user['mailaddress']}}
+                                {{$user->mailaddress}}
                             </p>
 
                         </div>
@@ -200,25 +188,24 @@
                             </label>
 
                             <div class="col-lg-12">
-
                                 @if (old('sex')??"" or $errors->has('sex'))
                                 <select id="sex" name="sex" class="form-control" >
                                     <option value="" >--</option>
-                                    <option value=1 {{(old('sex')===1) ? "selected" : ""}} >男</option>
-                                    <option value=2 {{(old('sex')===2) ? "selected" : ""}}>女</option>
+                                    @foreach($sex_list as $sex)
+                                    <option value= {{$sex->sex_id}} {{ (old('sex')===$sex->sex_id) ? "selected" : ""}} >{{$sex->sex}}</option>
+                                    @endforeach
                                 </select>
                                 @else
                                 <select id="sex" name="sex" class="form-control" >
                                     <option value="" selected >--</option>
-                                    <option value=1 {{($user['sex']===1) ? "selected" : ""}} >男</option>
-                                    <option value=2 {{($user['sex']===2) ? "selected" : ""}}>女</option>
+                                    @foreach($sex_list as $sex)
+                                    <option value= {{$sex->sex_id}} {{ ($user->sex===$sex->sex_id) ? "selected" : ""}} >{{$sex->sex}}</option>
+                                    @endforeach
                                 </select>
                                 @endif
-
                                 
                                 @if ($errors->has('sex'))
-                                    <p class="error-css text-danger" style="margin: 1rem 0rem">{{
-                                        $errors->first('sex') }}</p>
+                                    <p class="error-css text-danger" style="margin: 1rem 0rem">{{$errors->first('sex') }}</p>
                                 @endif
                             </div>
                         </div>
@@ -228,7 +215,7 @@
                             <i onclick="details('birthDayInfo')" style="cursor:pointer" class=" fa fa-question-circle" aria-hidden="true"></i>
                             <div id="birthDayInfo" style="margin-left:1rem">あああああああああああああああああああ</div>
                             <div class="col-lg-12">
-                                <input id="dateOfBirth" name="date_of_birth" type="text" style="color: #000;background-color: #fff;" class="flatpickr form-control" value="{{old('date_of_birth')?old('date_of_birth'):($user['date_of_birth']??"年/月/日")}}" readonly="readonly">
+                                <input id="dateOfBirth" name="date_of_birth" type="text" style="color: #000;background-color: #fff;" class="flatpickr form-control" value="{{old('date_of_birth')?old('date_of_birth'):($user->date_of_birth??"年/月/日")}}" readonly="readonly">
                             </div>
                             @if ($errors->has('date_of_birth'))
                             <div class="col-lg-12">
@@ -236,6 +223,8 @@
                             </div>
                             @endif
                         </div>
+                        
+                        
                         <div class="form-group">
                             <label class="control-label" style="margin-left: 1rem">＊居住地 :
                             </label>
@@ -243,18 +232,20 @@
                                 @if (old('residence_country')??"" or ($errors->has('residence_country')))
                                 <select id="residenceCountry" name="residence_country" class="form-control">
                                     <option value="" selected>--</option>
-                                    <option value=1  {{(old('residence_country')===1) ? "selected" : ""}}>日本</option>
-                                    <option value=2 {{(old('residence_country')===2) ? "selected" : ""}}>アメリカ</option>
-                                    <option value=3 {{(old('residence_country')===3) ? "selected" : ""}}>インド</option>
+                                    
+                                    @foreach($countries as $country)
+                                    <option value= {{$country->country_id}} {{ (old('residence_country')===$country->country_id) ? "selected" : ""}} >{{$country->country_name}}</option>
+                                    @endforeach
                                 </select>
                                 @else
                                 <select id="residenceCountry" name="residence_country" class="form-control">
                                     <option value="" selected>--</option>
-                                    <option value=1  {{($user['residence_country']===1)?"selected" : ""}}>日本</option>
-                                    <option value=2 {{($user['residence_country']===2)?"selected" : ""}}>アメリカ</option>
-                                    <option value=3 {{($user['residence_country']===3)?"selected" : ""}}>インド</option>
+                                    @foreach($countries as $country)
+                                    <option value= {{$country->country_id}} {{ ($user->residence_country===$country->country_id) ? "selected" : ""}} >{{$country->country_name}}</option>
+                                    @endforeach
                                 </select>
                                 @endif
+                                
                                 @if ($errors->has('residence_country'))
                                 
                                     <p class="error-css text-danger" style="margin: 1rem 0rem">{{
@@ -266,21 +257,24 @@
                         <div class="form-group" id="residencePrefectures" style="display: none">
                             <label class="col-lg-6 control-label">＊都道府県 :
                             </label>
-                            
-                            
                             <div class="col-lg-12">
                                 @if (old('residence_prefecture')??"" or ($errors->has('residence_prefecture')))
                                 <select id="residencePrefecture" name="residence_prefecture" class="form-control">
                                     <option value="" selected>--</option>
-                                    <option value=1 {{(old('residence_prefecture')===1) ? "selected" : ""}}>愛知</option>
-                                    <option value=2 {{(old('residence_prefecture')===2) ? "selected" : ""}}>宮崎</option>
+                                    @foreach($prefectures as $prefecture)
+                                    <option value= {{$prefecture->pref_id}} {{ (old('residence_prefecture')===$prefecture->pref_id) ? "selected" : ""}} >{{$prefecture->pref_name}}</option>
+                                    @endforeach
                                 </select>
                                
                                 @else
                                 <select id="residencePrefecture"  name="residence_prefecture" class="form-control">
                                     <option value="" selected>--</option>
-                                    <option value=1 {{($user['residence_prefecture']==="1") ? "selected" : ""}}>愛知</option>
-                                    <option value=2 {{($user['residence_prefecture']==="2") ? "selected" : ""}}>宮崎</option>
+                                    @foreach($prefectures as $prefecture)
+                                    
+                                    <option value= {{$prefecture->pref_id}} {{ 
+                                   
+                                   ((int)$user->residence_prefecture===$prefecture->pref_id) ? "selected" : ""}} >{{$prefecture->pref_name}}</option>
+                                    @endforeach
                                 </select>
                                 @endif
                                 @if ($errors->has('residence_prefecture'))
@@ -302,7 +296,7 @@
                                 <div id="heightInfo" style="margin-left:1rem">あああああ</div>
                                 <div class="col-lg-12 " style="display: flex; margin-left:-1rem">
                                     <input class="form-control" id="height" name="height" type="text" maxlength=6
-                                        style="float: left" value={{old('height')?old('height'):$user['height']}}>
+                                        style="float: left" value = {{old('height')?old('height'):$user->height}}>
                                     <span>cm</span>
                                 </div>
 
@@ -316,7 +310,7 @@
                                 <div id="weightInfo" style="margin-left:1rem">ああああああ</div>
                                 <div class="col-lg-12" style="display: flex;margin-left:-1rem">
                                     <input maxlength=6 class="form-control" id="weight" name="weight" type="text"
-                                        style="float: left" value={{old('weight')?old('weight'):$user['weight']}}>
+                                        style="float: left" value={{old('weight')?old('weight'):$user->weight}}>
                                     <span>kg</span>
                                 </div>
                             </div>
@@ -341,18 +335,18 @@
             </div>
             <div class="col-md-3" style="text-align: right">
                 <p class="col-lg-9 control-label" style="font-weight: bold">ユーザーID :
-                    {{ str_pad($user['user_id'], 7, "0", STR_PAD_LEFT)}}
+                    {{ str_pad($user->user_id, 7, "0", STR_PAD_LEFT)}}
                 </p>
                 <p class="col-lg-9 control-label" style="font-weight: bold">ユーザー種別 :
-                    {{str_pad($user['user_type'], 8, "0", STR_PAD_LEFT)}}
+                    {{str_pad($user->user_type, 8, "0", STR_PAD_LEFT)}}
                 </p>
-                <p id="passwordChangeButton" onclick="passwordChangeConfirm()" class="col-lg-9 control-label"
-                    style="font-weight: bold; text-decoration:underline; color:blue;cursor: pointer">
-                    パスワードの変更
-                </p>
+                
             </div>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous">
     </script>
     {{-- Date Picker Start --}}
@@ -373,6 +367,12 @@
             if(dateOfBirth.value==="年/月/日")
                 dateOfBirth.value = "";
             return true;
+        }
+        function passwordChangeConfirm(){
+            let text = "パスワード変更画面に遷移します。\n 入力された内容は破棄されますが、よろしいですか？";
+            if (confirm(text) == true) {
+                window.location.href='{{ route("user.password-change") }}';
+            } 
         }
     </script>
 

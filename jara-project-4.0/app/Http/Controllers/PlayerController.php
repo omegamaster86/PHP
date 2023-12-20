@@ -20,25 +20,28 @@ use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Validation\ValidationException;
-use League\CommonMark\Node\Inline\Newline;
+
+
+use App\Models\M_sex;
+use App\Models\M_countries;
+use App\Models\M_prefectures;
 
 class PlayerController extends Controller
 {
-    //
     public function createRegister(): View
     {
-        $retrive_player_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+        $retrieve_player_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
 
-        if(empty($retrive_player_ID[0])){
+        if(empty($retrieve_player_ID[0])){
             return view('player.register-edit',["page_mode"=>"register"]);
         }
         else {
-            if($retrive_player_ID[count($retrive_player_ID)-1]->delete_flag){
+            if($retrieve_player_ID[count($retrieve_player_ID)-1]->delete_flag){
                 return view('player.register-edit',["page_mode"=>"register"]);
             }
             else {
-                $player_info = $retrive_player_ID[count($retrive_player_ID)-1];
-                $player_info->date_of_birth = date('Y/m/d', strtotime($retrive_player_ID[count($retrive_player_ID)-1]->date_of_birth));
+                $player_info = $retrieve_player_ID[count($retrieve_player_ID)-1];
+                $player_info->date_of_birth = date('Y/m/d', strtotime($retrieve_player_ID[count($retrieve_player_ID)-1]->date_of_birth));
 
                 return view('player.register-edit',["page_mode"=>"edit","player_info"=>$player_info]);
             }
@@ -89,8 +92,8 @@ class PlayerController extends Controller
             'sideInfo.required_without_all' => $sideInfo_required,
         ]);
         if (DB::table('t_players')->where('jara_player_id',$request->playerCode)->where('delete_flag',0)->exists()){
-            $retrive_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->playerCode]);
-            $existing_player_name = $retrive_player_name[0]->player_name;
+            $retrieve_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->playerCode]);
+            $existing_player_name = $retrieve_player_name[0]->player_name;
             //Display error message to the client
             throw ValidationException::withMessages([
                 'system_error' => "この既存選手IDは既に別の選手と紐づいています。入力した既存選手IDを確認してください。紐づいていた選手I：[$request->playerCode] [$existing_player_name]"
@@ -125,19 +128,19 @@ class PlayerController extends Controller
      */
     public function createEdit(): View
     {
-        $retrive_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+        $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
 
-        if(!count($retrive_player_by_ID))
+        if(!count($retrieve_player_by_ID))
             return view('player.register-edit',["page_mode"=>"register"]);
 
-        $recent_player_array = count($retrive_player_by_ID)-1;
+        $recent_player_array = count($retrieve_player_by_ID)-1;
 
-        if($retrive_player_by_ID[$recent_player_array]->delete_flag)
+        if($retrieve_player_by_ID[$recent_player_array]->delete_flag)
             return view('player.register-edit',["page_mode"=>"register"]);
 
-        $player_info = $retrive_player_by_ID[$recent_player_array];
+        $player_info = $retrieve_player_by_ID[$recent_player_array];
 
-        $player_info->date_of_birth = date('Y/m/d', strtotime($retrive_player_by_ID[$recent_player_array]->date_of_birth));
+        $player_info->date_of_birth = date('Y/m/d', strtotime($retrieve_player_by_ID[$recent_player_array]->date_of_birth));
 
         return view('player.register-edit',["page_mode"=>"edit","player_info"=>$player_info]);
     }
@@ -198,8 +201,8 @@ class PlayerController extends Controller
             'sideInfo.required_without_all' => $sideInfo_required,
         ]);
         if (DB::table('t_players')->where('jara_player_id',$request->playerCode)->where('delete_flag',0)->exists()){
-            $retrive_player = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
-            if($retrive_player[count($retrive_player)-1]->JARAPlayerCode===$request->playerCode){
+            $retrieve_player = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+            if($retrieve_player[count($retrieve_player)-1]->JARAPlayerCode===$request->playerCode){
                 $player_info = $request->all();
                 if ($request->hasFile('photo')){
                     $player_info['photo']=DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('player_id'). '.' . $request->file('photo')->getClientOriginalExtension();
@@ -217,12 +220,12 @@ class PlayerController extends Controller
                 if(count($request->sideInfo)%2)
                     $sideInfo_xor= $sideInfo_xor ^ "00000000";
                 $player_info['sideInfo'] = $sideInfo_xor; 
-                $player_info['playerId'] = $retrive_player[0]->playerId;
+                $player_info['playerId'] = $retrieve_player[0]->playerId;
                 // dd($player_info['photo']);
                 return redirect('player/edit/confirm')->with('player_info', $player_info);
             }
-            $retrive_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->playerCode]);
-            $existing_player_name = $retrive_player_name[0]->player_name;
+            $retrieve_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->playerCode]);
+            $existing_player_name = $retrieve_player_name[0]->player_name;
             //Display error message to the client
             throw ValidationException::withMessages([
                 'system_error' => "この既存選手IDは既に別の選手と紐づいています。入力した既存選手IDを確認してください。紐づいていた選手I：[$request->playerCode] [$existing_player_name]"
@@ -231,7 +234,7 @@ class PlayerController extends Controller
         else{
 
         }
-        $retrive_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+        $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
 
         $player_info = $request->all();
         
@@ -244,7 +247,7 @@ class PlayerController extends Controller
         if(count($request->sideInfo)%2)
             $sideInfo_xor= $sideInfo_xor ^ "00000000";
         $player_info['sideInfo'] = $sideInfo_xor; 
-        $player_info['playerId'] = $retrive_player_by_ID[0]->playerId;
+        $player_info['playerId'] = $retrieve_player_by_ID[0]->playerId;
         $player_info['previousPageStatus'] = "success"; 
         return redirect('player/edit/confirm')->with('player_info', $player_info);
         dd("stop");
@@ -267,8 +270,8 @@ class PlayerController extends Controller
     public function storeRegisterConfirm( Request $request): RedirectResponse
     {
         if (DB::table('t_players')->where('jara_player_id',$request->jar_player_id)->where('delete_flag',0)->exists()){
-            $retrive_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->jara_player_id]);
-            $existing_player_name = $retrive_player_name[0]->player_name;
+            $retrieve_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->jara_player_id]);
+            $existing_player_name = $retrieve_player_name[0]->player_name;
             //Display error message to the client
             return redirect('player/register')->with('system_error', "登録に失敗しました。別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：[$request->jara_player_id] [$existing_player_name]");
             dd("stop");
@@ -334,11 +337,11 @@ class PlayerController extends Controller
     public function storeEditConfirm( Request $request): RedirectResponse
     {
         if (DB::table('t_players')->where('jara_player_id', '=', $request->jara_player_id)->where('delete_flag', '=', 0)->exists()){
-            $retrive_player = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
-            if(empty($retrive_player)){
+            $retrieve_player = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+            if(empty($retrieve_player)){
                 dd("stop");
-                $retrive_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->jara_player_id]);
-                $existing_player_name = $retrive_player_name[0]->player_name;
+                $retrieve_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->jara_player_id]);
+                $existing_player_name = $retrieve_player_name[0]->player_name;
                 //Display error message to the client
                 return redirect('player/edit')->with('system_error', "登録に失敗しました。別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：[$request->jara_player_id] [$existing_player_name]");
             }
@@ -409,59 +412,54 @@ class PlayerController extends Controller
     /**
      * Display the edit confirm view.
      */
-    public function createDetails(): View
+    public function createDetails($user_id): View
     {
-        $retrive_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+        //searching player info from database
+        $retreive_player_by_ID = DB::select('SELECT sex.sex, birth_country.birth_country_name,residence_country.residence_country_name, birth_prefecture.birth_prefecture_name, residence_prefecture.residence_prefecture_name, player.photo, player.player_id, player.jara_player_id, player.player_name, player.date_of_birth, player.sex, player.height, player.weight, player.side_info, player.birth_country, player.birth_prefecture, player.residence_country, player.residence_prefecture FROM t_players as player
+
+        Left join (select sex_id, sex from m_sex where delete_flag = ? ) as sex on player.sex = sex.sex_id
+        
+        Left join (select country_id, country_name as birth_country_name from m_countries where delete_flag = ?)  as birth_country on player.birth_country = birth_country.country_id
+        
+        Left join (select country_id, country_name as residence_country_name from m_countries where delete_flag = ?)  as residence_country on player.residence_country = residence_country.country_id
+        
+        Left join (select pref_id, pref_name as birth_prefecture_name from m_prefectures where delete_flag = ?)  as birth_prefecture on player.birth_prefecture = birth_prefecture.pref_id
+        
+        Left join (select pref_id, pref_name as residence_prefecture_name from m_prefectures where delete_flag = ?)  as residence_prefecture on player.residence_prefecture = residence_prefecture.pref_id
+        
+        where player.user_id = ? AND player.delete_flag = ?', [0, 0, 0, 0, 0, $user_id, 0] );
 
 
-        $retrieve_all_race_records = DB::select('select * from t_race_result_record');
-        // $retrieve_all_race_record->event_name = DB::select('select event_name from t_races where race_id = ?', [$retrieve_all_race_record->race_id]);
-        foreach($retrieve_all_race_records as $retrieve_all_race_record){
-            // dd($retrieve_all_race_record->{'500m_laptime'});
-            $retrieve_all_race_record->event_name = DB::table('t_races')->where('race_id', $retrieve_all_race_record->race_id)->value('event_name');
-            $retrieve_all_race_record->event_start_date = DB::table('t_tournaments')->where('tourn_id', $retrieve_all_race_record->tourn_id)->value('event_start_date');
-        }
+        //searching race record info from database
+        $retrieve_all_race_records = DB::select('SELECT tourn.event_start_date, race.event_name, record.tourn_name, record.official, record.org_name, record.race_number, record.race_name, record.by_group, record.crew_name, record.rank, record.laptime_500m, record.laptime_1000m, record.laptime_1500m, record.laptime_2000m, record.final_time, record.stroke_rate_avg, record.stroke_rat_500m, record.stroke_rat_1000m, record.stroke_rat_1500m, record.stroke_rat_2000m, record.attendance, record.ergo_weight, record.player_height, record.player_weight, record.sheet_name, record.race_result_record_name  FROM t_race_result_record as record
+        
+        Left join (select race_id, event_name from t_races where delete_flag = ? ) as race on record.race_id = race.race_id
+        
+        Left join (select tourn_id, event_start_date from t_tournaments where delete_flag = ?)  as tourn on record.tourn_id = tourn.tourn_id
+        
+        where record.user_id = ? AND record.delete_flag = ?', [0, 0, $user_id, 0] );
 
-        if(!count($retrive_player_by_ID))
+        //if there is no player info send the user to the register page
+        if(!count($retreive_player_by_ID))
             return view('player.register-edit',["page_mode"=>"register"]);
 
-        $recent_player_array = count($retrive_player_by_ID)-1;
-
-        if($retrive_player_by_ID[$recent_player_array]->delete_flag)
-            return view('player.register-edit',["page_mode"=>"register"]);
-
-        $player_info = $retrive_player_by_ID[$recent_player_array];
+        //storing searched player data to a variable
+        $player_info = $retreive_player_by_ID[0];
        
-        $player_info->date_of_birth = date('Y/m/d', strtotime($retrive_player_by_ID[$recent_player_array]->date_of_birth));
-        if($player_info->sex===1){
-            $player_info->sex = "男";
-        }
-        elseif($player_info->sex===2){
-            $player_info->sex = "女";
-        }
-        else{
-            $player_info->sex = "";
-        }
-        if($player_info->birth_country==="1"){
-            $player_info->birth_country = "日本";
-        }
-        elseif($player_info->birth_country==="2"){
-            $player_info->birth_country = "アメリカ";
-        }
-        elseif($player_info->birth_country==="3"){
-            $player_info->birth_country = "インド";
-        }
+        //change the date format
+        $player_info->date_of_birth = date('Y/m/d', strtotime($player_info->date_of_birth));
 
-        return view('player.details',["player_info"=>$player_info, 'all_race_records' => $retrieve_all_race_records]);
+        //paasing the searched data to the blade for view
+        return view('player.details', ["player_info"=>$player_info, 'all_race_records' => $retrieve_all_race_records, "user_id" => $user_id]);
     }
     public function createDelete(): View
     {
-        $retrive_player_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
-        if(empty($retrive_player_ID)){
+        $retrieve_player_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+        if(empty($retrieve_player_ID)){
             return view('player.register-edit',["page_mode"=>"register"]);
         }
 
-        $player_info = $retrive_player_ID[count($retrive_player_ID)-1];
+        $player_info = $retrieve_player_ID[count($retrieve_player_ID)-1];
         
         if($player_info->delete_flag){
             return view('player.register-edit',["page_mode"=>"register"]);

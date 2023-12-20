@@ -44,35 +44,20 @@
                 <label for="certificationNumber">受信したメールに記載されているコードを入力してください。</label>
 
                 @if ($errors->has('verification_error'))
-                <p style="margin: 1rem; font-weight:bold; color:red;text-align:center">{{
-                    $errors->first('verification_error') }}</p>
+                <p style="margin: 1rem; font-weight:bold; color:red;text-align:center">{{$errors->first('verification_error') }}</p>
                 @endif
-                <input type="text" maxlength="6" name="certification_number" class="form-control"
-                    id="certificationNumber" required>
+                <input type="text" maxlength="6" name="certification_number" class="form-control" id="certificationNumber" required>
             </div>
-            {{-- {{ ((session('message')['status'] ?? '') === 'success') ? 'done' : '' . isActive(
-            'admin.installer.complete' ) }} --}}
-            <input name="photo"  type="hidden"
-                value="{{ $user_info['photo'] }}">
-            <input name="user_name" type="hidden"
-                value="{{ $user_info['user_name'] ?? '' }}">
-            <input name="mailaddress_status" type="hidden"
-                value="{{ $user_info['mailaddress_status'] ?? '' }}">
-            <input name="mailaddress" type="hidden"
-                value="{{ $user_info['mailaddress'] ?? '' }}">
-            <input name="sex" type="hidden"
-                value="{{ $user_info['sex'] ?? '' }}">
-            <input name="date_of_birth" type="hidden"
-                value="{{ $user_info['date_of_birth'] ?? '' }}">
-            <input name="residenceCountry" class="form-control" type="hidden"
-                value="{{  $user_info['residenceCountry'] ?? '' }}">
-            <input name="residencePrefecture" class="form-control" type="hidden"
-                value="{{ $user_info['residencePrefecture'] ?? '' }}">
-            <input name="height" class="form-control" type="hidden"
-                value="{{ $user_info['height'] ?? '' }}">
-            <input name="weight" class="form-control" type="hidden"
-                value="{{ $user_info['weight'] ?? '' }}">
-
+            <input name="photo"  type="hidden" value="{{ $user->photo }}">
+            <input name="user_name" type="hidden" value="{{ $user->user_name }}">
+            <input name="mailaddress_status" type="hidden" value="{{ $user->mailaddress_status  }}">
+            <input name="mailaddress" type="hidden" value="{{ $user->mailaddress }}">
+            <input name="sex" type="hidden" value="{{ $user->sex }}">
+            <input name="date_of_birth" type="hidden" value="{{ $user->date_of_birth }}">
+            <input name="residence_country" type="hidden" value="{{  $user->residence_country }}">
+            <input name="residence_prefecture" type="hidden" value="{{ $user->residence_prefecture }}">
+            <input name="height" type="hidden" value="{{ $user->height }}">
+            <input name="weight" type="hidden" value="{{ $user->weight }}">
 
             <div class="form-group" style="display: flex; margin-top:2rem;gap: 4rem;">
                 <div class="col-lg-5" style="text-align: right">

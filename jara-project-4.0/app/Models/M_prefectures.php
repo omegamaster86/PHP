@@ -70,4 +70,20 @@ class M_prefectures extends Model
         }
         return $target_pref;
     }
+    public function getPrefName($pref_id)
+    {
+        $pref_name_info = DB::select('select pref_name
+                                from m_prefectures
+                                where delete_flag=0
+                                and pref_id = ?'
+                                ,[$pref_id]
+                            );
+        //pref_name_infoは一意に決まるため0番目を返す
+        if(!empty($pref_name_info))
+            $pref_name = $pref_name_info[0]->pref_name;
+        else
+            $pref_name = "";
+        return $pref_name;
+    }
+    
 }

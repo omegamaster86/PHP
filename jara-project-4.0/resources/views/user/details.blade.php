@@ -43,6 +43,7 @@
         <a href={{route('player.register')}}>選手情報登録</a>
         <a href={{route('player.edit')}}>選手情報更新</a>
         <a href={{route('player.delete')}}>選手情報削除</a>
+        <a href={{route('player.details',["user_id"=>Auth::user()->user_id])}}>選手情報参照</a>
         <a href={{route('organization.management')}}>団体管理</a>
         <form method="POST" action="{{ route('logout') }}">
             @csrf
@@ -77,9 +78,9 @@
                             <div style="margin: 0px 0px 5px 15px">写真
                             </div>
                             <div class="text-center">
-                                @if(Auth::user()->photo??"")
+                                @if($user->photo??"")
                                 <img class="avatar img-circle img-thumbnail"
-                                    src="{{ asset('images/users/' . Auth::user()->photo) }}"
+                                    src="{{ asset('images/users/' . $user->photo) }}"
                                     alt="avatar" />
                                 @else
                                 <img class="avatar img-circle img-thumbnail" src="{{ asset('images/no-image.png')}}"
@@ -93,41 +94,37 @@
                         <x-input-error :messages="$errors->get('datachecked')" class="mt-2" />
                         <div class="form-group ">
                             <label  class=" control-label">ユーザー名
-                                : {{$user['user_name']}}
+                                : {{$user->user_name}}
                             </label>
 
                         </div>
                         <div class="form-group">
                             <p class="control-label" id="emailChange">メールアドレス :
-                                {{$user['mailaddress']}}
+                                {{$user->mailaddress}}
                             </p>
 
 
                         </div>
                         <div class="form-group">
                             <label class="control-label">性別 : 
-                                @if($user['sex']=="1")
-                                男
-                                @elseif ($user['sex']=="2")
-                                女
-                                @endif
+                                {{$user->sex_name}}
                             </label>
 
                         </div>
                         <div class="form-group">
                             <label class=" control-label" >生年月日:</label>
-                            {{$user['date_of_birth']}}
+                            {{$user->date_of_birth}}
 
                         </div>
                         <div class="form-group">
                             <label class="control-label">居住地 :
-                                {{$user['residence_country']}}
+                                {{$user->country_name}}
                             </label>
                         </div>
-                        @if($user['residence_country']=="日本")
+                        @if($user->country_name==="日本国 （jpn）")
                         <div class="form-group">
                             <label class="control-label">都道府県 :
-                                {{$user['residence_prefecture']}}
+                                {{$user->pref_name}}
                             </label>
                         </div>
                         @endif
@@ -136,25 +133,36 @@
                                 <label style="cursor:pointer" class=" control-label">身長
                                     :
                                 </label>
-                                @if($user['height'])
-                                {{$user['height']}} cm
+                                @if($user->height)
+                                {{$user->height}} cm
                                 @endif
                             </div>
                             <div class="col-lg-6">
                                 <label style="cursor:pointer" class=" control-label">体重
                                     :
                                 </label>
-                                @if($user['weight'])
-                                {{$user['weight']}} kg
+                                @if($user->weight)
+                                {{$user->weight}} kg
                                 @endif
 
                             </div>
 
                         </div>
+                        @if($page_mode == "delete")
+
+                        <div>
+                            <textarea class="form-control"  style="resize: none;" rows="5">人マ夏養受法フイねク準要ろび間発ぼ府自83駒ぱかがじ橋受ハケコ行進ハツネ往葉じひド力雇ませほ。集ニ選違的すぶぽぴ由禁サコホ言無ネエ属茨みフぞ盛9藤イ済食むえ面購ナテソシ行融ひゅど集変みなぶよ教帯人マ夏養受法フイねク準要ろび間発ぼ府自83駒ぱかがじ橋受ハケコ行進ハツネ往
+                            </textarea>
+                        </div>
+                        <div style="margin: 5px 0px 10px 0px; text-align:center ">
+                            <input id="link-checkbox" name="terms_of_service" type="checkbox"  onclick="controlDisableButton()">
+                            <label for="link-checkbox" >利用規約に同意する</label>
+                        </div>
+                        @endif
                         <div class="form-group col-lg-12" style="display: flex;  margin: 2rem 0rem 0rem -1rem;">
                             @if($page_mode=="delete")
                             <div class="col-lg-5" style="text-align: right">
-                                <button type="submit" class=" btn btn-danger btn-lg btn-block ">
+                                <button id="deleteAccount" type="submit" class=" btn btn-danger btn-lg btn-block " disabled >
                                     {{ __('退会') }}
                                 </button>
                             </div>
@@ -175,10 +183,10 @@
             </div>
             <div class="col-md-3" style="text-align: right">
                 <p class="col-lg-9 control-label" style="font-weight: bold">ユーザーID :
-                    {{ str_pad(Auth::user()->userId, 7, "0", STR_PAD_LEFT)}}
+                    {{ str_pad(Auth::user()->user_id, 7, "0", STR_PAD_LEFT)}}
                 </p>
                 <p class="col-lg-9 control-label" style="font-weight: bold">ユーザー種別 :
-                    {{str_pad(Auth::user()->userType, 8, "0", STR_PAD_LEFT)}}
+                    {{str_pad(Auth::user()->user_type, 8, "0", STR_PAD_LEFT)}}
                 </p>
                 @if($page_mode=="details")
                 <p class="col-lg-9 control-label"
@@ -198,6 +206,16 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous">
+    </script>
+    <script>
+        function controlDisableButton() {
+            let deleteButtonEl = document.getElementById("deleteAccount");
+            if(deleteButtonEl.disabled)
+                deleteButtonEl.disabled = false;
+            else
+                deleteButtonEl.disabled = true;
+
+        }
     </script>
     <script src="{{ asset('js/nav.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>

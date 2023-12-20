@@ -49,7 +49,7 @@
             <a href={{route('user.password-change')}}>パスワード変更</a>
             <a href={{route('player.register')}}>選手情報登録</a>
             <a href={{route('player.edit')}}>選手情報更新</a>
-            <a href={{route('player.details')}}>選手情報参照</a>
+            <a href={{route('player.details',["user_id"=>Auth::user()->user_id])}}>選手情報参照</a>
             <a href={{route('player.delete')}}>選手情報削除</a>
             <a href={{route('organization.management')}}>団体管理</a>
             <form method="POST" action="{{ route('logout') }}">
@@ -111,8 +111,8 @@
                                     写真
 
                                 </div>
-                                @if($player_info['photo']??"")
-                                <img id = "playerPicture" src="{{ asset('images/players/'.$player_info['photo']) }}" class="avatar img-circle img-thumbnail" alt="avatar">
+                                @if($player_info->photo??"")
+                                <img id = "playerPicture" src="{{ asset('images/players/'.$player_info->photo) }}" class="avatar img-circle img-thumbnail" alt="avatar">
                                 @else
                                     @if($player_info->photo??"")
                                     <img id = "playerPicture" src="{{ asset('images/players/'.$player_info->photo) }}"
@@ -124,7 +124,7 @@
                                 @endif
 
                             </div>
-                            <input type="hidden" name="photo" value="{{$player_info['photo']??($player_info->photo??"")}}" style="display:none">
+                            <input type="hidden" name="photo" value="{{$player_info->photo??""}}" style="display:none">
                         </div>
                         <div class="col-md-1"></div>
 
@@ -138,8 +138,6 @@
                                 <div class="col-sm-7 col-form-label">
                                     @if($page_mode==="delete")
                                     {{str_pad(($player_info->playerId??""), 8, "0", STR_PAD_LEFT)}}
-                                    @else
-                                    {{ str_pad(($player_info['playerId']??""), 8, "0", STR_PAD_LEFT)}}
                                     @endif
                                 </div>
                             </div>
@@ -150,12 +148,11 @@
                                     class="col-sm-5  col-form-label">JARA選手コード
                                 </label>
                                 <div class="col-sm-7 col-form-label">
+                                    
                                     @if($page_mode==="delete")
                                     {{$player_info->jara_player_id??""}}
-                                    @else
-                                    {{$player_info['jara_player_id']??""}}
                                     <input name="playerCode" type="hidden"
-                                        value="{{$player_info['jara_player_id']??""}}">
+                                        value="{{$player_info->jara_player_id??""}}">
                                     @endif
                                 </div>
 
@@ -165,12 +162,11 @@
                                     class="col-sm-5  col-form-label">選手名
                                 </label>
                                 <div class="col-sm-7 col-form-label">
+                                    
                                     @if($page_mode==="delete")
-                                    {{$player_info->playerName??""}}
-                                    @else
-                                    {{$player_info['playerName']??""}}
+                                    {{$player_info->player_name??""}}
                                     <input name="playerName" type="hidden"
-                                        value="{{$player_info['playerName']??""}}">
+                                        value="{{$player_info->player_name??""}}">
                                     @endif
                                 </div>
                             </div>
@@ -182,10 +178,8 @@
                                 <div class="col-sm-7 col-form-label">
                                     @if($page_mode==="delete")
                                     {{date('Y/m/d', strtotime($player_info->date_of_birth))}}
-                                    @else
-                                    {{$player_info['date_of_birth']??""}}
                                     <input name="date_of_birth" type="hidden"
-                                        value="{{$player_info['date_of_birth']??""}}">
+                                        value="{{$player_info->date_of_birth??""}}">
                                     @endif
                                 </div>
 
@@ -196,20 +190,9 @@
                                     class="col-sm-5  col-form-label">性別
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    @if($page_mode==="delete")
-                                    {{$player_info->sex??""}}
-                                    @else
-                                    @if(($player_info['sex']??"")==="1")
-                                    男
-                                    @elseif(($player_info['sex']??"")==="2")
-                                    女
-                                    @else
-                                    ""
-                                    @endif
-                                    <input name="sex" type="hidden" value="{{
-                                        $player_info['sex']??""
-                                        }}">
-                                    @endif
+                                    
+                                {{$player_info->sex??""}}
+                                    <input name="sex" type="hidden" value="{{$player_info->sex??""}}">
                                 </div>
                             </div>
                             <div class="form-group row ">
@@ -217,16 +200,8 @@
                                 </label>
 
                                 <div class="col-sm-7 col-form-label">
-                                    @if($page_mode==="delete")
                                     {{$player_info->height??""}} cm
-                                    @else
-                                    {{
-                                    $player_info['height']??""
-                                    }} cm
-                                    <input name="height" type="hidden" value="{{
-                                        $player_info['height']??""
-                                        }}">
-                                    @endif
+                                    <input name="height" type="hidden" value="{{$player_info->height??""}}">
                                 </div>
                             </div>
                             <div class="form-group row ">
@@ -234,17 +209,8 @@
                                 </label>
 
                                 <div class="col-sm-7 col-form-label">
-                                    @if($page_mode === "delete")
                                     {{$player_info->weight??""}} kg
-                                    @else
-                                    
-                                    {{
-                                    $player_info['weight']??""
-                                    }} kg
-                                    <input name="weight" type="hidden" value="{{
-                                        $player_info['weight']??""
-                                        }}">
-                                    @endif
+                                    <input name="weight" type="hidden" value="{{$player_info->weight??""}}">
                                 </div>
 
                             </div>
@@ -252,21 +218,12 @@
                                 <label style="cursor:pointer;text-align:right" class="col-sm-5  col-form-label">サイド情報
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    
-                                    @if($page_mode === "delete")
                                     {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'S　' : '' }}
                                     {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'B　' : '' }}
                                     {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
                                     {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
-                                    @else
-                                    {{((str_pad(($player_info['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'S　' : '' }}
-                                    {{((str_pad(($player_info['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'B　' : '' }}
-                                    {{((str_pad(($player_info['side_info']??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'X　' : '' }}
-                                    {{((str_pad(($player_info['side_info']??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'COX' : '' }}
                                    
-                                    <input name="side_info" type="hidden" value="{{
-                                        $player_info['side_info']??""}}">
-                                    @endif
+                                    <input name="side_info" type="hidden" value="{{$player_info->side_info??""}}">
                                 </div>
                             </div>
 
@@ -276,34 +233,17 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
                                     
-                                    @if($page_mode === "delete")
                                     {{$player_info->birth_country??""}}
-                                    @else
-                                    {{
-                                    $player_info['birthCountry']??""
-                                    }}
-                                    
-                                    @endif
-                                    <input name="birth_country" id="confirmBirthCountry" type="hidden" value="{{($player_info->birth_country??"")?$player_info->birth_country :
-                                        ($player_info['birth_country']??"")
-                                        }}">
+                                    <input name="birth_country" id="confirmBirthCountry" type="hidden" value="{{$player_info->birth_country??""}}">
                                 </div>
-
                             </div>
                             <div class="form-group row " id="confirmBirthPrefectures" style="display: none">
                                 <label style="cursor:pointer;text-align:right" class="col-sm-5  col-form-label">都道府県
                                 </label>
 
                                 <div class="col-sm-7 col-form-label">
-                                    @if($page_mode === "delete")
                                     {{$player_info->birth_prefecture??""}}
-                                    @else
-                                    {{
-                                    $player_info['birth_prefecture']??""}}
-                                    
-                                    @endif
-                                    <input name="birth_prefecture" type="hidden" value="{{($player_info->birth_prefecture??"")?$player_info->birth_prefecture :
-                                        $player_info['birth_prefecture']??""}}">
+                                    <input name="birth_prefecture" type="hidden" value="{{$player_info->birth_prefecture??""}}">
                                 </div>
 
                             </div>
@@ -312,14 +252,8 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
                                     
-                                    @if($page_mode==="delete")
                                     {{$player_info->residence_country??""}}
-                                    @else
-                                    {{
-                                    $player_info['residence_country']??""}}
-                                    @endif
-                                    <input id="confirmCountry" name="residence_country" type="hidden" value="{{
-                                        ($player_info->residence_country??"")?$player_info->residence_country : ($player_info['residence_country']??"")}}">
+                                    <input id="confirmCountry" name="residence_country" type="hidden" value="{{$player_info->residence_country??""}}">
                                 </div>
 
                             </div>
@@ -327,14 +261,8 @@
                                 <label style="text-align:right" class="col-sm-5  col-form-label">都道府県
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    @if($page_mode === "delete")
                                     {{$player_info->residence_prefecture??""}}
-                                    @else
-                                    {{
-                                    $player_info['residence_prefecture']??""}}
-                                    @endif
-                                    <input name="residence_prefecture" type="hidden" value="{{($player_info->residence_prefecture??"")?$player_info->residence_prefecture :
-                                        ($player_info['residence_prefecture']??"")}}">
+                                    <input name="residence_prefecture" type="hidden" value="{{$player_info->residence_prefecture??""}}">
                                 </div>
 
                             </div>
@@ -393,8 +321,7 @@
                     </div>
                 </div>
                 @endif
-
-                @if(($player_info['previous_page_status']??"")==="success")
+                @if(($player_info->previous_page_status??"")==="success")
                 <!-- Button trigger modal -->
                 <button style="display: none" type="button" id="idCheckedMessage" class="btn btn-secondary btn-lg"
                     data-toggle="modal" data-target="#staticBackdrop">

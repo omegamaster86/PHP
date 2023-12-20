@@ -36,13 +36,14 @@
         style="background: linear-gradient(to right,#1991FC,  #45b796);padding:0;color: #000;font-weight:500;min-height:100vh; width:100vw">
         <div id="mySidenav" class="sidenav">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            @if($user['temp_password_flag']===0)
+            @if($user->temp_password_flag===0)
                 <a href={{route('my-page')}}>マイページ</a>
                 <a href={{route('user.edit')}}>情報更新</a>
                 <a href={{route('user.details')}}>情報参照</a>
                 <a href={{route('user.delete')}}>退会</a>
                 <a href={{route('player.register')}}>選手情報登録</a>
                 <a href={{route('player.edit')}}>選手情報更新</a>
+                <a href={{route('player.details',["user_id"=>Auth::user()->user_id])}}>選手情報参照</a>
                 <a href={{route('player.delete')}}>選手情報削除</a>
                 <a href={{route('organization.management')}}>団体管理</a>
             @endif
@@ -61,16 +62,16 @@
                 <h1 >
                     パスワード変更
                 </h1>
-                <p >ユーザー名　：　{{$user['user_name']}}</p>
+                <p >ユーザー名　：　{{$user->user_name}}</p>
             </div>
             
             <div class="col-md-1"></div>
             <div class="col-md-2" style="text-align: right">
                 <p class="col-lg-12 control-label" style="font-weight: bold">ユーザーID :
-                    {{ str_pad($user['user_id'], 7, "0", STR_PAD_LEFT)}}
+                    {{ str_pad($user->user_id, 7, "0", STR_PAD_LEFT)}}
                 </p>
                 <p class="col-lg-12 control-label" style="font-weight: bold">ユーザー種別 :
-                    {{str_pad($user['user_type'], 8, "0", STR_PAD_LEFT)}}
+                    {{str_pad($user->user_type, 8, "0", STR_PAD_LEFT)}}
                 </p>
             </div>
         </div>
@@ -127,7 +128,7 @@
                         @endif
                         
                         <div class="col-lg-12 d-flex mt-4" class="form-group" >
-                            @if($user['temp_password_flag']===1)
+                            @if($user->temp_password_flag===1)
                             <div class="col-lg-8"></div>
                             <div class="col-lg-4" style="text-align: left">
                                 <button type="submit" class=" btn btn-success btn-lg btn-block ">

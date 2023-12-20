@@ -43,7 +43,7 @@ class UserController extends Controller
             "height" => Auth::user()->height, 
             "weight" => Auth::user()->weight );
 
-        return view('user.edit')->with(compact('user'));
+        return view('user.edit',["user" => (object)$user]);
     }
     public function storeEdit(Request $request) : View
     {
@@ -56,7 +56,7 @@ class UserController extends Controller
             
             $file = $request->file('photo');
             // $file->store('toPath', ['disk' => 'public']);
-            $file_name = DB::table('t_users')->where('mailaddress', '=', Auth::user()->mailaddress)->value('user_id'). '.' . $request->file('photo')->getClientOriginalExtension();
+            $file_name = Auth::user()->user_id. '.' . $request->file('photo')->getClientOriginalExtension();
             // Storage::disk('public')->put($fileName, $file);
 
             // Storage::disk('public')->putFileAs('uploads', $file, $fileName);
@@ -77,8 +77,6 @@ class UserController extends Controller
 
         if((int)$request->mailaddress_status===1){
             $request->validate([
-                // [^\x01-\x7E]
-                // ^[0-9a-zA-Z-_]+$
                 // Username validation rule
                 'user_name' => ['required', 'string', 'max:32','regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'],   
 
@@ -87,16 +85,17 @@ class UserController extends Controller
                 //Confirm mail address validation rule
                 'confirm_email' => ['required','email', 'string', 'lowercase',  'max:255', 'same:mailaddress'],
 
+                //Confirm sex validation rule
                 'sex' => ['required','string'],
+
+                //Confirm date of birth validation rule
                 'date_of_birth' => ['required','string'],
+
+                //Confirm residence country validation rule
                 'residence_country' => ['required','string'],
-                'residence_prefecture' => ['nullable','required_if:residence_country,日本','string'
-                
-                // function($attribute,$value,$fail) {
-                    //     include('ErrorMessages/ErrorMessages.php');
-                            
-                    // },
-                    ]
+
+                //Confirm residence prefecture validation rule
+                'residence_prefecture' => ['nullable','required_if:residence_country,"112"','string']
                 ], 
                 [
                 //Error message for Username validation rule 
@@ -114,32 +113,53 @@ class UserController extends Controller
                 'confirm_email.email' => $email_validation,
                 'confirm_email.lowercase' => $mailAddress_lowercase,
                 'confirm_email.same' => $confirm_email_compare,
-                //Error message for date of birth validation rule 
+
+                //Error message for sex validation rule
                 'sex.required' => $sex_required,
+                //Error message for date of birth validation rule 
                 'date_of_birth.required' => $dateOfBirth_required,
+
+                //Error message for residence country validation rule
                 'residence_country.required' => $residenceCountry_required,
+
+                //Error message for residence prefecture validation rule
                 'residence_prefecture.required_if' => $residencePrefecture_required_if,
             ]);
         }
         else{
             $request->validate([
-                // Username validation rule
+                // user name validation rule
                 'user_name' => ['required', 'string', 'max:32','regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'],
+
+                // sex validation rule
                 'sex' => ['required','string'],
+
+                // date of birth validation rule
                 'date_of_birth' => ['required','string'],
+
+                // residence country validation rule
                 'residence_country' => ['required','string'],
-                'residence_prefecture' => ['nullable','required_if:residence_country,日本','string']
+
+                // residence prefecture validation rule
+                'residence_prefecture' => ['nullable','required_if:residence_country,"112"','string']
 
             ],
                 [
-                    //Error message for Username validation rule 
+                    //Error message for user name validation rule 
                     'user_name.required' => $userName_required,
                     'user_name.regex' => $userName_regex,
                     'user_name.max' => $userName_max_limit,
+
+                    //Error message for sex validation rule 
                     'sex.required' => $sex_required,
+
                     //Error message for date of birth validation rule 
                     'date_of_birth.required' => $dateOfBirth_required,
+
+                    //Error message for residence country validation rule 
                     'residence_country.required' => $residenceCountry_required,
+
+                    //Error message for residence prefecture validation rule 
                     'residence_prefecture.required_if' => $residencePrefecture_required_if,
                 ]
             );
@@ -153,16 +173,15 @@ class UserController extends Controller
         $user_info = $request->all();
         
         if ($request->hasFile('photo')){
-            $user_info['photo']=DB::table('t_users')->where('mailaddress', '=', Auth::user()->mailaddress)->value('user_id'). '.' . $request->file('photo')->getClientOriginalExtension();
+            $user_info['photo'] = Auth::user()->user_id. '.' . $request->file('photo')->getClientOriginalExtension();
         }
         else{
             if($request->user_picture_status==="delete")
-                $user_info['photo']="";
+                $user_info['photo'] = "";
             else
-                $user_info['photo']=DB::table('t_users')->where('mailaddress', '=', Auth::user()->mailaddress)->value('photo');
+                $user_info['photo'] = Auth::user()->photo;
         }
-        // dd($userInfo['photo']);->with(compact('user')->with('user_info', $user_info)
-        return view('user/edit/confirm')->with(compact('user_info'));       
+        return view('user/edit/confirm',[ "user" => (object)$user]);       
         
     }
 
@@ -225,11 +244,10 @@ class UserController extends Controller
                 ];
                 Mail::to($request->get('mailaddress'))->send(new VerificationMail($mail_data));
 
-                $user_info = $request->all();
+                $user = $request->all();
                 
                 // return redirect('user/edit/verification')->with('user_info', $user_info);
-                return view('user/edit/verification')->with(compact('user_info'));
-                dd("mail sent");
+                return view('user/edit/verification',["user" => (object)$user]);
 
             }
             else{
@@ -264,9 +282,8 @@ class UserController extends Controller
                 $page_url = route('my-page');
                 $page_url_text = "マイページ";
                 
-                return view('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+                return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
                 
-                // return redirect('profile')->with('status', "更新の件、完了になりました。");
             }
     }
 
@@ -284,9 +301,9 @@ class UserController extends Controller
             ]); 
         }
         if($request->mailaddress_status=="1"){
-            if (DB::table('t_users')->where('mailaddress', Auth::user()->mailaddress)->where('delete_flag', '=', 0)->exists()){
+            if (!Auth::user()->delete_flag){
                 if(Hash::check($request->certification_number, Auth::user()->certification_number)) {
-                    if (DB::table('t_users')->where('mailaddress', Auth::user()->mailaddress)->where('expiry_time_of_certification_number', '<', date('Y-m-d H:i:s'))->exists()) {
+                    if (Auth::user()->expiry_time_of_certification_number < date('Y-m-d H:i:s')) {
                         throw ValidationException::withMessages([
                             'verification_error' => $code_timed_out
                         ]); 
@@ -313,7 +330,6 @@ class UserController extends Controller
                             $e_bindings = implode(", ",$e->getBindings());
                             $e_connectionName = $e->connectionName;
 
-
                             //Store error message in the register log file.
                             Log::channel('user_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
                             if($e_errorCode == 1213||$e_errorCode == 1205)
@@ -334,7 +350,7 @@ class UserController extends Controller
                         $page_url = route('my-page');
                         $page_url_text = "マイページ";
                         
-                        return view('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+                        return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
                         
                     }
                 }
@@ -372,7 +388,7 @@ class UserController extends Controller
             "height" => Auth::user()->height, 
             "weight" => Auth::user()->weight );
 
-        return view('user.details',["page_mode" => "details"])->with(compact('user'));
+        return view('user.details',["page_mode" => "details", "user" => (object)$user]);
     }
     public function createDelete(Request $request): View
     {
@@ -388,7 +404,7 @@ class UserController extends Controller
             "height" => Auth::user()->height, 
             "weight" => Auth::user()->weight );
 
-        return view('user.details',["page_mode" => "delete"])->with(compact('user'));
+        return view('user.details',["page_mode" => "delete", "user" => (object)$user]);
     }
     public function storeDelete(Request $request) : RedirectResponse
     {
@@ -453,7 +469,6 @@ class UserController extends Controller
     }
     public function storeDeleteVerification(Request $request): RedirectResponse
     {
-        // dd($request->all());
         include('Auth/ErrorMessages/ErrorMessages.php');
         if($request->certification_number === ""){
             throw ValidationException::withMessages([
@@ -461,9 +476,9 @@ class UserController extends Controller
             ]); 
         }
         
-        if (DB::table('t_users')->where('mailaddress', '=', Auth::user()->mailaddress)->where('delete_flag', '=', 0)->exists()){
+        if (!Auth::user()->delete_flag){
             if(Hash::check($request->certification_number, Auth::user()->certification_number)) {
-                if (DB::table('t_users')->where('mailaddress', '=', Auth::user()->mailaddress)->where('expiry_time_of_certification_number', '<', date('Y-m-d H:i:s'))->exists()) {
+                if (Auth::user()->expiry_time_of_certification_number < date('Y-m-d H:i:s')) {
                     throw ValidationException::withMessages([
                         'verification_error' => $code_timed_out
                     ]); 
@@ -490,8 +505,7 @@ class UserController extends Controller
                     DB::commit();
                 } catch (\Throwable $e) {
                     DB::rollBack();
-
-                    $e_message = $e->getMessage(                                        );
+                    $e_message = $e->getMessage();
                     $e_code = $e->getCode();
                     $e_file = $e->getFile();
                     $e_line = $e->getLine();
@@ -521,7 +535,7 @@ class UserController extends Controller
                 $page_url_text = "OK";
                 
                 //Redirect to registered user to the login page with success status.
-                return redirect('status')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+                return redirect('status',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
                 }
             }
             else{
@@ -530,9 +544,7 @@ class UserController extends Controller
                 ]); 
             }
         }
-        // if (DB::table('t_users')->where('mailaddress', '=', Auth::user()->mailaddress)->where('certification_number', '=', $request->certification_number)->exists()){
-            
-        // }
+        
         else{
             throw ValidationException::withMessages([
                 'verification_error' => $code_not_found
@@ -544,12 +556,11 @@ class UserController extends Controller
     {
 		$user = array("user_name" => Auth::user()->user_name, "user_id" => Auth::user()->user_id, "user_type" => Auth::user()->user_type, "temp_password_flag" => Auth::user()->temp_password_flag);
         
-        return view('user.password-change')->with(compact('user'));
+        return view('user.password-change',["user" => $user]);
 
     }
     public function storePasswordChange(Request $request) : View
     {
-        // dd($request->all());
         include('Auth/ErrorMessages/ErrorMessages.php');
         $request->validate([
             // previousPassword validation rule
@@ -633,7 +644,7 @@ class UserController extends Controller
                     $page_url = route('user.edit');
                     $page_url_text = "OK";
 
-                    return view('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+                    return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
 
             }
             //If the entered password does not matched with the database information
@@ -687,7 +698,7 @@ class UserController extends Controller
                     $page_url = route('my-page');
                     $page_url_text = "OK";
                     
-                    return view('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+                    return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
             }
             //If the entered password does not matched with the database information
             else{
@@ -697,7 +708,6 @@ class UserController extends Controller
             }
         }
         
-        dd("stop");
 
     }
 }

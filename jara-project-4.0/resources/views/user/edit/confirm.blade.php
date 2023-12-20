@@ -33,6 +33,13 @@
 
 <body>
     <div class="container-fluid bootstrap snippets bootdey" style="background: linear-gradient(to right,#1991FC,  #45b796);padding:0;color: #000;font-weight:500;min-height:100vh; width:100vw">
+        @if($user??"")
+        @else
+        <script>
+            window.location.href='{{ route("user.edit") }}'
+            </script>
+        @dd("1")
+        @endif
         <div id="mySidenav" class="sidenav">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
             <a href={{route('my-page')}}>マイページ</a>
@@ -43,10 +50,10 @@
             <a href={{route('player.register')}}>選手情報登録</a>
             <a href={{route('player.edit')}}>選手情報更新</a>
             <a href={{route('player.delete')}}>選手情報削除</a>
+            <a href={{route('player.details',["user_id"=>Auth::user()->user_id])}}>選手情報参照</a>
             <a href={{route('organization.management')}}>団体管理</a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-    
                 <a href="route('logout')" onclick="event.preventDefault();
                                     this.closest('form').submit();">
                     ログアウト
@@ -75,14 +82,14 @@
                             <div class="text-center">
                                 
                                 
-                                @if($user_info['photo'])
+                                @if($user->photo)
                                 <img class="avatar img-circle img-thumbnail"
-                                    src="{{ asset('images/users/' . $user_info['photo']) }}"
+                                    src="{{ asset('images/users/' . $user->photo) }}"
                                     alt="avatar" />
                                 @else
-                                    @if($user_info['photo'])
+                                    @if($user->photo)
                                     <img class="avatar img-circle img-thumbnail"
-                                    src="{{ asset('images/users/' .$user_info['photo']) }}"
+                                    src="{{ asset('images/users/' .$user->photo) }}"
                                     alt="avatar" />
                                     @else
                                     <img class="avatar img-circle img-thumbnail"
@@ -92,7 +99,7 @@
                                 @endif
                                 <div style="display: none">
                                     <input type="text" id="photo" name="photo"
-                                        value="{{$user_info['photo']}}" class="form-control">
+                                        value="{{$user->photo}}" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -103,94 +110,79 @@
 
                         <div class="form-group ">
                             <label  class=" control-label">ユーザー名
-                                : {{ $user_info['user_name']}}
+                                : {{ $user->user_name}}
                             </label>
                             <input name="user_name" class="form-control" type="hidden"
-                                value="{{ $user_info['user_name']}}">
+                                value="{{ $user->user_name}}">
                         </div>
                         <div style="display:none">
                             <input type="text" id="mailAddressStatus" name="mailaddress_status"
-                                value="{{$user_info['mailaddress_status']}}" />
+                                value="{{$user->mailaddress_status}}" />
                         </div>
                         <div class="form-group">
                             <p class="control-label" id="emailChange">メールアドレス :
-                                {{ $user_info['mailaddress']? $user_info['mailaddress'] : Auth::user()->mailaddress}}
+                                {{ $user->mailaddress? $user->mailaddress : Auth::user()->mailaddress}}
                             </p>
                             <input name="mailaddress" class="form-control" type="hidden"
-                                value="{{ $user_info['mailaddress']? $user_info['mailaddress'] : Auth::user()->mailaddress }}">
+                                value="{{ $user->mailaddress? $user->mailaddress : Auth::user()->mailaddress }}">
 
 
                         </div>
                         <div class="form-group">
                             <label class="control-label">性別 : 
-                                @if($user_info['sex']=="1")
-                                男
-                                @elseif ($user_info['sex']=="2")
-                                女
-                                @else
-                                @endif
+                                {{$user->sex_name}}
                             </label>
 
                             <input name="sex" class="form-control" type="hidden"
-                                value="{{$user_info['sex']}}">
+                                value="{{$user->sex}}">
                         </div>
                         <div class="form-group">
-                            @if($user_info['date_of_birth']!="")
+                            @if($user->date_of_birth!="")
                             <label class="control-label" >生年月日:</label>
                             @endif
-                            {{$user_info['date_of_birth']}}
+                            {{$user->date_of_birth}}
                             <input name="date_of_birth" class="form-control" type="hidden"
-                                value="{{$user_info['date_of_birth']}}">
+                                value="{{$user->date_of_birth}}">
                         </div>
                         <div class="form-group">
                             <label class="control-label">居住地 :
-                                @if($user_info['residence_country']=="1")
-                                日本
-                                @elseif ($user_info['residence_country']=="2")
-                                アメリカ
-                                @elseif ($user_info['residence_country']=="3")
-                                インド
-                                @endif
+                                {{$user->country_name}}
                             </label>
 
 
                             <input id="residenceCountry" name="residence_country" class="form-control" type="hidden"
-                                value="{{$user_info['residence_country']}}">
+                                value="{{$user->residence_country}}">
                         </div>
-                        @if($user_info['residence_country']=="1")
+                        @if($user->residence_country=="112")
                         <div class="form-group">
                             <label class="control-label">都道府県 :
-                                @if($user_info['residence_prefecture']=="1")
-                                愛知
-                                @elseif ($user_info['residence_prefecture']=="2")
-                                宮崎
-                                @endif
+                                {{$user->pref_name}}
                             </label>
 
                             <input id="residencePrefecture" name="residence_prefecture" class="form-control"
-                                type="hidden" value="{{$user_info['residence_prefecture']}}">
+                                type="hidden" value="{{$user->residence_prefecture}}">
                         </div>
                         @endif
                         <div class="form-group" style="display: flex">
                             <div class="col-lg-6" style="margin: 0rem 0rem 0rem -1rem;">
                                 <label class=" control-label">身長 :
                                 </label>
-                                {{$user_info['height']?$user_info['height']:0}} cm
+                                {{$user->height?$user->height:0}} cm
 
                                 <input name="height" class="form-control" type="hidden"
-                                    value="{{$user_info['height']}}">
+                                    value="{{$user->height}}">
 
                             </div>
                             <div class="col-lg-6">
                                 <label class=" control-label">体重 :</label>
-                                {{$user_info['weight']?$user_info['weight']:0}} kg
+                                {{$user->weight?$user->weight:0}} kg
 
                                 <input name="weight" class="form-control" type="hidden"
-                                    value="{{$user_info['weight']}}">
+                                    value="{{$user->weight}}">
                             </div>
 
                         </div>
-                        @if($user_info['mailaddress_status'])
+                        @if($user->mailaddress_status)
                         <div class="form-group alert alert-success" role="alert">
                             メールアドレスが変更されている為、表示されている<br />
                             メールアドレス宛に6桁の認証番号が送られます。<br />

@@ -23,8 +23,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
     <link rel="stylesheet" type="text/css" href="{{ asset('/font-awesome/css/font-awesome.min.css') }}">
-
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/player-register.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/nav.css') }}">
 
     {{-- Date Picker --}}
@@ -57,6 +55,12 @@
             height: 650px; 
             overflow-y: auto;    /* Trigger vertical scroll    */
         }
+        .filterDiv{
+            display: none;
+        }
+        .show {
+            display: table-row;
+        }
     </style>
 </head>
 
@@ -73,7 +77,7 @@
             <a href={{route('user.password-change')}}>パスワード変更</a>
             <a href={{route('player.register')}}>選手情報登録</a>
             <a href={{route('player.edit')}}>選手情報更新</a>
-            <a href={{route('player.details')}}>選手情報参照</a>
+            <a href={{route('player.details',["user_id"=>Auth::user()->user_id])}}>選手情報参照</a>
             <a href={{route('player.delete')}}>選手情報削除</a>
             <a href={{route('organization.management')}}>団体管理</a>
             <form method="POST" action="{{ route('logout') }}">
@@ -199,28 +203,28 @@
                                         <input class="form-check-input" type="checkbox" name="side_info[]"
                                             value="00000001" {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000001")==="00000001")? 'checked' : '' }} id="checkS">
                                         <label class="form-check-label" for="checkS">
-                                            : S
+                                            : S　（ストロークサイド）
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="side_info[]"
                                             value="00000010" {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000010")==="00000010")? 'checked' : '' }} id="checkB">
                                         <label class="form-check-label" for="checkB">
-                                            : B
+                                            : B（バウサイド）
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="side_info[]"
                                             value="00000100" {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00000100")==="00000100")? 'checked' : '' }} id="checkX">
                                         <label class="form-check-label" for="checkX">
-                                            : X
+                                            : X（スカル）
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="side_info[]"
                                             value="00001000" {{((str_pad(($player_info->side_info??""), 8, "0", STR_PAD_LEFT)&"00001000")==="00001000")? 'checked' : '' }} id="checkC">
                                         <label class="form-check-label" for="checkC">
-                                            : C
+                                            : C（コックス）
                                         </label>
                                     </div>
                                     
@@ -236,8 +240,8 @@
                                 </label>
                                 <div class="col-sm-7 col-form-label">
 
-                                    {{$player_info->birth_country}}
-                                    <input type="hidden" id = "birthCountry" value="{{$player_info->birth_country}}"/>
+                                    {{$player_info->birth_country_name}}
+                                    <input type="hidden" id = "birthCountry" value="{{$player_info->birth_country_name}}"/>
                                     
                                 </div>
 
@@ -248,7 +252,8 @@
                                 </label>
 
                                 <div class="col-sm-7 col-form-label">
-                                    {{$player_info->birth_prefecture??""}}
+                                    {{$player_info->birth_prefecture_name??""}}
+                                    <input type="hidden" id = "birthPrefecture" value="{{$player_info->birth_prefecture_name}}"/>
                                 </div>
 
                             </div>
@@ -256,8 +261,8 @@
                                 <label style="text-align:right" for="sex" class="col-sm-5  col-form-label">居住地
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{$player_info->residence_country}}
-                                    <input type="hidden" id = "residenceCountry" value="{{$player_info->residence_country}}"/>
+                                    {{$player_info->residence_country_name}}
+                                    <input type="hidden" id = "residenceCountry" value="{{$player_info->residence_country_name}}"/>
                                 </div>
 
                             </div>
@@ -265,8 +270,9 @@
                                 <label style="text-align:right" class="col-sm-5  col-form-label">都道府県
                                 </label>
                                 <div class="col-sm-7 col-form-label">
-                                    {{$player_info->residence_prefecture??""}}
+                                    {{$player_info->residence_prefecture_name??""}}
                                 </div>
+                                <input type="hidden" id = "residencePrefecture" value="{{$player_info->residence_prefecture_name}}"/>
 
                             </div>
                         </div>
@@ -276,25 +282,38 @@
                     </form>
             </div>
             <div class="col-md-3" style="text-align: right">
-                <a class="btn btn-secondary btn-lg" href="#" >
+                <a class="btn btn-secondary btn-lg" href="{{route('my-page')}}" >
                     マイページ
                 </a>
+                <br/>
+                <br/>
+                @if((int)$user_id===Auth::user()->user_id or ((Auth::user()->user_type&"01000000")==="01000000"))
+                <a style="text-decoration: underline; color:#000;" href="{{route('player.edit')}}" >
+                    選手情報を更新
+                </a>
+                <br/>
+                <br/>
+                <a style="text-decoration: underline; color:#000;"  href="{{route('player.delete')}}" >
+                    選手情報を削除
+                </a>
+                @endif
             </div>
             <br/>
             <br/>
             <div class="col-12 d-flex" style="margin:5rem 0rem 0rem 2rem ; background-color:#00c77b;">
-                <div class="col-4" style="margin: 0rem 0rem 0rem -2rem" >
-                    <a role="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary" href="#">すべて</a>
-                    <a role="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary" href="#">公式</a>
-                    <a role="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary" href="#">非公式</a>
+                <div id="myBtnContainer" class="col-4" style="margin: 0rem 0rem 0rem -2rem" >
+                    <a role="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary active" onclick="filterSelection('all')">すべて</a>
+                    <a role="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary" onclick="filterSelection('official') ">公式</a>
+                    <a role="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary" onclick="filterSelection('hyoukoushiki')">非公式</a>
                 </div>
                 <div class="col-4" style="text-align: center;font-size:28px" >個人記録</div>
+                @if((int)$user_id===Auth::user()->user_id or ((Auth::user()->user_type&"01000000")==="01000000"))
                 <div class="col-4" style="text-align:right;margin-left:2rem" >
-                    <a role="button" style="width: 400px;height:60px; font-size:28px" class="btn btn-secondary" href="#">個人記録の追加・編集</a>
+                    <a role="button" style="width: 400px;height:60px; font-size:28px" class="btn btn-secondary" >個人記録の追加・編集</a>
                 </div>
+                @endif
             </div>
             <div class="col-12" id="scrollableTable" style="padding :0rem 2rem 0rem 2rem; width:100%; overflow-x: auto; " >
-                
                 <table class="table table-striped table-bordered" >
                     <thead >
                         <tr>
@@ -334,7 +353,12 @@
                     <tbody class=" ">
                         {{-- @dd($all_race_records) --}}
                         @foreach($all_race_records as $race_record)
-                        <tr >
+
+                        <tr @if($race_record->official) 
+                            class="filterDiv official" 
+                            @else 
+                            class="filterDiv hyoukoushiki" 
+                            @endif>
                             <td>
                                 {{$race_record->tourn_name}}
                             </td>
@@ -386,6 +410,9 @@
                         
                     </tbody>
                 </table>
+            </div>
+            <div class="col-12" style="text-align: right;margin:2rem 0rem" >
+                <a role="button" style="width: 120px;height:60px; font-size:28px" class="btn btn-secondary" href="javascript:history.back()">戻る</a>
             </div>    
             
         </div>
@@ -393,26 +420,77 @@
             
         </div> 
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous">
-    </script>
     <script>
 
-        
-
-        (function (){
-            console.log(document.getElementById("birthCountry").value);
-            if(document.getElementById("birthCountry").value === "日本"){
+        (function(){
+            if(document.getElementById("birthCountry").value === "日本国 （jpn）"){
                 document.getElementById("birthPrefectures").style.display='flex';
             }
-            if(document.getElementById("residenceCountry").value === "日本"){
+            if(document.getElementById("residenceCountry").value === "日本国 （jpn）"){
                 document.getElementById("prefectures").style.display = 'flex';
             }
-        })();
-        
-        
+        })()
+
+        filterSelection("all");
+        function filterSelection(c) {
+            var x, i;
+            x = document.getElementsByClassName("filterDiv");
+            if (c == "all") c = "";
+            // Add the "show" class (display:block) to the filtered elements, and remove the "show" class from the elements that are not selected
+            for (i = 0; i < x.length; i++) {
+                
+                w3RemoveClass(x[i], "show");
+                if (x[i].className.indexOf(c) > -1) w3AddClass(x[i], "show");
+            }
+        }
+
+        // Show filtered elements
+        function w3AddClass(element, name) {
+            var i, arr1, arr2;
+            arr1 = element.className.split(" ");
+            arr2 = name.split(" ");
+            for (i = 0; i < arr2.length; i++) {
+                if (arr1.indexOf(arr2[i]) == -1) {
+                element.className += " " + arr2[i];
+                }
+            }
+        }
+
+        // Hide elements that are not selected
+        function w3RemoveClass(element, name) {
+            var i, arr1, arr2;
+            arr1 = element.className.split(" ");
+            arr2 = name.split(" ");
+            for (i = 0; i < arr2.length; i++) {
+                while (arr1.indexOf(arr2[i]) > -1) {
+                arr1.splice(arr1.indexOf(arr2[i]), 1);
+                }
+            }
+            element.className = arr1.join(" ");
+        }
+
+        // Add active class to the current control button (highlight it)
+        var btnContainer = document.getElementById("myBtnContainer");
+        var btns = btnContainer.getElementsByClassName("btn");
+        for (var i = 0; i < btns.length; i++) {
+        btns[i].addEventListener("click", function() {
+            var current = document.getElementsByClassName("active");
+            current[0].className = current[0].className.replace(" active", "");
+            this.className += " active";
+        });
+        }
 
     </script>
 
+    
+
+    <script src="{{ asset('js/nav.js') }}"></script>
+    {{-- <script src="{{ asset('js/main.js') }}"></script> --}}
+    
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous">
+    </script>
     <script>
         $(document).ready(function(){
         var rowCount = $('tbody tr').length;
@@ -422,9 +500,6 @@
         }
         });
     </script>
-
-    <script src="{{ asset('js/nav.js') }}"></script>
-    <script src="{{ asset('js/main.js') }}"></script>
 </body>
 
 </html>
