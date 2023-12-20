@@ -2,20 +2,8 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-// use App\Http\Controllers\UserEditController;
 use App\Http\Controllers\UserController;
-// use App\Http\Controllers\UserPasswordChangeController;
-// use App\Http\Controllers\UserDeleteController;
-// use App\Http\Controllers\EditInfoConfirmController;
-// use App\Http\Controllers\EditVerifiCationController;
-// use App\Http\Controllers\DeleteVerifiCationController;
-// use App\Http\Controllers\PlayerRegisterController;
 use App\Http\Controllers\PlayerController;
-// use App\Http\Controllers\PlayerRegisterConfirmController;
-// use App\Http\Controllers\PlayerEditConfirmController;
-// use App\Http\Controllers\PlayerEditController;
-// use App\Http\Controllers\PlayerDetailsController;
-// use App\Http\Controllers\PlayerDeleteController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\TournamentController;
 use App\Http\Controllers\PlayerInfoAlignmentController;
@@ -96,7 +84,7 @@ Route::middleware('auth')->group(function () {
 
     //Player Details
     
-    Route::get('player/details', [PlayerController::class, 'createDetails'])->name('player.details');
+    Route::get('player/{user_id}', [PlayerController::class, 'createDetails'])->name('player.details');
 
     //20231129
     //-----大会関連-----

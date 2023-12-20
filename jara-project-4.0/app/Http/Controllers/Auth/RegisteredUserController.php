@@ -89,16 +89,17 @@ class RegisteredUserController extends Controller
             'terms_of_service.accepted' => $terms_of_service,
         ]);
 
-        if (DB::table('t_users')->where('mailaddress', '=', $request->mailaddress)->exists()){
-            if (DB::table('t_users')->where('mailaddress', '=', $request->mailaddress)->where('delete_flag',0)->exists()){
-                if (DB::table('t_users')->where('mailaddress', '=', $request->mailaddress)->where('temp_password_flag', '=', 0)->exists()){
+        if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? ',[$request->mailaddress]))){
+            if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 0',[$request->mailaddress]))){
+                if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and temp_password_flag = 0',[$request->mailaddress]))){
                     //Display error message to the client
                     throw ValidationException::withMessages([
                         'datachecked_error' => $email_register_check
                     ]); 
                 }
                 else {
-                    if (DB::table('t_users')->where('mailaddress', '=', $request->mailaddress)->where('expiry_time_of_temp_password', '<', date('Y-m-d H:i:s'))->exists()) {
+                    
+                    if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and expiry_time_of_temp_password < ?',[$request->mailaddress, date('Y-m-d H:i:s')]))) {
                         //Display error message to the client
                         throw ValidationException::withMessages([
                             'datachecked_error' => $registration_failed

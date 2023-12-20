@@ -11,13 +11,13 @@ use Illuminate\Validation\ValidationException;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-//use App\Models\T_users;
+use App\Models\T_users;
 
 class LoginRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     */
+    */
     public function authorize(): bool
     {
         return true;
@@ -56,13 +56,14 @@ class LoginRequest extends FormRequest
     {
         include('ErrorMessages/ErrorMessages.php');
         $this->ensureIsNotRateLimited();
-        if (DB::table('t_users')->where('mailaddress', '=', $this->only('mailaddress'))->where('delete_flag', '=', 1)->exists()) {
+        if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 1 ',[$this->only('mailaddress')['mailaddress']]))) {
             throw ValidationException::withMessages([
                 'datachecked_error' => $this_mail_deleted
             ]); 
         }
         
-        if (DB::table('t_users')->where('mailaddress', $this->only('mailaddress'))->where('expiry_time_of_temp_password', '<', date('Y-m-d H:i:s'))->exists()) {
+        
+        if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and expiry_time_of_temp_password < ? ',[$this->only('mailaddress')['mailaddress'], date('Y-m-d H:i:s')]))) {
             throw ValidationException::withMessages([
                 'datachecked_error' => $temp_password_timed_out
             ]); 
@@ -70,7 +71,8 @@ class LoginRequest extends FormRequest
         
         if (! Auth::attempt($this->only('mailaddress', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
-            if (DB::table('t_users')->where('mailaddress', $this->only('mailaddress'))->exists()) {
+            
+            if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? ',[$this->only('mailaddress')['mailaddress']]))) {
                 throw ValidationException::withMessages([
                     'datachecked_error' => $password_compare
                 ]);
@@ -84,8 +86,9 @@ class LoginRequest extends FormRequest
             }
         }
 
+        $find_user_id = DB::select('SELECT user_id FROM t_users where mailaddress = ?',[$this->only('mailaddress')['mailaddress']]);
         
-        $user_id = DB::table('t_users')->where('mailaddress','=', $this->only('mailaddress'))->value('user_id');
+        $user_id = $find_user_id[0]->user_id;
 
         DB::beginTransaction();
         try {
