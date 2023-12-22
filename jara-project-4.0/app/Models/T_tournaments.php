@@ -127,7 +127,8 @@ class T_tournaments extends Model
     //20231215 団体IDをキーとして大会情報を取得する
     public function getTournamentsFromOrgId($target_org_id)
     {
-        $tournaments = DB::select('select 
+        $tournaments = DB::select(
+            'select 
                                     `tourn_id`,
                                     `tourn_name`,
                                     `sponsor_org_id`,
@@ -150,9 +151,9 @@ class T_tournaments extends Model
                                     on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
                                     where `t_tournaments`.`delete_flag` =0
                                     and `sponsor_org_id` = ?
-                                    order by `event_start_date`'
-                                    ,[$target_org_id]
-                                );
+                                    order by `event_start_date`',
+            [$target_org_id]
+        );
         return $tournaments;
     }
 
@@ -183,9 +184,8 @@ class T_tournaments extends Model
                         on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
                         where `t_tournaments`.`delete_flag`=0
                         and `tourn_id` in (#TournamentIdCondition#)
-                        order by event_start_date'
-                        ;
-        $sqlString = str_replace('#TournamentIdCondition#',$tournamentIdCondition,$sqlString);
+                        order by event_start_date';
+        $sqlString = str_replace('#TournamentIdCondition#', $tournamentIdCondition, $sqlString);
         $entryTournaments = DB::select($sqlString);
         return $entryTournaments;
     }
@@ -193,17 +193,19 @@ class T_tournaments extends Model
     public function getTournamentWithSearchCondition($searchCondition)
     {
         //大会種別(公式・非公式)　大会名　開催開始年月日　開催終了年月日　開催場所　主催団体ID　主催団体名　を取得
-        $sqlString = 'select `t_tournaments`.`tourn_id`, `t_tournaments`.`tourn_type`,
-                        `t_tournaments`.`tourn_name`, `t_tournaments`.`event_start_date`, `t_tournaments`.`event_end_date`,
-                        `t_tournaments`.`venue_name`, `t_tournaments`.`sponsor_org_id`, `t_organizations`.`org_name`
+        $sqlString = 'select `t_tournaments`.`tourn_id`, `t_tournaments`.`tourn_type`,`t_tournaments`.`tourn_name`, 
+                        `t_tournaments`.`event_start_date`, `t_tournaments`.`event_end_date`, `t_tournaments`.`venue_name` as `venue_name_tournament`, 
+                        `t_tournaments`.`sponsor_org_id`, `t_organizations`.`org_name`, `m_venue`.`venue_name` as `venue_name_master`
                         from `t_tournaments`
                         left join `t_race_result_record`
                         on `t_tournaments`.`tourn_id`=`t_race_result_record`.`tourn_id`
                         left join `t_organizations`
                         on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
+                        left join `m_venue`
+                        on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
                         where `t_tournaments`.`delete_flag` = 0
                         #SearchCondition#';
-        $sqlString = str_replace('#SearchCondition#',$searchCondition,$sqlString);
+        $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
         $tournaments = DB::select($sqlString);
         return $tournaments;
     }

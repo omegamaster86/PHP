@@ -23,6 +23,7 @@ use App\Models\T_tournaments;
 use App\Models\T_races;
 use App\Models\T_raceResultRecord;
 use App\Models\T_organizations;
+use App\Models\M_venue;
 use Illuminate\Support\Facades\Validator;
 
 /*
@@ -79,11 +80,12 @@ class TournamentController extends Controller
     }
 
     //大会検索画面に遷移した時
-    public function createSearch(T_tournaments $tTournaments, T_races $tRace)
+    public function createSearch(T_tournaments $tTournaments, T_races $tRace, M_venue $venueData)
     {
         $tournamentInfo = "";
         $tournamentList = "";
-        return view('tournament.search', ["pagemode" => "search", "tournamentInfo" => $tournamentInfo, "tournamentList" => $tournamentList]);
+        $venueList = $venueData->getVenueList();
+        return view('tournament.search', ["pagemode" => "search", "tournamentInfo" => $tournamentInfo, "tournamentList" => $tournamentList, "venueList" => $venueList]);
     }
 
     //大会情報登録画面で確認ボタンを押した時
@@ -280,43 +282,49 @@ class TournamentController extends Controller
     {
         $condition = "";
         if (isset($searchInfo['jaraPId'])) {
-            //$condition .= " and `t_race_result_record`.`jara_player_id`=" . $searchInfo['jaraPId'];
+            $condition .= " and `t_race_result_record`.`jara_player_id`=" . $searchInfo['jaraPId']; //JARA選手コード
         }
         if (isset($searchInfo['pId'])) {
-            $condition .= " and `t_tournaments`.`jara_player_id`=" . $searchInfo['pId'];
+            $condition .= " and `t_race_result_record`.`player_id`=" . $searchInfo['pId']; //選手ID
         }
         if (isset($searchInfo['pName'])) {
-            //$condition .= " nd `t_race_result_record`.`jara_player_id`=" . $searchInfo['pName'];
+            $condition .= " and `t_race_result_record`.`player_name` like " . "\"%" . $searchInfo['pName'] . "%\""; //選手名
         }
         if (isset($searchInfo['tName'])) {
-            $condition .= " and `t_tournaments`.`tourn_name` like " . "\"%" . $searchInfo['tName'] . "%\"";
+            $condition .= " and `t_tournaments`.`tourn_name` like " . "\"%" . $searchInfo['tName'] . "%\""; //大会名
         }
         if (isset($searchInfo['startDay'])) {
-            $condition .= " and `t_tournaments`.`event_start_date`=" . $searchInfo['startDay'];
+            $condition .= " and `t_tournaments`.`event_start_date`>= CAST('" . $searchInfo['startDay'] . "' AS DATE)"; //開催開始年月日
         }
         if (isset($searchInfo['endDay'])) {
-            $condition .= " and `t_tournaments`.`event_end_date`=" . $searchInfo['endDay'];
+            $condition .= " and `t_tournaments`.`event_end_date` <= CAST('" . $searchInfo['endDay'] . "' AS DATE)"; //開催終了年月日
         }
         if (isset($searchInfo['tVenueSelect'])) {
-            $condition .= " and `t_tournaments`.`venue_id`=" . $searchInfo['tVenueSelect'];
+            $condition .= " and `t_tournaments`.`venue_id` = " . $searchInfo['tVenueSelect']; //開催場所
         }
         if (isset($searchInfo['sponsorOrgId'])) {
-            $condition .= " and `t_tournaments`.`sponsor_org_id`=" . $searchInfo['sponsorOrgId'];
+            $condition .= " and `t_tournaments`.`sponsor_org_id`= " . $searchInfo['sponsorOrgId']; //主催団体ID
         }
         if (isset($searchInfo['sponsorOrgName'])) {
-            //$condition .= " and `t_tournaments`.`sponsor_org_id`=" . $searchInfo['sponsorOrgId'];
+            $condition .= " and `t_organizations`.`org_name` like " . "\"%" . $searchInfo['sponsorOrgName'] . "%\""; //主催団体名
         }
-        //検索条件の入力によって、条件の文字列を増やしていく
 
         return $condition;
     }
 
-    public function searchTournament(Request $request, T_tournaments $tTournaments)
+    public function searchTournament(Request $request, T_tournaments $tTournaments, M_venue $venueData)
     {
         $searchInfo = $request->all();
         $searchCondition = $this->generateSearchCondition($searchInfo);
         $tournamentList =  $tTournaments->getTournamentWithSearchCondition($searchCondition);
+        $venueList = $venueData->getVenueList();
 
-        return view('tournament.search', ["pagemode" => "search", "tournamentInfo" => $searchInfo, "tournamentList" => $tournamentList]);
+        if ($searchInfo['tVenueSelect'] == "") {
+            //選択された開催場所が「その他」の場合、大会テーブルの「venue_name」を表示
+        } else {
+            //「その他」以外が選択されていた場合、水域マスターに紐づいた水域名を表示
+        }
+
+        return view('tournament.search', ["pagemode" => "search", "tournamentInfo" => $searchInfo, "tournamentList" => $tournamentList, "venueList" => $venueList]);
     }
 }

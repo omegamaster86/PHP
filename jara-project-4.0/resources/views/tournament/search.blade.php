@@ -88,8 +88,13 @@
                         <input id="endDay" name="endDay" value="">
                     </div>
                     <div class="form-group">
-                        <label for="tVenueSelect" class="col-md-6" style="text-align: right"><b>開催場所：</b></label>
-                        <input id="tVenueSelect" name="tVenueSelect" value="">
+                        <label for="tVenueSelect" class="col-md-6" style="text-align: right"><b>開催場所：</b></label>                        
+                        <select id="tVenueSelect" name="tVenueSelect">
+                            <option value="">--</option>
+                        @foreach($venueList as $item)
+                            <option value="{{$item->venue_id}}">{{$item->venue_name}}</option>
+                        @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="sponsorOrgId" class="col-md-6" style="text-align: right"><b>主催団体ID</b></label>
