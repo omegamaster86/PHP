@@ -62,6 +62,7 @@ return [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
+            'tap' => ['App\Logging\CustomizeFormatter'],
             'replace_placeholders' => true,
         ],
 
@@ -70,6 +71,7 @@ return [
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 14,
+            'tap' => ['App\Logging\CustomizeFormatter'],
             'replace_placeholders' => true,
         ],
 
@@ -171,7 +173,32 @@ return [
             'path' => storage_path('logs/player_delete.log'),
             'level' => env('LOG_LEVEL', 'debug')
         ],
+        'organizations' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/organizations.log'),
+            'tap' => ['App\Logging\CustomizeFormatter'],
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+        ],
+        'action' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/action.log'),
+            'tap' => ['App\Logging\ActionLogFormatter'],
+            'level' => 'debug',
+            'days' => 14,
+        ],
         
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | SQL Log
+    |--------------------------------------------------------------------------
+    */
+
+    'sql' => [
+        'enable' => env('LOG_SQL_ENABLE', false),
+        'slow_query_time' => env('LOG_SQL_SLOW_QUERY_TIME', 2000), // ms
     ],
     
 

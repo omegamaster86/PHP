@@ -122,6 +122,43 @@ Route::middleware('auth')->group(function () {
 
     //Organizations
     //団体情報登録・更新画面
+    // Route::get('organization/register', [OrganizationController::class, 'create'])->name('organizations.register');
+    // Route::post('organization/register', [OrganizationController::class, 'storeConfirm']);
+
+    // Route::get('organization/edit/{targetOrgId}', [OrganizationController::class, 'createEdit'])->name('organizations.edit');
+    // Route::post('organization/edit/{targetOrgId}', [OrganizationController::class, 'storeEditConfirm']);
+
+    // //団体情報登録・更新確認画面
+    // Route::get('organization/register/confirm', [OrganizationController::class, 'createConfirm'])->name('organizations.register.confirm');
+    // Route::post('organization/register/confirm', [OrganizationController::class, 'storeConfirmRegister']);
+
+    // Route::get('organization/edit/{targetOrgId}/confirm', [OrganizationController::class, 'createEditConfirm'])->name('organizations.edit.confirm');
+    // Route::post('organization/edit/{targetOrgId}/confirm', [OrganizationController::class, 'storeConfirmEdit']);
+
+    // //団体情報参照・削除画面
+    // Route::get('organization/reference/{targetOrgId}', [OrganizationController::class, 'createReference'])->name('organizations.reference');
+    
+    // Route::get('organization/delete/{targetOrgId}', [OrganizationController::class, 'createDeleteView'])->name('organizations.delete');
+    // Route::post('organization/delete/{targetOrgId}', [OrganizationController::class, 'deleteOrganization']);
+    
+    // //団体検索画面
+    // Route::get('organization/search', [OrganizationController::class, 'createSearchView'])->name('organizations.search');
+    // Route::post('organization/search', [OrganizationController::class, 'searchOrganization']);
+
+    //Organization Management
+    Route::get('organization/management', [OrganizationController::class, 'createManagement'])->name('organization.management');
+    
+    
+    // 20231207
+    // 選手情報連携画面
+    Route::get('PlayerInfoAlignment/', [PlayerInfoAlignmentController::class, 'createInfoAlignment'])->name('PlayerInfoAlignment');
+    Route::post('PlayerInfoAlignment/', [PlayerInfoAlignmentController::class, 'csvread'])->name('csv.upload');
+
+});
+
+Route::group(['middleware' => ['auth', 'action_log']], function () {
+    //Organizations
+    //団体情報登録・更新画面
     Route::get('organization/register', [OrganizationController::class, 'create'])->name('organizations.register');
     Route::post('organization/register', [OrganizationController::class, 'storeConfirm']);
 
@@ -144,14 +181,4 @@ Route::middleware('auth')->group(function () {
     //団体検索画面
     Route::get('organization/search', [OrganizationController::class, 'createSearchView'])->name('organizations.search');
     Route::post('organization/search', [OrganizationController::class, 'searchOrganization']);
-
-    //Organization Management
-    Route::get('organization/management', [OrganizationController::class, 'createManagement'])->name('organization.management');
-    
-    
-    // 20231207
-    // 選手情報連携画面
-    Route::get('PlayerInfoAlignment/', [PlayerInfoAlignmentController::class, 'createInfoAlignment'])->name('PlayerInfoAlignment');
-    Route::post('PlayerInfoAlignment/', [PlayerInfoAlignmentController::class, 'csvread'])->name('csv.upload');
-
 });
