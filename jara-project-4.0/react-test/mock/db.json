@@ -1,0 +1,184 @@
+{
+  "teams": [
+    {
+      "teamTyp": "公式",
+      "entteamId": "3847803275",
+      "teamId": "3847803275",
+      "name": "団体A"
+    },
+    {
+      "teamTyp": "非公式",
+      "entteamId": "3423424324",
+      "teamId": "3423424324",
+      "name": "団体B"
+    },
+    {
+      "teamTyp": "公式",
+      "entteamId": "1212423342",
+      "teamId": "1212423342",
+      "name": "団体C"
+    }
+  ],
+  "player": {
+    "playerId": "1234567890",
+    "jaraPlayerCode": "34938424",
+    "playerName": "選手A",
+    "birthday": "1994/12/12",
+    "sex": "男性",
+    "height": "170",
+    "weight": "60",
+    "birthPlaceCountry": "日本",
+    "birthPlacePrefecture": "千葉",
+    "livingCountry": "日本",
+    "livingPrefecture": "千葉",
+    "sideInfo": 10110000
+  },
+  "states": [
+    {
+      "name": "東京"
+    },
+    {
+      "name": "千葉"
+    },
+    {
+      "name": "神奈川"
+    }
+  ],
+  "countries": [
+    {
+      "name": "日本",
+      "cd": "ja"
+    },
+    {
+      "name": "アメリカ",
+      "cd": "us"
+    },
+    {
+      "name": "中国",
+      "cd": "cn"
+    }
+  ],
+  "sex": [
+    {
+      "name": "男性"
+    },
+    {
+      "name": "女性"
+    }
+  ],
+  "raceResultRecords": [
+    {
+      "raceResultRecordId": "101",
+      "tournName": "大会名1",
+      "tournType": 1,
+      "date": "2023/01/01",
+      "orgName": "団体A",
+      "raceNumber": "1",
+      "raceName": "レース名1"
+    },
+    {
+      "raceResultRecordId": "201",
+      "tournName": "大会名2",
+      "tournType": 2,
+      "date": "2023/02/01",
+      "orgName": "団体B",
+      "raceNumber": "2",
+      "raceName": "レース名2"
+    },
+    {
+      "raceResultRecordId": "301",
+      "tournName": "大会名3",
+      "tournType": 1,
+      "date": "2023/03/01",
+      "orgName": "団体C",
+      "raceNumber": "3",
+      "raceName": "レース名3"
+    }
+  ],
+  "playerInformation": {
+    "playerId": 1000001,
+    "existPlayerId": 1100001,
+    "playerName": "選手名1",
+    "dateOfBirth": "2023/04/01",
+    "sexName": "男性",
+    "height": 123.45,
+    "weight": 678.91,
+    "side": ["S（ストロークサイド）", "B（バウサイドサイド）", "X（スカル）", "C（コックス）"],
+    "birthCountryName": "日本",
+    "birthPrefectureName": "東京",
+    "residenceCountryName": "日本",
+    "residencePrefectureName": "埼玉",
+    "photo": "https://source.unsplash.com/random"
+  },
+  "volunteer": {
+    "volunteerId": 1000001,
+    "volunteerName": "ボランティア名1",
+    "dateOfBirth": "2023/04/01",
+    "sex": "男性",
+    "telephoneNumber": "090-1234-5678",
+    "mailaddress": "sample@mail.com",
+    "clothesSize": "M",
+    "personality": "性格",
+    "disType": ["視覚障害", "聴覚障害", "肢体障害", "知的障害", "精神障害", "その他"],
+    "qualHold": ["資格1", "資格2", "資格3"],
+    "language": [
+      {
+        "languageName": "言語1",
+        "level": "レベル1"
+      },
+      {
+        "languageName": "言語2",
+        "level": "レベル2"
+      },
+      {
+        "languageName": "言語3",
+        "level": "レベル3"
+      }
+    ],
+    "birthCountry": "日本",
+    "birthPrefecture": "東京",
+    "residenceCountry": "日本",
+    "residencePrefecture": "埼玉",
+    "photo": "https://source.unsplash.com/random",
+    "dayOfWeek": "011010100000",
+    "timeZone": "01101100"
+  },
+  "volunteerHistories": [
+    {
+      "tournId": 1000001,
+      "tournName": "大会名1",
+      "tournType": 1,
+      "eventStartDate": "2023/04/01",
+      "eventEndDate": "2023/04/03",
+      "roleName": "役割名1",
+      "ad": "広告1",
+      "dateType": 1,
+      "dayOfWeek": "011010100000",
+      "timeZone": "01101100"
+    },
+    {
+      "tournId": 1000002,
+      "tournName": "大会名2",
+      "tournType": 2,
+      "eventStartDate": "2023/04/01",
+      "eventEndDate": "2023/04/03",
+      "roleName": "役割名2",
+      "ad": "広告2",
+      "dateType": 2,
+      "dayOfWeek": "011010100000",
+      "timeZone": "01101100"
+    },
+    {
+      "tournId": 1000003,
+      "tournName": "大会名3",
+      "tournType": 1,
+      "eventStartDate": "2023/04/01",
+      "eventEndDate": "2023/04/03",
+      "roleName": "役割名3",
+      "ad": "広告3",
+      "dateType": 3,
+      "dayOfWeek": "011010100000",
+      "timeZone": "01101100"
+    }
+  ]
+}

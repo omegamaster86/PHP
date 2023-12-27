@@ -32,7 +32,11 @@ class OrganizationController extends Controller
                             M_prefectures $mPrefectures,
                             M_staff_type $mStaffType)
     {
-        if(Auth::user()->temp_password_flag === 0)
+        if(Auth::user()->temp_password_flag === 1)
+        {
+            return redirect('user/password-change');
+        }
+        else
         {
             $mOrgType = $mOrganizationType->getOrganizationType();
             $mOrgClass = $mOrganizationClass->getOrganizationClass();
@@ -58,7 +62,11 @@ class OrganizationController extends Controller
                                     T_organization_staff $tOrganizationStaff,
                                     M_staff_type $mStaffType)
     {
-        if(Auth::user()->temp_password_flag === 0)
+        if(Auth::user()->temp_password_flag === 1)
+        {
+            return redirect('user/password-change');
+        }
+        else
         {
             //団体情報を取得 20231215 t_futamura
             $tOrg = $tOrganization->getOrganization($targetOrgId);
@@ -139,7 +147,11 @@ class OrganizationController extends Controller
     //団体情報登録・更新確認画面を開く
     public function createConfirm()
     {
-        if(Auth::user()->temp_password_flag === 0)
+        if(Auth::user()->temp_password_flag === 1)
+        {
+            return redirect('user/password-change');
+        }
+        else
         {
             return view('organizations.register-confirm',["pagemode"=>"register"]);
         }
@@ -148,7 +160,11 @@ class OrganizationController extends Controller
     //団体情報登録・更新確認画面を開く
     public function createEditConfirm()
     {
-        if(Auth::user()->temp_password_flag === 0)
+        if(Auth::user()->temp_password_flag === 1)
+        {
+            return redirect('user/password-change');
+        }
+        else
         {
             return view('organizations.register-confirm',["pagemode"=>"edit"]);
         }
@@ -163,7 +179,11 @@ class OrganizationController extends Controller
                                     T_raceResultRecord $tRaceResultRecord,                                    
                                     T_organization_staff $tOrganizationStaff)
     {
-        if(Auth::user()->temp_password_flag === 0)
+        if(Auth::user()->temp_password_flag === 1)
+        {
+            return redirect('user/password-change');
+        }
+        else
         {
             //団体情報を取得 20231215 t_futamura
             $organizations = $tOrganizations->getOrganization($targetOrgId);
@@ -216,7 +236,11 @@ class OrganizationController extends Controller
                                         T_raceResultRecord $tRaceResultRecord,
                                         T_organization_staff $tOrganizationStaff)
     {
-        if(Auth::user()->temp_password_flag === 0)
+        if(Auth::user()->temp_password_flag === 1)
+        {
+            return redirect('user/password-change');
+        }
+        else
         {
             //団体情報を取得 20231215 t_futamura
             $organizations = $tOrganizations->getOrganization($targetOrgId);
@@ -266,7 +290,11 @@ class OrganizationController extends Controller
                                         M_organization_class $mOrganizationClass,
                                         M_countries $mCountries) : View
     {
-        if(Auth::user()->temp_password_flag === 0)
+        if(Auth::user()->temp_password_flag === 1)
+        {
+            return redirect('user/password-change');
+        }
+        else
         {
             //国マスタを取得
             $countries = $mCountries->getCountries();
@@ -295,7 +323,11 @@ class OrganizationController extends Controller
                                     M_organization_class $m_organization_class,
                                     M_staff_type $mStaffType)
     {
-        if(Auth::user()->temp_password_flag === 0)
+        if(Auth::user()->temp_password_flag === 1)
+        {
+            return redirect('user/password-change');
+        }
+        else
         {
             $organizationInfo = $request->all();
             include('Auth/ErrorMessages/ErrorMessages.php');
@@ -422,7 +454,11 @@ class OrganizationController extends Controller
                                         M_organization_class $m_organization_class,
                                         M_staff_type $mStaffType) : RedirectResponse
     {
-        if(Auth::user()->temp_password_flag === 0)
+        if(Auth::user()->temp_password_flag === 1)
+        {
+            return redirect('user/password-change');
+        }
+        else
         {
             $organizationInfo = $request->all();
             include('Auth/ErrorMessages/ErrorMessages.php');
@@ -545,7 +581,11 @@ class OrganizationController extends Controller
     //登録（挿入）実行
     public function storeConfirmRegister(Request $request,T_organizations $tOrganizations,T_organization_staff $tOrganizationStaff)
     {
-        if(Auth::user()->temp_password_flag === 0)
+        if(Auth::user()->temp_password_flag === 1)
+        {
+            return redirect('user/password-change');
+        }
+        else
         {
             //確認画面から登録
             $organizationInfo = $request->all();
@@ -638,7 +678,11 @@ class OrganizationController extends Controller
                                         T_organization_players $tOrganizationPlayers,
                                         T_organization_staff $tOrganizationStaff)
     {
-        if(Auth::user()->temp_password_flag === 0)
+        if(Auth::user()->temp_password_flag === 1)
+        {
+            return redirect('user/password-change');
+        }
+        else
         {
             $organizationInfo = $request->all();
             $org_id = $organizationInfo['org_id'];
@@ -661,7 +705,11 @@ class OrganizationController extends Controller
     //更新実行
     public function storeConfirmEdit(Request $request,T_organizations $tOrganizations,T_organization_staff $tOrganizationStaff)
     {
-        if(Auth::user()->temp_password_flag === 0)
+        if(Auth::user()->temp_password_flag === 1)
+        {
+            return redirect('user/password-change');
+        }
+        else
         {
             //確認画面から登録
             $organizationInfo = $request->all();
@@ -685,68 +733,77 @@ class OrganizationController extends Controller
     public function searchOrganization(Request $request,T_organizations $tOrganizations) : View
     {
         $searchInfo = $request->all();
-        //dd($searchInfo);
-        $searchCondition = $this->generateOrganizationSearchCondition($searchInfo);
-        //dd($searchCondition);
-        $organizations = $tOrganizations->getOrganizationWithSearchCondition($searchCondition);
+        $searchValue = [];
+        $searchCondition = $this->generateOrganizationSearchCondition($searchInfo, $searchValue);        
+        $organizations = $tOrganizations->getOrganizationWithSearchCondition($searchCondition,$searchValue);
         dd($organizations);
     }
 
-    private function generateOrganizationSearchCondition($searchInfo)
+    private function generateOrganizationSearchCondition($searchInfo, &$searchValue)
     {
         $condition = "";
         //エントリーシステムの団体IDの条件
         if(isset($searchInfo['entrysystemOrgId']))
         {
-            $condition .= " and `t_organizations`.`entrysystem_org_id`=".$searchInfo['entrysystemOrgId'];
+            $condition .= " and `t_organizations`.`entrysystem_org_id`= ?";
+            array_push($searchValue,$searchInfo['entrysystemOrgId']);
         }
         //団体IDの条件
         if(isset($searchInfo['org_id']))
         {
-            $condition .= " and `t_organizations`.`org_id`=".$searchInfo['org_id'];
+            $condition .= " and `t_organizations`.`org_id`= ?".$searchInfo['org_id'];
+            array_push($searchValue,$searchInfo['org_id']);
         }
         //団体名の条件
         if(isset($searchInfo['org_name']))
         {
-            $condition .= " and `t_organizations`.`org_name` like \"%".$searchInfo['org_name']."%\"";
+            $condition .= "and `t_organizations`.`org_name` LIKE ?";
+            array_push($searchValue,'%'.$searchInfo['org_name'].'%');
         }
         //団体種別の条件
         if(isset($searchInfo['org_type']))
         {
             if($searchInfo['org_type'] === "1")
             {
-                $condition .= " and (`t_organizations`.`jara_org_type`= 1 or `t_organizations`.`pref_org_type`= 1)";
+                $condition .= " and (`t_organizations`.`jara_org_type`= ? or `t_organizations`.`pref_org_type`= ?)";
             }
             elseif($searchInfo['org_type'] === "0")
             {
-                $condition .= " and (`t_organizations`.`jara_org_type`= 0 and `t_organizations`.`pref_org_type`= 0)";
+                $condition .= " and (`t_organizations`.`jara_org_type`= ? and `t_organizations`.`pref_org_type`= ?)";
             }
+            array_push($searchValue,$searchInfo['org_type']);
+            array_push($searchValue,$searchInfo['org_type']);
         }
         //団体区分の条件
         if(isset($searchInfo['org_class']))
         {
-            $condition .= " and `t_organizations`.`org_class`=".$searchInfo['org_class'];
+            $condition .= " and `t_organizations`.`org_class`= ?";
+            array_push($searchValue,$searchInfo['org_class']);
         }
         //創立年開始の条件
         if(isset($searchInfo['foundingYear_start']))
         {
-            $condition .= " and `t_organizations`.`founding_year`>=".$searchInfo['foundingYear_start'];
+            $condition .= " and `t_organizations`.`founding_year`>= ?";
+            array_push($searchValue,$searchInfo['foundingYear_start']);
         }
         //創立年終了の条件
         if(isset($searchInfo['foundingYear_end']))
         {
-            $condition .= " and `t_organizations`.`founding_year`<=".$searchInfo['foundingYear_end'];
+            $condition .= " and `t_organizations`.`founding_year`<= ?";
+            array_push($searchValue,$searchInfo['foundingYear_end']);
         }
         //国の条件
         if(isset($searchInfo['country']))
         {
-            $condition .= " and `t_organizations`.`location_country`=".$searchInfo['country'];
+            $condition .= " and `t_organizations`.`location_country`= ?";
+            array_push($searchValue,$searchInfo['country']);
         }
         //都道府県の条件
         $japanCode = "112";   //日本の国コード
         if(isset($searchInfo['prefecture']) && ($searchInfo['country'] === $japanCode))
         {
-            $condition .= " and `t_organizations`.`location_prefecture`=".$searchInfo['prefecture'];
+            $condition .= " and `t_organizations`.`location_prefecture`= ?";
+            array_push($searchValue,$searchInfo['prefecture']);
         }
         return $condition;
     }

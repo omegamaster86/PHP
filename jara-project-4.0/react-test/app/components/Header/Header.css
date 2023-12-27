@@ -1,0 +1,20 @@
+.header {
+  background-color: #002288;
+  border-bottom: 1px solid #eee;
+  height: 60px;
+  line-height: 60px;
+  padding: 0 20px;
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  > .right-content {
+    display: flex;
+    align-items: center;
+    gap: 16px; /* 子要素同士の間隔 */
+  }
+}
+.header-title {
+  font-size: 20px;
+  font-weight: 400;
+}
