@@ -524,9 +524,50 @@ class PlayerController extends Controller
         
         return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
     }
-    public function createSearch(): View
+    
+    public function createSearch(M_sex $sex): View
     {
-        return view('player.search');
+        $sex_list = $sex->getSexList();
+        return view('player.search',["sex_list" => $sex_list]);
+    }
+    
+
+
+    public function searchPlayer(Request $request,T_players $players, M_sex $sex): View
+    {
+        $searched_data = $request->all();
+        // dd($searched_data);
+        if($searched_data['date_of_birth_start']==="年/月/日") {
+            $searched_data['date_of_birth_start'] = NULL;
+        }
+        else{
+            $searched_data['date_of_birth_start'] = date('Y-m-d',strtotime($searched_data['date_of_birth_start']));
+        }
+        if($searched_data['date_of_birth_end']==="年/月/日") {
+            $searched_data['date_of_birth_end'] = NULL;
+        }
+        else{
+            $searched_data['date_of_birth_end'] = date('Y-m-d',strtotime($searched_data['date_of_birth_end']));
+        }
+        
+        $sex_list = $sex->getSexList();
+        
+        $player_list =  $players->getPlayerWithSearchCondition($searched_data);
+        $side_info_xor = "00000000";
+        if(isset($searched_data['side_info'])){
+            foreach($searched_data['side_info'] as $side_info){
+                $side_info_xor = $side_info_xor ^ $side_info;
+            }
+            if(count($searched_data['side_info'])%2)
+                $side_info_xor= $side_info_xor ^ "00000000";
+            $searched_data['side_info'] = $side_info_xor; 
+        }
+        else{
+            $searched_data['side_info'] = "00000000";
+        };
+        
+        
+        return view('player.search', ["page_mode" => "search", "sex_list" => $sex_list, "player_list" => $player_list, "searched_data" => (object)$searched_data]);
     }
 
 }

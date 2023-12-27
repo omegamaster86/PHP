@@ -87,6 +87,8 @@ Route::middleware('auth')->group(function () {
 
     //Player search 
     Route::get('player/search', [PlayerController::class, 'createSearch'])->name('player.search');
+    
+    Route::post('player/search', [PlayerController::class, 'searchPlayer']);
 
     //Player Details
     
