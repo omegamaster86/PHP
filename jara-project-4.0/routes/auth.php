@@ -7,6 +7,7 @@ use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\TournamentController;
 use App\Http\Controllers\PlayerInfoAlignmentController;
+use App\Http\Controllers\VolunteerController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -155,6 +156,12 @@ Route::middleware('auth')->group(function () {
     // 選手情報連携画面
     Route::get('PlayerInfoAlignment/', [PlayerInfoAlignmentController::class, 'createInfoAlignment'])->name('PlayerInfoAlignment');
     Route::post('PlayerInfoAlignment/', [PlayerInfoAlignmentController::class, 'csvread'])->name('csv.upload');
+
+    //20231227
+    // ボランティア削除画面
+    Route::get('volunteer/delete', [VolunteerController::class, 'createDelete']) ->name('volunteer.delete');
+    // ボランティア参照画面
+    Route::get('volunteer/reference', [VolunteerController::class, 'createReference'])->name('volunteer.reference');
 
 });
 

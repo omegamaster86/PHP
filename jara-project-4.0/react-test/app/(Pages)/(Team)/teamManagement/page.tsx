@@ -26,9 +26,18 @@ export default function TeamManagement() {
   const [teamdata, setTeamdata] = React.useState([] as teamResponse[]);
   const router = useRouter();
 
+  var responseData = null; //Laravel_Reactデータ送信テスト 20231227
+
   React.useEffect(() => {
     const fetchData = async () => {
       try {
+        responseData = await axios.get('http://localhost:8000/api/list'); //Laravel_Reactデータ送信テスト 20231227
+        console.log(responseData.data.post[0].content); //Laravel_Reactデータ送信テスト 20231227
+        console.log(responseData.data.post[0].title); //Laravel_Reactデータ送信テスト 20231227
+        console.log(responseData.data.post[1].content); //Laravel_Reactデータ送信テスト 20231227
+        console.log(responseData.data.post[1].title); //Laravel_Reactデータ送信テスト 20231227
+        console.log(responseData.data.post[2].content); //Laravel_Reactデータ送信テスト 20231227
+        console.log(responseData.data.post[2].title); //Laravel_Reactデータ送信テスト 20231227
         // 仮のURL（繋ぎ込み時に変更すること）
         const response = await axios.get<teamResponse[]>('http://localhost:3100/teams');
         setTeamdata(response.data);

@@ -37,14 +37,22 @@ use Illuminate\Support\Facades\Validator;
 class TournamentController extends Controller
 {
     // 大会登録画面呼び出し
-    public function create(Request $request): View
+    public function create(Request $request)
     {
+        //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
+        if (Auth::user()->temp_password_flag === 1) {
+            return redirect('user/password-change');
+        }
         return view('tournament.register-edit', ["pagemode" => "register"]);
     }
 
     // 大会情報変更画面呼び出し
-    public function createEdit(Request $request, T_tournaments $tTournaments, T_races $tRace): View
+    public function createEdit(Request $request, T_tournaments $tTournaments, T_races $tRace)
     {
+        //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
+        if (Auth::user()->temp_password_flag === 1) {
+            return redirect('user/password-change');
+        }
         //大会情報更新に必要な、大会IDなどを取得
         $tTours = $tTournaments->getTournament(1); //大会情報を取得
         $tRaceData = $tRace->getRace(1); //レース情報を取得
@@ -54,18 +62,30 @@ class TournamentController extends Controller
     //大会登録確認画面を開く
     public function createConfirm()
     {
+        //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
+        if (Auth::user()->temp_password_flag === 1) {
+            return redirect('user/password-change');
+        }
         return view('tournament.register-confirm', ["pagemode" => "register"]);
     }
 
     //大会更新確認画面を開く
     public function createEditConfirm()
     {
+        //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
+        if (Auth::user()->temp_password_flag === 1) {
+            return redirect('user/password-change');
+        }
         return view('tournament.register-confirm', ["pagemode" => "edit"]);
     }
 
     //大会情報参照画面に遷移した時
     public function createReference(T_tournaments $tTournaments, T_races $tRace)
     {
+        //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
+        if (Auth::user()->temp_password_flag === 1) {
+            return redirect('user/password-change');
+        }
         $tTours = $tTournaments->getTournament(1); //大会情報を取得
         $tRaceData = $tRace->getRace(1); //レース情報を取得
         return view('tournament.reference', ["pagemode" => "refer", "TournamentData" => $tTours, "RaceData" => $tRaceData]);
@@ -74,6 +94,10 @@ class TournamentController extends Controller
     //大会情報削除画面に遷移した時
     public function createDelete(T_tournaments $tTournaments, T_races $tRace)
     {
+        //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
+        if (Auth::user()->temp_password_flag === 1) {
+            return redirect('user/password-change');
+        }
         $tTours = $tTournaments->getTournament(1); //大会情報を取得
         $tRaceData = $tRace->getRace(1); //レース情報を取得
         return view('tournament.reference', ["pagemode" => "delete", "TournamentData" => $tTours, "RaceData" => $tRaceData]);
@@ -82,6 +106,10 @@ class TournamentController extends Controller
     //大会検索画面に遷移した時
     public function createSearch(T_tournaments $tTournaments, T_races $tRace, M_venue $venueData)
     {
+        //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
+        if (Auth::user()->temp_password_flag === 1) {
+            return redirect('user/password-change');
+        }
         $tournamentInfo = "";
         $tournamentList = "";
         $venueList = $venueData->getVenueList();
@@ -326,5 +354,33 @@ class TournamentController extends Controller
         }
 
         return view('tournament.search', ["pagemode" => "search", "tournamentInfo" => $searchInfo, "tournamentList" => $tournamentList, "venueList" => $venueList]);
+    }
+
+    public function index() //Laravel_Reactデータ送信テスト 20231227
+    {
+        return response()->json(
+            [
+                "post" => [
+                    [
+                        "id" => 1,
+                        "title" => "111111111",
+                        "content" => "sample1111"
+                    ],
+                    [
+                        "id" => 2,
+                        "title" => "22222222222222222",
+                        "content" => "aaaaaaaaaaaaaaaaaaaaaaaaa"
+                    ],
+                    [
+                        "id" => 3,
+                        "title" => "hogehoge333333333",
+                        "content" => "ああああああああああああああああ"
+                    ],
+                ]
+            ],
+            200,
+            [],
+            JSON_UNESCAPED_UNICODE //文字化け対策
+        );
     }
 }
