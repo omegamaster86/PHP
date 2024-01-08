@@ -17,6 +17,9 @@ use App\Http\Controllers\TournamentController; //Laravel_Reactデータ送信テ
 */
 
 Route::get('list',[TournamentController::class, 'index']); //Laravel_Reactデータ送信テスト 20231227
+Route::group(['middleware' => ['api', 'cors']], function () {
+    Route::post('postSample',[TournamentController::class, 'postTest']); //React_Laravelデータ送信テスト 20231228
+});
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

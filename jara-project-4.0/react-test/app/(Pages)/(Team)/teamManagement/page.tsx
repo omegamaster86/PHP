@@ -27,6 +27,7 @@ export default function TeamManagement() {
   const router = useRouter();
 
   var responseData = null; //Laravel_Reactデータ送信テスト 20231227
+  var buttonValue = "送信ボタン";
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -47,6 +48,18 @@ export default function TeamManagement() {
     };
     fetchData();
   }, []);
+
+  //React_Laravelデータ送信テスト 20240108
+  const onClick = async () => {
+    await axios.post('http://localhost:8000/api/postSample', "送信成功")
+      .then((res) => {
+        console.log(res);
+      }).catch(error => {
+        console.log(error);
+      });
+  }
+  //React_Laravelデータ送信テスト 20240108
+
   return (
     <div>
       <Header />
@@ -166,6 +179,16 @@ export default function TeamManagement() {
           >
             戻る
           </CustomButton>
+          {/* React_Laravelデータ送信テスト 20231228 */}
+          {/* <form name="postSample" onSubmit={(event) => handleSubmit(event)}> */}
+          <form name="postSample">
+            <label htmlFor="name">Name: </label>
+            <br />
+            <input type="text" id="name" name="name" />
+            <br />
+            <input type="button" defaultValue={buttonValue} onClick={onClick} />
+          </form>
+          {/* React_Laravelデータ送信テスト 20231228 */}
         </div>
       </main>
     </div>

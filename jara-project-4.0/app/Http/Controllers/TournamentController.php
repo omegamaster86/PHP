@@ -383,4 +383,10 @@ class TournamentController extends Controller
             JSON_UNESCAPED_UNICODE //文字化け対策
         );
     }
+
+    public function postTest(Request $request) //React_Laravelデータ送信テスト 20231227
+    {
+        $reqData = $request->all();
+        return response()->json(['reqData' => $reqData]);
+    }
 }
