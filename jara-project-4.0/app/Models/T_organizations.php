@@ -225,10 +225,10 @@ class T_organizations extends Model
         try{
                 DB::beginTransaction();
                 DB::update('update `t_organizations`
-                            set `delete_flag` = 1
+                            set `delete_flag` = ?
                             where 1=1
                             and `org_id` = ?'
-                            ,[$org_id]);
+                            ,[1,$org_id]);
                 DB::commit();
                 return $result;
         }

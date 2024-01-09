@@ -98,49 +98,109 @@ class OrganizationController extends Controller
     }
     
     //団体スタッフを入力する領域のタグテキストを生成
+    // private function generateStaffTag($tStaff, $mStaffType)
+    // {
+    //     $staff_count = 0;
+    //     $staff_field_count = 4; //監督、コーチ、マネージャ、監督代行用に一先ず4箇所入力領域を設ける
+    //     $tag = "";
+
+    //     if(isset($tStaff)){
+    //         foreach($tStaff as $staff){   
+    //             $tag .= '<div class="form-group">';                
+    //             $tag .= '<label for="staff'.($staff_count+1).'" class="col-md-5" style="text-align: right">スタッフ'.($staff_count+1).'</label>';
+    //             $tag .= '<input type="text" name="staff'.($staff_count+1).'_user_id" id="staff'.($staff_count+1).'_user_id" size="10" value="'.$staff->user_id.'">';
+    //             $tag .= '<label for="staff'.($staff_count+1).'" style="margin:3px;">'.$staff->user_name.'</label>';
+    //             $tag .= '<select id="staff'.($staff_count+1).'_type" name="staff'.($staff_count+1).'_type">';
+
+    //             foreach($mStaffType as $type)
+    //             {
+    //                 if($type->staff_type_id === $staff->staff_type_id){
+    //                     $tag .= '<option value="'.$type->staff_type_id.'" selected>'.$type->staff_type_name.'</option>';
+    //                 }
+    //                 else{
+    //                     $tag .= '<option value="'.$type->staff_type_id.'">'.$type->staff_type_name.'</option>';
+    //                 }
+    //             }
+    //             $tag .= '</select>';
+    //             $tag .= '</div>';
+    //             $staff_count +=1;
+    //         }
+    //     }
+    //     //足りない入力領域を追加する
+    //     for($i=$staff_count; $i<$staff_field_count; $i++){
+    //         $tag .= '<div class="form-group">';
+    //         $tag .= '<label for="staff'.($staff_count+1).'" class="col-md-5" style="text-align: right">スタッフ'.($staff_count+1).'</label>';
+    //         $tag .= '<input type="text" name="staff'.($staff_count+1).'_user_id" id="staff'.($staff_count+1).'_user_id" size="10">';
+    //         $tag .= '<label for="staff'.($staff_count+1).'" style="margin:3px;">ユーザ名</label>';
+    //         $tag .= '<select id="staff'.($staff_count+1).'_type" name="staff'.($staff_count+1).'_type">';
+    //         foreach($mStaffType as $type)
+    //         {
+    //             $tag .= '<option value="'.$type->staff_type_id.'">'.$type->staff_type_name.'</option>';
+    //         }
+    //         $tag .= '</select>';
+    //         $tag .= '</div>';
+    //         $staff_count +=1;
+    //     }
+    //     return $tag;
+    // }
+
     private function generateStaffTag($tStaff, $mStaffType)
     {
-        $staff_count = 0;
-        $staff_field_count = 4; //監督、コーチ、マネージャ、監督代行用に一先ず4箇所入力領域を設ける
-        $tag = "";
-
+        $staff_count = 1;
+        $tag = "<table border=1>
+                <tr>
+                    <th width='50px' style='text-align:center;'>削除</th>
+                    <th width='100px' style='text-align:center;'>ユーザーID</th>
+                    <th width='200px' style='text-align:center;'>ユーザー名</th>
+                    <th width='120px' style='text-align:center;'>管理者（監督）</th>
+                    <th width='120px' style='text-align:center;'>部長</th>
+                    <th width='120px' style='text-align:center;'>コーチ</th>
+                    <th width='120px' style='text-align:center;'>マネージャー</th>
+                    <th width='120px' style='text-align:center;'>監督代理</th>
+                </tr>";
         if(isset($tStaff)){
-            foreach($tStaff as $staff){   
-                $tag .= '<div class="form-group">';                
-                $tag .= '<label for="staff'.($staff_count+1).'" class="col-md-5" style="text-align: right">スタッフ'.($staff_count+1).'</label>';
-                $tag .= '<input type="text" name="staff'.($staff_count+1).'_user_id" id="staff'.($staff_count+1).'_user_id" size="10" value="'.$staff->user_id.'">';
-                $tag .= '<label for="staff'.($staff_count+1).'" style="margin:3px;">'.$staff->user_name.'</label>';
-                $tag .= '<select id="staff'.($staff_count+1).'_type" name="staff'.($staff_count+1).'_type">';
-
-                foreach($mStaffType as $type)
-                {
-                    if($type->staff_type_id === $staff->staff_type_id){
-                        $tag .= '<option value="'.$type->staff_type_id.'" selected>'.$type->staff_type_name.'</option>';
-                    }
-                    else{
-                        $tag .= '<option value="'.$type->staff_type_id.'">'.$type->staff_type_name.'</option>';
-                    }
+            foreach($tStaff as $staff){
+                $tag .= "<tr>";
+                $tag .= "<td style='text-align:center;'><input type='checkbox' id='staff".$staff_count."'></td>"; //削除
+                $tag .= "<td><input type='text' id='staff".$staff_count."_user_id' value='".$staff->user_id."'></td>"; //ユーザーID
+                $tag .= "<td>".$staff->user_name."</td>"; //ユーザー名
+                 //管理者（監督）
+                if($staff->is_director === 1){
+                    $tag .= "<td style='text-align:center;'><input type='checkbox' id='staff".$staff_count."_is_director' checked></td>";
+                }else{
+                    $tag .= "<td style='text-align:center;'><input type='checkbox' id='staff".$staff_count."_is_director'></td>";
                 }
-                $tag .= '</select>';
-                $tag .= '</div>';
+                //部長
+                if($staff->is_head === 1){
+                    $tag .= "<td style='text-align:center;'><input type='checkbox' id='staff".$staff_count."_is_head' checked></td>";
+                }else{
+                    $tag .= "<td style='text-align:center;'><input type='checkbox' id='staff".$staff_count."_is_head'></td>";
+                }
+                //コーチ
+                if($staff->is_coach === 1){
+                    $tag .= "<td style='text-align:center;'><input type='checkbox' id='staff".$staff_count."_is_coach' checked></td>";
+                }else{
+                    $tag .= "<td style='text-align:center;'><input type='checkbox' id='staff".$staff_count."_is_coach'></td>";
+                }
+                //マネージャー
+                if($staff->is_manager === 1){
+                    $tag .= "<td style='text-align:center;'><input type='checkbox' id='staff".$staff_count."_is_manager' checked></td>";
+                }else{
+                    $tag .= "<td style='text-align:center;'><input type='checkbox' id='staff".$staff_count."_is_manager'></td>";
+                }
+                //監督代理
+                if($staff->is_acting_director === 1){
+                    $tag .= "<td style='text-align:center;'><input type='checkbox' id='staff".$staff_count."_is_acting_director' checked></td>";
+                }
+                else{
+                    $tag .= "<td style='text-align:center;'><input type='checkbox' id='staff".$staff_count."_is_acting_director'></td>";
+                }
+                $tag .= "</tr>";
+                
                 $staff_count +=1;
             }
         }
-        //足りない入力領域を追加する
-        for($i=$staff_count; $i<$staff_field_count; $i++){
-            $tag .= '<div class="form-group">';
-            $tag .= '<label for="staff'.($staff_count+1).'" class="col-md-5" style="text-align: right">スタッフ'.($staff_count+1).'</label>';
-            $tag .= '<input type="text" name="staff'.($staff_count+1).'_user_id" id="staff'.($staff_count+1).'_user_id" size="10">';
-            $tag .= '<label for="staff'.($staff_count+1).'" style="margin:3px;">ユーザ名</label>';
-            $tag .= '<select id="staff'.($staff_count+1).'_type" name="staff'.($staff_count+1).'_type">';
-            foreach($mStaffType as $type)
-            {
-                $tag .= '<option value="'.$type->staff_type_id.'">'.$type->staff_type_name.'</option>';
-            }
-            $tag .= '</select>';
-            $tag .= '</div>';
-            $staff_count +=1;
-        }
+        $tag .= '</table>';
         return $tag;
     }
 
@@ -591,8 +651,9 @@ class OrganizationController extends Controller
             $organizationInfo = $request->all();
             $lastInsertId = $tOrganizations->insertOrganization($organizationInfo);
             //新しく入力されたスタッフをInsertする
-            $insertValues = $this->generateInsertStaffValues($organizationInfo,$lastInsertId);
-            $tOrganizationStaff->insertOrganizationStaff($insertValues,$lastInsertId);
+            $insert_values = array();
+            $insertValues = $this->generateInsertStaffValues($organizationInfo,$lastInsertId,$insert_values);
+            $tOrganizationStaff->insertOrganizationStaff($insertValues,$insert_values);
 
             $page_status = "完了しました";
             $page_url = route('my-page');
@@ -603,7 +664,7 @@ class OrganizationController extends Controller
     }
 
     //団体所属スタッフテーブルを更新するための条件文を生成する
-    private function generateUpdateStaffCondition($organizationInfo)
+    private function generateUpdateStaffCondition($organizationInfo,&$values)
     {
         $staff_index = 1;        
         $condition = "";
@@ -617,8 +678,12 @@ class OrganizationController extends Controller
             if(isset($organizationInfo["staff".$staff_index."_user_id"])
                 && isset($organizationInfo["staff".$staff_index."_user_name"]))
             {
-                $condition .= "or ( `user_id`='".$organizationInfo["staff".$staff_index."_user_id"]
-                                        ."' and `staff_type_id`='".$organizationInfo["staff".$staff_index."_type"]."')";
+                //SQLのstringを置き換える文字列の生成
+                $condition .= "or ( `user_id`= :staff".$staff_index."_user_id"
+                                         ."' and `staff_type_id`= :staff".$staff_index."_type)";
+                //代入する変数を連想配列に格納
+                $values["staff".$staff_index."_user_id"] = $organizationInfo["staff".$staff_index."_user_id"];
+                $values["staff".$staff_index."_type"] = $organizationInfo["staff".$staff_index."_type"];
             }
 
             $staff_index++;
@@ -628,11 +693,18 @@ class OrganizationController extends Controller
     }
 
     //団体所属スタッフテーブルに挿入するValueを生成する
-    private function generateInsertStaffValues($organizationInfo,$org_id)
+    private function generateInsertStaffValues($organizationInfo,$org_id,&$values)
     {   
         $staff_index = 1;
         $currentDatetime = NOW();
-        $values = "";
+        $replace_string = "";
+
+        //共通の値を先に配列に格納しておく
+        $values["org_id"] = $org_id;
+        $values["current_datetime"] = $currentDatetime;
+        $values["user_id"] = Auth::user()->user_id;
+        $values["delete_flag"] = 0;
+        //スタッフごとの処理
         while(true)
         {
             if(empty($organizationInfo["staff".$staff_index."_user_id"]))
@@ -643,19 +715,33 @@ class OrganizationController extends Controller
             if(isset($organizationInfo["staff".$staff_index."_user_id"])
                 && isset($organizationInfo["staff".$staff_index."_user_name"]))
             {
-                $values .= "union select '".$org_id."' AS `org_id`,";
-                $values .= "'".$organizationInfo["staff".$staff_index."_user_id"]."' AS `user_id`,";
-                $values .= "'".$organizationInfo["staff".$staff_index."_type"]."' AS `staff_type_id`,";
-                $values .= "'".$currentDatetime."' AS `registered_time`,";
-                $values .= "'".Auth::user()->user_id."' AS `registered_user_id`,";
-                $values .= "'".$currentDatetime."' AS `updated_time`,";
-                $values .= "'".Auth::user()->user_id."' AS `updated_user_id`,";
-                $values .= "'0' AS `delete_flag`";
+                // $values .= "union select '".$org_id."' AS `org_id`,";
+                // $values .= "'".$organizationInfo["staff".$staff_index."_user_id"]."' AS `user_id`,";
+                // $values .= "'".$organizationInfo["staff".$staff_index."_type"]."' AS `staff_type_id`,";
+                // $values .= "'".$currentDatetime."' AS `registered_time`,";
+                // $values .= "'".Auth::user()->user_id."' AS `registered_user_id`,";
+                // $values .= "'".$currentDatetime."' AS `updated_time`,";
+                // $values .= "'".Auth::user()->user_id."' AS `updated_user_id`,";
+                // $values .= "'0' AS `delete_flag`";
+
+                //置き換える文字列を生成
+                $replace_string .= "union select :org_id AS `org_id`,";
+                $replace_string .= ":staff".$staff_index."_user_id AS `user_id`,";
+                $replace_string .= ":staff".$staff_index."_type AS `staff_type_id`,";
+                $replace_string .= ":current_datetime AS `registered_time`,";
+                $replace_string .= ":user_id AS `registered_user_id`,";
+                $replace_string .= ":current_datetime AS `updated_time`,";
+                $replace_string .= ":user_id AS `updated_user_id`,";
+                $replace_string .= ":delete_flag AS `delete_flag`";
+
+                //SQLに代入する値の配列を生成
+                $values["staff".$staff_index."_user_id"] = $organizationInfo["staff".$staff_index."_user_id"];
+                $values["staff".$staff_index."_type"] = $organizationInfo["staff".$staff_index."_type"];
             }
             $staff_index++;
         }
-        
-        $values = ltrim($values,"union select ");
+        //置き換えるときselectに続くようにしたいので「union select」を除く
+        $values = ltrim($replace_string,"union select ");
         return $values;
     }
 
@@ -716,11 +802,13 @@ class OrganizationController extends Controller
             $tOrganizations->updateOrganization($organizationInfo);
 
             //前のスタッフをupdateする。
-            $updateCondition = $this->generateUpdateStaffCondition($organizationInfo);
-            $tOrganizationStaff->updateDeleteFlagInOrganizationStaff($updateCondition,$organizationInfo['org_id']);
+            $update_values = array();
+            $updateCondition = $this->generateUpdateStaffCondition($organizationInfo,$update_values);
+            $tOrganizationStaff->updateDeleteFlagInOrganizationStaff($updateCondition,$update_values);
             //新しく入力されたスタッフをInsertする
-            $insertValues = $this->generateInsertStaffValues($organizationInfo,$organizationInfo['org_id']);
-            $tOrganizationStaff->insertOrganizationStaff($insertValues,$organizationInfo['org_id']);
+            $insert_values = array();
+            $insertValues = $this->generateInsertStaffValues($organizationInfo,$organizationInfo['org_id'],$insert_values);
+            $tOrganizationStaff->insertOrganizationStaff($insertValues,$insert_values);
             
             $page_status = "完了しました";
             $page_url = route('my-page');
@@ -751,7 +839,7 @@ class OrganizationController extends Controller
         //団体IDの条件
         if(isset($searchInfo['org_id']))
         {
-            $condition .= " and `t_organizations`.`org_id`= ?".$searchInfo['org_id'];
+            $condition .= " and `t_organizations`.`org_id`= ?";
             array_push($searchValue,$searchInfo['org_id']);
         }
         //団体名の条件

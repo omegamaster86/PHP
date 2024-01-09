@@ -16,33 +16,75 @@ class T_organization_staff extends Model
 
     public function getOrganizationStaffFromOrgId($orgId)
     {
-        $orgStaffs = DB::select('select 
-                                    `org_staff_id`,
-                                    `staff`.`user_id`,
-                                    `staff`.`staff_type_id`,
-                                    `staff_type_name`,
-                                    `user`.`user_name`
+        // $orgStaffs = DB::select('select 
+        //                             `org_staff_id`,
+        //                             `staff`.`user_id`,
+        //                             `staff`.`staff_type_id`,
+        //                             `staff_type_name`,
+        //                             `user`.`user_name`
+        //                             from `t_organization_staff` `staff`
+        //                             join `t_users` `user`
+        //                             on `staff`.`user_id` = `user`.`user_id`
+        //                             left join `m_staff_type`
+        //                             on `staff`.`staff_type_id` = `m_staff_type`.`staff_type_id`
+        //                             where `staff`.`delete_flag` = 0
+        //                             and `user`.`delete_flag` = 0
+        //                             and `staff`.`org_id` = ?'
+        //                             ,[$orgId]
+        //                         );
+        
+        $orgStaffs = DB::select('select
+                                `org_id`
+                                ,`user_id`
+                                ,`user_name`
+                                ,case
+                                    when instr(`staff_type_array`,"1") > 0 then 1
+                                    else 0
+                                    end as `is_director`
+                                ,case
+                                    when instr(`staff_type_array`,"2") > 0 then 1
+                                    else 0
+                                    end as `is_head`
+                                ,case
+                                    when instr(`staff_type_array`,"3") > 0 then 1
+                                    else 0
+                                    end as `is_coach`
+                                ,case
+                                    when instr(`staff_type_array`,"4") > 0 then 1
+                                    else 0
+                                    end as `is_manager`
+                                ,case
+                                    when instr(`staff_type_array`,"5") > 0 then 1
+                                    else 0
+                                    end as `is_acting_director`
+                                from
+                                (
+                                    SELECT 
+                                    `staff`.`org_id`
+                                    ,`staff`.`user_id`
+                                    ,`user`.`user_name`
+                                    ,GROUP_CONCAT(`staff_type_id` order by `staff_type_id`)	AS "staff_type_array"
                                     from `t_organization_staff` `staff`
                                     join `t_users` `user`
                                     on `staff`.`user_id` = `user`.`user_id`
-                                    left join `m_staff_type`
-                                    on `staff`.`staff_type_id` = `m_staff_type`.`staff_type_id`
                                     where `staff`.`delete_flag` = 0
                                     and `user`.`delete_flag` = 0
-                                    and `staff`.`org_id` = ?'
-                                    ,[$orgId]
-                                );
+                                    and `staff`.`org_id` = ?
+                                    group by `staff`.`org_id`, `staff`.`user_id`,`user`.`user_name`
+                                ) as `staff`'
+                                ,[$orgId]
+                            );
         return $orgStaffs;
     }
 
-    //団体所属スタッフテーブルの削除フラグを更新する
-    public function updateDeleteFlagInOrganizationStaff($condition,$org_id)
+    //団体所属スタッフテーブルの削除フラグを更新する    
+    public function updateDeleteFlagInOrganizationStaff($condition,$values)
     {
         $sqlString = 'update `t_organization_staff`
                         set `delete_flag` = 1
                         where 1=1
                         and `delete_flag` = 0
-                        and `org_id` = #OrgIdReplace#
+                        and `org_id` = :org_id
                         and `org_staff_id` not in
                         (
                             SELECT `org_staff_id`
@@ -54,11 +96,10 @@ class T_organization_staff extends Model
                             )
                         )';
         $sqlString = str_replace('#ConditionReplace#',$condition,$sqlString);
-        $sqlString = str_replace('#OrgIdReplace#',$org_id,$sqlString);
         $result = true;
         DB::beginTransaction();
         try{
-                DB::update($sqlString);
+                DB::update($sqlString,$values);
                 DB::commit();
                 return $result;
         }
@@ -73,7 +114,7 @@ class T_organization_staff extends Model
     }
 
     //団体所属スタッフテーブルに挿入する
-    public function insertOrganizationStaff($values,$orgId)
+    public function insertOrganizationStaff($replace_str,$values)
     {
         $sqlString = "insert into `t_organization_staff`
                     (
@@ -99,16 +140,15 @@ class T_organization_staff extends Model
                         from `t_organization_staff`
                         where 1=1
                         and `delete_flag` = 0
-                        and `org_id` = #OrgIdCondition#
+                        and `org_id` = :org_id
                         and `t_organization_staff`.`user_id` = `value_table`.`user_id`
                         and `t_organization_staff`.`staff_type_id` = `value_table`.`staff_type_id`
                     )";
-        $sqlString = str_replace("#ValuesReplace#",$values,$sqlString);
-        $sqlString = str_replace("#OrgIdCondition#",$orgId,$sqlString);
+        $sqlString = str_replace("#ValuesReplace#",$replace_str,$sqlString);        
         $result = true;
         DB::beginTransaction();
         try{
-                DB::insert($sqlString);
+                DB::insert($sqlString,$values);
                 DB::commit();
                 return $result;
         }
