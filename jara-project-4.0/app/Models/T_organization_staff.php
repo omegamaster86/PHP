@@ -96,21 +96,7 @@ class T_organization_staff extends Model
                             )
                         )';
         $sqlString = str_replace('#ConditionReplace#',$condition,$sqlString);
-        $result = true;
-        DB::beginTransaction();
-        try{
-                DB::update($sqlString,$values);
-                DB::commit();
-                return $result;
-        }
-        catch (\Throwable $e){
-                dd($e);
-                dd("stop");
-                DB::rollBack();
-                
-                $result = false;
-                return $result;
-        }
+        DB::update($sqlString,$values);
     }
 
     //団体所属スタッフテーブルに挿入する
@@ -144,46 +130,18 @@ class T_organization_staff extends Model
                         and `t_organization_staff`.`user_id` = `value_table`.`user_id`
                         and `t_organization_staff`.`staff_type_id` = `value_table`.`staff_type_id`
                     )";
-        $sqlString = str_replace("#ValuesReplace#",$replace_str,$sqlString);        
-        $result = true;
-        DB::beginTransaction();
-        try{
-                DB::insert($sqlString,$values);
-                DB::commit();
-                return $result;
-        }
-        catch (\Throwable $e){
-                dd($e);
-                dd("stop");
-                DB::rollBack();
-                
-                $result = false;
-                return $result;
-        }
+        $sqlString = str_replace("#ValuesReplace#",$replace_str,$sqlString);
+        DB::insert($sqlString,$values);
     }
 
     //団体削除による団体所属スタッフの削除
     //org_idをキーとして、該当所属スタッフのdelete_flagを1にする
     public function updateDeleteFlagByOrganizationDeletion($org_id)
     {
-        $result = true;   
-        try{
-                DB::beginTransaction();
-                DB::update('update `t_organization_staff`
-                            set `delete_flag` = 1
-                            where 1=1
-                            and `org_id` = ?'
-                            ,[$org_id]);
-                DB::commit();
-                return $result;
-        }
-        catch (\Throwable $e){
-                dd($e);
-                dd("stop");
-                DB::rollBack();
-                
-                $result = false;
-                return $result;
-        }
+        DB::update('update `t_organization_staff`
+                    set `delete_flag` = 1
+                    where 1=1
+                    and `org_id` = ?'
+                    ,[$org_id]);
     }
 }

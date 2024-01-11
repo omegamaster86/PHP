@@ -97,53 +97,6 @@ class OrganizationController extends Controller
         }
     }
     
-    //団体スタッフを入力する領域のタグテキストを生成
-    // private function generateStaffTag($tStaff, $mStaffType)
-    // {
-    //     $staff_count = 0;
-    //     $staff_field_count = 4; //監督、コーチ、マネージャ、監督代行用に一先ず4箇所入力領域を設ける
-    //     $tag = "";
-
-    //     if(isset($tStaff)){
-    //         foreach($tStaff as $staff){   
-    //             $tag .= '<div class="form-group">';                
-    //             $tag .= '<label for="staff'.($staff_count+1).'" class="col-md-5" style="text-align: right">スタッフ'.($staff_count+1).'</label>';
-    //             $tag .= '<input type="text" name="staff'.($staff_count+1).'_user_id" id="staff'.($staff_count+1).'_user_id" size="10" value="'.$staff->user_id.'">';
-    //             $tag .= '<label for="staff'.($staff_count+1).'" style="margin:3px;">'.$staff->user_name.'</label>';
-    //             $tag .= '<select id="staff'.($staff_count+1).'_type" name="staff'.($staff_count+1).'_type">';
-
-    //             foreach($mStaffType as $type)
-    //             {
-    //                 if($type->staff_type_id === $staff->staff_type_id){
-    //                     $tag .= '<option value="'.$type->staff_type_id.'" selected>'.$type->staff_type_name.'</option>';
-    //                 }
-    //                 else{
-    //                     $tag .= '<option value="'.$type->staff_type_id.'">'.$type->staff_type_name.'</option>';
-    //                 }
-    //             }
-    //             $tag .= '</select>';
-    //             $tag .= '</div>';
-    //             $staff_count +=1;
-    //         }
-    //     }
-    //     //足りない入力領域を追加する
-    //     for($i=$staff_count; $i<$staff_field_count; $i++){
-    //         $tag .= '<div class="form-group">';
-    //         $tag .= '<label for="staff'.($staff_count+1).'" class="col-md-5" style="text-align: right">スタッフ'.($staff_count+1).'</label>';
-    //         $tag .= '<input type="text" name="staff'.($staff_count+1).'_user_id" id="staff'.($staff_count+1).'_user_id" size="10">';
-    //         $tag .= '<label for="staff'.($staff_count+1).'" style="margin:3px;">ユーザ名</label>';
-    //         $tag .= '<select id="staff'.($staff_count+1).'_type" name="staff'.($staff_count+1).'_type">';
-    //         foreach($mStaffType as $type)
-    //         {
-    //             $tag .= '<option value="'.$type->staff_type_id.'">'.$type->staff_type_name.'</option>';
-    //         }
-    //         $tag .= '</select>';
-    //         $tag .= '</div>';
-    //         $staff_count +=1;
-    //     }
-    //     return $tag;
-    // }
-
     private function generateStaffTag($tStaff, $mStaffType)
     {
         $staff_count = 1;
@@ -647,19 +600,28 @@ class OrganizationController extends Controller
         }
         else
         {
-            //確認画面から登録
-            $organizationInfo = $request->all();
-            $lastInsertId = $tOrganizations->insertOrganization($organizationInfo);
-            //新しく入力されたスタッフをInsertする
-            $insert_values = array();
-            $insertValues = $this->generateInsertStaffValues($organizationInfo,$lastInsertId,$insert_values);
-            $tOrganizationStaff->insertOrganizationStaff($insertValues,$insert_values);
+            DB::beginTransaction();
+            try{
+                //確認画面から登録
+                $organizationInfo = $request->all();
+                $lastInsertId = $tOrganizations->insertOrganization($organizationInfo);
+                //新しく入力されたスタッフをInsertする
+                $insert_values = array();
+                $insertValues = $this->generateInsertStaffValues($organizationInfo,$lastInsertId,$insert_values);
+                $tOrganizationStaff->insertOrganizationStaff($insertValues,$insert_values);
 
-            $page_status = "完了しました";
-            $page_url = route('my-page');
-            $page_url_text = "マイページ";
-                
-            return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+                DB::commit();
+                $page_status = "完了しました";
+                $page_url = route('my-page');
+                $page_url_text = "マイページ";
+                    
+                return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+            }
+            catch (\Throwable $e){
+                DB::rollBack();
+                dd($e);
+                dd("stop");
+            }
         }
     }
 
@@ -715,15 +677,6 @@ class OrganizationController extends Controller
             if(isset($organizationInfo["staff".$staff_index."_user_id"])
                 && isset($organizationInfo["staff".$staff_index."_user_name"]))
             {
-                // $values .= "union select '".$org_id."' AS `org_id`,";
-                // $values .= "'".$organizationInfo["staff".$staff_index."_user_id"]."' AS `user_id`,";
-                // $values .= "'".$organizationInfo["staff".$staff_index."_type"]."' AS `staff_type_id`,";
-                // $values .= "'".$currentDatetime."' AS `registered_time`,";
-                // $values .= "'".Auth::user()->user_id."' AS `registered_user_id`,";
-                // $values .= "'".$currentDatetime."' AS `updated_time`,";
-                // $values .= "'".Auth::user()->user_id."' AS `updated_user_id`,";
-                // $values .= "'0' AS `delete_flag`";
-
                 //置き換える文字列を生成
                 $replace_string .= "union select :org_id AS `org_id`,";
                 $replace_string .= ":staff".$staff_index."_user_id AS `user_id`,";
@@ -768,52 +721,68 @@ class OrganizationController extends Controller
         {
             return redirect('user/password-change');
         }
-        else
-        {
-            $organizationInfo = $request->all();
-            $org_id = $organizationInfo['org_id'];
+        else{
+            DB::beginTransaction();
+            try{
+                $organizationInfo = $request->all();
+                $org_id = $organizationInfo['org_id'];
 
-            //団体所属スタッフを削除
-            $tOrganizationStaff->updateDeleteFlagByOrganizationDeletion($org_id);
-            //団体所属選手を削除
-            $tOrganizationPlayers->updateDeleteFlagByOrganizationDeletion($org_id);
-            //団体を削除
-            $tOrganization->updateDeleteFlag($org_id);
-
-            $page_status = "完了しました";
-            $page_url = route('my-page');
-            $page_url_text = "マイページ";
+                //団体所属スタッフを削除
+                $tOrganizationStaff->updateDeleteFlagByOrganizationDeletion($org_id);
+                //団体所属選手を削除
+                $tOrganizationPlayers->updateDeleteFlagByOrganizationDeletion($org_id);
+                //団体を削除
+                $tOrganization->updateDeleteFlag($org_id);
                 
-            return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+                DB::commit();
+                $page_status = "完了しました";
+                $page_url = route('my-page');
+                $page_url_text = "マイページ";
+                    
+                return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+            }
+            catch(\Throwable $e){
+                DB::rollBack();
+                dd($e);
+                dd("stop");
+            }
         }
     }
 
     //更新実行
     public function storeConfirmEdit(Request $request,T_organizations $tOrganizations,T_organization_staff $tOrganizationStaff)
     {
-        if(Auth::user()->temp_password_flag === 1)
-        {
+        if(Auth::user()->temp_password_flag === 1){
             return redirect('user/password-change');
         }
         else
         {
-            //確認画面から登録
-            $organizationInfo = $request->all();
-            $tOrganizations->updateOrganization($organizationInfo);
+            DB::beginTransaction();
+            try{
+                //確認画面から登録
+                $organizationInfo = $request->all();
+                $tOrganizations->updateOrganization($organizationInfo);
 
-            //前のスタッフをupdateする。
-            $update_values = array();
-            $updateCondition = $this->generateUpdateStaffCondition($organizationInfo,$update_values);
-            $tOrganizationStaff->updateDeleteFlagInOrganizationStaff($updateCondition,$update_values);
-            //新しく入力されたスタッフをInsertする
-            $insert_values = array();
-            $insertValues = $this->generateInsertStaffValues($organizationInfo,$organizationInfo['org_id'],$insert_values);
-            $tOrganizationStaff->insertOrganizationStaff($insertValues,$insert_values);
-            
-            $page_status = "完了しました";
-            $page_url = route('my-page');
-            $page_url_text = "マイページ";            
-            return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+                //前のスタッフをupdateする。
+                $update_values = array();
+                $updateCondition = $this->generateUpdateStaffCondition($organizationInfo,$update_values);
+                $tOrganizationStaff->updateDeleteFlagInOrganizationStaff($updateCondition,$update_values);
+                //新しく入力されたスタッフをInsertする
+                $insert_values = array();
+                $insertValues = $this->generateInsertStaffValues($organizationInfo,$organizationInfo['org_id'],$insert_values);
+                $tOrganizationStaff->insertOrganizationStaff($insertValues,$insert_values);
+                
+                DB::commit();
+                $page_status = "完了しました";
+                $page_url = route('my-page');
+                $page_url_text = "マイページ";            
+                return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+            }
+            catch(\Throwable $e){
+                DB::rollBack();
+                dd($e);
+                dd("stop");
+            }
         }
     }
 
