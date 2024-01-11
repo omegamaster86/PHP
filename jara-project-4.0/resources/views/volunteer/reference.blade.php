@@ -131,7 +131,7 @@
                             <a class="btn btn-danger btn-lg btn-block" href="javascript:history.back()" role="button">戻る</a>
                         </div>
                     </div>
-                    @dd($TournamentData,$RaceData)
+                    @dd($volData,$volAvaData,$volHistData,$volLangProData,$volQualData,$volSupDisData)
                 </div>
             </div>
         </form>

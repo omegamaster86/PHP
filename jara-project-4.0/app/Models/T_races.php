@@ -19,6 +19,8 @@ class T_races extends Model
         'race_name' => null,
         'event_id' => null,
         'event_name' => null,
+        'race_class_id' => null,
+        'race_class_name' => null,
         'by_group' => null,
         'range' => null,
         'start_datetime' => null,
@@ -27,7 +29,7 @@ class T_races extends Model
 
     public function getRace($trnId)
     {
-        $races = DB::select('select `race_id`, `race_number`, `entrysystem_race_id`, `tourn_id`, `race_name`, `event_id`, `event_name`, `by_group`, `range`, `start_datetime`, `registered_time`, `registered_user_id`, `updated_time`, `updated_user_id`, `delete_flag` FROM `t_races` where delete_flag=0 and tourn_id = ?', [$trnId]);
+        $races = DB::select('select `race_id`, `race_number`, `entrysystem_race_id`, `tourn_id`, `race_name`, `event_id`, `event_name`, `race_class_id`, `race_class_name`, `by_group`, `range`, `start_datetime`, `registered_time`, `registered_user_id`, `updated_time`, `updated_user_id`, `delete_flag` FROM `t_races` where delete_flag=0 and tourn_id = ?', [$trnId]);
 
         return $races;
     }
@@ -39,7 +41,7 @@ class T_races extends Model
         DB::beginTransaction();
         try {
             DB::insert(
-                'insert into t_races (`race_id`, `race_number`, `entrysystem_race_id`, `tourn_id`, `race_name`, `event_id`, `event_name`, `by_group`, `range`, `start_datetime`, `registered_time`, `registered_user_id`, `updated_time`,`updated_user_id`, `delete_flag`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                'insert into t_races (`race_id`, `race_number`, `entrysystem_race_id`, `tourn_id`, `race_name`, `event_id`, `event_name`, `race_class_id`, `race_class_name`, `by_group`, `range`, `start_datetime`, `registered_time`, `registered_user_id`, `updated_time`,`updated_user_id`, `delete_flag`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 [
                     $racesInfo['race_id'],
                     $racesInfo['race_number'],
@@ -48,6 +50,8 @@ class T_races extends Model
                     $racesInfo['race_name'],
                     $racesInfo['event_id'],
                     $racesInfo['event_name'],
+                    $racesInfo['race_class_id'],
+                    $racesInfo['race_class_name'],
                     $racesInfo['by_group'],
                     $racesInfo['range'],
                     $racesInfo['start_datetime'],
@@ -78,7 +82,7 @@ class T_races extends Model
         DB::beginTransaction();
         try {
             DB::update(
-                'update t_races set `race_number`=?,`entrysystem_race_id`=?,`tourn_id`=?,`race_name`=?,`event_id`=?,`event_name`=?,`by_group`=?,`range`=?,`start_datetime`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where tourn_id = ?',
+                'update t_races set `race_number`=?,`entrysystem_race_id`=?,`tourn_id`=?,`race_name`=?,`event_id`=?,`event_name`=?,`race_class_id`=?,`race_class_name`=?,`by_group`=?,`range`=?,`start_datetime`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where tourn_id = ?',
                 [
                     $racesInfo['race_number'],
                     $racesInfo['entrysystem_race_id'],
@@ -86,6 +90,8 @@ class T_races extends Model
                     $racesInfo['race_name'],
                     $racesInfo['event_id'],
                     $racesInfo['event_name'],
+                    $racesInfo['race_class_id'],
+                    $racesInfo['race_class_name'],
                     $racesInfo['by_group'],
                     $racesInfo['range'],
                     $racesInfo['start_datetime'],

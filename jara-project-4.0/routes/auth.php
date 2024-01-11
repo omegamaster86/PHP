@@ -160,6 +160,7 @@ Route::middleware('auth')->group(function () {
     //20231227
     // ボランティア削除画面
     Route::get('volunteer/delete', [VolunteerController::class, 'createDelete']) ->name('volunteer.delete');
+    Route::post('volunteer/delete', [VolunteerController::class, 'deleteVolunteers']);
     // ボランティア参照画面
     Route::get('volunteer/reference', [VolunteerController::class, 'createReference'])->name('volunteer.reference');
 
