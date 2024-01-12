@@ -14,16 +14,19 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('guest')->group(function () {
 
     Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
-    
-    Route::get('status', function () {
-        return view('auth.guest_user_status');
-    })->name('guest_user_status');
 
     Route::post('register', [RegisteredUserController::class, 'store']);
+
+    Route::get('password-reset', [UserController::class, 'createPasswordReset'])->name('password-reset');
+    Route::post('password-reset', [UserController::class, 'storePasswordReset']);
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
+
+    Route::get('status', function () {
+        return view('auth.guest_user_status');
+    })->name('guest_user_status');
 
 });
 

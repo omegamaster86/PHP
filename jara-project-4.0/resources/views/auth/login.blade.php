@@ -13,6 +13,7 @@
 *
 ************************************************************************--}}
 <x-guest-layout>
+    
     <div>
         <h1 style="text-align:center;font-weight:bold;font-size:24px">ログイン</h1>
 
@@ -22,6 +23,7 @@
 
         <br />
     </div>
+    
     <form method="POST" action="{{ route('login') }}" class="px-4 py-2 font-semibold text-sm bg-white text-slate-700 dark:bg-slate-700 dark:text-white rounded-md shadow-sm ring-1 ring-black border-black dark:border-black border-2 border-solid">
         
         @csrf
@@ -54,9 +56,10 @@
             </x-primary-button>
         </div>
     </form>
+    {{-- font-mono text-xs text-indigo-600 whitespace-pre dark:text-indigo-300 --}}
 
     <div class="items-center mt-4 " style="text-align: center;">
-        <a href="#" class="underline py-2 pl-2 font-mono text-xs text-indigo-600 whitespace-pre dark:text-indigo-300  ">
+        <a href="{{route('password-reset')}}" class="underline py-2 pl-2  text-indigo-600 ">
             {{ __('パスワードをお忘れるの場合') }}
         </a>
     </div>
@@ -72,7 +75,7 @@
         <br />
         <p style="text-align:center;font-size:14px">
             日本ローイング協会　サポートデスク<br />
-            <a href="#" class="underline py-2 pl-2 font-mono text-xs text-indigo-600 whitespace-pre dark:text-indigo-300  ">
+            <a href="#" class="underline py-2 pl-2  text-indigo-600  ">
                 お問い合わせはこちらへ
             </a>
             <br />
@@ -80,4 +83,5 @@
             月曜～金曜 9：00～12：00　13：00～17：00
         </p>
     </div>
+    
 </x-guest-layout>

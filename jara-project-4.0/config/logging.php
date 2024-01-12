@@ -143,6 +143,11 @@ return [
             'path' => storage_path('logs/user_password_change.log'),
             'level' => env('LOG_LEVEL', 'debug')
         ],
+        'user_password_reset' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/user_password_reset.log'),
+            'level' => env('LOG_LEVEL', 'debug')
+        ],
         'user_login_access_log' => [
             'driver' => 'single',
             'path' => storage_path('logs/user_login_access_log.log'),

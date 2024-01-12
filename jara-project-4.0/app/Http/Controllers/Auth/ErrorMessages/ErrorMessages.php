@@ -37,6 +37,9 @@ $mailAddress_not_found = 'このメールアドレスは登録されていませ
 
 $confirm_email_required = '確認用のメールアドレスを入力してください。';
 $confirm_email_compare = 'メールアドレスは一致しません。';
+$confirm_email_for_password_reset_page = '登録済みメールアドレスと一致しません。<br/>メールアドレスを確認してください。';
+
+$mailaddress_not_registered = "登録されていないメールアドレスです。<br/>メールアドレスを確認してください。";
 
 
 //privacy policy error message
@@ -138,3 +141,4 @@ $entrysystemOrgId_registered = '入力されたエントリーシステムの団
 //管理者、部長、コーチ、マネージャー、監督代行の全て共通
 $userId_not_found = '[対象項目名]のユーザーは、既にシステムより削除されているか、本登録されていないユーザーIDが入力されています。';
 $organization_commit_failed = '団体情報の登録に失敗しました。ユーザーサポートにお問い合わせください。';
+

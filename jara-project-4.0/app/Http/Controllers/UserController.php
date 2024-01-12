@@ -17,6 +17,7 @@ use App\Http\Requests\FileUploadRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VerificationMail;
+use App\Mail\PasswordResetMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\UploadedFile;
@@ -734,5 +735,126 @@ class UserController extends Controller
         }
         
 
+    }
+
+    public function createPasswordReset(Request $request): View
+    {
+		// $user = array("user_name" => Auth::user()->user_name, "user_id" => Auth::user()->user_id, "user_type" => Auth::user()->user_type, "temp_password_flag" => Auth::user()->temp_password_flag);
+        
+        return view('auth.password-reset');
+
+    }
+    public function storePasswordReset(Request $request)
+    {
+        
+        include('Auth/ErrorMessages/ErrorMessages.php');
+
+        $request->validate([
+            // Mail address validation rule
+            'mailaddress' => ['required', 'email'],
+            // Confirm mail address validation rule
+            'confirm_email' => ['required', 'same:mailaddress'],
+        ],
+        [
+            //Error message for mail address validation rule 
+            'mailaddress.required' => $mailAddress_required,
+            'mailaddress.email' => $email_validation,
+
+            //Error message for confirm mail address validation rule 
+            'confirm_email.required' => $mailAddress_required,
+            'confirm_email.same' => $confirm_email_for_password_reset_page,
+        ]);
+        
+        if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 0',[$request->mailaddress]))){
+            // For Generate random password
+            $temp_password = Str::random(8); 
+            //For getting current time
+            $date = date('Y-m-d H:i:s');
+            //For adding 30 minutes with current time
+            $new_date = date('Y-m-d H:i:s', strtotime($date. ' + 30 minutes'));
+
+             //For converting date format from H:i:s to H:i 
+             $mail_date  = date("Y/m/d H:i", strtotime($new_date));
+
+            // Insert new password info in the database.(t_user table)
+
+            $find_user_id = DB::select('SELECT user_id,user_name FROM t_users where mailaddress = ? and delete_flag = 0',[$request->mailaddress]);
+            $user_id = $find_user_id[0]->user_id;
+            $user_name = $find_user_id[0]->user_name;
+
+            DB::beginTransaction();
+            try {
+                $hashed_password = Hash::make($temp_password);
+                DB::update('update t_users set password = ? , temp_password = ?, expiry_time_of_temp_password = ?, temp_password_flag = ?, registered_time = ?, registered_user_id = ?, updated_time = ?, updated_user_id = ? where mailaddress = ? and delete_flag = 0 ', [ $hashed_password, $hashed_password ,  $new_date, '1', now(), $user_id, now(), $user_id, $request->mailaddress]);
+
+                DB::commit();
+            } catch (\Throwable $e) {
+                DB::rollBack();
+
+                $e_message = $e->getMessage();
+                $e_code = $e->getCode();
+                $e_file = $e->getFile();
+                $e_line = $e->getLine();
+                $e_sql = $e->getSql();
+                $e_errorCode = $e->errorInfo[1];
+                $e_bindings = implode(", ",$e->getBindings());
+                $e_connectionName = $e->connectionName;
+
+
+                //Store error message in the register log file.
+                Log::channel('user_password_reset')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
+                if($e_errorCode == 1213||$e_errorCode == 1205)
+                {
+                    throw ValidationException::withMessages([
+                        'datachecked_error' => $registration_failed
+                    ]); 
+                }
+                else{
+                    throw ValidationException::withMessages([
+                        'datachecked_error' => $registration_failed
+                    ]); 
+                }
+            }
+
+            
+
+            //Store user information for sending email.
+            $mail_data = [
+                'user_name' => $user_name,
+                'mailaddress' => $request->mailaddress,
+                'temporary_password' => $temp_password,
+                'temporary_password_expiration_date'=> $mail_date
+            ];
+
+            
+            //Sending mail to the user
+            
+            try {
+                Mail::to($request->get('mailaddress'))->send(new PasswordResetMail($mail_data));
+            } catch (Exception $e) {
+                //Store error message in the user_password_reset log file.
+                Log::channel('user_password_reset')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「EMAIL_SENT_ERROR_MESSAGE」  ： $e\r\n  \r\n ============================================================ \r\n \r\n");
+                //Display error message to the client
+                throw ValidationException::withMessages([
+                    'datachecked_error' => $mail_sent_failed,
+                ]);
+            }
+            //Refresh the requested data
+            $request->merge(['mailaddress' => '']);
+            $request->merge(['confirm_email' => '']);
+
+            $page_status = "仮パスワードを記載したメールアドレスを送信しました。<br/>送信されたメールに記載されたパスワードを使用して、パスワードの再設定を行ってください。";
+            //Redirect to password-reset page with success status.
+            return redirect('password-reset')->with(['status'=> $page_status]);
+
+
+        }
+        
+        else {
+            throw ValidationException::withMessages([
+                'datachecked_error' => $mailaddress_not_registered
+            ]); 
+        }
+        
     }
 }
