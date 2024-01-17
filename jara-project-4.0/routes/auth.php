@@ -166,7 +166,10 @@ Route::middleware('auth')->group(function () {
     Route::post('volunteer/delete', [VolunteerController::class, 'deleteVolunteers']);
     // ボランティア参照画面
     Route::get('volunteer/reference', [VolunteerController::class, 'createReference'])->name('volunteer.reference');
-
+    //20240116
+    //ボランティア検索画面
+    Route::get('volunteer/search', [VolunteerController::class, 'createSearch'])->name('volunteer.search');
+    Route::post('volunteer/search',[VolunteerController::class, 'searchVolunteers']);
 });
 
 Route::group(['middleware' => ['auth', 'action_log']], function () {
