@@ -24,6 +24,7 @@ interface teamResponse {
 export default function TeamManagement() {
   const [error, setError] = React.useState({ isError: false, errorMessage: '' });
   const [teamdata, setTeamdata] = React.useState([] as teamResponse[]);
+  const [resData, setResponseData] = React.useState([] as any); //Laravel_Reactデータ送信テスト 20240116
   const router = useRouter();
 
   var responseData = null; //Laravel_Reactデータ送信テスト 20231227
@@ -32,13 +33,10 @@ export default function TeamManagement() {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        responseData = await axios.get('http://localhost:8000/api/list'); //Laravel_Reactデータ送信テスト 20231227
-        console.log(responseData.data.post[0].content); //Laravel_Reactデータ送信テスト 20231227
-        console.log(responseData.data.post[0].title); //Laravel_Reactデータ送信テスト 20231227
-        console.log(responseData.data.post[1].content); //Laravel_Reactデータ送信テスト 20231227
-        console.log(responseData.data.post[1].title); //Laravel_Reactデータ送信テスト 20231227
-        console.log(responseData.data.post[2].content); //Laravel_Reactデータ送信テスト 20231227
-        console.log(responseData.data.post[2].title); //Laravel_Reactデータ送信テスト 20231227
+        const responseData = await axios.get('http://localhost:8000/api/list'); //Laravel_Reactデータ送信テスト 20231227
+        console.log(responseData.data); //Laravel_Reactデータ送信テスト 20231227
+        setResponseData(responseData.data); //Laravel_Reactデータ送信テスト 20240116
+        
         // 仮のURL（繋ぎ込み時に変更すること）
         const response = await axios.get<teamResponse[]>('http://localhost:3100/teams');
         setTeamdata(response.data);
@@ -190,6 +188,9 @@ export default function TeamManagement() {
           </form>
           {/* React_Laravelデータ送信テスト 20231228 */}
         </div>
+        <p>
+          {resData['tourn_name']}
+        </p>
       </main>
     </div>
   );

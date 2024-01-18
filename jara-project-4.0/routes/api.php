@@ -3,7 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TournamentController; //Laravel_Reactデータ送信テスト 20231227
-
+use App\Models\M_prefectures;
+use App\Models\M_countries;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +18,8 @@ use App\Http\Controllers\TournamentController; //Laravel_Reactデータ送信テ
 */
 
 Route::get('list',[TournamentController::class, 'index']); //Laravel_Reactデータ送信テスト 20231227
+Route::get('getPrefecures',[M_prefectures::class, 'getPrefecures']); //Laravel_Reactデータ送信テスト 20240117
+Route::get('getCountries',[M_countries::class, 'getCountries']); //Laravel_Reactデータ送信テスト 20240117
 Route::group(['middleware' => ['api', 'cors']], function () {
     Route::post('postSample',[TournamentController::class, 'postTest']); //React_Laravelデータ送信テスト 20231228
 });

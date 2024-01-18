@@ -356,32 +356,12 @@ class TournamentController extends Controller
         return view('tournament.search', ["pagemode" => "search", "tournamentInfo" => $searchInfo, "tournamentList" => $tournamentList, "venueList" => $venueList]);
     }
 
-    public function index() //Laravel_Reactデータ送信テスト 20231227
+    public function index(T_tournaments $tTournaments, T_races $tRace) //Laravel_Reactデータ送信テスト 20231227
     {
-        return response()->json(
-            [
-                "post" => [
-                    [
-                        "id" => 1,
-                        "title" => "111111111",
-                        "content" => "sample1111"
-                    ],
-                    [
-                        "id" => 2,
-                        "title" => "22222222222222222",
-                        "content" => "aaaaaaaaaaaaaaaaaaaaaaaaa"
-                    ],
-                    [
-                        "id" => 3,
-                        "title" => "hogehoge333333333",
-                        "content" => "ああああああああああああああああ"
-                    ],
-                ]
-            ],
-            200,
-            [],
-            JSON_UNESCAPED_UNICODE //文字化け対策
-        );
+        $tTours = $tTournaments->getTournament(1); //大会情報を取得
+        $tRaceData = $tRace->getRace(1); //レース情報を取得
+
+        return $tTours;
     }
 
     public function postTest(Request $request) //React_Laravelデータ送信テスト 20231227

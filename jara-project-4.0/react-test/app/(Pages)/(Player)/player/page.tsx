@@ -15,6 +15,8 @@ import { useSearchParams } from 'next/navigation';
 import CustomButton from '@/app/components/CustomButton';
 import CustomTextField from '@/app/components/CustomTextField';
 import InputLabel from '@/app/components/InputLabel';
+import { masterDataResponse } from '@/app/utils/interface'; //外部ファイルからインターフェースをインポート
+import { listDataResponse } from '@/app/utils/interface'; //外部ファイルからインターフェースをインポート
 
 // Jsonの型定義
 interface countryResponse {
@@ -74,9 +76,9 @@ export default function PlayerUpdate() {
     sex: '', // 性別
     height: '', // 身長
     weight: '', // 体重
-    birthPlaceCountry: '日本', // 出身地（国）
+    birthPlaceCountry: '日本国 （jpn）', // 出身地（国）
     birthPlacePrefecture: '東京', // 出身地（都道府県）
-    livingCountry: '日本', // 居住地（国）
+    livingCountry: '日本国 （jpn）', // 居住地（国）
     livingPrefecture: '東京', // 居住地（都道府県）
     sideInfo: {
       S: false,
@@ -90,8 +92,9 @@ export default function PlayerUpdate() {
     },
   });
 
-  const [countries, setCountries] = React.useState([] as string[]);
-  const [prefectures, setPrefectures] = React.useState([] as string[]);
+  // const [countries, setCountries] = React.useState([] as string[]);
+  const [countries, setCountries] = React.useState([] as masterDataResponse[]);
+  const [prefectures, setPrefectures] = React.useState([] as masterDataResponse[]);
   const [sex, setSex] = React.useState([] as string[]);
   const [currentShowFile, setCurrentShowFile] = React.useState<{
     file: File;
@@ -192,7 +195,7 @@ export default function PlayerUpdate() {
           }));
         })
         .catch((error) => {
-          alert(error);
+          //alert(error);
         });
     }
     // APIを叩いて、選手情報を取得する
@@ -202,14 +205,16 @@ export default function PlayerUpdate() {
     const fetchCountry = async () => {
       // APIを叩いて、国名を取得する
       axios
-        .get<countryResponse[]>('http://localhost:3100/countries')
+        // .get<countryResponse[]>('http://localhost:3100/countries')
+        .get('http://localhost:8000/api/getCountries')
         .then((response) => {
           // nameプロパティのみ抜き出してstringの配列に変換
-          const countryList = response.data.map((country: { name: string }) => country.name);
+          // const countryList = response.data.map((country: { name: string }) => country.name);
+          const countryList = response.data.map(({ country_id, country_name }: { country_id: number; country_name: string }) => ({ id: country_id, name: country_name }));
           setCountries(countryList);
         })
         .catch((error) => {
-          alert(error);
+          //alert(error);
         });
     };
     fetchCountry();
@@ -220,14 +225,18 @@ export default function PlayerUpdate() {
     const fetchState = async () => {
       // APIを叩いて、都道府県名を取得する
       axios
-        .get<stateResponse[]>('http://localhost:3100/states')
+        //.get<stateResponse[]>('http://localhost:3100/states')
+        .get('http://localhost:8000/api/getPrefecures')
         .then((response) => {
+          //console.log(response.data);
           // nameプロパティのみ抜き出してstringの配列に変換
-          const stateList = response.data.map((state: { name: string }) => state.name);
+          //const stateList = response.data.map((state: { name: string }) => state.name);
+          const stateList = response.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
+          //console.log(stateList);
           setPrefectures(stateList);
         })
         .catch((error) => {
-          alert(error);
+          //alert(error);
         });
     };
     fetchState();
@@ -244,7 +253,7 @@ export default function PlayerUpdate() {
           setSex(sexList);
         })
         .catch((error) => {
-          alert(error);
+          //alert(error);
         });
     };
     fetchSex();
@@ -471,7 +480,7 @@ export default function PlayerUpdate() {
             {mode !== 'delete' && (
               <CustomDropdown
                 id='birthPlaceCountry'
-                options={countries}
+                options={countries.map(({ id, name }) => (name))}
                 value={formData.birthPlaceCountry}
                 onChange={(e) => {
                   handleInputChange('birthPlaceCountry', e);
@@ -480,7 +489,7 @@ export default function PlayerUpdate() {
               />
             )}
           </div>
-          {formData.birthPlaceCountry === '日本' && (
+          {formData.birthPlaceCountry === '日本国 （jpn）' && (
             <div className='flex flex-col justify-start'>
               <InputLabel label='都道府県' required={mode !== 'delete'} />
               {mode === 'delete' && (
@@ -489,9 +498,10 @@ export default function PlayerUpdate() {
               {mode !== 'delete' && (
                 <CustomDropdown
                   id='birthPlacePrefecture'
-                  options={prefectures}
+                  options={prefectures.map(({ id, name }) => (name))} //都道府県のnameだけをリストにして表示 20240117
                   value={formData.birthPlacePrefecture}
                   onChange={(e) => {
+                    console.log(prefectures.filter((list) => list.name == e)); //選択都道府県確認用 20240117
                     handleInputChange('birthPlacePrefecture', e);
                   }}
                   className='border-[0.5px] border-solid border-gray-50 rounded w-[300px]'
@@ -509,7 +519,7 @@ export default function PlayerUpdate() {
             {mode !== 'delete' && (
               <CustomDropdown
                 id='livingCountry'
-                options={countries}
+                options={countries.map(({ id, name }) => (name))}
                 value={formData.livingCountry}
                 onChange={(e) => {
                   handleInputChange('livingCountry', e);
@@ -518,7 +528,7 @@ export default function PlayerUpdate() {
               />
             )}
           </div>
-          {formData.livingCountry === '日本' && (
+          {formData.livingCountry === '日本国 （jpn）' && (
             <div className='flex flex-col justify-start'>
               <InputLabel label='都道府県' required={mode !== 'delete'} />
               {mode === 'delete' && (
@@ -527,9 +537,10 @@ export default function PlayerUpdate() {
               {mode !== 'delete' && (
                 <CustomDropdown
                   id='livingPrefecture'
-                  options={prefectures}
+                  options={prefectures.map(({ id, name }) => (name))} //都道府県のnameだけをリストにして表示 20240117
                   value={formData.livingPrefecture}
                   onChange={(e) => {
+                    console.log(prefectures.filter((list) => list.name == e)); //選択都道府県確認用 20240117
                     handleInputChange('livingPrefecture', e);
                   }}
                   className='border-[0.5px] border-solid border-gray-50 rounded w-[300px] '
