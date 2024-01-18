@@ -75,7 +75,7 @@
         <br />
         <p style="text-align:center;font-size:14px">
             日本ローイング協会　サポートデスク<br />
-            <a href="#" class="underline py-2 pl-2  text-indigo-600  ">
+            <a href="{{route('contact-us')}}" class="underline py-2 pl-2  text-indigo-600  ">
                 お問い合わせはこちらへ
             </a>
             <br />
