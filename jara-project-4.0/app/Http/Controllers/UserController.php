@@ -392,8 +392,7 @@ class UserController extends Controller
 
     public function createDetails(Request $request, M_sex $sex, M_countries $countries, M_prefectures $prefectures): View
     {
-        $user = array(
-            "user_name" => Auth::user()->user_name, 
+        $user = array("user_name" => Auth::user()->user_name, 
             "user_id" => Auth::user()->user_id, 
             "user_type" => Auth::user()->user_type, 
             "mailaddress" => Auth::user()->mailaddress, 
@@ -413,8 +412,7 @@ class UserController extends Controller
     }
     public function createDelete(Request $request, M_sex $sex, M_countries $countries, M_prefectures $prefectures): View
     {
-        $user = array(
-            "user_name" => Auth::user()->user_name, 
+        $user = array("user_name" => Auth::user()->user_name, 
             "user_id" => Auth::user()->user_id, 
             "user_type" => Auth::user()->user_type, 
             "mailaddress" => Auth::user()->mailaddress, 
@@ -857,4 +855,7 @@ class UserController extends Controller
         }
         
     }
+
+
+    
 }

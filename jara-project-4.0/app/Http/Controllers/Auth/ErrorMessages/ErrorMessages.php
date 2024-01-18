@@ -17,6 +17,7 @@
 $email_register_check = "既に登録されているメールアドレスです。<br>同じメールアドレスでユーザーの登録は出来ません。";
 $registration_failed = "仮登録に失敗しました。<br>ユーザーサポートにお問い合わせください。";
 $mail_sent_failed = "メールの送信に失敗しました。<br>入力したメールアドレスを確認してください。";
+$mail_sent_failed_for_contact_us = "メールの送信に失敗しました。<br/>もう一度送信してください。";
 $database_system_error = "内部処理エラーが発生しました、<br>サポートにご連絡ください。";
 $database_registration_failed_try_again = "他のユーザーが登録処理中です、<br>しばらく待ってから再度操作をお願いします。";
 $already_registered = "既に仮登録がされています。<br>発行された仮パスワードで、<br>ログイン画面からログインしてください。";
@@ -42,8 +43,14 @@ $confirm_email_for_password_reset_page = '登録済みメールアドレスと�
 $mailaddress_not_registered = "登録されていないメールアドレスです。<br/>メールアドレスを確認してください。";
 
 
+//content error message
+$content_required = 'お問い合わせ内容を入力してください。';
+
 //privacy policy error message
 $terms_of_service = 'ユーザーの仮登録には利用契約への同意が必要です。';
+
+//privacy policy error message
+$terms_of_service_for_contact_us = '個人情報保護方針への同意が必要です。';
 
 // date of birth error message
 $dateOfBirth_required = '生年月日を入力してください。';

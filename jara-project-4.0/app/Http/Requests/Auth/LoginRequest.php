@@ -44,8 +44,6 @@ class LoginRequest extends FormRequest
             'password.required' => $password_required 
         ];
     }
-    
-
 
     /**
      * Attempt to authenticate the request's credentials.

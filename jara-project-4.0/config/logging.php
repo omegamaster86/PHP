@@ -163,6 +163,11 @@ return [
             'path' => storage_path('logs/user_delete.log'),
             'level' => env('LOG_LEVEL', 'debug')
         ],
+        'contact_us' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/contact_us.log'),
+            'level' => env('LOG_LEVEL', 'debug')
+        ],
         'player_register' => [
             'driver' => 'single',
             'path' => storage_path('logs/player_register.log'),

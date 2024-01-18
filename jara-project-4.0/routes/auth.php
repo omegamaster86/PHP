@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\OrganizationController;
@@ -11,6 +12,11 @@ use App\Http\Controllers\VolunteerController;
 use App\Http\Controllers\TournamentRaceRefeController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+
+Route::get('contact-us', [ContactUsController::class, 'create'])->name('contact-us');
+Route::get('contact-us/confirm', [ContactUsController::class, 'createConfirm'])->name('contact-us-confirm');
+Route::post('contact-us', [ContactUsController::class, 'store']);
+Route::post('contact-us/confirm', [ContactUsController::class, 'storeConfirm']);
 
 Route::middleware('guest')->group(function () {
 
@@ -28,7 +34,6 @@ Route::middleware('guest')->group(function () {
     Route::get('status', function () {
         return view('auth.guest_user_status');
     })->name('guest_user_status');
-
 });
 
 Route::middleware('auth')->group(function () {
@@ -98,9 +103,6 @@ Route::middleware('auth')->group(function () {
     //Player Details
     
     Route::get('player/{user_id}', [PlayerController::class, 'createDetails'])->name('player.details');
-
-    
-
 
     //20231129
     //-----大会関連-----

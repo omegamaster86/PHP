@@ -7,7 +7,7 @@ import InputLabel from '../InputLabel';
 const CustomTextField = ({
   label,
   isError,
-  errorMessages,
+  errorMessages=[],
   required,
   value,
   onChange,
