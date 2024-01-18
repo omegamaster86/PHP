@@ -8,6 +8,7 @@ use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\TournamentController;
 use App\Http\Controllers\PlayerInfoAlignmentController;
 use App\Http\Controllers\VolunteerController;
+use App\Http\Controllers\TournamentRaceRefeController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -124,6 +125,10 @@ Route::middleware('auth')->group(function () {
     // 大会検索画面
     Route::get('tournament/search', [TournamentController::class, 'createSearch']) ->name('tournament.search');
     Route::post('tournament/search', [TournamentController::class, 'searchTournament']);
+
+     // 大会レース結果参照画面
+     Route::get('tournament/racereference', [TournamentRaceRefeController::class, 'createReference'])->name('tournament.racereference');
+     Route::post('tournament/racereference', [TournamentRaceRefeController::class, 'showCrewData']);
     //-----大会関連ここまで-----------------------------
 
     //Organizations
