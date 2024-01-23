@@ -1,18 +1,20 @@
 <?php
+
 /*************************************************************************
-*  Project name: JARA
-*  File name: AuthenticatedSessionController.php
-*  File extension: .php
-*  Description: This is the controller file to manage login request
-*************************************************************************
-*  Author: DEY PRASHANTA KUMAR
-*  Created At: 2023/11/02
-*  Updated At: 2023/12/04
-*************************************************************************
-*
-*  Copyright 2023 by DPT INC.
-*
-************************************************************************/
+ *  Project name: JARA
+ *  File name: AuthenticatedSessionController.php
+ *  File extension: .php
+ *  Description: This is the controller file to manage login request
+ *************************************************************************
+ *  Author: DEY PRASHANTA KUMAR
+ *  Created At: 2023/11/02
+ *  Updated At: 2023/12/04
+ *************************************************************************
+ *
+ *  Copyright 2023 by DPT INC.
+ *
+ ************************************************************************/
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -33,7 +35,10 @@ class AuthenticatedSessionController extends Controller
     public function create(): View
     {
         // dd("test");
-        return view('auth.login');
+        //return view('auth.login');
+        $token = csrf_token();
+        $hoge = (string) $token . "000000hoge";
+        return view('auth.login', ["hoge" => $hoge]);
     }
 
     /**
@@ -41,20 +46,51 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();  
+        //dd($request->all(), $request->session()->token(), csrf_token());
+        $request->authenticate();
 
         $request->session()->regenerate();
-        
+
         //Get the status of registered user
         $temp_password_flag = Auth::user()->temp_password_flag;
+        return redirect('http://127.0.0.1:3000/login');
         //Redirect the temporary registered user to the my password change page
-        if($temp_password_flag) {
+        if ($temp_password_flag) {
             return redirect('user/password-change');
         }
         //Redirect the registered user to the my page
         else {
             return redirect('my-page');
         }
+    }
+    //20240119 React連携 ログイン画面CSRFトークン生成
+    public function createCsrf()
+    {
+        //$token = $request->session()->token();
+        // $token = "aaaaaaaaaa";
+        $token = csrf_token();
+        echo($token);
+        echo("aaaaaaaaa");
+        var_dump($token);
+        $hoge = str_split($token);
+        $hoge = "aaa000aaa000" . (string) $token . "hhhhhhh99999999";
+        return  $hoge;
+    }
+
+    //20240119 React連携 ログイン画面遷移
+    public function loginCheck(Request $request)
+    {
+        //$request->session()->token();
+        $reqData = $request->all();
+        return  $reqData;
+        $request->authenticate();
+
+        $request->session()->regenerate();
+
+        //Get the status of registered user
+        $temp_password_flag = Auth::user()->temp_password_flag;
+
+        return $temp_password_flag;
     }
 
     /**
@@ -70,7 +106,7 @@ class AuthenticatedSessionController extends Controller
 
         //Destroy current  token
         $request->session()->regenerateToken();
-        
+
         //Redirect the logout user to the index page
         return redirect('/');
     }

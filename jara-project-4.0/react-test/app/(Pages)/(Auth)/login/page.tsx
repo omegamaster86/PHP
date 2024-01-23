@@ -1,15 +1,20 @@
+// 機能名: ログイン画面
 'use client';
 
-import Header from '../../../components/Header';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import CustomButton from '../../../components/CustomButton';
-import CustomTextField from '@/app/components/CustomTextField';
-import CustomPasswordField from '@/app/components/CustomPasswordField';
+import {
+  CustomButton,
+  CustomTextField,
+  CustomPasswordField,
+  ErrorBox,
+  CustomTitle,
+} from '@/app/components';
 import Validator from '@/app/utils/validator';
+import axios from 'axios';
 
 export default function Login() {
-  const [errorText, setErrorText] = useState('');
+  const [errorText, setErrorText] = useState([] as string[]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailErrorMessages, setEmailErrorMessages] = useState([] as string[]);
@@ -19,18 +24,10 @@ export default function Login() {
 
   return (
     <div>
-      <Header />
-      <main className='flex flex-col items-center justify-start gap-[80px] my-[100px] m-auto p-4'>
-        <h1 className='text-h1 font-bold'>ログイン</h1>
-        <div className='flex flex-col gap-[20px] rounded'>
-          {errorText && (
-            <div
-              className='flex flex-col gap-[20px]
-              bg-systemErrorBg border-systemErrorText border-solid border-[1px] p-2 px-4 justify-center  break-words'
-            >
-              <p className='text-systemErrorText text-[14px] font-bold text-center'>{errorText}</p>
-            </div>
-          )}
+      <main className='flex flex-col items-center justify-between gap-[40px] my-[100px] m-auto'>
+        <CustomTitle isCenter={true}>ログイン</CustomTitle>
+        <div className='flex flex-col gap-[20px] justify-center rounded md:w-[900px]'>
+          <ErrorBox errorText={errorText} />
           <div className='flex flex-col gap-[8px]'>
             <div className='flex flex-col gap-[8px]'>
               <CustomTextField
@@ -40,7 +37,7 @@ export default function Login() {
                 required
                 value={email}
                 placeHolder='メールアドレスを入力してください。'
-                hideDisplayHelp={true}
+                displayHelp={false}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
@@ -56,7 +53,7 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <p className=' flex justify-center text-[14px] font-bold pt-[32px]'>
+          <p className='flex justify-center text-small font-bold pt-[32px]'>
             <a
               className='text-primary-500 '
               href='#'
@@ -68,59 +65,80 @@ export default function Login() {
             </a>
           </p>
           <CustomButton
-            className='primary'
+            buttonType='primary'
+            className='self-center'
             onClick={() => {
               const emailErrorMessages = Validator.getErrorMessages([
                 Validator.validateRequired(email, 'メールアドレス'),
-                Validator.validateEmailFormat(email),
               ]);
               const passwordErrorMessages = Validator.getErrorMessages([
                 Validator.validateRequired(password, 'パスワード'),
               ]);
-
-              // 仮の処理 バリデーション
               setEmailErrorMessages(emailErrorMessages);
               setPasswordErrorMessages(passwordErrorMessages);
-              console.log(emailErrorMessages);
-
               if (emailErrorMessages.length > 0 || passwordErrorMessages.length > 0) {
-                return;
+                // TODO: バリデーションエラー時の処理を実装
+                console.log('error');
               } else {
-                // 仮の処理 仮パスワードかどうかで分岐
+                // TODO: ログイン処理
                 let isPasswordTemporary = true;
                 if (isPasswordTemporary) {
-                  router.push('/passwordchange');
+                  // TODO: ログイン処理を実装
+                  const requestBody = {};
+                  axios
+                    .post('http://localhost:3100/', requestBody)
+                    .then((response) => {
+                      // TODO: 成功時の処理を実装
+                      console.log(response);
+                      router.push('/passwordchange');
+                    })
+                    .catch((error) => {
+                      // TODO: エラー処理を実装
+                      console.log(error);
+                    });
                 } else {
-                  router.push('/mypage');
+                  // TODO: ログイン処理を実装
+                  const requestBody = {};
+                  axios
+                    .post('http://localhost:3100/', requestBody)
+                    .then((response) => {
+                      // TODO: 成功時の処理を実装
+                      console.log(response);
+                      router.push('/mypage');
+                    })
+                    .catch((error) => {
+                      // TODO: エラー処理を実装
+                      console.log(error);
+                    });
                 }
               }
-              return;
             }}
           >
             ログイン
           </CustomButton>
-          <p className='text-center text-[14px] pt-[20px]'>初めてご利用の方</p>
+          <p className='text-center text-small pt-[20px]'>初めてご利用の方</p>
           <CustomButton
+            className='self-center'
             onClick={() => {
               router.push('/signup');
             }}
-            className='secondary'
+            buttonType='white-outlined'
           >
             新規登録
           </CustomButton>
         </div>
       </main>
       <div className='bg-disableBg flex justify-center flex-col items-center text-secondaryText gap-[20px] py-[87px] '>
-        <div className='text-[20px] text-black font-bold'>日本ローイング協会 サポートデスク</div>
+        <div className='text-h3 text-black font-bold'>日本ローイング協会 サポートデスク</div>
         <CustomButton
           onClick={() => {
             router.push('/contact');
           }}
-          className='border-solid border-[1px] border-primary-500 text-primary-500'
+          buttonType='primary-outlined'
         >
           <p>お問い合わせはこちらへ</p>
         </CustomButton>
-        <p className='text-black text-[14px] p-4'>
+        <p className='text-black text-small p-4'>
           営業時間：土・日・祝日　休業日を除く月曜〜金曜　9:00〜12:00 13:00〜17:00
         </p>
       </div>

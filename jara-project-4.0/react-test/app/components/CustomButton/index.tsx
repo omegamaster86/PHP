@@ -2,21 +2,27 @@ const CustomButton = ({
   children,
   onClick,
   className,
-  width,
+  buttonType,
+  icon,
 }: {
   children: React.ReactNode;
   onClick: () => void;
   className?: string;
-  width?: string;
+  buttonType?: string;
+  icon?: React.ReactNode;
 }) => (
   <button
-    className={`text-base h-12 w-72 border-solid border-gray-200 border-[1px] rounded-md p-2 ${className}
+    className={`${className} text-normal h-12 w-72 border-solid border-[1px] rounded-[2px] p-2
       ${
-        className?.split(' ')[0] === 'primary'
+        buttonType === 'primary'
           ? 'bg-primary-500 text-white hover:bg-primary-700'
-          : className?.split(' ')[0] === 'secondary'
-            ? 'bg-transparent text-primaryText hover:bg-gray-50'
-            : ''
+          : buttonType === 'white-outlined'
+            ? 'bg-transparent text-secondaryText hover:bg-gray-50 border-gray-100'
+            : buttonType === 'primary-outlined'
+              ? 'bg-transparent text-primary-500 hover:bg-gray-50 border-primary-500'
+              : buttonType === 'red-outlined'
+                ? 'bg-transparent text-systemErrorText hover:bg-gray-50 border-systemErrorText'
+                : 'bg-white'
       }`}
     onClick={onClick}
   >

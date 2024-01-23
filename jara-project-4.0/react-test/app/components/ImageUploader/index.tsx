@@ -10,11 +10,20 @@ interface ImageUploaderProps {
   setCurrentShowFile: React.Dispatch<
     React.SetStateAction<{ file: File; isUploaded: boolean; preview?: string } | undefined>
   >;
+  initialPhotoUrl?: string;
   displayCloseIcon?: boolean;
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ currentShowFile, setCurrentShowFile }) => {
+const ImageUploader: React.FC<ImageUploaderProps> = ({
+  currentShowFile,
+  setCurrentShowFile,
+  initialPhotoUrl,
+  displayCloseIcon,
+}) => {
+  const [isinitial, setIsinitial] = useState(true);
+  const [initialPhoto, setInitialPhoto] = useState('');
   const onUploadFile = async (file: File) => {
+    isinitial && setIsinitial(false);
     try {
       setCurrentShowFile({ file, isUploaded: false });
 
@@ -46,7 +55,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ currentShowFile, setCurre
         );
         Papa.parse(acceptedFiles[0], {
           header: true,
-          complete: function (results) {
+          complete: function (results: any) {
             console.log(results);
           },
         });
@@ -91,36 +100,59 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ currentShowFile, setCurre
     maxSize: 50 * 1024 * 1024, // 50MB
   });
 
+  useEffect(() => {
+    if (initialPhotoUrl) {
+      setInitialPhoto(initialPhotoUrl);
+    }
+  }, [initialPhotoUrl]);
+
   return (
     <div>
       <div>
-        <div
-          {...getRootProps()}
-          className='bg-containerBg w-[320px] h-[320px] justify-center flex dropzone'
-        >
-          {currentShowFile?.isUploaded || false ? (
+        <div {...getRootProps()} className='w-[320px] h-[320px] justify-center flex dropzone'>
+          {currentShowFile?.isUploaded ? (
             <div className='relative'>
               <button
-                className='absolute rounded bg-transparent hover:bg-disableBg text-primaryText h-12 w-[50px] top-1 right-[0px]'
-                onClick={() => {
+                className='absolute rounded bg-transparent hover:bg-transparent text-primaryText h-12 w-[50px] top-1 right-[0px]'
+                onClick={(e) => {
                   // 画像をクリアする
+                  e.stopPropagation();
                   setCurrentShowFile(undefined);
                 }}
               >
                 <CloseIcon />
               </button>
               <img
-                className='object-cover w-full h-full'
+                className='w-[320px] h-[320px] rounded-[2px] object-cover'
                 src={currentShowFile.preview}
                 alt='image preview'
                 // Revoke data uri after image is loaded
-                onLoad={() => {
-                  URL.revokeObjectURL(currentShowFile.preview);
-                }}
+                onLoad={() => {}}
+              />
+            </div>
+          ) : initialPhotoUrl && isinitial ? (
+            <div className='relative'>
+              {initialPhoto && (
+                <button
+                  className='absolute rounded bg-transparent hover:opacity-25 hover:bg-containerBg text-primaryText h-12 w-[50px] top-1 right-[0px]'
+                  onClick={(e) => {
+                    // 画像をクリアする
+                    e.stopPropagation();
+                    setInitialPhoto('');
+                  }}
+                >
+                  <CloseIcon />
+                </button>
+              )}
+              <img
+                className='object-cover w-[320px] h-[320px]'
+                src={initialPhoto}
+                // Revoke data uri after image is loaded
+                onLoad={() => {}}
               />
             </div>
           ) : (
-            <div className='m-auto mt-auto justify-center flex items-center flex-col gap-[10px]'>
+            <div className='w-[320px] h-[320px] bg-containerBg m-auto mt-auto justify-center flex items-center flex-col gap-[10px]'>
               <input {...getInputProps()} />
               <UploadFileIcon className='w-full h-5 w-[32px] h-[32px] text-primaryText' />
               <p className='text-secondaryText border-secondaryText text-sm'>ファイルを選択</p>
@@ -128,7 +160,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ currentShowFile, setCurre
                 {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : 'or'}
               </p>
               <button
-                className='text-secondaryText py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none border border-dashed border-secondaryText hover:bg-containerBg focus:z-10 focus:ring-4 focus:ring-primary-50'
+                className='text-secondaryText py-2.5 px-5 me-2 mb-2 text-small font-medium text-gray-900 focus:outline-none border border-dashed border-secondaryText hover:bg-containerBg focus:z-10 focus:ring-4 focus:ring-primary-50'
                 disabled={isDragReject}
                 type='button'
               >

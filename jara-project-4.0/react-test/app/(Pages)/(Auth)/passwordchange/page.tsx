@@ -1,14 +1,18 @@
+// パスワード変更画面
+
 'use client';
-import Header from '../../../components/Header';
 import { useState } from 'react';
 import CustomPasswordField from '@/app/components/CustomPasswordField';
 import CustomButton from '@/app/components/CustomButton';
 import { useRouter } from 'next/navigation';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
-import V from '@/app/utils/validator';
+import Validator from '@/app/utils/validator';
+import CustomTitle from '@/app/components/CustomTitle';
+import ErrorBox from '@/app/components/ErrorBox';
+import axios from 'axios';
 
 export default function Passwordchange() {
-  const [errorText, setErrorText] = useState('');
+  const [errorText, setErrorText] = useState([] as string[]);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -22,18 +26,10 @@ export default function Passwordchange() {
 
   return (
     <div>
-      <Header />
       <main className='flex flex-col items-center justify-start gap-[80px] my-[100px] m-auto p-4'>
-        <h1 className='text-h1 font-bold'>パスワード変更</h1>
-        <div className='flex flex-col gap-[20px] rounded'>
-          {errorText && (
-            <div
-              className='flex flex-col gap-[20px]
-                bg-systemErrorBg border-systemErrorText border-solid border-[1px] p-2 px-4 justify-center break-words bg-opacity-40'
-            >
-              <p className='text-systemErrorText text-[14px] text-center'>{errorText}</p>
-            </div>
-          )}
+        <CustomTitle isCenter={true}>パスワード変更</CustomTitle>
+        <div className='flex flex-col gap-4 rounded'>
+          <ErrorBox errorText={errorText} />
           <CustomPasswordField
             label='旧パスワード'
             isError={currentPasswordErrorMessages.length > 0}
@@ -62,8 +58,8 @@ export default function Passwordchange() {
             onChange={(e) => setConfirmNewPassword(e.target.value)}
           />
           <div className='flex flex-col gap-[8px] bg-systemWarningBg border-systemWarningText border-solid border-[1px] p-2 justify-center break-words bg-opacity-40'>
-            <WarningAmberOutlinedIcon className='text-systemWarningText text-[20px]' />
-            <div className='flex flex-col gap-[8px] text-primaryText text-[10px] text-left'>
+            <WarningAmberOutlinedIcon className='text-systemWarningText text-h3' />
+            <div className='flex flex-col gap-[8px] text-primaryText text-caption2 text-left'>
               パスワードは、以下の文字種の全てを含む、8文字以上16文字以内にしてください。
               <br />
               ・半角英文字
@@ -78,7 +74,8 @@ export default function Passwordchange() {
         </div>
         <div className='flex justify-center gap-[16px]'>
           <CustomButton
-            className='secondary w-[200px]'
+            buttonType='white-outlined'
+            className='w-[200px]'
             onClick={() => {
               // パスワード変更画面に遷移
               router.back();
@@ -87,30 +84,49 @@ export default function Passwordchange() {
             戻る
           </CustomButton>
           <CustomButton
-            className='primary w-[200px]'
+            buttonType='primary'
+            className='w-[200px]'
             onClick={() => {
               // バリデーション
               setCurrentPasswordErrorMessages(
-                V.getErrorMessages([
-                  V.validateRequired(currentPassword, '旧パスワード'),
+                Validator.getErrorMessages([
+                  Validator.validateRequired(currentPassword, '旧パスワード'),
                 ]) as string[],
               );
 
               setNewPasswordErrorMessages(
-                V.getErrorMessages([
-                  V.validateRequired(newPassword, '新パスワード'),
-                  V.validatePasswordFormat(newPassword),
-                  V.validateLengthMinAndMax(newPassword, 'パスワード', 8, 16),
-                  V.ValidateNotEqual(newPassword, currentPassword, '旧パスワード', 'パスワード'),
+                Validator.getErrorMessages([
+                  Validator.validateRequired(newPassword, '新パスワード'),
+                  Validator.validatePasswordFormat(newPassword),
+                  Validator.validateLengthMinAndMax(newPassword, 'パスワード', 8, 16),
+                  Validator.ValidateNotEqual(
+                    newPassword,
+                    currentPassword,
+                    '旧パスワード',
+                    'パスワード',
+                  ),
                 ]) as string[],
               );
 
               setConfirmNewPasswordErrorMessages(
-                V.getErrorMessages([
-                  V.validateRequired(confirmNewPassword, '確認用のパスワード'),
-                  V.validateEqual(newPassword, confirmNewPassword, 'パスワード'),
+                Validator.getErrorMessages([
+                  Validator.validateRequired(confirmNewPassword, '確認用のパスワード'),
+                  Validator.validateEqual(newPassword, confirmNewPassword, 'パスワード'),
                 ]) as string[],
               );
+
+              const requestBody = {};
+              axios
+                .post('http://localhost:3100/', requestBody)
+                .then((response) => {
+                  // 成功時の処理を実装
+                  window.confirm('パスワードを変更しました。');
+                  console.log(response);
+                })
+                .catch((error) => {
+                  // エラー時の処理を実装
+                  console.log(error);
+                });
             }}
           >
             変更

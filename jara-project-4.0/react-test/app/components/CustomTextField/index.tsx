@@ -1,21 +1,24 @@
-import HelpOutlineSharp from '@mui/icons-material/HelpOutlineSharp';
 import TextField from '@mui/material/TextField';
-import React, { useState } from 'react';
+import React from 'react';
 import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '../InputLabel';
 
 const CustomTextField = ({
   label,
   isError,
-  errorMessages=[],
+  errorMessages,
   required,
   value,
   onChange,
   type,
   readonly,
   inputAdorment,
-  hideDisplayHelp,
+  displayHelp,
   placeHolder,
+  disabled,
+  toolTipTitle,
+  toolTipText,
+  textFieldWidth,
 }: {
   label: string;
   isError?: boolean;
@@ -26,39 +29,53 @@ const CustomTextField = ({
   type?: string;
   readonly?: boolean;
   inputAdorment?: string;
-  hideDisplayHelp?: boolean;
+  displayHelp?: boolean;
   placeHolder?: string;
+  disabled?: boolean;
+  toolTipTitle?: string;
+  toolTipText?: string;
+  textFieldWidth?: number;
 }) => {
-  const [passwordShown, setPasswordShown] = useState(false);
-  const togglePasswordVisibility = () => {
-    setPasswordShown(!passwordShown);
-  };
-
+  if (displayHelp === undefined) {
+    displayHelp = true;
+  }
   return (
     <div className='flex flex-col gap-[8px]'>
-      <InputLabel label={label} required={required} displayHelp={!hideDisplayHelp}/>
+      <InputLabel
+        label={label}
+        required={required}
+        displayHelp={displayHelp}
+        toolTipTitle={toolTipTitle}
+        toolTipText={toolTipText}
+      />
       <div className='flex flex-col gap-[8px]'>
-        {readonly && <p className='h-12 w-[300px] p-3 disable'>{value}</p>}
+        {readonly && <p className='h-12 w-[300px] text-secondaryText py-3 disable'>{value} {inputAdorment}</p>}
         {!readonly && (
           <TextField
             type={type || 'text'}
             error={isError}
             name={label}
             id={label}
+            {...(disabled && { disabled: true })}
+            {...(disabled && { className: 'bg-disableBg' })}
             value={value}
             onChange={onChange}
             placeholder={placeHolder}
+            inputProps={{
+              step: '0.01',
+            }}
             InputProps={
               inputAdorment &&
               ({
                 endAdornment: <InputAdornment position='end'>{inputAdorment}</InputAdornment>,
               } as any)
             }
+            className={`bg-white ${textFieldWidth ? 'w-[' + textFieldWidth + 'px]' : ''}`}
           />
         )}
       </div>
       {isError &&
-        errorMessages.map((message) => {
+        errorMessages?.map((message) => {
           return (
             <p key={message} className='text-caption1 text-systemErrorText'>
               {message}

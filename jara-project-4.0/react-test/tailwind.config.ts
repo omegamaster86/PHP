@@ -12,17 +12,13 @@ const config: Config = {
       body: ['Inter', 'system-ui', 'sans-serif'],
     },
     fontSize: {
-      tiny: '.875rem',
-      xs: '.75rem', // 12px
-      sm: '.875rem', // 14px
-      base: '1rem', // 16px
       lg: '1.125rem',
-      xl: '1.25rem', // 20px
       '2xl': '1.5rem',
       '5xl': '3rem',
       '6xl': '4rem',
       '7xl': '5rem',
       h1: '2.35rem', // 40px
+      h2: '1.875rem', // 32px
       h3: '1.25rem', // 24px
       normal: '1rem', // 16px
       small: '0.875rem', // 14px
@@ -43,7 +39,22 @@ const config: Config = {
         '800': '#001554',
         '900': '#001247',
       },
+      secondary: {
+        '50': '#C6F5E3',
+        '100': '#B3F2D9',
+        '200': '#9AEECC',
+        '300': '#78E8BB',
+        '400': '#4BE1A5',
+        '500': '#21C583',
+        '600': '#1CA770',
+        '700': '#188E5F',
+        '800': '#147951',
+        '900': '#116745',
+      },
       gray: {
+        '20': '#F2F2F2',
+        '30': '#F0F0F0',
+        '40': '#DEDEDE',
         '50': '#F5F5F5',
         '100': '#E0E0E0',
         '200': '#BDBDBD',
@@ -58,11 +69,11 @@ const config: Config = {
       originalPrimary: '#3399FF',
       disableBg: '#F8F8F8',
       border: '#EDEDED',
-      secondary: '#f59e0b',
       primaryText: '#000000',
       secondaryText: '#808080',
       white: '#FFFFFF',
       black: '#000000',
+      red: '#F44336',
       transparent: 'transparent',
       containerBg: '#F5F5F5',
       thinContainerBg: '#FCFCFC',
@@ -74,6 +85,7 @@ const config: Config = {
     },
     height: {
       '12': '3rem',
+      '432': '27rem',
     },
     width: {
       '72': '18rem',

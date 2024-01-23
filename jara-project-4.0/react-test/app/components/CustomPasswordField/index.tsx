@@ -1,4 +1,3 @@
-import HelpOutlineSharp from '@mui/icons-material/HelpOutlineSharp';
 import TextField from '@mui/material/TextField';
 import React, { useState } from 'react';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -13,7 +12,9 @@ const CustomPasswordField = ({
   required,
   value,
   onChange,
-  placeholder
+  placeholder,
+  toolTipTitle,
+  toolTipText,
 }: {
   label: string;
   isError: boolean;
@@ -22,6 +23,8 @@ const CustomPasswordField = ({
   value?: string;
   placeholder?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  toolTipTitle?: string;
+  toolTipText?: string;
 }) => {
   const [passwordShown, setPasswordShown] = useState(false);
   const togglePasswordVisibility = () => {
@@ -29,7 +32,12 @@ const CustomPasswordField = ({
   };
   return (
     <div className='flex flex-col gap-[8px]'>
-      <InputLabel label={label} required={required} />
+      <InputLabel
+        label={label}
+        required={required}
+        toolTipTitle={toolTipTitle}
+        toolTipText={toolTipText}
+      />
       <div className='flex flex-col gap-[8px]'>
         <TextField
           type={passwordShown ? 'text' : 'password'}
@@ -58,7 +66,7 @@ const CustomPasswordField = ({
       {isError &&
         errorMessages.map((message) => {
           return (
-            <p key={message} className='text-[12px] text-systemErrorText'>
+            <p key={message} className='text-caption1 text-systemErrorText'>
               {message}
             </p>
           );

@@ -1,0 +1,597 @@
+// 機能名: ボランティア情報参照画面・ボランティア情報削除画面
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import {
+  ErrorBox,
+  CustomTitle,
+  InputLabel,
+  CustomButton,
+  CustomTextField,
+  OriginalCheckbox,
+  Tab,
+  CustomTable,
+  CustomThead,
+  CustomTh,
+  CustomTr,
+  CustomTbody,
+  CustomTd,
+} from '@/app/components';
+import axios from 'axios';
+import Link from 'next/link';
+import EditIcon from '@mui/icons-material/EditOutlined';
+import { VolunteerResponse, VolunteerHistoriesResponse } from '@/app/types';
+
+export default function VolunteerInformationRef() {
+  const [volunteerdata, setVolunteerdata] = useState({} as VolunteerResponse);
+  const [volunteerHistoriesdata, setVolunteerHistoriesdata] = useState(
+    [] as VolunteerHistoriesResponse[],
+  );
+  const [errorMessage, setErrorMessage] = useState([] as string[]);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const mode = searchParams.get('mode'); // なし(参照), deleteの2モード
+  switch (mode) {
+    case 'delete':
+      break;
+    default:
+      // デフォルトは参照モード
+      break;
+  }
+
+  /**
+   * @param binaryString
+   * @param index
+   * @returns
+   * @description
+   * 12桁の2進数文字列を受け取り、index番目の値をbool型で返す。
+   * indexが12桁より大きい場合、undefinedを返す。
+   * @example
+   * getDayOfWeekBool('001110000000', 0) // false
+   * getDayOfWeekBool('001110000000', 1) // false
+   * getDayOfWeekBool('001110000000', 2) // false
+   * getDayOfWeekBool('001110000000', 3) // true
+   * getDayOfWeekBool('001110000000', 4) // true
+   * getDayOfWeekBool('001110000000', 5) // true
+   * getDayOfWeekBool('001110000000', 6) // false
+   */
+  const getDayOfWeekBool = (binaryString: string, index: number) => {
+    if (binaryString == undefined) {
+      return;
+    }
+    if (binaryString.length !== 12) {
+      return;
+    }
+    if (binaryString[index] === '1') {
+      return true;
+    }
+    return false;
+  };
+
+  const getTimeZoneBool = (binaryString: string, index: number) => {
+    if (binaryString == undefined) {
+      return;
+    }
+    if (binaryString.length !== 8) {
+      return;
+    }
+    if (binaryString[index] === '1') {
+      return true;
+    }
+    return false;
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // TODO: 仮のURL（繋ぎ込み時に変更すること）
+        axios
+          .get<VolunteerResponse>('http://localhost:3100/volunteer')
+          .then((response) => {
+            setVolunteerdata(response.data);
+          })
+          .catch((error) => {
+            // TODO: エラーハンドリングを実装
+            console.log(error);
+          });
+        // TODO: 仮のURL（繋ぎ込み時に変更すること）
+        axios
+          .get<VolunteerHistoriesResponse[]>('http://localhost:3100/volunteerHistories')
+          .then((response) => {
+            setVolunteerHistoriesdata(response.data);
+          })
+          .catch((error) => {
+            // TODO: エラーハンドリングを実装
+            console.log(error);
+          });
+      } catch (error) {
+        // TODO: エラーハンドリングを実装
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {}, []);
+  const [activeTab, setActiveTab] = useState<number>(0);
+
+  const handleTabChange = (tabNumber: number) => {
+    setActiveTab(tabNumber);
+  };
+  return (
+    <div>
+      <main className='flex flex-col justify-start gap-[20px] my-[80px] flex-nowrap'>
+        <div className='w-9/12 m-3 flex flex-row items-center justify-between gap-[20px]'>
+          <CustomTitle isCenter={false} displayBack={true}>
+            ボランティア情報{mode === 'delete' && '削除'}
+            {mode !== 'delete' && '参照'}
+          </CustomTitle>
+          {mode !== 'delete' && (
+            // TODO: ボランティア情報変更画面に遷移
+            // ボランティア情報を変更ボタン
+            <Link
+              href={{
+                pathname: '/volunteerInformation',
+                query: { id: volunteerdata.volunteerId, mode: 'update' },
+              }}
+              className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
+            >
+              <EditIcon className='cursor-pointer m-1 text-small md:text-h3' />
+              ボランティア情報を変更
+            </Link>
+          )}
+        </div>
+        <ErrorBox errorText={errorMessage} />
+        <div className='flex flex-row gap-[20px] justify-between'>
+          <div className='flex flex-col gap-[20px]'>
+            {/* 写真 */}
+            <InputLabel label='写真' required={false} />
+            <img
+              src={volunteerdata.photo}
+              className='w-[200px] h-[200px] rounded-[10px] object-cover'
+            />
+          </div>
+        </div>
+
+        <div className='flex flex-wrap justify-between gap-[20px]'>
+          <div className='flex flex-col gap-[20px] max-w-[400px]'>
+            {/* ボランティアID */}
+            <CustomTextField
+              label='ボランティアID'
+              value={volunteerdata.volunteerId}
+              readonly
+              displayHelp={false}
+              onChange={(e) => {}}
+            />
+            {/* 氏名 */}
+            <CustomTextField
+              label='氏名'
+              value={volunteerdata.volunteerName}
+              readonly
+              displayHelp={false}
+              onChange={(e) => {}}
+            />
+            {/* 生年月日 */}
+            <CustomTextField
+              label='生年月日'
+              value={volunteerdata.dateOfBirth}
+              readonly
+              displayHelp={false}
+              onChange={(e) => {}}
+            />
+            {/* 性別 */}
+            <CustomTextField
+              label='性別'
+              value={volunteerdata.sex}
+              readonly
+              displayHelp={false}
+              onChange={(e) => {}}
+            />
+            {/* 居住地（国） */}
+            <div className='flex flex-row gap-[16px]'>
+              <CustomTextField
+                label='居住地'
+                value={volunteerdata.residenceCountry}
+                readonly
+                displayHelp={false}
+                onChange={(e) => {}}
+              />
+              {/* 居住地（都道府県） */}
+              <CustomTextField
+                label='都道府県'
+                value={volunteerdata.residencePrefecture}
+                readonly
+                displayHelp={false}
+                onChange={(e) => {}}
+              />
+            </div>
+            {/* 電話番号 */}
+            <CustomTextField
+              label='電話番号'
+              value={volunteerdata.telephoneNumber}
+              readonly
+              displayHelp={false}
+              onChange={(e) => {}}
+            />
+            {/* メールアドレス */}
+            <CustomTextField
+              label='メールアドレス'
+              value={volunteerdata.mailaddress}
+              readonly
+              displayHelp={false}
+              onChange={(e) => {}}
+            />
+          </div>
+          <div className='flex flex-col gap-[20px] max-w-[400px]'>
+            {/* 服のサイズ */}
+            <CustomTextField
+              label='服のサイズ'
+              value={volunteerdata.clothesSize}
+              readonly
+              displayHelp={false}
+              onChange={(e) => {}}
+            />
+            {/* 障碍タイプ */}
+            <label htmlFor='disType'>補助が可能な障碍タイプ</label>
+            <div className='flex flex-row gap-[16px] justify-start'>
+              {volunteerdata.disType?.map((disType) => (
+                <OriginalCheckbox
+                  id='disType'
+                  key={disType}
+                  label={disType}
+                  value={disType}
+                  checked={disType.length > 0}
+                  readonly
+                  onChange={(e) => {}}
+                />
+              ))}
+            </div>
+            {/* 資格情報 */}
+            <label htmlFor='qualHold'>資格情報</label>
+            <div className='flex flex-row gap-[16px] justify-start'>
+              {volunteerdata.qualHold?.map((qualHold) => (
+                <div id='qualHold' key={qualHold}>
+                  <p className='text-secondaryText'>{qualHold}</p>
+                </div>
+              ))}
+            </div>
+            <label htmlFor='language'>言語</label>
+            {volunteerdata.language?.map((language: any) => (
+              <div
+                id='language'
+                key={language.languageName}
+                className='flex flex-row gap-[6px] justify-start'
+              >
+                {/* 言語（種類） */}
+                <p className='text-secondaryText'>{language.languageName}：</p>
+                {/* 言語（レベル） */}
+                <p className='text-secondaryText'>{language.level}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className='flex flex-col gap-[20px] '>
+          {/* 参加可能曜日 */}
+          <div className='text-h3 font-bold my-2'>参加しやすい曜日</div>
+          <div className='flex flex-row gap-[16px] flex-wrap'>
+            曜日指定
+            <OriginalCheckbox
+              id='anyday'
+              label='祝日は可'
+              value=''
+              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 7) || false}
+              readonly
+              onChange={(e) => {}}
+            />
+            <OriginalCheckbox
+              id='sunday'
+              label='日曜日'
+              value=''
+              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 0) || false}
+              readonly
+              onChange={(e) => {}}
+            />
+            <OriginalCheckbox
+              id='monday'
+              label='月曜日'
+              value=''
+              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 1) || false}
+              readonly
+              onChange={(e) => {}}
+            />
+            <OriginalCheckbox
+              id='tuesday'
+              label='火曜日'
+              value=''
+              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 2) || false}
+              readonly
+              onChange={(e) => {}}
+            />
+            <OriginalCheckbox
+              id='wednesday'
+              label='水曜日'
+              value=''
+              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 3) || false}
+              readonly
+              onChange={(e) => {}}
+            />
+            <OriginalCheckbox
+              id='thursday'
+              label='木曜日'
+              value=''
+              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 4) || false}
+              readonly
+              onChange={(e) => {}}
+            />
+            <OriginalCheckbox
+              id='friday'
+              label='金曜日'
+              value=''
+              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 5) || false}
+              readonly
+              onChange={(e) => {}}
+            />
+            <OriginalCheckbox
+              id='saturday'
+              label='土曜日'
+              value=''
+              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 6) || false}
+              readonly
+              onChange={(e) => {}}
+            />
+            <OriginalCheckbox
+              id='any'
+              label='相談可能'
+              value=''
+              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 8) || false}
+              readonly
+              onChange={(e) => {}}
+            />
+          </div>
+          {/* 参加可能時間帯 */}
+          <div className='text-h3 font-bold my-2'>参加しやすい時間帯</div>
+          <div className='flex flex-col gap-[16px]'>
+            時間帯指定
+            <OriginalCheckbox
+              id='anytime'
+              label='相談可能'
+              value=''
+              checked={getTimeZoneBool(volunteerdata.timeZone, 7) || false}
+              readonly
+              onChange={(e) => {}}
+            />
+            <OriginalCheckbox
+              id='earlymorning'
+              label='早朝　 06:00〜08:00'
+              value=''
+              checked={getTimeZoneBool(volunteerdata.timeZone, 0) || false}
+              readonly
+              onChange={(e) => {}}
+            />
+            <OriginalCheckbox
+              id='morning'
+              label='午前　 08:00〜12:00'
+              value=''
+              checked={getTimeZoneBool(volunteerdata.timeZone, 1) || false}
+              readonly
+              onChange={(e) => {}}
+            />
+            <OriginalCheckbox
+              id='afternoon'
+              label='午後　 12:00〜16:00'
+              value=''
+              checked={getTimeZoneBool(volunteerdata.timeZone, 2) || false}
+              readonly
+              onChange={(e) => {}}
+            />
+            <OriginalCheckbox
+              id='night'
+              label='夜　　 16:00〜20:00'
+              value=''
+              checked={getTimeZoneBool(volunteerdata.timeZone, 3) || false}
+              readonly
+              onChange={(e) => {}}
+            />
+          </div>
+        </div>
+        <div className='mx-auto mt-[40px] flex flex-col gap-[8px]'>
+          <div className='flex flex-row justify-between items-center'>
+            <div className='flex'>
+              {/* すべてトグルボタン */}
+              <Tab
+                number={0}
+                isActive={activeTab === 0}
+                onClick={handleTabChange}
+                rounded='rounded-l'
+              >
+                全て
+              </Tab>
+              {/* 公式大会トグルボタン */}
+              <Tab
+                number={1}
+                isActive={activeTab === 1}
+                onClick={handleTabChange}
+                rounded='rounded-none'
+              >
+                公式
+              </Tab>
+              {/* 非公式大会トグルボタン */}
+              <Tab
+                number={2}
+                isActive={activeTab === 2}
+                onClick={handleTabChange}
+                rounded='rounded-r'
+              >
+                非公式
+              </Tab>
+            </div>
+            {mode !== 'delete' && (
+              <Link
+                className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
+                href={{
+                  // TODO: ボランティア履歴情報登録画面の正規URLに変更
+                  pathname: '/volunteerHistoriesInformationDelete',
+                  query: { id: volunteerdata.volunteerId },
+                }}
+              >
+                履歴の削除
+              </Link>
+            )}
+          </div>
+          <div className='w-screen flex justify-between items-center'>
+            {/* 独自テーブルコンポーネントがrowSpanに対応させていない（rowSpanの利用頻度が少ない）ため、個別実装にて対応 */}
+            <CustomTable>
+              <CustomThead>
+                <CustomTr>
+                  <th colSpan={17} rowSpan={1} className='p-1 border border-gray-20'>
+                    ボランティア参加履歴
+                  </th>
+                </CustomTr>
+                <CustomTr>
+                  <th colSpan={1} rowSpan={2} className='p-1 border border-gray-20'>
+                    大会名/イベント名
+                  </th>
+                  <th colSpan={2} className='p-1 border border-gray-20'>
+                    開催期間
+                  </th>
+                  <th colSpan={1} rowSpan={2} className='p-1 border border-gray-20'>
+                    役割
+                  </th>
+                  <th colSpan={1} rowSpan={2} className='p-1 border border-gray-20'>
+                    AD
+                  </th>
+                  <th colSpan={8} rowSpan={1} className='p-1 border border-gray-20'>
+                    参加日
+                  </th>
+                </CustomTr>
+                <CustomTr>
+                  <CustomTh>開始日</CustomTh>
+                  <CustomTh>終了日</CustomTh>
+                  <CustomTh>祝日</CustomTh>
+                  <CustomTh>日曜</CustomTh>
+                  <CustomTh>月曜</CustomTh>
+                  <CustomTh>火曜</CustomTh>
+                  <CustomTh>水曜</CustomTh>
+                  <CustomTh>木曜</CustomTh>
+                  <CustomTh>金曜</CustomTh>
+                  <CustomTh>土曜</CustomTh>
+                </CustomTr>
+              </CustomThead>
+              {/* ボランティア参加履歴一覧テーブル明細表示 */}
+              <CustomTbody>
+                {volunteerHistoriesdata.map(
+                  (volunteerHistoriesdata) =>
+                    (volunteerHistoriesdata.tournType == activeTab || activeTab == 0) && (
+                      <CustomTr key={volunteerHistoriesdata.tournName}>
+                        {/* 大会名/イベント名 */}
+                        <CustomTd align='center'>{volunteerHistoriesdata.tournName}</CustomTd>
+                        {/* 開催開始日 */}
+                        <CustomTd align='center'>{volunteerHistoriesdata.eventStartDate}</CustomTd>
+                        {/* 開催終了日 */}
+                        <CustomTd align='center'>{volunteerHistoriesdata.eventEndDate}</CustomTd>
+                        {/* 役割 */}
+                        <CustomTd align='center'>{volunteerHistoriesdata.roleName}</CustomTd>
+                        {/* AD */}
+                        <CustomTd align='center'>{volunteerHistoriesdata.ad}</CustomTd>
+                        {/* 祝日 */}
+                        <CustomTd align='center'>
+                          {getDayOfWeekBool(volunteerHistoriesdata.dayOfWeek, 7) && (
+                            <p className='text-small'>可</p>
+                          )}
+                        </CustomTd>
+                        {/* 日曜 */}
+                        <CustomTd align='center'>
+                          {getDayOfWeekBool(volunteerHistoriesdata.dayOfWeek, 0) && (
+                            <p className='text-small'>◯</p>
+                          )}
+                        </CustomTd>
+                        {/* 月曜 */}
+                        <CustomTd align='center'>
+                          {getDayOfWeekBool(volunteerHistoriesdata.dayOfWeek, 1) && (
+                            <p className='text-small'>◯</p>
+                          )}
+                        </CustomTd>
+                        {/* 火曜 */}
+                        <CustomTd align='center'>
+                          {getDayOfWeekBool(volunteerHistoriesdata.dayOfWeek, 2) && (
+                            <p className='text-small'>◯</p>
+                          )}
+                        </CustomTd>
+                        {/* 水曜 */}
+                        <CustomTd align='center'>
+                          {getDayOfWeekBool(volunteerHistoriesdata.dayOfWeek, 3) && (
+                            <p className='text-small'>◯</p>
+                          )}
+                        </CustomTd>
+                        {/* 木曜 */}
+                        <CustomTd align='center'>
+                          {getDayOfWeekBool(volunteerHistoriesdata.dayOfWeek, 4) && (
+                            <p className='text-small'>◯</p>
+                          )}
+                        </CustomTd>
+                        {/* 金曜 */}
+                        <CustomTd align='center'>
+                          {getDayOfWeekBool(volunteerHistoriesdata.dayOfWeek, 5) && (
+                            <p className='text-small'>◯</p>
+                          )}
+                        </CustomTd>
+                        {/* 土曜 */}
+                        <CustomTd align='center'>
+                          {getDayOfWeekBool(volunteerHistoriesdata.dayOfWeek, 6) && (
+                            <p className='text-small'>◯</p>
+                          )}
+                        </CustomTd>
+                      </CustomTr>
+                    ),
+                )}
+              </CustomTbody>
+            </CustomTable>
+          </div>
+        </div>
+        <div className='flex flex-row mb-1 gap-[16px] justify-center'>
+          {/* 戻るボタン */}
+          <CustomButton
+            buttonType='white-outlined'
+            className='text-normal h-12 w-72 mb-6'
+            onClick={() => {
+              router.back();
+              // ボランティア情報参照画面に遷移
+            }}
+          >
+            戻る
+          </CustomButton>
+          {/* 削除ボタン */}
+          {mode === 'delete' && (
+            <CustomButton
+              buttonType='primary'
+              className='text-secondaryText text-normal h-12 w-72 mr-1 mb-6'
+              onClick={() => {
+                // TODO: 削除処理
+                /**
+                 * 以下のテーブルに登録されている当該ボランティアのデータの「削除フラグ」に"1"を設定する。
+                 * 「ボランティアテーブル」
+                 * 「ボランティア履歴テーブル」
+                 * 「ボランティアアベイラブルテーブル」
+                 * 「ボランティア保有資格情報テーブル」
+                 * 「ボランティア言語レベルテーブル」
+                 * 「ボランティア支援可能障碍タイプテーブル」
+                 */
+                // TODO: エラーハンドリングを実装
+                // 削除に失敗した場合、
+                // 以下のメッセージをシステムエラーとして赤文字で表示し、以降の処理は行わない。
+                // setErrorMessage(['ユーザー情報の登録に失敗しました。ユーザーサポートにお問い合わせください。']);
+
+                // 管理画面に遷移
+                router.push('/dashboard');
+              }}
+            >
+              削除
+            </CustomButton>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}
