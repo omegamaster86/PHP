@@ -152,9 +152,14 @@ export default function PlayerInformation() {
       try {
         // TODO: 都道府県情報の取得処理を実装
         axios
-          .get<PrefectureResponse[]>('http://localhost:3100/prefecture')
+          //20240123 DBからデータ取得
+          // .get<PrefectureResponse[]>('http://localhost:3100/prefecture')
+          .get('http://localhost:8000/api/getPrefecures')
           .then((response) => {
-            setPrefectures(response.data);
+            const stateList = response.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
+            //console.log(stateList);
+            setPrefectures(stateList);
+            // setPrefectures(response.data);
           })
           .catch((error) => {
             // TODO: 個別エラー処理を実装
@@ -178,9 +183,13 @@ export default function PlayerInformation() {
           });
         // TODO: 国の取得処理を実装
         axios
-          .get<CountryResponse[]>('http://localhost:3100/countries')
+          //20240123 DBからデータ取得
+          // .get<CountryResponse[]>('http://localhost:3100/countries')
+          .get('http://localhost:8000/api/getCountries')
           .then((response) => {
-            setCountries(response.data);
+            const countryList = response.data.map(({ country_id, country_name }: { country_id: number; country_name: string }) => ({ id: country_id, name: country_name }));
+            setCountries(countryList);
+            // setCountries(response.data);
           })
           .catch((error) => {
             // TODO: 個別エラー処理を実装
@@ -375,7 +384,8 @@ export default function PlayerInformation() {
             // TODO: 更新処理を実装
             const registerData = {};
             axios
-              .post('http://localhost:3100/', registerData)
+              // .post('http://localhost:3100/', registerData)
+              .post('http://localhost:8000/api/postSample', formData) //20240123 送信テスト
               .then((response) => {
                 // TODO: 更新処理成功時の処理
               })
@@ -390,7 +400,8 @@ export default function PlayerInformation() {
             // TODO: 登録処理を実装
             const registerData = {};
             axios
-              .post('http://localhost:3100/', registerData)
+              // .post('http://localhost:3100/', registerData)
+              .post('http://localhost:8000/api/postSample', formData) //20240123 送信テスト
               .then((response) => {
                 // TODO: 登録処理成功時の処理の実装
               })
@@ -409,6 +420,19 @@ export default function PlayerInformation() {
       </CustomButton>
     ),
   };
+
+  // 20240123 マージ用
+  //選手データ送信テスト 20240119
+  const postPlayerData = async (formData: any) => {
+    await axios.post('http://localhost:8000/api/postSample', formData)
+      .then((res) => {
+        console.log(res.data.reqData);
+      }).catch(error => {
+        console.log(error);
+      });
+  }
+  //選手データ送信テスト 20240119
+  // 20240123 マージ用
 
   return (
     <div>
@@ -458,7 +482,7 @@ export default function PlayerInformation() {
                   className='object-cover w-[320px] h-[320px] rounded-[2px]'
                   src={currentShowFile?.preview}
                   // Revoke data uri after image is loaded
-                  onLoad={() => {}}
+                  onLoad={() => { }}
                 />
               </div>
             )}
@@ -695,7 +719,9 @@ export default function PlayerInformation() {
               />
               <CustomDropdown
                 id='birthPrefecture'
-                options={prefectures.map((item) => ({ key: item.id, value: item.name }))}
+                //20240123 DBから取得したデータの表示
+                // options={prefectures.map((item) => ({ key: item.id, value: item.name }))}
+                options={prefectures.map(({ id, name }) => ({ key: id, value: name }))} //都道府県のnameだけをリストにして表示 20240117
                 readonly={mode === 'confirm'}
                 value={
                   mode !== 'confirm'

@@ -22,10 +22,18 @@ export default function TeamManagement() {
   const [errorMessage, setErrorMessage] = useState([] as string[]);
   const [teamdata, setTeamdata] = useState([] as TeamResponse[]);
   const router = useRouter();
+  const [resData, setResponseData] = React.useState([] as any); //Laravel_Reactデータ送信テスト 20240116
+
+  var responseData = null; //Laravel_Reactデータ送信テスト 20231227
+  var buttonValue = "送信ボタン"; //Laravel_Reactデータ送信テスト 20240123
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const responseData = await axios.get('http://localhost:8000/api/list'); //Laravel_Reactデータ送信テスト 20231227
+        console.log(responseData.data); //Laravel_Reactデータ送信テスト 20231227
+        setResponseData(responseData.data); //Laravel_Reactデータ送信テスト 20240116
+
         // 仮のURL（繋ぎ込み時に変更すること）
         const response = await axios.get<TeamResponse[]>('http://localhost:3100/teams');
         setTeamdata(response.data);
@@ -35,6 +43,18 @@ export default function TeamManagement() {
     };
     fetchData();
   }, []);
+
+  //React_Laravelデータ送信テスト 20240108
+  const onClick = async () => {
+    await axios.post('http://localhost:8000/api/postSample', "送信成功")
+      .then((res) => {
+        console.log(res);
+      }).catch(error => {
+        console.log(error);
+      });
+  }
+  //React_Laravelデータ送信テスト 20240108
+
   return (
     <div>
       <main className='flex flex-col justify-start p-24 m-auto gap-[80px] my-[100px]'>
@@ -141,6 +161,16 @@ export default function TeamManagement() {
           >
             戻る
           </CustomButton>
+          {/* React_Laravelデータ送信テスト 20231228 */}
+          {/* <form name="postSample" onSubmit={(event) => handleSubmit(event)}> */}
+          <form name="postSample">
+            <label htmlFor="name">Name: </label>
+            <br />
+            <input type="text" id="name" name="name" />
+            <br />
+            <input type="button" defaultValue={buttonValue} onClick={onClick} />
+          </form>
+          {/* React_Laravelデータ送信テスト 20231228 */}
         </div>
       </main>
     </div>
