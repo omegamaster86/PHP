@@ -6,6 +6,7 @@ use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\OrganizationPlayersController;
 use App\Http\Controllers\TournamentController;
 use App\Http\Controllers\PlayerInfoAlignmentController;
 use App\Http\Controllers\VolunteerController;
@@ -204,4 +205,13 @@ Route::group(['middleware' => ['auth', 'action_log']], function () {
     //団体検索画面
     Route::get('organization/search', [OrganizationController::class, 'createSearchView'])->name('organizations.search');
     Route::post('organization/search', [OrganizationController::class, 'searchOrganization']);
+
+    //20240118
+    //団体所属選手登録画面
+    Route::get('organization-players/edit/{targetOrgId}',[OrganizationPlayersController::class, 'createEdit'])->name('organization-players.edit');
+
+    //20240122
+    //団体所属追加選手検索画面
+    Route::get('organization-players/search/{targetOrgId}', [OrganizationPlayersController::class, 'createSearchView'])->name('organization-players.search');
+    Route::post('organization-players/search/{targetOrgId}', [OrganizationPlayersController::class, 'searchOrganizationPlayers']);
 });

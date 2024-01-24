@@ -159,59 +159,73 @@ class VolunteerController extends Controller
                                 M_languages $m_languages,
                                 M_language_proficiency $m_language_proficiency)
     {
-        $sex = $m_sex->getSexList();
-        $countries = $m_countries->getCountries();
-        $prefectures = $m_prefectures->getPrefecures();
-        $languages =  $m_languages->getLanguages();
-        $language_proficiency = $m_language_proficiency->getLanguageProficiency();
+        if(Auth::user()->temp_password_flag === 1)
+        {
+            return redirect('user/password-change');
+        }
+        else
+        {
+            $sex = $m_sex->getSexList();
+            $countries = $m_countries->getCountries();
+            $prefectures = $m_prefectures->getPrefecures();
+            $languages =  $m_languages->getLanguages();
+            $language_proficiency = $m_language_proficiency->getLanguageProficiency();
 
-        return view('volunteer.search',['m_sex' => $sex,
-                                        'countries' => $countries,
-                                        'prefectures' => $prefectures,
-                                        'languages' => $languages,
-                                        'language_proficiency' => $language_proficiency
-                                    ]);
+            return view('volunteer.search',['m_sex' => $sex,
+                                            'countries' => $countries,
+                                            'prefectures' => $prefectures,
+                                            'languages' => $languages,
+                                            'language_proficiency' => $language_proficiency
+                                        ]);
+        }
     }
 
     //条件に合うボランティアの検索結果を表示する
     public function searchVolunteers(Request $request,T_volunteers $t_volunteers)
     {
-        $searchInfo = $request->all();        
-        $conditionValue = array();  //検索条件の値を格納する配列
-        $supportableDisabilityCondition = $this->generateSupportableDisabilityCondition($searchInfo);
-        $languageCondition = $this->generateLanguageCondition($searchInfo,$conditionValue);
-        $condition = $this->generateCondition($searchInfo,$conditionValue);
-        $langJoinType = "";
-        if(isset($searchInfo['language1'])
-            || isset($searchInfo['language2'])
-            || isset($searchInfo['language3']))
+        if(Auth::user()->temp_password_flag === 1)
         {
-            $langJoinType = "join";
+            return redirect('user/password-change');
         }
         else
         {
-            $langJoinType = "left join";
-        }
+            $searchInfo = $request->all();        
+            $conditionValue = array();  //検索条件の値を格納する配列
+            $supportableDisabilityCondition = $this->generateSupportableDisabilityCondition($searchInfo);
+            $languageCondition = $this->generateLanguageCondition($searchInfo,$conditionValue);
+            $condition = $this->generateCondition($searchInfo,$conditionValue);
+            $langJoinType = "";
+            if(isset($searchInfo['language1'])
+                || isset($searchInfo['language2'])
+                || isset($searchInfo['language3']))
+            {
+                $langJoinType = "join";
+            }
+            else
+            {
+                $langJoinType = "left join";
+            }
 
-        $SupportableDisabilityJoinType = "";
-        if(isset($searchInfo['PR1'])
-            || isset($searchInfo['PR2'])
-            || isset($searchInfo['PR3']))
-        {
-            $SupportableDisabilityJoinType = "join";
-        }
-        else
-        {
-            $SupportableDisabilityJoinType = "left join";
-        }
+            $SupportableDisabilityJoinType = "";
+            if(isset($searchInfo['PR1'])
+                || isset($searchInfo['PR2'])
+                || isset($searchInfo['PR3']))
+            {
+                $SupportableDisabilityJoinType = "join";
+            }
+            else
+            {
+                $SupportableDisabilityJoinType = "left join";
+            }
 
-        $result = $t_volunteers->getVolunteersWithSearchCondition($supportableDisabilityCondition,
-                                                        $languageCondition,
-                                                        $condition,
-                                                        $langJoinType,
-                                                        $SupportableDisabilityJoinType,
-                                                        $conditionValue);
-        dd($result);
+            $result = $t_volunteers->getVolunteersWithSearchCondition($supportableDisabilityCondition,
+                                                            $languageCondition,
+                                                            $condition,
+                                                            $langJoinType,
+                                                            $SupportableDisabilityJoinType,
+                                                            $conditionValue);
+            dd($result);
+        }
     }
 
     //補助が可能な障碍タイプの条件を生成

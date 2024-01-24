@@ -1,11 +1,11 @@
 {{--*************************************************************************
 * Project name: JARA
-* File name: registered-confirm.blade.php
+* File name: search.blade.php
 * File extension: .blade.php
 * Description: This is the ui of organization's edit and update confirmation page
 *************************************************************************
 * Author: t_futamura
-* Created At: 2023/11/30
+* Created At: 2024/1/17
 * Updated At: 
 *************************************************************************
 *
