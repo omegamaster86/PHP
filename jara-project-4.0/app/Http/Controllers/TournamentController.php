@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use League\CommonMark\Node\Inline\Newline;
 
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Session;
 use App\Models\T_tournaments;
 use App\Models\T_races;
 use App\Models\T_raceResultRecord;
@@ -368,5 +370,112 @@ class TournamentController extends Controller
     {
         $reqData = $request->all();
         return response()->json(['reqData' => $reqData]);
+    }
+
+    //大会エントリー一括登録
+    public function createEntryRegister(T_tournaments $tourn)
+    {
+        $tournament_name_list = $tourn->getTournamentName();
+        return view("tournament.entry-register", ["dataList" => [], "errorMsg" => "", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
+
+        //user can visit this page if he/she is an admin
+        // if (((Auth::user()->user_type & "01000000") === "01000000") or ((Auth::user()->user_type & "00100000") === "00100000") or ((Auth::user()->user_type & "00010000") === "00010000") or ((Auth::user()->user_type & "00001000") === "00001000")) {
+        //     $tournament_name_list = $tourn->getTournamentName();
+        //     return view("tournament.entry-register", ["dataList" => [], "errorMsg" => "", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
+        // }
+        // //redirect to my-page those have no permission to access tournament-entry-register page
+        // else {
+        //     return redirect('my-page');
+        // }
+    }
+    public function csvReadEntryRegister(Request $request, T_tournaments $tourn, T_races $tRace)
+    {
+
+        $tournament_name_list = $tourn->getTournamentName();
+
+        if ($request->has('csvRead')) { // 参照ボタンクリック
+            // CSVファイルが存在するかの確認
+            if ($request->hasFile('csvFile')) {
+                //拡張子がCSVであるかの確認
+                if ($request->csvFile->getClientOriginalExtension() !== "csv") {
+                    // throw new Exception('このファイルはCSVファイルではありません');
+                    return view('tournament.entry-register', ["dataList" => [], "errorMsg" => "このファイルはCSVファイルではありません", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
+                }
+                //ファイルの保存
+                $newCsvFileName = $request->csvFile->getClientOriginalName();
+                $request->csvFile->storeAs('public/csv', $newCsvFileName);
+            } else {
+                // throw new Exception('ファイルを取得できませんでした');
+                return view('tournament.entry-register', ["dataList" => [], "errorMsg" => "ファイルを取得できませんでした。<br/>入力したファイルパスを確認してください", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
+            }
+            //保存したCSVファイルの取得
+            $csv = Storage::disk('local')->get("public/csv/{$newCsvFileName}");
+            // OS間やファイルで違う改行コードをexplode統一
+            $csv = str_replace(array("\r\n", "\r"), "\n", $csv);
+            // $csvを元に行単位のコレクション作成。explodeで改行ごとに分解
+
+            $csvList = collect(explode("\n", $csv));
+            $csvList = $csvList->toArray();
+            $checkList = array();
+            $dataList = array();
+            for ($i = 1; $i < count($csvList); $i++) {
+                $value = explode(',', $csvList[$i]);
+                $dataList[$i] = $value;
+            }
+
+            return view('tournament.entry-register', ["dataList" => $dataList, "errorMsg" => "", "checkList" => $checkList, "tournament_name_list" => $tournament_name_list]);
+        } else if ($request->has('dbUpload')) { // 登録ボタンクリック
+            $csvData = Session::get('dataList');
+            // dd($csvData[1][5]);
+            // $result = explode(',', $request->Flag01);
+            $result = "1";
+            //dd($csvData);
+            for ($i = 1; $i < count($csvData); $i++) {
+                if ($result == "1") {
+                    //登録待ち
+                    $racesData = collect([
+                        'race_id' => $csvData[$i][4],
+                        'race_number' => 1,
+                        'entrysystem_race_id' => $csvData[$i][5],
+                        'tourn_id' => $csvData[$i][1],
+                        'race_name' => $csvData[$i][6],
+                        'event_id' => $csvData[$i][14],
+                        'event_name' => $csvData[$i][15],
+                        'race_class_id' => 111,
+                        'race_class_name' => null,
+                        'by_group' => null,
+                        'range' => null,
+                        'start_datetime' => null,
+                        'delete_flag' => 0,
+                    ]);
+                    $log = $tRace->insertRaces($racesData);
+                } else if ($result == "2") {
+                    //登録可能
+                    $racesData = collect([
+                        'race_id' => $csvData[$i][4],
+                        'race_number' => 1,
+                        'entrysystem_race_id' => $csvData[$i][5],
+                        'tourn_id' => $csvData[$i][1],
+                        'race_name' => $csvData[$i][6],
+                        'event_id' => $csvData[$i][14],
+                        'event_name' => $csvData[$i][15],
+                        'race_class_id' => 111,
+                        'race_class_name' => null,
+                        'by_group' => null,
+                        'range' => null,
+                        'start_datetime' => null,
+                        'delete_flag' => 0,
+                    ]);
+                    $tRace->updateRaces($racesData);
+                } else {
+                    continue;
+                }
+            }
+            //dd($playersInfo);
+
+            return view('tournament.entry-register', ["dataList" => [], "errorMsg" => $log, "checkList" => "", "tournament_name_list" => $tournament_name_list]);
+        } else {
+            return view('tournament.entry-register', ["dataList" => [], "errorMsg" => "", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
+        }
     }
 }

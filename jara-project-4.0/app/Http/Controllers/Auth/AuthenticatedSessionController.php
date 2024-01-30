@@ -53,7 +53,7 @@ class AuthenticatedSessionController extends Controller
 
         //Get the status of registered user
         $temp_password_flag = Auth::user()->temp_password_flag;
-        return redirect('http://127.0.0.1:3000/login');
+        //return redirect('http://127.0.0.1:3000/login');
         //Redirect the temporary registered user to the my password change page
         if ($temp_password_flag) {
             return redirect('user/password-change');
