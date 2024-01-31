@@ -432,26 +432,26 @@ class TournamentController extends Controller
             //dd($csvData);
             for ($i = 1; $i < count($csvData); $i++) {
                 if ($result == "1") {
-                    $tRaceResultRecord::$raceResultRecordInfo['player_id'] = ""; //選手ID
-                    $tRaceResultRecord::$raceResultRecordInfo['tourn_id'] = ""; //大会ID
-                    $tRaceResultRecord::$raceResultRecordInfo['race_id'] = ""; //レースID
-                    $tRaceResultRecord::$raceResultRecordInfo['race_number'] = ""; //レースNo
-                    //レース区分ID
-                    $tRaceResultRecord::$raceResultRecordInfo['org_id'] = ""; //団体ID
-                    $tRaceResultRecord::$raceResultRecordInfo['crew_name'] = ""; //クルー名
-                    $tRaceResultRecord::$raceResultRecordInfo['by_group'] = ""; //組別
-                    $tRaceResultRecord::$raceResultRecordInfo['event_id'] = ""; //種目ID
+                    $tRaceResultRecord::$raceResultRecordInfo['player_id'] = $csvData[$i][17]; //選手ID
+                    $tRaceResultRecord::$raceResultRecordInfo['tourn_id'] = $csvData[$i][1]; //大会ID
+                    $tRaceResultRecord::$raceResultRecordInfo['race_id'] = $csvData[$i][7]; //レースID
+                    $tRaceResultRecord::$raceResultRecordInfo['race_number'] = $csvData[$i][10]; //レースNo
+                    $tRaceResultRecord::$raceResultRecordInfo['race_number'] = $csvData[$i][5]; //レース区分ID 仮実装
+                    $tRaceResultRecord::$raceResultRecordInfo['org_id'] = $csvData[$i][12]; //団体ID
+                    $tRaceResultRecord::$raceResultRecordInfo['crew_name'] = $csvData[$i][14]; //クルー名
+                    $tRaceResultRecord::$raceResultRecordInfo['by_group'] = $csvData[$i][9]; //組別
+                    $tRaceResultRecord::$raceResultRecordInfo['event_id'] = $csvData[$i][3]; //種目ID
                     $log = $tRaceResultRecord->insertRaceResultRecord($tRaceResultRecord::$raceResultRecordInfo);
                 } else if ($result == "2") {
-                    $tRaceResultRecord::$raceResultRecordInfo['player_id'] = ""; //選手ID
-                    $tRaceResultRecord::$raceResultRecordInfo['tourn_id'] = ""; //大会ID
-                    $tRaceResultRecord::$raceResultRecordInfo['race_id'] = ""; //レースID
-                    $tRaceResultRecord::$raceResultRecordInfo['race_number'] = ""; //レースNo
-                    //レース区分ID
-                    $tRaceResultRecord::$raceResultRecordInfo['org_id'] = ""; //団体ID
-                    $tRaceResultRecord::$raceResultRecordInfo['crew_name'] = ""; //クルー名
-                    $tRaceResultRecord::$raceResultRecordInfo['by_group'] = ""; //組別
-                    $tRaceResultRecord::$raceResultRecordInfo['event_id'] = ""; //種目ID
+                    $tRaceResultRecord::$raceResultRecordInfo['player_id'] = $csvData[$i][17]; //選手ID
+                    $tRaceResultRecord::$raceResultRecordInfo['tourn_id'] = $csvData[$i][1]; //大会ID
+                    $tRaceResultRecord::$raceResultRecordInfo['race_id'] = $csvData[$i][7]; //レースID
+                    $tRaceResultRecord::$raceResultRecordInfo['race_number'] = $csvData[$i][10]; //レースNo
+                    $tRaceResultRecord::$raceResultRecordInfo['race_number'] = $csvData[$i][5]; //レース区分ID 仮実装
+                    $tRaceResultRecord::$raceResultRecordInfo['org_id'] = $csvData[$i][12]; //団体ID
+                    $tRaceResultRecord::$raceResultRecordInfo['crew_name'] = $csvData[$i][14]; //クルー名
+                    $tRaceResultRecord::$raceResultRecordInfo['by_group'] = $csvData[$i][9]; //組別
+                    $tRaceResultRecord::$raceResultRecordInfo['event_id'] = $csvData[$i][3]; //種目ID
                     $tRaceResultRecord->updateRaceResultRecord($tRaceResultRecord::$raceResultRecordInfo);
                 } else {
                     continue;
