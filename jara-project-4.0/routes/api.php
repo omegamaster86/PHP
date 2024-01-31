@@ -14,6 +14,7 @@ use App\Http\Controllers\TournamentRaceRefeController;
 use App\Http\Controllers\TournamentController; //Laravel_Reactデータ送信テスト 20231227
 use App\Models\M_prefectures;
 use App\Models\M_countries;
+use App\Models\M_sex;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,8 +38,13 @@ Route::group(['middleware' => ['api', 'cors']], function () {
 
     Route::get('getPrefecures', [M_prefectures::class, 'getPrefecures']); //都道府県マスター取得 20240117
     Route::get('getCountries', [M_countries::class, 'getCountries']); //国マスター取得 20240117
+    Route::get('getSexList', [M_sex::class, 'getSexList']); //性別マスター取得 20240131
 
     //---------------以下にAPIを追加する----------------
     Route::get('createCsrf', [AuthenticatedSessionController::class, 'createCsrf']); //ログイン画面遷移時にcsrfトークンを取得 20240122
     Route::post('loginCheck', [AuthenticatedSessionController::class, 'loginCheck']); //ログインボタン押下時の処理 20240119
+
+    //選手登録
+    Route::post('storePlayerTest', [PlayerController::class, 'storePlayerTest']); //選手登録確認画面から登録 20231228
+
 });
