@@ -211,29 +211,40 @@ export default function PlayerInformation() {
       // TODO: 選手情報を取得する処理を実装
       // searchParams.get('id')から選手IDを取得
       axios
-        .get<PlayerInformationResponse>('http://localhost:3100/player')
+        // .get<PlayerInformationResponse>('http://localhost:3100/player')
+        .get('http://localhost:8000/api/getUpdatePlayerData')
         .then((response) => {
+          console.log(response.data);
+          //サイド情報のデータ変換
+          var data = response.data.result.side_info.split('');
+          for (let i = 0; i < 4; i++) {
+            if (data[i] == "1") {
+              data[i] = true;
+            } else {
+              data[i] = false;
+            }
+          }
           // nameプロパティのみ抜き出してstringの配列に変換
           setFormData((prevFormData) => ({
             ...prevFormData,
             ...{
-              playerId: response.data.playerId, // 選手ID
-              jaraPlayerCode: response.data.jaraPlayerCode, // JARA選手コード
-              playerName: response.data.playerName, // 選手名
-              sexName: response.data.sexName, // 性別
-              sexId: response.data.sexId, // 性別
-              height: response.data.height, // 身長
-              weight: response.data.weight, // 体重
-              birthCountryName: response.data.birthCountryName, // 出身地（国）
-              birthCountryId: response.data.birthCountryId, // 出身地（国）
-              birthPrefectureName: response.data.birthPrefectureName, // 出身地（都道府県）
-              birthPrefectureId: response.data.birthPrefectureId, // 出身地（都道府県）
-              residenceCountryName: response.data.residenceCountryName, // 居住地（国）
-              residenceCountryId: response.data.residenceCountryId, // 居住地（国）
-              residencePrefectureName: response.data.residencePrefectureName, // 居住地（都道府県）
-              residencePrefectureId: response.data.residencePrefectureId, // 居住地（都道府県）
-              dateOfBirth: response.data.dateOfBirth, // 生年月日
-              sideInfo: response.data.sideInfo, // サイド情報
+              playerId: response.data.result.player_id, // 選手ID
+              jaraPlayerCode: response.data.result.jara_player_id, // JARA選手コード
+              playerName: response.data.result.player_name, // 選手名
+              sexName: response.data.result.sex_name, // 性別
+              sexId: response.data.result.sex, // 性別
+              height: response.data.result.height, // 身長
+              weight: response.data.result.weight, // 体重
+              birthCountryName: response.data.result.bir_country_name, // 出身地（国）
+              birthCountryId: response.data.result.birth_country, // 出身地（国）
+              birthPrefectureName: response.data.result.bir_pref_name, // 出身地（都道府県）
+              birthPrefectureId: response.data.result.birth_prefecture, // 出身地（都道府県）
+              residenceCountryName: response.data.result.res_country_name, // 居住地（国）
+              residenceCountryId: response.data.result.residence_country, // 居住地（国）
+              residencePrefectureName: response.data.result.res_pref_name, // 居住地（都道府県）
+              residencePrefectureId: response.data.result.residence_prefecture, // 居住地（都道府県）
+              dateOfBirth: response.data.result.date_of_birth, // 生年月日
+              sideInfo: data, // サイド情報
             },
           }));
         })
@@ -388,7 +399,7 @@ export default function PlayerInformation() {
             const registerData = {};
             axios
               // .post('http://localhost:3100/', registerData)
-              .post('http://localhost:8000/api/storePlayerTest', formData) //20240123 送信テスト
+              .post('http://localhost:8000/api/updatePlayerData', formData) //20240123 送信テスト
               .then((response) => {
                 // TODO: 更新処理成功時の処理
                 console.log(response);
