@@ -388,7 +388,7 @@ class TournamentController extends Controller
         //     return redirect('my-page');
         // }
     }
-    public function csvReadEntryRegister(Request $request, T_tournaments $tourn, T_races $tRace)
+    public function csvReadEntryRegister(Request $request, T_tournaments $tourn, T_races $tRace, T_raceResultRecord $tRaceResultRecord)
     {
 
         $tournament_name_list = $tourn->getTournamentName();
@@ -432,41 +432,27 @@ class TournamentController extends Controller
             //dd($csvData);
             for ($i = 1; $i < count($csvData); $i++) {
                 if ($result == "1") {
-                    //登録待ち
-                    $racesData = collect([
-                        'race_id' => $csvData[$i][4],
-                        'race_number' => 1,
-                        'entrysystem_race_id' => $csvData[$i][5],
-                        'tourn_id' => $csvData[$i][1],
-                        'race_name' => $csvData[$i][6],
-                        'event_id' => $csvData[$i][14],
-                        'event_name' => $csvData[$i][15],
-                        'race_class_id' => 111,
-                        'race_class_name' => null,
-                        'by_group' => null,
-                        'range' => null,
-                        'start_datetime' => null,
-                        'delete_flag' => 0,
-                    ]);
-                    $log = $tRace->insertRaces($racesData);
+                    $tRaceResultRecord::$raceResultRecordInfo['player_id'] = ""; //選手ID
+                    $tRaceResultRecord::$raceResultRecordInfo['tourn_id'] = ""; //大会ID
+                    $tRaceResultRecord::$raceResultRecordInfo['race_id'] = ""; //レースID
+                    $tRaceResultRecord::$raceResultRecordInfo['race_number'] = ""; //レースNo
+                    //レース区分ID
+                    $tRaceResultRecord::$raceResultRecordInfo['org_id'] = ""; //団体ID
+                    $tRaceResultRecord::$raceResultRecordInfo['crew_name'] = ""; //クルー名
+                    $tRaceResultRecord::$raceResultRecordInfo['by_group'] = ""; //組別
+                    $tRaceResultRecord::$raceResultRecordInfo['event_id'] = ""; //種目ID
+                    $log = $tRaceResultRecord->insertRaceResultRecord($tRaceResultRecord::$raceResultRecordInfo);
                 } else if ($result == "2") {
-                    //登録可能
-                    $racesData = collect([
-                        'race_id' => $csvData[$i][4],
-                        'race_number' => 1,
-                        'entrysystem_race_id' => $csvData[$i][5],
-                        'tourn_id' => $csvData[$i][1],
-                        'race_name' => $csvData[$i][6],
-                        'event_id' => $csvData[$i][14],
-                        'event_name' => $csvData[$i][15],
-                        'race_class_id' => 111,
-                        'race_class_name' => null,
-                        'by_group' => null,
-                        'range' => null,
-                        'start_datetime' => null,
-                        'delete_flag' => 0,
-                    ]);
-                    $tRace->updateRaces($racesData);
+                    $tRaceResultRecord::$raceResultRecordInfo['player_id'] = ""; //選手ID
+                    $tRaceResultRecord::$raceResultRecordInfo['tourn_id'] = ""; //大会ID
+                    $tRaceResultRecord::$raceResultRecordInfo['race_id'] = ""; //レースID
+                    $tRaceResultRecord::$raceResultRecordInfo['race_number'] = ""; //レースNo
+                    //レース区分ID
+                    $tRaceResultRecord::$raceResultRecordInfo['org_id'] = ""; //団体ID
+                    $tRaceResultRecord::$raceResultRecordInfo['crew_name'] = ""; //クルー名
+                    $tRaceResultRecord::$raceResultRecordInfo['by_group'] = ""; //組別
+                    $tRaceResultRecord::$raceResultRecordInfo['event_id'] = ""; //種目ID
+                    $tRaceResultRecord->updateRaceResultRecord($tRaceResultRecord::$raceResultRecordInfo);
                 } else {
                     continue;
                 }
