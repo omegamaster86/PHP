@@ -46,59 +46,59 @@ export const useAuth = ({
     }
   }
 
-  const register = async (data: {
-    name: string
-    email: string
-    password: string
-    password_confirmation: string
-  }) => {
-    try {
-      await csrf()
+  // const register = async (data: {
+  //   name: string
+  //   email: string
+  //   password: string
+  //   password_confirmation: string
+  // }) => {
+  //   try {
+  //     await csrf()
 
-      await axios.post('/register', data)
-      mutate()
-    } catch (error) {
-      throw error
-    }
-  }
+  //     await axios.post('/register', data)
+  //     mutate()
+  //   } catch (error) {
+  //     throw error
+  //   }
+  // }
 
-  const forgotPassword = async (data: {
-    email: string
-  }): Promise<AxiosResponse> => {
-    try {
-      await csrf()
-      return await axios.post('/forgot-password', data)
-    } catch (error) {
-      throw error
-    }
-  }
+  // const forgotPassword = async (data: {
+  //   email: string
+  // }): Promise<AxiosResponse> => {
+  //   try {
+  //     await csrf()
+  //     return await axios.post('/forgot-password', data)
+  //   } catch (error) {
+  //     throw error
+  //   }
+  // }
 
-  const resetPassword = async (data: {
-    email: string
-    password: string
-    password_confirmation: string
-  }) => {
-    try {
-      await csrf()
+  // const resetPassword = async (data: {
+  //   email: string
+  //   password: string
+  //   password_confirmation: string
+  // }) => {
+  //   try {
+  //     await csrf()
 
-      const response = await axios.post('/reset-password', {
-        ...data,
-        token: params.token,
-      })
+  //     const response = await axios.post('/reset-password', {
+  //       ...data,
+  //       token: params.token,
+  //     })
 
-      router.push('/login?reset=' + btoa(response.data.status))
-    } catch (error) {
-      throw error
-    }
-  }
+  //     router.push('/login?reset=' + btoa(response.data.status))
+  //   } catch (error) {
+  //     throw error
+  //   }
+  // }
 
-  const resendEmailVerification = async () => {
-    try {
-      return await axios.post('/email/verification-notification')
-    } catch (error) {
-      throw error
-    }
-  }
+  // const resendEmailVerification = async () => {
+  //   try {
+  //     return await axios.post('/email/verification-notification')
+  //   } catch (error) {
+  //     throw error
+  //   }
+  // }
 
   const logout = async () => {
     if (!error) {
@@ -130,11 +130,11 @@ export const useAuth = ({
 
   return {
     user,
-    register,
+    // register,
     login,
-    forgotPassword,
-    resetPassword,
-    resendEmailVerification,
+    // forgotPassword,
+    // resetPassword,
+    // resendEmailVerification,
     logout,
   }
 }
