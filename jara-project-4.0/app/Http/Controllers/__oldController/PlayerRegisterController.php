@@ -1,0 +1,140 @@
+<?php
+/**************************************************************
+* Project name: JARA
+* File name: PlayerRegisterController.php
+* File extension: .php
+* Description: This is the controller of player register page
+*************************************************************************
+* Author: DEY PRASHANTA KUMAR
+* Created At: 2023/11/17
+* Updated At: 2023/11/17
+*************************************************************************
+*
+* Copyright 2023 by DPT INC.
+*
+**************************************************************/
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Providers\RouteServiceProvider;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
+use App\Services\FileUploadService;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\FileUploadRequest;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\WelcomeMail;
+use Illuminate\Support\Facades\DB;
+
+use Illuminate\Validation\ValidationException;
+use League\CommonMark\Node\Inline\Newline;
+
+
+
+class PlayerRegisterController extends Controller
+{
+    /**
+     * Display the player registration view.
+     */
+    public function createRegisterEdit(): View
+    {
+        $retrive_player_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+
+        if(empty($retrive_player_ID[0])){
+            return view('player.register',["page_mode"=>"register"]);
+        }
+        else {
+            if($retrive_player_ID[count($retrive_player_ID)-1]->delete_flag){
+                return view('player.register',["page_mode"=>"register"]);
+            }
+            else {
+                $player_info = $retrive_player_ID[count($retrive_player_ID)-1]->all();
+                $player_info->date_of_birth = date('Y/m/d', strtotime($retrive_player_ID[count($retrive_player_ID)-1]->date_of_birth));
+
+                return view('player.register',["page_mode"=>"edit","player_info"=>$player_info]);
+            }
+        }
+            
+        
+    }
+
+    /**
+     * Handle an incoming registration request.
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    
+
+    public function storeRegisterEdit( Request $request): RedirectResponse
+    {
+        include('Auth/ErrorMessages/ErrorMessages.php');
+        $random_file_name = Str::random(12);
+        if ($request->hasFile('photo')) {
+            
+            $file = $request->file('photo');
+            
+            $fileName = $random_file_name. '.' . $request->file('photo')->getClientOriginalExtension();
+
+            $destinationPath = public_path().'/images/players/' ;
+            $file->move($destinationPath,$fileName);
+        }
+        $request->validate([
+            'playerCode' => ['required', 'string', 'regex:/^[0-9a-zA-Z]+$/'],
+            'playerName' => ['required', 'string', 'regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'],
+            'dateOfBirth' => ['required','regex:/^[0-9\/]+$/'],
+            'sex' => ['required','regex:/^[1-3]+$/'],
+            'height' => ['required'],
+            'weight' => ['required'],
+            'sideInfo' => ['required_without_all'],
+        ],[
+            'playerCode.required' => $playerCode_required,
+            'playerCode.regex' => $playerCode_regex,
+            'playerName.required' => $playerName_required,
+            'playerName.regex' => $playerName_regex,
+            'dateOfBirth.required' => $dateOfBirth_required,
+            'dateOfBirth.regex' => $dateOfBirth_required,
+            'sex.required' => $sex_required,
+            'sex.regex' => $sex_required,
+            'height.required' => $height_required,
+            'weight.required' => $weight_required,
+            'sideInfo.required_without_all' => $sideInfo_required,
+        ]);
+        if (DB::table('t_players')->where('jara_player_id',$request->playerCode)->where('delete_flag',0)->exists()){
+            $retrive_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->playerCode]);
+            $existing_player_name = $retrive_player_name[0]->player_name;
+            //Display error message to the client
+            throw ValidationException::withMessages([
+                'system_error' => "この既存選手IDは既に別の選手と紐づいています。入力した既存選手IDを確認してください。紐づいていた選手I：[$request->playerCode] [$existing_player_name]"
+            ]); 
+        }
+        else{
+
+        }
+        $playerInfo = $request->all();
+        if ($request->hasFile('photo')){
+            $playerInfo['photo']=$random_file_name. '.' . $request->file('photo')->getClientOriginalExtension();
+        }
+        else{
+            if($request->playerPictureStatus==="delete")
+                $playerInfo['photo']="";
+            else
+                $playerInfo['photo']=DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('photo');
+        }
+        $sideInfo_xor = "00000000";
+        foreach($request->sideInfo as $sideInfo){
+            $sideInfo_xor = $sideInfo_xor ^ $sideInfo;
+        }
+        if(count($request->sideInfo)%2)
+            $sideInfo_xor= $sideInfo_xor ^ "00000000";
+        $playerInfo['side_info'] = $sideInfo_xor; 
+        $playerInfo['previousPageStatus'] = "success"; 
+        return redirect('player/register/confirm')->with('playerInfo', $playerInfo);
+        
+    }
+}
