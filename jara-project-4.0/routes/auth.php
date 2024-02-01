@@ -11,6 +11,7 @@ use App\Http\Controllers\TournamentController;
 use App\Http\Controllers\PlayerInfoAlignmentController;
 use App\Http\Controllers\VolunteerController;
 use App\Http\Controllers\TournamentRaceRefeController;
+use App\Http\Controllers\VolunteerInfoAlignmentController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -184,6 +185,10 @@ Route::middleware('auth')->group(function () {
     //ボランティア検索画面
     Route::get('volunteer/search', [VolunteerController::class, 'createSearch'])->name('volunteer.search');
     Route::post('volunteer/search', [VolunteerController::class, 'searchVolunteers']);
+    //20240126
+    //ボランティア一括登録画面
+    Route::get('volunteerInfoAlignment/', [VolunteerInfoAlignmentController::class, 'createInfoAlignment'])->name('VolunteerInfoAlignment');
+    Route::post('volunteerInfoAlignment/', [VolunteerInfoAlignmentController::class, 'csvread'])->name('volunteer.csv.read');
 });
 
 Route::group(['middleware' => ['auth', 'action_log']], function () {
