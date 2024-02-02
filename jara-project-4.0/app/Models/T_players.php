@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class T_players extends Model
 {
@@ -137,33 +138,33 @@ class T_players extends Model
                                 )values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 [
                     null,
-                    null,
-                    $playersInfo['jaraPlayerId'],
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
+                    1,
+                    $playersInfo['jara_player_id'],
+                    $playersInfo['player_name'],
+                    $playersInfo['date_of_birth'],
+                    $playersInfo['sex'],
+                    $playersInfo['height'],
+                    $playersInfo['weight'],
+                    $playersInfo['side_info'],
+                    $playersInfo['birth_country'],
+                    $playersInfo['birth_prefecture'],
+                    $playersInfo['residence_country'],
+                    $playersInfo['residence_prefecture'],
+                    $playersInfo['photo'],
                     NOW(),
-                    Auth::user()->user_id,
+                    1, //Auth::user()->user_id,
                     NOW(),
-                    Auth::user()->user_id,
+                    1, //Auth::user()->user_id,
                     0
                 ]
             );
             DB::commit();
+            // Log::debug(sprintf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"));
+            // Log::debug(sprintf("sakusesu"));
+            // Log::debug(sprintf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"));
             return "登録完了";
         } catch (\Throwable $e) {
             DB::rollBack();
-            dd($e);
-            // dd($request->all());
-            dd("stop");
 
             $result = "failed";
             return $result;
@@ -208,8 +209,8 @@ class T_players extends Model
                         left join `m_countries`
                         on `t_players`.`birth_country` = `m_countries`.`country_id`
                         where `t_players`.`delete_flag`=0
-                        and `player_id` in (#PlayerIdCondition#)';        
-        $sqlString = str_replace('#PlayerIdCondition#',$PlayerIdCondition,$sqlString);
+                        and `player_id` in (#PlayerIdCondition#)';
+        $sqlString = str_replace('#PlayerIdCondition#', $PlayerIdCondition, $sqlString);
         $players = DB::select($sqlString);
         return $players;
     }
@@ -232,77 +233,76 @@ class T_players extends Model
         if (isset($searched_data['date_of_birth'])) {
             $condition .= " and `t_race_result_record`.`date_of_birth`>= CAST('" . $searched_data['date_of_birth'] . "' AS DATE)"; //開催開始年月日
         }
-        
+
 
         return $condition;
     }
 
     public function getPlayerWithSearchCondition($searched_data)
     {
-        dump("searched_data : ",$searched_data);
+        dump("searched_data : ", $searched_data);
         $condition = "";
         $valid_data_array = array();
 
         if (isset($searched_data['player_id'])) {
             $condition .= " and player.player_id = ?";
-            array_push($valid_data_array,$searched_data['player_id']) ;
+            array_push($valid_data_array, $searched_data['player_id']);
         }
         if (isset($searched_data['jara_player_id'])) {
             $condition .= " and record.jara_player_id = ?";
-            array_push($valid_data_array,$searched_data['jara_player_id']) ;
+            array_push($valid_data_array, $searched_data['jara_player_id']);
         }
         if (isset($searched_data['sex'])) {
             $condition .= " and player.sex = ?";
-            array_push($valid_data_array,$searched_data['sex']) ;
+            array_push($valid_data_array, $searched_data['sex']);
         }
-        
+
         if (isset($searched_data['date_of_birth_start'])) {
             $condition .= " and player.date_of_birth >= CAST(? AS DATE)";
-            array_push($valid_data_array,$searched_data['date_of_birth_start']) ;
+            array_push($valid_data_array, $searched_data['date_of_birth_start']);
         }
         if (isset($searched_data['date_of_birth_end'])) {
             $condition .= " and player.date_of_birth <= CAST(? AS DATE) ";
-            array_push($valid_data_array,$searched_data['date_of_birth_end']) ;
+            array_push($valid_data_array, $searched_data['date_of_birth_end']);
         }
         // dump($searched_data['side_info']);
         if (isset($searched_data['side_info'])) {
             // $searched_data['side_info'] = $searched_data['side_info'][0] & "";
-            foreach($searched_data['side_info'] as $side_info) {
+            foreach ($searched_data['side_info'] as $side_info) {
                 //CAST(expr AS BINARY)
                 $condition .= " and ( (player.side_info  & ?) = ?)";
-                array_push($valid_data_array,$side_info) ;
-                array_push($valid_data_array,$side_info) ;
+                array_push($valid_data_array, $side_info);
+                array_push($valid_data_array, $side_info);
             }
-
         }
         if (isset($searched_data['entrysystem_org_id'])) {
-            $condition .= " and record.entrysystem_org_id = ?" ;
-            array_push($valid_data_array,$searched_data['entrysystem_org_id']) ;
+            $condition .= " and record.entrysystem_org_id = ?";
+            array_push($valid_data_array, $searched_data['entrysystem_org_id']);
         }
         if (isset($searched_data['org_id'])) {
             $condition .= " and record.org_id = ?";
-            array_push($valid_data_array,$searched_data['org_id']) ;
+            array_push($valid_data_array, $searched_data['org_id']);
         }
         if (isset($searched_data['player_name'])) {
             //'%' . $query . '%'
             $searched_data['player_name'] = '%' . $searched_data['player_name'] . '%';
-            $condition .= " and record.player_name like ?"  ;
-            array_push($valid_data_array,$searched_data['player_name']) ;
+            $condition .= " and record.player_name like ?";
+            array_push($valid_data_array, $searched_data['player_name']);
         }
         if (isset($searched_data['org_name'])) {
             $searched_data['org_name'] = '%' . $searched_data['org_name'] . '%';
             $condition .= " and record.org_name like ?";
-            array_push($valid_data_array,$searched_data['org_name']) ;
+            array_push($valid_data_array, $searched_data['org_name']);
         }
         if (isset($searched_data['tourn_name'])) {
             $searched_data['tourn_name'] = '%' . $searched_data['tourn_name'] . '%';
             $condition .= " and record.tourn_name like ?";
-            array_push($valid_data_array,$searched_data['tourn_name']) ;
+            array_push($valid_data_array, $searched_data['tourn_name']);
         }
         if (isset($searched_data['event_name'])) {
             $searched_data['event_name'] = '%' . $searched_data['event_name'] . '%';
             $condition .= " and record.event_name like ?";
-            array_push($valid_data_array,$searched_data['event_name']) ;
+            array_push($valid_data_array, $searched_data['event_name']);
         }
 
         $sql_string = 'select player.player_id, sex.sex_id, sex.sex, player.date_of_birth, player.side_info, record.jara_player_id, record.player_name, record.entrysystem_org_id, record.org_id, record.org_name from t_race_result_record as record
@@ -312,7 +312,7 @@ class T_players extends Model
         $sql_string = str_replace('#condition#', $condition, $sql_string);
         dump($sql_string);
         dump($valid_data_array);
-        $race_records = DB::select($sql_string,$valid_data_array);
+        $race_records = DB::select($sql_string, $valid_data_array);
         dump($race_records);
         return $race_records;
     }
