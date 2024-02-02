@@ -18,6 +18,9 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Models\T_players;
+use App\Models\T_raceResultRecord;
 
 use Illuminate\Validation\ValidationException;
 
@@ -570,4 +573,137 @@ class PlayerController extends Controller
         return view('player.search', ["page_mode" => "search", "sex_list" => $sex_list, "player_list" => $player_list, "searched_data" => (object)$searched_data]);
     }
 
+    //===============================================================================================
+    //===============================================================================================
+
+    //reactからの選手登録 20240131
+    public function storePlayerTest(Request $request, T_players $tPlayersData)
+    {
+        Log::debug(sprintf("storePlayerTest start"));
+        $reqData = $request->all();
+        $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jaraPlayerCode']; //JARA選手コード
+        $tPlayersData::$playerInfo['player_name'] = $reqData['playerName']; //選手名
+        $tPlayersData::$playerInfo['date_of_birth'] = $reqData['dateOfBirth']; //誕生日
+        $tPlayersData::$playerInfo['height'] = $reqData['height']; //身長
+        $tPlayersData::$playerInfo['weight'] = $reqData['weight']; //体重
+        $tPlayersData::$playerInfo['sex'] = $reqData['sexId']; //性別ID
+        $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
+        //サイド情報
+        $side_info = null;
+        for ($i = 0; $i < 4; $i++) {
+            if ($reqData['sideInfo'][$i]) {
+                $side_info .= "1";
+            } else {
+                $side_info .= "0";
+            }
+        }
+        $tPlayersData::$playerInfo['side_info'] = $side_info;
+
+        $tPlayersData::$playerInfo['birth_country'] = $reqData['birthCountryId']; //出身地(国)
+        $tPlayersData::$playerInfo['birth_prefecture'] =  $reqData['birthPrefectureId']; //出身地(都道府県名)
+        $tPlayersData::$playerInfo['residence_country'] = $reqData['residenceCountryId']; //居住地(国)
+        $tPlayersData::$playerInfo['residence_prefecture'] =  $reqData['residencePrefectureId']; //居住地(都道府県)
+        $result = $tPlayersData->insertPlayers($tPlayersData::$playerInfo); //DBに選手を登録 20240131
+        Log::debug(sprintf("storePlayerTest end"));
+        return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
+    }
+
+    //react 選手情報更新画面に表示するuserIDに紐づいたデータを送信 20240131
+    public function getUpdatePlayerData(T_players $tPlayersData)
+    {
+        Log::debug(sprintf("getUpdatePlayerData start"));
+        // $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+        $retrieve_player_by_ID = $tPlayersData->getPlayerData(1); //DBに選手を登録 20240131
+        Log::debug(sprintf("getUpdatePlayerData end"));
+        return response()->json(['result' => $retrieve_player_by_ID]); //DBの結果を返す
+    }
+    //reactからの選手登録 20240131
+    public function updatePlayerData(Request $request, T_players $tPlayersData)
+    {
+        Log::debug(sprintf("updatePlayerData start"));
+        $reqData = $request->all();
+        $tPlayersData::$playerInfo['player_id'] = $reqData['playerId']; //JARA選手コード
+        $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jaraPlayerCode']; //JARA選手コード
+        $tPlayersData::$playerInfo['player_name'] = $reqData['playerName']; //選手名
+        $tPlayersData::$playerInfo['date_of_birth'] = $reqData['dateOfBirth']; //誕生日
+        $tPlayersData::$playerInfo['height'] = $reqData['height']; //身長
+        $tPlayersData::$playerInfo['weight'] = $reqData['weight']; //体重
+        $tPlayersData::$playerInfo['sex'] = $reqData['sexId']; //性別ID
+        $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
+        //サイド情報
+        $side_info = null;
+        for ($i = 0; $i < 4; $i++) {
+            if ($reqData['sideInfo'][$i]) {
+                $side_info .= "1";
+            } else {
+                $side_info .= "0";
+            }
+        }
+        $tPlayersData::$playerInfo['side_info'] = $side_info;
+
+        $tPlayersData::$playerInfo['birth_country'] = $reqData['birthCountryId']; //出身地(国)
+        $tPlayersData::$playerInfo['birth_prefecture'] =  $reqData['birthPrefectureId']; //出身地(都道府県名)
+        $tPlayersData::$playerInfo['residence_country'] = $reqData['residenceCountryId']; //居住地(国)
+        $tPlayersData::$playerInfo['residence_prefecture'] =  $reqData['residencePrefectureId']; //居住地(都道府県)
+        $result = $tPlayersData->updatePlayerData($tPlayersData::$playerInfo); //DBに選手を登録 20240131
+        Log::debug(sprintf("updatePlayerData end"));
+        return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
+    }
+    //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
+    public function getPlayerInfoData(T_players $tPlayersData)
+    {
+        Log::debug(sprintf("getPlayerInfoData start"));
+        // $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+        $result = $tPlayersData->getPlayerData(1); //DBに選手を登録 20240131
+        Log::debug(sprintf("getPlayerInfoData end"));
+        return response()->json(['result' => $result]); //DBの結果を返す
+    }
+    //react 選手情報参照画面に表示するplayerIDに紐づいたデータを送信 20240131
+    public function getRaceResultRecordsData(T_raceResultRecord $tRaceResultRecord)
+    {
+        Log::debug(sprintf("getRaceResultRecordsData start"));
+        // $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+        $result = $tRaceResultRecord->getRaceResultRecord_playerId(1); //DBに選手を登録 20240131
+        Log::debug(sprintf("getRaceResultRecordsData end"));
+        return response()->json(['result' => $result]); //DBの結果を返す
+    }
+    //react 選手情報削除画面から受け取ったデータを削除する 20240201
+    public function deletePlayerData(Request $request, T_players $tPlayersData, T_raceResultRecord $tRaceResultRecord)
+    {
+        Log::debug(sprintf("deletePlayerData start"));
+        $reqData = $request->all();
+        $tPlayersData::$playerInfo['player_id'] = $reqData['playerInformation']['playerId']; //JARA選手コード
+        $tPlayersData::$playerInfo['jara_player_id'] = $reqData['playerInformation']['jaraPlayerCode']; //JARA選手コード
+        $tPlayersData::$playerInfo['player_name'] = $reqData['playerInformation']['playerName']; //選手名
+        $tPlayersData::$playerInfo['date_of_birth'] = $reqData['playerInformation']['dateOfBirth']; //誕生日
+        $tPlayersData::$playerInfo['height'] = $reqData['playerInformation']['height']; //身長
+        $tPlayersData::$playerInfo['weight'] = $reqData['playerInformation']['weight']; //体重
+        $tPlayersData::$playerInfo['sex'] = $reqData['playerInformation']['sexId']; //性別ID
+        $tPlayersData::$playerInfo['photo'] = $reqData['playerInformation']['photo']; //写真
+        //サイド情報
+        $side_info = null;
+        for ($i = 0; $i < 4; $i++) {
+            if ($reqData['playerInformation']['sideInfo'][$i]) {
+                $side_info .= "1";
+            } else {
+                $side_info .= "0";
+            }
+        }
+        $tPlayersData::$playerInfo['side_info'] = $side_info;
+
+        $tPlayersData::$playerInfo['birth_country'] = $reqData['playerInformation']['birthCountryId']; //出身地(国)
+        $tPlayersData::$playerInfo['birth_prefecture'] =  $reqData['playerInformation']['birthPrefectureId']; //出身地(都道府県名)
+        $tPlayersData::$playerInfo['residence_country'] = $reqData['playerInformation']['residenceCountryId']; //居住地(国)
+        $tPlayersData::$playerInfo['residence_prefecture'] =  $reqData['playerInformation']['residencePrefectureId']; //居住地(都道府県)
+        $tPlayersData::$playerInfo['delete_flag'] = 1; //削除フラグ
+        $result = $tPlayersData->updatePlayerData($tPlayersData::$playerInfo); //DBに選手を登録 20240131
+
+        $tRaceResultRecord::$raceResultRecordInfo['player_id'] = $reqData['playerInformation']['playerId']; //選手ID
+        $tRaceResultRecord::$raceResultRecordInfo['delete_flag'] = 1; //削除フラグ
+        $result = $tRaceResultRecord->deleteRaceResultRecord_playerId($tRaceResultRecord::$raceResultRecordInfo); //DBに選手を登録 20240131
+
+
+        Log::debug(sprintf("deletePlayerData end"));
+        return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
+    }
 }

@@ -11,6 +11,102 @@ class T_players extends Model
 {
     use HasFactory;
 
+    public static $playerInfo = [
+        'player_id' => null,
+        'user_id' => null,
+        'jara_player_id' => null,
+        'player_name' => null,
+        'date_of_birth' => null,
+        'sex' => null,
+        'height' => null,
+        'weight' => null,
+        'side_info' => null,
+        'birth_country' => null,
+        'birth_prefecture' => null,
+        'residence_country' => null,
+        'residence_prefecture' => null,
+        'photo' => null,
+        'registered_time' => null,
+        'registered_user_id' => null,
+        'updated_time' => null,
+        'updated_user_id' => null,
+        'delete_flag' => 0,
+    ];
+
+    //選手情報更新画面用 userIDに紐づいた選手情報を取得 20240131
+    public function getPlayerData($user_id)
+    {
+        $result = DB::select('select `player_id`, `user_id`, `jara_player_id`, `player_name`, `date_of_birth`, `t_players`.`sex`, `height`, `weight`, `side_info`, `birth_country`, `birth_prefecture`, `residence_country`, `residence_prefecture`, `photo`, `t_players`.`registered_time`, `t_players`.`registered_user_id`, `t_players`.`updated_time`, `t_players`.`updated_user_id`, `t_players`.`delete_flag`,
+        `m_sex`.`sex` as `sex_name`,
+        bir_cont.`country_name` as `bir_country_name`,
+        bir_pref.`pref_name` as `bir_pref_name`,
+        res_cont.`country_name` as `res_country_name`,
+        res_pref.`pref_name` as `res_pref_name`
+        FROM `t_players`
+        left join `m_sex`
+        on `t_players`.`sex`=`m_sex`.`sex_id`
+        left join m_countries bir_cont
+        on `t_players`.birth_country = bir_cont.country_id
+        left join m_prefectures bir_pref
+        on `t_players`.birth_prefecture = bir_pref.pref_id
+        left join m_countries res_cont
+        on `t_players`.residence_country = res_cont.country_id
+        left join m_prefectures res_pref
+        on `t_players`.residence_prefecture = res_pref.pref_id
+        where `t_players`.delete_flag = 0 and `t_players`.user_id = ?', [$user_id]);
+
+        //1つのデータを取得するため0番目だけを返す
+        //Log::debug($result);
+        $targetTrn = null;
+        if (!empty($result)) {
+            $targetTrn = $result[0];
+        }
+        return $targetTrn;
+    }
+
+    //react 選手情報更新画面用 選手情報の更新を行う 20240131
+    public function updatePlayerData($playersInfo)
+    {
+        $result = "success";
+        DB::beginTransaction();
+        try {
+            DB::update(
+                'update `t_players` set `player_id`=?,`user_id`=?,`jara_player_id`=?,`player_name`=?,`date_of_birth`=?,`sex`=?,`height`=?,`weight`=?,`side_info`=?,`birth_country`=?, `birth_prefecture`=?,`residence_country`=?,`residence_prefecture`=?,`photo`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where user_id = ?',
+                [
+                    $playersInfo['player_id'],
+                    1,
+                    $playersInfo['jara_player_id'],
+                    $playersInfo['player_name'],
+                    $playersInfo['date_of_birth'],
+                    $playersInfo['sex'],
+                    $playersInfo['height'],
+                    $playersInfo['weight'],
+                    $playersInfo['side_info'],
+                    $playersInfo['birth_country'],
+                    $playersInfo['birth_prefecture'],
+                    $playersInfo['residence_country'],
+                    $playersInfo['residence_prefecture'],
+                    $playersInfo['photo'],
+                    NOW(),
+                    1, //Auth::user()->user_id,
+                    NOW(),
+                    1, //Auth::user()->user_id,
+                    $playersInfo['delete_flag'],
+                    1 //where条件用
+                ]
+            );
+
+            DB::commit();
+            return $result = "success";
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::debug($e);
+            $result = "failed";
+            return $result;
+        }
+    }
+
+
     public function insertPlayers($playersInfo)
     {
         $result = "success";
