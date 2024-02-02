@@ -84,11 +84,11 @@ export default function PlayerInformation() {
     height: '',
     weight: '',
     birthCountryId: 0,
-    birthCountryName: '日本国 （jpn）',
+    birthCountryName: '日本',
     birthPrefectureId: 0,
     birthPrefectureName: '東京',
     residenceCountryId: 0,
-    residenceCountryName: '日本国 （jpn）',
+    residenceCountryName: '日本',
     residencePrefectureId: 0,
     residencePrefectureName: '東京',
     dateOfBirth: '',
@@ -170,12 +170,9 @@ export default function PlayerInformation() {
           });
         // TODO: 性別の取得処理を実装
         axios
-          // .get<SexResponse[]>('http://localhost:3100/sex')
-          .get('http://localhost:8000/api/getSexList') //20240123 DBからデータ取得
+          .get<SexResponse[]>('http://localhost:3100/sex')
           .then((response) => {
-            console.log(response.data);
-            const sexList = response.data.map(({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }));
-            setSex(sexList);
+            setSex(response.data);
           })
           .catch((error) => {
             // TODO: 個別エラー処理を実装
@@ -211,19 +208,8 @@ export default function PlayerInformation() {
       // TODO: 選手情報を取得する処理を実装
       // searchParams.get('id')から選手IDを取得
       axios
-        // .get<PlayerInformationResponse>('http://localhost:3100/player')
-        .get('http://localhost:8000/api/getUpdatePlayerData')
+        .get<PlayerInformationResponse>('http://localhost:3100/player')
         .then((response) => {
-          console.log(response.data);
-          //サイド情報のデータ変換
-          var data = response.data.result.side_info.split('');
-          for (let i = 0; i < 4; i++) {
-            if (data[i] == "1") {
-              data[i] = true;
-            } else {
-              data[i] = false;
-            }
-          }
           // nameプロパティのみ抜き出してstringの配列に変換
           setFormData((prevFormData) => ({
             ...prevFormData,
@@ -311,7 +297,7 @@ export default function PlayerInformation() {
 
     // 出身地（都道府県）の入力チェック
     const birthPlacePrefectureError = Validator.getErrorMessages([
-      formData.birthCountryName.includes('日本')
+      formData.birthCountryName === '日本'
         ? Validator.validateSelectRequired(formData.birthPrefectureName, '出身地（都道府県）')
         : '',
     ]);
@@ -323,7 +309,7 @@ export default function PlayerInformation() {
 
     // 居住地（都道府県）の入力チェック
     const livingPrefectureError = Validator.getErrorMessages([
-      formData.residenceCountryName.includes('日本')
+      formData.residenceCountryName === '日本'
         ? Validator.validateSelectRequired(formData.residencePrefectureName, '居住地（都道府県）')
         : '',
     ]);
@@ -400,10 +386,9 @@ export default function PlayerInformation() {
             const registerData = {};
             axios
               // .post('http://localhost:3100/', registerData)
-              .post('http://localhost:8000/api/updatePlayerData', formData) //20240123 送信テスト
+              .post('http://localhost:8000/api/postSample', formData) //20240123 送信テスト
               .then((response) => {
                 // TODO: 更新処理成功時の処理
-                console.log(response);
               })
               .catch((error) => {
                 // TODO: 更新処理失敗時の処理
@@ -417,10 +402,9 @@ export default function PlayerInformation() {
             const registerData = {};
             axios
               // .post('http://localhost:3100/', registerData)
-              .post('http://localhost:8000/api/storePlayerTest', formData) //20240123 送信テスト
+              .post('http://localhost:8000/api/postSample', formData) //20240123 送信テスト
               .then((response) => {
                 // TODO: 登録処理成功時の処理の実装
-                console.log(response);
               })
               .catch((error) => {
                 // TODO: 登録処理失敗時の処理の実装
@@ -437,6 +421,19 @@ export default function PlayerInformation() {
       </CustomButton>
     ),
   };
+
+  // 20240123 マージ用
+  //選手データ送信テスト 20240119
+  const postPlayerData = async (formData: any) => {
+    await axios.post('http://localhost:8000/api/postSample', formData)
+      .then((res) => {
+        console.log(res.data.reqData);
+      }).catch(error => {
+        console.log(error);
+      });
+  }
+  //選手データ送信テスト 20240119
+  // 20240123 マージ用
 
   return (
     <div>
@@ -735,7 +732,7 @@ export default function PlayerInformation() {
               className='rounded w-[300px] '
             />
           </div>
-          {formData.birthCountryName.includes('日本') && (
+          {formData.birthCountryName === '日本' && (
             <div className='flex flex-col justify-start'>
               {/* 出身地（都道府県） */}
               <InputLabel
@@ -799,7 +796,7 @@ export default function PlayerInformation() {
               className='rounded w-[300px] '
             />
           </div>
-          {formData.residenceCountryName.includes('日本') && (
+          {formData.residenceCountryName === '日本' && (
             <div className='flex flex-col justify-start'>
               {/* 居住地（都道府県） */}
               <InputLabel

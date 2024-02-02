@@ -57,31 +57,4 @@ class T_volunteer_supportable_disability extends Model
             ]
         );
     }
-
-    public function insertVolunteerSupportableDisability($values)
-    {
-        DB::insert('INSERT INTO `t_volunteer_supportable_disability`
-                    (
-                        `volunteer_id`,
-                        `dis_type_id`,
-                        `registered_time`,
-                        `registered_user_id`,
-                        `updated_time`,
-                        `updated_user_id`,
-                        `delete_flag`
-                    )
-                    VALUES
-                    (
-                        :volunteer_id
-                        ,:dis_type_id
-                        ,:registered_time
-                        ,:registered_user_id
-                        ,:updated_time
-                        ,:updated_user_id
-                        ,:delete_flag
-                    )',$values);
-        //挿入したIDを取得
-        $insertId =  DB::getPdo()->lastInsertId();
-        return $insertId;
-    }
 }
