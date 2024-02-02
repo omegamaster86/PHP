@@ -464,4 +464,17 @@ class TournamentController extends Controller
             return view('tournament.entry-register', ["dataList" => [], "errorMsg" => "", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
         }
     }
+
+    //======================================================================================================
+    //======================================================================================================
+
+    //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
+    public function getTournamentInfoData(T_tournaments $tourn)
+    {
+        Log::debug(sprintf("getTournamentInfoData start"));
+        // $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+        $result = $tourn->getTournament(1); //DBに選手を登録 20240131
+        Log::debug(sprintf("getTournamentInfoData end"));
+        return response()->json(['result' => $result]); //DBの結果を返す
+    }
 }

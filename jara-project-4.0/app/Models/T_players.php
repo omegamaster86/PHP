@@ -57,7 +57,7 @@ class T_players extends Model
         where `t_players`.delete_flag = 0 and `t_players`.user_id = ?', [$user_id]);
 
         //1つのデータを取得するため0番目だけを返す
-        Log::debug($result);
+        //Log::debug($result);
         $targetTrn = null;
         if (!empty($result)) {
             $targetTrn = $result[0];
@@ -92,7 +92,7 @@ class T_players extends Model
                     1, //Auth::user()->user_id,
                     NOW(),
                     1, //Auth::user()->user_id,
-                    0,
+                    $playersInfo['delete_flag'],
                     1 //where条件用
                 ]
             );

@@ -30,7 +30,7 @@ export default function TeamManagement() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseData = await axios.get('http://localhost:8000/api/list'); //Laravel_Reactデータ送信テスト 20231227
+        const responseData = await axios.get('http://localhost:8000/api/getOrgData'); //団体データ取得 20240201
         console.log(responseData.data); //Laravel_Reactデータ送信テスト 20231227
         setResponseData(responseData.data); //Laravel_Reactデータ送信テスト 20240116
 

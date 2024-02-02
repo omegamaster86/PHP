@@ -245,6 +245,7 @@ export default function PlayerInformation() {
               residencePrefectureId: response.data.result.residence_prefecture, // 居住地（都道府県）
               dateOfBirth: response.data.result.date_of_birth, // 生年月日
               sideInfo: data, // サイド情報
+              photo: response.data.result.photo, //写真
             },
           }));
         })
@@ -454,8 +455,8 @@ export default function PlayerInformation() {
           <InputLabel
             label='写真'
             displayHelp={mode !== 'confirm'}
-            toolTipTitle='Title'
-            toolTipText='サンプル用のツールチップ表示'
+            toolTipTitle='Title' //はてなボタン用
+            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
           <div className='flex flex-row justify-start gap-[4px]'>
             {mode !== 'confirm' && (
@@ -485,7 +486,9 @@ export default function PlayerInformation() {
                   className='object-cover w-[320px] h-[320px] rounded-[2px]'
                   src={currentShowFile?.preview}
                   // Revoke data uri after image is loaded
-                  onLoad={() => { }}
+                  onLoad={() => {
+                    console.log(currentShowFile);
+                  }}
                 />
               </div>
             )}
@@ -517,6 +520,8 @@ export default function PlayerInformation() {
             errorMessages={jaraPlayerCodeErrorMessage}
             value={formData.jaraPlayerCode?.toString()}
             onChange={(e) => handleInputChange('jaraPlayerCode', e.target.value)}
+            toolTipTitle='Title JARA選手コード' //はてなボタン用
+            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
         </div>
         <div className='flex flex-col justify-start'>
@@ -531,6 +536,8 @@ export default function PlayerInformation() {
             readonly={mode === 'confirm'}
             value={formData.playerName}
             onChange={(e) => handleInputChange('playerName', e.target.value)}
+            toolTipTitle='Title 選手名' //はてなボタン用
+            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
         </div>
         <div className='flex flex-col justify-start'>
@@ -539,6 +546,8 @@ export default function PlayerInformation() {
             label='生年月日'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
+            toolTipTitle='Title 生年月日' //はてなボタン用
+            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
           <CustomDatePicker
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -552,7 +561,13 @@ export default function PlayerInformation() {
         </div>
         <div className='flex flex-col justify-start'>
           {/* 性別 */}
-          <InputLabel label='性別' required={mode !== 'confirm'} displayHelp={mode !== 'confirm'} />
+          <InputLabel
+            label='性別'
+            required={mode !== 'confirm'}
+            displayHelp={mode !== 'confirm'}
+            toolTipTitle='Title 性別'
+            toolTipText='サンプル用のツールチップ表示'
+          />
           <CustomDropdown
             id='sex'
             readonly={mode === 'confirm'}
@@ -581,6 +596,8 @@ export default function PlayerInformation() {
             inputAdorment='cm'
             value={formData.height?.toString()}
             onChange={(e) => handleInputChange('height', e.target.value)}
+            toolTipTitle='Title 身長' //はてなボタン用
+            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
         </div>
         <div className='flex flex-col justify-start'>
@@ -597,6 +614,8 @@ export default function PlayerInformation() {
             inputAdorment='kg'
             value={formData.weight?.toString()}
             onChange={(e) => handleInputChange('weight', e.target.value)}
+            toolTipTitle='Title 体重' //はてなボタン用
+            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
         </div>
         <div className='flex flex-col justify-start'>
@@ -605,6 +624,8 @@ export default function PlayerInformation() {
             label='サイド情報'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
+            toolTipTitle='Title サイド情報' //はてなボタン用
+            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
           <div className='flex justify-start flex-col gap-[4px] my-1'>
             <OriginalCheckbox
@@ -690,6 +711,8 @@ export default function PlayerInformation() {
               label='出身地'
               required={mode !== 'confirm'}
               displayHelp={mode !== 'confirm'}
+              toolTipTitle='Title 出身地' //はてなボタン用
+              toolTipText='サンプル用のツールチップ表示' //はてなボタン用
             />
             <CustomDropdown
               id='birthCountry'
@@ -719,6 +742,8 @@ export default function PlayerInformation() {
                 label='都道府県'
                 required={mode !== 'confirm'}
                 displayHelp={mode !== 'confirm'}
+                toolTipTitle='Title 都道府県' //はてなボタン用
+                toolTipText='サンプル用のツールチップ表示' //はてなボタン用
               />
               <CustomDropdown
                 id='birthPrefecture'
@@ -751,6 +776,8 @@ export default function PlayerInformation() {
               label='居住地'
               required={mode !== 'confirm'}
               displayHelp={mode !== 'confirm'}
+              toolTipTitle='Title 居住地' //はてなボタン用
+              toolTipText='サンプル用のツールチップ表示' //はてなボタン用
             />
             <CustomDropdown
               id='residenceCountry'
@@ -779,6 +806,8 @@ export default function PlayerInformation() {
                 label='都道府県'
                 required={mode !== 'confirm'}
                 displayHelp={mode !== 'confirm'}
+                toolTipTitle='Title 都道府県' //はてなボタン用
+                toolTipText='サンプル用のツールチップ表示' //はてなボタン用
               />
               <CustomDropdown
                 id='residencePrefecture'
