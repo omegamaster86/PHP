@@ -31,7 +31,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string','email'],
+            'mailaddress' => ['required', 'string','email'],
             'password' => ['required', 'string'],
         ];
     }
@@ -39,8 +39,8 @@ class LoginRequest extends FormRequest
     {
         include(app_path() . '/Http/Controllers/Auth/ErrorMessages/ErrorMessages.php');
         return [
-            'email.required' => $mailAddress_required,
-            'email.email'=> $email_validation,
+            'mailaddress.required' => $mailAddress_required,
+            'mailaddress.email'=> $email_validation,
             'password.required' => $password_required 
         ];
     }
@@ -52,41 +52,38 @@ class LoginRequest extends FormRequest
      */
     public function authenticate(): void
     {
-        // test
-        $input = $this->request->all();
-        // test
         include(app_path() . '/Http/Controllers/Auth/ErrorMessages/ErrorMessages.php');
         $this->ensureIsNotRateLimited();
-        if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 1 ',[$input['email']]))) {
+        if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 1 ',[$this->only('mailaddress')['mailaddress']]))) {
             throw ValidationException::withMessages([
-                'system_error' => $this_mail_deleted
+                'datachecked_error' => $this_mail_deleted
             ]); 
         }
         
-        if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and expiry_time_of_temp_password < ? ',[$input['email'], date('Y-m-d H:i:s')]))) {
+        if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and expiry_time_of_temp_password < ? ',[$this->only('mailaddress')['mailaddress'], date('Y-m-d H:i:s')]))) {
             throw ValidationException::withMessages([
-                'system_error' => $temp_password_timed_out
+                'datachecked_error' => $temp_password_timed_out
             ]); 
         }
         
-        if (! Auth::attempt(['mailaddress' => $input['email'], 'password' => $input['password']])) {
+        if (! Auth::attempt($this->only('mailaddress', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
             
-            if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? ',[$input['email']]))) {
+            if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? ',[$this->only('mailaddress')['mailaddress']]))) {
                 throw ValidationException::withMessages([
-                    'system_error' => $password_compare
+                    'datachecked_error' => $password_compare
                 ]);
             }
             
             else{
                 throw ValidationException::withMessages([
-                    'system_error' => $mailAddress_not_found,
+                    'datachecked_error' => $mailAddress_not_found,
                 ]);
                 
             }
         }
 
-        $find_user_id = DB::select('SELECT user_id FROM t_users where mailaddress = ?',[$input['email']]);
+        $find_user_id = DB::select('SELECT user_id FROM t_users where mailaddress = ?',[$this->only('mailaddress')['mailaddress']]);
         
         $user_id = $find_user_id[0]->user_id;
 
@@ -132,7 +129,7 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
+            'mailaddress' => trans('auth.throttle', [
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
             ]),
@@ -144,6 +141,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->input('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->input('mailaddress')).'|'.$this->ip());
     }
 }

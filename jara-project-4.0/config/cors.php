@@ -15,11 +15,12 @@ return [
     |
     */
 
-    'paths' => ['*'],
+    // 'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['*'], //20240108 cors用に変更
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000')],
+    'allowed_origins' => ['*'],
 
     'allowed_origins_patterns' => [],
 
@@ -29,6 +30,7 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => true,
+    // 'supports_credentials' => false,
+    'supports_credentials' => true, //20240108 cors用に変更
 
 ];

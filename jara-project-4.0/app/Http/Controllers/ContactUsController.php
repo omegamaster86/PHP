@@ -93,7 +93,6 @@ class ContactUsController extends Controller
         $user = $request->all();
         $user_logged_out = empty(Auth::user());
         $previousPageStatus = true;
-
         return view('contact-us-confirm',["user_logged_out"=>$user_logged_out, "user"=>(object)$user,'previousPageStatus'=>$previousPageStatus]);
     }
     public function createConfirm()

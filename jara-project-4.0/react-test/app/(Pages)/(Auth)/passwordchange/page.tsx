@@ -2,7 +2,6 @@
 
 'use client';
 import { useState } from 'react';
-import { useAuth } from '@/app/hooks/auth'
 import CustomPasswordField from '@/app/components/CustomPasswordField';
 import CustomButton from '@/app/components/CustomButton';
 import { useRouter } from 'next/navigation';
@@ -11,7 +10,6 @@ import Validator from '@/app/utils/validator';
 import CustomTitle from '@/app/components/CustomTitle';
 import ErrorBox from '@/app/components/ErrorBox';
 import axios from 'axios';
-import { Header } from '@/app/components';
 
 export default function Passwordchange() {
   const [errorText, setErrorText] = useState([] as string[]);
@@ -25,36 +23,9 @@ export default function Passwordchange() {
   );
 
   const router = useRouter();
-  
-  {/* This is a extra feature for logout - start*/}
-  const [loggedIn, setLoggedIn] = useState(false);
-  const { user, logout } = useAuth({ middleware: 'auth' })
-  function authCheck(){
-    if(user){
-      setLoggedIn(true)
-    }
-    
-  }
-  if(!loggedIn){
-    authCheck()
-  }
-  else {
-    // if(!(user?.temp_password_flag))
-    //   router.push('/myPage')
-  }
-  
-  {/* This is a extra feature for logout - end*/}
+
   return (
-    <>
-    {loggedIn && (<><Header />
     <div>
-      {/* This is a extra feature for logout - start*/}
-      <div className=' text-right mt-4 mr-2'>
-        <CustomButton buttonType='primary' className='w-[200px]'  onClick={logout} >
-              ログアウト
-        </CustomButton>
-      </div>
-      {/* This is a extra feature for logout - end*/}
       <main className='flex flex-col items-center justify-start gap-[80px] my-[100px] m-auto p-4'>
         <CustomTitle isCenter={true}>パスワード変更</CustomTitle>
         <div className='flex flex-col gap-4 rounded'>
@@ -162,7 +133,6 @@ export default function Passwordchange() {
           </CustomButton>
         </div>
       </main>
-    </div></>)}
-    </>
+    </div>
   );
 }
