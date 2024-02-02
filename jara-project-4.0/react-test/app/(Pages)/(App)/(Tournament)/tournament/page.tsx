@@ -315,20 +315,17 @@ export default function Tournament() {
         })
         .catch((error) => {
           // TODO: エラー処理の実装置き換え
-          // alert(error);
+          alert(error);
         });
-      // TODO: データ取得処理の実装置き換えgetVenueList
+      // TODO: データ取得処理の実装置き換え
       axios
-        // .get<VenueResponse[]>('http://localhost:3100/venue')
-        .get('http://localhost:8000/api/getVenueList')
+        .get<VenueResponse[]>('http://localhost:3100/venue')
         .then((response) => {
-          console.log(response.data);
-          const stateList = response.data.map(({ venue_id, venue_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
           setVenue(response.data);
         })
         .catch((error) => {
           // TODO: エラー処理の実装置き換え
-          // alert(error);
+          alert(error);
         });
       // TODO: データ取得処理の実装置き換え
       axios
@@ -338,7 +335,7 @@ export default function Tournament() {
         })
         .catch((error) => {
           // TODO: エラー処理の実装置き換え
-          // alert(error);
+          alert(error);
         });
       // TODO: データ取得処理の実装置き換え
       axios
@@ -348,7 +345,7 @@ export default function Tournament() {
         })
         .catch((error) => {
           // TODO: エラー処理の実装置き換え
-          // alert(error);
+          alert(error);
         });
       // 更新モードの時に、大会情報を取得する
       if (mode === 'update') {
@@ -377,7 +374,7 @@ export default function Tournament() {
           })
           .catch((error) => {
             // TODO: エラー処理の実装置き換え
-            // alert(error);
+            alert(error);
           });
         // TODO: データ取得処理の実装置き換え
         axios
@@ -387,7 +384,7 @@ export default function Tournament() {
           })
           .catch((error) => {
             // TODO: エラー処理の実装置き換え
-            // alert(error);
+            alert(error);
           });
       }
     };
