@@ -204,8 +204,70 @@ class T_volunteers extends Model
         $sqlString = str_replace("#langJoinType#",$langJoinType,$sqlString);
         $sqlString = str_replace("#SupportableDisabilityJoinType#",$SupportableDisabilityJoinType,$sqlString);
 
-        DB::enableQueryLog();
         $volunteers = DB::select($sqlString,$conditionValue);
         return $volunteers;
+    }
+
+    //ボランティアの一覧を取得
+    public function getVolunteer()
+    {
+        $volunteer = DB::select('select
+                                `volunteer_id`,
+                                `user_id`,
+                                `volunteer_name`
+                                from t_volunteers
+                                where delete_flag = ?'
+                                ,[0]);
+        
+        return $volunteer;
+    }
+
+    //ボランティアテーブルに挿入する
+    //文字を置き換えて複数の挿入を可能とする
+    //$replaceCondition：置き換え後の文字列
+    //$values：挿入する値
+    public function insertVolunteer($values)
+    {
+        DB::insert("INSERT INTO `t_volunteers`
+                    (
+                        `user_id`,
+                        `volunteer_name`,
+                        `residence_country`,
+                        `residence_prefecture`,
+                        `sex`,
+                        `date_of_birth`,
+                        `dis_type_id`,
+                        `telephone_number`,
+                        `mailaddress`,
+                        `users_email_flag`,
+                        `clothes_size`,
+                        `registered_time`,
+                        `registered_user_id`,
+                        `updated_time`,
+                        `updated_user_id`,
+                        `delete_flag`
+                    )
+                    VALUES
+                    (
+                        :user_id
+                        ,:volunteer_name
+                        ,:residence_country
+                        ,:residence_prefecture
+                        ,:sex
+                        ,:date_of_birth
+                        ,:dis_type_id
+                        ,:telephone_number
+                        ,:mailaddress
+                        ,:users_email_flag
+                        ,:clothes_size
+                        ,:registered_time
+                        ,:register_user_id
+                        ,:updated_time
+                        ,updated_user_id
+                        ,:delete_flag
+                    )",$values);
+        //挿入したIDを取得
+        $insertId =  DB::getPdo()->lastInsertId();
+        return $insertId;
     }
 }

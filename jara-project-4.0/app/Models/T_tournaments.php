@@ -209,4 +209,13 @@ class T_tournaments extends Model
         $tournaments = DB::select($sqlString);
         return $tournaments;
     }
+    public function getTournamentName()
+    {
+        $tournament_name_list = DB::select('select tourn_name
+                                        from t_tournaments
+                                        where delete_flag = 0
+                                        order by tourn_id'
+                                    );
+        return $tournament_name_list;
+    }
 }
