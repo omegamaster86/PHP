@@ -59,35 +59,4 @@ class T_volunteer_qualifications_hold extends Model
             ]
         );
     }
-
-    //ボランティア保有資格情報テーブルに挿入する
-    //ボランティア一括登録画面用
-    public function insertVolunteerQualificationsHold($values)
-    {
-        DB::insert('INSERT INTO `t_volunteer_qualifications_hold`
-                    (
-                        `volunteer_id`,
-                        `qual_id`,
-                        `others_qual`,
-                        `registered_time`,
-                        `registered_user_id`,
-                        `updated_time`,
-                        `updated_user_id`,
-                        `delete_flag`
-                    )
-                    VALUES
-                    (
-                        :volunteer_id
-                        ,:qual_id
-                        ,:others_qual
-                        ,:registered_time
-                        ,:registered_user_id
-                        ,:updated_time
-                        ,:updated_user_id
-                        ,:delete_flag
-                    )',$values);
-        //挿入したIDを取得
-        $insertId =  DB::getPdo()->lastInsertId();
-        return $insertId;
-    }
 }

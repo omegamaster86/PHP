@@ -16,6 +16,23 @@ class T_organization_staff extends Model
 
     public function getOrganizationStaffFromOrgId($orgId)
     {
+        // $orgStaffs = DB::select('select 
+        //                             `org_staff_id`,
+        //                             `staff`.`user_id`,
+        //                             `staff`.`staff_type_id`,
+        //                             `staff_type_name`,
+        //                             `user`.`user_name`
+        //                             from `t_organization_staff` `staff`
+        //                             join `t_users` `user`
+        //                             on `staff`.`user_id` = `user`.`user_id`
+        //                             left join `m_staff_type`
+        //                             on `staff`.`staff_type_id` = `m_staff_type`.`staff_type_id`
+        //                             where `staff`.`delete_flag` = 0
+        //                             and `user`.`delete_flag` = 0
+        //                             and `staff`.`org_id` = ?'
+        //                             ,[$orgId]
+        //                         );
+        
         $orgStaffs = DB::select('select
                                 `org_id`
                                 ,`user_id`
