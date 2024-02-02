@@ -9,9 +9,17 @@ import {
   CustomPasswordField,
   ErrorBox,
   CustomTitle,
+  Header,
 } from '@/app/components';
+import { useAuth } from '@/app/hooks/auth'
 import Validator from '@/app/utils/validator';
-import axios from 'axios';
+
+import axios, { AxiosError } from 'axios'
+
+interface Values {
+  email: string
+  password: string
+}
 
 export default function Login() {
   const [errorText, setErrorText] = useState([] as string[]);
@@ -22,7 +30,34 @@ export default function Login() {
 
   const router = useRouter();
 
-  return (
+  const { login } = useAuth({
+    middleware: 'guest',
+    redirectIfAuthenticated: '/DummyMyPage',
+})
+
+const submitForm = async (
+  values: Values,
+): Promise<any> => {
+  try {
+    await login(values)
+  } catch (error: Error | AxiosError | any) {
+    if (axios.isAxiosError(error) && error.response?.status === 422) {
+      setErrorText(error.response?.data?.errors?.system_error)
+    }
+  } finally {
+    // setSubmitting(false)
+    // setStatus('')
+  }
+}
+
+// const handleSubmit = (event:any)=>{
+//   event.preventDefault();
+//   console.log("form submitted!");
+// }
+return (
+  // <form onSubmit={handleSubmit}>
+  <>
+    <Header />
     <div>
       <main className='flex flex-col items-center justify-between gap-[40px] my-[100px] m-auto'>
         <CustomTitle isCenter={true}>ログイン</CustomTitle>
@@ -70,9 +105,12 @@ export default function Login() {
             onClick={() => {
               const emailErrorMessages = Validator.getErrorMessages([
                 Validator.validateRequired(email, 'メールアドレス'),
+                Validator.validateEmailFormat(email),
+                Validator.validateEmailFormat2(email),
               ]);
               const passwordErrorMessages = Validator.getErrorMessages([
                 Validator.validateRequired(password, 'パスワード'),
+                // Validator.validatePasswordFormat(password),
               ]);
               setEmailErrorMessages(emailErrorMessages);
               setPasswordErrorMessages(passwordErrorMessages);
@@ -81,36 +119,41 @@ export default function Login() {
                 console.log('error');
               } else {
                 // TODO: ログイン処理
-                let isPasswordTemporary = true;
-                if (isPasswordTemporary) {
-                  // TODO: ログイン処理を実装
-                  const requestBody = {};
-                  axios
-                    .post('http://localhost:3100/', requestBody)
-                    .then((response) => {
-                      // TODO: 成功時の処理を実装
-                      console.log(response);
-                      router.push('/passwordchange');
-                    })
-                    .catch((error) => {
-                      // TODO: エラー処理を実装
-                      console.log(error);
-                    });
-                } else {
-                  // TODO: ログイン処理を実装
-                  const requestBody = {};
-                  axios
-                    .post('http://localhost:3100/', requestBody)
-                    .then((response) => {
-                      // TODO: 成功時の処理を実装
-                      console.log(response);
-                      router.push('/mypage');
-                    })
-                    .catch((error) => {
-                      // TODO: エラー処理を実装
-                      console.log(error);
-                    });
-                }
+                // let isPasswordTemporary = true;
+                // if (isPasswordTemporary) {
+                //   // TODO: ログイン処理を実装
+                //   const requestBody = {};
+                //   axios
+                //     .post('http://localhost:8000/', requestBody)
+                //     .then((response) => {
+                //       // TODO: 成功時の処理を実装
+                //       console.log(response);
+                //       router.push('/passwordchange');
+                //     })
+                //     .catch((error) => {
+                //       // TODO: エラー処理を実装
+                //       console.log(error);
+                //     });
+                // } else {
+                //   // TODO: ログイン処理を実装
+                //   const requestBody = {};
+                //   axios
+                //     .post('http://localhost:8000/', requestBody)
+                //     .then((response) => {
+                //       // TODO: 成功時の処理を実装
+                //       console.log(response);
+                //       router.push('/mypage');
+                //     })
+                //     .catch((error) => {
+                //       // TODO: エラー処理を実装
+                //       console.log(error);
+                //     });
+                // }
+                
+                submitForm({
+                    email,
+                    password,
+                })
               }
             }}
           >
@@ -143,5 +186,7 @@ export default function Login() {
         </p>
       </div>
     </div>
-  );
+  </>
+  // </form>
+);
 }

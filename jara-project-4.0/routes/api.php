@@ -28,9 +28,9 @@ use App\Models\M_venue;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
 
 Route::group(['middleware' => ['api', 'cors']], function () {
     Route::get('list', [TournamentController::class, 'index']); //Laravel_Reactデータ送信テスト 20231227
