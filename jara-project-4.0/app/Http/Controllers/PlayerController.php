@@ -32,6 +32,7 @@ class PlayerController extends Controller
     {
         $retrieve_player_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
 
+<<<<<<< HEAD
         if(empty($retrieve_player_ID[0])){
             return view('player.register-edit',["page_mode"=>"register"]);
         }
@@ -42,10 +43,22 @@ class PlayerController extends Controller
             else {
                 $player_info = $retrieve_player_ID[count($retrieve_player_ID)-1];
                 $player_info->date_of_birth = date('Y/m/d', strtotime($retrieve_player_ID[count($retrieve_player_ID)-1]->date_of_birth));
+=======
+         if (empty($retrieve_player_ID[0])) {
+            return view('player.register-edit', ["page_mode" => "register"]);
+        } else {
+            if ($retrieve_player_ID[count($retrieve_player_ID) - 1]->delete_flag) {
+                return view('player.register-edit', ["page_mode" => "register"]);
+            } else {
+                $player_info = $retrieve_player_ID[count($retrieve_player_ID) - 1];
+                $player_info->date_of_birth = date('Y/m/d', strtotime($retrieve_player_ID[count($retrieve_player_ID) - 1]->date_of_birth));
+>>>>>>> 74dc80a57df4b07b96e709fb2f38a7d20fdd537a
 
                 return view('player.register-edit',["page_mode"=>"edit","player_info"=>$player_info]);
             }
         }
+
+
     }
 
     /**
@@ -55,6 +68,10 @@ class PlayerController extends Controller
      */
     
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 74dc80a57df4b07b96e709fb2f38a7d20fdd537a
     public function storeRegister( Request $request): RedirectResponse
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
@@ -63,7 +80,7 @@ class PlayerController extends Controller
             
             $file = $request->file('photo');
 
-            $fileName = $random_file_name . '.' . $request->file('photo')->getClientOriginalExtension();
+            $fileName = $random_file_name. '.' . $request->file('photo')->getClientOriginalExtension();
 
             $destinationPath = public_path().'/images/players/' ;
             $file->move($destinationPath,$fileName);
@@ -96,7 +113,9 @@ class PlayerController extends Controller
             throw ValidationException::withMessages([
                 'system_error' => "この既存選手IDは既に別の選手と紐づいています。入力した既存選手IDを確認してください。紐づいていた選手I：[$request->playerCode] [$existing_player_name]"
             ]);
-        } else {
+        }
+        else{
+
         }
         $player_info = $request->all();
         if ($request->hasFile('photo')){
@@ -112,11 +131,12 @@ class PlayerController extends Controller
         foreach($request->sideInfo as $sideInfo){
             $sideInfo_xor = $sideInfo_xor ^ $sideInfo;
         }
-        if (count($request->sideInfo) % 2)
-            $sideInfo_xor = $sideInfo_xor ^ "00000000";
+        if(count($request->sideInfo)%2)
+            $sideInfo_xor= $sideInfo_xor ^ "00000000";
         $player_info['side_info'] = $sideInfo_xor;
         $player_info['previousPageStatus'] = "success";
         return redirect('player/register/confirm')->with('player_info', $player_info);
+
     }
     /**
      * Display the edit view.
@@ -158,7 +178,7 @@ class PlayerController extends Controller
             // $file->store('toPath', ['disk' => 'public']);
 
 
-            $fileName = DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('player_id') . '.' . $request->file('photo')->getClientOriginalExtension();
+            $fileName = DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('player_id'). '.' . $request->file('photo')->getClientOriginalExtension();
             // Storage::disk('public')->put($fileName, $file);
 
 
@@ -212,8 +232,8 @@ class PlayerController extends Controller
                 foreach($request->sideInfo as $sideInfo){
                     $sideInfo_xor = $sideInfo_xor ^ $sideInfo;
                 }
-                if (count($request->sideInfo) % 2)
-                    $sideInfo_xor = $sideInfo_xor ^ "00000000";
+                if(count($request->sideInfo)%2)
+                    $sideInfo_xor= $sideInfo_xor ^ "00000000";
                 $player_info['sideInfo'] = $sideInfo_xor;
                 $player_info['playerId'] = $retrieve_player[0]->playerId;
                 // dd($player_info['photo']);
@@ -225,7 +245,9 @@ class PlayerController extends Controller
             throw ValidationException::withMessages([
                 'system_error' => "この既存選手IDは既に別の選手と紐づいています。入力した既存選手IDを確認してください。紐づいていた選手I：[$request->playerCode] [$existing_player_name]"
             ]);
-        } else {
+        }
+        else{
+
         }
         $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
 
@@ -237,8 +259,8 @@ class PlayerController extends Controller
         foreach($request->sideInfo as $sideInfo){
             $sideInfo_xor = $sideInfo_xor ^ $sideInfo;
         }
-        if (count($request->sideInfo) % 2)
-            $sideInfo_xor = $sideInfo_xor ^ "00000000";
+        if(count($request->sideInfo)%2)
+            $sideInfo_xor= $sideInfo_xor ^ "00000000";
         $player_info['sideInfo'] = $sideInfo_xor;
         $player_info['playerId'] = $retrieve_player_by_ID[0]->playerId;
         $player_info['previousPageStatus'] = "success"; 
@@ -260,6 +282,10 @@ class PlayerController extends Controller
      */
     
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 74dc80a57df4b07b96e709fb2f38a7d20fdd537a
     public function storeRegisterConfirm( Request $request): RedirectResponse
     {
         if (DB::table('t_players')->where('jara_player_id',$request->jar_player_id)->where('delete_flag',0)->exists()){
@@ -280,7 +306,7 @@ class PlayerController extends Controller
                 $page_url = route('my-page');
                 $page_url_text = "マイページ";
 
-                return redirect('change-notification')->with(['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+                return redirect('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
             } catch (\Throwable $e) {
                 DB::rollBack();
 
@@ -300,12 +326,14 @@ class PlayerController extends Controller
                     throw ValidationException::withMessages([
                         'datachecked_error' => $database_registration_failed
                     ]);
-                } else {
+                }
+                else{
                     throw ValidationException::withMessages([
                         'datachecked_error' => $database_registration_failed
                     ]); 
                 }
             }
+
         }
     }
 
@@ -315,7 +343,7 @@ class PlayerController extends Controller
     public function createEditConfirm(): View
     {
 
-        return view('player.register-edit-confirm', ["page_mode" => "edit-confirm"]);
+        return view('player.register-edit-confirm',["page_mode"=>"edit-confirm"]);
     }
 
     /**
@@ -325,6 +353,10 @@ class PlayerController extends Controller
      */
     
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 74dc80a57df4b07b96e709fb2f38a7d20fdd537a
     public function storeEditConfirm( Request $request): RedirectResponse
     {
         if (DB::table('t_players')->where('jara_player_id', '=', $request->jara_player_id)->where('delete_flag', '=', 0)->exists()){
@@ -349,23 +381,23 @@ class PlayerController extends Controller
                     $page_url = route('my-page');
                     $page_url_text = "マイページ";
 
-                    return redirect('change-notification')->with(['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+                    return redirect('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
                 } catch (\Throwable $e) {
                     dd($request->all());
                     dd("stop");
                     DB::rollBack();
-                    //Store error message in the register log file.
-                    Log::channel('player_update')->info(" error-message  -> $update_failed");
-                    throw ValidationException::withMessages([
-                        'datachecked_error' => $update_failed
-                    ]);
+                     //Store error message in the register log file.
+                     Log::channel('player_update')->info(" error-message  -> $update_failed");
+                     throw ValidationException::withMessages([
+                         'datachecked_error' => $update_failed
+                     ]);
                 }
                 
                 $page_status = "選手情報の更新が正常に完了しました。";
-                $page_url = route('my-page');
-                $page_url_text = "マイページ";
+                    $page_url = route('my-page');
+                    $page_url_text = "マイページ";
 
-                return redirect('change-notification')->with(['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+                    return redirect('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
             }
         }
         else{
@@ -375,27 +407,30 @@ class PlayerController extends Controller
                         'update t_players set jara_player_id = ? , player_name = ?, date_of_birth = ?, sex = ?, height = ?, weight = ?,side_info = ?,birth_country = ?,birth_prefecture = ?,residence_country = ?,residence_prefecture = ?,photo = ? where user_id = ?',
                         [ $request->jara_player_id, $request->player_name,$request->date_of_birth,$request->sex,$request->height,$request->weight,$request->side_info,$request->birth_country,$request->birth_prefecture,$request->residence_country,$request->residence_prefecture,$request->photo,Auth::user()->user_id]
                     );
+<<<<<<< HEAD
+=======
 
-                DB::commit();
+                    DB::commit();
+                    $page_status = "選手情報の更新が正常に完了しました。";
+                    $page_url = route('my-page');
+                    $page_url_text = "マイページ";
+
+                    return redirect('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
+                } catch (\Throwable $e) {
+                    DB::rollBack();
+                    //Store error message in the player update log file.
+                    Log::channel('player_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
+                     throw ValidationException::withMessages([
+                         'datachecked_error' => $update_failed
+                     ]);
+                }
+>>>>>>> 74dc80a57df4b07b96e709fb2f38a7d20fdd537a
+
                 $page_status = "選手情報の更新が正常に完了しました。";
-                $page_url = route('my-page');
-                $page_url_text = "マイページ";
+                    $page_url = route('my-page');
+                    $page_url_text = "マイページ";
 
-                return redirect('change-notification')->with(['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-            } catch (\Throwable $e) {
-                DB::rollBack();
-                //Store error message in the player update log file.
-                Log::channel('player_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-                throw ValidationException::withMessages([
-                    'datachecked_error' => $update_failed
-                ]);
-            }
-
-            $page_status = "選手情報の更新が正常に完了しました。";
-            $page_url = route('my-page');
-            $page_url_text = "マイページ";
-
-            return redirect('change-notification')->with(['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+                    return redirect('change-notification')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
         }
         return redirect('player/edit');
     }
@@ -417,8 +452,8 @@ class PlayerController extends Controller
         Left join (select pref_id, pref_name as birth_prefecture_name from m_prefectures where delete_flag = ?)  as birth_prefecture on player.birth_prefecture = birth_prefecture.pref_id
 
         Left join (select pref_id, pref_name as residence_prefecture_name from m_prefectures where delete_flag = ?)  as residence_prefecture on player.residence_prefecture = residence_prefecture.pref_id
-        
-        where player.user_id = ? AND player.delete_flag = ?', [0, 0, 0, 0, 0, $user_id, 0]);
+
+        where player.user_id = ? AND player.delete_flag = ?', [0, 0, 0, 0, 0, $user_id, 0] );
 
 
 
@@ -428,8 +463,8 @@ class PlayerController extends Controller
         Left join (select race_id, event_name from t_races where delete_flag = ? ) as race on record.race_id = race.race_id
 
         Left join (select tourn_id, event_start_date from t_tournaments where delete_flag = ?)  as tourn on record.tourn_id = tourn.tourn_id
-        
-        where record.user_id = ? AND record.delete_flag = ?', [0, 0, $user_id, 0]);
+
+        where record.user_id = ? AND record.delete_flag = ?', [0, 0, $user_id, 0] );
 
         //if there is no player info send the user to the register page
         if(!count($retreive_player_by_ID))
@@ -451,10 +486,10 @@ class PlayerController extends Controller
             return view('player.register-edit',["page_mode"=>"register"]);
         }
 
-        $player_info = $retrieve_player_ID[count($retrieve_player_ID) - 1];
+        $player_info = $retrieve_player_ID[count($retrieve_player_ID)-1];
 
-        if ($player_info->delete_flag) {
-            return view('player.register-edit', ["page_mode" => "register"]);
+        if($player_info->delete_flag){
+            return view('player.register-edit',["page_mode"=>"register"]);
         }
         if($player_info->sex===1){
             $player_info->sex = "男";
@@ -475,6 +510,10 @@ class PlayerController extends Controller
      */
     
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 74dc80a57df4b07b96e709fb2f38a7d20fdd537a
     public function storeDelete(Request $request, ): RedirectResponse
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
@@ -491,7 +530,7 @@ class PlayerController extends Controller
             $page_url = route('my-page');
             $page_url_text = "マイページ";
 
-            return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+            return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
         } catch (\Throwable $e) {
             dd($request->all());
             dd("stop");
@@ -513,7 +552,7 @@ class PlayerController extends Controller
         $page_url = route('my-page');
         $page_url_text = "マイページ";
 
-        return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+        return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
     }
     
     public function createSearch(M_sex $sex): View
@@ -524,6 +563,10 @@ class PlayerController extends Controller
     
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 74dc80a57df4b07b96e709fb2f38a7d20fdd537a
     public function searchPlayer(Request $request,T_players $players, M_sex $sex): View
     {
         $searched_data = $request->all();
@@ -536,6 +579,12 @@ class PlayerController extends Controller
         }
         if($searched_data['date_of_birth_end']==="年/月/日") {
             $searched_data['date_of_birth_end'] = NULL;
+<<<<<<< HEAD
+=======
+        }
+        else{
+            $searched_data['date_of_birth_end'] = date('Y-m-d',strtotime($searched_data['date_of_birth_end']));
+>>>>>>> 74dc80a57df4b07b96e709fb2f38a7d20fdd537a
         }
         else{
             $searched_data['date_of_birth_end'] = date('Y-m-d',strtotime($searched_data['date_of_birth_end']));
@@ -549,10 +598,11 @@ class PlayerController extends Controller
             foreach($searched_data['side_info'] as $side_info){
                 $side_info_xor = $side_info_xor ^ $side_info;
             }
-            if (count($searched_data['side_info']) % 2)
-                $side_info_xor = $side_info_xor ^ "00000000";
+            if(count($searched_data['side_info'])%2)
+                $side_info_xor= $side_info_xor ^ "00000000";
             $searched_data['side_info'] = $side_info_xor;
-        } else {
+        }
+        else{
             $searched_data['side_info'] = "00000000";
         };
         
@@ -560,7 +610,7 @@ class PlayerController extends Controller
         return view('player.search', ["page_mode" => "search", "sex_list" => $sex_list, "player_list" => $player_list, "searched_data" => (object)$searched_data]);
     }
 
-    //===============================================================================================
+       //===============================================================================================
     //===============================================================================================
 
     //reactからの選手登録 20240131
@@ -693,4 +743,5 @@ class PlayerController extends Controller
         Log::debug(sprintf("deletePlayerData end"));
         return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
     }
+
 }

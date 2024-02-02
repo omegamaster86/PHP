@@ -27,49 +27,87 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class AuthenticationTest extends TestCase
+class AuthenticatedSessionController extends Controller
 {
-    use RefreshDatabase;
-
-    public function test_login_screen_can_be_rendered(): void
+    /**
+     * Display the login page view.
+     */
+    public function create(): View
     {
-        $response = $this->get('/login');
-
-        $response->assertStatus(200);
+        // dd("test");
+        //return view('auth.login');
+        $token = csrf_token();
+        $hoge = (string) $token . "000000hoge";
+        return view('auth.login', ["hoge" => $hoge]);
     }
 
-    public function test_users_can_authenticate_using_the_login_screen(): void
+    /**
+     * Handle an incoming authentication request.
+     */
+    public function store(LoginRequest $request): RedirectResponse
     {
-        $user = User::factory()->create();
+        //dd($request->all(), $request->session()->token(), csrf_token());
+        $request->authenticate();
 
-        $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
-        ]);
+        $request->session()->regenerate();
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(RouteServiceProvider::HOME);
+        //Get the status of registered user
+        $temp_password_flag = Auth::user()->temp_password_flag;
+        //return redirect('http://127.0.0.1:3000/login');
+        //Redirect the temporary registered user to the my password change page
+        if ($temp_password_flag) {
+            return redirect('user/password-change');
+        }
+        //Redirect the registered user to the my page
+        else {
+            return redirect('my-page');
+        }
+    }
+    //20240119 React連携 ログイン画面CSRFトークン生成
+    public function createCsrf()
+    {
+        //$token = $request->session()->token();
+        // $token = "aaaaaaaaaa";
+        $token = csrf_token();
+        echo($token);
+        echo("aaaaaaaaa");
+        var_dump($token);
+        $hoge = str_split($token);
+        $hoge = "aaa000aaa000" . (string) $token . "hhhhhhh99999999";
+        return  $hoge;
     }
 
-    public function test_users_can_not_authenticate_with_invalid_password(): void
+    //20240119 React連携 ログイン画面遷移
+    public function loginCheck(Request $request)
     {
-        $user = User::factory()->create();
+        //$request->session()->token();
+        $reqData = $request->all();
+        return  $reqData;
+        $request->authenticate();
 
-        $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'wrong-password',
-        ]);
+        $request->session()->regenerate();
 
-        $this->assertGuest();
+        //Get the status of registered user
+        $temp_password_flag = Auth::user()->temp_password_flag;
+
+        return $temp_password_flag;
     }
 
-    public function test_users_can_logout(): void
+    /**
+     * Destroy an authenticated session.
+     */
+    public function destroy(Request $request): RedirectResponse
     {
-        $user = User::factory()->create();
+        // Logout Function
+        Auth::guard('web')->logout();
 
-        $response = $this->actingAs($user)->post('/logout');
+        //Destroy current session
+        $request->session()->invalidate();
 
-        $this->assertGuest();
-        $response->assertRedirect('/');
+        //Destroy current  token
+        $request->session()->regenerateToken();
+
+        //Redirect the logout user to the index page
+        return redirect('/');
     }
 }
