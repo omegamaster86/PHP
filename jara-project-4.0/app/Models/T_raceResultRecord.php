@@ -13,7 +13,7 @@ class T_raceResultRecord extends Model
 
     public static $raceResultRecordInfo = [
         'race_result_record_id' => null,
-        'user_id' => null,
+        'player_id' => null,
         'jara_player_id' => null,
         'player_name' => null,
         'entrysystem_tourn_id' => null,
@@ -67,7 +67,7 @@ class T_raceResultRecord extends Model
     //レースIDに紐づいたレース結果情報を取得
     public function getRaceResultRecord_receId($raceId)
     {
-        $racesResultRecord = DB::select('select `race_result_record_id`, `user_id`, `jara_player_id`, `player_name`, `entrysystem_tourn_id`, `tourn_id`, `tourn_name`, `race_id`, `entrysystem_race_id`, `race_number`, `race_name`, `org_id`, `entrysystem_org_id`, `org_name`, `crew_name`, `by_group`, `event_id`, `event_name`, `range`, `rank`, `laptime_500m`, `laptime_1000m`, `laptime_1500m`, `laptime_2000m`, `final_time`, `stroke_rate_avg`, `stroke_rat_500m`, `stroke_rat_1000m`, `stroke_rat_1500m`, `stroke_rat_2000m`, `heart_rate_avg`, `heart_rate_500m`, `heart_rate_1000m`, `heart_rate_1500m`, `heart_rate_2000m`, `official`, `attendance`, `ergo_weight`, `crew_rep_record_flag`, `player_height`, `player_weight`, `sheet_number`, `t_race_result_record`.`sheet_name`, `race_result_record_name`, `start_datetime`, `wind_speed_2000m_point`, `wind_direction_2000m_point`, `wind_speed_1000m_point`, `wind_direction_1000m_point`, `t_race_result_record`.`registered_time`, `t_race_result_record`.`registered_user_id`, `t_race_result_record`.`updated_time`, 
+        $racesResultRecord = DB::select('select `race_result_record_id`, `player_id`, `jara_player_id`, `player_name`, `entrysystem_tourn_id`, `tourn_id`, `tourn_name`, `race_id`, `entrysystem_race_id`, `race_number`, `race_name`, `org_id`, `entrysystem_org_id`, `org_name`, `crew_name`, `by_group`, `event_id`, `event_name`, `range`, `rank`, `laptime_500m`, `laptime_1000m`, `laptime_1500m`, `laptime_2000m`, `final_time`, `stroke_rate_avg`, `stroke_rat_500m`, `stroke_rat_1000m`, `stroke_rat_1500m`, `stroke_rat_2000m`, `heart_rate_avg`, `heart_rate_500m`, `heart_rate_1000m`, `heart_rate_1500m`, `heart_rate_2000m`, `official`, `attendance`, `ergo_weight`, `crew_rep_record_flag`, `player_height`, `player_weight`, `sheet_number`, `t_race_result_record`.`sheet_name`, `race_result_record_name`, `start_datetime`, `wind_speed_2000m_point`, `wind_direction_2000m_point`, `wind_speed_1000m_point`, `wind_direction_1000m_point`, `t_race_result_record`.`registered_time`, `t_race_result_record`.`registered_user_id`, `t_race_result_record`.`updated_time`, 
         `t_race_result_record`.`updated_user_id`, `t_race_result_record`.`delete_flag`, 
         `m_sheet_number`.`display_order`
         FROM `t_race_result_record` 
@@ -81,7 +81,7 @@ class T_raceResultRecord extends Model
     //大会IDに紐づいたレース結果情報を取得
     public function getRaceResultRecord_tournId($tournId)
     {
-        $racesResultRecord = DB::select('select `race_result_record_id`, `user_id`, `jara_player_id`, `player_name`, `entrysystem_tourn_id`, `tourn_id`, `tourn_name`, `race_id`, `entrysystem_race_id`, `race_number`, `race_name`, `org_id`, `entrysystem_org_id`, `org_name`, `crew_name`, `by_group`, `event_id`, `event_name`, `range`, `rank`, `laptime_500m`, `laptime_1000m`, `laptime_1500m`, `laptime_2000m`, `final_time`, `stroke_rate_avg`, `stroke_rat_500m`, `stroke_rat_1000m`, `stroke_rat_1500m`, `stroke_rat_2000m`, `heart_rate_avg`, `heart_rate_500m`, `heart_rate_1000m`, `heart_rate_1500m`, `heart_rate_2000m`, `official`, `attendance`, `ergo_weight`, `crew_rep_record_flag`, `player_height`, `player_weight`, `sheet_number`, `t_race_result_record`.`sheet_name`, `race_result_record_name`, `start_datetime`, `wind_speed_2000m_point`, `wind_direction_2000m_point`, `wind_speed_1000m_point`, `wind_direction_1000m_point`, `t_race_result_record`.`registered_time`, `t_race_result_record`.`registered_user_id`, `t_race_result_record`.`updated_time`, 
+        $racesResultRecord = DB::select('select `race_result_record_id`, `player_id`, `jara_player_id`, `player_name`, `entrysystem_tourn_id`, `tourn_id`, `tourn_name`, `race_id`, `entrysystem_race_id`, `race_number`, `race_name`, `org_id`, `entrysystem_org_id`, `org_name`, `crew_name`, `by_group`, `event_id`, `event_name`, `range`, `rank`, `laptime_500m`, `laptime_1000m`, `laptime_1500m`, `laptime_2000m`, `final_time`, `stroke_rate_avg`, `stroke_rat_500m`, `stroke_rat_1000m`, `stroke_rat_1500m`, `stroke_rat_2000m`, `heart_rate_avg`, `heart_rate_500m`, `heart_rate_1000m`, `heart_rate_1500m`, `heart_rate_2000m`, `official`, `attendance`, `ergo_weight`, `crew_rep_record_flag`, `player_height`, `player_weight`, `sheet_number`, `t_race_result_record`.`sheet_name`, `race_result_record_name`, `start_datetime`, `wind_speed_2000m_point`, `wind_direction_2000m_point`, `wind_speed_1000m_point`, `wind_direction_1000m_point`, `t_race_result_record`.`registered_time`, `t_race_result_record`.`registered_user_id`, `t_race_result_record`.`updated_time`, 
         `t_race_result_record`.`updated_user_id`, `t_race_result_record`.`delete_flag`, 
         `m_sheet_number`.`display_order`
         FROM `t_race_result_record` 
@@ -92,8 +92,22 @@ class T_raceResultRecord extends Model
         return $racesResultRecord;
     }
 
+    //選手IDに紐づいたレース結果情報を取得 20240201
+    public function getRaceResultRecord_playerId($playerId)
+    {
+        $racesResultRecord = DB::select('select `race_result_record_id`, `player_id`, `jara_player_id`, `player_name`, `entrysystem_tourn_id`, `tourn_id`, `tourn_name`, `race_id`, `entrysystem_race_id`, `race_number`, `race_name`, `org_id`, `entrysystem_org_id`, `org_name`, `crew_name`, `by_group`, `event_id`, `event_name`, `range`, `rank`, `laptime_500m`, `laptime_1000m`, `laptime_1500m`, `laptime_2000m`, `final_time`, `stroke_rate_avg`, `stroke_rat_500m`, `stroke_rat_1000m`, `stroke_rat_1500m`, `stroke_rat_2000m`, `heart_rate_avg`, `heart_rate_500m`, `heart_rate_1000m`, `heart_rate_1500m`, `heart_rate_2000m`, `official`, `attendance`, `ergo_weight`, `crew_rep_record_flag`, `player_height`, `player_weight`, `sheet_number`, `t_race_result_record`.`sheet_name`, `race_result_record_name`, `start_datetime`, `wind_speed_2000m_point`, `wind_direction_2000m_point`, `wind_speed_1000m_point`, `wind_direction_1000m_point`, `t_race_result_record`.`registered_time`, `t_race_result_record`.`registered_user_id`, `t_race_result_record`.`updated_time`, 
+        `t_race_result_record`.`updated_user_id`, `t_race_result_record`.`delete_flag`, 
+        `m_sheet_number`.`display_order`
+        FROM `t_race_result_record` 
+        left join `m_sheet_number`
+        on `t_race_result_record`.`sheet_number` = `m_sheet_number`.`sheet_id`
+        where `t_race_result_record`.delete_flag = 0 and `t_race_result_record`.player_id = ?', [$playerId]);
+
+        return $racesResultRecord;
+    }
+
     //クルー一覧に表示する選手の情報を取得
-    public function getRaceResultRecord_crewData($raceId,$crewName,$orgId)
+    public function getRaceResultRecord_crewData($raceId, $crewName, $orgId)
     {
         $racesResultRecord = DB::select('select `race_result_record_id`,  
         `player_name`, 
@@ -109,7 +123,7 @@ class T_raceResultRecord extends Model
         where `t_race_result_record`.delete_flag=0 
         and `t_race_result_record`.race_id = ?
         and `t_race_result_record`.crew_name = ?
-        and `t_race_result_record`.org_id = ?', [$raceId,$crewName,$orgId]);
+        and `t_race_result_record`.org_id = ?', [$raceId, $crewName, $orgId]);
 
         return $racesResultRecord;
     }
@@ -120,10 +134,10 @@ class T_raceResultRecord extends Model
         DB::beginTransaction();
         try {
             DB::insert(
-                'insert into t_race_result_record(`race_result_record_id`, `user_id`, `jara_player_id`, `player_name`, `entrysystem_tourn_id`, `tourn_id`, `tourn_name`, `race_id`, `entrysystem_race_id`, `race_number`, `race_name`, `org_id`, `entrysystem_org_id`, `org_name`, `crew_name`, `by_group`, `event_id`, `event_name`, `range`, `rank`, `laptime_500m`, `laptime_1000m`, `laptime_1500m`, `laptime_2000m`, `final_time`, `stroke_rate_avg`, `stroke_rat_500m`, `stroke_rat_1000m`, `stroke_rat_1500m`, `stroke_rat_2000m`, `heart_rate_avg`, `heart_rate_500m`, `heart_rate_1000m`, `heart_rate_1500m`, `heart_rate_2000m`, `official`, `attendance`, `ergo_weight`, `crew_rep_record_flag`, `player_height`, `player_weight`, `sheet_number`, `sheet_name`, `race_result_record_name`, `start_datetime`, `wind_speed_2000m_point`, `wind_direction_2000m_point`, `wind_speed_1000m_point`, `wind_direction_1000m_point`, `registered_time`, `registered_user_id`, `updated_time`, `updated_user_id`, `delete_flag`)VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                'insert into t_race_result_record(`race_result_record_id`, `player_id`, `jara_player_id`, `player_name`, `entrysystem_tourn_id`, `tourn_id`, `tourn_name`, `race_id`, `entrysystem_race_id`, `race_number`, `race_name`, `org_id`, `entrysystem_org_id`, `org_name`, `crew_name`, `by_group`, `event_id`, `event_name`, `range`, `rank`, `laptime_500m`, `laptime_1000m`, `laptime_1500m`, `laptime_2000m`, `final_time`, `stroke_rate_avg`, `stroke_rat_500m`, `stroke_rat_1000m`, `stroke_rat_1500m`, `stroke_rat_2000m`, `heart_rate_avg`, `heart_rate_500m`, `heart_rate_1000m`, `heart_rate_1500m`, `heart_rate_2000m`, `official`, `attendance`, `ergo_weight`, `crew_rep_record_flag`, `player_height`, `player_weight`, `sheet_number`, `sheet_name`, `race_result_record_name`, `start_datetime`, `wind_speed_2000m_point`, `wind_direction_2000m_point`, `wind_speed_1000m_point`, `wind_direction_1000m_point`, `registered_time`, `registered_user_id`, `updated_time`, `updated_user_id`, `delete_flag`)VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 [
                     $raceResultRecordInfo['race_result_record_id'],
-                    $raceResultRecordInfo['user_id'],
+                    $raceResultRecordInfo['player_id'],
                     $raceResultRecordInfo['jara_player_id'],
                     $raceResultRecordInfo['player_name'],
                     $raceResultRecordInfo['entrysystem_tourn_id'],
@@ -198,9 +212,9 @@ class T_raceResultRecord extends Model
         DB::beginTransaction();
         try {
             DB::update(
-                'update t_race_result_record set `user_id`=?,`jara_player_id`=?,`player_name`=?,`entrysystem_tourn_id`=?,`tourn_id`=?,`tourn_name`=?,`race_id`=?,`entrysystem_race_id`=?,`race_number`=?,`race_name`=?,`org_id`=?, `entrysystem_org_id`=?,`org_name`=?,`crew_name`=?,`by_group`=?,`event_id`=?,`event_name`=?,`range`=?,`rank`=?,`laptime_500m`=?,`laptime_1000m`=?,`laptime_1500m`=?,`laptime_2000m`=?,`final_time`=?, `stroke_rate_avg`=?,`stroke_rat_500m`=?,`stroke_rat_1000m`=?,`stroke_rat_1500m`=?,`stroke_rat_2000m`=?,`heart_rate_avg`=?,`heart_rate_500m`=?,`heart_rate_1000m`=?,`heart_rate_1500m`=?,`heart_rate_2000m`=?, `official`=?,`attendance`=?,`ergo_weight`=?,`crew_rep_record_flag`=?,`player_height`=?,`player_weight`=?,`sheet_number`=?,`sheet_name`=?,`race_result_record_name`=?,`start_datetime`=?,`wind_speed_2000m_point`=?,`wind_direction_2000m_point`=?,`wind_speed_1000m_point`=?,`wind_direction_1000m_point`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? WHERE `tourn_id` = ?',
+                'update t_race_result_record set `player_id`=?,`jara_player_id`=?,`player_name`=?,`entrysystem_tourn_id`=?,`tourn_id`=?,`tourn_name`=?,`race_id`=?,`entrysystem_race_id`=?,`race_number`=?,`race_name`=?,`org_id`=?, `entrysystem_org_id`=?,`org_name`=?,`crew_name`=?,`by_group`=?,`event_id`=?,`event_name`=?,`range`=?,`rank`=?,`laptime_500m`=?,`laptime_1000m`=?,`laptime_1500m`=?,`laptime_2000m`=?,`final_time`=?, `stroke_rate_avg`=?,`stroke_rat_500m`=?,`stroke_rat_1000m`=?,`stroke_rat_1500m`=?,`stroke_rat_2000m`=?,`heart_rate_avg`=?,`heart_rate_500m`=?,`heart_rate_1000m`=?,`heart_rate_1500m`=?,`heart_rate_2000m`=?, `official`=?,`attendance`=?,`ergo_weight`=?,`crew_rep_record_flag`=?,`player_height`=?,`player_weight`=?,`sheet_number`=?,`sheet_name`=?,`race_result_record_name`=?,`start_datetime`=?,`wind_speed_2000m_point`=?,`wind_direction_2000m_point`=?,`wind_speed_1000m_point`=?,`wind_direction_1000m_point`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? WHERE `tourn_id` = ?',
                 [
-                    $raceResultRecordInfo['user_id'],
+                    $raceResultRecordInfo['player_id'],
                     $raceResultRecordInfo['jara_player_id'],
                     $raceResultRecordInfo['player_name'],
                     $raceResultRecordInfo['entrysystem_tourn_id'],
@@ -249,9 +263,9 @@ class T_raceResultRecord extends Model
                     $raceResultRecordInfo['wind_speed_1000m_point'],
                     $raceResultRecordInfo['wind_direction_1000m_point'],
                     NOW(),
-                    Auth::user()->user_id,
+                    1, //Auth::user()->user_id,
                     NOW(),
-                    Auth::user()->user_id,
+                    1, //Auth::user()->user_id,
                     $raceResultRecordInfo['delete_flag'],
                     $raceResultRecordInfo['tourn_id'], //where条件
                 ]
@@ -270,15 +284,42 @@ class T_raceResultRecord extends Model
         }
     }
 
+
+    public function deleteRaceResultRecord_playerId($raceResultRecordInfo)
+    {
+        $result = "success";
+        DB::beginTransaction();
+        try {
+            DB::update(
+                'update t_race_result_record set `registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? WHERE `player_id` = ?',
+                [
+                    NOW(),
+                    1, //Auth::user()->user_id,
+                    NOW(),
+                    1, //Auth::user()->user_id,
+                    $raceResultRecordInfo['delete_flag'],
+                    $raceResultRecordInfo['player_id'], //where条件
+                ]
+            );
+
+            DB::commit();
+            return $result;
+        } catch (\Throwable $e) {
+            $result = "failed";
+            return $result;
+        }
+    }
+
     //団体IDを条件として出漕結果記録テーブル内の大会IDを取得する
     public function getTournamentIdForResultsRecord($targetOrgId)
     {
-        $tournamentIds = DB::select('select `tourn_id`
+        $tournamentIds = DB::select(
+            'select `tourn_id`
                                         from `t_race_result_record`
                                         where `delete_flag`=0
-                                        and `org_id`=?'
-                                    ,[$targetOrgId]
-                                );
+                                        and `org_id`=?',
+            [$targetOrgId]
+        );
         return $tournamentIds;
     }
 }
