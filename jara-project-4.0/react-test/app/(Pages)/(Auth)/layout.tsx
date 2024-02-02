@@ -1,11 +1,16 @@
 'use client';
-import Header from '../../components/Header';
+import Header from '@/app/components/Header';
+import {useAuth} from '@/app/hooks/auth';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+
   return (
-    <div className='flex h-screen flex-col'>
-      <Header />
-      <div className='flex-grow md:overflow-y-auto md:p-12'>{children}</div>
-    </div>
+    <>
+    {/* {user && */}
+      <div className='flex h-screen flex-col'>
+        <div className='flex-grow md:overflow-y-auto md:p-12'>{children}</div>
+      </div>
+      {/* } */}
+    </>
   );
 }

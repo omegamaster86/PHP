@@ -35,7 +35,6 @@ class PlayerInfoAlignmentController extends Controller
 
     public function csvread(Request $request, T_players $tPlayersData): View
     {
-        
         if ($request->has('csvRead')) { // 参照ボタンクリック
             // CSVファイルが存在するかの確認
             if ($request->hasFile('csvFile')) {
