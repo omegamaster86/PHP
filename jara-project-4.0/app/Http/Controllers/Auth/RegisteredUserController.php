@@ -22,12 +22,12 @@ class RegisteredUserController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-
+        
         include('ErrorMessages/ErrorMessages.php');
 
         $request->validate([
             // User name validation rule
-            'user_name' => ['required', 'max:32', 'regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'],
+            'user_name' => ['required', 'max:32', 'regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'], 
             // Mail address validation rule
             'mailaddress' => ['required', 'email', 'string', 'lowercase',  'max:255'],
             // Confirm mail address validation rule
@@ -37,24 +37,24 @@ class RegisteredUserController extends Controller
             'terms_of_service' => ['accepted'],
         ],
         [
-            //Error message for Username validation rule
+            //Error message for Username validation rule 
             'user_name.required' => $userName_required,
             'user_name.max' => $userName_max_limit,
             'user_name.regex' => $userName_regex,
 
-            //Error message for mail address validation rule
+            //Error message for mail address validation rule 
             'mailaddress.required' => $mailAddress_required,
             'mailaddress.email' => $email_validation,
             'mailaddress.lowercase' =>$mailAddress_lowercase,
             'mailaddress.unique' => $mailAddress_unique,
 
-            //Error message for confirm mail address validation rule
+            //Error message for confirm mail address validation rule 
             'confirm_email.required' => $confirm_email_required,
             'confirm_email.email' => $email_validation,
             'confirm_email.lowercase' => $mailAddress_lowercase,
             'confirm_email.same' => $confirm_email_compare,
 
-            //Error message for terms of service validation rule
+            //Error message for terms of service validation rule 
             'terms_of_service.accepted' => $terms_of_service,
         ]);
 
@@ -64,21 +64,21 @@ class RegisteredUserController extends Controller
                     //Display error message to the client
                     throw ValidationException::withMessages([
                         'datachecked_error' => $email_register_check
-                    ]);
+                    ]); 
                 }
                 else {
-
+                    
                     if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and expiry_time_of_temp_password < ?',[$request->mailaddress, date('Y-m-d H:i:s')]))) {
                         //Display error message to the client
                         throw ValidationException::withMessages([
                             'datachecked_error' => $registration_failed
-                        ]);
+                        ]); 
                     }
                     else {
                         //Display error message to the client
                         throw ValidationException::withMessages([
                             'datachecked_error' => $already_registered,
-                        ]);
+                        ]); 
                     }
                 }
             }
@@ -89,9 +89,9 @@ class RegisteredUserController extends Controller
                 ]);
             }
         }
-
+        
         // For Generate random password
-        $temp_password = Str::random(8);
+        $temp_password = Str::random(8); 
         //For getting current time
         $date = date('Y-m-d H:i:s');
         //For adding 24hour with current time
@@ -124,15 +124,15 @@ class RegisteredUserController extends Controller
             {
                 throw ValidationException::withMessages([
                     'datachecked_error' => $registration_failed
-                ]);
+                ]); 
             }
             else{
                 throw ValidationException::withMessages([
                     'datachecked_error' => $registration_failed
-                ]);
+                ]); 
             }
         }
-
+        
         //For getting current time
         $mail_date = date('Y/m/d H:i');
         //For adding 24hour with current time
@@ -147,9 +147,9 @@ class RegisteredUserController extends Controller
             'temporary_password_expiration_date'=> $new_mail_date
         ];
 
-
+        
         //Sending mail to the user
-
+        
         try {
             Mail::to($request->get('mailaddress'))->send(new WelcomeMail($mail_data));
         } catch (Exception $e) {
@@ -171,7 +171,7 @@ class RegisteredUserController extends Controller
         $page_status = "入力されたメールアドレスに、「仮パスワード通知メール」を送信しました。<br/><br/>メール本文に記載された「仮パスワード」を使用して、ログイン画面よりログインしてください。";
         $page_url = route('login');
         $page_url_text = "OK";
-
+        
         //Redirect to registered user to the login page with success status.
         return redirect('status')->with(['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
     }
