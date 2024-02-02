@@ -52,35 +52,4 @@ class T_volunteer_availables extends Model
             ]
         );
     }
-
-    //ボランティアアベイラブルテーブルに挿入する
-    //ボランティア一括登録画面用
-    public function insertVolunteerAvailables($values)
-    {
-        DB:insert('INSERT INTO `t_volunteer_availables`
-                    (
-                        `volunteer_id`,
-                        `day_of_week`,
-                        `time_zone`,
-                        `registered_time`,
-                        `registered_user_id`,
-                        `updated_time`,
-                        `updated_user_id`,
-                        `delete_flag`
-                    )
-                    VALUES
-                    (
-                        :volunteer_id
-                        ,:day_of_week
-                        ,:time_zone
-                        ,:registered_time
-                        ,:registered_user_id
-                        ,:updated_time
-                        ,:updated_user_id
-                        ,:delete_flag
-                    )',$values);
-        //挿入したIDを取得
-        $insertId =  DB::getPdo()->lastInsertId();
-        return $insertId;
-    }
 }

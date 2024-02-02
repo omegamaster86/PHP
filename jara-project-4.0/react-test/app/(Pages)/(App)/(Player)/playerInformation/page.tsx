@@ -84,11 +84,11 @@ export default function PlayerInformation() {
     height: '',
     weight: '',
     birthCountryId: 0,
-    birthCountryName: '日本国 （jpn）',
+    birthCountryName: '日本',
     birthPrefectureId: 0,
     birthPrefectureName: '東京',
     residenceCountryId: 0,
-    residenceCountryName: '日本国 （jpn）',
+    residenceCountryName: '日本',
     residencePrefectureId: 0,
     residencePrefectureName: '東京',
     dateOfBirth: '',
@@ -170,12 +170,9 @@ export default function PlayerInformation() {
           });
         // TODO: 性別の取得処理を実装
         axios
-          // .get<SexResponse[]>('http://localhost:3100/sex')
-          .get('http://localhost:8000/api/getSexList') //20240123 DBからデータ取得
+          .get<SexResponse[]>('http://localhost:3100/sex')
           .then((response) => {
-            console.log(response.data);
-            const sexList = response.data.map(({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }));
-            setSex(sexList);
+            setSex(response.data);
           })
           .catch((error) => {
             // TODO: 個別エラー処理を実装
@@ -211,41 +208,29 @@ export default function PlayerInformation() {
       // TODO: 選手情報を取得する処理を実装
       // searchParams.get('id')から選手IDを取得
       axios
-        // .get<PlayerInformationResponse>('http://localhost:3100/player')
-        .get('http://localhost:8000/api/getUpdatePlayerData')
+        .get<PlayerInformationResponse>('http://localhost:3100/player')
         .then((response) => {
-          console.log(response.data);
-          //サイド情報のデータ変換
-          var data = response.data.result.side_info.split('');
-          for (let i = 0; i < 4; i++) {
-            if (data[i] == "1") {
-              data[i] = true;
-            } else {
-              data[i] = false;
-            }
-          }
           // nameプロパティのみ抜き出してstringの配列に変換
           setFormData((prevFormData) => ({
             ...prevFormData,
             ...{
-              playerId: response.data.result.player_id, // 選手ID
-              jaraPlayerCode: response.data.result.jara_player_id, // JARA選手コード
-              playerName: response.data.result.player_name, // 選手名
-              sexName: response.data.result.sex_name, // 性別
-              sexId: response.data.result.sex, // 性別
-              height: response.data.result.height, // 身長
-              weight: response.data.result.weight, // 体重
-              birthCountryName: response.data.result.bir_country_name, // 出身地（国）
-              birthCountryId: response.data.result.birth_country, // 出身地（国）
-              birthPrefectureName: response.data.result.bir_pref_name, // 出身地（都道府県）
-              birthPrefectureId: response.data.result.birth_prefecture, // 出身地（都道府県）
-              residenceCountryName: response.data.result.res_country_name, // 居住地（国）
-              residenceCountryId: response.data.result.residence_country, // 居住地（国）
-              residencePrefectureName: response.data.result.res_pref_name, // 居住地（都道府県）
-              residencePrefectureId: response.data.result.residence_prefecture, // 居住地（都道府県）
-              dateOfBirth: response.data.result.date_of_birth, // 生年月日
-              sideInfo: data, // サイド情報
-              photo: response.data.result.photo, //写真
+              playerId: response.data.playerId, // 選手ID
+              jaraPlayerCode: response.data.jaraPlayerCode, // JARA選手コード
+              playerName: response.data.playerName, // 選手名
+              sexName: response.data.sexName, // 性別
+              sexId: response.data.sexId, // 性別
+              height: response.data.height, // 身長
+              weight: response.data.weight, // 体重
+              birthCountryName: response.data.birthCountryName, // 出身地（国）
+              birthCountryId: response.data.birthCountryId, // 出身地（国）
+              birthPrefectureName: response.data.birthPrefectureName, // 出身地（都道府県）
+              birthPrefectureId: response.data.birthPrefectureId, // 出身地（都道府県）
+              residenceCountryName: response.data.residenceCountryName, // 居住地（国）
+              residenceCountryId: response.data.residenceCountryId, // 居住地（国）
+              residencePrefectureName: response.data.residencePrefectureName, // 居住地（都道府県）
+              residencePrefectureId: response.data.residencePrefectureId, // 居住地（都道府県）
+              dateOfBirth: response.data.dateOfBirth, // 生年月日
+              sideInfo: response.data.sideInfo, // サイド情報
             },
           }));
         })
@@ -311,7 +296,7 @@ export default function PlayerInformation() {
 
     // 出身地（都道府県）の入力チェック
     const birthPlacePrefectureError = Validator.getErrorMessages([
-      formData.birthCountryName.includes('日本')
+      formData.birthCountryName === '日本'
         ? Validator.validateSelectRequired(formData.birthPrefectureName, '出身地（都道府県）')
         : '',
     ]);
@@ -323,7 +308,7 @@ export default function PlayerInformation() {
 
     // 居住地（都道府県）の入力チェック
     const livingPrefectureError = Validator.getErrorMessages([
-      formData.residenceCountryName.includes('日本')
+      formData.residenceCountryName === '日本'
         ? Validator.validateSelectRequired(formData.residencePrefectureName, '居住地（都道府県）')
         : '',
     ]);
@@ -400,10 +385,9 @@ export default function PlayerInformation() {
             const registerData = {};
             axios
               // .post('http://localhost:3100/', registerData)
-              .post('http://localhost:8000/api/updatePlayerData', formData) //20240123 送信テスト
+              .post('http://localhost:8000/api/postSample', formData) //20240123 送信テスト
               .then((response) => {
                 // TODO: 更新処理成功時の処理
-                console.log(response);
               })
               .catch((error) => {
                 // TODO: 更新処理失敗時の処理
@@ -417,10 +401,9 @@ export default function PlayerInformation() {
             const registerData = {};
             axios
               // .post('http://localhost:3100/', registerData)
-              .post('http://localhost:8000/api/storePlayerTest', formData) //20240123 送信テスト
+              .post('http://localhost:8000/api/postSample', formData) //20240123 送信テスト
               .then((response) => {
                 // TODO: 登録処理成功時の処理の実装
-                console.log(response);
               })
               .catch((error) => {
                 // TODO: 登録処理失敗時の処理の実装
@@ -437,6 +420,19 @@ export default function PlayerInformation() {
       </CustomButton>
     ),
   };
+
+  // 20240123 マージ用
+  //選手データ送信テスト 20240119
+  const postPlayerData = async (formData: any) => {
+    await axios.post('http://localhost:8000/api/postSample', formData)
+      .then((res) => {
+        console.log(res.data.reqData);
+      }).catch(error => {
+        console.log(error);
+      });
+  }
+  //選手データ送信テスト 20240119
+  // 20240123 マージ用
 
   return (
     <div>
@@ -455,8 +451,8 @@ export default function PlayerInformation() {
           <InputLabel
             label='写真'
             displayHelp={mode !== 'confirm'}
-            toolTipTitle='Title' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+            toolTipTitle='Title'
+            toolTipText='サンプル用のツールチップ表示'
           />
           <div className='flex flex-row justify-start gap-[4px]'>
             {mode !== 'confirm' && (
@@ -486,9 +482,7 @@ export default function PlayerInformation() {
                   className='object-cover w-[320px] h-[320px] rounded-[2px]'
                   src={currentShowFile?.preview}
                   // Revoke data uri after image is loaded
-                  onLoad={() => {
-                    console.log(currentShowFile);
-                  }}
+                  onLoad={() => { }}
                 />
               </div>
             )}
@@ -520,8 +514,6 @@ export default function PlayerInformation() {
             errorMessages={jaraPlayerCodeErrorMessage}
             value={formData.jaraPlayerCode?.toString()}
             onChange={(e) => handleInputChange('jaraPlayerCode', e.target.value)}
-            toolTipTitle='Title JARA選手コード' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
         </div>
         <div className='flex flex-col justify-start'>
@@ -536,8 +528,6 @@ export default function PlayerInformation() {
             readonly={mode === 'confirm'}
             value={formData.playerName}
             onChange={(e) => handleInputChange('playerName', e.target.value)}
-            toolTipTitle='Title 選手名' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
         </div>
         <div className='flex flex-col justify-start'>
@@ -546,8 +536,6 @@ export default function PlayerInformation() {
             label='生年月日'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
-            toolTipTitle='Title 生年月日' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
           <CustomDatePicker
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -561,13 +549,7 @@ export default function PlayerInformation() {
         </div>
         <div className='flex flex-col justify-start'>
           {/* 性別 */}
-          <InputLabel
-            label='性別'
-            required={mode !== 'confirm'}
-            displayHelp={mode !== 'confirm'}
-            toolTipTitle='Title 性別'
-            toolTipText='サンプル用のツールチップ表示'
-          />
+          <InputLabel label='性別' required={mode !== 'confirm'} displayHelp={mode !== 'confirm'} />
           <CustomDropdown
             id='sex'
             readonly={mode === 'confirm'}
@@ -596,8 +578,6 @@ export default function PlayerInformation() {
             inputAdorment='cm'
             value={formData.height?.toString()}
             onChange={(e) => handleInputChange('height', e.target.value)}
-            toolTipTitle='Title 身長' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
         </div>
         <div className='flex flex-col justify-start'>
@@ -614,8 +594,6 @@ export default function PlayerInformation() {
             inputAdorment='kg'
             value={formData.weight?.toString()}
             onChange={(e) => handleInputChange('weight', e.target.value)}
-            toolTipTitle='Title 体重' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
         </div>
         <div className='flex flex-col justify-start'>
@@ -624,8 +602,6 @@ export default function PlayerInformation() {
             label='サイド情報'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
-            toolTipTitle='Title サイド情報' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
           <div className='flex justify-start flex-col gap-[4px] my-1'>
             <OriginalCheckbox
@@ -711,8 +687,6 @@ export default function PlayerInformation() {
               label='出身地'
               required={mode !== 'confirm'}
               displayHelp={mode !== 'confirm'}
-              toolTipTitle='Title 出身地' //はてなボタン用
-              toolTipText='サンプル用のツールチップ表示' //はてなボタン用
             />
             <CustomDropdown
               id='birthCountry'
@@ -735,15 +709,13 @@ export default function PlayerInformation() {
               className='rounded w-[300px] '
             />
           </div>
-          {formData.birthCountryName.includes('日本') && (
+          {formData.birthCountryName === '日本' && (
             <div className='flex flex-col justify-start'>
               {/* 出身地（都道府県） */}
               <InputLabel
                 label='都道府県'
                 required={mode !== 'confirm'}
                 displayHelp={mode !== 'confirm'}
-                toolTipTitle='Title 都道府県' //はてなボタン用
-                toolTipText='サンプル用のツールチップ表示' //はてなボタン用
               />
               <CustomDropdown
                 id='birthPrefecture'
@@ -776,8 +748,6 @@ export default function PlayerInformation() {
               label='居住地'
               required={mode !== 'confirm'}
               displayHelp={mode !== 'confirm'}
-              toolTipTitle='Title 居住地' //はてなボタン用
-              toolTipText='サンプル用のツールチップ表示' //はてなボタン用
             />
             <CustomDropdown
               id='residenceCountry'
@@ -799,15 +769,13 @@ export default function PlayerInformation() {
               className='rounded w-[300px] '
             />
           </div>
-          {formData.residenceCountryName.includes('日本') && (
+          {formData.residenceCountryName === '日本' && (
             <div className='flex flex-col justify-start'>
               {/* 居住地（都道府県） */}
               <InputLabel
                 label='都道府県'
                 required={mode !== 'confirm'}
                 displayHelp={mode !== 'confirm'}
-                toolTipTitle='Title 都道府県' //はてなボタン用
-                toolTipText='サンプル用のツールチップ表示' //はてなボタン用
               />
               <CustomDropdown
                 id='residencePrefecture'

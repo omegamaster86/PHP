@@ -36,16 +36,4 @@ class T_users extends Authenticatable
         }
         return $userName;
     }
-
-    //全てのユーザーIDを取得する
-    //ボランティア一括登録画面でユーザーIDの存在チェック用
-    public function getUserIDList()
-    {
-        $user_ids = DB::select('select user_id
-                                from t_users
-                                where delete_flag = ?',
-                                [0]
-                            );
-        return $user_ids;
-    }
 }
