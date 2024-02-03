@@ -20,6 +20,7 @@ import CustomTr from './CustomTable/Tr';
 import CustomTbody from './CustomTable/Tbody';
 import CustomThead from './CustomTable/Thead';
 import CustomTd from './CustomTable/Td';
+import Loading from './Loading';
 
 export { CustomTitle };
 export { CustomButton };
@@ -43,3 +44,4 @@ export { CustomTbody };
 export { CustomTd };
 export { Label };
 export { Footer };
+export { Loading };

@@ -1,11 +1,18 @@
 'use client';
 import { useAuth } from '@/app/hooks/auth';
-import { Header, Footer, CustomButton } from '@/app/components';
+import { Header, Footer, CustomButton, Loading } from '@/app/components';
 import { useEffect, useState } from 'react';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [loggedIn, setLoggedIn] = useState(false);
-  const { user, logout } = useAuth({ middleware: 'auth' })
+  const { user, logout, isLoading } = useAuth({ middleware: 'auth' })
+
+  if(isLoading) {
+    return (
+      <Loading/>
+    )
+  }
+
   function authCheck(){
     if(user){
       setLoggedIn(true)

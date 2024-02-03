@@ -15,8 +15,7 @@ return [
     |
     */
 
-    // 'paths' => ['api/*', 'sanctum/csrf-cookie'],
-    'paths' => ['*'], //20240108 cors用に変更
+    'paths' => ['*'],
 
     'allowed_methods' => ['*'],
 
@@ -30,7 +29,6 @@ return [
 
     'max_age' => 0,
 
-    // 'supports_credentials' => false,
-    'supports_credentials' => true, //20240108 cors用に変更
+    'supports_credentials' => true,
 
 ];

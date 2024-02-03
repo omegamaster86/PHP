@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useAuth } from '@/app/hooks/auth'
 import CustomPasswordField from '@/app/components/CustomPasswordField';
 import CustomButton from '@/app/components/CustomButton';
+import Loading from '@/app/components/Loading';
 import { useRouter } from 'next/navigation';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import Validator from '@/app/utils/validator';
@@ -28,12 +29,17 @@ export default function Passwordchange() {
   
   {/* This is a extra feature for logout - start*/}
   const [loggedIn, setLoggedIn] = useState(false);
-  const { user, logout } = useAuth({ middleware: 'auth' })
+  const { user, logout, isLoading } = useAuth({ middleware: 'auth' })
+
+  if(isLoading ) {
+    return (
+    <Loading/>)
+  }
+
   function authCheck(){
     if(user){
       setLoggedIn(true)
     }
-    
   }
   if(!loggedIn){
     authCheck()

@@ -54,7 +54,7 @@ class LoginRequest extends FormRequest
     {
         // test
         $input = $this->request->all();
-        // test        
+        // test
         include(app_path() . '/Http/Controllers/Auth/ErrorMessages/ErrorMessages.php');
         $this->ensureIsNotRateLimited();
         if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 1 ',[$input['email']]))) {

@@ -10,6 +10,7 @@ import {
   ErrorBox,
   CustomTitle,
   Header,
+  Loading,
 } from '@/app/components';
 import { useAuth } from '@/app/hooks/auth'
 import Validator from '@/app/utils/validator';
@@ -30,10 +31,14 @@ export default function Login() {
 
   const router = useRouter();
 
-  const { login } = useAuth({
+  const { login, isLoading } = useAuth({
     middleware: 'guest',
     redirectIfAuthenticated: '/DummyMyPage',
 })
+
+if(isLoading) {
+  <Loading/>
+}
 
 const submitForm = async (
   values: Values,
@@ -50,12 +55,7 @@ const submitForm = async (
   }
 }
 
-// const handleSubmit = (event:any)=>{
-//   event.preventDefault();
-//   console.log("form submitted!");
-// }
 return (
-  // <form onSubmit={handleSubmit}>
   <>
     <Header />
     <div>
@@ -187,6 +187,5 @@ return (
       </div>
     </div>
   </>
-  // </form>
 );
 }
