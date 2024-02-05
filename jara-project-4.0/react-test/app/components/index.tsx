@@ -22,6 +22,7 @@ import CustomThead from './CustomTable/Thead';
 import CustomTd from './CustomTable/Td';
 import CustomYearPicker from './CustomYearPicker';
 import CustomAutocomplete from './CustomAutocomplete';
+import Loading from './Loading';
 
 export { CustomTitle };
 export { CustomButton };
@@ -47,3 +48,4 @@ export { CustomTd };
 export { Label };
 export { Footer };
 export { CustomAutocomplete };
+export { Loading };
