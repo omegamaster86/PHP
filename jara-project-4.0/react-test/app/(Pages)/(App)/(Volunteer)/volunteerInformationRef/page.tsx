@@ -86,28 +86,20 @@ export default function VolunteerInformationRef() {
     const fetchData = async () => {
       try {
         // TODO: 仮のURL（繋ぎ込み時に変更すること）
-        axios
-          .get<VolunteerResponse>('http://localhost:3100/volunteer')
-          .then((response) => {
-            setVolunteerdata(response.data);
-          })
-          .catch((error) => {
-            // TODO: エラーハンドリングを実装
-            console.log(error);
-          });
-        // TODO: 仮のURL（繋ぎ込み時に変更すること）
-        axios
-          .get<VolunteerHistoriesResponse[]>('http://localhost:3100/volunteerHistories')
-          .then((response) => {
-            setVolunteerHistoriesdata(response.data);
-          })
-          .catch((error) => {
-            // TODO: エラーハンドリングを実装
-            console.log(error);
-          });
+        const volunteerResponse = await axios.get<VolunteerResponse>(
+          'http://localhost:3100/volunteer',
+        );
+        setVolunteerdata(volunteerResponse.data);
+        const volunteerHistoriesResponse = await axios.get<VolunteerHistoriesResponse[]>(
+          'http://localhost:3100/volunteerHistories',
+        );
+        setVolunteerHistoriesdata(volunteerHistoriesResponse.data);
       } catch (error) {
         // TODO: エラーハンドリングを実装
-        console.log(error);
+        setErrorMessage([
+          ...(errorMessage as string[]),
+          'API取得エラー:' + (error as Error).message,
+        ]);
       }
     };
 
@@ -441,30 +433,27 @@ export default function VolunteerInformationRef() {
             )}
           </div>
           <div className='w-screen flex justify-between items-center'>
-            {/* 独自テーブルコンポーネントがrowSpanに対応させていない（rowSpanの利用頻度が少ない）ため、個別実装にて対応 */}
             <CustomTable>
               <CustomThead>
                 <CustomTr>
-                  <th colSpan={17} rowSpan={1} className='p-1 border border-gray-20'>
+                  <CustomTh colSpan={17} rowSpan={1}>
                     ボランティア参加履歴
-                  </th>
+                  </CustomTh>
                 </CustomTr>
                 <CustomTr>
-                  <th colSpan={1} rowSpan={2} className='p-1 border border-gray-20'>
+                  <CustomTh colSpan={1} rowSpan={2}>
                     大会名/イベント名
-                  </th>
-                  <th colSpan={2} className='p-1 border border-gray-20'>
-                    開催期間
-                  </th>
-                  <th colSpan={1} rowSpan={2} className='p-1 border border-gray-20'>
+                  </CustomTh>
+                  <CustomTh colSpan={2}>開催期間</CustomTh>
+                  <CustomTh colSpan={1} rowSpan={2}>
                     役割
-                  </th>
-                  <th colSpan={1} rowSpan={2} className='p-1 border border-gray-20'>
+                  </CustomTh>
+                  <CustomTh colSpan={1} rowSpan={2}>
                     AD
-                  </th>
-                  <th colSpan={8} rowSpan={1} className='p-1 border border-gray-20'>
+                  </CustomTh>
+                  <CustomTh colSpan={8} rowSpan={1}>
                     参加日
-                  </th>
+                  </CustomTh>
                 </CustomTr>
                 <CustomTr>
                   <CustomTh>開始日</CustomTh>

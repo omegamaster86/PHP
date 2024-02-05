@@ -88,78 +88,70 @@ export default function PlayerInformationRef() {
             sideList[i] = false;
           }
         }
-
-        playerInformation.playerId = playerInf.data.result.player_id;
-        playerInformation.jaraPlayerCode = playerInf.data.result.jara_player_id;
-        playerInformation.existPlayerId = playerInf.data.result.player_id;
-        playerInformation.playerName = playerInf.data.result.player_name;
-        playerInformation.dateOfBirth = playerInf.data.result.date_of_birth;
-        playerInformation.sexName = playerInf.data.result.sex_name;
-        playerInformation.sexId = playerInf.data.result.sex;
-        playerInformation.height = playerInf.data.result.height;
-        playerInformation.weight = playerInf.data.result.weight;
-        playerInformation.sideInfo = sideList;
-        playerInformation.birthCountryName = playerInf.data.result.bir_country_name;
-        playerInformation.birthCountryId = playerInf.data.result.birth_country;
-        playerInformation.birthPrefectureName = playerInf.data.result.bir_pref_name;
-        playerInformation.birthPrefectureId = playerInf.data.result.birth_prefecture;
-        playerInformation.residenceCountryName = playerInf.data.result.res_country_name;
-        playerInformation.residenceCountryId = playerInf.data.result.residence_country;
-        playerInformation.residencePrefectureName = playerInf.data.result.res_pref_name;
-        playerInformation.residencePrefectureId = playerInf.data.result.residence_prefecture;
-        playerInformation.photo = playerInf.data.result.photo;
-        // setplayerInformation(playerInf.data);
+        setplayerInformation({
+          playerId: playerInf.data.result.player_id,
+          jaraPlayerCode: playerInf.data.result.jara_player_id,
+          existPlayerId: playerInf.data.result.player_id,
+          playerName: playerInf.data.result.player_name,
+          dateOfBirth: playerInf.data.result.date_of_birth,
+          sexName: playerInf.data.result.sex_name,
+          sexId: playerInf.data.result.sex,
+          height: playerInf.data.result.height,
+          weight: playerInf.data.result.weight,
+          sideInfo: sideList,
+          birthCountryName: playerInf.data.result.bir_country_name,
+          birthCountryId: playerInf.data.result.birth_country,
+          birthPrefectureName: playerInf.data.result.bir_pref_name,
+          birthPrefectureId: playerInf.data.result.birth_prefecture,
+          residenceCountryName: playerInf.data.result.res_country_name,
+          residenceCountryId: playerInf.data.result.residence_country,
+          residencePrefectureName: playerInf.data.result.res_pref_name,
+          residencePrefectureId: playerInf.data.result.residence_prefecture,
+          photo: playerInf.data.result.photo,
+        });
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
         const response = await axios.get('http://localhost:8000/api/getRaceResultRecordsData');
-        console.log(response.data.result);
-        for (var i = 0; i < response.data.result.length; i++) {
-          console.log(i);
-          console.log(response.data.result[i].race_result_record_id);
-          raceResultRecordsDatas.raceResultRecordId = response.data.result[i].race_result_record_id as number;
-          console.log(raceResultRecordsDatas.raceResultRecordId);
-          raceResultRecordsDatas.tournId = response.data.result[i].tourn_id as number;
-          raceResultRecordsDatas.tournName = response.data.result[i].tourn_name as string;
-          raceResultRecordsDatas.official = response.data.result[i].official as number;
-          raceResultRecordsDatas.eventStartDate = "";
-          raceResultRecordsDatas.orgName = response.data.result[i].org_name as string;
-          raceResultRecordsDatas.raceNumber = response.data.result[i].race_number as number;
-          raceResultRecordsDatas.eventName = response.data.result[i].event_name as string;
-          raceResultRecordsDatas.raceName = response.data.result[i].race_name as string;
-          raceResultRecordsDatas.byGroup = response.data.result[i].by_group as string;
-          raceResultRecordsDatas.crewName = response.data.result[i].crew_name as string;
-          raceResultRecordsDatas.rank = response.data.result[i].rank as number;
-          raceResultRecordsDatas.fiveHundredmLaptime = response.data.result[i].laptime_500m as number;
-          raceResultRecordsDatas.tenHundredmLaptime = response.data.result[i].laptime_1000m as number;
-          raceResultRecordsDatas.fifteenHundredmLaptime = response.data.result[i].laptime_1500m as number;
-          raceResultRecordsDatas.twentyHundredmLaptime = response.data.result[i].laptime_2000m as number;
-          raceResultRecordsDatas.finalTime = response.data.result[i].final_time as number;
-          raceResultRecordsDatas.strokeRateAvg = response.data.result[i].final_time as number;
-          raceResultRecordsDatas.fiveHundredmStrokeRat = response.data.result[i].stroke_rat_500m as number;
-          raceResultRecordsDatas.tenHundredmStrokeRat = response.data.result[i].stroke_rat_1000m as number;
-          raceResultRecordsDatas.fifteenHundredmStrokeRat = response.data.result[i].stroke_rat_1500m as number;
-          raceResultRecordsDatas.twentyHundredmStrokeRat = response.data.result[i].stroke_rat_2000m as number;
-          raceResultRecordsDatas.heartRateAvg = response.data.result[i].heart_rate_avg as number;
-          raceResultRecordsDatas.fiveHundredmHeartRate = response.data.result[i].heart_rate_500m as number;
-          raceResultRecordsDatas.tenHundredmHeartRate = response.data.result[i].heart_rate_1000m as number;
-          raceResultRecordsDatas.fifteenHundredmHeartRate = response.data.result[i].heart_rate_1500m as number;
-          raceResultRecordsDatas.twentyHundredmHeartRate = response.data.result[i].heart_rate_2000m as number;
-          raceResultRecordsDatas.attendance = response.data.result[i].attendance as number;
-          raceResultRecordsDatas.ergoWeight = response.data.result[i].ergo_weight as number;
-          raceResultRecordsDatas.playerHeight = response.data.result[i].player_height as number;
-          raceResultRecordsDatas.playerWeight = response.data.result[i].player_weight as number;
-          raceResultRecordsDatas.sheetName = response.data.result[i].seat_name as string;
-          raceResultRecordsDatas.raceResultRecordName = response.data.result[i].race_result_record_name as string;
-          raceResultRecordsDatas.registeredTime = response.data.result[i].registered_time as string;
-          raceResultRecordsDatas.twentyHundredmWindSpeed = response.data.result[i].wind_speed_2000m_point as number;
-          raceResultRecordsDatas.twentyHundredmWindDirection = response.data.result[i].wind_direction_2000m_point as number;
-          raceResultRecordsDatas.tenHundredmWindSpeed = response.data.result[i].wind_speed_1000m_point as number;
-          raceResultRecordsDatas.tenHundredmWindDirection = response.data.result[i].wind_direction_1000m_point as number;
-          console.log(raceResultRecordsDatas);
-          raceResultRecordsData.push(raceResultRecordsDatas);
-        }
-        console.log("==============");
-        console.log(raceResultRecordsData);
-        setResultRecordsData(raceResultRecordsData);
+        
+        // setResultRecordsData({
+        //   raceResultRecordId: response.data.result[i].race_result_record_id,
+        //   tournId: response.data.result[i].tourn_id,
+        //   tournNam: response.data.result[i].tourn_name,
+        //   official: response.data.result[i].official,
+        //   eventStartDate: "",
+        //   orgName: response.data.result[i].org_name,
+        //   raceNumber: response.data.result[i].race_number,
+        //   eventName: response.data.result[i].event_name,
+        //   raceName: response.data.result[i].race_name,
+        //   byGroup: response.data.result[i].by_group,
+        //   crewName: response.data.result[i].crew_name,
+        //   rank: response.data.result[i].rank,
+        //   fiveHundredmLaptime: response.data.result[i].laptime_500m,
+        //   tenHundredmLaptime: response.data.result[i].laptime_1000m,
+        //   fifteenHundredmLaptime: response.data.result[i].laptime_1500m,
+        //   twentyHundredmLaptime: response.data.result[i].laptime_2000m,
+        //   finalTime: response.data.result[i].final_time,
+        //   strokeRateAvg: response.data.result[i].final_time,
+        //   fiveHundredmStrokeRat: response.data.result[i].stroke_rat_500m,
+        //   tenHundredmStrokeRat: response.data.result[i].stroke_rat_1000m,
+        //   fifteenHundredmStrokeRat: response.data.result[i].stroke_rat_1500m,
+        //   twentyHundredmStrokeRat: response.data.result[i].stroke_rat_2000m,
+        //   heartRateAvg: response.data.result[i].heart_rate_avg,
+        //   fiveHundredmHeartRate: response.data.result[i].heart_rate_500m,
+        //   tenHundredmHeartRate: response.data.result[i].heart_rate_1000m,
+        //   fifteenHundredmHeartRate: response.data.result[i].heart_rate_1500m,
+        //   twentyHundredmHeartRate: response.data.result[i].heart_rate_2000m,
+        //   attendance: response.data.result[i].attendance,
+        //   ergoWeight: response.data.result[i].ergo_weight,
+        //   playerHeight: response.data.result[i].player_height,
+        //   playerWeight: response.data.result[i].player_weight,
+        //   sheetName: response.data.result[i].seat_name,
+        //   raceResultRecordName: response.data.result[i].race_result_record_name,
+        //   registeredTime : response.data.result[i].registered_time,
+        //   twentyHundredmWindSpeed: response.data.result[i].wind_speed_2000m_point,
+        //   twentyHundredmWindDirection: response.data.result[i].wind_direction_2000m_point,
+        //   tenHundredmWindSpeed: response.data.result[i].wind_speed_1000m_point,
+        //   tenHundredmWindDirection: response.data.result[i].wind_direction_1000m_point,
+        // });
       } catch (error: any) {
         setError({ isError: true, errorMessage: 'API取得エラー:' + error.message });
       }
@@ -211,7 +203,7 @@ export default function PlayerInformationRef() {
       <main>
         <div className='flex flex-col pt-[40px] pb-[60px] gap-[50px] md:w-[1000px] sm: w-[600px]'>
           <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
-          <div className='bg-primary-900 p-4'>
+          <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4 '>
             <div className='flex flex-row gap-[40px]'>
               <div>
                 {/* 写真 */}
@@ -316,7 +308,7 @@ export default function PlayerInformationRef() {
                       <div
                         className={
                           !playerInformation.birthPrefectureName ||
-                            playerInformation.birthPrefectureName === ''
+                          playerInformation.birthPrefectureName === ''
                             ? 'hidden'
                             : ''
                         }
@@ -340,7 +332,7 @@ export default function PlayerInformationRef() {
                       <div
                         className={
                           !playerInformation.residencePrefectureName ||
-                            playerInformation.residencePrefectureName === ''
+                          playerInformation.residencePrefectureName === ''
                             ? 'hidden'
                             : ''
                         }
@@ -364,36 +356,40 @@ export default function PlayerInformationRef() {
                   ></Label>
                   <div className='flex flex-row justify-start gap-[10px]'>
                     <div
-                      className={`text-center px-[12px] py-[8px] rounded-full ${playerInformation.sideInfo?.at(0)
-                        ? 'border border-secondary-500 text-secondary-500'
-                        : 'border border-gray-30 text-white'
-                        }`}
+                      className={`text-center px-[12px] py-[8px] rounded-full ${
+                        playerInformation.sideInfo?.at(0)
+                          ? 'border border-secondary-500 text-secondary-500'
+                          : 'border border-gray-30 text-white'
+                      }`}
                     >
                       S（ストロークサイド）
                     </div>
                     <div
-                      className={`text-center px-[12px] py-[8px] rounded-full ${playerInformation.sideInfo?.at(1)
-                        ? 'border border-secondary-500 text-secondary-500'
-                        : 'border border-gray-30 text-white'
-                        }`}
+                      className={`text-center px-[12px] py-[8px] rounded-full ${
+                        playerInformation.sideInfo?.at(1)
+                          ? 'border border-secondary-500 text-secondary-500'
+                          : 'border border-gray-30 text-white'
+                      }`}
                     >
                       B（バウサイド）
                     </div>
                   </div>
                   <div className='flex flex-row justify-start gap-[10px]'>
                     <div
-                      className={`text-center px-[12px] py-[8px] rounded-full ${playerInformation.sideInfo?.at(2)
-                        ? 'border border-secondary-500 text-secondary-500'
-                        : 'border border-gray-30 text-white'
-                        }`}
+                      className={`text-center px-[12px] py-[8px] rounded-full ${
+                        playerInformation.sideInfo?.at(2)
+                          ? 'border border-secondary-500 text-secondary-500'
+                          : 'border border-gray-30 text-white'
+                      }`}
                     >
                       X（スカル）
                     </div>
                     <div
-                      className={`text-center px-[12px] py-[8px] rounded-full ${playerInformation.sideInfo?.at(3)
-                        ? 'border border-secondary-500 text-secondary-500'
-                        : 'border border-gray-30 text-white'
-                        }`}
+                      className={`text-center px-[12px] py-[8px] rounded-full ${
+                        playerInformation.sideInfo?.at(3)
+                          ? 'border border-secondary-500 text-secondary-500'
+                          : 'border border-gray-30 text-white'
+                      }`}
                     >
                       C（コックス）
                     </div>

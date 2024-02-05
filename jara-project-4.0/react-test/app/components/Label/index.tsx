@@ -17,7 +17,9 @@ export default function Label({
         ? 'text-secondaryText'
         : textColor === 'white'
           ? 'text-white'
-          : 'text-primaryText'
+          : textColor === 'gray'
+            ? 'text-gray-40'
+            : 'text-primaryText'
     }
     ${
       textSize === 'h1'
@@ -39,7 +41,7 @@ export default function Label({
     ${isBold ? 'font-bold' : 'font-normal'}
     `}
     >
-      <label htmlFor={label}>{label}</label>
+      <div>{label}</div>
     </div>
   );
 }

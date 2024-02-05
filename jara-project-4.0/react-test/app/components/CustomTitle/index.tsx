@@ -1,4 +1,4 @@
-import React from 'react';
+import { ReactNode } from 'react';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'; // Import the specific icon component
 import { useRouter } from 'next/navigation';
 
@@ -9,7 +9,7 @@ const CustomTitle = ({
 }: {
   isCenter?: boolean;
   displayBack?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }) => {
   const router = useRouter();
   if (isCenter) {

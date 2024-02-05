@@ -1,5 +1,5 @@
 import TextField from '@mui/material/TextField';
-import React, { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 import InputAdornment from '@mui/material/InputAdornment';
 import VisibilityIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOffOutlined';
@@ -22,7 +22,7 @@ const CustomPasswordField = ({
   required?: boolean;
   value?: string;
   placeholder?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   toolTipTitle?: string;
   toolTipText?: string;
 }) => {

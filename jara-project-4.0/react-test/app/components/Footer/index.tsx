@@ -1,7 +1,7 @@
-import React from 'react';
+import { FC } from 'react';
 import CustomButton from '../CustomButton';
 
-const Footer: React.FC = () => {
+const Footer: FC = () => {
   return (
     <div className='bg-primary-500 px-[100px] pt-[50px] text-white'>
       <div className='flex flex-row justify-between max-w-[900px] m-auto flex-wrap'>

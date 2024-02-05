@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
@@ -14,7 +14,7 @@ interface SelectProps {
   readonly?: boolean;
   isError?: boolean;
 }
-const CustomDropdown: React.FC<SelectProps> = ({
+const CustomDropdown: FC<SelectProps> = ({
   id,
   options,
   value,
@@ -48,11 +48,13 @@ const CustomDropdown: React.FC<SelectProps> = ({
           ))}
         </Select>
       )}
-      <p className='text-caption1 text-systemErrorText'>
-        {errorMessages?.map((message) => {
-          return message;
-        })}
-      </p>
+      {(errorMessages?.length || 0) > 0 && (
+        <p className='text-caption1 text-systemErrorText mt-1'>
+          {errorMessages?.map((message) => {
+            return message;
+          })}
+        </p>
+      )}
     </div>
   );
 };

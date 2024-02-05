@@ -56,9 +56,9 @@ class T_races extends Model
                     $racesInfo['range'],
                     $racesInfo['start_datetime'],
                     NOW(),
-                    Auth::user()->user_id,
+                    1, //Auth::user()->user_id,
                     NOW(),
-                    Auth::user()->user_id,
+                    1, //Auth::user()->user_id,
                     $racesInfo['delete_flag'],
                 ]
             );
@@ -66,9 +66,6 @@ class T_races extends Model
             DB::commit();
             return "登録完了";
         } catch (\Throwable $e) {
-            dd($e);
-            // dd($request->all());
-            dd("stop");
             DB::rollBack();
 
             $result = "failed";
@@ -107,9 +104,6 @@ class T_races extends Model
             DB::commit();
             return $result;
         } catch (\Throwable $e) {
-            dd($e);
-            // dd($request->all());
-            dd("stop");
             DB::rollBack();
 
             $result = "failed";

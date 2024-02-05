@@ -323,6 +323,29 @@ const validateEqual = (elm1: any, elm2: any, elmName: string) => {
  * @param elm2 チェックする要素2
  * @param elmName チェックする要素の名前
  * @returns {string}
+ */
+const validateEqual2 = (elm1: any, elm2: any) => {
+  if (elm1 === '') {
+    return '';
+  }
+  if (elm2 === '') {
+    return '';
+  }
+
+  let errorMessage = '';
+  if (elm1 !== elm2) {
+    errorMessage = '登録済みメールアドレスと一致しません。メールアドレスを確認してください。';
+    return errorMessage;
+  }
+  return errorMessage;
+};
+
+/**
+ * 等値チェック
+ * @param elm1 チェックする要素1
+ * @param elm2 チェックする要素2
+ * @param elmName チェックする要素の名前
+ * @returns {string}
  * @description
  * 等値チェックを行う。
  * 要素1と要素2が等しくない場合、エラーメッセージを返す。
@@ -426,6 +449,14 @@ const validateAlphabetNumber = (elm: string, elmName: string) => {
   return errorMessage;
 };
 
+/**
+ * サイド情報の必須チェック
+ * @param sideInfo
+ * @returns
+ * @description
+ * サイド情報の必須チェックを行う。
+ * サイド情報がtrueがない場合、エラーメッセージを返す。
+ */
 const validateSideInfoIsInput = (sideInfo: boolean[]) => {
   if (
     // sideInfoにtrueがない場合エラー
@@ -435,6 +466,77 @@ const validateSideInfoIsInput = (sideInfo: boolean[]) => {
   } else {
     return '';
   }
+};
+
+/**
+ * 設立年の形式チェック
+ * @param foundingYear
+ * @returns
+ * @description
+ * 設立年の形式チェックを行う。
+ * 1750年から現在までの範囲であるかチェックする。
+ * 範囲外の場合、エラーメッセージを返す。
+ */
+const validateFoundingYear = (foundingYear: string) => {
+  let errorMessage = '';
+  if (foundingYear === '') {
+    return '';
+  }
+
+  if (Number(foundingYear) < 1750 || Number(foundingYear) > new Date().getFullYear()) {
+    errorMessage = '設立年は1750年から現在までの範囲で入力してください。';
+    return errorMessage;
+  }
+
+  return errorMessage;
+};
+
+/**
+ * 郵便番号の形式チェック
+ * @param addressNumber
+ * @returns
+ * @description
+ * 郵便番号の形式チェックを行う。
+ * 000-0000の形式であるかチェックする。
+ * 形式でない場合、エラーメッセージを返す。
+ */
+const validateAddressNumberFormat = (addressNumber: string) => {
+  let errorMessage = '';
+  if (addressNumber === '') {
+    return '';
+  }
+  const addressNumberRegex = new RegExp('^[0-9]{3}-[0-9]{4}$');
+  if (!addressNumberRegex.test(addressNumber)) {
+    errorMessage = '不正な郵便番号です、適切な郵便番号を入力してください（数字３桁-数字４桁）';
+    return errorMessage;
+  }
+  return errorMessage;
+};
+
+/**
+ * 証跡のエラーチェック
+ * @param trail
+ * @param orgType
+ * @param labelText
+ * @returns
+ * @description
+ * 証跡のエラーチェックを行う。
+ * 証跡を設定しない場合、団体種別が任意であるかチェックする。
+ * 証跡を設定する場合、団体種別が正式であるかチェックする。
+ */
+const validateTrailError = (trail: string, orgType: string, labelText: string) => {
+  let errorMessage = '';
+  if (!trail && orgType !== '任意') {
+    errorMessage =
+      labelText + '証跡を設定しない場合、' + labelText + '団体種別は"任意"を選択してください。';
+    return errorMessage;
+  }
+  if (trail && orgType !== '正式') {
+    errorMessage =
+      labelText + '証跡を設定する場合、' + labelText + '団体種別は"正式"を選択してください。';
+    return errorMessage;
+  }
+  return errorMessage;
 };
 
 const Validator = {
@@ -457,6 +559,10 @@ const Validator = {
   validateBirthOfDateRange,
   validateUrlFormat,
   validateAlphabetNumber,
+  validateEqual2,
+  validateFoundingYear,
+  validateAddressNumberFormat,
+  validateTrailError,
 };
 
 export default Validator;

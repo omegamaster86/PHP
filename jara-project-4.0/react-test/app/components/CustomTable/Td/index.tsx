@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 
 type AlignType = 'left' | 'center' | 'right' | 'justify' | 'char';
@@ -9,7 +10,7 @@ const CustomTd = ({
   key,
   textType,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   transitionDest?: string;
   align?: AlignType;
   key?: number;

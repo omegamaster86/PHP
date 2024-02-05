@@ -92,7 +92,7 @@ export default function TeamManagement() {
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       href={{
-                        pathname: '/teamInfo',
+                        pathname: '/team',
                         query: { mode: 'update', teamId: row.teamId.toString() },
                       }}
                       rel='noopener noreferrer'
@@ -106,7 +106,7 @@ export default function TeamManagement() {
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       href={{
-                        pathname: '/teamInfo',
+                        pathname: '/team',
                         query: { mode: 'update', teamId: row.teamId.toString() },
                       }}
                       rel='noopener noreferrer'
@@ -123,7 +123,7 @@ export default function TeamManagement() {
                         {/* 更新ボタン */}
                         <CustomButton
                           onClick={() => {
-                            router.push('/teamInfo?mode=update&teamId=' + row.teamId.toString());
+                            router.push('/team?mode=update&teamId=' + row.teamId.toString());
                           }}
                           buttonType='white-outlined'
                           className='w-[60px] text-small h-[40px] p-[0px] border-transparent'
@@ -134,7 +134,7 @@ export default function TeamManagement() {
                         {/* 削除ボタン */}
                         <CustomButton
                           onClick={() => {
-                            router.push('/teamInfoRef?mode=delete&teamId=' + row.teamId.toString());
+                            router.push('/teamRef?mode=delete&teamId=' + row.teamId.toString());
                           }}
                           buttonType='white-outlined'
                           className='w-[60px] text-small h-[40px] p-[0px] border-transparent'

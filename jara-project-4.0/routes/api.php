@@ -16,6 +16,8 @@ use App\Models\M_prefectures;
 use App\Models\M_countries;
 use App\Models\M_sex;
 use App\Models\M_venue;
+use App\Models\M_race_class;
+use App\Models\M_events;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +43,8 @@ Route::group(['middleware' => ['api', 'cors']], function () {
     Route::get('getCountries', [M_countries::class, 'getCountries']); //国マスター取得 20240117
     Route::get('getSexList', [M_sex::class, 'getSexList']); //性別マスター取得 20240131
     Route::get('getVenueList', [M_venue::class, 'getVenueList']); //水域マスター取得 20240201
+    Route::get('getRaceClass', [M_race_class::class, 'getRaceClass']); //レースクラスマスター取得 20240202
+    Route::get('getEvents', [M_events::class, 'getEvents']); //イベントマスター取得 20240202
 
     //---------------以下にAPIを追加する----------------
     Route::get('createCsrf', [AuthenticatedSessionController::class, 'createCsrf']); //ログイン画面遷移時にcsrfトークンを取得 20240122
@@ -59,5 +63,7 @@ Route::group(['middleware' => ['api', 'cors']], function () {
     Route::get('getOrgData', [PlayerController::class, 'getOrgData']); //DBから団体管理画面にデータを渡す 20240201
 
     //大会登録・更新画面
-    Route::get('getTournamentInfoData', [TournamentController::class, 'getTournamentInfoData']); //DBから選手情報更新画面にデータを渡す 20240201
+    Route::get('getTournamentInfoData', [TournamentController::class, 'getTournamentInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
+    Route::post('storeTournamentInfoData', [TournamentController::class, 'storeTournamentInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
+    
 });

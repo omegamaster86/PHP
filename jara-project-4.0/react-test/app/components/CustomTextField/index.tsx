@@ -2,6 +2,7 @@ import TextField from '@mui/material/TextField';
 import React from 'react';
 import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '../InputLabel';
+import { ChangeEvent } from 'react';
 
 const CustomTextField = ({
   label,
@@ -18,14 +19,14 @@ const CustomTextField = ({
   disabled,
   toolTipTitle,
   toolTipText,
-  textFieldWidth,
+  className,
 }: {
-  label: string;
+  label?: string;
   isError?: boolean;
   errorMessages?: string[];
   required?: boolean;
   value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   type?: string;
   readonly?: boolean;
   inputAdorment?: string;
@@ -34,22 +35,28 @@ const CustomTextField = ({
   disabled?: boolean;
   toolTipTitle?: string;
   toolTipText?: string;
-  textFieldWidth?: number;
+  className?: string;
 }) => {
   if (displayHelp === undefined) {
     displayHelp = true;
   }
   return (
     <div className='flex flex-col gap-[8px]'>
-      <InputLabel
-        label={label}
-        required={required}
-        displayHelp={displayHelp}
-        toolTipTitle={toolTipTitle}
-        toolTipText={toolTipText}
-      />
+      {label && (
+        <InputLabel
+          label={label}
+          required={required}
+          displayHelp={displayHelp}
+          toolTipTitle={toolTipTitle}
+          toolTipText={toolTipText}
+        />
+      )}
       <div className='flex flex-col gap-[8px]'>
-        {readonly && <p className='h-12 w-[300px] text-secondaryText py-3 disable'>{value} {inputAdorment}</p>}
+        {readonly && (
+          <p className={className + ' h-12 text-secondaryText py-3 disable'}>
+            {value} {inputAdorment}
+          </p>
+        )}
         {!readonly && (
           <TextField
             type={type || 'text'}
@@ -70,7 +77,7 @@ const CustomTextField = ({
                 endAdornment: <InputAdornment position='end'>{inputAdorment}</InputAdornment>,
               } as any)
             }
-            className={`bg-white ${textFieldWidth ? 'w-[' + textFieldWidth + 'px]' : ''}`}
+            className={`bg-white ${className ? className : ''}`}
           />
         )}
       </div>

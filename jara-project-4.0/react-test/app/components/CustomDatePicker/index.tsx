@@ -15,6 +15,8 @@ const CustomDatePicker = ({
   readonly,
   placeHolder,
   isError,
+  className,
+  id,
 }: {
   selectedDate: string;
   onChange: any;
@@ -24,15 +26,18 @@ const CustomDatePicker = ({
   readonly?: boolean;
   placeHolder?: string;
   isError?: boolean;
+  className?: string;
+  id?: string;
 }) => {
   return (
     <div>
       {readonly && <p className='h-12 w-[300px] text-secondaryText py-3 disable'>{selectedDate}</p>}
       {!readonly && (
         <DatePicker
+          id={id}
           className={`border-[0.5px] border-solid rounded h-12 w-full p-3 ${
             isError ? 'border-red' : 'border-gray-200 '
-          }`}
+          } ${className ? className : ''}`}
           {...(selectedDate && { selected: new Date(selectedDate) })}
           onChange={onChange}
           {...(useTime ? { dateFormat: 'yyyy/MM/dd HH:mm:ss' } : { dateFormat: 'yyyy/MM/dd' })}

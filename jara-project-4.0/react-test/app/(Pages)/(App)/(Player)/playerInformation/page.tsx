@@ -1,7 +1,7 @@
 // 機能名: 選手情報登録・更新・入力確認
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ChangeEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import {
@@ -149,6 +149,7 @@ export default function PlayerInformation() {
   // 更新モードの時に、選手情報を取得する
   useEffect(() => {
     const fetchMaster = async () => {
+      // 仮のURL（繋ぎ込み時に変更すること）
       try {
         // TODO: 都道府県情報の取得処理を実装
         axios
@@ -202,7 +203,10 @@ export default function PlayerInformation() {
             ]);
           });
       } catch (error: any) {
-        setErrorMessage(['API取得エラー:' + error.message]);
+        setErrorMessage([
+          ...(errorMessage as string[]),
+          'API取得エラー:' + (error as Error).message,
+        ]);
       }
     };
     fetchMaster();
@@ -404,6 +408,7 @@ export default function PlayerInformation() {
               .then((response) => {
                 // TODO: 更新処理成功時の処理
                 console.log(response);
+                window.confirm('選手情報を更新しました。');
               })
               .catch((error) => {
                 // TODO: 更新処理失敗時の処理
@@ -421,6 +426,7 @@ export default function PlayerInformation() {
               .then((response) => {
                 // TODO: 登録処理成功時の処理の実装
                 console.log(response);
+                window.confirm('選手情報を登録しました。');
               })
               .catch((error) => {
                 // TODO: 登録処理失敗時の処理の実装
@@ -550,7 +556,7 @@ export default function PlayerInformation() {
             toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
           <CustomDatePicker
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
               handleInputChange('dateOfBirth', formatDate(e as unknown as Date));
             }}
             readonly={mode === 'confirm'}

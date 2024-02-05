@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, Dispatch, SetStateAction, FC } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { FileRejection } from 'react-dropzone';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
@@ -7,14 +7,14 @@ import CloseIcon from '@mui/icons-material/Close';
 
 interface ImageUploaderProps {
   currentShowFile: { file: File; isUploaded: boolean; preview?: string } | undefined;
-  setCurrentShowFile: React.Dispatch<
-    React.SetStateAction<{ file: File; isUploaded: boolean; preview?: string } | undefined>
+  setCurrentShowFile: Dispatch<
+    SetStateAction<{ file: File; isUploaded: boolean; preview?: string } | undefined>
   >;
   initialPhotoUrl?: string;
   displayCloseIcon?: boolean;
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({
+const ImageUploader: FC<ImageUploaderProps> = ({
   currentShowFile,
   setCurrentShowFile,
   initialPhotoUrl,
@@ -56,7 +56,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         Papa.parse(acceptedFiles[0], {
           header: true,
           complete: function (results: any) {
-            console.log(results);
+            // 成功時の処理
           },
         });
       } catch (error) {

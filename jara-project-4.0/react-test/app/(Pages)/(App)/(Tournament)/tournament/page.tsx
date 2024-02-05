@@ -91,6 +91,7 @@ export default function Tournament() {
     startDateTime: '',
   });
 
+  //大会情報 20240202
   const [tournamentFormData, setTournamentFormData] = useState<Tournament>({
     tournId: tournId,
     entrysystemRaceId: '',
@@ -106,6 +107,12 @@ export default function Tournament() {
     venueName: '',
     tournUrl: '',
     tournInfoFailePath: '',
+  });
+
+  //追加対象のデータをまとめて送信する 20240202
+  const [sendFormData, setSendDatas] = useState({
+    tournamentFormData: tournamentFormData, //選手情報
+    tableData: tableData //選手の出漕結果情報
   });
 
   // フォームの入力値を管理する関数
@@ -317,14 +324,24 @@ export default function Tournament() {
           // TODO: エラー処理の実装置き換え
           // alert(error);
         });
-      // TODO: データ取得処理の実装置き換えgetVenueList
+      // TODO: データ取得処理の実装置き換え
       axios
         // .get<VenueResponse[]>('http://localhost:3100/venue')
         .get('http://localhost:8000/api/getVenueList')
         .then((response) => {
-          console.log(response.data);
-          const stateList = response.data.map(({ venue_id, venue_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
-          setVenue(response.data);
+          //DBのカラム名と画面側のプロパティ名をマップする 20240202
+          const stateList = response.data.map(({
+            venue_id,
+            venue_name
+          }:
+            {
+              venue_id: number;
+              venue_name: string
+            }) => ({
+              id: venue_id,
+              name: venue_name
+            }));
+          setVenue(stateList);
         })
         .catch((error) => {
           // TODO: エラー処理の実装置き換え
@@ -332,9 +349,22 @@ export default function Tournament() {
         });
       // TODO: データ取得処理の実装置き換え
       axios
-        .get<EventResponse[]>('http://localhost:3100/event')
+        // .get<EventResponse[]>('http://localhost:3100/event')
+        .get('http://localhost:8000/api/getEvents')
         .then((response) => {
-          setEvent(response.data);
+          //DBのカラム名と画面側のプロパティ名をマップする 20240202
+          const stateList = response.data.map(({
+            event_id,
+            event_name
+          }:
+            {
+              event_id: number;
+              event_name: string
+            }) => ({
+              id: event_id,
+              name: event_name
+            }));
+          setEvent(stateList);
         })
         .catch((error) => {
           // TODO: エラー処理の実装置き換え
@@ -342,9 +372,22 @@ export default function Tournament() {
         });
       // TODO: データ取得処理の実装置き換え
       axios
-        .get<RaceTypeResponse[]>('http://localhost:3100/raceType')
+        // .get<RaceTypeResponse[]>('http://localhost:3100/raceType')
+        .get('http://localhost:8000/api/getRaceClass')
         .then((response) => {
-          setRaceType(response.data);
+          //DBのカラム名と画面側のプロパティ名をマップする 20240202
+          const stateList = response.data.map(({
+            race_class_id,
+            race_class_name
+          }:
+            {
+              race_class_id: number;
+              race_class_name: string
+            }) => ({
+              id: race_class_id,
+              name: race_class_name
+            }));
+          setRaceType(stateList);
         })
         .catch((error) => {
           // TODO: エラー処理の実装置き換え
@@ -355,23 +398,25 @@ export default function Tournament() {
         // APIを叩いて、大会情報とレース情報を取得する
         // TODO: データ取得処理の実装置き換え
         axios
-          .get<Tournament>('http://localhost:3100/tournament')
+          // .get<Tournament>('http://localhost:3100/tournament')
+          .get('http://localhost:8000/api/getTournamentInfoData')
           .then((response) => {
+            console.log(response);
             setTournamentFormData({
               tournId: tournId,
-              entrysystemRaceId: response.data.entrysystemRaceId,
-              tournName: response.data.tournName,
-              tournType: response.data.tournType,
-              tournTypeName: response.data.tournTypeName,
-              sponsorOrgId: response.data.sponsorOrgId,
-              sponsorOrgName: response.data.sponsorOrgName,
-              eventStartDate: response.data.eventStartDate,
-              eventEndDate: response.data.eventEndDate,
-              venueId: response.data.venueId,
-              venueIdName: response.data.venueIdName,
-              venueName: response.data.venueName,
-              tournUrl: response.data.tournUrl,
-              tournInfoFailePath: response.data.tournInfoFailePath,
+              entrysystemRaceId: response.data.result.entrysystem_tourn_id,
+              tournName: response.data.result.tourn_name,
+              tournType: response.data.result.tourn_type,
+              tournTypeName: response.data.result.tourn_name,
+              sponsorOrgId: response.data.result.ponsor_org_id,
+              sponsorOrgName: response.data.result.tourn_name,
+              eventStartDate: response.data.result.event_start_date,
+              eventEndDate: response.data.result.event_end_date,
+              venueId: response.data.result.venue_id,
+              venueIdName: response.data.result.venue_name,
+              venueName: response.data.result.venue_name,
+              tournUrl: response.data.result.tourn_url,
+              tournInfoFailePath: response.data.result.tourn_info_faile_path,
             });
             console.log(response.data);
           })
@@ -404,9 +449,13 @@ export default function Tournament() {
           const isError = performValidation();
           if (!isError) {
             const registerData = {};
+            sendFormData.tournamentFormData = tournamentFormData;
+            sendFormData.tableData = tableData;
             axios
-              .post('http://localhost:3100/', registerData)
+              // .post('http://localhost:3100/', registerData)
+              .post('http://localhost:8000/api/storeTournamentInfoData', sendFormData)
               .then((response) => {
+                console.log(response);
                 // TODO: 処理成功時の処理
                 setTournamentFormData({} as Tournament);
                 setRaceFormData({
@@ -689,7 +738,7 @@ export default function Tournament() {
                 readonly={mode === 'confirm'}
                 value={row.otherRaceName}
                 onChange={(e) => handleInputChangeRace(row.id, 'otherRaceName', e.target.value)}
-                textFieldWidth={150}
+                className='w-[150px]'
               />
             </div>
           </div>

@@ -62,9 +62,9 @@ class T_tournaments extends Model
                     $tournamentsInfo['tourn_info_faile_path'],
                     $tournamentsInfo['entrysystem_tourn_id'],
                     NOW(),
-                    Auth::user()->user_id,
+                    1, //Auth::user()->user_id,
                     NOW(),
-                    Auth::user()->user_id,
+                    1, // Auth::user()->user_id,
                     $tournamentsInfo['delete_flag']
                 ]
             );
@@ -73,9 +73,6 @@ class T_tournaments extends Model
             DB::commit();
             return $result;
         } catch (\Throwable $e) {
-            dd($e);
-            // dd($request->all());
-            dd("stop");
             DB::rollBack();
 
             //$result = "failed";

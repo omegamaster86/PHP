@@ -4,6 +4,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import { ReactNode, useState, Fragment } from 'react';
 
 export default function CustomDialog({
   title,
@@ -18,13 +19,13 @@ export default function CustomDialog({
   title: string;
   buttonLabel: string;
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
   displayCancel?: boolean;
   handleConfirm: () => boolean;
   confirmButtonLabel?: string;
   handleCancel?: () => void;
 }) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -35,7 +36,7 @@ export default function CustomDialog({
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       <CustomButton onClick={handleClickOpen} className={className} buttonType='primary'>
         {buttonLabel}
       </CustomButton>
@@ -78,6 +79,6 @@ export default function CustomDialog({
           </CustomButton>
         </DialogActions>
       </Dialog>
-    </React.Fragment>
+    </Fragment>
   );
 }

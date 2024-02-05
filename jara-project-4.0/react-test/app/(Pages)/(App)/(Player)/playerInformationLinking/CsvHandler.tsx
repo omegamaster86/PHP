@@ -140,8 +140,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           .map((row) => props.csvDownloadProps.header.map((h) => row[h.key]).join(','))
           .join('\n');
 
-      console.log(csvContent);
-
       // ダウンロード用のBlobを作成（UTF-8指定）
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
 

@@ -1,5 +1,5 @@
 // Reactのインポート
-import React from 'react';
+import { FC } from 'react';
 
 // タブコンポーネントのプロパティ型定義
 interface TabProps {
@@ -11,7 +11,7 @@ interface TabProps {
 }
 
 // タブコンポーネントの関数コンポーネント
-const Tab: React.FC<TabProps> = ({ number, isActive, onClick, rounded, children }) => {
+const Tab: FC<TabProps> = ({ number, isActive, onClick, rounded, children }) => {
   return (
     <div
       className={`flex w-[80px] h-[38px] items-center justify-center cursor-pointer text-caption1 ${

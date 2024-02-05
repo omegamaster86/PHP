@@ -1,9 +1,11 @@
+import { ReactNode } from 'react';
+
 const CustomTr = ({
   children,
   isHidden,
   index, // keyだとエラーが出るのでindexに変更
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   isHidden?: boolean;
   index?: number;
 }) => {
