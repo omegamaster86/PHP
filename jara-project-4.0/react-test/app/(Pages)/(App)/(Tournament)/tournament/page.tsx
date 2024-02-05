@@ -186,11 +186,11 @@ export default function Tournament() {
     const venueNameError =
       tournamentFormData.venueId === '0'
         ? Validator.getErrorMessages([
-            Validator.validateRequired(
-              tournamentFormData.venueName,
-              '開催場所を選択するか、入力欄に開催場所',
-            ),
-          ])
+          Validator.validateRequired(
+            tournamentFormData.venueName,
+            '開催場所を選択するか、入力欄に開催場所',
+          ),
+        ])
         : [];
 
     const tournUrlError = Validator.getErrorMessages([
@@ -520,7 +520,8 @@ export default function Tournament() {
           if (!isError) {
             const registerData = {};
             axios
-              .post('http://localhost:3100/', registerData)
+              // .post('http://localhost:3100/', registerData)
+              .post('http://localhost:8000/api/updateTournamentInfoData', sendFormData)
               .then((response) => {
                 // TODO: 処理成功時の処理
                 setTournamentFormData({} as Tournament);
@@ -791,16 +792,15 @@ export default function Tournament() {
         <ErrorBox errorText={errorMessages} />
         {/* 大会ID */}
         <div
-          className={`${
-            mode === 'update' || prevMode === 'update' ? '' : 'hidden'
-          } 'flex flex-col justify-start'`}
+          className={`${mode === 'update' || prevMode === 'update' ? '' : 'hidden'
+            } 'flex flex-col justify-start'`}
         >
           <CustomTextField
             label='大会ID'
             isError={false}
             displayHelp={false}
             readonly
-            onChange={(e) => {}}
+            onChange={(e) => { }}
             value={tournamentFormData.tournId}
           />
         </div>
@@ -816,6 +816,8 @@ export default function Tournament() {
               displayHelp={mode !== 'confirm'}
               value={tournamentFormData.entrysystemRaceId}
               onChange={(e) => handleInputChangeTournament('entrysystemRaceId', e.target.value)}
+              toolTipTitle='Title エントリーシステムの大会ID' //はてなボタン用
+              toolTipText='サンプル用のツールチップ表示' //はてなボタン用
             />
           )}
         </div>
@@ -831,6 +833,8 @@ export default function Tournament() {
               readonly={mode === 'confirm'}
               value={tournamentFormData.tournName}
               onChange={(e) => handleInputChangeTournament('tournName', e.target.value)}
+              toolTipTitle='Title 大会名' //はてなボタン用
+              toolTipText='サンプル用のツールチップ表示' //はてなボタン用
             />
             {/* 大会種別（公式・非公式） */}
             <CustomDropdown
@@ -867,6 +871,8 @@ export default function Tournament() {
             readonly={mode === 'confirm'}
             value={tournamentFormData.sponsorOrgId}
             onChange={(e) => handleInputChangeTournament('sponsorOrgId', e.target.value)}
+            toolTipTitle='Title 主催団体ID' //はてなボタン用
+            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
         </div>
         {/* 主催団体名 */}
@@ -878,7 +884,7 @@ export default function Tournament() {
               displayHelp={mode !== 'confirm'}
               readonly={mode === 'confirm'}
               value={tournamentFormData.sponsorOrgName}
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
           </div>
         )}
@@ -889,6 +895,8 @@ export default function Tournament() {
               label='開催開始年月日'
               required={mode !== 'confirm'}
               displayHelp={mode !== 'confirm'}
+              toolTipTitle='Title 開催開始年月日' //はてなボタン用
+              toolTipText='サンプル用のツールチップ表示' //はてなボタン用
             ></InputLabel>
             <CustomDatePicker
               selectedDate={tournamentFormData.eventStartDate}
@@ -906,6 +914,8 @@ export default function Tournament() {
               label='開催終了年月日'
               required={mode !== 'confirm'}
               displayHelp={mode !== 'confirm'}
+              toolTipTitle='Title 開催終了年月日' //はてなボタン用
+              toolTipText='サンプル用のツールチップ表示' //はてなボタン用
             ></InputLabel>
             <CustomDatePicker
               selectedDate={tournamentFormData.eventEndDate}
@@ -924,6 +934,8 @@ export default function Tournament() {
             label={'開催場所'}
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
+            toolTipTitle='Title 開催場所' //はてなボタン用
+            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           ></InputLabel>
           <div className='flex flex-row justify-start gap-[4px]'>
             <CustomDropdown
@@ -977,6 +989,8 @@ export default function Tournament() {
             displayHelp={mode !== 'confirm'}
             value={tournamentFormData.tournUrl}
             onChange={(e) => handleInputChangeTournament('tournUrl', e.target.value)}
+            toolTipTitle='Title 大会個別URL' //はてなボタン用
+            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
         </div>
         {/* 大会要項PDFファイル */}

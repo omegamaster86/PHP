@@ -84,18 +84,28 @@ export default function PlayerInformationRef() {
   // エラーハンドリング用のステート
   const [error, setError] = useState({ isError: false, errorMessage: '' });
 
+  //追加対象のデータをまとめて送信する 20240202
+  const [sendFormData, setSendDatas] = useState({
+    tournamentFormData: tournamentFormData, //選手情報
+    tableData: tableData //選手の出漕結果情報
+  });
+
   // データ取得
   useEffect(() => {
     // StrictModeの制約回避のため、APIの呼び出し実績の有無をuseEffectの中に記述
     if (!isApiFetched.current) {
       const fetchData = async () => {
-        const userResponse = await axios.get<UserResponse>('http://localhost:3100/user');
-        setUserType(userResponse.data.userType);
+        // const userResponse = await axios.get<UserResponse>('http://localhost:3100/user');
+        // setUserType(userResponse.data.userType);
         // TODO: tournIdを元に大会情報を取得する処理の置き換え
-        const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
+        // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
+        const tournamentResponse = await axios.get('http://localhost:8000/api/getTournamentInfoData');
+        console.log(tournamentResponse);
         setTournamentFormData(tournamentResponse.data);
         // TODO: tournIdを元にレース情報を取得する処理の置き換え
-        const raceResponse = await axios.get<Race[]>('http://localhost:3100/race');
+        // const raceResponse = await axios.get<Race[]>('http://localhost:3100/race');
+        const raceResponse = await axios.get('http://localhost:8000/api/getTournamentInfoData');
+        console.log(raceResponse);
         raceResponse.data.map((data) => {
           setTableData((prevData) => [...prevData, { ...data }]);
         });
@@ -227,16 +237,16 @@ export default function PlayerInformationRef() {
                     userType === ROLE.GROUP_MANAGER ||
                     userType === ROLE.JARA ||
                     userType === ROLE.PREFECTURE) && (
-                    <div className='flex flex-row gap-[10px]'>
-                      {/* エントリーシステムの大会ID */}
-                      <div className='text-gray-40 text-caption1'>エントリーシステムの大会ID：</div>
-                      <Label
-                        label={tournamentFormData.entrysystemRaceId}
-                        textColor='white'
-                        textSize='caption1'
-                      ></Label>
-                    </div>
-                  )}
+                      <div className='flex flex-row gap-[10px]'>
+                        {/* エントリーシステムの大会ID */}
+                        <div className='text-gray-40 text-caption1'>エントリーシステムの大会ID：</div>
+                        <Label
+                          label={tournamentFormData.entrysystemRaceId}
+                          textColor='white'
+                          textSize='caption1'
+                        ></Label>
+                      </div>
+                    )}
                 </div>
               </div>
             </div>
@@ -327,7 +337,8 @@ export default function PlayerInformationRef() {
                     if (!isOk) {
                       // TODO: 削除確認画面でOKボタンが押された場合、テーブルの当該項目に削除フラグを立てる処理の置き換え
                       axios
-                        .delete('http://localhost:3100/tournament')
+                        // .delete('http://localhost:3100/tournament')
+                        .post('http://localhost:8000/api/deleteTournamentData', sendFormData) //大会情報の削除 20240202
                         .then((response) => {
                           // TODO: 削除完了時の処理の置き換え
                         })

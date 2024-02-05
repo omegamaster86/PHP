@@ -377,6 +377,8 @@ export default function OrgInfo() {
           value={formData.entOrgId}
           displayHelp={mode !== 'confirm'}
           onChange={(e) => handleInputChange('entOrgId', e.target.value)}
+          toolTipTitle='Title エントリーシステムの団体ID' //はてなボタン用
+          toolTipText='サンプル用のツールチップ表示' //はてなボタン用
         />
         {/* 団体名 */}
         <CustomTextField
@@ -388,10 +390,17 @@ export default function OrgInfo() {
           displayHelp={mode !== 'confirm'}
           value={formData.orgName}
           onChange={(e) => handleInputChange('orgName', e.target.value)}
+          toolTipTitle='Title 団体名' //はてなボタン用
+          toolTipText='サンプル用のツールチップ表示' //はてなボタン用
         />
         {/* 創立年 */}
         <div className='w-full flex flex-col justify-between gap-[8px]'>
-          <InputLabel label='創立年' displayHelp={mode !== 'confirm'} />
+          <InputLabel
+            label='創立年'
+            displayHelp={mode !== 'confirm'}
+            toolTipTitle='Title 創立年' //はてなボタン用
+            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+          />
           <CustomYearPicker
             selectedDate={formData.foundingYear === 0 ? '' : formData.foundingYear?.toString()}
             errorMessages={foundingYearErrorMessages}
@@ -407,6 +416,8 @@ export default function OrgInfo() {
             label='所在地'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
+            toolTipTitle='Title 所在地' //はてなボタン用
+            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
           {mode !== 'confirm' && (
             <div className='w-full flex flex-row justify-start gap-[8px]'>
@@ -490,6 +501,8 @@ export default function OrgInfo() {
             label='都道府県'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
+            toolTipTitle='Title 都道府県' //はてなボタン用
+            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
           <CustomDropdown
             id='prefecture'
@@ -523,6 +536,8 @@ export default function OrgInfo() {
           readonly={mode === 'confirm'}
           isError={addressErrorMessages.length > 0}
           onChange={(e) => handleInputChange('address1', e.target.value)}
+          toolTipTitle='Title 市区町村・町字番地' //はてなボタン用
+          toolTipText='サンプル用のツールチップ表示' //はてなボタン用
         />
         {/* マンション・アパート */}
         <CustomTextField
@@ -534,6 +549,8 @@ export default function OrgInfo() {
           onChange={(e) => handleInputChange('address2', e.target.value)}
           isError={addressErrorMessages.length > 0}
           errorMessages={addressErrorMessages}
+          toolTipTitle='Title マンション・アパート' //はてなボタン用
+          toolTipText='サンプル用のツールチップ表示' //はてなボタン用
         />
         <div className='w-full flex flex-col justify-between gap-[8px]'>
           {/* 団体区分 */}
@@ -541,6 +558,8 @@ export default function OrgInfo() {
             label='団体区分'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
+            toolTipTitle='Title 団体区分' //はてなボタン用
+            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
           <CustomDropdown
             id='団体区分'
@@ -565,7 +584,12 @@ export default function OrgInfo() {
           />
         </div>
         {/* JARA団体種別 */}
-        <InputLabel label='団体種別' displayHelp={mode !== 'confirm'} />
+        <InputLabel
+          label='団体種別'
+          displayHelp={mode !== 'confirm'}
+          toolTipTitle='Title 団体種別' //はてなボタン用
+          toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+        />
         <div className='w-full flex flex-row justify-start gap-[8px]'>
           <div className='w-full flex flex-col justify-between gap-[8px]'>
             <InputLabel label='JARA' />
@@ -595,15 +619,15 @@ export default function OrgInfo() {
           {(user.userType === ROLE.SYSTEM_ADMIN ||
             user.userType === ROLE.JARA ||
             (user.userType === ROLE.PREFECTURE && mode !== 'create')) && (
-            <CustomTextField
-              label='証跡'
-              displayHelp={false}
-              className='w-[300px]'
-              value={formData.jaraOrgRegTrail}
-              readonly={mode === 'confirm' || user.userType === ROLE.PREFECTURE}
-              onChange={(e) => handleInputChange('jaraOrgRegTrail', e.target.value)}
-            />
-          )}
+              <CustomTextField
+                label='証跡'
+                displayHelp={false}
+                className='w-[300px]'
+                value={formData.jaraOrgRegTrail}
+                readonly={mode === 'confirm' || user.userType === ROLE.PREFECTURE}
+                onChange={(e) => handleInputChange('jaraOrgRegTrail', e.target.value)}
+              />
+            )}
         </div>
         <div className='w-full flex flex-row justify-start gap-[8px]'>
           <div className='w-full flex flex-col justify-between gap-[8px]'>
@@ -635,15 +659,15 @@ export default function OrgInfo() {
           {(user.userType === ROLE.SYSTEM_ADMIN ||
             (user.userType === ROLE.JARA && mode !== 'create') ||
             user.userType === ROLE.PREFECTURE) && (
-            <CustomTextField
-              label='証跡'
-              className='w-[300px]'
-              displayHelp={false}
-              readonly={mode === 'confirm' || user.userType === ROLE.JARA}
-              value={formData.prefOrgRegTrail}
-              onChange={(e) => handleInputChange('prefOrgRegTrail', e.target.value)}
-            />
-          )}
+              <CustomTextField
+                label='証跡'
+                className='w-[300px]'
+                displayHelp={false}
+                readonly={mode === 'confirm' || user.userType === ROLE.JARA}
+                value={formData.prefOrgRegTrail}
+                onChange={(e) => handleInputChange('prefOrgRegTrail', e.target.value)}
+              />
+            )}
         </div>
       </div>
       <div className='overflow-auto'>
