@@ -234,4 +234,14 @@ class T_organizations extends Model
         $organizations = DB::select($sqlString,$value_array);
         return $organizations;
     }
+
+    public function getOrganizationName()
+    {
+        $organization_name_list = DB::select('select org_name
+                                        from t_organizations
+                                        where delete_flag = 0
+                                        order by org_id'
+                                    );
+        return $organization_name_list;
+    }
 }

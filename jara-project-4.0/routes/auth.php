@@ -21,6 +21,12 @@ Route::get('contact-us/confirm', [ContactUsController::class, 'createConfirm'])-
 Route::post('contact-us', [ContactUsController::class, 'store']);
 Route::post('contact-us/confirm', [ContactUsController::class, 'storeConfirm']);
 
+
+//団体選手一括登録
+Route::get('organization-player-register', [OrganizationPlayersController::class, 'createOrganizationPlayerRegister'])->name('organization-player-register');
+Route::post('organization-player-register', [OrganizationPlayersController::class, 'csvReadOrganizationPlayerRegister']);
+//団体選手一括登録
+
 Route::middleware('guest')->group(function () {
 
     Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
