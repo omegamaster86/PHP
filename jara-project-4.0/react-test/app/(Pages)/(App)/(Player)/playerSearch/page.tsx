@@ -172,8 +172,10 @@ export default function PlayerSearch() {
       try {
         // 仮のURL（繋ぎ込み時に変更すること）
         // 性別
-        const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
-        setSex(sexResponse.data);
+        // const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
+        const sexResponse = await axios.get('http://localhost:8000/api/getSexList');
+        const sexList = sexResponse.data.map(({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }));
+        setSex(sexList);
         // 種目
         const eventResponse = await axios.get<EventResponse[]>('http://localhost:3100/event');
         setEvent(eventResponse.data);

@@ -98,7 +98,7 @@ export default function PlayerInformationRef() {
           sex_id: playerInf.data.result.sex,
           height: playerInf.data.result.height,
           weight: playerInf.data.result.weight,
-          side_Info: sideList,
+          side_info: sideList,
           birthCountryName: playerInf.data.result.bir_country_name,
           birth_country: playerInf.data.result.birth_country,
           birthPrefectureName: playerInf.data.result.bir_pref_name,
@@ -357,7 +357,7 @@ export default function PlayerInformationRef() {
                   <div className='flex flex-row justify-start gap-[10px]'>
                     <div
                       className={`text-center px-[12px] py-[8px] rounded-full ${
-                        playerInformation.side_Info?.at(0)
+                        playerInformation.side_info?.at(0)
                           ? 'border border-secondary-500 text-secondary-500'
                           : 'border border-gray-30 text-white'
                       }`}
@@ -366,7 +366,7 @@ export default function PlayerInformationRef() {
                     </div>
                     <div
                       className={`text-center px-[12px] py-[8px] rounded-full ${
-                        playerInformation.side_Info?.at(1)
+                        playerInformation.side_info?.at(1)
                           ? 'border border-secondary-500 text-secondary-500'
                           : 'border border-gray-30 text-white'
                       }`}
@@ -377,7 +377,7 @@ export default function PlayerInformationRef() {
                   <div className='flex flex-row justify-start gap-[10px]'>
                     <div
                       className={`text-center px-[12px] py-[8px] rounded-full ${
-                        playerInformation.side_Info?.at(2)
+                        playerInformation.side_info?.at(2)
                           ? 'border border-secondary-500 text-secondary-500'
                           : 'border border-gray-30 text-white'
                       }`}
@@ -386,7 +386,7 @@ export default function PlayerInformationRef() {
                     </div>
                     <div
                       className={`text-center px-[12px] py-[8px] rounded-full ${
-                        playerInformation.side_Info?.at(3)
+                        playerInformation.side_info?.at(3)
                           ? 'border border-secondary-500 text-secondary-500'
                           : 'border border-gray-30 text-white'
                       }`}

@@ -403,20 +403,20 @@ export default function Tournament() {
           .then((response) => {
             console.log(response);
             setTournamentFormData({
-              tournId: tournId,
+              tourn_id: tournId,
               entrysystemRaceId: response.data.result.entrysystem_tourn_id,
-              tournName: response.data.result.tourn_name,
-              tournType: response.data.result.tourn_type,
+              tourn_name: response.data.result.tourn_name,
+              tourn_type: response.data.result.tourn_type,
               tournTypeName: response.data.result.tourn_name,
-              sponsorOrgId: response.data.result.ponsor_org_id,
+              sponsor_org_id: response.data.result.ponsor_org_id,
               sponsorOrgName: response.data.result.tourn_name,
-              eventStartDate: response.data.result.event_start_date,
-              eventEndDate: response.data.result.event_end_date,
-              venueId: response.data.result.venue_id,
+              event_start_date: response.data.result.event_start_date,
+              event_end_date: response.data.result.event_end_date,
+              venue_id: response.data.result.venue_id,
               venueIdName: response.data.result.venue_name,
-              venueName: response.data.result.venue_name,
-              tournUrl: response.data.result.tourn_url,
-              tournInfoFailePath: response.data.result.tourn_info_faile_path,
+              venue_name: response.data.result.venue_name,
+              tourn_url: response.data.result.tourn_url,
+              tourn_info_faile_path: response.data.result.tourn_info_faile_path,
             });
             console.log(response.data);
           })
@@ -461,35 +461,35 @@ export default function Tournament() {
                 setRaceFormData({
                   id: 0,
                   checked: false,
-                  raceId: '',
-                  entrysystemRaceId: '',
-                  raceNumber: '',
-                  raceType: '',
-                  raceTypeName: '',
+                  race_id: '',
+                  entrysystem_race_id: '',
+                  race_number: '',
+                  race_class_id: '',
+                  race_class_name: '',
                   otherRaceName: '',
-                  eventId: '',
-                  eventName: '',
-                  raceName: '',
-                  byGroup: '',
+                  event_id: '',
+                  event_name: '',
+                  race_name: '',
+                  by_group: '',
                   range: '',
-                  startDateTime: '',
+                  start_datetime: '',
                 });
                 setTableData([
                   {
                     id: 0,
                     checked: false,
-                    raceId: '',
-                    entrysystemRaceId: '',
-                    raceNumber: '',
-                    raceType: '',
-                    raceTypeName: '',
+                    race_id: '',
+                    entrysystem_race_id: '',
+                    race_number: '',
+                    race_class_id: '',
+                    race_class_name: '',
                     otherRaceName: '',
-                    eventId: '',
-                    eventName: '',
-                    raceName: '',
-                    byGroup: '',
+                    event_id: '',
+                    event_name: '',
+                    race_name: '',
+                    by_group: '',
                     range: '',
-                    startDateTime: '',
+                    start_datetime: '',
                   },
                 ]);
                 fileUploaderRef?.current?.clearFile();
@@ -528,35 +528,35 @@ export default function Tournament() {
                 setRaceFormData({
                   id: 0,
                   checked: false,
-                  raceId: '',
-                  entrysystemRaceId: '',
-                  raceNumber: '',
-                  eventId: '',
-                  eventName: '',
-                  raceName: '',
-                  raceType: '',
-                  raceTypeName: '',
+                  race_id: '',
+                  entrysystem_race_id: '',
+                  race_number: '',
+                  event_id: '',
+                  event_name: '',
+                  race_name: '',
+                  race_class_id: '',
+                  race_class_name: '',
                   otherRaceName: '',
-                  byGroup: '',
+                  by_group: '',
                   range: '',
-                  startDateTime: '',
+                  start_datetime: '',
                 });
                 setTableData([
                   {
                     id: 0,
                     checked: false,
-                    raceId: '',
-                    entrysystemRaceId: '',
-                    raceNumber: '',
-                    raceType: '',
-                    raceTypeName: '',
+                    race_id: '',
+                    entrysystem_race_id: '',
+                    race_number: '',
+                    race_class_id: '',
+                    race_class_name: '',
                     otherRaceName: '',
-                    eventId: '',
-                    eventName: '',
-                    raceName: '',
-                    byGroup: '',
+                    event_id: '',
+                    event_name: '',
+                    race_name: '',
+                    by_group: '',
                     range: '',
-                    startDateTime: '',
+                    start_datetime: '',
                   },
                 ]);
                 fileUploaderRef?.current?.clearFile();
@@ -616,18 +616,18 @@ export default function Tournament() {
         setRaceFormData({
           id: 0,
           checked: false,
-          raceId: '',
-          entrysystemRaceId: '',
-          raceNumber: '',
-          raceType: '',
-          raceTypeName: '',
+          race_id: '',
+          entrysystem_race_id: '',
+          race_number: '',
+          race_class_id: '',
+          race_class_name: '',
           otherRaceName: '',
-          eventId: '',
-          eventName: '',
-          raceName: '',
-          byGroup: '',
+          event_id: '',
+          event_name: '',
+          race_name: '',
+          by_group: '',
           range: '',
-          startDateTime: '',
+          start_datetime: '',
         });
       }}
     >
@@ -670,8 +670,8 @@ export default function Tournament() {
         <CustomTd>
           <TextField
             type={'text'}
-            value={row.entrysystemRaceId}
-            onChange={(e) => handleInputChangeRace(row.id, 'entrysystemRaceId', e.target.value)}
+            value={row.entrysystem_race_id}
+            onChange={(e) => handleInputChangeRace(row.id, 'entrysystem_race_id', e.target.value)}
             className='my-[8px]'
           />
         </CustomTd>
@@ -679,7 +679,7 @@ export default function Tournament() {
         <CustomTd>
           <TextField
             type={'number'}
-            value={row.raceNumber}
+            value={row.race_number}
             onChange={(e) => {
               handleInputChangeRace(row.id, 'raceNumber', e.target.value);
             }}
@@ -691,7 +691,7 @@ export default function Tournament() {
           <CustomDropdown
             id='event'
             options={event.map((item) => ({ key: item.id, value: item.name }))}
-            value={row.eventId}
+            value={row.event_id}
             onChange={(e) => {
               handleInputChangeRace(row.id, 'eventId', e);
               handleInputChangeRace(
@@ -707,7 +707,7 @@ export default function Tournament() {
         <CustomTd>
           <TextField
             type={'text'}
-            value={row.raceName}
+            value={row.race_name}
             onChange={(e) => handleInputChangeRace(row.id, 'raceName', e.target.value)}
             className='w-[150px]'
           />
@@ -718,7 +718,7 @@ export default function Tournament() {
             <CustomDropdown
               id='raceType'
               options={raceType.map((item) => ({ key: item.id, value: item.name }))}
-              value={row.raceType}
+              value={row.race_class_id}
               onChange={(e) => {
                 handleInputChangeRace(row.id, 'raceType', e.toString());
                 handleInputChangeRace(
@@ -731,7 +731,7 @@ export default function Tournament() {
               readonly={mode === 'confirm'}
             />
             {/* その他選択時に表示のテキストボックス */}
-            <div className={`${row.raceType === '999' ? '' : 'hidden'} `}>
+            <div className={`${row.race_class_id === '999' ? '' : 'hidden'} `}>
               <CustomTextField
                 label=''
                 isError={raceTypeNameErrorMessage.length > 0}
@@ -748,7 +748,7 @@ export default function Tournament() {
         <CustomTd>
           <TextField
             type={'number'}
-            value={row.byGroup}
+            value={row.by_group}
             onChange={(e) => handleInputChangeRace(row.id, 'byGroup', e.target.value)}
             className='w-[150px]'
           />
@@ -765,7 +765,7 @@ export default function Tournament() {
         {/* 発艇日時 */}
         <CustomTd>
           <CustomDatePicker
-            selectedDate={row.startDateTime}
+            selectedDate={row.start_datetime}
             useTime={true}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               handleInputChangeRace(row.id, 'startDateTime', formatDateTime(e as unknown as Date));
@@ -801,7 +801,7 @@ export default function Tournament() {
             displayHelp={false}
             readonly
             onChange={(e) => { }}
-            value={tournamentFormData.tournId}
+            value={tournamentFormData.tourn_id}
           />
         </div>
         {/* エントリーシステムの大会ID */}
@@ -831,8 +831,8 @@ export default function Tournament() {
               required={mode !== 'confirm'}
               displayHelp={mode !== 'confirm'}
               readonly={mode === 'confirm'}
-              value={tournamentFormData.tournName}
-              onChange={(e) => handleInputChangeTournament('tournName', e.target.value)}
+              value={tournamentFormData.tourn_name}
+              onChange={(e) => handleInputChangeTournament('tourn_name', e.target.value)}
               toolTipTitle='Title 大会名' //はてなボタン用
               toolTipText='サンプル用のツールチップ表示' //はてなボタン用
             />
@@ -841,10 +841,10 @@ export default function Tournament() {
               id='tournType'
               options={tournType.map((item) => ({ key: item.id, value: item.name }))}
               value={
-                mode !== 'confirm' ? tournamentFormData.tournType : tournamentFormData.tournTypeName
+                mode !== 'confirm' ? tournamentFormData.tourn_type : tournamentFormData.tournTypeName
               }
               onChange={(e) => {
-                handleInputChangeTournament('tournType', e.toString());
+                handleInputChangeTournament('tourn_type', e.toString());
                 handleInputChangeTournament(
                   'tournTypeName',
                   tournType.find((item) => item.id === Number(e))?.name || '',
@@ -869,8 +869,8 @@ export default function Tournament() {
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
             readonly={mode === 'confirm'}
-            value={tournamentFormData.sponsorOrgId}
-            onChange={(e) => handleInputChangeTournament('sponsorOrgId', e.target.value)}
+            value={tournamentFormData.sponsor_org_id}
+            onChange={(e) => handleInputChangeTournament('sponsor_org_id', e.target.value)}
             toolTipTitle='Title 主催団体ID' //はてなボタン用
             toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
@@ -899,7 +899,7 @@ export default function Tournament() {
               toolTipText='サンプル用のツールチップ表示' //はてなボタン用
             ></InputLabel>
             <CustomDatePicker
-              selectedDate={tournamentFormData.eventStartDate}
+              selectedDate={tournamentFormData.event_start_date}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 handleInputChangeTournament('eventStartDate', formatDate(e as unknown as Date));
               }}
@@ -918,7 +918,7 @@ export default function Tournament() {
               toolTipText='サンプル用のツールチップ表示' //はてなボタン用
             ></InputLabel>
             <CustomDatePicker
-              selectedDate={tournamentFormData.eventEndDate}
+              selectedDate={tournamentFormData.event_end_date}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 handleInputChangeTournament('eventEndDate', formatDate(e as unknown as Date));
               }}
@@ -942,7 +942,7 @@ export default function Tournament() {
               id='venue'
               options={venue.map((item) => ({ key: item.id, value: item.name }))}
               value={
-                mode !== 'confirm' ? tournamentFormData.venueId : tournamentFormData.venueIdName
+                mode !== 'confirm' ? tournamentFormData.venue_id : tournamentFormData.venueIdName
               }
               onChange={(e) => {
                 handleInputChangeTournament('venueId', e.toString());
@@ -955,13 +955,13 @@ export default function Tournament() {
               readonly={mode === 'confirm'}
             />
             {/* 開催場所入力欄 */}
-            <div className={`${tournamentFormData.venueId === '0' ? '' : 'hidden'} `}>
+            <div className={`${tournamentFormData.venue_id === '0' ? '' : 'hidden'} `}>
               <CustomTextField
                 label=''
                 isError={venueNameErrorMessage.length > 0}
                 readonly={mode === 'confirm'}
                 displayHelp={false}
-                value={tournamentFormData.venueName}
+                value={tournamentFormData.venue_name}
                 onChange={(e) => handleInputChangeTournament('venueName', e.target.value)}
               />
             </div>
@@ -987,7 +987,7 @@ export default function Tournament() {
             errorMessages={tournUrlErrorMessage}
             readonly={mode === 'confirm'}
             displayHelp={mode !== 'confirm'}
-            value={tournamentFormData.tournUrl}
+            value={tournamentFormData.tourn_url}
             onChange={(e) => handleInputChangeTournament('tournUrl', e.target.value)}
             toolTipTitle='Title 大会個別URL' //はてなボタン用
             toolTipText='サンプル用のツールチップ表示' //はてなボタン用
@@ -1124,11 +1124,11 @@ export default function Tournament() {
                   {(mode === 'update' || prevMode === 'update') && (
                     <CustomTd>
                       {mode === 'confirm' ? (
-                        <p className='h-12 text-secondaryText py-3 disable'>{row.raceId}</p>
+                        <p className='h-12 text-secondaryText py-3 disable'>{row.race_id}</p>
                       ) : (
                         <TextField
                           type={'text'}
-                          value={row.raceId}
+                          value={row.race_id}
                           onChange={(e) => handleInputChangeRace(row.id, 'raceId', e.target.value)}
                           className='my-[8px]'
                         />
@@ -1155,29 +1155,29 @@ export default function Tournament() {
                   {mode === 'confirm' ? (
                     <>
                       {/* エントリーシステムのレースID */}
-                      <CustomTd textType='secondary'>{row.entrysystemRaceId}</CustomTd>
+                      <CustomTd textType='secondary'>{row.entrysystem_race_id}</CustomTd>
                       {/* レースNo. */}
-                      <CustomTd textType='secondary'>{row.raceNumber}</CustomTd>
+                      <CustomTd textType='secondary'>{row.race_number}</CustomTd>
                       {/* 種目 */}
-                      <CustomTd textType='secondary'>{row.eventName}</CustomTd>
+                      <CustomTd textType='secondary'>{row.event_name}</CustomTd>
                       {/* レース名 */}
-                      <CustomTd textType='secondary'>{row.raceName}</CustomTd>
+                      <CustomTd textType='secondary'>{row.race_name}</CustomTd>
                       <CustomTd textType='secondary'>
                         {/* レース区分 */}
                         <div className='flex flex-row gap-[8px] items-center'>
-                          {row.raceTypeName}
+                          {row.race_class_name}
                           {/* レース区分名 */}
-                          <div className={`${row.raceType === '999' ? '' : 'hidden'} `}>
+                          <div className={`${row.race_class_id === '999' ? '' : 'hidden'} `}>
                             {row.otherRaceName}
                           </div>
                         </div>
                       </CustomTd>
                       {/* 組別 */}
-                      <CustomTd textType='secondary'>{row.byGroup}</CustomTd>
+                      <CustomTd textType='secondary'>{row.by_group}</CustomTd>
                       {/* 距離 */}
                       <CustomTd textType='secondary'>{row.range}</CustomTd>
                       {/* 発艇日時 */}
-                      <CustomTd textType='secondary'>{row.startDateTime}</CustomTd>
+                      <CustomTd textType='secondary'>{row.start_datetime}</CustomTd>
                     </>
                   ) : (
                     raceRowComp(row)

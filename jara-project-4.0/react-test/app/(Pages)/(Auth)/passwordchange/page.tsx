@@ -152,7 +152,8 @@ export default function Passwordchange() {
 
               const requestBody = {};
               axios
-                .post('http://localhost:3100/', requestBody)
+                // .post('http://localhost:3100/', requestBody)
+                .post('http://localhost:8000/api/passwordChange', sendFormData)
                 .then((response) => {
                   // 成功時の処理を実装
                   window.confirm('パスワードを変更しました。');

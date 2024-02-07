@@ -486,28 +486,28 @@ class TournamentController extends Controller
        
         //確認画面から登録
         // $tTournament::$tournamentInfo['tourn_id'] = 1;
-        $tTournament::$tournamentInfo['tourn_name'] = $reqData['tournamentFormData']['tournName']; //大会名
-        $tTournament::$tournamentInfo['sponsor_org_id'] = $reqData['tournamentFormData']['sponsorOrgId']; //主催団体ID
-        $tTournament::$tournamentInfo['event_start_date'] = $reqData['tournamentFormData']['eventStartDate']; //大会開始日
-        $tTournament::$tournamentInfo['event_end_date'] = $reqData['tournamentFormData']['eventEndDate']; //大会終了日 
-        $tTournament::$tournamentInfo['venue_id'] = $reqData['tournamentFormData']['venueId']; //水域ID
-        $tTournament::$tournamentInfo['venue_name'] = $reqData['tournamentFormData']['venueIdName']; //水域名
-        $tTournament::$tournamentInfo['entrysystem_tourn_id'] = $reqData['tournamentFormData']['entrysystemRaceId']; //エントリーシステムの大会ID
+        $tTournament::$tournamentInfo['tourn_name'] = $reqData['tournamentFormData']['tourn_name']; //大会名
+        $tTournament::$tournamentInfo['sponsor_org_id'] = $reqData['tournamentFormData']['sponsor_org_id']; //主催団体ID
+        $tTournament::$tournamentInfo['event_start_date'] = $reqData['tournamentFormData']['event_start_date']; //大会開始日
+        $tTournament::$tournamentInfo['event_end_date'] = $reqData['tournamentFormData']['event_end_date']; //大会終了日 
+        $tTournament::$tournamentInfo['venue_id'] = $reqData['tournamentFormData']['venue_id']; //水域ID
+        $tTournament::$tournamentInfo['venue_name'] = $reqData['tournamentFormData']['venue_name']; //水域名
+        $tTournament::$tournamentInfo['entrysystem_tourn_id'] = $reqData['tournamentFormData']['entrysystem_tourn_id']; //エントリーシステムの大会ID
         $result = $tTournament->insertTournaments($tTournament::$tournamentInfo);
 
         //レース登録リスト行数分登録する
         for ($i = 0; $i < count($reqData['tableData']); $i++) {
-            $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['raceNumber']; //レース番号
-            $tRace::$racesData['entrysystem_race_id'] = $reqData['tableData'][$i]['entrysystemRaceId']; //エントリーシステムのレースID
+            $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['race_number']; //レース番号
+            $tRace::$racesData['entrysystem_race_id'] = $reqData['tableData'][$i]['entrysystem_race_id']; //エントリーシステムのレースID
             $tRace::$racesData['tourn_id'] = $reqData['tableData'][$i]['id']; //大会IDに紐づける
-            $tRace::$racesData['race_name'] = $reqData['tableData'][$i]['raceName']; //レース名
-            $tRace::$racesData['event_id'] = $reqData['tableData'][$i]['eventId']; //イベントID
-            $tRace::$racesData['event_name'] = $reqData['tableData'][$i]['eventName']; //イベント名
-            $tRace::$racesData['race_class_id'] = $reqData['tableData'][$i]['raceType']; //レース区分ID
-            $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['raceTypeName']; //レース区分
-            $tRace::$racesData['by_group'] = $reqData['tableData'][$i]['byGroup']; //レース区分
+            $tRace::$racesData['race_name'] = $reqData['tableData'][$i]['race_name']; //レース名
+            $tRace::$racesData['event_id'] = $reqData['tableData'][$i]['event_id']; //イベントID
+            $tRace::$racesData['event_name'] = $reqData['tableData'][$i]['event_name']; //イベント名
+            $tRace::$racesData['race_class_id'] = $reqData['tableData'][$i]['race_class_id']; //レース区分ID
+            $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['race_class_name']; //レース区分
+            $tRace::$racesData['by_group'] = $reqData['tableData'][$i]['by_group']; //レース区分
             $tRace::$racesData['range'] = $reqData['tableData'][$i]['range']; //距離
-            $tRace::$racesData['start_datetime'] = $reqData['tableData'][$i]['startDateTime']; //発艇日時
+            $tRace::$racesData['start_datetime'] = $reqData['tableData'][$i]['start_datetime']; //発艇日時
             $tRace->insertRaces($tRace::$racesData); //レーステーブルの挿入
         }
 
@@ -523,28 +523,28 @@ class TournamentController extends Controller
        
         //確認画面から登録
         // $tTournament::$tournamentInfo['tourn_id'] = 1;
-        $tTournament::$tournamentInfo['tourn_name'] = $reqData['tournamentFormData']['tournName']; //大会名
-        $tTournament::$tournamentInfo['sponsor_org_id'] = $reqData['tournamentFormData']['sponsorOrgId']; //主催団体ID
-        $tTournament::$tournamentInfo['event_start_date'] = $reqData['tournamentFormData']['eventStartDate']; //大会開始日
-        $tTournament::$tournamentInfo['event_end_date'] = $reqData['tournamentFormData']['eventEndDate']; //大会終了日 
-        $tTournament::$tournamentInfo['venue_id'] = $reqData['tournamentFormData']['venueId']; //水域ID
-        $tTournament::$tournamentInfo['venue_name'] = $reqData['tournamentFormData']['venueIdName']; //水域名
-        $tTournament::$tournamentInfo['entrysystem_tourn_id'] = $reqData['tournamentFormData']['entrysystemRaceId']; //エントリーシステムの大会ID
+        $tTournament::$tournamentInfo['tourn_name'] = $reqData['tournamentFormData']['tourn_name']; //大会名
+        $tTournament::$tournamentInfo['sponsor_org_id'] = $reqData['tournamentFormData']['sponsor_org_id']; //主催団体ID
+        $tTournament::$tournamentInfo['event_start_date'] = $reqData['tournamentFormData']['event_start_date']; //大会開始日
+        $tTournament::$tournamentInfo['event_end_date'] = $reqData['tournamentFormData']['event_end_date']; //大会終了日 
+        $tTournament::$tournamentInfo['venue_id'] = $reqData['tournamentFormData']['venue_id']; //水域ID
+        $tTournament::$tournamentInfo['venue_name'] = $reqData['tournamentFormData']['venue_name']; //水域名
+        $tTournament::$tournamentInfo['entrysystem_tourn_id'] = $reqData['tournamentFormData']['entrysystem_tourn_id']; //エントリーシステムの大会ID
         $result = $tTournament->updateTournaments($tTournament::$tournamentInfo);
 
         //レース登録リスト行数分登録する
         for ($i = 0; $i < count($reqData['tableData']); $i++) {
-            $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['raceNumber']; //レース番号
-            $tRace::$racesData['entrysystem_race_id'] = $reqData['tableData'][$i]['entrysystemRaceId']; //エントリーシステムのレースID
+            $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['race_number']; //レース番号
+            $tRace::$racesData['entrysystem_race_id'] = $reqData['tableData'][$i]['entrysystem_race_id']; //エントリーシステムのレースID
             $tRace::$racesData['tourn_id'] = $reqData['tableData'][$i]['id']; //大会IDに紐づける
-            $tRace::$racesData['race_name'] = $reqData['tableData'][$i]['raceName']; //レース名
-            $tRace::$racesData['event_id'] = $reqData['tableData'][$i]['eventId']; //イベントID
-            $tRace::$racesData['event_name'] = $reqData['tableData'][$i]['eventName']; //イベント名
-            $tRace::$racesData['race_class_id'] = $reqData['tableData'][$i]['raceType']; //レース区分ID
-            $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['raceTypeName']; //レース区分
-            $tRace::$racesData['by_group'] = $reqData['tableData'][$i]['byGroup']; //レース区分
+            $tRace::$racesData['race_name'] = $reqData['tableData'][$i]['race_name']; //レース名
+            $tRace::$racesData['event_id'] = $reqData['tableData'][$i]['event_id']; //イベントID
+            $tRace::$racesData['event_name'] = $reqData['tableData'][$i]['event_name']; //イベント名
+            $tRace::$racesData['race_class_id'] = $reqData['tableData'][$i]['race_class_id']; //レース区分ID
+            $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['race_class_name']; //レース区分
+            $tRace::$racesData['by_group'] = $reqData['tableData'][$i]['by_group']; //レース区分
             $tRace::$racesData['range'] = $reqData['tableData'][$i]['range']; //距離
-            $tRace::$racesData['start_datetime'] = $reqData['tableData'][$i]['startDateTime']; //発艇日時
+            $tRace::$racesData['start_datetime'] = $reqData['tableData'][$i]['start_datetime']; //発艇日時
             $tRace->updateRaces($tRace::$racesData); //レーステーブルの挿入
         }
 
@@ -570,26 +570,26 @@ class TournamentController extends Controller
        
         //確認画面から登録
         // $tTournament::$tournamentInfo['tourn_id'] = 1;
-        $tTournament::$tournamentInfo['tourn_name'] = $reqData['tournamentFormData']['tournName']; //大会名
-        $tTournament::$tournamentInfo['sponsor_org_id'] = $reqData['tournamentFormData']['sponsorOrgId']; //主催団体ID
-        $tTournament::$tournamentInfo['event_start_date'] = $reqData['tournamentFormData']['eventStartDate']; //大会開始日
-        $tTournament::$tournamentInfo['event_end_date'] = $reqData['tournamentFormData']['eventEndDate']; //大会終了日 
-        $tTournament::$tournamentInfo['venue_id'] = $reqData['tournamentFormData']['venueId']; //水域ID
-        $tTournament::$tournamentInfo['venue_name'] = $reqData['tournamentFormData']['venueIdName']; //水域名
-        $tTournament::$tournamentInfo['entrysystem_tourn_id'] = $reqData['tournamentFormData']['entrysystemRaceId']; //エントリーシステムの大会ID
+        $tTournament::$tournamentInfo['tourn_name'] = $reqData['tournamentFormData']['tourn_name']; //大会名
+        $tTournament::$tournamentInfo['sponsor_org_id'] = $reqData['tournamentFormData']['sponsor_org_id']; //主催団体ID
+        $tTournament::$tournamentInfo['event_start_date'] = $reqData['tournamentFormData']['event_start_date']; //大会開始日
+        $tTournament::$tournamentInfo['event_end_date'] = $reqData['tournamentFormData']['event_end_date']; //大会終了日 
+        $tTournament::$tournamentInfo['venue_id'] = $reqData['tournamentFormData']['venue_id']; //水域ID
+        $tTournament::$tournamentInfo['venue_name'] = $reqData['tournamentFormData']['venue_name']; //水域名
+        $tTournament::$tournamentInfo['entrysystem_tourn_id'] = $reqData['tournamentFormData']['entrysystem_tourn_id']; //エントリーシステムの大会ID
         $tTournament::$tournamentInfo['delete_flag'] = 1; //エントリーシステムの大会ID
         $result = $tTournament->updateTournaments($tTournament::$tournamentInfo);
 
         //レース登録リスト行数分登録する
         for ($i = 0; $i < count($reqData['tableData']); $i++) {
-            $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['raceNumber']; //レース番号
-            $tRace::$racesData['entrysystem_race_id'] = $reqData['tableData'][$i]['entrysystemRaceId']; //エントリーシステムのレースID
+            $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['race_number']; //レース番号
+            $tRace::$racesData['entrysystem_race_id'] = $reqData['tableData'][$i]['entrysystem_race_id']; //エントリーシステムのレースID
             $tRace::$racesData['tourn_id'] = $reqData['tableData'][$i]['id']; //大会IDに紐づける
-            $tRace::$racesData['race_name'] = $reqData['tableData'][$i]['raceName']; //レース名
-            $tRace::$racesData['event_id'] = $reqData['tableData'][$i]['eventId']; //イベントID
-            $tRace::$racesData['event_name'] = $reqData['tableData'][$i]['eventName']; //イベント名
-            $tRace::$racesData['race_class_id'] = $reqData['tableData'][$i]['raceType']; //レース区分ID
-            $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['raceTypeName']; //レース区分
+            $tRace::$racesData['race_name'] = $reqData['tableData'][$i]['race_name']; //レース名
+            $tRace::$racesData['event_id'] = $reqData['tableData'][$i]['event_id']; //イベントID
+            $tRace::$racesData['event_name'] = $reqData['tableData'][$i]['event_name']; //イベント名
+            $tRace::$racesData['race_class_id'] = $reqData['tableData'][$i]['race_class_id']; //レース区分ID
+            $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['race_class_name']; //レース区分
             $tRace::$racesData['by_group'] = $reqData['tableData'][$i]['byGroup']; //レース区分
             $tRace::$racesData['range'] = $reqData['tableData'][$i]['range']; //距離
             $tRace::$racesData['start_datetime'] = $reqData['tableData'][$i]['startDateTime']; //発艇日時

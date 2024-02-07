@@ -44,7 +44,7 @@ export default function TeamPlayer() {
       birthCountryName: '', // 出身地（国）
       birthPrefectureName: '', // 出身地（都道府県）
       photo: '', // 写真
-      side_Info: [], // サイド情報
+      side_info: [], // サイド情報
     },
   ]);
   const [errorMessage, setErrorMessage] = useState([] as string[]);
@@ -216,10 +216,10 @@ export default function TeamPlayer() {
                   {data.residenceCountryName}
                   {data.residencePrefectureName}
                 </CustomTd>
-                <CustomTd align='center'>{data.side_Info[0] ? '◯' : '×'}</CustomTd>
-                <CustomTd align='center'>{data.side_Info[1] ? '◯' : '×'}</CustomTd>
-                <CustomTd align='center'>{data.side_Info[2] ? '◯' : '×'}</CustomTd>
-                <CustomTd align='center'>{data.side_Info[3] ? '◯' : '×'}</CustomTd>
+                <CustomTd align='center'>{data.side_info[0] ? '◯' : '×'}</CustomTd>
+                <CustomTd align='center'>{data.side_info[1] ? '◯' : '×'}</CustomTd>
+                <CustomTd align='center'>{data.side_info[2] ? '◯' : '×'}</CustomTd>
+                <CustomTd align='center'>{data.side_info[3] ? '◯' : '×'}</CustomTd>
               </CustomTr>
             ))}
           </CustomTbody>

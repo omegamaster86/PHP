@@ -51,7 +51,8 @@ export default function Inquiry() {
     const fetchData = async () => {
       try {
         // 仮のURL（繋ぎ込み時に変更すること）
-        const response = await axios.get<UserResponse>('http://localhost:3100/user');
+        // const response = await axios.get<UserResponse>('http://localhost:3100/user');
+        const response = await axios.get('http://localhost:8000/api/user');
         setUser(response.data);
       } catch (error) {
         setErrorMessage([

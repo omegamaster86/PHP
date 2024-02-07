@@ -241,9 +241,9 @@ export default function TeamSearch() {
                 value={formData?.orgId || ''}
               />
               {!(
-                user.userType === ROLE.SUPPORTER ||
-                user.userType === ROLE.PLAYER ||
-                user.userType === ROLE.VOLUNTEER
+                user.user_type === ROLE.SUPPORTER ||
+                user.user_type === ROLE.PLAYER ||
+                user.user_type === ROLE.VOLUNTEER
               ) && (
                 // エントリーシステムの団体ID
                 <CustomTextField
@@ -345,7 +345,7 @@ export default function TeamSearch() {
                     rel='noopener noreferrer'
                     target='_blank'
                   >
-                    {org.orgClassId}
+                    {org.org_class}
                   </Link>
                 </CustomTd>
                 {/* 団体名 */}
@@ -362,7 +362,7 @@ export default function TeamSearch() {
                   </Link>
                 </CustomTd>
                 {/* 設立年 */}
-                <CustomTd>{org.foundingYear}</CustomTd>
+                <CustomTd>{org.founding_year}</CustomTd>
                 {/* 団体種別 */}
                 <CustomTd>{org.orgTypeName}</CustomTd>
                 {/* 団体区分 */}

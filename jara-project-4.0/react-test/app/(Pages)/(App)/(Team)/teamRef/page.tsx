@@ -423,7 +423,7 @@ export default function TeamRef() {
                         id='sideInfoS'
                         value='S'
                         onChange={() => {}}
-                        checked={row.side_Info[0]}
+                        checked={row.side_info[0]}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -432,7 +432,7 @@ export default function TeamRef() {
                         id='sideInfoB'
                         value='B'
                         onChange={() => {}}
-                        checked={row.side_Info[1]}
+                        checked={row.side_info[1]}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -441,7 +441,7 @@ export default function TeamRef() {
                         id='sideInfoX'
                         value='X'
                         onChange={() => {}}
-                        checked={row.side_Info[2]}
+                        checked={row.side_info[2]}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -450,7 +450,7 @@ export default function TeamRef() {
                         id='sideInfoC'
                         value='C'
                         onChange={() => {}}
-                        checked={row.side_Info[3]}
+                        checked={row.side_info[3]}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>

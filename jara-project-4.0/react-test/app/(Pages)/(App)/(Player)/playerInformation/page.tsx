@@ -92,7 +92,7 @@ export default function PlayerInformation() {
     residence_prefecture: 0,
     residencePrefectureName: '東京',
     date_of_birth: '',
-    side_Info: [false, false, false, false],
+    side_info: [false, false, false, false],
     photo: '',
   });
 
