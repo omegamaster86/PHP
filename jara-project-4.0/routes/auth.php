@@ -53,6 +53,11 @@ Route::middleware('auth')->group(function () {
     Route::get('getUserData', [UserController::class, 'getUserData']);
     // 実装　ー　クマール　ー終了
 
+    Route::post('storePasswordChange', [UserController::class, 'storePasswordChange']); //パスワード変更 20240207
+
+    //React連携後APIここまで===========================================================
+    //================================================================================
+    
     //Notification page
     Route::get('change-notification', function () {
         return view('change-notification');

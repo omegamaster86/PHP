@@ -149,17 +149,20 @@ export default function Passwordchange() {
                   Validator.validateEqual(newPassword, confirmNewPassword, 'パスワード'),
                 ]) as string[],
               );
+              const requestBody = {
+                currentPassword,
+                newPassword,
+                confirmNewPassword
+              };
               const csrf = () => axios.get('/sanctum/csrf-cookie')
               await csrf()
-
-              const requestBody = {};
               axios
                 // .post('http://localhost:3100/', requestBody)
-                .post('/passwordChange', sendFormData)
+                .post('/storePasswordChange', requestBody)
                 .then((response) => {
                   // 成功時の処理を実装
-                  window.confirm('パスワードを変更しました。');
                   console.log(response);
+                  window.confirm('パスワードを変更しました。');
                 })
                 .catch((error) => {
                   // エラー時の処理を実装
