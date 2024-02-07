@@ -107,7 +107,6 @@ class T_players extends Model
         }
     }
 
-
     public function insertPlayers($playersInfo)
     {
         $result = "success";
@@ -196,7 +195,7 @@ class T_players extends Model
 
     //20231218 選手IDに一致する全ての選手情報を取得
     //選手IDの条件はin句に置き換える
-    public function getPlayers($PlayerIdCondition)
+    public function getPlayersFromPlayerId($PlayerIdCondition)
     {
         $sqlString = 'select 
                         `player_id`
@@ -315,5 +314,56 @@ class T_players extends Model
         $race_records = DB::select($sql_string, $valid_data_array);
         dump($race_records);
         return $race_records;
+    }
+
+    //全選手情報を取得
+    //大会結果一括登録画面用
+    public function getPlayers()
+    {
+        $players = DB::select('select
+                                `player_id`,
+                                `user_id`,
+                                `jara_player_id`, 
+                                `player_name`, 
+                                `date_of_birth`, 
+                                `sex`, 
+                                `height`, 
+                                `weight`, 
+                                `side_info`, 
+                                `birth_country`, 
+                                `birth_prefecture`, 
+                                `residence_country`, 
+                                `residence_prefecture`, 
+                                `photo`, 
+                                FROM `t_players`
+                                WHERE 1=1
+                                and delete_flag = 0');
+        return $players;
+    }
+
+    //player_idが一致するプレイヤーを抽出する
+    public function getPlayer($player_id)
+    {
+        $player = DB::select('select
+                                `player_id`,
+                                `user_id`,
+                                `jara_player_id`, 
+                                `player_name`, 
+                                `date_of_birth`, 
+                                `sex`, 
+                                `height`, 
+                                `weight`, 
+                                `side_info`, 
+                                `birth_country`, 
+                                `birth_prefecture`, 
+                                `residence_country`, 
+                                `residence_prefecture`, 
+                                `photo`, 
+                                FROM `t_players`
+                                WHERE 1=1
+                                and delete_flag = 0
+                                and player_id = ?
+                                ',$player_id);
+        return $player;
     }
 }

@@ -322,4 +322,302 @@ class T_raceResultRecord extends Model
         );
         return $tournamentIds;
     }
+
+    //エントリー大会ID、エントリーレースID、JARA選手IDが一致する公式のレース結果の件数を取得する
+    public function getTargetOfficialRaceCount($conditions)
+    {
+        $target_race_count = DB::select('select count(*)    as "target_race_count"
+                                            FROM `t_race_result_record` rrr
+                                            where 1=1
+                                            and rrr.`delete_flag` = 0
+                                            and rrr.`official` = 1	#公式大会
+                                            and rrr.`entrysystem_tourn_id` = :entrysystem_tourn_id	#エントリーシステムID
+                                            and rrr.`entrysystem_race_id` = :entrysystem_race_id	#エントリーレースID
+                                            and rrr.`jara_player_id` = :jara_player_id				#jara選手コード
+                                        ',$conditions);
+        return $target_race_count;
+    }
+
+    //エントリー大会ID、エントリーレースID、JARA選手IDが一致する公式のレース結果を取得する
+    public function getTargetOfficialRace($conditions)
+    {
+        $target_race = DB::select('select
+                                        rrr.`race_result_record_id`
+                                        ,tour.`tourn_id`				#大会ID
+                                        ,tour.`entrysystem_tourn_id`	#既存大会ID
+                                        ,tour.`tourn_name`				#大会名
+                                        ,race.`race_id`					#レースID
+                                        ,race.`entrysystem_race_id`		#既存レースID
+                                        ,race.`race_number`             #レースNo.
+                                        ,race.`race_name`				#レース名
+                                        ,org.`org_id`					#団体ID
+                                        ,org.`entrysystem_org_id`		#既存団体ID
+                                        ,org.`org_name`					#団体名
+                                        ,ply.`player_id`				#選手名
+                                        ,ply.`jara_player_id`			#既存選手ID
+                                        ,ply.`player_name`				#選手名
+                                        ,ply.`height`					#選手身長
+                                        ,ply.`weight`					#選手体重
+                                        FROM `t_race_result_record` rrr
+                                        left join `t_tournaments` tour
+                                        on rrr.`tourn_id` = tour.`tourn_id`
+                                        left join `t_races` race
+                                        on rrr.`race_id` = race.`race_id`
+                                        left join `t_organizations` org
+                                        on rrr.`org_id` = org.`org_id`
+                                        left join t_players ply
+                                        on rrr.`player_id` = ply.`player_id`
+                                        where 1=1
+                                        and rrr.`delete_flag` = 0
+                                        and tour.`delete_flag` = 0
+                                        and race.`delete_flag` = 0
+                                        and org.`delete_flag` = 0
+                                        and ply.`delete_flag` = 0
+                                        and rrr.`official` = 1	#公式大会
+                                        and rrr.`entrysystem_tourn_id` = :entrysystem_tourn_id	#エントリーシステムID
+                                        and rrr.`entrysystem_race_id` = :entrysystem_race_id	#エントリーレースID
+                                        and rrr.`jara_player_id` = :jara_player_id				#jara選手コード
+                                    ',$conditions);
+        return $target_race;
+    }
+
+    //大会ID、レースID、選手IDが一致する非公式のレース結果件数を取得する
+    public function getTargetUnofficialRaceCount($conditions)
+    {
+        $target_race_count = DB::select('select count(*)    as "target_race_count"
+                                            FROM `t_race_result_record` rrr
+                                            where 1=1
+                                            and rrr.`delete_flag` = 0
+                                            and rrr.`official` = 0	                                #非公式大会
+                                            and rrr.`entrysystem_tourn_id` = :entrysystem_tourn_id	#エントリーシステムID
+                                            and rrr.`entrysystem_race_id` = :entrysystem_race_id	#エントリーレースID
+                                            and rrr.`jara_player_id` = :jara_player_id				#jara選手コード
+                                        ',$conditions);
+        return $target_race_count;
+    }
+
+    //大会ID、レースID、選手IDが一致する非公式のレース結果を取得する
+    public function getTargetUnofficialRace($conditions)
+    {
+        $target_race_count = DB::select('select
+                                            rrr.`race_result_record_id`     
+                                            ,tour.`tourn_id`				#大会ID
+                                            ,tour.`entrysystem_tourn_id`	#既存大会ID
+                                            ,tour.`tourn_name`				#大会名
+                                            ,race.`race_id`					#レースID
+                                            ,race.`entrysystem_race_id`		#既存レースID
+                                            ,race.`race_number`             #レースNo.
+                                            ,race.`race_name`				#レース名
+                                            ,org.`org_id`					#団体ID
+                                            ,org.`entrysystem_org_id`		#既存団体ID
+                                            ,org.`org_name`					#団体名
+                                            ,ply.`player_id`				#選手名
+                                            ,ply.`jara_player_id`			#既存選手ID
+                                            ,ply.`player_name`				#選手名
+                                            ,ply.`height`					#選手身長
+                                            ,ply.`weight`					#選手体重
+                                            FROM `t_race_result_record` rrr
+                                            left join `t_tournaments` tour
+                                            on rrr.`tourn_id` = tour.`tourn_id`
+                                            left join `t_races` race
+                                            on rrr.`race_id` = race.`race_id`
+                                            left join `t_organizations` org
+                                            on rrr.`org_id` = org.`org_id`
+                                            left join t_players ply
+                                            on rrr.`player_id` = ply.`player_id`
+                                            where 1=1
+                                            and rrr.`delete_flag` = 0
+                                            and tour.`delete_flag` = 0
+                                            and race.`delete_flag` = 0
+                                            and org.`delete_flag` = 0
+                                            and ply.`delete_flag` = 0
+                                            and rrr.`official` = 0	#非公式大会
+                                            and rrr.`entrysystem_tourn_id` = :entrysystem_tourn_id	#エントリーシステムID
+                                            and rrr.`entrysystem_race_id` = :entrysystem_race_id	#エントリーレースID
+                                            and rrr.`jara_player_id` = :jara_player_id				#jara選手コード
+                                        ',$conditions);
+        return $target_race_count;
+    }
+
+    //出漕結果記録テーブルを更新する
+    //大会結果情報一括登録画面用
+    public function updateBulkRaceResultRecord($values)
+    {
+        DB::update('update `t_race_result_record`
+                        SET `player_id`=:player_id,
+                            `jara_player_id`=:jara_player_id,
+                            `player_name`=:player_name,
+                            `entrysystem_tourn_id`=:entrysystem_tourn_id,
+                            `tourn_id`=:tourn_id,
+                            `tourn_name`=:tourn_name,
+                            `race_id`=:race_id,
+                            `entrysystem_race_id`=:entrysystem_race_id,
+                            #`race_number`=:race_number,
+                            `race_name`=:race_name,
+                            `org_id`=:org_id,
+                            `entrysystem_org_id`=:entrysystem_org_id,
+                            `org_name`=:org_name,
+                            `crew_name`=:crew_name,
+                            #`by_group`=:by_group,
+                            #`event_id`=:event_id,
+                            #`event_name`=:event_name,
+                            #`range`=:range,
+                            `rank`=:rank,
+                            `laptime_500m`=:laptime_500m,
+                            `laptime_1000m`=:laptime_1000m,
+                            `laptime_1500m`=:laptime_1500m,
+                            `laptime_2000m`=:laptime_2000m,
+                            `final_time`=:final_time,
+                            `stroke_rate_avg`=:stroke_rate_avg,
+                            `stroke_rat_500m`=:stroke_rat_500m,
+                            `stroke_rat_1000m`=:stroke_rat_1000m,
+                            `stroke_rat_1500m`=:stroke_rat_1500m,
+                            `stroke_rat_2000m`=:stroke_rat_2000m,
+                            `heart_rate_avg`=:heart_rate_avg,
+                            `heart_rate_500m`=:heart_rate_500m,
+                            `heart_rate_1000m`=:heart_rate_1000m,
+                            `heart_rate_1500m`=:heart_rate_1500m,
+                            `heart_rate_2000m`=:heart_rate_2000m,
+                            `official`=:official,
+                            `attendance`=:attendance,
+                            `ergo_weight`=:ergo_weight,
+                            `crew_rep_record_flag`=:crew_rep_record_flag,
+                            `player_height`=:player_height,
+                            `player_weight`=:player_weight,
+                            `m_seat_number`=:m_seat_number,
+                            #`seat_name`=:seat_name,
+                            `race_result_record_name`=:race_result_record_name,
+                            #`start_datetime`=:start_datetime,
+                            #`wind_speed_2000m_point`=:wind_speed_2000m_point,
+                            #`wind_direction_2000m_point`=:wind_direction_2000m_point,
+                            #`wind_speed_1000m_point`=:wind_speed_1000m_point,
+                            #`wind_direction_1000m_point`=:wind_direction_1000m_point,
+                            `updated_time`=:updated_time,
+                            `updated_user_id`=:user_id
+                            WHERE 1=1
+                            and `race_result_record_id` = :race_result_record_id'
+                            ,$values);
+    }
+
+    //出漕結果記録テーブルに挿入する
+    //大会結果情報一括登録画面用
+    public function insertBulkRaceResultRecord($values)
+    {
+        DB::insert('insert INTO `t_race_result_record`
+                    (
+                        `player_id`,
+                        `jara_player_id`, 
+                        `player_name`, 
+                        `entrysystem_tourn_id`, 
+                        `tourn_id`, 
+                        `tourn_name`, 
+                        `race_id`,
+                        `entrysystem_race_id`, 
+                        `race_number`, 
+                        `race_name`, 
+                        `org_id`, 
+                        `entrysystem_org_id`, 
+                        `org_name`, 
+                        `crew_name`, 
+                        `by_group`, 
+                        `event_id`, 
+                        `event_name`, 
+                        `range`, 
+                        `rank`, 
+                        `laptime_500m`, 
+                        `laptime_1000m`, 
+                        `laptime_1500m`, 
+                        `laptime_2000m`, 
+                        `final_time`, 
+                        `stroke_rate_avg`, 
+                        `stroke_rat_500m`, 
+                        `stroke_rat_1000m`, 
+                        `stroke_rat_1500m`, 
+                        `stroke_rat_2000m`, 
+                        `heart_rate_avg`, 
+                        `heart_rate_500m`, 
+                        `heart_rate_1000m`, 
+                        `heart_rate_1500m`, 
+                        `heart_rate_2000m`, 
+                        `official`, 
+                        `attendance`, 
+                        `ergo_weight`, 
+                        `crew_rep_record_flag`, 
+                        `player_height`, 
+                        `player_weight`, 
+                        `m_sheet_number`, 
+                        `seat_name`, 
+                        `race_result_record_name`, 
+                        `start_datetime`, 
+                        `wind_speed_2000m_point`, 
+                        `wind_direction_2000m_point`, 
+                        `wind_speed_1000m_point`, 
+                        `wind_direction_1000m_point`, 
+                        `registered_time`, 
+                        `registered_user_id`, 
+                        `updated_time`, 
+                        `updated_user_id`, 
+                        `delete_flag`
+                    )
+                    VALUES
+                    (
+                        :player_id,
+                        :jara_player_id,
+                        :player_name, 
+                        :entrysystem_tourn_id, 
+                        :tourn_id, 
+                        :tourn_name, 
+                        :race_id,
+                        :entrysystem_race_id, 
+                        :race_number, 
+                        :race_name, 
+                        :org_id, 
+                        :entrysystem_org_id, 
+                        :org_name, 
+                        :crew_name, 
+                        :by_group, 
+                        :event_id, 
+                        :event_name, 
+                        :range, 
+                        :rank, 
+                        :laptime_500m, 
+                        :laptime_1000m, 
+                        :laptime_1500m, 
+                        :laptime_2000m, 
+                        :final_time, 
+                        :stroke_rate_avg, 
+                        :stroke_rat_500m, 
+                        :stroke_rat_1000m, 
+                        :stroke_rat_1500m, 
+                        :stroke_rat_2000m, 
+                        :heart_rate_avg, 
+                        :heart_rate_500m, 
+                        :heart_rate_1000m, 
+                        :heart_rate_1500m, 
+                        :heart_rate_2000m, 
+                        :official, 
+                        :attendance, 
+                        :ergo_weight, 
+                        :crew_rep_record_flag, 
+                        :player_height, 
+                        :player_weight, 
+                        :m_sheet_number, 
+                        :seat_name, 
+                        :race_result_record_name, 
+                        :start_datetime, 
+                        :wind_speed_2000m_point, 
+                        :wind_direction_2000m_point, 
+                        :wind_speed_1000m_point, 
+                        :wind_direction_1000m_point, 
+                        :registered_time, 
+                        :user_id, 
+                        :registered_time,
+                        :user_id, 
+                        :delete_flag
+                    )'
+                ,$values);
+        //挿入したIDを取得
+        $insertId =  DB::getPdo()->lastInsertId();
+        return $insertId;
+    }
 }

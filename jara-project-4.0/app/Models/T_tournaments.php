@@ -215,4 +215,50 @@ class T_tournaments extends Model
                                     );
         return $tournament_name_list;
     }
+
+    //大会IDを条件に大会情報を取得する
+    public function getTournamentFromTournId($tourn_id)
+    {
+        $tournament = DB::select('select
+                                    `tourn_id`,
+                                    `tourn_name`,
+                                    `sponsor_org_id`,
+                                    `event_start_date`,
+                                    `event_end_date`,
+                                    `venue_id`,
+                                    `venue_name`,
+                                    `tourn_type`,
+                                    `tourn_url`,
+                                    `tourn_info_faile_path`,
+                                    `entrysystem_tourn_id`,
+                                    FROM `t_tournaments`
+                                    where 1=1
+                                    and delete_flag = 0
+                                    and tourn_id = :tourn_id'
+                                ,[$tourn_id]);
+        return $tournament;
+    }
+
+    //フロントエンドで入力された大会IDを条件に、該当の大会情報を取得する
+    public function getTournamentInfoFromTournId($tourn_id)
+    {
+        $target_tournament = DB::select('select 
+                                            `tourn_id`,
+                                            `tourn_name`,
+                                            `sponsor_org_id`,
+                                            `event_start_date`,
+                                            `event_end_date`,
+                                            `venue_id`,
+                                            `venue_name`,
+                                            `tourn_type`,
+                                            `tourn_url`,
+                                            `tourn_info_faile_path`,
+                                            `entrysystem_tourn_id`
+                                        FROM `t_tournaments`
+                                        WHERE 1=1
+                                        and `delete_flag` = 0
+                                        and `tourn_id` = :tourn_id'
+                                        ,$tourn_id);
+        return $target_tournament;
+    }
 }

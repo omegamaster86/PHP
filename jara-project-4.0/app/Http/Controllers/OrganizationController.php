@@ -211,7 +211,7 @@ class OrganizationController extends Controller
             $organizedPlayers = [];
             if(!empty($organizedPlayerIdCondition))
             {
-                $organizedPlayers = $tPlayers->getPlayers($organizedPlayerIdCondition);
+                $organizedPlayers = $tPlayers->getPlayersFromPlayerId($organizedPlayerIdCondition);
             }
             //出漕結果記録情報を取得
             $tournamentIds = $tRaceResultRecord->getTournamentIdForResultsRecord($targetOrgId);
@@ -268,7 +268,7 @@ class OrganizationController extends Controller
             $organizedPlayers = [];
             if(!empty($organizedPlayerIdCondition))
             {
-                $organizedPlayers = $tPlayers->getPlayers($organizedPlayerIdCondition);
+                $organizedPlayers = $tPlayers->getPlayersFromPlayerId($organizedPlayerIdCondition);
             }
             //出漕結果記録情報を取得
             $tournamentIds = $tRaceResultRecord->getTournamentIdForResultsRecord($targetOrgId);

@@ -13,6 +13,7 @@ use App\Http\Controllers\PlayerInfoAlignmentController;
 use App\Http\Controllers\VolunteerController;
 use App\Http\Controllers\TournamentRaceRefeController;
 use App\Http\Controllers\VolunteerInfoAlignmentController;
+use App\Http\Controllers\TournamentInfoAlignmentController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -152,6 +153,9 @@ Route::middleware('auth')->group(function () {
     Route::get('tournament-entry-register', [TournamentController::class, 'createEntryRegister'])->name('tournament-entry-register');
     Route::post('tournament-entry-register', [TournamentController::class, 'csvReadEntryRegister']);
 
+    //20240205 レース(大会)結果一括登録
+    Route::get('tournamentInfoAlignment', [TournamentInfoAlignmentController::class, 'createEntryRegister'])->name('TournamentInfoAlignment');
+    Route::post('tournamentInfoAlignment', [TournamentInfoAlignmentController::class, 'csvReadEntryRegister']);
 
     //-----大会関連ここまで-----------------------------
 

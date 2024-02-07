@@ -244,4 +244,27 @@ class T_organizations extends Model
                                     );
         return $organization_name_list;
     }
+
+    public function getOrganizations()
+    {
+        $organizations = DB::select('select
+                                        `org_id`, 
+                                        `entrysystem_org_id`, 
+                                        `org_name`, 
+                                        `jara_org_type`, 
+                                        `jara_org_reg_trail`, 
+                                        `pref_org_type`, 
+                                        `pref_org_reg_trail`, 
+                                        `org_class`, 
+                                        `founding_year`, 
+                                        `location_country`, 
+                                        `location_prefecture`, 
+                                        `post_code`, 
+                                        `address1`, 
+                                        `address2` 
+                                        FROM `t_organizations`
+                                        WHERE 1=1
+                                        and `delete_flag` = 0');
+        return $organizations;
+    }
 }

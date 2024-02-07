@@ -84,6 +84,7 @@ class VolunteerInfoAlignmentController extends Controller
             $tagName = 0;
             $disabled = "";
             $jaraIdList = array();
+            $csv_column_count = 34;
             $csvHeaderLine = "ユーザーID,氏名,生年月日,性別,居住地（国）,居住地（都道府県）,メールアドレス,電話番号,服のサイズ,PR1,PR2,PR3,保有資格1,保有資格2,保有資格3,保有資格4,保有資格5,言語1,言語1語学力,言語2,言語2語学力,言語3,言語3語学力,日曜日,月曜日,火曜日,水曜日,木曜日,金曜日,土曜日,早朝,午前,午後,夜";
 
             //各マスターからIDの一覧を取得
@@ -106,9 +107,9 @@ class VolunteerInfoAlignmentController extends Controller
             //言語レベルの一覧
             $language_proficientcy_list = $m_language_proficiency->getLanguageProficiency();
 
-            for ($i = 0; $i < count($csvList); $i++)
+            for ($rowIndex = 0; $rowIndex < count($csvList); $rowIndex++)
             {
-                $value = explode(',', $csvList[$i]); //一行ごとのデータをカンマ区切りでリストに入れる
+                $value = explode(',', $csvList[$rowIndex]); //一行ごとのデータをカンマ区切りでリストに入れる
                 //各フィールドの値
                 //不正データの場合は全てNULLのため初期値をNULLにしておく
                 $user_id = "NULL";            //ユーザーID
@@ -147,11 +148,11 @@ class VolunteerInfoAlignmentController extends Controller
                 $morning = "NULL";          //午前
                 $afternoon = "NULL";        //午後
                 $night = "NULL";            //夜
-                if (($csvList[$i] == $csvHeaderLine) || empty($value[0]) || in_array($value[0], $jaraIdList))
+                if (($csvList[$rowIndex] == $csvHeaderLine) || empty($value[0]) || in_array($value[0], $jaraIdList))
                 {
                     continue; //各行がヘッダ行と一致する場合,ユーザーIDがない場合,ユーザーIDが重複リストに含まれている場合、以降の処理を行わない。
                 }
-                elseif(count($value) != 34)
+                elseif(count($value) != $csv_column_count)
                 {
                     //行のデータ個数が正しくない場合
                     $renkei = '無効データ';
@@ -228,7 +229,7 @@ class VolunteerInfoAlignmentController extends Controller
                     $mail_address = $value[6];
                     if($checkResult == true)
                     {
-                        //空文字でない、YYYY/MM/DDの形式で日付として適切であるかチェック
+                        //空文字でない、メールアドレス形式であるかチェック
                         if(empty($mail_address) || !filter_var($mail_address, FILTER_VALIDATE_EMAIL))
                         {   
                             $this->assignInvalidData($renkei,$disabled,$checkResult);
@@ -553,15 +554,15 @@ class VolunteerInfoAlignmentController extends Controller
                     //削除フラグは全て0で登録する
                     $delete_flag = 0;
 
-                    //ボランティアテーブルに挿入するための要素を格納する
+                    //ボランティアテーブルに挿入する要素を格納する配列
                     $volunteer_data = array();
-                    //ボランティアアベイラブルテーブルに挿入するための要素を格納する
+                    //ボランティアアベイラブルテーブルに挿入する要素を格納する配列
                     $volunteer_available_data = array();
-                    //ボランティア支援可能障碍タイプテーブルに挿入
+                    //ボランティア支援可能障碍タイプテーブルに挿入する要素を格納する配列
                     $volunteer_supportable_disability = array();
-                    //ボランティア保有資格情報テーブルに挿入
+                    //ボランティア保有資格情報テーブルに挿入する要素を格納する配列
                     $volunteer_qualifications_hold_data = array();
-                    //ボランティ言語レベルテーブルに挿入
+                    //ボランティ言語レベルテーブルに挿入する要素を格納する配列
                     $volunteer_language_proficiency_data = array();
 
                     DB::beginTransaction();
@@ -702,7 +703,7 @@ class VolunteerInfoAlignmentController extends Controller
             $this->assignInvalidData($renkei,$disabled,$checkResult);
         }
         //整数かつX桁以内であることをチェック
-        if(!is_numeric($value) || mb_strlen($value) > $digits)
+        if(!is_int($value) || mb_strlen($value) > $digits)
         {   
             $this->assignInvalidData($renkei,$disabled,$checkResult);
         }
