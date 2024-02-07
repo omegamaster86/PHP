@@ -3,7 +3,9 @@
 
 import { useState, useEffect, ChangeEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
+// 実装　ー　クマール　ー開始
+import axios from '@/app/lib/axios';
+// 実装　ー　クマール　ー終了
 import DialogTitle from '@mui/material/DialogTitle';
 import Divider from '@mui/material/Divider';
 import Validator from '@/app/utils/validator';
@@ -24,6 +26,7 @@ import {
   ErrorBox,
   CustomTitle,
 } from '@/app/components';
+import { useAuth } from '@/app/hooks/auth';
 
 export default function UserInformationUpdate() {
   const router = useRouter();
@@ -88,6 +91,9 @@ export default function UserInformationUpdate() {
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [authNumber, setAuthNumber] = useState('' as string);
 
+  // 実装　ー　クマール　ー開始　
+  const { user} = useAuth({ middleware: 'auth' }) //簡単にユーザー情報もらうため
+  // 実装　ー　クマール　ー終了
   // フォームの入力値を管理する関数
   const handleInputChange = (name: string, value: string) => {
     setFormData((prevFormData) => ({
@@ -140,7 +146,12 @@ export default function UserInformationUpdate() {
     const fetchUser = async () => {
       try {
         // const response = await axios.get<UserResponse>('http://localhost:3100/user');
-        const response = await axios.get('http://localhost:8000/api/getUserData');
+        // console.log("User : ", user);
+        // 実装　ー　クマール　ー開始
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
+        const response = await axios.get('/getUserData');
+        // 実装　ー　クマール　ー終了
         console.log(response.data.result);
         setFormData((prevFormData) => ({
           ...prevFormData,

@@ -878,11 +878,14 @@ class UserController extends Controller
     }
 
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
-    public function getUserData(Request $request, T_users $t_users)
+    public function getUserData(T_users $t_users)
     {
         Log::debug(sprintf("getUserData start"));
-        Log::debug($this::$loginUserInfo);
-        $result = $t_users->getUserData($this::$loginUserInfo['user_id']); //ユーザ情報の取得
+        // Log::debug($this::$loginUserInfo);
+        // 実装　ー　クマール　ー開始
+        Log::debug(Auth::user()->user_name);
+        $result = $t_users->getUserData(Auth::user()->user_id); //ユーザ情報の取得
+        // 実装　ー　クマール　ー終了
         Log::debug(sprintf("getUserData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }

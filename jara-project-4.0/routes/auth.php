@@ -48,6 +48,10 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    // 実装　ー　クマール　ー開始
+    Route::get('getUserData', [UserController::class, 'getUserData']);
+    // 実装　ー　クマール　ー終了
+
     //Notification page
     Route::get('change-notification', function () {
         return view('change-notification');

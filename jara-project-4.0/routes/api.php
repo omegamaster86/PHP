@@ -30,11 +30,11 @@ use App\Models\M_events;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
 
-Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'setLoginUserData']);
+// Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'setLoginUserData']);
 
 Route::group(['middleware' => ['api', 'cors']], function () {
     Route::get('list', [TournamentController::class, 'index']); //Laravel_Reactデータ送信テスト 20231227
