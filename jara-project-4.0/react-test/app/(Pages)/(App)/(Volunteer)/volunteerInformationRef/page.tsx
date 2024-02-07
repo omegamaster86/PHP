@@ -18,7 +18,7 @@ import {
   CustomTbody,
   CustomTd,
 } from '@/app/components';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/EditOutlined';
 import { VolunteerResponse, VolunteerHistoriesResponse } from '@/app/types';
@@ -86,12 +86,14 @@ export default function VolunteerInformationRef() {
     const fetchData = async () => {
       try {
         // TODO: 仮のURL（繋ぎ込み時に変更すること）
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
         const volunteerResponse = await axios.get<VolunteerResponse>(
-          'http://localhost:3100/volunteer',
+          '/volunteer',
         );
         setVolunteerdata(volunteerResponse.data);
         const volunteerHistoriesResponse = await axios.get<VolunteerHistoriesResponse[]>(
-          'http://localhost:3100/volunteerHistories',
+          '/volunteerHistories',
         );
         setVolunteerHistoriesdata(volunteerHistoriesResponse.data);
       } catch (error) {

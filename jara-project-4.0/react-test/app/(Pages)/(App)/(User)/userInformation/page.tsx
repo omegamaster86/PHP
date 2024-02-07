@@ -117,19 +117,21 @@ export default function UserInformationUpdate() {
       try {
         // TODO: APIを叩いて、マスタ情報を取得する処理の置き換え
         // const prefectureResponse = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
-        const prefectureResponse = await axios.get('http://localhost:8000/api/getPrefecures');
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
+        const prefectureResponse = await axios.get('/getPrefecures');
         const stateList = prefectureResponse.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
         //console.log(stateList);
         setPrefectures(stateList);
         // setPrefectures(prefectureResponse.data);
         // const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
-        const sexResponse = await axios.get('http://localhost:8000/api/getSexList');
+        const sexResponse = await axios.get('/getSexList');
         console.log(sexResponse.data);
         const sexList = sexResponse.data.map(({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }));
         setSex(sexList);
         // setSex(sexResponse.data);
         // const countryResponse = await axios.get<CountryResponse[]>('http://localhost:3100/countries',);
-        const countryResponse = await axios.get('http://localhost:8000/api/getCountries');
+        const countryResponse = await axios.get('/getCountries');
         const countryList = countryResponse.data.map(({ country_id, country_name }: { country_id: number; country_name: string }) => ({ id: country_id, name: country_name }));
         setCountries(countryList);
         // setCountries(countryResponse.data);
@@ -277,10 +279,13 @@ export default function UserInformationUpdate() {
             // 「ユーザーテーブル」に上記で作成した承認番号と承認番号の有効期限を削除（null）する。
             console.log('認証番号を削除しました。');
             // TODO: エラーハンドリングはサーバとの疎通実装時、axiosでcatchするため、以下は置き換え
+            const updateUser = async()=> {
+              const csrf = () => axios.get('/sanctum/csrf-cookie')
+            await csrf()
             const requestBody = {};
             axios
               // .post('http://localhost:3100/', requestBody)
-              .post('http://localhost:8000/api/updateUserData',requestBody)
+              .post('/updateUserData',requestBody)
               .then((response) => {
                 // 成功時の処理を実装
                 window.confirm('ユーザー情報を更新しました。');
@@ -291,6 +296,8 @@ export default function UserInformationUpdate() {
                   'ユーザー情報の登録に失敗しました。ユーザーサポートにお問い合わせください。',
                 ]);
               });
+            }
+            updateUser()
           }
         }}
       >
@@ -578,7 +585,7 @@ export default function UserInformationUpdate() {
             <CustomButton
               buttonType='primary'
               className='w-[200px]'
-              onClick={() => {
+              onClick={async() => {
                 // 認証処理。認証番号が入力されていない場合はバリデーションエラーを表示する。
                 if (!authNumber) {
                   setErrorMessage(['認証番号を入力してください。']);
@@ -608,8 +615,10 @@ export default function UserInformationUpdate() {
                 setIsAuthDialogOpen(false);
 
                 // TODO: 「ユーザーテーブル」に上記で作成した承認番号と承認番号の有効期限を削除（null）する処理に置き換える
+                const csrf = () => axios.get('/sanctum/csrf-cookie')
+                await csrf()
                 axios
-                  .delete('http://localhost:3100/user')
+                  .delete('/user')
                   .then((response) => {
                     console.log('認証番号を削除しました。');
                     setAuthNumber('');

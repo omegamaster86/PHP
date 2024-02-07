@@ -11,7 +11,7 @@ import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import Validator from '@/app/utils/validator';
 import CustomTitle from '@/app/components/CustomTitle';
 import ErrorBox from '@/app/components/ErrorBox';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import { Header } from '@/app/components';
 
 export default function Passwordchange() {
@@ -121,7 +121,7 @@ export default function Passwordchange() {
           <CustomButton
             buttonType='primary'
             className='w-[200px]'
-            onClick={() => {
+            onClick={async() => {
               // バリデーション
               setCurrentPasswordErrorMessages(
                 Validator.getErrorMessages([
@@ -149,11 +149,13 @@ export default function Passwordchange() {
                   Validator.validateEqual(newPassword, confirmNewPassword, 'パスワード'),
                 ]) as string[],
               );
+              const csrf = () => axios.get('/sanctum/csrf-cookie')
+              await csrf()
 
               const requestBody = {};
               axios
                 // .post('http://localhost:3100/', requestBody)
-                .post('http://localhost:8000/api/passwordChange', sendFormData)
+                .post('/passwordChange', sendFormData)
                 .then((response) => {
                   // 成功時の処理を実装
                   window.confirm('パスワードを変更しました。');

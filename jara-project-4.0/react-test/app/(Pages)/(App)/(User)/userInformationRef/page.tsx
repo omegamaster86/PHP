@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import { Divider } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
@@ -73,7 +73,9 @@ export default function UserInformationUpdate() {
       try {
         // APIを叩いて、ユーザー情報を取得する
         // TODO: 仮のURL（繋ぎ込み時に変更すること）
-        const response = await axios.get<UserResponse>('http://localhost:3100/user');
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
+        const response = await axios.get<UserResponse>('/api/user');
         setFormData((prevFormData) => ({
           ...prevFormData,
           ...{
@@ -118,16 +120,22 @@ export default function UserInformationUpdate() {
           );
           if (isOk) {
             // TODO: ユーザーテーブルから削除する処理の実装
-            axios
-              .delete('http://localhost:3100/')
-              .then((res) => {
-                // ログイン画面に遷移する
-                router.push('/login');
-              })
-              .catch((error) => {
-                // TODO: エラー処理
-                setErrorMessage(['API取得エラー:' + (error as Error).message]);
-              });
+            const deleteUser = async()=>{
+              const csrf = () => axios.get('/sanctum/csrf-cookie')
+              await csrf()
+              axios
+                .delete('http://localhost:3100/')
+                .then((res) => {
+                  // ログイン画面に遷移する
+                  router.push('/login');
+                })
+                .catch((error) => {
+                  // TODO: エラー処理
+                  setErrorMessage(['API取得エラー:' + (error as Error).message]);
+                });
+            }
+            deleteUser()
+            
           }
         }}
       >

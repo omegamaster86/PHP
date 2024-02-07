@@ -11,7 +11,7 @@ import {
   CustomTitle,
 } from '@/app/components';
 import Validator from '@/app/utils/validator';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 
 export default function ForgotPassword() {
@@ -93,26 +93,32 @@ export default function ForgotPassword() {
               if (emailErrorMessages.length > 0 || emailConfirmErrorMessages.length > 0) {
                 // TODO: バリデーションエラー時の処理を実装
               } else {
-                axios
-                  .get('/api/forgotpassword', {
-                    params: {
-                      email: email,
-                    },
-                  })
-                  .then((res) => {
-                    // TODO: ユーザーテーブルに存在するかを検索し、結果によりメッセージを出し分ける
-                    setMessageText([
-                      '仮パスワードを記載したメールアドレスを送信しました。送信されたメールに記載されたパスワードを使用して、パスワードの再設定を行ってください。',
-                    ]);
-                    setErrorText([
-                      '登録されていないメールアドレスです。メールアドレスを確認してください',
-                    ]);
-                    // TODO: ユーザーテーブルの更新
-                  })
-                  .catch((err) => {
-                    // TODO: エラー処理
-                    setErrorText([err.message]);
-                  });
+
+                const forgotPassword = async () => {
+                  const csrf = () => axios.get('/sanctum/csrf-cookie')
+                  await csrf()
+                  axios
+                    .get('/api/forgotpassword', {
+                      params: {
+                        email: email,
+                      },
+                    })
+                    .then((res) => {
+                      // TODO: ユーザーテーブルに存在するかを検索し、結果によりメッセージを出し分ける
+                      setMessageText([
+                        '仮パスワードを記載したメールアドレスを送信しました。送信されたメールに記載されたパスワードを使用して、パスワードの再設定を行ってください。',
+                      ]);
+                      setErrorText([
+                        '登録されていないメールアドレスです。メールアドレスを確認してください',
+                      ]);
+                      // TODO: ユーザーテーブルの更新
+                    })
+                    .catch((err) => {
+                      // TODO: エラー処理
+                      setErrorText([err.message]);
+                    });
+                }
+                forgotPassword()
               }
             }}
           >

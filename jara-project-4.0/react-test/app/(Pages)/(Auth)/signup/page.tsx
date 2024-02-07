@@ -12,7 +12,7 @@ import {
   OriginalCheckbox,
 } from '@/app/components';
 import Validator from '@/app/utils/validator';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 
 export default function Signup() {
   const [errorText, setErrorText] = useState([] as string[]);
@@ -117,7 +117,7 @@ export default function Signup() {
             <CustomButton
               className='w-[120px] md:w-[240px]'
               buttonType='primary'
-              onClick={() => {
+              onClick={async() => {
                 // エラーがあればエラーメッセージを表示
                 const userNameError = Validator.getErrorMessages([
                   Validator.validateRequired(userName, 'ユーザー名'),
@@ -154,9 +154,11 @@ export default function Signup() {
                 ) {
                   return;
                 }
+                const csrf = () => axios.get('/sanctum/csrf-cookie')
+                await csrf()
                 // 仮登録処理
                 axios
-                  .post('http://localhost:3100/', {})
+                  .post('/register', {})
                   .then((response) => {
                     // 成功時の処理を実装
                     window.confirm('仮登録が完了しました。');
