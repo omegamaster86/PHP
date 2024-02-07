@@ -111,14 +111,14 @@ export default function TeamRef() {
         <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4 '>
           <div className='flex flex-col gap-[30px] m-auto rounded-[10px] w-[700px]'>
             {/* 団体名 */}
-            <Label label={formData.orgName} textColor='white' textSize='h2'></Label>
+            <Label label={formData.org_name} textColor='white' textSize='h2'></Label>
             {/* 開催情報 */}
             <Label label='開催情報' textColor='white' textSize='small' isBold={true}></Label>
             <div className='flex flex-col gap-[5px]'>
               {/* 創立年 */}
               <div className='flex flex-row'>
                 <div className='text-gray-40 text-caption1 w-[100px]'>創立年</div>
-                <Label label={formData.foundingYear?.toString()} textColor='white' />
+                <Label label={formData.founding_year?.toString()} textColor='white' />
               </div>
               {/* 所在地 */}
               <div className='flex flex-row'>
@@ -126,7 +126,7 @@ export default function TeamRef() {
                 {/* 市区町村・町字番地, 都道府県, マンション・アパート, 郵便番号1, 郵便番号 */}
                 <Label
                   label={
-                    formData.addressNumber +
+                    formData.post_code +
                     ' ' +
                     formData.locationPrefectureName +
                     formData.address1 +
@@ -147,12 +147,12 @@ export default function TeamRef() {
                   <Label label={formData.jaraOrgTypeName} textColor='white' />
                   <Label label={formData.prefOrgTypeName} textColor='white' />
                 </div>
-                {(userData.userType === ROLE.SYSTEM_ADMIN ||
-                  userData.userType === ROLE.JARA ||
-                  userData.userType === ROLE.PREFECTURE) && (
+                {(userData.user_type === ROLE.SYSTEM_ADMIN ||
+                  userData.user_type === ROLE.JARA ||
+                  userData.user_type === ROLE.PREFECTURE) && (
                   <div className='w-[100px]'>
-                    <Label label={formData.jaraOrgRegTrail} textColor='white' />
-                    <Label label={formData.prefOrgRegTrail} textColor='white' />
+                    <Label label={formData.jara_org_reg_trail} textColor='white' />
+                    <Label label={formData.pref_org_reg_trail} textColor='white' />
                   </div>
                 )}
               </div>
@@ -161,12 +161,12 @@ export default function TeamRef() {
               {/* 団体ID */}
               <div className='flex flex-row '>
                 <div className='text-gray-40 text-caption1 w-[100px]'>団体ID</div>
-                <Label label={formData.orgId} textColor='white' />
+                <Label label={formData.org_id} textColor='white' />
               </div>
               {/* エントリーシステムの団体ID */}
               <div className='flex flex-row gap-[15px]'>
                 <div className='text-gray-40 text-caption1 '>エントリーシステムの団体ID</div>
-                <Label label={formData.entOrgId} textColor='white' />
+                <Label label={formData.entrysystem_org_id} textColor='white' />
               </div>
             </div>
           </div>
@@ -224,28 +224,28 @@ export default function TeamRef() {
                         <Link
                           href={{
                             pathname: '/tournament',
-                            query: { mode: 'update', tournId: row.tournId?.toString() },
+                            query: { mode: 'update', tourn_id: row.tourn_id?.toString() },
                           }}
                           className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                         >
-                          {row.tournName}
+                          {row.tourn_name}
                         </Link>
                       </CustomTd>
                       {/* 開催期間 */}
                       <CustomTd>
-                        {row.eventStartDate} ~ {row.eventEndDate}
+                        {row.event_start_date} ~ {row.event_end_date}
                       </CustomTd>
                       {/* 開催場所 */}
-                      <CustomTd>{row.venueName}</CustomTd>
+                      <CustomTd>{row.venue_name}</CustomTd>
                       {/* 大会URL */}
                       <CustomTd>
                         <Link
-                          href={row.tournUrl || ('' as string)}
+                          href={row.tourn_url || ('' as string)}
                           rel='noopener noreferrer'
                           target='_blank'
                           className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                         >
-                          {row.tournUrl}
+                          {row.tourn_url}
                         </Link>
                       </CustomTd>
                     </CustomTr>
@@ -281,28 +281,28 @@ export default function TeamRef() {
                       <Link
                         href={{
                           pathname: '/tournament',
-                          query: { mode: 'update', tournId: row.tournId?.toString() },
+                          query: { mode: 'update', tourn_id: row.tourn_id?.toString() },
                         }}
                         className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       >
-                        {row.tournName}
+                        {row.tourn_name}
                       </Link>
                     </CustomTd>
                     {/* 開催期間 */}
                     <CustomTd>
-                      {row.eventStartDate} ~ {row.eventEndDate}
+                      {row.event_start_date} ~ {row.event_end_date}
                     </CustomTd>
                     {/* 開催場所 */}
-                    <CustomTd>{row.venueName}</CustomTd>
+                    <CustomTd>{row.venue_name}</CustomTd>
                     {/* 大会URL */}
                     <CustomTd>
                       <Link
-                        href={row.tournUrl || ('' as string)}
+                        href={row.tourn_url || ('' as string)}
                         rel='noopener noreferrer'
                         target='_blank'
                         className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       >
-                        {row.tournUrl}
+                        {row.tourn_url}
                       </Link>
                     </CustomTd>
                   </CustomTr>
@@ -386,7 +386,7 @@ export default function TeamRef() {
                     <CustomTd align='center'>
                       <img
                         src={row.photo}
-                        alt={row.playerName}
+                        alt={row.player_name}
                         className='w-[50px] h-[50px] rounded-full'
                       />
                     </CustomTd>
@@ -394,18 +394,18 @@ export default function TeamRef() {
                     <CustomTd>
                       <Link
                         className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                        href={'/playerInformationRef?playerId=' + row.playerId}
+                        href={'/playerInformationRef?player_id=' + row.player_id}
                       >
-                        {row.playerName}
+                        {row.player_name}
                       </Link>
                     </CustomTd>
                     {/* 選手ID */}
                     <CustomTd>
                       <Link
                         className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                        href={'/playerInformationRef?playerId=' + row.playerId}
+                        href={'/playerInformationRef?player_id=' + row.player_id}
                       >
-                        {row.playerId}
+                        {row.player_id}
                       </Link>
                     </CustomTd>
 
@@ -423,7 +423,7 @@ export default function TeamRef() {
                         id='sideInfoS'
                         value='S'
                         onChange={() => {}}
-                        checked={row.sideInfo[0]}
+                        checked={row.side_Info[0]}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -432,7 +432,7 @@ export default function TeamRef() {
                         id='sideInfoB'
                         value='B'
                         onChange={() => {}}
-                        checked={row.sideInfo[1]}
+                        checked={row.side_Info[1]}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -441,7 +441,7 @@ export default function TeamRef() {
                         id='sideInfoX'
                         value='X'
                         onChange={() => {}}
-                        checked={row.sideInfo[2]}
+                        checked={row.side_Info[2]}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -450,7 +450,7 @@ export default function TeamRef() {
                         id='sideInfoC'
                         value='C'
                         onChange={() => {}}
-                        checked={row.sideInfo[3]}
+                        checked={row.side_Info[3]}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -481,14 +481,14 @@ export default function TeamRef() {
               <CustomTbody>
                 {staffs.map((row, index) => (
                   <CustomTr key={index}>
-                    <CustomTd>{row.userId}</CustomTd>
-                    <CustomTd>{row.userName}</CustomTd>
+                    <CustomTd>{row.user_id}</CustomTd>
+                    <CustomTd>{row.user_name}</CustomTd>
                     <CustomTd>
                       <OriginalCheckbox
                         id='staffType1'
                         value='監督'
                         onChange={() => {}}
-                        checked={row.staffType.includes('監督')}
+                        checked={row.staff_type_id.includes('監督')}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -497,7 +497,7 @@ export default function TeamRef() {
                         id='staffType2'
                         value='部長'
                         onChange={() => {}}
-                        checked={row.staffType.includes('部長')}
+                        checked={row.staff_type_id.includes('部長')}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -506,7 +506,7 @@ export default function TeamRef() {
                         id='staffType3'
                         value='コーチ'
                         onChange={() => {}}
-                        checked={row.staffType.includes('コーチ')}
+                        checked={row.staff_type_id.includes('コーチ')}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -515,7 +515,7 @@ export default function TeamRef() {
                         id='staffType4'
                         value='マネージャー'
                         onChange={() => {}}
-                        checked={row.staffType.includes('マネージャー')}
+                        checked={row.staff_type_id.includes('マネージャー')}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -524,7 +524,7 @@ export default function TeamRef() {
                         id='staffType5'
                         value='管理代理'
                         onChange={() => {}}
-                        checked={row.staffType.includes('管理代理')}
+                        checked={row.staff_type_id.includes('管理代理')}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>

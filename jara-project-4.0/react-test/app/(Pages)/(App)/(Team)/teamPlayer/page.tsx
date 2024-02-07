@@ -32,10 +32,10 @@ export default function TeamPlayer() {
   const [formData, setFormData] = useState<TeamPlayerInformationResponse[]>([
     {
       id: 0, // ID
-      playerId: 0, // 選手ID
-      jaraPlayerCode: '', // JARA選手コード
-      playerName: '', // 選手名
-      dateOfBirth: '', // 生年月日
+      player_id: 0, // 選手ID
+      jara_player_id: '', // JARA選手コード
+      player_name: '', // 選手名
+      date_of_birth: '', // 生年月日
       sexName: '', // 性別
       height: '', // 身長
       weight: '', // 体重
@@ -44,7 +44,7 @@ export default function TeamPlayer() {
       birthCountryName: '', // 出身地（国）
       birthPrefectureName: '', // 出身地（都道府県）
       photo: '', // 写真
-      sideInfo: [], // サイド情報
+      side_Info: [], // サイド情報
     },
   ]);
   const [errorMessage, setErrorMessage] = useState([] as string[]);
@@ -181,7 +181,7 @@ export default function TeamPlayer() {
                     rel='noopener noreferrer'
                     target='_blank'
                   >
-                    {data.playerId}
+                    {data.player_id}
                   </Link>
                 </CustomTd>
                 <CustomTd align='center'>
@@ -193,7 +193,7 @@ export default function TeamPlayer() {
                     rel='noopener noreferrer'
                     target='_blank'
                   >
-                    {data.jaraPlayerCode}
+                    {data.jara_player_id}
                   </Link>
                 </CustomTd>
                 <CustomTd align='center'>
@@ -205,7 +205,7 @@ export default function TeamPlayer() {
                     rel='noopener noreferrer'
                     target='_blank'
                   >
-                    {data.playerName}
+                    {data.player_name}
                   </Link>
                 </CustomTd>
                 <CustomTd align='center'>
@@ -216,10 +216,10 @@ export default function TeamPlayer() {
                   {data.residenceCountryName}
                   {data.residencePrefectureName}
                 </CustomTd>
-                <CustomTd align='center'>{data.sideInfo[0] ? '◯' : '×'}</CustomTd>
-                <CustomTd align='center'>{data.sideInfo[1] ? '◯' : '×'}</CustomTd>
-                <CustomTd align='center'>{data.sideInfo[2] ? '◯' : '×'}</CustomTd>
-                <CustomTd align='center'>{data.sideInfo[3] ? '◯' : '×'}</CustomTd>
+                <CustomTd align='center'>{data.side_Info[0] ? '◯' : '×'}</CustomTd>
+                <CustomTd align='center'>{data.side_Info[1] ? '◯' : '×'}</CustomTd>
+                <CustomTd align='center'>{data.side_Info[2] ? '◯' : '×'}</CustomTd>
+                <CustomTd align='center'>{data.side_Info[3] ? '◯' : '×'}</CustomTd>
               </CustomTr>
             ))}
           </CustomTbody>

@@ -35,21 +35,21 @@ export default function UserInformationUpdate() {
 
   // フォームの入力値を管理するステート
   const [formData, setFormData] = useState<UserResponse>({
-    userId: '', // ユーザーID
-    userName: '', // ユーザー名
-    dateOfBirth: '', // 生年月日
+    user_id: '', // ユーザーID
+    user_name: '', // ユーザー名
+    date_of_birth: '', // 生年月日
     sexName: '', // 性別
-    sexId: 0, // 性別ID
+    sex: 0, // 性別ID
     height: '', // 身長
     weight: '', // 体重
     residenceCountryName: '', // 居住地（国）
-    residenceCountryId: 0, // 居住地（国）ID
+    residence_country: 0, // 居住地（国）ID
     residencePrefectureName: '', // 居住地（都道府県）
-    residencePrefectureId: 0, // 居住地（都道府県）ID
-    email: '', // メールアドレス
-    userType: '', // ユーザー種別
+    residence_prefecture: 0, // 居住地（都道府県）ID
+    mailaddress: '', // メールアドレス
+    user_type: '', // ユーザー種別
     userTypeName: '', // ユーザー種別名
-    tempPasswordFlag: false, // 仮登録フラグ
+    temp_password_flag: false, // 仮登録フラグ
     photo: '', // 写真
   });
   // モードのチェック
@@ -97,29 +97,37 @@ export default function UserInformationUpdate() {
   };
 
   useEffect(() => {
-    if (formData.residenceCountryId == 0) {
+    if (formData.residence_country == 0) {
       setFormData((prevFormData) => ({
         ...prevFormData,
         residencePrefectureId: 0,
         residencePrefectureName: '東京',
       }));
     }
-  }, [formData.residenceCountryId]);
+  }, [formData.residence_country]);
 
   useEffect(() => {
     const fetchMaster = async () => {
       try {
         // TODO: APIを叩いて、マスタ情報を取得する処理の置き換え
-        const prefectureResponse = await axios.get<PrefectureResponse[]>(
-          'http://localhost:3100/prefecture',
-        );
-        setPrefectures(prefectureResponse.data);
-        const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
-        setSex(sexResponse.data);
-        const countryResponse = await axios.get<CountryResponse[]>(
-          'http://localhost:3100/countries',
-        );
-        setCountries(countryResponse.data);
+        // const prefectureResponse = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
+        const prefectureResponse = await axios.get('http://localhost:8000/api/getPrefecures');
+        const stateList = prefectureResponse.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
+        //console.log(stateList);
+        setPrefectures(stateList);
+        // setPrefectures(prefectureResponse.data);
+        // const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
+        const sexResponse = await axios.get('http://localhost:8000/api/getSexList');
+        console.log(sexResponse.data);
+        const sexList = sexResponse.data.map(({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }));
+        setSex(sexList);
+        // setSex(sexResponse.data);
+        // const countryResponse = await axios.get<CountryResponse[]>('http://localhost:3100/countries',);
+        const countryResponse = await axios.get('http://localhost:8000/api/getCountries');
+        const countryList = countryResponse.data.map(({ country_id, country_name }: { country_id: number; country_name: string }) => ({ id: country_id, name: country_name }));
+        setCountries(countryList);
+        // setCountries(countryResponse.data);
+
       } catch (error: any) {
         setErrorMessage(['API取得エラー:' + error.message]);
       }
@@ -131,36 +139,38 @@ export default function UserInformationUpdate() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get<UserResponse>('http://localhost:3100/user');
+        // const response = await axios.get<UserResponse>('http://localhost:3100/user');
+        const response = await axios.get('http://localhost:8000/api/getUserData');
+        console.log(response.data.result);
         setFormData((prevFormData) => ({
           ...prevFormData,
           ...{
-            userId: response.data.userId,
-            userName: response.data.userName,
-            userType: response.data.userType,
-            userTypeName: response.data.userTypeName,
-            dateOfBirth: response.data.dateOfBirth,
-            sexName: response.data.sexName ? response.data.sexName : '男性',
-            sexId: response.data.sexId,
-            height: response.data.height,
-            weight: response.data.weight,
-            residenceCountryId: response.data.residenceCountryId,
-            residenceCountryName: response.data.residenceCountryName
-              ? response.data.residenceCountryName
+            userId: response.data.result.user_id,
+            userName: response.data.result.user_name,
+            userType: response.data.result.user_type,
+            userTypeName: "",//response.data.result.userTypeName,
+            dateOfBirth: response.data.result.date_of_birth,
+            sexName: '男性',//response.data.result.sexName ? response.data.sexName : '男性',
+            sexId: response.data.result.sex,
+            height: response.data.result.height,
+            weight: response.data.result.weight,
+            residenceCountryId: response.data.result.residence_country,
+            residenceCountryName: 0//response.data.result.residenceCountryName
+              ? response.data.result.residenceCountryName
               : '日本',
-            residencePrefectureId: response.data.residencePrefectureId,
-            residencePrefectureName: response.data.residencePrefectureName,
-            email: response.data.email,
-            tempPasswordFlag: response.data.tempPasswordFlag,
-            photo: response.data.photo,
+            residencePrefectureId: response.data.result.residence_prefecture,
+            residencePrefectureName: "",//response.data.result.residencePrefectureName,
+            email: response.data.result.mailaddress,
+            tempPasswordFlag: response.data.result.temp_password_flag,
+            photo: response.data.result.photo,
           },
         }));
-        setPrevEmail(response.data.email);
+        setPrevEmail(response.data.result.mailaddress);
       } catch (error: any) {
         setErrorMessage(['API取得エラー:' + error.message]);
       }
     };
-    // 更新モード、参照モード、削除モードの時にユーザー情報を取得し、フォームにセットする。
+    // 更新モードの時にユーザー情報を取得し、フォームにセットする。
     if (mode === 'update') {
       fetchUser();
     }
@@ -174,8 +184,8 @@ export default function UserInformationUpdate() {
         className='w-[200px]'
         onClick={() => {
           const userNameError = Validator.getErrorMessages([
-            Validator.validateRequired(formData.userName, 'ユーザー名'),
-            Validator.validateUserNameFormat(formData.userName),
+            Validator.validateRequired(formData.user_name, 'ユーザー名'),
+            Validator.validateUserNameFormat(formData.user_name),
           ]);
 
           const sexError = Validator.getErrorMessages([
@@ -191,8 +201,8 @@ export default function UserInformationUpdate() {
           ]);
 
           const dateOfBirthError = Validator.getErrorMessages([
-            Validator.validateRequired(formData.dateOfBirth, '生年月日'),
-            Validator.validateBirthOfDateRange(new Date(formData.dateOfBirth), '生年月日', 5, 150),
+            Validator.validateRequired(formData.date_of_birth, '生年月日'),
+            Validator.validateBirthOfDateRange(new Date(formData.date_of_birth), '生年月日', 5, 150),
           ]);
 
           setUserNameErrorMessages(userNameError as string[]);
@@ -212,7 +222,7 @@ export default function UserInformationUpdate() {
           }
           router.push(
             '/userInformation?mode=confirm&isMailChanged=' +
-              (email && email !== formData.email ? 'true' : 'false') +
+              (email && email !== formData.mailaddress ? 'true' : 'false') +
               (prevScreen ? '&prevScreen=' + prevScreen : ''),
           );
         }}
@@ -258,7 +268,8 @@ export default function UserInformationUpdate() {
             // TODO: エラーハンドリングはサーバとの疎通実装時、axiosでcatchするため、以下は置き換え
             const requestBody = {};
             axios
-              .post('http://localhost:3100/', requestBody)
+              // .post('http://localhost:3100/', requestBody)
+              .post('http://localhost:8000/api/updateUserData',requestBody)
               .then((response) => {
                 // 成功時の処理を実装
                 window.confirm('ユーザー情報を更新しました。');
@@ -323,7 +334,7 @@ export default function UserInformationUpdate() {
         <CustomTextField
           label='ユーザーID'
           readonly
-          value={formData.userId}
+          value={formData.user_id}
           displayHelp={false}
           placeHolder='XXXXXXX'
         />
@@ -347,7 +358,7 @@ export default function UserInformationUpdate() {
           isError={userNameErrorMessages.length > 0}
           displayHelp={mode === 'update'}
           required={mode === 'update'}
-          value={formData.userName}
+          value={formData.user_name}
         />
         {/* メールアドレス */}
         <div className='flex flex-row gap-[10px]'>
@@ -359,12 +370,12 @@ export default function UserInformationUpdate() {
             readonly
             placeHolder='メールアドレスを入力してください。'
             type='email'
-            value={formData.email}
+            value={formData.mailaddress}
             onChange={() => {
               handleInputChange('email', '');
             }}
           />
-          {!formData.tempPasswordFlag && mode == 'update' && (
+          {!formData.temp_password_flag && mode == 'update' && (
             <div className='mt-auto'>
               <CustomDialog
                 className='w-[120px] '
@@ -386,7 +397,7 @@ export default function UserInformationUpdate() {
                   setEmailConfirmErrorMessages(confEmailError);
 
                   if (errorMessages.length == 0 && confEmailError.length == 0) {
-                    setPrevEmail(formData.email);
+                    setPrevEmail(formData.mailaddress);
                     setFormData((prevFormData) => ({
                       ...prevFormData,
                       email: email,
@@ -443,7 +454,7 @@ export default function UserInformationUpdate() {
           <InputLabel label='性別' required={mode === 'update'} />
           <CustomDropdown
             id='性別'
-            value={mode !== 'confirm' ? formData.sexId?.toString() || '' : formData.sexName}
+            value={mode !== 'confirm' ? formData.sex?.toString() || '' : formData.sexName}
             options={sex.map((item) => ({ key: item.id, value: item.name }))}
             placeHolder='男性'
             className='w-[200px]'
@@ -460,7 +471,7 @@ export default function UserInformationUpdate() {
           <InputLabel label='生年月日' displayHelp={mode === 'update'} />
           <CustomDatePicker
             readonly={mode === 'confirm'}
-            selectedDate={formData.dateOfBirth}
+            selectedDate={formData.date_of_birth}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               handleInputChange('dateOfBirth', formatDate(e as unknown as Date));
             }}
@@ -479,7 +490,7 @@ export default function UserInformationUpdate() {
               placeHolder='日本'
               value={
                 mode !== 'confirm'
-                  ? formData.residenceCountryId?.toString() || ''
+                  ? formData.residence_prefecture?.toString() || ''
                   : formData.residenceCountryName
               }
               onChange={(e) => {
@@ -503,7 +514,7 @@ export default function UserInformationUpdate() {
                 options={prefectures.map((item) => ({ key: item.id, value: item.name })) || []}
                 value={
                   mode !== 'confirm'
-                    ? formData.residencePrefectureId?.toString() || ''
+                    ? formData.residence_prefecture?.toString() || ''
                     : formData.residencePrefectureName
                 }
                 placeHolder='東京'

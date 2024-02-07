@@ -378,25 +378,25 @@ export default function TournamentSearch() {
               {searchResponse.map((row, index) => (
                 <CustomTr index={index} key={index}>
                   {/* 大会種別 */}
-                  <CustomTd>{row.tournTypeName}</CustomTd>
+                  <CustomTd>{row.tourn_type}</CustomTd>
                   {/* 大会名 */}
                   <CustomTd>
                     <Link
                       href={{
                         pathname: '/tournamentRef',
-                        query: { tournId: row.tournId },
+                        query: { tournId: row.tourn_id },
                       }}
                       className='text-primary-300 underline hover:text-primary-50 cursor-pointer'
                       rel='noopener noreferrer'
                       target='_blank'
                     >
-                      {row.tournName}
+                      {row.tourn_name}
                     </Link>
                   </CustomTd>
                   {/* 開催開始日 */}
-                  <CustomTd>{row.eventStartDate}</CustomTd>
+                  <CustomTd>{row.event_start_date}</CustomTd>
                   {/* 開催終了日 */}
-                  <CustomTd>{row.eventEndDate}</CustomTd>
+                  <CustomTd>{row.event_end_date}</CustomTd>
                   {/* 開催場所 */}
                   <CustomTd>{row.venueName}</CustomTd>
                   {/* 主催団体ID */}
@@ -404,13 +404,13 @@ export default function TournamentSearch() {
                     <Link
                       href={{
                         pathname: '/teamRef',
-                        query: { sponsorOrgId: row.sponsorOrgId },
+                        query: { sponsorOrgId: row.sponsor_org_id },
                       }}
                       className='text-primary-300 underline hover:text-primary-50 cursor-pointer'
                       rel='noopener noreferrer'
                       target='_blank'
                     >
-                      {row.sponsorOrgId}
+                      {row.sponsor_org_id}
                     </Link>
                   </CustomTd>
                   {/* 主催団体名 */}
@@ -418,7 +418,7 @@ export default function TournamentSearch() {
                     <Link
                       href={{
                         pathname: '/teamRef',
-                        query: { sponsorOrgId: row.sponsorOrgId },
+                        query: { sponsorOrgId: row.sponsor_org_id },
                       }}
                       className='text-primary-300 underline hover:text-primary-50 cursor-pointer'
                       rel='noopener noreferrer'

@@ -30,9 +30,11 @@ use App\Models\M_events;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'setLoginUserData']);
 
 Route::group(['middleware' => ['api', 'cors']], function () {
     Route::get('list', [TournamentController::class, 'index']); //Laravel_Reactデータ送信テスト 20231227
@@ -47,6 +49,9 @@ Route::group(['middleware' => ['api', 'cors']], function () {
     Route::get('getEvents', [M_events::class, 'getEvents']); //イベントマスター取得 20240202
 
     //---------------以下にAPIを追加する----------------
+    Route::get('getUserData', [UserController::class, 'getUserData']); //DBからユーザ画面にデータを渡す 20240131
+    Route::post('updateUserData', [UserController::class, 'updateUserData']); //DBからユーザ画面にデータを渡す 20240131
+
     Route::get('createCsrf', [AuthenticatedSessionController::class, 'createCsrf']); //ログイン画面遷移時にcsrfトークンを取得 20240122
     Route::post('loginCheck', [AuthenticatedSessionController::class, 'loginCheck']); //ログインボタン押下時の処理 20240119
 
@@ -59,8 +64,8 @@ Route::group(['middleware' => ['api', 'cors']], function () {
     Route::get('getRaceResultRecordsData', [PlayerController::class, 'getRaceResultRecordsData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('deletePlayerData', [PlayerController::class, 'deletePlayerData']); //該当データをDBから削除する 20240201
 
-    //団体管理画面
-    Route::get('getOrgData', [PlayerController::class, 'getOrgData']); //DBから団体管理画面にデータを渡す 20240201
+    //団体登録画面
+    Route::get('getOrgData', [OrganizationController::class, 'getOrgData']); //DBから団体管理画面にデータを渡す 20240201
 
     //大会登録・更新画面
     Route::get('getTournamentInfoData', [TournamentController::class, 'getTournamentInfoData']); //DBから大会情報更新画面にデータを渡す 20240201

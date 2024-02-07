@@ -76,23 +76,23 @@ export default function PlayerInformation() {
   };
 
   const [formData, setFormData] = useState<PlayerInformationResponse>({
-    playerId: 0,
-    jaraPlayerCode: '',
-    playerName: '',
+    player_id: 0,
+    jara_player_id: '',
+    player_name: '',
     sexName: '',
-    sexId: 0,
+    sex_id: 0,
     height: '',
     weight: '',
-    birthCountryId: 0,
+    birth_country: 0,
     birthCountryName: '日本国 （jpn）',
-    birthPrefectureId: 0,
+    birth_prefecture: 0,
     birthPrefectureName: '東京',
-    residenceCountryId: 0,
+    residence_country: 0,
     residenceCountryName: '日本国 （jpn）',
-    residencePrefectureId: 0,
+    residence_prefecture: 0,
     residencePrefectureName: '東京',
-    dateOfBirth: '',
-    sideInfo: [false, false, false, false],
+    date_of_birth: '',
+    side_Info: [false, false, false, false],
     photo: '',
   });
 
@@ -126,25 +126,25 @@ export default function PlayerInformation() {
   // 選手情報登録・更新・入力確認画面の「居住地（国）」が「日本」の場合、「居住地（都道府県）」を「東京」で設定する
   useEffect(() => {
     // 居住地（国）が日本（=0）の時
-    if (formData.residenceCountryId == 0) {
+    if (formData.residence_country == 0) {
       setFormData((prevFormData) => ({
         ...prevFormData,
         residencePrefectureId: 0, // 東京
         residencePrefectureName: '東京',
       }));
     }
-  }, [formData.residenceCountryId]);
+  }, [formData.residence_country]);
 
   // 選手情報登録・更新・入力確認画面の「出身地（国）」が「日本」の場合、「出身地（都道府県）」を「東京」で設定する
   useEffect(() => {
-    if (formData.birthCountryId == 0) {
+    if (formData.birth_country == 0) {
       setFormData((prevFormData) => ({
         ...prevFormData,
         birthPrefectureId: 0,
         birthPrefectureName: '東京',
       }));
     }
-  }, [formData.birthCountryId]);
+  }, [formData.birth_country]);
 
   // 更新モードの時に、選手情報を取得する
   useEffect(() => {
@@ -232,23 +232,23 @@ export default function PlayerInformation() {
           setFormData((prevFormData) => ({
             ...prevFormData,
             ...{
-              playerId: response.data.result.player_id, // 選手ID
-              jaraPlayerCode: response.data.result.jara_player_id, // JARA選手コード
-              playerName: response.data.result.player_name, // 選手名
+              player_id: response.data.result.player_id, // 選手ID
+              jara_player_id: response.data.result.jara_player_id, // JARA選手コード
+              player_name: response.data.result.player_name, // 選手名
               sexName: response.data.result.sex_name, // 性別
-              sexId: response.data.result.sex, // 性別
+              sex_id: response.data.result.sex, // 性別
               height: response.data.result.height, // 身長
               weight: response.data.result.weight, // 体重
-              birthCountryName: response.data.result.bir_country_name, // 出身地（国）
-              birthCountryId: response.data.result.birth_country, // 出身地（国）
+              bir_country_name: response.data.result.bir_country_name, // 出身地（国）
+              birth_country: response.data.result.birth_country, // 出身地（国）
               birthPrefectureName: response.data.result.bir_pref_name, // 出身地（都道府県）
-              birthPrefectureId: response.data.result.birth_prefecture, // 出身地（都道府県）
+              birth_prefecture: response.data.result.birth_prefecture, // 出身地（都道府県）
               residenceCountryName: response.data.result.res_country_name, // 居住地（国）
-              residenceCountryId: response.data.result.residence_country, // 居住地（国）
+              residence_country: response.data.result.residence_country, // 居住地（国）
               residencePrefectureName: response.data.result.res_pref_name, // 居住地（都道府県）
-              residencePrefectureId: response.data.result.residence_prefecture, // 居住地（都道府県）
-              dateOfBirth: response.data.result.date_of_birth, // 生年月日
-              sideInfo: data, // サイド情報
+              residence_prefecture: response.data.result.residence_prefecture, // 居住地（都道府県）
+              date_of_birth: response.data.result.date_of_birth, // 生年月日
+              side_info: data, // サイド情報
               photo: response.data.result.photo, //写真
             },
           }));
@@ -271,24 +271,24 @@ export default function PlayerInformation() {
   const validate = () => {
     // JARA選手コードの入力チェック
     const jaraPlayerCodeError = Validator.getErrorMessages([
-      Validator.validatePlayerIdFormat(formData.jaraPlayerCode.toString()),
+      Validator.validatePlayerIdFormat(formData.jara_player_id.toString()),
     ]);
 
     // 選手名の入力チェック
     const playerNameError = Validator.getErrorMessages([
-      Validator.validateSelectRequired(formData.playerName, '選手名'),
-      Validator.validateLength(formData.playerName, '選手名', 50),
-      Validator.validatePlayerNameFormat(formData.playerName),
+      Validator.validateSelectRequired(formData.player_name, '選手名'),
+      Validator.validateLength(formData.player_name, '選手名', 50),
+      Validator.validatePlayerNameFormat(formData.player_name),
     ]);
 
     // サイド情報の入力チェック
     const sideInfoError = Validator.getErrorMessages([
-      Validator.validateSideInfoIsInput(formData.sideInfo),
+      Validator.validateSideInfoIsInput(formData.side_info),
     ]);
 
     // 生年月日の入力チェック
     const dateOfBirthError = Validator.getErrorMessages([
-      Validator.validateSelectRequired(formData.dateOfBirth, '生年月日'),
+      Validator.validateSelectRequired(formData.date_of_birth, '生年月日'),
     ]);
 
     // 性別の入力チェック
@@ -509,7 +509,7 @@ export default function PlayerInformation() {
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
             readonly
-            value={formData.playerId?.toString()}
+            value={formData.player_id?.toString()}
             onChange={(e) => handleInputChange('playerId', e.target.value)}
           />
         )}
@@ -524,7 +524,7 @@ export default function PlayerInformation() {
             placeHolder='123456789012'
             readonly={mode === 'confirm'}
             errorMessages={jaraPlayerCodeErrorMessage}
-            value={formData.jaraPlayerCode?.toString()}
+            value={formData.jara_player_id?.toString()}
             onChange={(e) => handleInputChange('jaraPlayerCode', e.target.value)}
             toolTipTitle='Title JARA選手コード' //はてなボタン用
             toolTipText='サンプル用のツールチップ表示' //はてなボタン用
@@ -540,7 +540,7 @@ export default function PlayerInformation() {
             errorMessages={playerNameErrorMessage}
             placeHolder='山田 太郎'
             readonly={mode === 'confirm'}
-            value={formData.playerName}
+            value={formData.player_name}
             onChange={(e) => handleInputChange('playerName', e.target.value)}
             toolTipTitle='Title 選手名' //はてなボタン用
             toolTipText='サンプル用のツールチップ表示' //はてなボタン用
@@ -560,7 +560,7 @@ export default function PlayerInformation() {
               handleInputChange('dateOfBirth', formatDate(e as unknown as Date));
             }}
             readonly={mode === 'confirm'}
-            selectedDate={formData.dateOfBirth}
+            selectedDate={formData.date_of_birth}
             maxDate={new Date()}
             errorMessages={dateOfBirthErrorMessage}
           />
@@ -578,7 +578,7 @@ export default function PlayerInformation() {
             id='sex'
             readonly={mode === 'confirm'}
             options={sex.map((item) => ({ key: item.id, value: item.name }))}
-            value={mode !== 'confirm' ? formData.sexId?.toString() || '' : formData.sexName}
+            value={mode !== 'confirm' ? formData.sex_id?.toString() || '' : formData.sexName}
             errorMessages={sexErrorMessage}
             placeHolder='未選択'
             onChange={(e) => {
@@ -639,15 +639,15 @@ export default function PlayerInformation() {
               readonly={mode === 'confirm'}
               label=': S (ストロークサイド)'
               value='S'
-              checked={formData.sideInfo?.at(0) ?? false}
+              checked={formData.side_info?.at(0) ?? false}
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
                   sideInfo: [
-                    !prevFormData.sideInfo[0],
-                    prevFormData.sideInfo[1],
-                    prevFormData.sideInfo[2],
-                    prevFormData.sideInfo[3],
+                    !prevFormData.side_info[0],
+                    prevFormData.side_info[1],
+                    prevFormData.side_info[2],
+                    prevFormData.side_info[3],
                   ],
                 })) as void
               }
@@ -657,15 +657,15 @@ export default function PlayerInformation() {
               readonly={mode === 'confirm'}
               label=': B (バウサイド)'
               value='B'
-              checked={formData.sideInfo?.at(1) as boolean}
+              checked={formData.side_info?.at(1) as boolean}
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
                   sideInfo: [
-                    prevFormData.sideInfo[0],
-                    !prevFormData.sideInfo[1],
-                    prevFormData.sideInfo[2],
-                    prevFormData.sideInfo[3],
+                    prevFormData.side_info[0],
+                    !prevFormData.side_info[1],
+                    prevFormData.side_info[2],
+                    prevFormData.side_info[3],
                   ],
                 })) as void
               }
@@ -675,15 +675,15 @@ export default function PlayerInformation() {
               label=': X (スカル)'
               value='X'
               readonly={mode === 'confirm'}
-              checked={formData.sideInfo?.at(2) as boolean}
+              checked={formData.side_info?.at(2) as boolean}
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
                   sideInfo: [
-                    prevFormData.sideInfo[0],
-                    prevFormData.sideInfo[1],
-                    !prevFormData.sideInfo[2],
-                    prevFormData.sideInfo[3],
+                    prevFormData.side_info[0],
+                    prevFormData.side_info[1],
+                    !prevFormData.side_info[2],
+                    prevFormData.side_info[3],
                   ],
                 })) as void
               }
@@ -693,15 +693,15 @@ export default function PlayerInformation() {
               label=': C (コックス)'
               readonly={mode === 'confirm'}
               value='C'
-              checked={formData.sideInfo?.at(3) as boolean}
+              checked={formData.side_info?.at(3) as boolean}
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
                   sideInfo: [
-                    prevFormData.sideInfo[0],
-                    prevFormData.sideInfo[1],
-                    prevFormData.sideInfo[2],
-                    !prevFormData.sideInfo[3],
+                    prevFormData.side_info[0],
+                    prevFormData.side_info[1],
+                    prevFormData.side_info[2],
+                    !prevFormData.side_info[3],
                   ],
                 })) as void
               }
@@ -726,13 +726,13 @@ export default function PlayerInformation() {
               options={countries.map((item) => ({ key: item.id, value: item.name }))}
               value={
                 mode !== 'confirm'
-                  ? formData.birthCountryId?.toString() || ''
+                  ? formData.birth_country?.toString() || ''
                   : formData.birthCountryName
               }
               errorMessages={birthCountryNameErrorMessage}
               placeHolder='未選択'
               onChange={(e) => {
-                handleInputChange('birthCountryId', e);
+                handleInputChange('birth_country', e);
                 handleInputChange(
                   'birthCountryName',
                   countries.find((item) => item.id === Number(e))?.name || '',
@@ -759,7 +759,7 @@ export default function PlayerInformation() {
                 readonly={mode === 'confirm'}
                 value={
                   mode !== 'confirm'
-                    ? formData.birthPrefectureId?.toString() || ''
+                    ? formData.birth_prefecture?.toString() || ''
                     : formData.birthPrefectureName
                 }
                 onChange={(e) => {
@@ -790,12 +790,12 @@ export default function PlayerInformation() {
               options={countries.map((item) => ({ key: item.id, value: item.name }))}
               value={
                 mode !== 'confirm'
-                  ? formData.residenceCountryId?.toString() || ''
+                  ? formData.residence_country?.toString() || ''
                   : formData.residenceCountryName
               }
               readonly={mode === 'confirm'}
               onChange={(e) => {
-                handleInputChange('residenceCountryId', e);
+                handleInputChange('residence_country', e);
                 handleInputChange(
                   'residenceCountryName',
                   countries.find((item) => item.id === Number(e))?.name || '',
@@ -821,7 +821,7 @@ export default function PlayerInformation() {
                 options={prefectures.map((item) => ({ key: item.id, value: item.name }))}
                 value={
                   mode !== 'confirm'
-                    ? formData.residencePrefectureId?.toString() || ''
+                    ? formData.residence_prefecture?.toString() || ''
                     : formData.residencePrefectureName
                 }
                 onChange={(e) => {

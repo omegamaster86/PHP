@@ -89,24 +89,24 @@ export default function PlayerInformationRef() {
           }
         }
         setplayerInformation({
-          playerId: playerInf.data.result.player_id,
-          jaraPlayerCode: playerInf.data.result.jara_player_id,
+          player_id: playerInf.data.result.player_id,
+          jara_player_id: playerInf.data.result.jara_player_id,
           existPlayerId: playerInf.data.result.player_id,
-          playerName: playerInf.data.result.player_name,
-          dateOfBirth: playerInf.data.result.date_of_birth,
+          player_name: playerInf.data.result.player_name,
+          date_of_birth: playerInf.data.result.date_of_birth,
           sexName: playerInf.data.result.sex_name,
-          sexId: playerInf.data.result.sex,
+          sex_id: playerInf.data.result.sex,
           height: playerInf.data.result.height,
           weight: playerInf.data.result.weight,
-          sideInfo: sideList,
+          side_Info: sideList,
           birthCountryName: playerInf.data.result.bir_country_name,
-          birthCountryId: playerInf.data.result.birth_country,
+          birth_country: playerInf.data.result.birth_country,
           birthPrefectureName: playerInf.data.result.bir_pref_name,
-          birthPrefectureId: playerInf.data.result.birth_prefecture,
+          birth_prefecture: playerInf.data.result.birth_prefecture,
           residenceCountryName: playerInf.data.result.res_country_name,
-          residenceCountryId: playerInf.data.result.residence_country,
+          residence_country: playerInf.data.result.residence_country,
           residencePrefectureName: playerInf.data.result.res_pref_name,
-          residencePrefectureId: playerInf.data.result.residence_prefecture,
+          residence_prefecture: playerInf.data.result.residence_prefecture,
           photo: playerInf.data.result.photo,
         });
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
@@ -219,7 +219,7 @@ export default function PlayerInformationRef() {
                 <div className='flex flex-col gap-[10px]'>
                   {/* 選手名 */}
                   <Label
-                    label={playerInformation.playerName}
+                    label={playerInformation.player_name}
                     textColor='white'
                     textSize='h3'
                   ></Label>
@@ -228,7 +228,7 @@ export default function PlayerInformationRef() {
                       {/* 選手ID */}
                       <div className='text-gray-40 text-caption1'>選手ID</div>
                       <Label
-                        label={playerInformation.playerId?.toString()}
+                        label={playerInformation.player_id?.toString()}
                         textColor='white'
                         textSize='caption1'
                       ></Label>
@@ -267,7 +267,7 @@ export default function PlayerInformationRef() {
                           {/* 生年月日 */}
                           <div className='text-gray-40 text-caption1'>誕生　</div>
                           <Label
-                            label={playerInformation.dateOfBirth}
+                            label={playerInformation.date_of_birth}
                             textColor='white'
                             textSize='caption1'
                           ></Label>
@@ -357,7 +357,7 @@ export default function PlayerInformationRef() {
                   <div className='flex flex-row justify-start gap-[10px]'>
                     <div
                       className={`text-center px-[12px] py-[8px] rounded-full ${
-                        playerInformation.sideInfo?.at(0)
+                        playerInformation.side_Info?.at(0)
                           ? 'border border-secondary-500 text-secondary-500'
                           : 'border border-gray-30 text-white'
                       }`}
@@ -366,7 +366,7 @@ export default function PlayerInformationRef() {
                     </div>
                     <div
                       className={`text-center px-[12px] py-[8px] rounded-full ${
-                        playerInformation.sideInfo?.at(1)
+                        playerInformation.side_Info?.at(1)
                           ? 'border border-secondary-500 text-secondary-500'
                           : 'border border-gray-30 text-white'
                       }`}
@@ -377,7 +377,7 @@ export default function PlayerInformationRef() {
                   <div className='flex flex-row justify-start gap-[10px]'>
                     <div
                       className={`text-center px-[12px] py-[8px] rounded-full ${
-                        playerInformation.sideInfo?.at(2)
+                        playerInformation.side_Info?.at(2)
                           ? 'border border-secondary-500 text-secondary-500'
                           : 'border border-gray-30 text-white'
                       }`}
@@ -386,7 +386,7 @@ export default function PlayerInformationRef() {
                     </div>
                     <div
                       className={`text-center px-[12px] py-[8px] rounded-full ${
-                        playerInformation.sideInfo?.at(3)
+                        playerInformation.side_Info?.at(3)
                           ? 'border border-secondary-500 text-secondary-500'
                           : 'border border-gray-30 text-white'
                       }`}
@@ -469,79 +469,79 @@ export default function PlayerInformationRef() {
                       isHidden={!(row.official + 1 === activeTab || activeTab === 0)}
                     >
                       {/* 大会名 */}
-                      <CustomTd transitionDest={`/tournamentRef?tournId=${row.tournId}`}>
-                        {row.tournName}
+                      <CustomTd transitionDest={`/tournamentRef?tournId=${row.tourn_id}`}>
+                        {row.tourn_name}
                       </CustomTd>
                       {/* 公式／非公式 */}
                       <CustomTd>{row.official === 0 ? '非公式' : '公式'}</CustomTd>
                       {/* 開催日 */}
                       <CustomTd>{row.eventStartDate}</CustomTd>
                       {/* 団体所属 */}
-                      <CustomTd>{row.orgName}</CustomTd>
+                      <CustomTd>{row.org_name}</CustomTd>
                       {/* レースNo. */}
-                      <CustomTd>{row.raceNumber}</CustomTd>
+                      <CustomTd>{row.race_number}</CustomTd>
                       {/* 種目 */}
-                      <CustomTd>{row.eventName}</CustomTd>
+                      <CustomTd>{row.event_name}</CustomTd>
                       {/* レース名 */}
-                      <CustomTd>{row.raceName}</CustomTd>
+                      <CustomTd>{row.race_name}</CustomTd>
                       {/* 組別 */}
-                      <CustomTd>{row.byGroup}</CustomTd>
+                      <CustomTd>{row.by_group}</CustomTd>
                       {/* クルー名 */}
-                      <CustomTd>{row.crewName}</CustomTd>
+                      <CustomTd>{row.crew_name}</CustomTd>
                       {/* 順位 */}
                       <CustomTd>{row.rank}</CustomTd>
                       {/* 500mラップタイム */}
-                      <CustomTd>{row.fiveHundredmLaptime}</CustomTd>
+                      <CustomTd>{row.laptime_500m}</CustomTd>
                       {/* 1000mラップタイム */}
-                      <CustomTd>{row.tenHundredmLaptime}</CustomTd>
+                      <CustomTd>{row.laptime_1000m}</CustomTd>
                       {/* 1500mラップタイム */}
-                      <CustomTd>{row.fifteenHundredmLaptime}</CustomTd>
+                      <CustomTd>{row.laptime_1500m}</CustomTd>
                       {/* 2000mラップタイム */}
-                      <CustomTd>{row.twentyHundredmLaptime}</CustomTd>
+                      <CustomTd>{row.laptime_2000m}</CustomTd>
                       {/* 最終タイム */}
-                      <CustomTd>{row.finalTime}</CustomTd>
+                      <CustomTd>{row.final_time}</CustomTd>
                       {/* ストロークレート（平均） */}
-                      <CustomTd>{row.strokeRateAvg}</CustomTd>
+                      <CustomTd>{row.stroke_rate_avg}</CustomTd>
                       {/* 500mlapストロークレート */}
-                      <CustomTd>{row.fiveHundredmStrokeRat}</CustomTd>
+                      <CustomTd>{row.stroke_rat_500m}</CustomTd>
                       {/* 1000mlapストロークレート */}
-                      <CustomTd>{row.tenHundredmStrokeRat}</CustomTd>
+                      <CustomTd>{row.stroke_rat_1000m}</CustomTd>
                       {/* 1500mlapストロークレート */}
-                      <CustomTd>{row.fifteenHundredmStrokeRat}</CustomTd>
+                      <CustomTd>{row.stroke_rat_1500m}</CustomTd>
                       {/* 2000mlapストロークレート */}
-                      <CustomTd>{row.twentyHundredmStrokeRat}</CustomTd>
+                      <CustomTd>{row.stroke_rat_2000m}</CustomTd>
                       {/* 心拍数/分（平均） */}
-                      <CustomTd>{row.heartRateAvg}</CustomTd>
+                      <CustomTd>{row.heart_rate_avg}</CustomTd>
                       {/* 500mlap心拍数/分 */}
-                      <CustomTd>{row.fiveHundredmHeartRate}</CustomTd>
+                      <CustomTd>{row.heart_rate_500m}</CustomTd>
                       {/* 1000mlap心拍数/分 */}
-                      <CustomTd>{row.tenHundredmHeartRate}</CustomTd>
+                      <CustomTd>{row.heart_rate_1000m}</CustomTd>
                       {/* 1500mlap心拍数/分 */}
-                      <CustomTd>{row.fifteenHundredmHeartRate}</CustomTd>
+                      <CustomTd>{row.heart_rate_1500m}</CustomTd>
                       {/* 2000mlap心拍数/分 */}
-                      <CustomTd>{row.twentyHundredmHeartRate}</CustomTd>
+                      <CustomTd>{row.heart_rate_2000m}</CustomTd>
                       {/* 立ち合い有無 */}
                       <CustomTd>{row.attendance}</CustomTd>
                       {/* エルゴ体重 */}
-                      <CustomTd>{row.ergoWeight}</CustomTd>
+                      <CustomTd>{row.ergo_weight}</CustomTd>
                       {/* 選手身長（出漕時点） */}
-                      <CustomTd>{row.playerHeight}</CustomTd>
+                      <CustomTd>{row.player_height}</CustomTd>
                       {/* 選手体重（出漕時点） */}
-                      <CustomTd>{row.playerWeight}</CustomTd>
+                      <CustomTd>{row.player_weight}</CustomTd>
                       {/* シート番号（出漕時点） */}
-                      <CustomTd>{row.sheetName}</CustomTd>
+                      <CustomTd>{row.seat_name}</CustomTd>
                       {/* 出漕結果記録名 */}
-                      <CustomTd>{row.raceResultRecordName}</CustomTd>
+                      <CustomTd>{row.race_result_record_name}</CustomTd>
                       {/* 登録日時 */}
-                      <CustomTd>{row.registeredTime}</CustomTd>
+                      <CustomTd>{row.registered_time}</CustomTd>
                       {/* 2000m地点風速 */}
-                      <CustomTd>{row.twentyHundredmWindSpeed}</CustomTd>
+                      <CustomTd>{row.wind_speed_2000m_point}</CustomTd>
                       {/* 2000m地点風向 */}
-                      <CustomTd>{row.twentyHundredmWindDirection}</CustomTd>
+                      <CustomTd>{row.wind_direction_2000m_point}</CustomTd>
                       {/* 1000m地点風速 */}
-                      <CustomTd>{row.tenHundredmWindSpeed}</CustomTd>
+                      <CustomTd>{row.wind_speed_1000m_point}</CustomTd>
                       {/* 1000m地点風向 */}
-                      <CustomTd>{row.tenHundredmWindDirection}</CustomTd>
+                      <CustomTd>{row.wind_direction_1000m_point}</CustomTd>
                     </CustomTr>
                   ))}
                 </CustomTbody>

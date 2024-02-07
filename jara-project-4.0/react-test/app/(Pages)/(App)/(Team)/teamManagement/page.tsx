@@ -93,12 +93,12 @@ export default function TeamManagement() {
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       href={{
                         pathname: '/team',
-                        query: { mode: 'update', teamId: row.teamId.toString() },
+                        query: { mode: 'update', org_id: row.org_id.toString() },
                       }}
                       rel='noopener noreferrer'
                       target='_blank'
                     >
-                      {row.entteamId}
+                      {row.entrysystem_org_id}
                     </Link>
                   </CustomTd>
                   {/* 団体ID */}
@@ -107,23 +107,23 @@ export default function TeamManagement() {
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       href={{
                         pathname: '/team',
-                        query: { mode: 'update', teamId: row.teamId.toString() },
+                        query: { mode: 'update', org_id: row.org_id.toString() },
                       }}
                       rel='noopener noreferrer'
                       target='_blank'
                     >
-                      {row.teamId}
+                      {row.org_id}
                     </Link>
                   </CustomTd>
                   {/* 団体名 */}
-                  <CustomTd>{row.name}</CustomTd>
+                  <CustomTd>{row.org_name}</CustomTd>
                   <CustomTd>
                     <div>
                       <div className='flex justify-center items-center gap-[10px]'>
                         {/* 更新ボタン */}
                         <CustomButton
                           onClick={() => {
-                            router.push('/team?mode=update&teamId=' + row.teamId.toString());
+                            router.push('/team?mode=update&org_id=' + row.org_id.toString());
                           }}
                           buttonType='white-outlined'
                           className='w-[60px] text-small h-[40px] p-[0px] border-transparent'
@@ -134,7 +134,7 @@ export default function TeamManagement() {
                         {/* 削除ボタン */}
                         <CustomButton
                           onClick={() => {
-                            router.push('/teamRef?mode=delete&teamId=' + row.teamId.toString());
+                            router.push('/teamRef?mode=delete&org_id=' + row.org_id.toString());
                           }}
                           buttonType='white-outlined'
                           className='w-[60px] text-small h-[40px] p-[0px] border-transparent'
@@ -164,9 +164,9 @@ export default function TeamManagement() {
           {/* React_Laravelデータ送信テスト 20231228 */}
           {/* <form name="postSample" onSubmit={(event) => handleSubmit(event)}> */}
           <form name="postSample">
-            <label htmlFor="name">Name: </label>
+            <label htmlFor="org_name">Name: </label>
             <br />
-            <input type="text" id="name" name="name" />
+            <input type="text" id="org_name" name="org_name" />
             <br />
             <input type="button" defaultValue={buttonValue} onClick={onClick} />
           </form>

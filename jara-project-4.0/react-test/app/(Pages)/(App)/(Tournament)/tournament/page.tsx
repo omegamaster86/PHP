@@ -61,52 +61,52 @@ export default function Tournament() {
     {
       id: 0,
       checked: false,
-      raceId: '',
-      entrysystemRaceId: '',
-      raceNumber: '',
-      eventId: '',
-      eventName: '',
-      raceName: '',
-      raceType: '',
-      raceTypeName: '',
-      byGroup: '',
+      race_id: '',
+      entrysystem_race_id: '',
+      race_number: '',
+      event_id: '',
+      event_name: '',
+      race_name: '',
+      race_class_id: '',
+      race_class_name: '',
+      by_group: '',
       range: '',
-      startDateTime: '',
+      start_datetime: '',
     },
   ]);
 
   const [raceFormData, setRaceFormData] = useState<Race>({
     id: 0,
     checked: false,
-    raceId: '',
-    entrysystemRaceId: '',
-    raceNumber: '',
-    eventId: '',
-    eventName: '',
-    raceName: '',
-    raceType: '',
-    raceTypeName: '',
-    byGroup: '',
+    race_id: '',
+    entrysystem_race_id: '',
+    race_number: '',
+    event_id: '',
+    event_name: '',
+    race_name: '',
+    race_class_id: '',
+    race_class_name: '',
+    by_group: '',
     range: '',
-    startDateTime: '',
+    start_datetime: '',
   });
 
   //大会情報 20240202
   const [tournamentFormData, setTournamentFormData] = useState<Tournament>({
-    tournId: tournId,
+    tourn_id: tournId,
     entrysystemRaceId: '',
-    tournName: '',
-    tournType: '',
+    tourn_name: '',
+    tourn_type: '',
     tournTypeName: '',
-    sponsorOrgId: '',
+    sponsor_org_id: '',
     sponsorOrgName: '',
-    eventStartDate: '',
-    eventEndDate: '',
-    venueId: '',
+    event_start_date: '',
+    event_end_date: '',
+    venue_id: '',
     venueIdName: '',
-    venueName: '',
-    tournUrl: '',
-    tournInfoFailePath: '',
+    venue_name: '',
+    tourn_url: '',
+    tourn_info_faile_path: '',
   });
 
   //追加対象のデータをまとめて送信する 20240202
@@ -166,56 +166,56 @@ export default function Tournament() {
   const performValidation = () => {
     const entrysystemRaceIdError = Validator.getErrorMessages([]);
     const tournNameError = Validator.getErrorMessages([
-      Validator.validateRequired(tournamentFormData.tournName, '大会名'),
+      Validator.validateRequired(tournamentFormData.tourn_name, '大会名'),
     ]);
     const sponsorOrgIdError = Validator.getErrorMessages([
-      Validator.validateRequired(tournamentFormData.sponsorOrgId, '主催団体ID'),
+      Validator.validateRequired(tournamentFormData.sponsor_org_id, '主催団体ID'),
     ]);
     const eventStartDateError = Validator.getErrorMessages([
-      Validator.validateRequired(tournamentFormData.eventStartDate, '開催日時'),
+      Validator.validateRequired(tournamentFormData.event_start_date, '開催日時'),
     ]);
     const eventEndDateError = Validator.getErrorMessages([
-      Validator.validateRequired(tournamentFormData.eventEndDate, '終了日時'),
+      Validator.validateRequired(tournamentFormData.event_end_date, '終了日時'),
     ]);
     const venueIdError = Validator.getErrorMessages([
       Validator.validateRequired(
-        tournamentFormData.venueId,
+        tournamentFormData.venue_id,
         '開催場所を選択するか、入力欄に開催場所',
       ),
     ]);
     const venueNameError =
-      tournamentFormData.venueId === '0'
+      tournamentFormData.venue_id === '0'
         ? Validator.getErrorMessages([
           Validator.validateRequired(
-            tournamentFormData.venueName,
+            tournamentFormData.venue_name,
             '開催場所を選択するか、入力欄に開催場所',
           ),
         ])
         : [];
 
     const tournUrlError = Validator.getErrorMessages([
-      Validator.validateUrlFormat(tournamentFormData.tournUrl),
+      Validator.validateUrlFormat(tournamentFormData.tourn_url),
     ]);
     const raceNumberErrorFlg = tableData.some((row) => {
-      return Validator.validateRequired(row.raceNumber, 'レースNo.').length > 0;
+      return Validator.validateRequired(row.race_number, 'レースNo.').length > 0;
     });
     const eventIdErrorFlg = tableData.some((row) => {
-      return Validator.validateSelectRequired(row.eventId, '種目').length > 0;
+      return Validator.validateSelectRequired(row.event_id, '種目').length > 0;
     });
     const raceNameErrorFlg = tableData.some((row) => {
-      return Validator.validateRequired(row.raceName, 'レース名').length > 0;
+      return Validator.validateRequired(row.race_name, 'レース名').length > 0;
     });
     const raceTypeErrorFlg = tableData.some((row) => {
-      return Validator.validateRequired(row.raceType, 'レース区分').length > 0;
+      return Validator.validateRequired(row.race_class_id, 'レース区分').length > 0;
     });
     const raceTypeNameErrorFlg = tableData.some((row) => {
-      return row.raceType === '999'
-        ? Validator.validateRequired(row.raceTypeName, 'レース区分').length > 0
+      return row.race_class_id === '999'
+        ? Validator.validateRequired(row.race_class_name, 'レース区分').length > 0
         : false;
     });
 
     const byGroupErrorFlg = tableData.some((row) => {
-      return Validator.validateRequired(row.byGroup, '組別').length > 0;
+      return Validator.validateRequired(row.by_group, '組別').length > 0;
     });
 
     const rangeErrorFlg = tableData.some((row) => {
@@ -223,7 +223,7 @@ export default function Tournament() {
     });
 
     const startDateTimeErrorFlg = tableData.some((row) => {
-      return Validator.validateRequired(row.startDateTime, '発艇日時').length > 0;
+      return Validator.validateRequired(row.start_datetime, '発艇日時').length > 0;
     });
 
     setEntrysystemRaceIdErrorMessage(entrysystemRaceIdError);

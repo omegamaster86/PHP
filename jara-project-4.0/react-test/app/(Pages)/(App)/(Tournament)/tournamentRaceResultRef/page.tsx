@@ -63,31 +63,31 @@ export default function TournamentRaceResultRef() {
     const fetchData = async () => {
       try {
         // 仮のURL（繋ぎ込み時に変更すること）
-        const response = await axios.get<RaceResultRecordsResponse[]>(
-          'http://localhost:3100/raceResultRecords',
-        );
-        setResultRecordsData(response.data);
-        response.data.length === 0
-          ? setError({ isError: true, errorMessage: 'エントリー情報がありません。' })
-          : null;
-        const raceNamesArray = response.data.map((item) => item.raceName);
-        const uniqueRaceNamesSet = new Set(raceNamesArray);
-        const uniqueRaceNamesArray = Array.from(uniqueRaceNamesSet);
-        setRaceNameList(
-          uniqueRaceNamesArray.map((item, index) => ({
-            id: index,
-            name: item,
-          })),
-        );
-        const byGroupsArray = response.data.map((item) => item.byGroup);
-        const uniqueByGroupsSet = new Set(byGroupsArray);
-        const uniqueByGroupsArray = Array.from(uniqueByGroupsSet);
-        setByGroupList(
-          uniqueByGroupsArray.map((item, index) => ({
-            id: index,
-            name: item,
-          })),
-        );
+        // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
+        const response = await axios.get('http://localhost:8000/api/getRaceResultRecordsData');
+        console.log(response);
+        // setResultRecordsData(response.data);
+        // response.data.length === 0
+        //   ? setError({ isError: true, errorMessage: 'エントリー情報がありません。' })
+        //   : null;
+        // const raceNamesArray = response.data.map((item) => item.raceName);
+        // const uniqueRaceNamesSet = new Set(raceNamesArray);
+        // const uniqueRaceNamesArray = Array.from(uniqueRaceNamesSet);
+        // setRaceNameList(
+        //   uniqueRaceNamesArray.map((item, index) => ({
+        //     id: index,
+        //     name: item,
+        //   })),
+        // );
+        // const byGroupsArray = response.data.map((item) => item.byGroup);
+        // const uniqueByGroupsSet = new Set(byGroupsArray);
+        // const uniqueByGroupsArray = Array.from(uniqueByGroupsSet);
+        // setByGroupList(
+        //   uniqueByGroupsArray.map((item, index) => ({
+        //     id: index,
+        //     name: item,
+        //   })),
+        // );
       } catch (error: any) {
         setError({ isError: true, errorMessage: 'API取得エラー:' + error.message });
       }
@@ -221,7 +221,7 @@ export default function TournamentRaceResultRef() {
               {/* 種目名 */}
               <div className='flex flex-col justify-start'>
                 <Label
-                  label={raceResultRecordsData.at(0)?.eventName ?? ''}
+                  label={raceResultRecordsData.at(0)?.event_name ?? ''}
                   textColor='white'
                   textSize='h3'
                 />
@@ -238,12 +238,12 @@ export default function TournamentRaceResultRef() {
                   <div className='flex flex-col justify-start gap-[10px]'>
                     {/* 大会名 */}
                     <Link
-                      href={`/tournamentRef?tournId=${raceResultRecordsData.at(0)?.tournId}`}
+                      href={`/tournamentRef?tournId=${raceResultRecordsData.at(0)?.tourn_id}`}
                       rel='noopener noreferrer'
                       target='_blank'
                       className='text-primary-300 underline hover:text-primary-50 cursor-pointer text-caption1'
                     >
-                      {raceResultRecordsData.at(0)?.tournName as string}
+                      {raceResultRecordsData.at(0)?.tourn_name as string}
                     </Link>
                     <div className='flex flex-col justify-start'>
                       {/* 開催場所 */}
@@ -309,16 +309,16 @@ export default function TournamentRaceResultRef() {
                         selectedRaceNameList.length > 0 &&
                         selectedByGroupList.length === 0
                       ) {
-                        return selectedRaceNameList.some((item) => item.name === row.raceName);
+                        return selectedRaceNameList.some((item) => item.name === row.race_name);
                       } else if (
                         selectedRaceNameList.length === 0 &&
                         selectedByGroupList.length > 0
                       ) {
-                        return selectedByGroupList.some((item) => item.name === row.byGroup);
+                        return selectedByGroupList.some((item) => item.name === row.by_group);
                       } else {
                         return (
-                          selectedRaceNameList.some((item) => item.name === row.raceName) &&
-                          selectedByGroupList.some((item) => item.name === row.byGroup)
+                          selectedRaceNameList.some((item) => item.name === row.race_name) &&
+                          selectedByGroupList.some((item) => item.name === row.by_group)
                         );
                       }
                     })
@@ -326,11 +326,11 @@ export default function TournamentRaceResultRef() {
                     .map((row, index) => (
                       <CustomTr key={index}>
                         {/* レース名 */}
-                        <CustomTd>{row.raceName}</CustomTd>
+                        <CustomTd>{row.race_name}</CustomTd>
                         {/* レースNo. */}
-                        <CustomTd>{row.raceNumber}</CustomTd>
+                        <CustomTd>{row.race_number}</CustomTd>
                         {/* 組別 */}
-                        <CustomTd>{row.byGroup}</CustomTd>
+                        <CustomTd>{row.by_group}</CustomTd>
                         {/* 発艇日時 */}
                         <CustomTd>{row.eventStartDate}</CustomTd>
                         {/* 順位 */}
@@ -344,67 +344,67 @@ export default function TournamentRaceResultRef() {
                             }}
                             className='text-primary-300 underline hover:text-primary-50 cursor-pointer text-caption1'
                           >
-                            {row.crewName}
+                            {row.crew_name}
                           </div>
                         </CustomTd>
                         {/* 500mlapタイム */}
-                        <CustomTd>{row.fiveHundredmLaptime}</CustomTd>
+                        <CustomTd>{row.laptime_500m}</CustomTd>
                         {/* 1000mlapタイム */}
-                        <CustomTd>{row.tenHundredmLaptime}</CustomTd>
+                        <CustomTd>{row.laptime_1000m}</CustomTd>
                         {/* 1500mlapタイム */}
-                        <CustomTd>{row.fifteenHundredmLaptime}</CustomTd>
+                        <CustomTd>{row.laptime_1500m}</CustomTd>
                         {/* 2000mlapタイム */}
-                        <CustomTd>{row.twentyHundredmLaptime}</CustomTd>
+                        <CustomTd>{row.laptime_2000m}</CustomTd>
                         {/* 最終タイム */}
-                        <CustomTd>{row.finalTime}</CustomTd>
+                        <CustomTd>{row.final_time}</CustomTd>
                         {/* B.No */}
                         <CustomTd>{row.bNo}</CustomTd>
                         {/* Qualify */}
-                        <CustomTd>{row.remark}</CustomTd>
+                        <CustomTd>{row.remark}</CustomTd>{/*#置き換え作業未対応 remarkがRaceResultRecordsResponseにない*/}
                         {/* ストローク（平均） */}
-                        <CustomTd>{row.strokeRateAvg}</CustomTd>
+                        <CustomTd>{row.stroke_rate_avg}</CustomTd>
                         {/* 500mlapストローク */}
-                        <CustomTd>{row.fiveHundredmStrokeRat}</CustomTd>
+                        <CustomTd>{row.stroke_rat_500m}</CustomTd>
                         {/* 1000mlapストローク */}
-                        <CustomTd>{row.tenHundredmStrokeRat}</CustomTd>
+                        <CustomTd>{row.stroke_rat_1000m}</CustomTd>
                         {/* 1500mlapストローク */}
-                        <CustomTd>{row.fifteenHundredmStrokeRat}</CustomTd>
+                        <CustomTd>{row.stroke_rat_1500m}</CustomTd>
                         {/* 2000mlapストローク */}
-                        <CustomTd>{row.twentyHundredmStrokeRat}</CustomTd>
+                        <CustomTd>{row.stroke_rat_2000m}</CustomTd>
                         {/* 心拍数/分（平均） */}
-                        <CustomTd>{row.heartRateAvg}</CustomTd>
+                        <CustomTd>{row.heart_rate_avg}</CustomTd>
                         {/* 500m心拍数/分 */}
-                        <CustomTd>{row.fiveHundredmHeartRate}</CustomTd>
+                        <CustomTd>{row.heart_rate_500m}</CustomTd>
                         {/* 1000m心拍数/分 */}
-                        <CustomTd>{row.tenHundredmHeartRate}</CustomTd>
+                        <CustomTd>{row.heart_rate_1000m}</CustomTd>
                         {/* 1500m心拍数/分 */}
-                        <CustomTd>{row.fifteenHundredmHeartRate}</CustomTd>
+                        <CustomTd>{row.heart_rate_1500m}</CustomTd>
                         {/* 2000m心拍数/分 */}
-                        <CustomTd>{row.twentyHundredmHeartRate}</CustomTd>
+                        <CustomTd>{row.heart_rate_2000m}</CustomTd>
                         {/* 非公式／公式 */}
                         <CustomTd>{row.official === 0 ? '非公式' : '公式'}</CustomTd>
                         {/* 立ち合い有無 */}
                         <CustomTd>{row.attendance}</CustomTd>
                         {/* エルゴ体重 */}
-                        <CustomTd>{row.ergoWeight}</CustomTd>
+                        <CustomTd>{row.ergo_weight}</CustomTd>
                         {/* 選手身長 */}
-                        <CustomTd>{row.playerHeight}</CustomTd>
+                        <CustomTd>{row.player_height}</CustomTd>
                         {/* 選手体重 */}
-                        <CustomTd>{row.playerWeight}</CustomTd>
+                        <CustomTd>{row.player_weight}</CustomTd>
                         {/* シート番号ID */}
-                        <CustomTd>{row.sheetNameId}</CustomTd>
+                        <CustomTd>{row.seat_number}</CustomTd>
                         {/* シート番号 */}
-                        <CustomTd>{row.sheetName}</CustomTd>
+                        <CustomTd>{row.seat_name}</CustomTd>
                         {/* 出漕結果記録名 */}
-                        <CustomTd>{row.raceResultRecordName}</CustomTd>
+                        <CustomTd>{row.race_result_record_name}</CustomTd>
                         {/* 500m地点風速 */}
-                        <CustomTd>{row.fiveHundredmHeartRate}</CustomTd>
+                        <CustomTd>{row.fiveHundredmHeartRate}</CustomTd>{/*#置き換え作業未対応 wind_speed_2000m_pointの間違い？*/}
                         {/* 1000m地点風速 */}
-                        <CustomTd>{row.tenHundredmHeartRate}</CustomTd>
+                        <CustomTd>{row.tenHundredmHeartRate}</CustomTd>{/*#置き換え作業未対応 wind_direction_2000m_pointの間違い？*/}
                         {/* 1500m地点風速 */}
-                        <CustomTd>{row.fifteenHundredmHeartRate}</CustomTd>
+                        <CustomTd>{row.fifteenHundredmHeartRate}</CustomTd>{/*#置き換え作業未対応 wind_speed_1000m_pointの間違い？*/}
                         {/* 2000m地点風速 */}
-                        <CustomTd>{row.twentyHundredmWindSpeed}</CustomTd>
+                        <CustomTd>{row.twentyHundredmWindSpeed}</CustomTd>{/*#置き換え作業未対応 wind_direction_1000m_pointの間違い？*/}
                       </CustomTr>
                     ))}
                 </CustomTbody>
@@ -545,19 +545,19 @@ export default function TournamentRaceResultRef() {
                     .sort((a, b) => a.order - b.order)
                     .map((row, index) => (
                       <CustomTr key={index}>
-                        <CustomTd>{row.sheetName}</CustomTd>
+                        <CustomTd>{row.seat_name}</CustomTd>
                         <CustomTd>
                           <Link
-                            href={`/playerInformationRef?playerId=${row.playerId}`}
+                            href={`/playerInformationRef?playerId=${row.player_id}`}
                             rel='noopener noreferrer'
                             target='_blank'
                             className='text-primary-300 underline hover:text-primary-50 cursor-pointer text-caption1'
                           >
-                            {row.playerName}
+                            {row.player_name}
                           </Link>
                         </CustomTd>
-                        <CustomTd>{row.playerHeight}</CustomTd>
-                        <CustomTd>{row.playerWeight}</CustomTd>
+                        <CustomTd>{row.player_height}</CustomTd>
+                        <CustomTd>{row.player_weight}</CustomTd>
                       </CustomTr>
                     ))}
                 </CustomTbody>

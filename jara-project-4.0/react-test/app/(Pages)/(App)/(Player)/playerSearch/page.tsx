@@ -518,7 +518,7 @@ export default function PlayerSearch() {
                 <CustomTr index={index} key={index}>
                   <CustomTd>
                     <img
-                      src={row.playerPhoto}
+                      src={row.photo}
                       width={100}
                       height={100}
                       alt='Random'
@@ -527,16 +527,16 @@ export default function PlayerSearch() {
                   </CustomTd>
                   {/* TODO 仮実装なので、以下リンク設定があるものには、遷移時に必要なパラメータを設定 */}
                   {/* 選手名 */}
-                  <CustomTd transitionDest={'/playerInfomationRef?playerId=' + row.playerId}>
-                    {row.playerName}
+                  <CustomTd transitionDest={'/playerInfomationRef?playerId=' + row.player_id}>
+                    {row.player_name}
                   </CustomTd>
                   {/* JARA選手コード */}
-                  <CustomTd transitionDest={'/playerInfomationRef?playerId=' + row.playerId}>
-                    {row.jaraPlayerId}
+                  <CustomTd transitionDest={'/playerInfomationRef?playerId=' + row.player_id}>
+                    {row.jara_player_id}
                   </CustomTd>
                   {/* 選手ID */}
-                  <CustomTd transitionDest={'/playerInfomationRef?playerId=' + row.playerId}>
-                    {row.playerId}
+                  <CustomTd transitionDest={'/playerInfomationRef?playerId=' + row.player_id}>
+                    {row.player_id}
                   </CustomTd>
                   {/* 性別 */}
                   <CustomTd>{row.sex}</CustomTd>

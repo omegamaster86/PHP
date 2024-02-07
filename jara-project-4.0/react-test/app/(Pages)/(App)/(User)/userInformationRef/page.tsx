@@ -27,18 +27,18 @@ export default function UserInformationUpdate() {
 
   // フォームの入力値を管理するステート
   const [formData, setFormData] = useState<UserResponse>({
-    userId: '', // ユーザーID
-    userName: '', // ユーザー名
-    dateOfBirth: '', // 生年月日
+    user_id: '', // ユーザーID
+    user_name: '', // ユーザー名
+    date_of_birth: '', // 生年月日
     sexName: '', // 性別
     height: '', // 身長
     weight: '', // 体重
     residenceCountryName: '', // 居住地（国）
     residencePrefectureName: '', // 居住地（都道府県）
-    email: '', // メールアドレス
-    userType: '', // ユーザー種別
+    mailaddress: '', // メールアドレス
+    user_type: '', // ユーザー種別
     userTypeName: '', // ユーザー種別名
-    tempPasswordFlag: false, // 仮登録ステータス
+    temp_password_flag: false, // 仮登録ステータス
     photo: '', // 写真
   });
   // モードのチェック
@@ -77,17 +77,17 @@ export default function UserInformationUpdate() {
         setFormData((prevFormData) => ({
           ...prevFormData,
           ...{
-            userId: response.data.userId,
-            userName: response.data.userName,
-            userType: response.data.userType,
-            dateOfBirth: response.data.dateOfBirth,
+            userId: response.data.user_id,
+            userName: response.data.user_name,
+            userType: response.data.user_type,
+            dateOfBirth: response.data.date_of_birth,
             sexName: response.data.sexName,
             height: response.data.height,
             weight: response.data.weight,
             residenceCountryName: response.data.residenceCountryName,
             residencePrefectureName: response.data.residencePrefectureName,
-            email: response.data.email,
-            tempPasswordFlag: response.data.tempPasswordFlag,
+            email: response.data.mailaddress,
+            tempPasswordFlag: response.data.temp_password_flag,
             photo: response.data.photo,
           },
         }));
@@ -159,14 +159,14 @@ export default function UserInformationUpdate() {
         <CustomTextField
           label='ユーザーID'
           readonly={true}
-          value={formData.userId}
+          value={formData.user_id}
           displayHelp={false}
         />
         {/* ユーザー種別 */}
         <CustomTextField
           label='ユーザー種別'
           readonly={true}
-          value={formData.userType}
+          value={formData.user_type}
           displayHelp={false}
         />
         {/* ユーザー名 */}
@@ -176,7 +176,7 @@ export default function UserInformationUpdate() {
           readonly
           displayHelp={false}
           required={false}
-          value={formData.userName}
+          value={formData.user_name}
         />
         {/* メールアドレス */}
         <div className='flex flex-row gap-[10px] '>
@@ -186,7 +186,7 @@ export default function UserInformationUpdate() {
             errorMessages={[]}
             readonly
             type='email'
-            value={formData.email}
+            value={formData.mailaddress}
           />
         </div>
         <div className='flex flex-col justify-start gap-[10px]'>
@@ -204,7 +204,7 @@ export default function UserInformationUpdate() {
           <InputLabel label='生年月日' displayHelp={false} />
           <CustomDatePicker
             readonly
-            selectedDate={formData.dateOfBirth}
+            selectedDate={formData.date_of_birth}
             onChange={(e: string) => {
               handleInputChange('dateOfBirth', e);
             }}

@@ -19,96 +19,96 @@ interface SexResponse {
 
 // 出漕結果情報一覧
 interface RaceResultRecordsResponse {
-  raceResultRecordId: number; // 出漕結果記録ID
-  tournId: number; // 大会ID
-  tournName: string; // 大会名
+  race_result_record_id: number; // 出漕結果記録ID
+  tourn_id: number; // 大会ID
+  tourn_name: string; // 大会名
   official: number; // 公式／非公式
-  eventStartDate: string; // 開催日
-  orgName: string; // 団体所属
-  raceNumber: number; // レースNo.
-  eventName: string; // 種目
-  raceName: string; // レース名
-  byGroup: string; // 組別
-  crewName: string; // クルー名
+  eventStartDate: string; // 開催日　#置き換え作業未対応
+  org_name: string; // 団体所属
+  race_number: number; // レースNo.
+  event_name: string; // 種目　
+  race_name: string; // レース名
+  by_group: string; // 組別
+  crew_name: string; // クルー名
   rank: number; // 順位
-  fiveHundredmLaptime: number; // 500mラップタイム
-  tenHundredmLaptime: number; // 1000mラップタイム
-  fifteenHundredmLaptime: number; // 1500mラップタイム
-  twentyHundredmLaptime: number; // 2000mラップタイム
-  finalTime: number; // 最終タイム
-  bNo: number; // B.No
-  remark: string; // 備考
-  strokeRateAvg: number; // ストロークレート（平均）
-  fiveHundredmStrokeRat: number; // 500mlapストロークレート
-  tenHundredmStrokeRat: number; // 1000mlapストロークレート
-  fifteenHundredmStrokeRat: number; // 1500mlapストロークレート
-  twentyHundredmStrokeRat: number; // 2000mlapストロークレート
-  heartRateAvg: number; // 心拍数/分（平均）
-  fiveHundredmHeartRate: number; // 500mlap心拍数/分
-  tenHundredmHeartRate: number; // 1000mlap心拍数/分
-  fifteenHundredmHeartRate: number; // 1500mlap心拍数/分
-  twentyHundredmHeartRate: number; // 2000mlap心拍数/分
+  laptime_500m: number; // 500mラップタイム
+  laptime_1000m: number; // 1000mラップタイム
+  laptime_1500m: number; // 1500mラップタイム
+  laptime_2000m: number; // 2000mラップタイム
+  final_time: number; // 最終タイム
+  bNo: number; // B.No　#置き換え作業未対応
+  race_result_notes: string; // 備考
+  stroke_rate_avg: number; // ストロークレート（平均）
+  stroke_rat_500m: number; // 500mlapストロークレート
+  stroke_rat_1000m: number; // 1000mlapストロークレート
+  stroke_rat_1500m: number; // 1500mlapストロークレート
+  stroke_rat_2000m: number; // 2000mlapストロークレート
+  heart_rate_avg: number; // 心拍数/分（平均）
+  heart_rate_500m: number; // 500mlap心拍数/分
+  heart_rate_1000m: number; // 1000mlap心拍数/分
+  heart_rate_1500m: number; // 1500mlap心拍数/分
+  heart_rate_2000m: number; // 2000mlap心拍数/分
   attendance: number; // 立ち合い有無
-  ergoWeight: number; // エルゴ体重
-  playerHeight: number; // 選手身長（出漕時点）
-  playerWeight: number; // 選手体重（出漕時点）
-  sheetNameId: number; // シート番号ID（出漕時点）
-  sheetName: string; // シート番号（出漕時点）
-  raceResultRecordName: string; // 出漕結果記録名
-  registeredTime: string; // 登録日時
-  twentyHundredmWindSpeed: number; // 2000m地点風速
-  twentyHundredmWindDirection: number; // 2000m地点風向
-  tenHundredmWindSpeed: number; // 1000m地点風速
-  tenHundredmWindDirection: number; // 1000m地点風向
-  venueName: string; // 開催場所
+  ergo_weight: number; // エルゴ体重
+  player_height: number; // 選手身長（出漕時点）
+  player_weight: number; // 選手体重（出漕時点）
+  seat_number: number; // シート番号ID（出漕時点）
+  seat_name: string; // シート番号（出漕時点）
+  race_result_record_name: string; // 出漕結果記録名
+  registered_time: string; // 登録日時
+  wind_speed_2000m_point: number; // 2000m地点風速
+  wind_direction_2000m_point: number; // 2000m地点風向
+  wind_speed_1000m_point: number; // 1000m地点風速
+  wind_direction_1000m_point: number; // 1000m地点風向
+  venueName: string; // 開催場所　#置き換え作業対応不要
   range: number; // 距離
   order: number; // 順番
 }
 
 // 団体情報
 interface TeamResponse {
-  teamTyp: string; // 団体種別
-  entteamId: string; // エントリーシステムの団体ID
-  teamId: string; // 団体ID
-  name: string; // 団体名
+  teamTyp: string; // 団体種別　#置き換え作業対応不要
+  entrysystem_org_id: string; // エントリーシステムの団体ID
+  org_id: string; // 団体ID
+  org_name: string; // 団体名
 }
 
 // 大会情報
 interface Tournament {
-  tournId?: string; // 大会ID
-  entrysystemRaceId: string; // エントリーシステムのレースID
-  tournName: string; // 大会名
-  tournType: string; // 大会種別
-  tournTypeName: string; // 大会種別名
-  sponsorOrgId: string; // 主催団体ID
-  sponsorOrgName: string; // 主催団体名
-  eventStartDate: string; // 開催日
-  eventEndDate: string; // 終了日
-  venueId: string; // 開催場所ID
-  venueIdName: string; // 開催場所ID名
-  venueName: string; // 開催場所名
-  tournUrl: string; // 大会URL
-  tournInfoFailePath: string; // 大会情報ファイルパス
+  tourn_id?: string; // 大会ID
+  entrysystemRaceId: string; // エントリーシステムのレースID　#置き換え作業未対応（エントリー大会IDの間違い？）
+  tourn_name: string; // 大会名
+  tourn_type: string; // 大会種別
+  tournTypeName: string; // 大会種別名　#置き換え作業対応不要
+  sponsor_org_id: string; // 主催団体ID
+  sponsorOrgName: string; // 主催団体名　#置き換え作業対応不要
+  event_start_date: string; // 開催日
+  event_end_date: string; // 終了日
+  venue_id: string; // 開催場所ID
+  venueIdName: string; // 開催場所ID名　#置き換え作業対応不要
+  venue_name: string; // 開催場所名
+  tourn_url: string; // 大会URL
+  tourn_info_faile_path: string; // 大会情報ファイルパス
 }
 
 // レース情報
 interface Race {
-  id: number; // ID
-  checked: boolean; // チェックボックス
-  raceId: string; //
-  entrysystemRaceId: string; // エントリーシステムのレースID
-  raceNumber: string; // レースNo.
-  eventId: string; // 種目ID
-  eventName: string; // 種目名
-  raceName: string; // レース名
-  raceType: string; // レース区分
-  raceTypeName: string; // レース区分名
-  otherRaceName?: string; // その他レース名
-  byGroup: string; // 組別
+  id: number; // ID　#置き換え作業未対応
+  checked: boolean; // チェックボックス　#置き換え作業未対応
+  race_id: string; //
+  entrysystem_race_id: string; // エントリーシステムのレースID
+  race_number: string; // レースNo.
+  event_id: string; // 種目ID
+  event_name: string; // 種目名
+  race_name: string; // レース名
+  race_class_id: string; // レース区分
+  race_class_name: string; // レース区分名
+  otherRaceName?: string; // その他レース名　#置き換え作業未対応
+  by_group: string; // 組別
   range: string; // 距離
-  startDateTime: string; // 開始日時
+  start_datetime: string; // 開始日時
   // 「出漕結果記録テーブル」に「レーステーブル」.「レースID」と紐づくデータが存在する場合、リンクボタンを表示するかどうかを制御するためにhasHistoryを利用
-  hasHistory?: boolean; // 過去のレース結果があるかどうか
+  hasHistory?: boolean; // 過去のレース結果があるかどうか　#置き換え作業未対応
 }
 
 // 承認種別
@@ -137,102 +137,102 @@ interface RaceTypeResponse {
 
 // ユーザー情報
 interface UserResponse {
-  userId: string; // ユーザーID
-  userType: string; // ユーザー種別
-  userTypeName: string; // ユーザー種別
-  userName: string; // ユーザー名
-  email: string; // メールアドレス
-  sexName: string; // 性別
-  sexId?: number; // 性別
-  dateOfBirth: string; // 生年月日
-  residenceCountryId?: number; // 居住地（国）
-  residenceCountryName: string; // 居住地（国）
-  residencePrefectureId?: number; // 居住地（都道府県）
-  residencePrefectureName: string; // 居住地（都道府県）
+  user_id: string; // ユーザーID
+  user_type: string; // ユーザー種別
+  userTypeName: string; // ユーザー種別　#置き換え作業未対応
+  user_name: string; // ユーザー名
+  mailaddress: string; // メールアドレス
+  sexName: string; // 性別　#置き換え作業未対応
+  sex?: number; // 性別
+  date_of_birth: string; // 生年月日
+  residence_country?: number; // 居住地（国）
+  residenceCountryName: string; // 居住地（国）　#置き換え作業対応不要
+  residence_prefecture?: number; // 居住地（都道府県）
+  residencePrefectureName: string; // 居住地（都道府県）　#置き換え作業対応不要
   height: string; // 身長
   weight: string; // 体重
-  tempPasswordFlag: boolean; // 登録ステータス
+  temp_password_flag: boolean; // 登録ステータス
   photo: string; // 写真
 }
 
 // ボランティア情報
 interface VolunteerResponse {
-  volunteerId: string; // ボランティアID
-  volunteerName: string; // 氏名
-  residenceCountry: string; // 居住地（国）
-  residencePrefecture: string; // 居住地（都道府県）
-  sex: string; // 性別
-  dateOfBirth: string; // 生年月日
-  telephoneNumber: string; // 電話番号
+  volunteer_id: string; // ボランティアID
+  volunteer_name: string; // 氏名
+  residence_country: string; // 居住地（国）
+  residence_prefecture: string; // 居住地（都道府県）
+  sex: string; // 性別　#置き換え作業未対応
+  date_of_birth: string; // 生年月日
+  telephone_number: string; // 電話番号
   mailaddress: string; // メールアドレス
-  clothesSize: string; // 服のサイズ
-  personality: string; // 性格
-  disType: string[]; // 障碍タイプ
-  qualHold: string[]; // 保有資格
-  language: any; // 言語
-  dayOfWeek: string; // 曜日
-  timeZone: string; // 時間帯
-  photo: string; // 写真
+  clothes_size: string; // 服のサイズ
+  personality: string; // 性格　#置き換え作業未対応
+  dis_type_id: string[]; // 障碍タイプ
+  qualHold: string[]; // 保有資格　#置き換え作業未対応
+  language: any; // 言語　#置き換え作業未対応
+  day_of_week: string; // 曜日
+  time_zone: string; // 時間帯
+  photo: string; // 写真　#置き換え作業未対応
 }
 
 // ボランティア履歴情報
 interface VolunteerHistoriesResponse {
-  tournId: string; // 大会ID
-  tournName: string; // 大会名
-  tournType: number; // 大会種別
-  eventStartDate: string; // 開催日
-  eventEndDate: string; // 終了日
-  roleName: string; // 役割名
-  ad: string; // 役割名
-  dateType: number; // 平日/休日（祝日）
-  dayOfWeek: string; // 曜日
-  timeZone: string; // 時間帯
+  tourn_id: string; // 大会ID
+  tourn_name: string; // 大会名
+  tourn_type: number; // 大会種別
+  event_start_date: string; // 開催日
+  event_end_date: string; // 終了日
+  role: string; // 役割名
+  ad: string; // 役割名　#置き換え作業未対応
+  date_type: number; // 平日/休日（祝日）
+  day_of_week: string; // 曜日
+  time_zone: string; // 時間帯
 }
 
 // 選手情報
 interface PlayerInformationResponse {
-  playerId: number; // 選手ID
-  jaraPlayerCode: string; // JARA選手コード
-  existPlayerId?: number; // 既存選手ID
-  playerName: string; // 選手名
-  dateOfBirth: string; // 生年月日
-  sexName: string; // 性別
-  sexId?: number; // 性別
+  player_id: number; // 選手ID
+  jara_player_id: string; // JARA選手コード
+  existPlayerId?: number; // 既存選手ID　#置き換え作業未対応
+  player_name: string; // 選手名
+  date_of_birth: string; // 生年月日
+  sexName: string; // 性別　#置き換え作業対応不要
+  sex_id?: number; // 性別
   height: string; // 身長
   weight: string; // 体重
-  sideInfo: boolean[]; // サイド情報
-  birthCountryName: string; // 出身地（国）
-  birthCountryId?: number; // 出身地（国）
-  birthPrefectureName: string; // 出身地（都道府県）
-  birthPrefectureId?: number; // 出身地（都道府県）
-  residenceCountryName: string; // 居住地（国）
-  residenceCountryId?: number; // 居住地（国）
-  residencePrefectureName: string; // 居住地（都道府県）
-  residencePrefectureId?: number; // 居住地（都道府県）
+  side_info: boolean[]; // サイド情報
+  birthCountryName: string; // 出身地（国）　#置き換え作業対応不要
+  birth_country?: number; // 出身地（国）
+  birthPrefectureName: string; // 出身地（都道府県）　#置き換え作業対応不要
+  birth_prefecture?: number; // 出身地（都道府県）
+  residenceCountryName: string; // 居住地（国）　#置き換え作業対応不要
+  residence_country?: number; // 居住地（国）
+  residencePrefectureName: string; // 居住地（都道府県）　#置き換え作業対応不要
+  residence_prefecture?: number; // 居住地（都道府県）
   photo: string; // 写真
 }
 
 // 団体所属選手情報
 interface TeamPlayerInformationResponse {
-  id: number; // ID
-  playerId: number; // 選手ID
-  jaraPlayerCode: string; // JARA選手コード
-  existPlayerId?: number; // 既存選手ID
-  playerName: string; // 選手名
-  dateOfBirth: string; // 生年月日
-  sexName: string; // 性別
-  sexId?: number; // 性別
+  id: number; // ID　#置き換え作業未対応
+  player_id: number; // 選手ID
+  jara_player_id: string; // JARA選手コード
+  existPlayerId?: number; // 既存選手ID　#置き換え作業未対応
+  player_name: string; // 選手名
+  date_of_birth: string; // 生年月日
+  sexName: string; // 性別　#置き換え作業未対応
+  sex_id?: number; // 性別
   height: string; // 身長
   weight: string; // 体重
-  sideInfo: boolean[]; // サイド情報
-  birthCountryName: string; // 出身地（国）
-  birthCountryId?: number; // 出身地（国）
-  birthPrefectureName: string; // 出身地（都道府県）
-  birthPrefectureId?: number; // 出身地（都道府県）
-  residenceCountryName: string; // 居住地（国）
-  residenceCountryId?: number; // 居住地（国）
-  residencePrefectureName: string; // 居住地（都道府県）
-  residencePrefectureId?: number; // 居住地（都道府県）
+  side_info: boolean[]; // サイド情報
+  birthCountryName: string; // 出身地（国）　#置き換え作業対応不要
+  birth_country?: number; // 出身地（国）
+  birthPrefectureName: string; // 出身地（都道府県）　#置き換え作業対応不要
+  birth_prefecture?: number; // 出身地（都道府県）
+  residenceCountryName: string; // 居住地（国）　#置き換え作業対応不要
+  residence_country?: number; // 居住地（国）
+  residencePrefectureName: string; // 居住地（都道府県）　#置き換え作業対応不要
+  residence_prefecture?: number; // 居住地（都道府県）
   photo: string; // 写真
   deleteFlag?: boolean; // 削除フラグ
 }
@@ -263,62 +263,62 @@ interface TournamentResponse {
 
 // 選手情報
 interface Player {
-  id: number; // 選手ID
-  playerPhoto: string; // 選手画像
-  playerName: string; // 選手名
-  jaraPlayerId: string; // JARA選手コード
-  playerId: string; // 選手ID
-  sexId: string; // 性別ID
-  sex: string; // 性別
-  entrysystemRaceId: string; // エントリーシステムの団体ID
-  orgId1: string; // 団体ID1
-  orgName1: string; // 所属団体名1
-  orgId2: string; // 団体ID2
-  orgName2: string; // 所属団体名2
-  orgId3: string; // 団体ID3
-  orgName3: string; // 所属団体名3
+  id: number; // 選手ID　#置き換え作業未対応
+  photo: string; // 選手画像
+  player_name: string; // 選手名
+  jara_player_id: string; // JARA選手コード
+  player_id: string; // 選手ID
+  sex_id: string; // 性別ID
+  sex: string; // 性別　#置き換え作業未対応
+  entrysystemRaceId: string; // エントリーシステムの団体ID　#置き換え作業未対応
+  orgId1: string; // 団体ID1　#置き換え作業未対応
+  orgName1: string; // 所属団体名1　#置き換え作業未対応
+  orgId2: string; // 団体ID2　#置き換え作業未対応
+  orgName2: string; // 所属団体名2　#置き換え作業未対応
+  orgId3: string; // 団体ID3　#置き換え作業未対応
+  orgName3: string; // 所属団体名3　#置き換え作業未対応
 }
 
 // クルー
 interface CrewResponse {
-  playerId: number; // 選手ID
-  sheetName: string; // シート番号（出漕時点）
-  playerName: string; // 選手名
-  playerHeight: number; // 選手身長（出漕時点）
-  playerWeight: number; // 選手体重（出漕時点）
-  order: number; // 順番
+  player_id: number; // 選手ID
+  seat_name: string; // シート番号（出漕時点）
+  player_name: string; // 選手名
+  player_height: number; // 選手身長（出漕時点）
+  player_weight: number; // 選手体重（出漕時点）
+  order: number; // 順番　#置き換え作業未対応
 }
 
 // 団体情報
 interface Organization {
-  orgId: string; // 団体ID
-  orgName: string; // 団体名
-  entOrgId: string; // エントリーシステムの団体ID
-  orgTypeName: string; // 団体種別名
-  foundingYear: number; // 設立年
-  addressNumber: string; // 郵便番号
-  locationPrefectureId: number; // 所在地（都道府県）
-  locationPrefectureName: string; // 所在地（都道府県）
+  org_id: string; // 団体ID
+  org_name: string; // 団体名
+  entrysystem_org_id: string; // エントリーシステムの団体ID
+  orgTypeName: string; // 団体種別名　#置き換え作業未対応
+  founding_year: number; // 設立年
+  post_code: string; // 郵便番号
+  location_prefecture: number; // 所在地（都道府県）
+  locationPrefectureName: string; // 所在地（都道府県）　#置き換え作業対応不要
   address1: string; // 住所1
   address2: string; // 住所2
-  orgClassId: number; // 団体区分
-  orgClassName: string; // 団体区分
-  jaraOrgTypeId: number; // JARA団体種別
-  jaraOrgTypeName: string; // JARA団体種別
-  jaraOrgRegTrail: string; // JARA団体登録状況
-  prefOrgTypeId: number; // 県ボ団体種別
-  prefOrgTypeName: string; // 県ボ団体種別
-  prefOrgRegTrail: string; // 県ボ団体登録状況
+  org_class: number; // 団体区分
+  orgClassName: string; // 団体区分　#置き換え作業未対応
+  jara_org_type: number; // JARA団体種別
+  jaraOrgTypeName: string; // JARA団体種別　#置き換え作業未対応
+  jara_org_reg_trail: string; // JARA団体登録状況
+  pref_org_type: number; // 県ボ団体種別
+  prefOrgTypeName: string; // 県ボ団体種別　#置き換え作業未対応
+  pref_org_reg_trail: string; // 県ボ団体登録状況
 }
 
 // スタッフ情報
 interface Staff {
-  id: number; // ID
-  userId: string; // ユーザーID
-  userName: string; // ユーザー名
-  staffType: string[]; // スタッフ種別
-  deleteFlag: boolean; // 削除フラグ]
-  isUserFound: boolean; // ユーザーが見つかったかどうか
+  id: number; // ID　#置き換え作業未対応
+  user_id: string; // ユーザーID
+  userName: string; // ユーザー名　#置き換え作業未対応
+  staff_type_id: string[]; // スタッフ種別
+  delete_flag: boolean; // 削除フラグ]
+  isUserFound: boolean; // ユーザーが見つかったかどうか　#置き換え作業未対応
 }
 
 // 団体種別
@@ -335,18 +335,18 @@ interface OrgClass {
 
 // 団体情報
 interface Org {
-  entrySystemId: number;
-  orgId: number;
-  orgName: string;
-  orgClassId: number;
-  orgClassName: string;
-  orgTypeId: number;
-  orgTypeName: string;
-  foundingYear: string;
-  residenceCountryId: number;
-  residenceCountryName: string;
-  residencePrefectureId: number;
-  residencePrefectureName: string;
+  entrysystem_org_id: number;
+  org_id: number;// 団体ID
+  org_name: string;// 団体名
+  org_class: number;// 団体区分
+  orgClassName: string; // 　#置き換え作業未対応
+  orgTypeId: number; // 　#置き換え作業未対応
+  orgTypeName: string; // 　#置き換え作業未対応
+  founding_year: string;// 創立年
+  location_country: number;// 所在地（国）
+  residenceCountryName: string;// 　#置き換え作業対応不要
+  location_prefecture: number;// 所在地（都道府県）
+  residencePrefectureName: string;// 　#置き換え作業対応不要
 }
 
 export type { SexResponse };

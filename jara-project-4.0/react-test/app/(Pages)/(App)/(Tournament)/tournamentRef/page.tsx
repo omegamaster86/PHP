@@ -136,7 +136,7 @@ export default function PlayerInformationRef() {
               <div className='flex flex-col gap-[30px]'>
                 <div className='flex flex-row justify-between'>
                   <Label
-                    label={tournamentFormData.tournName}
+                    label={tournamentFormData.tourn_name}
                     textColor='white'
                     textSize='h2'
                   ></Label>
@@ -156,12 +156,12 @@ export default function PlayerInformationRef() {
                   {/* 大会個別URL */}
                   <div className='text-gray-40 text-caption1 w-[100px]'>大会URL</div>
                   <Link
-                    href={tournamentFormData.tournUrl}
+                    href={tournamentFormData.tourn_url}
                     rel='noopener noreferrer'
                     target='_blank'
                     className='text-white text-caption1 underline hover:text-primary-100'
                   >
-                    {tournamentFormData.tournUrl}
+                    {tournamentFormData.tourn_url}
                   </Link>
                 </div>
                 <div className='flex flex-col gap-[12px]'>
@@ -173,7 +173,7 @@ export default function PlayerInformationRef() {
                           {/* 開催開始年月日 */}
                           <div className='text-gray-40 text-caption1 w-[100px]'>開催開始年月日</div>
                           <Label
-                            label={tournamentFormData.eventStartDate}
+                            label={tournamentFormData.event_start_date}
                             textColor='white'
                             textSize='caption1'
                           ></Label>
@@ -182,7 +182,7 @@ export default function PlayerInformationRef() {
                           {/* 開催終了年月日 */}
                           <div className='text-gray-40 text-caption1 w-[100px]'>開催終了年月日</div>
                           <Label
-                            label={tournamentFormData.eventEndDate}
+                            label={tournamentFormData.event_end_date}
                             textColor='white'
                             textSize='caption1'
                           ></Label>
@@ -217,7 +217,7 @@ export default function PlayerInformationRef() {
                     {/* 主催団体ID */}
                     <div className='text-gray-40 text-caption1 w-[100px]'>ID</div>
                     <Label
-                      label={tournamentFormData.sponsorOrgId}
+                      label={tournamentFormData.sponsor_org_id}
                       textColor='white'
                       textSize='caption1'
                     ></Label>
@@ -228,7 +228,7 @@ export default function PlayerInformationRef() {
                     {/* 大会ID */}
                     <div className='text-gray-40 text-caption1'>大会ID：</div>
                     <Label
-                      label={tournamentFormData.tournId?.toString() as string}
+                      label={tournamentFormData.tourn_id?.toString() as string}
                       textColor='white'
                       textSize='caption1'
                     ></Label>
@@ -279,32 +279,32 @@ export default function PlayerInformationRef() {
                     {row.hasHistory && (
                       // TODO: 遷移先のURLは仮置き。置き換えること。
                       <CustomTd
-                        transitionDest={'/tournamentRaceResultRef&raceId=' + row.raceId?.toString()}
+                        transitionDest={'/tournamentRaceResultRef&raceId=' + row.race_id?.toString()}
                       >
-                        {row.raceId}
+                        {row.race_id}
                       </CustomTd>
                     )}
-                    {!row.hasHistory && <CustomTd>{row.raceId}</CustomTd>}
+                    {!row.hasHistory && <CustomTd>{row.race_id}</CustomTd>}
                     {row.hasHistory && (
                       // TODO: 遷移先のURLは仮置き。置き換えること。
                       <CustomTd
-                        transitionDest={'/tournamentRaceResultRef&raceId=' + row.raceId?.toString()}
+                        transitionDest={'/tournamentRaceResultRef&raceId=' + row.race_id?.toString()}
                       >
-                        {row.raceName}
+                        {row.race_name}
                       </CustomTd>
                     )}
                     {/* レース名 */}
-                    {!row.hasHistory && <CustomTd>{row.raceName}</CustomTd>}
+                    {!row.hasHistory && <CustomTd>{row.race_name}</CustomTd>}
                     {/* レースNo. */}
-                    <CustomTd>{row.raceNumber}</CustomTd>
+                    <CustomTd>{row.race_number}</CustomTd>
                     {/* 種目 */}
-                    <CustomTd>{row.raceTypeName}</CustomTd>
+                    <CustomTd>{row.race_class_name}</CustomTd>
                     {/* 組別 */}
-                    <CustomTd>{row.byGroup}</CustomTd>
+                    <CustomTd>{row.by_group}</CustomTd>
                     {/* 距離 */}
                     <CustomTd>{row.range}</CustomTd>
                     {/* 発艇日時 */}
-                    <CustomTd>{row.startDateTime}</CustomTd>
+                    <CustomTd>{row.start_datetime}</CustomTd>
                   </CustomTr>
                 ))}
               </CustomTbody>

@@ -34,24 +34,24 @@ import {
 
 export default function OrgInfo() {
   const [formData, setFormData] = useState<Organization>({
-    orgId: '',
-    orgName: '',
-    entOrgId: '',
+    org_id: '',
+    org_name: '',
+    entrysystem_org_id: '',
     orgTypeName: '',
-    foundingYear: 0,
-    addressNumber: '',
-    locationPrefectureId: 0,
+    founding_year: 0,
+    post_code: '',
+    location_prefecture: 0,
     locationPrefectureName: '',
     address1: '',
     address2: '',
-    orgClassId: 0,
+    org_class: 0,
     orgClassName: '',
-    jaraOrgTypeId: 0,
+    jara_org_type: 0,
     jaraOrgTypeName: '',
-    jaraOrgRegTrail: '',
-    prefOrgTypeId: 0,
+    jara_org_reg_trail: '',
+    pref_org_type: 0,
     prefOrgTypeName: '',
-    prefOrgRegTrail: '',
+    pref_org_reg_trail: '',
   } as Organization);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -123,43 +123,47 @@ export default function OrgInfo() {
     const fetchData = async () => {
       try {
         // TODO: APIを叩いて、マスタ情報を取得する処理の置き換え
-        const prefectures = await axios.get<PrefectureResponse[]>(
-          'http://localhost:3100/prefecture',
-        );
+        // const prefectures = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
+        const prefectures = await axios.get('http://localhost:8000/api/getPrefecures');
         setPrefectureOptions(prefectures.data);
-        const orgClass = await axios.get<OrgClass[]>('http://localhost:3100/orgClass');
+        // const orgClass = await axios.get<OrgClass[]>('http://localhost:3100/orgClass');
+        const orgClass = await axios.get('http://localhost:8000/api/getOrgClassData');
         setOrgClassOptions(orgClass.data);
-        const orgType = await axios.get<OrgType[]>('http://localhost:3100/orgType');
+        // const orgType = await axios.get<OrgType[]>('http://localhost:3100/orgType');
+        const orgType = await axios.get('http://localhost:8000/api/getOrgTypeData');
         setOrgTypeOptions(orgType.data);
-        const user = await axios.get<UserResponse>('http://localhost:3100/user');
+        // const user = await axios.get<UserResponse>('http://localhost:3100/user');
+        const user = await axios.get('http://localhost:8000/api/getUserData');
         setUser(user.data);
 
         if (mode === 'update') {
-          const organization = await axios.get<Organization>('http://localhost:3100/organization');
+          // const organization = await axios.get<Organization>('http://localhost:3100/organization');
+          const organization = await axios.get('http://localhost:8000/api/getOrgData');
           setFormData((prevFormData) => ({
             ...prevFormData,
             ...{
-              orgId: organization.data.orgId,
-              orgName: organization.data.orgName,
-              entOrgId: organization.data.entOrgId,
+              org_id: organization.data.org_id,
+              org_name: organization.data.org_name,
+              entrysystem_org_id: organization.data.entrysystem_org_id,
               orgTypName: organization.data.orgTypeName,
-              foundingYear: organization.data.foundingYear,
-              addressNumber: organization.data.addressNumber,
-              locationPrefectureId: organization.data.locationPrefectureId,
+              founding_year: organization.data.founding_year,
+              post_code: organization.data.post_code,
+              location_prefecture: organization.data.location_prefecture,
               locationPrefectureName: organization.data.locationPrefectureName,
               address1: organization.data.address1,
               address2: organization.data.address2,
-              orgClassId: organization.data.orgClassId,
+              org_class: organization.data.org_class,
               orgClassName: organization.data.orgClassName,
-              jaraOrgTypeId: organization.data.jaraOrgTypeId,
+              jara_org_type: organization.data.jara_org_type,
               jaraOrgTypeName: organization.data.jaraOrgTypeName,
-              jaraOrgRegTrail: organization.data.jaraOrgRegTrail,
-              prefOrgTypeId: organization.data.prefOrgTypeId,
+              jara_org_reg_trail: organization.data.jara_org_reg_trail,
+              pref_org_type: organization.data.pref_org_type,
               prefOrgTypeName: organization.data.prefOrgTypeName,
-              prefOrgRegTrail: organization.data.prefOrgRegTrail,
+              pref_org_reg_trail: organization.data.pref_org_reg_trail,
             },
           }));
-          const staff = await axios.get<Staff[]>('http://localhost:3100/staff');
+          // const staff = await axios.get<Staff[]>('http://localhost:3100/staff');
+          const staff = await axios.get('http://localhost:8000/api/getStaff');
           setTableData(staff.data);
         }
       } catch (error: any) {
@@ -175,9 +179,9 @@ export default function OrgInfo() {
    * 郵便番号を-で分割して、stateを更新する
    */
   useEffect(() => {
-    const addressNumbers = formData.addressNumber?.split('-');
+    const addressNumbers = formData.post_code?.split('-');
     setAddressNumbers(addressNumbers);
-  }, [formData.addressNumber]);
+  }, [formData.post_code]);
 
   /**
    * バリデーションエラーの有無を判定する関数
@@ -186,20 +190,20 @@ export default function OrgInfo() {
    */
   const isValidateError = () => {
     const orgNameError = Validator.getErrorMessages([
-      Validator.validateRequired(formData.orgName, '団体名'),
+      Validator.validateRequired(formData.org_name, '団体名'),
     ]);
     setOrgNameErrorMessages(orgNameError);
 
     const foundingYearError = Validator.getErrorMessages([
       Validator.validateFoundingYear(
-        formData.foundingYear === 0 ? '' : formData.foundingYear.toString(),
+        formData.founding_year === 0 ? '' : formData.founding_year.toString(),
       ),
     ]);
     setFoundingYearErrorMessages(foundingYearError);
 
     const addressError = Validator.getErrorMessages([
-      Validator.validateRequired(formData.addressNumber, '郵便番号'),
-      Validator.validateAddressNumberFormat(formData.addressNumber),
+      Validator.validateRequired(formData.post_code, '郵便番号'),
+      Validator.validateAddressNumberFormat(formData.post_code),
       Validator.validateRequired(formData.locationPrefectureName, '都道府県'),
       Validator.validateRequired(formData.address1, '市区町村・町字番地'),
       Validator.validateRequired(formData.address2, '建物名'),
@@ -207,17 +211,17 @@ export default function OrgInfo() {
     setAddressErrorMessages(addressError);
 
     const orgClassError = Validator.getErrorMessages([
-      Validator.validateRequired(formData.orgClassId, '団体区分'),
+      Validator.validateRequired(formData.org_class, '団体区分'),
     ]);
     setOrgClassErrorMessages(orgClassError);
 
     const jaraTrailError = Validator.getErrorMessages([
-      Validator.validateTrailError(formData.jaraOrgRegTrail, formData.jaraOrgTypeName, 'JARA'),
+      Validator.validateTrailError(formData.jara_org_reg_trail, formData.jaraOrgTypeName, 'JARA'),
     ]);
     setJaraOrgTypeErrorMessages(jaraTrailError);
 
     const prefTrailError = Validator.getErrorMessages([
-      Validator.validateTrailError(formData.prefOrgRegTrail, formData.prefOrgTypeName, '県ボ'),
+      Validator.validateTrailError(formData.pref_org_reg_trail, formData.prefOrgTypeName, '県ボ'),
     ]);
     setPrefOrgTypeErrorMessages(prefTrailError);
 
@@ -246,10 +250,10 @@ export default function OrgInfo() {
           ...prevData,
           {
             id: prevData.length + 1,
-            userId: '',
+            user_id: '',
             userName: '',
-            deleteFlag: false,
-            staffType: [],
+            delete_flag: false,
+            staff_type_id: [],
             isUserFound: true, //新規登録時は便宜的にtrue
           },
         ]);
@@ -306,7 +310,8 @@ export default function OrgInfo() {
           alert('TODO: APIを叩いて、登録・更新処理を行う');
           if (prevMode === 'create') {
             axios
-              .post('http://localhost:3100/', requestBody)
+              // .post('http://localhost:3100/', requestBody)
+              .post('http://localhost:8000/api/storeOrgData', formData) //20240206
               .then((response) => {
                 // TODO: 登録処理成功時の処理
                 window.confirm('団体情報を登録しました。');
@@ -320,7 +325,8 @@ export default function OrgInfo() {
               });
           } else {
             axios
-              .post('http://localhost:3100/', requestBody)
+              // .post('http://localhost:3100/', requestBody)
+              .post('http://localhost:8000/api/updateOrgData', formData) //20240206
               .then((response) => {
                 // TODO: 更新処理成功時の処理
                 window.confirm('団体情報を更新しました。');
@@ -366,17 +372,17 @@ export default function OrgInfo() {
               displayHelp={false}
               readonly
               required={false}
-              value={formData.orgId}
-              onChange={(e) => handleInputChange('orgId', e.target.value)}
+              value={formData.org_id}
+              onChange={(e) => handleInputChange('org_id', e.target.value)}
             />
           ))}
         {/* エントリーシステムの団体ID */}
         <CustomTextField
           label='エントリーシステムの団体ID'
           readonly={mode === 'confirm'}
-          value={formData.entOrgId}
+          value={formData.entrysystem_org_id}
           displayHelp={mode !== 'confirm'}
-          onChange={(e) => handleInputChange('entOrgId', e.target.value)}
+          onChange={(e) => handleInputChange('entrysystem_org_id', e.target.value)}
           toolTipTitle='Title エントリーシステムの団体ID' //はてなボタン用
           toolTipText='サンプル用のツールチップ表示' //はてなボタン用
         />
@@ -388,8 +394,8 @@ export default function OrgInfo() {
           errorMessages={orgNameErrorMessages}
           isError={orgNameErrorMessages.length > 0}
           displayHelp={mode !== 'confirm'}
-          value={formData.orgName}
-          onChange={(e) => handleInputChange('orgName', e.target.value)}
+          value={formData.org_name}
+          onChange={(e) => handleInputChange('org_name', e.target.value)}
           toolTipTitle='Title 団体名' //はてなボタン用
           toolTipText='サンプル用のツールチップ表示' //はてなボタン用
         />
@@ -402,9 +408,9 @@ export default function OrgInfo() {
             toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
           <CustomYearPicker
-            selectedDate={formData.foundingYear === 0 ? '' : formData.foundingYear?.toString()}
+            selectedDate={formData.founding_year === 0 ? '' : formData.founding_year?.toString()}
             errorMessages={foundingYearErrorMessages}
-            onChange={(date: Date) => handleInputChange('foundingYear', date.toString())}
+            onChange={(date: Date) => handleInputChange('founding_year', date.toString())}
             readonly={mode === 'confirm'}
             isError={foundingYearErrorMessages.length > 0}
             className='w-[300px]'
@@ -429,7 +435,7 @@ export default function OrgInfo() {
                 value={addressNumbers?.[0]}
                 onChange={(e) =>
                   handleInputChange(
-                    'addressNumber',
+                    'post_code',
                     e.target.value + '-' + (addressNumbers?.[1] || ''),
                   )
                 }
@@ -443,7 +449,7 @@ export default function OrgInfo() {
                 value={addressNumbers?.[1]}
                 onChange={(e) =>
                   handleInputChange(
-                    'addressNumber',
+                    'post_code',
                     (addressNumbers?.[0] || '') + '-' + e.target.value,
                   )
                 }
@@ -457,8 +463,8 @@ export default function OrgInfo() {
                 disabled={disableFlag}
                 onClick={() => {
                   const addressError = Validator.getErrorMessages([
-                    Validator.validateRequired(formData.addressNumber, '郵便番号'),
-                    Validator.validateAddressNumberFormat(formData.addressNumber),
+                    Validator.validateRequired(formData.post_code, '郵便番号'),
+                    Validator.validateAddressNumberFormat(formData.post_code),
                   ]);
                   if (addressError.length > 0) {
                     setAddressErrorMessages(addressError);
@@ -471,7 +477,7 @@ export default function OrgInfo() {
                   setFormData((prevFormData) => ({
                     ...prevFormData,
                     ...{
-                      locationPrefectureId: 1,
+                      location_prefecture: 1,
                       locationPrefectureName: '北海道',
                       address1: '札幌市',
                       address2: '中央区',
@@ -489,7 +495,7 @@ export default function OrgInfo() {
                 displayHelp={false}
                 required={false}
                 readonly
-                value={'〒' + formData.addressNumber}
+                value={'〒' + formData.post_code}
                 className='w-[120px]'
               />
             </div>
@@ -513,12 +519,12 @@ export default function OrgInfo() {
             isError={addressErrorMessages.length > 0}
             value={
               (mode !== 'confirm'
-                ? formData.locationPrefectureId.toString()
+                ? formData.location_prefecture.toString()
                 : formData.locationPrefectureName) || ''
             }
             readonly={mode === 'confirm'}
             onChange={(e) => {
-              handleInputChange('locationPrefectureId', e);
+              handleInputChange('location_prefecture', e);
               handleInputChange(
                 'locationPrefectureName',
                 prefectureOptions.find((prefecture) => prefecture.id === Number(e))?.name || '',
@@ -571,10 +577,10 @@ export default function OrgInfo() {
             readonly={mode === 'confirm'}
             isError={orgClassErrorMessages.length > 0}
             value={
-              (mode !== 'confirm' ? formData.orgClassId.toString() : formData.orgClassName) || ''
+              (mode !== 'confirm' ? formData.org_class.toString() : formData.orgClassName) || ''
             }
             onChange={(e) => {
-              handleInputChange('orgClassId', e);
+              handleInputChange('org_class', e);
               handleInputChange(
                 'orgClassName',
                 orgClassOptions.find((orgClass) => orgClass.id === Number(e))?.name || '',
@@ -596,10 +602,10 @@ export default function OrgInfo() {
             <CustomDropdown
               id='JARA'
               value={
-                mode !== 'confirm' ? formData.jaraOrgTypeId?.toString() : formData.jaraOrgTypeName
+                mode !== 'confirm' ? formData.jara_org_type?.toString() : formData.jaraOrgTypeName
               }
               onChange={(e) => {
-                handleInputChange('jaraOrgTypeId', e);
+                handleInputChange('jara_org_type', e);
                 handleInputChange(
                   'jaraOrgTypeName',
                   orgTypeOptions.find((orgType) => orgType.id === Number(e))?.name || '',
@@ -616,16 +622,16 @@ export default function OrgInfo() {
             />
           </div>
           {/* JARA証跡 */}
-          {(user.userType === ROLE.SYSTEM_ADMIN ||
-            user.userType === ROLE.JARA ||
-            (user.userType === ROLE.PREFECTURE && mode !== 'create')) && (
+          {(user.user_type === ROLE.SYSTEM_ADMIN ||
+            user.user_type === ROLE.JARA ||
+            (user.user_type === ROLE.PREFECTURE && mode !== 'create')) && (
               <CustomTextField
                 label='証跡'
                 displayHelp={false}
                 className='w-[300px]'
-                value={formData.jaraOrgRegTrail}
-                readonly={mode === 'confirm' || user.userType === ROLE.PREFECTURE}
-                onChange={(e) => handleInputChange('jaraOrgRegTrail', e.target.value)}
+                value={formData.jara_org_reg_trail}
+                readonly={mode === 'confirm' || user.user_type === ROLE.PREFECTURE}
+                onChange={(e) => handleInputChange('jara_org_reg_trail', e.target.value)}
               />
             )}
         </div>
@@ -636,10 +642,10 @@ export default function OrgInfo() {
             <CustomDropdown
               id='県ボ'
               value={
-                mode !== 'confirm' ? formData.prefOrgTypeId?.toString() : formData.prefOrgTypeName
+                mode !== 'confirm' ? formData.pref_org_type?.toString() : formData.prefOrgTypeName
               }
               onChange={(e) => {
-                handleInputChange('prefOrgTypeId', e);
+                handleInputChange('pref_org_type', e);
                 handleInputChange(
                   'prefOrgTypeName',
                   orgTypeOptions.find((orgType) => orgType.id === Number(e))?.name || '',
@@ -656,16 +662,16 @@ export default function OrgInfo() {
             />
           </div>
           {/* 県ボ証跡 */}
-          {(user.userType === ROLE.SYSTEM_ADMIN ||
-            (user.userType === ROLE.JARA && mode !== 'create') ||
-            user.userType === ROLE.PREFECTURE) && (
+          {(user.user_type === ROLE.SYSTEM_ADMIN ||
+            (user.user_type === ROLE.JARA && mode !== 'create') ||
+            user.user_type === ROLE.PREFECTURE) && (
               <CustomTextField
                 label='証跡'
                 className='w-[300px]'
                 displayHelp={false}
-                readonly={mode === 'confirm' || user.userType === ROLE.JARA}
-                value={formData.prefOrgRegTrail}
-                onChange={(e) => handleInputChange('prefOrgRegTrail', e.target.value)}
+                readonly={mode === 'confirm' || user.user_type === ROLE.JARA}
+                value={formData.pref_org_reg_trail}
+                onChange={(e) => handleInputChange('pref_org_reg_trail', e.target.value)}
               />
             )}
         </div>
@@ -686,7 +692,7 @@ export default function OrgInfo() {
                         onClick={() => {
                           tableData.length > 0 &&
                             setTableData((prevData) =>
-                              prevData.map((data) => ({ ...data, deleteFlag: true })),
+                              prevData.map((data) => ({ ...data, delete_flag: true })),
                             );
                         }}
                         disabled={disableFlag}
@@ -704,7 +710,7 @@ export default function OrgInfo() {
                         onClick={() => {
                           tableData.length > 0 &&
                             setTableData((prevData) =>
-                              prevData.map((data) => ({ ...data, deleteFlag: false })),
+                              prevData.map((data) => ({ ...data, delete_flag: false })),
                             );
                         }}
                         disabled={disableFlag}
@@ -745,12 +751,12 @@ export default function OrgInfo() {
                 {mode !== 'confirm' ? (
                   <CustomTd align='center'>
                     <OriginalCheckbox
-                      id='deleteFlag'
+                      id='delete_flag'
                       value='delete'
-                      checked={data.isUserFound ? data.deleteFlag : true}
+                      checked={data.isUserFound ? data.delete_flag : true}
                       readonly={mode === 'confirm' || !data.isUserFound}
                       onChange={() => {
-                        handleInputChangeStaff(data.id, 'deleteFlag', !data.deleteFlag);
+                        handleInputChangeStaff(data.id, 'delete_flag', !data.delete_flag);
                       }}
                     />
                   </CustomTd>
@@ -762,11 +768,11 @@ export default function OrgInfo() {
                   <CustomTextField
                     displayHelp={false}
                     required={false}
-                    value={data.userId}
+                    value={data.user_id}
                     className='border-transparent'
                     readonly={mode === 'confirm'}
                     disabled={!data.isUserFound}
-                    onChange={(e) => handleInputChangeStaff(data.id, 'userId', e.target.value)}
+                    onChange={(e) => handleInputChangeStaff(data.id, 'user_id', e.target.value)}
                   />
                 </CustomTd>
                 {/** ユーザー名 */}
@@ -778,7 +784,7 @@ export default function OrgInfo() {
                     disabled={!data.isUserFound}
                     readonly={mode === 'confirm' || !data.isUserFound}
                     className={data.isUserFound ? '' : 'text-systemErrorText'}
-                    onChange={(e) => handleInputChangeStaff(data.id, 'userName', e.target.value)}
+                    onChange={(e) => handleInputChangeStaff(data.id, 'user_name', e.target.value)}
                   />
                 </CustomTd>
                 {/** 管理者(監督) */}
@@ -786,15 +792,15 @@ export default function OrgInfo() {
                   <OriginalCheckbox
                     id='director'
                     value='監督'
-                    checked={data.staffType.includes('監督')}
+                    checked={data.staff_type_id.includes('監督')}
                     readonly={mode === 'confirm' || !data.isUserFound}
                     onChange={() => {
                       handleInputChangeStaff(
                         data.id,
-                        'staffType',
-                        data.staffType.includes('監督')
-                          ? data.staffType.filter((item) => item !== '監督')
-                          : [...data.staffType, '監督'],
+                        'staff_type_id',
+                        data.staff_type_id.includes('監督')
+                          ? data.staff_type_id.filter((item) => item !== '監督')
+                          : [...data.staff_type_id, '監督'],
                       );
                     }}
                   />
@@ -804,15 +810,15 @@ export default function OrgInfo() {
                   <OriginalCheckbox
                     id='generalmanager'
                     value='部長'
-                    checked={data.staffType.includes('部長')}
+                    checked={data.staff_type_id.includes('部長')}
                     readonly={mode === 'confirm' || !data.isUserFound}
                     onChange={() => {
                       handleInputChangeStaff(
                         data.id,
-                        'staffType',
-                        data.staffType.includes('部長')
-                          ? data.staffType.filter((item) => item !== '部長')
-                          : [...data.staffType, '部長'],
+                        'staff_type_id',
+                        data.staff_type_id.includes('部長')
+                          ? data.staff_type_id.filter((item) => item !== '部長')
+                          : [...data.staff_type_id, '部長'],
                       );
                     }}
                   />
@@ -822,15 +828,15 @@ export default function OrgInfo() {
                   <OriginalCheckbox
                     id='coach'
                     value='コーチ'
-                    checked={data.staffType.includes('コーチ')}
+                    checked={data.staff_type_id.includes('コーチ')}
                     readonly={mode === 'confirm' || !data.isUserFound}
                     onChange={() => {
                       handleInputChangeStaff(
                         data.id,
-                        'staffType',
-                        data.staffType.includes('コーチ')
-                          ? data.staffType.filter((item) => item !== 'コーチ')
-                          : [...data.staffType, 'コーチ'],
+                        'staff_type_id',
+                        data.staff_type_id.includes('コーチ')
+                          ? data.staff_type_id.filter((item) => item !== 'コーチ')
+                          : [...data.staff_type_id, 'コーチ'],
                       );
                     }}
                   />
@@ -840,15 +846,15 @@ export default function OrgInfo() {
                   <OriginalCheckbox
                     id='manager'
                     value='マネージャー'
-                    checked={data.staffType.includes('マネージャー')}
+                    checked={data.staff_type_id.includes('マネージャー')}
                     readonly={mode === 'confirm' || !data.isUserFound}
                     onChange={() => {
                       handleInputChangeStaff(
                         data.id,
-                        'staffType',
-                        data.staffType.includes('マネージャー')
-                          ? data.staffType.filter((item) => item !== 'マネージャー')
-                          : [...data.staffType, 'マネージャー'],
+                        'staff_type_id',
+                        data.staff_type_id.includes('マネージャー')
+                          ? data.staff_type_id.filter((item) => item !== 'マネージャー')
+                          : [...data.staff_type_id, 'マネージャー'],
                       );
                     }}
                   />
@@ -858,15 +864,15 @@ export default function OrgInfo() {
                   <OriginalCheckbox
                     id='actingdirector'
                     value='管理代理'
-                    checked={data.staffType.includes('管理代理')}
+                    checked={data.staff_type_id.includes('管理代理')}
                     readonly={mode === 'confirm' || !data.isUserFound}
                     onChange={() => {
                       handleInputChangeStaff(
                         data.id,
-                        'staffType',
-                        data.staffType.includes('管理代理')
-                          ? data.staffType.filter((item) => item !== '管理代理')
-                          : [...data.staffType, '管理代理'],
+                        'staff_type_id',
+                        data.staff_type_id.includes('管理代理')
+                          ? data.staff_type_id.filter((item) => item !== '管理代理')
+                          : [...data.staff_type_id, '管理代理'],
                       );
                     }}
                   />

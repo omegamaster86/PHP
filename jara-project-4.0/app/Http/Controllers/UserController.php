@@ -29,6 +29,11 @@ use App\Models\M_prefectures;
 
 class UserController extends Controller
 {
+    public static $loginUserInfo = [
+        'user_id' => null,
+        'user_name' => ""
+    ];
+
     //
     public function createEdit(Request $request, M_sex $sex, M_countries $countries, M_prefectures $prefectures ): View
     {   
@@ -856,6 +861,54 @@ class UserController extends Controller
         
     }
 
+    //======================================================================================
+    //======================================================================================
+    
+    public function setLoginUserData(Request $request, T_users $t_users)
+    {
+        Log::debug(sprintf("setLoginUserData start"));
+        Log::debug($request->user());
+        $reqData = $request->user();
+        $this::$loginUserInfo['user_id'] = $reqData['user_id'];
+        $this::$loginUserInfo['user_name'] = $reqData['user_name'];
+        Log::debug("==============");
+        Log::debug($this::$loginUserInfo);
+        Log::debug(sprintf("setLoginUserData end"));
+        return $request->user();
+    }
 
+    //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
+    public function getUserData(Request $request, T_users $t_users)
+    {
+        Log::debug(sprintf("getUserData start"));
+        Log::debug($this::$loginUserInfo);
+        $result = $t_users->getUserData($this::$loginUserInfo['user_id']); //ユーザ情報の取得
+        Log::debug(sprintf("getUserData end"));
+        return response()->json(['result' => $result]); //DBの結果を返す
+    }
+    //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
+    public function updateUserData(Request $request, T_users $t_users)
+    {
+        Log::debug(sprintf("updateUserData start"));
+        $reqData = $request->all();
+       
+        //確認画面から登録
+        // $tTournament::$tournamentInfo['tourn_id'] = 1;
+        $t_users::$userInfo['user_id'] = $reqData['tournamentFormData']['user_id']; //ユーザID
+        $t_users::$userInfo['user_name'] = $reqData['tournamentFormData']['user_name']; //ユーザ名
+        $t_users::$userInfo['mailaddress'] = $reqData['tournamentFormData']['mailaddress']; //メールアドレス
+        $t_users::$userInfo['sex'] = $reqData['tournamentFormData']['sex']; //性別
+        $t_users::$userInfo['residence_country'] = $reqData['tournamentFormData']['residence_country']; //居住地国
+        $t_users::$userInfo['residence_prefecture'] = $reqData['tournamentFormData']['residence_prefecture']; //居住都道府県
+        $t_users::$userInfo['date_of_birth'] = $reqData['tournamentFormData']['date_of_birth']; //誕生日
+        $t_users::$userInfo['height'] = $reqData['tournamentFormData']['height']; //身長
+        $t_users::$userInfo['weight'] = $reqData['tournamentFormData']['weight']; //体重
+        $t_users::$userInfo['user_type'] = $reqData['tournamentFormData']['user_type']; //ユーザ種別
+        $t_users::$userInfo['photo'] = $reqData['tournamentFormData']['photo']; //写真
+
+        $result = $t_users->updateUserData(1); //レース情報を取得
+        Log::debug(sprintf("updateUserData end"));
+        return response()->json(['result' => $result]); //DBの結果を返す
+    }
     
 }

@@ -126,7 +126,7 @@ export default function VolunteerInformationRef() {
             <Link
               href={{
                 pathname: '/volunteerInformation',
-                query: { id: volunteerdata.volunteerId, mode: 'update' },
+                query: { id: volunteerdata.volunteer_id, mode: 'update' },
               }}
               className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
             >
@@ -152,7 +152,7 @@ export default function VolunteerInformationRef() {
             {/* ボランティアID */}
             <CustomTextField
               label='ボランティアID'
-              value={volunteerdata.volunteerId}
+              value={volunteerdata.volunteer_id}
               readonly
               displayHelp={false}
               onChange={(e) => {}}
@@ -160,7 +160,7 @@ export default function VolunteerInformationRef() {
             {/* 氏名 */}
             <CustomTextField
               label='氏名'
-              value={volunteerdata.volunteerName}
+              value={volunteerdata.volunteer_name}
               readonly
               displayHelp={false}
               onChange={(e) => {}}
@@ -168,7 +168,7 @@ export default function VolunteerInformationRef() {
             {/* 生年月日 */}
             <CustomTextField
               label='生年月日'
-              value={volunteerdata.dateOfBirth}
+              value={volunteerdata.date_of_birth}
               readonly
               displayHelp={false}
               onChange={(e) => {}}
@@ -185,7 +185,7 @@ export default function VolunteerInformationRef() {
             <div className='flex flex-row gap-[16px]'>
               <CustomTextField
                 label='居住地'
-                value={volunteerdata.residenceCountry}
+                value={volunteerdata.residence_country}
                 readonly
                 displayHelp={false}
                 onChange={(e) => {}}
@@ -193,7 +193,7 @@ export default function VolunteerInformationRef() {
               {/* 居住地（都道府県） */}
               <CustomTextField
                 label='都道府県'
-                value={volunteerdata.residencePrefecture}
+                value={volunteerdata.residence_prefecture}
                 readonly
                 displayHelp={false}
                 onChange={(e) => {}}
@@ -202,7 +202,7 @@ export default function VolunteerInformationRef() {
             {/* 電話番号 */}
             <CustomTextField
               label='電話番号'
-              value={volunteerdata.telephoneNumber}
+              value={volunteerdata.telephone_number}
               readonly
               displayHelp={false}
               onChange={(e) => {}}
@@ -220,7 +220,7 @@ export default function VolunteerInformationRef() {
             {/* 服のサイズ */}
             <CustomTextField
               label='服のサイズ'
-              value={volunteerdata.clothesSize}
+              value={volunteerdata.clothes_size}
               readonly
               displayHelp={false}
               onChange={(e) => {}}
@@ -228,13 +228,13 @@ export default function VolunteerInformationRef() {
             {/* 障碍タイプ */}
             <label htmlFor='disType'>補助が可能な障碍タイプ</label>
             <div className='flex flex-row gap-[16px] justify-start'>
-              {volunteerdata.disType?.map((disType) => (
+              {volunteerdata.dis_type_id?.map((dis_type_id) => (
                 <OriginalCheckbox
                   id='disType'
-                  key={disType}
-                  label={disType}
-                  value={disType}
-                  checked={disType.length > 0}
+                  key={dis_type_id}
+                  label={dis_type_id}
+                  value={dis_type_id}
+                  checked={dis_type_id.length > 0}
                   readonly
                   onChange={(e) => {}}
                 />
@@ -273,7 +273,7 @@ export default function VolunteerInformationRef() {
               id='anyday'
               label='祝日は可'
               value=''
-              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 7) || false}
+              checked={getDayOfWeekBool(volunteerdata.day_of_week, 7) || false}
               readonly
               onChange={(e) => {}}
             />
@@ -281,7 +281,7 @@ export default function VolunteerInformationRef() {
               id='sunday'
               label='日曜日'
               value=''
-              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 0) || false}
+              checked={getDayOfWeekBool(volunteerdata.day_of_week, 0) || false}
               readonly
               onChange={(e) => {}}
             />
@@ -289,7 +289,7 @@ export default function VolunteerInformationRef() {
               id='monday'
               label='月曜日'
               value=''
-              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 1) || false}
+              checked={getDayOfWeekBool(volunteerdata.day_of_week, 1) || false}
               readonly
               onChange={(e) => {}}
             />
@@ -297,7 +297,7 @@ export default function VolunteerInformationRef() {
               id='tuesday'
               label='火曜日'
               value=''
-              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 2) || false}
+              checked={getDayOfWeekBool(volunteerdata.day_of_week, 2) || false}
               readonly
               onChange={(e) => {}}
             />
@@ -305,7 +305,7 @@ export default function VolunteerInformationRef() {
               id='wednesday'
               label='水曜日'
               value=''
-              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 3) || false}
+              checked={getDayOfWeekBool(volunteerdata.day_of_week, 3) || false}
               readonly
               onChange={(e) => {}}
             />
@@ -313,7 +313,7 @@ export default function VolunteerInformationRef() {
               id='thursday'
               label='木曜日'
               value=''
-              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 4) || false}
+              checked={getDayOfWeekBool(volunteerdata.day_of_week, 4) || false}
               readonly
               onChange={(e) => {}}
             />
@@ -321,7 +321,7 @@ export default function VolunteerInformationRef() {
               id='friday'
               label='金曜日'
               value=''
-              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 5) || false}
+              checked={getDayOfWeekBool(volunteerdata.day_of_week, 5) || false}
               readonly
               onChange={(e) => {}}
             />
@@ -329,7 +329,7 @@ export default function VolunteerInformationRef() {
               id='saturday'
               label='土曜日'
               value=''
-              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 6) || false}
+              checked={getDayOfWeekBool(volunteerdata.day_of_week, 6) || false}
               readonly
               onChange={(e) => {}}
             />
@@ -337,7 +337,7 @@ export default function VolunteerInformationRef() {
               id='any'
               label='相談可能'
               value=''
-              checked={getDayOfWeekBool(volunteerdata.dayOfWeek, 8) || false}
+              checked={getDayOfWeekBool(volunteerdata.day_of_week, 8) || false}
               readonly
               onChange={(e) => {}}
             />
@@ -350,7 +350,7 @@ export default function VolunteerInformationRef() {
               id='anytime'
               label='相談可能'
               value=''
-              checked={getTimeZoneBool(volunteerdata.timeZone, 7) || false}
+              checked={getTimeZoneBool(volunteerdata.time_zone, 7) || false}
               readonly
               onChange={(e) => {}}
             />
@@ -358,7 +358,7 @@ export default function VolunteerInformationRef() {
               id='earlymorning'
               label='早朝　 06:00〜08:00'
               value=''
-              checked={getTimeZoneBool(volunteerdata.timeZone, 0) || false}
+              checked={getTimeZoneBool(volunteerdata.time_zone, 0) || false}
               readonly
               onChange={(e) => {}}
             />
@@ -366,7 +366,7 @@ export default function VolunteerInformationRef() {
               id='morning'
               label='午前　 08:00〜12:00'
               value=''
-              checked={getTimeZoneBool(volunteerdata.timeZone, 1) || false}
+              checked={getTimeZoneBool(volunteerdata.time_zone, 1) || false}
               readonly
               onChange={(e) => {}}
             />
@@ -374,7 +374,7 @@ export default function VolunteerInformationRef() {
               id='afternoon'
               label='午後　 12:00〜16:00'
               value=''
-              checked={getTimeZoneBool(volunteerdata.timeZone, 2) || false}
+              checked={getTimeZoneBool(volunteerdata.time_zone, 2) || false}
               readonly
               onChange={(e) => {}}
             />
@@ -382,7 +382,7 @@ export default function VolunteerInformationRef() {
               id='night'
               label='夜　　 16:00〜20:00'
               value=''
-              checked={getTimeZoneBool(volunteerdata.timeZone, 3) || false}
+              checked={getTimeZoneBool(volunteerdata.time_zone, 3) || false}
               readonly
               onChange={(e) => {}}
             />
@@ -425,7 +425,7 @@ export default function VolunteerInformationRef() {
                 href={{
                   // TODO: ボランティア履歴情報登録画面の正規URLに変更
                   pathname: '/volunteerHistoriesInformationDelete',
-                  query: { id: volunteerdata.volunteerId },
+                  query: { id: volunteerdata.volunteer_id },
                 }}
               >
                 履歴の削除
@@ -472,63 +472,63 @@ export default function VolunteerInformationRef() {
               <CustomTbody>
                 {volunteerHistoriesdata.map(
                   (volunteerHistoriesdata) =>
-                    (volunteerHistoriesdata.tournType == activeTab || activeTab == 0) && (
-                      <CustomTr key={volunteerHistoriesdata.tournName}>
+                    (volunteerHistoriesdata.tourn_type == activeTab || activeTab == 0) && (
+                      <CustomTr key={volunteerHistoriesdata.tourn_name}>
                         {/* 大会名/イベント名 */}
-                        <CustomTd align='center'>{volunteerHistoriesdata.tournName}</CustomTd>
+                        <CustomTd align='center'>{volunteerHistoriesdata.tourn_name}</CustomTd>
                         {/* 開催開始日 */}
-                        <CustomTd align='center'>{volunteerHistoriesdata.eventStartDate}</CustomTd>
+                        <CustomTd align='center'>{volunteerHistoriesdata.event_start_date}</CustomTd>
                         {/* 開催終了日 */}
-                        <CustomTd align='center'>{volunteerHistoriesdata.eventEndDate}</CustomTd>
+                        <CustomTd align='center'>{volunteerHistoriesdata.event_end_date}</CustomTd>
                         {/* 役割 */}
-                        <CustomTd align='center'>{volunteerHistoriesdata.roleName}</CustomTd>
+                        <CustomTd align='center'>{volunteerHistoriesdata.role}</CustomTd>
                         {/* AD */}
                         <CustomTd align='center'>{volunteerHistoriesdata.ad}</CustomTd>
                         {/* 祝日 */}
                         <CustomTd align='center'>
-                          {getDayOfWeekBool(volunteerHistoriesdata.dayOfWeek, 7) && (
+                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 7) && (
                             <p className='text-small'>可</p>
                           )}
                         </CustomTd>
                         {/* 日曜 */}
                         <CustomTd align='center'>
-                          {getDayOfWeekBool(volunteerHistoriesdata.dayOfWeek, 0) && (
+                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 0) && (
                             <p className='text-small'>◯</p>
                           )}
                         </CustomTd>
                         {/* 月曜 */}
                         <CustomTd align='center'>
-                          {getDayOfWeekBool(volunteerHistoriesdata.dayOfWeek, 1) && (
+                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 1) && (
                             <p className='text-small'>◯</p>
                           )}
                         </CustomTd>
                         {/* 火曜 */}
                         <CustomTd align='center'>
-                          {getDayOfWeekBool(volunteerHistoriesdata.dayOfWeek, 2) && (
+                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 2) && (
                             <p className='text-small'>◯</p>
                           )}
                         </CustomTd>
                         {/* 水曜 */}
                         <CustomTd align='center'>
-                          {getDayOfWeekBool(volunteerHistoriesdata.dayOfWeek, 3) && (
+                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 3) && (
                             <p className='text-small'>◯</p>
                           )}
                         </CustomTd>
                         {/* 木曜 */}
                         <CustomTd align='center'>
-                          {getDayOfWeekBool(volunteerHistoriesdata.dayOfWeek, 4) && (
+                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 4) && (
                             <p className='text-small'>◯</p>
                           )}
                         </CustomTd>
                         {/* 金曜 */}
                         <CustomTd align='center'>
-                          {getDayOfWeekBool(volunteerHistoriesdata.dayOfWeek, 5) && (
+                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 5) && (
                             <p className='text-small'>◯</p>
                           )}
                         </CustomTd>
                         {/* 土曜 */}
                         <CustomTd align='center'>
-                          {getDayOfWeekBool(volunteerHistoriesdata.dayOfWeek, 6) && (
+                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 6) && (
                             <p className='text-small'>◯</p>
                           )}
                         </CustomTd>
