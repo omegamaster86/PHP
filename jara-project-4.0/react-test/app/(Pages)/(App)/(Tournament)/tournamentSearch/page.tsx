@@ -4,7 +4,7 @@
 // Reactおよび関連モジュールのインポート
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 // コンポーネントのインポート
 import {
   CustomTitle,
@@ -117,7 +117,9 @@ export default function TournamentSearch() {
 
     try {
       // 仮のURL（繋ぎ込み時に変更すること）
-      const response = await axios.get<Tournament[]>('http://localhost:3100/tournamentSearch/');
+      const csrf = () => axios.get('/sanctum/csrf-cookie')
+      await csrf()
+      const response = await axios.get<Tournament[]>('/tournamentSearch/');
       setSearchResponse(response.data);
     } catch (error) {
       setErrorMessage([...(errorMessage as string[]), 'API取得エラー:' + (error as Error).message]);
@@ -133,11 +135,14 @@ export default function TournamentSearch() {
     const fetchData = async () => {
       try {
         // 仮のURL（繋ぎ込み時に変更すること）
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
         const tourTypeResponse = await axios.get<TourTypeResponse[]>(
-          'http://localhost:3100/tourType',
+          '/tourType',
         );
         setTourType(tourTypeResponse.data);
-        const venueResponse = await axios.get<VenueResponse[]>('http://localhost:3100/venue');
+
+        const venueResponse = await axios.get<VenueResponse[]>('/venue');
         setVenue(venueResponse.data);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);

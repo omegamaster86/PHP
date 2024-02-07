@@ -13,7 +13,7 @@ import {
   InputLabel,
 } from '@/app/components';
 import Validator from '@/app/utils/validator';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import { TextareaAutosize } from '@mui/material';
 import { UserResponse } from '@/app/types';
 
@@ -29,8 +29,8 @@ export default function Inquiry() {
   const [isLogIn, setIsLogIn] = useState(false);
   // ユーザー情報
   const [user, setUser] = useState({
-    userName: '',
-    email: '',
+    user_name: '',
+    mailaddress: '',
   } as UserResponse);
   // お問い合わせ内容
   const [inquiry, setInquiry] = useState<string>();
@@ -52,7 +52,9 @@ export default function Inquiry() {
       try {
         // 仮のURL（繋ぎ込み時に変更すること）
         // const response = await axios.get<UserResponse>('http://localhost:3100/user');
-        const response = await axios.get('http://localhost:8000/api/user');
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
+        const response = await axios.get('/api/user');
         setUser(response.data);
       } catch (error) {
         setErrorMessage([
@@ -77,14 +79,14 @@ export default function Inquiry() {
         onClick={() => {
           // エラーがあればエラーメッセージを表示
           const userNameError = Validator.getErrorMessages([
-            Validator.validateRequired(user.userName, '氏名（ユーザー名）'),
-            Validator.validateUserNameFormat(user.userName),
-            Validator.validateLength(user.userName, '氏名（ユーザー名）', 32),
+            Validator.validateRequired(user.user_name, '氏名（ユーザー名）'),
+            Validator.validateUserNameFormat(user.user_name),
+            Validator.validateLength(user.user_name, '氏名（ユーザー名）', 32),
           ]);
 
           const emailError = Validator.getErrorMessages([
-            Validator.validateRequired(user.email, 'メールアドレス'),
-            Validator.validateEmailFormat(user.email),
+            Validator.validateRequired(user.mailaddress, 'メールアドレス'),
+            Validator.validateEmailFormat(user.mailaddress),
           ]);
 
           const inquiryError = Validator.getErrorMessages([
@@ -120,11 +122,13 @@ export default function Inquiry() {
     confirm: (
       <CustomButton
         buttonType='primary'
-        onClick={() => {
+        onClick={async() => {
           // 送信処理
           const requestBody = {};
+          const csrf = () => axios.get('/sanctum/csrf-cookie')
+          await csrf()
           axios
-            .post('http://localhost:3100/smtp', requestBody)
+            .post('/smtp', requestBody)
             .then((response) => {
               router.push('/login');
             })
@@ -156,9 +160,9 @@ export default function Inquiry() {
                 errorMessages={userNameErrorMessages}
                 required={!isConfirm}
                 displayHelp={false}
-                value={user.userName}
+                value={user.user_name}
                 placeHolder='山田 太郎'
-                onChange={(e) => setUser({ ...user, userName: e.target.value })}
+                onChange={(e) => setUser({ ...user, user_name: e.target.value })}
                 readonly={isConfirm}
               />
             </div>
@@ -173,8 +177,8 @@ export default function Inquiry() {
               required={!isConfirm}
               displayHelp={false}
               placeHolder='メールアドレスを入力してください。'
-              value={user.email}
-              onChange={(e) => setUser({ ...user, email: e.target.value })}
+              value={user.mailaddress}
+              onChange={(e) => setUser({ ...user, mailaddress: e.target.value })}
               readonly={isConfirm}
             />
           </div>

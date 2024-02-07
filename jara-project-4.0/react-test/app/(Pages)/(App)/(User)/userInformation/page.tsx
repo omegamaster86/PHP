@@ -363,7 +363,7 @@ export default function UserInformationUpdate() {
           placeHolder='山田 太郎'
           readonly={mode === 'confirm'}
           onChange={(e) => {
-            handleInputChange('userName', e.target.value);
+            handleInputChange('user_name', e.target.value);
           }}
           errorMessages={[...userNameErrorMessages]}
           isError={userNameErrorMessages.length > 0}
@@ -383,7 +383,7 @@ export default function UserInformationUpdate() {
             type='email'
             value={formData.mailaddress}
             onChange={() => {
-              handleInputChange('email', '');
+              handleInputChange('mailaddress', '');
             }}
           />
           {!formData.temp_password_flag && mode == 'update' && (
@@ -471,7 +471,7 @@ export default function UserInformationUpdate() {
             className='w-[200px]'
             readonly={mode === 'confirm'}
             onChange={(e) => {
-              handleInputChange('sexId', e);
+              handleInputChange('sex', e);
               handleInputChange('sexName', sex.find((item) => item.id === Number(e))?.name || '');
             }}
             errorMessages={sexErrorMessages}
@@ -484,7 +484,7 @@ export default function UserInformationUpdate() {
             readonly={mode === 'confirm'}
             selectedDate={formData.date_of_birth}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              handleInputChange('dateOfBirth', formatDate(e as unknown as Date));
+              handleInputChange('date_of_birth', formatDate(e as unknown as Date));
             }}
             maxDate={new Date()}
             errorMessages={dateOfBirthErrorMessages}
@@ -505,7 +505,7 @@ export default function UserInformationUpdate() {
                   : formData.residenceCountryName
               }
               onChange={(e) => {
-                handleInputChange('residenceCountryId', e);
+                handleInputChange('residence_country', e);
                 handleInputChange(
                   'residenceCountryName',
                   countries.find((item) => item.id === Number(e))?.name || '',

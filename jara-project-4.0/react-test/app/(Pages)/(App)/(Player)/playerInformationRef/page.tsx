@@ -4,7 +4,7 @@
 // Reactおよび関連モジュールのインポート
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 // コンポーネントのインポート
 import {
   CustomButton,
@@ -62,7 +62,9 @@ export default function PlayerInformationRef() {
 
   //選手情報削除関数 20240201
   const dataDelete = async () => {
-    await axios.post('http://localhost:8000/api/deletePlayerData', deleteData)
+    const csrf = () => axios.get('/sanctum/csrf-cookie')
+    await csrf()
+    await axios.post('/deletePlayerData', deleteData)
       .then((res) => {
         console.log(res.data);
         //router.push('/myPage');
@@ -77,7 +79,9 @@ export default function PlayerInformationRef() {
       try {
         // 仮のURL（繋ぎ込み時に変更すること）
         // const playerInf = await axios.get<PlayerInformationResponse>('http://localhost:3100/player',);
-        const playerInf = await axios.get('http://localhost:8000/api/getPlayerInfoData');
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
+        const playerInf = await axios.get('/getPlayerInfoData');
         console.log(playerInf.data.result);
         //サイド情報のデータ変換
         const sideList = playerInf.data.result.side_info.split('');
@@ -110,7 +114,7 @@ export default function PlayerInformationRef() {
           photo: playerInf.data.result.photo,
         });
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
-        const response = await axios.get('http://localhost:8000/api/getRaceResultRecordsData');
+        const response = await axios.get('/getRaceResultRecordsData');
         
         // setResultRecordsData({
         //   raceResultRecordId: response.data.result[i].race_result_record_id,

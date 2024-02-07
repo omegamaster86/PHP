@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useState, SyntheticEvent } from 'react';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import {
   CustomTable,
   CustomTh,
@@ -74,27 +74,29 @@ export default function TeamRef() {
       try {
         // 仮のURL（繋ぎ込み時に変更すること）
         // 主催大会
-        const response = await axios.get<Organization>('http://localhost:3100/organization');
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
+        const response = await axios.get<Organization>('/organization');
         setFormData(response.data);
         const hostTournamentsResponse = await axios.get<Tournament[]>(
-          'http://localhost:3100/tournamentSearch',
+          '/tournamentSearch',
         );
         setHostTournaments(hostTournamentsResponse.data);
         // エントリー大会
         const entTournamentsResponse = await axios.get<Tournament[]>(
-          'http://localhost:3100/tournamentSearch',
+          '/tournamentSearch',
         );
         setEntTournaments(entTournamentsResponse.data);
         // 所属選手
         const playersResponse = await axios.get<PlayerInformationResponse[]>(
-          'http://localhost:3100/playerSearch',
+          '/playerSearch',
         );
         setPlayers(playersResponse.data);
-        const userDataResponse = await axios.get<UserResponse>('http://localhost:3100/user');
+        const userDataResponse = await axios.get<UserResponse>('/api/user');
         setUserData(userDataResponse.data);
 
         // 所属スタッフ
-        const staffsResponse = await axios.get<Staff[]>('http://localhost:3100/staff');
+        const staffsResponse = await axios.get<Staff[]>('/staff');
         setStaffs(staffsResponse.data);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
@@ -482,7 +484,7 @@ export default function TeamRef() {
                 {staffs.map((row, index) => (
                   <CustomTr key={index}>
                     <CustomTd>{row.user_id}</CustomTd>
-                    <CustomTd>{row.user_name}</CustomTd>
+                    <CustomTd>{row.userName}</CustomTd>
                     <CustomTd>
                       <OriginalCheckbox
                         id='staffType1'
@@ -547,11 +549,13 @@ export default function TeamRef() {
             <CustomButton
               className='w-[300px] h-[50px]'
               buttonType='primary'
-              onClick={() => {
+              onClick={async() => {
                 const isOk = window.confirm('団体情報を削除します。よろしいですか？');
+                const csrf = () => axios.get('/sanctum/csrf-cookie')
+                await csrf()
                 if (!isOk) return;
                 axios
-                  .delete('http://localhost:3100/organization')
+                  .delete('/organization')
                   .then(() => {
                     // TODO: 削除成功時の処理
                     router.back();

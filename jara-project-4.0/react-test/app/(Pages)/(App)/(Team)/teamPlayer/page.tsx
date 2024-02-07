@@ -16,7 +16,7 @@ import {
 } from '@/app/components';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import { TeamPlayerInformationResponse, TeamResponse } from '@/app/types';
 
 export default function TeamPlayer() {
@@ -52,9 +52,11 @@ export default function TeamPlayer() {
   useEffect(() => {
     const getTeamPlayer = async () => {
       try {
-        const response = await axios.get('http://localhost:3100/teamPlayers');
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
+        const response = await axios.get('/teamPlayers');
         setFormData(response.data);
-        const teamResponse = await axios.get('http://localhost:3100/team');
+        const teamResponse = await axios.get('/team');
         setTeamData(teamResponse.data);
       } catch (error) {
         console.log(error);
@@ -69,7 +71,7 @@ export default function TeamPlayer() {
         {/* 画面名*/}
         <CustomTitle isCenter={false} displayBack>
           <div>
-            {teamData.name}
+            {teamData.org_name}
             <br />
             団体への選手追加・削除
           </div>

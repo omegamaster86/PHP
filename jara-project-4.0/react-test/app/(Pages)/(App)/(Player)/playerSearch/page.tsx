@@ -4,7 +4,7 @@
 // Reactおよび関連モジュールのインポート
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 // コンポーネントのインポート
 import {
   CustomTitle,
@@ -139,7 +139,9 @@ export default function PlayerSearch() {
     apiUri = apiUri.slice(0, -1);
 
     try {
-      const response = await axios.get<Player[]>('http://localhost:3100/playerSearch/');
+      const csrf = () => axios.get('/sanctum/csrf-cookie')
+      await csrf()
+      const response = await axios.get<Player[]>('/playerSearch/');
       const data = response.data;
 
       if (data.length > 100) {
@@ -173,11 +175,13 @@ export default function PlayerSearch() {
         // 仮のURL（繋ぎ込み時に変更すること）
         // 性別
         // const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
-        const sexResponse = await axios.get('http://localhost:8000/api/getSexList');
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
+        const sexResponse = await axios.get('/getSexList');
         const sexList = sexResponse.data.map(({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }));
         setSex(sexList);
         // 種目
-        const eventResponse = await axios.get<EventResponse[]>('http://localhost:3100/event');
+        const eventResponse = await axios.get<EventResponse[]>('/event');
         setEvent(eventResponse.data);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);

@@ -3,7 +3,7 @@
 
 import { useEffect, useState, ChangeEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import {
   CustomDropdown,
   CustomDatePicker,
@@ -148,14 +148,16 @@ export default function PlayerInformation() {
 
   // 更新モードの時に、選手情報を取得する
   useEffect(() => {
-    const fetchMaster = async () => {
+    const fetchPrefecture = async () => {
       // 仮のURL（繋ぎ込み時に変更すること）
       try {
         // TODO: 都道府県情報の取得処理を実装
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
         axios
           //20240123 DBからデータ取得
           // .get<PrefectureResponse[]>('http://localhost:3100/prefecture')
-          .get('http://localhost:8000/api/getPrefecures')
+          .get('/getPrefecures')
           .then((response) => {
             const stateList = response.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
             //console.log(stateList);
@@ -172,7 +174,7 @@ export default function PlayerInformation() {
         // TODO: 性別の取得処理を実装
         axios
           // .get<SexResponse[]>('http://localhost:3100/sex')
-          .get('http://localhost:8000/api/getSexList') //20240123 DBからデータ取得
+          .get('/getSexList') //20240123 DBからデータ取得
           .then((response) => {
             console.log(response.data);
             const sexList = response.data.map(({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }));
@@ -189,7 +191,7 @@ export default function PlayerInformation() {
         axios
           //20240123 DBからデータ取得
           // .get<CountryResponse[]>('http://localhost:3100/countries')
-          .get('http://localhost:8000/api/getCountries')
+          .get('/getCountries')
           .then((response) => {
             const countryList = response.data.map(({ country_id, country_name }: { country_id: number; country_name: string }) => ({ id: country_id, name: country_name }));
             setCountries(countryList);
@@ -209,59 +211,66 @@ export default function PlayerInformation() {
         ]);
       }
     };
-    fetchMaster();
-
+    fetchPrefecture();
+    
     if (mode === 'update') {
       // TODO: 選手情報を取得する処理を実装
       // searchParams.get('id')から選手IDを取得
-      axios
-        // .get<PlayerInformationResponse>('http://localhost:3100/player')
-        .get('http://localhost:8000/api/getUpdatePlayerData')
-        .then((response) => {
-          console.log(response.data);
-          //サイド情報のデータ変換
-          var data = response.data.result.side_info.split('');
-          for (let i = 0; i < 4; i++) {
-            if (data[i] == "1") {
-              data[i] = true;
-            } else {
-              data[i] = false;
+      const fetchPlayerData = async () => {
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
+          axios
+          // .get<PlayerInformationResponse>('http://localhost:3100/player')
+          .get('/getUpdatePlayerData')
+          .then((response) => {
+            console.log(response.data);
+            //サイド情報のデータ変換
+            var data = response.data.result.side_info.split('');
+            for (let i = 0; i < 4; i++) {
+              if (data[i] == "1") {
+                data[i] = true;
+              } else {
+                data[i] = false;
+              }
             }
-          }
-          // nameプロパティのみ抜き出してstringの配列に変換
-          setFormData((prevFormData) => ({
-            ...prevFormData,
-            ...{
-              player_id: response.data.result.player_id, // 選手ID
-              jara_player_id: response.data.result.jara_player_id, // JARA選手コード
-              player_name: response.data.result.player_name, // 選手名
-              sexName: response.data.result.sex_name, // 性別
-              sex_id: response.data.result.sex, // 性別
-              height: response.data.result.height, // 身長
-              weight: response.data.result.weight, // 体重
-              bir_country_name: response.data.result.bir_country_name, // 出身地（国）
-              birth_country: response.data.result.birth_country, // 出身地（国）
-              birthPrefectureName: response.data.result.bir_pref_name, // 出身地（都道府県）
-              birth_prefecture: response.data.result.birth_prefecture, // 出身地（都道府県）
-              residenceCountryName: response.data.result.res_country_name, // 居住地（国）
-              residence_country: response.data.result.residence_country, // 居住地（国）
-              residencePrefectureName: response.data.result.res_pref_name, // 居住地（都道府県）
-              residence_prefecture: response.data.result.residence_prefecture, // 居住地（都道府県）
-              date_of_birth: response.data.result.date_of_birth, // 生年月日
-              side_info: data, // サイド情報
-              photo: response.data.result.photo, //写真
-            },
-          }));
-        })
-        .catch((error) => {
-          // TODO: エラー処理を実装
-          setErrorMessage([
-            ...(errorMessage as string[]),
-            'API取得エラー:' + (error as Error).message,
-          ]);
-        });
-    }
-    // APIを叩いて、選手情報を取得する
+            // nameプロパティのみ抜き出してstringの配列に変換
+            setFormData((prevFormData) => ({
+              ...prevFormData,
+              ...{
+                player_id: response.data.result.player_id, // 選手ID
+                jara_player_id: response.data.result.jara_player_id, // JARA選手コード
+                player_name: response.data.result.player_name, // 選手名
+                sexName: response.data.result.sex_name, // 性別
+                sex_id: response.data.result.sex, // 性別
+                height: response.data.result.height, // 身長
+                weight: response.data.result.weight, // 体重
+                bir_country_name: response.data.result.bir_country_name, // 出身地（国）
+                birth_country: response.data.result.birth_country, // 出身地（国）
+                birthPrefectureName: response.data.result.bir_pref_name, // 出身地（都道府県）
+                birth_prefecture: response.data.result.birth_prefecture, // 出身地（都道府県）
+                residenceCountryName: response.data.result.res_country_name, // 居住地（国）
+                residence_country: response.data.result.residence_country, // 居住地（国）
+                residencePrefectureName: response.data.result.res_pref_name, // 居住地（都道府県）
+                residence_prefecture: response.data.result.residence_prefecture, // 居住地（都道府県）
+                date_of_birth: response.data.result.date_of_birth, // 生年月日
+                side_info: data, // サイド情報
+                photo: response.data.result.photo, //写真
+              },
+            }));
+          })
+          .catch((error) => {
+            // TODO: エラー処理を実装
+            setErrorMessage([
+              ...(errorMessage as string[]),
+              'API取得エラー:' + (error as Error).message,
+            ]);
+          });
+          
+      }
+      
+      fetchPlayerData()// APIを叩いて、選手情報を取得する
+      }
+      
   }, []);
 
   /**
@@ -398,13 +407,15 @@ export default function PlayerInformation() {
     confirm: (
       <CustomButton
         buttonType='primary'
-        onClick={() => {
+        onClick={async () => {
           if (prevMode == 'update') {
             // TODO: 更新処理を実装
             const registerData = {};
+            const csrf = () => axios.get('/sanctum/csrf-cookie')
+            await csrf()
             axios
               // .post('http://localhost:3100/', registerData)
-              .post('http://localhost:8000/api/updatePlayerData', formData) //20240123 送信テスト
+              .post('/updatePlayerData', formData) //20240123 送信テスト
               .then((response) => {
                 // TODO: 更新処理成功時の処理
                 console.log(response);
@@ -419,10 +430,12 @@ export default function PlayerInformation() {
               });
           } else if (prevMode == 'create') {
             // TODO: 登録処理を実装
+            const csrf = () => axios.get('/sanctum/csrf-cookie')
+            await csrf()
             const registerData = {};
             axios
               // .post('http://localhost:3100/', registerData)
-              .post('http://localhost:8000/api/storePlayerTest', formData) //20240123 送信テスト
+              .post('/storePlayerTest', formData) //20240123 送信テスト
               .then((response) => {
                 // TODO: 登録処理成功時の処理の実装
                 console.log(response);
@@ -510,7 +523,7 @@ export default function PlayerInformation() {
             displayHelp={mode !== 'confirm'}
             readonly
             value={formData.player_id?.toString()}
-            onChange={(e) => handleInputChange('playerId', e.target.value)}
+            onChange={(e) => handleInputChange('player_id', e.target.value)}
           />
         )}
         <div className='flex flex-col justify-start'>
@@ -525,7 +538,7 @@ export default function PlayerInformation() {
             readonly={mode === 'confirm'}
             errorMessages={jaraPlayerCodeErrorMessage}
             value={formData.jara_player_id?.toString()}
-            onChange={(e) => handleInputChange('jaraPlayerCode', e.target.value)}
+            onChange={(e) => handleInputChange('jara_player_id', e.target.value)}
             toolTipTitle='Title JARA選手コード' //はてなボタン用
             toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
@@ -541,7 +554,7 @@ export default function PlayerInformation() {
             placeHolder='山田 太郎'
             readonly={mode === 'confirm'}
             value={formData.player_name}
-            onChange={(e) => handleInputChange('playerName', e.target.value)}
+            onChange={(e) => handleInputChange('player_name', e.target.value)}
             toolTipTitle='Title 選手名' //はてなボタン用
             toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
@@ -582,7 +595,7 @@ export default function PlayerInformation() {
             errorMessages={sexErrorMessage}
             placeHolder='未選択'
             onChange={(e) => {
-              handleInputChange('sexId', e);
+              handleInputChange('sex_id', e);
               handleInputChange('sexName', sex.find((item) => item.id === Number(e))?.name || '');
             }}
             className='rounded w-[300px] '
@@ -763,7 +776,7 @@ export default function PlayerInformation() {
                     : formData.birthPrefectureName
                 }
                 onChange={(e) => {
-                  handleInputChange('birthPrefectureId', e);
+                  handleInputChange('birth_prefecture', e);
                   handleInputChange(
                     'birthPrefectureName',
                     prefectures.find((item) => item.id === Number(e))?.name || '',
@@ -825,7 +838,7 @@ export default function PlayerInformation() {
                     : formData.residencePrefectureName
                 }
                 onChange={(e) => {
-                  handleInputChange('residencePrefectureId', e);
+                  handleInputChange('residence_prefecture', e);
                   handleInputChange(
                     'residencePrefectureName',
                     prefectures.find((item) => item.id === Number(e))?.name || '',

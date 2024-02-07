@@ -2,7 +2,7 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import {
   CustomButton,
   ErrorBox,
@@ -30,12 +30,14 @@ export default function TeamManagement() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseData = await axios.get('http://localhost:8000/api/getOrgData'); //団体データ取得 20240201
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
+        const responseData = await axios.get('/getOrgData'); //団体データ取得 20240201
         console.log(responseData.data); //Laravel_Reactデータ送信テスト 20231227
         setResponseData(responseData.data); //Laravel_Reactデータ送信テスト 20240116
 
         // 仮のURL（繋ぎ込み時に変更すること）
-        const response = await axios.get<TeamResponse[]>('http://localhost:3100/teams');
+        const response = await axios.get<TeamResponse[]>('/teams');
         setTeamdata(response.data);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
@@ -46,7 +48,9 @@ export default function TeamManagement() {
 
   //React_Laravelデータ送信テスト 20240108
   const onClick = async () => {
-    await axios.post('http://localhost:8000/api/postSample', "送信成功")
+    const csrf = () => axios.get('/sanctum/csrf-cookie')
+    await csrf()
+    await axios.post('/postSample', "送信成功")
       .then((res) => {
         console.log(res);
       }).catch(error => {

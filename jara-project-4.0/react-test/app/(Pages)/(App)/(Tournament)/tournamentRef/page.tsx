@@ -4,7 +4,7 @@
 // Reactおよび関連モジュールのインポート
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 // コンポーネントのインポート
 import {
   ErrorBox,
@@ -62,20 +62,20 @@ export default function PlayerInformationRef() {
 
   // 大会情報を管理する状態
   const [tournamentFormData, setTournamentFormData] = useState<Tournament>({
-    tournId: '',
+    tourn_id: '',
     entrysystemRaceId: '',
-    tournName: '',
-    tournType: '',
+    tourn_name: '',
+    tourn_type: '',
     tournTypeName: '',
-    sponsorOrgId: '',
+    sponsor_org_id: '',
     sponsorOrgName: '',
-    eventStartDate: '',
-    eventEndDate: '',
-    venueId: '',
+    event_start_date: '',
+    event_end_date: '',
+    venue_id: '',
     venueIdName: '',
-    venueName: '',
-    tournUrl: '',
-    tournInfoFailePath: '',
+    venue_name: '',
+    tourn_url: '',
+    tourn_info_faile_path: '',
   });
 
   // APIの呼び出し実績の有無を管理する状態
@@ -99,12 +99,14 @@ export default function PlayerInformationRef() {
         // setUserType(userResponse.data.userType);
         // TODO: tournIdを元に大会情報を取得する処理の置き換え
         // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
-        const tournamentResponse = await axios.get('http://localhost:8000/api/getTournamentInfoData');
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
+        const tournamentResponse = await axios.get('/getTournamentInfoData');
         console.log(tournamentResponse);
         setTournamentFormData(tournamentResponse.data);
         // TODO: tournIdを元にレース情報を取得する処理の置き換え
         // const raceResponse = await axios.get<Race[]>('http://localhost:3100/race');
-        const raceResponse = await axios.get('http://localhost:8000/api/getTournamentInfoData');
+        const raceResponse = await axios.get('/getTournamentInfoData');
         console.log(raceResponse);
         raceResponse.data.map((data) => {
           setTableData((prevData) => [...prevData, { ...data }]);
@@ -304,7 +306,7 @@ export default function PlayerInformationRef() {
                     {/* 距離 */}
                     <CustomTd>{row.range}</CustomTd>
                     {/* 発艇日時 */}
-                    <CustomTd>{row.start_datetime}</CustomTd>
+                    <CustomTd>{row.start_date_time}</CustomTd>
                   </CustomTr>
                 ))}
               </CustomTbody>
@@ -331,14 +333,16 @@ export default function PlayerInformationRef() {
                 <CustomButton
                   buttonType='primary'
                   className='w-[280px]'
-                  onClick={() => {
+                  onClick={async() => {
                     // TODO: 削除ボタン押下イベントの実装
                     const isOk = window.confirm('大会情報を削除します。よろしいですか？');
+                    const csrf = () => axios.get('/sanctum/csrf-cookie')
+                    await csrf()
                     if (!isOk) {
                       // TODO: 削除確認画面でOKボタンが押された場合、テーブルの当該項目に削除フラグを立てる処理の置き換え
                       axios
                         // .delete('http://localhost:3100/tournament')
-                        .post('http://localhost:8000/api/deleteTournamentData', sendFormData) //大会情報の削除 20240202
+                        .post('/deleteTournamentData', sendFormData) //大会情報の削除 20240202
                         .then((response) => {
                           // TODO: 削除完了時の処理の置き換え
                         })

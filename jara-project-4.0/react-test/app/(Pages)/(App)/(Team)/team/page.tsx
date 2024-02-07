@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import Divider from '@mui/material/Divider';
 import {
   OrgClass,
@@ -124,21 +124,25 @@ export default function OrgInfo() {
       try {
         // TODO: APIを叩いて、マスタ情報を取得する処理の置き換え
         // const prefectures = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
-        const prefectures = await axios.get('http://localhost:8000/api/getPrefecures');
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
+        const prefectures = await axios.get('/getPrefecures');
         setPrefectureOptions(prefectures.data);
         // const orgClass = await axios.get<OrgClass[]>('http://localhost:3100/orgClass');
-        const orgClass = await axios.get('http://localhost:8000/api/getOrgClassData');
+        const orgClass = await axios.get('/getOrgClassData');
         setOrgClassOptions(orgClass.data);
         // const orgType = await axios.get<OrgType[]>('http://localhost:3100/orgType');
-        const orgType = await axios.get('http://localhost:8000/api/getOrgTypeData');
+        const orgType = await axios.get('/getOrgTypeData');
         setOrgTypeOptions(orgType.data);
         // const user = await axios.get<UserResponse>('http://localhost:3100/user');
-        const user = await axios.get('http://localhost:8000/api/getUserData');
+        const user = await axios.get('/getUserData');
         setUser(user.data);
 
         if (mode === 'update') {
           // const organization = await axios.get<Organization>('http://localhost:3100/organization');
-          const organization = await axios.get('http://localhost:8000/api/getOrgData');
+          const csrf = () => axios.get('/sanctum/csrf-cookie')
+          await csrf()
+          const organization = await axios.get('/getOrgData');
           setFormData((prevFormData) => ({
             ...prevFormData,
             ...{
@@ -163,7 +167,8 @@ export default function OrgInfo() {
             },
           }));
           // const staff = await axios.get<Staff[]>('http://localhost:3100/staff');
-          const staff = await axios.get('http://localhost:8000/api/getStaff');
+          
+          const staff = await axios.get('/getStaff');
           setTableData(staff.data);
         }
       } catch (error: any) {
@@ -309,9 +314,12 @@ export default function OrgInfo() {
           const requestBody = {};
           alert('TODO: APIを叩いて、登録・更新処理を行う');
           if (prevMode === 'create') {
+            const storeOrgData = async()=>{
+              const csrf = () => axios.get('/sanctum/csrf-cookie')
+            await csrf()
             axios
               // .post('http://localhost:3100/', requestBody)
-              .post('http://localhost:8000/api/storeOrgData', formData) //20240206
+              .post('/storeOrgData', formData) //20240206
               .then((response) => {
                 // TODO: 登録処理成功時の処理
                 window.confirm('団体情報を登録しました。');
@@ -323,10 +331,16 @@ export default function OrgInfo() {
                   '登録に失敗しました。原因：' + (error as Error).message,
                 ]);
               });
+            }
+            storeOrgData()
+            
           } else {
-            axios
+            const updateOrgData = async()=>{
+              const csrf = () => axios.get('/sanctum/csrf-cookie')
+              await csrf()
+              axios
               // .post('http://localhost:3100/', requestBody)
-              .post('http://localhost:8000/api/updateOrgData', formData) //20240206
+              .post('/updateOrgData', formData) //20240206
               .then((response) => {
                 // TODO: 更新処理成功時の処理
                 window.confirm('団体情報を更新しました。');
@@ -338,6 +352,8 @@ export default function OrgInfo() {
                   '更新に失敗しました。原因：' + (error as Error).message,
                 ]);
               });
+            }
+            updateOrgData()
           }
         }}
       >

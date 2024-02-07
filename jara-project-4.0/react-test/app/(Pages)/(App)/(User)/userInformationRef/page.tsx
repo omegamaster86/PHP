@@ -206,7 +206,7 @@ export default function UserInformationUpdate() {
             readonly
             selectedDate={formData.date_of_birth}
             onChange={(e: string) => {
-              handleInputChange('dateOfBirth', e);
+              handleInputChange('date_of_birth', e);
             }}
             maxDate={new Date()}
           />

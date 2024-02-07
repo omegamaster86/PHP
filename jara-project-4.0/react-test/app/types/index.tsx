@@ -106,7 +106,7 @@ interface Race {
   otherRaceName?: string; // その他レース名　#置き換え作業未対応
   by_group: string; // 組別
   range: string; // 距離
-  start_datetime: string; // 開始日時
+  start_date_time: string; // 開始日時
   // 「出漕結果記録テーブル」に「レーステーブル」.「レースID」と紐づくデータが存在する場合、リンクボタンを表示するかどうかを制御するためにhasHistoryを利用
   hasHistory?: boolean; // 過去のレース結果があるかどうか　#置き換え作業未対応
 }

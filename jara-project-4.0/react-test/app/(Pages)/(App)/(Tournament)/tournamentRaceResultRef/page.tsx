@@ -4,7 +4,7 @@
 // Reactおよび関連モジュールのインポート
 import React, { useState, useEffect, ChangeEvent, Fragment, MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 // コンポーネントのインポート
 import {
   CustomButton,
@@ -64,7 +64,9 @@ export default function TournamentRaceResultRef() {
       try {
         // 仮のURL（繋ぎ込み時に変更すること）
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
-        const response = await axios.get('http://localhost:8000/api/getRaceResultRecordsData');
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
+        const response = await axios.get('/getRaceResultRecordsData');
         console.log(response);
         // setResultRecordsData(response.data);
         // response.data.length === 0
@@ -189,9 +191,12 @@ export default function TournamentRaceResultRef() {
    * @description クルー情報を取得する
    */
   const getCrew = async () => {
+
     var apiUri = 'http://localhost:3100/crew?';
+    const csrf = () => axios.get('/sanctum/csrf-cookie')
+    await csrf()
     axios
-      .get<CrewResponse[]>('http://localhost:3100/crew/')
+      .get<CrewResponse[]>('/crew/')
       .then((response) => {
         // レスポンスからデータを取り出してstateにセット
         setCrewRecordsData(response.data);

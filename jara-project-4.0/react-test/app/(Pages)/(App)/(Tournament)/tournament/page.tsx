@@ -4,7 +4,7 @@
 // Reactおよび関連モジュールのインポート
 import React, { useState, useEffect, ChangeEvent, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 // コンポーネントのインポート
 import {
   CustomDropdown,
@@ -71,7 +71,7 @@ export default function Tournament() {
       race_class_name: '',
       by_group: '',
       range: '',
-      start_datetime: '',
+      start_date_time: '',
     },
   ]);
 
@@ -88,7 +88,7 @@ export default function Tournament() {
     race_class_name: '',
     by_group: '',
     range: '',
-    start_datetime: '',
+    start_date_time: '',
   });
 
   //大会情報 20240202
@@ -223,7 +223,7 @@ export default function Tournament() {
     });
 
     const startDateTimeErrorFlg = tableData.some((row) => {
-      return Validator.validateRequired(row.start_datetime, '発艇日時').length > 0;
+      return Validator.validateRequired(row.start_date_time, '発艇日時').length > 0;
     });
 
     setEntrysystemRaceIdErrorMessage(entrysystemRaceIdError);
@@ -315,8 +315,10 @@ export default function Tournament() {
     const fetchData = async () => {
       // APIを叩いてデータを取得する
       // TODO: データ取得処理の実装置き換え
+      const csrf = () => axios.get('/sanctum/csrf-cookie')
+      await csrf()
       axios
-        .get<TourTypeResponse[]>('http://localhost:3100/tourType')
+        .get<TourTypeResponse[]>('/tourType')
         .then((response) => {
           setTourType(response.data);
         })
@@ -327,7 +329,7 @@ export default function Tournament() {
       // TODO: データ取得処理の実装置き換え
       axios
         // .get<VenueResponse[]>('http://localhost:3100/venue')
-        .get('http://localhost:8000/api/getVenueList')
+        .get('/getVenueList')
         .then((response) => {
           //DBのカラム名と画面側のプロパティ名をマップする 20240202
           const stateList = response.data.map(({
@@ -350,7 +352,7 @@ export default function Tournament() {
       // TODO: データ取得処理の実装置き換え
       axios
         // .get<EventResponse[]>('http://localhost:3100/event')
-        .get('http://localhost:8000/api/getEvents')
+        .get('/getEvents')
         .then((response) => {
           //DBのカラム名と画面側のプロパティ名をマップする 20240202
           const stateList = response.data.map(({
@@ -373,7 +375,7 @@ export default function Tournament() {
       // TODO: データ取得処理の実装置き換え
       axios
         // .get<RaceTypeResponse[]>('http://localhost:3100/raceType')
-        .get('http://localhost:8000/api/getRaceClass')
+        .get('/getRaceClass')
         .then((response) => {
           //DBのカラム名と画面側のプロパティ名をマップする 20240202
           const stateList = response.data.map(({
@@ -397,9 +399,11 @@ export default function Tournament() {
       if (mode === 'update') {
         // APIを叩いて、大会情報とレース情報を取得する
         // TODO: データ取得処理の実装置き換え
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
         axios
           // .get<Tournament>('http://localhost:3100/tournament')
-          .get('http://localhost:8000/api/getTournamentInfoData')
+          .get('/getTournamentInfoData')
           .then((response) => {
             console.log(response);
             setTournamentFormData({
@@ -425,8 +429,9 @@ export default function Tournament() {
             // alert(error);
           });
         // TODO: データ取得処理の実装置き換え
+        
         axios
-          .get<Race[]>('http://localhost:3100/race')
+          .get<Race[]>('/race')
           .then((response) => {
             setTableData(response.data);
           })
@@ -448,12 +453,15 @@ export default function Tournament() {
           setDisplayFlg(false);
           const isError = performValidation();
           if (!isError) {
-            const registerData = {};
+            const storeTournamentInfo = async() => {
+              const csrf = () => axios.get('/sanctum/csrf-cookie')
+              await csrf()
+              const registerData = {};
             sendFormData.tournamentFormData = tournamentFormData;
             sendFormData.tableData = tableData;
             axios
               // .post('http://localhost:3100/', registerData)
-              .post('http://localhost:8000/api/storeTournamentInfoData', sendFormData)
+              .post('/storeTournamentInfoData', sendFormData)
               .then((response) => {
                 console.log(response);
                 // TODO: 処理成功時の処理
@@ -472,7 +480,7 @@ export default function Tournament() {
                   race_name: '',
                   by_group: '',
                   range: '',
-                  start_datetime: '',
+                  start_date_time: '',
                 });
                 setTableData([
                   {
@@ -489,7 +497,7 @@ export default function Tournament() {
                     race_name: '',
                     by_group: '',
                     range: '',
-                    start_datetime: '',
+                    start_date_time: '',
                   },
                 ]);
                 fileUploaderRef?.current?.clearFile();
@@ -505,6 +513,9 @@ export default function Tournament() {
               .finally(() => {
                 setDisplayFlg(true);
               });
+            }
+            storeTournamentInfo()
+            
           }
         }}
       >
@@ -517,11 +528,15 @@ export default function Tournament() {
         onClick={() => {
           setDisplayFlg(false);
           const isError = performValidation();
+          
           if (!isError) {
-            const registerData = {};
+            const updateTournamentInfo = async()=>{
+              const csrf = () => axios.get('/sanctum/csrf-cookie')
+              await csrf()
+              const registerData = {};
             axios
               // .post('http://localhost:3100/', registerData)
-              .post('http://localhost:8000/api/updateTournamentInfoData', sendFormData)
+              .post('/updateTournamentInfoData', sendFormData)
               .then((response) => {
                 // TODO: 処理成功時の処理
                 setTournamentFormData({} as Tournament);
@@ -539,7 +554,7 @@ export default function Tournament() {
                   otherRaceName: '',
                   by_group: '',
                   range: '',
-                  start_datetime: '',
+                  start_date_time: '',
                 });
                 setTableData([
                   {
@@ -556,7 +571,7 @@ export default function Tournament() {
                     race_name: '',
                     by_group: '',
                     range: '',
-                    start_datetime: '',
+                    start_date_time: '',
                   },
                 ]);
                 fileUploaderRef?.current?.clearFile();
@@ -572,6 +587,8 @@ export default function Tournament() {
               .finally(() => {
                 setDisplayFlg(true);
               });
+            }
+            updateTournamentInfo()
           }
         }}
       >
@@ -627,7 +644,7 @@ export default function Tournament() {
           race_name: '',
           by_group: '',
           range: '',
-          start_datetime: '',
+          start_date_time: '',
         });
       }}
     >
@@ -681,7 +698,7 @@ export default function Tournament() {
             type={'number'}
             value={row.race_number}
             onChange={(e) => {
-              handleInputChangeRace(row.id, 'raceNumber', e.target.value);
+              handleInputChangeRace(row.id, 'race_number', e.target.value);
             }}
             className='w-[150px]'
           />
@@ -693,7 +710,7 @@ export default function Tournament() {
             options={event.map((item) => ({ key: item.id, value: item.name }))}
             value={row.event_id}
             onChange={(e) => {
-              handleInputChangeRace(row.id, 'eventId', e);
+              handleInputChangeRace(row.id, 'event_id', e);
               handleInputChangeRace(
                 row.id,
                 'eventName',
@@ -708,7 +725,7 @@ export default function Tournament() {
           <TextField
             type={'text'}
             value={row.race_name}
-            onChange={(e) => handleInputChangeRace(row.id, 'raceName', e.target.value)}
+            onChange={(e) => handleInputChangeRace(row.id, 'race_name', e.target.value)}
             className='w-[150px]'
           />
         </CustomTd>
@@ -720,7 +737,7 @@ export default function Tournament() {
               options={raceType.map((item) => ({ key: item.id, value: item.name }))}
               value={row.race_class_id}
               onChange={(e) => {
-                handleInputChangeRace(row.id, 'raceType', e.toString());
+                handleInputChangeRace(row.id, 'race_class_id', e.toString());
                 handleInputChangeRace(
                   row.id,
                   'raceTypeName',
@@ -749,7 +766,7 @@ export default function Tournament() {
           <TextField
             type={'number'}
             value={row.by_group}
-            onChange={(e) => handleInputChangeRace(row.id, 'byGroup', e.target.value)}
+            onChange={(e) => handleInputChangeRace(row.id, 'by_group', e.target.value)}
             className='w-[150px]'
           />
         </CustomTd>
@@ -765,10 +782,10 @@ export default function Tournament() {
         {/* 発艇日時 */}
         <CustomTd>
           <CustomDatePicker
-            selectedDate={row.start_datetime}
+            selectedDate={row.start_date_time}
             useTime={true}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              handleInputChangeRace(row.id, 'startDateTime', formatDateTime(e as unknown as Date));
+              handleInputChangeRace(row.id, 'start_date_time', formatDateTime(e as unknown as Date));
             }}
           />
         </CustomTd>
@@ -901,7 +918,7 @@ export default function Tournament() {
             <CustomDatePicker
               selectedDate={tournamentFormData.event_start_date}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                handleInputChangeTournament('eventStartDate', formatDate(e as unknown as Date));
+                handleInputChangeTournament('event_start_date', formatDate(e as unknown as Date));
               }}
               readonly={mode === 'confirm'}
               isError={eventStartDateErrorMessage.length > 0}
@@ -920,7 +937,7 @@ export default function Tournament() {
             <CustomDatePicker
               selectedDate={tournamentFormData.event_end_date}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                handleInputChangeTournament('eventEndDate', formatDate(e as unknown as Date));
+                handleInputChangeTournament('event_end_date', formatDate(e as unknown as Date));
               }}
               readonly={mode === 'confirm'}
               isError={eventEndDateErrorMessage.length > 0}
@@ -962,7 +979,7 @@ export default function Tournament() {
                 readonly={mode === 'confirm'}
                 displayHelp={false}
                 value={tournamentFormData.venue_name}
-                onChange={(e) => handleInputChangeTournament('venueName', e.target.value)}
+                onChange={(e) => handleInputChangeTournament('venue_name', e.target.value)}
               />
             </div>
           </div>
@@ -988,7 +1005,7 @@ export default function Tournament() {
             readonly={mode === 'confirm'}
             displayHelp={mode !== 'confirm'}
             value={tournamentFormData.tourn_url}
-            onChange={(e) => handleInputChangeTournament('tournUrl', e.target.value)}
+            onChange={(e) => handleInputChangeTournament('tourn_url', e.target.value)}
             toolTipTitle='Title 大会個別URL' //はてなボタン用
             toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
@@ -1129,7 +1146,7 @@ export default function Tournament() {
                         <TextField
                           type={'text'}
                           value={row.race_id}
-                          onChange={(e) => handleInputChangeRace(row.id, 'raceId', e.target.value)}
+                          onChange={(e) => handleInputChangeRace(row.id, 'race_id', e.target.value)}
                           className='my-[8px]'
                         />
                       )}
@@ -1177,7 +1194,7 @@ export default function Tournament() {
                       {/* 距離 */}
                       <CustomTd textType='secondary'>{row.range}</CustomTd>
                       {/* 発艇日時 */}
-                      <CustomTd textType='secondary'>{row.start_datetime}</CustomTd>
+                      <CustomTd textType='secondary'>{row.start_date_time}</CustomTd>
                     </>
                   ) : (
                     raceRowComp(row)

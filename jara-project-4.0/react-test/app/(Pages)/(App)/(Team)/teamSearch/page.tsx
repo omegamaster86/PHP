@@ -16,7 +16,7 @@ import {
   ErrorBox,
 } from '@/app/components';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import { OrgClass, OrgType, UserResponse, Org } from '@/app/types';
 import { Divider } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -82,8 +82,10 @@ export default function TeamSearch() {
    * 検索結果をstateにセットする
    */
   const handleSearch = async () => {
+    const csrf = () => axios.get('/sanctum/csrf-cookie')
+    await csrf()
     axios
-      .get<Org[]>('http://localhost:3100/orgSearch')
+      .get<Org[]>('/orgSearch')
       .then((response) => {
         const data = response.data;
         if (data.length > 100) {
@@ -117,11 +119,13 @@ export default function TeamSearch() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const orgClass = await axios.get<OrgClass[]>('http://localhost:3100/orgClass');
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
+        const orgClass = await axios.get<OrgClass[]>('/orgClass');
         setOrgClassOptions(orgClass.data);
-        const orgType = await axios.get<OrgType[]>('http://localhost:3100/orgType');
+        const orgType = await axios.get<OrgType[]>('/orgType');
         setOrgTypeOptions(orgType.data);
-        const userInfo = await axios.get<UserResponse>('http://localhost:3100/user');
+        const userInfo = await axios.get<UserResponse>('/api/user');
         setUser(userInfo.data);
       } catch (error: any) {
         setErrorMessages(['APIの呼び出しに失敗しました。']);
@@ -334,7 +338,7 @@ export default function TeamSearch() {
             {visibleData.map((org, index) => (
               <CustomTr key={index}>
                 {/* エントリーシステムの団体ID */}
-                <CustomTd>{org.entrySystemId}</CustomTd>
+                <CustomTd>{org.entrysystem_org_id}</CustomTd>
                 {/* 団体ID */}
                 <CustomTd>
                   <Link
