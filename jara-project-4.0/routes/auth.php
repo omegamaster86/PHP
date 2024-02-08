@@ -42,6 +42,8 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
 
     Route::post('register', [RegisteredUserController::class, 'store']);
+    
+    Route::post('signup', [RegisteredUserController::class, 'store'])->name('signup');
 
     Route::get('password-reset', [UserController::class, 'createPasswordReset'])->name('password-reset');
     Route::post('password-reset', [UserController::class, 'storePasswordReset']);
