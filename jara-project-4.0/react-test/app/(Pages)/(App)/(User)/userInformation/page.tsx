@@ -158,23 +158,23 @@ export default function UserInformationUpdate() {
         setFormData((prevFormData) => ({
           ...prevFormData,
           ...{
-            userId: response.data.result.user_id,
-            userName: response.data.result.user_name,
-            userType: response.data.result.user_type,
+            user_id: response.data.result.user_id,
+            user_name: response.data.result.user_name,
+            user_type: response.data.result.user_type,
             userTypeName: "",//response.data.result.userTypeName,
-            dateOfBirth: response.data.result.date_of_birth,
+            date_of_birth: response.data.result.date_of_birth,
             sexName: '男性',//response.data.result.sexName ? response.data.sexName : '男性',
-            sexId: response.data.result.sex,
+            sex: response.data.result.sex,
             height: response.data.result.height,
             weight: response.data.result.weight,
-            residenceCountryId: response.data.result.residence_country,
+            residence_country: response.data.result.residence_country,
             residenceCountryName: 0//response.data.result.residenceCountryName
               ? response.data.result.residenceCountryName
-              : '日本',
-            residencePrefectureId: response.data.result.residence_prefecture,
+              : '日本国 （jpn）',
+              residence_prefecture: response.data.result.residence_prefecture,
             residencePrefectureName: "",//response.data.result.residencePrefectureName,
-            email: response.data.result.mailaddress,
-            tempPasswordFlag: response.data.result.temp_password_flag,
+            mailaddress: response.data.result.mailaddress,
+            temp_password_flag: response.data.result.temp_password_flag,
             photo: response.data.result.photo,
           },
         }));
@@ -505,10 +505,10 @@ export default function UserInformationUpdate() {
               id='residenceCountry'
               readonly={mode === 'confirm'}
               options={countries.map((item) => ({ key: item.id, value: item.name })) || []}
-              placeHolder='日本'
+              placeHolder='日本国 （jpn）'
               value={
                 mode !== 'confirm'
-                  ? formData.residence_prefecture?.toString() || ''
+                  ? formData.residence_country?.toString() || ''
                   : formData.residenceCountryName
               }
               onChange={(e) => {
@@ -523,7 +523,7 @@ export default function UserInformationUpdate() {
             />
           </div>
           {/* 居住地（都道府県） */}
-          {formData.residenceCountryName === '日本' && (
+          {formData.residenceCountryName === '日本国 （jpn）' && (
             <div className='flex flex-col justify-start'>
               <InputLabel label='都道府県' required={mode === 'update'} />
               <CustomDropdown
@@ -537,7 +537,7 @@ export default function UserInformationUpdate() {
                 }
                 placeHolder='東京'
                 onChange={(e) => {
-                  handleInputChange('residencePrefectureId', e);
+                  handleInputChange('residence_prefecture', e);
                   handleInputChange(
                     'residencePrefectureName',
                     prefectures.find((item) => item.id === Number(e))?.name || '',

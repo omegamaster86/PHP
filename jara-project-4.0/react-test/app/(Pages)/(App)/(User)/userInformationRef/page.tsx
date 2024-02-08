@@ -59,7 +59,7 @@ export default function UserInformationUpdate() {
   };
 
   useEffect(() => {
-    if (formData.residenceCountryName == '日本') {
+    if (formData.residenceCountryName == '日本国 （jpn）') {
       setFormData((prevFormData) => ({
         ...prevFormData,
         livingPrefecture: '東京',
@@ -226,11 +226,11 @@ export default function UserInformationUpdate() {
               label='居住地'
               readonly
               displayHelp={false}
-              placeHolder='日本'
+              placeHolder='日本国 （jpn）'
               value={formData.residenceCountryName}
             />
           </div>
-          {formData.residenceCountryName === '日本' && (
+          {formData.residenceCountryName === '日本国 （jpn）' && (
             <div className='flex flex-col justify-start'>
               {/* 居住地（都道府県） */}
               <CustomTextField

@@ -324,7 +324,7 @@ export default function PlayerInformation() {
 
     // 出身地（都道府県）の入力チェック
     const birthPlacePrefectureError = Validator.getErrorMessages([
-      formData.birthCountryName.includes('日本')
+      formData.birthCountryName === '日本国 （jpn）' 
         ? Validator.validateSelectRequired(formData.birthPrefectureName, '出身地（都道府県）')
         : '',
     ]);
@@ -336,7 +336,7 @@ export default function PlayerInformation() {
 
     // 居住地（都道府県）の入力チェック
     const livingPrefectureError = Validator.getErrorMessages([
-      formData.residenceCountryName.includes('日本')
+      formData.residenceCountryName === '日本国 （jpn）' 
         ? Validator.validateSelectRequired(formData.residencePrefectureName, '居住地（都道府県）')
         : '',
     ]);
@@ -570,7 +570,7 @@ export default function PlayerInformation() {
           />
           <CustomDatePicker
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              handleInputChange('dateOfBirth', formatDate(e as unknown as Date));
+              handleInputChange('date_of_birth', formatDate(e as unknown as Date));
             }}
             readonly={mode === 'confirm'}
             selectedDate={formData.date_of_birth}
@@ -656,7 +656,7 @@ export default function PlayerInformation() {
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
-                  sideInfo: [
+                  side_info: [
                     !prevFormData.side_info[0],
                     prevFormData.side_info[1],
                     prevFormData.side_info[2],
@@ -674,7 +674,7 @@ export default function PlayerInformation() {
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
-                  sideInfo: [
+                  side_info: [
                     prevFormData.side_info[0],
                     !prevFormData.side_info[1],
                     prevFormData.side_info[2],
@@ -692,7 +692,7 @@ export default function PlayerInformation() {
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
-                  sideInfo: [
+                  side_info: [
                     prevFormData.side_info[0],
                     prevFormData.side_info[1],
                     !prevFormData.side_info[2],
@@ -710,7 +710,7 @@ export default function PlayerInformation() {
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
-                  sideInfo: [
+                  side_info: [
                     prevFormData.side_info[0],
                     prevFormData.side_info[1],
                     prevFormData.side_info[2],
@@ -754,7 +754,7 @@ export default function PlayerInformation() {
               className='rounded w-[300px] '
             />
           </div>
-          {formData.birthCountryName.includes('日本') && (
+          {formData.birthCountryName === '日本国 （jpn）' && (
             <div className='flex flex-col justify-start'>
               {/* 出身地（都道府県） */}
               <InputLabel
@@ -818,7 +818,7 @@ export default function PlayerInformation() {
               className='rounded w-[300px] '
             />
           </div>
-          {formData.residenceCountryName.includes('日本') && (
+          {formData.residenceCountryName === '日本国 （jpn）' && (
             <div className='flex flex-col justify-start'>
               {/* 居住地（都道府県） */}
               <InputLabel

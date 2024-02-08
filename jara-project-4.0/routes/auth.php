@@ -16,6 +16,12 @@ use App\Http\Controllers\VolunteerInfoAlignmentController;
 use App\Http\Controllers\TournamentInfoAlignmentController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use App\Models\M_prefectures;
+use App\Models\M_countries;
+use App\Models\M_sex;
+use App\Models\M_venue;
+use App\Models\M_race_class;
+use App\Models\M_events;
 
 Route::get('contact-us', [ContactUsController::class, 'create'])->name('contact-us');
 Route::get('contact-us/confirm', [ContactUsController::class, 'createConfirm'])->name('contact-us-confirm');
@@ -53,7 +59,41 @@ Route::middleware('auth')->group(function () {
     Route::get('getUserData', [UserController::class, 'getUserData']);
     // 実装　ー　クマール　ー終了
 
+    //共通項目
+    Route::get('getPrefecures', [M_prefectures::class, 'getPrefecures']); //都道府県マスター取得 20240117
+    Route::get('getCountries', [M_countries::class, 'getCountries']); //国マスター取得 20240117
+    Route::get('getSexList', [M_sex::class, 'getSexList']); //性別マスター取得 20240131
+    Route::get('getVenueList', [M_venue::class, 'getVenueList']); //水域マスター取得 20240201
+    Route::get('getRaceClass', [M_race_class::class, 'getRaceClass']); //レースクラスマスター取得 20240202
+    Route::get('getEvents', [M_events::class, 'getEvents']); //イベントマスター取得 20240202
+
+    //ユーザー関連
+    Route::get('getUserData', [UserController::class, 'getUserData']); //DBからユーザ情報を取得 20240131
+    Route::post('updateUserData', [UserController::class, 'updateUserData']); //ユーザ情報をDBに送る 20240131
+
+    //パスワード関連
     Route::post('storePasswordChange', [UserController::class, 'storePasswordChange']); //パスワード変更 20240207
+
+    //選手関連
+    Route::post('storePlayerTest', [PlayerController::class, 'storePlayerTest']); //選手登録確認画面から登録 20231228
+    Route::get('getUpdatePlayerData', [PlayerController::class, 'getUpdatePlayerData']); //DBから選手情報更新画面にデータを渡す 20240131
+    Route::post('updatePlayerData', [PlayerController::class, 'updatePlayerData']); //選手更新確認画面から更新 20240131
+    Route::get('getPlayerInfoData', [PlayerController::class, 'getPlayerInfoData']); //DBから選手情報更新画面にデータを渡す 20240131
+    Route::get('getRaceResultRecordsData', [PlayerController::class, 'getRaceResultRecordsData']); //DBから選手情報更新画面にデータを渡す 20240131
+    Route::post('deletePlayerData', [PlayerController::class, 'deletePlayerData']); //該当データをDBから削除する 20240201
+
+    //団体関連
+    Route::get('getOrgData', [OrganizationController::class, 'getOrgData']); //DBから団体管理画面にデータを渡す 20240201
+
+    //大会関連
+    Route::get('getTournamentInfoData', [TournamentController::class, 'getTournamentInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
+    Route::post('storeTournamentInfoData', [TournamentController::class, 'storeTournamentInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
+    Route::post('updateTournamentInfoData', [TournamentController::class, 'updateTournamentInfoData']); //大会情報更新 20240202
+    Route::get('getRaceInfoData', [TournamentController::class, 'getRaceInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
+    Route::post('deleteTournamentData', [TournamentController::class, 'deleteTournamentData']); //DBから大会情報を削除する 20240205
+
+    //ボランティア関連
+
 
     //React連携後APIここまで===========================================================
     //================================================================================
