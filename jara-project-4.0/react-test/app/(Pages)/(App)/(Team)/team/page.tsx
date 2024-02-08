@@ -126,14 +126,17 @@ export default function OrgInfo() {
         // const prefectures = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
-        const prefectures = await axios.get('/getPrefecures');
-        setPrefectureOptions(prefectures.data);
+        const prefectures = await axios.get('/getPrefecures'); //都道府県マスターの取得 20240208
+        const stateList = prefectures.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
+        setPrefectureOptions(stateList);
         // const orgClass = await axios.get<OrgClass[]>('http://localhost:3100/orgClass');
-        const orgClass = await axios.get('/getOrgClassData');
-        setOrgClassOptions(orgClass.data);
+        const orgClass = await axios.get('/getOrganizationClass'); //団体区分マスターの取得 20240208
+        const orgClassList = orgClass.data.map(({ org_class_id, org_class_name }: { org_class_id: number; org_class_name: string }) => ({ id: org_class_id, name: org_class_name }));
+        setOrgClassOptions(orgClassList);
         // const orgType = await axios.get<OrgType[]>('http://localhost:3100/orgType');
-        const orgType = await axios.get('/getOrgTypeData');
-        setOrgTypeOptions(orgType.data);
+        const orgType = await axios.get('/getOrganizationType'); //団体種別マスターの取得 20240208
+        const orgTypeList = orgType.data.map(({ org_type_id, org_type }: { org_type_id: number; org_type: string }) => ({ id: org_type_id, name: org_type }));
+        setOrgTypeOptions(orgTypeList);
         // const user = await axios.get<UserResponse>('http://localhost:3100/user');
         const user = await axios.get('/getUserData');
         setUser(user.data);
@@ -167,7 +170,7 @@ export default function OrgInfo() {
             },
           }));
           // const staff = await axios.get<Staff[]>('http://localhost:3100/staff');
-          
+
           const staff = await axios.get('/getStaff');
           setTableData(staff.data);
         }
@@ -314,44 +317,44 @@ export default function OrgInfo() {
           const requestBody = {};
           alert('TODO: APIを叩いて、登録・更新処理を行う');
           if (prevMode === 'create') {
-            const storeOrgData = async()=>{
-              const csrf = () => axios.get('/sanctum/csrf-cookie')
-            await csrf()
-            axios
-              // .post('http://localhost:3100/', requestBody)
-              .post('/storeOrgData', formData) //20240206
-              .then((response) => {
-                // TODO: 登録処理成功時の処理
-                window.confirm('団体情報を登録しました。');
-              })
-              .catch((error) => {
-                // TODO: 登録処理失敗時の処理
-                setErrorMessage([
-                  ...(errorMessage as string[]),
-                  '登録に失敗しました。原因：' + (error as Error).message,
-                ]);
-              });
-            }
-            storeOrgData()
-            
-          } else {
-            const updateOrgData = async()=>{
+            const storeOrgData = async () => {
               const csrf = () => axios.get('/sanctum/csrf-cookie')
               await csrf()
               axios
-              // .post('http://localhost:3100/', requestBody)
-              .post('/updateOrgData', formData) //20240206
-              .then((response) => {
-                // TODO: 更新処理成功時の処理
-                window.confirm('団体情報を更新しました。');
-              })
-              .catch((error) => {
-                // TODO: 更新処理失敗時の処理
-                setErrorMessage([
-                  ...(errorMessage as string[]),
-                  '更新に失敗しました。原因：' + (error as Error).message,
-                ]);
-              });
+                // .post('http://localhost:3100/', requestBody)
+                .post('/storeOrgData', formData) //20240206
+                .then((response) => {
+                  // TODO: 登録処理成功時の処理
+                  window.confirm('団体情報を登録しました。');
+                })
+                .catch((error) => {
+                  // TODO: 登録処理失敗時の処理
+                  setErrorMessage([
+                    ...(errorMessage as string[]),
+                    '登録に失敗しました。原因：' + (error as Error).message,
+                  ]);
+                });
+            }
+            storeOrgData()
+
+          } else {
+            const updateOrgData = async () => {
+              const csrf = () => axios.get('/sanctum/csrf-cookie')
+              await csrf()
+              axios
+                // .post('http://localhost:3100/', requestBody)
+                .post('/updateOrgData', formData) //20240206
+                .then((response) => {
+                  // TODO: 更新処理成功時の処理
+                  window.confirm('団体情報を更新しました。');
+                })
+                .catch((error) => {
+                  // TODO: 更新処理失敗時の処理
+                  setErrorMessage([
+                    ...(errorMessage as string[]),
+                    '更新に失敗しました。原因：' + (error as Error).message,
+                  ]);
+                });
             }
             updateOrgData()
           }

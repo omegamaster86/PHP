@@ -22,6 +22,9 @@ use App\Models\M_sex;
 use App\Models\M_venue;
 use App\Models\M_race_class;
 use App\Models\M_events;
+use App\Models\M_organization_class;
+use App\Models\M_organization_type;
+
 
 Route::get('contact-us', [ContactUsController::class, 'create'])->name('contact-us');
 Route::get('contact-us/confirm', [ContactUsController::class, 'createConfirm'])->name('contact-us-confirm');
@@ -66,6 +69,8 @@ Route::middleware('auth')->group(function () {
     Route::get('getVenueList', [M_venue::class, 'getVenueList']); //水域マスター取得 20240201
     Route::get('getRaceClass', [M_race_class::class, 'getRaceClass']); //レースクラスマスター取得 20240202
     Route::get('getEvents', [M_events::class, 'getEvents']); //イベントマスター取得 20240202
+    Route::get('getOrganizationClass', [M_organization_class::class, 'getOrganizationClass']); //団体区分マスター取得 20240208
+    Route::get('getOrganizationType', [M_organization_type::class, 'getOrganizationType']); //団体種別マスター取得 20240208
 
     //ユーザー関連
     Route::get('getUserData', [UserController::class, 'getUserData']); //DBからユーザ情報を取得 20240131

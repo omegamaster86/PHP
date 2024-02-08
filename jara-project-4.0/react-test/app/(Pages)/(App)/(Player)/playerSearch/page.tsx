@@ -34,20 +34,20 @@ import Label from '@/app/components/Label';
 // 検索条件フォームの型定義
 // 検索条件
 interface SearchCond {
-  playerName: string;
+  player_id: string;
+  player_name: string;
+  jara_player_id: string;
   sexId: string;
   sex: string;
-  jaraPlayerId: string;
-  playerId: string;
   startDateOfBirth: string;
   endDateOfBirth: string;
-  entrysystemOrgId: string;
-  orgId: string;
-  orgName: string;
-  eventId: string;
-  eventName: string;
-  raceEventName: string;
-  sideInfo: {
+  entrysystem_org_id: string;
+  org_id: string;
+  org_name: string;
+  event_id: string;
+  event_name: string;
+  race_class_name: string;
+  side_info: {
     S: boolean;
     B: boolean;
     X: boolean;
@@ -65,20 +65,20 @@ export default function PlayerSearch() {
 
   // フォームデータを管理する状態
   const [searchCond, setSearchCond] = useState<SearchCond>({
-    playerName: '',
+    player_name: '',
     sexId: '',
     sex: '',
-    jaraPlayerId: '',
-    playerId: '',
+    jara_player_id: '',
+    player_id: '',
     startDateOfBirth: '',
     endDateOfBirth: '',
-    entrysystemOrgId: '',
-    orgId: '',
-    orgName: '',
-    eventId: '',
-    eventName: '',
-    raceEventName: '',
-    sideInfo: {
+    entrysystem_org_id: '',
+    org_id: '',
+    org_name: '',
+    event_id: '',
+    event_name: '',
+    race_class_name: '',
+    side_info: {
       S: false,
       B: false,
       X: false,
@@ -181,8 +181,10 @@ export default function PlayerSearch() {
         const sexList = sexResponse.data.map(({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }));
         setSex(sexList);
         // 種目
-        const eventResponse = await axios.get<EventResponse[]>('/event');
-        setEvent(eventResponse.data);
+        // const eventResponse = await axios.get<EventResponse[]>('/event');
+        const eventResponse = await axios.get('/getEvents');
+        const eventResponseList = eventResponse.data.map(({ event_id, event_name }: { event_id: number; event_name: string }) => ({ id: event_id, name: event_name }));
+        setEvent(eventResponseList);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
       }
@@ -208,8 +210,8 @@ export default function PlayerSearch() {
     const checked = event.target.checked;
     setSearchCond((prevFormData) => ({
       ...prevFormData,
-      sideInfo: {
-        ...prevFormData.sideInfo,
+      side_info: {
+        ...prevFormData.side_info,
         [name]: checked,
       },
     }));
@@ -253,8 +255,8 @@ export default function PlayerSearch() {
                 <CustomTextField
                   label='選手名'
                   displayHelp={false}
-                  value={searchCond.playerName}
-                  onChange={(e) => handleInputChange('playerName', e.target.value)}
+                  value={searchCond.player_name}
+                  onChange={(e) => handleInputChange('player_name', e.target.value)}
                 />
               </div>
               {/* 性別 */}
@@ -274,21 +276,26 @@ export default function PlayerSearch() {
               </div>
               {/* サイド情報 */}
               <div className='flex flex-col justify-start'>
-                <InputLabel label='サイド情報' displayHelp />
+                <InputLabel
+                  label='サイド情報'
+                  displayHelp
+                  toolTipTitle='Title' //はてなボタン用
+                  toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+                />
                 <div className='flex flex-row gap-[4px]'>
                   <div className='flex justify-start flex-col gap-[4px] my-1'>
                     <OriginalCheckbox
                       id='checkbox-S'
                       label=': S (ストロークサイド)'
                       value='S'
-                      checked={searchCond.sideInfo.S}
+                      checked={searchCond.side_info.S}
                       onChange={handleCheckboxChange}
                     />
                     <OriginalCheckbox
                       id='checkbox-B'
                       label=': B (バウサイド)'
                       value='B'
-                      checked={searchCond.sideInfo.B}
+                      checked={searchCond.side_info.B}
                       onChange={handleCheckboxChange}
                     />
                   </div>
@@ -297,14 +304,14 @@ export default function PlayerSearch() {
                       id='checkbox-X'
                       label=': X (スカル)'
                       value='X'
-                      checked={searchCond.sideInfo.X}
+                      checked={searchCond.side_info.X}
                       onChange={handleCheckboxChange}
                     />
                     <OriginalCheckbox
                       id='checkbox-C'
                       label=': C (コックス)'
                       value='C'
-                      checked={searchCond.sideInfo.C}
+                      checked={searchCond.side_info.C}
                       onChange={handleCheckboxChange}
                     />
                   </div>
@@ -333,16 +340,20 @@ export default function PlayerSearch() {
                     type='number'
                     label='JARA選手コード'
                     displayHelp
-                    value={searchCond.jaraPlayerId}
-                    onChange={(e) => handleInputChange('jaraPlayerId', e.target.value)}
+                    value={searchCond.jara_player_id}
+                    onChange={(e) => handleInputChange('jara_player_id', e.target.value)}
+                    toolTipTitle='Title' //はてなボタン用
+                    toolTipText='サンプル用のツールチップ表示' //はてなボタン用
                   />
                   {/* 選手ID */}
                   <CustomTextField
                     type='number'
                     label='選手ID'
                     displayHelp
-                    value={searchCond.playerId}
-                    onChange={(e) => handleInputChange('playerId', e.target.value)}
+                    value={searchCond.player_id}
+                    onChange={(e) => handleInputChange('player_id', e.target.value)}
+                    toolTipTitle='Title' //はてなボタン用
+                    toolTipText='サンプル用のツールチップ表示' //はてなボタン用
                   />
                   <div className='flex flex-col justify-start gap-[8px]'>
                     <InputLabel label='生年月日' />
@@ -383,8 +394,10 @@ export default function PlayerSearch() {
                         label='エントリーシステムの団体ID'
                         type='number'
                         displayHelp
-                        value={searchCond.entrysystemOrgId}
-                        onChange={(e) => handleInputChange('entrysystemOrgId', e.target.value)}
+                        value={searchCond.entrysystem_org_id}
+                        onChange={(e) => handleInputChange('entrysystem_org_id', e.target.value)}
+                        toolTipTitle='Title' //はてなボタン用
+                        toolTipText='サンプル用のツールチップ表示' //はてなボタン用
                       />
                     </div>
                   )}
@@ -396,8 +409,10 @@ export default function PlayerSearch() {
                       displayHelp
                       isError={sponsorOrgIdErrorMessage.length > 0}
                       errorMessages={sponsorOrgIdErrorMessage}
-                      value={searchCond.orgId}
-                      onChange={(e) => handleInputChange('orgId', e.target.value)}
+                      value={searchCond.org_id}
+                      onChange={(e) => handleInputChange('org_id', e.target.value)}
+                      toolTipTitle='Title' //はてなボタン用
+                      toolTipText='サンプル用のツールチップ表示' //はてなボタン用
                     />
                   </div>
                   {/* 団体名 */}
@@ -405,8 +420,10 @@ export default function PlayerSearch() {
                     <CustomTextField
                       label='団体名'
                       displayHelp
-                      value={searchCond.orgName}
-                      onChange={(e) => handleInputChange('orgName', e.target.value)}
+                      value={searchCond.org_name}
+                      onChange={(e) => handleInputChange('org_name', e.target.value)}
+                      toolTipTitle='Title' //はてなボタン用
+                      toolTipText='サンプル用のツールチップ表示' //はてなボタン用
                     />
                   </div>
                 </div>
@@ -420,10 +437,10 @@ export default function PlayerSearch() {
                     <CustomDropdown
                       id='event'
                       options={event.map((item) => ({ key: item.id, value: item.name }))}
-                      value={searchCond.eventId}
+                      value={searchCond.event_id}
                       placeHolder='未選択'
                       onChange={(e) => {
-                        handleInputChange('eventId', e);
+                        handleInputChange('event_id', e);
                         handleInputChange(
                           'eventName',
                           event.find((item) => item.id === Number(e))?.name || '',
@@ -439,8 +456,8 @@ export default function PlayerSearch() {
                       displayHelp={false}
                       isError={sponsorOrgIdErrorMessage.length > 0}
                       errorMessages={sponsorOrgIdErrorMessage}
-                      value={searchCond.raceEventName}
-                      onChange={(e) => handleInputChange('raceEventName', e.target.value)}
+                      value={searchCond.race_class_name}
+                      onChange={(e) => handleInputChange('race_class_name', e.target.value)}
                     />
                   </div>
                 </div>
@@ -465,20 +482,20 @@ export default function PlayerSearch() {
                 buttonType='secondary'
                 onClick={() => {
                   setSearchCond({
-                    playerName: '',
+                    player_name: '',
                     sexId: '',
                     sex: '',
-                    jaraPlayerId: '',
-                    playerId: '',
+                    jara_player_id: '',
+                    player_id: '',
                     startDateOfBirth: '',
                     endDateOfBirth: '',
-                    entrysystemOrgId: '',
-                    orgId: '',
-                    orgName: '',
-                    eventId: '',
-                    eventName: '',
-                    raceEventName: '',
-                    sideInfo: {
+                    entrysystem_org_id: '',
+                    org_id: '',
+                    org_name: '',
+                    event_id: '',
+                    event_name: '',
+                    race_class_name: '',
+                    side_info: {
                       S: false,
                       B: false,
                       X: false,
