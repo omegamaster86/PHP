@@ -123,9 +123,9 @@ export default function OrgInfo() {
     const fetchData = async () => {
       try {
         // TODO: APIを叩いて、マスタ情報を取得する処理の置き換え
-        // const prefectures = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
+        // const prefectures = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
         const prefectures = await axios.get('/getPrefecures'); //都道府県マスターの取得 20240208
         const stateList = prefectures.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
         setPrefectureOptions(stateList);
@@ -134,18 +134,20 @@ export default function OrgInfo() {
         const orgClassList = orgClass.data.map(({ org_class_id, org_class_name }: { org_class_id: number; org_class_name: string }) => ({ id: org_class_id, name: org_class_name }));
         setOrgClassOptions(orgClassList);
         // const orgType = await axios.get<OrgType[]>('http://localhost:3100/orgType');
-        const orgType = await axios.get('/getOrganizationType'); //団体種別マスターの取得 20240208
+        const orgType = await axios.get('/getOrganizationTypeData'); //団体種別マスターの取得 20240208
         const orgTypeList = orgType.data.map(({ org_type_id, org_type }: { org_type_id: number; org_type: string }) => ({ id: org_type_id, name: org_type }));
         setOrgTypeOptions(orgTypeList);
         // const user = await axios.get<UserResponse>('http://localhost:3100/user');
-        const user = await axios.get('/getUserData');
-        setUser(user.data);
-
+        const userData = await axios.get('/getUserData');
+        console.log(userData);
+        setUser(userData.data.result);
+        console.log(user);
         if (mode === 'update') {
           // const organization = await axios.get<Organization>('http://localhost:3100/organization');
           const csrf = () => axios.get('/sanctum/csrf-cookie')
           await csrf()
           const organization = await axios.get('/getOrgData');
+          console.log(organization);
           setFormData((prevFormData) => ({
             ...prevFormData,
             ...{
@@ -169,9 +171,10 @@ export default function OrgInfo() {
               pref_org_reg_trail: organization.data.pref_org_reg_trail,
             },
           }));
+          console.log(formData);
           // const staff = await axios.get<Staff[]>('http://localhost:3100/staff');
 
-          const staff = await axios.get('/getStaff');
+          const staff = await axios.get('/getStaff'); //残件対象項目
           setTableData(staff.data);
         }
       } catch (error: any) {
@@ -315,24 +318,27 @@ export default function OrgInfo() {
         onClick={() => {
           // TODO: APIを叩いて、登録・更新処理を行う
           const requestBody = {};
-          alert('TODO: APIを叩いて、登録・更新処理を行う');
+          //alert('TODO: APIを叩いて、登録・更新処理を行う');
           if (prevMode === 'create') {
             const storeOrgData = async () => {
+              console.log(formData);
               const csrf = () => axios.get('/sanctum/csrf-cookie')
               await csrf()
               axios
                 // .post('http://localhost:3100/', requestBody)
                 .post('/storeOrgData', formData) //20240206
                 .then((response) => {
+                  console.log(response);
                   // TODO: 登録処理成功時の処理
-                  window.confirm('団体情報を登録しました。');
+                  //window.confirm('団体情報を登録しました。');
                 })
                 .catch((error) => {
+                  console.log(error);
                   // TODO: 登録処理失敗時の処理
-                  setErrorMessage([
-                    ...(errorMessage as string[]),
-                    '登録に失敗しました。原因：' + (error as Error).message,
-                  ]);
+                  // setErrorMessage([
+                  //   ...(errorMessage as string[]),
+                  //   '登録に失敗しました。原因：' + (error as Error).message,
+                  // ]);
                 });
             }
             storeOrgData()
@@ -627,7 +633,7 @@ export default function OrgInfo() {
                 handleInputChange('jara_org_type', e);
                 handleInputChange(
                   'jaraOrgTypeName',
-                  orgTypeOptions.find((orgType) => orgType.id === Number(e))?.name || '',
+                  orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
                 );
               }}
               readonly={mode === 'confirm'}
@@ -667,7 +673,7 @@ export default function OrgInfo() {
                 handleInputChange('pref_org_type', e);
                 handleInputChange(
                   'prefOrgTypeName',
-                  orgTypeOptions.find((orgType) => orgType.id === Number(e))?.name || '',
+                  orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
                 );
               }}
               options={orgTypeOptions.map((orgType) => ({

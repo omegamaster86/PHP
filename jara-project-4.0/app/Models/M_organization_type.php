@@ -41,4 +41,17 @@ class M_organization_type extends Model
                                     );
         return $organizationType;
     }
+
+    //団体種別マスタを取得 react用 20240209
+    public function getOrganizationTypeData()
+    {
+        $organizationType = DB::select('select 
+                                        org_type_id
+                                        ,org_type
+                                        from m_organization_type 
+                                        where delete_flag=0
+                                        order by display_order'
+                                    );
+        return $organizationType;
+    }
 }

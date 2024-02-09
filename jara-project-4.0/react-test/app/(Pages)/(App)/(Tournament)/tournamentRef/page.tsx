@@ -63,7 +63,7 @@ export default function PlayerInformationRef() {
   // 大会情報を管理する状態
   const [tournamentFormData, setTournamentFormData] = useState<Tournament>({
     tourn_id: '',
-    entrysystemRaceId: '',
+    entrysystem_tourn_id: '',
     tourn_name: '',
     tourn_type: '',
     tournTypeName: '',
@@ -95,12 +95,12 @@ export default function PlayerInformationRef() {
     // StrictModeの制約回避のため、APIの呼び出し実績の有無をuseEffectの中に記述
     if (!isApiFetched.current) {
       const fetchData = async () => {
-        // const userResponse = await axios.get<UserResponse>('http://localhost:3100/user');
-        // setUserType(userResponse.data.userType);
-        // TODO: tournIdを元に大会情報を取得する処理の置き換え
-        // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
+        const userResponse = await axios.get<UserResponse>('http://localhost:3100/user'); //残件対象項目
+        setUserType(userResponse.data.userType);
+        // TODO: tournIdを元に大会情報を取得する処理の置き換え
+        // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
         const tournamentResponse = await axios.get('/getTournamentInfoData');
         console.log(tournamentResponse);
         setTournamentFormData(tournamentResponse.data);
@@ -243,7 +243,7 @@ export default function PlayerInformationRef() {
                         {/* エントリーシステムの大会ID */}
                         <div className='text-gray-40 text-caption1'>エントリーシステムの大会ID：</div>
                         <Label
-                          label={tournamentFormData.entrysystemRaceId}
+                          label={tournamentFormData.entrysystem_tourn_id}
                           textColor='white'
                           textSize='caption1'
                         ></Label>

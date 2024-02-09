@@ -291,13 +291,13 @@ class T_raceResultRecord extends Model
         DB::beginTransaction();
         try {
             DB::update(
-                'update t_race_result_record set `registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? WHERE `player_id` = ?',
+                'update t_race_result_record set `registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where `player_id` = ?',
                 [
                     NOW(),
-                    1, //Auth::user()->user_id,
+                    Auth::user()->user_id,
                     NOW(),
-                    1, //Auth::user()->user_id,
-                    $raceResultRecordInfo['delete_flag'],
+                    Auth::user()->user_id,
+                    1,
                     $raceResultRecordInfo['player_id'], //where条件
                 ]
             );

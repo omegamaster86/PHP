@@ -124,7 +124,7 @@ export default function UserInformationUpdate() {
               const csrf = () => axios.get('/sanctum/csrf-cookie')
               await csrf()
               axios
-                .delete('http://localhost:3100/')
+                .delete('http://localhost:3100/') //残件対象項目
                 .then((res) => {
                   // ログイン画面に遷移する
                   router.push('/login');

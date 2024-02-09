@@ -39,45 +39,33 @@ class T_tournaments extends Model
 
     public function insertTournaments($tournamentsInfo)
     {
-        $result =  array();
-        array_push($result, "success");
+        DB::insert(
+            'insert into t_tournaments
+            (`tourn_id`, `tourn_name`, `sponsor_org_id`, `event_start_date`, `event_end_date`, `venue_id`, `venue_name`, `tourn_type`, `tourn_url`,
+             `tourn_info_faile_path`, `entrysystem_tourn_id`, `registered_time`, `registered_user_id`, `updated_time`, `updated_user_id`, `delete_flag`)
+            values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            [
+                null,
+                $tournamentsInfo['tourn_name'],
+                $tournamentsInfo['sponsor_org_id'],
+                $tournamentsInfo['event_start_date'],
+                $tournamentsInfo['event_end_date'],
+                $tournamentsInfo['venue_id'],
+                $tournamentsInfo['venue_name'],
+                $tournamentsInfo['tourn_type'],
+                $tournamentsInfo['tourn_url'],
+                $tournamentsInfo['tourn_info_faile_path'],
+                $tournamentsInfo['entrysystem_tourn_id'],
+                NOW(),
+                Auth::user()->user_id,
+                NOW(),
+                Auth::user()->user_id,
+                $tournamentsInfo['delete_flag']
+            ]
+        );
 
-        DB::beginTransaction();
-        try {
-            DB::insert(
-                'insert into t_tournaments
-                (`tourn_id`, `tourn_name`, `sponsor_org_id`, `event_start_date`, `event_end_date`, `venue_id`, `venue_name`, `tourn_type`, `tourn_url`,
-                 `tourn_info_faile_path`, `entrysystem_tourn_id`, `registered_time`, `registered_user_id`, `updated_time`, `updated_user_id`, `delete_flag`)
-                values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-                [
-                    $tournamentsInfo['tourn_id'],
-                    $tournamentsInfo['tourn_name'],
-                    $tournamentsInfo['sponsor_org_id'],
-                    $tournamentsInfo['event_start_date'],
-                    $tournamentsInfo['event_end_date'],
-                    $tournamentsInfo['venue_id'],
-                    $tournamentsInfo['venue_name'],
-                    $tournamentsInfo['tourn_type'],
-                    $tournamentsInfo['tourn_url'],
-                    $tournamentsInfo['tourn_info_faile_path'],
-                    $tournamentsInfo['entrysystem_tourn_id'],
-                    NOW(),
-                    1, //Auth::user()->user_id,
-                    NOW(),
-                    1, // Auth::user()->user_id,
-                    $tournamentsInfo['delete_flag']
-                ]
-            );
-            array_push($result, DB::getPdo()->lastInsertId());
-
-            DB::commit();
-            return $result;
-        } catch (\Throwable $e) {
-            DB::rollBack();
-
-            //$result = "failed";
-            return $result;
-        }
+        $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
+        return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 
     public function updateTournaments($tournamentsInfo)

@@ -62,6 +62,8 @@ export default function PlayerInformationRef() {
 
   //選手情報削除関数 20240201
   const dataDelete = async () => {
+    deleteData.playerInformation = playerInformation;
+    deleteData.raceResultRecordsData = raceResultRecordsData;
     const csrf = () => axios.get('/sanctum/csrf-cookie')
     await csrf()
     await axios.post('/deletePlayerData', deleteData)
@@ -114,48 +116,9 @@ export default function PlayerInformationRef() {
           photo: playerInf.data.result.photo,
         });
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
-        const response = await axios.get('/getRaceResultRecordsData');
-        
-        // setResultRecordsData({
-        //   raceResultRecordId: response.data.result[i].race_result_record_id,
-        //   tournId: response.data.result[i].tourn_id,
-        //   tournNam: response.data.result[i].tourn_name,
-        //   official: response.data.result[i].official,
-        //   eventStartDate: "",
-        //   orgName: response.data.result[i].org_name,
-        //   raceNumber: response.data.result[i].race_number,
-        //   eventName: response.data.result[i].event_name,
-        //   raceName: response.data.result[i].race_name,
-        //   byGroup: response.data.result[i].by_group,
-        //   crewName: response.data.result[i].crew_name,
-        //   rank: response.data.result[i].rank,
-        //   fiveHundredmLaptime: response.data.result[i].laptime_500m,
-        //   tenHundredmLaptime: response.data.result[i].laptime_1000m,
-        //   fifteenHundredmLaptime: response.data.result[i].laptime_1500m,
-        //   twentyHundredmLaptime: response.data.result[i].laptime_2000m,
-        //   finalTime: response.data.result[i].final_time,
-        //   strokeRateAvg: response.data.result[i].final_time,
-        //   fiveHundredmStrokeRat: response.data.result[i].stroke_rat_500m,
-        //   tenHundredmStrokeRat: response.data.result[i].stroke_rat_1000m,
-        //   fifteenHundredmStrokeRat: response.data.result[i].stroke_rat_1500m,
-        //   twentyHundredmStrokeRat: response.data.result[i].stroke_rat_2000m,
-        //   heartRateAvg: response.data.result[i].heart_rate_avg,
-        //   fiveHundredmHeartRate: response.data.result[i].heart_rate_500m,
-        //   tenHundredmHeartRate: response.data.result[i].heart_rate_1000m,
-        //   fifteenHundredmHeartRate: response.data.result[i].heart_rate_1500m,
-        //   twentyHundredmHeartRate: response.data.result[i].heart_rate_2000m,
-        //   attendance: response.data.result[i].attendance,
-        //   ergoWeight: response.data.result[i].ergo_weight,
-        //   playerHeight: response.data.result[i].player_height,
-        //   playerWeight: response.data.result[i].player_weight,
-        //   sheetName: response.data.result[i].seat_name,
-        //   raceResultRecordName: response.data.result[i].race_result_record_name,
-        //   registeredTime : response.data.result[i].registered_time,
-        //   twentyHundredmWindSpeed: response.data.result[i].wind_speed_2000m_point,
-        //   twentyHundredmWindDirection: response.data.result[i].wind_direction_2000m_point,
-        //   tenHundredmWindSpeed: response.data.result[i].wind_speed_1000m_point,
-        //   tenHundredmWindDirection: response.data.result[i].wind_direction_1000m_point,
-        // });
+        const response = await axios.get('/getRaceResultRecordsData'); //残件対象項目
+        console.log(response);
+        // setResultRecordsData({});
       } catch (error: any) {
         setError({ isError: true, errorMessage: 'API取得エラー:' + error.message });
       }

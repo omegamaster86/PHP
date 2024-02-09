@@ -18,7 +18,7 @@ class T_players extends Model
         'jara_player_id' => null,
         'player_name' => null,
         'date_of_birth' => null,
-        'sex' => null,
+        'sex_id' => null,
         'height' => null,
         'weight' => null,
         'side_info' => null,
@@ -37,7 +37,7 @@ class T_players extends Model
     //選手情報更新画面用 userIDに紐づいた選手情報を取得 20240131
     public function getPlayerData($user_id)
     {
-        $result = DB::select('select `player_id`, `user_id`, `jara_player_id`, `player_name`, `date_of_birth`, `t_players`.`sex`, `height`, `weight`, `side_info`, `birth_country`, `birth_prefecture`, `residence_country`, `residence_prefecture`, `photo`, `t_players`.`registered_time`, `t_players`.`registered_user_id`, `t_players`.`updated_time`, `t_players`.`updated_user_id`, `t_players`.`delete_flag`,
+        $result = DB::select('select `player_id`, `user_id`, `jara_player_id`, `player_name`, `date_of_birth`, `t_players`.`sex_id`, `height`, `weight`, `side_info`, `birth_country`, `birth_prefecture`, `residence_country`, `residence_prefecture`, `photo`, `t_players`.`registered_time`, `t_players`.`registered_user_id`, `t_players`.`updated_time`, `t_players`.`updated_user_id`, `t_players`.`delete_flag`,
         `m_sex`.`sex` as `sex_name`,
         bir_cont.`country_name` as `bir_country_name`,
         bir_pref.`pref_name` as `bir_pref_name`,
@@ -45,7 +45,7 @@ class T_players extends Model
         res_pref.`pref_name` as `res_pref_name`
         FROM `t_players`
         left join `m_sex`
-        on `t_players`.`sex`=`m_sex`.`sex_id`
+        on `t_players`.`sex_id`=`m_sex`.`sex_id`
         left join m_countries bir_cont
         on `t_players`.birth_country = bir_cont.country_id
         left join m_prefectures bir_pref
@@ -72,14 +72,14 @@ class T_players extends Model
         DB::beginTransaction();
         try {
             DB::update(
-                'update `t_players` set `player_id`=?,`user_id`=?,`jara_player_id`=?,`player_name`=?,`date_of_birth`=?,`sex`=?,`height`=?,`weight`=?,`side_info`=?,`birth_country`=?, `birth_prefecture`=?,`residence_country`=?,`residence_prefecture`=?,`photo`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where user_id = ?',
+                'update `t_players` set `player_id`=?,`user_id`=?,`jara_player_id`=?,`player_name`=?,`date_of_birth`=?,`sex_id`=?,`height`=?,`weight`=?,`side_info`=?,`birth_country`=?, `birth_prefecture`=?,`residence_country`=?,`residence_prefecture`=?,`photo`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where user_id = ?',
                 [
                     $playersInfo['player_id'],
-                    1,
+                    Auth::user()->user_id, //選手更新時に入力されるuserIdはログイン中のuserId
                     $playersInfo['jara_player_id'],
                     $playersInfo['player_name'],
                     $playersInfo['date_of_birth'],
-                    $playersInfo['sex'],
+                    $playersInfo['sex_id'],
                     $playersInfo['height'],
                     $playersInfo['weight'],
                     $playersInfo['side_info'],
@@ -89,11 +89,11 @@ class T_players extends Model
                     $playersInfo['residence_prefecture'],
                     $playersInfo['photo'],
                     NOW(),
-                    1, //Auth::user()->user_id,
+                    Auth::user()->user_id,
                     NOW(),
-                    1, //Auth::user()->user_id,
+                    Auth::user()->user_id,
                     $playersInfo['delete_flag'],
-                    1 //where条件用
+                    Auth::user()->user_id //where条件用
                 ]
             );
 
@@ -106,6 +106,35 @@ class T_players extends Model
             return $result;
         }
     }
+
+    //react 選手情報更新画面用 選手情報の更新を行う 20240131
+    public function deletePlayerData($playersInfo)
+    {
+        $result = "success";
+        DB::beginTransaction();
+        try {
+            DB::update(
+                'update `t_players` set `registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where player_id = ?',
+                [
+                    NOW(),
+                    Auth::user()->user_id,
+                    NOW(),
+                    Auth::user()->user_id,
+                    1,
+                    $playersInfo['player_id'] //where条件用
+                ]
+            );
+
+            DB::commit();
+            return $result = "success";
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::debug($e);
+            $result = "failed";
+            return $result;
+        }
+    }
+
 
     public function insertPlayers($playersInfo)
     {
@@ -120,7 +149,7 @@ class T_players extends Model
                                     jara_player_id,
                                     player_name,
                                     date_of_birth,
-                                    sex,
+                                    sex_id,
                                     height,
                                     weight,		
                                     side_info,
@@ -137,11 +166,11 @@ class T_players extends Model
                                 )values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 [
                     null,
-                    1,
+                    Auth::user()->user_id, //選手登録時に入力されるuserIdはログイン中のuserId
                     $playersInfo['jara_player_id'],
                     $playersInfo['player_name'],
                     $playersInfo['date_of_birth'],
-                    $playersInfo['sex'],
+                    $playersInfo['sex_id'],
                     $playersInfo['height'],
                     $playersInfo['weight'],
                     $playersInfo['side_info'],
@@ -151,20 +180,17 @@ class T_players extends Model
                     $playersInfo['residence_prefecture'],
                     $playersInfo['photo'],
                     NOW(),
-                    1, //Auth::user()->user_id,
+                    Auth::user()->user_id,
                     NOW(),
-                    1, //Auth::user()->user_id,
+                    Auth::user()->user_id,
                     0
                 ]
             );
             DB::commit();
-            // Log::debug(sprintf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"));
-            // Log::debug(sprintf("sakusesu"));
-            // Log::debug(sprintf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"));
             return "登録完了";
         } catch (\Throwable $e) {
             DB::rollBack();
-
+            Log::debug($e);
             $result = "failed";
             return $result;
         }
@@ -184,9 +210,6 @@ class T_players extends Model
             return $result;
         } catch (\Throwable $e) {
             DB::rollBack();
-            dd($e);
-            // dd($request->all());
-            dd("stop");
 
             $result = "failed";
             return $result;
@@ -326,7 +349,7 @@ class T_players extends Model
                                 `jara_player_id`, 
                                 `player_name`, 
                                 `date_of_birth`, 
-                                `sex`, 
+                                `sex_id`, 
                                 `height`, 
                                 `weight`, 
                                 `side_info`, 
@@ -350,7 +373,7 @@ class T_players extends Model
                                 `jara_player_id`, 
                                 `player_name`, 
                                 `date_of_birth`, 
-                                `sex`, 
+                                `sex_id`, 
                                 `height`, 
                                 `weight`, 
                                 `side_info`, 

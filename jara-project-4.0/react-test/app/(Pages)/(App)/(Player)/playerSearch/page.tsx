@@ -131,8 +131,8 @@ export default function PlayerSearch() {
    * 検索結果をstateにセットする
    */
   const handleSearch = async () => {
-    var apiUri = 'http://localhost:3100/playerSearch?';
-
+    // var apiUri = 'http://localhost:3100/playerSearch?'; //残件対象項目
+    var apiUri = process.env.NEXT_PUBLIC_BACKEND_URL + '/playerSearch?'; //残件対象項目
     getNonEmptyProperties(searchCond).forEach((item) => {
       apiUri += item.key + '=' + item.value + '&';
     });
@@ -141,7 +141,7 @@ export default function PlayerSearch() {
     try {
       const csrf = () => axios.get('/sanctum/csrf-cookie')
       await csrf()
-      const response = await axios.get<Player[]>('/playerSearch/');
+      const response = await axios.get<Player[]>('/playerSearch/'); //残件対象項目
       const data = response.data;
 
       if (data.length > 100) {

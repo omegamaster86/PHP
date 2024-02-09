@@ -63,10 +63,10 @@ export default function TournamentRaceResultRef() {
     const fetchData = async () => {
       try {
         // 仮のURL（繋ぎ込み時に変更すること）
-        // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
-        const response = await axios.get('/getRaceResultRecordsData');
+        // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
+        const response = await axios.get('/getRaceResultRecordsData'); //残件対象項目
         console.log(response);
         // setResultRecordsData(response.data);
         // response.data.length === 0
@@ -196,7 +196,7 @@ export default function TournamentRaceResultRef() {
     const csrf = () => axios.get('/sanctum/csrf-cookie')
     await csrf()
     axios
-      .get<CrewResponse[]>('/crew/')
+      .get<CrewResponse[]>('/crew/') //残件対象項目
       .then((response) => {
         // レスポンスからデータを取り出してstateにセット
         setCrewRecordsData(response.data);

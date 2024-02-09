@@ -24,7 +24,7 @@ use App\Models\M_race_class;
 use App\Models\M_events;
 use App\Models\M_organization_class;
 use App\Models\M_organization_type;
-
+use App\Models\M_approval_type;
 
 Route::get('contact-us', [ContactUsController::class, 'create'])->name('contact-us');
 Route::get('contact-us/confirm', [ContactUsController::class, 'createConfirm'])->name('contact-us-confirm');
@@ -72,8 +72,9 @@ Route::middleware('auth')->group(function () {
     Route::get('getRaceClass', [M_race_class::class, 'getRaceClass']); //レースクラスマスター取得 20240202
     Route::get('getEvents', [M_events::class, 'getEvents']); //イベントマスター取得 20240202
     Route::get('getOrganizationClass', [M_organization_class::class, 'getOrganizationClass']); //団体区分マスター取得 20240208
-    Route::get('getOrganizationType', [M_organization_type::class, 'getOrganizationType']); //団体種別マスター取得 20240208
-
+    Route::get('getOrganizationTypeData', [M_organization_type::class, 'getOrganizationTypeData']); //団体種別マスター取得 20240208
+    Route::get('getApprovalType', [M_approval_type::class, 'getApprovalType']); //大会種別マスター取得 20240208
+    
     //ユーザー関連
     Route::get('getUserData', [UserController::class, 'getUserData']); //DBからユーザ情報を取得 20240131
     Route::post('updateUserData', [UserController::class, 'updateUserData']); //ユーザ情報をDBに送る 20240131
@@ -91,6 +92,7 @@ Route::middleware('auth')->group(function () {
 
     //団体関連
     Route::get('getOrgData', [OrganizationController::class, 'getOrgData']); //DBから団体管理画面にデータを渡す 20240201
+    Route::post('storeOrgData', [OrganizationController::class, 'storeOrgData']); //団体情報をDBに送る 20240201
 
     //大会関連
     Route::get('getTournamentInfoData', [TournamentController::class, 'getTournamentInfoData']); //DBから大会情報更新画面にデータを渡す 20240201

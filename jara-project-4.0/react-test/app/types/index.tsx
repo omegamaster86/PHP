@@ -76,7 +76,7 @@ interface TeamResponse {
 // 大会情報
 interface Tournament {
   tourn_id?: string; // 大会ID
-  entrysystemRaceId: string; // エントリーシステムのレースID　#置き換え作業未対応（エントリー大会IDの間違い？）
+  entrysystem_tourn_id: string; // エントリーシステムの大会ID
   tourn_name: string; // 大会名
   tourn_type: string; // 大会種別
   tournTypeName: string; // 大会種別名　#置き換え作業対応不要
@@ -85,7 +85,6 @@ interface Tournament {
   event_start_date: string; // 開催日
   event_end_date: string; // 終了日
   venue_id: string; // 開催場所ID
-  venueIdName: string; // 開催場所ID名　#置き換え作業対応不要
   venue_name: string; // 開催場所名
   tourn_url: string; // 大会URL
   tourn_info_faile_path: string; // 大会情報ファイルパス

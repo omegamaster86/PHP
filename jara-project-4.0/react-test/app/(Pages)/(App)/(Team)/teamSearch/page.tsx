@@ -121,11 +121,22 @@ export default function TeamSearch() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
-        const orgClass = await axios.get<OrgClass[]>('/orgClass');
-        setOrgClassOptions(orgClass.data);
-        const orgType = await axios.get<OrgType[]>('/orgType');
-        setOrgTypeOptions(orgType.data);
-        const userInfo = await axios.get<UserResponse>('/api/user');
+
+        //団体種別マスターの取得 20240209
+        // const orgType = await axios.get<OrgType[]>('/orgType');
+        const orgType = await axios.get('/getOrganizationTypeData');
+        console.log(orgType.data);
+        const orgTypeList = orgType.data.map(({ org_type_id, org_type }: { org_type_id: number; org_type: string }) => ({ id: org_type_id, name: org_type }));
+        setOrgTypeOptions(orgTypeList);
+
+        //団体区分マスターの取得 20240209
+        // const orgClass = await axios.get<OrgClass[]>('/orgClass');
+        const orgClass = await axios.get('/getOrganizationClass');
+        const orgClassList = orgClass.data.map(({ org_class_id, org_class_name }: { org_class_id: number; org_class_name: string }) => ({ id: org_class_id, name: org_class_name }));
+        setOrgClassOptions(orgClassList);
+
+        // const userInfo = await axios.get<UserResponse>('/api/user');
+        const userInfo = await axios.get('/api/user');
         setUser(userInfo.data);
       } catch (error: any) {
         setErrorMessages(['APIの呼び出しに失敗しました。']);
@@ -171,6 +182,8 @@ export default function TeamSearch() {
               handleInputChange('residenceCountryName', e.target.value);
             }}
             value={formData.residenceCountryName}
+            toolTipTitle='Title' //はてなボタン用
+            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           />
           {/* 所在地（都道府県） */}
           <CustomTextField
@@ -202,11 +215,12 @@ export default function TeamSearch() {
                 <CustomDropdown
                   id='団体種別'
                   options={orgTypeOptions.map((orgType) => ({
-                    key: orgType.id as number,
-                    value: orgType.name as string,
+                    value: orgType.name,
+                    key: orgType.id,
                   }))}
                   value={formData?.orgTypeId || ''}
                   onChange={(e) => {
+                    console.log(e);
                     handleInputChange('orgTypeId', e);
                     handleInputChange(
                       'orgTypeName',
@@ -227,6 +241,7 @@ export default function TeamSearch() {
                   }))}
                   value={formData?.orgClassId || ''}
                   onChange={(e) => {
+                    console.log(e);
                     handleInputChange('orgClassId', e);
                     handleInputChange(
                       'orgClassName',
@@ -243,23 +258,32 @@ export default function TeamSearch() {
                   handleInputChange('orgId', e.target.value);
                 }}
                 value={formData?.orgId || ''}
+                toolTipTitle='Title' //はてなボタン用
+                toolTipText='サンプル用のツールチップ表示' //はてなボタン用
               />
               {!(
                 user.user_type === ROLE.SUPPORTER ||
                 user.user_type === ROLE.PLAYER ||
                 user.user_type === ROLE.VOLUNTEER
               ) && (
-                // エントリーシステムの団体ID
-                <CustomTextField
-                  label='エントリーシステムID'
-                  onChange={(e) => {
-                    handleInputChange('entrySystemId', e.target.value);
-                  }}
-                  value={formData?.entrySystemId || ''}
-                />
-              )}
+                  // エントリーシステムの団体ID
+                  <CustomTextField
+                    label='エントリーシステムID'
+                    onChange={(e) => {
+                      handleInputChange('entrySystemId', e.target.value);
+                    }}
+                    value={formData?.entrySystemId || ''}
+                    toolTipTitle='Title' //はてなボタン用
+                    toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+                  />
+                )}
               <div className='w-full flex flex-col justify-start gap-[8px]'>
-                <InputLabel label='設立年' displayHelp />
+                <InputLabel
+                  label='設立年'
+                  displayHelp
+                  toolTipTitle='Title' //はてなボタン用
+                  toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+                />
                 <div className='w-full flex flex-row justify-start gap-[8px]'>
                   {/* 創立年（開始年） */}
                   <CustomYearPicker

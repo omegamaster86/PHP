@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class T_users extends Authenticatable
 {
@@ -108,6 +110,7 @@ class T_users extends Authenticatable
 
     public function updateUserData($targetUserId)
     {
+        Log::debug(Auth::user()->user_id);
         $result = "success";
         DB::beginTransaction();
         try {
@@ -143,9 +146,9 @@ class T_users extends Authenticatable
                     $targetUserId['user_type'],
                     $targetUserId['photo'],
                     NOW(),
-                    1,//Auth::user()->user_id,
+                    Auth::user()->user_id,
                     NOW(),
-                    1,//Auth::user()->user_id,
+                    Auth::user()->user_id,
                     $targetUserId['delete_flag'],
                     $targetUserId['user_id'], //where条件
                 ]
@@ -154,9 +157,6 @@ class T_users extends Authenticatable
             DB::commit();
             return $result;
         } catch (\Throwable $e) {
-            dd($e);
-            // dd($request->all());
-            dd("stop");
             DB::rollBack();
 
             $result = "failed";

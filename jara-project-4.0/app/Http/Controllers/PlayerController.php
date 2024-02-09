@@ -559,12 +559,13 @@ class PlayerController extends Controller
     {
         Log::debug(sprintf("storePlayerTest start"));
         $reqData = $request->all();
+        Log::debug($reqData);
         $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
         $tPlayersData::$playerInfo['player_name'] = $reqData['player_name']; //選手名
         $tPlayersData::$playerInfo['date_of_birth'] = $reqData['date_of_birth']; //誕生日
         $tPlayersData::$playerInfo['height'] = $reqData['height']; //身長
         $tPlayersData::$playerInfo['weight'] = $reqData['weight']; //体重
-        $tPlayersData::$playerInfo['sex'] = $reqData['sex']; //性別ID
+        $tPlayersData::$playerInfo['sex'] = $reqData['sex_id']; //性別ID
         $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
         //サイド情報
         $side_info = null;
@@ -600,13 +601,14 @@ class PlayerController extends Controller
     {
         Log::debug(sprintf("updatePlayerData start"));
         $reqData = $request->all();
+        Log::debug($reqData);
         $tPlayersData::$playerInfo['player_id'] = $reqData['player_id']; //JARA選手コード
         $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
         $tPlayersData::$playerInfo['player_name'] = $reqData['player_name']; //選手名
         $tPlayersData::$playerInfo['date_of_birth'] = $reqData['date_of_birth']; //誕生日
         $tPlayersData::$playerInfo['height'] = $reqData['height']; //身長
         $tPlayersData::$playerInfo['weight'] = $reqData['weight']; //体重
-        $tPlayersData::$playerInfo['sex'] = $reqData['sex']; //性別ID
+        $tPlayersData::$playerInfo['sex_id'] = $reqData['sex_id']; //性別ID
         $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
         //サイド情報
         $side_info = null;
@@ -650,36 +652,13 @@ class PlayerController extends Controller
     {
         Log::debug(sprintf("deletePlayerData start"));
         $reqData = $request->all();
-        $tPlayersData::$playerInfo['player_id'] = $reqData['playerInformation']['player_id']; //JARA選手コード
-        $tPlayersData::$playerInfo['jara_player_id'] = $reqData['playerInformation']['jara_player_id']; //JARA選手コード
-        $tPlayersData::$playerInfo['player_name'] = $reqData['playerInformation']['player_name']; //選手名
-        $tPlayersData::$playerInfo['date_of_birth'] = $reqData['playerInformation']['date_of_birth']; //誕生日
-        $tPlayersData::$playerInfo['height'] = $reqData['playerInformation']['height']; //身長
-        $tPlayersData::$playerInfo['weight'] = $reqData['playerInformation']['weight']; //体重
-        $tPlayersData::$playerInfo['sex'] = $reqData['playerInformation']['sex']; //性別ID
-        $tPlayersData::$playerInfo['photo'] = $reqData['playerInformation']['photo']; //写真
-        //サイド情報
-        $side_info = null;
-        for ($i = 0; $i < 4; $i++) {
-            if ($reqData['playerInformation']['side_info'][$i]) {
-                $side_info .= "1";
-            } else {
-                $side_info .= "0";
-            }
-        }
-        $tPlayersData::$playerInfo['side_info'] = $side_info;
-
-        $tPlayersData::$playerInfo['birth_country'] = $reqData['playerInformation']['birth_country']; //出身地(国)
-        $tPlayersData::$playerInfo['birth_prefecture'] =  $reqData['playerInformation']['birth_prefecture']; //出身地(都道府県名)
-        $tPlayersData::$playerInfo['residence_country'] = $reqData['playerInformation']['residence_country']; //居住地(国)
-        $tPlayersData::$playerInfo['residence_prefecture'] =  $reqData['playerInformation']['residence_prefecture']; //居住地(都道府県)
-        $tPlayersData::$playerInfo['delete_flag'] = 1; //削除フラグ
-        $result = $tPlayersData->updatePlayerData($tPlayersData::$playerInfo); //DBに選手を登録 20240131
+        Log::debug($reqData);
+        
+        $tPlayersData::$playerInfo['player_id'] = $reqData['playerInformation']['player_id']; //選手ID
+        $result = $tPlayersData->deletePlayerData($tPlayersData::$playerInfo); //該当選手に削除フラグを立てる 20240208
 
         $tRaceResultRecord::$raceResultRecordInfo['player_id'] = $reqData['playerInformation']['player_id']; //選手ID
-        $tRaceResultRecord::$raceResultRecordInfo['delete_flag'] = 1; //削除フラグ
-        $result = $tRaceResultRecord->deleteRaceResultRecord_playerId($tRaceResultRecord::$raceResultRecordInfo); //DBに選手を登録 20240131
-
+        $result = $tRaceResultRecord->deleteRaceResultRecord_playerId($tRaceResultRecord::$raceResultRecordInfo); //該当選手に削除フラグを立てる 20240208
 
         Log::debug(sprintf("deletePlayerData end"));
         return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す

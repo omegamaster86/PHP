@@ -115,10 +115,10 @@ export default function UserInformationUpdate() {
   useEffect(() => {
     const fetchMaster = async () => {
       try {
-        // TODO: APIを叩いて、マスタ情報を取得する処理の置き換え
-        // const prefectureResponse = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
+        // TODO: APIを叩いて、マスタ情報を取得する処理の置き換え
+        // const prefectureResponse = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
         const prefectureResponse = await axios.get('/getPrefecures');
         const stateList = prefectureResponse.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
         //console.log(stateList);
@@ -285,7 +285,7 @@ export default function UserInformationUpdate() {
             const requestBody = {};
             axios
               // .post('http://localhost:3100/', requestBody)
-              .post('/updateUserData',requestBody)
+              .post('/updateUserData',formData)
               .then((response) => {
                 // 成功時の処理を実装
                 window.confirm('ユーザー情報を更新しました。');

@@ -108,7 +108,7 @@ export default function TournamentSearch() {
   }
 
   const handleSearch = async () => {
-    var apiUri = 'http://localhost:3100/tournamentSearch?';
+    var apiUri = 'http://localhost:3100/tournamentSearch?'; //残件対象項目
 
     getNonEmptyProperties(searchCond).forEach((item) => {
       apiUri += item.key + '=' + item.value + '&';
