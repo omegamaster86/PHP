@@ -94,9 +94,9 @@ class T_organizations extends Model
                         $organizationInfo['pref_id'],
                         $organizationInfo['address1'],
                         $organizationInfo['address2'],
-                        NOW(),
+                        now()->format('Y-m-d H:i:s.u'),
                         Auth::user()->user_id,
-                        NOW(),
+                        now()->format('Y-m-d H:i:s.u'),
                         Auth::user()->user_id,
                         0
                     ]
@@ -141,7 +141,7 @@ class T_organizations extends Model
                 $organizationInfo['pref_id'],
                 $organizationInfo['address1'],
                 $organizationInfo['address2'],
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 $organizationInfo['org_id'],
             ]

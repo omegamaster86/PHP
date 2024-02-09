@@ -198,4 +198,21 @@ class T_organization_players extends Model
         $players = DB::select($sqlString,$conditionValue);
         return $players;
     }
+
+    //選手IDを条件に所属選手情報を取得する
+    public function getOrganizationPlayersInfoFromPlayerId($player_id)
+    {
+        $org_players_info = DB::select('select 
+                                        `org_player_id`,
+                                        `org_id`, 
+                                        `player_id`, 
+                                        `joining_date`, 
+                                        `departure_date`
+                                        FROM `t_organization_players`
+                                        WHERE 1=1
+                                        and `delete_flag` = 0
+                                        and `player_id` = :player_id
+                                        ',$player_id);
+        return $org_players_info;
+    }
 }

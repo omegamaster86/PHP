@@ -636,7 +636,7 @@ class OrganizationController extends Controller
     private function generateInsertStaffValues($organizationInfo, $org_id, &$values)
     {
         $staff_index = 1;
-        $currentDatetime = NOW();
+        $currentDatetime = now()->format('Y-m-d H:i:s.u');
         $replace_string = "";
 
         //共通の値を先に配列に格納しておく

@@ -164,5 +164,33 @@ class T_users extends Authenticatable
         }
     }
 
-    
+    //メールアドレスを条件にユーザー情報を取得する
+    public function getUserDataFromMailAddress($mailaddress)
+    {
+        $users = DB::select('select 
+                                `user_id`, 
+                                `user_name`, 
+                                `mailaddress`, 
+                                `temp_password_flag`
+                                FROM `t_users`
+                                WHERE 1=1
+                                and `mailaddress` = ?'
+                            ,$mailaddress);
+        return $users;
+    }
+
+    //ユーザーIDを条件にユーザー情報を取得する
+    public function getUserDataFromUserId($user_id)
+    {
+        $users = DB::select('select 
+                                `user_id`, 
+                                `user_name`, 
+                                `mailaddress`, 
+                                `temp_password_flag`
+                                FROM `t_users`
+                                WHERE 1=1
+                                and `user_id` = ?'
+                            ,$user_id);
+        return $users;
+    }    
 }

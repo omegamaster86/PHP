@@ -550,7 +550,7 @@ class VolunteerInfoAlignmentController extends Controller
                     //登録・更新するユーザー名を取得
                     $register_user_id = Auth::user()->user_id;
                     //登録・更新日時のために現在の日時を取得
-                    $current_datetime = now();
+                    $current_datetime = now()->format('Y-m-d H:i:s.u');
                     //削除フラグは全て0で登録する
                     $delete_flag = 0;
 

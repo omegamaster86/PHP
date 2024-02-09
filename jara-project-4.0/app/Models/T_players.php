@@ -224,13 +224,26 @@ class T_players extends Model
                         `player_id`
                         ,`user_id`
                         ,`player_name`
-                        ,`country_name`
+                        ,bir_cou.country_id			as `birth_country_id`
+                        ,bir_cou.`country_name`		as `birth_country_name`
+                        ,res_cou.country_id			as `residence_country_id`
+                        ,res_cou.country_name		as `residence_country_name`
+                        ,bir_pref.pref_id			as `birth_pref_id`
+                        ,bir_pref.pref_name			as `birth_pref_name`
+                        ,res_pref.pref_id			as `residence_pref_id`
+                        ,res_pref.pref_name			as `residence_pref_name`
                         ,`height`
                         ,`weight`
                         from `t_players`
-                        left join `m_countries`
-                        on `t_players`.`birth_country` = `m_countries`.`country_id`
-                        where `t_players`.`delete_flag`=0
+                        left join `m_countries` bir_cou
+                        on `t_players`.`birth_country` = bir_cou.`country_id`
+                        left join `m_countries` res_cou
+                        on `t_players`.`residence_country` = res_cou.`country_id`
+                        left join `m_prefectures` bir_pref
+                        on `t_players`.`birth_prefecture` = bir_pref.`pref_id`
+                        left join `m_prefectures` res_pref
+                        on `t_players`.`residence_prefecture` = bir_pref.`pref_id`
+                        where `t_players`.`delete_flag`=0        
                         and `player_id` in (#PlayerIdCondition#)';
         $sqlString = str_replace('#PlayerIdCondition#', $PlayerIdCondition, $sqlString);
         $players = DB::select($sqlString);
@@ -388,5 +401,38 @@ class T_players extends Model
                                 and player_id = ?
                                 ',$player_id);
         return $player;
+    }
+
+    //JARA選手IDを条件にプレイヤー情報を取得する
+    public function getPlayerFromJaraPlayerCode($jara_player_code)
+    {
+        $players = DB::select('select 
+                                `player_id`
+                                ,`user_id`
+                                ,`jara_player_id`
+                                ,`player_name`
+                                ,bir_cou.country_id			as `birth_country_id`
+                                ,bir_cou.`country_name`		as `birth_country_name`
+                                ,res_cou.country_id			as `residence_country_id`
+                                ,res_cou.country_name		as `residence_country_name`
+                                ,bir_pref.pref_id			as `birth_pref_id`
+                                ,bir_pref.pref_name			as `birth_pref_name`
+                                ,res_pref.pref_id			as `residence_pref_id`
+                                ,res_pref.pref_name			as `residence_pref_name`
+                                ,`height`
+                                ,`weight`
+                                from `t_players`
+                                left join `m_countries` bir_cou
+                                on `t_players`.`birth_country` = bir_cou.`country_id`
+                                left join `m_countries` res_cou
+                                on `t_players`.`residence_country` = res_cou.`country_id`
+                                left join `m_prefectures` bir_pref
+                                on `t_players`.`birth_prefecture` = bir_pref.`pref_id`
+                                left join `m_prefectures` res_pref
+                                on `t_players`.`residence_prefecture` = bir_pref.`pref_id`
+                                where `t_players`.`delete_flag`=0
+                                and `jara_player_id` = ?'                                
+                            ,$jara_player_code);
+        return $players;
     }
 }
