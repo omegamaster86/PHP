@@ -81,7 +81,7 @@ Route::middleware('auth')->group(function () {
     Route::post('deleteUserData', [UserController::class, 'updateDeleteFlagInUserData']); //ユーザ情報を削除する 20240212
 
     //パスワード関連
-    Route::post('storePasswordChange', [UserController::class, 'storePasswordChange']); //パスワード変更 20240207
+    Route::post('user/password-change', [UserController::class, 'storePasswordChange']); //パスワード変更 20240207
 
     //選手関連
     Route::post('storePlayerTest', [PlayerController::class, 'storePlayerTest']); //選手登録確認画面から登録 20231228
@@ -135,9 +135,9 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
     //Password Change
-    Route::get('user/password-change', [UserController::class, 'createPasswordChange'])->name('user.password-change');
+    // Route::get('user/password-change', [UserController::class, 'createPasswordChange'])->name('user.password-change');
 
-    Route::post('user/password-change', [UserController::class, 'storePasswordChange']);
+    // Route::post('user/password-change', [UserController::class, 'storePasswordChange']);
 
     // My page 
     Route::get('my-page', function () {

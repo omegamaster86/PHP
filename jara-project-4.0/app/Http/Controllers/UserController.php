@@ -568,49 +568,53 @@ class UserController extends Controller
 
         return view('user.password-change', ["user" => (object)$user]);
     }
+    
     public function storePasswordChange(Request $request)
     {
         Log::debug(sprintf("storePasswordChange start"));
         //$request->all()
         Log::debug($request->all());
         include('Auth/ErrorMessages/ErrorMessages.php');
-        $request->validate(
-            [
-                // previousPassword validation rule
-                'currentPassword' => ['required', 'min:8', 'max:16', 'regex:/^.*(?=.{8,})(?=.*[a-zA-Z0-9!"#$%&\'()*+,-.:;<=>?@_`{|}~^]).*$/'],
-                // newPassword validation rule
-                'newPassword' => ['required', 'min:8', 'max:16', 'regex:/^.*(?=.{8,})(?=.*[a-zA-Z0-9!"#$%&\'()*+,-.:;<=>?@_`{|}~^]).*$/'],
-                // Confirm new Password validation rule
-                'confirmNewPassword' => ['required', 'min:8', 'max:16', 'regex:/^.*(?=.{8,})(?=.*[a-zA-Z0-9!"#$%&\'()*+,-.:;<=>?@_`{|}~^]).*$/', 'same:newPassword'],
-            ],
-            [
-                //Error message for previousPassword validation rule 
-                'currentPassword.required' => $previous_password_required,
-                'currentPassword.min' => $password_condition,
-                'currentPassword.max' => $password_condition,
-                'currentPassword.regex' => $password_condition,
+        // $request->validate(
+        //     [
+        //         // previousPassword validation rule
+        //         'currentPassword' => ['required', 'min:8', 'max:16', 'regex:/^.*(?=.{8,})(?=.*[a-zA-Z0-9!"#$%&\'()*+,-.:;<=>?@_`{|}~^]).*$/'],
+        //         // newPassword validation rule
+        //         'newPassword' => ['required', 'min:8', 'max:16', 'regex:/^.*(?=.{8,})(?=.*[a-zA-Z0-9!"#$%&\'()*+,-.:;<=>?@_`{|}~^]).*$/'],
+        //         // Confirm new Password validation rule
+        //         'confirmNewPassword' => ['required', 'min:8', 'max:16', 'regex:/^.*(?=.{8,})(?=.*[a-zA-Z0-9!"#$%&\'()*+,-.:;<=>?@_`{|}~^]).*$/', 'same:newPassword'],
+        //     ],
+        //     [
+        //         //Error message for previousPassword validation rule 
+        //         'currentPassword.required' => $previous_password_required,
+        //         'currentPassword.min' => $password_condition,
+        //         'currentPassword.max' => $password_condition,
+        //         'currentPassword.regex' => $password_condition,
 
-                //Error message for newPassword validation rule 
-                'newPassword.required' => $new_password_required,
-                'newPassword.min' => $password_condition,
-                'newPassword.max' => $password_condition,
-                'newPassword.regex' => $password_condition,
+        //         //Error message for newPassword validation rule 
+        //         'newPassword.required' => $new_password_required,
+        //         'newPassword.min' => $password_condition,
+        //         'newPassword.max' => $password_condition,
+        //         'newPassword.regex' => $password_condition,
 
 
-                //Error message for confirm new password validation rule 
-                'confirmNewPassword.required' => $new_password_confirm_required,
-                'confirmNewPassword.min' => $password_condition,
-                'confirmNewPassword.max' => $password_condition,
-                'confirmNewPassword.regex' => $password_condition,
-                'confirmNewPassword.same' => $password_compare,
-            ]
-        );
-        if ($request->currentPassword === $request->new_password_required) {
-            throw ValidationException::withMessages([
-                'system_error' => $previous_and_new_password_compare
-            ]);
-        }
+        //         //Error message for confirm new password validation rule 
+        //         'confirmNewPassword.required' => $new_password_confirm_required,
+        //         'confirmNewPassword.min' => $password_condition,
+        //         'confirmNewPassword.max' => $password_condition,
+        //         'confirmNewPassword.regex' => $password_condition,
+        //         'confirmNewPassword.same' => $password_compare,
+        //     ]
+        // );
+
+        // if ($request->currentPassword === $request->new_password_required) {
+        //     // throw ValidationException::withMessages([
+        //     //     'system_error' => $previous_and_new_password_compare
+        //     // ]);
+        //     return response()->json(['system_error' => $previous_and_new_password_compare],400);
+        // }
         //When logged with a temporary flag
+        // now()->format('Y-m-d H:i:s.u');
         if (Auth::user()->temp_password) {
             //If the entered password does matched with the database information
             if (Hash::check($request->currentPassword, Auth::user()->temp_password)) {
@@ -619,7 +623,7 @@ class UserController extends Controller
                 try {
                     DB::update(
                         'update t_users set password = ? , temp_password = ? , expiry_time_of_temp_password = ?, temp_password_flag = ?,registered_time = ?, updated_time =?  where user_id = ?',
-                        [Hash::make($request->newPassword), NULL, NULL, 0, now(), now(), Auth::user()->user_id]
+                        [Hash::make($request->newPassword), NULL, NULL, 0,  now()->format('Y-m-d H:i:s.u'),  now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id]
                     );
 
                     DB::commit();
@@ -627,13 +631,15 @@ class UserController extends Controller
                     DB::rollBack();
                     $e_errorCode = $e->errorInfo[1];
                     if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                        throw ValidationException::withMessages([
-                            'datachecked_error' => $database_system_error
-                        ]);
+                        // throw ValidationException::withMessages([
+                        //     'datachecked_error' => $database_system_error
+                        // ]);
+                        return response()->json(['system_error' => $database_system_error],500);
                     } else {
-                        throw ValidationException::withMessages([
-                            'datachecked_error' => $database_system_error
-                        ]);
+                        // throw ValidationException::withMessages([
+                        //     'datachecked_error' => $database_system_error
+                        // ]);
+                        return response()->json(['system_error' => $database_system_error],500);
                     }
                 }
 
@@ -645,9 +651,10 @@ class UserController extends Controller
             }
             //If the entered password does not matched with the database information
             else {
-                throw ValidationException::withMessages([
-                    'system_error' => $previous_password_not_matched
-                ]);
+                // throw ValidationException::withMessages([
+                //     'system_error' => $previous_password_not_matched
+                // ]);
+                return response()->json(['system_error' => $previous_password_not_matched],400);
             }
         }
         //When logged as a registered user
@@ -662,7 +669,7 @@ class UserController extends Controller
 
                     DB::update(
                         'update t_users set password = ?, registered_time = ?,updated_time =?  where user_id = ?',
-                        [Hash::make($request->newPassword), now(), now(),  Auth::user()->user_id]
+                        [Hash::make($request->newPassword),  now()->format('Y-m-d H:i:s.u'),  now()->format('Y-m-d H:i:s.u'),  Auth::user()->user_id]
                     );
 
                     DB::commit();
@@ -670,25 +677,31 @@ class UserController extends Controller
                     DB::rollBack();
                     $e_errorCode = $e->errorInfo[1];
                     if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                        throw ValidationException::withMessages([
-                            'datachecked_error' => $database_system_error
-                        ]);
+                        // throw ValidationException::withMessages([
+                        //     'datachecked_error' => $database_system_error
+                        // ]);
+                        return response()->json(['system_error' => $database_system_error],500);
                     } else {
-                        throw ValidationException::withMessages([
-                            'datachecked_error' => $database_system_error
-                        ]);
+                        // throw ValidationException::withMessages([
+                        //     'datachecked_error' => $database_system_error
+                        // ]);
+                        return response()->json(['system_error' => $database_system_error],500);
                     }
                 }
-                $page_status = "パスワードを変更の件、完了になりました。";
-                $page_url_text = "OK";
+                // $page_status = "パスワードを変更の件、完了になりました。";
+                // $page_url_text = "OK";
                 // return view('change-notification',['status'=> $page_status,"url"=>$page_url,"url_text"=>$page_url_text]);
-                return response()->json(['reqData' => $page_url_text, 'result' => $page_status]); //送信データ(debug用)とDBの結果を返す
+
+                // return response()->json(['reqData' => $page_url_text, 'result' => $page_status]); //送信データ(debug用)とDBの結果を返す
+                return response()->json("パスワードを変更の件、完了になりました。");
+
             }
             //If the entered password does not matched with the database information
             else {
-                throw ValidationException::withMessages([
-                    'system_error' => $previous_password_not_matched
-                ]);
+                // throw ValidationException::withMessages([
+                //     'system_error' => $previous_password_not_matched
+                // ]);
+                return response()->json(['system_error' => $previous_password_not_matched],400);
             }
         }
         Log::debug(sprintf("storePasswordChange end"));

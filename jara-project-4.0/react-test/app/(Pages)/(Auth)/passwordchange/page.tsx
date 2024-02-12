@@ -123,32 +123,43 @@ export default function Passwordchange() {
             className='w-[200px]'
             onClick={async() => {
               // バリデーション
+              const currentPasswordErrorMessages = Validator.getErrorMessages([
+                Validator.validateRequired(currentPassword, '旧パスワード'),
+              ]);
               setCurrentPasswordErrorMessages(
-                Validator.getErrorMessages([
-                  Validator.validateRequired(currentPassword, '旧パスワード'),
-                ]) as string[],
+                currentPasswordErrorMessages
               );
 
+              const newPasswordErrorMessages = Validator.getErrorMessages([
+                Validator.validateRequired(newPassword, '新パスワード'),
+                Validator.validatePasswordFormat(newPassword),
+                Validator.validateLengthMinAndMax(newPassword, 'パスワード', 8, 16),
+                Validator.ValidateNotEqual(
+                  newPassword,
+                  currentPassword,
+                  '旧パスワード',
+                  'パスワード',
+                ),
+              ]) ;
               setNewPasswordErrorMessages(
-                Validator.getErrorMessages([
-                  Validator.validateRequired(newPassword, '新パスワード'),
-                  Validator.validatePasswordFormat(newPassword),
-                  Validator.validateLengthMinAndMax(newPassword, 'パスワード', 8, 16),
-                  Validator.ValidateNotEqual(
-                    newPassword,
-                    currentPassword,
-                    '旧パスワード',
-                    'パスワード',
-                  ),
-                ]) as string[],
+                newPasswordErrorMessages
               );
 
+              const confirmPasswordErrorMessages = Validator.getErrorMessages([
+                Validator.validateRequired(confirmNewPassword, '確認用のパスワード'),
+                Validator.validateEqual(newPassword, confirmNewPassword, 'パスワード'),
+              ]);
               setConfirmNewPasswordErrorMessages(
-                Validator.getErrorMessages([
-                  Validator.validateRequired(confirmNewPassword, '確認用のパスワード'),
-                  Validator.validateEqual(newPassword, confirmNewPassword, 'パスワード'),
-                ]) as string[],
+                confirmPasswordErrorMessages
               );
+              // エラーがある場合、後続の処理を中止
+              if (
+                currentPasswordErrorMessages.length > 0 ||
+                newPasswordErrorMessages.length > 0 ||
+                confirmPasswordErrorMessages.length > 0
+              ) {
+                return;
+              }
               const requestBody = {
                 currentPassword,
                 newPassword,
@@ -158,15 +169,30 @@ export default function Passwordchange() {
               await csrf()
               axios
                 // .post('http://localhost:3100/', requestBody)
-                .post('/storePasswordChange', requestBody)
+                .post('/user/password-change', requestBody)
                 .then((response) => {
                   // 成功時の処理を実装
-                  console.log(response);
-                  window.confirm('パスワードを変更しました。');
+                  // console.log(response);
+                  // window.confirm('パスワードを変更しました。');
+                  if (window.confirm(response?.data) == true) {
+                    router.push('/DummyMyPage')
+                  }
                 })
                 .catch((error) => {
                   // エラー時の処理を実装
                   console.log(error);
+                  let systemError = [] as string[];
+                  if(error.response?.status === 422){
+                    systemError.push(error?.response?.data?.message)
+                  }
+
+                  else if(error.response?.status === 400){
+                    systemError = [...error?.response?.data?.system_error]
+                  }
+                  else{
+                    systemError = ["内部処理エラーが発生しました、","サポートにご連絡ください。"]
+                  }
+                  setErrorText(systemError);
                 });
             }}
           >
