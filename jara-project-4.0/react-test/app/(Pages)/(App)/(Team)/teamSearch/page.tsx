@@ -28,14 +28,14 @@ import RemoveIcon from '@mui/icons-material/Remove';
 
 interface SearchCond {
   entrySystemId: string;
-  orgId: string;
-  orgName: string;
-  orgClassId: string;
+  org_id: string;
+  org_name: string;
+  org_class: string;
   orgClassName: string;
-  orgTypeId: string;
+  org_type: string;
   orgTypeName: string;
-  foundingYearStart: string;
-  foundingYearEnd: string;
+  foundingYear_start: string;
+  foundingYear_end: string;
   residenceCountryId: string;
   residenceCountryName: string;
   residencePrefectureId: string;
@@ -49,14 +49,14 @@ export default function TeamSearch() {
   const [user, setUser] = useState<UserResponse>({} as UserResponse); // ユーザー情報
   const [formData, setFormData] = useState<SearchCond>({
     entrySystemId: '',
-    orgId: '',
-    orgName: '',
-    orgTypeId: '',
+    org_id: '',
+    org_name: '',
+    org_type: '',
     orgTypeName: '',
-    orgClassId: '',
+    org_class: '',
     orgClassName: '',
-    foundingYearStart: '',
-    foundingYearEnd: '',
+    foundingYear_start: '',
+    foundingYear_end: '',
     residenceCountryId: '',
     residenceCountryName: '',
     residencePrefectureId: '',
@@ -85,14 +85,16 @@ export default function TeamSearch() {
     const csrf = () => axios.get('/sanctum/csrf-cookie')
     await csrf()
     axios
-      .get<Org[]>('/orgSearch')
+      // .get<Org[]>('/orgSearch')
+      .post('/orgSearch', formData)
       .then((response) => {
-        const data = response.data;
+        const data = response.data.result;
+        console.log(data);
         if (data.length > 100) {
           window.alert('検索結果が100件を超えました、上位100件を表示しています。');
         }
         // レスポンスからデータを取り出してstateにセット
-        setOrgSearchResult(response.data);
+        setOrgSearchResult(data);
         // 最初は10件だけ表示
         setVisibleItems(10);
         setVisibleData(data.slice(0, 10));
@@ -170,9 +172,9 @@ export default function TeamSearch() {
             label='団体名'
             displayHelp={false}
             onChange={(e) => {
-              handleInputChange('orgName', e.target.value);
+              handleInputChange('org_name', e.target.value);
             }}
-            value={formData.orgName}
+            value={formData.org_name}
           />
           {/* 所在地（国） */}
           <CustomTextField
@@ -218,10 +220,10 @@ export default function TeamSearch() {
                     value: orgType.name,
                     key: orgType.id,
                   }))}
-                  value={formData?.orgTypeId || ''}
+                  value={formData?.org_type || ''}
                   onChange={(e) => {
                     console.log(e);
-                    handleInputChange('orgTypeId', e);
+                    handleInputChange('org_type', e);
                     handleInputChange(
                       'orgTypeName',
                       orgTypeOptions.find((orgType) => orgType.id === Number(e))?.name || '',
@@ -239,10 +241,10 @@ export default function TeamSearch() {
                     value: orgClass.name,
                     key: orgClass.id,
                   }))}
-                  value={formData?.orgClassId || ''}
+                  value={formData?.org_class || ''}
                   onChange={(e) => {
                     console.log(e);
-                    handleInputChange('orgClassId', e);
+                    handleInputChange('org_class', e);
                     handleInputChange(
                       'orgClassName',
                       orgClassOptions.find((orgClass) => orgClass.id === Number(e))?.name || '',
@@ -255,9 +257,9 @@ export default function TeamSearch() {
               <CustomTextField
                 label='団体ID'
                 onChange={(e) => {
-                  handleInputChange('orgId', e.target.value);
+                  handleInputChange('org_id', e.target.value);
                 }}
-                value={formData?.orgId || ''}
+                value={formData?.org_id || ''}
                 toolTipTitle='Title' //はてなボタン用
                 toolTipText='サンプル用のツールチップ表示' //はてなボタン用
               />
@@ -287,16 +289,16 @@ export default function TeamSearch() {
                 <div className='w-full flex flex-row justify-start gap-[8px]'>
                   {/* 創立年（開始年） */}
                   <CustomYearPicker
-                    selectedDate={formData.foundingYearStart}
+                    selectedDate={formData.foundingYear_start}
                     onChange={(date: Date) =>
-                      handleInputChange('foundingYearStart', date.toString())
+                      handleInputChange('foundingYear_start', date.toString())
                     }
                   />
                   <div className='flex justify-center items-center'>〜</div>
                   {/* 創立年（終了年） */}
                   <CustomYearPicker
-                    selectedDate={formData.foundingYearEnd}
-                    onChange={(date: Date) => handleInputChange('foundingYearEnd', date.toString())}
+                    selectedDate={formData.foundingYear_end}
+                    onChange={(date: Date) => handleInputChange('foundingYear_end', date.toString())}
                   />
                 </div>
               </div>
@@ -325,14 +327,14 @@ export default function TeamSearch() {
               onClick={() => {
                 setFormData({
                   entrySystemId: '',
-                  orgId: '',
-                  orgName: '',
-                  orgTypeId: '',
+                  org_id: '',
+                  org_name: '',
+                  org_type: '',
                   orgTypeName: '',
-                  orgClassId: '',
+                  org_class: '',
                   orgClassName: '',
-                  foundingYearStart: '',
-                  foundingYearEnd: '',
+                  foundingYear_start: '',
+                  foundingYear_end: '',
                   residenceCountryId: '',
                   residenceCountryName: '',
                   residencePrefectureId: '',

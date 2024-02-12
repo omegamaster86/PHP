@@ -131,27 +131,28 @@ export default function PlayerSearch() {
    * 検索結果をstateにセットする
    */
   const handleSearch = async () => {
-    // var apiUri = 'http://localhost:3100/playerSearch?'; //残件対象項目
-    var apiUri = process.env.NEXT_PUBLIC_BACKEND_URL + '/playerSearch?'; //残件対象項目
-    getNonEmptyProperties(searchCond).forEach((item) => {
-      apiUri += item.key + '=' + item.value + '&';
-    });
-    apiUri = apiUri.slice(0, -1);
+    // var apiUri = 'http://localhost:3100/playerSearch?';
+    // getNonEmptyProperties(searchCond).forEach((item) => {
+    //   apiUri += item.key + '=' + item.value + '&';
+    // });
+    // apiUri = apiUri.slice(0, -1);
 
     try {
       const csrf = () => axios.get('/sanctum/csrf-cookie')
       await csrf()
-      const response = await axios.get<Player[]>('/playerSearch/'); //残件対象項目
+      // const response = await axios.get<Player[]>('/playerSearch/');
+      const response = await axios.post('/playerSearch', searchCond);
       const data = response.data;
+      console.log(data);
 
       if (data.length > 100) {
         window.alert('検索結果が100件を超えました、上位100件を表示しています。');
       }
       // レスポンスからデータを取り出してstateにセット
-      setSearchResponse(data);
+      // setSearchResponse(data);
       // 最初は10件だけ表示
-      setVisibleItems(10);
-      setVisibleData(data.slice(0, 10));
+      // setVisibleItems(10);
+      // setVisibleData(data.slice(0, 10));
     } catch (error) {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
     }

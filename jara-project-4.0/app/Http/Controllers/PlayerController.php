@@ -517,19 +517,20 @@ class PlayerController extends Controller
 
 
 
-    public function searchPlayer(Request $request, T_players $players, M_sex $sex): View
+    public function searchPlayer(Request $request, T_players $players, M_sex $sex)
     {
+        Log::debug(sprintf("searchPlayer start"));
         $searched_data = $request->all();
-        // dd($searched_data);
-        if ($searched_data['date_of_birth_start'] === "年/月/日") {
-            $searched_data['date_of_birth_start'] = NULL;
+        Log::debug($searched_data);
+        if ($searched_data['startDateOfBirth'] === "年/月/日") {
+            $searched_data['startDateOfBirth'] = NULL;
         } else {
-            $searched_data['date_of_birth_start'] = date('Y-m-d', strtotime($searched_data['date_of_birth_start']));
+            $searched_data['startDateOfBirth'] = date('Y-m-d', strtotime($searched_data['startDateOfBirth']));
         }
-        if ($searched_data['date_of_birth_end'] === "年/月/日") {
-            $searched_data['date_of_birth_end'] = NULL;
+        if ($searched_data['endDateOfBirth'] === "年/月/日") {
+            $searched_data['endDateOfBirth'] = NULL;
         } else {
-            $searched_data['date_of_birth_end'] = date('Y-m-d', strtotime($searched_data['date_of_birth_end']));
+            $searched_data['endDateOfBirth'] = date('Y-m-d', strtotime($searched_data['endDateOfBirth']));
         }
 
         $sex_list = $sex->getSexList();
@@ -548,7 +549,9 @@ class PlayerController extends Controller
         };
 
 
-        return view('player.search', ["page_mode" => "search", "sex_list" => $sex_list, "player_list" => $player_list, "searched_data" => (object)$searched_data]);
+        Log::debug(sprintf("searchPlayer end"));
+        return response()->json(['reqData' => $sex_list, 'result' => $player_list]); //送信データ(debug用)とDBの結果を返す
+        // return view('player.search', ["page_mode" => "search", "sex_list" => $sex_list, "player_list" => $player_list, "searched_data" => (object)$searched_data]);
     }
 
     //===============================================================================================

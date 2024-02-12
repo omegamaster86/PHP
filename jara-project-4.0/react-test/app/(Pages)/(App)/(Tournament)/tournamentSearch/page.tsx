@@ -35,17 +35,17 @@ import RemoveIcon from '@mui/icons-material/Remove';
 // 検索条件フォームの型定義
 // 検索条件
 interface SearchCond {
-  jaraPlayerId: string;
-  playerId: string;
-  playerName: string;
-  tournName: string;
-  tournType: string;
+  jara_player_id: string;
+  player_id: string;
+  player_name: string;
+  tourn_name: string;
+  tourn_type: string;
   tournTypeName: string;
-  eventStartDate: string;
-  eventEndDate: string;
-  venueId: string;
-  venueName: string;
-  sponsorOrgId: string;
+  event_start_date: string;
+  event_end_date: string;
+  venue_id: string;
+  venue_name: string;
+  sponsor_org_id: string;
   sponsorOrgName: string;
 }
 
@@ -69,17 +69,17 @@ export default function TournamentSearch() {
 
   // フォームデータを管理する状態
   const [searchCond, setSearchCond] = useState<SearchCond>({
-    jaraPlayerId: '',
-    playerId: '',
-    playerName: '',
-    tournName: '',
-    tournType: '',
+    jara_player_id: '',
+    player_id: '',
+    player_name: '',
+    tourn_name: '',
+    tourn_type: '',
     tournTypeName: '',
-    eventStartDate: new Date().toLocaleDateString(),
-    eventEndDate: new Date().toLocaleDateString(),
-    venueId: '',
-    venueName: '',
-    sponsorOrgId: '',
+    event_start_date: new Date().toLocaleDateString(),
+    event_end_date: new Date().toLocaleDateString(),
+    venue_id: '',
+    venue_name: '',
+    sponsor_org_id: '',
     sponsorOrgName: '',
   } as SearchCond);
   const [searchResponse, setSearchResponse] = useState<Tournament[]>([]);
@@ -108,19 +108,18 @@ export default function TournamentSearch() {
   }
 
   const handleSearch = async () => {
-    var apiUri = 'http://localhost:3100/tournamentSearch?'; //残件対象項目
-
-    getNonEmptyProperties(searchCond).forEach((item) => {
-      apiUri += item.key + '=' + item.value + '&';
-    });
-    apiUri = apiUri.slice(0, -1);
+    // var apiUri = 'http://localhost:3100/tournamentSearch?';
+    // getNonEmptyProperties(searchCond).forEach((item) => {
+    //   apiUri += item.key + '=' + item.value + '&';
+    // });
+    // apiUri = apiUri.slice(0, -1);
 
     try {
-      // 仮のURL（繋ぎ込み時に変更すること）
       const csrf = () => axios.get('/sanctum/csrf-cookie')
       await csrf()
-      const response = await axios.get<Tournament[]>('/tournamentSearch/');
-      setSearchResponse(response.data);
+      const response = await axios.post('/tournamentSearch', searchCond);
+      console.log(response.data);
+      setSearchResponse(response.data.result);
     } catch (error) {
       setErrorMessage([...(errorMessage as string[]), 'API取得エラー:' + (error as Error).message]);
     }
@@ -179,9 +178,9 @@ export default function TournamentSearch() {
                 displayHelp={false}
                 isError={false}
                 errorMessages={[]}
-                value={searchCond.tournName}
+                value={searchCond.tourn_name}
                 className='w-[400px] border-[0.5px] border-solid border-gray-50 rounded'
-                onChange={(e) => handleInputChange('tournName', e.target.value)}
+                onChange={(e) => handleInputChange('tourn_name', e.target.value)}
               />
               {/* 大会種別 */}
               <div className='flex flex-col justify-start gap-[8px] w-[200px] h-[50px] border-[0.5px] border-solid border-gray-50 rounded'>
@@ -189,9 +188,9 @@ export default function TournamentSearch() {
                 <CustomDropdown
                   id='tournType'
                   options={tournType.map((item) => ({ key: item.id, value: item.name }))}
-                  value={searchCond.tournType}
+                  value={searchCond.tourn_type}
                   onChange={(e) => {
-                    handleInputChange('tournType', e);
+                    handleInputChange('tourn_type', e);
                     handleInputChange(
                       'tournTypeName',
                       tournType.find((item) => item.id.toString() === e)?.name || '',
@@ -208,11 +207,11 @@ export default function TournamentSearch() {
                     id='venueId'
                     placeHolder='開催場所'
                     options={venue.map((item) => ({ key: item.id, value: item.name }))}
-                    value={searchCond.venueId}
+                    value={searchCond.venue_id}
                     onChange={(e) => {
-                      handleInputChange('venueId', e);
+                      handleInputChange('venue_id', e);
                       handleInputChange(
-                        'venueName',
+                        'venue_name',
                         venue.find((item) => item.id.toString() === e)?.name || '',
                       );
                     }}
@@ -227,9 +226,9 @@ export default function TournamentSearch() {
                 <InputLabel label='開催年月' />
                 <CustomDatePicker
                   placeHolder={new Date().toLocaleDateString('ja-JP')}
-                  selectedDate={searchCond.eventStartDate}
+                  selectedDate={searchCond.event_start_date}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    handleInputChange('eventStartDate', formatDate(e as unknown as Date));
+                    handleInputChange('event_start_date', formatDate(e as unknown as Date));
                   }}
                 />
               </div>
@@ -240,9 +239,9 @@ export default function TournamentSearch() {
               <div className='flex flex-col justify-start self-end'>
                 <CustomDatePicker
                   placeHolder={new Date().toLocaleDateString('ja-JP')}
-                  selectedDate={searchCond.eventEndDate}
+                  selectedDate={searchCond.event_end_date}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    handleInputChange('eventEndDate', formatDate(e as unknown as Date));
+                    handleInputChange('event_end_date', formatDate(e as unknown as Date));
                   }}
                 />
               </div>
@@ -271,8 +270,8 @@ export default function TournamentSearch() {
                     displayHelp={false}
                     isError={false}
                     errorMessages={[]}
-                    value={searchCond.jaraPlayerId}
-                    onChange={(e) => handleInputChange('jaraPlayerId', e.target.value)}
+                    value={searchCond.jara_player_id}
+                    onChange={(e) => handleInputChange('jara_player_id', e.target.value)}
                   />
                   {/* 選手ID */}
                   <CustomTextField
@@ -282,8 +281,8 @@ export default function TournamentSearch() {
                     displayHelp={false}
                     isError={false}
                     errorMessages={[]}
-                    value={searchCond.playerId}
-                    onChange={(e) => handleInputChange('playerId', e.target.value)}
+                    value={searchCond.player_id}
+                    onChange={(e) => handleInputChange('player_id', e.target.value)}
                   />
                   <CustomTextField
                     label='選手名'
@@ -291,8 +290,8 @@ export default function TournamentSearch() {
                     displayHelp={false}
                     isError={false}
                     errorMessages={[]}
-                    value={searchCond.playerName}
-                    onChange={(e) => handleInputChange('playerName', e.target.value)}
+                    value={searchCond.player_name}
+                    onChange={(e) => handleInputChange('player_name', e.target.value)}
                   />
                 </div>
               </div>
@@ -307,8 +306,8 @@ export default function TournamentSearch() {
                       label='主催団体ID'
                       placeHolder='主催団体ID'
                       displayHelp={false}
-                      value={searchCond.sponsorOrgId}
-                      onChange={(e) => handleInputChange('sponsorOrgId', e.target.value)}
+                      value={searchCond.sponsor_org_id}
+                      onChange={(e) => handleInputChange('sponsor_org_id', e.target.value)}
                     />
                   </div>
                   {/* 主催団体名 */}
@@ -342,17 +341,19 @@ export default function TournamentSearch() {
                 buttonType='secondary'
                 onClick={() => {
                   setSearchCond({
-                    jaraPlayerId: '',
-                    playerId: '',
-                    playerName: '',
-                    tournName: '',
-                    tournType: '',
+                    jara_player_id: '',
+                    player_id: '',
+                    player_name: '',
+                    tourn_name: '',
+                    tourn_type: '',
                     tournTypeName: '',
-                    eventStartDate: new Date().toLocaleDateString(),
-                    eventEndDate: new Date().toLocaleDateString(),
-                    venueId: '',
-                    venueName: '',
-                    sponsorOrgId: '',
+                    // event_start_date: new Date().toLocaleDateString(),
+                    // event_end_date: new Date().toLocaleDateString(),
+                    event_start_date: '',
+                    event_end_date: '',
+                    venue_id: '',
+                    venue_name: '',
+                    sponsor_org_id: '',
                     sponsorOrgName: '',
                   } as SearchCond);
                 }}
@@ -403,13 +404,13 @@ export default function TournamentSearch() {
                   {/* 開催終了日 */}
                   <CustomTd>{row.event_end_date}</CustomTd>
                   {/* 開催場所 */}
-                  <CustomTd>{row.venueName}</CustomTd>
+                  <CustomTd>{row.venue_name}</CustomTd>
                   {/* 主催団体ID */}
                   <CustomTd>
                     <Link
                       href={{
                         pathname: '/teamRef',
-                        query: { sponsorOrgId: row.sponsor_org_id },
+                        query: { sponsor_org_id: row.sponsor_org_id },
                       }}
                       className='text-primary-300 underline hover:text-primary-50 cursor-pointer'
                       rel='noopener noreferrer'
@@ -423,7 +424,7 @@ export default function TournamentSearch() {
                     <Link
                       href={{
                         pathname: '/teamRef',
-                        query: { sponsorOrgId: row.sponsor_org_id },
+                        query: { sponsor_org_id: row.sponsor_org_id },
                       }}
                       className='text-primary-300 underline hover:text-primary-50 cursor-pointer'
                       rel='noopener noreferrer'

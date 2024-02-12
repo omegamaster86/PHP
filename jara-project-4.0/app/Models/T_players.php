@@ -292,13 +292,13 @@ class T_players extends Model
             array_push($valid_data_array, $searched_data['sex']);
         }
 
-        if (isset($searched_data['date_of_birth_start'])) {
+        if (isset($searched_data['startDateOfBirth'])) {
             $condition .= " and player.date_of_birth >= CAST(? AS DATE)";
-            array_push($valid_data_array, $searched_data['date_of_birth_start']);
+            array_push($valid_data_array, $searched_data['startDateOfBirth']);
         }
-        if (isset($searched_data['date_of_birth_end'])) {
+        if (isset($searched_data['endDateOfBirth'])) {
             $condition .= " and player.date_of_birth <= CAST(? AS DATE) ";
-            array_push($valid_data_array, $searched_data['date_of_birth_end']);
+            array_push($valid_data_array, $searched_data['endDateOfBirth']);
         }
         // dump($searched_data['side_info']);
         if (isset($searched_data['side_info'])) {

@@ -760,13 +760,17 @@ class OrganizationController extends Controller
     }
 
     //団体検索を実行
-    public function searchOrganization(Request $request, T_organizations $tOrganizations): View
+    public function searchOrganization(Request $request, T_organizations $tOrganizations)
     {
+        Log::debug(sprintf("searchOrganization start"));
         $searchInfo = $request->all();
+        Log::debug($searchInfo);
         $searchValue = [];
         $searchCondition = $this->generateOrganizationSearchCondition($searchInfo, $searchValue);
         $organizations = $tOrganizations->getOrganizationWithSearchCondition($searchCondition, $searchValue);
-        dd($organizations);
+        // dd($organizations);
+        Log::debug(sprintf("searchOrganization end"));
+        return response()->json(['result' => $organizations]); //送信データ(debug用)とDBの結果を返す
     }
 
     private function generateOrganizationSearchCondition($searchInfo, &$searchValue)
@@ -813,15 +817,15 @@ class OrganizationController extends Controller
             array_push($searchValue, $searchInfo['foundingYear_end']);
         }
         //国の条件
-        if (isset($searchInfo['country'])) {
+        if (isset($searchInfo['residenceCountryId'])) {
             $condition .= " and `t_organizations`.`location_country`= ?";
-            array_push($searchValue, $searchInfo['country']);
+            array_push($searchValue, $searchInfo['residenceCountryId']);
         }
         //都道府県の条件
         $japanCode = "112";   //日本の国コード
-        if (isset($searchInfo['prefecture']) && ($searchInfo['country'] === $japanCode)) {
+        if (isset($searchInfo['residencePrefectureId']) && ($searchInfo['residenceCountryId'] === $japanCode)) {
             $condition .= " and `t_organizations`.`location_prefecture`= ?";
-            array_push($searchValue, $searchInfo['prefecture']);
+            array_push($searchValue, $searchInfo['residencePrefectureId']);
         }
         return $condition;
     }

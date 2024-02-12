@@ -310,52 +310,52 @@ class TournamentController extends Controller
     //----------------大会検索で使用　ここから----------------------------
     private function generateSearchCondition($searchInfo)
     {
+        Log::debug(sprintf("generateSearchCondition start"));
         $condition = "";
-        if (isset($searchInfo['jaraPId'])) {
-            $condition .= " and `t_race_result_record`.`jara_player_id`=" . $searchInfo['jaraPId']; //JARA選手コード
+        if (isset($searchInfo['jara_player_id'])) {
+            $condition .= " and `t_race_result_record`.`jara_player_id`=" . $searchInfo['jara_player_id']; //JARA選手コード
         }
-        if (isset($searchInfo['pId'])) {
-            $condition .= " and `t_race_result_record`.`player_id`=" . $searchInfo['pId']; //選手ID
+        if (isset($searchInfo['player_id'])) {
+            $condition .= " and `t_race_result_record`.`player_id`=" . $searchInfo['player_id']; //選手ID
         }
-        if (isset($searchInfo['pName'])) {
-            $condition .= " and `t_race_result_record`.`player_name` like " . "\"%" . $searchInfo['pName'] . "%\""; //選手名
+        if (isset($searchInfo['player_name'])) {
+            $condition .= " and `t_race_result_record`.`player_name` like " . "\"%" . $searchInfo['player_name'] . "%\""; //選手名
         }
-        if (isset($searchInfo['tName'])) {
-            $condition .= " and `t_tournaments`.`tourn_name` like " . "\"%" . $searchInfo['tName'] . "%\""; //大会名
+        if (isset($searchInfo['tourn_name'])) {
+            $condition .= " and `t_tournaments`.`tourn_name` like " . "\"%" . $searchInfo['tourn_name'] . "%\""; //大会名
         }
-        if (isset($searchInfo['startDay'])) {
-            $condition .= " and `t_tournaments`.`event_start_date`>= CAST('" . $searchInfo['startDay'] . "' AS DATE)"; //開催開始年月日
+        if (isset($searchInfo['event_start_date'])) {
+            $condition .= " and `t_tournaments`.`event_start_date`>= CAST('" . $searchInfo['event_start_date'] . "' AS DATE)"; //開催開始年月日
         }
-        if (isset($searchInfo['endDay'])) {
-            $condition .= " and `t_tournaments`.`event_end_date` <= CAST('" . $searchInfo['endDay'] . "' AS DATE)"; //開催終了年月日
+        if (isset($searchInfo['event_end_date'])) {
+            $condition .= " and `t_tournaments`.`event_end_date` <= CAST('" . $searchInfo['event_end_date'] . "' AS DATE)"; //開催終了年月日
         }
-        if (isset($searchInfo['tVenueSelect'])) {
-            $condition .= " and `t_tournaments`.`venue_id` = " . $searchInfo['tVenueSelect']; //開催場所
+        if (isset($searchInfo['venue_id'])) {
+            $condition .= " and `t_tournaments`.`venue_id` = " . $searchInfo['venue_id']; //開催場所
         }
-        if (isset($searchInfo['sponsorOrgId'])) {
-            $condition .= " and `t_tournaments`.`sponsor_org_id`= " . $searchInfo['sponsorOrgId']; //主催団体ID
+        if (isset($searchInfo['sponsor_org_id'])) {
+            $condition .= " and `t_tournaments`.`sponsor_org_id`= " . $searchInfo['sponsor_org_id']; //主催団体ID
         }
         if (isset($searchInfo['sponsorOrgName'])) {
             $condition .= " and `t_organizations`.`org_name` like " . "\"%" . $searchInfo['sponsorOrgName'] . "%\""; //主催団体名
         }
-
+        Log::debug(sprintf("generateSearchCondition end"));
         return $condition;
     }
 
     public function searchTournament(Request $request, T_tournaments $tTournaments, M_venue $venueData)
     {
+        Log::debug(sprintf("searchTournament start"));
         $searchInfo = $request->all();
+        Log::debug($searchInfo);
         $searchCondition = $this->generateSearchCondition($searchInfo);
+        Log::debug($searchCondition);
         $tournamentList =  $tTournaments->getTournamentWithSearchCondition($searchCondition);
         $venueList = $venueData->getVenueList();
 
-        if ($searchInfo['tVenueSelect'] == "") {
-            //選択された開催場所が「その他」の場合、大会テーブルの「venue_name」を表示
-        } else {
-            //「その他」以外が選択されていた場合、水域マスターに紐づいた水域名を表示
-        }
-
-        return view('tournament.search', ["pagemode" => "search", "tournamentInfo" => $searchInfo, "tournamentList" => $tournamentList, "venueList" => $venueList]);
+        Log::debug(sprintf("searchTournament end"));
+        return response()->json(['reqData' => $venueList, 'result' => $tournamentList]); //送信データ(debug用)とDBの結果を返す
+        // return view('tournament.search', ["pagemode" => "search", "tournamentInfo" => $searchInfo, "tournamentList" => $tournamentList, "venueList" => $venueList]);
     }
 
     public function index(T_tournaments $tTournaments, T_races $tRace) //Laravel_Reactデータ送信テスト 20231227
