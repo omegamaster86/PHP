@@ -845,4 +845,15 @@ class OrganizationController extends Controller
         Log::debug(sprintf("storeOrgData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
+
+    //userIDに紐づいたデータを送信 20240131
+    public function getOrganizationForOrgManagement(T_organizations $tOrganization)
+    {
+        Log::debug(sprintf("getOrganizationForOrgManagement start"));
+        //団体情報を取得 20231215 t_futamura
+        $targetOrgId = Auth::user()->user_id;
+        $tOrg = $tOrganization->getOrganizationForOrgManagement($targetOrgId); //userIDに紐づいた団体を取得するように修正する必要がある 二村さん残件対応箇所
+        Log::debug(sprintf("getOrganizationForOrgManagement end"));
+        return response()->json(['result' => $tOrg]); //DBの結果を返す
+    }
 }

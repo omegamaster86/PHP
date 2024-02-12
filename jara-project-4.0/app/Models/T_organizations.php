@@ -55,6 +55,41 @@ class T_organizations extends Model
         return $targetOrg;
     }
 
+    //reactの団体管理画面用に作成
+    public function getOrganizationForOrgManagement($orgId)
+    {
+        $organization = DB::select('select 
+                                        `org_id`,
+                                        `entrysystem_org_id`,
+                                        `org_name`,
+                                        `jara_org_type`,
+                                        `jara_org_reg_trail`,
+                                        `pref_org_type`,
+                                        `pref_org_reg_trail`,
+                                        `org_class`,
+                                        `org_class_name`,
+                                        `founding_year`,
+                                        `post_code`,
+                                        `location_country`,
+                                        `country_name`,
+                                        `location_prefecture`,
+                                        `pref_name`,
+                                        `address1`,
+                                        `address2`
+                                        from `t_organizations`
+                                        left join `m_countries`
+                                        on `t_organizations`.`location_country` = `m_countries`.`country_id`
+                                        left join `m_prefectures`
+                                        on `t_organizations`.`location_prefecture` = `m_prefectures`.`pref_id`
+                                        left join `m_organization_class`
+                                        on `t_organizations`.`org_class` = `m_organization_class`.`org_class_id`
+                                        where `t_organizations`.`delete_flag`=0
+                                        and `org_id`=?'
+                                    ,[$orgId]
+                                );
+        return $organization;
+    }
+
     //Insertを実行して、InsertしたレコードのID（主キー）を返す
     public function insertOrganization($organizationInfo)
     {

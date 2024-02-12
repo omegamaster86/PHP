@@ -97,6 +97,7 @@ Route::middleware('auth')->group(function () {
     Route::post('storeOrgData', [OrganizationController::class, 'storeOrgData']); //団体情報をDBに送る 20240201
     Route::get('getStaffData', [OrganizationController::class, 'getStaffData']); //団体所属スタッフを取得 20240212
     Route::post('orgSearch', [OrganizationController::class, 'searchOrganization']); //団体検索 20240212
+    Route::get('getOrganizationForOrgManagement', [OrganizationController::class, 'getOrganizationForOrgManagement']); //団体管理画面用に団体情報を取得 20240212
 
     //大会関連
     Route::get('getTournamentInfoData', [TournamentController::class, 'getTournamentInfoData']); //DBから大会情報更新画面にデータを渡す 20240201

@@ -22,23 +22,16 @@ export default function TeamManagement() {
   const [errorMessage, setErrorMessage] = useState([] as string[]);
   const [teamdata, setTeamdata] = useState([] as TeamResponse[]);
   const router = useRouter();
-  const [resData, setResponseData] = React.useState([] as any); //Laravel_Reactデータ送信テスト 20240116
-
-  var responseData = null; //Laravel_Reactデータ送信テスト 20231227
-  var buttonValue = "送信ボタン"; //Laravel_Reactデータ送信テスト 20240123
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
-        const responseData = await axios.get('/getOrgData'); //団体データ取得 20240201
-        console.log(responseData.data); //Laravel_Reactデータ送信テスト 20231227
-        setResponseData(responseData.data); //Laravel_Reactデータ送信テスト 20240116
-
-        // 仮のURL（繋ぎ込み時に変更すること）
-        const response = await axios.get<TeamResponse[]>('/teams');
-        setTeamdata(response.data);
+        // const response = await axios.get<TeamResponse[]>('/teams');
+        const responseData = await axios.get('/getOrganizationForOrgManagement'); //団体データ取得 20240201
+        console.log(responseData.data.result);
+        setTeamdata(responseData.data.result);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
       }
@@ -165,16 +158,6 @@ export default function TeamManagement() {
           >
             戻る
           </CustomButton>
-          {/* React_Laravelデータ送信テスト 20231228 */}
-          {/* <form name="postSample" onSubmit={(event) => handleSubmit(event)}> */}
-          <form name="postSample">
-            <label htmlFor="org_name">Name: </label>
-            <br />
-            <input type="text" id="org_name" name="org_name" />
-            <br />
-            <input type="button" defaultValue={buttonValue} onClick={onClick} />
-          </form>
-          {/* React_Laravelデータ送信テスト 20231228 */}
         </div>
       </main>
     </div>
