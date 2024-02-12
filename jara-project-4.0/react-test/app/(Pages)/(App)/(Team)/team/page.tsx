@@ -173,8 +173,7 @@ export default function OrgInfo() {
           }));
           console.log(formData);
           // const staff = await axios.get<Staff[]>('http://localhost:3100/staff');
-
-          const staff = await axios.get('/getStaff'); //残件対象項目
+          const staff = await axios.get('/getStaffData'); //残件対象項目
           setTableData(staff.data);
         }
       } catch (error: any) {

@@ -161,18 +161,18 @@ export default function UserInformationUpdate() {
             user_id: response.data.result.user_id,
             user_name: response.data.result.user_name,
             user_type: response.data.result.user_type,
-            userTypeName: "",//response.data.result.userTypeName,
+            userTypeName: response.data.result.userTypeName,
             date_of_birth: response.data.result.date_of_birth,
-            sexName: '男性',//response.data.result.sexName ? response.data.sexName : '男性',
+            sexName: response.data.result.sexName ? response.data.sexName : '男性',
             sex: response.data.result.sex,
             height: response.data.result.height,
             weight: response.data.result.weight,
             residence_country: response.data.result.residence_country,
-            residenceCountryName: 0//response.data.result.residenceCountryName
+            residenceCountryName: response.data.result.residenceCountryName
               ? response.data.result.residenceCountryName
               : '日本国 （jpn）',
               residence_prefecture: response.data.result.residence_prefecture,
-            residencePrefectureName: "",//response.data.result.residencePrefectureName,
+            residencePrefectureName: response.data.result.residencePrefectureName,
             mailaddress: response.data.result.mailaddress,
             temp_password_flag: response.data.result.temp_password_flag,
             photo: response.data.result.photo,

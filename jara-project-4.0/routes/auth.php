@@ -78,7 +78,7 @@ Route::middleware('auth')->group(function () {
     //ユーザー関連
     Route::get('getUserData', [UserController::class, 'getUserData']); //DBからユーザ情報を取得 20240131
     Route::post('updateUserData', [UserController::class, 'updateUserData']); //ユーザ情報をDBに送る 20240131
-    Route::post('deleteUserData', [UserController::class, 'deleteUserData']); //ユーザ情報を削除する 20240212
+    Route::post('deleteUserData', [UserController::class, 'updateDeleteFlagInUserData']); //ユーザ情報を削除する 20240212
 
     //パスワード関連
     Route::post('storePasswordChange', [UserController::class, 'storePasswordChange']); //パスワード変更 20240207
@@ -94,6 +94,7 @@ Route::middleware('auth')->group(function () {
     //団体関連
     Route::get('getOrgData', [OrganizationController::class, 'getOrgData']); //DBから団体管理画面にデータを渡す 20240201
     Route::post('storeOrgData', [OrganizationController::class, 'storeOrgData']); //団体情報をDBに送る 20240201
+    Route::get('getStaffData', [OrganizationController::class, 'getStaffData']); //団体所属スタッフを取得 20240212
 
     //大会関連
     Route::get('getTournamentInfoData', [TournamentController::class, 'getTournamentInfoData']); //DBから大会情報更新画面にデータを渡す 20240201

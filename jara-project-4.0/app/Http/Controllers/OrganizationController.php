@@ -49,7 +49,7 @@ class OrganizationController extends Controller
     }
 
     //団体情報更新画面を開く
-    public function createEdit(
+    public function getStaffData(
         $targetOrgId,
         T_organizations $tOrganization,
         M_organization_type $mOrganizationType,
@@ -59,8 +59,9 @@ class OrganizationController extends Controller
         M_staff_type $mStaffType
     ) {
         if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
+            // return redirect('user/password-change');
         } else {
+            $targetOrgId = 1;
             //団体情報を取得 20231215 t_futamura
             $tOrg = $tOrganization->getOrganization($targetOrgId);
             //団体種別マスターを取得 20231215 t_futamura
@@ -80,17 +81,18 @@ class OrganizationController extends Controller
 
             $staff_tag = $this->generateStaffTag($tStaff, $mStfType);
             //各データをViewに渡して開く
-            return view(
-                'organizations.register-edit',
-                [
-                    "pagemode" => "edit",
-                    "organization" => $tOrg,
-                    "organizationType" => $mOrgType,
-                    "organizationClass" => $mOrgClass,
-                    "prefectures" => $mPref,
-                    "staff_tag" => $staff_tag
-                ]
-            );
+            // return view(
+            //     'organizations.register-edit',
+            //     [
+            //         "pagemode" => "edit",
+            //         "organization" => $tOrg,
+            //         "organizationType" => $mOrgType,
+            //         "organizationClass" => $mOrgClass,
+            //         "prefectures" => $mPref,
+            //         "staff_tag" => $staff_tag
+            //     ]
+            // );
+            return response()->json(['result' => $tStaff]); //処理結果を返す
         }
     }
 
