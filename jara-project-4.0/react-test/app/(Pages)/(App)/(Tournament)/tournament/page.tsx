@@ -405,10 +405,11 @@ export default function Tournament() {
         axios
           // .get<Tournament>('http://localhost:3100/tournament')
           .get('/getTournamentInfoData') //残件対象項目
+
           .then((response) => {
             console.log(response);
             setTournamentFormData({
-              tourn_id: tournId,
+              tourn_id: response.data.result.tourn_id,
               entrysystem_tourn_id: response.data.result.entrysystem_tourn_id,
               tourn_name: response.data.result.tourn_name,
               tourn_type: response.data.result.tourn_type,

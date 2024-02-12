@@ -94,7 +94,6 @@ export default function PlayerInformationRef() {
         setplayerInformation({
           player_id: playerInf.data.result.player_id,
           jara_player_id: playerInf.data.result.jara_player_id,
-          existPlayerId: playerInf.data.result.player_id,
           player_name: playerInf.data.result.player_name,
           date_of_birth: playerInf.data.result.date_of_birth,
           sexName: playerInf.data.result.sex_name,
@@ -199,9 +198,9 @@ export default function PlayerInformationRef() {
                     </div>
                     <div className='flex flex-row gap-[10px]'>
                       {/* 既存選手ID */}
-                      <div className='text-gray-40 text-caption1'>既存選手ID</div>
+                      <div className='text-gray-40 text-caption1'>エントリーシステムの選手ID</div>
                       <Label
-                        label={playerInformation.existPlayerId?.toString() ?? ''}
+                        label={playerInformation.jara_player_id.toString() ?? ''}
                         textColor='white'
                         textSize='caption1'
                       ></Label>

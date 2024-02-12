@@ -68,28 +68,28 @@ export default function TournamentRaceResultRef() {
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
         const response = await axios.get('/getRaceResultRecordsData'); //残件対象項目
         console.log(response);
-        // setResultRecordsData(response.data);
-        // response.data.length === 0
-        //   ? setError({ isError: true, errorMessage: 'エントリー情報がありません。' })
-        //   : null;
-        // const raceNamesArray = response.data.map((item) => item.raceName);
-        // const uniqueRaceNamesSet = new Set(raceNamesArray);
-        // const uniqueRaceNamesArray = Array.from(uniqueRaceNamesSet);
-        // setRaceNameList(
-        //   uniqueRaceNamesArray.map((item, index) => ({
-        //     id: index,
-        //     name: item,
-        //   })),
-        // );
-        // const byGroupsArray = response.data.map((item) => item.byGroup);
-        // const uniqueByGroupsSet = new Set(byGroupsArray);
-        // const uniqueByGroupsArray = Array.from(uniqueByGroupsSet);
-        // setByGroupList(
-        //   uniqueByGroupsArray.map((item, index) => ({
-        //     id: index,
-        //     name: item,
-        //   })),
-        // );
+        setResultRecordsData(response.data.result);
+        response.data.length === 0
+          ? setError({ isError: true, errorMessage: 'エントリー情報がありません。' })
+          : null;
+        const raceNamesArray = response.data.result.map((item) => item.race_name);
+        const uniqueRaceNamesSet = new Set(raceNamesArray);
+        const uniqueRaceNamesArray = Array.from(uniqueRaceNamesSet);
+        setRaceNameList(
+          uniqueRaceNamesArray.map((item, index) => ({
+            id: index,
+            name: item,
+          })),
+        );
+        const byGroupsArray = response.data.result.map((item) => item.by_group);
+        const uniqueByGroupsSet = new Set(byGroupsArray);
+        const uniqueByGroupsArray = Array.from(uniqueByGroupsSet);
+        setByGroupList(
+          uniqueByGroupsArray.map((item, index) => ({
+            id: index,
+            name: item,
+          })),
+        );
       } catch (error: any) {
         setError({ isError: true, errorMessage: 'API取得エラー:' + error.message });
       }

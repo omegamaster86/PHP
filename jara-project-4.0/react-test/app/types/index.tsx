@@ -191,7 +191,6 @@ interface VolunteerHistoriesResponse {
 interface PlayerInformationResponse {
   player_id: number; // 選手ID
   jara_player_id: string; // JARA選手コード
-  existPlayerId?: number; // 既存選手ID　#置き換え作業未対応
   player_name: string; // 選手名
   date_of_birth: string; // 生年月日
   sexName: string; // 性別　#置き換え作業対応不要
@@ -215,7 +214,6 @@ interface TeamPlayerInformationResponse {
   id: number; // ID　#置き換え作業未対応
   player_id: number; // 選手ID
   jara_player_id: string; // JARA選手コード
-  existPlayerId?: number; // 既存選手ID　#置き換え作業未対応
   player_name: string; // 選手名
   date_of_birth: string; // 生年月日
   sexName: string; // 性別　#置き換え作業未対応
