@@ -30,10 +30,8 @@ export default function PlayerInformationRef() {
   // modeの値を取得 delete
   const mode = searchParams.get('mode');
   if (mode == null) {
-    console.log(mode, "aaaaaaaaaaa");
     router.push('/playerInformationRef');
   }
-  console.log(mode);
 
   // タブ切り替え用のステート
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -117,7 +115,7 @@ export default function PlayerInformationRef() {
         });
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
         const response = await axios.get('/getRaceResultRecordsData'); //残件対象項目
-        console.log(response);
+        console.log(response.data);
         // setResultRecordsData({});
       } catch (error: any) {
         setError({ isError: true, errorMessage: 'API取得エラー:' + error.message });
