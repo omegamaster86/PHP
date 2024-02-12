@@ -642,8 +642,9 @@ class PlayerController extends Controller
     public function getRaceResultRecordsData(T_raceResultRecord $tRaceResultRecord)
     {
         Log::debug(sprintf("getRaceResultRecordsData start"));
-        $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]); //ユーザIDに紐づいた選手IDを取得 20240212
-        $result = $tRaceResultRecord->getRaceResultRecord_playerId($retrieve_player_by_ID); //選手IDを元に出漕結果記録を取得 20240212
+        $playerDataList = DB::select('select * from t_players where delete_flag = 0 and user_id = ?', [Auth::user()->user_id]); //ユーザIDに紐づいた選手IDを取得 20240212
+        $latestPlayerId = count($playerDataList) - 1; //複数存在する場合を考慮して最新の選手データを使用する
+        $result = $tRaceResultRecord->getRaceResultRecord_playerId($playerDataList[$latestPlayerId]->player_id); //選手IDを元に出漕結果記録を取得 20240212
         Log::debug(sprintf("getRaceResultRecordsData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }

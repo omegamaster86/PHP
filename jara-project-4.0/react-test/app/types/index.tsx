@@ -36,7 +36,6 @@ interface RaceResultRecordsResponse {
   laptime_1500m: number; // 1500mラップタイム
   laptime_2000m: number; // 2000mラップタイム
   final_time: number; // 最終タイム
-  bNo: number; // B.No　#置き換え作業未対応
   race_result_notes: string; // 備考
   stroke_rate_avg: number; // ストロークレート（平均）
   stroke_rat_500m: number; // 500mlapストロークレート

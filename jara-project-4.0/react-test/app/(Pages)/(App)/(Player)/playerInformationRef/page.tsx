@@ -44,7 +44,6 @@ export default function PlayerInformationRef() {
 
   // レース結果情報のデータステート
   const [raceResultRecordsData, setResultRecordsData] = useState([] as RaceResultRecordsResponse[]);
-  const [raceResultRecordsDatas, setResultRecordsDatas] = useState({} as RaceResultRecordsResponse);
 
   // 選手情報のデータステート
   const [playerInformation, setplayerInformation] = useState({} as PlayerInformationResponse);
@@ -114,9 +113,9 @@ export default function PlayerInformationRef() {
           photo: playerInf.data.result.photo,
         });
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
-        const response = await axios.get('/getRaceResultRecordsData'); //残件対象項目
-        console.log(response.data);
-        // setResultRecordsData({});
+        const response = await axios.get('/getRaceResultRecordsData');
+        console.log(response.data.result);
+        setResultRecordsData(response.data.result);
       } catch (error: any) {
         setError({ isError: true, errorMessage: 'API取得エラー:' + error.message });
       }

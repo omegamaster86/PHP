@@ -362,10 +362,8 @@ export default function TournamentRaceResultRef() {
                         <CustomTd>{row.laptime_2000m}</CustomTd>
                         {/* 最終タイム */}
                         <CustomTd>{row.final_time}</CustomTd>
-                        {/* B.No */}
-                        <CustomTd>{row.bNo}</CustomTd>
-                        {/* Qualify */}
-                        <CustomTd>{row.remark}</CustomTd>{/*#置き換え作業未対応 remarkがRaceResultRecordsResponseにない*/}
+                        {/* 備考 */}
+                        <CustomTd>{row.race_result_notes}</CustomTd>
                         {/* ストローク（平均） */}
                         <CustomTd>{row.stroke_rate_avg}</CustomTd>
                         {/* 500mlapストローク */}
@@ -402,14 +400,14 @@ export default function TournamentRaceResultRef() {
                         <CustomTd>{row.seat_name}</CustomTd>
                         {/* 出漕結果記録名 */}
                         <CustomTd>{row.race_result_record_name}</CustomTd>
-                        {/* 500m地点風速 */}
-                        <CustomTd>{row.fiveHundredmHeartRate}</CustomTd>{/*#置き換え作業未対応 wind_speed_2000m_pointの間違い？*/}
-                        {/* 1000m地点風速 */}
-                        <CustomTd>{row.tenHundredmHeartRate}</CustomTd>{/*#置き換え作業未対応 wind_direction_2000m_pointの間違い？*/}
-                        {/* 1500m地点風速 */}
-                        <CustomTd>{row.fifteenHundredmHeartRate}</CustomTd>{/*#置き換え作業未対応 wind_speed_1000m_pointの間違い？*/}
                         {/* 2000m地点風速 */}
-                        <CustomTd>{row.twentyHundredmWindSpeed}</CustomTd>{/*#置き換え作業未対応 wind_direction_1000m_pointの間違い？*/}
+                        <CustomTd>{row.wind_speed_2000m_point}</CustomTd>
+                        {/* 2000m地点風向 */}
+                        <CustomTd>{row.wind_direction_2000m_point}</CustomTd>
+                        {/* 1000m地点風速 */}
+                        <CustomTd>{row.wind_speed_1000m_point}</CustomTd>
+                        {/* 1000m地点風向 */}
+                        <CustomTd>{row.wind_direction_1000m_point}</CustomTd>
                       </CustomTr>
                     ))}
                 </CustomTbody>

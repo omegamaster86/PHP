@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class T_raceResultRecord extends Model
 {
@@ -102,6 +103,7 @@ class T_raceResultRecord extends Model
         on `t_race_result_record`.`seat_number` = `m_seat_number`.`seat_id`
         where `t_race_result_record`.delete_flag = 0 and `t_race_result_record`.player_id = ?', [$playerId]);
 
+        Log::debug($racesResultRecord);
         return $racesResultRecord;
     }
 
