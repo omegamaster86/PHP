@@ -858,15 +858,26 @@ class UserController extends Controller
         Log::debug(sprintf("updateUserData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
-
-    //ユーザ情報削除用関数 20240212
-    public function deleteUserData(Request $request, T_users $t_users)
+    //react ユーザー情報の削除 20240212
+    //delete_flagを1にupdateする
+    public function updateDeleteFlagInUserData(Request $requests,T_users $t_users)
     {
-        Log::debug(sprintf("deleteUserData start"));
-        $reqData = $request->all();
-        Log::debug($reqData);
-
-        Log::debug(sprintf("deleteUserData end"));
-        return response()->json(['result' => $reqData]); //送信結果をそのまま返す　※デバッグ用
+        Log::debug(sprintf("updateDeleteFlagInUserData start."));
+        $result = true;
+        $reqData = $requests->all();
+        $target_user_id = $reqData['user_id'];
+        try
+        {
+            DB::beginTransaction();
+            $t_users->updateDeleteFlagToInvalid($target_user_id);
+            DB::commit();
+        }
+        catch(\Throwable $e)
+        {
+            DB::rollback();
+            $result = false;
+        }
+        Log::debug(sprintf("updateDeleteFlagInUserData end."));
+        return response()->json(['result' => $result]); //処理結果を返す
     }
 }

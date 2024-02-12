@@ -192,5 +192,14 @@ class T_users extends Authenticatable
                                 and `user_id` = ?'
                             ,$user_id);
         return $users;
-    }    
+    }
+    //対象のユーザーの削除フラグを「１＝削除データ」に更新する 20240212
+    public function updateDeleteFlagToInvalid($user_id)
+    {
+        DB::update('update `t_users`
+                    SET delete_flag = 1
+                    where 1=1
+                    and user_id = ?'
+                    ,$user_id);
+    }
 }
