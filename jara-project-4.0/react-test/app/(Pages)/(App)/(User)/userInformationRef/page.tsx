@@ -79,10 +79,11 @@ export default function UserInformationUpdate() {
         setFormData((prevFormData) => ({
           ...prevFormData,
           ...{
-            userId: response.data.user_id,
-            userName: response.data.user_name,
-            userType: response.data.user_type,
-            dateOfBirth: response.data.date_of_birth,
+            user_id: response.data.user_id,
+            user_name: response.data.user_name,
+            user_type: response.data.user_type,
+            mailaddress: response.data.mailaddress,
+            date_of_birth: response.data.date_of_birth,
             sexName: response.data.sexName,
             height: response.data.height,
             weight: response.data.weight,
@@ -124,7 +125,8 @@ export default function UserInformationUpdate() {
               const csrf = () => axios.get('/sanctum/csrf-cookie')
               await csrf()
               axios
-                .delete('http://localhost:3100/') //残件対象項目
+                // .delete('http://localhost:3100/')
+                .post('/deleteUserData', formData) //20240212 削除するデータを送信
                 .then((res) => {
                   // ログイン画面に遷移する
                   router.push('/login');

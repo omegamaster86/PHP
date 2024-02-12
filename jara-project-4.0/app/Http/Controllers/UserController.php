@@ -858,4 +858,15 @@ class UserController extends Controller
         Log::debug(sprintf("updateUserData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
+
+    //ユーザ情報削除用関数 20240212
+    public function deleteUserData(Request $request, T_users $t_users)
+    {
+        Log::debug(sprintf("deleteUserData start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+
+        Log::debug(sprintf("deleteUserData end"));
+        return response()->json(['result' => $reqData]); //送信結果をそのまま返す　※デバッグ用
+    }
 }

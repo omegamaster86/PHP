@@ -78,6 +78,7 @@ Route::middleware('auth')->group(function () {
     //ユーザー関連
     Route::get('getUserData', [UserController::class, 'getUserData']); //DBからユーザ情報を取得 20240131
     Route::post('updateUserData', [UserController::class, 'updateUserData']); //ユーザ情報をDBに送る 20240131
+    Route::post('deleteUserData', [UserController::class, 'deleteUserData']); //ユーザ情報を削除する 20240212
 
     //パスワード関連
     Route::post('storePasswordChange', [UserController::class, 'storePasswordChange']); //パスワード変更 20240207
