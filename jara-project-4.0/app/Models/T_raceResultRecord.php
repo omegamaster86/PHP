@@ -808,4 +808,30 @@ class T_raceResultRecord extends Model
         $insertId =  DB::getPdo()->lastInsertId();
         return $insertId;
     }
+
+    //クルーの情報を取得
+    public function getCrews($values)
+    {
+        $crews = DB::select('select
+                            rrr.`player_id`
+                            ,msn.seat_id
+                            ,msn.`seat_name`
+                            ,msn.`seat_addr_name`
+                            ,rrr.`player_name`
+                            ,rrr.`player_height`
+                            ,rrr.`player_weight`
+                            ,msn.`display_order`
+                            from `t_race_result_record` rrr
+                            left join `m_seat_number` msn
+                            on rrr.seat_number = msn.seat_id
+                            where 1=1
+                            and rrr.`delete_flag` = 0
+                            and (msn.`delete_flag` = 0 or msn.`delete_flag` is null)
+                            and rrr.race_id = :race_id
+                            and rrr.crew_name = :crew_name
+                            and rrr.org_id = :org_id
+                            order by msn.`display_order`'
+                        ,$values);
+        return $crews;    
+    }
 }

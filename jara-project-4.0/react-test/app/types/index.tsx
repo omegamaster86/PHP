@@ -280,7 +280,9 @@ interface Player {
 // クルー
 interface CrewResponse {
   player_id: number; // 選手ID
-  seat_name: string; // シート番号（出漕時点）
+  seat_id: number; // シート番号（出漕時点）
+  seat_name: string;  //シート名
+  seat_addr_name: string; //シート略称
   player_name: string; // 選手名
   player_height: number; // 選手身長（出漕時点）
   player_weight: number; // 選手体重（出漕時点）
@@ -295,6 +297,8 @@ interface Organization {
   orgTypeName: string; // 団体種別名　#置き換え作業未対応
   founding_year: number; // 設立年
   post_code: string; // 郵便番号
+  location_country: number;// 所在地（国）
+  locationCountry: string; // 所在地（国）　#置き換え作業対応不要
   location_prefecture: number; // 所在地（都道府県）
   locationPrefectureName: string; // 所在地（都道府県）　#置き換え作業対応不要
   address1: string; // 住所1

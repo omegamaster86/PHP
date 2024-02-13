@@ -19,32 +19,57 @@ class T_organizations extends Model
     public function getOrganization($orgId)
     {
         $organization = DB::select('select 
-                                        `org_id`,
-                                        `entrysystem_org_id`,
-                                        `org_name`,
-                                        `jara_org_type`,
-                                        `jara_org_reg_trail`,
-                                        `pref_org_type`,
-                                        `pref_org_reg_trail`,
-                                        `org_class`,
-                                        `org_class_name`,
-                                        `founding_year`,
-                                        `post_code`,
-                                        `location_country`,
-                                        `country_name`,
-                                        `location_prefecture`,
-                                        `pref_name`,
-                                        `address1`,
-                                        `address2`
-                                        from `t_organizations`
-                                        left join `m_countries`
-                                        on `t_organizations`.`location_country` = `m_countries`.`country_id`
-                                        left join `m_prefectures`
-                                        on `t_organizations`.`location_prefecture` = `m_prefectures`.`pref_id`
-                                        left join `m_organization_class`
-                                        on `t_organizations`.`org_class` = `m_organization_class`.`org_class_id`
-                                        where `t_organizations`.`delete_flag`=0
-                                        and `org_id`=?'
+                                    `org_id`,
+                                    `entrysystem_org_id`,
+                                    `org_name`,
+                                    `jara_org_type`,
+                                    case jmot.org_type
+                                        when 0 then "任意"
+                                        when 1 then "正式"
+                                    end as `jaraOrgTypeName`,
+                                    `jara_org_reg_trail`,
+                                    `pref_org_type`,
+                                    case pmot.org_type
+                                        when 0 then "任意"
+                                        when 1 then "正式"
+                                    end as `prefOrgTypeName`,
+                                    `pref_org_reg_trail`,
+                                    case
+                                        when `jara_org_type` = 1 and `pref_org_type` = 1 then "JARA・県ボ"
+                                        when `jara_org_type` = 1 then "JARA"
+                                        when `pref_org_type` = 1 then "県ボ"
+                                        else "任意"
+                                    end as `orgTypeName`,
+                                    `org_class`,
+                                    `org_class_name`    as `orgClassName`,
+                                    `founding_year`,
+                                    `post_code`,
+                                    `location_country`,
+                                    `country_name`,
+                                    `country_name` as `locationCountry`,
+                                    `location_prefecture`,
+                                    `pref_name` as `locationPrefectureName`,
+                                    `address1`,
+                                    `address2`
+                                    from `t_organizations`
+                                    left join `m_countries`
+                                    on `t_organizations`.`location_country` = `m_countries`.`country_id`
+                                    left join `m_prefectures`
+                                    on `t_organizations`.`location_prefecture` = `m_prefectures`.`pref_id`
+                                    left join `m_organization_class`
+                                    on `t_organizations`.`org_class` = `m_organization_class`.`org_class_id`
+                                    left join `m_organization_type` jmot
+                                    on `t_organizations`.`jara_org_type` = jmot.`org_type_id`
+                                    left join `m_organization_type` pmot
+                                    on `t_organizations`.`pref_org_type` = pmot.`org_type_id`
+                                    where 1=1
+                                    and `t_organizations`.`delete_flag`=0
+                                    and (`m_countries`.`delete_flag` = 0 or `m_countries`.`delete_flag` is null)
+                                    and (`m_prefectures`.`delete_flag` = 0 or `m_prefectures`.`delete_flag` is null)
+                                    and (`m_organization_class`.`delete_flag` = 0 or `m_organization_class`.`delete_flag` is null)
+                                    and (jmot.`delete_flag` = 0 or jmot.`delete_flag` is null)
+                                    and (pmot.`delete_flag` = 0 or pmot.`delete_flag` is null)
+                                    and `org_id`=?'
                                     ,[$orgId]);
         //1つの団体IDを取得するため0番目だけを返す
         $targetOrg = null;
@@ -62,23 +87,32 @@ class T_organizations extends Model
                                     `entrysystem_org_id`,
                                     `org_name`,
                                     `jara_org_type`,
+                                    case jmot.org_type
+                                        when 0 then "任意"
+                                        when 1 then "正式"
+                                    end as `jaraOrgTypeName`,
                                     `jara_org_reg_trail`,
                                     `pref_org_type`,
+                                    case pmot.org_type
+                                        when 0 then "任意"
+                                        when 1 then "正式"
+                                    end as `prefOrgTypeName`,
                                     `pref_org_reg_trail`,
                                     case
                                         when `jara_org_type` = 1 and `pref_org_type` = 1 then "JARA・県ボ"
                                         when `jara_org_type` = 1 then "JARA"
                                         when `pref_org_type` = 1 then "県ボ"
                                         else "任意"
-                                    end as `teamTyp`,
+                                    end as `orgTypeName`,
                                     `org_class`,
-                                    `org_class_name`,
+                                    `org_class_name`    as `orgClassName`,
                                     `founding_year`,
                                     `post_code`,
                                     `location_country`,
                                     `country_name`,
+                                    `country_name` as `locationCountry`,
                                     `location_prefecture`,
-                                    `pref_name`,
+                                    `pref_name` as `locationPrefectureName`,
                                     `address1`,
                                     `address2`
                                     from `t_organizations`
@@ -88,14 +122,19 @@ class T_organizations extends Model
                                     on `t_organizations`.`location_prefecture` = `m_prefectures`.`pref_id`
                                     left join `m_organization_class`
                                     on `t_organizations`.`org_class` = `m_organization_class`.`org_class_id`
+                                    left join `m_organization_type` jmot
+                                    on `t_organizations`.`jara_org_type` = jmot.`org_type_id`
+                                    left join `m_organization_type` pmot
+                                    on `t_organizations`.`pref_org_type` = pmot.`org_type_id`
                                     where 1=1
                                     and `t_organizations`.`delete_flag`=0
-                                    and  (`m_countries`.`delete_flag` = 0 or `m_countries`.`delete_flag` is null)
-                                    and  (`m_prefectures`.`delete_flag` = 0 or `m_prefectures`.`delete_flag` is null)
-                                    and  (`m_organization_class`.`delete_flag` = 0 or `m_organization_class`.`delete_flag` is null)
+                                    and (`m_countries`.`delete_flag` = 0 or `m_countries`.`delete_flag` is null)
+                                    and (`m_prefectures`.`delete_flag` = 0 or `m_prefectures`.`delete_flag` is null)
+                                    and (`m_organization_class`.`delete_flag` = 0 or `m_organization_class`.`delete_flag` is null)
+                                    and (jmot.`delete_flag` = 0 or jmot.`delete_flag` is null)
+                                    and (pmot.`delete_flag` = 0 or pmot.`delete_flag` is null)
                                     and `org_id`=?'
-                                    ,[$orgId]
-                                );
+                                    ,[$orgId]);
         return $organization;
     }
 
@@ -254,24 +293,57 @@ class T_organizations extends Model
     {
         DB::enableQueryLog();
 
-        $sqlString = 'select
+        $sqlString = 'select 
                         `org_id`,
                         `entrysystem_org_id`,
                         `org_name`,
-                        `founding_year`,
+                        `jara_org_type`,
+                        case jmot.org_type
+                            when 0 then "任意"
+                            when 1 then "正式"
+                        end as `jaraOrgTypeName`,
+                        `jara_org_reg_trail`,
+                        `pref_org_type`,
+                        case pmot.org_type
+                            when 0 then "任意"
+                            when 1 then "正式"
+                        end as `prefOrgTypeName`,
+                        `pref_org_reg_trail`,
                         case
-                            when `jara_org_type` = 1 and `pref_org_type` then "JARA・県ボ"
+                            when `jara_org_type` = 1 and `pref_org_type` = 1 then "JARA・県ボ"
                             when `jara_org_type` = 1 then "JARA"
                             when `pref_org_type` = 1 then "県ボ"
                             else "任意"
-                        end as `org_type`,
+                        end as `orgTypeName`,
                         `org_class`,
-                        `m_organization_class`.`org_class_name`
+                        `org_class_name`    as `orgClassName`,
+                        `founding_year`,
+                        `post_code`,
+                        `location_country`,
+                        `country_name`,
+                        `country_name` as `locationCountry`,
+                        `location_prefecture`,
+                        `pref_name` as `locationPrefectureName`,
+                        `address1`,
+                        `address2`
                         from `t_organizations`
+                        left join `m_countries`
+                        on `t_organizations`.`location_country` = `m_countries`.`country_id`
+                        left join `m_prefectures`
+                        on `t_organizations`.`location_prefecture` = `m_prefectures`.`pref_id`
                         left join `m_organization_class`
                         on `t_organizations`.`org_class` = `m_organization_class`.`org_class_id`
+                        left join `m_organization_type` jmot
+                        on `t_organizations`.`jara_org_type` = jmot.`org_type_id`
+                        left join `m_organization_type` pmot
+                        on `t_organizations`.`pref_org_type` = pmot.`org_type_id`
                         where 1=1
                         and `t_organizations`.`delete_flag`=0
+                        and (`m_countries`.`delete_flag` = 0 or `m_countries`.`delete_flag` is null)
+                        and (`m_prefectures`.`delete_flag` = 0 or `m_prefectures`.`delete_flag` is null)
+                        and (`m_organization_class`.`delete_flag` = 0 or `m_organization_class`.`delete_flag` is null)
+                        and (jmot.`delete_flag` = 0 or jmot.`delete_flag` is null)
+                        and (pmot.`delete_flag` = 0 or pmot.`delete_flag` is null)
                         #SearchCondition#
                         order by `org_id`';
         $sqlString = str_replace('#SearchCondition#',$searchCondition,$sqlString);
@@ -291,24 +363,57 @@ class T_organizations extends Model
 
     public function getOrganizations()
     {
-        $organizations = DB::select('select
-                                        `org_id`, 
-                                        `entrysystem_org_id`, 
-                                        `org_name`, 
-                                        `jara_org_type`, 
-                                        `jara_org_reg_trail`, 
-                                        `pref_org_type`, 
-                                        `pref_org_reg_trail`, 
-                                        `org_class`, 
-                                        `founding_year`, 
-                                        `location_country`, 
-                                        `location_prefecture`, 
-                                        `post_code`, 
-                                        `address1`, 
-                                        `address2` 
-                                        FROM `t_organizations`
-                                        WHERE 1=1
-                                        and `delete_flag` = 0');
+        $organizations = DB::select('select 
+                                    `org_id`,
+                                    `entrysystem_org_id`,
+                                    `org_name`,
+                                    `jara_org_type`,
+                                    case jmot.org_type
+                                        when 0 then "任意"
+                                        when 1 then "正式"
+                                    end as `jaraOrgTypeName`,
+                                    `jara_org_reg_trail`,
+                                    `pref_org_type`,
+                                    case pmot.org_type
+                                        when 0 then "任意"
+                                        when 1 then "正式"
+                                    end as `prefOrgTypeName`,
+                                    `pref_org_reg_trail`,
+                                    case
+                                        when `jara_org_type` = 1 and `pref_org_type` = 1 then "JARA・県ボ"
+                                        when `jara_org_type` = 1 then "JARA"
+                                        when `pref_org_type` = 1 then "県ボ"
+                                        else "任意"
+                                    end as `orgTypeName`,
+                                    `org_class`,
+                                    `org_class_name`    as `orgClassName`,
+                                    `founding_year`,
+                                    `post_code`,
+                                    `location_country`,
+                                    `country_name` as `locationCountry`,
+                                    `location_prefecture`,
+                                    `pref_name` as `locationPrefectureName`,
+                                    `address1`,
+                                    `address2`
+                                    from `t_organizations`
+                                    left join `m_countries`
+                                    on `t_organizations`.`location_country` = `m_countries`.`country_id`
+                                    left join `m_prefectures`
+                                    on `t_organizations`.`location_prefecture` = `m_prefectures`.`pref_id`
+                                    left join `m_organization_class`
+                                    on `t_organizations`.`org_class` = `m_organization_class`.`org_class_id`
+                                    left join `m_organization_type` jmot
+                                    on `t_organizations`.`jara_org_type` = jmot.`org_type_id`
+                                    left join `m_organization_type` pmot
+                                    on `t_organizations`.`pref_org_type` = pmot.`org_type_id`
+                                    where 1=1
+                                    and `t_organizations`.`delete_flag`=0
+                                    and (`m_countries`.`delete_flag` = 0 or `m_countries`.`delete_flag` is null)
+                                    and (`m_prefectures`.`delete_flag` = 0 or `m_prefectures`.`delete_flag` is null)
+                                    and (`m_organization_class`.`delete_flag` = 0 or `m_organization_class`.`delete_flag` is null)
+                                    and (jmot.`delete_flag` = 0 or jmot.`delete_flag` is null)
+                                    and (pmot.`delete_flag` = 0 or pmot.`delete_flag` is null)
+                                    and `delete_flag` = 0');
         return $organizations;
     }
 }
