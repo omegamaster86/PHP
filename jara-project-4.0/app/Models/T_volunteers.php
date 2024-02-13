@@ -31,7 +31,7 @@ class T_volunteers extends Model
         'delete_flag' => 0,
     ];
 
-    public function getVolunteers($vlntrId)
+    public function getVolunteers($user_id)
     {
         $volunteers = DB::select('select `t_volunteers`.`volunteer_id`, `t_volunteers`.`user_id`, `t_volunteers`.`volunteer_name`, `t_volunteers`.`residence_country`, 
         `t_volunteers`.`residence_prefecture`, `t_volunteers`.`sex`, `t_volunteers`.`date_of_birth`, `t_volunteers`.`dis_type_id`, `t_volunteers`.`telephone_number`, 
@@ -47,7 +47,7 @@ class T_volunteers extends Model
         on `t_volunteers`.`sex` = `m_sex`.`sex_id`
         left join `m_clothes_size`
         on `t_volunteers`.`clothes_size` = `m_clothes_size`.`clothes_size_id`
-        where `t_volunteers`.delete_flag=0 and `t_volunteers`.volunteer_id = ?', [$vlntrId]);
+        where `t_volunteers`.delete_flag=0 and `t_volunteers`.user_id = ?', [$user_id]);
         //1つの団体IDを取得するため0番目だけを返す
         $targetTrn = null;
         if (!empty($volunteers)) {

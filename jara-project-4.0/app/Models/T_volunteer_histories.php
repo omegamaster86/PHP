@@ -38,12 +38,8 @@ class T_volunteer_histories extends Model
         left join `t_tournaments`
         on `t_volunteer_histories`.`tourn_id` = `t_tournaments`.`tourn_id`
         where `t_volunteer_histories`.delete_flag=0 and `t_volunteer_histories`.volunteer_id = ?', [$vlntrId]);
-        //1つの団体IDを取得するため0番目だけを返す
-        $targetTrn = null;
-        if (!empty($volunteers)) {
-            $targetTrn = $volunteers[0];
-        }
-        return $targetTrn;
+        
+        return $volunteers;
     }
 
     public function updateVolunteerHistories($volunteersInfo)

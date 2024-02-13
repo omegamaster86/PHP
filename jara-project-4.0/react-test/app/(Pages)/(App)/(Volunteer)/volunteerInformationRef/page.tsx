@@ -88,14 +88,32 @@ export default function VolunteerInformationRef() {
         // TODO: 仮のURL（繋ぎ込み時に変更すること）
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
-        const volunteerResponse = await axios.get<VolunteerResponse>(
-          '/volunteer',
-        );
-        setVolunteerdata(volunteerResponse.data);
-        const volunteerHistoriesResponse = await axios.get<VolunteerHistoriesResponse[]>(
-          '/volunteerHistories',
-        );
-        setVolunteerHistoriesdata(volunteerHistoriesResponse.data);
+        // const volunteerResponse = await axios.get<VolunteerResponse>('/volunteer',);
+        const volunteerResponse = await axios.get('/getVolunteerData'); //ボランティア情報の取得 20240213
+        console.log(volunteerResponse.data.result);
+        setVolunteerdata({
+          volunteer_id: volunteerResponse.data.result.volunteer_id, // ボランティアID
+          volunteer_name: volunteerResponse.data.result.volunteer_name, // 氏名
+          residence_country: volunteerResponse.data.result.residence_country, // 居住地（国）
+          residence_prefecture: volunteerResponse.data.result.residence_prefecture, // 居住地（都道府県）
+          sex: volunteerResponse.data.result.sex, // 性別　#置き換え作業未対応
+          date_of_birth: volunteerResponse.data.result.date_of_birth, // 生年月日
+          telephone_number: volunteerResponse.data.result.telephone_number, // 電話番号
+          mailaddress: volunteerResponse.data.result.mailaddress, // メールアドレス
+          clothes_size: volunteerResponse.data.result.clothes_size, // 服のサイズ
+          personality: volunteerResponse.data.result.personality, // 性格　#置き換え作業未対応
+          dis_type_id: [''], // 障碍タイプ
+          qualHold: [''], // 保有資格　#置き換え作業未対応
+          language: [''], // 言語　#置き換え作業未対応
+          day_of_week: volunteerResponse.data.result.day_of_week, // 曜日
+          time_zone: volunteerResponse.data.result.time_zone, // 時間帯
+          photo: volunteerResponse.data.result.photo, // 写真　#置き換え作業未対応
+        });
+        // const volunteerHistoriesResponse = await axios.get<VolunteerHistoriesResponse[]>(
+        //   '/volunteerHistories',
+        // );
+        console.log(volunteerResponse.data.volHistData)
+        setVolunteerHistoriesdata(volunteerResponse.data.volHistData);
       } catch (error) {
         // TODO: エラーハンドリングを実装
         setErrorMessage([
@@ -569,6 +587,7 @@ export default function VolunteerInformationRef() {
                  * 「ボランティア言語レベルテーブル」
                  * 「ボランティア支援可能障碍タイプテーブル」
                  */
+                
                 // TODO: エラーハンドリングを実装
                 // 削除に失敗した場合、
                 // 以下のメッセージをシステムエラーとして赤文字で表示し、以降の処理は行わない。

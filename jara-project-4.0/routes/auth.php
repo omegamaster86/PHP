@@ -108,7 +108,7 @@ Route::middleware('auth')->group(function () {
     Route::post('tournamentSearch', [TournamentController::class, 'searchTournament']); //大会検索 20240212
 
     //ボランティア関連
-
+    Route::get('getVolunteerData', [VolunteerController::class, 'getVolunteerData']); //ボランティア情報取得 20240213 ※ボランティア履歴情報も取得する
 
     //React連携後APIここまで===========================================================
     //================================================================================

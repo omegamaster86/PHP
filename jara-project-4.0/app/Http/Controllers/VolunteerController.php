@@ -47,8 +47,8 @@ use Illuminate\Support\Facades\Validator;
 
 class VolunteerController extends Controller
 {
-    //大会情報参照画面に遷移した時
-    public function createReference(
+    //ボランティア情報参照画面
+    public function getVolunteerData(
         T_volunteers $tVolunteer,
         T_volunteer_availables $tVolunteerAvailables,
         T_volunteer_histories $tVolunteerHistories,
@@ -56,21 +56,20 @@ class VolunteerController extends Controller
         T_volunteer_qualifications_hold $tVolunteerQualificationsHold,
         T_volunteer_supportable_disability $tVolunteerSupportableDisability
     ) {
+        Log::debug(sprintf("createReference start"));
         //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
         if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
+            //return redirect('user/password-change');
         }
-        $volData = $tVolunteer->getVolunteers(1); //ボランティア情報を取得
+        $volData = $tVolunteer->getVolunteers(Auth::user()->user_id); //ボランティア情報を取得
         $volAvaData = $tVolunteerAvailables->getVolunteerAvailables(1); //ボランティアアベイラブル情報を取得
-        $volHistData = $tVolunteerHistories->getVolunteerHistories(1); //ボランティア履歴情報を取得
+        $volHistData = $tVolunteerHistories->getVolunteerHistories(Auth::user()->user_id); //ボランティア履歴情報を取得
         $volLangProData = $tVolunteerLanguageProficiency->getVolunteerLanguageProficiency(1); //ボランティア言語レベル情報を取得
         $volQualData = $tVolunteerQualificationsHold->getVolunteerQualificationsHold(1); //ボランティア保有資格情報を取得
         $volSupDisData = $tVolunteerSupportableDisability->getVolunteerSupportableDisability(1); //ボランティア支援可能障害タイプ情報を取得
 
-        return view('volunteer.reference', [
-            "pagemode" => "refer", "volData" => $volData, "volAvaData" => $volAvaData, "volHistData" => $volHistData,
-            "volLangProData" => $volLangProData, "volQualData" => $volQualData, "volSupDisData" => $volSupDisData
-        ]);
+        Log::debug(sprintf("createReference start"));
+        return response()->json(['result' => $volData, 'volHistData' => $volHistData]); //DBの結果を返す
     }
 
     //大会情報削除画面に遷移した時
@@ -153,77 +152,73 @@ class VolunteerController extends Controller
     }
 
     //ボランティア検索画面を開く
-    public function createSearch(M_sex $m_sex,
-                                M_countries $m_countries,
-                                M_prefectures $m_prefectures,
-                                M_languages $m_languages,
-                                M_language_proficiency $m_language_proficiency)
-    {
-        if(Auth::user()->temp_password_flag === 1)
-        {
+    public function createSearch(
+        M_sex $m_sex,
+        M_countries $m_countries,
+        M_prefectures $m_prefectures,
+        M_languages $m_languages,
+        M_language_proficiency $m_language_proficiency
+    ) {
+        if (Auth::user()->temp_password_flag === 1) {
             return redirect('user/password-change');
-        }
-        else
-        {
+        } else {
             $sex = $m_sex->getSexList();
             $countries = $m_countries->getCountries();
             $prefectures = $m_prefectures->getPrefecures();
             $languages =  $m_languages->getLanguages();
             $language_proficiency = $m_language_proficiency->getLanguageProficiency();
 
-            return view('volunteer.search',['m_sex' => $sex,
-                                            'countries' => $countries,
-                                            'prefectures' => $prefectures,
-                                            'languages' => $languages,
-                                            'language_proficiency' => $language_proficiency
-                                        ]);
+            return view('volunteer.search', [
+                'm_sex' => $sex,
+                'countries' => $countries,
+                'prefectures' => $prefectures,
+                'languages' => $languages,
+                'language_proficiency' => $language_proficiency
+            ]);
         }
     }
 
     //条件に合うボランティアの検索結果を表示する
-    public function searchVolunteers(Request $request,T_volunteers $t_volunteers)
+    public function searchVolunteers(Request $request, T_volunteers $t_volunteers)
     {
-        if(Auth::user()->temp_password_flag === 1)
-        {
+        if (Auth::user()->temp_password_flag === 1) {
             return redirect('user/password-change');
-        }
-        else
-        {
-            $searchInfo = $request->all();        
+        } else {
+            $searchInfo = $request->all();
             $conditionValue = array();  //検索条件の値を格納する配列
             $supportableDisabilityCondition = $this->generateSupportableDisabilityCondition($searchInfo);
-            $languageCondition = $this->generateLanguageCondition($searchInfo,$conditionValue);
-            $condition = $this->generateCondition($searchInfo,$conditionValue);
+            $languageCondition = $this->generateLanguageCondition($searchInfo, $conditionValue);
+            $condition = $this->generateCondition($searchInfo, $conditionValue);
             $langJoinType = "";
-            if(isset($searchInfo['language1'])
+            if (
+                isset($searchInfo['language1'])
                 || isset($searchInfo['language2'])
-                || isset($searchInfo['language3']))
-            {
+                || isset($searchInfo['language3'])
+            ) {
                 $langJoinType = "join";
-            }
-            else
-            {
+            } else {
                 $langJoinType = "left join";
             }
 
             $SupportableDisabilityJoinType = "";
-            if(isset($searchInfo['PR1'])
+            if (
+                isset($searchInfo['PR1'])
                 || isset($searchInfo['PR2'])
-                || isset($searchInfo['PR3']))
-            {
+                || isset($searchInfo['PR3'])
+            ) {
                 $SupportableDisabilityJoinType = "join";
-            }
-            else
-            {
+            } else {
                 $SupportableDisabilityJoinType = "left join";
             }
 
-            $result = $t_volunteers->getVolunteersWithSearchCondition($supportableDisabilityCondition,
-                                                            $languageCondition,
-                                                            $condition,
-                                                            $langJoinType,
-                                                            $SupportableDisabilityJoinType,
-                                                            $conditionValue);
+            $result = $t_volunteers->getVolunteersWithSearchCondition(
+                $supportableDisabilityCondition,
+                $languageCondition,
+                $condition,
+                $langJoinType,
+                $SupportableDisabilityJoinType,
+                $conditionValue
+            );
             dd($result);
         }
     }
@@ -233,23 +228,21 @@ class VolunteerController extends Controller
     {
         $condition = "";
         //PR1、PR2、PR3のいずれかがチェックされていたらhavingの条件を生成する
-        if(isset($searchInfo['PR1'])
+        if (
+            isset($searchInfo['PR1'])
             || isset($searchInfo['PR2'])
-            || isset($searchInfo['PR3']))
-        {
+            || isset($searchInfo['PR3'])
+        ) {
             $condition .= "having 1=1\r\n";
-            if(isset($searchInfo['PR1']))
-            {
+            if (isset($searchInfo['PR1'])) {
                 $condition .= "and instr(dis_type_id_array,1) > 0\r\n";
             }
 
-            if(isset($searchInfo['PR2']))
-            {
+            if (isset($searchInfo['PR2'])) {
                 $condition .= "and instr(dis_type_id_array,2) > 0\r\n";
             }
 
-            if(isset($searchInfo['PR3']))
-            {
+            if (isset($searchInfo['PR3'])) {
                 $condition .= "and instr(dis_type_id_array,3) > 0\r\n";
             }
         }
@@ -257,14 +250,15 @@ class VolunteerController extends Controller
     }
 
     //言語と言語レベルの検索条件を生成
-    private function generateLanguageCondition($searchInfo,&$conditionValue)
+    private function generateLanguageCondition($searchInfo, &$conditionValue)
     {
         $condition = "";
         $lang_max_count = 3;    //入力可能な言語条件の最大値は3
-        if(isset($searchInfo['language1'])
+        if (
+            isset($searchInfo['language1'])
             || isset($searchInfo['language2'])
-            || isset($searchInfo['language3']))
-        {
+            || isset($searchInfo['language3'])
+        ) {
             $condition .= "and vol.volunteer_id in
                            (
                                 select volunteer_id
@@ -274,20 +268,15 @@ class VolunteerController extends Controller
                             ";
 
             //言語と言語レベルの組み合わせに合致するor条件を生成
-            for($i=1;$i<=$lang_max_count;$i++)
-            {
-                if(isset($searchInfo['language'.$i]))
-                {
-                    if(isset($searchInfo['lang_pro'.$i]))
-                    {
-                        $condition .= ",count((lang_id = :lang_id".$i." and lang_pro >= :lang_pro".$i.") or null) as `lang".$i."`\r\n";
-                        $conditionValue['lang_id'.$i] = $searchInfo['language'.$i];
-                        $conditionValue['lang_pro'.$i] = $searchInfo['lang_pro'.$i];
-                    }
-                    else
-                    {
-                        $condition .= ",count(lang_id = :lang_id".$i." or null) as `lang".$i."`\r\n";
-                        $conditionValue['lang_id'.$i] = $searchInfo['language'.$i];
+            for ($i = 1; $i <= $lang_max_count; $i++) {
+                if (isset($searchInfo['language' . $i])) {
+                    if (isset($searchInfo['lang_pro' . $i])) {
+                        $condition .= ",count((lang_id = :lang_id" . $i . " and lang_pro >= :lang_pro" . $i . ") or null) as `lang" . $i . "`\r\n";
+                        $conditionValue['lang_id' . $i] = $searchInfo['language' . $i];
+                        $conditionValue['lang_pro' . $i] = $searchInfo['lang_pro' . $i];
+                    } else {
+                        $condition .= ",count(lang_id = :lang_id" . $i . " or null) as `lang" . $i . "`\r\n";
+                        $conditionValue['lang_id' . $i] = $searchInfo['language' . $i];
                     }
                 }
             }
@@ -296,13 +285,11 @@ class VolunteerController extends Controller
                             )vlp
                             where 1=1
                             ";
-            
+
             //全ての言語を持っているかを判定するためのand条件を生成
-            for($i=1;$i<=$lang_max_count;$i++)
-            {
-                if(isset($searchInfo['language'.$i]))
-                {   
-                    $condition .= "and vlp.lang".$i." > 0\r\n";
+            for ($i = 1; $i <= $lang_max_count; $i++) {
+                if (isset($searchInfo['language' . $i])) {
+                    $condition .= "and vlp.lang" . $i . " > 0\r\n";
                 }
             }
             $condition .= ")\r\n";
@@ -311,58 +298,51 @@ class VolunteerController extends Controller
     }
 
     //その他の検索条件を生成
-    private function generateCondition($searchInfo,&$conditionValue)
+    private function generateCondition($searchInfo, &$conditionValue)
     {
         $condition = "";
         //ボランティアID
-        if(isset($searchInfo['volunteer_id']))
-        {
+        if (isset($searchInfo['volunteer_id'])) {
             $condition .= "and `t_volunteers`.`volunteer_id` = :volunteer_id\r\n";
             $conditionValue['volunteer_id'] = $searchInfo['volunteer_id'];
         }
         //ボランティア名
-        if(isset($searchInfo['volunteer_name']))
-        {
+        if (isset($searchInfo['volunteer_name'])) {
             $condition .= "and `t_volunteers`.`volunteer_name` LIKE :volunteer_name\r\n";
-            $conditionValue['volunteer_name'] = '%'.$searchInfo['volunteer_name'].'%';
+            $conditionValue['volunteer_name'] = '%' . $searchInfo['volunteer_name'] . '%';
         }
         //生年月日
-        if(isset($searchInfo['date_of_birth_start']))
-        {
+        if (isset($searchInfo['date_of_birth_start'])) {
             $condition .= "and `t_volunteers`.`date_of_birth` >= CAST(:date_of_birth_start as date)\r\n";
             $conditionValue['date_of_birth_start'] = $searchInfo['date_of_birth_start'];
         }
-        if(isset($searchInfo['date_of_birth_end']))
-        {
+        if (isset($searchInfo['date_of_birth_end'])) {
             $condition .= "and `t_volunteers`.`date_of_birth` <= CAST(:date_of_birth_end as date)\r\n";
             $conditionValue['date_of_birth_end'] = $searchInfo['date_of_birth_end'];
         }
         //性別
-        if(isset($searchInfo['sex']))
-        {
+        if (isset($searchInfo['sex'])) {
             $condition .= "and `t_volunteers`.`sex` = :sex\r\n";
             $conditionValue['sex'] = $searchInfo['sex'];
         }
         //居住地（国）
-        if(isset($searchInfo['residence_country']))
-        {
+        if (isset($searchInfo['residence_country'])) {
             $condition .= "and `t_volunteers`.`residence_country` = :residence_country\r\n";
             $conditionValue['residence_country'] = $searchInfo['residence_country'];
         }
         //居住地（都道府県)
-        if(isset($searchInfo['residence_prefecture']))
-        {
+        if (isset($searchInfo['residence_prefecture'])) {
             $condition .= "and `t_volunteers`.`residence_prefecture` = :residence_prefecture\r\n";
             $conditionValue['residence_prefecture'] = $searchInfo['residence_prefecture'];
         }
         //資格情報
-        if(isset($searchInfo['qualifications1'])
+        if (
+            isset($searchInfo['qualifications1'])
             || isset($searchInfo['qualifications2'])
             || isset($searchInfo['qualifications3'])
             || isset($searchInfo['qualifications4'])
-            || isset($searchInfo['qualifications5'])        
-        )
-        {
+            || isset($searchInfo['qualifications5'])
+        ) {
             //資格入力可能最大数は5
             $qualifications_max = 5;
             //「その他」の資格ID
@@ -374,22 +354,18 @@ class VolunteerController extends Controller
                                 select tq.volunteer_id
                             ";
 
-            for($i=1;$i<=$qualifications_max;$i++)
-            {
-                if(isset($searchInfo['qualifications'.$i]))
-                {
+            for ($i = 1; $i <= $qualifications_max; $i++) {
+                if (isset($searchInfo['qualifications' . $i])) {
                     //「その他」の資格のとき
-                    if($searchInfo['qualifications'.$i] == $other_qualification_id)
-                    {
-                        $condition .= ",count((tq.qual_id = :qualifications".$i." and tq.others_qual = :other_qualification ) or null) as `qualifications".$i."`\r\n";
-                        $conditionValue['qualifications'.$i] = $searchInfo['qualifications'.$i];
+                    if ($searchInfo['qualifications' . $i] == $other_qualification_id) {
+                        $condition .= ",count((tq.qual_id = :qualifications" . $i . " and tq.others_qual = :other_qualification ) or null) as `qualifications" . $i . "`\r\n";
+                        $conditionValue['qualifications' . $i] = $searchInfo['qualifications' . $i];
                         $conditionValue['other_qualification'] = $searchInfo['other_qualification'];
                     }
                     //「その他」ではない資格のとき
-                    else
-                    {
-                        $condition .= ",count(tq.qual_id = :qualifications".$i." or null) as `qualifications".$i."`\r\n";
-                        $conditionValue['qualifications'.$i] = $searchInfo['qualifications'.$i];
+                    else {
+                        $condition .= ",count(tq.qual_id = :qualifications" . $i . " or null) as `qualifications" . $i . "`\r\n";
+                        $conditionValue['qualifications' . $i] = $searchInfo['qualifications' . $i];
                     }
                 }
             }
@@ -398,103 +374,84 @@ class VolunteerController extends Controller
                            )qual
                            where 1=1
                            ";
-            
-            for($i=1;$i<=$qualifications_max;$i++)
-            {
-                if(isset($searchInfo['qualifications'.$i]))
-                {
-                    $condition .= "and qual.`qualifications".$i."` > 0\r\n";
+
+            for ($i = 1; $i <= $qualifications_max; $i++) {
+                if (isset($searchInfo['qualifications' . $i])) {
+                    $condition .= "and qual.`qualifications" . $i . "` > 0\r\n";
                 }
             }
             $condition .= ")\r\n";
         }
         //参加しやすい曜日
         //日曜日
-        if(isset($searchInfo['sunday']))
-        {
+        if (isset($searchInfo['sunday'])) {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,12,1) = '1'\r\n";
         }
         //月曜日
-        if(isset($searchInfo['monday']))
-        {
+        if (isset($searchInfo['monday'])) {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,11,1) = '1'\r\n";
         }
         //火曜日
-        if(isset($searchInfo['tuesday']))
-        {
+        if (isset($searchInfo['tuesday'])) {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,10,1) = '1'\r\n";
         }
         //水曜日
-        if(isset($searchInfo['wednesday']))
-        {
+        if (isset($searchInfo['wednesday'])) {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,9,1) = '1'\r\n";
         }
         //木曜日
-        if(isset($searchInfo['thursday']))
-        {
+        if (isset($searchInfo['thursday'])) {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,8,1) = '1'\r\n";
         }
         //金曜日
-        if(isset($searchInfo['friday']))
-        {
+        if (isset($searchInfo['friday'])) {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,7,1) = '1'\r\n";
         }
         //土曜日
-        if(isset($searchInfo['saturday']))
-        {
+        if (isset($searchInfo['saturday'])) {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,6,1) = '1'\r\n";
         }
         //祝日出勤可
-        if(isset($searchInfo['holiday']))
-        {
+        if (isset($searchInfo['holiday'])) {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,5,1) = '1'\r\n";
         }
         //相談可
-        if(isset($searchInfo['day_negotiable']))
-        {
+        if (isset($searchInfo['day_negotiable'])) {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,4,1) = '1'\r\n";
         }
         //参加可能時間帯条件
         //早朝
-        if(isset($searchInfo['early_morning']))
-        {
+        if (isset($searchInfo['early_morning'])) {
             $condition .= "and SUBSTRING(t_volunteer_availables.`time_zone`,8,1) = '1'\r\n";
         }
         //午前
-        if(isset($searchInfo['morning']))
-        {
+        if (isset($searchInfo['morning'])) {
             $condition .= "and SUBSTRING(t_volunteer_availables.`time_zone`,7,1) = '1'\r\n";
         }
         //午後
-        if(isset($searchInfo['afternoon']))
-        {
+        if (isset($searchInfo['afternoon'])) {
             $condition .= "and SUBSTRING(t_volunteer_availables.`time_zone`,6,1) = '1'\r\n";
         }
         //夜
-        if(isset($searchInfo['night']))
-        {
+        if (isset($searchInfo['night'])) {
             $condition .= "and SUBSTRING(t_volunteer_availables.`time_zone`,5,1) = '1'\r\n";
         }
         //相談可
-        if(isset($searchInfo['time_negotiable']))
-        {
+        if (isset($searchInfo['time_negotiable'])) {
             $condition .= "and SUBSTRING(t_volunteer_availables.`time_zone`,1,1) = '1'\r\n";
         }
         //過去に参加した大会
-        if(isset($searchInfo['tournament1']))
-        {
+        if (isset($searchInfo['tournament1'])) {
             $condition .= "and t_tournaments.`tourn_name` LIKE :tournament1\r\n";
-            $conditionValue['tournament1'] = "%".$searchInfo['tournament1']."%";
+            $conditionValue['tournament1'] = "%" . $searchInfo['tournament1'] . "%";
         }
-        if(isset($searchInfo['tournament2']))
-        {
+        if (isset($searchInfo['tournament2'])) {
             $condition .= "and t_tournaments.`tourn_name` LIKE :tournament2\r\n";
-            $conditionValue['tournament2'] = "%".$searchInfo['tournament2']."%";
+            $conditionValue['tournament2'] = "%" . $searchInfo['tournament2'] . "%";
         }
-        if(isset($searchInfo['tournament3']))
-        {
+        if (isset($searchInfo['tournament3'])) {
             $condition .= "and t_tournaments.`tourn_name` LIKE :tournament3\r\n";
-            $conditionValue['tournament3'] = "%".$searchInfo['tournament3']."%";
+            $conditionValue['tournament3'] = "%" . $searchInfo['tournament3'] . "%";
         }
         return $condition;
     }
