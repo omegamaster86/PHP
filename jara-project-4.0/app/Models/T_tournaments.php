@@ -28,7 +28,35 @@ class T_tournaments extends Model
 
     public function getTournament($trnId)
     {
-        $tournaments = DB::select('select `tourn_id`, `tourn_name`, `sponsor_org_id`, `event_start_date`, `event_end_date`, `venue_id`, `venue_name`, `tourn_type`, `tourn_url`, `tourn_info_faile_path`, `entrysystem_tourn_id`, `registered_time`, `registered_user_id`, `updated_time`, `updated_user_id`, `delete_flag` from t_tournaments where delete_flag=0 and tourn_id = ?', [$trnId]);
+        $tournaments = DB::select('select
+                                    `tourn_id`,
+                                    `tourn_name`,
+                                    `sponsor_org_id`,
+                                    `t_organizations`.`org_name` as `sponsorOrgName`,
+                                    `event_start_date`,
+                                    `event_end_date`,
+                                    `venue_id`,
+                                    `venue_name`,
+                                    `tourn_type`,
+                                    CASE
+                                        when `tourn_type` = 0 then "非公式"
+                                        when `tourn_type` = 1 then "公式"
+                                        end as `tournTypeName`,
+                                    `tourn_url`,
+                                    `tourn_info_faile_path`,
+                                    `entrysystem_tourn_id`,
+                                    `t_tournaments`.`registered_time`,
+                                    `t_tournaments`.`registered_user_id`,
+                                    `t_tournaments`.`updated_time`,
+                                    `t_tournaments`.`updated_user_id`,
+                                    `t_tournaments`.`delete_flag`
+                                    from `t_tournaments`
+                                    left join `t_organizations`
+                                    on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
+                                    where 1=1
+                                    and `t_tournaments`.`delete_flag` = 0
+                                    and (`t_organizations`.`delete_flag` = 0 or `t_organizations`.`delete_flag` is null)
+                                    and tourn_id = ?', [$trnId]);
         //1つの団体IDを取得するため0番目だけを返す
         $targetTrn = null;
         if (!empty($tournaments)) {
@@ -112,11 +140,11 @@ class T_tournaments extends Model
     //20231215 団体IDをキーとして大会情報を取得する
     public function getTournamentsFromOrgId($target_org_id)
     {
-        $tournaments = DB::select(
-            'select 
+        $tournaments = DB::select('select 
                                     `tourn_id`,
                                     `tourn_name`,
                                     `sponsor_org_id`,
+                                    `org_name` as `sponsorOrgName`,
                                     `event_start_date`,
                                     `event_end_date`,
                                     `t_tournaments`.`venue_id`,
@@ -129,16 +157,22 @@ class T_tournaments extends Model
                                         when 0 then "非公式"
                                         when 1 then "公式"
                                         else ""
-                                        end as `tourn_type_display`,
-                                    `tourn_url`
+                                        end as `tournTypeName`,
+                                    `tourn_url`,
+                                    `tourn_info_faile_path`,
+                                    `entrysystem_tourn_id`
                                     from `t_tournaments`
                                     left join `m_venue`
                                     on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
-                                    where `t_tournaments`.`delete_flag` =0
+                                    left join `t_organization`
+                                    on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
+                                    where 1=1
+                                    and `t_tournaments`.`delete_flag` = 0
+                                    and (`t_organizations`.`delete_flag` = 0 or `t_organizations`.`delete_flag` is null)
+                                    and (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
                                     and `sponsor_org_id` = ?
-                                    order by `event_start_date`',
-            [$target_org_id]
-        );
+                                    order by `event_start_date`'
+                                    ,[$target_org_id]);
         return $tournaments;
     }
 
@@ -146,10 +180,11 @@ class T_tournaments extends Model
     //出漕結果記録の大会IDから大会情報を取得
     public function getEntryTournaments($tournamentIdCondition)
     {
-        $sqlString = 'select
+        $sqlString = 'select 
                         `tourn_id`,
                         `tourn_name`,
                         `sponsor_org_id`,
+                        `org_name` as `sponsorOrgName`,
                         `event_start_date`,
                         `event_end_date`,
                         `t_tournaments`.`venue_id`,
@@ -162,12 +197,19 @@ class T_tournaments extends Model
                             when 0 then "非公式"
                             when 1 then "公式"
                             else ""
-                            end as `tourn_type_display`,
-                        `tourn_url`
+                            end as `tournTypeName`,
+                        `tourn_url`,
+                        `tourn_info_faile_path`,
+                        `entrysystem_tourn_id`
                         from `t_tournaments`
                         left join `m_venue`
                         on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
-                        where `t_tournaments`.`delete_flag`=0
+                        left join `t_organization`
+                        on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
+                        where 1=1
+                        and `t_tournaments`.`delete_flag` = 0
+                        and (`t_organizations`.`delete_flag` = 0 or `t_organizations`.`delete_flag` is null)
+                        and (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
                         and `tourn_id` in (#TournamentIdCondition#)
                         order by event_start_date';
         $sqlString = str_replace('#TournamentIdCondition#', $tournamentIdCondition, $sqlString);
@@ -178,17 +220,35 @@ class T_tournaments extends Model
     public function getTournamentWithSearchCondition($searchCondition)
     {
         //大会種別(公式・非公式)　大会名　開催開始年月日　開催終了年月日　開催場所　主催団体ID　主催団体名　を取得
-        $sqlString = 'select `t_tournaments`.`tourn_id`, `t_tournaments`.`tourn_type`,`t_tournaments`.`tourn_name`, 
-                        `t_tournaments`.`event_start_date`, `t_tournaments`.`event_end_date`, `t_tournaments`.`venue_name` as `venue_name_tournament`, 
-                        `t_tournaments`.`sponsor_org_id`, `t_organizations`.`org_name`, `m_venue`.`venue_name` as `venue_name_master`
+        $sqlString = 'select
+                        `tourn_id`,
+                        `tourn_name`,
+                        `sponsor_org_id`,
+                        `org_name` as `sponsorOrgName`,
+                        `event_start_date`,
+                        `event_end_date`,
+                        `t_tournaments`.`venue_id`,
+                        case `m_venue`.`venue_name`
+                            when "その他" then `t_tournaments`.`venue_name`
+                            else `m_venue`.`venue_name`
+                            end as `venue_name`,
+                        `tourn_type`,
+                        case `tourn_type`
+                            when 0 then "非公式"
+                            when 1 then "公式"
+                            else ""
+                            end as `tournTypeName`,
+                        `tourn_url`,
+                        `tourn_info_faile_path`,
+                        `entrysystem_tourn_id`
                         from `t_tournaments`
-                        left join `t_race_result_record`
-                        on `t_tournaments`.`tourn_id`=`t_race_result_record`.`tourn_id`
                         left join `t_organizations`
                         on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
                         left join `m_venue`
                         on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
                         where `t_tournaments`.`delete_flag` = 0
+                        and (`t_organizations`.`delete_flag` = 0 or `t_organizations`.`delete_flag` is null)
+                        and (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
                         #SearchCondition#';
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
         $tournaments = DB::select($sqlString);
@@ -208,21 +268,35 @@ class T_tournaments extends Model
     public function getTournamentFromTournId($tourn_id)
     {
         $tournament = DB::select('select
-                                    `tourn_id`,
-                                    `tourn_name`,
-                                    `sponsor_org_id`,
-                                    `event_start_date`,
-                                    `event_end_date`,
-                                    `venue_id`,
-                                    `venue_name`,
-                                    `tourn_type`,
-                                    `tourn_url`,
-                                    `tourn_info_faile_path`,
-                                    `entrysystem_tourn_id`,
-                                    FROM `t_tournaments`
-                                    where 1=1
-                                    and delete_flag = 0
-                                    and tourn_id = :tourn_id'
+                                `tourn_id`,
+                                `tourn_name`,
+                                `sponsor_org_id`,
+                                `org_name` as `sponsorOrgName`,
+                                `event_start_date`,
+                                `event_end_date`,
+                                `t_tournaments`.`venue_id`,
+                                case `m_venue`.`venue_name`
+                                    when "その他" then `t_tournaments`.`venue_name`
+                                    else `m_venue`.`venue_name`
+                                    end as `venue_name`,
+                                `tourn_type`,
+                                case `tourn_type`
+                                    when 0 then "非公式"
+                                    when 1 then "公式"
+                                    else ""
+                                    end as `tournTypeName`,
+                                `tourn_url`,
+                                `tourn_info_faile_path`,
+                                `entrysystem_tourn_id`
+                                from `t_tournaments`
+                                left join `t_organizations`
+                                on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
+                                left join `m_venue`
+                                on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
+                                where `t_tournaments`.`delete_flag` = 0
+                                and (`t_organizations`.`delete_flag` = 0 or `t_organizations`.`delete_flag` is null)
+                                and (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
+                                and tourn_id = :tourn_id'
                                 ,[$tourn_id]);
         return $tournament;
     }
@@ -230,22 +304,36 @@ class T_tournaments extends Model
     //フロントエンドで入力された大会IDを条件に、該当の大会情報を取得する
     public function getTournamentInfoFromTournId($tourn_id)
     {
-        $target_tournament = DB::select('select 
-                                            `tourn_id`,
-                                            `tourn_name`,
-                                            `sponsor_org_id`,
-                                            `event_start_date`,
-                                            `event_end_date`,
-                                            `venue_id`,
-                                            `venue_name`,
-                                            `tourn_type`,
-                                            `tourn_url`,
-                                            `tourn_info_faile_path`,
-                                            `entrysystem_tourn_id`
-                                        FROM `t_tournaments`
-                                        WHERE 1=1
-                                        and `delete_flag` = 0
-                                        and `tourn_id` = :tourn_id'
+        $target_tournament = DB::select('select
+                                        `tourn_id`,
+                                        `tourn_name`,
+                                        `sponsor_org_id`,
+                                        `org_name` as `sponsorOrgName`,
+                                        `event_start_date`,
+                                        `event_end_date`,
+                                        `t_tournaments`.`venue_id`,
+                                        case `m_venue`.`venue_name`
+                                            when "その他" then `t_tournaments`.`venue_name`
+                                            else `m_venue`.`venue_name`
+                                            end as `venue_name`,
+                                        `tourn_type`,
+                                        case `tourn_type`
+                                            when 0 then "非公式"
+                                            when 1 then "公式"
+                                            else ""
+                                            end as `tournTypeName`,
+                                        `tourn_url`,
+                                        `tourn_info_faile_path`,
+                                        `entrysystem_tourn_id`
+                                        from `t_tournaments`
+                                        left join `t_organizations`
+                                        on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
+                                        left join `m_venue`
+                                        on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
+                                        where `t_tournaments`.`delete_flag` = 0
+                                        and (`t_organizations`.`delete_flag` = 0 or `t_organizations`.`delete_flag` is null)
+                                        and (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
+                                        and `t_tournaments`.`tourn_id` = :tourn_id'
                                         ,$tourn_id);
         return $target_tournament;
     }

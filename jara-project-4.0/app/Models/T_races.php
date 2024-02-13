@@ -29,8 +29,27 @@ class T_races extends Model
 
     public function getRace($trnId)
     {
-        $races = DB::select('select `race_id`, `race_number`, `entrysystem_race_id`, `tourn_id`, `race_name`, `event_id`, `event_name`, `race_class_id`, `race_class_name`, `by_group`, `range`, `start_date_time`, `registered_time`, `registered_user_id`, `updated_time`, `updated_user_id`, `delete_flag` FROM `t_races` where delete_flag=0 and tourn_id = ?', [$trnId]);
-
+        $races = DB::select('select
+                            `race_id`
+                            ,`race_number`
+                            ,`entrysystem_race_id`
+                            ,`tourn_id`
+                            ,`race_name`
+                            ,`event_id`
+                            ,`event_name`
+                            ,`race_class_id`
+                            ,`race_class_name`
+                            ,`by_group`
+                            ,`range`
+                            ,`start_date_time`
+                            ,`registered_time`
+                            ,`registered_user_id`
+                            ,`updated_time`
+                            ,`updated_user_id`
+                            ,`delete_flag`
+                            FROM `t_races`
+                            where delete_flag=0
+                            and tourn_id = ?', [$trnId]);
         return $races;
     }
 

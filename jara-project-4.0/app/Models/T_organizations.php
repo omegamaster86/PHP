@@ -45,8 +45,7 @@ class T_organizations extends Model
                                         on `t_organizations`.`org_class` = `m_organization_class`.`org_class_id`
                                         where `t_organizations`.`delete_flag`=0
                                         and `org_id`=?'
-                                    ,[$orgId]
-                                );
+                                    ,[$orgId]);
         //1つの団体IDを取得するため0番目だけを返す
         $targetOrg = null;
         if(!empty($organization)){
@@ -59,32 +58,42 @@ class T_organizations extends Model
     public function getOrganizationForOrgManagement($orgId)
     {
         $organization = DB::select('select 
-                                        `org_id`,
-                                        `entrysystem_org_id`,
-                                        `org_name`,
-                                        `jara_org_type`,
-                                        `jara_org_reg_trail`,
-                                        `pref_org_type`,
-                                        `pref_org_reg_trail`,
-                                        `org_class`,
-                                        `org_class_name`,
-                                        `founding_year`,
-                                        `post_code`,
-                                        `location_country`,
-                                        `country_name`,
-                                        `location_prefecture`,
-                                        `pref_name`,
-                                        `address1`,
-                                        `address2`
-                                        from `t_organizations`
-                                        left join `m_countries`
-                                        on `t_organizations`.`location_country` = `m_countries`.`country_id`
-                                        left join `m_prefectures`
-                                        on `t_organizations`.`location_prefecture` = `m_prefectures`.`pref_id`
-                                        left join `m_organization_class`
-                                        on `t_organizations`.`org_class` = `m_organization_class`.`org_class_id`
-                                        where `t_organizations`.`delete_flag`=0
-                                        and `org_id`=?'
+                                    `org_id`,
+                                    `entrysystem_org_id`,
+                                    `org_name`,
+                                    `jara_org_type`,
+                                    `jara_org_reg_trail`,
+                                    `pref_org_type`,
+                                    `pref_org_reg_trail`,
+                                    case
+                                        when `jara_org_type` = 1 and `pref_org_type` = 1 then "JARA・県ボ"
+                                        when `jara_org_type` = 1 then "JARA"
+                                        when `pref_org_type` = 1 then "県ボ"
+                                        else "任意"
+                                    end as `teamTyp`,
+                                    `org_class`,
+                                    `org_class_name`,
+                                    `founding_year`,
+                                    `post_code`,
+                                    `location_country`,
+                                    `country_name`,
+                                    `location_prefecture`,
+                                    `pref_name`,
+                                    `address1`,
+                                    `address2`
+                                    from `t_organizations`
+                                    left join `m_countries`
+                                    on `t_organizations`.`location_country` = `m_countries`.`country_id`
+                                    left join `m_prefectures`
+                                    on `t_organizations`.`location_prefecture` = `m_prefectures`.`pref_id`
+                                    left join `m_organization_class`
+                                    on `t_organizations`.`org_class` = `m_organization_class`.`org_class_id`
+                                    where 1=1
+                                    and `t_organizations`.`delete_flag`=0
+                                    and  (`m_countries`.`delete_flag` = 0 or `m_countries`.`delete_flag` is null)
+                                    and  (`m_prefectures`.`delete_flag` = 0 or `m_prefectures`.`delete_flag` is null)
+                                    and  (`m_organization_class`.`delete_flag` = 0 or `m_organization_class`.`delete_flag` is null)
+                                    and `org_id`=?'
                                     ,[$orgId]
                                 );
         return $organization;

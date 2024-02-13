@@ -266,11 +266,13 @@ interface Player {
   player_id: string; // 選手ID
   sex_id: string; // 性別ID
   sex: string; // 性別　#置き換え作業未対応
-  entrysystemRaceId: string; // エントリーシステムの団体ID　#置き換え作業未対応
+  entrysystemOrgId1: string; // エントリーシステムの団体ID1　#置き換え作業未対応
   orgId1: string; // 団体ID1　#置き換え作業未対応
   orgName1: string; // 所属団体名1　#置き換え作業未対応
+  entrysystemOrgId2: string; // エントリーシステムの団体ID2　#置き換え作業未対応
   orgId2: string; // 団体ID2　#置き換え作業未対応
   orgName2: string; // 所属団体名2　#置き換え作業未対応
+  entrysystemOrgId3: string; // エントリーシステムの団体ID3　#置き換え作業未対応
   orgId3: string; // 団体ID3　#置き換え作業未対応
   orgName3: string; // 所属団体名3　#置き換え作業未対応
 }
