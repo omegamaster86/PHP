@@ -275,7 +275,7 @@ class T_players extends Model
 
     public function getPlayerWithSearchCondition($searched_data)
     {
-        dump("searched_data : ", $searched_data);
+        Log::debug(sprintf("getPlayerWithSearchCondition start"));
         $condition = "";
         $valid_data_array = array();
 
@@ -288,7 +288,7 @@ class T_players extends Model
             array_push($valid_data_array, $searched_data['jara_player_id']);
         }
         if (isset($searched_data['sex'])) {
-            $condition .= " and player.sex = ?";
+            $condition .= " and player.sex_id = ?";
             array_push($valid_data_array, $searched_data['sex']);
         }
 
@@ -300,16 +300,25 @@ class T_players extends Model
             $condition .= " and player.date_of_birth <= CAST(? AS DATE) ";
             array_push($valid_data_array, $searched_data['endDateOfBirth']);
         }
-        // dump($searched_data['side_info']);
-        if (isset($searched_data['side_info'])) {
-            // $searched_data['side_info'] = $searched_data['side_info'][0] & "";
-            foreach ($searched_data['side_info'] as $side_info) {
-                //CAST(expr AS BINARY)
-                $condition .= " and ( (player.side_info  & ?) = ?)";
-                array_push($valid_data_array, $side_info);
-                array_push($valid_data_array, $side_info);
-            }
-        }
+
+        // reactからのデータ形式に対応させるためにコメントアウト 20240214
+        // // dump($searched_data['side_info']);
+        // if (isset($searched_data['side_info'])) {
+        //     // $searched_data['side_info'] = $searched_data['side_info'][0] & "";
+        //     foreach ($searched_data['side_info'] as $side_info) {
+        //         //CAST(expr AS BINARY)
+        //         $condition .= " and ( (player.side_info  & ?) = ?)";
+        //         array_push($valid_data_array, $side_info);
+        //         array_push($valid_data_array, $side_info);
+        //     }
+        // }
+
+        // reactからのデータ形式に対応させるために修正 20240214
+        // if (isset($searched_data['side_info'])) {
+        //     $condition .= " and player.side_info = ?";
+        //     array_push($valid_data_array, $searched_data['side_info']);
+        // }
+
         if (isset($searched_data['entrysystem_org_id'])) {
             $condition .= " and record.entrysystem_org_id = ?";
             array_push($valid_data_array, $searched_data['entrysystem_org_id']);
@@ -342,13 +351,13 @@ class T_players extends Model
 
         $sql_string = 'select player.player_id, sex.sex_id, sex.sex, player.date_of_birth, player.side_info, record.jara_player_id, record.player_name, record.entrysystem_org_id, record.org_id, record.org_name from t_race_result_record as record
         left join t_players as player on record.jara_player_id = player.jara_player_id
-        left join m_sex as sex on player.sex = sex.sex_id
+        left join m_sex as sex on player.sex_id = sex.sex_id
         where record.delete_flag = 0 #condition# LIMIT 100';
         $sql_string = str_replace('#condition#', $condition, $sql_string);
-        dump($sql_string);
-        dump($valid_data_array);
+        Log::debug($sql_string);
         $race_records = DB::select($sql_string, $valid_data_array);
-        dump($race_records);
+        Log::debug($race_records);
+        Log::debug(sprintf("getPlayerWithSearchCondition end"));
         return $race_records;
     }
 
@@ -399,14 +408,15 @@ class T_players extends Model
                                 WHERE 1=1
                                 and delete_flag = 0
                                 and player_id = ?
-                                ',$player_id);
+                                ', $player_id);
         return $player;
     }
 
     //JARA選手IDを条件にプレイヤー情報を取得する
     public function getPlayerFromJaraPlayerCode($jara_player_code)
     {
-        $players = DB::select('select 
+        $players = DB::select(
+            'select 
                                 `player_id`
                                 ,`user_id`
                                 ,`jara_player_id`
@@ -431,8 +441,9 @@ class T_players extends Model
                                 left join `m_prefectures` res_pref
                                 on `t_players`.`residence_prefecture` = bir_pref.`pref_id`
                                 where `t_players`.`delete_flag`=0
-                                and `jara_player_id` = ?'                                
-                            ,$jara_player_code);
+                                and `jara_player_id` = ?',
+            $jara_player_code
+        );
         return $players;
     }
 }

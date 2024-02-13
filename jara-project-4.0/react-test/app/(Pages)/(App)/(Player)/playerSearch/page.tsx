@@ -48,14 +48,14 @@ interface SearchCond {
   event_name: string;
   race_class_name: string;
   side_info: {
-    S: boolean;
-    B: boolean;
-    X: boolean;
-    C: boolean;
     N1: boolean;
     N2: boolean;
     N3: boolean;
     N4: boolean;
+    S: boolean;
+    B: boolean;
+    X: boolean;
+    C: boolean;
   };
 }
 
@@ -79,14 +79,14 @@ export default function PlayerSearch() {
     event_name: '',
     race_class_name: '',
     side_info: {
-      S: false,
-      B: false,
-      X: false,
-      C: false,
       N1: false,
       N2: false,
       N3: false,
       N4: false,
+      S: false,
+      B: false,
+      X: false,
+      C: false,
     },
   } as SearchCond);
   const [searchResponse, setSearchResponse] = useState<Player[]>([]);
@@ -142,17 +142,16 @@ export default function PlayerSearch() {
       await csrf()
       // const response = await axios.get<Player[]>('/playerSearch/');
       const response = await axios.post('/playerSearch', searchCond);
-      const data = response.data;
+      const data = response.data.result;
       console.log(data);
-
       if (data.length > 100) {
         window.alert('検索結果が100件を超えました、上位100件を表示しています。');
       }
       // レスポンスからデータを取り出してstateにセット
-      // setSearchResponse(data);
+      setSearchResponse(data);
       // 最初は10件だけ表示
-      // setVisibleItems(10);
-      // setVisibleData(data.slice(0, 10));
+      setVisibleItems(10);
+      setVisibleData(data.slice(0, 10));
     } catch (error) {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
     }
@@ -497,14 +496,14 @@ export default function PlayerSearch() {
                     event_name: '',
                     race_class_name: '',
                     side_info: {
-                      S: false,
-                      B: false,
-                      X: false,
-                      C: false,
                       N1: false,
                       N2: false,
                       N3: false,
                       N4: false,
+                      S: false,
+                      B: false,
+                      X: false,
+                      C: false,
                     },
                   } as SearchCond);
                 }}
@@ -564,10 +563,19 @@ export default function PlayerSearch() {
                   </CustomTd>
                   {/* 性別 */}
                   <CustomTd>{row.sex}</CustomTd>
-                  {/* エントリーシステムの団体ID */}
+                  {/* エントリーシステムの団体ID1 */}
                   <CustomTd
-                    transitionDest={'/teamInfomationRef?entrysystemRaceId=' + row.entrysystemRaceId}
-                  >
+                    transitionDest={'/teamInfomationRef?entrysystemRaceId=' + row.entrysystemRaceId}>
+                    {row.entrysystemRaceId}
+                  </CustomTd>
+                  {/* エントリーシステムの団体ID2 */}
+                  <CustomTd
+                    transitionDest={'/teamInfomationRef?entrysystemRaceId=' + row.entrysystemRaceId}>
+                    {row.entrysystemRaceId}
+                  </CustomTd>
+                  {/* エントリーシステムの団体ID3 */}
+                  <CustomTd
+                    transitionDest={'/teamInfomationRef?entrysystemRaceId=' + row.entrysystemRaceId}>
                     {row.entrysystemRaceId}
                   </CustomTd>
                   {/* 団体ID1 */}

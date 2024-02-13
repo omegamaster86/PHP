@@ -521,32 +521,46 @@ class PlayerController extends Controller
     {
         Log::debug(sprintf("searchPlayer start"));
         $searched_data = $request->all();
-        Log::debug($searched_data);
-        if ($searched_data['startDateOfBirth'] === "年/月/日") {
-            $searched_data['startDateOfBirth'] = NULL;
-        } else {
-            $searched_data['startDateOfBirth'] = date('Y-m-d', strtotime($searched_data['startDateOfBirth']));
+        $tmpList = ""; //変換したサイド情報を保持するためのtmp変数
+        foreach ($searched_data['side_info'] as $sideInfoVal) {
+            if($sideInfoVal){
+                $tmpList .= "1";
+            }else{
+                $tmpList .= "0";
+            }
         }
-        if ($searched_data['endDateOfBirth'] === "年/月/日") {
-            $searched_data['endDateOfBirth'] = NULL;
-        } else {
-            $searched_data['endDateOfBirth'] = date('Y-m-d', strtotime($searched_data['endDateOfBirth']));
-        }
+        $searched_data['side_info'] = $tmpList;
+        Log::debug($searched_data['side_info']);
+
+        // reactからのデータ形式に対応させるためにコメントアウト 20240214
+        // if ($searched_data['startDateOfBirth'] === "年/月/日") {
+        //     $searched_data['startDateOfBirth'] = NULL;
+        // } else {
+        //     $searched_data['startDateOfBirth'] = date('Y-m-d', strtotime($searched_data['startDateOfBirth']));
+        // }
+        // if ($searched_data['endDateOfBirth'] === "年/月/日") {
+        //     $searched_data['endDateOfBirth'] = NULL;
+        // } else {
+        //     $searched_data['endDateOfBirth'] = date('Y-m-d', strtotime($searched_data['endDateOfBirth']));
+        // }
 
         $sex_list = $sex->getSexList();
 
         $player_list =  $players->getPlayerWithSearchCondition($searched_data);
-        $side_info_xor = "00000000";
-        if (isset($searched_data['side_info'])) {
-            foreach ($searched_data['side_info'] as $side_info) {
-                $side_info_xor = $side_info_xor ^ $side_info;
-            }
-            if (count($searched_data['side_info']) % 2)
-                $side_info_xor = $side_info_xor ^ "00000000";
-            $searched_data['side_info'] = $side_info_xor;
-        } else {
-            $searched_data['side_info'] = "00000000";
-        };
+        Log::debug($player_list);
+
+        // reactからのデータ形式に対応させるためにコメントアウト 20240214
+        // $side_info_xor = "00000000";
+        // if (isset($searched_data['side_info'])) {
+        //     foreach ($searched_data['side_info'] as $side_info) {
+        //         $side_info_xor = $side_info_xor ^ $side_info;
+        //     }
+        //     if (count($searched_data['side_info']) % 2)
+        //         $side_info_xor = $side_info_xor ^ "00000000";
+        //     $searched_data['side_info'] = $side_info_xor;
+        // } else {
+        //     $searched_data['side_info'] = "00000000";
+        // };
 
 
         Log::debug(sprintf("searchPlayer end"));
