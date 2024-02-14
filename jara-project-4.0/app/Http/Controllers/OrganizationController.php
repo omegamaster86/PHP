@@ -836,6 +836,18 @@ class OrganizationController extends Controller
         return view('organizations.management', ['organizations' => $organizations]);
     }
 
+
+    //react 団体登録画面からDBにデータを渡す 20240209
+    public function getOrgData(Request $request, T_organizations $tOrganizations)
+    {
+        Log::debug(sprintf("getOrgData start"));
+        $result = $request->all();
+        Log::debug($result);
+        $tOrg = $tOrganizations->getOrganization($result['org_id']); //userIDに紐づいた団体を取得するように修正する必要がある 二村さん残件対応箇所
+        Log::debug(sprintf("getOrgData end"));
+        return response()->json(['result' => $tOrg]); //DBの結果を返す
+    }
+
     //react 団体登録画面からDBにデータを渡す 20240209
     public function storeOrgData(Request $request, T_organizations $tOrganizations)
     {

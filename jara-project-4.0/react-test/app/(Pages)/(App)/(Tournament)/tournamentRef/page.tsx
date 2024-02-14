@@ -75,7 +75,6 @@ export default function PlayerInformationRef() {
     event_start_date: '',
     event_end_date: '',
     venue_id: '',
-    venueIdName: '',
     venue_name: '',
     tourn_url: '',
     tourn_info_faile_path: '',
@@ -112,10 +111,10 @@ export default function PlayerInformationRef() {
         // TODO: tournIdを元にレース情報を取得する処理の置き換え
         // const raceResponse = await axios.get<Race[]>('http://localhost:3100/race');
         const raceResponse = await axios.post('/getRaceData', tourn_id);
-        console.log(raceResponse.data);
-        // raceResponse.data.map((data) => {
-        //   setTableData((prevData) => [...prevData, { ...data }]);
-        // });
+        console.log(raceResponse.data.result);
+        raceResponse.data.result.map((data: any) => {
+          setTableData((prevData) => [...prevData, { ...data }]);
+        });
       };
       fetchData();
       isApiFetched.current = true;
@@ -200,7 +199,7 @@ export default function PlayerInformationRef() {
                       {/* 開催場所 */}
                       <div className='text-gray-40 text-caption1 w-[100px]'>開催場所</div>
                       <Label
-                        label={tournamentFormData.venueIdName}
+                        label={tournamentFormData.venue_name}
                         textColor='white'
                         textSize='caption1'
                       ></Label>
@@ -338,7 +337,7 @@ export default function PlayerInformationRef() {
                 <CustomButton
                   buttonType='primary'
                   className='w-[280px]'
-                  onClick={async() => {
+                  onClick={async () => {
                     // TODO: 削除ボタン押下イベントの実装
                     const isOk = window.confirm('大会情報を削除します。よろしいですか？');
                     const csrf = () => axios.get('/sanctum/csrf-cookie')

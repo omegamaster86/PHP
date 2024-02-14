@@ -371,6 +371,7 @@ export default function TeamSearch() {
                     className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                     href={{
                       pathname: '/teamRef',
+                      query: { orgId: org.org_id },
                     }}
                     rel='noopener noreferrer'
                     target='_blank'
@@ -384,6 +385,7 @@ export default function TeamSearch() {
                     className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                     href={{
                       pathname: '/teamRef',
+                      query: { orgId: org.org_id },
                     }}
                     rel='noopener noreferrer'
                     target='_blank'

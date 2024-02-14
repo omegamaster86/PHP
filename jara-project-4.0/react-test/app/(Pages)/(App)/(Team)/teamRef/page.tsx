@@ -37,6 +37,9 @@ export default function TeamRef() {
   const [staffs, setStaffs] = useState([] as Staff[]);
   const [value, setValue] = useState(0);
 
+  // ページ全体のエラーハンドリング用のステート
+  let isError = false;
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const mode = searchParams.get('mode');
@@ -47,6 +50,19 @@ export default function TeamRef() {
       // 参照モードとして扱う
       break;
   }
+
+  const orgId = searchParams.get('orgId')?.toString() || '';
+  // orgIdの値を取得
+  switch (orgId) {
+    case '':
+      isError = true;
+      break;
+    default:
+      break;
+  }
+  const [org_id, setOrgId] = useState<any>({
+    org_id: orgId,
+  });
 
   /**
    * タブの切り替え
@@ -76,23 +92,21 @@ export default function TeamRef() {
         // 主催大会
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
-        const response = await axios.get<Organization>('/organization');
-        setFormData(response.data);
-        const hostTournamentsResponse = await axios.get<Tournament[]>(
-          '/tournamentSearch',
-        );
+        // const response = await axios.get<Organization>('/organization');
+        const response = await axios.post('/getOrgData', org_id); //団体情報取得
+        console.log(response);
+        setFormData(response.data.result);
+        const hostTournamentsResponse = await axios.get<Tournament[]>('/tournamentSearch',);
         setHostTournaments(hostTournamentsResponse.data);
         // エントリー大会
-        const entTournamentsResponse = await axios.get<Tournament[]>(
-          '/tournamentSearch',
-        );
+        const entTournamentsResponse = await axios.get<Tournament[]>('/tournamentSearch',);
         setEntTournaments(entTournamentsResponse.data);
         // 所属選手
-        const playersResponse = await axios.get<PlayerInformationResponse[]>(
-          '/playerSearch',
-        );
+        const playersResponse = await axios.get<PlayerInformationResponse[]>('/playerSearch',);
         setPlayers(playersResponse.data);
-        const userDataResponse = await axios.get<UserResponse>('/api/user');
+        
+        // const userDataResponse = await axios.get<UserResponse>('/api/user');
+        const userDataResponse = await axios.get('/api/user');
         setUserData(userDataResponse.data);
 
         // 所属スタッフ
@@ -152,11 +166,11 @@ export default function TeamRef() {
                 {(userData.user_type === ROLE.SYSTEM_ADMIN ||
                   userData.user_type === ROLE.JARA ||
                   userData.user_type === ROLE.PREFECTURE) && (
-                  <div className='w-[100px]'>
-                    <Label label={formData.jara_org_reg_trail} textColor='white' />
-                    <Label label={formData.pref_org_reg_trail} textColor='white' />
-                  </div>
-                )}
+                    <div className='w-[100px]'>
+                      <Label label={formData.jara_org_reg_trail} textColor='white' />
+                      <Label label={formData.pref_org_reg_trail} textColor='white' />
+                    </div>
+                  )}
               </div>
             </div>
             <div className='flex flex-row gap-[20px]'>
@@ -321,9 +335,8 @@ export default function TeamRef() {
               <>所属選手</>
               {mode !== 'delete' && (
                 <div
-                  className={`absolute right-[10px] ${
-                    mode === 'delete' ? 'hidden' : 'flex flex-row gap-[10px]'
-                  }`}
+                  className={`absolute right-[10px] ${mode === 'delete' ? 'hidden' : 'flex flex-row gap-[10px]'
+                    }`}
                 >
                   <CustomButton
                     className='w-[100px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
@@ -424,7 +437,7 @@ export default function TeamRef() {
                       <OriginalCheckbox
                         id='sideInfoS'
                         value='S'
-                        onChange={() => {}}
+                        onChange={() => { }}
                         checked={row.side_info[0]}
                         readonly={true}
                       ></OriginalCheckbox>
@@ -433,7 +446,7 @@ export default function TeamRef() {
                       <OriginalCheckbox
                         id='sideInfoB'
                         value='B'
-                        onChange={() => {}}
+                        onChange={() => { }}
                         checked={row.side_info[1]}
                         readonly={true}
                       ></OriginalCheckbox>
@@ -442,7 +455,7 @@ export default function TeamRef() {
                       <OriginalCheckbox
                         id='sideInfoX'
                         value='X'
-                        onChange={() => {}}
+                        onChange={() => { }}
                         checked={row.side_info[2]}
                         readonly={true}
                       ></OriginalCheckbox>
@@ -451,7 +464,7 @@ export default function TeamRef() {
                       <OriginalCheckbox
                         id='sideInfoC'
                         value='C'
-                        onChange={() => {}}
+                        onChange={() => { }}
                         checked={row.side_info[3]}
                         readonly={true}
                       ></OriginalCheckbox>
@@ -489,7 +502,7 @@ export default function TeamRef() {
                       <OriginalCheckbox
                         id='staffType1'
                         value='監督'
-                        onChange={() => {}}
+                        onChange={() => { }}
                         checked={row.staff_type_id.includes('監督')}
                         readonly={true}
                       ></OriginalCheckbox>
@@ -498,7 +511,7 @@ export default function TeamRef() {
                       <OriginalCheckbox
                         id='staffType2'
                         value='部長'
-                        onChange={() => {}}
+                        onChange={() => { }}
                         checked={row.staff_type_id.includes('部長')}
                         readonly={true}
                       ></OriginalCheckbox>
@@ -507,7 +520,7 @@ export default function TeamRef() {
                       <OriginalCheckbox
                         id='staffType3'
                         value='コーチ'
-                        onChange={() => {}}
+                        onChange={() => { }}
                         checked={row.staff_type_id.includes('コーチ')}
                         readonly={true}
                       ></OriginalCheckbox>
@@ -516,7 +529,7 @@ export default function TeamRef() {
                       <OriginalCheckbox
                         id='staffType4'
                         value='マネージャー'
-                        onChange={() => {}}
+                        onChange={() => { }}
                         checked={row.staff_type_id.includes('マネージャー')}
                         readonly={true}
                       ></OriginalCheckbox>
@@ -525,7 +538,7 @@ export default function TeamRef() {
                       <OriginalCheckbox
                         id='staffType5'
                         value='管理代理'
-                        onChange={() => {}}
+                        onChange={() => { }}
                         checked={row.staff_type_id.includes('管理代理')}
                         readonly={true}
                       ></OriginalCheckbox>
@@ -549,7 +562,7 @@ export default function TeamRef() {
             <CustomButton
               className='w-[300px] h-[50px]'
               buttonType='primary'
-              onClick={async() => {
+              onClick={async () => {
                 const isOk = window.confirm('団体情報を削除します。よろしいですか？');
                 const csrf = () => axios.get('/sanctum/csrf-cookie')
                 await csrf()
