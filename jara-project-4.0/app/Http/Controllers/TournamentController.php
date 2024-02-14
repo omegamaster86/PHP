@@ -469,11 +469,12 @@ class TournamentController extends Controller
     //======================================================================================================
 
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
-    public function getTournamentInfoData(T_tournaments $tourn)
+    public function getTournamentInfoData(Request $request,T_tournaments $tourn)
     {
         Log::debug(sprintf("getTournamentInfoData start"));
-        // $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
-        $result = $tourn->getTournament(1); //DBに選手を登録 20240131
+        $reqData = $request->all();
+        Log::debug($reqData['tourn_id']);
+        $result = $tourn->getTournament($reqData['tourn_id']); //DBに選手を登録 20240131
         Log::debug(sprintf("getTournamentInfoData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
@@ -609,5 +610,16 @@ class TournamentController extends Controller
 
         Log::debug(sprintf("storeTournamentInfoData end"));
         return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
+    }
+
+    //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
+    public function getRaceData(Request $request, T_races $tRace)
+    {
+        Log::debug(sprintf("getRaceData start"));
+        $reqData = $request->all();
+        Log::debug($reqData['tourn_id']);
+        $result = $tRace->getRace($reqData['tourn_id']); //レース情報を取得
+        Log::debug(sprintf("getRaceData end"));
+        return response()->json(['result' => $result]); //DBの結果を返す
     }
 }

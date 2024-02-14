@@ -75,8 +75,10 @@ export default function TournamentSearch() {
     tourn_name: '',
     tourn_type: '',
     tournTypeName: '',
-    event_start_date: new Date().toLocaleDateString(),
-    event_end_date: new Date().toLocaleDateString(),
+    // event_start_date: new Date().toLocaleDateString(),
+    // event_end_date: new Date().toLocaleDateString(),
+    event_start_date: '',
+    event_end_date: '',
     venue_id: '',
     venue_name: '',
     sponsor_org_id: '',
@@ -136,13 +138,16 @@ export default function TournamentSearch() {
         // 仮のURL（繋ぎ込み時に変更すること）
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
-        const tourTypeResponse = await axios.get<TourTypeResponse[]>(
-          '/tourType',
-        );
-        setTourType(tourTypeResponse.data);
+        // const tourTypeResponse = await axios.get<TourTypeResponse[]>('/tourType',);
+        const tourTypeResponse = await axios.get('/getApprovalType');
+        const tourTypeList = tourTypeResponse.data.map(({ appro_type_id, appro_type_id_name }: { appro_type_id: number; appro_type_id_name: string }) => ({ id: appro_type_id, name: appro_type_id_name }));
+        console.log(tourTypeList);
+        setTourType(tourTypeList);
 
-        const venueResponse = await axios.get<VenueResponse[]>('/venue');
-        setVenue(venueResponse.data);
+        // const venueResponse = await axios.get<VenueResponse[]>('/venue');
+        const venueResponse = await axios.get('/getVenueList');
+        const stateList = venueResponse.data.map(({ venue_id, venue_name }: { venue_id: number; venue_name: string }) => ({ id: venue_id, name: venue_name }));
+        setVenue(stateList);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
       }
