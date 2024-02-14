@@ -29,7 +29,7 @@ class T_races extends Model
 
     public function getRace($trnId)
     {
-        $races = DB::select('select
+        $race = DB::select('select
                             `race_id`
                             ,`race_number`
                             ,`entrysystem_race_id`
@@ -50,7 +50,7 @@ class T_races extends Model
                             FROM `t_races`
                             where delete_flag=0
                             and tourn_id = ?', [$trnId]);
-        return $races;
+        return $race;
     }
 
     public function insertRaces($racesInfo)
@@ -77,6 +77,55 @@ class T_races extends Model
                 $racesInfo['delete_flag'],
             ]
         );
+    }
+
+    //interfaceのRaceを引数としてinsertを実行する
+    //登録日時、更新日時は「current_datetime」
+    //登録ユーザー、更新ユーザーは「user_id」
+    //で指定する
+    public function insertRace($race)
+    {
+        DB::insert('insert into t_races
+                    (
+                        `race_id`,
+                        `entrysystem_race_id`, 
+                        `tourn_id`,
+                        `race_number`,
+                        `event_id`, 
+                        `event_name`,
+                        `race_name`,
+                        `race_class_id`, 
+                        `race_class_name`, 
+                        `by_group`, 
+                        `range`, 
+                        `start_date_time`, 
+                        `registered_time`, 
+                        `registered_user_id`, 
+                        `updated_time`,
+                        `updated_user_id`,
+                        `delete_flag`
+                    )
+                    VALUES
+                    (
+                        :race_id,
+                        :entrysystem_race_id, 
+                        :tourn_id,
+                        :race_number,
+                        :event_id, 
+                        :event_name,
+                        :race_name,
+                        :race_class_id, 
+                        :race_class_name, 
+                        :by_group, 
+                        :range, 
+                        :start_date_time, 
+                        :current_datetime, 
+                        :user_id, 
+                        :current_datetime,
+                        :user_id,
+                        :delete_flag
+                    )'
+                    ,$race);
     }
 
     public function updateRaces($racesInfo)
@@ -115,5 +164,27 @@ class T_races extends Model
             $result = "failed";
             return $result;
         }
+    }
+
+    //interfaceのRaceを引数としてupdateを実行する
+    public function updateRace($race)
+    {
+        DB::update('update t_races
+                    set
+                    `race_number`= :race_number,
+                    `entrysystem_race_id`= :entrysystem_race_id,
+                    `tourn_id`= :tourn_id,
+                    `race_name`= :race_name,
+                    `event_id`= :event_id,
+                    `event_name`= :event_name,
+                    `race_class_id`= :race_class_id,
+                    `race_class_name`= :race_class_name,
+                    `by_group`= :by_group,
+                    `range`= :range,
+                    `start_date_time`= :start_date_time,
+                    `updated_time`= :updated_time,
+                    `updated_user_id`= :updated_user_id,
+                    where `tourn_id` = :'
+                ,$race);
     }
 }

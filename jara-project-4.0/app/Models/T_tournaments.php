@@ -96,6 +96,49 @@ class T_tournaments extends Model
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 
+    //interfaceのTournamentを引数としてinsertを実行
+    public function insertTournament($tournament)
+    {
+        DB::insert('insert into t_tournaments
+                    (
+                        `entrysystem_tourn_id`,
+                        `tourn_name`,
+                        `tourn_type`,
+                        `sponsor_org_id`,
+                        `event_start_date`,
+                        `event_end_date`,
+                        `venue_id`,
+                        `venue_name`,
+                        `tourn_url`,
+                        `tourn_info_faile_path`,
+                        `registered_time`,
+                        `registered_user_id`,
+                        `updated_time`,
+                        `updated_user_id`,
+                        `delete_flag`
+                    )
+                    values
+                    (
+                        :entrysystem_tourn_id,
+                        :tourn_name,
+                        :tourn_type,
+                        :sponsor_org_id,
+                        :event_start_date,
+                        :event_end_date,
+                        :venue_id,
+                        :venue_name,
+                        :tourn_url,
+                        :tourn_info_faile_path,
+                        :registered_time,
+                        :registered_user_id,
+                        :updated_time,
+                        :updated_user_id,
+                        :delete_flag
+                    )',$tournament);
+        $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
+        return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
+    }
+
     public function updateTournaments($tournamentsInfo)
     {
         $result = "success";
@@ -135,6 +178,27 @@ class T_tournaments extends Model
             $result = "failed";
             return $result;
         }
+    }
+
+    //interfaceのTournamentを引数としてupdateを実行
+    public function updateTournament($tournamentInfo)
+    {
+        DB::update('update t_tournaments
+                    set                    
+                    `entrysystem_tourn_id`= :entrysystem_tourn_id,
+                    `tourn_name`= :tourn_name,
+                    `tourn_type`= :tourn_type,
+                    `sponsor_org_id`= :sponsor_org_id,
+                    `event_start_date`= :event_start_date,
+                    `event_end_date`= :event_end_date,
+                    `venue_id`= :venue_id,
+                    `venue_name`= :venue_name,
+                    `tourn_url`= :tourn_url,
+                    `tourn_info_faile_path`= :tourn_info_faile_path,
+                    `updated_time`= :updated_time,
+                    `updated_user_id`= :updated_user_id,
+                    where tourn_id = :tourn_id'
+                    ,$tournamentInfo);
     }
 
     //20231215 団体IDをキーとして大会情報を取得する

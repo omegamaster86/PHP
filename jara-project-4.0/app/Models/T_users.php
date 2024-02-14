@@ -228,6 +228,28 @@ class T_users extends Authenticatable
         }
     }
 
+    //UserResponseを引数としてupdateを実行
+    public function updateUserResponse($userResponse)
+    {
+        DB::update('update `t_users`
+                    set 
+                    `user_type`= :user_type,
+                    `user_name`= :user_name,
+                    `mailaddress`= :mailaddress,
+                    `sex`= :sex,
+                    `date_of_birth`= :date_of_birth,
+                    `residence_country`= :residence_country,
+                    `residence_prefecture`= :residence_prefecture,
+                    `height`= :height,
+                    `weight`= :weight,
+                    `temp_password_flag`= :temp_password_flag,
+                    `photo`= :photo,
+                    `updated_time`= :updated_time,
+                    `updated_user_id`= :updated_user_id,
+                    where user_id = :user_id'
+                ,$userResponse);
+    }
+
     //メールアドレスを条件にユーザー情報を取得する
     public function getUserDataFromMailAddress($mailaddress)
     {

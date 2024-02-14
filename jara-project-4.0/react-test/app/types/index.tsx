@@ -95,6 +95,7 @@ interface Race {
   checked: boolean; // チェックボックス　#置き換え作業未対応
   race_id: string; //
   entrysystem_race_id: string; // エントリーシステムのレースID
+  tourn_id: number; //大会ID
   race_number: string; // レースNo.
   event_id: string; // 種目ID
   event_name: string; // 種目名
@@ -335,6 +336,7 @@ interface OrgClass {
   name: string; // 名称
 }
 
+//Organizationに統合したため、OrgではなくOrganizationを使用すること
 // 団体情報
 interface Org {
   entrysystem_org_id: number;

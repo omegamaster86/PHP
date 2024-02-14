@@ -324,7 +324,62 @@ class T_raceResultRecord extends Model
         DB::beginTransaction();
         try {
             DB::insert(
-                'insert into t_race_result_record(`race_result_record_id`, `player_id`, `jara_player_id`, `player_name`, `entrysystem_tourn_id`, `tourn_id`, `tourn_name`, `race_id`, `entrysystem_race_id`, `race_number`, `race_name`, `org_id`, `entrysystem_org_id`, `org_name`, `crew_name`, `by_group`, `event_id`, `event_name`, `range`, `rank`, `laptime_500m`, `laptime_1000m`, `laptime_1500m`, `laptime_2000m`, `final_time`, `stroke_rate_avg`, `stroke_rat_500m`, `stroke_rat_1000m`, `stroke_rat_1500m`, `stroke_rat_2000m`, `heart_rate_avg`, `heart_rate_500m`, `heart_rate_1000m`, `heart_rate_1500m`, `heart_rate_2000m`, `official`, `attendance`, `ergo_weight`, `player_height`, `player_weight`, `seat_number`, `seat_name`, `race_result_record_name`, `start_datetime`, `wind_speed_2000m_point`, `wind_direction_2000m_point`, `wind_speed_1000m_point`, `wind_direction_1000m_point`, `registered_time`, `registered_user_id`, `updated_time`, `updated_user_id`, `delete_flag`)VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                'insert into t_race_result_record
+                (
+                    `race_result_record_id`, 
+                    `player_id`, 
+                    `jara_player_id`, 
+                    `player_name`, 
+                    `entrysystem_tourn_id`,
+                    `tourn_id`, 
+                    `tourn_name`, 
+                    `race_id`, 
+                    `entrysystem_race_id`, 
+                    `race_number`, 
+                    `race_name`, 
+                    `org_id`, 
+                    `entrysystem_org_id`, 
+                    `org_name`, 
+                    `crew_name`, 
+                    `by_group`, 
+                    `event_id`, 
+                    `event_name`, 
+                    `range`, 
+                    `rank`, 
+                    `laptime_500m`, 
+                    `laptime_1000m`, 
+                    `laptime_1500m`, 
+                    `laptime_2000m`, 
+                    `final_time`, 
+                    `stroke_rate_avg`, 
+                    `stroke_rat_500m`, 
+                    `stroke_rat_1000m`, 
+                    `stroke_rat_1500m`, 
+                    `stroke_rat_2000m`, 
+                    `heart_rate_avg`, 
+                    `heart_rate_500m`, 
+                    `heart_rate_1000m`, 
+                    `heart_rate_1500m`, 
+                    `heart_rate_2000m`, 
+                    `official`, 
+                    `attendance`, 
+                    `ergo_weight`, 
+                    `player_height`, 
+                    `player_weight`, 
+                    `seat_number`, 
+                    `seat_name`, 
+                    `race_result_record_name`, 
+                    `start_datetime`, 
+                    `wind_speed_2000m_point`, 
+                    `wind_direction_2000m_point`, 
+                    `wind_speed_1000m_point`, 
+                    `wind_direction_1000m_point`, 
+                    `registered_time`, 
+                    `registered_user_id`, 
+                    `updated_time`, 
+                    `updated_user_id`, 
+                    `delete_flag`
+                    )VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 [
                     $raceResultRecordInfo['race_result_record_id'],
                     $raceResultRecordInfo['player_id'],
@@ -374,9 +429,9 @@ class T_raceResultRecord extends Model
                     $raceResultRecordInfo['wind_direction_2000m_point'],
                     $raceResultRecordInfo['wind_speed_1000m_point'],
                     $raceResultRecordInfo['wind_direction_1000m_point'],
-                    NOW(),
+                    now()->format('Y-m-d H:i:s.u'),
                     Auth::user()->user_id,
-                    NOW(),
+                    now()->format('Y-m-d H:i:s.u'),
                     Auth::user()->user_id,
                     $raceResultRecordInfo['delete_flag']
                 ]
@@ -392,6 +447,111 @@ class T_raceResultRecord extends Model
             $result = "failed";
             return $result;
         }
+    }
+
+    //出漕結果情報一覧のinterfaceでinsert実行
+    //登録日時、更新日時は「current_time」
+    //登録ユーザー、更新ユーザーは「user_id」
+    //で指定すること
+    public function insertRaceResultRecordResponse($raceResultRecordResponse)
+    {
+        DB::insert('insert into t_race_result_record
+                    (
+                        `race_result_record_id`, 
+                        `tourn_id`, 
+                        `tourn_name`,
+                        `official`,  
+                        `org_name`, 
+                        `race_number`, 
+                        `race_name`, 
+                        `event_name`,
+                        `by_group`, 
+                        `crew_name`, 
+                        `rank`, 
+                        `laptime_500m`, 
+                        `laptime_1000m`, 
+                        `laptime_1500m`, 
+                        `laptime_2000m`, 
+                        `final_time`, 
+                        `race_result_notes`
+                        `stroke_rate_avg`, 
+                        `stroke_rat_500m`, 
+                        `stroke_rat_1000m`, 
+                        `stroke_rat_1500m`, 
+                        `stroke_rat_2000m`, 
+                        `heart_rate_avg`, 
+                        `heart_rate_500m`, 
+                        `heart_rate_1000m`, 
+                        `heart_rate_1500m`, 
+                        `heart_rate_2000m`,
+                        `attendance`, 
+                        `ergo_weight`, 
+                        `player_height`, 
+                        `player_weight`, 
+                        `seat_number`, 
+                        `seat_name`, 
+                        `race_result_record_name`,
+                        `wind_speed_2000m_point`, 
+                        `wind_direction_2000m_point`, 
+                        `wind_speed_1000m_point`, 
+                        `wind_direction_1000m_point`,  
+                        `range`, 
+                        `registered_time`, 
+                        `registered_user_id`, 
+                        `updated_time`, 
+                        `updated_user_id`, 
+                        `delete_flag`
+                    )VALUES
+                    (
+                        :race_result_record_id, 
+                        :tourn_id, 
+                        :tourn_name,
+                        :official,  
+                        :org_name, 
+                        :race_number, 
+                        :race_name, 
+                        :event_name,
+                        :by_group, 
+                        :crew_name, 
+                        :rank, 
+                        :laptime_500m, 
+                        :laptime_1000m, 
+                        :laptime_1500m, 
+                        :laptime_2000m, 
+                        :final_time, 
+                        :race_result_notes,
+                        :stroke_rate_avg, 
+                        :stroke_rat_500m, 
+                        :stroke_rat_1000m, 
+                        :stroke_rat_1500m, 
+                        :stroke_rat_2000m, 
+                        :heart_rate_avg, 
+                        :heart_rate_500m, 
+                        :heart_rate_1000m, 
+                        :heart_rate_1500m, 
+                        :heart_rate_2000m,
+                        :attendance, 
+                        :ergo_weight, 
+                        :player_height, 
+                        :player_weight, 
+                        :seat_number, 
+                        :seat_name, 
+                        :race_result_record_name,
+                        :wind_speed_2000m_point, 
+                        :wind_direction_2000m_point, 
+                        :wind_speed_1000m_point, 
+                        :wind_direction_1000m_point,  
+                        :range, 
+                        :current_time, 
+                        :user_id, 
+                        :current_time, 
+                        :user_id, 
+                        :delete_flag
+                    )'
+            ,$raceResultRecordResponse);
+        //挿入したIDを取得
+        $insertId =  DB::getPdo()->lastInsertId();
+        return $insertId;
     }
 
     public function updateRaceResultRecord($raceResultRecordInfo)
@@ -472,6 +632,53 @@ class T_raceResultRecord extends Model
         }
     }
 
+    public function updateRaceResultRecordsResponse($raceResultRecordsResponse)
+    {
+        DB::update('update t_race_result_record
+                    set 
+                    `tourn_id` = :tourn_id, 
+                    `tourn_name` = :tourn_name,
+                    `official` = :official,  
+                    `org_name` = :org_name, 
+                    `race_number` = :race_number, 
+                    `race_name` = :race_name, 
+                    `event_name` = :event_name,
+                    `by_group` = :by_group, 
+                    `crew_name` = :crew_name, 
+                    `rank` = :rank, 
+                    `laptime_500m` = :laptime_500m, 
+                    `laptime_1000m` = :laptime_1000m, 
+                    `laptime_1500m` = :laptime_1500m, 
+                    `laptime_2000m` = :laptime_2000m, 
+                    `final_time` = :final_time, 
+                    `race_result_notes` = :race_result_notes,
+                    `stroke_rate_avg` = :stroke_rate_avg, 
+                    `stroke_rat_500m` = :stroke_rat_500m, 
+                    `stroke_rat_1000m` = :stroke_rat_1000m, 
+                    `stroke_rat_1500m` = :stroke_rat_1500m, 
+                    `stroke_rat_2000m` = :stroke_rat_2000m, 
+                    `heart_rate_avg` = :heart_rate_avg, 
+                    `heart_rate_500m` = :heart_rate_500m, 
+                    `heart_rate_1000m` = :heart_rate_1000m, 
+                    `heart_rate_1500m` = :heart_rate_1500m, 
+                    `heart_rate_2000m` = :heart_rate_2000m,
+                    `attendance` = :attendance, 
+                    `ergo_weight` = :ergo_weight, 
+                    `player_height` = :player_height, 
+                    `player_weight` = :player_weight, 
+                    `seat_number` = :seat_number, 
+                    `seat_name` = :seat_name, 
+                    `race_result_record_name` = :race_result_record_name,
+                    `wind_speed_2000m_point` = :wind_speed_2000m_point, 
+                    `wind_direction_2000m_point` = :wind_direction_2000m_point, 
+                    `wind_speed_1000m_point` = :wind_speed_1000m_point, 
+                    `wind_direction_1000m_point` = :wind_direction_1000m_point,  
+                    `range` = :range, 
+                    `updated_time` = :updated_time, 
+                    `updated_user_id` = :updated_user_id
+                    WHERE `race_result_record_id` = :race_result_record_id'
+                    ,$raceResultRecordsResponse);
+    }
 
     public function deleteRaceResultRecord_playerId($raceResultRecordInfo)
     {
