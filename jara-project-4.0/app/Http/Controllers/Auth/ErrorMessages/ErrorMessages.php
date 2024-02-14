@@ -21,7 +21,7 @@ $mail_sent_failed_for_contact_us = "メールの送信に失敗しました。<b
 $database_system_error = ["内部処理エラーが発生しました、" , "サポートにご連絡ください。"];
 $database_registration_failed_try_again = ["他のユーザーが登録処理中です、" , "しばらく待ってから再度操作をお願いします。"];
 $already_registered = ["既に仮登録がされています。" , "発行された仮パスワードで、" , "ログイン画面からログインしてください。"];
-$this_mail_deleted = "このメールアドレスは登録されていません";
+$this_mail_deleted = "メールアドレスかパスワードに誤りがあります。";
 
 //username error message
 $userName_required = 'ユーザー名を入力してください。';
@@ -33,8 +33,8 @@ $userName_regex = ['ユーザー名に使用できる文字は以下になりま
 $mailAddress_required = 'メールアドレスを入力してください。';
 $email_validation = ['メールアドレスの書式が誤っています。" , "メールアドレスを確認してください。'];
 $mailAddress_lowercase = ['メールアドレスの書式が誤っています。" , "メールアドレスを確認してください。'];
-$mailAddress_unique = 'このメールアドレスは既に登録されています。';
-$mailAddress_not_found = 'このメールアドレスは登録されていません';
+$mailAddress_already_exists =[ 'このメールアドレスは既に登録されています。'];
+$mailAddress_not_found = 'メールアドレスかパスワードに誤りがあります。';
 
 $confirm_email_required = '確認用のメールアドレスを入力してください。';
 $confirm_email_compare = 'メールアドレスは一致しません。';
@@ -73,14 +73,14 @@ $password_regex = '入力制限は 16文字です。';
 $previous_password_required = '旧パスワードを入力してください。';
 $new_password_required = '新パスワードを入力してください。';
 $new_password_confirm_required = 'パスワード確認を入力してください。';
-$password_compare = 'パスワードが一致しません。';
+$password_compare = 'メールアドレスかパスワードに誤りがあります。';
 $previous_and_new_password_compare = ["旧パスワードと新パスワードは同じです。" , "異なるパスワードを入力してください。"];
 $previous_password_not_matched = ["旧パスワードが正しくありません。" , "正しい旧パスワードを入力してください。"];
 $temp_password_timed_out = ["このパスワードは有効期限が切れています。" , "
 新規登録からユーザー仮登録を行ってくさい。"];
 
 //verification code error message
-$code_not_found = '認証番号が不正です。';
+$code_not_found = ['認証番号が不正です。'];
 $code_timed_out = ["認証番号の有効期限が切れています。" , "
 再度「更新ボタン」を押してください。"];
 

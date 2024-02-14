@@ -119,8 +119,8 @@ export default function UserInformationUpdate() {
   useEffect(() => {
     const fetchMaster = async () => {
       try {
-        // const csrf = () => axios.get('/sanctum/csrf-cookie')
-        // await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
         // TODO: APIを叩いて、マスタ情報を取得する処理の置き換え
         // const prefectureResponse = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
         const prefectureResponse = await axios.get('/getPrefecures');
@@ -154,8 +154,8 @@ export default function UserInformationUpdate() {
         // const response = await axios.get<UserResponse>('http://localhost:3100/user');
         // console.log("User : ", user);
         // 実装　ー　クマール　ー開始
-        // const csrf = () => axios.get('/sanctum/csrf-cookie')
-        // await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
         const response = await axios.get('/getUserData');
         // 実装　ー　クマール　ー終了
         console.log(response.data.result);
@@ -743,6 +743,7 @@ export default function UserInformationUpdate() {
           buttonType='white-outlined'
           className='w-[200px]'
           onClick={() => {
+            setErrorMessage([]);
             router.back();
           }}
         >
