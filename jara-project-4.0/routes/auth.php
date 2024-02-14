@@ -39,13 +39,13 @@ Route::post('organization-player-register', [OrganizationPlayersController::clas
 
 Route::middleware('guest')->group(function () {
 
-    Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
+    // Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    // Route::post('register', [RegisteredUserController::class, 'store']);
     
     Route::post('signup', [RegisteredUserController::class, 'store'])->name('signup');
 
-    Route::get('password-reset', [UserController::class, 'createPasswordReset'])->name('password-reset');
+    // Route::get('password-reset', [UserController::class, 'createPasswordReset'])->name('password-reset');
     Route::post('password-reset', [UserController::class, 'storePasswordReset']);
 
     // Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
@@ -54,9 +54,9 @@ Route::middleware('guest')->group(function () {
 
     Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 
-    Route::get('status', function () {
-        return view('auth.guest_user_status');
-    })->name('guest_user_status');
+    // Route::get('status', function () {
+    //     return view('auth.guest_user_status');
+    // })->name('guest_user_status');
 });
 
 Route::middleware('auth')->group(function () {
@@ -83,6 +83,10 @@ Route::middleware('auth')->group(function () {
     //パスワード関連
     Route::post('user/password-change', [UserController::class, 'storePasswordChange']); //パスワード変更 20240207
 
+    //ユーザー情報更新画面
+    Route::post('user/sent-certification-number', [UserController::class, 'sentCertificationNumber']); //承認番号送信　20240213
+    Route::post('user/verify-certification-number', [UserController::class, 'verifyCertificationNumber']); //承認番号確認　20240213
+
     //選手関連
     Route::post('storePlayerTest', [PlayerController::class, 'storePlayerTest']); //選手登録確認画面から登録 20231228
     Route::get('getUpdatePlayerData', [PlayerController::class, 'getUpdatePlayerData']); //DBから選手情報更新画面にデータを渡す 20240131
@@ -97,7 +101,7 @@ Route::middleware('auth')->group(function () {
     Route::post('storeOrgData', [OrganizationController::class, 'storeOrgData']); //団体情報をDBに送る 20240201
     Route::get('getStaffData', [OrganizationController::class, 'getStaffData']); //団体所属スタッフを取得 20240212
     Route::post('orgSearch', [OrganizationController::class, 'searchOrganization']); //団体検索 20240212
-    Route::get('getOrganizationForOrgManagement', [OrganizationController::class, 'getOrganizationForOrgManagement']); //団体管理画面用に団体情報を取得 20240212
+	Route::get('getOrganizationForOrgManagement', [OrganizationController::class, 'getOrganizationForOrgManagement']); //団体管理画面用に団体情報を取得 20240212
 
     //大会関連
     Route::get('getTournamentInfoData', [TournamentController::class, 'getTournamentInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
@@ -108,32 +112,33 @@ Route::middleware('auth')->group(function () {
     Route::post('tournamentSearch', [TournamentController::class, 'searchTournament']); //大会検索 20240212
 
     //ボランティア関連
-    Route::get('getVolunteerData', [VolunteerController::class, 'getVolunteerData']); //ボランティア情報取得 20240213 ※ボランティア履歴情報も取得する
+	Route::get('getVolunteerData', [VolunteerController::class, 'getVolunteerData']); //ボランティア情報取得 20240213 ※ボランティア履歴情報も取得する
+
 
     //React連携後APIここまで===========================================================
     //================================================================================
     
     //Notification page
-    Route::get('change-notification', function () {
-        return view('change-notification');
-    })->name('change-notification');
+    // Route::get('change-notification', function () {
+    //     return view('change-notification');
+    // })->name('change-notification');
 
     //User
-    Route::get('user/edit', [UserController::class, 'createEdit'])->name('user.edit');
+    // Route::get('user/edit', [UserController::class, 'createEdit'])->name('user.edit');
 
-    Route::post('user/edit', [UserController::class, 'storeEdit']);
+    // Route::post('user/edit', [UserController::class, 'storeEdit']);
 
-    Route::get('user/edit/confirm', [UserController::class, 'createEditConfirm'])->name('user.edit.confirm');
+    // Route::get('user/edit/confirm', [UserController::class, 'createEditConfirm'])->name('user.edit.confirm');
 
-    Route::post('user/edit/confirm', [UserController::class, 'storeEditConfirm']);
-    Route::get('user/edit/verification', [UserController::class, 'createEditVerifiCation'])->name('user.edit.verification');
-    Route::post('user/edit/verification', [UserController::class, 'storeEditVerifiCation']);
-    Route::get('user/delete/verification', [UserController::class, 'createDeleteVerifiCation'])->name('user.delete.verification');
-    Route::post('user/delete/verification', [UserController::class, 'storeDeleteVerifiCation']);
+    // Route::post('user/edit/confirm', [UserController::class, 'storeEditConfirm']);
+    // Route::get('user/edit/verification', [UserController::class, 'createEditVerifiCation'])->name('user.edit.verification');
+    // Route::post('user/edit/verification', [UserController::class, 'storeEditVerifiCation']);
+    // Route::get('user/delete/verification', [UserController::class, 'createDeleteVerifiCation'])->name('user.delete.verification');
+    // Route::post('user/delete/verification', [UserController::class, 'storeDeleteVerifiCation']);
 
-    Route::get('user/details', [UserController::class, 'createDetails'])->name('user.details');
+    // Route::get('user/details', [UserController::class, 'createDetails'])->name('user.details');
 
-    Route::get('user/delete', [UserController::class, 'createDelete'])->name('user.delete');
+    // Route::get('user/delete', [UserController::class, 'createDelete'])->name('user.delete');
     Route::post('user/delete',  [UserController::class, 'storeDelete']);
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

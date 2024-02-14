@@ -123,7 +123,7 @@ const ImageUploader: FC<ImageUploaderProps> = ({
                 <CloseIcon />
               </button>
               <img
-                className='w-[320px] h-[320px] rounded-[2px] object-cover'
+                className='w-[320px] h-[320px] rounded-[2px] object-cover cursor-pointer'
                 src={currentShowFile.preview}
                 alt='image preview'
                 // Revoke data uri after image is loaded
@@ -145,7 +145,7 @@ const ImageUploader: FC<ImageUploaderProps> = ({
                 </button>
               )}
               <img
-                className='object-cover w-[320px] h-[320px]'
+                className='object-cover w-[320px] h-[320px] cursor-pointer'
                 src={initialPhoto}
                 // Revoke data uri after image is loaded
                 onLoad={() => {}}

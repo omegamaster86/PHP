@@ -33,7 +33,11 @@ export default function UserInformationUpdate() {
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode');
   const prevScreen = searchParams.get('prevScreen');
-  const isMailChanged = searchParams.get('isMailChanged');
+  let isMailChanged =searchParams.get('isMailChanged');
+
+  //For storing the verification status of certification number
+  const [isNumberVerified,setIsNumberVerified] = useState(false);
+
   let paramError = false;
 
   // フォームの入力値を管理するステート
@@ -115,8 +119,8 @@ export default function UserInformationUpdate() {
   useEffect(() => {
     const fetchMaster = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        // const csrf = () => axios.get('/sanctum/csrf-cookie')
+        // await csrf()
         // TODO: APIを叩いて、マスタ情報を取得する処理の置き換え
         // const prefectureResponse = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
         const prefectureResponse = await axios.get('/getPrefecures');
@@ -150,8 +154,8 @@ export default function UserInformationUpdate() {
         // const response = await axios.get<UserResponse>('http://localhost:3100/user');
         // console.log("User : ", user);
         // 実装　ー　クマール　ー開始
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        // const csrf = () => axios.get('/sanctum/csrf-cookie')
+        // await csrf()
         const response = await axios.get('/getUserData');
         // 実装　ー　クマール　ー終了
         console.log(response.data.result);
@@ -180,6 +184,7 @@ export default function UserInformationUpdate() {
         }));
         setPrevEmail(response.data.result.mailaddress);
       } catch (error: any) {
+        console.log("userData")
         setErrorMessage(['API取得エラー:' + error.message]);
       }
     };
@@ -233,9 +238,11 @@ export default function UserInformationUpdate() {
           ) {
             return;
           }
+          // formData.mailaddress
+          {{console.log("email", email); console.log("prev email", prevEmail);}}
           router.push(
             '/userInformation?mode=confirm&isMailChanged=' +
-              (email && email !== formData.mailaddress ? 'true' : 'false') +
+              ((email && email !== prevEmail) ? 'true' : 'false') +
               (prevScreen ? '&prevScreen=' + prevScreen : ''),
           );
         }}
@@ -247,55 +254,91 @@ export default function UserInformationUpdate() {
       <CustomButton
         buttonType='primary'
         className='w-[200px]'
-        onClick={() => {
+        onClick={async() => {
           // TODO: 更新処理
           if (isMailChanged === 'true') {
-            const isOK = window.confirm(
-              'メールアドレスが変更されている為、表示されているメールアドレス宛に6桁の認証番号が送られます。メール本文に記載されている認証番号を入力してください。※認証番号の有効期限は30分間です。',
-            );
-
-            if (isOK) {
-              // 6桁の整数をランダム生成する
-              const getRandomInt = (min: number, max: number) => {
-                min = Math.ceil(min);
-                max = Math.floor(max);
-                return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
-              };
-              // TODO: 「ユーザーテーブル」に作成した承認番号と承認番号の有効期限を登録する※既に登録されている場合は、上書きする
-              console.log('承認番号：' + getRandomInt(100000, 999999));
-              // 有効期限は30分後
-              const expireDateTime = new Date();
-              expireDateTime.setMinutes(expireDateTime.getMinutes() + 30);
-              console.log('有効期限：' + expireDateTime.toLocaleString('ja-JP'));
-
-              // TODO: 変更後のメールアドレス宛に「「2.-①-ⅰ-b1-1」で作成した6桁の整数」を通知する。メールの内容は、シート「補足」の「認証番号通知メール」を参照
-              if (isMailChanged) {
+            if(isNumberVerified){
+              const updateUser = async()=> {
+                const csrf = () => axios.get('/sanctum/csrf-cookie')
+                await csrf()
+                const requestBody = {};
+                axios
+                  // .post('http://localhost:3100/', requestBody)
+                  .post('/updateUserData',formData)
+                  .then((response) => {
+                    // 成功時の処理を実装
+                    window.confirm('ユーザー情報を更新しました。');
+                    // router.push('/' + (prevScreen ? prevScreen : ''));
+                    router.push('/DummyMyPage');
+                  })
+                  .catch((error) => {
+                    if(error?.response) {
+                      setErrorMessage([...error?.response?.data]);
+                    }
+                    else {
+                      setErrorMessage([error?.message]);
+                    }
+                    
+                  });
               }
-              console.log(email + 'あてにメールを送信しました。');
-              // TODO: 認証番号入力用のダイアログをモーダルで表示する。
-              setIsAuthDialogOpen(true);
+              updateUser()
+            } else {
+              const isOK = window.confirm(
+                'メールアドレスが変更されている為、表示されているメールアドレス宛に6桁の認証番号が送られます。メール本文に記載されている認証番号を入力してください。※認証番号の有効期限は30分間です。',
+              );
+              if (isOK) {
+                const csrf = () => axios.get('/sanctum/csrf-cookie')
+                await csrf()
+                axios
+                // .post('http://localhost:3100/', requestBody)
+                .post('/user/sent-certification-number',{
+                  user_name:formData.user_name,
+                  mailaddress: formData.mailaddress
+                })
+                .then((response) => {
+                  // 成功時の処理を実装
+                  setIsAuthDialogOpen(true);
+                  setErrorMessage([]);
+                })
+                .catch((error) => {
+                  if(error?.response) {
+                    setErrorMessage([...error?.response?.data]);
+                  }
+                  else {
+                    setErrorMessage([error?.message]);
+                  }
+                  // setErrorMessage([
+                  //   'メールを送信に失敗しました。ユーザーサポートにお問い合わせください。',
+                  // ]);
+                });
+              }
+
             }
           } else {
-            // 「ユーザーテーブル」に上記で作成した承認番号と承認番号の有効期限を削除（null）する。
-            console.log('認証番号を削除しました。');
-            // TODO: エラーハンドリングはサーバとの疎通実装時、axiosでcatchするため、以下は置き換え
             const updateUser = async()=> {
               const csrf = () => axios.get('/sanctum/csrf-cookie')
-            await csrf()
-            const requestBody = {};
-            axios
-              // .post('http://localhost:3100/', requestBody)
-              .post('/updateUserData',formData)
-              .then((response) => {
-                // 成功時の処理を実装
-                window.confirm('ユーザー情報を更新しました。');
-                router.push('/' + (prevScreen ? prevScreen : ''));
-              })
-              .catch((error) => {
-                setErrorMessage([
-                  'ユーザー情報の登録に失敗しました。ユーザーサポートにお問い合わせください。',
-                ]);
-              });
+              await csrf()
+              const requestBody = {};
+              axios
+                // .post('http://localhost:3100/', requestBody)
+                .post('/updateUserData',formData)
+                .then((response) => {
+                  // 成功時の処理を実装
+                  window.confirm('ユーザー情報を更新しました。');
+                  // router.push('/' + (prevScreen ? prevScreen : ''));
+                  router.push('/DummyMyPage');
+                })
+                .catch((error) => {
+                  if(error?.response) {
+                    setErrorMessage([...error?.response?.data]);
+                  }
+                  else {
+                    setErrorMessage([error?.message]);
+                  }
+                  // setErrorMessage([
+                  //   'ユーザー情報の登録に失敗しました。ユーザーサポートにお問い合わせください。',
+                  // ]);
+                });
             }
             updateUser()
           }
@@ -322,6 +365,7 @@ export default function UserInformationUpdate() {
   if (paramError) {
     return <div>ページが見つかりません</div>;
   }
+  
   return (
     <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[46px] my-[80px]'>
       <div className='flex flex-col justify-start gap-[20px]'>
@@ -340,12 +384,13 @@ export default function UserInformationUpdate() {
             <ImageUploader
               currentShowFile={currentShowFile}
               setCurrentShowFile={setCurrentShowFile}
-              initialPhotoUrl={formData.photo}
+              initialPhotoUrl={`http://localhost:8000/images/users/${formData.photo}`}
             />
           )}
           {/* 写真 */}
+          {/* src={formData.photo} */}
           {mode === 'confirm' && (
-            <img src={formData.photo} className='w-[300px] h-[300px] rounded-[2px] object-cover' />
+            <img src={currentShowFile?.preview??`http://localhost:8000/images/users/${formData.photo}`} className='w-[300px] h-[300px] rounded-[2px] object-cover' alt = "Profile Photo" />
           )}
         </div>
         {/* ユーザーID */}
@@ -415,10 +460,10 @@ export default function UserInformationUpdate() {
                   setEmailConfirmErrorMessages(confEmailError);
 
                   if (errorMessages.length == 0 && confEmailError.length == 0) {
-                    setPrevEmail(formData.mailaddress);
+                    // setPrevEmail(formData.mailaddress);
                     setFormData((prevFormData) => ({
                       ...prevFormData,
-                      email: email,
+                      mailaddress: email,
                     }));
                     return true;
                   }
@@ -570,7 +615,9 @@ export default function UserInformationUpdate() {
                 setAuthNumber(e.target.value);
               }}
             />
+            <ErrorBox errorText={errorMessage} />
           </DialogContent>
+          
           <DialogActions>
             <CustomButton
               buttonType='white-outlined'
@@ -578,6 +625,7 @@ export default function UserInformationUpdate() {
               onClick={() => {
                 setIsAuthDialogOpen(false);
                 setAuthNumber('');
+                setErrorMessage([])
               }}
             >
               キャンセル
@@ -589,47 +637,68 @@ export default function UserInformationUpdate() {
                 // 認証処理。認証番号が入力されていない場合はバリデーションエラーを表示する。
                 if (!authNumber) {
                   setErrorMessage(['認証番号を入力してください。']);
-                  setIsAuthDialogOpen(false);
+                  // setIsAuthDialogOpen(false);
                   return;
                 }
 
-                const verifyResult = () => {
-                  // TODO: 「ユーザーテーブル」の当該ユーザーの「メールアドレス変更認証番号」に登録されている数字と一致することを確認する処理に置き換え
-                  true;
-                };
-                if (!verifyResult) {
-                  setErrorMessage(['認証番号が不正です。']);
-                  setIsAuthDialogOpen(false);
-                  return;
-                }
-                const expireResult = () => {
-                  // TODO: 当該認証番号の有効期限切れていないことを確認する処理に置き換え
-                  true;
-                };
-                if (!expireResult) {
-                  setErrorMessage(['認証番号の有効期限が切れています。']);
-                  setIsAuthDialogOpen(false);
-                  return;
-                }
-
-                setIsAuthDialogOpen(false);
-
-                // TODO: 「ユーザーテーブル」に上記で作成した承認番号と承認番号の有効期限を削除（null）する処理に置き換える
                 const csrf = () => axios.get('/sanctum/csrf-cookie')
                 await csrf()
-                axios
-                  .delete('/user')
-                  .then((response) => {
-                    console.log('認証番号を削除しました。');
-                    setAuthNumber('');
-                    router.push('/' + prevScreen);
-                  })
-                  .catch((error) => {
-                    // TODO: エラーハンドリング処理の置き換え
-                    setErrorMessage([
-                      'ユーザー情報の登録に失敗しました。ユーザーサポートにお問い合わせください。',
-                    ]);
-                  });
+
+                axios.post('/user/verify-certification-number',{
+                  certification_number : authNumber
+                }).then((response)=>{
+                  setIsNumberVerified(true);
+                  setAuthNumber('');
+                  setErrorMessage([]);
+                  setIsAuthDialogOpen(false);
+                  window.alert(response?.data);
+                }).catch((error)=>{
+                  // setAuthNumber('');
+                  if(error?.response) {
+                    setErrorMessage([...error?.response?.data]);
+                  }
+                  else {
+                    setErrorMessage([error?.message]);
+                  }
+                })
+
+                // const verifyResult = () => {
+                //   // TODO: 「ユーザーテーブル」の当該ユーザーの「メールアドレス変更認証番号」に登録されている数字と一致することを確認する処理に置き換え
+                //   true;
+                // };
+                // if (!verifyResult) {
+                //   setErrorMessage(['認証番号が不正です。']);
+                //   setIsAuthDialogOpen(false);
+                //   return;
+                // }
+                // const expireResult = () => {
+                //   // TODO: 当該認証番号の有効期限切れていないことを確認する処理に置き換え
+                //   true;
+                // };
+                // if (!expireResult) {
+                //   setErrorMessage(['認証番号の有効期限が切れています。']);
+                //   setIsAuthDialogOpen(false);
+                //   return;
+                // }
+
+                // setIsAuthDialogOpen(false);
+
+                // TODO: 「ユーザーテーブル」に上記で作成した承認番号と承認番号の有効期限を削除（null）する処理に置き換える
+                // const csrf = () => axios.get('/sanctum/csrf-cookie')
+                // await csrf()
+                // axios
+                //   .delete('/user')
+                //   .then((response) => {
+                //     console.log('認証番号を削除しました。');
+                //     setAuthNumber('');
+                //     router.push('/' + prevScreen);
+                //   })
+                //   .catch((error) => {
+                //     // TODO: エラーハンドリング処理の置き換え
+                //     setErrorMessage([
+                //       'ユーザー情報の登録に失敗しました。ユーザーサポートにお問い合わせください。',
+                //     ]);
+                //   });
               }}
             >
               送信

@@ -58,38 +58,6 @@ class RegisteredUserController extends Controller
         
         include('ErrorMessages/ErrorMessages.php');
         
-        // $request->validate([
-        //     // User name validation rule
-        //     'user_name' => ['required', 'max:32', 'regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'], 
-        //     // Mail address validation rule
-        //     'mailaddress' => ['required', 'email', 'string', 'lowercase',  'max:255'],
-        //     // Confirm mail address validation rule
-        //     'confirm_email' => ['required', 'email', 'string', 'lowercase',  'max:255', 'same:mailaddress'],
-
-        //     // Terms of service validation rule
-        //     'terms_of_service' => ['accepted'],
-        // ],
-        // [
-        //     //Error message for Username validation rule 
-        //     'user_name.required' => $userName_required,
-        //     'user_name.max' => $userName_max_limit,
-        //     'user_name.regex' => $userName_regex,
-
-        //     //Error message for mail address validation rule 
-        //     'mailaddress.required' => $mailAddress_required,
-        //     'mailaddress.email' => $email_validation,
-        //     'mailaddress.lowercase' =>$mailAddress_lowercase,
-        //     'mailaddress.unique' => $mailAddress_unique,
-
-        //     //Error message for confirm mail address validation rule 
-        //     'confirm_email.required' => $confirm_email_required,
-        //     'confirm_email.email' => $email_validation,
-        //     'confirm_email.lowercase' => $mailAddress_lowercase,
-        //     'confirm_email.same' => $confirm_email_compare,
-
-        //     //Error message for terms of service validation rule 
-        //     'terms_of_service.accepted' => $terms_of_service,
-        // ]);
 
         if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? ',[$request->mailaddress]))){
             if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 0',[$request->mailaddress]))){

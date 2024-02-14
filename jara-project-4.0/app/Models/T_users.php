@@ -33,8 +33,6 @@ class T_users extends Authenticatable
         'certification_number' => null,
         'expiry_time_of_certification_number' => null,
         'temp_password_flag' => null,
-        'registered_time' => null,
-        'registered_user_id' => null,
         'updated_time' => null,
         'updated_user_id' => null,
         'delete_flag' => 0,
@@ -197,8 +195,6 @@ class T_users extends Authenticatable
                 `weight`=?,
                 `user_type`=?,
                 `photo`=?,
-                `registered_time`=?,
-                `registered_user_id`=?,
                 `updated_time`=?,
                 `updated_user_id`=?,
                 `delete_flag`=?
@@ -215,9 +211,7 @@ class T_users extends Authenticatable
                     $targetUserId['weight'],
                     $targetUserId['user_type'],
                     $targetUserId['photo'],
-                    NOW(),
-                    Auth::user()->user_id,
-                    NOW(),
+                    NOW()->format('Y-m-d H:i:s.u'),
                     Auth::user()->user_id,
                     $targetUserId['delete_flag'],
                     $targetUserId['user_id'], //where条件
