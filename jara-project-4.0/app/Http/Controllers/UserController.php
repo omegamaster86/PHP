@@ -735,24 +735,27 @@ class UserController extends Controller
     }
     //react ユーザー情報の削除 20240212
     //delete_flagを1にupdateする
-    public function updateDeleteFlagInUserData(Request $requests,T_users $t_users)
+    public function updateDeleteFlagInUserData(T_users $t_users)
     {
         Log::debug(sprintf("updateDeleteFlagInUserData start."));
-        $result = true;
-        $reqData = $requests->all();
-        $target_user_id = $reqData['user_id'];
         try
         {
             DB::beginTransaction();
-            $t_users->updateDeleteFlagToInvalid($target_user_id);
+            $t_users->updateDeleteFlagToInvalid();
             DB::commit();
         }
         catch(\Throwable $e)
         {
             DB::rollback();
-            $result = false;
+
+            $e_message = $e->getMessage();
+            $e_code = $e->getCode();
+
+            //Store error message in the register log file.
+            Log::channel('user_update')->info("\r\n \r\n＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code  \r\n  \r\n ============================================================ \r\n \r\n");
+            return response()->json(["失敗しました。ユーザーサポートにお問い合わせください。"],500);
         }
         Log::debug(sprintf("updateDeleteFlagInUserData end."));
-        return response()->json(['result' => $result]); //処理結果を返す
+        return response()->json(["退会の件、完了しました。"],200); //処理結果を返す
     }
 }

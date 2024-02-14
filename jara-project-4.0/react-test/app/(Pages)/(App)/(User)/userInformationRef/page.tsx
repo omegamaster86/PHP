@@ -18,12 +18,14 @@ import {
   ErrorBox,
   CustomTitle,
 } from '@/app/components';
+import { useAuth } from '@/app/hooks/auth';
 
 export default function UserInformationUpdate() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode');
   let paramError = false;
+  const {  logout } = useAuth({ middleware: 'auth' })
 
   // フォームの入力値を管理するステート
   const [formData, setFormData] = useState<UserResponse>({
@@ -75,23 +77,28 @@ export default function UserInformationUpdate() {
         // TODO: 仮のURL（繋ぎ込み時に変更すること）
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
-        const response = await axios.get<UserResponse>('/api/user');
+        const response = await axios.get('/getUserData');
         setFormData((prevFormData) => ({
           ...prevFormData,
           ...{
-            user_id: response.data.user_id,
-            user_name: response.data.user_name,
-            user_type: response.data.user_type,
-            mailaddress: response.data.mailaddress,
-            date_of_birth: response.data.date_of_birth,
-            sexName: response.data.sexName,
-            height: response.data.height,
-            weight: response.data.weight,
-            residenceCountryName: response.data.residenceCountryName,
-            residencePrefectureName: response.data.residencePrefectureName,
-            email: response.data.mailaddress,
-            tempPasswordFlag: response.data.temp_password_flag,
-            photo: response.data.photo,
+            user_id: response.data.result.user_id,
+            user_name: response.data.result.user_name,
+            user_type: response.data.result.user_type,
+            userTypeName: response.data.result.userTypeName,
+            date_of_birth: response.data.result.date_of_birth,
+            sexName: response.data.result.sexName ? response.data.sexName : '男性',
+            sex: response.data.result.sex,
+            height: response.data.result.height,
+            weight: response.data.result.weight,
+            residence_country: response.data.result.residence_country,
+            residenceCountryName: response.data.result.residenceCountryName
+              ? response.data.result.residenceCountryName
+              : '日本国 （jpn）',
+              residence_prefecture: response.data.result.residence_prefecture,
+            residencePrefectureName: response.data.result.residencePrefectureName,
+            mailaddress: response.data.result.mailaddress,
+            temp_password_flag: response.data.result.temp_password_flag,
+            photo: response.data.result.photo,
           },
         }));
       } catch (error: any) {
@@ -126,14 +133,20 @@ export default function UserInformationUpdate() {
               await csrf()
               axios
                 // .delete('http://localhost:3100/')
-                .post('/deleteUserData', formData) //20240212 削除するデータを送信
+                .post('/deleteUserData') //20240212 削除するデータを送信
                 .then((res) => {
                   // ログイン画面に遷移する
-                  router.push('/login');
+                  logout();
                 })
                 .catch((error) => {
                   // TODO: エラー処理
-                  setErrorMessage(['API取得エラー:' + (error as Error).message]);
+                  if(error?.response){
+                    setErrorMessage([...error?.response?.data]);
+                  }
+                  else{
+                    setErrorMessage([...error?.message]);
+                  }
+                  
                 });
             }
             deleteUser()
@@ -163,7 +176,7 @@ export default function UserInformationUpdate() {
         <div className='flex flex-col justify-start gap-[10px]'>
           {/* 写真 */}
           <InputLabel displayHelp={false} label='写真' />
-          <img src={formData.photo} className='w-[300px] h-[300px] rounded-[2px] object-cover' />
+          <img src={`http://localhost:8000/images/users/${formData.photo}`} className='w-[300px] h-[300px] rounded-[2px] object-cover' />
         </div>
         {/* ユーザーID */}
         <CustomTextField
@@ -176,7 +189,7 @@ export default function UserInformationUpdate() {
         <CustomTextField
           label='ユーザー種別'
           readonly={true}
-          value={formData.user_type}
+          value={formData.userTypeName}
           displayHelp={false}
         />
         {/* ユーザー名 */}

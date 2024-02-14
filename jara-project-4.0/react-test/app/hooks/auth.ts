@@ -47,7 +47,10 @@ export const useAuth = ({
 
   const logout = async () => {
     if (!error) {
-      await axios.post('/logout').then(() => mutate())
+      await axios.post('/logout').then(() => {
+        mutate()
+        window.history.replaceState(null, '', '/login')
+      })
     }
 
     window.location.pathname = '/login'

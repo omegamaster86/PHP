@@ -92,7 +92,7 @@ class LoginRequest extends FormRequest
 
         DB::beginTransaction();
         try {
-           DB::insert('insert into t_access_log (user_id, access_time, ip, host, browser, registered_time, registered_user_id,update_time, update_user_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', [$user_id, now(), request()->host(), request()->getHttpHost(), request()->userAgent(),now(),$user_id, now(), $user_id]);
+           DB::insert('insert into t_access_logs (access_user_id, access_datetime, access_ip, access_host, access_browser, registered_time, registered_user_id, updated_time, updated_user_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', [$user_id, now()->format('Y-m-d H:i:s.u'), request()->getClientIp(), request()->getHttpHost(), request()->userAgent(),now()->format('Y-m-d H:i:s.u'),$user_id, now()->format('Y-m-d H:i:s.u'), $user_id]);
 
             DB::commit();
         } catch (\Throwable $e) {
