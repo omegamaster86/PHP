@@ -67,7 +67,13 @@ export const useAuth = ({
     }
     
     if (middleware === 'guest' && redirectIfAuthenticated && user) {
-      router.push(redirectIfAuthenticated)
+      if (user?.temp_password_flag) {
+        router.push('/passwordchange')
+      }
+      else{
+        router.push(redirectIfAuthenticated)
+      }
+      
     }
 
     
