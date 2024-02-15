@@ -12,61 +12,60 @@ use App\Models\T_users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class OrganizationPlayersController extends Controller
 {
     //団体所属選手登録画面を開く
-    public function createEdit($targetOrgId,
-                                T_organizations $t_organizations,
-                                T_organization_players $t_organization_players)
-    {
-        if(Auth::user()->temp_password_flag === 1)
-        {
+    public function createEdit(
+        $targetOrgId,
+        T_organizations $t_organizations,
+        T_organization_players $t_organization_players
+    ) {
+        if (Auth::user()->temp_password_flag === 1) {
             return redirect('user/password-change');
-        }
-        else
-        {
-            $organization = $t_organizations->getOrganization($targetOrgId);            
+        } else {
+            $organization = $t_organizations->getOrganization($targetOrgId);
             $org_name = $organization->org_name;
             $organization_players = $t_organization_players->getOrganizationPlayersInfo($targetOrgId);
 
-            return view('organization-players.edit',['org_name'=>$org_name,'org_players'=>$organization_players]);
+            return view('organization-players.edit', ['org_name' => $org_name, 'org_players' => $organization_players]);
         }
     }
 
     //団体選手検索画面を開く
-    public function createSearchView($targetOrgId,
-                                        T_organizations $t_organizations,
-                                        M_sex $m_sex,
-                                        M_prefectures $m_prefectures,
-                                        M_events $m_events)
-    {
-        if(Auth::user()->temp_password_flag === 1)
-        {
+    public function createSearchView(
+        $targetOrgId,
+        T_organizations $t_organizations,
+        M_sex $m_sex,
+        M_prefectures $m_prefectures,
+        M_events $m_events
+    ) {
+        if (Auth::user()->temp_password_flag === 1) {
             return redirect('user/password-change');
-        }
-        else
-        {
+        } else {
             $organization = $t_organizations->getOrganization($targetOrgId);
             $org_name = $organization->org_name;
             $sex = $m_sex->getSexList();
             $prefectures = $m_prefectures->getPrefecures();
             $events = $m_events->getEvents();
 
-            return view('organization-players.search',['org_name' => $org_name,
-                                                        'm_sex' => $sex,
-                                                        'prefectures' => $prefectures,
-                                                        'events' => $events]);
+            return view('organization-players.search', [
+                'org_name' => $org_name,
+                'm_sex' => $sex,
+                'prefectures' => $prefectures,
+                'events' => $events
+            ]);
         }
     }
 
     //団体所属追加選手検索画面で、選手を検索する
-    public function searchOrganizationPlayers(Request $request,T_organization_players $t_organization_players)
+    public function searchOrganizationPlayers(Request $request, T_organization_players $t_organization_players)
     {
         $searchInfo = $request->all();
         $searchValue = [];
         $searchCondition = $this->generateOrganizationPlayersSearchCondition($searchInfo, $searchValue);
-        $players = $t_organization_players->getOrganizationPlayersFromCondition($searchCondition,$searchValue);
+        $players = $t_organization_players->getOrganizationPlayersFromCondition($searchCondition, $searchValue);
         dd($players);
     }
 
@@ -75,88 +74,73 @@ class OrganizationPlayersController extends Controller
     {
         $condition = "";
         //JARA選手コード
-        if(isset($searchInfo['jara_player_id']))
-        {
+        if (isset($searchInfo['jara_player_id'])) {
             $condition .= "and tp.jara_player_id = :jara_player_id\r\n";
             $conditionValue['jara_player_id'] = $searchInfo['jara_player_id'];
         }
         //選手ID
-        if(isset($searchInfo['player_id']))
-        {
+        if (isset($searchInfo['player_id'])) {
             $condition .= "and tp.player_id = :player_id\r\n";
             $conditionValue['player_id'] = $searchInfo['player_id'];
         }
         //選手名
-        if(isset($searchInfo['player_name']))
-        {
+        if (isset($searchInfo['player_name'])) {
             $condition .= "and tp.player_name LIKE :player_name\r\n";
-            $conditionValue['player_name'] = "%".$searchInfo['player_name']."%";
+            $conditionValue['player_name'] = "%" . $searchInfo['player_name'] . "%";
         }
         //性別
-        if(isset($searchInfo['sex']))
-        {
+        if (isset($searchInfo['sex'])) {
             $condition .= "and `m_sex`.`sex_id` = :sex\r\n";
             $conditionValue['sex'] = $searchInfo['sex'];
         }
         //出身地（都道府県）
-        if(isset($searchInfo['birth_prefecture']))
-        {
+        if (isset($searchInfo['birth_prefecture'])) {
             $condition .= "and bir_pref.pref_id =:birth_prefecture\r\n";
             $conditionValue['birth_prefecture'] = $searchInfo['birth_prefecture'];
         }
         //居住地（都道府県）
-        if(isset($searchInfo['residence_prefecture']))
-        {
+        if (isset($searchInfo['residence_prefecture'])) {
             $condition .= "and res_pref.pref_id =:residence_prefecture\r\n";
             $conditionValue['residence_prefecture'] = $searchInfo['residence_prefecture'];
         }
         //S(ストロークサイド)
-        if(isset($searchInfo['side_S']))
-        {
-            $condition .= "and SUBSTRING(tp.`side_info`,8,1) = 1\r\n";            
+        if (isset($searchInfo['side_S'])) {
+            $condition .= "and SUBSTRING(tp.`side_info`,8,1) = 1\r\n";
         }
         //B(バウサイド)
-        if(isset($searchInfo['side_B']))
-        {
+        if (isset($searchInfo['side_B'])) {
             $condition .= "and SUBSTRING(tp.`side_info`,7,1) = 1\r\n";
         }
         //X(スカルサイド)
-        if(isset($searchInfo['side_X']))
-        {
+        if (isset($searchInfo['side_X'])) {
             $condition .= "and SUBSTRING(tp.`side_info`,6,1) = 1\r\n";
         }
         //C(コックスサイド)
-        if(isset($searchInfo['side_C']))
-        {
+        if (isset($searchInfo['side_C'])) {
             $condition .= "and SUBSTRING(tp.`side_info`,5,1) = 1\r\n";
         }
         //団体ID
-        if(isset($searchInfo['org_id']))
-        {
+        if (isset($searchInfo['org_id'])) {
             $condition .= "and org.org_id = :org_id\r\n";
             $conditionValue['org_id'] = $searchInfo['org_id'];
         }
         //エントリーシステムID
-        if(isset($searchInfo['entry_system_id']))
-        {
+        if (isset($searchInfo['entry_system_id'])) {
             $condition .= "and org.entrysystem_org_id =:entry_system_id\r\n";
             $conditionValue['entry_system_id'] = $searchInfo['entry_system_id'];
         }
         //団体名
-        if(isset($searchInfo['org_name']))
-        {
+        if (isset($searchInfo['org_name'])) {
             $condition .= "and org.org_name LIKE :org_name\r\n";
-            $conditionValue['org_name'] = "%".$searchInfo['org_name']."%";
+            $conditionValue['org_name'] = "%" . $searchInfo['org_name'] . "%";
         }
         //出漕大会名
-        if(isset($searchInfo['tourn_name']))
-        {
+        if (isset($searchInfo['tourn_name'])) {
             $condition .= "and tour.tourn_name LIKE :tourn_name\r\n";
-            $conditionValue['tourn_name'] = "%".$searchInfo['tourn_name']."%";
+            $conditionValue['tourn_name'] = "%" . $searchInfo['tourn_name'] . "%";
         }
         //出漕履歴情報
-        if(isset($searchInfo['event_id']))
-        {
+        if (isset($searchInfo['event_id'])) {
             $condition .= "and trrr.event_id = :event_id\r\n";
             $conditionValue['event_id'] = $searchInfo['event_id'];
         }
@@ -180,12 +164,13 @@ class OrganizationPlayersController extends Controller
         // }
     }
     //団体所属選手一括登録画面で読み込みと登録を行う
-    public function csvReadOrganizationPlayerRegister(Request $request, 
-                                                        T_organizations $t_organizations, 
-                                                        T_players $t_players,
-                                                        T_users $t_users,
-                                                        T_organization_players $t_organization_players)
-    {
+    public function csvReadOrganizationPlayerRegister(
+        Request $request,
+        T_organizations $t_organizations,
+        T_players $t_players,
+        T_users $t_users,
+        T_organization_players $t_organization_players
+    ) {
         $organization_name_list = $t_organizations->getOrganizationName();
         if ($request->has('csvRead')) { // 読み込みボタンクリック
             // CSVファイルが存在するかの確認
@@ -227,9 +212,8 @@ class OrganizationPlayersController extends Controller
             $user_id_col = 2;
             $mailaddress_col = 3;
             $player_name_col = 4;
-            
-            for ($rowIndex = 0; $rowIndex < count($csvList); $rowIndex++)
-            {
+
+            for ($rowIndex = 0; $rowIndex < count($csvList); $rowIndex++) {
                 $rowArray = array();
                 $value = explode(',', $csvList[$rowIndex]); //一行ごとのデータをカンマ区切りでリストに入れる
                 //各フィールドの値
@@ -239,297 +223,243 @@ class OrganizationPlayersController extends Controller
                 $rowArray['user_id'] = null;            //ユーザーID
                 $rowArray['mailaddress'] = null;        //メールアドレス
                 $rowArray['player_name'] = null;        //選手名
-                
-                if (($rowIndex == 0 && $csvList[$rowIndex] == $csvHeaderLine) || empty($value[0]) /*|| in_array($value[0], $jaraIdList)*/)
-                {
+
+                if (($rowIndex == 0 && $csvList[$rowIndex] == $csvHeaderLine) || empty($value[0]) /*|| in_array($value[0], $jaraIdList)*/) {
                     continue; //各行がヘッダ行と一致する場合,ユーザーIDがない場合,ユーザーIDが重複リストに含まれている場合、以降の処理を行わない。
-                }
-                elseif(count($value) != $csv_column_count)
-                {
+                } elseif (count($value) != $csv_column_count) {
                     //行のデータ個数が正しくない場合
                     // $renkei = '無効データ';
                     // $disabled = "disabled";
                     $rowArray['renkei'] = '無効データ';
                     $rowArray['disabled'] = "disabled";
-                }
-                else
-                {
-                    $checkResult = true;                    
+                } else {
+                    $checkResult = true;
                     //対象行の各項目の値を変数に格納
                     $jara_player_code = $csvList[$rowIndex][$jara_player_code_col];
                     $player_id = $csvList[$rowIndex][$player_id_col];
-                    $user_id = $csvList[$rowIndex][$user_id_col];                    
+                    $user_id = $csvList[$rowIndex][$user_id_col];
                     $mail_address = $csvList[$rowIndex][$mailaddress_col];
                     $player_name = $csvList[$rowIndex][$player_name_col];
                     //メールアドレスのチェック
                     //メールアドレスが設定されていることを確認
-                    if(empty($mail_address))
-                    {
+                    if (empty($mail_address)) {
                         //メールアドレスが設定されてなかったら
                         //読み込み結果を「無効データ（メールアドレス未設定）」にする
-                        $this->assignInvalidData('無効データ（メールアドレス未設定）',$renkei,$disabled,$checkResult);
+                        $this->assignInvalidData('無効データ（メールアドレス未設定）', $renkei, $disabled, $checkResult);
                         $rowArray['renkei'] = $renkei;
                         $rowArray['disabled'] = $disabled;
-                    }
-                    else
-                    {
+                    } else {
                         //メールアドレスのフォーマットとして適切であることを確認
-                        if(!filter_var($mail_address, FILTER_VALIDATE_EMAIL))
-                        {
-                            $this->assignInvalidData('無効データ（メールアドレス不正）',$renkei,$disabled,$checkResult);
+                        if (!filter_var($mail_address, FILTER_VALIDATE_EMAIL)) {
+                            $this->assignInvalidData('無効データ（メールアドレス不正）', $renkei, $disabled, $checkResult);
                             $rowArray['renkei'] = $renkei;
                             $rowArray['disabled'] = $disabled;
                         }
                     }
                     //選手名のチェック
                     //選手が設定されていることを確認
-                    if($checkResult)
-                    {
-                        if(empty($player_name))
-                        {
-                            $this->assignInvalidData('無効データ（選手名未設定）',$renkei,$disabled,$checkResult);
+                    if ($checkResult) {
+                        if (empty($player_name)) {
+                            $this->assignInvalidData('無効データ（選手名未設定）', $renkei, $disabled, $checkResult);
                             $rowArray['renkei'] = $renkei;
                             $rowArray['disabled'] = $disabled;
-                        }
-                        else
-                        {
+                        } else {
                             //選手名のフォーマットとして適切であることを確認
-                            if(mb_strlen($player_name) > 50)
-                            {
-                                $this->assignInvalidData('無効データ（選手名不正）',$renkei,$disabled,$checkResult);
+                            if (mb_strlen($player_name) > 50) {
+                                $this->assignInvalidData('無効データ（選手名不正）', $renkei, $disabled, $checkResult);
                                 $rowArray['renkei'] = $renkei;
                                 $rowArray['disabled'] = $disabled;
                             }
                         }
-                    }                   
+                    }
                     //取り込み可能かをチェックする
                     //入力組み合わせ①
-                    if(isset($user_id) && isset($player_id) && isset($jara_player_code))
-                    {
+                    if (isset($user_id) && isset($player_id) && isset($jara_player_code)) {
                         //ユーザーID、選手ID、JARA選手コードが全て入力されているとき
                         //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
                         //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
                         $user_data = $t_users->getUserDataFromMailAddress($mail_address);
-                        if(!in_array($user_id,array_column($user_data,'user_id')))
-                        {
-                            $this->assignInvalidData('無効データ（メールアドレス不正）',$renkei,$disabled,$checkResult);
+                        if (!in_array($user_id, array_column($user_data, 'user_id'))) {
+                            $this->assignInvalidData('無効データ（メールアドレス不正）', $renkei, $disabled, $checkResult);
                             $rowArray['renkei'] = $renkei;
                             $rowArray['disabled'] = $disabled;
                         }
-                        if($checkResult)
-                        {
+                        if ($checkResult) {
                             //選手データが登録されているか確認
                             $player_data = $t_players->getPlayer($player_id);
-                            if(empty($player_data))
-                            {
-                                $this->assignInvalidData('無効データ（未登録選手）',$renkei,$disabled,$checkResult);
+                            if (empty($player_data)) {
+                                $this->assignInvalidData('無効データ（未登録選手）', $renkei, $disabled, $checkResult);
                                 $rowArray['renkei'] = $renkei;
                                 $rowArray['disabled'] = $disabled;
-                            }                            
+                            }
                             //「選手テーブル」.「ユーザーID」とファイルに入力されている「ユーザーID」が一致するか確認
-                            if($checkResult)
-                            {
-                                if($player_data['user_id'] != $user_id)
-                                {
-                                    $this->assignInvalidData('無効データ（ユーザーデータと選手データ不一致）',$renkei,$disabled,$checkResult);
+                            if ($checkResult) {
+                                if ($player_data['user_id'] != $user_id) {
+                                    $this->assignInvalidData('無効データ（ユーザーデータと選手データ不一致）', $renkei, $disabled, $checkResult);
                                     $rowArray['renkei'] = $renkei;
                                     $rowArray['disabled'] = $disabled;
                                 }
                             }
                             //「選手テーブル」.「JARA選手コード」とファイルに入力されている「JARA選手コード」が一致するか確認
-                            if($checkResult)
-                            {
-                                if($player_data['jara_player_code'] != $jara_player_code)
-                                {
-                                    $this->assignInvalidData('無効データ（JARA選手コード不一致）',$renkei,$disabled,$checkResult);
+                            if ($checkResult) {
+                                if ($player_data['jara_player_code'] != $jara_player_code) {
+                                    $this->assignInvalidData('無効データ（JARA選手コード不一致）', $renkei, $disabled, $checkResult);
                                     $rowArray['renkei'] = $renkei;
                                     $rowArray['disabled'] = $disabled;
                                 }
                             }
-                            if($checkResult)
-                            {
+                            if ($checkResult) {
                                 //所属情報テーブルを取得
                                 $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);
                                 //団体テーブルから団体名を取得
                                 $target_organization = $t_organizations->getOrganization($input_org_id);
                                 //選手テーブルから出身地と居住地を取得
-                                $player_data = $t_players->getPlayersFromPlayerId($player_id);                                
+                                $player_data = $t_players->getPlayersFromPlayerId($player_id);
                                 //所属情報を取得できなかった場合
-                                if(empty($org_player_info))
-                                {
-                                    $this->assignRowArray($rowArray,"登録可能",$user_id,$player_id,$jara_player_code,$player_name,$mail_address,null,null,$player_data);
+                                if (empty($org_player_info)) {
+                                    $this->assignRowArray($rowArray, "登録可能", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, null, null, $player_data);
                                 }
                                 //取得情報が取得できた場合
-                                else
-                                {
+                                else {
                                     //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
-                                    if(in_array($input_org_id ,array_column($org_player_info,'org_id')))
-                                    {
+                                    if (in_array($input_org_id, array_column($org_player_info, 'org_id'))) {
                                         //存在するとき
-                                        $this->assignRowArray($rowArray,"無効データ（重複選手）",$user_id,$player_id,$jara_player_code,$player_name,$mail_address,$input_org_id,$target_organization['org_name'],$player_data);
+                                        $this->assignRowArray($rowArray, "無効データ（重複選手）", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization['org_name'], $player_data);
                                     }
                                     //入力値が団体所属情報のorg_id列に存在しない
-                                    else
-                                    {
-                                        $this->assignRowArray($rowArray,"登録可能",$user_id,$player_id,$jara_player_code,$player_name,$mail_address,$input_org_id,$target_organization['org_name'],$player_data);
+                                    else {
+                                        $this->assignRowArray($rowArray, "登録可能", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization['org_name'], $player_data);
                                     }
                                 }
                             }
                         }
                     }
                     //入力組み合わせ②
-                    elseif(isset($user_id) && isset($player_id) && !isset($jara_player_code))
-                    {
+                    elseif (isset($user_id) && isset($player_id) && !isset($jara_player_code)) {
                         //ユーザーID、選手IDが全て入力されているとき
                         //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
                         //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
                         $user_data = $t_users->getUserDataFromMailAddress($mail_address);
-                        if(!in_array($user_id,array_column($user_data,'user_id')))
-                        {
-                            $this->assignInvalidData('無効データ（メールアドレス不正）',$renkei,$disabled,$checkResult);
+                        if (!in_array($user_id, array_column($user_data, 'user_id'))) {
+                            $this->assignInvalidData('無効データ（メールアドレス不正）', $renkei, $disabled, $checkResult);
                             $rowArray['renkei'] = $renkei;
                             $rowArray['disabled'] = $disabled;
                         }
-                        if($checkResult)
-                        {
+                        if ($checkResult) {
                             //選手データが登録されているか確認
                             $player_data = $t_players->getPlayer($player_id);
-                            if(empty($player_data))
-                            {
-                                $this->assignInvalidData('無効データ（未登録選手）',$renkei,$disabled,$checkResult);
+                            if (empty($player_data)) {
+                                $this->assignInvalidData('無効データ（未登録選手）', $renkei, $disabled, $checkResult);
                                 $rowArray['renkei'] = $renkei;
                                 $rowArray['disabled'] = $disabled;
-                            }                            
+                            }
                             //「選手テーブル」.「ユーザーID」とファイルに入力されている「ユーザーID」が一致するか確認
-                            if($checkResult)
-                            {
-                                if($player_data['user_id'] != $user_id)
-                                {
-                                    $this->assignInvalidData('無効データ（ユーザーデータと選手データ不一致）',$renkei,$disabled,$checkResult);
+                            if ($checkResult) {
+                                if ($player_data['user_id'] != $user_id) {
+                                    $this->assignInvalidData('無効データ（ユーザーデータと選手データ不一致）', $renkei, $disabled, $checkResult);
                                     $rowArray['renkei'] = $renkei;
                                     $rowArray['disabled'] = $disabled;
                                 }
                             }
-                            if($checkResult)
-                            {
+                            if ($checkResult) {
                                 //所属情報テーブルを取得
                                 $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);
                                 //団体テーブルから団体名を取得
                                 $target_organization = $t_organizations->getOrganization($input_org_id);
                                 //選手テーブルから出身地と居住地を取得
-                                $player_data = $t_players->getPlayersFromPlayerId($player_id);                                
+                                $player_data = $t_players->getPlayersFromPlayerId($player_id);
                                 //所属情報を取得できなかった場合
-                                if(empty($org_player_info))
-                                {
-                                    $this->assignRowArray($rowArray,"登録可能",$user_id,$player_id,$player_data['jara_player_code'],$player_name,$mail_address,null,null,$player_data);
+                                if (empty($org_player_info)) {
+                                    $this->assignRowArray($rowArray, "登録可能", $user_id, $player_id, $player_data['jara_player_code'], $player_name, $mail_address, null, null, $player_data);
                                 }
                                 //取得情報が取得できた場合
-                                else
-                                {
+                                else {
                                     //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
-                                    if(in_array($input_org_id ,array_column($org_player_info,'org_id')))
-                                    {
+                                    if (in_array($input_org_id, array_column($org_player_info, 'org_id'))) {
                                         //存在するとき
-                                        $this->assignRowArray($rowArray,"無効データ（重複選手）",$user_id,$player_id,$player_data['jara_player_code'],$player_name,$mail_address,$input_org_id,$target_organization['org_name'],$player_data);
+                                        $this->assignRowArray($rowArray, "無効データ（重複選手）", $user_id, $player_id, $player_data['jara_player_code'], $player_name, $mail_address, $input_org_id, $target_organization['org_name'], $player_data);
                                     }
                                     //入力値が団体所属情報のorg_id列に存在しない
-                                    else
-                                    {
-                                        $this->assignRowArray($rowArray,"登録可能",$user_id,$player_id,$player_data['jara_player_code'],$player_name,$mail_address,$input_org_id,$target_organization['org_name'],$player_data);
+                                    else {
+                                        $this->assignRowArray($rowArray, "登録可能", $user_id, $player_id, $player_data['jara_player_code'], $player_name, $mail_address, $input_org_id, $target_organization['org_name'], $player_data);
                                     }
                                 }
                             }
                         }
                     }
                     //入力組み合わせ③
-                    elseif(isset($user_id) && !isset($player_id) && isset($jara_player_code))
-                    {
+                    elseif (isset($user_id) && !isset($player_id) && isset($jara_player_code)) {
                         //ユーザーID、JARA選手コードが全て入力されているとき
                         //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
                         //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
                         $user_data = $t_users->getUserDataFromMailAddress($mail_address);
-                        if(!in_array($user_id,array_column($user_data,'user_id')))
-                        {
-                            $this->assignInvalidData('無効データ（メールアドレス不正）',$renkei,$disabled,$checkResult);
+                        if (!in_array($user_id, array_column($user_data, 'user_id'))) {
+                            $this->assignInvalidData('無効データ（メールアドレス不正）', $renkei, $disabled, $checkResult);
                             $rowArray['renkei'] = $renkei;
                             $rowArray['disabled'] = $disabled;
                         }
-                        if($checkResult)
-                        {
+                        if ($checkResult) {
                             //JARA選手コードで選手データが登録されているかを確認
                             $player_data = $t_players->getPlayerFromJaraPlayerCode($jara_player_code);
-                            if(empty($player_data))
-                            {
-                                $this->assignInvalidData('無効データ（無効選手ID）',$renkei,$disabled,$checkResult);
+                            if (empty($player_data)) {
+                                $this->assignInvalidData('無効データ（無効選手ID）', $renkei, $disabled, $checkResult);
                                 $rowArray['renkei'] = $renkei;
                                 $rowArray['disabled'] = $disabled;
                             }
                             //「選手テーブル」.「ユーザーID」とファイルに入力されている「ユーザーID」が一致するか確認
-                            if($checkResult)
-                            {
-                                if($player_data['user_id'] != $user_id)
-                                {
-                                    $this->assignInvalidData('無効データ（ユーザーデータと選手データ不一致）',$renkei,$disabled,$checkResult);
+                            if ($checkResult) {
+                                if ($player_data['user_id'] != $user_id) {
+                                    $this->assignInvalidData('無効データ（ユーザーデータと選手データ不一致）', $renkei, $disabled, $checkResult);
                                     $rowArray['renkei'] = $renkei;
                                     $rowArray['disabled'] = $disabled;
                                 }
                             }
 
-                            if($checkResult)
-                            {
+                            if ($checkResult) {
                                 //所属情報テーブルを取得
                                 $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);
                                 //団体テーブルから団体名を取得
                                 $target_organization = $t_organizations->getOrganization($input_org_id);
                                 //所属情報を取得できなかった場合
-                                if(empty($org_player_info))
-                                {
-                                    $this->assignRowArray($rowArray,"登録可能",$user_id,$player_data['player_id'],$jara_player_code,$player_name,$mail_address,null,null,$player_data);
+                                if (empty($org_player_info)) {
+                                    $this->assignRowArray($rowArray, "登録可能", $user_id, $player_data['player_id'], $jara_player_code, $player_name, $mail_address, null, null, $player_data);
                                 }
                                 //取得情報が取得できた場合
-                                else
-                                {
+                                else {
                                     //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
-                                    if(in_array($input_org_id ,array_column($org_player_info,'org_id')))
-                                    {
+                                    if (in_array($input_org_id, array_column($org_player_info, 'org_id'))) {
                                         //存在するとき
-                                        $this->assignRowArray($rowArray,"無効データ（重複選手）",$user_id,$player_data['player_id'],$jara_player_code,$player_name,$mail_address,$input_org_id,$target_organization['org_name'],$player_data);
+                                        $this->assignRowArray($rowArray, "無効データ（重複選手）", $user_id, $player_data['player_id'], $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization['org_name'], $player_data);
                                     }
                                     //入力値が団体所属情報のorg_id列に存在しない
-                                    else
-                                    {
-                                        $this->assignRowArray($rowArray,"登録可能",$user_id,$player_data['player_id'],$jara_player_code,$player_name,$mail_address,$input_org_id,$target_organization['org_name'],$player_data);
+                                    else {
+                                        $this->assignRowArray($rowArray, "登録可能", $user_id, $player_data['player_id'], $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization['org_name'], $player_data);
                                     }
                                 }
                             }
                         }
                     }
                     //入力組み合わせ④
-                    elseif(isset($user_id) && !isset($player_id) && !isset($jara_player_code))
-                    {
+                    elseif (isset($user_id) && !isset($player_id) && !isset($jara_player_code)) {
                         //ユーザーIDだけが入力されているとき
                         //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
                         //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
                         $user_data = $t_users->getUserDataFromMailAddress($mail_address);
-                        if(!in_array($user_id,array_column($user_data,'user_id')))
-                        {
-                            $this->assignInvalidData('無効データ（メールアドレス不正）',$renkei,$disabled,$checkResult);
+                        if (!in_array($user_id, array_column($user_data, 'user_id'))) {
+                            $this->assignInvalidData('無効データ（メールアドレス不正）', $renkei, $disabled, $checkResult);
                             $rowArray['renkei'] = $renkei;
                             $rowArray['disabled'] = $disabled;
                         }
-                        if($checkResult)
-                        {
+                        if ($checkResult) {
                             $temp_password_flag = $user_data['$temp_password_flag'];
-                            if($temp_password_flag == 0)
-                            {
+                            if ($temp_password_flag == 0) {
                                 //本登録の場合
                                 //ファイルに入力されている「ユーザーID」で「選手テーブル」検索
                                 $player_data = $t_players->getPlayerData($user_id);
-                                if(empty($player_data))
-                                {
+                                if (empty($player_data)) {
                                     //選手登録されていなかった場合
                                     $rowArray['renkei'] = "選手未登録のため選手登録後、所属選手登録を実施";
-                                    $rowArray['user_id'] = $user_id; 
+                                    $rowArray['user_id'] = $user_id;
                                     $rowArray['player_id'] = null;
                                     $rowArray['jara_player_code'] = null;
                                     $rowArray['player_name'] = $player_name;
@@ -538,23 +468,19 @@ class OrganizationPlayersController extends Controller
                                     $rowArray['org_name'] = null;
                                     $rowArray['birth_place'] =  null;
                                     $rowArray['residence'] = null;
-                                }
-                                else
-                                {
+                                } else {
                                     //選手登録されている場合
                                     //所属情報テーブルを取得
                                     $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);
                                     //団体テーブルから団体名を取得
                                     $target_organization = $t_organizations->getOrganization($org_player_info['org_id']);
-                                    
-                                    $this->assignRowArray($rowArray,"登録可能",$user_id,$player_id,$jara_player_code,$player_name,$mail_address,$org_player_info['org_id'],$target_organization['org_name'],$player_data);
+
+                                    $this->assignRowArray($rowArray, "登録可能", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $org_player_info['org_id'], $target_organization['org_name'], $player_data);
                                 }
-                            }
-                            elseif($temp_password_flag == 1)
-                            {
+                            } elseif ($temp_password_flag == 1) {
                                 //仮登録の場合
                                 $rowArray['renkei'] = "無効データ（仮登録ユーザー）";
-                                $rowArray['user_id'] = $user_id; 
+                                $rowArray['user_id'] = $user_id;
                                 $rowArray['player_id'] = $player_id;
                                 $rowArray['jara_player_code'] = $jara_player_code;
                                 $rowArray['player_name'] = $player_name;
@@ -567,223 +493,186 @@ class OrganizationPlayersController extends Controller
                         }
                     }
                     //入力組み合わせ⑤
-                    elseif(!isset($user_id) && isset($player_id) && isset($jara_player_code))
-                    {
+                    elseif (!isset($user_id) && isset($player_id) && isset($jara_player_code)) {
                         //選手ID、JARA選手コードが全て入力されているとき
                         //選手データが登録されているか確認
                         $player_data = $t_players->getPlayer($player_id);
-                        if(empty($player_data))
-                        {
-                            $this->assignInvalidData('無効データ（未登録選手）',$renkei,$disabled,$checkResult);
+                        if (empty($player_data)) {
+                            $this->assignInvalidData('無効データ（未登録選手）', $renkei, $disabled, $checkResult);
                             $rowArray['renkei'] = $renkei;
                             $rowArray['disabled'] = $disabled;
                         }
-                        if($checkResult)
-                        {
+                        if ($checkResult) {
                             //「選手テーブル」.「ユーザーID」に値が設定されているか確認
-                            if(empty($player_data['user_id']))
-                            {
-                                $this->assignInvalidData('無効データ（無効選手ID）',$renkei,$disabled,$checkResult);
+                            if (empty($player_data['user_id'])) {
+                                $this->assignInvalidData('無効データ（無効選手ID）', $renkei, $disabled, $checkResult);
                                 $rowArray['renkei'] = $renkei;
                                 $rowArray['disabled'] = $disabled;
                             }
 
-                            if($checkResult)
-                            {
+                            if ($checkResult) {
                                 //「選手テーブル」.「ユーザーID」と紐づく「ユーザーテーブル」.「メールアドレス」と
                                 //ファイルに入力されている「メールアドレス」が一致するか確認
                                 $user_data = $t_users->getUserDataFromUserId($player_data['user_id']);
-                                if(!in_array($mail_address,array_column($user_data,'mail_address')))
-                                {
-                                    $this->assignInvalidData('無効データ（メールアドレス不正）',$renkei,$disabled,$checkResult);
+                                if (!in_array($mail_address, array_column($user_data, 'mail_address'))) {
+                                    $this->assignInvalidData('無効データ（メールアドレス不正）', $renkei, $disabled, $checkResult);
                                     $rowArray['renkei'] = $renkei;
                                     $rowArray['disabled'] = $disabled;
                                 }
                             }
 
-                            if($checkResult)
-                            {
+                            if ($checkResult) {
                                 //「選手テーブル」.「JARA選手コード」とファイルに入力されている「JARA選手コード」が一致するか確認
-                                if($player_data['jara_player_code'] != $jara_player_code)
-                                {
-                                    $this->assignInvalidData('無効データ（JARA選手コード不一致）',$renkei,$disabled,$checkResult);
+                                if ($player_data['jara_player_code'] != $jara_player_code) {
+                                    $this->assignInvalidData('無効データ（JARA選手コード不一致）', $renkei, $disabled, $checkResult);
                                     $rowArray['renkei'] = $renkei;
                                     $rowArray['disabled'] = $disabled;
                                 }
                             }
                         }
-                        if($checkResult)
-                        {
+                        if ($checkResult) {
                             //所属情報テーブルを取得
                             $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);
                             //団体テーブルから団体名を取得
                             $target_organization = $t_organizations->getOrganization($input_org_id);
                             //選手テーブルから出身地と居住地を取得
-                            $player_data = $t_players->getPlayersFromPlayerId($player_id);                                
+                            $player_data = $t_players->getPlayersFromPlayerId($player_id);
                             //所属情報を取得できなかった場合
-                            if(empty($org_player_info))
-                            {
-                                $this->assignRowArray($rowArray,"登録可能",$user_id,$player_id,$jara_player_code,$player_name,$mail_address,null,null,$player_data);
+                            if (empty($org_player_info)) {
+                                $this->assignRowArray($rowArray, "登録可能", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, null, null, $player_data);
                             }
                             //取得情報が取得できた場合
-                            else
-                            {
+                            else {
                                 //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
-                                if(in_array($input_org_id ,array_column($org_player_info,'org_id')))
-                                {
+                                if (in_array($input_org_id, array_column($org_player_info, 'org_id'))) {
                                     //存在するとき
-                                    $this->assignRowArray($rowArray,"無効データ（重複選手）",$user_id,$player_id,$jara_player_code,$player_name,$mail_address,$input_org_id,$target_organization['org_name'],$player_data);
+                                    $this->assignRowArray($rowArray, "無効データ（重複選手）", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization['org_name'], $player_data);
                                 }
                                 //入力値が団体所属情報のorg_id列に存在しない
-                                else
-                                {
-                                    $this->assignRowArray($rowArray,"登録可能",$user_id,$player_id,$jara_player_code,$player_name,$mail_address,$input_org_id,$target_organization['org_name'],$player_data);
+                                else {
+                                    $this->assignRowArray($rowArray, "登録可能", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization['org_name'], $player_data);
                                 }
                             }
                         }
                     }
                     //入力組み合わせ⑥
-                    elseif(!isset($user_id) && isset($player_id) && !isset($jara_player_code))
-                    {
+                    elseif (!isset($user_id) && isset($player_id) && !isset($jara_player_code)) {
                         //選手IDだけが入力されているとき
                         //選手データが登録されているか確認
                         $player_data = $t_players->getPlayer($player_id);
-                        if(empty($player_data))
-                        {
-                            $this->assignInvalidData('無効データ（未登録選手）',$renkei,$disabled,$checkResult);
+                        if (empty($player_data)) {
+                            $this->assignInvalidData('無効データ（未登録選手）', $renkei, $disabled, $checkResult);
                             $rowArray['renkei'] = $renkei;
                             $rowArray['disabled'] = $disabled;
                         }
-                        if($checkResult)
-                        {
+                        if ($checkResult) {
                             //「選手テーブル」.「ユーザーID」に値が設定されているか確認
-                            if(empty($player_data['user_id']))
-                            {
-                                $this->assignInvalidData('無効データ（無効選手ID）',$renkei,$disabled,$checkResult);
+                            if (empty($player_data['user_id'])) {
+                                $this->assignInvalidData('無効データ（無効選手ID）', $renkei, $disabled, $checkResult);
                                 $rowArray['renkei'] = $renkei;
                                 $rowArray['disabled'] = $disabled;
                             }
 
-                            if($checkResult)
-                            {
+                            if ($checkResult) {
                                 //「選手テーブル」.「ユーザーID」と紐づく「ユーザーテーブル」.「メールアドレス」と
                                 //ファイルに入力されている「メールアドレス」が一致するか確認
                                 $user_data = $t_users->getUserDataFromUserId($player_data['user_id']);
-                                if(!in_array($mail_address,array_column($user_data,'mail_address')))
-                                {
-                                    $this->assignInvalidData('無効データ（メールアドレス不正）',$renkei,$disabled,$checkResult);
+                                if (!in_array($mail_address, array_column($user_data, 'mail_address'))) {
+                                    $this->assignInvalidData('無効データ（メールアドレス不正）', $renkei, $disabled, $checkResult);
                                     $rowArray['renkei'] = $renkei;
                                     $rowArray['disabled'] = $disabled;
                                 }
                             }
                         }
-                        if($checkResult)
-                        {
+                        if ($checkResult) {
                             //所属情報テーブルを取得
                             $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);
                             //団体テーブルから団体名を取得
                             $target_organization = $t_organizations->getOrganization($input_org_id);
                             //選手テーブルから出身地と居住地を取得
-                            $player_data = $t_players->getPlayersFromPlayerId($player_id);                                
+                            $player_data = $t_players->getPlayersFromPlayerId($player_id);
                             //所属情報を取得できなかった場合
-                            if(empty($org_player_info))
-                            {
-                                $this->assignRowArray($rowArray,"登録可能",$user_id,$player_id,$jara_player_code,$player_name,$mail_address,null,null,$player_data);
+                            if (empty($org_player_info)) {
+                                $this->assignRowArray($rowArray, "登録可能", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, null, null, $player_data);
                             }
                             //取得情報が取得できた場合
-                            else
-                            {
+                            else {
                                 //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
-                                if(in_array($input_org_id ,array_column($org_player_info,'org_id')))
-                                {
+                                if (in_array($input_org_id, array_column($org_player_info, 'org_id'))) {
                                     //存在するとき
-                                    $this->assignRowArray($rowArray,"無効データ（重複選手）",$user_id,$player_id,$jara_player_code,$player_name,$mail_address,$input_org_id,$target_organization['org_name'],$player_data);
+                                    $this->assignRowArray($rowArray, "無効データ（重複選手）", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization['org_name'], $player_data);
                                 }
                                 //入力値が団体所属情報のorg_id列に存在しない
-                                else
-                                {
-                                    $this->assignRowArray($rowArray,"登録可能",$user_id,$player_id,$jara_player_code,$player_name,$mail_address,$input_org_id,$target_organization['org_name'],$player_data);
+                                else {
+                                    $this->assignRowArray($rowArray, "登録可能", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization['org_name'], $player_data);
                                 }
                             }
                         }
                     }
                     //入力組み合わせ⑦
-                    elseif(!isset($user_id) && !isset($player_id) && isset($jara_player_code))
-                    {
+                    elseif (!isset($user_id) && !isset($player_id) && isset($jara_player_code)) {
                         //JARA選手コードだけが入力されているとき
                         $player_data = $t_players->getPlayerFromJaraPlayerCode($jara_player_code);
-                        if(empty($player_data))
-                        {
-                            $this->assignInvalidData('無効データ（未登録JARA選手コード）',$renkei,$disabled,$checkResult);
+                        if (empty($player_data)) {
+                            $this->assignInvalidData('無効データ（未登録JARA選手コード）', $renkei, $disabled, $checkResult);
                             $rowArray['renkei'] = $renkei;
                             $rowArray['disabled'] = $disabled;
                         }
-                        
-                        if($checkResult)
-                        {
+
+                        if ($checkResult) {
                             //「選手テーブル」.「ユーザーID」に値が設定されているか確認
-                            if(empty($player_data['user_id']))
-                            {
-                                $this->assignInvalidData('無効データ（連携待ちJARA選手コード）',$renkei,$disabled,$checkResult);
+                            if (empty($player_data['user_id'])) {
+                                $this->assignInvalidData('無効データ（連携待ちJARA選手コード）', $renkei, $disabled, $checkResult);
                                 $rowArray['renkei'] = $renkei;
                                 $rowArray['disabled'] = $disabled;
                             }
 
-                            if($checkResult)
-                            {
+                            if ($checkResult) {
                                 //「選手テーブル」.「ユーザーID」と紐づく「ユーザーテーブル」.「メールアドレス」と
                                 //ファイルに入力されている「メールアドレス」が一致するか確認
                                 $user_data = $t_users->getUserData($player_data['user_id']);
-                                if($user_data['mail_address'] != $mail_address)
-                                {
-                                    $this->assignInvalidData('無効データ（メールアドレス不一致）',$renkei,$disabled,$checkResult);
+                                if ($user_data['mail_address'] != $mail_address) {
+                                    $this->assignInvalidData('無効データ（メールアドレス不一致）', $renkei, $disabled, $checkResult);
                                     $rowArray['renkei'] = $renkei;
                                     $rowArray['disabled'] = $disabled;
                                 }
                             }
 
-                            if($checkResult)
-                            {
+                            if ($checkResult) {
                                 //所属情報テーブルを取得
                                 $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_data['player_id']);
                                 //団体テーブルから団体名を取得
                                 $target_organization = $t_organizations->getOrganization($input_org_id);
                                 //選手テーブルから出身地と居住地を取得
-                                $player_data = $t_players->getPlayersFromPlayerId($player_data['player_id']);                                
+                                $player_data = $t_players->getPlayersFromPlayerId($player_data['player_id']);
                                 //所属情報を取得できなかった場合
-                                if(empty($org_player_info))
-                                {
-                                    $this->assignRowArray($rowArray,"登録可能",$user_id,$player_data['player_id'],$jara_player_code,$player_name,$mail_address,null,null,$player_data);
+                                if (empty($org_player_info)) {
+                                    $this->assignRowArray($rowArray, "登録可能", $user_id, $player_data['player_id'], $jara_player_code, $player_name, $mail_address, null, null, $player_data);
                                 }
                                 //取得情報が取得できた場合
-                                else
-                                {
+                                else {
                                     //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
-                                    if(in_array($input_org_id ,array_column($org_player_info,'org_id')))
-                                    {
+                                    if (in_array($input_org_id, array_column($org_player_info, 'org_id'))) {
                                         //存在するとき
-                                        $this->assignRowArray($rowArray,"無効データ（重複選手）",$user_id,$player_data['player_id'],$jara_player_code,$player_name,$mail_address,$input_org_id,$target_organization['org_name'],$player_data);
+                                        $this->assignRowArray($rowArray, "無効データ（重複選手）", $user_id, $player_data['player_id'], $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization['org_name'], $player_data);
                                     }
                                     //入力値が団体所属情報のorg_id列に存在しない
-                                    else
-                                    {
-                                        $this->assignRowArray($rowArray,"登録可能",$user_id,$player_data['player_id'],$jara_player_code,$player_name,$mail_address,$input_org_id,$target_organization['org_name'],$player_data);
+                                    else {
+                                        $this->assignRowArray($rowArray, "登録可能", $user_id, $player_data['player_id'], $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization['org_name'], $player_data);
                                     }
                                 }
                             }
                         }
                     }
                     //入力組み合わせ⑧
-                    else
-                    {
+                    else {
                         //ユーザーID、選手ID、JARA選手コードのいずれも入力されていないとき                        
                         //ファイルに記載されている「メールアドレス」で、「ユーザーテーブル」を検索
                         $user_data = $t_users->getUserDataFromMailAddress($mail_address);
-                        if(empty($user_data))
-                        {
+                        if (empty($user_data)) {
                             //ユーザー情報が登録されていない場合
                             $rowArray['renkei'] = "ユーザー未登録";
-                            $rowArray['user_id'] = null; 
+                            $rowArray['user_id'] = null;
                             $rowArray['player_id'] = null;
                             $rowArray['jara_player_code'] = null;
                             $rowArray['player_name'] = $player_name;
@@ -792,21 +681,17 @@ class OrganizationPlayersController extends Controller
                             $rowArray['org_name'] = null;
                             $rowArray['birth_place'] =  null;
                             $rowArray['residence'] = null;
-                        }
-                        else
-                        {
+                        } else {
                             //ユーザー情報が登録されていた場合
                             $temp_password_flag = $user_data['$temp_password_flag'];
-                            if($temp_password_flag == 0)
-                            {
+                            if ($temp_password_flag == 0) {
                                 //本登録の場合
                                 //ファイルに入力されている「ユーザーID」で「選手テーブル」検索
                                 $player_data = $t_players->getPlayerData($user_id);
-                                if(empty($player_data))
-                                {
+                                if (empty($player_data)) {
                                     //選手登録されていなかった場合
                                     $rowArray['renkei'] = "選手未登録のため選手登録後、所属選手登録を実施";
-                                    $rowArray['user_id'] = $user_id; 
+                                    $rowArray['user_id'] = $user_id;
                                     $rowArray['player_id'] = null;
                                     $rowArray['jara_player_code'] = null;
                                     $rowArray['player_name'] = $player_name;
@@ -815,23 +700,19 @@ class OrganizationPlayersController extends Controller
                                     $rowArray['org_name'] = null;
                                     $rowArray['birth_place'] =  null;
                                     $rowArray['residence'] = null;
-                                }
-                                else
-                                {
+                                } else {
                                     //選手登録されている場合
                                     //所属情報テーブルを取得
                                     $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);
                                     //団体テーブルから団体名を取得
                                     $target_organization = $t_organizations->getOrganization($org_player_info['org_id']);
-                                    
-                                    $this->assignRowArray($rowArray,"登録可能",$user_id,$player_id,$jara_player_code,$player_name,$mail_address,$org_player_info['org_id'],$target_organization['org_name'],$player_data);
+
+                                    $this->assignRowArray($rowArray, "登録可能", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $org_player_info['org_id'], $target_organization['org_name'], $player_data);
                                 }
-                            }
-                            elseif($temp_password_flag == 1)
-                            {
+                            } elseif ($temp_password_flag == 1) {
                                 //仮登録の場合
                                 $rowArray['renkei'] = "無効データ（仮登録ユーザー）";
-                                $rowArray['user_id'] = $user_id; 
+                                $rowArray['user_id'] = $user_id;
                                 $rowArray['player_id'] = $player_id;
                                 $rowArray['jara_player_code'] = $jara_player_code;
                                 $rowArray['player_name'] = $player_name;
@@ -890,7 +771,7 @@ class OrganizationPlayersController extends Controller
     }
 
     //データのチェックで不備があったときの変数代入処理
-    private function assignInvalidData($error_description,&$renkei,&$disabled,&$checkResult)
+    private function assignInvalidData($error_description, &$renkei, &$disabled, &$checkResult)
     {
         $renkei = $error_description;
         $disabled = "disabled";
@@ -898,10 +779,10 @@ class OrganizationPlayersController extends Controller
     }
 
     //フロントエンドに返す１行データの配列に値を代入する
-    private function assignRowArray(&$rowArray,$renkei,$user_id,$player_id,$jara_player_code,$player_name,$mail_address,$org_id,$ord_name,$player_data)
+    private function assignRowArray(&$rowArray, $renkei, $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $org_id, $ord_name, $player_data)
     {
         $rowArray['renkei'] = $renkei;
-        $rowArray['user_id'] = $user_id; 
+        $rowArray['user_id'] = $user_id;
         $rowArray['player_id'] = $player_id;
         $rowArray['jara_player_code'] = $jara_player_code;
         $rowArray['player_name'] = $player_name;
@@ -910,9 +791,21 @@ class OrganizationPlayersController extends Controller
         $rowArray['org_name'] = $ord_name;
         $rowArray['birth_country_id'] = $player_data['birth_country_id'];
         $rowArray['birth_pref_id'] = $player_data['birth_pref_id'];
-        $rowArray['birth_place'] =  $player_data['birth_country_name'].$player_data['birth_pref_name'];
+        $rowArray['birth_place'] =  $player_data['birth_country_name'] . $player_data['birth_pref_name'];
         $rowArray['residence_country_id'] = $player_data['residence_country_id'];
         $rowArray['residence_pref_id'] = $player_data['residence_pref_id'];
-        $rowArray['residence'] = $player_data['residence_country_name'].$player_data['residence_pref_name'];
+        $rowArray['residence'] = $player_data['residence_country_name'] . $player_data['residence_pref_name'];
+    }
+
+    //団体所属追加選手検索画面で、選手を検索する
+    public function searchOrganizationPlayersForTeamRef(Request $request, T_organization_players $t_organization_players)
+    {
+        Log::debug(sprintf("searchOrganizationPlayersForTeamRef start"));
+        $searchInfo = $request->all();
+        $searchValue = [];
+        $searchCondition = $this->generateOrganizationPlayersSearchCondition($searchInfo, $searchValue);
+        $players = $t_organization_players->getOrganizationPlayersFromCondition($searchCondition, $searchValue);
+        Log::debug(sprintf("searchOrganizationPlayersForTeamRef end"));
+        return response()->json(['result' => $players]); //DBの結果を返す
     }
 }

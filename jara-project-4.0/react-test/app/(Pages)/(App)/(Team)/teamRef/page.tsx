@@ -97,15 +97,21 @@ export default function TeamRef() {
         const response = await axios.post('/getOrgData', org_id); //団体情報取得
         console.log(response);
         setFormData(response.data.result);
-        
+        // // 主催大会大会
         // const hostTournamentsResponse = await axios.get<Tournament[]>('/tournamentSearch',);
-        // setHostTournaments(hostTournamentsResponse.data);
+        const hostTournamentsResponse = await axios.post('/getTournamentInfoData_org', org_id);
+        console.log(hostTournamentsResponse.data.result);
+        setHostTournaments(hostTournamentsResponse.data.result);
         // // エントリー大会
         // const entTournamentsResponse = await axios.get<Tournament[]>('/tournamentSearch',);
-        // setEntTournaments(entTournamentsResponse.data);
+        const entTournamentsResponse = await axios.post('/getEntryTournamentsViewForTeamRef', org_id); 
+        console.log(entTournamentsResponse.data.result);
+        setEntTournaments(entTournamentsResponse.data);
         // // 所属選手
         // const playersResponse = await axios.get<PlayerInformationResponse[]>('/playerSearch',);
-        // setPlayers(playersResponse.data);
+        const playersResponse = await axios.post('/searchOrganizationPlayersForTeamRef', org_id);
+        console.log(playersResponse.data.result);
+        setPlayers(playersResponse.data.result);
         
         // const userDataResponse = await axios.get<UserResponse>('/api/user');
         const userDataResponse = await axios.get('/api/user');
@@ -113,7 +119,7 @@ export default function TeamRef() {
 
         // 所属スタッフ
         // const staffsResponse = await axios.get<Staff[]>('/staff');
-        const staffsResponse = await axios.post('/getOrgStaffData', org_id); //団体情報取得
+        const staffsResponse = await axios.post('/getOrgStaffData', org_id); //スタッフ情報取得
         console.log(staffsResponse.data.result);
         setStaffs(staffsResponse.data.result);
 
@@ -508,7 +514,7 @@ export default function TeamRef() {
                         id='staffType1'
                         value='監督'
                         onChange={() => { }}
-                        // checked={row.staff_type_id.includes('監督')}
+                        checked={row.staff_type_id.includes('監督')}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -517,7 +523,7 @@ export default function TeamRef() {
                         id='staffType2'
                         value='部長'
                         onChange={() => { }}
-                        // checked={row.staff_type_id.includes('部長')}
+                        checked={row.staff_type_id.includes('部長')}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -526,7 +532,7 @@ export default function TeamRef() {
                         id='staffType3'
                         value='コーチ'
                         onChange={() => { }}
-                        // checked={row.staff_type_id.includes('コーチ')}
+                        checked={row.staff_type_id.includes('コーチ')}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -535,7 +541,7 @@ export default function TeamRef() {
                         id='staffType4'
                         value='マネージャー'
                         onChange={() => { }}
-                        // checked={row.staff_type_id.includes('マネージャー')}
+                        checked={row.staff_type_id.includes('マネージャー')}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -544,7 +550,7 @@ export default function TeamRef() {
                         id='staffType5'
                         value='管理代理'
                         onChange={() => { }}
-                        // checked={row.staff_type_id.includes('管理代理')}
+                        checked={row.staff_type_id.includes('管理代理')}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>

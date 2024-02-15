@@ -879,7 +879,7 @@ class OrganizationController extends Controller
         for ($i = 0; $i < count($tOrg); $i++) {
             $staff_type_id = array();
             if ($tOrg[$i]->is_director == 1) {
-                array_push($staff_type_id, "管理者(監督)");
+                array_push($staff_type_id, "監督");
             }
             if ($tOrg[$i]->is_head == 1) {
                 array_push($staff_type_id, "部長");
@@ -895,8 +895,31 @@ class OrganizationController extends Controller
             }
             $tOrg[$i]->staff_type_id = $staff_type_id;
         }
-        Log::debug($tOrg);
         Log::debug(sprintf("getOrgStaffData end"));
         return response()->json(['result' => $tOrg]); //DBの結果を返す
+    }
+
+    //エントリー大会取得
+    public function getEntryTournamentsViewForTeamRef(
+        Request $request,
+        T_tournaments $tTournaments,
+        T_raceResultRecord $tRaceResultRecord
+    ) {
+        Log::debug(sprintf("getEntryTournamentsViewForTeamRef start"));
+        $targetOrgId = $request->all();
+        Log::debug($targetOrgId);
+        //出漕結果記録情報を取得
+        $tournamentIds = $tRaceResultRecord->getTournamentIdForResultsRecord($targetOrgId);
+        //エントリー大会情報取得のための条件文を生成する
+        $tournamentIdColumnName = 'tourn_id';
+        $tournamentsIdCondition = $this->generateIdCondition($tournamentIds, $tournamentIdColumnName);
+        //エントリー大会情報を取得
+        $entryTournaments = [];
+        if (!empty($tournamentsIdCondition)) {
+            $entryTournaments = $tTournaments->getEntryTournaments($tournamentsIdCondition);
+        }
+
+        Log::debug(sprintf("getEntryTournamentsViewForTeamRef end"));
+        return response()->json(['result' => $entryTournaments]); //DBの結果を返す
     }
 }

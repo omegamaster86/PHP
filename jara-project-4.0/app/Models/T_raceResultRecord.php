@@ -712,8 +712,8 @@ class T_raceResultRecord extends Model
             'select `tourn_id`
                                         from `t_race_result_record`
                                         where `delete_flag`=0
-                                        and `org_id`=?',
-            [$targetOrgId]
+                                        and `org_id`= :org_id',
+            $targetOrgId
         );
         return $tournamentIds;
     }

@@ -228,7 +228,7 @@ class T_tournaments extends Model
                                     from `t_tournaments`
                                     left join `m_venue`
                                     on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
-                                    left join `t_organization`
+                                    left join `t_organizations`
                                     on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
                                     where 1=1
                                     and `t_tournaments`.`delete_flag` = 0
@@ -268,7 +268,7 @@ class T_tournaments extends Model
                         from `t_tournaments`
                         left join `m_venue`
                         on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
-                        left join `t_organization`
+                        left join `t_organizations`
                         on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
                         where 1=1
                         and `t_tournaments`.`delete_flag` = 0

@@ -235,7 +235,7 @@ class T_organization_players extends Model
                         join `t_players` tp
                         on top.`player_id` = tp.`player_id`
                         left join `m_sex`
-                        on tp.`sex` = `m_sex`.`sex_id`
+                        on tp.`sex_id` = `m_sex`.`sex_id`
                         left join m_countries bir_cont
                         on tp.birth_country = bir_cont.country_id
                         left join m_prefectures bir_pref

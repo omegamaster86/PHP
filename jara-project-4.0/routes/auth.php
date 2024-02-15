@@ -102,17 +102,21 @@ Route::middleware('auth')->group(function () {
     Route::get('getStaffData', [OrganizationController::class, 'getStaffData']); //団体所属スタッフを取得 20240212
     Route::post('orgSearch', [OrganizationController::class, 'searchOrganization']); //団体検索 20240212
     Route::get('getOrganizationForOrgManagement', [OrganizationController::class, 'getOrganizationForOrgManagement']); //団体管理画面用に団体情報を取得 20240212
+    Route::post('getEntryTournamentsViewForTeamRef', [OrganizationController::class, 'getEntryTournamentsViewForTeamRef']); //エントリー大会 20240212
+    Route::post('searchOrganizationPlayersForTeamRef', [OrganizationPlayersController::class, 'searchOrganizationPlayersForTeamRef']); //主催大会 20240215
 
     //スタッフ関連
     Route::post('getOrgStaffData', [OrganizationController::class, 'getOrgStaffData']); //スタッフ情報取得 20240214
 
     //大会関連
     Route::post('getTournamentInfoData', [TournamentController::class, 'getTournamentInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
+    Route::post('getTournamentInfoData_org', [TournamentController::class, 'getTournamentInfoData_org']); //主催大会 20240215
     Route::post('storeTournamentInfoData', [TournamentController::class, 'storeTournamentInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
     Route::post('updateTournamentInfoData', [TournamentController::class, 'updateTournamentInfoData']); //大会情報更新 20240202
     Route::get('getRaceInfoData', [TournamentController::class, 'getRaceInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
     Route::post('deleteTournamentData', [TournamentController::class, 'deleteTournamentData']); //DBから大会情報を削除する 20240205
     Route::post('tournamentSearch', [TournamentController::class, 'searchTournament']); //大会検索 20240212
+    
 
     //レース関連
     Route::post('getRaceData', [TournamentController::class, 'getRaceData']); //レース情報取得 20240214

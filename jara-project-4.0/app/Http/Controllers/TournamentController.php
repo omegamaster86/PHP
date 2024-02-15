@@ -479,6 +479,17 @@ class TournamentController extends Controller
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 
+    //主催大会
+    public function getTournamentInfoData_org(Request $request,T_tournaments $tourn)
+    {
+        Log::debug(sprintf("getTournamentInfoData_org start"));
+        $reqData = $request->all();
+        Log::debug($reqData['org_id']);
+        $result = $tourn->getTournamentsFromOrgId($reqData['org_id']); //DBに選手を登録 20240215
+        Log::debug(sprintf("getTournamentInfoData_org end"));
+        return response()->json(['result' => $result]); //DBの結果を返す
+    }
+
     //reactからの大会登録 20240202
     public function storeTournamentInfoData(Request $request, T_tournaments $tTournament, T_races $tRace)
     {
