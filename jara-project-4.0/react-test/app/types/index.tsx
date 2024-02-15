@@ -152,6 +152,8 @@ interface UserResponse {
   weight: string; // 体重
   temp_password_flag: boolean; // 登録ステータス
   photo: string; // 写真
+  uploadedPhoto?: File; // アップロードされて写真を保存する
+  uploadedPhotoName?: string; // アップロードされて写真の名前を保存する
 }
 
 // ボランティア情報

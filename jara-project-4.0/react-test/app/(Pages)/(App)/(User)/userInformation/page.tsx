@@ -99,7 +99,7 @@ export default function UserInformationUpdate() {
   const { user} = useAuth({ middleware: 'auth' }) //簡単にユーザー情報もらうため
   // 実装　ー　クマール　ー終了
   // フォームの入力値を管理する関数
-  const handleInputChange = (name: string, value: string) => {
+  const handleInputChange = (name: string, value: string | File | null) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -115,6 +115,18 @@ export default function UserInformationUpdate() {
       }));
     }
   }, [formData.residence_country]);
+
+  //アップロードされたファイルを保存するー開始
+  useEffect(() => {
+    if(currentShowFile?.file) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        uploadedPhotoName:currentShowFile.file.name,
+        uploadedPhoto: currentShowFile.file
+      }))
+    }
+  }, [currentShowFile?.file]);//ファイルのアップロード終わったら
+  //アップロードされたファイルを保存するー完了
 
   useEffect(() => {
     const fetchMaster = async () => {
@@ -195,6 +207,8 @@ export default function UserInformationUpdate() {
     // APIを叩いて、ユーザー情報を取得する
   }, []);
 
+
+
   const modeCustomButtons = {
     update: (
       <CustomButton
@@ -238,8 +252,6 @@ export default function UserInformationUpdate() {
           ) {
             return;
           }
-          // formData.mailaddress
-          {{console.log("email", email); console.log("prev email", prevEmail);}}
           router.push(
             '/userInformation?mode=confirm&isMailChanged=' +
               ((email && email !== prevEmail) ? 'true' : 'false') +
@@ -256,12 +268,14 @@ export default function UserInformationUpdate() {
         className='w-[200px]'
         onClick={async() => {
           // TODO: 更新処理
+          
           if (isMailChanged === 'true') {
             if(isNumberVerified){
               const updateUser = async()=> {
                 const csrf = () => axios.get('/sanctum/csrf-cookie')
                 await csrf()
                 const requestBody = {};
+                
                 axios
                   // .post('http://localhost:3100/', requestBody)
                   .post('/updateUserData',formData)
@@ -319,9 +333,17 @@ export default function UserInformationUpdate() {
               const csrf = () => axios.get('/sanctum/csrf-cookie')
               await csrf()
               const requestBody = {};
+              
               axios
                 // .post('http://localhost:3100/', requestBody)
-                .post('/updateUserData',formData)
+                .post('/updateUserData',formData,{ 
+                  //ファイルを送るため
+                  headers: { 
+                    'content-type' : 'multipart/form-data' ,
+                    'X-Requested-With': 'XMLHttpRequest',
+                   } ,
+                 })
+
                 .then((response) => {
                   // 成功時の処理を実装
                   window.confirm('ユーザー情報を更新しました。');
@@ -391,6 +413,7 @@ export default function UserInformationUpdate() {
           {/* src={formData.photo} */}
           {mode === 'confirm' && (
             <img src={currentShowFile?.preview??`http://localhost:8000/images/users/${formData.photo}`} className='w-[300px] h-[300px] rounded-[2px] object-cover' alt = "Profile Photo" />
+            
           )}
         </div>
         {/* ユーザーID */}
@@ -755,3 +778,4 @@ export default function UserInformationUpdate() {
     </main>
   );
 }
+

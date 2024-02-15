@@ -715,6 +715,28 @@ class UserController extends Controller
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
     public function updateUserData(Request $request, T_users $t_users)
     {
+        if ($request->hasFile('uploadedPhoto')) {
+            $file = $request->file('uploadedPhoto');
+            // $file->store('toPath', ['disk' => 'public']);
+            $file_name = Auth::user()->user_id. '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
+            $url = 'http://localhost:8000/images/users/'.$file_name;
+            $request->photo = $url;
+            // Storage::disk('public')->put($fileName, $file);
+
+            // Storage::disk('public')->putFileAs('uploads', $file, $fileName);
+
+            // $destination_path = public_path().'/images/users/' ;
+            // $file->move($destination_path,$file_name);
+            $file->storeAs('public/images/users', $file_name);
+
+            // You can now save the $filePath to the database or use it as needed
+            // ...
+            // return response()->json(['message' => 'File uploaded successfully']);
+        }
+        else {
+            Log::debug(sprintf("Donot have file"));
+        }
+
         Log::debug(sprintf("updateUserData start"));
         $reqData = $request->all();
         //確認画面から登録
@@ -731,6 +753,8 @@ class UserController extends Controller
         $t_users::$userInfo['photo'] = $reqData['photo']; //写真
         $result = $t_users->updateUserData($t_users::$userInfo); //レース情報を取得
         Log::debug(sprintf("updateUserData end"));
+
+        
         return response()->json(['result' => $result]); //DBの結果を返す
     }
     //react ユーザー情報の削除 20240212
