@@ -133,7 +133,7 @@ class T_tournaments extends Model
                         :registered_user_id,
                         :updated_time,
                         :updated_user_id,
-                        :delete_flag
+                        0
                     )',$tournament);
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す

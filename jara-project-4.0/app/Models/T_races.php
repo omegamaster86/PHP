@@ -77,6 +77,8 @@ class T_races extends Model
                 $racesInfo['delete_flag'],
             ]
         );
+        $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
+        return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 
     //interfaceのRaceを引数としてinsertを実行する
@@ -123,7 +125,7 @@ class T_races extends Model
                         :user_id, 
                         :current_datetime,
                         :user_id,
-                        :delete_flag
+                        0
                     )'
                     ,$race);
     }

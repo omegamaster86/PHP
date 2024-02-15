@@ -135,6 +135,28 @@ class T_players extends Model
         }
     }
 
+    //interfaceのPlayerInformationResponseを引数としてupdateを実行する
+    public function updatePlayerInformationResponse($playerInformationResponse)
+    {
+        DB::update('update `t_players`
+                    `jara_player_id`= :jara_player_id,
+                    `player_name`= :player_name,
+                    `date_of_birth`= :date_of_birth,
+                    `sex_id`= :sex_id,
+                    `height`= :height,
+                    `weight`= :weight,
+                    `side_info`= :side_info,
+                    `birth_country`= :birth_country,
+                    `birth_prefecture`= :birth_prefecture,
+                    `residence_country`= :residence_country,
+                    `residence_prefecture`= :residence_prefecture,
+                    `photo`= :photo,
+                    `updated_time`= :updated_time,
+                    `updated_user_id`= :updated_user_id,
+                    where `user_id` = :user_id'
+                    ,$playerInformationResponse);
+    }
+
     //react 選手情報更新画面用 選手情報の更新を行う 20240131
     public function deletePlayerData($playersInfo)
     {
@@ -162,8 +184,7 @@ class T_players extends Model
             return $result;
         }
     }
-
-
+    
     public function insertPlayers($playersInfo)
     {
         $result = "success";
@@ -222,6 +243,59 @@ class T_players extends Model
             $result = "failed";
             return $result;
         }
+    }
+
+    //PlayerInformationResponseを引数としてinsertを実行する
+    //登録日時、更新日時は「current_datetime」
+    //登録ユーザー、更新ユーザーは「user_id」
+    //で指定する
+    public function insertPlayer($playerInfo)
+    {
+        DB::insert('insert into t_players
+                    (
+                        `user_id`,
+                        `jara_player_id`,
+                        `player_name`,
+                        `date_of_birth`,
+                        `sex_id`,
+                        `height`,
+                        `weight`,		
+                        `side_info`,
+                        `birth_country`,
+                        `birth_prefecture`,
+                        `residence_country`,
+                        `residence_prefecture`,
+                        `photo`,
+                        `registered_time`,
+                        `registered_user_id`,
+                        `updated_time`,
+                        `updated_user_id`,
+                        `delete_flag`
+                    )
+                    values
+                    (
+                        :user_id,
+                        :jara_player_id,
+                        :player_name,
+                        :date_of_birth,
+                        :sex_id,
+                        :height,
+                        :weight,		
+                        :side_info,
+                        :birth_country,
+                        :birth_prefecture,
+                        :residence_country,
+                        :residence_prefecture,
+                        :photo,
+                        :current_datetime,
+                        :user_id,
+                        :current_datetime,
+                        :user_id,
+                        0
+                    )'
+                    ,$playerInfo);
+        $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
+        return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 
     public function updatePlayers($playersInfo)

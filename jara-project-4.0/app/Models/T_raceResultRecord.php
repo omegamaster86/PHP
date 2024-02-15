@@ -546,7 +546,7 @@ class T_raceResultRecord extends Model
                         :user_id, 
                         :current_time, 
                         :user_id, 
-                        :delete_flag
+                        0
                     )'
             ,$raceResultRecordResponse);
         //挿入したIDを取得

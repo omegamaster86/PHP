@@ -152,6 +152,41 @@ class T_organization_players extends Model
         DB::insert($sqlString,$insertValue);
     }
 
+    //interfaceのTeamPlayerInformationResponseを引数としてinsertを実行する
+    //登録日時、更新日時は「current_datetime」
+    //登録ユーザー、更新ユーザーは「user_id」
+    //で指定する
+    public function insertOrganizationPlayer($organizationPlayer)
+    {
+        DB::insert('insert INTO `t_organization_players`
+                    (
+                        `org_id`,
+                        `player_id`,
+                        `joining_date`,
+                        `deperture_date`
+                        `registered_time`,
+                        `registered_user_id`,
+                        `updated_time`,
+                        `updated_user_id`,
+                        `delete_flag`
+                    )
+                    VALUES
+                    (
+                        :org_id,
+                        :player_id,
+                        :joining_date,
+                        :deperture_date
+                        :current_datetime,
+                        :user_id,
+                        :current_datetime,
+                        :user_id,
+                        0
+                    )'
+                    ,$organizationPlayer);
+        $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
+        return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
+    }
+
     //団体所属選手を削除する
     //delete_flagを1にする
     public function updateDeleteFlagOrganizationPlayers($player_id)

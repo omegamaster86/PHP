@@ -292,4 +292,67 @@ class T_users extends Authenticatable
                     ,Auth::user()->user_id
                     ,Auth::user()->user_id]);
     }
+
+    
+    //ユーザー種別を更新する
+    //フラグを立てる場合の関数
+    //更新対象のユーザーIDを「user_id」
+    //更新する値を「input」
+    //で指定すること
+    public function updateUserTypeRegist($updateInfo)
+    {
+        DB::update('update `t_users`
+                    set `user_type` = 
+                    (
+                        select
+                        LPAD(conv((`user_type_decimal` - `input_decimal`),10,2),8,"0") as `user_type`
+                        FROM
+                        (
+                            SELECT
+                            conv(`user_type`,2,10)	as `user_type_decimal`
+                            ,conv(`input`,2,10) as `input_decimal`
+                            FROM
+                            (
+                                select `user_type`
+                                ,:input	as `input`
+                                from `t_users`
+                                where 1=1
+                                and user_id = :user_id
+                            )t
+                        )t
+                    )
+                    where `user_id` = :user_id'
+                    ,$updateInfo);
+    }
+
+    //ユーザー種別を更新する
+    //フラグを戻す場合の関数
+    //更新対象のユーザーIDを「user_id」
+    //更新する値を「input」
+    //で指定すること
+    public function updateUserTypeDelete($updateInfo)
+    {
+        DB::update('update `t_users`
+                    set `user_type` = 
+                    (
+                        select
+                        LPAD(conv((`user_type_decimal` + `input_decimal`),10,2),8,"0") as `user_type`
+                        FROM
+                        (
+                            SELECT
+                            conv(`user_type`,2,10)	as `user_type_decimal`
+                            ,conv(`input`,2,10) as `input_decimal`
+                            FROM
+                            (
+                                select `user_type`
+                                ,:input	as `input`
+                                from `t_users`
+                                where 1=1
+                                and user_id = :user_id
+                            )t
+                        )t
+                    )
+                    where `user_id` = :user_id'
+                    ,$updateInfo);
+    }
 }

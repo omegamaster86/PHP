@@ -324,6 +324,16 @@ interface Staff {
   isUserFound: boolean; // ユーザーが見つかったかどうか　#置き換え作業未対応
 }
 
+//団体所属選手情報
+interface OrganizationPlayer
+{
+  org_player_id: number;  //団体所属ID
+  org_id: number;         //団体ID
+  player_id: number;      //選手ID
+  joining_date: string;   //団体登録年月日
+  deperture_date: string; //退団年月日
+}
+
 // 団体種別
 interface OrgType {
   id: number; // ID
