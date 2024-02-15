@@ -138,97 +138,79 @@ class T_organizations extends Model
         return $organization;
     }
 
-    //Insertを実行して、InsertしたレコードのID（主キー）を返す
-    public function insertOrganization($organizationInfo)
+    //interfaceのOrganizationを引数としてInsertを実行し、InsertしたレコードのID（主キー）を返す
+    public function insertOrganization($organization)
     {
         DB::insert('insert into `t_organizations`
                     (
-                        `entrysystem_org_id`,
                         `org_name`,
-                        `jara_org_type`,
-                        `jara_org_reg_trail`,
-                        `pref_org_type`,
-                        `pref_org_reg_trail`,
-                        `org_class`,
+                        `entrysystem_org_id`,
                         `founding_year`,
                         `post_code`,
                         `location_country`,
                         `location_prefecture`,
                         `address1`,
                         `address2`,
+                        `org_class`,
+                        `jara_org_type`,
+                        `jara_org_reg_trail`,
+                        `pref_org_type`,
+                        `pref_org_reg_trail`,
                         `registered_time`,
                         `registered_user_id`,
                         `updated_time`,
                         `updated_user_id`,
                         `delete_flag`
-                    )values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                    [
-                        $organizationInfo['entrysystemOrgId'],
-                        $organizationInfo['orgName'],
-                        $organizationInfo['jaraOrgType'],
-                        $organizationInfo['jaraOrgRegTrail'],
-                        $organizationInfo['prefOrgType'],
-                        $organizationInfo['prefOrgRegTrail'],
-                        $organizationInfo['orgClass'],
-                        $organizationInfo['foundingYear'],
-                        $organizationInfo['post_code'],
-                        //$organizationInfo['country'],
-                        112,                        //country=日本
-                        $organizationInfo['pref_id'],
-                        $organizationInfo['address1'],
-                        $organizationInfo['address2'],
-                        now()->format('Y-m-d H:i:s.u'),
-                        Auth::user()->user_id,
-                        now()->format('Y-m-d H:i:s.u'),
-                        Auth::user()->user_id,
+                    )
+                    values
+                    (
+                        :org_name,
+                        :entrysystem_org_id,
+                        :founding_year,
+                        :post_code,
+                        :location_country,
+                        :location_prefecture,
+                        :address1,
+                        :address2,
+                        :org_class,
+                        :jara_org_type,
+                        :jara_org_reg_trail,
+                        :pref_org_type,
+                        :pref_org_reg_trail,
+                        :current_datetime,
+                        :user_id,
+                        :current_time,
+                        :user_id,
                         0
-                    ]
-                );
+                    )',
+                    $organization);
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
         return $insertId;
     }
 
-    //任意の団体情報を更新する
-    public function updateOrganization($organizationInfo)
+    //interfaceのorganizationを引数として、任意の団体情報のupdateを実行する
+    public function updateOrganization($organization)
     {
-        DB::update(
-                'update `t_organizations`
-                set `entrysystem_org_id` = ?,
-                `org_name` = ?,
-                `jara_org_type` = ?,
-                `jara_org_reg_trail` = ?,
-                `pref_org_type` = ?,
-                `pref_org_reg_trail` = ?,
-                `org_class` = ?,
-                `founding_year` = ?,
-                `post_code` = ?,
-                `location_country` = ?,
-                `location_prefecture` = ?,
-                `address1` = ?,
-                `address2` = ?,                                
-                `updated_time` = ?,
-                `updated_user_id` = ?
-                where `org_id` = ?
-            ',[
-                $organizationInfo['entrysystemOrgId'],
-                $organizationInfo['orgName'],
-                $organizationInfo['jaraOrgType'],
-                $organizationInfo['jaraOrgRegTrail'],
-                $organizationInfo['prefOrgType'],
-                $organizationInfo['prefOrgRegTrail'],
-                $organizationInfo['orgClass'],
-                $organizationInfo['foundingYear'],
-                $organizationInfo['post_code'],
-                112,                                    //country=日本
-                $organizationInfo['pref_id'],
-                $organizationInfo['address1'],
-                $organizationInfo['address2'],
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id,
-                $organizationInfo['org_id'],
-            ]
-        );
+        DB::update('update `t_organizations`
+                    set
+                    `org_name` = :org_name,
+                    `entrysystem_org_id` = :entrysystem_org_id,
+                    `founding_year` = :founding_year,
+                    `post_code` = :post_code,
+                    `location_country` = :location_country,
+                    `location_prefecture` = :location_prefecture,
+                    `address1` = :address1,
+                    `address2` = :address2,
+                    `org_class` = :org_class,
+                    `jara_org_type` = :jara_org_type,
+                    `jara_org_reg_trail` = :jara_org_reg_trail,
+                    `pref_org_type` = :pref_org_type,
+                    `pref_org_reg_trail` = :pref_org_reg_trail,
+                    `updated_time` = :updated_time,
+                    `updated_user_id` = :updated_user_id
+                    where `org_id` = :org_id
+                ',$organization);
     }
 
     //エントリーシステムの団体IDの数を取得する
