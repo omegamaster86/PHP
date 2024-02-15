@@ -99,9 +99,8 @@ export default function PlayerInformationRef() {
       const fetchData = async () => {
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
-        // const userResponse = await axios.get<UserResponse>('http://localhost:3100/user'); //残件対象項目
-        const userResponse = await axios.get('getUserData'); //残件対象項目
-        console.log(userResponse.data.result.user_type);
+        // const userResponse = await axios.get<UserResponse>('http://localhost:3100/user');
+        const userResponse = await axios.get('getUserData');
         setUserType(userResponse.data.result.user_type);
         // TODO: tournIdを元に大会情報を取得する処理の置き換え
         // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');

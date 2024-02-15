@@ -19,7 +19,7 @@ class T_organization_staff extends Model
         $orgStaffs = DB::select('select
                                 `org_id`
                                 ,`user_id`
-                                ,`user_name`
+                                ,`user_name` as `userName`
                                 ,case
                                     when instr(`staff_type_array`,"1") > 0 then 1
                                     else 0

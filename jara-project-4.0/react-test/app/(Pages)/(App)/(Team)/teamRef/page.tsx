@@ -51,7 +51,8 @@ export default function TeamRef() {
       break;
   }
 
-  const orgId = searchParams.get('orgId')?.toString() || '';
+
+  const orgId = searchParams.get('orgId')?.toString() || searchParams.get('sponsor_org_id')?.toString() || '';
   // orgIdの値を取得
   switch (orgId) {
     case '':
@@ -96,22 +97,26 @@ export default function TeamRef() {
         const response = await axios.post('/getOrgData', org_id); //団体情報取得
         console.log(response);
         setFormData(response.data.result);
-        const hostTournamentsResponse = await axios.get<Tournament[]>('/tournamentSearch',);
-        setHostTournaments(hostTournamentsResponse.data);
-        // エントリー大会
-        const entTournamentsResponse = await axios.get<Tournament[]>('/tournamentSearch',);
-        setEntTournaments(entTournamentsResponse.data);
-        // 所属選手
-        const playersResponse = await axios.get<PlayerInformationResponse[]>('/playerSearch',);
-        setPlayers(playersResponse.data);
+        
+        // const hostTournamentsResponse = await axios.get<Tournament[]>('/tournamentSearch',);
+        // setHostTournaments(hostTournamentsResponse.data);
+        // // エントリー大会
+        // const entTournamentsResponse = await axios.get<Tournament[]>('/tournamentSearch',);
+        // setEntTournaments(entTournamentsResponse.data);
+        // // 所属選手
+        // const playersResponse = await axios.get<PlayerInformationResponse[]>('/playerSearch',);
+        // setPlayers(playersResponse.data);
         
         // const userDataResponse = await axios.get<UserResponse>('/api/user');
         const userDataResponse = await axios.get('/api/user');
         setUserData(userDataResponse.data);
 
         // 所属スタッフ
-        const staffsResponse = await axios.get<Staff[]>('/staff');
-        setStaffs(staffsResponse.data);
+        // const staffsResponse = await axios.get<Staff[]>('/staff');
+        const staffsResponse = await axios.post('/getOrgStaffData', org_id); //団体情報取得
+        console.log(staffsResponse.data.result);
+        setStaffs(staffsResponse.data.result);
+
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
       }
@@ -197,7 +202,7 @@ export default function TeamRef() {
           <Tab label='主催大会' {...a11yProps(0)} />
           <Tab label='エントリー大会' {...a11yProps(1)} />
           <Tab label='所属選手' {...a11yProps(2)} />
-          <Tab label='所属スタッフ大会' {...a11yProps(3)} />
+          <Tab label='所属スタッフ' {...a11yProps(3)} />
         </Tabs>
 
         {/* 主催大会テーブル表示 */}
@@ -503,7 +508,7 @@ export default function TeamRef() {
                         id='staffType1'
                         value='監督'
                         onChange={() => { }}
-                        checked={row.staff_type_id.includes('監督')}
+                        // checked={row.staff_type_id.includes('監督')}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -512,7 +517,7 @@ export default function TeamRef() {
                         id='staffType2'
                         value='部長'
                         onChange={() => { }}
-                        checked={row.staff_type_id.includes('部長')}
+                        // checked={row.staff_type_id.includes('部長')}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -521,7 +526,7 @@ export default function TeamRef() {
                         id='staffType3'
                         value='コーチ'
                         onChange={() => { }}
-                        checked={row.staff_type_id.includes('コーチ')}
+                        // checked={row.staff_type_id.includes('コーチ')}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -530,7 +535,7 @@ export default function TeamRef() {
                         id='staffType4'
                         value='マネージャー'
                         onChange={() => { }}
-                        checked={row.staff_type_id.includes('マネージャー')}
+                        // checked={row.staff_type_id.includes('マネージャー')}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>
@@ -539,7 +544,7 @@ export default function TeamRef() {
                         id='staffType5'
                         value='管理代理'
                         onChange={() => { }}
-                        checked={row.staff_type_id.includes('管理代理')}
+                        // checked={row.staff_type_id.includes('管理代理')}
                         readonly={true}
                       ></OriginalCheckbox>
                     </CustomTd>

@@ -868,4 +868,35 @@ class OrganizationController extends Controller
         Log::debug(sprintf("getOrganizationForOrgManagement end"));
         return response()->json(['result' => $tOrg]); //DBの結果を返す
     }
+
+    //userIDに紐づいたデータを送信 20240131
+    public function getOrgStaffData(Request $request, T_organization_staff $tOrganizationStaff)
+    {
+        Log::debug(sprintf("getOrgStaffData start"));
+        $result = $request->all();
+        Log::debug($result);
+        $tOrg = $tOrganizationStaff->getOrganizationStaffFromOrgId($result['org_id']); //userIDに紐づいた団体を取得するように修正する必要がある 二村さん残件対応箇所
+        for ($i = 0; $i < count($tOrg); $i++) {
+            $staff_type_id = array();
+            if ($tOrg[$i]->is_director == 1) {
+                array_push($staff_type_id, "管理者(監督)");
+            }
+            if ($tOrg[$i]->is_head == 1) {
+                array_push($staff_type_id, "部長");
+            }
+            if ($tOrg[$i]->is_coach == 1) {
+                array_push($staff_type_id, "コーチ");
+            }
+            if ($tOrg[$i]->is_manager == 1) {
+                array_push($staff_type_id, "マネージャー");
+            }
+            if ($tOrg[$i]->is_acting_director == 1) {
+                array_push($staff_type_id, "管理代理");
+            }
+            $tOrg[$i]->staff_type_id = $staff_type_id;
+        }
+        Log::debug($tOrg);
+        Log::debug(sprintf("getOrgStaffData end"));
+        return response()->json(['result' => $tOrg]); //DBの結果を返す
+    }
 }
