@@ -4,12 +4,16 @@ import type { FileRejection } from 'react-dropzone';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import Papa from 'papaparse';
 import CloseIcon from '@mui/icons-material/Close';
+import { UserResponse } from '@/app/types';
 
 interface ImageUploaderProps {
   currentShowFile: { file: File; isUploaded: boolean; preview?: string } | undefined;
   setCurrentShowFile: Dispatch<
     SetStateAction<{ file: File; isUploaded: boolean; preview?: string } | undefined>
   >;
+  setFormData: Dispatch<
+  SetStateAction<UserResponse>
+>;
   initialPhotoUrl?: string;
   displayCloseIcon?: boolean;
 }
@@ -17,6 +21,7 @@ interface ImageUploaderProps {
 const ImageUploader: FC<ImageUploaderProps> = ({
   currentShowFile,
   setCurrentShowFile,
+  setFormData,
   initialPhotoUrl,
   displayCloseIcon,
 }) => {
@@ -109,6 +114,8 @@ const ImageUploader: FC<ImageUploaderProps> = ({
     }
   }, [initialPhotoUrl]);
 
+ 
+
   return (
     <div>
       <div>
@@ -141,18 +148,42 @@ const ImageUploader: FC<ImageUploaderProps> = ({
                   onClick={(e) => {
                     // 画像をクリアする
                     e.stopPropagation();
+                    setFormData((prevFormData) => ({
+                      ...prevFormData,
+                      photo:''
+                    }))
                     setInitialPhoto('');
                   }}
                 >
                   <CloseIcon />
                 </button>
               )}
-              <img
+              {initialPhoto ? (<img
                 className='object-cover w-[320px] h-[320px] cursor-pointer'
                 src={initialPhoto}
                 // Revoke data uri after image is loaded
                 onLoad={() => {}}
-              />
+              />) :  (
+                <div className='w-[320px] h-[320px] bg-containerBg m-auto mt-auto justify-center flex items-center flex-col gap-[10px]'>
+                  <input {...getInputProps()} />
+                  <UploadFileIcon className='w-full h-5 w-[32px] h-[32px] text-primaryText' />
+                  <p className='text-secondaryText border-secondaryText text-sm'>ファイルを選択</p>
+                  <p className='text-secondaryText text-sm'>
+                    {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : 'or'}
+                  </p>
+                  <button
+                    className='text-secondaryText py-2.5 px-5 me-2 mb-2 text-small font-medium text-gray-900 focus:outline-none border border-dashed border-secondaryText hover:bg-containerBg focus:z-10 focus:ring-4 focus:ring-primary-50'
+                    disabled={isDragReject}
+                    type='button'
+                  >
+                    {isDragAccept
+                      ? 'ファイルをアップロードします。'
+                      : isDragReject
+                        ? 'エラー'
+                        : 'アップロード'}
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <div className='w-[320px] h-[320px] bg-containerBg m-auto mt-auto justify-center flex items-center flex-col gap-[10px]'>

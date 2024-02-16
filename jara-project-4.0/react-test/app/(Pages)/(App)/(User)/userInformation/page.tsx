@@ -89,7 +89,7 @@ export default function UserInformationUpdate() {
     file: File;
     isUploaded: boolean;
     preview?: string;
-  }>();
+  } | undefined>(undefined);
   const [email, setEmail] = useState('');
   const [confirmEmail, setConfirmEmail] = useState('');
   const [emailErrorMessages, setEmailErrorMessages] = useState([] as string[]);
@@ -97,9 +97,9 @@ export default function UserInformationUpdate() {
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [authNumber, setAuthNumber] = useState('' as string);
 
-  // 実装　ー　クマール　ー開始　
-  const { user} = useAuth({ middleware: 'auth' }) //簡単にユーザー情報もらうため
-  // 実装　ー　クマール　ー終了
+  // // 実装　ー　クマール　ー開始　
+  // const { user} = useAuth({ middleware: 'auth' }) //簡単にユーザー情報もらうため
+  // // 実装　ー　クマール　ー終了
   // フォームの入力値を管理する関数
   const handleInputChange = (name: string, value: string | File | null) => {
     setFormData((prevFormData) => ({
@@ -109,17 +109,18 @@ export default function UserInformationUpdate() {
   };
 
   useEffect(() => {
-    if (formData.residence_country == 0) {
+    if (formData?.residence_country == 0) {
       setFormData((prevFormData) => ({
         ...prevFormData,
         residencePrefectureId: 0,
         residencePrefectureName: '東京',
       }));
     }
-  }, [formData.residence_country]);
-  useEffect(() => {
-    setCurrentShowFile(undefined)
-  }, [formData.photo]);
+  }, [formData?.residence_country]);
+  // useEffect(() => {
+
+  //   setCurrentShowFile(undefined)
+  // }, [formData?.uploadedPhoto]);
 
 
   //アップロードされたファイルを保存するー開始
@@ -128,10 +129,19 @@ export default function UserInformationUpdate() {
       setFormData((prevFormData) => ({
         ...prevFormData,
         uploadedPhotoName:currentShowFile.file.name,
-        uploadedPhoto: currentShowFile.file
+        uploadedPhoto: currentShowFile.file,
+        photo:''
       }))
     }
-  }, [currentShowFile?.file]);//ファイルのアップロード終わったら
+    else{
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        uploadedPhotoName:'',
+        uploadedPhoto: undefined,
+        photo:''
+      }))
+    }
+  }, [currentShowFile]);//ファイルのアップロード終わったら
   //アップロードされたファイルを保存するー完了
 
   useEffect(() => {
@@ -148,7 +158,6 @@ export default function UserInformationUpdate() {
         // setPrefectures(prefectureResponse.data);
         // const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
         const sexResponse = await axios.get('/getSexList');
-        console.log(sexResponse.data);
         const sexList = sexResponse.data.map(({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }));
         setSex(sexList);
         // setSex(sexResponse.data);
@@ -176,7 +185,6 @@ export default function UserInformationUpdate() {
         await csrf()
         const response = await axios.get('/getUserData');
         // 実装　ー　クマール　ー終了
-        console.log(response.data.result);
         setFormData((prevFormData) => ({
           ...prevFormData,
           ...{
@@ -202,7 +210,6 @@ export default function UserInformationUpdate() {
         }));
         setPrevEmail(response.data.result.mailaddress);
       } catch (error: any) {
-        console.log("userData")
         setErrorMessage(['API取得エラー:' + error.message]);
       }
     };
@@ -222,25 +229,25 @@ export default function UserInformationUpdate() {
         className='w-[200px]'
         onClick={() => {
           const userNameError = Validator.getErrorMessages([
-            Validator.validateRequired(formData.user_name, 'ユーザー名'),
-            Validator.validateUserNameFormat(formData.user_name),
+            Validator.validateRequired(formData?.user_name, 'ユーザー名'),
+            Validator.validateUserNameFormat(formData?.user_name),
           ]);
 
           const sexError = Validator.getErrorMessages([
-            Validator.validateRequired(formData.sexName, '性別'),
+            Validator.validateRequired(formData?.sexName, '性別'),
           ]);
 
           const livingCountryError = Validator.getErrorMessages([
-            Validator.validateRequired(formData.residenceCountryName, '居住地'),
+            Validator.validateRequired(formData?.residenceCountryName, '居住地'),
           ]);
 
           const livingPrefectureError = Validator.getErrorMessages([
-            Validator.validateRequired(formData.residencePrefectureName, '居住地'),
+            Validator.validateRequired(formData?.residencePrefectureName, '居住地'),
           ]);
 
           const dateOfBirthError = Validator.getErrorMessages([
-            Validator.validateRequired(formData.date_of_birth, '生年月日'),
-            Validator.validateBirthOfDateRange(new Date(formData.date_of_birth), '生年月日', 5, 150),
+            Validator.validateRequired(formData?.date_of_birth, '生年月日'),
+            Validator.validateBirthOfDateRange(new Date(formData?.date_of_birth), '生年月日', 5, 150),
           ]);
 
           setUserNameErrorMessages(userNameError as string[]);
@@ -284,7 +291,12 @@ export default function UserInformationUpdate() {
                 
                 axios
                   // .post('http://localhost:3100/', requestBody)
-                  .post('/updateUserData',formData)
+                  .post('/updateUserData',formData,{ 
+                    //ファイルを送るため
+                    headers: { 
+                      'content-type' : 'multipart/form-data' ,
+                     } ,
+                   })
                   .then((response) => {
                     // 成功時の処理を実装
                     window.confirm('ユーザー情報を更新しました。');
@@ -312,8 +324,8 @@ export default function UserInformationUpdate() {
                 axios
                 // .post('http://localhost:3100/', requestBody)
                 .post('/user/sent-certification-number',{
-                  user_name:formData.user_name,
-                  mailaddress: formData.mailaddress
+                  user_name:formData?.user_name,
+                  mailaddress: formData?.mailaddress
                 })
                 .then((response) => {
                   // 成功時の処理を実装
@@ -346,7 +358,6 @@ export default function UserInformationUpdate() {
                   //ファイルを送るため
                   headers: { 
                     'content-type' : 'multipart/form-data' ,
-                    'X-Requested-With': 'XMLHttpRequest',
                    } ,
                  })
 
@@ -413,7 +424,8 @@ export default function UserInformationUpdate() {
             <ImageUploader
               currentShowFile={currentShowFile}
               setCurrentShowFile={setCurrentShowFile}
-              initialPhotoUrl={formData.photo?`${USER_IMAGE_URL}${formData.photo}`:''}
+              setFormData={setFormData}
+              initialPhotoUrl={formData?.photo?`${USER_IMAGE_URL}${formData.photo}`:''}
             />
           )}
           {/* 写真 */}
@@ -427,7 +439,7 @@ export default function UserInformationUpdate() {
         <CustomTextField
           label='ユーザーID'
           readonly
-          value={formData.user_id}
+          value={formData?.user_id}
           displayHelp={false}
           placeHolder='XXXXXXX'
         />
@@ -436,7 +448,7 @@ export default function UserInformationUpdate() {
           label='ユーザー種別'
           readonly
           placeHolder='XXXXXXX'
-          value={formData.userTypeName}
+          value={formData?.userTypeName}
           displayHelp={false}
         />
         {/* ユーザー名 */}
@@ -451,7 +463,7 @@ export default function UserInformationUpdate() {
           isError={userNameErrorMessages.length > 0}
           displayHelp={mode === 'update'}
           required={mode === 'update'}
-          value={formData.user_name}
+          value={formData?.user_name}
         />
         {/* メールアドレス */}
         <div className='flex flex-row gap-[10px]'>
@@ -463,12 +475,12 @@ export default function UserInformationUpdate() {
             readonly
             placeHolder='メールアドレスを入力してください。'
             type='email'
-            value={formData.mailaddress}
+            value={formData?.mailaddress}
             onChange={() => {
               handleInputChange('mailaddress', '');
             }}
           />
-          {!formData.temp_password_flag && mode == 'update' && (
+          {!formData?.temp_password_flag && mode == 'update' && (
             <div className='mt-auto'>
               <CustomDialog
                 className='w-[120px] '
@@ -547,7 +559,7 @@ export default function UserInformationUpdate() {
           <InputLabel label='性別' required={mode === 'update'} />
           <CustomDropdown
             id='性別'
-            value={mode !== 'confirm' ? formData.sex?.toString() || '' : formData.sexName}
+            value={mode !== 'confirm' ? formData?.sex?.toString() || '' : formData?.sexName}
             options={sex.map((item) => ({ key: item.id, value: item.name }))}
             placeHolder='男性'
             className='w-[200px]'
@@ -564,7 +576,7 @@ export default function UserInformationUpdate() {
           <InputLabel label='生年月日' displayHelp={mode === 'update'} />
           <CustomDatePicker
             readonly={mode === 'confirm'}
-            selectedDate={formData.date_of_birth}
+            selectedDate={formData?.date_of_birth}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               handleInputChange('date_of_birth', formatDate(e as unknown as Date));
             }}
@@ -583,8 +595,8 @@ export default function UserInformationUpdate() {
               placeHolder='日本国 （jpn）'
               value={
                 mode !== 'confirm'
-                  ? formData.residence_country?.toString() || ''
-                  : formData.residenceCountryName
+                  ? formData?.residence_country?.toString() || ''
+                  : formData?.residenceCountryName
               }
               onChange={(e) => {
                 handleInputChange('residence_country', e);
@@ -598,7 +610,7 @@ export default function UserInformationUpdate() {
             />
           </div>
           {/* 居住地（都道府県） */}
-          {formData.residenceCountryName === '日本国 （jpn）' && (
+          {formData?.residenceCountryName === '日本国 （jpn）' && (
             <div className='flex flex-col justify-start'>
               <InputLabel label='都道府県' required={mode === 'update'} />
               <CustomDropdown
@@ -607,8 +619,8 @@ export default function UserInformationUpdate() {
                 options={prefectures.map((item) => ({ key: item.id, value: item.name })) || []}
                 value={
                   mode !== 'confirm'
-                    ? formData.residence_prefecture?.toString() || ''
-                    : formData.residencePrefectureName
+                    ? formData?.residence_prefecture?.toString() || ''
+                    : formData?.residencePrefectureName
                 }
                 placeHolder='東京'
                 onChange={(e) => {
@@ -742,7 +754,7 @@ export default function UserInformationUpdate() {
             type='number'
             readonly={mode === 'confirm'}
             required={false}
-            value={formData.height}
+            value={formData?.height}
             placeHolder='180'
             onChange={(e) => {
               handleInputChange('height', e.target.value);
@@ -756,7 +768,7 @@ export default function UserInformationUpdate() {
             type='number'
             readonly={mode === 'confirm'}
             required={false}
-            value={formData.weight}
+            value={formData?.weight}
             onChange={(e) => {
               handleInputChange('weight', e.target.value);
             }}
