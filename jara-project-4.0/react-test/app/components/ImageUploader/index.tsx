@@ -27,14 +27,16 @@ const ImageUploader: FC<ImageUploaderProps> = ({
     try {
       setCurrentShowFile({ file, isUploaded: false });
 
-      const uploadTime = Math.random() * 9000 + 1000; // 1秒から10秒
+      // const uploadTime = Math.random() * 9000 + 1000; // 1秒から10秒
+      const uploadTime = 1000; // 1秒
       await new Promise((resolve) => setTimeout(resolve, uploadTime));
 
       // アップロード成功時の処理
       setCurrentShowFile({ file, isUploaded: true });
     } catch (error) {
       // ここでエラーに関するユーザーへの通知や処理を行う
-      alert(`アップロード中にエラーが発生しました: ${error}`);
+      // alert(`アップロード中にエラーが発生しました: ${error}`);
+      alert(`アップロード中にエラーが発生しました。`);
     }
   };
 
@@ -61,7 +63,8 @@ const ImageUploader: FC<ImageUploaderProps> = ({
         });
       } catch (error) {
         // ↓ここでエラーに関するユーザーへの通知や処理を行う
-        console.log(`アップロード中にエラーが発生しました: ${error}`);
+        // console.log(`アップロード中にエラーが発生しました: ${error}`);
+        console.log(`アップロード中にエラーが発生しました。`);
       }
     },
     [currentShowFile],

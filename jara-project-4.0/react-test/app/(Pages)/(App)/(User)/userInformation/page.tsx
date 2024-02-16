@@ -1,6 +1,8 @@
 // 機能名: ユーザー情報更新画面・入力確認画面
 'use client';
 
+import { USER_IMAGE_URL, NO_IMAGE_URL} from "../../../../utils/imageUrl" //For importing image url from a single source of truth
+
 import { useState, useEffect, ChangeEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 // 実装　ー　クマール　ー開始
@@ -115,6 +117,10 @@ export default function UserInformationUpdate() {
       }));
     }
   }, [formData.residence_country]);
+  useEffect(() => {
+    setCurrentShowFile(undefined)
+  }, [formData.photo]);
+
 
   //アップロードされたファイルを保存するー開始
   useEffect(() => {
@@ -401,18 +407,19 @@ export default function UserInformationUpdate() {
         </div>
         <div className='flex flex-col justify-start gap-[10px]'>
           {/* 写真 */}
-          <InputLabel required displayHelp label='写真' />
+          {/*写真　は　必要ものではありませんので "required displayHelp" は　はずしました。*/}
+          <InputLabel  label='写真' />
           {mode === 'update' && (
             <ImageUploader
               currentShowFile={currentShowFile}
               setCurrentShowFile={setCurrentShowFile}
-              initialPhotoUrl={`http://localhost:8000/images/users/${formData.photo}`}
+              initialPhotoUrl={formData.photo?`${USER_IMAGE_URL}${formData.photo}`:''}
             />
           )}
           {/* 写真 */}
           {/* src={formData.photo} */}
           {mode === 'confirm' && (
-            <img src={currentShowFile?.preview??`http://localhost:8000/images/users/${formData.photo}`} className='w-[300px] h-[300px] rounded-[2px] object-cover' alt = "Profile Photo" />
+            <img src={currentShowFile?.preview??(formData.photo?`${USER_IMAGE_URL}${formData.photo}`:`${NO_IMAGE_URL}`)} className='w-[300px] h-[300px] rounded-[2px] object-cover' alt = "Profile Photo" />
             
           )}
         </div>

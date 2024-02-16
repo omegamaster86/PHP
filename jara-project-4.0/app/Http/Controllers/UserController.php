@@ -134,8 +134,6 @@ class UserController extends Controller
 
     public function sentCertificationNumber(Request $request) {
         include('Auth/ErrorMessages/ErrorMessages.php');
-        Log::debug(sprintf("sentCertificationNumber start"));
-        Log::debug($request->mailaddress);
         // $certification_number = Str::random(6); // For Creating random password
         // $certification_number = rand(1000000,100); // For Creating random password
         if($request->mailaddress!==Auth::user()->mailaddress){
@@ -160,7 +158,6 @@ class UserController extends Controller
 
         DB::beginTransaction();
         try {
-            Log::debug(sprintf("sentCertificationNumber test"));
             DB::update(
                 'update t_users set  certification_number = ? , expiry_time_of_certification_number = ?,updated_time = ?,updated_user_id = ? where 1=1 and user_id = ?',
                 [Hash::make($certification_number), $newDate,$date,Auth::user()->user_id, Auth::user()->user_id]
@@ -207,7 +204,6 @@ class UserController extends Controller
 
         return response()->json(["メールを送信しました。"],200);
         
-        Log::debug(sprintf("sentCertificationNumber end"));
     }
 
     public function verifyCertificationNumber(Request $request){
@@ -542,8 +538,6 @@ class UserController extends Controller
         //When logged as a registered user
         else {
             //If the entered password does matched with the database information
-            Log::debug($request->currentPassword);
-            Log::debug(Auth::user()->password);
             if (Hash::check($request->currentPassword, Auth::user()->password)) {
 
                 DB::beginTransaction();
@@ -573,7 +567,6 @@ class UserController extends Controller
                 return response()->json(['system_error' => $previous_password_not_matched],400);
             }
         }
-        Log::debug(sprintf("storePasswordChange end"));
     }
     public function storePasswordReset(Request $request)
     {
@@ -689,55 +682,34 @@ class UserController extends Controller
 
     public function setLoginUserData(Request $request, T_users $t_users)
     {
-        Log::debug(sprintf("setLoginUserData start"));
-        Log::debug($request->user());
         $reqData = $request->user();
         $this::$loginUserInfo['user_id'] = $reqData['user_id'];
         $this::$loginUserInfo['user_name'] = $reqData['user_name'];
-        Log::debug("==============");
-        Log::debug($this::$loginUserInfo);
-        Log::debug(sprintf("setLoginUserData end"));
         return $request->user();
     }
 
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
     public function getUserData(T_users $t_users)
     {
-        Log::debug(sprintf("getUserData start"));
-        // Log::debug($this::$loginUserInfo);
         // 実装　ー　クマール　ー開始
-        Log::debug(Auth::user()->user_name);
         $result = $t_users->getUserData(Auth::user()->user_id); //ユーザ情報の取得
         // 実装　ー　クマール　ー終了
-        Log::debug(sprintf("getUserData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
     public function updateUserData(Request $request, T_users $t_users)
     {
+        //If new picture is uploaded
         if ($request->hasFile('uploadedPhoto')) {
             $file = $request->file('uploadedPhoto');
-            // $file->store('toPath', ['disk' => 'public']);
-            $file_name = Auth::user()->user_id. '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
-            $url = 'http://localhost:8000/images/users/'.$file_name;
-            $request->photo = $url;
-            // Storage::disk('public')->put($fileName, $file);
-
-            // Storage::disk('public')->putFileAs('uploads', $file, $fileName);
-
-            // $destination_path = public_path().'/images/users/' ;
-            // $file->move($destination_path,$file_name);
-            $file->storeAs('public/images/users', $file_name);
-
-            // You can now save the $filePath to the database or use it as needed
-            // ...
+            $file_name = Auth::user()->user_id . '.' . $file->getClientOriginalExtension();
+            $destination_path = public_path().'/images/users/' ;
+            $file->move($destination_path,$file_name);
+            // $file->storeAs('public/images/users', $file_name);
             // return response()->json(['message' => 'File uploaded successfully']);
         }
-        else {
-            Log::debug(sprintf("Donot have file"));
-        }
 
-        Log::debug(sprintf("updateUserData start"));
+        //store all requested information
         $reqData = $request->all();
         //確認画面から登録
         $t_users::$userInfo['user_id'] = $reqData['user_id']; //ユーザID
@@ -750,9 +722,18 @@ class UserController extends Controller
         $t_users::$userInfo['height'] = $reqData['height']; //身長
         $t_users::$userInfo['weight'] = $reqData['weight']; //体重
         $t_users::$userInfo['user_type'] = $reqData['user_type']; //ユーザ種別
-        $t_users::$userInfo['photo'] = $reqData['photo']; //写真
+
+        //If new picture is uploaded
+        if($request->hasFile('uploadedPhoto')){
+            $file_name = Auth::user()->user_id . '.' . $file->getClientOriginalExtension();
+            $t_users::$userInfo['photo'] = $file_name; //写真
+        }
+        else {
+             //If  picture is not uploaded
+            $t_users::$userInfo['photo'] = $reqData['photo']; //写真
+        }
+        
         $result = $t_users->updateUserData($t_users::$userInfo); //レース情報を取得
-        Log::debug(sprintf("updateUserData end"));
 
         
         return response()->json(['result' => $result]); //DBの結果を返す
@@ -761,7 +742,6 @@ class UserController extends Controller
     //delete_flagを1にupdateする
     public function updateDeleteFlagInUserData(T_users $t_users)
     {
-        Log::debug(sprintf("updateDeleteFlagInUserData start."));
         try
         {
             DB::beginTransaction();
@@ -779,7 +759,6 @@ class UserController extends Controller
             Log::channel('user_update')->info("\r\n \r\n＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code  \r\n  \r\n ============================================================ \r\n \r\n");
             return response()->json(["失敗しました。ユーザーサポートにお問い合わせください。"],500);
         }
-        Log::debug(sprintf("updateDeleteFlagInUserData end."));
         return response()->json(["退会の件、完了しました。"],200); //処理結果を返す
     }
 }
