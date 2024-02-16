@@ -37,7 +37,7 @@ export default function PlayerInformationRef() {
   }
 
   // 選手IDを取得
-  const playerId = searchParams.get('playerId')?.toString() || '';
+  const playerId = searchParams.get('playerId')?.toString() || searchParams.get('player_id')?.toString() || '';
   switch (playerId) {
     case '':
       break;
