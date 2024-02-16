@@ -398,12 +398,15 @@ class T_users extends Authenticatable
                         :temp_password, 
                         :expiry_time_of_temp_password, 
                         :temp_password_flag, 
-                        :registered_time, 
-                        :registered_user_id, 
-                        :updated_time, 
-                        :updated_user_id, 
+                        :current_datetime, 
+                        :user_id, 
+                        :current_datetime, 
+                        :user_id, 
                         0
                     )'
                     ,$userInfo);
+        //挿入したIDを取得
+        $insertId =  DB::getPdo()->lastInsertId();
+        return $insertId;
     }
 }

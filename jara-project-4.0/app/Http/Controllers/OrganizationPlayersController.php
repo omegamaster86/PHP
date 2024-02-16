@@ -746,6 +746,8 @@ class OrganizationPlayersController extends Controller
                     //削除フラグは全て0で登録する
                     $delete_flag = 0;
 
+                    //有効なユーザーかを示す
+                    $is_valid_user = true;
                     //対象のユーザーデータを取得
                     $target_user_data = $t_users->getUserDataFromInputCsv($rowData);
 
@@ -753,143 +755,216 @@ class OrganizationPlayersController extends Controller
                     if (isset($target_user_data))
                     {
                         //メールアドレスが一致するユーザーデータが複数存在する場合
-                        if (count($target_user_data) > 1)
+                        // if (count($target_user_data) > 1)
+                        // {
+                        //     //Display error message to the client
+                        //     // throw ValidationException::withMessages([
+                        //     //     'datachecked_error' => $registration_failed,
+                        //     // ]);
+                        //     return response()->json(['system_error' => $registration_failed],400);
+                        //     //Status code 400 is for bad request from user
+                        // }
+                        // //メールアドレスが一致するユーザーデータが1件存在する場合
+                        // else 
+                        // {
+                        //     //temp_password_flagを確認
+                        //     if ($target_user_data[`temp_password_flag`] == 0)
+                        //     {
+                        //         //temp_password_flag=0の場合、本登録済み
+
+                        //         //Display error message to the client
+            
+                        //         // throw ValidationException::withMessages([
+                        //         //     'datachecked_error' => $email_register_check
+                        //         // ]);
+                        //         return response()->json(['system_error' => $email_register_check],400);
+                        //         //Status code 400 is for bad request from user
+                        //     }
+                        //     else
+                        //     {
+                        //         //temp_password_flag=0の場合、仮登録済
+                        //         //if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and expiry_time_of_temp_password < ?',[$request->mailaddress, date('Y-m-d H:i:s')])))                                
+                        //         if ($target_user_data[`expiry_time_of_temp_password`] < date('Y-m-d H:i:s'))
+                        //         {
+                        //             //Display error message to the client
+                        //             // throw ValidationException::withMessages([
+                        //             //     'datachecked_error' => $registration_failed
+                        //             // ]); 
+                        //             return response()->json(['system_error' => $registration_failed],400);
+                        //             //Status code 400 is for bad request from user
+                        //         }
+                        //         else
+                        //         {
+                        //             //Display error message to the client
+                        //             // throw ValidationException::withMessages([
+                        //             //     'datachecked_error' => $already_registered,
+                        //             // ]); 
+                        //             return response()->json(['system_error' => $already_registered],400);
+                        //             //Status code 400 is for bad request from user
+                        //         }
+                        //     }
+                        // }
+                    }
+                    else
+                    {
+                        // For Generate random password
+                        $temp_password = Str::random(8); 
+                        //For getting current time
+                        //$date = now()->format('Y-m-d H:i:s.u');
+                        
+                        //For adding 1day with current time
+                        $converting_date=date_create($current_datetime);
+                        date_add($converting_date,date_interval_create_from_date_string("1 day"));
+                        $newDate = date_format($converting_date,"Y-m-d H:i:s.u");
+                
+                        // Insert new user info in the database.(t_user table)
+                
+                        DB::beginTransaction();
+                        try
                         {
+                            //ユーザー生成のためのデータを配列に格納
+                            $hashed_password = Hash::make($temp_password);
+                            $insert_user = [];
+                            $insert_user['user_name'] = $rowData['player_name'];
+                            $insert_user['mailaddress'] = $rowData['mailaddress'];
+                            $insert_user['password'] = $hashed_password;
+                            $insert_user['temp_password'] = $hashed_password;
+                            $insert_user['expiry_time_of_temp_password'] = $newDate;
+                            $insert_user['temp_password_flag'] = 1;
+                            $insert_user['current_datetime'] = $current_datetime;
+                            //登録ユーザーIDはカレントユーザー？
+                            //$insert_user['user_id'] = 9999999;
+                            $insert_user['user_id'] = $register_user_id;
+                            //insert実行
+                            $t_users->insertTemporaryUser($insert_user);
+                
+                            DB::commit();
+                        } catch (\Throwable $e) {
+                            DB::rollBack();
+                
+                            $e_message = $e->getMessage();
+                            $e_code = $e->getCode();
+                            $e_file = $e->getFile();
+                            $e_line = $e->getLine();
+                            $e_sql = $e->getSql();
+                            $e_errorCode = $e->errorInfo[1];
+                            $e_bindings = implode(", ",$e->getBindings());
+                            $e_connectionName = $e->connectionName;
+                
+                
+                            //Store error message in the register log file.
+                            Log::channel('user_register')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
+                            if($e_errorCode == 1213||$e_errorCode == 1205)
+                            {
+                                // throw ValidationException::withMessages([
+                                //     'datachecked_error' => $registration_failed
+                                // ]);
+                                return response()->json(['system_error' => $registration_failed],500);
+                                //Status code 500 for internal server error
+                            }
+                            else{
+                                // throw ValidationException::withMessages([
+                                //     'datachecked_error' => $registration_failed
+                                // ]); 
+                                return response()->json(['system_error' => $registration_failed],500);
+                                //Status code 500 for internal server error
+                            }
+                        }
+                        
+                        //For getting current time
+                        $mail_date = date('Y/m/d H:i');
+                        //For adding 24hour with current time
+                        $new_mail_date = date('Y/m/d H:i', strtotime($mail_date. ' + 24 hours'));
+                
+                        //Store user information for sending email.
+                        $mail_data = [
+                            'user_name' => $request->user_name,
+                            'to_mailaddress' => $request->mailaddress,
+                            'from_mailaddress' => 'xxxxx@jara.or.jp',
+                            'temporary_password' => $temp_password,
+                            'temporary_password_expiration_date'=> $new_mail_date
+                        ];
+                        
+                        //Sending mail to the user
+                        
+                        try {
+                            Mail::to($request->get('mailaddress'))->send(new WelcomeMail($mail_data));
+                        } catch (Exception $e) {
+                            DB::delete('delete from t_users where mailaddress = ?', [$request->mailaddress ]);
+                            //Store error message in the user_register log file.
+                            Log::channel('user_register')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「EMAIL_SENT_ERROR_MESSAGE」  ： $e\r\n  \r\n ============================================================ \r\n \r\n");
                             //Display error message to the client
                             // throw ValidationException::withMessages([
-                            //     'datachecked_error' => $registration_failed,
-                            // ]);
-                            return response()->json(['system_error' => $registration_failed],400);
-                            //Status code 400 is for bad request from user
-                        }
-                        //メールアドレスが一致するユーザーデータが1件存在する場合
-                        else 
-                        {
-                            //temp_password_flagを確認
-                            if ($target_user_data[`temp_password_flag`] == 0)
-                            {
-                                //temp_password_flag=0の場合、本登録済み
-
-                                //Display error message to the client
-            
-                                // throw ValidationException::withMessages([
-                                //     'datachecked_error' => $email_register_check
-                                // ]);
-                                return response()->json(['system_error' => $email_register_check],400);
-                                //Status code 400 is for bad request from user
-                            }
-                            else
-                            {
-                                //temp_password_flag=0の場合、仮登録済
-                                //if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and expiry_time_of_temp_password < ?',[$request->mailaddress, date('Y-m-d H:i:s')])))                                
-                                if ($target_user_data[`expiry_time_of_temp_password`] < date('Y-m-d H:i:s'))
-                                {
-                                    //Display error message to the client
-                                    // throw ValidationException::withMessages([
-                                    //     'datachecked_error' => $registration_failed
-                                    // ]); 
-                                    return response()->json(['system_error' => $registration_failed],400);
-                                    //Status code 400 is for bad request from user
-                                }
-                                else
-                                {
-                                    //Display error message to the client
-                                    // throw ValidationException::withMessages([
-                                    //     'datachecked_error' => $already_registered,
-                                    // ]); 
-                                    return response()->json(['system_error' => $already_registered],400);
-                                    //Status code 400 is for bad request from user
-                                }
-                            }
-                        }
-                    }
-                    
-                    // For Generate random password
-                    $temp_password = Str::random(8); 
-                    //For getting current time
-                    $date = now()->format('Y-m-d H:i:s.u');
-                    
-                    //For adding 1day with current time
-                    $converting_date=date_create($date);
-                    date_add($converting_date,date_interval_create_from_date_string("1 day"));
-                    $newDate = date_format($converting_date,"Y-m-d H:i:s.u");
-            
-                    // Insert new user info in the database.(t_user table)
-            
-                    DB::beginTransaction();
-                    try {
-                        $hashed_password = Hash::make($temp_password);
-                        $user = DB::insert('insert into t_users (user_name, mailaddress, password, temp_password, expiry_time_of_temp_password, temp_password_flag, registered_time, registered_user_id, updated_time, updated_user_id, delete_flag) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$request->user_name, $request->mailaddress, $hashed_password, $hashed_password , $newDate, 1, $date, 9999999,$date, 9999999, 0 ]);
-            
-                        DB::commit();
-                    } catch (\Throwable $e) {
-                        DB::rollBack();
-            
-                        $e_message = $e->getMessage();
-                        $e_code = $e->getCode();
-                        $e_file = $e->getFile();
-                        $e_line = $e->getLine();
-                        $e_sql = $e->getSql();
-                        $e_errorCode = $e->errorInfo[1];
-                        $e_bindings = implode(", ",$e->getBindings());
-                        $e_connectionName = $e->connectionName;
-            
-            
-                        //Store error message in the register log file.
-                        Log::channel('user_register')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-                        if($e_errorCode == 1213||$e_errorCode == 1205)
-                        {
-                            // throw ValidationException::withMessages([
-                            //     'datachecked_error' => $registration_failed
+                            //     'datachecked_error' => $mail_sent_failed,
                             // ]);
                             return response()->json(['system_error' => $registration_failed],500);
-                            //Status code 500 for internal server error
-                        }
-                        else{
-                            // throw ValidationException::withMessages([
-                            //     'datachecked_error' => $registration_failed
-                            // ]); 
-                            return response()->json(['system_error' => $registration_failed],500);
-                            //Status code 500 for internal server error
+                                //Status code 500 for internal server error
                         }
                     }
-                    
-                    //For getting current time
-                    $mail_date = date('Y/m/d H:i');
-                    //For adding 24hour with current time
-                    $new_mail_date = date('Y/m/d H:i', strtotime($mail_date. ' + 24 hours'));
-            
-                    //Store user information for sending email.
-                    $mail_data = [
-                        'user_name' => $request->user_name,
-                        'to_mailaddress' => $request->mailaddress,
-                        'from_mailaddress' => 'xxxxx@jara.or.jp',
-                        'temporary_password' => $temp_password,
-                        'temporary_password_expiration_date'=> $new_mail_date
-                    ];
-            
-                    
-                    //Sending mail to the user
-                    
-                    try {
-                        Mail::to($request->get('mailaddress'))->send(new WelcomeMail($mail_data));
-                    } catch (Exception $e) {
-                        DB::delete('delete from t_users where mailaddress = ?', [$request->mailaddress ]);
-                        //Store error message in the user_register log file.
-                        Log::channel('user_register')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「EMAIL_SENT_ERROR_MESSAGE」  ： $e\r\n  \r\n ============================================================ \r\n \r\n");
-                        //Display error message to the client
-                        // throw ValidationException::withMessages([
-                        //     'datachecked_error' => $mail_sent_failed,
-                        // ]);
-                        return response()->json(['system_error' => $registration_failed],500);
-                            //Status code 500 for internal server error
+                    //直近に挿入した選手のID
+                    $insert_player_id = 0;
+                    //選手情報を取得
+                    $target_player_data = $t_players->getPlayer($rowData['player_id']);
+                    //対象の選手が選手テーブルに存在するかをチェック
+                    if(!isset($target_player_data))
+                    {   
+                        //選手未登録の場合、選手テーブルに挿入
+                        $insert_player_data = [];
+                        $insert_player_data['user_id'] = $rowData['user_id'];
+                        $insert_player_data['jara_player_id'] = $rowData['jara_player_id'];
+                        $insert_player_data['player_name'] = $rowData['player_name'];
+                        $insert_player_data['date_of_birth'] = $target_user_data['date_of_birth'];
+                        $insert_player_data['sex_id'] = $target_user_data['sex'];
+                        $insert_player_data['height'] = $target_user_data['height'];
+                        $insert_player_data['weight'] = $target_user_data['weight'];
+                        $insert_player_data['side_info'] = $rowData['side_info'];
+                        $insert_player_data['birth_country'] = $rowData['birth_country'];
+                        $insert_player_data['birth_prefecture'] = $rowData['birth_prefecture'];
+                        $insert_player_data['residence_country'] = $rowData['residence_country'];
+                        $insert_player_data['photo'] = $rowData['photo'];
+                        $insert_player_data['current_datetime'] = $current_datetime;
+                        $insert_player_data['user_id'] = $register_user_id;
+
+                        DB::beginTransaction();
+                        try
+                        {   
+                            //insertを実行して、insertしたレコードのIDを取得
+                            $insert_player_id = $t_players->insertPlayer($insert_player_data);
+                            DB::commit();
+                        } catch (\Throwable $e)
+                        {
+                            DB::rollBack();
+                        }
+                        //メール送信→関数化する
                     }
-
-
-                    //選手未登録の場合、選手テーブルに挿入
-                    //メール送信
-
                     //団体所属選手テーブルに挿入
+                    $insert_organization_player_data = [];
+                    $insert_organization_player_data['org_id'] = $input_org_id;
+                    //選手IDは入力値になければ直近にinsertした選手IDを代入
+                    if(isset($rowData['player_id']))
+                    {
+                        $insert_organization_player_data['player_id'] = $rowData['player_id'];
+                    }
+                    else
+                    {
+                        $insert_organization_player_data['player_id'] = $insert_player_id;
+                    }
+                    $insert_organization_player_data['joining_date'] = $rowData['joining_date'];
+                    $insert_organization_player_data['deperture_date'] = $rowData['deperture_date'];
+                    $insert_organization_player_data['current_datetime'] = $current_datetime;
+                    $insert_organization_player_data['user_id'] = $register_user_id;
+                    
+                    DB::beginTransaction();
+                    try
+                    {   
+                        //insertを実行して、insertしたレコードのIDを取得
+                        $insert_organization_player_id = $t_organization_players->insertOrganizationPlayer($insert_organization_player_data);
+                        DB::commit();
+                    }
+                    catch (\Throwable $e)
+                    {
+                        DB::rollBack();
+                    }
                     //メール送信
                 }
             }
@@ -958,5 +1033,12 @@ class OrganizationPlayersController extends Controller
 
         Log::debug(sprintf("searchOrganizationPlayersForTeamRef end"));
         return response()->json(['result' => $players]); //DBの結果を返す
+    }
+
+    //メールの送信
+    private function sendMail($user_name,$mailaddress,$temp_password,$mail_template)
+    {
+        //任意のテンプレートを引数で選択してメールを送信
+        //ユーザー名、メールアドレスなど必要な値は引数で指定する
     }
 }
