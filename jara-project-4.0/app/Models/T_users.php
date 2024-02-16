@@ -275,6 +275,7 @@ class T_users extends Authenticatable
                                 `temp_password_flag`
                                 FROM `t_users`
                                 WHERE 1=1
+                                and `delete_flag` = 0
                                 and `user_id` = ?'
                             ,$user_id);
         return $users;

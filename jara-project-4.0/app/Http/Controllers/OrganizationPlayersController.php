@@ -728,46 +728,42 @@ class OrganizationPlayersController extends Controller
                 $dataList[$rowIndex] = $rowArray;
             }
             return view('organizations.player-register', ["dataList" => $dataList, "errorMsg" => "", "checkList" => $checkList, "organization_name_list" => $organization_name_list]);
-        } else if ($request->has('dbUpload')) { // 登録ボタンクリック
-            $csvData = Session::get('dataList');
-            // dd($csvData[1][5]);
-            // $result = explode(',', $request->Flag01);
+        } else if ($request->has('regist')) { // 登録ボタンクリック
             $result = "1";
-            //dd($csvData);
-            // for ($i = 1; $i < count($csvData); $i++) {
-            //     if ($result == "1") {
-            //         $tRaceResultRecord::$raceResultRecordInfo['player_id'] = $csvData[$i][17]; //選手ID
-            //         $tRaceResultRecord::$raceResultRecordInfo['tourn_id'] = $csvData[$i][1]; //大会ID
-            //         $tRaceResultRecord::$raceResultRecordInfo['race_id'] = $csvData[$i][7]; //レースID
-            //         $tRaceResultRecord::$raceResultRecordInfo['race_number'] = $csvData[$i][10]; //レースNo
-            //         $tRaceResultRecord::$raceResultRecordInfo['race_number'] = $csvData[$i][5]; //レース区分ID 仮実装
-            //         $tRaceResultRecord::$raceResultRecordInfo['org_id'] = $csvData[$i][12]; //団体ID
-            //         $tRaceResultRecord::$raceResultRecordInfo['crew_name'] = $csvData[$i][14]; //クルー名
-            //         $tRaceResultRecord::$raceResultRecordInfo['by_group'] = $csvData[$i][9]; //組別
-            //         $tRaceResultRecord::$raceResultRecordInfo['event_id'] = $csvData[$i][3]; //種目ID
-            //         $log = $tRaceResultRecord->insertRaceResultRecord($tRaceResultRecord::$raceResultRecordInfo);
-            //     } else if ($result == "2") {
-            //         $tRaceResultRecord::$raceResultRecordInfo['player_id'] = $csvData[$i][17]; //選手ID
-            //         $tRaceResultRecord::$raceResultRecordInfo['tourn_id'] = $csvData[$i][1]; //大会ID
-            //         $tRaceResultRecord::$raceResultRecordInfo['race_id'] = $csvData[$i][7]; //レースID
-            //         $tRaceResultRecord::$raceResultRecordInfo['race_number'] = $csvData[$i][10]; //レースNo
-            //         $tRaceResultRecord::$raceResultRecordInfo['race_number'] = $csvData[$i][5]; //レース区分ID 仮実装
-            //         $tRaceResultRecord::$raceResultRecordInfo['org_id'] = $csvData[$i][12]; //団体ID
-            //         $tRaceResultRecord::$raceResultRecordInfo['crew_name'] = $csvData[$i][14]; //クルー名
-            //         $tRaceResultRecord::$raceResultRecordInfo['by_group'] = $csvData[$i][9]; //組別
-            //         $tRaceResultRecord::$raceResultRecordInfo['event_id'] = $csvData[$i][3]; //種目ID
-            //         $tRaceResultRecord->updateRaceResultRecord($tRaceResultRecord::$raceResultRecordInfo);
-            //     } else {
-            //         continue;
-            //     }
-            // }
-            //dd($playersInfo);
+            //入力値（テーブルの各要素）の配列をフロントから受け取る
+            //配列は行列の形式、また1行の各フィールドはその名称で取得可能の想定
+            $postData = $request->all();
+            //foreachで1行ずつ処理
+            foreach($postData as $rowData)
+            {
+                if($rowData['check'] == "checked" && $rowData['renkei'] == "登録可能データ")
+                {
+                    //登録・更新するユーザー名を取得
+                    $register_user_id = Auth::user()->user_id;
+                    //登録・更新日時のために現在の日時を取得
+                    $current_datetime = now()->format('Y-m-d H:i:s.u');
+                    //削除フラグは全て0で登録する
+                    $delete_flag = 0;
 
-            //return view('tournament.entry-register', ["dataList" => [], "errorMsg" => $log, "checkList" => "", "tournament_name_list" => $tournament_name_list]);
+                    //ユーザーデータが存在するかチェック
+                    $user_id = $rowData['user_id'];
+                    $user_data = $t_users->getUserDataFromUserId($user_id);
+                    if(empty($user_data))
+                    {
+                        //ユーザー未登録の場合、ユーザーテーブルに挿入
+                        
+                        //メール送信
+                    }
+
+
+                    //選手未登録の場合、選手テーブルに挿入
+                    //メール送信
+
+                    //団体所属選手テーブルに挿入
+                    //メール送信
+                }
+            }
         }
-        // else {
-        //     return view('tournament.entry-register', ["dataList" => [], "errorMsg" => "", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
-        // }
     }
 
     //データのチェックで不備があったときの変数代入処理

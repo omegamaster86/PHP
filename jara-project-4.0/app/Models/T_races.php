@@ -189,4 +189,43 @@ class T_races extends Model
                     where `tourn_id` = :'
                 ,$race);
     }
+
+
+    public function getRaces($trnId)
+    {
+        $races = DB::select('select
+                            rc.`race_id`
+                            ,race.`race_number`
+                            ,race.`entrysystem_race_id`
+                            ,race.`tourn_id`
+                            ,race.`race_name`
+                            ,race.`event_id`
+                            ,race.`event_name`
+                            ,race.`race_class_id`
+                            ,race.`race_class_name`
+                            ,race.`by_group`
+                            ,race.`range`
+                            ,race.`start_date_time`
+                            ,rc.hasHistory
+                            from
+                            (
+                                select race.`race_id`
+                                ,case count(rrr.race_result_record_id)
+                                    when 0 then 0
+                                    else 1
+                                    end as `hasHistory`
+                                FROM `t_races` race
+                                left join `t_race_result_record` rrr
+                                on race.race_id = rrr.race_id
+                                where 1=1
+                                and race.delete_flag = 0
+                                and (rrr.delete_flag = 0 or rrr.delete_flag is null)
+                                and race.tourn_id = :tourn_id
+                                group by race.`race_id`
+                            )rc
+                            join `t_races` race
+                            on rc.race_id = race.race_id'
+                        , $trnId);
+        return $races;
+    }
 }
