@@ -281,19 +281,19 @@ export default function tournamentRef() {
                 {tableData.map((row, index) => (
                   <CustomTr key={index}>
                     {/* 「出漕結果記録テーブル」に「レーステーブル」.「レースID」と紐づくデータが存在する場合、リンクボタンを表示するかどうかを制御するためにhasHistoryを利用 */}
-                    {row.hasHistory && (
+                    {(row.hasHistory == true) && (
                       // TODO: 遷移先のURLは仮置き。置き換えること。
                       <CustomTd
-                        transitionDest={'/tournamentRaceResultRef&raceId=' + row.race_id?.toString()}
+                        transitionDest={'/tournamentRaceResultRef?raceId=' + row.race_id?.toString()}
                       >
                         {row.race_id}
                       </CustomTd>
                     )}
                     {!row.hasHistory && <CustomTd>{row.race_id}</CustomTd>}
-                    {row.hasHistory && (
+                    {(row.hasHistory == true) && (
                       // TODO: 遷移先のURLは仮置き。置き換えること。
                       <CustomTd
-                        transitionDest={'/tournamentRaceResultRef&raceId=' + row.race_id?.toString()}
+                        transitionDest={'/tournamentRaceResultRef?raceId=' + row.race_id?.toString()}
                       >
                         {row.race_name}
                       </CustomTd>

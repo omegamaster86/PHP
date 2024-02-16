@@ -210,10 +210,10 @@ class T_races extends Model
                             from
                             (
                                 select race.`race_id`
-                                ,case count(rrr.race_result_record_id)
-                                    when 0 then 0
+                                ,case 
+                                    when count(rrr.race_result_record_id) = 0 then 0
                                     else 1
-                                    end as `hasHistory`
+                                end as `hasHistory`
                                 FROM `t_races` race
                                 left join `t_race_result_record` rrr
                                 on race.race_id = rrr.race_id

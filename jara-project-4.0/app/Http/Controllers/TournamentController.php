@@ -469,7 +469,7 @@ class TournamentController extends Controller
     //======================================================================================================
 
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
-    public function getTournamentInfoData(Request $request,T_tournaments $tourn)
+    public function getTournamentInfoData(Request $request, T_tournaments $tourn)
     {
         Log::debug(sprintf("getTournamentInfoData start"));
         $reqData = $request->all();
@@ -481,7 +481,7 @@ class TournamentController extends Controller
     }
 
     //主催大会
-    public function getTournamentInfoData_org(Request $request,T_tournaments $tourn)
+    public function getTournamentInfoData_org(Request $request, T_tournaments $tourn)
     {
         Log::debug(sprintf("getTournamentInfoData_org start"));
         $reqData = $request->all();
@@ -630,8 +630,37 @@ class TournamentController extends Controller
         Log::debug(sprintf("getRaceData start"));
         $reqData = $request->all();
         Log::debug($reqData['tourn_id']);
-        $result = $tRace->getRace($reqData['tourn_id']); //レース情報を取得
+        //$result = $tRace->getRace($reqData['tourn_id']); //レース情報を取得
+        $result = $tRace->getRaces($reqData); //レース情報を取得
         Log::debug(sprintf("getRaceData end"));
+        return response()->json(['result' => $result]); //DBの結果を返す
+    }
+
+    //大会レース結果参照画面に表示する用 20240216
+    public function getTournRaceResultRecords(Request $request, T_raceResultRecord $tRaceResultRecord)
+    {
+        Log::debug(sprintf("getTournRaceResultRecords start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        $result = $tRaceResultRecord->getRaceResultRecord_receId($reqData['race_id']);
+        Log::debug(sprintf("getTournRaceResultRecords end"));
+        return response()->json(['result' => $result]); //DBの結果を返す
+    }
+
+    //クルー情報取得 20240216
+    public function getCrewData(Request $request, T_raceResultRecord $tRaceResultRecord)
+    {
+        Log::debug(sprintf("getCrewData start"));
+        $reqData = $request->all();
+        foreach ($reqData as $key => $val) { //foreachで取り出す配列と要素の値を格納する変数を指定する。
+            if ($key == 'race_id' || $key == 'crew_name' || $key == 'org_id') {
+                continue;
+            }
+            unset($reqData[$key]);
+        }
+        Log::debug($reqData);
+        $result = $tRaceResultRecord->getCrews($reqData);
+        Log::debug(sprintf("getCrewData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 }

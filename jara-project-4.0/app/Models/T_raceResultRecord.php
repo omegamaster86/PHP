@@ -1006,13 +1006,13 @@ class T_raceResultRecord extends Model
     {
         $crews = DB::select('select
                             rrr.`player_id`
-                            ,msn.seat_id
+                            ,msn.`seat_id`
                             ,msn.`seat_name`
                             ,msn.`seat_addr_name`
                             ,rrr.`player_name`
                             ,rrr.`player_height`
                             ,rrr.`player_weight`
-                            ,msn.`display_order`
+                            ,msn.`display_order` as `order`
                             from `t_race_result_record` rrr
                             left join `m_seat_number` msn
                             on rrr.seat_number = msn.seat_id

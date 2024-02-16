@@ -3,7 +3,7 @@
 
 // Reactおよび関連モジュールのインポート
 import React, { useState, useEffect, ChangeEvent, Fragment, MouseEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/app/lib/axios';
 // コンポーネントのインポート
 import {
@@ -47,6 +47,20 @@ export default function TournamentRaceResultRef() {
     errorMessage: '',
   });
 
+  // クエリパラメータを取得する
+  const searchParams = useSearchParams();
+  const raceId = searchParams.get('raceId')?.toString() || '';
+  // tournIdの値を取得
+  switch (raceId) {
+    case '':
+      break;
+    default:
+      break;
+  }
+  const [race_id, setRaceId] = useState<any>({
+    race_id: raceId,
+  });
+
   // レース結果情報のデータステート
   const [raceResultRecordsData, setResultRecordsData] = useState([] as RaceResultRecordsResponse[]);
   const [crewRecordsData, setCrewRecordsData] = useState([] as CrewResponse[]);
@@ -54,6 +68,14 @@ export default function TournamentRaceResultRef() {
   const [selectedRaceNameList, setSelectedRaceNameList] = useState([] as RaceNameList[]);
   const [byGroupList, setByGroupList] = useState([] as ByGroupList[]);
   const [selectedByGroupList, setSelectedByGroupList] = useState([] as ByGroupList[]);
+
+  //クルー情報取得用 20240216
+  interface SearchCrewList {
+    race_id: number; //レースID
+    crew_name: string; //クルー名
+    org_id: number; //団体ID
+  };
+  const [searchCrewInfo, setSearchCrewInfo] = useState([] as SearchCrewList[]);
 
   // Next.jsのRouterを利用
   const router = useRouter();
@@ -66,8 +88,10 @@ export default function TournamentRaceResultRef() {
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
-        const response = await axios.get('/getRaceResultRecordsData'); //残件対象項目
-        console.log(response);
+        const response = await axios.post('/getTournRaceResultRecords', race_id); //残件対象項目
+        console.log(response.data.result);
+        //クルー情報を取得するためのパラメータをセット
+        setSearchCrewInfo(response.data.result);
         setResultRecordsData(response.data.result);
         response.data.length === 0
           ? setError({ isError: true, errorMessage: 'エントリー情報がありません。' })
@@ -190,19 +214,20 @@ export default function TournamentRaceResultRef() {
    * クルー情報取得
    * @description クルー情報を取得する
    */
-  const getCrew = async () => {
-
-    var apiUri = 'http://localhost:3100/crew?';
+  const getCrew = async (index: number) => {
+    // var apiUri = 'http://localhost:3100/crew?';
     const csrf = () => axios.get('/sanctum/csrf-cookie')
     await csrf()
-    axios
-      .get<CrewResponse[]>('/crew/') //残件対象項目
+    await axios
+      // .get<CrewResponse[]>('/crew/') //残件対象項目
+      .post('/getCrewData', searchCrewInfo[index])
       .then((response) => {
+        console.log(response.data.result);
         // レスポンスからデータを取り出してstateにセット
-        setCrewRecordsData(response.data);
+        setCrewRecordsData(response.data.result);
       })
       .catch((error) => {
-        alert(error);
+        //alert(error);
       });
   };
 
@@ -344,8 +369,9 @@ export default function TournamentRaceResultRef() {
                         <CustomTd>
                           <div
                             onClick={(event) => {
+                              console.log(index);
                               setOpen(true);
-                              getCrew();
+                              getCrew(index);
                             }}
                             className='text-primary-300 underline hover:text-primary-50 cursor-pointer text-caption1'
                           >
