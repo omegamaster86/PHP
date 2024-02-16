@@ -205,30 +205,41 @@ class T_organization_players extends Model
                         top.`player_id`			#選手ID
                         ,tp.`jara_player_id`	#JARA選手コード
                         ,tp.`player_name`		#選手名
-                        ,m_sex.sex				#性別
+                        ,tp.date_of_birth
+                        ,tp.height
+                        ,tp.weight
+                        ,tp.photo
+                        ,tp.`birth_country`
+                        ,bir_cont.`country_name` as `birthCountryName`
+                        ,`birth_prefecture`
+                        ,tp.`residence_country`
+                        ,res_cont.`country_name` as `residenceCountryName`
+                        ,`residence_prefecture`
+                        ,m_sex.sex as sexName	#性別
+                        ,m_sex.sex_id		    #性別ID
                         ,CASE 
                             when tp.`birth_country` = 112 then bir_pref.`pref_name`
                             else bir_cont.`country_name`
-                            end as birth_place	#出身地
+                            end as birthPrefectureName	#出身地
                         ,CASE
                             when tp.`residence_country` = 112 then res_pref.`pref_name`
                             else res_cont.country_name
-                            end as residence	#居住地
+                            end as residencePrefectureName	#居住地
                         ,CASE
-                            when SUBSTRING(tp.`side_info`,8,1) = 1 then "◯"
-                            else "×"
+                            when SUBSTRING(tp.`side_info`,8,1) = 1 then 1
+                            else 0
                             end as side_S
                         ,CASE
-                            when SUBSTRING(tp.`side_info`,7,1) = 1 then "◯"
-                            else "×"
+                            when SUBSTRING(tp.`side_info`,7,1) = 1 then 1
+                            else 0
                             end as side_B
                         ,CASE
-                            when SUBSTRING(tp.`side_info`,6,1) = 1 then "◯"
-                            else "×"
+                            when SUBSTRING(tp.`side_info`,6,1) = 1 then 1
+                            else 0
                             end as side_X
                         ,CASE
-                            when SUBSTRING(tp.`side_info`,5,1) = 1 then "◯"
-                            else "×"
+                            when SUBSTRING(tp.`side_info`,5,1) = 1 then 1
+                            else 0
                             end as side_C
                         ,min(org.org_id) as `org_id`
                         from `t_organization_players` top

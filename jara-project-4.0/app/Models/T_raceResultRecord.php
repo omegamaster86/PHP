@@ -226,9 +226,9 @@ class T_raceResultRecord extends Model
                                         `player_id`, 
                                         `jara_player_id`, 
                                         `player_name`, 
-                                        `entrysystem_tourn_id`, 
-                                        `tourn_id`, 
-                                        `tourn_name`, 
+                                        t_race_result_record.`entrysystem_tourn_id`, 
+                                        t_race_result_record.`tourn_id`, 
+                                        t_race_result_record.`tourn_name`, 
                                         `race_id`, 
                                         `entrysystem_race_id`, 
                                         `race_number`, 
@@ -292,7 +292,7 @@ class T_raceResultRecord extends Model
                                         and  (`m_seat_number`.`delete_flag` = 0 or `m_seat_number`.`delete_flag` is null)
                                         and  (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
                                         and `t_race_result_record`.player_id = ?', [$playerId]);
-        Log::debug($racesResultRecord);
+        // Log::debug($racesResultRecord);
         return $racesResultRecord;
     }
 

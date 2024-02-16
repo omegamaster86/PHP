@@ -521,11 +521,12 @@ class PlayerController extends Controller
     {
         Log::debug(sprintf("searchPlayer start"));
         $searched_data = $request->all();
+        Log::debug($searched_data);
         $tmpList = ""; //変換したサイド情報を保持するためのtmp変数
         foreach ($searched_data['side_info'] as $sideInfoVal) {
-            if($sideInfoVal){
+            if ($sideInfoVal) {
                 $tmpList .= "1";
-            }else{
+            } else {
                 $tmpList .= "0";
             }
         }
@@ -647,21 +648,22 @@ class PlayerController extends Controller
         return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
     }
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
-    public function getPlayerInfoData(T_players $tPlayersData)
+    public function getPlayerInfoData(Request $request, T_players $tPlayersData)
     {
         Log::debug(sprintf("getPlayerInfoData start"));
-        // $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
-        $result = $tPlayersData->getPlayerData(1); //DBに選手を登録 20240131
+        $reqData = $request->all();
+        Log::debug($reqData);
+        $result = $tPlayersData->getPlayerData($reqData['player_id']); //DBに選手を登録 20240131
         Log::debug(sprintf("getPlayerInfoData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
     //react 選手情報参照画面に表示するplayerIDに紐づいたデータを送信 20240131
-    public function getRaceResultRecordsData(T_raceResultRecord $tRaceResultRecord)
+    public function getRaceResultRecordsData(Request $request, T_raceResultRecord $tRaceResultRecord)
     {
         Log::debug(sprintf("getRaceResultRecordsData start"));
-        $playerDataList = DB::select('select * from t_players where delete_flag = 0 and user_id = ?', [Auth::user()->user_id]); //ユーザIDに紐づいた選手IDを取得 20240212
-        $latestPlayerId = count($playerDataList) - 1; //複数存在する場合を考慮して最新の選手データを使用する
-        $result = $tRaceResultRecord->getRaceResultRecord_playerId($playerDataList[$latestPlayerId]->player_id); //選手IDを元に出漕結果記録を取得 20240212
+        $reqData = $request->all();
+        Log::debug($reqData);
+        $result = $tRaceResultRecord->getRaceResultRecord_playerId($reqData['player_id']); //選手IDを元に出漕結果記録を取得 20240212
         Log::debug(sprintf("getRaceResultRecordsData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
@@ -671,7 +673,7 @@ class PlayerController extends Controller
         Log::debug(sprintf("deletePlayerData start"));
         $reqData = $request->all();
         Log::debug($reqData);
-        
+
         $tPlayersData::$playerInfo['player_id'] = $reqData['playerInformation']['player_id']; //選手ID
         $result = $tPlayersData->deletePlayerData($tPlayersData::$playerInfo); //該当選手に削除フラグを立てる 20240208
 

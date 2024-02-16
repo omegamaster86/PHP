@@ -475,6 +475,7 @@ class TournamentController extends Controller
         $reqData = $request->all();
         Log::debug($reqData['tourn_id']);
         $result = $tourn->getTournament($reqData['tourn_id']); //DBに選手を登録 20240131
+        // Log::debug($result);
         Log::debug(sprintf("getTournamentInfoData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }

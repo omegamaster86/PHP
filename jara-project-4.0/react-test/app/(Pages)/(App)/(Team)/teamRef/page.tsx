@@ -106,7 +106,7 @@ export default function TeamRef() {
         // const entTournamentsResponse = await axios.get<Tournament[]>('/tournamentSearch',);
         const entTournamentsResponse = await axios.post('/getEntryTournamentsViewForTeamRef', org_id); 
         console.log(entTournamentsResponse.data.result);
-        setEntTournaments(entTournamentsResponse.data);
+        setEntTournaments(entTournamentsResponse.data.result);
         // // 所属選手
         // const playersResponse = await axios.get<PlayerInformationResponse[]>('/playerSearch',);
         const playersResponse = await axios.post('/searchOrganizationPlayersForTeamRef', org_id);

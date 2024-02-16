@@ -156,7 +156,7 @@ export default function PlayerSearch() {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
     }
   };
-
+  console.log(visibleData);
   // ログインユーザーの種別
   const [userType, setUserType] = useState<number>(1);
 
@@ -543,40 +543,40 @@ export default function PlayerSearch() {
                     <img
                       src={row.photo}
                       width={100}
-                      height={100}
+                      height={50}
                       alt='Random'
                       className='rounded-full'
                     />
                   </CustomTd>
                   {/* TODO 仮実装なので、以下リンク設定があるものには、遷移時に必要なパラメータを設定 */}
                   {/* 選手名 */}
-                  <CustomTd transitionDest={'/playerInfomationRef?playerId=' + row.player_id}>
+                  <CustomTd transitionDest={'/playerInformationRef?playerId=' + row.player_id}>
                     {row.player_name}
                   </CustomTd>
                   {/* JARA選手コード */}
-                  <CustomTd transitionDest={'/playerInfomationRef?playerId=' + row.player_id}>
+                  <CustomTd transitionDest={'/playerInformationRef?playerId=' + row.player_id}>
                     {row.jara_player_id}
                   </CustomTd>
                   {/* 選手ID */}
-                  <CustomTd transitionDest={'/playerInfomationRef?playerId=' + row.player_id}>
+                  <CustomTd transitionDest={'/playerInformationRef?playerId=' + row.player_id}>
                     {row.player_id}
                   </CustomTd>
                   {/* 性別 */}
                   <CustomTd>{row.sex}</CustomTd>
                   {/* エントリーシステムの団体ID1 */}
                   <CustomTd
-                    transitionDest={'/teamInfomationRef?entrysystemRaceId=' + row.entrysystemRaceId}>
-                    {row.entrysystemRaceId}
+                    transitionDest={'/teamInfomationRef?entrysystemRaceId=' + row.entrysystemOrgId1}>
+                    {row.entrysystemOrgId1}
                   </CustomTd>
                   {/* エントリーシステムの団体ID2 */}
                   <CustomTd
-                    transitionDest={'/teamInfomationRef?entrysystemRaceId=' + row.entrysystemRaceId}>
-                    {row.entrysystemRaceId}
+                    transitionDest={'/teamInfomationRef?entrysystemRaceId=' + row.entrysystemOrgId2}>
+                    {row.entrysystemOrgId2}
                   </CustomTd>
                   {/* エントリーシステムの団体ID3 */}
                   <CustomTd
-                    transitionDest={'/teamInfomationRef?entrysystemRaceId=' + row.entrysystemRaceId}>
-                    {row.entrysystemRaceId}
+                    transitionDest={'/teamInfomationRef?entrysystemRaceId=' + row.entrysystemOrgId3}>
+                    {row.entrysystemOrgId3}
                   </CustomTd>
                   {/* 団体ID1 */}
                   <CustomTd transitionDest={'/teamInfomationRef?orgId=' + row.orgId1}>

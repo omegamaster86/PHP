@@ -53,8 +53,12 @@ export default function Tournament() {
   if (mode == null) {
     router.push('/tournament?mode=create');
   }
-  const tournId = searchParams.get('tournId')?.toString() || '';
+  const tournId = searchParams.get('tourn_id')?.toString() || '';
   const prevMode = searchParams.get('prevMode')?.toString() || 'confirm';
+
+  const [tourn_id, setTournId] = useState<any>({
+    tourn_id: tournId,
+  });
 
   // フォームデータを管理する状態
   const [tableData, setTableData] = useState<Race[]>([
@@ -63,6 +67,7 @@ export default function Tournament() {
       checked: false,
       race_id: '',
       entrysystem_race_id: '',
+      tourn_id: 0,
       race_number: '',
       event_id: '',
       event_name: '',
@@ -72,6 +77,7 @@ export default function Tournament() {
       by_group: '',
       range: '',
       start_date_time: '',
+      hasHistory: false,
     },
   ]);
 
@@ -80,6 +86,7 @@ export default function Tournament() {
     checked: false,
     race_id: '',
     entrysystem_race_id: '',
+    tourn_id: 0,
     race_number: '',
     event_id: '',
     event_name: '',
@@ -89,6 +96,7 @@ export default function Tournament() {
     by_group: '',
     range: '',
     start_date_time: '',
+    hasHistory: false,
   });
 
   //大会情報 20240202
@@ -404,37 +412,21 @@ export default function Tournament() {
         await csrf()
         axios
           // .get<Tournament>('http://localhost:3100/tournament')
-          .get('/getTournamentInfoData') //残件対象項目
-
+          .post('/getTournamentInfoData', tourn_id) //大会IDを元に大会情報を取得する
           .then((response) => {
-            console.log(response);
-            setTournamentFormData({
-              tourn_id: response.data.result.tourn_id,
-              entrysystem_tourn_id: response.data.result.entrysystem_tourn_id,
-              tourn_name: response.data.result.tourn_name,
-              tourn_type: response.data.result.tourn_type,
-              tournTypeName: response.data.result.tourn_name,
-              sponsor_org_id: response.data.result.ponsor_org_id,
-              sponsorOrgName: response.data.result.tourn_name,
-              event_start_date: response.data.result.event_start_date,
-              event_end_date: response.data.result.event_end_date,
-              venue_id: response.data.result.venue_id,
-              venue_name: response.data.result.venue_name,
-              tourn_url: response.data.result.tourn_url,
-              tourn_info_faile_path: "aaaa",//response.data.result.tourn_info_faile_path,
-            });
+            setTournamentFormData(response.data.result);
             console.log(response.data);
           })
           .catch((error) => {
             // TODO: エラー処理の実装置き換え
             // alert(error);
           });
-        // TODO: データ取得処理の実装置き換え
-
         axios
-          .get<Race[]>('/race')
+          // .get<Race[]>('/race')
+          .post('/getRaceData', tourn_id)
           .then((response) => {
-            setTableData(response.data);
+            console.log(response.data.result);
+            setTableData(response.data.result);
           })
           .catch((error) => {
             // TODO: エラー処理の実装置き換え
@@ -476,16 +468,17 @@ export default function Tournament() {
                     checked: false,
                     race_id: '',
                     entrysystem_race_id: '',
+                    tourn_id: 0,
                     race_number: '',
-                    race_class_id: '',
-                    race_class_name: '',
-                    otherRaceName: '',
                     event_id: '',
                     event_name: '',
                     race_name: '',
+                    race_class_id: '',
+                    race_class_name: '',
                     by_group: '',
                     range: '',
                     start_date_time: '',
+                    hasHistory: false,
                   });
                   setTableData([
                     {
@@ -493,16 +486,17 @@ export default function Tournament() {
                       checked: false,
                       race_id: '',
                       entrysystem_race_id: '',
+                      tourn_id: 0,
                       race_number: '',
-                      race_class_id: '',
-                      race_class_name: '',
-                      otherRaceName: '',
                       event_id: '',
                       event_name: '',
                       race_name: '',
+                      race_class_id: '',
+                      race_class_name: '',
                       by_group: '',
                       range: '',
                       start_date_time: '',
+                      hasHistory: false,
                     },
                   ]);
                   fileUploaderRef?.current?.clearFile();
@@ -550,16 +544,17 @@ export default function Tournament() {
                     checked: false,
                     race_id: '',
                     entrysystem_race_id: '',
+                    tourn_id: 0,
                     race_number: '',
                     event_id: '',
                     event_name: '',
                     race_name: '',
                     race_class_id: '',
                     race_class_name: '',
-                    otherRaceName: '',
                     by_group: '',
                     range: '',
                     start_date_time: '',
+                    hasHistory: false,
                   });
                   setTableData([
                     {
@@ -567,16 +562,17 @@ export default function Tournament() {
                       checked: false,
                       race_id: '',
                       entrysystem_race_id: '',
+                      tourn_id: 0,
                       race_number: '',
-                      race_class_id: '',
-                      race_class_name: '',
-                      otherRaceName: '',
                       event_id: '',
                       event_name: '',
                       race_name: '',
+                      race_class_id: '',
+                      race_class_name: '',
                       by_group: '',
                       range: '',
                       start_date_time: '',
+                      hasHistory: false,
                     },
                   ]);
                   fileUploaderRef?.current?.clearFile();
@@ -640,16 +636,17 @@ export default function Tournament() {
           checked: false,
           race_id: '',
           entrysystem_race_id: '',
+          tourn_id: 0,
           race_number: '',
-          race_class_id: '',
-          race_class_name: '',
-          otherRaceName: '',
           event_id: '',
           event_name: '',
           race_name: '',
+          race_class_id: '',
+          race_class_name: '',
           by_group: '',
           range: '',
           start_date_time: '',
+          hasHistory: false,
         });
       }}
     >

@@ -25,8 +25,8 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { ROLE } from '@/app/utils/consts';
 
-// 選手情報参照画面
-export default function PlayerInformationRef() {
+// 大会情報参照画面
+export default function tournamentRef() {
   // フック
   const router = useRouter();
 

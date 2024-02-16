@@ -34,8 +34,8 @@ class T_players extends Model
         'delete_flag' => 0,
     ];
 
-    //選手情報更新画面用 userIDに紐づいた選手情報を取得 20240131
-    public function getPlayerData($user_id)
+    //選手情報更新画面用 plauerIdに紐づいた選手情報を取得 20240215
+    public function getPlayerData($player_id)
     {
         $result = DB::select('select
                                 `player_id`
@@ -81,11 +81,11 @@ class T_players extends Model
                                 and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
                                 and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
                                 and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
-                                and `t_players`.user_id = ?'
-                                ,[$user_id]);
+                                and `t_players`.player_id = ?'
+                                ,[$player_id]);
 
         //1つのデータを取得するため0番目だけを返す
-        //Log::debug($result);
+        // Log::debug($result);
         $targetTrn = null;
         if (!empty($result)) {
             $targetTrn = $result[0];
@@ -471,14 +471,28 @@ class T_players extends Model
             array_push($valid_data_array, $searched_data['event_name']);
         }
 
-        $sql_string = 'select player.player_id, sex.sex_id, sex.sex, player.date_of_birth, player.side_info, record.jara_player_id, record.player_name, record.entrysystem_org_id, record.org_id, record.org_name from t_race_result_record as record
-        left join t_players as player on record.jara_player_id = player.jara_player_id
-        left join m_sex as sex on player.sex_id = sex.sex_id
-        where record.delete_flag = 0 #condition# LIMIT 100';
+        $sql_string = 'select 
+                        player.player_id,
+                        player.player_name, 
+                        player.jara_player_id, 
+                        player.photo,
+                        player.sex_id, 
+                        m_sex.sex, 
+                        player.date_of_birth, 
+                        player.side_info, 
+                        record.org_id, 
+                        record.entrysystem_org_id, 
+                        record.org_name 
+        from t_players as player
+        left join t_race_result_record as record
+        on  player.player_id = record.player_id
+        left join m_sex 
+        on player.sex_id = m_sex.sex_id
+        where player.delete_flag = 0 #condition# LIMIT 100';
         $sql_string = str_replace('#condition#', $condition, $sql_string);
-        Log::debug($sql_string);
+        // Log::debug($sql_string);
         $race_records = DB::select($sql_string, $valid_data_array);
-        Log::debug($race_records);
+        // Log::debug($race_records);
         Log::debug(sprintf("getPlayerWithSearchCondition end"));
         return $race_records;
     }

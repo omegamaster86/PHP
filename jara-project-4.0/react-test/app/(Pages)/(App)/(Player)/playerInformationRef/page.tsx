@@ -29,9 +29,25 @@ export default function PlayerInformationRef() {
   const searchParams = useSearchParams();
   // modeの値を取得 delete
   const mode = searchParams.get('mode');
-  if (mode == null) {
-    router.push('/playerInformationRef');
+  switch (mode) {
+    case 'delete':
+      break;
+    default:
+      break;
   }
+
+  // 選手IDを取得
+  const playerId = searchParams.get('playerId')?.toString() || '';
+  switch (playerId) {
+    case '':
+      break;
+    default:
+      break;
+  }
+  const [player_id, setPlayerId] = useState<any>({
+    player_id: playerId,
+  });
+
 
   // タブ切り替え用のステート
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -80,7 +96,7 @@ export default function PlayerInformationRef() {
         // const playerInf = await axios.get<PlayerInformationResponse>('http://localhost:3100/player',);
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
-        const playerInf = await axios.get('/getPlayerInfoData');
+        const playerInf = await axios.post('/getPlayerInfoData', player_id);
         console.log(playerInf.data.result);
         //サイド情報のデータ変換
         const sideList = playerInf.data.result.side_info.split('');
@@ -112,7 +128,7 @@ export default function PlayerInformationRef() {
           photo: playerInf.data.result.photo,
         });
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
-        const response = await axios.get('/getRaceResultRecordsData');
+        const response = await axios.post('/getRaceResultRecordsData', player_id);
         console.log(response.data.result);
         setResultRecordsData(response.data.result);
       } catch (error: any) {
@@ -200,7 +216,7 @@ export default function PlayerInformationRef() {
                       {/* 既存選手ID */}
                       <div className='text-gray-40 text-caption1'>エントリーシステムの選手ID</div>
                       <Label
-                        label={playerInformation.jara_player_id.toString() ?? ''}
+                        label={playerInformation.jara_player_id ?? ''}
                         textColor='white'
                         textSize='caption1'
                       ></Label>

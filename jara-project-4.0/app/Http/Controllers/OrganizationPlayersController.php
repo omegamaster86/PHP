@@ -805,6 +805,31 @@ class OrganizationPlayersController extends Controller
         $searchValue = [];
         $searchCondition = $this->generateOrganizationPlayersSearchCondition($searchInfo, $searchValue);
         $players = $t_organization_players->getOrganizationPlayersFromCondition($searchCondition, $searchValue);
+        for ($i = 0; $i < count($players); $i++) {
+            $side_info = array();
+            if ($players[$i]->side_B == 1) {
+                array_push($side_info, 1);
+            }else{
+                array_push($side_info, 0);
+            }
+            if ($players[$i]->side_S == 1) {
+                array_push($side_info, 1);
+            }else{
+                array_push($side_info, 0);
+            }
+            if ($players[$i]->side_C == 1) {
+                array_push($side_info, 1);
+            }else{
+                array_push($side_info, 0);
+            }
+            if ($players[$i]->side_X == 1) {
+                array_push($side_info, 1);
+            }else{
+                array_push($side_info, 0);
+            }
+            $players[$i]->side_info = $side_info;
+        }
+
         Log::debug(sprintf("searchOrganizationPlayersForTeamRef end"));
         return response()->json(['result' => $players]); //DBの結果を返す
     }
