@@ -260,6 +260,7 @@ class T_users extends Authenticatable
                                 `temp_password_flag`
                                 FROM `t_users`
                                 WHERE 1=1
+                                and `delete_flag` = 0
                                 and `mailaddress` = ?'
                             ,$mailaddress);
         return $users;
@@ -355,5 +356,54 @@ class T_users extends Authenticatable
                     )
                     where `user_id` = :user_id'
                     ,$updateInfo);
+    }
+
+    //読み込んだcsvの情報を条件としてユーザー情報を取得
+    public function getUserDataFromInputCsv($user_data)
+    {
+        $user = DB::select('select
+                            `user_id`                            
+                            ,expiry_time_of_temp_password
+                            ,`temp_password_flag`
+                            FROM `t_users`
+                            where 1=1
+                            and `delete_flag` = 0
+                            and `mailaddress` = :mailaddress'
+                            ,$user_data);
+        return $user;
+    }
+
+    //仮ユーザーをinsertする
+    public function insertTemporaryUser($userInfo)
+    {
+        DB::insert('insert into t_users
+                    (
+                        user_name, 
+                        mailaddress, 
+                        password, 
+                        temp_password, 
+                        expiry_time_of_temp_password, 
+                        temp_password_flag, 
+                        registered_time, 
+                        registered_user_id, 
+                        updated_time, 
+                        updated_user_id, 
+                        delete_flag
+                    )
+                    values
+                    (
+                        :user_name, 
+                        :mailaddress, 
+                        :password, 
+                        :temp_password, 
+                        :expiry_time_of_temp_password, 
+                        :temp_password_flag, 
+                        :registered_time, 
+                        :registered_user_id, 
+                        :updated_time, 
+                        :updated_user_id, 
+                        0
+                    )'
+                    ,$userInfo);
     }
 }
