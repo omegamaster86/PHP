@@ -2,7 +2,7 @@ import TextField from '@mui/material/TextField';
 import React from 'react';
 import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '../InputLabel';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, FocusEvent } from 'react';
 
 const CustomTextField = ({
   label,
@@ -20,6 +20,9 @@ const CustomTextField = ({
   toolTipTitle,
   toolTipText,
   className,
+  isDecimal,
+  onBlur,
+  maxLength,
 }: {
   label?: string;
   isError?: boolean;
@@ -36,6 +39,9 @@ const CustomTextField = ({
   toolTipTitle?: string;
   toolTipText?: string;
   className?: string;
+  isDecimal?: boolean;
+  onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
+  maxLength?: number;
 }) => {
   if (displayHelp === undefined) {
     displayHelp = true;
@@ -67,10 +73,15 @@ const CustomTextField = ({
             {...(disabled && { className: 'bg-disableBg' })}
             value={value}
             onChange={onChange}
-            placeholder={placeHolder}
-            inputProps={{
-              step: '0.01',
+            onBlur={(e) => {
+              if (onBlur) {
+                onBlur(e);
+              }
             }}
+            placeholder={placeHolder}
+            inputProps={
+              (isDecimal && { step: '0.01' }) || (maxLength && { maxLength: maxLength }) || {}
+            }
             InputProps={
               inputAdorment &&
               ({

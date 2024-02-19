@@ -611,6 +611,7 @@ export default function PlayerInformation() {
             isError={heightErrorMessage.length > 0}
             errorMessages={heightErrorMessage}
             type='number'
+            isDecimal={true}
             placeHolder='180.00'
             inputAdorment='cm'
             value={formData.height?.toString()}
@@ -630,6 +631,7 @@ export default function PlayerInformation() {
             placeHolder='80.00'
             errorMessages={weightErrorMessage}
             type='number'
+            isDecimal={true}
             inputAdorment='kg'
             value={formData.weight?.toString()}
             onChange={(e) => handleInputChange('weight', e.target.value)}

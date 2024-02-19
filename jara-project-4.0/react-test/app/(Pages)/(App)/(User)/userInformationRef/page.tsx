@@ -264,6 +264,7 @@ export default function UserInformationUpdate() {
             type='number'
             readonly
             required={false}
+            isDecimal={true}
             value={formData.height}
             placeHolder='180'
             onChange={(e) => {
@@ -277,6 +278,7 @@ export default function UserInformationUpdate() {
             label='体重'
             type='number'
             readonly
+            isDecimal={true}
             required={false}
             value={formData.weight}
             displayHelp={false}

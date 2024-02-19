@@ -754,7 +754,8 @@ export default function UserInformationUpdate() {
             type='number'
             readonly={mode === 'confirm'}
             required={false}
-            value={formData?.height}
+            isDecimal={true}
+            value={formData.height}
             placeHolder='180'
             onChange={(e) => {
               handleInputChange('height', e.target.value);
@@ -766,6 +767,7 @@ export default function UserInformationUpdate() {
           <CustomTextField
             label='体重'
             type='number'
+            isDecimal={true}
             readonly={mode === 'confirm'}
             required={false}
             value={formData?.weight}

@@ -665,7 +665,11 @@
       "byGroup": "1",
       "range": "1",
       "startDateTime": "2021/01/01 10:00",
-      "hasHistory": true
+      "hasHistory": true,
+      "tournId": 3000001,
+      "tournName": "大会名1",
+      "hasMatch": false,
+      "csvRowId": 1
     },
     {
       "id": 2,
@@ -682,7 +686,11 @@
       "byGroup": "2",
       "range": "2",
       "startDateTime": "2021/02/01 10:00",
-      "hasHistory": false
+      "hasHistory": false,
+      "tournId": 3000002,
+      "tournName": "大会名2",
+      "hasMatch": false,
+      "csvRowId": 2
     },
     {
       "id": 3,
@@ -698,7 +706,11 @@
       "otherRaceName": "",
       "byGroup": "3",
       "range": "3",
-      "startDateTime": "2021/04/01 10:00"
+      "startDateTime": "2021/04/01 10:00",
+      "tournId": 3000003,
+      "tournName": "大会名3",
+      "hasMatch": true,
+      "csvRowId": 3
     }
   ],
   "raceType": [
@@ -855,7 +867,7 @@
   "tournamentSearch": [
     {
       "id": 1,
-      "tournId":1000001,
+      "tournId": 1000001,
       "tournType": "1",
       "tournTypeName": "公式",
       "tournName": "大会名1",
@@ -869,7 +881,7 @@
     },
     {
       "id": 2,
-      "tournId":2000001,
+      "tournId": 2000001,
       "tournType": "2",
       "tournTypeName": "非公式",
       "tournName": "大会名2",
@@ -883,7 +895,7 @@
     },
     {
       "id": 3,
-      "tournId":3000001,
+      "tournId": 3000001,
       "tournType": "1",
       "tournTypeName": "公式",
       "tournName": "大会名3",
@@ -897,7 +909,7 @@
     },
     {
       "id": 4,
-      "tournId":4000001,
+      "tournId": 4000001,
       "tournType": "1",
       "tournTypeName": "公式",
       "tournName": "大会名4",
@@ -1285,16 +1297,7 @@
       "residencePrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     },
     {
       "id": 3,
@@ -1322,16 +1325,7 @@
       "residencePrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     },
     {
       "id": 2,
@@ -1359,16 +1353,7 @@
       "residencePrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     }
   ],
   "playerSearch": [
@@ -1704,5 +1689,10 @@
       "playerWeight": 320,
       "order": 2
     }
-  ]
+  ],
+  "emptyRace": [],
+  "checkRace": {
+    "id": 1,
+    "hasMatch": false
+  }
 }

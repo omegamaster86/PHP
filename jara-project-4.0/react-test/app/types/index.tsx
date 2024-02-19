@@ -107,7 +107,8 @@ interface Race {
   range: string; // 距離
   start_date_time: string; // 開始日時
   // 「出漕結果記録テーブル」に「レーステーブル」.「レースID」と紐づくデータが存在する場合、リンクボタンを表示するかどうかを制御するためにhasHistoryを利用
-  hasHistory?: boolean; // 過去のレース結果があるかどうか　#置き換え作業未対応
+  hasHistory?: boolean; // 過去のレース結果があるかどうか
+  tournName: string; // 大会名
 }
 
 // 承認種別
@@ -234,6 +235,7 @@ interface TeamPlayerInformationResponse {
   residence_prefecture?: number; // 居住地（都道府県）
   photo: string; // 写真
   deleteFlag?: boolean; // 削除フラグ
+  type?: string; // 種別
 }
 
 // 障碍タイプ
@@ -365,6 +367,12 @@ interface Org {
   residencePrefectureName: string;// 　#置き換え作業対応不要
 }
 
+// レース情報
+interface CheckRace {
+  id: number; // ID
+  hasMatch?: boolean; // 過去のレース結果があるかどうか
+}
+
 export type { SexResponse };
 export type { PrefectureResponse };
 export type { CountryResponse };
@@ -391,4 +399,6 @@ export type { OrgType };
 export type { OrgClass };
 export type { TournamentResponse };
 export type { CrewResponse };
+export type { OrganizationPlayer };
 export type { Org };
+export type { CheckRace };

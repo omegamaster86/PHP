@@ -1,4 +1,4 @@
-import React from 'react';
+import {FocusEvent} from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import ja from 'date-fns/locale/ja';
@@ -15,15 +15,17 @@ const CustomYearPicker = ({
   placeHolder,
   isError,
   className,
+  onBlur,
 }: {
   selectedDate: string;
-  onChange: any;
+  onChange?: any;
   maxDate?: Date;
   errorMessages?: string[];
   readonly?: boolean;
   placeHolder?: string;
   isError?: boolean;
   className?: string;
+  onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
 }) => {
   const dispYear = new Date(selectedDate).getFullYear();
   return (
@@ -40,6 +42,11 @@ const CustomYearPicker = ({
           } ${className ? className : ''}`}
           {...(selectedDate && { selected: new Date(selectedDate) })}
           onChange={onChange}
+          onBlur={(e) => {
+            if (onBlur) {
+              onBlur(e);
+            }
+          }}
           {...{ dateFormat: 'yyyy' }}
           maxDate={maxDate}
           {...{ placeholderText: 'yyyy' }}

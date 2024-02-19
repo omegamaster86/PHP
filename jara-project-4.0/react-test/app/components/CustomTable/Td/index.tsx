@@ -9,12 +9,14 @@ const CustomTd = ({
   align,
   key,
   textType,
+  className,
 }: {
   children: ReactNode;
   transitionDest?: string;
   align?: AlignType;
   key?: number;
   textType?: string;
+  className?: string;
 }) => {
   // Next.jsのRouterを利用
   const router = useRouter();
@@ -29,8 +31,11 @@ const CustomTd = ({
             ? 'text-secondaryText'
             : textType === 'error'
               ? 'text-systemErrorText'
-              : 'text-primaryText'
-      }  
+              : textType === 'warning'
+                ? 'systemWarningText'
+                : 'text-primaryText'
+      }
+      ${className}
       `}
       align={align}
       key={key}

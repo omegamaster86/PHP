@@ -55,7 +55,7 @@ export default function InputLabel({
           }
           placement='top'
         >
-          <HelpOutlineSharp className='text-caption2 text-secondaryText text-[16px]' />
+          <HelpOutlineSharp className='text-secondaryText text-[16px]' />
         </HtmlTooltip>
       )}
     </div>

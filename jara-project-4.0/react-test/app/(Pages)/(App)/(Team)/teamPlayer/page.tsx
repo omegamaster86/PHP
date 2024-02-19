@@ -13,8 +13,9 @@ import {
   CustomTextField,
   OriginalCheckbox,
   CustomButton,
+  ErrorBox,
 } from '@/app/components';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import axios from '@/app/lib/axios';
 import { TeamPlayerInformationResponse, TeamResponse } from '@/app/types';
@@ -45,17 +46,43 @@ export default function TeamPlayer() {
       birthPrefectureName: '', // 出身地（都道府県）
       photo: '', // 写真
       side_info: [], // サイド情報
+      type: '', // 種別
     },
   ]);
   const [errorMessage, setErrorMessage] = useState([] as string[]);
+  const mode = useSearchParams().get('mode');
 
   useEffect(() => {
+    // modeの値を取得 update, create
+    switch (mode) {
+      case 'update':
+        break;
+      case 'create':
+        break;
+      case 'confirm':
+        formData.map((data) => {
+          setFormData((prevData) =>
+            prevData.filter((data) => !(data.deleteFlag === true && data.type === '新規')),
+          );
+        });
+        break;
+      default:
+        // TODO: 404エラーの表示処理に切り替え
+        router.push('/teamPlayer?mode=create');
+        break;
+    }
     const getTeamPlayer = async () => {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
         const response = await axios.get('/teamPlayers');
-        setFormData(response.data);
+        setFormData(
+          response.data.map((data: TeamPlayerInformationResponse) => ({
+            ...data,
+            deleteFlag: false,
+            type: '既存',
+          })),
+        );
         const teamResponse = await axios.get('/team');
         setTeamData(teamResponse.data);
       } catch (error) {
@@ -73,57 +100,64 @@ export default function TeamPlayer() {
           <div>
             {teamData.org_name}
             <br />
-            団体への選手追加・削除
+            団体への選手追加・削除{mode === 'confirm' && '確認'}
           </div>
         </CustomTitle>
-        <p>
-          新たに所属選手を追加したい場合は、「追加選手の検索」ボタンを押下し、
-          <br />
-          遷移先の検索画面にて追加したい選手を検索し、検索結果から選択してください。
-          <br />
-          所属選手から除外したい場合は、「削除」にチェックを入れてください。
-        </p>
+        <ErrorBox errorText={errorMessage} />
+        {mode !== 'confirm' && (
+          <p>
+            新たに所属選手を追加したい場合は、「追加選手の検索」ボタンを押下し、
+            <br />
+            遷移先の検索画面にて追加したい選手を検索し、検索結果から選択してください。
+            <br />
+            所属選手から除外したい場合は、「削除」にチェックを入れてください。
+          </p>
+        )}
       </div>
       <div>
         <div className='w-full bg-primary-500 text-white h-[40px] flex justify-center items-center font-bold relative'>
           <>所属選手</>
-          <div className={`absolute left-[10px]`}>
-            <CustomButton
-              className='w-[100px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
-              buttonType='secondary'
-              onClick={() => {
-                formData.length > 0 &&
-                  setFormData((prevData) =>
-                    prevData.map((data) => ({ ...data, deleteFlag: true })),
-                  );
-              }}
-            >
-              全削除
-            </CustomButton>
-            <CustomButton
-              className='w-[120px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
-              buttonType='secondary'
-              onClick={() => {
-                formData.length > 0 &&
-                  setFormData((prevData) =>
-                    prevData.map((data) => ({ ...data, deleteFlag: false })),
-                  );
-              }}
-            >
-              全削除解除
-            </CustomButton>
-          </div>
-          <div className={`absolute right-[10px]`}>
-            <CustomButton
-              className='w-[120px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
-              buttonType='secondary'
-              onClick={() => {
-                router.push('/addPlayerSearch');
-              }}
-            >
-              追加選手の検索
-            </CustomButton>
-          </div>
+          {mode !== 'confirm' && (
+            <div className={`absolute left-[10px]`}>
+              <CustomButton
+                className='w-[100px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
+                buttonType='secondary'
+                onClick={() => {
+                  formData.length > 0 &&
+                    setFormData((prevData) =>
+                      prevData.map((data) => ({ ...data, deleteFlag: true })),
+                    );
+                }}
+              >
+                全削除
+              </CustomButton>
+              <CustomButton
+                className='w-[120px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
+                buttonType='secondary'
+                onClick={() => {
+                  formData.length > 0 &&
+                    setFormData((prevData) =>
+                      prevData.map((data) => ({ ...data, deleteFlag: false })),
+                    );
+                }}
+              >
+                全削除解除
+              </CustomButton>
+            </div>
+          )}
+          {mode !== 'confirm' && (
+            <div className={`absolute right-[10px]`}>
+              <CustomButton
+                className='w-[120px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
+                buttonType='secondary'
+                onClick={() => {
+                  router.push('/addPlayerSearch');
+                }}
+              >
+                追加選手の検索
+              </CustomButton>
+            </div>
+          )}
         </div>
         <CustomTable>
           <CustomThead>
@@ -162,14 +196,15 @@ export default function TeamPlayer() {
           </CustomThead>
           <CustomTbody>
             {formData.map((data, index) => (
-              <CustomTr>
-                <CustomTd align='center'>既存</CustomTd>
+              <CustomTr key={index}>
+                <CustomTd align='center'>{data.type}</CustomTd>
                 <CustomTd align='center'>
                   <OriginalCheckbox
                     checked={data.deleteFlag ? true : false}
                     onChange={() => {
-                      handleInputChangeStaff(data.id, 'delete', !data.deleteFlag);
+                      handleInputChangeStaff(data.id, 'deleteFlag', !data.deleteFlag);
                     }}
+                    readonly={mode === 'confirm'}
                     id='delete'
                     value='delete'
                   ></OriginalCheckbox>
@@ -178,7 +213,7 @@ export default function TeamPlayer() {
                   <Link
                     className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                     href={{
-                      pathname: '/playerRef',
+                      pathname: '/playerInformationRef',
                     }}
                     rel='noopener noreferrer'
                     target='_blank'
@@ -190,7 +225,7 @@ export default function TeamPlayer() {
                   <Link
                     className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                     href={{
-                      pathname: '/playerRef',
+                      pathname: '/playerInformationRef',
                     }}
                     rel='noopener noreferrer'
                     target='_blank'
@@ -210,14 +245,8 @@ export default function TeamPlayer() {
                     {data.player_name}
                   </Link>
                 </CustomTd>
-                <CustomTd align='center'>
-                  {data.birthCountryName}
-                  {data.birthPrefectureName}
-                </CustomTd>
-                <CustomTd align='center'>
-                  {data.residenceCountryName}
-                  {data.residencePrefectureName}
-                </CustomTd>
+                <CustomTd align='center'>{data.birthPrefectureName}</CustomTd>
+                <CustomTd align='center'>{data.residencePrefectureName}</CustomTd>
                 <CustomTd align='center'>{data.side_info[0] ? '◯' : '×'}</CustomTd>
                 <CustomTd align='center'>{data.side_info[1] ? '◯' : '×'}</CustomTd>
                 <CustomTd align='center'>{data.side_info[2] ? '◯' : '×'}</CustomTd>
@@ -226,6 +255,39 @@ export default function TeamPlayer() {
             ))}
           </CustomTbody>
         </CustomTable>
+        <div
+          className='flex justify-between w-full gap-[20px] mt-[20px]'
+          style={{ marginTop: '20px' }}
+        >
+          <CustomButton
+            buttonType='white-outlined'
+            onClick={() => {
+              router.back();
+            }}
+          >
+            戻る
+          </CustomButton>
+          {mode !== 'confirm' && (
+            <CustomButton
+              buttonType='primary'
+              onClick={() => {
+                router.push('/teamPlayer?mode=confirm');
+              }}
+            >
+              確認
+            </CustomButton>
+          )}
+          {mode === 'confirm' && (
+            <CustomButton
+              buttonType='primary'
+              onClick={() => {
+                // TODO: 反映処理
+              }}
+            >
+              反映
+            </CustomButton>
+          )}
+        </div>
       </div>
     </main>
   );

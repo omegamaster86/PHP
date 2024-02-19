@@ -74,6 +74,7 @@ const config: Config = {
       white: '#FFFFFF',
       black: '#000000',
       red: '#F44336',
+      yellow: '#FFFF00',
       transparent: 'transparent',
       containerBg: '#F5F5F5',
       thinContainerBg: '#FCFCFC',

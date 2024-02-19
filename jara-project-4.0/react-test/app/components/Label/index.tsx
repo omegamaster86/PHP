@@ -19,7 +19,9 @@ export default function Label({
           ? 'text-white'
           : textColor === 'gray'
             ? 'text-gray-40'
-            : 'text-primaryText'
+            : textColor === 'red'
+              ? 'text-red'
+              : 'text-primaryText'
     }
     ${
       textSize === 'h1'
