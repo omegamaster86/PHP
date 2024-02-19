@@ -743,74 +743,17 @@ class OrganizationPlayersController extends Controller
                     $register_user_id = Auth::user()->user_id;
                     //登録・更新日時のために現在の日時を取得
                     $current_datetime = now()->format('Y-m-d H:i:s.u');
-                    //削除フラグは全て0で登録する
-                    $delete_flag = 0;
 
-                    //有効なユーザーかを示す
-                    $is_valid_user = true;
                     //対象のユーザーデータを取得
                     $target_user_data = $t_users->getUserDataFromInputCsv($rowData);
 
                     //ユーザーデータが存在するかチェック
-                    if (isset($target_user_data))
+                    if (empty($target_user_data))
                     {
-                        //メールアドレスが一致するユーザーデータが複数存在する場合
-                        // if (count($target_user_data) > 1)
-                        // {
-                        //     //Display error message to the client
-                        //     // throw ValidationException::withMessages([
-                        //     //     'datachecked_error' => $registration_failed,
-                        //     // ]);
-                        //     return response()->json(['system_error' => $registration_failed],400);
-                        //     //Status code 400 is for bad request from user
-                        // }
-                        // //メールアドレスが一致するユーザーデータが1件存在する場合
-                        // else 
-                        // {
-                        //     //temp_password_flagを確認
-                        //     if ($target_user_data[`temp_password_flag`] == 0)
-                        //     {
-                        //         //temp_password_flag=0の場合、本登録済み
+                        //ユーザーが存在しない場合、ユーザーテーブルにinsertして仮登録のメール送信
 
-                        //         //Display error message to the client
-            
-                        //         // throw ValidationException::withMessages([
-                        //         //     'datachecked_error' => $email_register_check
-                        //         // ]);
-                        //         return response()->json(['system_error' => $email_register_check],400);
-                        //         //Status code 400 is for bad request from user
-                        //     }
-                        //     else
-                        //     {
-                        //         //temp_password_flag=0の場合、仮登録済
-                        //         //if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and expiry_time_of_temp_password < ?',[$request->mailaddress, date('Y-m-d H:i:s')])))                                
-                        //         if ($target_user_data[`expiry_time_of_temp_password`] < date('Y-m-d H:i:s'))
-                        //         {
-                        //             //Display error message to the client
-                        //             // throw ValidationException::withMessages([
-                        //             //     'datachecked_error' => $registration_failed
-                        //             // ]); 
-                        //             return response()->json(['system_error' => $registration_failed],400);
-                        //             //Status code 400 is for bad request from user
-                        //         }
-                        //         else
-                        //         {
-                        //             //Display error message to the client
-                        //             // throw ValidationException::withMessages([
-                        //             //     'datachecked_error' => $already_registered,
-                        //             // ]); 
-                        //             return response()->json(['system_error' => $already_registered],400);
-                        //             //Status code 400 is for bad request from user
-                        //         }
-                        //     }
-                        // }
-                    }
-                    else
-                    {
                         // For Generate random password
                         $temp_password = Str::random(8); 
-                        //For getting current time
-                        //$date = now()->format('Y-m-d H:i:s.u');
                         
                         //For adding 1day with current time
                         $converting_date=date_create($current_datetime);
@@ -889,7 +832,9 @@ class OrganizationPlayersController extends Controller
                         
                         try {
                             Mail::to($request->get('mailaddress'))->send(new WelcomeMail($mail_data));
-                        } catch (Exception $e) {
+                        }
+                        catch (Exception $e)
+                        {
                             DB::delete('delete from t_users where mailaddress = ?', [$request->mailaddress ]);
                             //Store error message in the user_register log file.
                             Log::channel('user_register')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「EMAIL_SENT_ERROR_MESSAGE」  ： $e\r\n  \r\n ============================================================ \r\n \r\n");
@@ -901,14 +846,16 @@ class OrganizationPlayersController extends Controller
                                 //Status code 500 for internal server error
                         }
                     }
+
+                    //選手情報が存在しているかチェック
                     //直近に挿入した選手のID
                     $insert_player_id = 0;
                     //選手情報を取得
                     $target_player_data = $t_players->getPlayer($rowData['player_id']);
                     //対象の選手が選手テーブルに存在するかをチェック
-                    if(!isset($target_player_data))
+                    if(empty($target_player_data))
                     {   
-                        //選手未登録の場合、選手テーブルに挿入
+                        //選手未登録の場合、選手テーブルにinsertして通知メールを送信
                         $insert_player_data = [];
                         $insert_player_data['user_id'] = $rowData['user_id'];
                         $insert_player_data['jara_player_id'] = $rowData['jara_player_id'];
@@ -931,11 +878,11 @@ class OrganizationPlayersController extends Controller
                             //insertを実行して、insertしたレコードのIDを取得
                             $insert_player_id = $t_players->insertPlayer($insert_player_data);
                             DB::commit();
-                        } catch (\Throwable $e)
+                        }
+                        catch (\Throwable $e)
                         {
                             DB::rollBack();
                         }
-                        //メール送信→関数化する
                     }
                     //団体所属選手テーブルに挿入
                     $insert_organization_player_data = [];
@@ -965,7 +912,15 @@ class OrganizationPlayersController extends Controller
                     {
                         DB::rollBack();
                     }
-                    //メール送信
+
+                    try
+                    {
+                        //メール送信
+                    }
+                    catch (\Throwable $e)
+                    {
+                        //メール送信に失敗したときのエラー
+                    }
                 }
             }
         }
@@ -1036,9 +991,41 @@ class OrganizationPlayersController extends Controller
     }
 
     //メールの送信
-    private function sendMail($user_name,$mailaddress,$temp_password,$mail_template)
+    private function sendMail($user_name,$mailaddress,$temp_password,$mail_template,$error_message)
     {
         //任意のテンプレートを引数で選択してメールを送信
         //ユーザー名、メールアドレスなど必要な値は引数で指定する
+
+        //For getting current time
+        $mail_date = date('Y/m/d H:i');
+        //For adding 24hour with current time
+        $new_mail_date = date('Y/m/d H:i', strtotime($mail_date. ' + 24 hours'));
+
+        //Store user information for sending email.
+        $mail_data = [
+                        'user_name' => $user_name,
+                        'to_mailaddress' => $mailaddress,
+                        'from_mailaddress' => 'xxxxx@jara.or.jp',
+                        'temporary_password' => $temp_password,
+                        'temporary_password_expiration_date'=> $new_mail_date
+                    ];
+        
+        //Sending mail to the user
+        
+        try {
+            Mail::to($mailaddress)->send(new WelcomeMail($mail_data));
+        }
+        catch (Exception $e)
+        {
+            //DB::delete('delete from t_users where mailaddress = ?', [$mailaddress ]);
+            //Store error message in the user_register log file.
+            Log::channel('user_register')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $mailaddress,  \r\n \r\n ＊＊＊「EMAIL_SENT_ERROR_MESSAGE」  ： $e\r\n  \r\n ============================================================ \r\n \r\n");
+            //Display error message to the client
+            // throw ValidationException::withMessages([
+            //     'datachecked_error' => $mail_sent_failed,
+            // ]);
+            return response()->json(['system_error' => $error_message],500);
+                //Status code 500 for internal server error
+        }
     }
 }
