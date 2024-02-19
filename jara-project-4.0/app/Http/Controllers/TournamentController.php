@@ -676,4 +676,61 @@ class TournamentController extends Controller
         Log::debug(sprintf("getCrewData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
+    
+    //レース結果一覧を取得 
+    public function getRaceResultsData(Request $request,T_raceResultRecord $T_raceResultRecord)
+    {
+        $input = $request->all();
+        //検索条件の値
+        $searchValues = [];
+        //置換文字列の生成
+        $replaceString = $this->generateRaceResultSearchCondition($input,$searchValues);
+        //レース結果一覧を取得
+        $result = $T_raceResultRecord->getRacesWithSearchCondition($replaceString,$searchValues);
+        return response()->json(['result' => $result]); //取得結果を返す
+    }
+
+    //レース結果一覧を取得するための検索条件の文字列を生成する
+    //SQLの文字列を置き換える
+    private function generateRaceResultSearchCondition($request,&$searchValues)
+    {
+        $condition = "";
+        //大会名
+        if(isset($request['tourn_name']))
+        {
+            $condition .= "and `tourn_name` LIKE :tourn_name\r\n";
+            $searchValues['event_year'] = "%".$request['tourn_name']."%";
+        }
+        //種目
+        if(isset($request['event_id']))
+        {
+            $condition .= "and `event_id` = :event_id\r\n";
+            $searchValues['event_id'] = $request['event_id'];
+        }
+        //種目名
+        if(isset($request['event_name']))
+        {
+            $condition .= "and event_name LIKE :event_name\r\n";
+            $searchValues['event_name'] = "%".$request['event_name']."%";
+        }
+        //レース区分
+        if(isset($request['race_class_id']))
+        {
+            $condition .= "and race_class_id = :race_class_id\r\n";
+            $searchValues['race_class_id'] = $request['race_class_id'];
+        }
+        //組別
+        if(isset($request['by_group']))
+        {
+            $condition .= "and by_group LIKE :by_group\r\n";
+            $searchValues['by_group'] = "%".$request['by_group']."%";
+        }
+        //レースNo.
+        if(isset($request['race_number']))
+        {
+            $condition .= "and race_number = :race_number\r\n";
+            $searchValues['race_number'] = $request['race_number'];
+        }
+        return $condition;
+    }
 }

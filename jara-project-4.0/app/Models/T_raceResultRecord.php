@@ -1026,4 +1026,23 @@ class T_raceResultRecord extends Model
                         ,$values);
         return $crews;    
     }
+
+    //検索条件により、レース結果を取得する
+    public function getRacesWithSearchCondition($conditions,$conditionValues)
+    {
+        $sqlString = 'select distinct
+                        `t_race_result_record`.`race_id`
+                        ,`t_race_result_record`.`race_name`
+                        ,`t_race_result_record`.`race_number`
+                        ,`t_race_result_record`.`race_class_id`
+                        ,`t_race_result_record`.`race_class_name` 
+                        ,`t_race_result_record`.`by_group`
+                        FROM `t_race_result_record`
+                        where 1=1
+                        #ReplaceConditionString#
+                        ';
+        $sqlString = str_replace("#ReplaceConditionString#",$conditions,$sqlString);
+        $races = DB::select($sqlString,$conditionValues);
+        return $races;
+    }
 }
