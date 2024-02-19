@@ -25,6 +25,10 @@ use App\Models\M_events;
 use App\Models\M_organization_class;
 use App\Models\M_organization_type;
 use App\Models\M_approval_type;
+use App\Models\M_disability_type;
+use App\Models\M_volunteer_qualifications;
+use App\Models\M_languages;
+use App\Models\M_language_proficiency;
 
 Route::get('contact-us', [ContactUsController::class, 'create'])->name('contact-us');
 Route::get('contact-us/confirm', [ContactUsController::class, 'createConfirm'])->name('contact-us-confirm');
@@ -74,6 +78,10 @@ Route::middleware('auth')->group(function () {
     Route::get('getOrganizationClass', [M_organization_class::class, 'getOrganizationClass']); //団体区分マスター取得 20240208
     Route::get('getOrganizationTypeData', [M_organization_type::class, 'getOrganizationTypeData']); //団体種別マスター取得 20240208
     Route::get('getApprovalType', [M_approval_type::class, 'getApprovalType']); //大会種別マスター取得 20240208
+    Route::get('getDisabilityType', [M_disability_type::class, 'getDisabilityType']); //障碍マスタ
+    Route::get('getQualifications', [M_volunteer_qualifications::class, 'getQualifications']); //資格マスタ
+    Route::get('getLanguages', [M_languages::class, 'getLanguages']); //言語マスタ
+    Route::get('getLanguageProficiency', [M_language_proficiency::class, 'getLanguageProficiency']); //言語レベルマスタ
 
     //ユーザー関連
     Route::get('getUserData', [UserController::class, 'getUserData']); //DBからユーザ情報を取得 20240131
@@ -116,7 +124,8 @@ Route::middleware('auth')->group(function () {
     Route::get('getRaceInfoData', [TournamentController::class, 'getRaceInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
     Route::post('deleteTournamentData', [TournamentController::class, 'deleteTournamentData']); //DBから大会情報を削除する 20240205
     Route::post('tournamentSearch', [TournamentController::class, 'searchTournament']); //大会検索 20240212
-    
+    Route::get('getTournamentInfoData_vol', [TournamentController::class, 'getTournamentInfoData_vol']); //大会検索 20240212
+
 
     //レース関連
     Route::post('getRaceData', [TournamentController::class, 'getRaceData']); //レース情報取得 20240214

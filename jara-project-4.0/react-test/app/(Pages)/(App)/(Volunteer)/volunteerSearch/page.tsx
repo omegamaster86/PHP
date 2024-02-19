@@ -43,7 +43,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 // その他モジュールのインポート
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 
 import {
   Box,
@@ -332,7 +332,7 @@ export default function VolunteerSearch() {
       })
       .catch((error) => {
         // TODO: エラー処理
-        alert(error);
+        // alert(error);
       });
   };
 
@@ -341,33 +341,52 @@ export default function VolunteerSearch() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
         // 仮のURL（繋ぎ込み時に変更すること）
         // 性別マスタの取得
-        const response = await axios.get<SexResponse[]>('http://localhost:3100/sex');
-        setSex(response.data);
+        // const response = await axios.get<SexResponse[]>('http://localhost:3100/sex');
+        const sexResponse = await axios.get('/getSexList');
+        const sexList = sexResponse.data.map(({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }));
+        setSex(sexList);
         // 大会マスタの取得
-        const tour = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments');
-        setTour(tour.data);
+        // const tour = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments');
+        const hostTournamentsResponse = await axios.get('/getTournamentInfoData_vol'); //残件対象項目
+        console.log(hostTournamentsResponse.data.result);
+        // setTour(tour.data);
         // 障碍タイプマスタの取得
-        const disType = await axios.get<DisTypeResponse[]>('http://localhost:3100/disType');
-        setDisType(disType.data);
+        // const disType = await axios.get<DisTypeResponse[]>('http://localhost:3100/disType');
+        const disType = await axios.get('/getDisabilityType');
+        const disTypeList = disType.data.map(({ dis_type_id, dis_type_name }: { dis_type_id: number; dis_type_name: string }) => ({ id: dis_type_id, name: dis_type_name }));
+        setDisType(disTypeList);
         // 資格マスタの取得
-        const qualHold = await axios.get<QualHoldResponse[]>('http://localhost:3100/qualHold');
-        setQualHold(qualHold.data);
+        // const qualHold = await axios.get<QualHoldResponse[]>('http://localhost:3100/qualHold');
+        const qualHold = await axios.get('/getQualifications');
+        const qualHoldList = qualHold.data.map(({ qual_id, qual_name }: { qual_id: number; qual_name: string }) => ({ id: qual_id, name: qual_name }));
+        setQualHold(qualHoldList);
         // 言語マスタの取得
-        const lang = await axios.get<LangResponse[]>('http://localhost:3100/language');
-        setLang(lang.data);
+        // const lang = await axios.get<LangResponse[]>('http://localhost:3100/language');
+        const lang = await axios.get('/getLanguages');
+        const langList = lang.data.map(({ lang_id, lang_name }: { lang_id: number; lang_name: string }) => ({ id: lang_id, name: lang_name }));
+        setLang(langList);
         // 言語レベルマスタの取得
-        const langLevel = await axios.get<LangResponse[]>('http://localhost:3100/languageLevel');
-        setLangLevel(langLevel.data);
-        const country = await axios.get<CountryResponse[]>('http://localhost:3100/countries');
-        setCountry(country.data);
-        const prefecture = await axios.get<PrefectureResponse[]>(
-          'http://localhost:3100/prefecture',
-        );
-        setPrefecture(prefecture.data);
+        // const langLevel = await axios.get<LangResponse[]>('http://localhost:3100/languageLevel');
+        const langLevel = await axios.get('/getLanguageProficiency');
+        const langLevelList = langLevel.data.map(({ lang_pro_id, lang_pro_name }: { lang_pro_id: number; lang_pro_name: string }) => ({ id: lang_pro_id, name: lang_pro_name }));
+        setLangLevel(langLevelList);
+
+        // const country = await axios.get<CountryResponse[]>('http://localhost:3100/countries');
+        const countryResponse = await axios.get('/getCountries');
+        const countryList = countryResponse.data.map(({ country_id, country_name }: { country_id: number; country_name: string }) => ({ id: country_id, name: country_name }));
+        setCountry(countryList);
+        
+        // const prefecture = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
+        const prefectureResponse = await axios.get('/getPrefecures');
+        const stateList = prefectureResponse.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
+        setPrefecture(stateList);
+
       } catch (error) {
-        alert(error);
+        // alert(error);
       }
     };
     fetchData();
@@ -555,11 +574,11 @@ export default function VolunteerSearch() {
                     onChange={(e) => {
                       let currentData = Array.isArray(e.target.value)
                         ? e.target.value.map((item: any) => {
-                            return {
-                              id: item,
-                              name: qualHold.find((qualHold) => qualHold.id === item)?.name || '',
-                            };
-                          })
+                          return {
+                            id: item,
+                            name: qualHold.find((qualHold) => qualHold.id === item)?.name || '',
+                          };
+                        })
                         : [];
                       setSearchCond((prevFormData) => ({
                         ...prevFormData,
@@ -576,15 +595,15 @@ export default function VolunteerSearch() {
                   >
                     {qualHold
                       ? qualHold
-                          .filter((item) => item.id !== undefined)
-                          .filter((item) => item.name !== undefined)
-                          .map((item, index) => {
-                            return (
-                              <MenuItem key={index} value={item.id}>
-                                {item.name}
-                              </MenuItem>
-                            );
-                          })
+                        .filter((item) => item.id !== undefined)
+                        .filter((item) => item.name !== undefined)
+                        .map((item, index) => {
+                          return (
+                            <MenuItem key={index} value={item.id}>
+                              {item.name}
+                            </MenuItem>
+                          );
+                        })
                       : null}
                   </Select>
                   <p className='self-end text-small text-gray-400'>※複数選択可（5資格まで）</p>
@@ -628,10 +647,10 @@ export default function VolunteerSearch() {
                           prevFormData.lang?.[1],
                           prevFormData.lang?.[2],
                         ] as [
-                          { id: number; name: string; levelId: number; levelName: string },
-                          { id: number; name: string; levelId: number; levelName: string },
-                          { id: number; name: string; levelId: number; levelName: string },
-                        ],
+                            { id: number; name: string; levelId: number; levelName: string },
+                            { id: number; name: string; levelId: number; levelName: string },
+                            { id: number; name: string; levelId: number; levelName: string },
+                          ],
                       }));
                     }}
                     options={lang.map((item) => ({ key: item.id, value: item.name }))}
@@ -660,10 +679,10 @@ export default function VolunteerSearch() {
                           prevFormData.lang?.[1],
                           prevFormData.lang?.[2],
                         ] as [
-                          { id: number; name: string; levelId: number; levelName: string },
-                          { id: number; name: string; levelId: number; levelName: string },
-                          { id: number; name: string; levelId: number; levelName: string },
-                        ],
+                            { id: number; name: string; levelId: number; levelName: string },
+                            { id: number; name: string; levelId: number; levelName: string },
+                            { id: number; name: string; levelId: number; levelName: string },
+                          ],
                       }));
                     }}
                     options={langLevel.map((item) => ({ key: item.id, value: item.name }))}
@@ -691,10 +710,10 @@ export default function VolunteerSearch() {
                         },
                         prevFormData.lang?.[2],
                       ] as [
-                        { id: number; name: string; levelId: number; levelName: string },
-                        { id: number; name: string; levelId: number; levelName: string },
-                        { id: number; name: string; levelId: number; levelName: string },
-                      ],
+                          { id: number; name: string; levelId: number; levelName: string },
+                          { id: number; name: string; levelId: number; levelName: string },
+                          { id: number; name: string; levelId: number; levelName: string },
+                        ],
                     }));
                   }}
                   options={lang.map((item) => ({ key: item.id, value: item.name }))}
@@ -720,10 +739,10 @@ export default function VolunteerSearch() {
                         },
                         prevFormData.lang?.[2],
                       ] as [
-                        { id: number; name: string; levelId: number; levelName: string },
-                        { id: number; name: string; levelId: number; levelName: string },
-                        { id: number; name: string; levelId: number; levelName: string },
-                      ],
+                          { id: number; name: string; levelId: number; levelName: string },
+                          { id: number; name: string; levelId: number; levelName: string },
+                          { id: number; name: string; levelId: number; levelName: string },
+                        ],
                     }));
                   }}
                   options={langLevel.map((item) => ({ key: item.id, value: item.name }))}
@@ -750,10 +769,10 @@ export default function VolunteerSearch() {
                           levelName: prevFormData.lang?.[2]?.levelName || '未選択',
                         },
                       ] as [
-                        { id: number; name: string; levelId: number; levelName: string },
-                        { id: number; name: string; levelId: number; levelName: string },
-                        { id: number; name: string; levelId: number; levelName: string },
-                      ],
+                          { id: number; name: string; levelId: number; levelName: string },
+                          { id: number; name: string; levelId: number; levelName: string },
+                          { id: number; name: string; levelId: number; levelName: string },
+                        ],
                     }));
                   }}
                   options={lang.map((item) => ({ key: item.id, value: item.name }))}
@@ -779,10 +798,10 @@ export default function VolunteerSearch() {
                             langLevel.find((item) => item.id === Number(e))?.name || '未選択',
                         },
                       ] as [
-                        { id: number; name: string; levelId: number; levelName: string },
-                        { id: number; name: string; levelId: number; levelName: string },
-                        { id: number; name: string; levelId: number; levelName: string },
-                      ],
+                          { id: number; name: string; levelId: number; levelName: string },
+                          { id: number; name: string; levelId: number; levelName: string },
+                          { id: number; name: string; levelId: number; levelName: string },
+                        ],
                     }));
                   }}
                   options={langLevel.map((item) => ({ key: item.id, value: item.name }))}
