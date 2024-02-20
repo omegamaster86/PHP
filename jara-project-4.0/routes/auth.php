@@ -135,7 +135,7 @@ Route::middleware('auth')->group(function () {
     Route::post('getCrewData', [TournamentController::class, 'getCrewData']); //クルー取得 20240216
 
     //ボランティア関連
-    Route::get('getVolunteerData', [VolunteerController::class, 'getVolunteerData']); //ボランティア情報取得 20240213 ※ボランティア履歴情報も取得する
+    Route::post('getVolunteerData', [VolunteerController::class, 'getVolunteerData']); //ボランティア情報取得 20240213 ※ボランティア履歴情報も取得する
     Route::post('volunteerSearch', [VolunteerController::class, 'searchVolunteers']); //ボランティア検索
 
 
