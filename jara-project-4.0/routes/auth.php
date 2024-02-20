@@ -136,6 +136,7 @@ Route::middleware('auth')->group(function () {
 
     //ボランティア関連
     Route::get('getVolunteerData', [VolunteerController::class, 'getVolunteerData']); //ボランティア情報取得 20240213 ※ボランティア履歴情報も取得する
+    Route::post('volunteerSearch', [VolunteerController::class, 'searchVolunteers']); //ボランティア検索
 
 
     //React連携後APIここまで===========================================================

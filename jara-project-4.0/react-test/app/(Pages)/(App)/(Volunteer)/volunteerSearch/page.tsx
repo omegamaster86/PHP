@@ -61,15 +61,15 @@ import CustomAutocomplete from '@/app/components/CustomAutocomplete';
 // 検索条件フォームの型定義
 // 検索条件
 interface SearchCond {
-  volunteerId?: number; // ボランティアID
-  volunteerName?: string; // 氏名
-  dateOfBirthStartDate?: string; // 生年月日
-  dateOfBirthEndDate?: string; // 生年月日
-  sexId?: number; // 性別
+  volunteer_id?: number; // ボランティアID
+  volunteer_name?: string; // 氏名
+  date_of_birth_start?: string; // 生年月日
+  date_of_birth_end?: string; // 生年月日
+  sex?: number; // 性別
   sexName?: string; // 性別
-  residenceCountryId?: number; // 居住地（国）
+  residence_country?: number; // 居住地（国）
   residenceCountryName?: string; // 居住地（国）
-  residencePrefectureId?: number; // 居住地（都道府県）
+  residence_prefecture?: number; // 居住地（都道府県）
   residencePrefectureName?: string; // 居住地（都道府県）
   qualHold?: [
     {
@@ -121,15 +121,15 @@ export default function VolunteerSearch() {
   // 検索条件の初期値
   const initialSearchCond = () => {
     return {
-      volunteerId: undefined,
-      volunteerName: undefined,
-      dateOfBirthStartDate: '',
-      dateOfBirthEndDate: undefined,
-      sexId: undefined,
+      volunteer_id: undefined,
+      volunteer_name: undefined,
+      date_of_birth_start: '',
+      date_of_birth_end: undefined,
+      sex: undefined,
       sexName: '',
-      residenceCountryId: undefined,
+      residence_country: undefined,
       residenceCountryName: '',
-      residencePrefectureId: undefined,
+      residence_prefecture: undefined,
       residencePrefectureName: '',
       qualHold: [] as { id: number; name: string }[],
       othersQual: '',
@@ -324,11 +324,15 @@ export default function VolunteerSearch() {
    * 検索結果をstateにセットする
    */
   const handleSearch = async () => {
+    const csrf = () => axios.get('/sanctum/csrf-cookie')
+    await csrf()
     axios
-      .get<VolunteerResponse[]>('http://localhost:3100/volunteerSearch')
+      // .get<VolunteerResponse[]>('http://localhost:3100/volunteerSearch')
+      .post('/volunteerSearch', searchCond)
       .then((response) => {
+        console.log(response.data.result);
         // レスポンスからデータを取り出してstateにセット
-        setSearchResponse(response.data as VolunteerResponse[]);
+        setSearchResponse(response.data.result as VolunteerResponse[]);
       })
       .catch((error) => {
         // TODO: エラー処理
@@ -349,34 +353,44 @@ export default function VolunteerSearch() {
         const sexResponse = await axios.get('/getSexList');
         const sexList = sexResponse.data.map(({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }));
         setSex(sexList);
+
         // 大会マスタの取得
         // const tour = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments');
-        const hostTournamentsResponse = await axios.get('/getTournamentInfoData_vol'); //残件対象項目
-        console.log(hostTournamentsResponse.data.result);
-        // setTour(tour.data);
+        const TournamentsResponse = await axios.get('/getTournamentInfoData_vol'); //残件対象項目
+        const TournamentsResponseList = TournamentsResponse.data.result.map(({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({ id: tourn_id, name: tourn_name }));
+        // console.log(TournamentsResponseList);
+        setTour(TournamentsResponseList);
+        
         // 障碍タイプマスタの取得
         // const disType = await axios.get<DisTypeResponse[]>('http://localhost:3100/disType');
         const disType = await axios.get('/getDisabilityType');
         const disTypeList = disType.data.map(({ dis_type_id, dis_type_name }: { dis_type_id: number; dis_type_name: string }) => ({ id: dis_type_id, name: dis_type_name }));
         setDisType(disTypeList);
+        
         // 資格マスタの取得
         // const qualHold = await axios.get<QualHoldResponse[]>('http://localhost:3100/qualHold');
         const qualHold = await axios.get('/getQualifications');
+        // console.log(qualHold.data);
         const qualHoldList = qualHold.data.map(({ qual_id, qual_name }: { qual_id: number; qual_name: string }) => ({ id: qual_id, name: qual_name }));
         setQualHold(qualHoldList);
+        
         // 言語マスタの取得
         // const lang = await axios.get<LangResponse[]>('http://localhost:3100/language');
         const lang = await axios.get('/getLanguages');
+        // console.log(lang.data);
         const langList = lang.data.map(({ lang_id, lang_name }: { lang_id: number; lang_name: string }) => ({ id: lang_id, name: lang_name }));
         setLang(langList);
+        
         // 言語レベルマスタの取得
         // const langLevel = await axios.get<LangResponse[]>('http://localhost:3100/languageLevel');
         const langLevel = await axios.get('/getLanguageProficiency');
+        // console.log(langLevel.data);
         const langLevelList = langLevel.data.map(({ lang_pro_id, lang_pro_name }: { lang_pro_id: number; lang_pro_name: string }) => ({ id: lang_pro_id, name: lang_pro_name }));
         setLangLevel(langLevelList);
 
         // const country = await axios.get<CountryResponse[]>('http://localhost:3100/countries');
         const countryResponse = await axios.get('/getCountries');
+        // console.log(countryResponse.data);
         const countryList = countryResponse.data.map(({ country_id, country_name }: { country_id: number; country_name: string }) => ({ id: country_id, name: country_name }));
         setCountry(countryList);
         
@@ -386,6 +400,7 @@ export default function VolunteerSearch() {
         setPrefecture(stateList);
 
       } catch (error) {
+        console.log(error);
         // alert(error);
       }
     };
@@ -454,8 +469,8 @@ export default function VolunteerSearch() {
                 displayHelp={false}
                 isError={false}
                 errorMessages={[]}
-                value={searchCond.volunteerId?.toString() || ''}
-                onChange={(e) => handleInputChange('volunteerId', e.target.value)}
+                value={searchCond.volunteer_id?.toString() || ''}
+                onChange={(e) => handleInputChange('volunteer_id', e.target.value)}
                 className='w-[310px]'
               />
             </div>
@@ -467,9 +482,9 @@ export default function VolunteerSearch() {
                 displayHelp={false}
                 isError={false}
                 errorMessages={[]}
-                value={searchCond.volunteerName}
+                value={searchCond.volunteer_name}
                 onChange={(e) => {
-                  handleInputChange('volunteerName', e.target.value);
+                  handleInputChange('volunteer_name', e.target.value);
                 }}
                 className='w-[467px]'
               />
@@ -484,21 +499,21 @@ export default function VolunteerSearch() {
                   style={{ width: '100%', height: '100%' }}
                 >
                   <CustomDatePicker
-                    id='dateOfBirthStartDate'
+                    id='date_of_birth_start'
                     placeHolder={new Date().toLocaleDateString('ja-JP')}
-                    selectedDate={searchCond.dateOfBirthStartDate?.toString() || ''}
+                    selectedDate={searchCond.date_of_birth_start?.toString() || ''}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      handleInputChange('dateOfBirthStartDate', formatDate(e as unknown as Date));
+                      handleInputChange('date_of_birth_start', formatDate(e as unknown as Date));
                     }}
                     className='w-[210px] border-[1px] border-solid border-border rounded-md bg-white h-[56px]'
                   />
                   <p className='self-center text-small text-gray-400'>〜</p>
                   <CustomDatePicker
-                    id='dateOfBirthEndDate'
+                    id='date_of_birth_end'
                     placeHolder={new Date().toLocaleDateString('ja-JP')}
-                    selectedDate={searchCond.dateOfBirthEndDate?.toString() || ''}
+                    selectedDate={searchCond.date_of_birth_end?.toString() || ''}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      handleInputChange('dateOfBirthEndDate', formatDate(e as unknown as Date));
+                      handleInputChange('date_of_birth_end', formatDate(e as unknown as Date));
                     }}
                     className='w-[210px] border-[1px] border-solid border-border rounded-md bg-white h-[56px]'
                   />
@@ -514,10 +529,10 @@ export default function VolunteerSearch() {
                 id='sex'
                 isError={false}
                 placeHolder='男性'
-                value={searchCond.sexId?.toString() || ''}
+                value={searchCond.sex?.toString() || ''}
                 className='w-[210px]'
                 onChange={(e) => {
-                  handleInputChange('sexId', e);
+                  handleInputChange('sex', e);
                   handleInputChange(
                     'sexName',
                     sex.find((item) => item.id === Number(e))?.name || '',
@@ -536,15 +551,15 @@ export default function VolunteerSearch() {
                   placeHolder='東京'
                   isError={false}
                   errorMessages={[]}
-                  value={searchCond.residenceCountryId?.toString() || ''}
+                  value={searchCond.residence_country?.toString() || ''}
                   onChange={(e) => {
-                    handleInputChange('residenceCountryId', e);
+                    handleInputChange('residence_country', e);
                   }}
                   options={country.map((item) => ({ key: item.id, value: item.name }))}
                 />
               </div>
               {/* 居住地（都道府県） */}
-              {searchCond.residenceCountryId === JAPAN_COUNTRY_ID && (
+              {searchCond.residence_country === JAPAN_COUNTRY_ID && (
                 <div className='flex flex-col justify-start gap-[8px]'>
                   <InputLabel label='都道府県' />
                   <CustomDropdown
@@ -552,9 +567,9 @@ export default function VolunteerSearch() {
                     className='w-[210px]'
                     isError={false}
                     errorMessages={[]}
-                    value={searchCond.residencePrefectureId?.toString() || ''}
+                    value={searchCond.residence_prefecture?.toString() || ''}
                     onChange={(e) => {
-                      handleInputChange('residencePrefectureId', e);
+                      handleInputChange('residence_prefecture', e);
                     }}
                     options={prefecture.map((item) => ({ key: item.id, value: item.name }))}
                   />
@@ -1174,7 +1189,7 @@ export default function VolunteerSearch() {
                   rel='noopener noreferrer'
                   target='_blank'
                 >
-                  {row.volunteerId}
+                  {row.volunteer_id}
                 </Link>
               </CustomTd>
               <CustomTd>
@@ -1186,21 +1201,21 @@ export default function VolunteerSearch() {
                   rel='noopener noreferrer'
                   target='_blank'
                 >
-                  {row.volunteerName}
+                  {row.volunteer_name}
                 </Link>
               </CustomTd>
               <CustomTd>
-                {row.residenceCountry === '日本' ? row.residencePrefecture : row.residenceCountry}
+                {row.residence_country === '日本' ? row.residence_prefecture : row.residence_country}
               </CustomTd>
               <CustomTd>{row.sex}</CustomTd>
-              <CustomTd>{calculateAgeFromBirthday(row.dateOfBirth)}</CustomTd>
-              <CustomTd>{row.disType?.[0] ? '◯' : '×'}</CustomTd>
-              <CustomTd>{row.disType?.[1] ? '◯' : '×'}</CustomTd>
-              <CustomTd>{row.disType?.[2] ? '◯' : '×'}</CustomTd>
-              <CustomTd>{row.language[0].languageName}</CustomTd>
-              <CustomTd>{row.language[1].languageName}</CustomTd>
-              <CustomTd>{row.language[2].languageName}</CustomTd>
-              <CustomTd>{row.telephoneNumber}</CustomTd>
+              <CustomTd>{calculateAgeFromBirthday(row.date_of_birth)}</CustomTd>
+              <CustomTd>{row.dis_type_id?.[0] ? '◯' : '×'}</CustomTd>
+              <CustomTd>{row.dis_type_id?.[1] ? '◯' : '×'}</CustomTd>
+              <CustomTd>{row.dis_type_id?.[2] ? '◯' : '×'}</CustomTd>
+              <CustomTd>{row.language?.[0]}</CustomTd>
+              <CustomTd>{row.language?.[1]}</CustomTd>
+              <CustomTd>{row.language?.[2]}</CustomTd>
+              <CustomTd>{row.telephone_number}</CustomTd>
               <CustomTd>{row.mailaddress}</CustomTd>
             </CustomTr>
           ))}

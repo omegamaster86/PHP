@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class T_volunteers extends Model
 {
@@ -94,6 +95,10 @@ class T_volunteers extends Model
         $sqlString = 'select distinct
                     `t_volunteers`.`volunteer_id`
                     ,`t_volunteers`.`volunteer_name`
+                    ,`t_volunteers`.`date_of_birth`
+                    ,`t_volunteers`.`clothes_size`
+                    ,`m_countries`.`country_name` as residence_country
+                    ,`m_prefectures`.`pref_name` as residence_prefecture
                     ,CASE
                         WHEN `t_volunteers`.`residence_country` = 112 then `m_prefectures`.`pref_name`
                         else `m_countries`.`country_name`
@@ -180,7 +185,7 @@ class T_volunteers extends Model
                         )v_lang
                         group by volunteer_id
                     )v_lang
-                    on `v_type`.`volunteer_id` = `v_lang`.`volunteer_id`
+                    on `t_volunteers`.`volunteer_id` = `v_lang`.`volunteer_id`
                     left join t_volunteer_availables
                     on t_volunteers.volunteer_id = t_volunteer_availables.volunteer_id
                     left join t_volunteer_histories
@@ -203,7 +208,7 @@ class T_volunteers extends Model
         $sqlString = str_replace("#Condition#",$condition,$sqlString);
         $sqlString = str_replace("#langJoinType#",$langJoinType,$sqlString);
         $sqlString = str_replace("#SupportableDisabilityJoinType#",$SupportableDisabilityJoinType,$sqlString);
-
+        Log::debug($sqlString);
         $volunteers = DB::select($sqlString,$conditionValue);
         return $volunteers;
     }

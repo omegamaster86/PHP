@@ -181,14 +181,60 @@ class VolunteerController extends Controller
     //条件に合うボランティアの検索結果を表示する
     public function searchVolunteers(Request $request, T_volunteers $t_volunteers)
     {
+        Log::debug(sprintf("searchVolunteers start"));
         if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
+            // return redirect('user/password-change');
         } else {
             $searchInfo = $request->all();
+            //参加しやすい曜日
+            $pieces = str_split((string) $searchInfo['dayOfWeek']);
+           
+            $searchInfo['sunday'] = $pieces[0];
+            $searchInfo['monday'] = $pieces[1];
+            $searchInfo['tuesday'] = $pieces[2];
+            $searchInfo['wednesday'] = $pieces[3];
+            $searchInfo['thursday'] = $pieces[4];
+            $searchInfo['friday'] = $pieces[5];
+            $searchInfo['saturday'] = $pieces[6];
+            $searchInfo['holiday'] = $pieces[7];
+            $searchInfo['day_negotiable'] = $pieces[8];
+
+            //参加可能時間帯
+            $timeZoneList = str_split((string) $searchInfo['timeZone']);
+            $searchInfo['early_morning'] = $timeZoneList[0];
+            $searchInfo['morning'] = $timeZoneList[1];
+            $searchInfo['afternoon'] = $timeZoneList[2];
+            $searchInfo['night'] = $timeZoneList[3];
+            $searchInfo['time_negotiable'] = $timeZoneList[4];
+
+            //保有資格
+            for ($i = 0; $i < count($searchInfo['qualHold']); $i++) {
+                if ($searchInfo['qualHold'][$i]['id'] == 99) {
+                    $searchInfo['qualifications' . ($i + 1)] = $searchInfo['qualHold'][$i]['id'];
+                    $searchInfo['other_qualification'] = ""; //残件対象項目
+                } else {
+                    $searchInfo['qualifications' . ($i + 1)] = $searchInfo['qualHold'][$i]['id'];
+                }
+            }
+
+            //言語レベル
+            for ($i = 0; $i < count($searchInfo['lang']); $i++) {
+                $searchInfo['language' . ($i + 1)] = $searchInfo['lang'][$i]['id'];
+                $searchInfo['lang_pro' . ($i + 1)] = $searchInfo['lang'][$i]['levelId'];
+            }
+
+            //障碍タイプ
+            for ($i = 0; $i < count($searchInfo['disType']); $i++) {
+                $searchInfo[$searchInfo['disType'][$i]['name']] = 1;
+            }
+
+            //過去に参加した大会 //残件対象項目
+
+            // Log::debug($searchInfo);
             $conditionValue = array();  //検索条件の値を格納する配列
-            $supportableDisabilityCondition = $this->generateSupportableDisabilityCondition($searchInfo);
-            $languageCondition = $this->generateLanguageCondition($searchInfo, $conditionValue);
-            $condition = $this->generateCondition($searchInfo, $conditionValue);
+            $supportableDisabilityCondition = $this->generateSupportableDisabilityCondition($searchInfo); //障碍タイプ
+            $languageCondition = $this->generateLanguageCondition($searchInfo, $conditionValue); //言語レベル 
+            $condition = $this->generateCondition($searchInfo, $conditionValue); //検索条件生成
             $langJoinType = "";
             if (
                 isset($searchInfo['language1'])
@@ -210,7 +256,7 @@ class VolunteerController extends Controller
             } else {
                 $SupportableDisabilityJoinType = "left join";
             }
-
+            Log::debug($searchInfo);
             $result = $t_volunteers->getVolunteersWithSearchCondition(
                 $supportableDisabilityCondition,
                 $languageCondition,
@@ -219,7 +265,23 @@ class VolunteerController extends Controller
                 $SupportableDisabilityJoinType,
                 $conditionValue
             );
-            dd($result);
+
+            for ($i = 0; $i < count($result); $i++) {
+                $dis_type_id = array();
+                array_push($dis_type_id, $result[$i]->is_pr1);
+                array_push($dis_type_id, $result[$i]->is_pr2);
+                array_push($dis_type_id, $result[$i]->is_pr3);
+                $result[$i]->dis_type_id = $dis_type_id;
+
+                $language = array();
+                array_push($language, $result[$i]->LANGUAGE_1);
+                array_push($language, $result[$i]->LANGUAGE_2);
+                array_push($language, $result[$i]->LANGUAGE_3);
+                $result[$i]->language = $language;
+            }
+
+            Log::debug(sprintf("searchVolunteers end"));
+            return response()->json(['result' => $result]); //DBの結果を返す
         }
     }
 
@@ -384,60 +446,60 @@ class VolunteerController extends Controller
         }
         //参加しやすい曜日
         //日曜日
-        if (isset($searchInfo['sunday'])) {
+        if ($searchInfo['sunday'] == '1') {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,12,1) = '1'\r\n";
         }
         //月曜日
-        if (isset($searchInfo['monday'])) {
+        if ($searchInfo['monday'] == '1') {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,11,1) = '1'\r\n";
         }
         //火曜日
-        if (isset($searchInfo['tuesday'])) {
+        if ($searchInfo['tuesday'] == '1') {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,10,1) = '1'\r\n";
         }
         //水曜日
-        if (isset($searchInfo['wednesday'])) {
+        if ($searchInfo['wednesday'] == '1') {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,9,1) = '1'\r\n";
         }
         //木曜日
-        if (isset($searchInfo['thursday'])) {
+        if ($searchInfo['thursday'] == '1') {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,8,1) = '1'\r\n";
         }
         //金曜日
-        if (isset($searchInfo['friday'])) {
+        if ($searchInfo['friday'] == '1') {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,7,1) = '1'\r\n";
         }
         //土曜日
-        if (isset($searchInfo['saturday'])) {
+        if ($searchInfo['saturday'] == '1') {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,6,1) = '1'\r\n";
         }
         //祝日出勤可
-        if (isset($searchInfo['holiday'])) {
+        if ($searchInfo['holiday'] == '1') {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,5,1) = '1'\r\n";
         }
         //相談可
-        if (isset($searchInfo['day_negotiable'])) {
+        if ($searchInfo['day_negotiable'] == '1') {
             $condition .= "and SUBSTRING(t_volunteer_availables.`day_of_week`,4,1) = '1'\r\n";
         }
         //参加可能時間帯条件
         //早朝
-        if (isset($searchInfo['early_morning'])) {
+        if ($searchInfo['early_morning'] == '1') {
             $condition .= "and SUBSTRING(t_volunteer_availables.`time_zone`,8,1) = '1'\r\n";
         }
         //午前
-        if (isset($searchInfo['morning'])) {
+        if ($searchInfo['morning'] == '1') {
             $condition .= "and SUBSTRING(t_volunteer_availables.`time_zone`,7,1) = '1'\r\n";
         }
         //午後
-        if (isset($searchInfo['afternoon'])) {
+        if ($searchInfo['afternoon'] == '1') {
             $condition .= "and SUBSTRING(t_volunteer_availables.`time_zone`,6,1) = '1'\r\n";
         }
         //夜
-        if (isset($searchInfo['night'])) {
+        if ($searchInfo['night'] == '1') {
             $condition .= "and SUBSTRING(t_volunteer_availables.`time_zone`,5,1) = '1'\r\n";
         }
         //相談可
-        if (isset($searchInfo['time_negotiable'])) {
+        if ($searchInfo['time_negotiable'] == '1') {
             $condition .= "and SUBSTRING(t_volunteer_availables.`time_zone`,1,1) = '1'\r\n";
         }
         //過去に参加した大会
