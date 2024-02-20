@@ -49,6 +49,7 @@ class VolunteerController extends Controller
 {
     //ボランティア情報参照画面
     public function getVolunteerData(
+        Request $request,
         T_volunteers $tVolunteer,
         T_volunteer_availables $tVolunteerAvailables,
         T_volunteer_histories $tVolunteerHistories,
@@ -61,12 +62,14 @@ class VolunteerController extends Controller
         if (Auth::user()->temp_password_flag === 1) {
             //return redirect('user/password-change');
         }
-        $volData = $tVolunteer->getVolunteers(Auth::user()->user_id); //ボランティア情報を取得
-        $volAvaData = $tVolunteerAvailables->getVolunteerAvailables(1); //ボランティアアベイラブル情報を取得
-        $volHistData = $tVolunteerHistories->getVolunteerHistories(Auth::user()->user_id); //ボランティア履歴情報を取得
-        $volLangProData = $tVolunteerLanguageProficiency->getVolunteerLanguageProficiency(1); //ボランティア言語レベル情報を取得
-        $volQualData = $tVolunteerQualificationsHold->getVolunteerQualificationsHold(1); //ボランティア保有資格情報を取得
-        $volSupDisData = $tVolunteerSupportableDisability->getVolunteerSupportableDisability(1); //ボランティア支援可能障害タイプ情報を取得
+        $requestData = $request->all();
+        Log::debug($requestData['volunteer_id']);
+        $volData = $tVolunteer->getVolunteers($requestData['volunteer_id']); //ボランティア情報を取得
+        $volAvaData = $tVolunteerAvailables->getVolunteerAvailables($requestData['volunteer_id']); //ボランティアアベイラブル情報を取得
+        $volHistData = $tVolunteerHistories->getVolunteerHistories($requestData['volunteer_id']); //ボランティア履歴情報を取得
+        $volLangProData = $tVolunteerLanguageProficiency->getVolunteerLanguageProficiency($requestData['volunteer_id']); //ボランティア言語レベル情報を取得
+        $volQualData = $tVolunteerQualificationsHold->getVolunteerQualificationsHold($requestData['volunteer_id']); //ボランティア保有資格情報を取得
+        $volSupDisData = $tVolunteerSupportableDisability->getVolunteerSupportableDisability($requestData['volunteer_id']); //ボランティア支援可能障害タイプ情報を取得
 
         Log::debug(sprintf("createReference start"));
         return response()->json(['result' => $volData, 'volHistData' => $volHistData]); //DBの結果を返す
