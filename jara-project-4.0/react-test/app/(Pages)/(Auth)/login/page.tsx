@@ -57,7 +57,6 @@ const submitForm = async (
 
 return (
   <>
-    <Header />
     <div>
       <main className='flex flex-col items-center justify-between gap-[40px] my-[100px] m-auto'>
         <CustomTitle isCenter={true}>ログイン</CustomTitle>

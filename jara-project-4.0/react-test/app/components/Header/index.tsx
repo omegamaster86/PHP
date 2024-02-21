@@ -3,6 +3,7 @@ import './Header.css';
 import Logo from '../Logo';
 import { useRouter, usePathname } from 'next/navigation';
 import { Menu, MenuItem, Button } from '@mui/material';
+import { useAuth } from '@/app/hooks/auth';
 
 const Header: FC = () => {
   const [index, setIndex] = useState(0);
@@ -11,10 +12,16 @@ const Header: FC = () => {
   const open = Boolean(anchorEl);
   const [clickIndex, setclickIndex] = useState(0);
 
+  // const raceId = searchParams.get('raceId')?.toString() || '';
+  const playerId = 1;
+  const [player_id, setRaceId] = useState<any>({
+    player_id: playerId,
+  });
+
   // メニューを開く
   const handleClick = (event: MouseEvent<HTMLButtonElement>, clickIndex: number) => {
     setAnchorEl(event.currentTarget);
-    setclickIndex(clickIndex);
+    setclickIndex(clickIndex); //メニューのカテゴリのindexが入る（大会、選手、団体、ボランティア、その他）
   };
 
   // メニューを閉じる
@@ -49,8 +56,12 @@ const Header: FC = () => {
       case '/volunteerInformationRef':
         setIndex(3);
         break;
-      default:
+      case '/userInformation':
+      case '/userInformationRef':
         setIndex(4);
+        break;
+      default:
+        setIndex(5);
         break;
     }
   };
@@ -76,6 +87,24 @@ const Header: FC = () => {
             <MenuItem
               onClick={(e) => {
                 handleClose();
+                router.push('/tournamentSearch');
+              }}
+              className='text-caption1'
+            >
+              大会検索
+            </MenuItem>
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                router.push('/tournamentSearch');
+              }}
+              className='text-caption1'
+            >
+              大会結果管理
+            </MenuItem>
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
                 router.push('/tournament?mode=create');
               }}
               className='text-caption1'
@@ -89,7 +118,16 @@ const Header: FC = () => {
               }}
               className='text-caption1'
             >
-              大会検索
+              大会結果情報一括登録
+            </MenuItem>
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                router.push('/tournamentSearch');
+              }}
+              className='text-caption1'
+            >
+              大会エントリー一括登録
             </MenuItem>
           </div>
         )}
@@ -99,26 +137,88 @@ const Header: FC = () => {
             <MenuItem
               onClick={(e) => {
                 handleClose();
-                router.push('/playerInformation?mode=create');
-              }}
-              className='text-caption1'
-            >
-              選手登録
-            </MenuItem>
-            <MenuItem
-              onClick={(e) => {
-                handleClose();
                 router.push('/playerSearch');
               }}
               className='text-caption1'
             >
               選手検索
             </MenuItem>
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                // router.push('/playerInformation?mode=update?player_id=' + player_id);
+                const urlStr = '/playerInformation?mode=update' + '?player_id=' + player_id;
+                // const urlStr = '/playerInformation?mode=update' + '&player_id=' + '1';
+                console.log(urlStr);
+                // router.push('/playerInformation?mode=update');
+                router.push(urlStr);
+              }}
+              className='text-caption1'
+            >
+              選手情報更新
+            </MenuItem>
+
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                router.push('/playerInformation?mode=create');
+              }}
+              className='text-caption1'
+            >
+              選手登録
+            </MenuItem>
+
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                router.push('/playerInformation?mode=create');
+              }}
+              className='text-caption1'
+            >
+              選手情報参照
+            </MenuItem>
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                router.push('/playerInformation?mode=create');
+              }}
+              className='text-caption1'
+            >
+              選手情報削除
+            </MenuItem>
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                router.push('/playerInformation?mode=create');
+              }}
+              className='text-caption1'
+            >
+              選手一括登録
+            </MenuItem>
+            
           </div>
         )}
         {/* clickIndexが2の時（団体押下時）に表示 */}
         {clickIndex === 2 && (
           <div>
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                router.push('/teamSearch');
+              }}
+              className='text-caption1'
+            >
+              団体検索
+            </MenuItem>
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                router.push('/teamSearch');
+              }}
+              className='text-caption1'
+            >
+              団体管理
+            </MenuItem>
             <MenuItem
               onClick={(e) => {
                 handleClose();
@@ -135,7 +235,7 @@ const Header: FC = () => {
               }}
               className='text-caption1'
             >
-              団体検索
+              団体選手一括登録
             </MenuItem>
           </div>
         )}
@@ -151,6 +251,83 @@ const Header: FC = () => {
             >
               ボランティア検索
             </MenuItem>
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                router.push('/volunteerSearch');
+              }}
+              className='text-caption1'
+            >
+              ボランティア情報参照
+            </MenuItem>
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                router.push('/volunteerSearch');
+              }}
+              className='text-caption1'
+            >
+              ボランティア情報削除
+            </MenuItem>
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                router.push('/volunteerSearch');
+              }}
+              className='text-caption1'
+            >
+              ボランティア一括登録
+            </MenuItem>
+          </div>
+        )}
+        {/* clickIndexが4の時（その他押下時）に表示 */}
+        {clickIndex === 4 && (
+          <div>
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                router.push('/userInformation?mode=update');
+              }}
+              className='text-caption1'
+            >
+              ユーザ情報更新
+            </MenuItem>
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                router.push('/userInformationRef');
+              }}
+              className='text-caption1'
+            >
+              ユーザ情報参照
+            </MenuItem>
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                router.push('/userInformationRef');
+              }}
+              className='text-caption1'
+            >
+              ユーザ情報削除
+            </MenuItem>
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                router.push('/userInformationRef');
+              }}
+              className='text-caption1'
+            >
+              パスワード変更
+            </MenuItem>
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                //ログアウト処理
+              }}
+              className='text-caption1'
+            >
+              ログアウト
+            </MenuItem>
           </div>
         )}
       </Menu>
@@ -163,10 +340,9 @@ const Header: FC = () => {
           <div>
             <button
               className={`
-              ${
-                index === 0 &&
+              ${index === 0 &&
                 'border-b-[2px] rounded-none border-solid border-primary-500 text-primary-500'
-              }
+                }
               flex justify-center items-center h-[49px] cursor-pointer w-[100px] 
               `}
               onClick={(e) => {
@@ -182,10 +358,9 @@ const Header: FC = () => {
                 handleClick(e, 1);
               }}
               className={`
-              ${
-                index === 1 &&
+              ${index === 1 &&
                 'border-b-[2px] rounded-none border-solid border-primary-500 text-primary-500'
-              }
+                }
               flex justify-center items-center h-[49px] w-[100px] cursor-pointer
               `}
             >
@@ -198,10 +373,9 @@ const Header: FC = () => {
                 handleClick(e, 2);
               }}
               className={`
-              ${
-                index === 2 &&
+              ${index === 2 &&
                 'border-b-[2px] rounded-none border-solid border-primary-500 text-primary-500'
-              }
+                }
               flex justify-center items-center h-[49px] w-[100px] cursor-pointer
               `}
             >
@@ -214,14 +388,28 @@ const Header: FC = () => {
                 handleClick(e, 3);
               }}
               className={`
-              ${
-                index === 3 &&
+              ${index === 3 &&
                 'border-b-[2px] rounded-none border-solid border-primary-500 text-primary-500'
-              }
+                }
               flex justify-center items-center h-[49px] w-[100px] cursor-pointer
               `}
             >
               ボランティア
+            </button>
+          </div>
+          <div>
+            <button
+              onClick={(e) => {
+                handleClick(e, 4);
+              }}
+              className={`
+              ${index === 4 &&
+                'border-b-[2px] rounded-none border-solid border-primary-500 text-primary-500'
+                }
+              flex justify-center items-center h-[49px] w-[100px] cursor-pointer
+              `}
+            >
+              その他
             </button>
           </div>
         </div>

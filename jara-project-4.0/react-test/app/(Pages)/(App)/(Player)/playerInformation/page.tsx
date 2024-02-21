@@ -29,7 +29,8 @@ export default function PlayerInformation() {
   const searchParams = useSearchParams();
 
   // modeの値を取得 update, create
-  const mode = searchParams.get('mode');
+  const mode = searchParams.get('mode')?.toString() || '';
+  console.log(mode);
   switch (mode) {
     case 'update':
       break;
@@ -42,7 +43,7 @@ export default function PlayerInformation() {
       router.push('/playerInformation?mode=create');
       break;
   }
-  const prevMode = searchParams.get('prevMode');
+  const prevMode = searchParams.get('prevMode')?.toString() || '';
   switch (prevMode) {
     case 'update':
       break;
@@ -54,6 +55,18 @@ export default function PlayerInformation() {
       // TODO: 404エラーの表示処理に切り替え
       break;
   }
+
+  // クエリパラメータを取得する
+  const playerId = searchParams.get('player_id')?.toString() || '';
+  switch (playerId) {
+    case '':
+      break;
+    default:
+      break;
+  }
+  const [player_id, setPlayerId] = useState<any>({
+    player_id: playerId,
+  });
 
   // フォームの入力値を管理する関数
   const handleInputChange = (name: string, value: string) => {
@@ -212,16 +225,16 @@ export default function PlayerInformation() {
       }
     };
     fetchPrefecture();
-    
+
     if (mode === 'update') {
       // TODO: 選手情報を取得する処理を実装
       // searchParams.get('id')から選手IDを取得
       const fetchPlayerData = async () => {
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
-          axios
+        axios
           // .get<PlayerInformationResponse>('http://localhost:3100/player')
-          .get('/getUpdatePlayerData')
+          .post('/getUpdatePlayerData', player_id)
           .then((response) => {
             console.log(response.data);
             //サイド情報のデータ変換
@@ -265,12 +278,12 @@ export default function PlayerInformation() {
               'API取得エラー:' + (error as Error).message,
             ]);
           });
-          
+
       }
-      
+
       fetchPlayerData()// APIを叩いて、選手情報を取得する
-      }
-      
+    }
+
   }, []);
 
   /**
@@ -324,7 +337,7 @@ export default function PlayerInformation() {
 
     // 出身地（都道府県）の入力チェック
     const birthPlacePrefectureError = Validator.getErrorMessages([
-      formData.birthCountryName === '日本国 （jpn）' 
+      formData.birthCountryName === '日本国 （jpn）'
         ? Validator.validateSelectRequired(formData.birthPrefectureName, '出身地（都道府県）')
         : '',
     ]);
@@ -336,7 +349,7 @@ export default function PlayerInformation() {
 
     // 居住地（都道府県）の入力チェック
     const livingPrefectureError = Validator.getErrorMessages([
-      formData.residenceCountryName === '日本国 （jpn）' 
+      formData.residenceCountryName === '日本国 （jpn）'
         ? Validator.validateSelectRequired(formData.residencePrefectureName, '居住地（都道府県）')
         : '',
     ]);
