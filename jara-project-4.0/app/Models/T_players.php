@@ -258,6 +258,7 @@ class T_players extends Model
             Log::debug($e);
             $result = "failed";
             return response()->json(["失敗しました。ユーザーサポートにお問い合わせください。"],500);
+            
         }
     }
 
