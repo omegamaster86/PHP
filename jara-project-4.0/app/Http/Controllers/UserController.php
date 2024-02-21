@@ -761,4 +761,11 @@ class UserController extends Controller
         }
         return response()->json(["退会の件、完了しました。"],200); //処理結果を返す
     }
+
+    //ユーザーに関連付いたIDを取得する
+    public function getIDsAssociatedWithUser(Request $request, T_users $t_users)
+    {
+        $users = $t_users->getIDsAssociatedWithUser($request); //ユーザIDに関連づいたIDの取得
+        return response()->json(['result' => $users]); //DBの結果を返す
+    }
 }
