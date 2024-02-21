@@ -49,6 +49,7 @@ class VolunteerController extends Controller
 {
     //ボランティア情報参照画面
     public function getVolunteerData(
+        Request $request,
         T_volunteers $tVolunteer,
         T_volunteer_availables $tVolunteerAvailables,
         T_volunteer_histories $tVolunteerHistories,
@@ -61,12 +62,14 @@ class VolunteerController extends Controller
         if (Auth::user()->temp_password_flag === 1) {
             //return redirect('user/password-change');
         }
-        $volData = $tVolunteer->getVolunteers(Auth::user()->user_id); //ボランティア情報を取得
-        $volAvaData = $tVolunteerAvailables->getVolunteerAvailables(1); //ボランティアアベイラブル情報を取得
-        $volHistData = $tVolunteerHistories->getVolunteerHistories(Auth::user()->user_id); //ボランティア履歴情報を取得
-        $volLangProData = $tVolunteerLanguageProficiency->getVolunteerLanguageProficiency(1); //ボランティア言語レベル情報を取得
-        $volQualData = $tVolunteerQualificationsHold->getVolunteerQualificationsHold(1); //ボランティア保有資格情報を取得
-        $volSupDisData = $tVolunteerSupportableDisability->getVolunteerSupportableDisability(1); //ボランティア支援可能障害タイプ情報を取得
+        $requestData = $request->all();
+        Log::debug($requestData['volunteer_id']);
+        $volData = $tVolunteer->getVolunteers($requestData['volunteer_id']); //ボランティア情報を取得
+        $volAvaData = $tVolunteerAvailables->getVolunteerAvailables($requestData['volunteer_id']); //ボランティアアベイラブル情報を取得
+        $volHistData = $tVolunteerHistories->getVolunteerHistories($requestData['volunteer_id']); //ボランティア履歴情報を取得
+        $volLangProData = $tVolunteerLanguageProficiency->getVolunteerLanguageProficiency($requestData['volunteer_id']); //ボランティア言語レベル情報を取得
+        $volQualData = $tVolunteerQualificationsHold->getVolunteerQualificationsHold($requestData['volunteer_id']); //ボランティア保有資格情報を取得
+        $volSupDisData = $tVolunteerSupportableDisability->getVolunteerSupportableDisability($requestData['volunteer_id']); //ボランティア支援可能障害タイプ情報を取得
 
         Log::debug(sprintf("createReference start"));
         return response()->json(['result' => $volData, 'volHistData' => $volHistData]); //DBの結果を返す
@@ -408,7 +411,7 @@ class VolunteerController extends Controller
             //資格入力可能最大数は5
             $qualifications_max = 5;
             //「その他」の資格ID
-            $other_qualification_id = 3;
+            $other_qualification_id = 99;
             $condition .= "and t_volunteers.volunteer_id in(
                             select volunteer_id
                             from
@@ -516,5 +519,19 @@ class VolunteerController extends Controller
             $conditionValue['tournament3'] = "%" . $searchInfo['tournament3'] . "%";
         }
         return $condition;
+    }
+
+    //ボランティア情報を取得する
+    public function getVolunteerResponse(Request $request,T_volunteers $t_volunteers)
+    {
+        $volunteerResponse = $t_volunteers->getVolunteerResponse($request); //ボランティアIDに基づいたボランティア情報を取得
+        return response()->json(['result' => $volunteerResponse]); //DBの結果を返す
+    }
+
+    //ボランティア履歴情報を取得する
+    public function VolunteerHistoriesResponse(Request $request,T_volunteer_histories $t_volunteer_histories)
+    {
+        $volunteerHistoriesResponse = $t_volunteer_histories->getVolunteerHistoriesResponse($request); //ボランティアIDに基づいたボランティア履歴情報を取得
+        return response()->json(['result' => $volunteerHistoriesResponse]); //DBの結果を返す
     }
 }

@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+use function Laravel\Prompts\select;
+
 class T_volunteers extends Model
 {
     use HasFactory;
@@ -32,7 +34,7 @@ class T_volunteers extends Model
         'delete_flag' => 0,
     ];
 
-    public function getVolunteers($user_id)
+    public function getVolunteers($volunteer_id)
     {
         $volunteers = DB::select('select `t_volunteers`.`volunteer_id`, `t_volunteers`.`user_id`, `t_volunteers`.`volunteer_name`, `t_volunteers`.`residence_country`, 
         `t_volunteers`.`residence_prefecture`, `t_volunteers`.`sex`, `t_volunteers`.`date_of_birth`, `t_volunteers`.`dis_type_id`, `t_volunteers`.`telephone_number`, 
@@ -48,7 +50,7 @@ class T_volunteers extends Model
         on `t_volunteers`.`sex` = `m_sex`.`sex_id`
         left join `m_clothes_size`
         on `t_volunteers`.`clothes_size` = `m_clothes_size`.`clothes_size_id`
-        where `t_volunteers`.delete_flag=0 and `t_volunteers`.user_id = ?', [$user_id]);
+        where `t_volunteers`.delete_flag=0 and `t_volunteers`.volunteer_id = ?', [$volunteer_id]);
         //1つの団体IDを取得するため0番目だけを返す
         $targetTrn = null;
         if (!empty($volunteers)) {
@@ -274,5 +276,136 @@ class T_volunteers extends Model
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
         return $insertId;
+    }
+
+    //volunteer_idを条件として、
+    //interfaceのVolunteerResponseに合うデータを取得する
+    public function getVolunteerResponse($volunteer_id)
+    {
+        $volunteer = DB::select("select
+                                vol.volunteer_id    as `vol_id`
+                                ,CONCAT('V',lpad(vol.volunteer_id, 7, '0'))   as `volunteer_id`
+                                ,vol.`volunteer_name`
+                                ,vol.residence_country      as `residence_country_id`
+                                ,con.country_name           as `residence_country`
+                                ,vol.residence_prefecture   as `residence_prefecture_id`
+                                ,pref.pref_name             as `residence_prefecture`
+                                ,vol.sex                    as `sex_id`
+                                ,sex.sex
+                                ,vol.`date_of_birth`
+                                ,vol.`telephone_number`
+                                ,case vol.users_email_flag
+                                    when 1 then users.mailaddress
+                                    else vol.mailaddress
+                                    end                     as `mailaddress`
+                                ,vol.clothes_size           as `clothes_size_id`
+                                ,clt.clothes_size
+                                ,v_sup.dis_type_id
+                                ,qual.qualHold
+                                ,lang.lang_name as `language`
+                                ,lang.lang_pro_name as `language_proficiency`
+                                ,vav.day_of_week
+                                ,vav.time_zone
+                                ,users.photo
+                                from t_volunteers vol
+                                join t_users users
+                                on vol.user_id = users.user_id
+                                left join `m_sex` sex
+                                on vol.sex = sex.sex_id
+                                left join `m_countries` con
+                                on vol.residence_country= con.country_id
+                                left join `m_prefectures` pref
+                                on vol.residence_prefecture = pref.pref_id
+                                left join `m_clothes_size` clt
+                                on vol.clothes_size = clt.clothes_size_id
+                                left join `t_volunteer_availables` vav
+                                on vol.volunteer_id = vav.volunteer_id
+                                left join
+                                (
+                                    select volunteer_id
+                                    ,GROUP_CONCAT(dis_type_name order by dis_type_id) as dis_type_id
+                                    from
+                                    (
+                                        select
+                                        vol.volunteer_id
+                                        ,v_sup.dis_type_id
+                                        ,dist.dis_type_name
+                                        from t_volunteers vol
+                                        left join t_volunteer_supportable_disability v_sup
+                                        on vol.volunteer_id = v_sup.volunteer_id
+                                        left join m_disability_type dist
+                                        on v_sup.dis_type_id = dist.dis_type_id
+                                        where 1=1
+                                        and vol.delete_flag = 0
+                                        and (v_sup.delete_flag = 0 or v_sup.delete_flag is null)
+                                        and (dist.delete_flag = 0 or dist.delete_flag is null)
+                                    )t
+                                    group by volunteer_id
+                                )v_sup
+                                on vol.volunteer_id = v_sup.volunteer_id
+                                left join
+                                (
+                                    select
+                                    volunteer_id
+                                    ,GROUP_CONCAT(qual_name order by qual_id,qual_hold_id) as qualHold
+                                    from
+                                    (
+                                        select
+                                        tq.qual_hold_id
+                                        ,tq.volunteer_id
+                                        ,tq.qual_id
+                                        ,case tq.qual_id
+                                            when 99 then tq.others_qual
+                                            else qual.qual_name
+                                            end as `qual_name`
+                                        FROM t_volunteer_qualifications_hold tq
+                                        left join m_volunteer_qualifications qual
+                                        on tq.qual_id = qual.qual_id
+                                        where 1=1
+                                        and tq.delete_flag = 0
+                                        and (qual.delete_flag = 0 or qual.delete_flag is null)
+                                    )t
+                                    group by volunteer_id
+                                )qual
+                                on vol.volunteer_id = qual.volunteer_id
+                                left join
+                                (
+                                    select
+                                    volunteer_id
+                                    ,GROUP_CONCAT(lang_name order by lang_id) as lang_name
+                                    ,GROUP_CONCAT(lang_pro_name order by lang_id) as lang_pro_name
+                                    from
+                                    (
+                                        select
+                                        vlp.lang_pro_id
+                                        ,vlp.volunteer_id
+                                        ,vlp.lang_id
+                                        ,lang.lang_name
+                                        ,vlp.lang_pro
+                                        ,mlp.lang_pro_name
+                                        FROM t_volunteer_language_proficiency vlp
+                                        left join m_languages lang
+                                        on vlp.lang_id = lang.lang_id
+                                        left join m_language_proficiency mlp
+                                        on vlp.lang_pro = mlp.lang_pro_id
+                                        where 1=1
+                                        and vlp.delete_flag = 0
+                                        and (lang.delete_flag = 0 or lang.delete_flag is null)
+                                        and (mlp.delete_flag = 0 or mlp.delete_flag is null)
+                                    )t
+                                    group by volunteer_id
+                                )lang
+                                on vol.volunteer_id = lang.volunteer_id
+                                where 1=1
+                                and vol.delete_flag = 0
+                                and users.delete_flag = 0
+                                and (sex.delete_flag = 0 or sex.delete_flag is null)
+                                and (con.delete_flag = 0 or con.delete_flag is null)
+                                and (pref.delete_flag = 0 or pref.delete_flag is null)
+                                and (clt.delete_flag = 0 or clt.delete_flag is null)
+                                and (vav.delete_flag = 0 or vav.delete_flag is null)
+                                and vol.volunteer_id = :volunteer_id"
+                            ,$volunteer_id);
+        return $volunteer;
     }
 }

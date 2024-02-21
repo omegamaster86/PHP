@@ -40,6 +40,18 @@ export default function VolunteerInformationRef() {
       break;
   }
 
+  // ボランティアIDを取得
+  const volunteerId = searchParams.get('volunteer_id')?.toString() || '';
+  switch (volunteerId) {
+    case '':
+      break;
+    default:
+      break;
+  }
+  const [volunteer_id, setVolunteerId] = useState<any>({
+    volunteer_id: volunteerId,
+  });
+
   /**
    * @param binaryString
    * @param index
@@ -89,7 +101,7 @@ export default function VolunteerInformationRef() {
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
         // const volunteerResponse = await axios.get<VolunteerResponse>('/volunteer',);
-        const volunteerResponse = await axios.get('/getVolunteerData'); //ボランティア情報の取得 20240213
+        const volunteerResponse = await axios.post('/getVolunteerData', volunteer_id); //ボランティア情報の取得 20240213
         console.log(volunteerResponse.data.result);
         setVolunteerdata({
           volunteer_id: volunteerResponse.data.result.volunteer_id, // ボランティアID
@@ -126,7 +138,7 @@ export default function VolunteerInformationRef() {
     fetchData();
   }, []);
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
   const [activeTab, setActiveTab] = useState<number>(0);
 
   const handleTabChange = (tabNumber: number) => {
@@ -175,7 +187,7 @@ export default function VolunteerInformationRef() {
               value={volunteerdata.volunteer_id}
               readonly
               displayHelp={false}
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             {/* 氏名 */}
             <CustomTextField
@@ -183,7 +195,7 @@ export default function VolunteerInformationRef() {
               value={volunteerdata.volunteer_name}
               readonly
               displayHelp={false}
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             {/* 生年月日 */}
             <CustomTextField
@@ -191,7 +203,7 @@ export default function VolunteerInformationRef() {
               value={volunteerdata.date_of_birth}
               readonly
               displayHelp={false}
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             {/* 性別 */}
             <CustomTextField
@@ -199,7 +211,7 @@ export default function VolunteerInformationRef() {
               value={volunteerdata.sex}
               readonly
               displayHelp={false}
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             {/* 居住地（国） */}
             <div className='flex flex-row gap-[16px]'>
@@ -208,7 +220,7 @@ export default function VolunteerInformationRef() {
                 value={volunteerdata.residence_country}
                 readonly
                 displayHelp={false}
-                onChange={(e) => {}}
+                onChange={(e) => { }}
               />
               {/* 居住地（都道府県） */}
               <CustomTextField
@@ -216,7 +228,7 @@ export default function VolunteerInformationRef() {
                 value={volunteerdata.residence_prefecture}
                 readonly
                 displayHelp={false}
-                onChange={(e) => {}}
+                onChange={(e) => { }}
               />
             </div>
             {/* 電話番号 */}
@@ -225,7 +237,7 @@ export default function VolunteerInformationRef() {
               value={volunteerdata.telephone_number}
               readonly
               displayHelp={false}
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             {/* メールアドレス */}
             <CustomTextField
@@ -233,7 +245,7 @@ export default function VolunteerInformationRef() {
               value={volunteerdata.mailaddress}
               readonly
               displayHelp={false}
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
           </div>
           <div className='flex flex-col gap-[20px] max-w-[400px]'>
@@ -243,7 +255,7 @@ export default function VolunteerInformationRef() {
               value={volunteerdata.clothes_size}
               readonly
               displayHelp={false}
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             {/* 障碍タイプ */}
             <label htmlFor='disType'>補助が可能な障碍タイプ</label>
@@ -256,7 +268,7 @@ export default function VolunteerInformationRef() {
                   value={dis_type_id}
                   checked={dis_type_id.length > 0}
                   readonly
-                  onChange={(e) => {}}
+                  onChange={(e) => { }}
                 />
               ))}
             </div>
@@ -295,7 +307,7 @@ export default function VolunteerInformationRef() {
               value=''
               checked={getDayOfWeekBool(volunteerdata.day_of_week, 7) || false}
               readonly
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             <OriginalCheckbox
               id='sunday'
@@ -303,7 +315,7 @@ export default function VolunteerInformationRef() {
               value=''
               checked={getDayOfWeekBool(volunteerdata.day_of_week, 0) || false}
               readonly
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             <OriginalCheckbox
               id='monday'
@@ -311,7 +323,7 @@ export default function VolunteerInformationRef() {
               value=''
               checked={getDayOfWeekBool(volunteerdata.day_of_week, 1) || false}
               readonly
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             <OriginalCheckbox
               id='tuesday'
@@ -319,7 +331,7 @@ export default function VolunteerInformationRef() {
               value=''
               checked={getDayOfWeekBool(volunteerdata.day_of_week, 2) || false}
               readonly
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             <OriginalCheckbox
               id='wednesday'
@@ -327,7 +339,7 @@ export default function VolunteerInformationRef() {
               value=''
               checked={getDayOfWeekBool(volunteerdata.day_of_week, 3) || false}
               readonly
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             <OriginalCheckbox
               id='thursday'
@@ -335,7 +347,7 @@ export default function VolunteerInformationRef() {
               value=''
               checked={getDayOfWeekBool(volunteerdata.day_of_week, 4) || false}
               readonly
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             <OriginalCheckbox
               id='friday'
@@ -343,7 +355,7 @@ export default function VolunteerInformationRef() {
               value=''
               checked={getDayOfWeekBool(volunteerdata.day_of_week, 5) || false}
               readonly
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             <OriginalCheckbox
               id='saturday'
@@ -351,7 +363,7 @@ export default function VolunteerInformationRef() {
               value=''
               checked={getDayOfWeekBool(volunteerdata.day_of_week, 6) || false}
               readonly
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             <OriginalCheckbox
               id='any'
@@ -359,7 +371,7 @@ export default function VolunteerInformationRef() {
               value=''
               checked={getDayOfWeekBool(volunteerdata.day_of_week, 8) || false}
               readonly
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
           </div>
           {/* 参加可能時間帯 */}
@@ -372,7 +384,7 @@ export default function VolunteerInformationRef() {
               value=''
               checked={getTimeZoneBool(volunteerdata.time_zone, 7) || false}
               readonly
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             <OriginalCheckbox
               id='earlymorning'
@@ -380,7 +392,7 @@ export default function VolunteerInformationRef() {
               value=''
               checked={getTimeZoneBool(volunteerdata.time_zone, 0) || false}
               readonly
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             <OriginalCheckbox
               id='morning'
@@ -388,7 +400,7 @@ export default function VolunteerInformationRef() {
               value=''
               checked={getTimeZoneBool(volunteerdata.time_zone, 1) || false}
               readonly
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             <OriginalCheckbox
               id='afternoon'
@@ -396,7 +408,7 @@ export default function VolunteerInformationRef() {
               value=''
               checked={getTimeZoneBool(volunteerdata.time_zone, 2) || false}
               readonly
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
             <OriginalCheckbox
               id='night'
@@ -404,7 +416,7 @@ export default function VolunteerInformationRef() {
               value=''
               checked={getTimeZoneBool(volunteerdata.time_zone, 3) || false}
               readonly
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
           </div>
         </div>
@@ -587,7 +599,7 @@ export default function VolunteerInformationRef() {
                  * 「ボランティア言語レベルテーブル」
                  * 「ボランティア支援可能障碍タイプテーブル」
                  */
-                
+
                 // TODO: エラーハンドリングを実装
                 // 削除に失敗した場合、
                 // 以下のメッセージをシステムエラーとして赤文字で表示し、以降の処理は行わない。

@@ -172,6 +172,7 @@ interface VolunteerResponse {
   dis_type_id: string[]; // 障碍タイプ
   qualHold: string[]; // 保有資格　#置き換え作業未対応
   language: any; // 言語　#置き換え作業未対応
+  language_proficiency: any;  //言語レベル
   day_of_week: string; // 曜日
   time_zone: string; // 時間帯
   photo: string; // 写真　#置き換え作業未対応
@@ -211,6 +212,8 @@ interface PlayerInformationResponse {
   residencePrefectureName: string; // 居住地（都道府県）　#置き換え作業対応不要
   residence_prefecture?: number; // 居住地（都道府県）
   photo: string; // 写真
+  uploadedPhoto?: File; // アップロードされて写真を保存する
+  uploadedPhotoName?: string; // アップロードされて写真の名前を保存する
 }
 
 // 団体所属選手情報

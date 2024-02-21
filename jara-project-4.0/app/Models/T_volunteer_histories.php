@@ -65,4 +65,28 @@ class T_volunteer_histories extends Model
             ]
         );
     }
+
+    //volunteer_idを条件としてボランティア履歴を取得
+    public function getVolunteerHistoriesResponse($volunteer_id)
+    {
+        $histories = DB::select("select
+                                tvh.tourn_id
+                                ,tourn.tourn_name
+                                ,tourn.tourn_type
+                                ,tourn.event_start_date
+                                ,tourn.event_end_date
+                                ,tvh.`role`
+                                ,tvh.date_type
+                                ,tvh.day_of_week
+                                ,tvh.time_zone
+                                from `t_volunteer_histories` tvh
+                                left join `t_tournaments` tourn
+                                on tvh.tourn_id = tourn.tourn_id
+                                where 1=1
+                                and tvh.delete_flag = 0
+                                and (tourn.delete_flag = 0 or tourn.delete_flag is null)
+                                and `volunteer_id` = :volunteer_id"
+                            ,$volunteer_id);
+        return $histories;
+    }
 }
