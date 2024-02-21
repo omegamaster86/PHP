@@ -57,7 +57,7 @@ class T_volunteer_availables extends Model
     //ボランティア一括登録画面用
     public function insertVolunteerAvailables($values)
     {
-        DB:insert('INSERT INTO `t_volunteer_availables`
+        DB::insert('INSERT INTO `t_volunteer_availables`
                     (
                         `volunteer_id`,
                         `day_of_week`,

@@ -131,7 +131,7 @@ class T_players extends Model
             DB::rollBack();
             Log::debug($e);
             $result = "failed";
-            return $result;
+            return response()->json(["失敗しました。ユーザーサポートにお問い合わせください。"],500);
         }
     }
 
@@ -184,6 +184,22 @@ class T_players extends Model
             return $result;
         }
     }
+
+    // jara_player_idで登録されたことありますかどうかチェック
+    public function checkJARAPlayerId($playersInfo){
+        $result = DB::select(
+            'select `player_id`, `player_name` from `t_players` where `delete_flag` = 0 and `jara_player_id` = ?',
+            [
+                $playersInfo['jara_player_id'] //where条件用
+            ]
+        );
+        $registeredPlayer = [];
+        if (!empty($result)) {
+            $registeredPlayer = $result[0];
+        }
+        return $registeredPlayer;
+    }
+
     
     public function insertPlayers($playersInfo)
     {
@@ -241,7 +257,8 @@ class T_players extends Model
             DB::rollBack();
             Log::debug($e);
             $result = "failed";
-            return $result;
+            return response()->json(["失敗しました。ユーザーサポートにお問い合わせください。"],500);
+            
         }
     }
 
@@ -601,7 +618,7 @@ class T_players extends Model
     }
 
     //JARA選手IDを条件にプレイヤー情報を取得する
-    public function getPlayerFromJaraPlayerCode($jara_player_code)
+    public function getPlayerFromJaraPlayerId($jara_player_id)
     {
         $players = DB::select('select
                                 `player_id`
@@ -648,7 +665,7 @@ class T_players extends Model
                                 and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
                                 and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
                                 and `jara_player_id` = ?',
-                                $jara_player_code);
+                                $jara_player_id);
         return $players;
     }
 

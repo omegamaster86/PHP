@@ -1,6 +1,6 @@
 // 機能名: 選手情報登録・更新・入力確認
 'use client';
-
+import { PLAYER_IMAGE_URL, NO_IMAGE_URL} from "../../../../utils/imageUrl" //For importing image url from a single source of truth
 import { useEffect, useState, ChangeEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/app/lib/axios';
@@ -159,6 +159,27 @@ export default function PlayerInformation() {
     }
   }, [formData.birth_country]);
 
+    //アップロードされたファイルを保存するー開始
+    useEffect(() => {
+      if(currentShowFile?.file) {
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          uploadedPhotoName:currentShowFile.file.name,
+          uploadedPhoto: currentShowFile.file,
+          photo:''
+        }))
+      }
+      else{
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          uploadedPhotoName:'',
+          uploadedPhoto: undefined,
+          photo:''
+        }))
+      }
+    }, [currentShowFile]);//ファイルのアップロード終わったら
+    //アップロードされたファイルを保存するー完了
+
   // 更新モードの時に、選手情報を取得する
   useEffect(() => {
     const fetchPrefecture = async () => {
@@ -293,6 +314,7 @@ export default function PlayerInformation() {
   const validate = () => {
     // JARA選手コードの入力チェック
     const jaraPlayerCodeError = Validator.getErrorMessages([
+      Validator.validateSelectRequired(formData.jara_player_id.toString(), 'JARA選手コード'),
       Validator.validatePlayerIdFormat(formData.jara_player_id.toString()),
     ]);
 
@@ -392,12 +414,36 @@ export default function PlayerInformation() {
     create: (
       <CustomButton
         buttonType='primary'
-        onClick={() => {
+        onClick={async() => {
           const isError = validate();
           if (isError) {
             return;
           }
-          router.push('/playerInformation?mode=confirm&prevMode=create');
+          // jara_player_id登録されているかどうかチェック
+          const csrf = () => axios.get('/sanctum/csrf-cookie')
+          await csrf()
+          axios
+            // .post('http://localhost:3100/', registerData)
+            .post('/checkJARAPlayerId', formData,{ 
+              //ファイルを送るため
+              headers: { 
+                'content-type' : 'multipart/form-data' ,
+                } ,
+              }) //20240123 送信テスト
+            .then((response) => {
+              // TODO: 更新処理成功時の処理
+              // console.log(response);
+              setErrorMessage([]);
+              window.alert('入力した既存選手IDと紐づくデータが存在しません。\nこの既存選手IDで登録しますか？');
+              
+              router.push('/playerInformation?mode=confirm&prevMode=create');
+            })
+            .catch((error) => {
+              // TODO: 更新処理失敗時の処理
+              setErrorMessage([
+                ...(error?.response?.data as string[]),
+              ]);
+            });
         }}
       >
         確認
@@ -406,12 +452,34 @@ export default function PlayerInformation() {
     update: (
       <CustomButton
         buttonType='primary'
-        onClick={() => {
+        onClick={async() => {
           const isError = validate();
           if (isError) {
             return;
           }
-          router.push('/playerInformation?mode=confirm&prevMode=update');
+          // jara_player_id登録されているかどうかチェック
+          const csrf = () => axios.get('/sanctum/csrf-cookie')
+          await csrf()
+          axios
+            // .post('http://localhost:3100/', registerData)
+            .post('/checkJARAPlayerId', formData,{ 
+              //ファイルを送るため
+              headers: { 
+                'content-type' : 'multipart/form-data' ,
+                } ,
+              }) //20240123 送信テスト
+            .then((response) => {
+              // TODO: 更新処理成功時の処理
+              // console.log(response);
+              window.alert('入力した既存選手IDと紐づくデータが存在しません。\nこの既存選手IDで登録しますか？');
+              router.push('/playerInformation?mode=confirm&prevMode=update');
+            })
+            .catch((error) => {
+              // TODO: 更新処理失敗時の処理
+              setErrorMessage([
+                ...(error?.response?.data as string[]),
+              ]);
+            });
         }}
       >
         確認
@@ -428,11 +496,17 @@ export default function PlayerInformation() {
             await csrf()
             axios
               // .post('http://localhost:3100/', registerData)
-              .post('/updatePlayerData', formData) //20240123 送信テスト
+              .post('/updatePlayerData', formData,{ 
+                //ファイルを送るため
+                headers: { 
+                  'content-type' : 'multipart/form-data' ,
+                 } ,
+               }) //20240123 送信テスト
               .then((response) => {
                 // TODO: 更新処理成功時の処理
                 console.log(response);
                 window.confirm('選手情報を更新しました。');
+                router.push('/DummyMyPage');
               })
               .catch((error) => {
                 // TODO: 更新処理失敗時の処理
@@ -448,11 +522,18 @@ export default function PlayerInformation() {
             const registerData = {};
             axios
               // .post('http://localhost:3100/', registerData)
-              .post('/storePlayerTest', formData) //20240123 送信テスト
+              .post('/storePlayerTest', formData,{ 
+                //ファイルを送るため
+                headers: { 
+                  'content-type' : 'multipart/form-data' ,
+                 } ,
+               }) //20240123 送信テスト
               .then((response) => {
                 // TODO: 登録処理成功時の処理の実装
                 console.log(response);
                 window.confirm('選手情報を登録しました。');
+
+                router.push('/DummyMyPage');
               })
               .catch((error) => {
                 // TODO: 登録処理失敗時の処理の実装
@@ -496,6 +577,7 @@ export default function PlayerInformation() {
                 <ImageUploader
                   currentShowFile={currentShowFile}
                   setCurrentShowFile={setCurrentShowFile}
+                  setFormData={setFormData} initialPhotoUrl={formData?.photo?`${PLAYER_IMAGE_URL}${formData.photo}`:''}
                 />
                 {/* 写真削除ボタン */}
                 <CustomButton
@@ -516,11 +598,13 @@ export default function PlayerInformation() {
                 {/* 写真 */}
                 <img
                   className='object-cover w-[320px] h-[320px] rounded-[2px]'
-                  src={currentShowFile?.preview}
+                  src={currentShowFile?.preview??(formData.photo?`${PLAYER_IMAGE_URL}${formData.photo}`:`${NO_IMAGE_URL}`)}
+
+                  alt = "Profile Photo"
                   // Revoke data uri after image is loaded
-                  onLoad={() => {
-                    console.log(currentShowFile);
-                  }}
+                  // onLoad={() => {
+                  //   console.log(currentShowFile);
+                  // }}
                 />
               </div>
             )}

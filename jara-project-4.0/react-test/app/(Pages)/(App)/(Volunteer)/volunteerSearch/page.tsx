@@ -360,27 +360,27 @@ export default function VolunteerSearch() {
         const TournamentsResponseList = TournamentsResponse.data.result.map(({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({ id: tourn_id, name: tourn_name }));
         // console.log(TournamentsResponseList);
         setTour(TournamentsResponseList);
-        
+
         // 障碍タイプマスタの取得
         // const disType = await axios.get<DisTypeResponse[]>('http://localhost:3100/disType');
         const disType = await axios.get('/getDisabilityType');
         const disTypeList = disType.data.map(({ dis_type_id, dis_type_name }: { dis_type_id: number; dis_type_name: string }) => ({ id: dis_type_id, name: dis_type_name }));
         setDisType(disTypeList);
-        
+
         // 資格マスタの取得
         // const qualHold = await axios.get<QualHoldResponse[]>('http://localhost:3100/qualHold');
         const qualHold = await axios.get('/getQualifications');
         // console.log(qualHold.data);
         const qualHoldList = qualHold.data.map(({ qual_id, qual_name }: { qual_id: number; qual_name: string }) => ({ id: qual_id, name: qual_name }));
         setQualHold(qualHoldList);
-        
+
         // 言語マスタの取得
         // const lang = await axios.get<LangResponse[]>('http://localhost:3100/language');
         const lang = await axios.get('/getLanguages');
         // console.log(lang.data);
         const langList = lang.data.map(({ lang_id, lang_name }: { lang_id: number; lang_name: string }) => ({ id: lang_id, name: lang_name }));
         setLang(langList);
-        
+
         // 言語レベルマスタの取得
         // const langLevel = await axios.get<LangResponse[]>('http://localhost:3100/languageLevel');
         const langLevel = await axios.get('/getLanguageProficiency');
@@ -393,7 +393,7 @@ export default function VolunteerSearch() {
         // console.log(countryResponse.data);
         const countryList = countryResponse.data.map(({ country_id, country_name }: { country_id: number; country_name: string }) => ({ id: country_id, name: country_name }));
         setCountry(countryList);
-        
+
         // const prefecture = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
         const prefectureResponse = await axios.get('/getPrefecures');
         const stateList = prefectureResponse.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
@@ -1184,7 +1184,8 @@ export default function VolunteerSearch() {
                 <Link
                   className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                   href={{
-                    pathname: '/userInformationRef',
+                    pathname: '/volunteerInformationRef',
+                    query: { volunteer_id: row.volunteer_id },
                   }}
                   rel='noopener noreferrer'
                   target='_blank'
@@ -1196,7 +1197,8 @@ export default function VolunteerSearch() {
                 <Link
                   className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                   href={{
-                    pathname: '/userInformationRef',
+                    pathname: '/volunteerInformationRef',
+                    query: { volunteer_id: row.volunteer_id },
                   }}
                   rel='noopener noreferrer'
                   target='_blank'
