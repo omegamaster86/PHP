@@ -24,6 +24,9 @@ const Header: FC = () => {
   const [is_volunteer, set_is_volunteer] = useState<number>(); //ボランティア権限 20240221
   const [is_audience, set_is_audience] = useState<number>(); //一般権限 20240221
 
+  const { logout } = useAuth({ middleware: 'auth' });
+
+
   // メニューを開く
   const handleClick = (event: MouseEvent<HTMLButtonElement>, clickIndex: number) => {
     setAnchorEl(event.currentTarget);
@@ -412,7 +415,7 @@ const Header: FC = () => {
             <MenuItem
               onClick={(e) => {
                 handleClose();
-                //ログアウト処理 残件
+                logout(); //ログアウト処理
               }}
               className='text-caption1'
             >
