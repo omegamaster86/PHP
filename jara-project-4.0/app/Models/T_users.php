@@ -409,4 +409,32 @@ class T_users extends Authenticatable
         $insertId =  DB::getPdo()->lastInsertId();
         return $insertId;
     }
+
+    //ユーザーに関連付いたIDを取得する
+    public function getIDsAssociatedWithUser($user_id)
+    {
+        $users = DB::select('select
+                            `t_users`.`user_id`
+                            ,SUBSTR(`t_users`.`user_type`,2,1) as `is_administrator`
+                            ,SUBSTR(`t_users`.`user_type`,3,1) as `is_jara`
+                            ,SUBSTR(`t_users`.`user_type`,4,1) as `is_pref_boat_officer`
+                            ,SUBSTR(`t_users`.`user_type`,5,1) as `is_organization_manager`
+                            ,SUBSTR(`t_users`.`user_type`,6,1) as `is_player`
+                            ,SUBSTR(`t_users`.`user_type`,7,1) as `is_volunteer`
+                            ,SUBSTR(`t_users`.`user_type`,8,1) as `is_audience`
+                            ,`t_players`.`player_id`
+                            ,`t_volunteers`.`volunteer_id`
+                            from `t_users`
+                            left join `t_players`
+                            on `t_users`.`user_id` = `t_players`.`user_id`
+                            left join `t_volunteers`
+                            on `t_users`.`user_id` = `t_volunteers`.`user_id` 
+                            where 1=1
+                            and `t_users`.`delete_flag` = 0
+                            and (`t_players`.`delete_flag` = 0 or `t_players`.`delete_flag` is null)
+                            and (`t_volunteers`.`delete_flag` = 0 or `t_volunteers`.`delete_flag` is null)
+                            and `t_users`.`user_id` = :user_id'
+                            ,$user_id);
+        return $users;
+    }
 }
