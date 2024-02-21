@@ -433,8 +433,8 @@ class T_users extends Authenticatable
                             and `t_users`.`delete_flag` = 0
                             and (`t_players`.`delete_flag` = 0 or `t_players`.`delete_flag` is null)
                             and (`t_volunteers`.`delete_flag` = 0 or `t_volunteers`.`delete_flag` is null)
-                            and `t_users`.`user_id` = :user_id'
-                            ,$user_id);
+                            and `t_users`.`user_id` = ?'
+                            ,[$user_id]);
         return $users;
     }
 }

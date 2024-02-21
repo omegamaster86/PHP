@@ -82,6 +82,7 @@ Route::middleware('auth')->group(function () {
     Route::get('getQualifications', [M_volunteer_qualifications::class, 'getQualifications']); //資格マスタ
     Route::get('getLanguages', [M_languages::class, 'getLanguages']); //言語マスタ
     Route::get('getLanguageProficiency', [M_language_proficiency::class, 'getLanguageProficiency']); //言語レベルマスタ
+    Route::get('getIDsAssociatedWithUser', [UserController::class, 'getIDsAssociatedWithUser']); //ユーザIDに紐づいた情報を取得 20240221
 
     //ユーザー関連
     Route::get('getUserData', [UserController::class, 'getUserData']); //DBからユーザ情報を取得 20240131

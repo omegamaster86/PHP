@@ -4,6 +4,7 @@ import Logo from '../Logo';
 import { useRouter, usePathname } from 'next/navigation';
 import { Menu, MenuItem, Button } from '@mui/material';
 import { useAuth } from '@/app/hooks/auth';
+import axios from '@/app/lib/axios';
 
 const Header: FC = () => {
   const [index, setIndex] = useState(0);
@@ -12,11 +13,8 @@ const Header: FC = () => {
   const open = Boolean(anchorEl);
   const [clickIndex, setclickIndex] = useState(0);
 
-  // const raceId = searchParams.get('raceId')?.toString() || '';
-  const playerId = 1;
-  const [player_id, setRaceId] = useState<any>({
-    player_id: playerId,
-  });
+  const [playerId, setPlayerId] = useState<number>(); //選手ID 20240221
+  const [volunteerId, setVolunteerId] = useState<number>(); //ボランティアID 20240221
 
   // メニューを開く
   const handleClick = (event: MouseEvent<HTMLButtonElement>, clickIndex: number) => {
@@ -70,6 +68,24 @@ const Header: FC = () => {
     handleIndex();
   }, [page]);
 
+  //選手IDに紐づいた情報の取得 20240221
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
+        const playerInf = await axios.get('/getIDsAssociatedWithUser');
+        console.log(playerInf.data.result[0]);
+        setPlayerId(playerInf.data.result[0].player_id);
+        setVolunteerId(playerInf.data.result[0].volunteer_id);
+      } catch (error: any) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+
+
   return (
     <div>
       <Menu
@@ -96,7 +112,7 @@ const Header: FC = () => {
             <MenuItem
               onClick={(e) => {
                 handleClose();
-                router.push('/tournamentSearch');
+                router.push('/DummyMyPage');
               }}
               className='text-caption1'
             >
@@ -114,7 +130,7 @@ const Header: FC = () => {
             <MenuItem
               onClick={(e) => {
                 handleClose();
-                router.push('/tournamentSearch');
+                router.push('/DummyMyPage');
               }}
               className='text-caption1'
             >
@@ -123,7 +139,7 @@ const Header: FC = () => {
             <MenuItem
               onClick={(e) => {
                 handleClose();
-                router.push('/tournamentSearch');
+                router.push('/DummyMyPage');
               }}
               className='text-caption1'
             >
@@ -146,32 +162,28 @@ const Header: FC = () => {
             <MenuItem
               onClick={(e) => {
                 handleClose();
-                // router.push('/playerInformation?mode=update?player_id=' + player_id);
-                const urlStr = '/playerInformation?mode=update' + '?player_id=' + player_id;
-                // const urlStr = '/playerInformation?mode=update' + '&player_id=' + '1';
-                console.log(urlStr);
-                // router.push('/playerInformation?mode=update');
-                router.push(urlStr);
-              }}
-              className='text-caption1'
-            >
-              選手情報更新
-            </MenuItem>
-
-            <MenuItem
-              onClick={(e) => {
-                handleClose();
                 router.push('/playerInformation?mode=create');
               }}
               className='text-caption1'
             >
               選手登録
             </MenuItem>
-
             <MenuItem
               onClick={(e) => {
                 handleClose();
-                router.push('/playerInformation?mode=create');
+                const urlStr = '/playerInformation?mode=update' + '&player_id=' + playerId;
+                router.push(urlStr);
+              }}
+              className='text-caption1'
+            >
+              選手情報更新
+            </MenuItem>
+            <MenuItem
+              onClick={(e) => {
+                handleClose();
+                const urlStr = '/playerInformationRef' + '?player_id=' + playerId;
+                router.push(urlStr);
+                // router.push('/playerInformation?mode=create');
               }}
               className='text-caption1'
             >
@@ -180,7 +192,9 @@ const Header: FC = () => {
             <MenuItem
               onClick={(e) => {
                 handleClose();
-                router.push('/playerInformation?mode=create');
+                const urlStr = '/playerInformationRef?mode=delete' + '&player_id=' + playerId;
+                router.push(urlStr);
+                // router.push('/playerInformation?mode=create');
               }}
               className='text-caption1'
             >
@@ -195,7 +209,7 @@ const Header: FC = () => {
             >
               選手一括登録
             </MenuItem>
-            
+
           </div>
         )}
         {/* clickIndexが2の時（団体押下時）に表示 */}
@@ -213,7 +227,7 @@ const Header: FC = () => {
             <MenuItem
               onClick={(e) => {
                 handleClose();
-                router.push('/teamSearch');
+                router.push('/teamManagement');
               }}
               className='text-caption1'
             >
@@ -231,7 +245,7 @@ const Header: FC = () => {
             <MenuItem
               onClick={(e) => {
                 handleClose();
-                router.push('/teamSearch');
+                router.push('/teamPlayerBulkRegister');
               }}
               className='text-caption1'
             >
@@ -254,7 +268,9 @@ const Header: FC = () => {
             <MenuItem
               onClick={(e) => {
                 handleClose();
-                router.push('/volunteerSearch');
+                const urlStr = '/volunteerInformationRef' + '?volunteer_id=' + volunteerId;
+                router.push(urlStr);
+                // router.push('/volunteerInformationRef');
               }}
               className='text-caption1'
             >
@@ -263,7 +279,9 @@ const Header: FC = () => {
             <MenuItem
               onClick={(e) => {
                 handleClose();
-                router.push('/volunteerSearch');
+                const urlStr = '/volunteerInformationRef?mode=delete' + '&volunteer_id=' + volunteerId;
+                router.push(urlStr);
+                // router.push('/volunteerSearch');
               }}
               className='text-caption1'
             >
@@ -272,7 +290,7 @@ const Header: FC = () => {
             <MenuItem
               onClick={(e) => {
                 handleClose();
-                router.push('/volunteerSearch');
+                router.push('/DummyMyPage');
               }}
               className='text-caption1'
             >
@@ -304,7 +322,7 @@ const Header: FC = () => {
             <MenuItem
               onClick={(e) => {
                 handleClose();
-                router.push('/userInformationRef');
+                router.push('/userInformationRef?mode=delete');
               }}
               className='text-caption1'
             >
@@ -313,7 +331,7 @@ const Header: FC = () => {
             <MenuItem
               onClick={(e) => {
                 handleClose();
-                router.push('/userInformationRef');
+                router.push('/passwordchange');
               }}
               className='text-caption1'
             >
