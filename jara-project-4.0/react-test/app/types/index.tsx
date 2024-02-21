@@ -172,6 +172,7 @@ interface VolunteerResponse {
   dis_type_id: string[]; // 障碍タイプ
   qualHold: string[]; // 保有資格　#置き換え作業未対応
   language: any; // 言語　#置き換え作業未対応
+  language_proficiency: any;  //言語レベル
   day_of_week: string; // 曜日
   time_zone: string; // 時間帯
   photo: string; // 写真　#置き換え作業未対応

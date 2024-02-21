@@ -411,7 +411,7 @@ class VolunteerController extends Controller
             //資格入力可能最大数は5
             $qualifications_max = 5;
             //「その他」の資格ID
-            $other_qualification_id = 3;
+            $other_qualification_id = 99;
             $condition .= "and t_volunteers.volunteer_id in(
                             select volunteer_id
                             from
@@ -519,5 +519,19 @@ class VolunteerController extends Controller
             $conditionValue['tournament3'] = "%" . $searchInfo['tournament3'] . "%";
         }
         return $condition;
+    }
+
+    //ボランティア情報を取得する
+    public function getVolunteerResponse(Request $request,T_volunteers $t_volunteers)
+    {
+        $volunteerResponse = $t_volunteers->getVolunteerResponse($request); //ボランティアIDに基づいたボランティア情報を取得
+        return response()->json(['result' => $volunteerResponse]); //DBの結果を返す
+    }
+
+    //ボランティア履歴情報を取得する
+    public function VolunteerHistoriesResponse(Request $request,T_volunteer_histories $t_volunteer_histories)
+    {
+        $volunteerHistoriesResponse = $t_volunteer_histories->getVolunteerHistoriesResponse($request); //ボランティアIDに基づいたボランティア履歴情報を取得
+        return response()->json(['result' => $volunteerHistoriesResponse]); //DBの結果を返す
     }
 }
