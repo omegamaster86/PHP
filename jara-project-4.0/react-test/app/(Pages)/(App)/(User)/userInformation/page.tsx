@@ -418,8 +418,8 @@ export default function UserInformationUpdate() {
         </div>
         <div className='flex flex-col justify-start gap-[10px]'>
           {/* 写真 */}
-          {/*写真　は　必要ものではありませんので "required displayHelp" は　はずしました。*/}
-          <InputLabel  label='写真' />
+          {/*写真　は　必要ものではありませんので "required" は　はずしました。*/}
+          <InputLabel displayHelp={mode !== 'confirm'}  label='写真' />
           {mode === 'update' && (
             <ImageUploader
               currentShowFile={currentShowFile}

@@ -69,27 +69,27 @@ class PlayerController extends Controller
             $destinationPath = public_path() . '/images/players/';
             $file->move($destinationPath, $fileName);
         }
-        $request->validate([
-            'playerCode' => ['required', 'string', 'regex:/^[0-9a-zA-Z]+$/'],
-            'playerName' => ['required', 'string', 'regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'],
-            'dateOfBirth' => ['required', 'regex:/^[0-9\/]+$/'],
-            'sex' => ['required', 'regex:/^[1-3]+$/'],
-            'height' => ['required'],
-            'weight' => ['required'],
-            'sideInfo' => ['required_without_all'],
-        ], [
-            'playerCode.required' => $playerCode_required,
-            'playerCode.regex' => $playerCode_regex,
-            'playerName.required' => $playerName_required,
-            'playerName.regex' => $playerName_regex,
-            'dateOfBirth.required' => $dateOfBirth_required,
-            'dateOfBirth.regex' => $dateOfBirth_required,
-            'sex.required' => $sex_required,
-            'sex.regex' => $sex_required,
-            'height.required' => $height_required,
-            'weight.required' => $weight_required,
-            'sideInfo.required_without_all' => $sideInfo_required,
-        ]);
+        // $request->validate([
+        //     'playerCode' => ['required', 'string', 'regex:/^[0-9a-zA-Z]+$/'],
+        //     'playerName' => ['required', 'string', 'regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'],
+        //     'dateOfBirth' => ['required', 'regex:/^[0-9\/]+$/'],
+        //     'sex' => ['required', 'regex:/^[1-3]+$/'],
+        //     'height' => ['required'],
+        //     'weight' => ['required'],
+        //     'sideInfo' => ['required_without_all'],
+        // ], [
+        //     'playerCode.required' => $playerCode_required,
+        //     'playerCode.regex' => $playerCode_regex,
+        //     'playerName.required' => $playerName_required,
+        //     'playerName.regex' => $playerName_regex,
+        //     'dateOfBirth.required' => $dateOfBirth_required,
+        //     'dateOfBirth.regex' => $dateOfBirth_required,
+        //     'sex.required' => $sex_required,
+        //     'sex.regex' => $sex_required,
+        //     'height.required' => $height_required,
+        //     'weight.required' => $weight_required,
+        //     'sideInfo.required_without_all' => $sideInfo_required,
+        // ]);
         if (DB::table('t_players')->where('jara_player_id', $request->playerCode)->where('delete_flag', 0)->exists()) {
             $retrieve_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->playerCode]);
             $existing_player_name = $retrieve_player_name[0]->player_name;
@@ -157,17 +157,13 @@ class PlayerController extends Controller
             $file = $request->file('photo');
             // $file->store('toPath', ['disk' => 'public']);
 
-
             $fileName = DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('player_id') . '.' . $request->file('photo')->getClientOriginalExtension();
             // Storage::disk('public')->put($fileName, $file);
-
-
 
             // Storage::disk('public')->putFileAs('uploads', $file, $fileName);
 
             $destinationPath = public_path() . '/images/players/';
             $file->move($destinationPath, $fileName);
-
 
             // You can now save the $filePath to the database or use it as needed
             // ...
@@ -575,16 +571,26 @@ class PlayerController extends Controller
     //reactからの選手登録 20240131
     public function storePlayerTest(Request $request, T_players $tPlayersData)
     {
+        $random_file_name = Str::random(12);
+        //If new picture is uploaded
+        if ($request->hasFile('uploadedPhoto')) {
+            $file = $request->file('uploadedPhoto');
+            $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
+            $destination_path = public_path().'/images/players/' ;
+            $file->move($destination_path,$file_name);
+            // $file->storeAs('public/images/users', $file_name);
+            // return response()->json(['message' => 'File uploaded successfully']);
+        }
         Log::debug(sprintf("storePlayerTest start"));
         $reqData = $request->all();
-        Log::debug($reqData);
+        
         $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
         $tPlayersData::$playerInfo['player_name'] = $reqData['player_name']; //選手名
         $tPlayersData::$playerInfo['date_of_birth'] = $reqData['date_of_birth']; //誕生日
         $tPlayersData::$playerInfo['height'] = $reqData['height']; //身長
         $tPlayersData::$playerInfo['weight'] = $reqData['weight']; //体重
         $tPlayersData::$playerInfo['sex'] = $reqData['sex_id']; //性別ID
-        $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
+        // $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
         //サイド情報
         $side_info = null;
         for ($i = 0; $i < 4; $i++) {
@@ -600,6 +606,15 @@ class PlayerController extends Controller
         $tPlayersData::$playerInfo['birth_prefecture'] =  $reqData['birth_prefecture']; //出身地(都道府県名)
         $tPlayersData::$playerInfo['residence_country'] = $reqData['residence_country']; //居住地(国)
         $tPlayersData::$playerInfo['residence_prefecture'] =  $reqData['residence_prefecture']; //居住地(都道府県)
+        //If new picture is uploaded
+        if($request->hasFile('uploadedPhoto')){
+            $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
+            $tPlayersData::$playerInfo['photo'] = $file_name; //写真
+        }
+        else {
+             //If  picture is not uploaded
+            $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
+        }
         $result = $tPlayersData->insertPlayers($tPlayersData::$playerInfo); //DBに選手を登録 20240131
         Log::debug(sprintf("storePlayerTest end"));
         return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
@@ -617,6 +632,16 @@ class PlayerController extends Controller
     //reactからの選手登録 20240131
     public function updatePlayerData(Request $request, T_players $tPlayersData)
     {
+        $random_file_name = Str::random(12);
+        //If new picture is uploaded
+        if ($request->hasFile('uploadedPhoto')) {
+            $file = $request->file('uploadedPhoto');
+            $fileName = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
+            $destination_path = public_path().'/images/players/' ;
+            $file->move($destination_path,$file_name);
+            // $file->storeAs('public/images/users', $file_name);
+            // return response()->json(['message' => 'File uploaded successfully']);
+        }
         Log::debug(sprintf("updatePlayerData start"));
         $reqData = $request->all();
         Log::debug($reqData);
@@ -627,7 +652,7 @@ class PlayerController extends Controller
         $tPlayersData::$playerInfo['height'] = $reqData['height']; //身長
         $tPlayersData::$playerInfo['weight'] = $reqData['weight']; //体重
         $tPlayersData::$playerInfo['sex_id'] = $reqData['sex_id']; //性別ID
-        $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
+        // $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
         //サイド情報
         $side_info = null;
         for ($i = 0; $i < 4; $i++) {
@@ -643,6 +668,16 @@ class PlayerController extends Controller
         $tPlayersData::$playerInfo['birth_prefecture'] =  $reqData['birth_prefecture']; //出身地(都道府県名)
         $tPlayersData::$playerInfo['residence_country'] = $reqData['residence_country']; //居住地(国)
         $tPlayersData::$playerInfo['residence_prefecture'] =  $reqData['residence_prefecture']; //居住地(都道府県)
+
+        //If new picture is uploaded
+        if($request->hasFile('uploadedPhoto')){
+            $fileName = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
+            $tPlayersData::$playerInfo['photo'] = $file_name; //写真
+        }
+        else {
+             //If  picture is not uploaded
+            $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
+        }
         $result = $tPlayersData->updatePlayerData($tPlayersData::$playerInfo); //DBに選手を登録 20240131
         Log::debug(sprintf("updatePlayerData end"));
         return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
@@ -682,5 +717,19 @@ class PlayerController extends Controller
 
         Log::debug(sprintf("deletePlayerData end"));
         return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
+    }
+    public function checkJARAPlayerId(Request $request, T_players $tPlayersData)
+    {
+        Log::debug(sprintf("checkJARAPlayerId start"));
+        $reqData = $request->all();
+        $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
+        $registered_player = $tPlayersData->checkJARAPlayerId($tPlayersData::$playerInfo);
+        if(!empty($registered_player))
+            return response()->json(["この既存選手IDは既に別の選手と紐づいています。入力した既存選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"],401);
+        else
+            return response()->json(["登録可能です。"]);
+        
+        
+
     }
 }

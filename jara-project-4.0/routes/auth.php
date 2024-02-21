@@ -97,6 +97,7 @@ Route::middleware('auth')->group(function () {
 
     //選手関連
     Route::post('storePlayerTest', [PlayerController::class, 'storePlayerTest']); //選手登録確認画面から登録 20231228
+    Route::post('checkJARAPlayerId', [PlayerController::class, 'checkJARAPlayerId']); //選手登録画面から登録 20240220
     Route::get('getUpdatePlayerData', [PlayerController::class, 'getUpdatePlayerData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('updatePlayerData', [PlayerController::class, 'updatePlayerData']); //選手更新確認画面から更新 20240131
     Route::post('getPlayerInfoData', [PlayerController::class, 'getPlayerInfoData']); //DBから選手情報更新画面にデータを渡す 20240131
@@ -125,7 +126,6 @@ Route::middleware('auth')->group(function () {
     Route::post('deleteTournamentData', [TournamentController::class, 'deleteTournamentData']); //DBから大会情報を削除する 20240205
     Route::post('tournamentSearch', [TournamentController::class, 'searchTournament']); //大会検索 20240212
     Route::get('getTournamentInfoData_vol', [TournamentController::class, 'getTournamentInfoData_vol']); //大会検索 20240212
-
 
     //レース関連
     Route::post('getRaceData', [TournamentController::class, 'getRaceData']); //レース情報取得 20240214
@@ -172,43 +172,43 @@ Route::middleware('auth')->group(function () {
 
     // Route::post('user/password-change', [UserController::class, 'storePasswordChange']);
 
-    // My page 
-    Route::get('my-page', function () {
-        return view('my-page');
-    })->name('my-page');
+    // // My page 
+    // Route::get('my-page', function () {
+    //     return view('my-page');
+    // })->name('my-page');
 
 
 
     // Player Register
 
-    Route::get('player/register', [PlayerController::class, 'createRegister'])->name('player.register');
+    // Route::get('player/register', [PlayerController::class, 'createRegister'])->name('player.register');
     Route::post('player/register', [PlayerController::class, 'storeRegister']);
 
-    Route::get('player/register/confirm', [PlayerController::class, 'createRegisterConfirm'])->name('player.register.confirm');
+    // Route::get('player/register/confirm', [PlayerController::class, 'createRegisterConfirm'])->name('player.register.confirm');
     Route::post('player/register/confirm', [PlayerController::class, 'storeRegisterConfirm']);
 
     // Player Edit
 
 
-    Route::get('player/edit', [PlayerController::class, 'createEdit'])->name('player.edit');
+    // Route::get('player/edit', [PlayerController::class, 'createEdit'])->name('player.edit');
     Route::post('player/edit', [PlayerController::class, 'storeEdit']);
 
-    Route::get('player/edit/confirm', [PlayerController::class, 'createEditConfirm'])->name('player.edit.confirm');
+    // Route::get('player/edit/confirm', [PlayerController::class, 'createEditConfirm'])->name('player.edit.confirm');
     Route::post('player/edit/confirm', [PlayerController::class, 'storeEditConfirm']);
 
     // Player Delete
-    Route::get('player/delete', [PlayerController::class, 'createDelete'])->name('player.delete');
+    // Route::get('player/delete', [PlayerController::class, 'createDelete'])->name('player.delete');
     Route::post('player/delete', [PlayerController::class, 'storeDelete']);
 
 
     //Player search 
-    Route::get('player/search', [PlayerController::class, 'createSearch'])->name('player.search');
+    // Route::get('player/search', [PlayerController::class, 'createSearch'])->name('player.search');
 
     Route::post('player/search', [PlayerController::class, 'searchPlayer']);
 
     //Player Details
 
-    Route::get('player/{user_id}', [PlayerController::class, 'createDetails'])->name('player.details');
+    // Route::get('player/{user_id}', [PlayerController::class, 'createDetails'])->name('player.details');
 
     //20231129
     //-----大会関連-----
