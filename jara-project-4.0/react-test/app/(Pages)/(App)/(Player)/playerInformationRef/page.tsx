@@ -20,6 +20,7 @@ import {
 } from '@/app/components';
 import AddIcon from '@mui/icons-material/Add';
 import { RaceResultRecordsResponse, PlayerInformationResponse } from '@/app/types';
+import { NO_IMAGE_URL, PLAYER_IMAGE_URL } from '@/app/utils/imageUrl';
 
 // 選手情報参照画面
 export default function PlayerInformationRef() {
@@ -187,7 +188,7 @@ export default function PlayerInformationRef() {
               <div>
                 {/* 写真 */}
                 <img
-                  src={playerInformation.photo}
+                  src={playerInformation.photo?`${PLAYER_IMAGE_URL}${playerInformation.photo}`:`${NO_IMAGE_URL}`}
                   width={200}
                   height={200}
                   alt='Random'

@@ -19,6 +19,7 @@ import {
   CustomTitle,
 } from '@/app/components';
 import { useAuth } from '@/app/hooks/auth';
+import { NO_IMAGE_URL, USER_IMAGE_URL } from '@/app/utils/imageUrl';
 
 export default function UserInformationUpdate() {
   const router = useRouter();
@@ -176,7 +177,7 @@ export default function UserInformationUpdate() {
         <div className='flex flex-col justify-start gap-[10px]'>
           {/* 写真 */}
           <InputLabel displayHelp={false} label='写真' />
-          <img src={`http://localhost:8000/images/users/${formData.photo}`} className='w-[300px] h-[300px] rounded-[2px] object-cover' />
+          <img src={formData.photo?`${USER_IMAGE_URL}${formData.photo}`:`${NO_IMAGE_URL}`} className='w-[300px] h-[300px] rounded-[2px] object-cover' />
         </div>
         {/* ユーザーID */}
         <CustomTextField
