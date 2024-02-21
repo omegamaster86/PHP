@@ -621,11 +621,13 @@ class PlayerController extends Controller
     }
 
     //react 選手情報更新画面に表示するuserIDに紐づいたデータを送信 20240131
-    public function getUpdatePlayerData(T_players $tPlayersData)
+    public function getUpdatePlayerData(Request $request, T_players $tPlayersData)
     {
         Log::debug(sprintf("getUpdatePlayerData start"));
         // $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
-        $retrieve_player_by_ID = $tPlayersData->getPlayerData(1); //DBに選手を登録 20240131
+        $reqData = $request->all();
+        Log::debug($reqData);
+        $retrieve_player_by_ID = $tPlayersData->getPlayerData($reqData['player_id']); //DBに選手を登録 20240131
         Log::debug(sprintf("getUpdatePlayerData end"));
         return response()->json(['result' => $retrieve_player_by_ID]); //DBの結果を返す
     }

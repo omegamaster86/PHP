@@ -82,6 +82,7 @@ Route::middleware('auth')->group(function () {
     Route::get('getQualifications', [M_volunteer_qualifications::class, 'getQualifications']); //資格マスタ
     Route::get('getLanguages', [M_languages::class, 'getLanguages']); //言語マスタ
     Route::get('getLanguageProficiency', [M_language_proficiency::class, 'getLanguageProficiency']); //言語レベルマスタ
+    Route::get('getIDsAssociatedWithUser', [UserController::class, 'getIDsAssociatedWithUser']); //ユーザIDに紐づいた情報を取得 20240221
 
     //ユーザー関連
     Route::get('getUserData', [UserController::class, 'getUserData']); //DBからユーザ情報を取得 20240131
@@ -97,8 +98,7 @@ Route::middleware('auth')->group(function () {
 
     //選手関連
     Route::post('storePlayerTest', [PlayerController::class, 'storePlayerTest']); //選手登録確認画面から登録 20231228
-    Route::post('checkJARAPlayerId', [PlayerController::class, 'checkJARAPlayerId']); //選手登録画面から登録 20240220
-    Route::get('getUpdatePlayerData', [PlayerController::class, 'getUpdatePlayerData']); //DBから選手情報更新画面にデータを渡す 20240131
+    Route::post('getUpdatePlayerData', [PlayerController::class, 'getUpdatePlayerData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('updatePlayerData', [PlayerController::class, 'updatePlayerData']); //選手更新確認画面から更新 20240131
     Route::post('getPlayerInfoData', [PlayerController::class, 'getPlayerInfoData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('getRaceResultRecordsData', [PlayerController::class, 'getRaceResultRecordsData']); //DBから選手情報更新画面にデータを渡す 20240131
