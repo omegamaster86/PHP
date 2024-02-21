@@ -211,6 +211,8 @@ interface PlayerInformationResponse {
   residencePrefectureName: string; // 居住地（都道府県）　#置き換え作業対応不要
   residence_prefecture?: number; // 居住地（都道府県）
   photo: string; // 写真
+  uploadedPhoto?: File; // アップロードされて写真を保存する
+  uploadedPhotoName?: string; // アップロードされて写真の名前を保存する
 }
 
 // 団体所属選手情報

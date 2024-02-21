@@ -4,15 +4,16 @@ import type { FileRejection } from 'react-dropzone';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import Papa from 'papaparse';
 import CloseIcon from '@mui/icons-material/Close';
-import { UserResponse } from '@/app/types';
+// import { UserResponse, PlayerInformationResponse } from '@/app/types';
 
 interface ImageUploaderProps {
   currentShowFile: { file: File; isUploaded: boolean; preview?: string } | undefined;
   setCurrentShowFile: Dispatch<
     SetStateAction<{ file: File; isUploaded: boolean; preview?: string } | undefined>
   >;
+  // UserResponse , PlayerInformationResponse
   setFormData: Dispatch<
-  SetStateAction<UserResponse>
+  SetStateAction<any>
 >;
   initialPhotoUrl?: string;
   displayCloseIcon?: boolean;
@@ -148,7 +149,7 @@ const ImageUploader: FC<ImageUploaderProps> = ({
                   onClick={(e) => {
                     // 画像をクリアする
                     e.stopPropagation();
-                    setFormData((prevFormData) => ({
+                    setFormData((prevFormData:any) => ({
                       ...prevFormData,
                       photo:''
                     }))
