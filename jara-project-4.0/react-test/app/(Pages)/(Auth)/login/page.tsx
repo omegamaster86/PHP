@@ -174,7 +174,7 @@ return (
         <div className='text-h3 text-black font-bold'>日本ローイング協会 サポートデスク</div>
         <CustomButton
           onClick={() => {
-            router.push('/contact');
+            router.push('/inquiry');
           }}
           buttonType='primary-outlined'
         >
