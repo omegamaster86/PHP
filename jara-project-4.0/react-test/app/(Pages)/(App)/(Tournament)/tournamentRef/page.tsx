@@ -2,7 +2,7 @@
 'use client';
 
 // Reactおよび関連モジュールのインポート
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/app/lib/axios';
 // コンポーネントのインポート
@@ -26,7 +26,7 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import { ROLE } from '@/app/utils/consts';
 
 // 大会情報参照画面
-export default function tournamentRef() {
+export default function TournamentRef() {
   // フック
   const router = useRouter();
 
