@@ -724,6 +724,7 @@ class PlayerController extends Controller
     {
         Log::debug(sprintf("checkJARAPlayerId start"));
         $reqData = $request->all();
+
         if($request["mode"]==="create") {
             $result = DB::select(
                 'select `player_id`, `player_name` from `t_players` where `delete_flag` = 0 and `user_id` = ?',
@@ -748,6 +749,16 @@ class PlayerController extends Controller
                 }
                 
             }
+            if($request["mode"]==="create_confirm") {
+                if($registered_player->user_id === Auth::user()->user_id) {
+                    return response()->json(["登録に失敗しました。選手IDはすでに登録されています。 複数作成することはできません。"],403);
+                }
+                else {
+                    return response()->json(["登録に失敗しました。
+                    別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"],401);
+                }
+                
+            }
             else if($request["mode"]==="update") {
                 if($registered_player->user_id === Auth::user()->user_id) {
                     return response()->json("");
@@ -756,13 +767,40 @@ class PlayerController extends Controller
                     return response()->json(["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"],401);
                 }
             }
+            else if($request["mode"]==="update_confirm") {
+                if($registered_player->user_id === Auth::user()->user_id) {
+                    return response()->json("");
+                }
+                else {
+                    return response()->json(["更新に失敗しました。
+                    別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"],401);
+                }
+            }
+            
             else {
+                
                 return response()->json(["失敗しました。"],400);
             }
             
         }
         else {
-            return response()->json(["入力したJARA選手IDと紐づくデータが存在しません。\nこのJARA選手IDで登録しますか？"]);
+            if($request["mode"]==="create") {
+                return response()->json(["入力したJARA選手IDと紐づくデータが存在しません。\nこのJARA選手IDで登録しますか？"]);
+            }
+            if($request["mode"]==="create_confirm") {
+                return response()->json([""]);
+            }
+            else if($request["mode"]==="update") {
+                return response()->json(["入力したJARA選手IDと紐づくデータが存在しません。\nこのJARA選手IDで更新しますか？"]);
+            }
+            else if($request["mode"]==="update_confirm") {
+                return response()->json([""]);
+            }
+            else {
+                
+                return response()->json(["失敗しました。"],400);
+            }
+            
         }
             
     }

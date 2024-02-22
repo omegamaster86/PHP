@@ -250,9 +250,41 @@ class T_races extends Model
                                 and (rrr.delete_flag = 0 or rrr.delete_flag is null)
                                 and race.`tourn_id` = :tourn_id
                                 and race.`race_class_id` = :race_class_id
-                                group by race.`race_id
-                                having count(rrr.race_result_record_id) = 0`'
+                                group by race.`race_id`
+                                having count(rrr.race_result_record_id) = 0'
                             , $values);
         return $races;
+    }
+
+    //レースIDを条件にレース情報を取得する
+    public function getRaceFromRaceId($race_id)
+    {
+        $race = DB::select("select
+                            race.`race_id`
+                            ,race.`race_number`
+                            ,race.`entrysystem_race_id`
+                            ,race.`tourn_id`
+                            ,race.`race_name`
+                            ,race.`event_id`
+                            ,case
+                                when race.`event_name` is null then eve.`event_name` 
+                                else race.`event_name`
+                                end as `event_name`
+                            ,race.`race_class_id`
+                            ,mrc.`race_class_name`
+                            ,race.`by_group`
+                            ,race.`range`
+                            ,race.`start_date_time`
+                            FROM `t_races` race
+                            left join `m_events` eve
+                            on race.`event_id` = eve.`event_id`
+                            left join `m_race_class` mrc
+                            on race.`race_class_id` = mrc.`race_class_id`
+                            where 1=1
+                            and race.`delete_flag` = 0
+                            and (eve.`delete_flag` = 0 or eve.`delete_flag` is null) 
+                            and race.race_id = :race_id"
+                            ,$race_id);
+        return $race;
     }
 }
