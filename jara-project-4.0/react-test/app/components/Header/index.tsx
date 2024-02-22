@@ -76,7 +76,6 @@ const Header: FC = () => {
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
         const playerInf = await axios.get('/getIDsAssociatedWithUser');
-        console.log(playerInf.data.result[0]);
         setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
       } catch (error: any) {
         console.log(error);

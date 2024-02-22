@@ -117,6 +117,7 @@ export default function VolunteerInformationRef() {
           dis_type_id: [''], // 障碍タイプ
           qualHold: [''], // 保有資格　#置き換え作業未対応
           language: [''], // 言語　#置き換え作業未対応
+          language_proficiency: '', //残件対応項目
           day_of_week: volunteerResponse.data.result.day_of_week, // 曜日
           time_zone: volunteerResponse.data.result.time_zone, // 時間帯
           photo: volunteerResponse.data.result.photo, // 写真　#置き換え作業未対応

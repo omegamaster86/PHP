@@ -21,6 +21,7 @@ import {
   Tournament,
   Staff,
   UserResponse,
+  UserIdType,
 } from '@/app/types';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -36,6 +37,7 @@ export default function TeamRef() {
   const [userData, setUserData] = useState({} as UserResponse);
   const [staffs, setStaffs] = useState([] as Staff[]);
   const [value, setValue] = useState(0);
+  const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
 
   // ページ全体のエラーハンドリング用のステート
   let isError = false;
@@ -104,7 +106,7 @@ export default function TeamRef() {
         setHostTournaments(hostTournamentsResponse.data.result);
         // // エントリー大会
         // const entTournamentsResponse = await axios.get<Tournament[]>('/tournamentSearch',);
-        const entTournamentsResponse = await axios.post('/getEntryTournamentsViewForTeamRef', org_id); 
+        const entTournamentsResponse = await axios.post('/getEntryTournamentsViewForTeamRef', org_id);
         console.log(entTournamentsResponse.data.result);
         setEntTournaments(entTournamentsResponse.data.result);
         // // 所属選手
@@ -112,7 +114,7 @@ export default function TeamRef() {
         const playersResponse = await axios.post('/searchOrganizationPlayersForTeamRef', org_id);
         console.log(playersResponse.data.result);
         setPlayers(playersResponse.data.result);
-        
+
         // const userDataResponse = await axios.get<UserResponse>('/api/user');
         const userDataResponse = await axios.get('/api/user');
         setUserData(userDataResponse.data);
@@ -122,6 +124,9 @@ export default function TeamRef() {
         const staffsResponse = await axios.post('/getOrgStaffData', org_id); //スタッフ情報取得
         console.log(staffsResponse.data.result);
         setStaffs(staffsResponse.data.result);
+
+        const playerInf = await axios.get('/getIDsAssociatedWithUser');
+        setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
 
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
@@ -345,29 +350,31 @@ export default function TeamRef() {
             <div className='w-full bg-secondary-500 text-white h-[40px] flex justify-center items-center font-bold relative'>
               <>所属選手</>
               {mode !== 'delete' && (
-                <div
-                  className={`absolute right-[10px] ${mode === 'delete' ? 'hidden' : 'flex flex-row gap-[10px]'
-                    }`}
-                >
-                  <CustomButton
-                    className='w-[100px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
-                    buttonType='secondary'
-                    onClick={() => {
-                      router.push('/teamPlayer?mode=create');
-                    }}
+                (userIdType.is_administrator == 1 || userIdType.is_organization_manager == 1) ? (
+                  <div
+                    className={`absolute right-[10px] ${mode === 'delete' ? 'hidden' : 'flex flex-row gap-[10px]'
+                      }`}
                   >
-                    所属選手編集
-                  </CustomButton>
-                  <CustomButton
-                    className='w-[120px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
-                    buttonType='secondary'
-                    onClick={() => {
-                      router.push('/teamPlayerBulkRegister');
-                    }}
-                  >
-                    所属選手一括登録
-                  </CustomButton>
-                </div>
+                    <CustomButton
+                      className='w-[100px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
+                      buttonType='secondary'
+                      onClick={() => {
+                        router.push('/teamPlayer?mode=create');
+                      }}
+                    >
+                      所属選手編集
+                    </CustomButton>
+                    <CustomButton
+                      className='w-[120px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
+                      buttonType='secondary'
+                      onClick={() => {
+                        router.push('/teamPlayerBulkRegister');
+                      }}
+                    >
+                      所属選手一括登録
+                    </CustomButton>
+                  </div>
+                ) : ''
               )}
             </div>
             <CustomTable>
