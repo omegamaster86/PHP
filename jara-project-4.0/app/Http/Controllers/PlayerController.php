@@ -613,7 +613,8 @@ class PlayerController extends Controller
         }
         else {
              //If  picture is not uploaded
-            $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
+
+            $tPlayersData::$playerInfo['photo'] = ''; //写真
         }
         $result = $tPlayersData->insertPlayers($tPlayersData::$playerInfo); //DBに選手を登録 20240131
         Log::debug(sprintf("storePlayerTest end"));
@@ -678,7 +679,13 @@ class PlayerController extends Controller
         }
         else {
              //If  picture is not uploaded
-            $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
+            if($reqData['photo']??"") {
+                $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
+            }
+            else {
+                $tPlayersData::$playerInfo['photo'] = ''; //写真
+            }
+            
         }
         $result = $tPlayersData->updatePlayerData($tPlayersData::$playerInfo); //DBに選手を登録 20240131
         Log::debug(sprintf("updatePlayerData end"));

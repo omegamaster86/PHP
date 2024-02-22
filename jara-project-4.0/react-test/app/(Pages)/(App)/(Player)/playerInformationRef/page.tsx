@@ -83,7 +83,7 @@ export default function PlayerInformationRef() {
     await axios.post('/deletePlayerData', deleteData)
       .then((res) => {
         console.log(res.data);
-        //router.push('/myPage');
+        router.push('/DummyMyPage');
       }).catch(error => {
         console.log(error);
       });
