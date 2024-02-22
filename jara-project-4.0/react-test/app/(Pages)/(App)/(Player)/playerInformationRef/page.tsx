@@ -83,7 +83,7 @@ export default function PlayerInformationRef() {
     await axios.post('/deletePlayerData', deleteData)
       .then((res) => {
         console.log(res.data);
-        router.push('/DummyMyPage');
+        router.push('/tournamentSearch'); //大会検索画面に遷移する 20240222
       }).catch(error => {
         console.log(error);
       });

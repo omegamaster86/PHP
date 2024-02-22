@@ -50,7 +50,7 @@ class OrganizationController extends Controller
 
     //団体情報更新画面を開く
     public function getStaffData(
-        $targetOrgId,
+        Request $request,
         T_organizations $tOrganization,
         M_organization_type $mOrganizationType,
         M_organization_class $mOrganizationClass,
@@ -61,9 +61,10 @@ class OrganizationController extends Controller
         if (Auth::user()->temp_password_flag === 1) {
             // return redirect('user/password-change');
         } else {
-            $targetOrgId = 1;
+            $targetOrgId = $request->all();
+            Log::debug($targetOrgId['org_id']);
             //団体情報を取得 20231215 t_futamura
-            $tOrg = $tOrganization->getOrganization($targetOrgId);
+            $tOrg = $tOrganization->getOrganization($targetOrgId['org_id']);
             //団体種別マスターを取得 20231215 t_futamura
             $mOrgType = $mOrganizationType->getOrganizationType();
             //団体区分マスターを取得 20231215 t_futamura
@@ -71,7 +72,7 @@ class OrganizationController extends Controller
             //都道府県マスターを取得 20231215 t_futamura
             $mPref = $mPrefectures->getPrefecures();
             //団体所属スタッフテーブルを取得 20231215 t_futamura
-            $tStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId);
+            $tStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId['org_id']);
             //スタッフ種別マスターを取得 20231215 t_futamura
             $mStfType = $mStaffType->getStaffType();
             //郵便番号を分割して持たせておく

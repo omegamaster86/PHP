@@ -54,7 +54,7 @@ export default function TeamRef() {
   }
 
 
-  const orgId = searchParams.get('orgId')?.toString() || searchParams.get('sponsor_org_id')?.toString() || '';
+  const orgId = searchParams.get('orgId')?.toString() || searchParams.get('org_id')?.toString() || searchParams.get('sponsor_org_id')?.toString() || '';
   // orgIdの値を取得
   switch (orgId) {
     case '':
