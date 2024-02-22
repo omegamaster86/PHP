@@ -730,7 +730,13 @@ class UserController extends Controller
         }
         else {
              //If  picture is not uploaded
-            $t_users::$userInfo['photo'] = $reqData['photo']; //写真
+            if($reqData['photo']??"") {
+                $t_users::$userInfo['photo'] = $reqData['photo']; //写真
+            }
+            else {
+                $t_users::$userInfo['photo'] = ''; //写真
+            }
+            
         }
         
         $result = $t_users->updateUserData($t_users::$userInfo); //レース情報を取得

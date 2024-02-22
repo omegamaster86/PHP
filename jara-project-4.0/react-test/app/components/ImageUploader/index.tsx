@@ -11,7 +11,7 @@ interface ImageUploaderProps {
   setCurrentShowFile: Dispatch<
     SetStateAction<{ file: File; isUploaded: boolean; preview?: string } | undefined>
   >;
-  // UserResponse , PlayerInformationResponse
+  // // UserResponse , PlayerInformationResponse
   setFormData: Dispatch<
   SetStateAction<any>
 >;
@@ -151,8 +151,10 @@ const ImageUploader: FC<ImageUploaderProps> = ({
                     e.stopPropagation();
                     setFormData((prevFormData:any) => ({
                       ...prevFormData,
+                      uploadedPhotoName:'',
+                      uploadedPhoto: undefined,
                       photo:''
-                    }))
+                    })) as void
                     setInitialPhoto('');
                   }}
                 >
