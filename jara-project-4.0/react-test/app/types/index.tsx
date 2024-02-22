@@ -376,6 +376,19 @@ interface CheckRace {
   hasMatch?: boolean; // 過去のレース結果があるかどうか
 }
 
+// ユーザIDに紐づいた情報 20240222
+interface UserIdType {
+  player_id: number; // 選手ID
+  volunteer_id: number; // ボランティアID
+  is_administrator: number; // 管理者
+  is_jara: number; // JARA
+  is_pref_boat_officer: number; // 県ボ
+  is_organization_manager: number; // 団体管理者
+  is_player: number; // 選手
+  is_volunteer: number; // ボランティア
+  is_audience: number; // 一般ユーザ
+}
+
 export type { SexResponse };
 export type { PrefectureResponse };
 export type { CountryResponse };
@@ -405,3 +418,4 @@ export type { CrewResponse };
 export type { OrganizationPlayer };
 export type { Org };
 export type { CheckRace };
+export type { UserIdType };
