@@ -302,22 +302,22 @@ interface Organization {
   org_id: string; // 団体ID
   org_name: string; // 団体名
   entrysystem_org_id: string; // エントリーシステムの団体ID
-  orgTypeName: string; // 団体種別名　#置き換え作業未対応
+  orgTypeName: string; // 団体種別名
   founding_year: number; // 設立年
   post_code: string; // 郵便番号
   location_country: number;// 所在地（国）
-  locationCountry: string; // 所在地（国）　#置き換え作業対応不要
+  locationCountry: string; // 所在地（国）
   location_prefecture: number; // 所在地（都道府県）
-  locationPrefectureName: string; // 所在地（都道府県）　#置き換え作業対応不要
+  locationPrefectureName: string; // 所在地（都道府県）
   address1: string; // 住所1
   address2: string; // 住所2
   org_class: number; // 団体区分
-  orgClassName: string; // 団体区分　#置き換え作業未対応
+  orgClassName: string; // 団体区分
   jara_org_type: number; // JARA団体種別
-  jaraOrgTypeName: string; // JARA団体種別　#置き換え作業未対応
+  jaraOrgTypeName: string; // JARA団体種別
   jara_org_reg_trail: string; // JARA団体登録状況
   pref_org_type: number; // 県ボ団体種別
-  prefOrgTypeName: string; // 県ボ団体種別　#置き換え作業未対応
+  prefOrgTypeName: string; // 県ボ団体種別
   pref_org_reg_trail: string; // 県ボ団体登録状況
 }
 

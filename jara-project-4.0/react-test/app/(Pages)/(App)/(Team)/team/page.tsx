@@ -91,6 +91,18 @@ export default function OrgInfo() {
       break;
   }
 
+  // クエリパラメータを取得する
+  const orgId = searchParams.get('org_id')?.toString() || '';
+  switch (orgId) {
+    case '':
+      break;
+    default:
+      break;
+  }
+  const [org_id, setOrgId] = useState<any>({
+    org_id: orgId,
+  });
+
   /**
    * 入力フォームの変更時の処理
    * @param name
@@ -146,29 +158,31 @@ export default function OrgInfo() {
           // const organization = await axios.get<Organization>('http://localhost:3100/organization');
           const csrf = () => axios.get('/sanctum/csrf-cookie')
           await csrf()
-          const organization = await axios.get('/getOrgData');
-          console.log(organization);
+          const organizationDataList = await axios.post('/getOrgData', org_id);
+          console.log(organizationDataList.data.result);
           setFormData((prevFormData) => ({
             ...prevFormData,
             ...{
-              org_id: organization.data.org_id,
-              org_name: organization.data.org_name,
-              entrysystem_org_id: organization.data.entrysystem_org_id,
-              orgTypName: organization.data.orgTypeName,
-              founding_year: organization.data.founding_year,
-              post_code: organization.data.post_code,
-              location_prefecture: organization.data.location_prefecture,
-              locationPrefectureName: organization.data.locationPrefectureName,
-              address1: organization.data.address1,
-              address2: organization.data.address2,
-              org_class: organization.data.org_class,
-              orgClassName: organization.data.orgClassName,
-              jara_org_type: organization.data.jara_org_type,
-              jaraOrgTypeName: organization.data.jaraOrgTypeName,
-              jara_org_reg_trail: organization.data.jara_org_reg_trail,
-              pref_org_type: organization.data.pref_org_type,
-              prefOrgTypeName: organization.data.prefOrgTypeName,
-              pref_org_reg_trail: organization.data.pref_org_reg_trail,
+              org_id: organizationDataList.data.result.org_id,
+              org_name: organizationDataList.data.result.org_name,
+              entrysystem_org_id: organizationDataList.data.result.entrysystem_org_id,
+              orgTypName: organizationDataList.data.result.orgTypeName,
+              founding_year: organizationDataList.data.result.founding_year,
+              post_code: organizationDataList.data.result.post_code,
+              location_country: organizationDataList.data.result.location_country,
+              locationCountry: organizationDataList.data.result.locationCountry,
+              location_prefecture: organizationDataList.data.result.location_prefecture,
+              locationPrefectureName: organizationDataList.data.result.locationPrefectureName,
+              address1: organizationDataList.data.result.address1,
+              address2: organizationDataList.data.result.address2,
+              org_class: organizationDataList.data.result.org_class,
+              orgClassName: organizationDataList.data.result.orgClassName,
+              jara_org_type: organizationDataList.data.result.jara_org_type,
+              jaraOrgTypeName: organizationDataList.data.result.jaraOrgTypeName,
+              jara_org_reg_trail: organizationDataList.data.result.jara_org_reg_trail,
+              pref_org_type: organizationDataList.data.result.pref_org_type,
+              prefOrgTypeName: organizationDataList.data.result.prefOrgTypeName,
+              pref_org_reg_trail: organizationDataList.data.result.pref_org_reg_trail,
             },
           }));
           console.log(formData);
@@ -189,7 +203,11 @@ export default function OrgInfo() {
    * 郵便番号を-で分割して、stateを更新する
    */
   useEffect(() => {
-    const addressNumbers = formData.post_code?.split('-');
+    // const addressNumbers = formData.post_code?.split('-');
+    const addressNumbers = Array();
+    addressNumbers.push(formData.post_code?.slice(0, 3)); //郵便番号の前半3文字
+    addressNumbers.push(formData.post_code?.slice(-4)); //郵便番号の後半4文字
+    console.log(addressNumbers);
     setAddressNumbers(addressNumbers);
   }, [formData.post_code]);
 
@@ -543,7 +561,7 @@ export default function OrgInfo() {
             isError={addressErrorMessages.length > 0}
             value={
               (mode !== 'confirm'
-                ? formData.location_prefecture.toString()
+                ? formData.location_prefecture?.toString()
                 : formData.locationPrefectureName) || ''
             }
             readonly={mode === 'confirm'}

@@ -843,7 +843,7 @@ class OrganizationController extends Controller
         Log::debug(sprintf("getOrgData start"));
         $result = $request->all();
         Log::debug($result);
-        $tOrg = $tOrganizations->getOrganization($result['org_id']); //userIDに紐づいた団体を取得するように修正する必要がある 二村さん残件対応箇所
+        $tOrg = $tOrganizations->getOrganization($result['org_id']);
         Log::debug(sprintf("getOrgData end"));
         return response()->json(['result' => $tOrg]); //DBの結果を返す
     }
