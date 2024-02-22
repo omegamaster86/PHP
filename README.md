@@ -1,4 +1,3 @@
-
 ## Getting started
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.
@@ -12,14 +11,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin http://192.168.3.89:8090/jara/ns230921-100.git
+git remote add origin https://gitlab.com/genaiorg/jara.git
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](http://192.168.3.89:8090/jara/ns230921-100/-/settings/integrations)
+- [ ] [Set up project integrations](https://gitlab.com/genaiorg/jara.git/-/settings/integrations)
 
 ## Collaborate with your team
 
