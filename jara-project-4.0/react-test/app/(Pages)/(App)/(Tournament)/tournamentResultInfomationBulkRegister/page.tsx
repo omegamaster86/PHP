@@ -264,10 +264,10 @@ export default function TournamentResultInfomationBulkRegister() {
           // 大会情報が取得できた場合
           setFormData((prevFormData) => ({
             ...prevFormData,
-            eventYear: tournamentResponse.data.eventStartDate.slice(0, 4),
+            eventYear: tournamentResponse.data.event_start_date.slice(0, 4),
             tourn: {
-              id: Number(tournamentResponse.data.tournId),
-              name: tournamentResponse.data.tournName,
+              id: Number(tournamentResponse.data.tourn_id),
+              name: tournamentResponse.data.tourn_name,
             },
           }));
           setDisplayFlg(false);
@@ -287,10 +287,10 @@ export default function TournamentResultInfomationBulkRegister() {
           // 大会情報が取得できた場合
           setFormData((prevFormData) => ({
             ...prevFormData,
-            eventYear: tournamentResponse.data.eventStartDate.slice(0, 4),
+            eventYear: tournamentResponse.data.event_start_date.slice(0, 4),
             tourn: {
-              id: Number(tournamentResponse.data.tournId),
-              name: tournamentResponse.data.tournName,
+              id: Number(tournamentResponse.data.tourn_id),
+              name: tournamentResponse.data.tourn_name,
             },
           }));
           setDisplayFlg(false);

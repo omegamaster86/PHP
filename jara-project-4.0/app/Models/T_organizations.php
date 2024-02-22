@@ -398,4 +398,29 @@ class T_organizations extends Model
                                     and `delete_flag` = 0');
         return $organizations;
     }
+
+    //ユーザーIDを条件にinterfaceのTeamResponseを取得する
+    public function getManagementOrganizations($user_id)
+    {
+        $organizations = DB::select("select distinct
+                                    case
+                                        when org.jara_org_type = 0 and org.pref_org_type = 0 then '任意'
+                                        else '正式'
+                                        end as `teamTyp`
+                                    ,org.entrysystem_org_id
+                                    ,org.org_id
+                                    ,org.org_name
+                                    from `t_organizations` org
+                                    left join `t_organization_staff` staff
+                                    on org.org_id = staff.org_id
+                                    left join `t_users` users
+                                    on staff.`user_id` = users.`user_id`
+                                    where 1=1
+                                    and org.delete_flag = 0
+                                    and (staff.delete_flag = 0 or staff.delete_flag is null)
+                                    and (users.delete_flag = 0 or users.delete_flag is null)
+                                    and users.user_id = ?"
+                                    ,[$user_id]);
+        return $organizations;
+    }
 }
