@@ -27,7 +27,7 @@ export default function Inquiry() {
   // modeの値に応じてボタンの表示を変更
   const isConfirm = mode === 'confirm';
   // ログインユーザーかどうか
-  const [isLogIn, setIsLogIn] = useState(true);
+  const [isLogIn, setIsLogIn] = useState(false);
   // ユーザー情報
   const [user, setUser] = useState({
     user_name: '',
@@ -58,10 +58,10 @@ export default function Inquiry() {
         const response = await axios.get('/api/user');
         setUser(response.data);
       } catch (error) {
-        setErrorMessage([
-          ...(errorMessage as string[]),
-          'API取得エラー:' + (error as Error).message,
-        ]);
+        // setErrorMessage([
+        //   ...(errorMessage as string[]),
+        //   'API取得エラー:' + (error as Error).message,
+        // ]);
       }
     };
 
@@ -145,7 +145,7 @@ export default function Inquiry() {
 
   return (
     <>
-      <Header />
+      {isLogIn&&<Header />}
       <div>
         <main className='flex flex-col items-center justify-start gap-[40px] my-[100px] m-auto p-4 md:max-w-[900px]'>
           {/* 画面名 */}
