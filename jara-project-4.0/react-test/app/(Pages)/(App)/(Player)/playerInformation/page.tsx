@@ -424,12 +424,7 @@ export default function PlayerInformation() {
           await csrf()
           axios
             // .post('http://localhost:3100/', registerData)
-            .post('/checkJARAPlayerId', formData,{ 
-              //ファイルを送るため
-              headers: { 
-                'content-type' : 'multipart/form-data' ,
-                } ,
-              }) //20240123 送信テスト
+            .post('/checkJARAPlayerId', {"jara_player_id" : formData.jara_player_id, "mode" : "create"}) //20240123 送信テスト
             .then((response) => {
               // TODO: 更新処理成功時の処理
               // console.log(response);
@@ -462,16 +457,15 @@ export default function PlayerInformation() {
           await csrf()
           axios
             // .post('http://localhost:3100/', registerData)
-            .post('/checkJARAPlayerId', formData,{ 
-              //ファイルを送るため
-              headers: { 
-                'content-type' : 'multipart/form-data' ,
-                } ,
-              }) //20240123 送信テスト
+            .post('/checkJARAPlayerId', {"jara_player_id" : formData.jara_player_id, "mode" : "update"}) //20240123 送信テスト
             .then((response) => {
               // TODO: 更新処理成功時の処理
               // console.log(response);
-              window.alert('入力した既存選手IDと紐づくデータが存在しません。\nこの既存選手IDで登録しますか？');
+              setErrorMessage([]);
+              if(response?.data){
+                window.alert(response?.data);
+              }
+              
               router.push('/playerInformation?mode=confirm&prevMode=update');
             })
             .catch((error) => {
@@ -494,53 +488,109 @@ export default function PlayerInformation() {
             const registerData = {};
             const csrf = () => axios.get('/sanctum/csrf-cookie')
             await csrf()
-            axios
-              // .post('http://localhost:3100/', registerData)
-              .post('/updatePlayerData', formData,{ 
-                //ファイルを送るため
-                headers: { 
-                  'content-type' : 'multipart/form-data' ,
-                 } ,
-               }) //20240123 送信テスト
+
+            // jara_player_id登録されているかどうかチェック
+            await axios
+              .post('/checkJARAPlayerId', {"jara_player_id" : formData.jara_player_id, "mode" : "update_confirm"}) //20240123 送信テスト
               .then((response) => {
                 // TODO: 更新処理成功時の処理
-                console.log(response);
-                window.confirm('選手情報を更新しました。');
-                router.push('/DummyMyPage');
+                // console.log(response);
+                setErrorMessage([]);
+                axios
+                  // .post('http://localhost:3100/', registerData)
+                  .post('/updatePlayerData', formData,{ 
+                    //ファイルを送るため
+                    headers: { 
+                      'content-type' : 'multipart/form-data' ,
+                    } ,
+                  }) //20240123 送信テスト
+                  .then((response) => {
+                    // TODO: 更新処理成功時の処理
+                    console.log(response);
+                    window.confirm('選手情報を更新しました。');
+                    router.push('/DummyMyPage');
+                  })
+                  .catch((error) => {
+                    // TODO: 更新処理失敗時の処理
+                    setErrorMessage([
+                      ...(errorMessage as string[]),
+                      '更新に失敗しました。原因：' + (error as Error).message,
+                    ]);
+                  });
               })
               .catch((error) => {
                 // TODO: 更新処理失敗時の処理
                 setErrorMessage([
-                  ...(errorMessage as string[]),
-                  '更新に失敗しました。原因：' + (error as Error).message,
+                  ...(error?.response?.data as string[]),
                 ]);
+
+                return;
               });
+            // axios
+            //   // .post('http://localhost:3100/', registerData)
+            //   .post('/updatePlayerData', formData,{ 
+            //     //ファイルを送るため
+            //     headers: { 
+            //       'content-type' : 'multipart/form-data' ,
+            //      } ,
+            //    }) //20240123 送信テスト
+            //   .then((response) => {
+            //     // TODO: 更新処理成功時の処理
+            //     console.log(response);
+            //     window.confirm('選手情報を更新しました。');
+            //     router.push('/DummyMyPage');
+            //   })
+            //   .catch((error) => {
+            //     // TODO: 更新処理失敗時の処理
+            //     setErrorMessage([
+            //       ...(errorMessage as string[]),
+            //       '更新に失敗しました。原因：' + (error as Error).message,
+            //     ]);
+            //   });
           } else if (prevMode == 'create') {
             // TODO: 登録処理を実装
             const csrf = () => axios.get('/sanctum/csrf-cookie')
             await csrf()
             const registerData = {};
-            axios
-              // .post('http://localhost:3100/', registerData)
-              .post('/storePlayerTest', formData,{ 
-                //ファイルを送るため
-                headers: { 
-                  'content-type' : 'multipart/form-data' ,
-                 } ,
-               }) //20240123 送信テスト
-              .then((response) => {
-                // TODO: 登録処理成功時の処理の実装
-                console.log(response);
-                window.confirm('選手情報を登録しました。');
 
-                router.push('/DummyMyPage');
+            // jara_player_id登録されているかどうかチェック
+            await axios
+            // .post('http://localhost:3100/', registerData)
+              .post('/checkJARAPlayerId', {"jara_player_id" : formData.jara_player_id, "mode" : "create_confirm"}) //20240123 送信テスト
+              .then((response) => {
+                // TODO: 更新処理成功時の処理
+                // console.log(response);
+                setErrorMessage([]);
+                axios
+                  // .post('http://localhost:3100/', registerData)
+                  .post('/storePlayerTest', formData,{ 
+                    //ファイルを送るため
+                    headers: { 
+                      'content-type' : 'multipart/form-data' ,
+                    } ,
+                  }) //20240123 送信テスト
+                  .then((response) => {
+                    // TODO: 登録処理成功時の処理の実装
+                    console.log(response);
+                    window.confirm('選手情報を登録しました。');
+
+                    router.push('/DummyMyPage');
+                  })
+                  .catch((error) => {
+                    // TODO: 登録処理失敗時の処理の実装
+                    setErrorMessage([
+                      ...(errorMessage as string[]),
+                      '登録に失敗しました。原因：' + (error as Error).message,
+                    ]);
+                  });
               })
               .catch((error) => {
-                // TODO: 登録処理失敗時の処理の実装
+                // TODO: 更新処理失敗時の処理
                 setErrorMessage([
-                  ...(errorMessage as string[]),
-                  '登録に失敗しました。原因：' + (error as Error).message,
+                  ...(error?.response?.data as string[]),
                 ]);
+
+                return;
               });
           }
         }}
@@ -585,6 +635,10 @@ export default function PlayerInformation() {
                   className='secondary mt-[20px] rounded border-[1px] border-solid border-borde text-primaryText h-12 w-[150px]'
                   onClick={() => {
                     // TODO: アップロードされた写真を削除する処理に置き換える
+                    setFormData((prevFormData) => ({
+                      ...prevFormData,
+                      photo:''
+                    }))
                     setCurrentShowFile(undefined);
                   }}
                 >
