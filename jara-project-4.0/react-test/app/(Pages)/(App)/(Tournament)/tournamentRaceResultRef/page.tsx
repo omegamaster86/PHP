@@ -96,20 +96,20 @@ export default function TournamentRaceResultRef() {
         response.data.length === 0
           ? setError({ isError: true, errorMessage: 'エントリー情報がありません。' })
           : null;
-        const raceNamesArray = response.data.result.map((item) => item.race_name);
+        const raceNamesArray = response.data.result.map((item: any) => item.race_name); //残件対応項目
         const uniqueRaceNamesSet = new Set(raceNamesArray);
         const uniqueRaceNamesArray = Array.from(uniqueRaceNamesSet);
         setRaceNameList(
-          uniqueRaceNamesArray.map((item, index) => ({
+          uniqueRaceNamesArray.map((item: any, index: any) => ({ //残件対応項目
             id: index,
             name: item,
           })),
         );
-        const byGroupsArray = response.data.result.map((item) => item.by_group);
+        const byGroupsArray = response.data.result.map((item: any) => item.by_group); //残件対応項目
         const uniqueByGroupsSet = new Set(byGroupsArray);
         const uniqueByGroupsArray = Array.from(uniqueByGroupsSet);
         setByGroupList(
-          uniqueByGroupsArray.map((item, index) => ({
+          uniqueByGroupsArray.map((item: any, index: any) => ({ //残件対応項目
             id: index,
             name: item,
           })),
@@ -307,7 +307,8 @@ export default function TournamentRaceResultRef() {
                         <CustomTh align='center' key={index}>
                           <div className='flex flex-row items-center gap-[10px]'>
                             {header}
-                            <div onClick={(event) => handleRaceNameHeaderClick(header, event)}>
+                            {/* 残件対応項目 */}
+                            <div onClick={(event) => handleRaceNameHeaderClick(header, event as any)}>
                               <FilterListIcon />
                             </div>
                           </div>
@@ -316,7 +317,8 @@ export default function TournamentRaceResultRef() {
                         <CustomTh align='center' key={index}>
                           <div className='flex flex-row items-center gap-[10px]'>
                             {header}
-                            <div onClick={(event) => handleByGroupHeaderClick(header, event)}>
+                            {/* 残件対応項目 */}
+                            <div onClick={(event) => handleByGroupHeaderClick(header, event as any)}>
                               <FilterListIcon />
                             </div>
                           </div>

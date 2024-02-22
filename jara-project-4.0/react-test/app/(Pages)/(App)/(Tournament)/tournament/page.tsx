@@ -78,6 +78,7 @@ export default function Tournament() {
       range: '',
       start_date_time: '',
       hasHistory: false,
+      tournName: '',
     },
   ]);
 
@@ -97,6 +98,7 @@ export default function Tournament() {
     range: '',
     start_date_time: '',
     hasHistory: false,
+    tournName: '',
   });
 
   //大会情報 20240202
@@ -479,6 +481,7 @@ export default function Tournament() {
                     range: '',
                     start_date_time: '',
                     hasHistory: false,
+                    tournName: '',
                   });
                   setTableData([
                     {
@@ -497,6 +500,7 @@ export default function Tournament() {
                       range: '',
                       start_date_time: '',
                       hasHistory: false,
+                      tournName: '',
                     },
                   ]);
                   fileUploaderRef?.current?.clearFile();
@@ -555,6 +559,7 @@ export default function Tournament() {
                     range: '',
                     start_date_time: '',
                     hasHistory: false,
+                    tournName: '',
                   });
                   setTableData([
                     {
@@ -573,6 +578,7 @@ export default function Tournament() {
                       range: '',
                       start_date_time: '',
                       hasHistory: false,
+                      tournName: '',
                     },
                   ]);
                   fileUploaderRef?.current?.clearFile();
@@ -647,6 +653,7 @@ export default function Tournament() {
           range: '',
           start_date_time: '',
           hasHistory: false,
+          tournName: '',
         });
       }}
     >
