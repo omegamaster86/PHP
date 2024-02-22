@@ -452,6 +452,7 @@ export default function PlayerInformation() {
           if (isError) {
             return;
           }
+          console.log("testing",formData)
           // jara_player_id登録されているかどうかチェック
           const csrf = () => axios.get('/sanctum/csrf-cookie')
           await csrf()
@@ -638,7 +639,9 @@ export default function PlayerInformation() {
                     // TODO: アップロードされた写真を削除する処理に置き換える
                     setFormData((prevFormData) => ({
                       ...prevFormData,
-                      photo: ''
+                      uploadedPhotoName:'',
+                      uploadedPhoto: undefined,
+                      photo:''
                     }))
                     setCurrentShowFile(undefined);
                   }}

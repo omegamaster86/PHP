@@ -610,9 +610,11 @@ class PlayerController extends Controller
         if ($request->hasFile('uploadedPhoto')) {
             $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
             $tPlayersData::$playerInfo['photo'] = $file_name; //写真
-        } else {
-            //If  picture is not uploaded
-            $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
+        }
+        else {
+             //If  picture is not uploaded
+
+            $tPlayersData::$playerInfo['photo'] = ''; //写真
         }
         $result = $tPlayersData->insertPlayers($tPlayersData::$playerInfo); //DBに選手を登録 20240131
 
@@ -676,9 +678,16 @@ class PlayerController extends Controller
         if ($request->hasFile('uploadedPhoto')) {
             $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
             $tPlayersData::$playerInfo['photo'] = $file_name; //写真
-        } else {
-            //If  picture is not uploaded
-            $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
+        }
+        else {
+             //If  picture is not uploaded
+            if($reqData['photo']??"") {
+                $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
+            }
+            else {
+                $tPlayersData::$playerInfo['photo'] = ''; //写真
+            }
+            
         }
         $result = $tPlayersData->updatePlayerData($tPlayersData::$playerInfo); //DBに選手を登録 20240131
 

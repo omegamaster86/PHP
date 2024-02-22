@@ -26,6 +26,7 @@ use App\Models\T_races;
 use App\Models\T_raceResultRecord;
 use App\Models\T_organizations;
 use App\Models\M_venue;
+use Exception;
 use Illuminate\Support\Facades\Validator;
 
 /*
@@ -730,5 +731,95 @@ class TournamentController extends Controller
             $searchValues['race_number'] = $request['race_number'];
         }
         return $condition;
+    }
+
+    //レース結果情報を登録(insert)する
+    public function registRaceResultRecord(Request $request,T_raceResultRecord $t_raceResultRecord)
+    {
+        include('Auth/ErrorMessages/ErrorMessages.php');
+        try
+        {
+            DB::transaction();
+            //出漕結果記録テーブルを検索
+            $reqData = $request->all();
+            $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData);
+            //結果が0件なら、insertを実行
+            if($result_count['result'] == 0)
+            {
+                $t_raceResultRecord->insertRaceResultRecordResponse($reqData);
+                DB::commit();
+            }
+            else
+            {
+                DB::commit();
+                //結果が1件以上存在するとき
+                return response()->json(['errMessage' => $race_result_record_have_been_registred]); //エラーメッセージを返す
+            }
+        }
+        catch(Exception $ex)
+        {
+            DB::rollBack();
+            return response()->json(['errMessage' => $ex->getMessage()]); //エラーメッセージを返す
+        }
+    }
+
+    //レース結果情報を更新(update)する
+    public function updateRaceResultRecord(Request $request,T_raceResultRecord $t_raceResultRecord)
+    {
+        include('Auth/ErrorMessages/ErrorMessages.php');
+        try
+        {
+            DB::transaction();
+            //出漕結果記録テーブルを検索
+            $reqData = $request->all();
+            $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData);
+            //結果が0件なら、insertを実行
+            if($result_count['result'] > 0)
+            {
+                $t_raceResultRecord->updateRaceResultRecordsResponse($reqData);
+                DB::commit();
+            }
+            else
+            {
+                DB::commit();
+                //結果が存在しないとき
+                return response()->json(['errMessage' => $race_result_record_have_been_deleted]); //エラーメッセージを返す
+            }
+        }
+        catch(Exception $ex)
+        {
+            DB::rollBack();
+            return response()->json(['errMessage' => $ex->getMessage()]); //エラーメッセージを返す
+        }
+    }
+
+    //レース結果情報を削除（update delete_flag)する
+    public function updateDeleteFlagOfRaceResultRecord(Request $request,T_raceResultRecord $t_raceResultRecord)
+    {
+        include('Auth/ErrorMessages/ErrorMessages.php');
+        try
+        {
+            DB::transaction();
+            //出漕結果記録テーブルを検索
+            $reqData = $request->all();
+            $result_count = $t_raceResultRecord->getIsExistsTargetRaceResultRecord($reqData);
+            //結果が0件なら、insertを実行
+            if($result_count['result'] == 0)
+            {
+                $t_raceResultRecord->updateDeleteFlagToValid($reqData);
+                DB::commit();
+            }
+            else
+            {
+                DB::commit();
+                //結果が存在しないとき
+                return response()->json(['errMessage' => $race_result_record_have_been_deleted]); //エラーメッセージを返す
+            }
+        }
+        catch(Exception $ex)
+        {
+            DB::rollBack();
+            return response()->json(['errMessage' => $ex->getMessage()]); //エラーメッセージを返す
+        }
     }
 }
