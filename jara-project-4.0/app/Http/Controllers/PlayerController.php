@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\T_players;
 use App\Models\T_raceResultRecord;
-
+use App\Models\T_users;
 use Illuminate\Validation\ValidationException;
 
 
@@ -569,21 +569,21 @@ class PlayerController extends Controller
     //===============================================================================================
 
     //reactからの選手登録 20240131
-    public function storePlayerTest(Request $request, T_players $tPlayersData)
+    public function storePlayerTest(Request $request, T_players $tPlayersData, T_users $t_users)
     {
         $random_file_name = Str::random(12);
         //If new picture is uploaded
         if ($request->hasFile('uploadedPhoto')) {
             $file = $request->file('uploadedPhoto');
             $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
-            $destination_path = public_path().'/images/players/' ;
-            $file->move($destination_path,$file_name);
+            $destination_path = public_path() . '/images/players/';
+            $file->move($destination_path, $file_name);
             // $file->storeAs('public/images/users', $file_name);
             // return response()->json(['message' => 'File uploaded successfully']);
         }
         Log::debug(sprintf("storePlayerTest start"));
         $reqData = $request->all();
-        
+
         $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
         $tPlayersData::$playerInfo['player_name'] = $reqData['player_name']; //選手名
         $tPlayersData::$playerInfo['date_of_birth'] = $reqData['date_of_birth']; //誕生日
@@ -607,17 +607,18 @@ class PlayerController extends Controller
         $tPlayersData::$playerInfo['residence_country'] = $reqData['residence_country']; //居住地(国)
         $tPlayersData::$playerInfo['residence_prefecture'] =  $reqData['residence_prefecture']; //居住地(都道府県)
         //If new picture is uploaded
-        if($request->hasFile('uploadedPhoto')){
+        if ($request->hasFile('uploadedPhoto')) {
             $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
             $tPlayersData::$playerInfo['photo'] = $file_name; //写真
-        }
-        else {
-             //If  picture is not uploaded
+        } else {
+            //If  picture is not uploaded
             $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
         }
         $result = $tPlayersData->insertPlayers($tPlayersData::$playerInfo); //DBに選手を登録 20240131
+
+        $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
         Log::debug(sprintf("storePlayerTest end"));
-        return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
+        return response()->json(['users' => $users, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
     }
 
     //react 選手情報更新画面に表示するuserIDに紐づいたデータを送信 20240131
@@ -632,15 +633,15 @@ class PlayerController extends Controller
         return response()->json(['result' => $retrieve_player_by_ID]); //DBの結果を返す
     }
     //reactからの選手登録 20240131
-    public function updatePlayerData(Request $request, T_players $tPlayersData)
+    public function updatePlayerData(Request $request, T_players $tPlayersData, T_users $t_users)
     {
         $random_file_name = Str::random(12);
         //If new picture is uploaded
         if ($request->hasFile('uploadedPhoto')) {
             $file = $request->file('uploadedPhoto');
             $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
-            $destination_path = public_path().'/images/players/' ;
-            $file->move($destination_path,$file_name);
+            $destination_path = public_path() . '/images/players/';
+            $file->move($destination_path, $file_name);
             // $file->storeAs('public/images/users', $file_name);
             // return response()->json(['message' => 'File uploaded successfully']);
         }
@@ -672,17 +673,18 @@ class PlayerController extends Controller
         $tPlayersData::$playerInfo['residence_prefecture'] =  $reqData['residence_prefecture']; //居住地(都道府県)
 
         //If new picture is uploaded
-        if($request->hasFile('uploadedPhoto')){
+        if ($request->hasFile('uploadedPhoto')) {
             $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
             $tPlayersData::$playerInfo['photo'] = $file_name; //写真
-        }
-        else {
-             //If  picture is not uploaded
+        } else {
+            //If  picture is not uploaded
             $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
         }
         $result = $tPlayersData->updatePlayerData($tPlayersData::$playerInfo); //DBに選手を登録 20240131
+
+        $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
         Log::debug(sprintf("updatePlayerData end"));
-        return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
+        return response()->json(['users' => $users, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
     }
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
     public function getPlayerInfoData(Request $request, T_players $tPlayersData)
@@ -725,7 +727,7 @@ class PlayerController extends Controller
         Log::debug(sprintf("checkJARAPlayerId start"));
         $reqData = $request->all();
 
-        if($request["mode"]==="create") {
+        if ($request["mode"] === "create") {
             $result = DB::select(
                 'select `player_id`, `player_name` from `t_players` where `delete_flag` = 0 and `user_id` = ?',
                 [
@@ -733,75 +735,57 @@ class PlayerController extends Controller
                 ]
             );
             if (!empty($result)) {
-                return response()->json(["選手IDはすでに登録されています。 複数作成することはできません。"],403);
+                return response()->json(["選手IDはすでに登録されています。 複数作成することはできません。"], 403);
             }
-
         }
         $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
         $registered_player = $tPlayersData->checkJARAPlayerId($tPlayersData::$playerInfo);
-        if(!empty($registered_player)){
-            if($request["mode"]==="create") {
-                if($registered_player->user_id === Auth::user()->user_id) {
-                    return response()->json(["選手IDはすでに登録されています。 複数作成することはできません。"],403);
+        if (!empty($registered_player)) {
+            if ($request["mode"] === "create") {
+                if ($registered_player->user_id === Auth::user()->user_id) {
+                    return response()->json(["選手IDはすでに登録されています。 複数作成することはできません。"], 403);
+                } else {
+                    return response()->json(["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
                 }
-                else {
-                    return response()->json(["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"],401);
-                }
-                
             }
-            if($request["mode"]==="create_confirm") {
-                if($registered_player->user_id === Auth::user()->user_id) {
-                    return response()->json(["登録に失敗しました。選手IDはすでに登録されています。 複数作成することはできません。"],403);
-                }
-                else {
+            if ($request["mode"] === "create_confirm") {
+                if ($registered_player->user_id === Auth::user()->user_id) {
+                    return response()->json(["登録に失敗しました。選手IDはすでに登録されています。 複数作成することはできません。"], 403);
+                } else {
                     return response()->json(["登録に失敗しました。
-                    別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"],401);
+                    別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
                 }
-                
-            }
-            else if($request["mode"]==="update") {
-                if($registered_player->user_id === Auth::user()->user_id) {
+            } else if ($request["mode"] === "update") {
+                if ($registered_player->user_id === Auth::user()->user_id) {
                     return response()->json("");
+                } else {
+                    return response()->json(["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
                 }
-                else {
-                    return response()->json(["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"],401);
-                }
-            }
-            else if($request["mode"]==="update_confirm") {
-                if($registered_player->user_id === Auth::user()->user_id) {
+            } else if ($request["mode"] === "update_confirm") {
+                if ($registered_player->user_id === Auth::user()->user_id) {
                     return response()->json("");
-                }
-                else {
+                } else {
                     return response()->json(["更新に失敗しました。
-                    別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"],401);
+                    別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
                 }
+            } else {
+
+                return response()->json(["失敗しました。"], 400);
             }
-            
-            else {
-                
-                return response()->json(["失敗しました。"],400);
-            }
-            
-        }
-        else {
-            if($request["mode"]==="create") {
+        } else {
+            if ($request["mode"] === "create") {
                 return response()->json(["入力したJARA選手IDと紐づくデータが存在しません。\nこのJARA選手IDで登録しますか？"]);
             }
-            if($request["mode"]==="create_confirm") {
+            if ($request["mode"] === "create_confirm") {
                 return response()->json([""]);
-            }
-            else if($request["mode"]==="update") {
+            } else if ($request["mode"] === "update") {
                 return response()->json(["入力したJARA選手IDと紐づくデータが存在しません。\nこのJARA選手IDで更新しますか？"]);
-            }
-            else if($request["mode"]==="update_confirm") {
+            } else if ($request["mode"] === "update_confirm") {
                 return response()->json([""]);
+            } else {
+
+                return response()->json(["失敗しました。"], 400);
             }
-            else {
-                
-                return response()->json(["失敗しました。"],400);
-            }
-            
         }
-            
     }
 }

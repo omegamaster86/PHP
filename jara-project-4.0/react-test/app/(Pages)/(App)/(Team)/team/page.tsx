@@ -185,10 +185,10 @@ export default function OrgInfo() {
               pref_org_reg_trail: organizationDataList.data.result.pref_org_reg_trail,
             },
           }));
-          console.log(formData);
           // const staff = await axios.get<Staff[]>('http://localhost:3100/staff');
-          const staff = await axios.get('/getStaffData'); //残件対象項目
-          setTableData(staff.data);
+          const staff = await axios.post('/getStaffData', org_id); //残件対象項目
+          console.log(staff.data);
+          // setTableData(staff.data);
         }
       } catch (error: any) {
         setErrorMessage(['API取得エラー:' + error.message]);
