@@ -1045,4 +1045,12 @@ class T_raceResultRecord extends Model
         $races = DB::select($sqlString,$conditionValues);
         return $races;
     }
+
+    //レースIDを条件としてレース結果情報を取得する
+    public function getRaceResultRecordsFromRaceId($race_id)
+    {
+        $race_result_records = DB::select("",$race_id);
+
+        return $race_result_records;
+    }
 }
