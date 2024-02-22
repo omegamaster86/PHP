@@ -32,9 +32,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className='flex-grow p-4 md:overflow-y-auto md:p-12 w-full max-w-7xl m-auto min-h-screen'>
             {/* This is a extra feature for logout - start */}
             <div className=' text-right mt-4 mr-2'>
-              <CustomButton buttonType='primary' className='w-[200px]'  onClick={logout} >
+              {/* <CustomButton buttonType='primary' className='w-[200px]'  onClick={logout} >
                     ログアウト
-              </CustomButton>
+              </CustomButton> */}
             </div>
             {children}
           </div>

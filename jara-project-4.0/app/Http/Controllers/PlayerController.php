@@ -95,7 +95,7 @@ class PlayerController extends Controller
             $existing_player_name = $retrieve_player_name[0]->player_name;
             //Display error message to the client
             throw ValidationException::withMessages([
-                'system_error' => "この既存選手IDは既に別の選手と紐づいています。入力した既存選手IDを確認してください。紐づいていた選手I：[$request->playerCode] [$existing_player_name]"
+                'system_error' => "このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手I：[$request->playerCode] [$existing_player_name]"
             ]);
         } else {
         }
@@ -218,7 +218,7 @@ class PlayerController extends Controller
             $existing_player_name = $retrieve_player_name[0]->player_name;
             //Display error message to the client
             throw ValidationException::withMessages([
-                'system_error' => "この既存選手IDは既に別の選手と紐づいています。入力した既存選手IDを確認してください。紐づいていた選手I：[$request->playerCode] [$existing_player_name]"
+                'system_error' => "このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手I：[$request->playerCode] [$existing_player_name]"
             ]);
         } else {
         }
@@ -638,7 +638,7 @@ class PlayerController extends Controller
         //If new picture is uploaded
         if ($request->hasFile('uploadedPhoto')) {
             $file = $request->file('uploadedPhoto');
-            $fileName = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
+            $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
             $destination_path = public_path().'/images/players/' ;
             $file->move($destination_path,$file_name);
             // $file->storeAs('public/images/users', $file_name);
@@ -673,7 +673,7 @@ class PlayerController extends Controller
 
         //If new picture is uploaded
         if($request->hasFile('uploadedPhoto')){
-            $fileName = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
+            $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
             $tPlayersData::$playerInfo['photo'] = $file_name; //写真
         }
         else {
@@ -724,14 +724,84 @@ class PlayerController extends Controller
     {
         Log::debug(sprintf("checkJARAPlayerId start"));
         $reqData = $request->all();
+
+        if($request["mode"]==="create") {
+            $result = DB::select(
+                'select `player_id`, `player_name` from `t_players` where `delete_flag` = 0 and `user_id` = ?',
+                [
+                    Auth::user()->user_id //where条件用
+                ]
+            );
+            if (!empty($result)) {
+                return response()->json(["選手IDはすでに登録されています。 複数作成することはできません。"],403);
+            }
+
+        }
         $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
         $registered_player = $tPlayersData->checkJARAPlayerId($tPlayersData::$playerInfo);
-        if(!empty($registered_player))
-            return response()->json(["この既存選手IDは既に別の選手と紐づいています。入力した既存選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"],401);
-        else
-            return response()->json(["登録可能です。"]);
-        
-        
-
+        if(!empty($registered_player)){
+            if($request["mode"]==="create") {
+                if($registered_player->user_id === Auth::user()->user_id) {
+                    return response()->json(["選手IDはすでに登録されています。 複数作成することはできません。"],403);
+                }
+                else {
+                    return response()->json(["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"],401);
+                }
+                
+            }
+            if($request["mode"]==="create_confirm") {
+                if($registered_player->user_id === Auth::user()->user_id) {
+                    return response()->json(["登録に失敗しました。選手IDはすでに登録されています。 複数作成することはできません。"],403);
+                }
+                else {
+                    return response()->json(["登録に失敗しました。
+                    別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"],401);
+                }
+                
+            }
+            else if($request["mode"]==="update") {
+                if($registered_player->user_id === Auth::user()->user_id) {
+                    return response()->json("");
+                }
+                else {
+                    return response()->json(["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"],401);
+                }
+            }
+            else if($request["mode"]==="update_confirm") {
+                if($registered_player->user_id === Auth::user()->user_id) {
+                    return response()->json("");
+                }
+                else {
+                    return response()->json(["更新に失敗しました。
+                    別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"],401);
+                }
+            }
+            
+            else {
+                
+                return response()->json(["失敗しました。"],400);
+            }
+            
+        }
+        else {
+            if($request["mode"]==="create") {
+                return response()->json(["入力したJARA選手IDと紐づくデータが存在しません。\nこのJARA選手IDで登録しますか？"]);
+            }
+            if($request["mode"]==="create_confirm") {
+                return response()->json([""]);
+            }
+            else if($request["mode"]==="update") {
+                return response()->json(["入力したJARA選手IDと紐づくデータが存在しません。\nこのJARA選手IDで更新しますか？"]);
+            }
+            else if($request["mode"]==="update_confirm") {
+                return response()->json([""]);
+            }
+            else {
+                
+                return response()->json(["失敗しました。"],400);
+            }
+            
+        }
+            
     }
 }

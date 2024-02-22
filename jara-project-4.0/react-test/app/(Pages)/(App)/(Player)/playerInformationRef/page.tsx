@@ -20,6 +20,7 @@ import {
 } from '@/app/components';
 import AddIcon from '@mui/icons-material/Add';
 import { RaceResultRecordsResponse, PlayerInformationResponse } from '@/app/types';
+import { NO_IMAGE_URL, PLAYER_IMAGE_URL } from '@/app/utils/imageUrl';
 
 // 選手情報参照画面
 export default function PlayerInformationRef() {
@@ -117,13 +118,13 @@ export default function PlayerInformationRef() {
           height: playerInf.data.result.height,
           weight: playerInf.data.result.weight,
           side_info: sideList,
-          birthCountryName: playerInf.data.result.bir_country_name,
+          birthCountryName: playerInf.data.result.birthCountryName,
           birth_country: playerInf.data.result.birth_country,
-          birthPrefectureName: playerInf.data.result.bir_pref_name,
+          birthPrefectureName: playerInf.data.result.birthPrefectureName,
           birth_prefecture: playerInf.data.result.birth_prefecture,
-          residenceCountryName: playerInf.data.result.res_country_name,
+          residenceCountryName: playerInf.data.result.residenceCountryName,
           residence_country: playerInf.data.result.residence_country,
-          residencePrefectureName: playerInf.data.result.res_pref_name,
+          residencePrefectureName: playerInf.data.result.residencePrefectureName,
           residence_prefecture: playerInf.data.result.residence_prefecture,
           photo: playerInf.data.result.photo,
         });
@@ -187,7 +188,7 @@ export default function PlayerInformationRef() {
               <div>
                 {/* 写真 */}
                 <img
-                  src={playerInformation.photo}
+                  src={playerInformation.photo?`${PLAYER_IMAGE_URL}${playerInformation.photo}`:`${NO_IMAGE_URL}`}
                   width={200}
                   height={200}
                   alt='Random'
