@@ -123,7 +123,7 @@ export default function Inquiry() {
     confirm: (
       <CustomButton
         buttonType='primary'
-        onClick={async() => {
+        onClick={async () => {
           // 送信処理
           const requestBody = {};
           const csrf = () => axios.get('/sanctum/csrf-cookie')
@@ -145,7 +145,7 @@ export default function Inquiry() {
 
   return (
     <>
-      {isLogIn&&<Header />}
+      <Header />
       <div>
         <main className='flex flex-col items-center justify-start gap-[40px] my-[100px] m-auto p-4 md:max-w-[900px]'>
           {/* 画面名 */}
@@ -200,9 +200,8 @@ export default function Inquiry() {
                   </div>
                 ) : (
                   <TextareaAutosize
-                    className={`bg-white border-[1px] border-solid rounded-md p-4 ${
-                      inquiryErrorMessages.length > 0 ? 'border-red' : 'border-gray-100'
-                    }`}
+                    className={`bg-white border-[1px] border-solid rounded-md p-4 ${inquiryErrorMessages.length > 0 ? 'border-red' : 'border-gray-100'
+                      }`}
                     value={inquiry}
                     onChange={(e) => setInquiry(e.target.value)}
                   />
@@ -267,6 +266,6 @@ export default function Inquiry() {
         </main>
       </div>
     </>
-    
+
   );
 }

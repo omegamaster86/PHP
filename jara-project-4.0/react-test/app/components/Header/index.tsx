@@ -13,6 +13,7 @@ const Header: FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [clickIndex, setclickIndex] = useState(0);
+  const [headerMenuFlag, setHeaderMenuFlag] = useState(0);
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
   const { logout } = useAuth({ middleware: 'auth' });
 
@@ -37,29 +38,35 @@ const Header: FC = () => {
       case '/tournamentRef':
       case '/tournamentSearch':
       case '/tournamentRaceResultRef':
+        setHeaderMenuFlag(1);
         setIndex(0);
         break;
       case '/playerInformation':
       case '/playerInformationRef':
       case '/playerRaceResultRegister':
       case '/playerSearch':
+        setHeaderMenuFlag(1);
         setIndex(1);
         break;
       case '/team':
       case '/teamRef':
       case '/teamSearch':
       case '/team':
+        setHeaderMenuFlag(1);
         setIndex(2);
         break;
       case '/volunteerSearch':
       case '/volunteerInformationRef':
+        setHeaderMenuFlag(1);
         setIndex(3);
         break;
       case '/userInformation':
       case '/userInformationRef':
+        setHeaderMenuFlag(1);
         setIndex(4);
         break;
       default:
+        setHeaderMenuFlag(0);
         setIndex(5);
         break;
     }
@@ -73,6 +80,7 @@ const Header: FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log(page);
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
         const playerInf = await axios.get('/getIDsAssociatedWithUser');
@@ -407,90 +415,92 @@ const Header: FC = () => {
         <Logo />
         <div className='right-content'></div>
       </header>
-      <div className='w-full'>
-        <div className='flex flex-row justify-start items-center h-[50px] gap-[40px] px-[104px] text-small text-secondaryText'>
-          <div>
-            <button
-              className={`
+      {headerMenuFlag == 1 ? (
+        <div className='w-full'>
+          <div className='flex flex-row justify-start items-center h-[50px] gap-[40px] px-[104px] text-small text-secondaryText'>
+            <div>
+              <button
+                className={`
               ${index === 0 &&
-                'border-b-[2px] rounded-none border-solid border-primary-500 text-primary-500'
-                }
+                  'border-b-[2px] rounded-none border-solid border-primary-500 text-primary-500'
+                  }
               flex justify-center items-center h-[49px] cursor-pointer w-[100px] 
               `}
-              onClick={(e) => {
-                handleClick(e, 0);
-              }}
-            >
-              大会情報
-            </button>
-          </div>
-          <div>
-            <button
-              onClick={(e) => {
-                handleClick(e, 1);
-              }}
-              className={`
-              ${index === 1 &&
-                'border-b-[2px] rounded-none border-solid border-primary-500 text-primary-500'
-                }
-              flex justify-center items-center h-[49px] w-[100px] cursor-pointer
-              `}
-            >
-              選手情報
-            </button>
-          </div>
-          <div>
-            <button
-              onClick={(e) => {
-                handleClick(e, 2);
-              }}
-              className={`
-              ${index === 2 &&
-                'border-b-[2px] rounded-none border-solid border-primary-500 text-primary-500'
-                }
-              flex justify-center items-center h-[49px] w-[100px] cursor-pointer
-              `}
-            >
-              団体
-            </button>
-          </div>
-          {(userIdType.is_administrator == 1
-            || userIdType.is_jara == 1
-            || userIdType.is_pref_boat_officer == 1
-            || userIdType.is_volunteer == 1) ? (
+                onClick={(e) => {
+                  handleClick(e, 0);
+                }}
+              >
+                大会情報
+              </button>
+            </div>
             <div>
               <button
                 onClick={(e) => {
-                  handleClick(e, 3);
+                  handleClick(e, 1);
                 }}
                 className={`
-              ${index === 3 &&
+              ${index === 1 &&
                   'border-b-[2px] rounded-none border-solid border-primary-500 text-primary-500'
                   }
               flex justify-center items-center h-[49px] w-[100px] cursor-pointer
               `}
               >
-                ボランティア
+                選手情報
               </button>
             </div>
-          ) : ''}
-          <div>
-            <button
-              onClick={(e) => {
-                handleClick(e, 4);
-              }}
-              className={`
-              ${index === 4 &&
-                'border-b-[2px] rounded-none border-solid border-primary-500 text-primary-500'
-                }
+            <div>
+              <button
+                onClick={(e) => {
+                  handleClick(e, 2);
+                }}
+                className={`
+              ${index === 2 &&
+                  'border-b-[2px] rounded-none border-solid border-primary-500 text-primary-500'
+                  }
               flex justify-center items-center h-[49px] w-[100px] cursor-pointer
               `}
-            >
-              その他
-            </button>
+              >
+                団体
+              </button>
+            </div>
+            {(userIdType.is_administrator == 1
+              || userIdType.is_jara == 1
+              || userIdType.is_pref_boat_officer == 1
+              || userIdType.is_volunteer == 1) ? (
+              <div>
+                <button
+                  onClick={(e) => {
+                    handleClick(e, 3);
+                  }}
+                  className={`
+              ${index === 3 &&
+                    'border-b-[2px] rounded-none border-solid border-primary-500 text-primary-500'
+                    }
+              flex justify-center items-center h-[49px] w-[100px] cursor-pointer
+              `}
+                >
+                  ボランティア
+                </button>
+              </div>
+            ) : ''}
+            <div>
+              <button
+                onClick={(e) => {
+                  handleClick(e, 4);
+                }}
+                className={`
+              ${index === 4 &&
+                  'border-b-[2px] rounded-none border-solid border-primary-500 text-primary-500'
+                  }
+              flex justify-center items-center h-[49px] w-[100px] cursor-pointer
+              `}
+              >
+                その他
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      ) : ''}
     </div>
   );
 };
