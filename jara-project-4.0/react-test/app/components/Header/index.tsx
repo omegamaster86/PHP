@@ -15,7 +15,7 @@ const Header: FC = () => {
   const [clickIndex, setclickIndex] = useState(0);
   const [headerMenuFlag, setHeaderMenuFlag] = useState(0);
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
-  const { logout } = useAuth({ middleware: 'auth' });
+  const { user, logout } = useAuth({ middleware: 'auth' });
 
 
   // メニューを開く
@@ -38,35 +38,29 @@ const Header: FC = () => {
       case '/tournamentRef':
       case '/tournamentSearch':
       case '/tournamentRaceResultRef':
-        setHeaderMenuFlag(1);
         setIndex(0);
         break;
       case '/playerInformation':
       case '/playerInformationRef':
       case '/playerRaceResultRegister':
       case '/playerSearch':
-        setHeaderMenuFlag(1);
         setIndex(1);
         break;
       case '/team':
       case '/teamRef':
       case '/teamSearch':
       case '/team':
-        setHeaderMenuFlag(1);
         setIndex(2);
         break;
       case '/volunteerSearch':
       case '/volunteerInformationRef':
-        setHeaderMenuFlag(1);
         setIndex(3);
         break;
       case '/userInformation':
       case '/userInformationRef':
-        setHeaderMenuFlag(1);
         setIndex(4);
         break;
       default:
-        setHeaderMenuFlag(0);
         setIndex(5);
         break;
     }
@@ -80,13 +74,17 @@ const Header: FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log(page);
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
-        const playerInf = await axios.get('/getIDsAssociatedWithUser');
-        setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
+        if (Object.keys(user).length > 0) {
+          setHeaderMenuFlag(1);
+          const csrf = () => axios.get('/sanctum/csrf-cookie')
+          await csrf()
+          const playerInf = await axios.get('/getIDsAssociatedWithUser');
+          setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
+        } else {
+          setHeaderMenuFlag(0);
+        }
       } catch (error: any) {
-        console.log(error);
+
       }
     };
     fetchData();

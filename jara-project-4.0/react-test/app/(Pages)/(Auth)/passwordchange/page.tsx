@@ -29,7 +29,6 @@ export default function Passwordchange() {
 
   return (
     <>
-      <Header />
       <div>
         {/* This is a extra feature for logout - start*/}
         {/* <div className=' text-right mt-4 mr-2'>
