@@ -17,47 +17,47 @@ use Illuminate\Support\Facades\Log;
 class OrganizationPlayersController extends Controller
 {
     //団体所属選手登録画面を開く
-    public function createEdit(
-        $targetOrgId,
-        T_organizations $t_organizations,
-        T_organization_players $t_organization_players
-    ) {
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        } else {
-            $organization = $t_organizations->getOrganization($targetOrgId);
-            $org_name = $organization->org_name;
-            $organization_players = $t_organization_players->getOrganizationPlayersInfo($targetOrgId);
+    // public function createEdit(
+    //     $targetOrgId,
+    //     T_organizations $t_organizations,
+    //     T_organization_players $t_organization_players
+    // ) {
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     } else {
+    //         $organization = $t_organizations->getOrganization($targetOrgId);
+    //         $org_name = $organization->org_name;
+    //         $organization_players = $t_organization_players->getOrganizationPlayersInfo($targetOrgId);
 
-            return view('organization-players.edit', ['org_name' => $org_name, 'org_players' => $organization_players]);
-        }
-    }
+    //         return view('organization-players.edit', ['org_name' => $org_name, 'org_players' => $organization_players]);
+    //     }
+    // }
 
     //団体選手検索画面を開く
-    public function createSearchView(
-        $targetOrgId,
-        T_organizations $t_organizations,
-        M_sex $m_sex,
-        M_prefectures $m_prefectures,
-        M_events $m_events
-    ) {
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        } else {
-            $organization = $t_organizations->getOrganization($targetOrgId);
-            $org_name = $organization->org_name;
-            $sex = $m_sex->getSexList();
-            $prefectures = $m_prefectures->getPrefecures();
-            $events = $m_events->getEvents();
+    // public function createSearchView(
+    //     $targetOrgId,
+    //     T_organizations $t_organizations,
+    //     M_sex $m_sex,
+    //     M_prefectures $m_prefectures,
+    //     M_events $m_events
+    // ) {
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     } else {
+    //         $organization = $t_organizations->getOrganization($targetOrgId);
+    //         $org_name = $organization->org_name;
+    //         $sex = $m_sex->getSexList();
+    //         $prefectures = $m_prefectures->getPrefecures();
+    //         $events = $m_events->getEvents();
 
-            return view('organization-players.search', [
-                'org_name' => $org_name,
-                'm_sex' => $sex,
-                'prefectures' => $prefectures,
-                'events' => $events
-            ]);
-        }
-    }
+    //         return view('organization-players.search', [
+    //             'org_name' => $org_name,
+    //             'm_sex' => $sex,
+    //             'prefectures' => $prefectures,
+    //             'events' => $events
+    //         ]);
+    //     }
+    // }
 
     //団体所属追加選手検索画面で、選手を検索する
     public function searchOrganizationPlayers(Request $request, T_organization_players $t_organization_players)
