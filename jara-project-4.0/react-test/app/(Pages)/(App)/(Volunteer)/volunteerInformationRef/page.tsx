@@ -607,7 +607,7 @@ export default function VolunteerInformationRef() {
                 // setErrorMessage(['ユーザー情報の登録に失敗しました。ユーザーサポートにお問い合わせください。']);
 
                 // 管理画面に遷移
-                router.push('/dashboard');
+                router.push('/tournamentSearch'); //大会検索画面に遷移する20240222
               }}
             >
               削除
