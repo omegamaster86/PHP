@@ -27,26 +27,26 @@ use App\Models\M_countries;
 class OrganizationController extends Controller
 {
     //団体情報登録画面を開く
-    public function create(
-        M_organization_type $mOrganizationType,
-        M_organization_class $mOrganizationClass,
-        M_prefectures $mPrefectures,
-        M_staff_type $mStaffType
-    ) {
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        } else {
-            $mOrgType = $mOrganizationType->getOrganizationType();
-            $mOrgClass = $mOrganizationClass->getOrganizationClass();
-            $mPref = $mPrefectures->getPrefecures();
-            $mStfType = $mStaffType->getStaffType();
-            $tStaff = null;
-            $staff_tag = $this->generateStaffTag($tStaff, $mStfType);
-            return view('organizations.register-edit', [
-                "pagemode" => "register", "organizationType" => $mOrgType, "organizationClass" => $mOrgClass, "prefectures" => $mPref, "staff_tag" => $staff_tag
-            ]);
-        }
-    }
+    // public function create(
+    //     M_organization_type $mOrganizationType,
+    //     M_organization_class $mOrganizationClass,
+    //     M_prefectures $mPrefectures,
+    //     M_staff_type $mStaffType
+    // ) {
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     } else {
+    //         $mOrgType = $mOrganizationType->getOrganizationType();
+    //         $mOrgClass = $mOrganizationClass->getOrganizationClass();
+    //         $mPref = $mPrefectures->getPrefecures();
+    //         $mStfType = $mStaffType->getStaffType();
+    //         $tStaff = null;
+    //         $staff_tag = $this->generateStaffTag($tStaff, $mStfType);
+    //         return view('organizations.register-edit', [
+    //             "pagemode" => "register", "organizationType" => $mOrgType, "organizationClass" => $mOrgClass, "prefectures" => $mPref, "staff_tag" => $staff_tag
+    //         ]);
+    //     }
+    // }
 
     //団体情報更新画面を開く
     public function getStaffData(
@@ -58,6 +58,7 @@ class OrganizationController extends Controller
         T_organization_staff $tOrganizationStaff,
         M_staff_type $mStaffType
     ) {
+        Log::debug(sprintf("getStaffData start."));
         if (Auth::user()->temp_password_flag === 1) {
             // return redirect('user/password-change');
         } else {
@@ -93,6 +94,7 @@ class OrganizationController extends Controller
             //         "staff_tag" => $staff_tag
             //     ]
             // );
+            Log::debug(sprintf("getStaffData end."));
             return response()->json(['result' => $tStaff]); //処理結果を返す
         }
     }
@@ -157,14 +159,14 @@ class OrganizationController extends Controller
     }
 
     //団体情報登録・更新確認画面を開く
-    public function createConfirm()
-    {
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        } else {
-            return view('organizations.register-confirm', ["pagemode" => "register"]);
-        }
-    }
+    // public function createConfirm()
+    // {
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     } else {
+    //         return view('organizations.register-confirm', ["pagemode" => "register"]);
+    //     }
+    // }
 
     //団体情報登録・更新確認画面を開く
     public function createEditConfirm()
@@ -843,7 +845,7 @@ class OrganizationController extends Controller
     {
         Log::debug(sprintf("getOrgData start"));
         $result = $request->all();
-        Log::debug($result);
+        //Log::debug($result);
         $tOrg = $tOrganizations->getOrganization($result['org_id']);
         Log::debug(sprintf("getOrgData end"));
         return response()->json(['result' => $tOrg]); //DBの結果を返す
@@ -876,7 +878,6 @@ class OrganizationController extends Controller
     {
         Log::debug(sprintf("getOrgStaffData start"));
         $result = $request->all();
-        Log::debug($result);
         $tOrg = $tOrganizationStaff->getOrganizationStaffFromOrgId($result['org_id']); //userIDに紐づいた団体を取得するように修正する必要がある 二村さん残件対応箇所
         for ($i = 0; $i < count($tOrg); $i++) {
             $staff_type_id = array();
@@ -898,6 +899,7 @@ class OrganizationController extends Controller
             $tOrg[$i]->staff_type_id = $staff_type_id;
         }
         Log::debug(sprintf("getOrgStaffData end"));
+        Log::debug($tOrg);
         return response()->json(['result' => $tOrg]); //DBの結果を返す
     }
 

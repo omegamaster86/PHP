@@ -186,7 +186,7 @@ export default function OrgInfo() {
             },
           }));
           // const staff = await axios.get<Staff[]>('http://localhost:3100/staff');
-          const staff = await axios.post('/getStaffData', org_id); //残件対象項目
+          const staff = await axios.post('/getOrgStaffData', org_id); //残件対象項目
           console.log(staff.data);
           // setTableData(staff.data);
         }

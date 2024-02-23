@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Auth\Events\Registered;
+// use App\Providers\RouteServiceProvider;
+// use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+// use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
-use App\Services\FileUploadService;
-use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\FileUploadRequest;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\WelcomeMail;
+// use App\Services\FileUploadService;
+// use Illuminate\Support\Facades\Storage;
+// use App\Http\Requests\FileUploadRequest;
+// use Illuminate\Http\UploadedFile;
+// use Illuminate\Support\Facades\Mail;
+// use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\T_players;
@@ -26,8 +26,8 @@ use Illuminate\Validation\ValidationException;
 
 
 use App\Models\M_sex;
-use App\Models\M_countries;
-use App\Models\M_prefectures;
+// use App\Models\M_countries;
+// use App\Models\M_prefectures;
 
 class PlayerController extends Controller
 {
@@ -121,24 +121,24 @@ class PlayerController extends Controller
     /**
      * Display the edit view.
      */
-    public function createEdit(): View
-    {
-        $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+    // public function createEdit(): View
+    // {
+    //     $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
 
-        if (!count($retrieve_player_by_ID))
-            return view('player.register-edit', ["page_mode" => "register"]);
+    //     if (!count($retrieve_player_by_ID))
+    //         return view('player.register-edit', ["page_mode" => "register"]);
 
-        $recent_player_array = count($retrieve_player_by_ID) - 1;
+    //     $recent_player_array = count($retrieve_player_by_ID) - 1;
 
-        if ($retrieve_player_by_ID[$recent_player_array]->delete_flag)
-            return view('player.register-edit', ["page_mode" => "register"]);
+    //     if ($retrieve_player_by_ID[$recent_player_array]->delete_flag)
+    //         return view('player.register-edit', ["page_mode" => "register"]);
 
-        $player_info = $retrieve_player_by_ID[$recent_player_array];
+    //     $player_info = $retrieve_player_by_ID[$recent_player_array];
 
-        $player_info->date_of_birth = date('Y/m/d', strtotime($retrieve_player_by_ID[$recent_player_array]->date_of_birth));
+    //     $player_info->date_of_birth = date('Y/m/d', strtotime($retrieve_player_by_ID[$recent_player_array]->date_of_birth));
 
-        return view('player.register-edit', ["page_mode" => "edit", "player_info" => $player_info]);
-    }
+    //     return view('player.register-edit', ["page_mode" => "edit", "player_info" => $player_info]);
+    // }
 
     /**
      * Handle an incoming edit request.
@@ -243,10 +243,10 @@ class PlayerController extends Controller
     /**
      * Display the registration view.
      */
-    public function createRegisterConfirm(): View
-    {
-        return view('player.register-edit-confirm', ["page_mode" => "register-confirm"]);
-    }
+    // public function createRegisterConfirm(): View
+    // {
+    //     return view('player.register-edit-confirm', ["page_mode" => "register-confirm"]);
+    // }
 
     /**
      * Handle an incoming registration request.
@@ -305,11 +305,11 @@ class PlayerController extends Controller
     /**
      * Display the edit confirm view.
      */
-    public function createEditConfirm(): View
-    {
+    // public function createEditConfirm(): View
+    // {
 
-        return view('player.register-edit-confirm', ["page_mode" => "edit-confirm"]);
-    }
+    //     return view('player.register-edit-confirm', ["page_mode" => "edit-confirm"]);
+    // }
 
     /**
      * Handle an incoming edit request.
@@ -394,68 +394,68 @@ class PlayerController extends Controller
     /**
      * Display the edit confirm view.
      */
-    public function createDetails($user_id): View
-    {
-        //searching player info from database
-        $retreive_player_by_ID = DB::select('SELECT sex.sex_name, birth_country.birth_country_name,residence_country.residence_country_name, birth_prefecture.birth_prefecture_name, residence_prefecture.residence_prefecture_name, player.photo, player.player_id, player.jara_player_id, player.player_name, player.date_of_birth, player.sex, player.height, player.weight, player.side_info, player.birth_country, player.birth_prefecture, player.residence_country, player.residence_prefecture FROM t_players as player
+    // public function createDetails($user_id): View
+    // {
+    //     //searching player info from database
+    //     $retreive_player_by_ID = DB::select('SELECT sex.sex_name, birth_country.birth_country_name,residence_country.residence_country_name, birth_prefecture.birth_prefecture_name, residence_prefecture.residence_prefecture_name, player.photo, player.player_id, player.jara_player_id, player.player_name, player.date_of_birth, player.sex, player.height, player.weight, player.side_info, player.birth_country, player.birth_prefecture, player.residence_country, player.residence_prefecture FROM t_players as player
 
-        Left join (select sex_id, sex as sex_name from m_sex where delete_flag = ? ) as sex on player.sex = sex.sex_id
+    //     Left join (select sex_id, sex as sex_name from m_sex where delete_flag = ? ) as sex on player.sex = sex.sex_id
         
-        Left join (select country_id, country_name as birth_country_name from m_countries where delete_flag = ?)  as birth_country on player.birth_country = birth_country.country_id
+    //     Left join (select country_id, country_name as birth_country_name from m_countries where delete_flag = ?)  as birth_country on player.birth_country = birth_country.country_id
         
-        Left join (select country_id, country_name as residence_country_name from m_countries where delete_flag = ?)  as residence_country on player.residence_country = residence_country.country_id
+    //     Left join (select country_id, country_name as residence_country_name from m_countries where delete_flag = ?)  as residence_country on player.residence_country = residence_country.country_id
         
-        Left join (select pref_id, pref_name as birth_prefecture_name from m_prefectures where delete_flag = ?)  as birth_prefecture on player.birth_prefecture = birth_prefecture.pref_id
+    //     Left join (select pref_id, pref_name as birth_prefecture_name from m_prefectures where delete_flag = ?)  as birth_prefecture on player.birth_prefecture = birth_prefecture.pref_id
         
-        Left join (select pref_id, pref_name as residence_prefecture_name from m_prefectures where delete_flag = ?)  as residence_prefecture on player.residence_prefecture = residence_prefecture.pref_id
+    //     Left join (select pref_id, pref_name as residence_prefecture_name from m_prefectures where delete_flag = ?)  as residence_prefecture on player.residence_prefecture = residence_prefecture.pref_id
         
-        where player.user_id = ? AND player.delete_flag = ?', [0, 0, 0, 0, 0, $user_id, 0]);
+    //     where player.user_id = ? AND player.delete_flag = ?', [0, 0, 0, 0, 0, $user_id, 0]);
 
 
 
-        //searching race record info from database
-        $retrieve_all_race_records = DB::select('SELECT tourn.event_start_date, race.event_name, record.tourn_name, record.official, record.org_name, record.race_number, record.race_name, record.by_group, record.crew_name, record.rank, record.laptime_500m, record.laptime_1000m, record.laptime_1500m, record.laptime_2000m, record.final_time, record.stroke_rate_avg, record.stroke_rat_500m, record.stroke_rat_1000m, record.stroke_rat_1500m, record.stroke_rat_2000m, record.attendance, record.ergo_weight, record.player_height, record.player_weight, record.sheet_name, record.race_result_record_name  FROM t_race_result_record as record
+    //     //searching race record info from database
+    //     $retrieve_all_race_records = DB::select('SELECT tourn.event_start_date, race.event_name, record.tourn_name, record.official, record.org_name, record.race_number, record.race_name, record.by_group, record.crew_name, record.rank, record.laptime_500m, record.laptime_1000m, record.laptime_1500m, record.laptime_2000m, record.final_time, record.stroke_rate_avg, record.stroke_rat_500m, record.stroke_rat_1000m, record.stroke_rat_1500m, record.stroke_rat_2000m, record.attendance, record.ergo_weight, record.player_height, record.player_weight, record.sheet_name, record.race_result_record_name  FROM t_race_result_record as record
         
-        Left join (select race_id, event_name from t_races where delete_flag = ? ) as race on record.race_id = race.race_id
+    //     Left join (select race_id, event_name from t_races where delete_flag = ? ) as race on record.race_id = race.race_id
         
-        Left join (select tourn_id, event_start_date from t_tournaments where delete_flag = ?)  as tourn on record.tourn_id = tourn.tourn_id
+    //     Left join (select tourn_id, event_start_date from t_tournaments where delete_flag = ?)  as tourn on record.tourn_id = tourn.tourn_id
         
-        where record.user_id = ? AND record.delete_flag = ?', [0, 0, $user_id, 0]);
+    //     where record.user_id = ? AND record.delete_flag = ?', [0, 0, $user_id, 0]);
 
-        //if there is no player info send the user to the register page
-        if (!count($retreive_player_by_ID))
-            return view('player.register-edit', ["page_mode" => "register"]);
+    //     //if there is no player info send the user to the register page
+    //     if (!count($retreive_player_by_ID))
+    //         return view('player.register-edit', ["page_mode" => "register"]);
 
-        //storing searched player data to a variable
-        $player_info = $retreive_player_by_ID[0];
+    //     //storing searched player data to a variable
+    //     $player_info = $retreive_player_by_ID[0];
 
-        //change the date format
-        $player_info->date_of_birth = date('Y/m/d', strtotime($player_info->date_of_birth));
+    //     //change the date format
+    //     $player_info->date_of_birth = date('Y/m/d', strtotime($player_info->date_of_birth));
 
-        //paasing the searched data to the blade for view
-        return view('player.details', ["player_info" => $player_info, 'all_race_records' => $retrieve_all_race_records, "user_id" => $user_id]);
-    }
-    public function createDelete(): View
-    {
-        $retrieve_player_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
-        if (empty($retrieve_player_ID)) {
-            return view('player.register-edit', ["page_mode" => "register"]);
-        }
+    //     //paasing the searched data to the blade for view
+    //     return view('player.details', ["player_info" => $player_info, 'all_race_records' => $retrieve_all_race_records, "user_id" => $user_id]);
+    // }
+    // public function createDelete(): View
+    // {
+    //     $retrieve_player_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+    //     if (empty($retrieve_player_ID)) {
+    //         return view('player.register-edit', ["page_mode" => "register"]);
+    //     }
 
-        $player_info = $retrieve_player_ID[count($retrieve_player_ID) - 1];
+    //     $player_info = $retrieve_player_ID[count($retrieve_player_ID) - 1];
 
-        if ($player_info->delete_flag) {
-            return view('player.register-edit', ["page_mode" => "register"]);
-        }
-        if ($player_info->sex === 1) {
-            $player_info->sex = "男";
-        } elseif ($player_info->sex === 2) {
-            $player_info->sex = "女";
-        } else {
-            $player_info->sex = "";
-        }
-        return view('player.register-edit-confirm', ["page_mode" => "delete", "player_info" => $player_info]);
-    }
+    //     if ($player_info->delete_flag) {
+    //         return view('player.register-edit', ["page_mode" => "register"]);
+    //     }
+    //     if ($player_info->sex === 1) {
+    //         $player_info->sex = "男";
+    //     } elseif ($player_info->sex === 2) {
+    //         $player_info->sex = "女";
+    //     } else {
+    //         $player_info->sex = "";
+    //     }
+    //     return view('player.register-edit-confirm', ["page_mode" => "delete", "player_info" => $player_info]);
+    // }
 
     /**
      * Handle an incoming edit request.
@@ -464,52 +464,52 @@ class PlayerController extends Controller
      */
 
 
-    public function storeDelete(Request $request,): RedirectResponse
-    {
-        include('Auth/ErrorMessages/ErrorMessages.php');
+    // public function storeDelete(Request $request,)/*: RedirectResponse*/
+    // {
+    //     include('Auth/ErrorMessages/ErrorMessages.php');
 
-        DB::beginTransaction();
-        try {
-            DB::update(
-                'update t_players set delete_flag = ?  where user_id = ?',
-                ["1", Auth::user()->user_id]
-            );
+    //     DB::beginTransaction();
+    //     try {
+    //         DB::update(
+    //             'update t_players set delete_flag = ?  where user_id = ?',
+    //             ["1", Auth::user()->user_id]
+    //         );
 
-            DB::commit();
-            $page_status = "選手情報の削除が完了しました。";
-            $page_url = route('my-page');
-            $page_url_text = "マイページ";
+    //         DB::commit();
+    //         $page_status = "選手情報の削除が完了しました。";
+    //         $page_url = route('my-page');
+    //         $page_url_text = "マイページ";
 
-            return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-        } catch (\Throwable $e) {
-            dd($request->all());
-            dd("stop");
-            DB::rollBack();
-            $e_message = $e->getMessage();
-            $e_code = $e->getCode();
-            $e_file = $e->getFile();
-            $e_line = $e->getLine();
-            $e_errorCode = $e->errorInfo[1];
-            $e_bindings = implode(", ", $e->getBindings());
-            $e_connectionName = $e->connectionName;
+    //         return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+    //     } catch (\Throwable $e) {
+    //         dd($request->all());
+    //         dd("stop");
+    //         DB::rollBack();
+    //         $e_message = $e->getMessage();
+    //         $e_code = $e->getCode();
+    //         $e_file = $e->getFile();
+    //         $e_line = $e->getLine();
+    //         $e_errorCode = $e->errorInfo[1];
+    //         $e_bindings = implode(", ", $e->getBindings());
+    //         $e_connectionName = $e->connectionName;
 
-            $user_id = Auth::user()->user_id;
-            //Store error message in the player delete log file.
-            Log::channel('player_delete')->info("\r\n \r\n ＊＊＊「USER_ID」 ：  $user_id,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-        }
+    //         $user_id = Auth::user()->user_id;
+    //         //Store error message in the player delete log file.
+    //         Log::channel('player_delete')->info("\r\n \r\n ＊＊＊「USER_ID」 ：  $user_id,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
+    //     }
 
-        $page_status = "選手情報の削除が完了しました。";
-        $page_url = route('my-page');
-        $page_url_text = "マイページ";
+    //     $page_status = "選手情報の削除が完了しました。";
+    //     $page_url = route('my-page');
+    //     $page_url_text = "マイページ";
 
-        return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-    }
+    //     return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+    // }
 
-    public function createSearch(M_sex $sex): View
-    {
-        $sex_list = $sex->getSexList();
-        return view('player.search', ["sex_list" => $sex_list]);
-    }
+    // public function createSearch(M_sex $sex): View
+    // {
+    //     $sex_list = $sex->getSexList();
+    //     return view('player.search', ["sex_list" => $sex_list]);
+    // }
 
 
 
