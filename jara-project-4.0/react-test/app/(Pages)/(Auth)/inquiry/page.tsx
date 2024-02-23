@@ -47,30 +47,6 @@ export default function Inquiry() {
   const [inquiryErrorMessages, setInquiryErrorMessages] = useState([] as string[]);
   const [consentErrorMessages, setConsentErrorMessages] = useState([] as string[]);
 
-  // データ取得用のEffect
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // 仮のURL（繋ぎ込み時に変更すること）
-        // const response = await axios.get<UserResponse>('http://localhost:3100/user');
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
-        const response = await axios.get('/api/user');
-        setUser(response.data);
-      } catch (error) {
-        // setErrorMessage([
-        //   ...(errorMessage as string[]),
-        //   'API取得エラー:' + (error as Error).message,
-        // ]);
-      }
-    };
-
-    // ログインユーザーの場合にデータを取得
-    if (isLogIn) {
-      fetchData();
-    }
-  }, [isLogIn]);
-
   // モードに応じたボタンの設定
   const modeCustomButtons = {
     default: (
@@ -145,7 +121,6 @@ export default function Inquiry() {
 
   return (
     <>
-      <Header />
       <div>
         <main className='flex flex-col items-center justify-start gap-[40px] my-[100px] m-auto p-4 md:max-w-[900px]'>
           {/* 画面名 */}
