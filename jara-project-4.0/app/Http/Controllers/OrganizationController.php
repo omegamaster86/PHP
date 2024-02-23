@@ -897,6 +897,9 @@ class OrganizationController extends Controller
                 array_push($staff_type_id, "管理代理");
             }
             $tOrg[$i]->staff_type_id = $staff_type_id;
+            $tOrg[$i]->isUserFound = true;
+            $tOrg[$i]->delete_flag = false;
+            $tOrg[$i]->id = ($i + 1);
         }
         Log::debug(sprintf("getOrgStaffData end"));
         Log::debug($tOrg);
