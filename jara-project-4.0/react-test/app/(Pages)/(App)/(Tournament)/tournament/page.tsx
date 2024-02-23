@@ -505,6 +505,7 @@ export default function Tournament() {
                   ]);
                   fileUploaderRef?.current?.clearFile();
                   window.confirm('大会情報を登録しました。');
+                  router.push(`/tournamentRef?tournId=${response.data.result}`);
                 })
                 .catch((error) => {
                   // TODO: 処理失敗時の処理
@@ -583,6 +584,7 @@ export default function Tournament() {
                   ]);
                   fileUploaderRef?.current?.clearFile();
                   window.confirm('大会情報を更新しました。');
+                  router.push(`/tournamentRef?tournId=${sendFormData.tournamentFormData.tourn_id}`);
                 })
                 .catch((error) => {
                   // TODO: 処理失敗時の処理
