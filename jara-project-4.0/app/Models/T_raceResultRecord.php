@@ -1133,12 +1133,14 @@ class T_raceResultRecord extends Model
     }
 
     //対象のレース結果情報の削除フラグを有効にする
-    public function updateDeleteFlagToValid($race_result_record_id)
+    public function updateDeleteFlagToValid($values)
     {
         DB::update("update t_race_result_record
                     set delete_flag = 1
+                    ,updated_time = :updated_datetime
+                    ,updated_user_id = :updated_user_id
                     where 1=1
                     and race_result_record_id = :race_result_record_id"
-                    ,$race_result_record_id);
+                    ,$values);
     }
 }

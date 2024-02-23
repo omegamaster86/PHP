@@ -301,7 +301,7 @@ export default function UserInformationUpdate() {
                     // 成功時の処理を実装
                     window.confirm('ユーザー情報を更新しました。');
                     // router.push('/' + (prevScreen ? prevScreen : ''));
-                    router.push('/DummyMyPage');
+                    router.push('/userInformationRef');
                   })
                   .catch((error) => {
                     if(error?.response) {
@@ -365,7 +365,7 @@ export default function UserInformationUpdate() {
                   // 成功時の処理を実装
                   window.confirm('ユーザー情報を更新しました。');
                   // router.push('/' + (prevScreen ? prevScreen : ''));
-                  router.push('/DummyMyPage');
+                  router.push('/userInformationRef');
                 })
                 .catch((error) => {
                   if(error?.response) {
