@@ -128,6 +128,8 @@ class T_races extends Model
                         0
                     )'
                     ,$race);
+        $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
+        return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 
     public function updateRaces($racesInfo)

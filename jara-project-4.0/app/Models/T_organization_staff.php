@@ -19,7 +19,7 @@ class T_organization_staff extends Model
         $orgStaffs = DB::select('select
                                 `org_id`
                                 ,`user_id`
-                                ,`user_name` as `userName`
+                                ,`user_name`
                                 ,case
                                     when instr(`staff_type_array`,"1") > 0 then 1
                                     else 0
@@ -115,6 +115,9 @@ class T_organization_staff extends Model
                     )";
         $sqlString = str_replace("#ValuesReplace#",$replace_str,$sqlString);
         DB::insert($sqlString,$values);
+
+        $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
+        return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 
     //団体削除による団体所属スタッフの削除
