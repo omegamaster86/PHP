@@ -12,11 +12,11 @@ class TournamentInfoAlignmentController extends Controller
 {
     //
     //レース結果一括登録画面呼び出し
-    public function createEntryRegister(Request $request): View
-    {
-        $csvList = "";
-        return view('tournament.info_alignment', ["csvList" => $csvList, "errorMsg" => "", "checkList" => ""]);
-    }
+    // public function createEntryRegister(Request $request): View
+    // {
+    //     $csvList = "";
+    //     return view('tournament.info_alignment', ["csvList" => $csvList, "errorMsg" => "", "checkList" => ""]);
+    // }
 
     //csv操作
     public function csvReadEntryRegister(Request $request,
