@@ -33,7 +33,7 @@ export default function Login() {
 
   const { login, isLoading } = useAuth({
     middleware: 'guest',
-    redirectIfAuthenticated: '/DummyMyPage',
+    redirectIfAuthenticated: '/tournamentSearch',
 })
 
 if(isLoading) {
