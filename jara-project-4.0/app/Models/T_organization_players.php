@@ -150,6 +150,9 @@ class T_organization_players extends Model
                         )';
         $sqlString = str_replace('#ReplaceValueString#',$replaceValueString,$sqlString);
         DB::insert($sqlString,$insertValue);
+
+        $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
+        return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 
     //interfaceのTeamPlayerInformationResponseを引数としてinsertを実行する
