@@ -1,7 +1,9 @@
 import { FC } from 'react';
 import CustomButton from '../CustomButton';
+import { useRouter, usePathname } from 'next/navigation';
 
 const Footer: FC = () => {
+  const router = useRouter();
   return (
     <div className='bg-primary-500 px-[100px] pt-[50px] text-white'>
       <div className='flex flex-row justify-between max-w-[900px] m-auto flex-wrap'>
@@ -30,7 +32,7 @@ const Footer: FC = () => {
             <br />
             ジャパンスポーツオリンピックスクエア 606
           </p>
-          <CustomButton buttonType='primary' className='text-white mt-[12px]' onClick={() => {}}>
+          <CustomButton buttonType='primary' className='text-white mt-[12px]' onClick={() => {router.push('/inquiry');}}>
             お問い合わせはこちらへ
           </CustomButton>
         </div>
