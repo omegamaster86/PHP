@@ -27,26 +27,26 @@ use App\Models\M_countries;
 class OrganizationController extends Controller
 {
     //団体情報登録画面を開く
-    public function create(
-        M_organization_type $mOrganizationType,
-        M_organization_class $mOrganizationClass,
-        M_prefectures $mPrefectures,
-        M_staff_type $mStaffType
-    ) {
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        } else {
-            $mOrgType = $mOrganizationType->getOrganizationType();
-            $mOrgClass = $mOrganizationClass->getOrganizationClass();
-            $mPref = $mPrefectures->getPrefecures();
-            $mStfType = $mStaffType->getStaffType();
-            $tStaff = null;
-            $staff_tag = $this->generateStaffTag($tStaff, $mStfType);
-            return view('organizations.register-edit', [
-                "pagemode" => "register", "organizationType" => $mOrgType, "organizationClass" => $mOrgClass, "prefectures" => $mPref, "staff_tag" => $staff_tag
-            ]);
-        }
-    }
+    // public function create(
+    //     M_organization_type $mOrganizationType,
+    //     M_organization_class $mOrganizationClass,
+    //     M_prefectures $mPrefectures,
+    //     M_staff_type $mStaffType
+    // ) {
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     } else {
+    //         $mOrgType = $mOrganizationType->getOrganizationType();
+    //         $mOrgClass = $mOrganizationClass->getOrganizationClass();
+    //         $mPref = $mPrefectures->getPrefecures();
+    //         $mStfType = $mStaffType->getStaffType();
+    //         $tStaff = null;
+    //         $staff_tag = $this->generateStaffTag($tStaff, $mStfType);
+    //         return view('organizations.register-edit', [
+    //             "pagemode" => "register", "organizationType" => $mOrgType, "organizationClass" => $mOrgClass, "prefectures" => $mPref, "staff_tag" => $staff_tag
+    //         ]);
+    //     }
+    // }
 
     //団体情報更新画面を開く
     public function getStaffData(
@@ -159,14 +159,14 @@ class OrganizationController extends Controller
     }
 
     //団体情報登録・更新確認画面を開く
-    public function createConfirm()
-    {
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        } else {
-            return view('organizations.register-confirm', ["pagemode" => "register"]);
-        }
-    }
+    // public function createConfirm()
+    // {
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     } else {
+    //         return view('organizations.register-confirm', ["pagemode" => "register"]);
+    //     }
+    // }
 
     //団体情報登録・更新確認画面を開く
     public function createEditConfirm()
