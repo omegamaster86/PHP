@@ -582,32 +582,32 @@ class OrganizationController extends Controller
     }
 
     //登録（挿入）実行
-    public function storeConfirmRegister(Request $request, T_organizations $tOrganizations, T_organization_staff $tOrganizationStaff)
-    {
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        } else {
-            DB::beginTransaction();
-            try {
-                //確認画面から登録
-                $organizationInfo = $request->all();
-                $lastInsertId = $tOrganizations->insertOrganization($organizationInfo);
-                //新しく入力されたスタッフをInsertする
-                $insert_values = array();
-                $insertValues = $this->generateInsertStaffValues($organizationInfo, $lastInsertId, $insert_values);
-                $tOrganizationStaff->insertOrganizationStaff($insertValues, $insert_values);
+    // public function storeConfirmRegister(Request $request, T_organizations $tOrganizations, T_organization_staff $tOrganizationStaff)
+    // {
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     } else {
+    //         DB::beginTransaction();
+    //         try {
+    //             //確認画面から登録
+    //             $organizationInfo = $request->all();
+    //             $lastInsertId = $tOrganizations->insertOrganization($organizationInfo);
+    //             //新しく入力されたスタッフをInsertする
+    //             $insert_values = array();
+    //             $insertValues = $this->generateInsertStaffValues($organizationInfo, $lastInsertId, $insert_values);
+    //             $tOrganizationStaff->insertOrganizationStaff($insertValues, $insert_values);
 
-                DB::commit();
-                $page_status = "完了しました";
-                $page_url = route('my-page');
-                $page_url_text = "マイページ";
+    //             DB::commit();
+    //             $page_status = "完了しました";
+    //             $page_url = route('my-page');
+    //             $page_url_text = "マイページ";
 
-                return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-            } catch (\Throwable $e) {
-                DB::rollBack();
-            }
-        }
-    }
+    //             return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+    //         } catch (\Throwable $e) {
+    //             DB::rollBack();
+    //         }
+    //     }
+    // }
 
     //団体所属スタッフテーブルを更新するための条件文を生成する
     private function generateUpdateStaffCondition($organizationInfo, &$values)
@@ -693,74 +693,74 @@ class OrganizationController extends Controller
     }
 
     //削除画面の[削除]ボタンで、団体情報の削除を実行
-    public function deleteOrganization(
-        Request $request,
-        T_organizations $tOrganization,
-        T_organization_players $tOrganizationPlayers,
-        T_organization_staff $tOrganizationStaff
-    ) {
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        } else {
-            DB::beginTransaction();
-            try {
-                $organizationInfo = $request->all();
-                $org_id = $organizationInfo['org_id'];
+    // public function deleteOrganization(
+    //     Request $request,
+    //     T_organizations $tOrganization,
+    //     T_organization_players $tOrganizationPlayers,
+    //     T_organization_staff $tOrganizationStaff
+    // ) {
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     } else {
+    //         DB::beginTransaction();
+    //         try {
+    //             $organizationInfo = $request->all();
+    //             $org_id = $organizationInfo['org_id'];
 
-                //団体所属スタッフを削除
-                $tOrganizationStaff->updateDeleteFlagByOrganizationDeletion($org_id);
-                //団体所属選手を削除
-                $tOrganizationPlayers->updateDeleteFlagByOrganizationDeletion($org_id);
-                //団体を削除
-                $tOrganization->updateDeleteFlag($org_id);
+    //             //団体所属スタッフを削除
+    //             $tOrganizationStaff->updateDeleteFlagByOrganizationDeletion($org_id);
+    //             //団体所属選手を削除
+    //             $tOrganizationPlayers->updateDeleteFlagByOrganizationDeletion($org_id);
+    //             //団体を削除
+    //             $tOrganization->updateDeleteFlag($org_id);
 
-                DB::commit();
-                $page_status = "完了しました";
-                $page_url = route('my-page');
-                $page_url_text = "マイページ";
+    //             DB::commit();
+    //             $page_status = "完了しました";
+    //             $page_url = route('my-page');
+    //             $page_url_text = "マイページ";
 
-                return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-            } catch (\Throwable $e) {
-                DB::rollBack();
-                dd($e);
-                dd("stop");
-            }
-        }
-    }
+    //             return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+    //         } catch (\Throwable $e) {
+    //             DB::rollBack();
+    //             dd($e);
+    //             dd("stop");
+    //         }
+    //     }
+    // }
 
     //更新実行
-    public function storeConfirmEdit(Request $request, T_organizations $tOrganizations, T_organization_staff $tOrganizationStaff)
-    {
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        } else {
-            DB::beginTransaction();
-            try {
-                //確認画面から登録
-                $organizationInfo = $request->all();
-                $tOrganizations->updateOrganization($organizationInfo);
+    // public function storeConfirmEdit(Request $request, T_organizations $tOrganizations, T_organization_staff $tOrganizationStaff)
+    // {
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     } else {
+    //         DB::beginTransaction();
+    //         try {
+    //             //確認画面から登録
+    //             $organizationInfo = $request->all();
+    //             $tOrganizations->updateOrganization($organizationInfo);
 
-                //前のスタッフをupdateする。
-                $update_values = array();
-                $updateCondition = $this->generateUpdateStaffCondition($organizationInfo, $update_values);
-                $tOrganizationStaff->updateDeleteFlagInOrganizationStaff($updateCondition, $update_values);
-                //新しく入力されたスタッフをInsertする
-                $insert_values = array();
-                $insertValues = $this->generateInsertStaffValues($organizationInfo, $organizationInfo['org_id'], $insert_values);
-                $tOrganizationStaff->insertOrganizationStaff($insertValues, $insert_values);
+    //             //前のスタッフをupdateする。
+    //             $update_values = array();
+    //             $updateCondition = $this->generateUpdateStaffCondition($organizationInfo, $update_values);
+    //             $tOrganizationStaff->updateDeleteFlagInOrganizationStaff($updateCondition, $update_values);
+    //             //新しく入力されたスタッフをInsertする
+    //             $insert_values = array();
+    //             $insertValues = $this->generateInsertStaffValues($organizationInfo, $organizationInfo['org_id'], $insert_values);
+    //             $tOrganizationStaff->insertOrganizationStaff($insertValues, $insert_values);
 
-                DB::commit();
-                $page_status = "完了しました";
-                $page_url = route('my-page');
-                $page_url_text = "マイページ";
-                return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-            } catch (\Throwable $e) {
-                DB::rollBack();
-                dd($e);
-                dd("stop");
-            }
-        }
-    }
+    //             DB::commit();
+    //             $page_status = "完了しました";
+    //             $page_url = route('my-page');
+    //             $page_url_text = "マイページ";
+    //             return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+    //         } catch (\Throwable $e) {
+    //             DB::rollBack();
+    //             dd($e);
+    //             dd("stop");
+    //         }
+    //     }
+    // }
 
     //団体検索を実行
     public function searchOrganization(Request $request, T_organizations $tOrganizations)
@@ -833,11 +833,11 @@ class OrganizationController extends Controller
         return $condition;
     }
 
-    public function createManagement(): View
-    {
-        $organizations = DB::select('select * from t_organizations');
-        return view('organizations.management', ['organizations' => $organizations]);
-    }
+    // public function createManagement(): View
+    // {
+    //     $organizations = DB::select('select * from t_organizations');
+    //     return view('organizations.management', ['organizations' => $organizations]);
+    // }
 
 
     //react 団体登録画面からDBにデータを渡す 20240209
@@ -855,10 +855,27 @@ class OrganizationController extends Controller
     public function storeOrgData(Request $request, T_organizations $tOrganizations)
     {
         Log::debug(sprintf("storeOrgData start"));
-        $result = $request->all();
-        Log::debug($result);
+        $lastInsertId = "";
+        $organizationInfo = $request->all();
+        Log::debug($organizationInfo);
+        DB::beginTransaction();
+        try {
+            Log::debug("=========================");
+            //確認画面から登録
+            $lastInsertId = $tOrganizations->insertOrganization($organizationInfo);
+            //新しく入力されたスタッフをInsertする
+            // $insert_values = array();
+            // $insertValues = $this->generateInsertStaffValues($organizationInfo, $lastInsertId, $insert_values);
+            //$tOrganizationStaff->insertOrganizationStaff($insertValues, $insert_values);
+            Log::debug($lastInsertId);
+            DB::commit();
+        } catch (\Throwable $e) {
+            Log::debug($e);
+            DB::rollBack();
+        }
+        Log::debug($lastInsertId);
         Log::debug(sprintf("storeOrgData end"));
-        return response()->json(['result' => $result]); //DBの結果を返す
+        return response()->json(['result' => $lastInsertId]); //DBの結果を返す
     }
 
     //userIDに紐づいたデータを送信 20240131
@@ -897,6 +914,9 @@ class OrganizationController extends Controller
                 array_push($staff_type_id, "管理代理");
             }
             $tOrg[$i]->staff_type_id = $staff_type_id;
+            $tOrg[$i]->isUserFound = true;
+            $tOrg[$i]->delete_flag = false;
+            $tOrg[$i]->id = ($i + 1);
         }
         Log::debug(sprintf("getOrgStaffData end"));
         Log::debug($tOrg);

@@ -51,6 +51,7 @@ export default function TeamPlayer() {
   ]);
   const [errorMessage, setErrorMessage] = useState([] as string[]);
   const mode = useSearchParams().get('mode');
+  const orgId = useSearchParams().get('org_id')?.toString() || '';
 
   useEffect(() => {
     // modeの値を取得 update, create
@@ -75,16 +76,20 @@ export default function TeamPlayer() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
-        const response = await axios.get('/teamPlayers');
+        // const response = await axios.get('/teamPlayers');
+        const response = await axios.post('/searchOrganizationPlayersForTeamRef', orgId);
+        console.log(response.data.result);
         setFormData(
-          response.data.map((data: TeamPlayerInformationResponse) => ({
+          response.data.result.map((data: TeamPlayerInformationResponse) => ({
             ...data,
             deleteFlag: false,
             type: '既存',
           })),
         );
-        const teamResponse = await axios.get('/team');
-        setTeamData(teamResponse.data);
+        // const teamResponse = await axios.get('/team');
+        const teamResponse = await axios.post('/getOrgData', orgId);
+        console.log(teamResponse.data.result);
+        setTeamData(teamResponse.data.result);
       } catch (error) {
         console.log(error);
       }
@@ -214,6 +219,7 @@ export default function TeamPlayer() {
                     className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                     href={{
                       pathname: '/playerInformationRef',
+                      query: { player_id: data.player_id },
                     }}
                     rel='noopener noreferrer'
                     target='_blank'
@@ -226,6 +232,7 @@ export default function TeamPlayer() {
                     className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                     href={{
                       pathname: '/playerInformationRef',
+                      query: { player_id: data.player_id },
                     }}
                     rel='noopener noreferrer'
                     target='_blank'
@@ -237,7 +244,8 @@ export default function TeamPlayer() {
                   <Link
                     className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                     href={{
-                      pathname: '/playerRef',
+                      pathname: '/playerInformationRef',
+                      query: { player_id: data.player_id },
                     }}
                     rel='noopener noreferrer'
                     target='_blank'
@@ -281,7 +289,7 @@ export default function TeamPlayer() {
             <CustomButton
               buttonType='primary'
               onClick={() => {
-                // TODO: 反映処理
+                // TODO: 反映処理　残件対応項目
               }}
             >
               反映

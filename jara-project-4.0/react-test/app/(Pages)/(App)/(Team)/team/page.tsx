@@ -40,6 +40,8 @@ export default function OrgInfo() {
     orgTypeName: '',
     founding_year: 0,
     post_code: '',
+    post_code1: '',
+    post_code2: '',
     location_prefecture: 0,
     locationPrefectureName: '',
     address1: '',
@@ -47,10 +49,10 @@ export default function OrgInfo() {
     org_class: 0,
     orgClassName: '',
     jara_org_type: 0,
-    jaraOrgTypeName: '',
+    jaraOrgTypeName: '任意',
     jara_org_reg_trail: '',
     pref_org_type: 0,
-    prefOrgTypeName: '',
+    prefOrgTypeName: '任意',
     pref_org_reg_trail: '',
   } as Organization);
   const router = useRouter();
@@ -148,6 +150,7 @@ export default function OrgInfo() {
         // const orgType = await axios.get<OrgType[]>('http://localhost:3100/orgType');
         const orgType = await axios.get('/getOrganizationTypeData'); //団体種別マスターの取得 20240208
         const orgTypeList = orgType.data.map(({ org_type_id, org_type }: { org_type_id: number; org_type: string }) => ({ id: org_type_id, name: org_type }));
+        console.log(orgTypeList);
         setOrgTypeOptions(orgTypeList);
         // const user = await axios.get<UserResponse>('http://localhost:3100/user');
         const userData = await axios.get('/getUserData');
@@ -186,9 +189,9 @@ export default function OrgInfo() {
             },
           }));
           // const staff = await axios.get<Staff[]>('http://localhost:3100/staff');
-          const staff = await axios.post('/getOrgStaffData', org_id); //残件対象項目
+          const staff = await axios.post('/getOrgStaffData', org_id);
           console.log(staff.data);
-          // setTableData(staff.data);
+          setTableData(staff.data.result);
         }
       } catch (error: any) {
         setErrorMessage(['API取得エラー:' + error.message]);
@@ -279,7 +282,7 @@ export default function OrgInfo() {
           {
             id: prevData.length + 1,
             user_id: '',
-            userName: '',
+            user_name: '',
             delete_flag: false,
             staff_type_id: [],
             isUserFound: true, //新規登録時は便宜的にtrue
@@ -348,6 +351,7 @@ export default function OrgInfo() {
                   console.log(response);
                   // TODO: 登録処理成功時の処理
                   //window.confirm('団体情報を登録しました。');
+                  router.push('/teamRef?orgId=' + response.data.result);
                 })
                 .catch((error) => {
                   console.log(error);
@@ -370,6 +374,7 @@ export default function OrgInfo() {
                 .then((response) => {
                   // TODO: 更新処理成功時の処理
                   window.confirm('団体情報を更新しました。');
+                  router.push('/teamRef?orgId=' + org_id);
                 })
                 .catch((error) => {
                   // TODO: 更新処理失敗時の処理
@@ -471,7 +476,7 @@ export default function OrgInfo() {
             <div className='w-full flex flex-row justify-start gap-[8px]'>
               <div className='h-[40px] self-end'>〒</div>
               {/* 郵便番号1 */}
-              <CustomTextField
+              {/* <CustomTextField
                 required={mode !== 'confirm'}
                 displayHelp={mode !== 'confirm'}
                 value={addressNumbers?.[0]}
@@ -483,10 +488,18 @@ export default function OrgInfo() {
                 }
                 isError={addressErrorMessages.length > 0}
                 className='w-[120px]'
+              /> */}
+              <CustomTextField
+                required={mode !== 'confirm'}
+                displayHelp={mode !== 'confirm'}
+                value={formData.post_code1}
+                onChange={(e) => handleInputChange('post_code1', e.target.value)}
+                isError={addressErrorMessages.length > 0}
+                className='w-[120px]'
               />
               <div className='h-[40px] self-end'>-</div>
               {/* 郵便番号2 */}
-              <CustomTextField
+              {/* <CustomTextField
                 required={mode !== 'confirm'}
                 value={addressNumbers?.[1]}
                 onChange={(e) =>
@@ -497,6 +510,13 @@ export default function OrgInfo() {
                 }
                 isError={addressErrorMessages.length > 0}
                 className='w-[120px] self-end'
+              /> */}
+              <CustomTextField
+                required={mode !== 'confirm'}
+                value={formData.post_code2}
+                onChange={(e) => handleInputChange('post_code2', e.target.value)}
+                isError={addressErrorMessages.length > 0}
+                className='w-[120px] self-end'
               />
               {/* 検索 */}
               <CustomButton
@@ -504,10 +524,13 @@ export default function OrgInfo() {
                 className='w-[80px] self-end'
                 disabled={disableFlag}
                 onClick={() => {
+                  formData.post_code = formData.post_code1 + '-' + formData.post_code2;
+                  console.log(formData.post_code);
                   const addressError = Validator.getErrorMessages([
                     Validator.validateRequired(formData.post_code, '郵便番号'),
                     Validator.validateAddressNumberFormat(formData.post_code),
                   ]);
+                  console.log(addressError.length);
                   if (addressError.length > 0) {
                     setAddressErrorMessages(addressError);
                     return;
@@ -647,11 +670,13 @@ export default function OrgInfo() {
                 mode !== 'confirm' ? formData.jara_org_type?.toString() : formData.jaraOrgTypeName
               }
               onChange={(e) => {
+                console.log(formData.jara_org_type);
                 handleInputChange('jara_org_type', e);
                 handleInputChange(
                   'jaraOrgTypeName',
                   orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
                 );
+                console.log("sssssss", formData.jara_org_type);
               }}
               readonly={mode === 'confirm'}
               options={orgTypeOptions.map((orgType) => ({
@@ -822,7 +847,7 @@ export default function OrgInfo() {
                   <CustomTextField
                     displayHelp={false}
                     required={false}
-                    value={data.isUserFound ? data.userName : '該当ユーザーなし'}
+                    value={data.isUserFound ? data.user_name : '該当ユーザーなし'}
                     disabled={!data.isUserFound}
                     readonly={mode === 'confirm' || !data.isUserFound}
                     className={data.isUserFound ? '' : 'text-systemErrorText'}
