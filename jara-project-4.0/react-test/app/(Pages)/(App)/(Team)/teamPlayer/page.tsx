@@ -74,8 +74,8 @@ export default function TeamPlayer() {
     }
     const getTeamPlayer = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         // const response = await axios.get('/teamPlayers');
         const response = await axios.post('/searchOrganizationPlayersForTeamRef', orgId);
         console.log(response.data.result);
@@ -91,7 +91,7 @@ export default function TeamPlayer() {
         console.log(teamResponse.data.result);
         setTeamData(teamResponse.data.result);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
     getTeamPlayer();

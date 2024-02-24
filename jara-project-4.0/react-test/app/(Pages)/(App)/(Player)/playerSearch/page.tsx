@@ -138,12 +138,11 @@ export default function PlayerSearch() {
     // apiUri = apiUri.slice(0, -1);
 
     try {
-      const csrf = () => axios.get('/sanctum/csrf-cookie')
-      await csrf()
+      const csrf = () => axios.get('/sanctum/csrf-cookie');
+      await csrf();
       // const response = await axios.get<Player[]>('/playerSearch/');
       const response = await axios.post('/playerSearch', searchCond);
       const data = response.data.result;
-      console.log(data);
       if (data.length > 100) {
         window.alert('検索結果が100件を超えました、上位100件を表示しています。');
       }
@@ -156,7 +155,6 @@ export default function PlayerSearch() {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
     }
   };
-  console.log(visibleData);
   // ログインユーザーの種別
   const [userType, setUserType] = useState<number>(1);
 
@@ -175,8 +173,8 @@ export default function PlayerSearch() {
         // 仮のURL（繋ぎ込み時に変更すること）
         // 性別
         // const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         const sexResponse = await axios.get('/getSexList');
         const sexList = sexResponse.data.map(({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }));
         setSex(sexList);

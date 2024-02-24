@@ -561,6 +561,7 @@ class PlayerController extends Controller
 
 
         Log::debug(sprintf("searchPlayer end"));
+        
         return response()->json(['reqData' => $sex_list, 'result' => $player_list]); //送信データ(debug用)とDBの結果を返す
         // return view('player.search', ["page_mode" => "search", "sex_list" => $sex_list, "player_list" => $player_list, "searched_data" => (object)$searched_data]);
     }
@@ -718,8 +719,13 @@ class PlayerController extends Controller
     //react 選手情報削除画面から受け取ったデータを削除する 20240201
     public function deletePlayerData(Request $request, T_players $tPlayersData, T_raceResultRecord $tRaceResultRecord)
     {
+        
+
         Log::debug(sprintf("deletePlayerData start"));
         $reqData = $request->all();
+        if(empty($reqData['playerInformation'])){
+            return response()->json("選手情報がないため選手を削除できません。",400);
+        }
         Log::debug($reqData);
 
         $tPlayersData::$playerInfo['player_id'] = $reqData['playerInformation']['player_id']; //選手ID
@@ -729,7 +735,14 @@ class PlayerController extends Controller
         $result = $tRaceResultRecord->deleteRaceResultRecord_playerId($tRaceResultRecord::$raceResultRecordInfo); //該当選手に削除フラグを立てる 20240208
 
         Log::debug(sprintf("deletePlayerData end"));
-        return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
+        if($result==="success") {
+            return response()->json("選手情報の削除が完了しました。",200);
+            
+        }
+        else {
+            return response()->json("失敗しました。選手を削除できませんでした。",500);
+        }
+        // return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
     }
     public function checkJARAPlayerId(Request $request, T_players $tPlayersData)
     {

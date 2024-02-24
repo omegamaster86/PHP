@@ -98,11 +98,11 @@ export default function VolunteerInformationRef() {
     const fetchData = async () => {
       try {
         // TODO: 仮のURL（繋ぎ込み時に変更すること）
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         // const volunteerResponse = await axios.get<VolunteerResponse>('/volunteer',);
         const volunteerResponse = await axios.post('/getVolunteerData', volunteer_id); //ボランティア情報の取得 20240213
-        console.log(volunteerResponse.data.result);
+        // console.log(volunteerResponse.data.result);
         setVolunteerdata({
           volunteer_id: volunteerResponse.data.result.volunteer_id, // ボランティアID
           volunteer_name: volunteerResponse.data.result.volunteer_name, // 氏名
@@ -125,7 +125,7 @@ export default function VolunteerInformationRef() {
         // const volunteerHistoriesResponse = await axios.get<VolunteerHistoriesResponse[]>(
         //   '/volunteerHistories',
         // );
-        console.log(volunteerResponse.data.volHistData)
+        // console.log(volunteerResponse.data.volHistData)
         setVolunteerHistoriesdata(volunteerResponse.data.volHistData);
       } catch (error) {
         // TODO: エラーハンドリングを実装

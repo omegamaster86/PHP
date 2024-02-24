@@ -70,7 +70,7 @@ const ImageUploader: FC<ImageUploaderProps> = ({
       } catch (error) {
         // ↓ここでエラーに関するユーザーへの通知や処理を行う
         // console.log(`アップロード中にエラーが発生しました: ${error}`);
-        console.log(`アップロード中にエラーが発生しました。`);
+        // console.log(`アップロード中にエラーが発生しました。`);
       }
     },
     [currentShowFile],
