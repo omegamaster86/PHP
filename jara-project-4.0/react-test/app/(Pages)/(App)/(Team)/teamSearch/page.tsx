@@ -82,14 +82,14 @@ export default function TeamSearch() {
    * 検索結果をstateにセットする
    */
   const handleSearch = async () => {
-    const csrf = () => axios.get('/sanctum/csrf-cookie')
-    await csrf()
+    const csrf = () => axios.get('/sanctum/csrf-cookie');
+    await csrf();
     axios
       // .get<Org[]>('/orgSearch')
       .post('/orgSearch', formData)
       .then((response) => {
         const data = response.data.result;
-        console.log(data);
+        // console.log(data);
         if (data.length > 100) {
           window.alert('検索結果が100件を超えました、上位100件を表示しています。');
         }
@@ -121,13 +121,13 @@ export default function TeamSearch() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
 
         //団体種別マスターの取得 20240209
         // const orgType = await axios.get<OrgType[]>('/orgType');
         const orgType = await axios.get('/getOrganizationTypeData');
-        console.log(orgType.data);
+        // console.log(orgType.data);
         const orgTypeList = orgType.data.map(({ org_type_id, org_type }: { org_type_id: number; org_type: string }) => ({ id: org_type_id, name: org_type }));
         setOrgTypeOptions(orgTypeList);
 
@@ -222,7 +222,7 @@ export default function TeamSearch() {
                   }))}
                   value={formData?.org_type || ''}
                   onChange={(e) => {
-                    console.log(e);
+                    // console.log(e);
                     handleInputChange('org_type', e);
                     handleInputChange(
                       'orgTypeName',
@@ -243,7 +243,7 @@ export default function TeamSearch() {
                   }))}
                   value={formData?.org_class || ''}
                   onChange={(e) => {
-                    console.log(e);
+                    // console.log(e);
                     handleInputChange('org_class', e);
                     handleInputChange(
                       'orgClassName',

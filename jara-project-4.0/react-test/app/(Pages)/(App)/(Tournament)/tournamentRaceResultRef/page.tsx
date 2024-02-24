@@ -85,11 +85,11 @@ export default function TournamentRaceResultRef() {
     const fetchData = async () => {
       try {
         // 仮のURL（繋ぎ込み時に変更すること）
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
         const response = await axios.post('/getTournRaceResultRecords', race_id); //残件対象項目
-        console.log(response.data.result);
+        // console.log(response.data.result);
         //クルー情報を取得するためのパラメータをセット
         setSearchCrewInfo(response.data.result);
         setResultRecordsData(response.data.result);
@@ -216,13 +216,13 @@ export default function TournamentRaceResultRef() {
    */
   const getCrew = async (index: number) => {
     // var apiUri = 'http://localhost:3100/crew?';
-    const csrf = () => axios.get('/sanctum/csrf-cookie')
-    await csrf()
+    const csrf = () => axios.get('/sanctum/csrf-cookie');
+    await csrf();
     await axios
       // .get<CrewResponse[]>('/crew/') //残件対象項目
       .post('/getCrewData', searchCrewInfo[index])
       .then((response) => {
-        console.log(response.data.result);
+        // console.log(response.data.result);
         // レスポンスからデータを取り出してstateにセット
         setCrewRecordsData(response.data.result);
       })
@@ -371,7 +371,7 @@ export default function TournamentRaceResultRef() {
                         <CustomTd>
                           <div
                             onClick={(event) => {
-                              console.log(index);
+                              // console.log(index);
                               setOpen(true);
                               getCrew(index);
                             }}

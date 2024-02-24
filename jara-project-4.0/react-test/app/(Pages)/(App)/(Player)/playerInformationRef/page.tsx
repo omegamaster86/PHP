@@ -78,14 +78,14 @@ export default function PlayerInformationRef() {
   const dataDelete = async () => {
     deleteData.playerInformation = playerInformation;
     deleteData.raceResultRecordsData = raceResultRecordsData;
-    const csrf = () => axios.get('/sanctum/csrf-cookie')
-    await csrf()
+    const csrf = () => axios.get('/sanctum/csrf-cookie');
+    await csrf();
     await axios.post('/deletePlayerData', deleteData)
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         router.push('/tournamentSearch'); //大会検索画面に遷移する 20240222
       }).catch(error => {
-        console.log(error);
+        setError({ isError: true, errorMessage: error.response?.data });
       });
   }
 
@@ -95,10 +95,10 @@ export default function PlayerInformationRef() {
       try {
         // 仮のURL（繋ぎ込み時に変更すること）
         // const playerInf = await axios.get<PlayerInformationResponse>('http://localhost:3100/player',);
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         const playerInf = await axios.post('/getPlayerInfoData', player_id);
-        console.log(playerInf.data.result);
+        // console.log(playerInf.data.result);
         //サイド情報のデータ変換
         const sideList = playerInf.data.result.side_info.split('');
         for (let i = 0; i < 4; i++) {
@@ -130,7 +130,7 @@ export default function PlayerInformationRef() {
         });
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
         const response = await axios.post('/getRaceResultRecordsData', player_id);
-        console.log(response.data.result);
+        // console.log(response.data.result);
         setResultRecordsData(response.data.result);
       } catch (error: any) {
         setError({ isError: true, errorMessage: 'API取得エラー:' + error.message });

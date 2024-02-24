@@ -73,8 +73,8 @@ export default function TeamPlayer() {
     }
     const getTeamPlayer = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         const response = await axios.get('/teamPlayers');
         setFormData(
           response.data.map((data: TeamPlayerInformationResponse) => ({
@@ -86,7 +86,7 @@ export default function TeamPlayer() {
         const teamResponse = await axios.get('/team');
         setTeamData(teamResponse.data);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
     getTeamPlayer();

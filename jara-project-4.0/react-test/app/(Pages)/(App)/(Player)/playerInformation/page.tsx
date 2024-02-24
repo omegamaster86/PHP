@@ -1,6 +1,6 @@
 // 機能名: 選手情報登録・更新・入力確認
 'use client';
-import { PLAYER_IMAGE_URL, NO_IMAGE_URL } from "../../../../utils/imageUrl" //For importing image url from a single source of truth
+import { PLAYER_IMAGE_URL, NO_IMAGE_URL } from "../../../../utils/imageUrl"; //For importing image url from a single source of truth
 import { useEffect, useState, ChangeEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/app/lib/axios';
@@ -30,7 +30,6 @@ export default function PlayerInformation() {
 
   // modeの値を取得 update, create
   const mode = searchParams.get('mode')?.toString() || '';
-  console.log(mode);
   switch (mode) {
     case 'update':
       break;
@@ -63,7 +62,7 @@ export default function PlayerInformation() {
       break;
     default:
       break;
-  }
+  };
   const [player_id, setPlayerId] = useState<any>({
     player_id: playerId,
   });
@@ -186,8 +185,8 @@ export default function PlayerInformation() {
       // 仮のURL（繋ぎ込み時に変更すること）
       try {
         // TODO: 都道府県情報の取得処理を実装
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         axios
           //20240123 DBからデータ取得
           // .get<PrefectureResponse[]>('http://localhost:3100/prefecture')
@@ -251,13 +250,13 @@ export default function PlayerInformation() {
       // TODO: 選手情報を取得する処理を実装
       // searchParams.get('id')から選手IDを取得
       const fetchPlayerData = async () => {
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         axios
           // .get<PlayerInformationResponse>('http://localhost:3100/player')
           .post('/getUpdatePlayerData', player_id)
           .then((response) => {
-            console.log(response.data);
+            // console.log(response.data);
             //サイド情報のデータ変換
             var data = response.data.result.side_info.split('');
             for (let i = 0; i < 4; i++) {
@@ -302,7 +301,7 @@ export default function PlayerInformation() {
 
       }
 
-      fetchPlayerData()// APIを叩いて、選手情報を取得する
+      fetchPlayerData();// APIを叩いて、選手情報を取得する
     }
 
   }, []);
@@ -420,8 +419,8 @@ export default function PlayerInformation() {
             return;
           }
           // jara_player_id登録されているかどうかチェック
-          const csrf = () => axios.get('/sanctum/csrf-cookie')
-          await csrf()
+          const csrf = () => axios.get('/sanctum/csrf-cookie');
+          await csrf();
           axios
             // .post('http://localhost:3100/', registerData)
             .post('/checkJARAPlayerId', { "jara_player_id": formData.jara_player_id, "mode": "create" })
@@ -452,10 +451,9 @@ export default function PlayerInformation() {
           if (isError) {
             return;
           }
-          console.log("testing",formData)
           // jara_player_id登録されているかどうかチェック
-          const csrf = () => axios.get('/sanctum/csrf-cookie')
-          await csrf()
+          const csrf = () => axios.get('/sanctum/csrf-cookie');
+          await csrf();
           axios
             // .post('http://localhost:3100/', registerData)
             .post('/checkJARAPlayerId', { "jara_player_id": formData.jara_player_id, "mode": "update" })
@@ -487,8 +485,8 @@ export default function PlayerInformation() {
           if (prevMode == 'update') {
             // TODO: 更新処理を実装
             const registerData = {};
-            const csrf = () => axios.get('/sanctum/csrf-cookie')
-            await csrf()
+            const csrf = () => axios.get('/sanctum/csrf-cookie');
+            await csrf();
 
             // jara_player_id登録されているかどうかチェック
             await axios
@@ -507,7 +505,6 @@ export default function PlayerInformation() {
                   }) //20240123 送信テスト
                   .then((response) => {
                     // TODO: 更新処理成功時の処理
-                    console.log(response);
                     window.confirm('選手情報を更新しました。');
                     const urlStr = '/playerInformationRef' + '?player_id=' + response.data.users[0].player_id;
                     router.push(urlStr); //選手情報参照画面に遷移する
@@ -551,8 +548,8 @@ export default function PlayerInformation() {
             //   });
           } else if (prevMode == 'create') {
             // TODO: 登録処理を実装
-            const csrf = () => axios.get('/sanctum/csrf-cookie')
-            await csrf()
+            const csrf = () => axios.get('/sanctum/csrf-cookie');
+            await csrf();
             const registerData = {};
 
             // jara_player_id登録されているかどうかチェック
@@ -573,7 +570,6 @@ export default function PlayerInformation() {
                   })
                   .then((response) => {
                     // TODO: 登録処理成功時の処理の実装
-                    console.log(response);
                     window.confirm('選手情報を登録しました。');
                     const urlStr = '/playerInformationRef' + '?player_id=' + response.data.users[0].player_id;
                     router.push(urlStr); //選手情報参照画面に遷移する
@@ -642,7 +638,7 @@ export default function PlayerInformation() {
                       uploadedPhotoName:'',
                       uploadedPhoto: undefined,
                       photo:''
-                    }))
+                    }));
                     setCurrentShowFile(undefined);
                   }}
                 >
