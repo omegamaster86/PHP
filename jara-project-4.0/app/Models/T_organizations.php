@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 class T_organizations extends Model
@@ -186,6 +187,7 @@ class T_organizations extends Model
                     $organization);
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
+        Log::debug($insertId);
         return $insertId;
     }
 

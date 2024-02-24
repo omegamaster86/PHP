@@ -855,10 +855,27 @@ class OrganizationController extends Controller
     public function storeOrgData(Request $request, T_organizations $tOrganizations)
     {
         Log::debug(sprintf("storeOrgData start"));
-        $result = $request->all();
-        Log::debug($result);
+        $lastInsertId = "";
+        $organizationInfo = $request->all();
+        Log::debug($organizationInfo);
+        DB::beginTransaction();
+        try {
+            Log::debug("=========================");
+            //確認画面から登録
+            $lastInsertId = $tOrganizations->insertOrganization($organizationInfo);
+            //新しく入力されたスタッフをInsertする
+            // $insert_values = array();
+            // $insertValues = $this->generateInsertStaffValues($organizationInfo, $lastInsertId, $insert_values);
+            //$tOrganizationStaff->insertOrganizationStaff($insertValues, $insert_values);
+            Log::debug($lastInsertId);
+            DB::commit();
+        } catch (\Throwable $e) {
+            Log::debug($e);
+            DB::rollBack();
+        }
+        Log::debug($lastInsertId);
         Log::debug(sprintf("storeOrgData end"));
-        return response()->json(['result' => $result]); //DBの結果を返す
+        return response()->json(['result' => $lastInsertId]); //DBの結果を返す
     }
 
     //userIDに紐づいたデータを送信 20240131

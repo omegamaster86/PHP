@@ -351,6 +351,7 @@ export default function OrgInfo() {
                   console.log(response);
                   // TODO: 登録処理成功時の処理
                   //window.confirm('団体情報を登録しました。');
+                  router.push('/teamRef?orgId=' + response.data.result);
                 })
                 .catch((error) => {
                   console.log(error);
@@ -373,6 +374,7 @@ export default function OrgInfo() {
                 .then((response) => {
                   // TODO: 更新処理成功時の処理
                   window.confirm('団体情報を更新しました。');
+                  router.push('/teamRef?orgId=' + org_id);
                 })
                 .catch((error) => {
                   // TODO: 更新処理失敗時の処理
@@ -674,7 +676,7 @@ export default function OrgInfo() {
                   'jaraOrgTypeName',
                   orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
                 );
-                console.log("sssssss",formData.jara_org_type);
+                console.log("sssssss", formData.jara_org_type);
               }}
               readonly={mode === 'confirm'}
               options={orgTypeOptions.map((orgType) => ({
