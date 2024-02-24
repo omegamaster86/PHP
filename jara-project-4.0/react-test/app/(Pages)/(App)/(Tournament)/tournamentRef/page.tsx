@@ -20,6 +20,7 @@ import {
 } from '@/app/components';
 import { Tournament, Race, UserResponse } from '@/app/types';
 import Link from 'next/link';
+import EditIcon from '@mui/icons-material/EditOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
@@ -135,6 +136,19 @@ export default function TournamentRef() {
               {mode === 'delete' && '大会情報削除'}
               {mode !== 'delete' && '大会情報'}
             </CustomTitle>
+            {mode !== 'delete' && (
+              <Link
+                href={{
+                  pathname: '/tournament',
+                  query: { mode: 'update', tourn_id: tournId },
+                }}
+                target='_blank'
+                className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
+              >
+                <EditIcon className='cursor-pointer m-1 text-small md:text-h3' />
+                大会情報を更新
+              </Link>
+            )}
           </div>
           <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4 '>
             <div className='flex flex-col gap-[10px]'>
