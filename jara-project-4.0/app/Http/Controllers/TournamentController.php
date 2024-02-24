@@ -3,21 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\RedirectResponse;
+// use App\Providers\RouteServiceProvider;
+// use Illuminate\Auth\Events\Registered;
+// use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+// use Illuminate\Support\Facades\Hash;
+// use Illuminate\Support\Str;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\WelcomeMail;
+// use Illuminate\Support\Facades\Mail;
+// use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-use Illuminate\Validation\ValidationException;
-use League\CommonMark\Node\Inline\Newline;
+// use Illuminate\Validation\ValidationException;
+// use League\CommonMark\Node\Inline\Newline;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
@@ -40,84 +40,84 @@ use Illuminate\Support\Facades\Validator;
 class TournamentController extends Controller
 {
     // 大会登録画面呼び出し
-    public function create(Request $request)
-    {
-        //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        }
-        return view('tournament.register-edit', ["pagemode" => "register"]);
-    }
+    // public function create(Request $request)
+    // {
+    //     //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     }
+    //     return view('tournament.register-edit', ["pagemode" => "register"]);
+    // }
 
     // 大会情報変更画面呼び出し
-    public function createEdit(Request $request, T_tournaments $tTournaments, T_races $tRace)
-    {
-        //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        }
-        //大会情報更新に必要な、大会IDなどを取得
-        $tTours = $tTournaments->getTournament(1); //大会情報を取得
-        $tRaceData = $tRace->getRace(1); //レース情報を取得
-        return view('tournament.register-edit', ["pagemode" => "edit", "TournamentData" => $tTours, "RaceData" => $tRaceData]);
-    }
+    // public function createEdit(Request $request, T_tournaments $tTournaments, T_races $tRace)
+    // {
+    //     //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     }
+    //     //大会情報更新に必要な、大会IDなどを取得
+    //     $tTours = $tTournaments->getTournament(1); //大会情報を取得
+    //     $tRaceData = $tRace->getRace(1); //レース情報を取得
+    //     return view('tournament.register-edit', ["pagemode" => "edit", "TournamentData" => $tTours, "RaceData" => $tRaceData]);
+    // }
 
     //大会登録確認画面を開く
-    public function createConfirm()
-    {
-        //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        }
-        return view('tournament.register-confirm', ["pagemode" => "register"]);
-    }
+    // public function createConfirm()
+    // {
+    //     //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     }
+    //     return view('tournament.register-confirm', ["pagemode" => "register"]);
+    // }
 
     //大会更新確認画面を開く
-    public function createEditConfirm()
-    {
-        //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        }
-        return view('tournament.register-confirm', ["pagemode" => "edit"]);
-    }
+    // public function createEditConfirm()
+    // {
+    //     //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     }
+    //     return view('tournament.register-confirm', ["pagemode" => "edit"]);
+    // }
 
     //大会情報参照画面に遷移した時
-    public function createReference(T_tournaments $tTournaments, T_races $tRace)
-    {
-        //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        }
-        $tTours = $tTournaments->getTournament(1); //大会情報を取得
-        $tRaceData = $tRace->getRace(1); //レース情報を取得
-        return view('tournament.reference', ["pagemode" => "refer", "TournamentData" => $tTours, "RaceData" => $tRaceData]);
-    }
+    // public function createReference(T_tournaments $tTournaments, T_races $tRace)
+    // {
+    //     //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     }
+    //     $tTours = $tTournaments->getTournament(1); //大会情報を取得
+    //     $tRaceData = $tRace->getRace(1); //レース情報を取得
+    //     return view('tournament.reference', ["pagemode" => "refer", "TournamentData" => $tTours, "RaceData" => $tRaceData]);
+    // }
 
     //大会情報削除画面に遷移した時
-    public function createDelete(T_tournaments $tTournaments, T_races $tRace)
-    {
-        //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        }
-        $tTours = $tTournaments->getTournament(1); //大会情報を取得
-        $tRaceData = $tRace->getRace(1); //レース情報を取得
-        return view('tournament.reference', ["pagemode" => "delete", "TournamentData" => $tTours, "RaceData" => $tRaceData]);
-    }
+    // public function createDelete(T_tournaments $tTournaments, T_races $tRace)
+    // {
+    //     //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     }
+    //     $tTours = $tTournaments->getTournament(1); //大会情報を取得
+    //     $tRaceData = $tRace->getRace(1); //レース情報を取得
+    //     return view('tournament.reference', ["pagemode" => "delete", "TournamentData" => $tTours, "RaceData" => $tRaceData]);
+    // }
 
     //大会検索画面に遷移した時
-    public function createSearch(T_tournaments $tTournaments, T_races $tRace, M_venue $venueData)
-    {
-        //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        }
-        $tournamentInfo = "";
-        $tournamentList = "";
-        $venueList = $venueData->getVenueList();
-        return view('tournament.search', ["pagemode" => "search", "tournamentInfo" => $tournamentInfo, "tournamentList" => $tournamentList, "venueList" => $venueList]);
-    }
+    // public function createSearch(T_tournaments $tTournaments, T_races $tRace, M_venue $venueData)
+    // {
+    //     //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     }
+    //     $tournamentInfo = "";
+    //     $tournamentList = "";
+    //     $venueList = $venueData->getVenueList();
+    //     return view('tournament.search', ["pagemode" => "search", "tournamentInfo" => $tournamentInfo, "tournamentList" => $tournamentList, "venueList" => $venueList]);
+    // }
 
     //大会情報登録画面で確認ボタンを押した時
     public function storeConfirm(Request $request, T_tournaments $t_organization, T_organizations $tOrganization)
@@ -221,92 +221,92 @@ class TournamentController extends Controller
     }
 
     //登録ボタンを押した時
-    public function storeConfirmRegister(Request $request, T_tournaments $tTournament, T_races $tRace, T_raceResultRecord $tRaceResultRecord)
-    {
-        //確認画面から登録
-        //$tournamentInfo = $request->all();
-        $tTournament::$tournamentInfo['tourn_id'] = 1;
-        $tTournament::$tournamentInfo['tourn_name'] = "Register";
-        $result = $tTournament->insertTournaments($tTournament::$tournamentInfo);
-        $ListCout = 3; //レース登録リスト行数分更新する
-        for ($i = 0; $i < $ListCout; $i++) {
-            $tRace::$racesData['race_number'] = $i;
-            $tRace::$racesData['tourn_id'] = $result[1]; //大会IDに紐づける
-            $tRace::$racesData['race_name'] = $i;
-            $tRace::$racesData['event_id'] = $i;
-            $tRace->insertRaces($tRace::$racesData); //レーステーブルの挿入
-        }
+    // public function storeConfirmRegister(Request $request, T_tournaments $tTournament, T_races $tRace, T_raceResultRecord $tRaceResultRecord)
+    // {
+    //     //確認画面から登録
+    //     //$tournamentInfo = $request->all();
+    //     $tTournament::$tournamentInfo['tourn_id'] = 1;
+    //     $tTournament::$tournamentInfo['tourn_name'] = "Register";
+    //     $result = $tTournament->insertTournaments($tTournament::$tournamentInfo);
+    //     $ListCout = 3; //レース登録リスト行数分更新する
+    //     for ($i = 0; $i < $ListCout; $i++) {
+    //         $tRace::$racesData['race_number'] = $i;
+    //         $tRace::$racesData['tourn_id'] = $result[1]; //大会IDに紐づける
+    //         $tRace::$racesData['race_name'] = $i;
+    //         $tRace::$racesData['event_id'] = $i;
+    //         $tRace->insertRaces($tRace::$racesData); //レーステーブルの挿入
+    //     }
 
-        $ListCout = 2; //出漕結果リスト行数分更新する
-        for ($i = 0; $i < $ListCout; $i++) {
-            $result = $tRaceResultRecord->insertRaceResultRecord($tRaceResultRecord::$raceResultRecordInfo); //出漕結果テーブルの挿入
-        }
+    //     $ListCout = 2; //出漕結果リスト行数分更新する
+    //     for ($i = 0; $i < $ListCout; $i++) {
+    //         $result = $tRaceResultRecord->insertRaceResultRecord($tRaceResultRecord::$raceResultRecordInfo); //出漕結果テーブルの挿入
+    //     }
 
-        if ($result == "success") {
-            $page_status = "完了しました";
-            $page_url = route('my-page');
-            $page_url_text = "マイページ";
+    //     if ($result == "success") {
+    //         $page_status = "完了しました";
+    //         $page_url = route('my-page');
+    //         $page_url_text = "マイページ";
 
-            return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-        }
-    }
+    //         return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+    //     }
+    // }
 
     //更新ボタンを押した時
-    public function storeConfirmEdit(Request $request, T_tournaments $tTournament, T_races $tRace, T_raceResultRecord $tRaceResultRecord)
-    {
-        $targetTournamentId = 1;
-        $result = "success";
+    // public function storeConfirmEdit(Request $request, T_tournaments $tTournament, T_races $tRace, T_raceResultRecord $tRaceResultRecord)
+    // {
+    //     $targetTournamentId = 1;
+    //     $result = "success";
 
-        //$tournamentInfo = $request->all();
-        $tTournament::$tournamentInfo['tourn_id'] = $targetTournamentId;
-        $tTournament::$tournamentInfo['tourn_name'] = "Update";
-        $result = $tTournament->updateTournaments($tTournament::$tournamentInfo); //大会テーブルの更新
+    //     //$tournamentInfo = $request->all();
+    //     $tTournament::$tournamentInfo['tourn_id'] = $targetTournamentId;
+    //     $tTournament::$tournamentInfo['tourn_name'] = "Update";
+    //     $result = $tTournament->updateTournaments($tTournament::$tournamentInfo); //大会テーブルの更新
 
-        $tRace::$racesData['tourn_id'] = $targetTournamentId;
-        $tRace::$racesData['race_name'] = "Update";
-        $tRace::$racesData['event_id'] = 9;
-        $result = $tRace->updateRaces($tRace::$racesData); //レーステーブルの更新
+    //     $tRace::$racesData['tourn_id'] = $targetTournamentId;
+    //     $tRace::$racesData['race_name'] = "Update";
+    //     $tRace::$racesData['event_id'] = 9;
+    //     $result = $tRace->updateRaces($tRace::$racesData); //レーステーブルの更新
 
-        $tRaceResultRecord::$raceResultRecordInfo['tourn_id'] = $targetTournamentId;
-        $result = $tRaceResultRecord->updateRaceResultRecord($tRaceResultRecord::$raceResultRecordInfo); //出漕結果テーブルの更新
+    //     $tRaceResultRecord::$raceResultRecordInfo['tourn_id'] = $targetTournamentId;
+    //     $result = $tRaceResultRecord->updateRaceResultRecord($tRaceResultRecord::$raceResultRecordInfo); //出漕結果テーブルの更新
 
-        if ($result == "success") {
-            $page_status = "完了しました";
-            $page_url = route('my-page');
-            $page_url_text = "マイページ";
-            return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-        }
-    }
+    //     if ($result == "success") {
+    //         $page_status = "完了しました";
+    //         $page_url = route('my-page');
+    //         $page_url_text = "マイページ";
+    //         return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+    //     }
+    // }
 
     //削除ボタンを押した時（削除フラグの更新）
-    public function deleteTournament(Request $request, T_tournaments $tTournament, T_races $tRace, T_raceResultRecord $tRaceResultRecord): View
-    {
-        $targetTournamentId = 1;
-        $result = "success";
+    // public function deleteTournament(Request $request, T_tournaments $tTournament, T_races $tRace, T_raceResultRecord $tRaceResultRecord): View
+    // {
+    //     $targetTournamentId = 1;
+    //     $result = "success";
 
-        //$tournamentInfo = $request->all();
-        $tTournament::$tournamentInfo['tourn_id'] = $targetTournamentId;
-        $tTournament::$tournamentInfo['tourn_name'] = "Delete";
-        $tTournament::$tournamentInfo['delete_flag'] = 1;
-        $result = $tTournament->updateTournaments($tTournament::$tournamentInfo); //大会テーブルの更新
+    //     //$tournamentInfo = $request->all();
+    //     $tTournament::$tournamentInfo['tourn_id'] = $targetTournamentId;
+    //     $tTournament::$tournamentInfo['tourn_name'] = "Delete";
+    //     $tTournament::$tournamentInfo['delete_flag'] = 1;
+    //     $result = $tTournament->updateTournaments($tTournament::$tournamentInfo); //大会テーブルの更新
 
-        $tRace::$racesData['tourn_id'] = $targetTournamentId;
-        $tRace::$racesData['race_name'] = "Delete";
-        $tRace::$racesData['event_id'] = 0;
-        $tRace::$racesData['delete_flag'] = 1;
-        $result = $tRace->updateRaces($tRace::$racesData); //レーステーブルの更新
+    //     $tRace::$racesData['tourn_id'] = $targetTournamentId;
+    //     $tRace::$racesData['race_name'] = "Delete";
+    //     $tRace::$racesData['event_id'] = 0;
+    //     $tRace::$racesData['delete_flag'] = 1;
+    //     $result = $tRace->updateRaces($tRace::$racesData); //レーステーブルの更新
 
-        $tRaceResultRecord::$raceResultRecordInfo['tourn_id'] = $targetTournamentId;
-        $tRaceResultRecord::$raceResultRecordInfo['delete_flag'] = 1;
-        $result = $tRaceResultRecord->updateRaceResultRecord($tRaceResultRecord::$raceResultRecordInfo); //出漕結果テーブルの更新
+    //     $tRaceResultRecord::$raceResultRecordInfo['tourn_id'] = $targetTournamentId;
+    //     $tRaceResultRecord::$raceResultRecordInfo['delete_flag'] = 1;
+    //     $result = $tRaceResultRecord->updateRaceResultRecord($tRaceResultRecord::$raceResultRecordInfo); //出漕結果テーブルの更新
 
-        if ($result == "success") {
-            $page_status = "完了しました";
-            $page_url = route('my-page');
-            $page_url_text = "マイページ";
-            return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-        }
-    }
+    //     if ($result == "success") {
+    //         $page_status = "完了しました";
+    //         $page_url = route('my-page');
+    //         $page_url_text = "マイページ";
+    //         return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+    //     }
+    // }
 
     //----------------大会検索で使用　ここから----------------------------
     private function generateSearchCondition($searchInfo)
@@ -374,97 +374,97 @@ class TournamentController extends Controller
     }
 
     //大会エントリー一括登録
-    public function createEntryRegister(T_tournaments $tourn)
-    {
-        $tournament_name_list = $tourn->getTournamentName();
-        return view("tournament.entry-register", ["dataList" => [], "errorMsg" => "", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
+    // public function createEntryRegister(T_tournaments $tourn)
+    // {
+    //     $tournament_name_list = $tourn->getTournamentName();
+    //     return view("tournament.entry-register", ["dataList" => [], "errorMsg" => "", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
 
-        //user can visit this page if he/she is an admin
-        // if (((Auth::user()->user_type & "01000000") === "01000000") or ((Auth::user()->user_type & "00100000") === "00100000") or ((Auth::user()->user_type & "00010000") === "00010000") or ((Auth::user()->user_type & "00001000") === "00001000")) {
-        //     $tournament_name_list = $tourn->getTournamentName();
-        //     return view("tournament.entry-register", ["dataList" => [], "errorMsg" => "", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
-        // }
-        // //redirect to my-page those have no permission to access tournament-entry-register page
-        // else {
-        //     return redirect('my-page');
-        // }
-    }
-    public function csvReadEntryRegister(Request $request, T_tournaments $tourn, T_races $tRace, T_raceResultRecord $tRaceResultRecord)
-    {
+    //     //user can visit this page if he/she is an admin
+    //     // if (((Auth::user()->user_type & "01000000") === "01000000") or ((Auth::user()->user_type & "00100000") === "00100000") or ((Auth::user()->user_type & "00010000") === "00010000") or ((Auth::user()->user_type & "00001000") === "00001000")) {
+    //     //     $tournament_name_list = $tourn->getTournamentName();
+    //     //     return view("tournament.entry-register", ["dataList" => [], "errorMsg" => "", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
+    //     // }
+    //     // //redirect to my-page those have no permission to access tournament-entry-register page
+    //     // else {
+    //     //     return redirect('my-page');
+    //     // }
+    // }
+    // public function csvReadEntryRegister(Request $request, T_tournaments $tourn, T_races $tRace, T_raceResultRecord $tRaceResultRecord)
+    // {
 
-        $tournament_name_list = $tourn->getTournamentName();
+    //     $tournament_name_list = $tourn->getTournamentName();
 
-        if ($request->has('csvRead')) { // 参照ボタンクリック
-            // CSVファイルが存在するかの確認
-            if ($request->hasFile('csvFile')) {
-                //拡張子がCSVであるかの確認
-                if ($request->csvFile->getClientOriginalExtension() !== "csv") {
-                    // throw new Exception('このファイルはCSVファイルではありません');
-                    return view('tournament.entry-register', ["dataList" => [], "errorMsg" => "このファイルはCSVファイルではありません", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
-                }
-                //ファイルの保存
-                $newCsvFileName = $request->csvFile->getClientOriginalName();
-                $request->csvFile->storeAs('public/csv', $newCsvFileName);
-            } else {
-                // throw new Exception('ファイルを取得できませんでした');
-                return view('tournament.entry-register', ["dataList" => [], "errorMsg" => "ファイルを取得できませんでした。<br/>入力したファイルパスを確認してください", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
-            }
-            //保存したCSVファイルの取得
-            $csv = Storage::disk('local')->get("public/csv/{$newCsvFileName}");
-            // OS間やファイルで違う改行コードをexplode統一
-            $csv = str_replace(array("\r\n", "\r"), "\n", $csv);
-            // $csvを元に行単位のコレクション作成。explodeで改行ごとに分解
+    //     if ($request->has('csvRead')) { // 参照ボタンクリック
+    //         // CSVファイルが存在するかの確認
+    //         if ($request->hasFile('csvFile')) {
+    //             //拡張子がCSVであるかの確認
+    //             if ($request->csvFile->getClientOriginalExtension() !== "csv") {
+    //                 // throw new Exception('このファイルはCSVファイルではありません');
+    //                 return view('tournament.entry-register', ["dataList" => [], "errorMsg" => "このファイルはCSVファイルではありません", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
+    //             }
+    //             //ファイルの保存
+    //             $newCsvFileName = $request->csvFile->getClientOriginalName();
+    //             $request->csvFile->storeAs('public/csv', $newCsvFileName);
+    //         } else {
+    //             // throw new Exception('ファイルを取得できませんでした');
+    //             return view('tournament.entry-register', ["dataList" => [], "errorMsg" => "ファイルを取得できませんでした。<br/>入力したファイルパスを確認してください", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
+    //         }
+    //         //保存したCSVファイルの取得
+    //         $csv = Storage::disk('local')->get("public/csv/{$newCsvFileName}");
+    //         // OS間やファイルで違う改行コードをexplode統一
+    //         $csv = str_replace(array("\r\n", "\r"), "\n", $csv);
+    //         // $csvを元に行単位のコレクション作成。explodeで改行ごとに分解
 
-            $csvList = collect(explode("\n", $csv));
-            $csvList = $csvList->toArray();
-            $checkList = array();
-            $dataList = array();
-            for ($i = 1; $i < count($csvList); $i++) {
-                $value = explode(',', $csvList[$i]);
-                $dataList[$i] = $value;
-            }
+    //         $csvList = collect(explode("\n", $csv));
+    //         $csvList = $csvList->toArray();
+    //         $checkList = array();
+    //         $dataList = array();
+    //         for ($i = 1; $i < count($csvList); $i++) {
+    //             $value = explode(',', $csvList[$i]);
+    //             $dataList[$i] = $value;
+    //         }
 
-            return view('tournament.entry-register', ["dataList" => $dataList, "errorMsg" => "", "checkList" => $checkList, "tournament_name_list" => $tournament_name_list]);
-        } else if ($request->has('dbUpload')) { // 登録ボタンクリック
-            $csvData = Session::get('dataList');
-            // dd($csvData[1][5]);
-            // $result = explode(',', $request->Flag01);
-            $result = "1";
-            //dd($csvData);
-            for ($i = 1; $i < count($csvData); $i++) {
-                if ($result == "1") {
-                    $tRaceResultRecord::$raceResultRecordInfo['player_id'] = $csvData[$i][17]; //選手ID
-                    $tRaceResultRecord::$raceResultRecordInfo['tourn_id'] = $csvData[$i][1]; //大会ID
-                    $tRaceResultRecord::$raceResultRecordInfo['race_id'] = $csvData[$i][7]; //レースID
-                    $tRaceResultRecord::$raceResultRecordInfo['race_number'] = $csvData[$i][10]; //レースNo
-                    $tRaceResultRecord::$raceResultRecordInfo['race_number'] = $csvData[$i][5]; //レース区分ID 仮実装
-                    $tRaceResultRecord::$raceResultRecordInfo['org_id'] = $csvData[$i][12]; //団体ID
-                    $tRaceResultRecord::$raceResultRecordInfo['crew_name'] = $csvData[$i][14]; //クルー名
-                    $tRaceResultRecord::$raceResultRecordInfo['by_group'] = $csvData[$i][9]; //組別
-                    $tRaceResultRecord::$raceResultRecordInfo['event_id'] = $csvData[$i][3]; //種目ID
-                    $log = $tRaceResultRecord->insertRaceResultRecord($tRaceResultRecord::$raceResultRecordInfo);
-                } else if ($result == "2") {
-                    $tRaceResultRecord::$raceResultRecordInfo['player_id'] = $csvData[$i][17]; //選手ID
-                    $tRaceResultRecord::$raceResultRecordInfo['tourn_id'] = $csvData[$i][1]; //大会ID
-                    $tRaceResultRecord::$raceResultRecordInfo['race_id'] = $csvData[$i][7]; //レースID
-                    $tRaceResultRecord::$raceResultRecordInfo['race_number'] = $csvData[$i][10]; //レースNo
-                    $tRaceResultRecord::$raceResultRecordInfo['race_number'] = $csvData[$i][5]; //レース区分ID 仮実装
-                    $tRaceResultRecord::$raceResultRecordInfo['org_id'] = $csvData[$i][12]; //団体ID
-                    $tRaceResultRecord::$raceResultRecordInfo['crew_name'] = $csvData[$i][14]; //クルー名
-                    $tRaceResultRecord::$raceResultRecordInfo['by_group'] = $csvData[$i][9]; //組別
-                    $tRaceResultRecord::$raceResultRecordInfo['event_id'] = $csvData[$i][3]; //種目ID
-                    $tRaceResultRecord->updateRaceResultRecord($tRaceResultRecord::$raceResultRecordInfo);
-                } else {
-                    continue;
-                }
-            }
-            //dd($playersInfo);
+    //         return view('tournament.entry-register', ["dataList" => $dataList, "errorMsg" => "", "checkList" => $checkList, "tournament_name_list" => $tournament_name_list]);
+    //     } else if ($request->has('dbUpload')) { // 登録ボタンクリック
+    //         $csvData = Session::get('dataList');
+    //         // dd($csvData[1][5]);
+    //         // $result = explode(',', $request->Flag01);
+    //         $result = "1";
+    //         //dd($csvData);
+    //         for ($i = 1; $i < count($csvData); $i++) {
+    //             if ($result == "1") {
+    //                 $tRaceResultRecord::$raceResultRecordInfo['player_id'] = $csvData[$i][17]; //選手ID
+    //                 $tRaceResultRecord::$raceResultRecordInfo['tourn_id'] = $csvData[$i][1]; //大会ID
+    //                 $tRaceResultRecord::$raceResultRecordInfo['race_id'] = $csvData[$i][7]; //レースID
+    //                 $tRaceResultRecord::$raceResultRecordInfo['race_number'] = $csvData[$i][10]; //レースNo
+    //                 $tRaceResultRecord::$raceResultRecordInfo['race_number'] = $csvData[$i][5]; //レース区分ID 仮実装
+    //                 $tRaceResultRecord::$raceResultRecordInfo['org_id'] = $csvData[$i][12]; //団体ID
+    //                 $tRaceResultRecord::$raceResultRecordInfo['crew_name'] = $csvData[$i][14]; //クルー名
+    //                 $tRaceResultRecord::$raceResultRecordInfo['by_group'] = $csvData[$i][9]; //組別
+    //                 $tRaceResultRecord::$raceResultRecordInfo['event_id'] = $csvData[$i][3]; //種目ID
+    //                 $log = $tRaceResultRecord->insertRaceResultRecord($tRaceResultRecord::$raceResultRecordInfo);
+    //             } else if ($result == "2") {
+    //                 $tRaceResultRecord::$raceResultRecordInfo['player_id'] = $csvData[$i][17]; //選手ID
+    //                 $tRaceResultRecord::$raceResultRecordInfo['tourn_id'] = $csvData[$i][1]; //大会ID
+    //                 $tRaceResultRecord::$raceResultRecordInfo['race_id'] = $csvData[$i][7]; //レースID
+    //                 $tRaceResultRecord::$raceResultRecordInfo['race_number'] = $csvData[$i][10]; //レースNo
+    //                 $tRaceResultRecord::$raceResultRecordInfo['race_number'] = $csvData[$i][5]; //レース区分ID 仮実装
+    //                 $tRaceResultRecord::$raceResultRecordInfo['org_id'] = $csvData[$i][12]; //団体ID
+    //                 $tRaceResultRecord::$raceResultRecordInfo['crew_name'] = $csvData[$i][14]; //クルー名
+    //                 $tRaceResultRecord::$raceResultRecordInfo['by_group'] = $csvData[$i][9]; //組別
+    //                 $tRaceResultRecord::$raceResultRecordInfo['event_id'] = $csvData[$i][3]; //種目ID
+    //                 $tRaceResultRecord->updateRaceResultRecord($tRaceResultRecord::$raceResultRecordInfo);
+    //             } else {
+    //                 continue;
+    //             }
+    //         }
+    //         //dd($playersInfo);
 
-            return view('tournament.entry-register', ["dataList" => [], "errorMsg" => $log, "checkList" => "", "tournament_name_list" => $tournament_name_list]);
-        } else {
-            return view('tournament.entry-register', ["dataList" => [], "errorMsg" => "", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
-        }
-    }
+    //         return view('tournament.entry-register', ["dataList" => [], "errorMsg" => $log, "checkList" => "", "tournament_name_list" => $tournament_name_list]);
+    //     } else {
+    //         return view('tournament.entry-register', ["dataList" => [], "errorMsg" => "", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
+    //     }
+    //}
 
     //======================================================================================================
     //======================================================================================================

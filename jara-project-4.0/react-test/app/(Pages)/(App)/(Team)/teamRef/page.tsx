@@ -223,17 +223,19 @@ export default function TeamRef() {
               <div className='w-full bg-primary-500 text-white h-[40px] flex justify-center items-center font-bold relative'>
                 <div className='absolute'>主催大会</div>
                 {mode !== 'delete' && (
-                  <div className='absolute right-[10px]'>
-                    <CustomButton
-                      className='w-[100px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
-                      buttonType='secondary'
-                      onClick={() => {
-                        router.push('/tournament?mode=create');
-                      }}
-                    >
-                      大会登録
-                    </CustomButton>
-                  </div>
+                  (userIdType.is_administrator == 1 || userIdType.is_organization_manager == 1) ? (
+                    <div className='absolute right-[10px]'>
+                      <CustomButton
+                        className='w-[100px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
+                        buttonType='secondary'
+                        onClick={() => {
+                          router.push('/tournament?mode=create');
+                        }}
+                      >
+                        大会登録
+                      </CustomButton>
+                    </div>
+                  ) : ''
                 )}
               </div>
               <CustomTable>
@@ -359,7 +361,7 @@ export default function TeamRef() {
                       className='w-[100px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
                       buttonType='secondary'
                       onClick={() => {
-                        router.push('/teamPlayer?mode=create');
+                        router.push('/teamPlayer?mode=create&org_id=' + orgId);
                       }}
                     >
                       所属選手編集
@@ -515,7 +517,7 @@ export default function TeamRef() {
                 {staffs.map((row, index) => (
                   <CustomTr key={index}>
                     <CustomTd>{row.user_id}</CustomTd>
-                    <CustomTd>{row.userName}</CustomTd>
+                    <CustomTd>{row.user_name}</CustomTd>
                     <CustomTd>
                       <OriginalCheckbox
                         id='staffType1'

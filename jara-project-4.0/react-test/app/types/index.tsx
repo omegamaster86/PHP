@@ -305,6 +305,8 @@ interface Organization {
   orgTypeName: string; // 団体種別名
   founding_year: number; // 設立年
   post_code: string; // 郵便番号
+  post_code1: string; // 郵便番号 分割した前3文字
+  post_code2: string; // 郵便番号 分割した後4文字
   location_country: number;// 所在地（国）
   locationCountry: string; // 所在地（国）
   location_prefecture: number; // 所在地（都道府県）
@@ -323,12 +325,12 @@ interface Organization {
 
 // スタッフ情報
 interface Staff {
-  id: number; // ID　#置き換え作業未対応
+  id: number; // ID
   user_id: string; // ユーザーID
-  userName: string; // ユーザー名　#置き換え作業未対応
+  user_name: string; // ユーザー名
   staff_type_id: string[]; // スタッフ種別
-  delete_flag: boolean; // 削除フラグ]
-  isUserFound: boolean; // ユーザーが見つかったかどうか　#置き換え作業未対応
+  delete_flag: boolean; // 削除フラグ
+  isUserFound: boolean; // ユーザーが見つかったかどうか
 }
 
 //団体所属選手情報
