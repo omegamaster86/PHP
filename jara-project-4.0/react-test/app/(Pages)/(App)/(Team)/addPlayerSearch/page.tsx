@@ -1,0 +1,646 @@
+'use client';
+// 団体所属追加選手検索画面
+import React, { useState, useEffect, ChangeEvent } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import axios from 'axios';
+import {
+  TeamPlayerInformationResponse,
+  TeamResponse,
+  SexResponse,
+  EventResponse,
+  PrefectureResponse,
+} from '@/app/types';
+
+import { Divider } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
+
+import {
+  CustomTitle,
+  CustomButton,
+  CustomTable,
+  CustomThead,
+  CustomTr,
+  CustomTh,
+  CustomTbody,
+  CustomTd,
+  ErrorBox,
+  OriginalCheckbox,
+  CustomTextField,
+  CustomDropdown,
+  InputLabel,
+  Label,
+} from '@/app/components';
+import Link from 'next/link';
+
+interface SearchCond {
+  playerName: string;
+  sexId: string;
+  sex: string;
+  jaraPlayerId: string;
+  playerId: string;
+  entrysystemOrgId: string;
+  birthCountryId: string;
+  birthPrefectureId: string;
+  residenceCountryId: string;
+  residencePrefectureId: string;
+  orgId: string;
+  orgName: string;
+  eventId: string;
+  eventName: string;
+  raceEventName: string;
+  sideInfo: {
+    S: boolean;
+    B: boolean;
+    X: boolean;
+    C: boolean;
+    N1: boolean;
+    N2: boolean;
+    N3: boolean;
+    N4: boolean;
+  };
+}
+
+export default function AddPlayerSearch() {
+  // マスタデータ
+  const [teamData, setTeamData] = useState({} as TeamResponse);
+  const [event, setEvent] = useState<EventResponse[]>([]);
+  const [prefectures, setPrefectures] = useState([] as PrefectureResponse[]);
+  const [sex, setSex] = useState<SexResponse[]>([]);
+
+  // エラーメッセージ
+  const [errorMessage, setErrorMessage] = useState([] as string[]);
+
+  // 検索結果表示用
+  const [searchResult, setSearchResult] = useState<TeamPlayerInformationResponse[]>([]);
+  const [visibleData, setVisibleData] = useState<TeamPlayerInformationResponse[]>([]); // 表示するデータ
+  const [visibleItems, setVisibleItems] = useState(10); // 表示するデータの数
+
+  const [searchCond, setSearchCond] = useState<SearchCond>({
+    playerName: '',
+    sexId: '',
+    sex: '',
+    jaraPlayerId: '',
+    playerId: '',
+    entrysystemOrgId: '',
+    orgId: '',
+    orgName: '',
+    eventId: '',
+    eventName: '',
+    raceEventName: '',
+    birthPrefectureId: '',
+    residencePrefectureId: '',
+    sideInfo: {
+      S: false,
+      B: false,
+      X: false,
+      C: false,
+      N1: false,
+      N2: false,
+      N3: false,
+      N4: false,
+    },
+  } as SearchCond);
+
+  const JAPAN_COUNTRY_ID = 0;
+  const router = useRouter();
+
+  /**
+   * 検索ボタン押下時の処理
+   * @description
+   * 検索ボタン押下時の処理
+   * 検索条件を元にAPIを叩いて検索結果を取得する
+   * 検索結果をstateにセットする
+   */
+  const handleSearch = async () => {
+    // 検索条件が一つでも入力されていることを確認
+    if (
+      searchCond.playerName === '' &&
+      searchCond.sexId === '' &&
+      searchCond.jaraPlayerId === '' &&
+      searchCond.playerId === '' &&
+      searchCond.entrysystemOrgId === '' &&
+      searchCond.orgId === '' &&
+      searchCond.orgName === '' &&
+      searchCond.eventId === '' &&
+      searchCond.eventName === '' &&
+      searchCond.raceEventName === '' &&
+      !Object.values(searchCond.sideInfo).some((value) => value)
+    ) {
+      setErrorMessage(['検索条件を1つ以上入力してください。']);
+      return;
+    }
+
+    try {
+      // TODO: APIを叩いて検索結果を取得する
+      const response = await axios.get('http://localhost:3100/teamPlayerSearch');
+      const data = response.data;
+      data.forEach((item: TeamPlayerInformationResponse) => {
+        item.checked = false;
+      });
+
+      if (data.length > 100) {
+        window.alert('検索結果が100件を超えました、上位100件を表示しています。');
+      }
+      setSearchResult(data);
+      setVisibleItems(10);
+      setVisibleData(data.slice(0, 10));
+
+      setErrorMessage([]);
+    } catch (error) {
+      setErrorMessage(['API取得エラー:' + (error as Error).message]);
+    }
+  };
+
+  /**
+   * データを10件ずつ増やす関数
+   * @description
+   * visibleDataに10件ずつデータを追加する
+   * visibleItemsに10を加算する
+   */
+  const loadMoreData = () => {
+    const newData = searchResult.slice(visibleItems, visibleItems + 10);
+    setVisibleData((prevData) => [...prevData, ...newData]);
+    setVisibleItems((prevCount) => prevCount + newData.length);
+    console.log(visibleItems);
+  };
+
+  /**
+   * チェックボックスの変更時の処理
+   * @description
+   * nameとcheckedを受け取り、stateを更新する
+   */
+  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const name = event.target.value;
+    const checked = event.target.checked;
+    setSearchCond((prevFormData) => ({
+      ...prevFormData,
+      sideInfo: {
+        ...prevFormData.sideInfo,
+        [name]: checked,
+      },
+    }));
+  };
+
+  // 日付をYYYY/MM/DDの形式に変換する
+  const formatDate = (dt: Date) => {
+    const y = dt.getFullYear();
+    const m = ('00' + (dt.getMonth() + 1)).slice(-2);
+    const d = ('00' + dt.getDate()).slice(-2);
+    return y + '/' + m + '/' + d;
+  };
+
+  /**
+   * 入力フォームの変更時の処理
+   * @param name
+   * @param value
+   * @description
+   * nameとvalueを受け取り、stateを更新する
+   */
+  const handleInputChange = (name: string, value: string) => {
+    setSearchCond((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+
+  useEffect(() => {
+    const getTeam = async () => {
+      try {
+        const teamResponse = await axios.get('http://localhost:3100/team');
+        setTeamData(teamResponse.data);
+        // 性別
+        const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
+        setSex(sexResponse.data);
+        // TODO: 都道府県情報の取得処理を実装
+        const prefectureResponse = await axios.get<PrefectureResponse[]>(
+          'http://localhost:3100/prefecture',
+        );
+        setPrefectures(prefectureResponse.data);
+        // 種目
+        const eventResponse = await axios.get<EventResponse[]>('http://localhost:3100/event');
+        setEvent(eventResponse.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getTeam();
+  }, []);
+  return (
+    <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px]'>
+      <div className='relative flex flex-col justify-between w-full h-screen flex-wrap gap-[20px]'>
+        <CustomTitle isCenter={false} displayBack>
+          <div>
+            {teamData.name}
+            <br />
+            団体に登録する選手検索
+          </div>
+        </CustomTitle>
+        <ErrorBox errorText={errorMessage} />
+        <div className='bg-thinContainerBg p-[20px] flex flex-col gap-[20px] border border-border'>
+          <div className='flex flex-col justify-start gap-[20px]'>
+            <Label label={'選手情報'} isBold />
+            <div className='flex flex-row justify-start gap-[16px]'>
+              {/* JARA選手コード */}
+              <CustomTextField
+                type='number'
+                label='JARA選手コード'
+                displayHelp
+                value={searchCond.jaraPlayerId}
+                onChange={(e) => handleInputChange('jaraPlayerId', e.target.value)}
+              />
+              {/* 選手ID */}
+              <CustomTextField
+                type='number'
+                label='選手ID'
+                displayHelp
+                value={searchCond.playerId}
+                onChange={(e) => handleInputChange('playerId', e.target.value)}
+              />
+              {/* 選手名 */}
+              <div className='flex flex-col justify-start'>
+                <CustomTextField
+                  label='選手名'
+                  displayHelp={false}
+                  value={searchCond.playerName}
+                  onChange={(e) => handleInputChange('playerName', e.target.value)}
+                />
+              </div>
+            </div>
+            <div className='flex flex-row justify-start gap-[16px]'>
+              {/* 性別 */}
+              <div className='flex flex-col justify-start gap-[8px]'>
+                <InputLabel label='性別' displayHelp={false} />
+                <CustomDropdown
+                  id='sex'
+                  options={sex.map((item) => ({ key: item.id, value: item.name }))}
+                  value={searchCond.sexId}
+                  errorMessages={[]}
+                  onChange={(e) => {
+                    handleInputChange('sexId', e);
+                    handleInputChange('sex', sex.find((item) => item.id === Number(e))?.name || '');
+                  }}
+                  className='rounded w-[90px]'
+                />
+              </div>
+              <div className='flex flex-col justify-start gap-[8px]'>
+                {/* 出身地（都道府県） */}
+                <InputLabel label='出身地（都道府県）' />
+                <CustomDropdown
+                  id='birthPrefecture'
+                  options={prefectures.map((item) => ({ key: item.id, value: item.name }))}
+                  value={searchCond.birthPrefectureId?.toString()}
+                  onChange={(e) => {
+                    handleInputChange('birthPrefectureId', e);
+                    handleInputChange(
+                      'birthPrefectureName',
+                      prefectures.find((item) => item.id === Number(e))?.name || '',
+                    );
+                  }}
+                  className='rounded w-[300px] '
+                />
+              </div>
+              <div className='flex flex-col justify-start gap-[8px]'>
+                {/* 居住地（都道府県） */}
+                <InputLabel label='居住地（都道府県）' />
+                <CustomDropdown
+                  id='residencePrefecture'
+                  options={prefectures.map((item) => ({ key: item.id, value: item.name }))}
+                  value={searchCond.residencePrefectureId?.toString()}
+                  onChange={(e) => {
+                    handleInputChange('residencePrefectureId', e);
+                    handleInputChange(
+                      'residencePrefectureName',
+                      prefectures.find((item) => item.id === Number(e))?.name || '',
+                    );
+                  }}
+                  className='rounded w-[300px] '
+                />
+              </div>
+            </div>
+            {/* サイド情報 */}
+            <div className='flex flex-col justify-start'>
+              <InputLabel label='サイド情報' displayHelp />
+              <div className='flex flex-row gap-[4px]'>
+                <div className='flex justify-start flex-col gap-[4px] my-1'>
+                  <OriginalCheckbox
+                    id='checkbox-S'
+                    label=': S (ストロークサイド)'
+                    value='S'
+                    checked={searchCond.sideInfo.S}
+                    onChange={handleCheckboxChange}
+                  />
+                  <OriginalCheckbox
+                    id='checkbox-B'
+                    label=': B (バウサイド)'
+                    value='B'
+                    checked={searchCond.sideInfo.B}
+                    onChange={handleCheckboxChange}
+                  />
+                </div>
+                <div className='flex justify-start flex-col gap-[4px] my-1'>
+                  <OriginalCheckbox
+                    id='checkbox-X'
+                    label=': X (スカル)'
+                    value='X'
+                    checked={searchCond.sideInfo.X}
+                    onChange={handleCheckboxChange}
+                  />
+                  <OriginalCheckbox
+                    id='checkbox-C'
+                    label=': C (コックス)'
+                    value='C'
+                    checked={searchCond.sideInfo.C}
+                    onChange={handleCheckboxChange}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className='flex flex-col justify-start gap-[8px]'>
+            <div className='flex flex-col justify-start gap-[8px]'>
+              <div className='flex flex-row gap-[16px]'></div>
+            </div>
+            <div className='flex flex-col justify-start gap-[8px]'>
+              <Label label={'選手所属団体情報'} isBold />
+              <div className='flex flex-row justify-start gap-[12px]'>
+                {/* エントリーシステムの団体ID */}
+
+                {/* 団体ID */}
+                <div className='flex flex-col justify-start'>
+                  <CustomTextField
+                    label='団体ID'
+                    type='number'
+                    displayHelp
+                    value={searchCond.orgId}
+                    onChange={(e) => handleInputChange('orgId', e.target.value)}
+                  />
+                </div>
+                {/* エントリーシステムID */}
+                <div className='flex flex-col justify-start'>
+                  <CustomTextField
+                    label='エントリー団体ID'
+                    type='number'
+                    displayHelp
+                    value={searchCond.entrysystemOrgId}
+                    onChange={(e) => handleInputChange('entrysystemOrgId', e.target.value)}
+                  />
+                </div>
+                {/* 団体名 */}
+                <div className='flex flex-col justify-start'>
+                  <CustomTextField
+                    label='団体名'
+                    displayHelp={false}
+                    value={searchCond.orgName}
+                    onChange={(e) => handleInputChange('orgName', e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className='flex flex-col justify-start gap-[8px]'>
+              <Label label={'出漕履歴情報'} isBold />
+              <div className='flex flex-row justify-start gap-[12px]'></div>
+              {/* 出漕大会名 */}
+              <div className='flex flex-col justify-start'>
+                <CustomTextField
+                  label='出漕大会名'
+                  displayHelp={false}
+                  value={searchCond.raceEventName}
+                  onChange={(e) => handleInputChange('raceEventName', e.target.value)}
+                />
+                <div className='text-caption1 my-[6px]'>※部分一致</div>
+              </div>
+            </div>
+            {/* 出漕種目 */}
+            <div className='flex flex-col justify-start gap-[8px]'>
+              <InputLabel label='出漕種目' displayHelp={false} />
+              <CustomDropdown
+                id='event'
+                options={event.map((item) => ({ key: item.id, value: item.name }))}
+                value={searchCond.eventId}
+                placeHolder='未選択'
+                onChange={(e) => {
+                  handleInputChange('eventId', e);
+                  handleInputChange(
+                    'eventName',
+                    event.find((item) => item.id === Number(e))?.name || '',
+                  );
+                }}
+                className='rounded w-[300px] '
+              />
+            </div>
+          </div>
+
+          <Divider className='w-[900px] h-[1px] bg-border' />
+          <div className='flex flex-col justify-start'>
+            <div className='flex flex-row justify-center gap-[4px]'>
+              {/* 検索 */}
+              <CustomButton
+                buttonType='primary'
+                onClick={() => {
+                  handleSearch();
+                }}
+                className='flex flex-row justify-center gap-[4px] w-[200px]'
+              >
+                <SearchIcon />
+                <div>検索</div>
+              </CustomButton>
+              <CustomButton
+                buttonType='secondary'
+                onClick={() => {
+                  setSearchCond({
+                    playerName: '',
+                    sexId: '',
+                    sex: '',
+                    jaraPlayerId: '',
+                    playerId: '',
+                    entrysystemOrgId: '',
+                    orgId: '',
+                    orgName: '',
+                    eventId: '',
+                    eventName: '',
+                    raceEventName: '',
+                    sideInfo: {
+                      S: false,
+                      B: false,
+                      X: false,
+                      C: false,
+                      N1: false,
+                      N2: false,
+                      N3: false,
+                      N4: false,
+                    },
+                  } as SearchCond);
+                }}
+                className='w-[200px]'
+              >
+                クリア
+              </CustomButton>
+            </div>
+          </div>
+        </div>
+        {/* TODO ヘッダー固定 */}
+        {/* 選手一覧テーブル表示 */}
+        <div className='overflow-auto'>
+          {/* 全選択ボタン */}
+          <div className='bg-primary-40 bg-opacity-30 text-primary-500 py-2 px-4 w-full h-[40px] flex justify-center items-center font-bold relative'>
+            <>選手候補</>
+            <div className={`absolute left-[10px] flex gap-[10px]`}>
+              <CustomButton
+                className='w-[100px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
+                buttonType='secondary'
+                onClick={() => {
+                  setVisibleData((prevData) =>
+                    prevData.map((item) => ({ ...item, checked: true })),
+                  );
+                }}
+              >
+                全選択
+              </CustomButton>
+              <CustomButton
+                className='w-[120px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
+                buttonType='secondary'
+                onClick={() => {
+                  setVisibleData((prevData) =>
+                    prevData.map((item) => ({ ...item, checked: false })),
+                  );
+                }}
+              >
+                全選択解除
+              </CustomButton>
+            </div>
+          </div>
+          <CustomTable>
+            {/* 選手一覧テーブルヘッダー表示 */}
+            <CustomThead>
+              <CustomTr>
+                <CustomTh rowSpan={2}>選択</CustomTh>
+                <CustomTh rowSpan={2}>選手ID</CustomTh>
+                <CustomTh rowSpan={2}>JARA選手コード</CustomTh>
+                <CustomTh rowSpan={2}>選手名</CustomTh>
+                <CustomTh rowSpan={2}>性別</CustomTh>
+                <CustomTh rowSpan={2}>出身地</CustomTh>
+                <CustomTh rowSpan={2}>居住地</CustomTh>
+                <CustomTh colSpan={4}>サイド情報</CustomTh>
+                <CustomTh rowSpan={2}>所属団体</CustomTh>
+              </CustomTr>
+              <CustomTr>
+                <CustomTh>S</CustomTh>
+                <CustomTh>B</CustomTh>
+                <CustomTh>X</CustomTh>
+                <CustomTh>C</CustomTh>
+              </CustomTr>
+            </CustomThead>
+            {/* 大会一覧テーブル明細表示 */}
+            <CustomTbody>
+              {visibleData.map((data, index) => (
+                <CustomTr key={index}>
+                  <CustomTd>
+                    <OriginalCheckbox
+                      id={'checkbox-' + index}
+                      label=''
+                      value={index.toString()}
+                      checked={data.checked || false}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setVisibleData((prevData) =>
+                          prevData.map((item, idx) =>
+                            idx === index ? { ...item, checked: checked } : item,
+                          ),
+                        );
+                      }}
+                    />
+                  </CustomTd>
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={'/playerInformationRef'}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {data.playerId}
+                    </Link>
+                  </CustomTd>
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={'/playerInformationRef'}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {data.jaraPlayerId}
+                    </Link>
+                  </CustomTd>
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={'/playerInformationRef'}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {data.playerName}
+                    </Link>
+                  </CustomTd>
+                  <CustomTd>{data.sexName}</CustomTd>
+                  <CustomTd>
+                    {data.birthCountryId === JAPAN_COUNTRY_ID
+                      ? data.birthPrefectureName
+                      : data.birthCountryName}
+                  </CustomTd>
+                  <CustomTd>
+                    {data.residenceCountryId === JAPAN_COUNTRY_ID
+                      ? data.residencePrefectureName
+                      : data.residenceCountryName}
+                  </CustomTd>
+                  <CustomTd>{data.sideInfo[0] ? '○' : '×'}</CustomTd>
+                  <CustomTd>{data.sideInfo[1] ? '○' : '×'}</CustomTd>
+                  <CustomTd>{data.sideInfo[2] ? '○' : '×'}</CustomTd>
+                  <CustomTd>{data.sideInfo[3] ? '○' : '×'}</CustomTd>
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={'/teamRef'}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {data.orgName}
+                    </Link>
+                  </CustomTd>
+                </CustomTr>
+              ))}
+            </CustomTbody>
+          </CustomTable>
+        </div>
+        {searchResult.length !== visibleItems && (
+          <div
+            className='flex flex-row justify-center gap-[16px] my-[30px] text-primary-500 font-bold cursor-pointer'
+            onClick={loadMoreData}
+          >
+            <AddIcon /> 10件表示する
+          </div>
+        )}
+        <div className='m-auto flex gap-[10px]'>
+          <CustomButton
+            buttonType='secondary'
+            onClick={() => {
+              router.back();
+            }}
+          >
+            戻る
+          </CustomButton>
+          <CustomButton
+            buttonType='primary'
+            onClick={() => {
+              // チェック済みのデータのみを取得
+              const checkedData = visibleData.filter((data) => data.checked);
+              sessionStorage.setItem('addPlayerList', JSON.stringify(checkedData));
+              router.back();
+            }}
+          >
+            リストに追加
+          </CustomButton>
+        </div>
+      </div>
+    </main>
+  );
+}

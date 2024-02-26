@@ -155,7 +155,7 @@ export default function TournamentResultInfomationBulkRegister() {
   useEffect(() => {
     if (tournamentNameIsEmpty) {
       const tournNameError = Validator.getErrorMessages([
-        Validator.validateRequired(formData.tournName, '大会名'),
+        Validator.validateSelectRequired(formData.tournName, '大会名'),
       ]);
       setTournNameErrorMessage(tournNameError);
     } else {
@@ -265,10 +265,7 @@ export default function TournamentResultInfomationBulkRegister() {
           setFormData((prevFormData) => ({
             ...prevFormData,
             eventYear: tournamentResponse.data.event_start_date.slice(0, 4),
-            tourn: {
-              id: Number(tournamentResponse.data.tourn_id),
-              name: tournamentResponse.data.tourn_name,
-            },
+            tournName: tournamentResponse.data.tourn_name,
           }));
           setDisplayFlg(false);
         }
@@ -341,7 +338,7 @@ export default function TournamentResultInfomationBulkRegister() {
         {
           id: rowIndex,
           checked: false,
-          loadingResult: '-',
+          loadingResult: '無効データ',
           tournId: '-',
           tournIdError: false,
           entrysystemTournId: '-',
@@ -730,7 +727,9 @@ export default function TournamentResultInfomationBulkRegister() {
               placeHolder={new Date().toLocaleDateString('ja-JP').slice(0, 4)}
               selectedDate={formData?.eventYear}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                handleInputChange('eventYear', e as unknown as string);
+                if (e.target.value.length <= 4) {
+                  handleInputChange('eventYear', e as unknown as string);
+                }
               }}
               onBlur={(e: FocusEvent<HTMLInputElement>) => {
                 if (
@@ -773,14 +772,17 @@ export default function TournamentResultInfomationBulkRegister() {
               getOptionLabel={(option) => option.name}
               value={{ id: 0, name: formData.tournName } || ''}
               onChange={(e: ChangeEvent<{}>, newValue) => {
-                handleInputChange('tournName', (newValue as TournamentResponse).name);
+                handleInputChange(
+                  'tournName',
+                  newValue ? (newValue as TournamentResponse).name : '',
+                );
                 setCsvDownloadProps((prevProps) => ({
                   ...prevProps,
-                  filename: (newValue as TournamentResponse).name,
+                  filename: (newValue as TournamentResponse)?.name,
                   formData: {
                     tournId: formData.tournId,
                     eventYear: formData.eventYear,
-                    tournName: (newValue as TournamentResponse).name,
+                    tournName: (newValue as TournamentResponse)?.name,
                   },
                 }));
               }}
@@ -866,15 +868,19 @@ export default function TournamentResultInfomationBulkRegister() {
                           }))
                         : null;
                     } else {
-                      setCsvData([]);
-                      csvFileData?.content?.slice(1).map((row, rowIndex) => {
-                        handleCsvData(row, rowIndex);
-                        setDialogDisplayFlg(true);
-                        // 仮実装。チェック内容に応じて連携ボタンの表示を判定
-                        if (row[0] !== '') {
-                          displayRegisterButton(true);
-                        }
-                      });
+                      if (formData.tournName === '' || formData.tournName === undefined) {
+                        checkTournName(true);
+                      } else {
+                        setCsvData([]);
+                        csvFileData?.content?.slice(1).map((row, rowIndex) => {
+                          handleCsvData(row, rowIndex);
+                          setDialogDisplayFlg(true);
+                          // 仮実装。チェック内容に応じて登録ボタンの表示を判定
+                          if (row[0] !== '') {
+                            displayRegisterButton(true);
+                          }
+                        });
+                      }
                     }
                     performValidation();
                     setActivationFlg(false);
@@ -992,8 +998,8 @@ export default function TournamentResultInfomationBulkRegister() {
                       setCsvData([]);
                       setCsvFileData({ content: [], isSet: false });
                       fileUploaderRef?.current?.clearFile();
-                      window.confirm('連携を完了しました。')
-                        ? (setActivationFlg(false),
+                      window.confirm('レース結果の登録が完了しました。')
+                      ? (setActivationFlg(false),
                           setDialogDisplayFlg(false),
                           setDisplayRegisterButtonFlg(false))
                         : null;
