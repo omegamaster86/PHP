@@ -64,7 +64,7 @@ const validateRequired = (elm: any, elmName: string) => {
  */
 const validateSelectRequired = (elm: any, elmName: string) => {
   let errorMessage = '';
-  console.log(elm);
+  // console.log(elm);
   if (!elm) {
     errorMessage = elmName + 'を選択してください。';
     return errorMessage;

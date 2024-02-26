@@ -95,8 +95,8 @@ export default function ForgotPassword() {
               } else {
 
                 const forgotPassword = async () => {
-                  const csrf = () => axios.get('/sanctum/csrf-cookie')
-                  await csrf()
+                  const csrf = () => axios.get('/sanctum/csrf-cookie');
+                  await csrf();
                   axios
                     .get('/api/forgotpassword', {
                       params: {

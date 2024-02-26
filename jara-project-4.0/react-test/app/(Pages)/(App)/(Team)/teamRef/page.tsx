@@ -93,26 +93,26 @@ export default function TeamRef() {
       try {
         // 仮のURL（繋ぎ込み時に変更すること）
         // 主催大会
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         // const response = await axios.get<Organization>('/organization');
         const response = await axios.post('/getOrgData', org_id); //団体情報取得
-        console.log(response);
+        // console.log(response);
         setFormData(response.data.result);
         // // 主催大会大会
         // const hostTournamentsResponse = await axios.get<Tournament[]>('/tournamentSearch',);
         const hostTournamentsResponse = await axios.post('/getTournamentInfoData_org', org_id);
-        console.log(hostTournamentsResponse.data.result);
+        // console.log(hostTournamentsResponse.data.result);
         setHostTournaments(hostTournamentsResponse.data.result);
         // // エントリー大会
         // const entTournamentsResponse = await axios.get<Tournament[]>('/tournamentSearch',);
         const entTournamentsResponse = await axios.post('/getEntryTournamentsViewForTeamRef', org_id);
-        console.log(entTournamentsResponse.data.result);
+        // console.log(entTournamentsResponse.data.result);
         setEntTournaments(entTournamentsResponse.data.result);
         // // 所属選手
         // const playersResponse = await axios.get<PlayerInformationResponse[]>('/playerSearch',);
         const playersResponse = await axios.post('/searchOrganizationPlayersForTeamRef', org_id);
-        console.log(playersResponse.data.result);
+        // console.log(playersResponse.data.result);
         setPlayers(playersResponse.data.result);
 
         // const userDataResponse = await axios.get<UserResponse>('/api/user');
@@ -122,7 +122,7 @@ export default function TeamRef() {
         // 所属スタッフ
         // const staffsResponse = await axios.get<Staff[]>('/staff');
         const staffsResponse = await axios.post('/getOrgStaffData', org_id); //スタッフ情報取得
-        console.log(staffsResponse.data.result);
+        // console.log(staffsResponse.data.result);
         setStaffs(staffsResponse.data.result);
 
         const playerInf = await axios.get('/getIDsAssociatedWithUser');
@@ -584,8 +584,8 @@ export default function TeamRef() {
               buttonType='primary'
               onClick={async () => {
                 const isOk = window.confirm('団体情報を削除します。よろしいですか？');
-                const csrf = () => axios.get('/sanctum/csrf-cookie')
-                await csrf()
+                const csrf = () => axios.get('/sanctum/csrf-cookie');
+                await csrf();
                 if (!isOk) return;
                 axios
                   .delete('/organization')

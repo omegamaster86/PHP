@@ -1,11 +1,37 @@
 'use client';
 import { useAuth } from '@/app/hooks/auth';
-import { Header, Footer, CustomButton, Loading } from '@/app/components';
-import { useEffect, useState } from 'react';
+import { Header, Footer, Loading } from '@/app/components';
+import { useState } from 'react';
+import { useIdleTimer } from "react-idle-timer"; // For logout a user after one hour of inactivity
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  
   const [loggedIn, setLoggedIn] = useState(false);
-  const { user, logout, isLoading } = useAuth({ middleware: 'auth' })
+  const { user, logout, isLoading } = useAuth({ middleware: 'auth' });
+
+  const onIdle = () => {
+    if(user){
+      logout(); //The user will be automatically after 1 hour of inactivity.
+      // pause();// For stop counting idle time of a logged user because of logout.
+    }
+  };
+  const {start, pause} =  useIdleTimer({onIdle, timeout: 1000 * 60 * 60, events: [
+    'mousemove',
+    'keydown',
+    'wheel',
+    'DOMMouseScroll',
+    'mousewheel',
+    'mousedown',
+    'touchstart',
+    'touchmove',
+    'MSPointerDown',
+    'MSPointerMove',
+    'visibilitychange',
+    'focus'
+  ], 
+  crossTab: true,
+  syncTimers: 1000 * 60 * 60
+  }); //Set 1 hour inactivity time for logout .
 
   if(isLoading) {
     return (
@@ -15,14 +41,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   function authCheck(){
     if(user){
-      setLoggedIn(true)
+      setLoggedIn(true);
+      start(); // For counting idle time of a logged user.
     }
   }
   if(!loggedIn){
-    authCheck()
+    authCheck();
   }
   
-
+  // console.log("login status : ",loggedIn);
   
   return (
     <>

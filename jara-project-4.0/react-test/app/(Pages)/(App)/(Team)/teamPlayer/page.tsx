@@ -117,7 +117,7 @@ export default function TeamPlayer() {
         console.log(teamResponse.data.result);
         setTeamData(teamResponse.data.result);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
     getTeamPlayer();

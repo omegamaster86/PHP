@@ -98,20 +98,20 @@ export default function TournamentRef() {
     // StrictModeの制約回避のため、APIの呼び出し実績の有無をuseEffectの中に記述
     if (!isApiFetched.current) {
       const fetchData = async () => {
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         // const userResponse = await axios.get<UserResponse>('http://localhost:3100/user');
         const userResponse = await axios.get('getUserData');
         setUserType(userResponse.data.result.user_type);
         // TODO: tournIdを元に大会情報を取得する処理の置き換え
         // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
         const tournamentResponse = await axios.post('/getTournamentInfoData', tourn_id); //大会IDを元に大会情報を取得する
-        console.log(tournamentResponse);
+        // console.log(tournamentResponse);
         setTournamentFormData(tournamentResponse.data.result);
         // TODO: tournIdを元にレース情報を取得する処理の置き換え
         // const raceResponse = await axios.get<Race[]>('http://localhost:3100/race');
         const raceResponse = await axios.post('/getRaceData', tourn_id);
-        console.log(raceResponse.data.result);
+        // console.log(raceResponse.data.result);
         raceResponse.data.result.map((data: any) => {
           setTableData((prevData) => [...prevData, { ...data }]);
         });
@@ -353,8 +353,8 @@ export default function TournamentRef() {
                   onClick={async () => {
                     // TODO: 削除ボタン押下イベントの実装
                     const isOk = window.confirm('大会情報を削除します。よろしいですか？');
-                    const csrf = () => axios.get('/sanctum/csrf-cookie')
-                    await csrf()
+                    const csrf = () => axios.get('/sanctum/csrf-cookie');
+                    await csrf();
                     if (!isOk) {
                       // TODO: 削除確認画面でOKボタンが押された場合、テーブルの当該項目に削除フラグを立てる処理の置き換え
                       axios

@@ -12,10 +12,10 @@ import {
   Header,
   Loading,
 } from '@/app/components';
-import { useAuth } from '@/app/hooks/auth'
+import { useAuth } from '@/app/hooks/auth';
 import Validator from '@/app/utils/validator';
 
-import axios, { AxiosError } from 'axios'
+import axios, { AxiosError } from 'axios';
 
 interface Values {
   email: string
@@ -115,7 +115,7 @@ return (
               setPasswordErrorMessages(passwordErrorMessages);
               if (emailErrorMessages.length > 0 || passwordErrorMessages.length > 0) {
                 // TODO: バリデーションエラー時の処理を実装
-                console.log('error');
+                // console.log('error');
               } else {
                 // TODO: ログイン処理
                 // let isPasswordTemporary = true;
