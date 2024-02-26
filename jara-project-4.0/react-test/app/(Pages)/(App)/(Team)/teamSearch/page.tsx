@@ -418,7 +418,7 @@ export default function TeamSearch() {
                     rel='noopener noreferrer'
                     target='_blank'
                   >
-                    {org.orgClassName}
+                    {org.org_name}
                   </Link>
                 </CustomTd>
                 {/* 設立年 */}
