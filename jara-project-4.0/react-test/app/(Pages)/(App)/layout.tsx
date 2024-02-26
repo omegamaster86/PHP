@@ -15,7 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       // pause();// For stop counting idle time of a logged user because of logout.
     }
   };
-  const {start, pause} =  useIdleTimer({onIdle, timeout: 1000 * 10, events: [
+  const {start, pause} =  useIdleTimer({onIdle, timeout: 1000 * 60 * 60, events: [
     'mousemove',
     'keydown',
     'wheel',
@@ -30,7 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     'focus'
   ], 
   crossTab: true,
-  syncTimers: 1000 * 5
+  syncTimers: 1000 * 60 * 60
   }); //Set 1 hour inactivity time for logout .
 
   if(isLoading) {
