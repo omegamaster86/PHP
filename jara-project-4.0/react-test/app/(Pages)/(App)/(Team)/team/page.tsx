@@ -337,7 +337,10 @@ export default function OrgInfo() {
         className='w-[200px]'
         onClick={() => {
           // TODO: APIを叩いて、登録・更新処理を行う
-          const requestBody = {};
+          const requestBody = {
+            formData, //団体情報
+            tableData //スタッフ情報
+          };
           //alert('TODO: APIを叩いて、登録・更新処理を行う');
           if (prevMode === 'create') {
             const storeOrgData = async () => {
@@ -346,7 +349,7 @@ export default function OrgInfo() {
               await csrf();
               axios
                 // .post('http://localhost:3100/', requestBody)
-                .post('/storeOrgData', formData) //20240206
+                .post('/storeOrgData', requestBody) //20240226
                 .then((response) => {
                   // console.log(response);
                   // TODO: 登録処理成功時の処理
@@ -370,7 +373,7 @@ export default function OrgInfo() {
               await csrf();
               axios
                 // .post('http://localhost:3100/', requestBody)
-                .post('/updateOrgData', formData) //20240206
+                .post('/updateOrgData', requestBody) //20240226
                 .then((response) => {
                   // TODO: 更新処理成功時の処理
                   window.confirm('団体情報を更新しました。');
