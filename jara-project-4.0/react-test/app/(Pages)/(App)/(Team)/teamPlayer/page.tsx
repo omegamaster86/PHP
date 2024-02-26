@@ -20,35 +20,19 @@ import Link from 'next/link';
 import axios from '@/app/lib/axios';
 import { TeamPlayerInformationResponse, TeamResponse } from '@/app/types';
 
+const JAPAN_COUNTRY_ID = 0;
+
 export default function TeamPlayer() {
   const router = useRouter();
   // テーブルデータの入力値を管理する関数
-  const handleInputChangeStaff = (rowId: number, name: string, value: any | boolean) => {
+  const handleInputChangeTeamPlayer = (rowId: number, name: string, value: any | boolean) => {
     setFormData((prevRows) =>
       prevRows.map((row) => (row.id === rowId ? { ...row, [name]: value } : row)),
     );
   };
 
   const [teamData, setTeamData] = useState({} as TeamResponse);
-  const [formData, setFormData] = useState<TeamPlayerInformationResponse[]>([
-    {
-      id: 0, // ID
-      player_id: 0, // 選手ID
-      jara_player_id: '', // JARA選手コード
-      player_name: '', // 選手名
-      date_of_birth: '', // 生年月日
-      sexName: '', // 性別
-      height: '', // 身長
-      weight: '', // 体重
-      residenceCountryName: '', // 居住地（国）
-      residencePrefectureName: '', // 居住地（都道府県）
-      birthCountryName: '', // 出身地（国）
-      birthPrefectureName: '', // 出身地（都道府県）
-      photo: '', // 写真
-      side_info: [], // サイド情報
-      type: '', // 種別
-    },
-  ]);
+  const [formData, setFormData] = useState<TeamPlayerInformationResponse[]>([]);
   const [errorMessage, setErrorMessage] = useState([] as string[]);
   const mode = useSearchParams().get('mode');
   const orgId = useSearchParams().get('org_id')?.toString() || '';
@@ -61,31 +45,73 @@ export default function TeamPlayer() {
       case 'create':
         break;
       case 'confirm':
-        formData.map((data) => {
-          setFormData((prevData) =>
-            prevData.filter((data) => !(data.deleteFlag === true && data.type === '新規')),
-          );
-        });
+        // 種別が追加かつ削除フラグが立っているデータを削除
+
+        const deleteData = formData.filter((data) => data.type === '追加' && data.deleteFlag);
+
+        if (deleteData.length > 0) {
+          setFormData((prevData) => prevData.filter((data) => !deleteData.includes(data)));
+        }
+
         break;
       default:
         // TODO: 404エラーの表示処理に切り替え
         router.push('/teamPlayer?mode=create');
         break;
     }
+  });
+
+  useEffect(() => {
     const getTeamPlayer = async () => {
+      const transformData = (data: TeamPlayerInformationResponse[], type: string) =>
+        data.map((item, index) => ({
+          ...item,
+          deleteFlag: false,
+          type,
+        }));
+      const setIndex = (data: TeamPlayerInformationResponse[]) =>
+        data.map((item, index) => ({
+          ...item,
+          id: index,
+        }));
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
-        // const response = await axios.get('/teamPlayers');
-        const response = await axios.post('/searchOrganizationPlayersForTeamRef', orgId);
-        console.log(response.data.result);
-        setFormData(
-          response.data.result.map((data: TeamPlayerInformationResponse) => ({
-            ...data,
-            deleteFlag: false,
-            type: '既存',
-          })),
-        );
+        if (sessionStorage.getItem('addPlayerList') !== null) {
+          const addPlayerList = JSON.parse(sessionStorage.getItem('addPlayerList') as string);
+          let data = transformData(addPlayerList, '追加');
+
+          if (mode == 'update') {
+            //const response = await axios.get('http://localhost:3100/teamPlayers');
+            //const searchRes = transformData(response.data, '既存');
+            //data = setIndex(searchRes.concat(data));
+
+            // const response = await axios.get('/teamPlayers');
+            const response = await axios.post('/searchOrganizationPlayersForTeamRef', orgId);
+            const searchRes = transformData(response.data.result, '既存');
+            data = setIndex(searchRes.concat(data));
+            console.log(response.data.result);
+            // setFormData(
+            //   response.data.result.map((data: TeamPlayerInformationResponse) => ({
+            //     ...data,
+            //     deleteFlag: false,
+            //     type: '既存',
+            //   })),
+            // );
+          }
+          setFormData(data);
+          sessionStorage.removeItem('addPlayerList');
+        } else {
+          if (mode == 'update') {
+            // const response = await axios.get('http://localhost:3100/teamPlayers');
+            // const searchRes = setIndex(transformData(response.data, '既存'));
+            const response = await axios.post('/searchOrganizationPlayersForTeamRef', orgId);
+            const searchRes = transformData(response.data.result, '既存');
+            console.log(searchRes);
+            setFormData(searchRes);
+          }
+        }
+
         // const teamResponse = await axios.get('/team');
         const teamResponse = await axios.post('/getOrgData', orgId);
         console.log(teamResponse.data.result);
@@ -202,16 +228,20 @@ export default function TeamPlayer() {
           <CustomTbody>
             {formData.map((data, index) => (
               <CustomTr key={index}>
-                <CustomTd align='center'>{data.type}</CustomTd>
+                <CustomTd align='center'>
+                  <div className={data.type === '追加' ? 'text-secondary-500' : 'text-primaryText'}>
+                    {data.type}
+                  </div>
+                </CustomTd>
                 <CustomTd align='center'>
                   <OriginalCheckbox
                     checked={data.deleteFlag ? true : false}
                     onChange={() => {
-                      handleInputChangeStaff(data.id, 'deleteFlag', !data.deleteFlag);
+                      handleInputChangeTeamPlayer(data.id, 'deleteFlag', !data.deleteFlag);
                     }}
                     readonly={mode === 'confirm'}
-                    id='delete'
-                    value='delete'
+                    id={`delete-${index}`}
+                    value='del'
                   ></OriginalCheckbox>
                 </CustomTd>
                 <CustomTd align='center'>
@@ -253,8 +283,16 @@ export default function TeamPlayer() {
                     {data.player_name}
                   </Link>
                 </CustomTd>
-                <CustomTd align='center'>{data.birthPrefectureName}</CustomTd>
-                <CustomTd align='center'>{data.residencePrefectureName}</CustomTd>
+                <CustomTd align='center'>
+                  {data.birth_country === JAPAN_COUNTRY_ID
+                    ? data.birthPrefectureName
+                    : data.birthCountryName}
+                </CustomTd>
+                <CustomTd align='center'>
+                  {data.residence_country === JAPAN_COUNTRY_ID
+                    ? data.residencePrefectureName
+                    : data.residenceCountryName}
+                </CustomTd>
                 <CustomTd align='center'>{data.side_info[0] ? '◯' : '×'}</CustomTd>
                 <CustomTd align='center'>{data.side_info[1] ? '◯' : '×'}</CustomTd>
                 <CustomTd align='center'>{data.side_info[2] ? '◯' : '×'}</CustomTd>

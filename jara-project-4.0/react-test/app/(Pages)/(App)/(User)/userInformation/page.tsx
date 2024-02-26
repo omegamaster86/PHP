@@ -213,14 +213,12 @@ export default function UserInformationUpdate() {
         setErrorMessage(['API取得エラー:' + error.message]);
       }
     };
-    // 更新モードの時にユーザー情報を取得し、フォームにセットする。
+    // 更新モード、参照モード、削除モードの時にユーザー情報を取得し、フォームにセットする。
     if (mode === 'update') {
       fetchUser();
     }
     // APIを叩いて、ユーザー情報を取得する
   }, []);
-
-
 
   const modeCustomButtons = {
     update: (
@@ -404,7 +402,6 @@ export default function UserInformationUpdate() {
   if (paramError) {
     return <div>ページが見つかりません</div>;
   }
-  
   return (
     <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[46px] my-[80px]'>
       <div className='flex flex-col justify-start gap-[20px]'>
@@ -659,7 +656,6 @@ export default function UserInformationUpdate() {
             />
             <ErrorBox errorText={errorMessage} />
           </DialogContent>
-          
           <DialogActions>
             <CustomButton
               buttonType='white-outlined'
@@ -799,4 +795,3 @@ export default function UserInformationUpdate() {
     </main>
   );
 }
-

@@ -1,22 +1,14 @@
-import React, { useState, useCallback, useRef, forwardRef, useImperativeHandle, Key } from 'react';
+import React, { useState, useCallback, forwardRef, useImperativeHandle } from 'react';
 import type { FileRejection } from 'react-dropzone';
 import { useDropzone } from 'react-dropzone';
 import Papa from 'papaparse';
 import CustomInputLabel from '@/app/components/InputLabel';
 import CustomTextField from '@mui/material/TextField';
 import { CustomButton } from '../../../../components';
-import axios from 'axios';
-import { CsvData } from './CsvDataInterface';
 
 interface Props {
   csvUploadProps: CsvUploadProps;
   csvDownloadProps: CsvDownloadProps;
-}
-
-interface FormData {
-  tournId: number;
-  eventYear: string;
-  tournName: string;
 }
 
 // CSVアップロードのプロパティの型定義
@@ -26,31 +18,23 @@ interface CsvUploadProps {
   csvUpload: (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => void; // CSVアップロード時のコールバック
   resetActivationFlg: () => void; // アクティベーションフラグのリセット
 }
-
 // CSVダウンロードのプロパティの型定義
 interface CsvDownloadProps {
   data: any[];
   header: any[];
   filename: string;
+  isOrgSelected: boolean;
   label: string;
-  tournId: number;
-  formData: FormData;
-  checkTournName: (flg: boolean) => void;
 }
-
 // Handlerの型定義
 interface Handler {
   clearFile(): void;
 }
 
-interface Header {
-  key: string;
-  label: string;
-}
-
 // FileUploaderコンポーネント
 const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) {
   const [currentShowFile, setcurrentShowFile] = useState<{ file: File; isUploaded: boolean }>();
+  const [dispError, setDispError] = useState<boolean>(false);
   useImperativeHandle(ref, () => {
     return {
       clearFile() {
@@ -62,12 +46,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
   // ファイルアップロード時の処理
   const onUploadFile = async (file: File) => {
     try {
-      setcurrentShowFile({ file, isUploaded: false });
-
-      const uploadTime = Math.random() * 9000 + 1000; // 1秒から10秒
-      await new Promise((resolve) => setTimeout(resolve, uploadTime));
-
-      // アップロード成功時の処理
+      // アップロード可能なファイルが存在する場合、アップロード中のスイッチを true にし、アップロードを開始する
       setcurrentShowFile({ file, isUploaded: true });
     } catch (error) {
       // エラーが発生した場合の処理
@@ -96,8 +75,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
             preview: URL.createObjectURL(file),
           }))[0],
         );
-
-        console.log(acceptedFiles[0] + 'is Uploaded');
 
         // FileをList<List<String>>に変換
         Papa.parse(acceptedFiles[0], {
@@ -148,51 +125,27 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
   });
 
   // ダウンロード処理を行う関数
-  const handleDownload = async () => {
-    let csvContent = '';
-
-    try {
-      // 大会IDを取得
-      const tournId = props.csvDownloadProps.tournId;
-      // レース情報を取得
-      // 仮実装　レース情報取得処理に変更
-      const raceResponse = await axios.get<CsvData[]>('http://localhost:3100/raceResultRecords');
-      // const raceResponse = await axios.get<CsvData[]>('http://localhost:3100/emptyRace');
-      // const raceResponse = await axios.get<Race[]>(
-      //   'http://localhost:3100/race?tournamentId=' + tournId,
-      // );
-
-      const header = props.csvDownloadProps.header.map((h) => h.label).join(',');
-
-      // CSVダウンロードのロジック
-      if (raceResponse.data.length === 0) {
-        if (
-          window.confirm(
-            '選択された大会に紐づくレースが登録されていません。入力項目のみが出力されたフォーマットを出力しますか？',
-          )
-        ) {
-          csvContent = header;
-          props.csvDownloadProps.filename =
-            raceResponse.data[0].tournName + '_レース結果一括登録用フォーマット.csv';
-        } else {
-          csvContent = '';
-        }
-      } else {
-        props.csvDownloadProps.filename =
-          raceResponse.data[0].tournName + '_レース結果一括登録用フォーマット.csv';
-        // Todo: レース情報を取得してCSVに変換する処理を実装
-        csvContent =
-          header + '\n' + raceResponse.data.map((row) => Object.values(row).join(',')).join('\n');
-      }
-    } catch (error) {
-      alert('APIの呼び出しに失敗しました。:' + error);
+  const handleDownload = () => {
+    if (props.csvDownloadProps.isOrgSelected === false) {
+      setDispError(true);
+      return;
+    } else {
+      setDispError(false);
     }
-
-    if (csvContent === '') {
+    if (props.csvDownloadProps.data.length === 0) {
+      alert('ダウンロードするデータがありません。');
       return;
     }
 
     try {
+      // CSVダウンロードのロジック
+      const csvContent =
+        props.csvDownloadProps.header.map((h) => h.label).join(',') +
+        '\n' +
+        props.csvDownloadProps.data
+          .map((row) => props.csvDownloadProps.header.map((h) => row[h.key]).join(','))
+          .join('\n');
+
       // ダウンロード用のBlobを作成（UTF-8指定）
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
 
@@ -215,11 +168,13 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
     }
   };
 
-  /* ファイルアップロードのテキストボックスとボタンの表示 */
+  {
+    /* ファイルアップロードのテキストボックスとボタンの表示 */
+  }
   return (
     <div>
       <div className='flex flex-col gap-[10px] w-full'>
-        <CustomInputLabel label={props.csvUploadProps.label} required></CustomInputLabel>
+        <CustomInputLabel label={props.csvUploadProps.label}></CustomInputLabel>
         <div className='flex flex-row gap-[4px]'>
           {!props.csvUploadProps.readonly && (
             <div {...getRootProps()} className='mb-1'>
@@ -245,7 +200,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
                     </CustomButton>
                   </div>
                   <div>
-                    {isDragAccept ? 'ファイルをアップロードします。' : isDragReject ? 'エラー' : ''}
+                    {isDragAccept ? 'ファイルをアップロードします。' : isDragReject ? '' : ''}
                   </div>
                 </div>
               </div>
@@ -253,32 +208,28 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           )}
           {props.csvUploadProps.readonly && (
             <div>
-              <CustomInputLabel label={props.csvUploadProps.label}></CustomInputLabel>
               <p className='h-12 w-[300px] text-secondaryText p-3 disable'>
                 {currentShowFile?.file.name}
               </p>
             </div>
           )}
-          <CustomButton
-            buttonType='primary'
-            onClick={() => {
-              props.csvDownloadProps.checkTournName(
-                props.csvDownloadProps.formData.tournName === '' ||
-                  props.csvDownloadProps.formData.tournName === undefined,
-              );
-              if (
-                !(
-                  props.csvDownloadProps.formData.tournName === '' ||
-                  props.csvDownloadProps.formData.tournName === undefined
-                )
-              ) {
+          <div className={`flex flex-col gap-[10px]`}>
+            <CustomButton
+              buttonType='primary'
+              disabled={props.csvUploadProps.readonly}
+              onClick={() => {
                 handleDownload();
-              }
-            }}
-            className='w-[200px] h-[57px]'
-          >
-            {props.csvDownloadProps.label}
-          </CustomButton>
+              }}
+              className='w-[200px] h-[57px]'
+            >
+              {props.csvDownloadProps.label}
+            </CustomButton>
+            {dispError === true && (
+              <p className={`text-systemErrorText text-sm w-[200px]`}>
+                所属団体名を選択してください。
+              </p>
+            )}
+          </div>
         </div>
       </div>
       {/* ファイルアップロード中の表示 */}
