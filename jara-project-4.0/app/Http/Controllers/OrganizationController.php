@@ -857,7 +857,14 @@ class OrganizationController extends Controller
         Log::debug(sprintf("storeOrgData start"));
         $lastInsertId = "";
         $organizationInfo = $request->all();
-        Log::debug($organizationInfo);
+        $post_code = $organizationInfo['post_code'];
+        $organizationInfo['post_code'] = str_replace("-","",$post_code);
+        if(empty($organizationInfo['location_country']))
+        {
+            //所在地（国）がnullなら、location_country=112を配列に追加する
+            $organizationInfo['location_country'] = 112;
+        }
+
         DB::beginTransaction();
         try {
             Log::debug("=========================");
