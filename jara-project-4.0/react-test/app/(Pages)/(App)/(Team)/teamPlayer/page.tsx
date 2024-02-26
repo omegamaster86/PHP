@@ -326,8 +326,19 @@ export default function TeamPlayer() {
           {mode === 'confirm' && (
             <CustomButton
               buttonType='primary'
-              onClick={() => {
+              onClick={async () => {
                 // TODO: 反映処理　残件対応項目
+                const csrf = () => axios.get('/sanctum/csrf-cookie');
+                await csrf();
+                axios
+                  .post('/updateOrgPlayerData', formData) //20240226
+                  .then((response) => {
+                    // TODO: 更新処理成功時の処理
+                    console.log(response.data);
+                  })
+                  .catch((error) => {
+
+                  });
               }}
             >
               反映
