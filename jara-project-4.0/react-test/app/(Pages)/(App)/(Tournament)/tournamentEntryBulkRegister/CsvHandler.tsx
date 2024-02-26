@@ -7,16 +7,11 @@ import CustomTextField from '@mui/material/TextField';
 import { CustomButton } from '../../../../components';
 import axios from 'axios';
 import { CsvData } from './CsvDataInterface';
+import { FormData } from './FormDataInterface';
 
 interface Props {
   csvUploadProps: CsvUploadProps;
   csvDownloadProps: CsvDownloadProps;
-}
-
-interface FormData {
-  tournId: number;
-  eventYear: string;
-  tournName: string;
 }
 
 // CSVアップロードのプロパティの型定義
@@ -33,14 +28,12 @@ interface CsvDownloadProps {
   header: any[];
   filename: string;
   label: string;
-  tournId: number;
   formData: FormData;
   checkTournName: (flg: boolean) => void;
 }
 
 // Handlerの型定義
 interface Handler {
-  clearFile(): void;
 }
 
 interface Header {
@@ -71,7 +64,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
       setcurrentShowFile({ file, isUploaded: true });
     } catch (error) {
       // エラーが発生した場合の処理
-      // console.log(`アップロード中にエラーが発生しました: ${error}`);
+      console.log(`アップロード中にエラーが発生しました: ${error}`);
     }
   };
 
@@ -97,7 +90,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           }))[0],
         );
 
-        // console.log(acceptedFiles[0] + 'is Uploaded');
+        console.log(acceptedFiles[0] + 'is Uploaded');
 
         // FileをList<List<String>>に変換
         Papa.parse(acceptedFiles[0], {
@@ -111,7 +104,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
         props.csvUploadProps.resetActivationFlg();
       } catch (error) {
         // エラーが発生した場合の処理
-        // console.log(`アップロード中にエラーが発生しました: ${error}`);
+        console.log(`アップロード中にエラーが発生しました: ${error}`);
       }
     },
     [props],
@@ -152,8 +145,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
     let csvContent = '';
 
     try {
-      // 大会IDを取得
-      const tournId = props.csvDownloadProps.tournId;
       // レース情報を取得
       // 仮実装　レース情報取得処理に変更
       const raceResponse = await axios.get<CsvData[]>('http://localhost:3100/raceResultRecords');
@@ -210,7 +201,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
-      // console.error('CSV Download Error:', error);
+      console.error('CSV Download Error:', error);
       alert('CSVのダウンロード中にエラーが発生しました。もう一度試してください。');
     }
   };
