@@ -17,7 +17,7 @@ import {
 } from '@/app/components';
 import { useEffect, useState } from 'react';
 import axios from '@/app/lib/axios';
-import { OrgClass, OrgType, UserResponse, Org } from '@/app/types';
+import { OrgClass, OrgType, UserResponse, Org, PrefectureResponse } from '@/app/types';
 import { Divider } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useRouter } from 'next/navigation';
@@ -46,6 +46,7 @@ export default function TeamSearch() {
   const router = useRouter();
   const [orgTypeOptions, setOrgTypeOptions] = useState<OrgType[]>([]); // 団体種別
   const [orgClassOptions, setOrgClassOptions] = useState<OrgClass[]>([]); // 団体区分
+  const [prefectureOptions, setPrefectureOptions] = useState([] as PrefectureResponse[]);
   const [user, setUser] = useState<UserResponse>({} as UserResponse); // ユーザー情報
   const [formData, setFormData] = useState<SearchCond>({
     entrySystemId: '',
@@ -82,14 +83,16 @@ export default function TeamSearch() {
    * 検索結果をstateにセットする
    */
   const handleSearch = async () => {
-    const csrf = () => axios.get('/sanctum/csrf-cookie')
-    await csrf()
+    formData.residenceCountryId = "112"; //仕様変更により、日本の固定値を代入 20240223
+    console.log(formData);
+    const csrf = () => axios.get('/sanctum/csrf-cookie');
+    await csrf();
     axios
       // .get<Org[]>('/orgSearch')
       .post('/orgSearch', formData)
       .then((response) => {
         const data = response.data.result;
-        console.log(data);
+        // console.log(data);
         if (data.length > 100) {
           window.alert('検索結果が100件を超えました、上位100件を表示しています。');
         }
@@ -121,13 +124,13 @@ export default function TeamSearch() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
 
         //団体種別マスターの取得 20240209
         // const orgType = await axios.get<OrgType[]>('/orgType');
         const orgType = await axios.get('/getOrganizationTypeData');
-        console.log(orgType.data);
+        // console.log(orgType.data);
         const orgTypeList = orgType.data.map(({ org_type_id, org_type }: { org_type_id: number; org_type: string }) => ({ id: org_type_id, name: org_type }));
         setOrgTypeOptions(orgTypeList);
 
@@ -136,6 +139,10 @@ export default function TeamSearch() {
         const orgClass = await axios.get('/getOrganizationClass');
         const orgClassList = orgClass.data.map(({ org_class_id, org_class_name }: { org_class_id: number; org_class_name: string }) => ({ id: org_class_id, name: org_class_name }));
         setOrgClassOptions(orgClassList);
+
+        const prefectures = await axios.get('/getPrefecures'); //都道府県マスターの取得 20240208
+        const stateList = prefectures.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
+        setPrefectureOptions(stateList);
 
         // const userInfo = await axios.get<UserResponse>('/api/user');
         const userInfo = await axios.get('/api/user');
@@ -177,7 +184,7 @@ export default function TeamSearch() {
             value={formData.org_name}
           />
           {/* 所在地（国） */}
-          <CustomTextField
+          {/* <CustomTextField
             label='国'
             displayHelp
             onChange={(e) => {
@@ -186,16 +193,37 @@ export default function TeamSearch() {
             value={formData.residenceCountryName}
             toolTipTitle='Title' //はてなボタン用
             toolTipText='サンプル用のツールチップ表示' //はてなボタン用
-          />
+          /> */}
           {/* 所在地（都道府県） */}
-          <CustomTextField
+          {/* <CustomTextField
             label='都道府県'
             displayHelp={false}
             onChange={(e) => {
               handleInputChange('residencePrefectureName', e.target.value);
             }}
             value={formData.residencePrefectureName}
-          />
+          /> */}
+          {/* 都道府県 */}
+          <div className='w-full flex flex-col justify-between gap-[8px]'>
+            <InputLabel label='都道府県' />
+            <CustomDropdown
+              id='都道府県'
+              options={prefectureOptions.map((item) => ({
+                value: item.name,
+                key: item.id,
+              }))}
+              value={formData?.residencePrefectureId || ''}
+              onChange={(e) => {
+                console.log(e);
+                handleInputChange('residencePrefectureId', e);
+                handleInputChange(
+                  'residencePrefectureName',
+                  prefectureOptions.find((item) => item.id === Number(e))?.name || '',
+                );
+              }}
+              className='w-[300px]'
+            />
+          </div>
         </div>
         <div>
           <Divider />
@@ -222,7 +250,7 @@ export default function TeamSearch() {
                   }))}
                   value={formData?.org_type || ''}
                   onChange={(e) => {
-                    console.log(e);
+                    // console.log(e);
                     handleInputChange('org_type', e);
                     handleInputChange(
                       'orgTypeName',
@@ -243,7 +271,7 @@ export default function TeamSearch() {
                   }))}
                   value={formData?.org_class || ''}
                   onChange={(e) => {
-                    console.log(e);
+                    // console.log(e);
                     handleInputChange('org_class', e);
                     handleInputChange(
                       'orgClassName',

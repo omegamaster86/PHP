@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class OrganizationPlayersController extends Controller
 {
@@ -984,6 +985,7 @@ class OrganizationPlayersController extends Controller
                 array_push($side_info, 0);
             }
             $players[$i]->side_info = $side_info;
+            $players[$i]->id = ($i + 1);
         }
 
         Log::debug(sprintf("searchOrganizationPlayersForTeamRef end"));

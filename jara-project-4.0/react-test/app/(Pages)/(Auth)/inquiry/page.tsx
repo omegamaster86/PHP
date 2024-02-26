@@ -102,8 +102,8 @@ export default function Inquiry() {
         onClick={async () => {
           // 送信処理
           const requestBody = {};
-          const csrf = () => axios.get('/sanctum/csrf-cookie')
-          await csrf()
+          const csrf = () => axios.get('/sanctum/csrf-cookie');
+          await csrf();
           axios
             .post('/smtp', requestBody)
             .then((response) => {

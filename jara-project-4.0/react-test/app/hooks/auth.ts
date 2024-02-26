@@ -1,7 +1,7 @@
-import useSWR from 'swr'
-import axios from '@/app/lib/axios'
-import { useEffect, useState } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import useSWR from 'swr';
+import axios from '@/app/lib/axios';
+import { useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
 export const useAuth = ({
   middleware,
@@ -10,11 +10,9 @@ export const useAuth = ({
   middleware?: string
   redirectIfAuthenticated?: string
 }) => {
-  const router = useRouter()
-  const pathname = usePathname()
-
-  const [isLoading, setIsLoading] = useState(true)
-
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isLoading, setIsLoading] = useState(true);
   const {
     data: user,
     error,
@@ -31,26 +29,26 @@ export const useAuth = ({
 
         }
         else {
-          router.push('/login')
+          router.push('/login');
         }
         
       }),
-  )
+  );
 
-  const csrf = () => axios.get('/sanctum/csrf-cookie')
+  const csrf = () => axios.get('/sanctum/csrf-cookie');
 
   const login = async (data: {
     email: string
     password: string
   }) => {
     try {
-      await csrf()
-      await axios.post('/login', data)
-      mutate()
+      await csrf();
+      await axios.post('/login', data);
+      mutate();
     } catch (error) {
       // throw error
     }
-  }
+  };
 
   const logout = async () => {
     if (!error) {
@@ -59,8 +57,8 @@ export const useAuth = ({
       }
       else {
         await axios.post('/logout').then(() => {
-          mutate()
-          window.history.replaceState(null, '', '/login')
+          mutate();
+          window.history.replaceState(null, '', '/login');
         })
       }
       
@@ -69,8 +67,8 @@ export const useAuth = ({
 
     }
     else{
-      window.history.replaceState(null, '', '/login')
-      window.location.pathname = '/login'
+      window.history.replaceState(null, '', '/login');
+      window.location.pathname = '/login';
     }
     
   }
@@ -78,19 +76,19 @@ export const useAuth = ({
   useEffect(() => {
 
     if(user || error) {
-      setIsLoading(false)
+      setIsLoading(false);
     }
 
     if (user?.temp_password_flag) {
-      router.push('/passwordchange')
+      router.push('/passwordchange');
     }
     
     if (middleware === 'guest' && redirectIfAuthenticated && user) {
       if (user?.temp_password_flag) {
-        router.push('/passwordchange')
+        router.push('/passwordchange');
       }
       else{
-        router.push(redirectIfAuthenticated)
+        router.push(redirectIfAuthenticated);
       }
       
     }
@@ -101,7 +99,7 @@ export const useAuth = ({
 
       }
       else {
-        logout()
+        logout();
       }
       
     }

@@ -1,4 +1,4 @@
-import Axios, { AxiosInstance } from 'axios'
+import Axios, { AxiosInstance } from 'axios';
 
 const axios: AxiosInstance = Axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
@@ -7,6 +7,6 @@ const axios: AxiosInstance = Axios.create({
   },
   withCredentials: true,
   withXSRFToken: true,
-})
+});
 
-export default axios
+export default axios;

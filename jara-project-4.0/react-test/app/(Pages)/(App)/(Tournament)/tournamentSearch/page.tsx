@@ -117,10 +117,10 @@ export default function TournamentSearch() {
     // apiUri = apiUri.slice(0, -1);
 
     try {
-      const csrf = () => axios.get('/sanctum/csrf-cookie')
-      await csrf()
+      const csrf = () => axios.get('/sanctum/csrf-cookie');
+      await csrf();
       const response = await axios.post('/tournamentSearch', searchCond);
-      console.log(response.data);
+      // console.log(response.data);
       setSearchResponse(response.data.result);
     } catch (error) {
       setErrorMessage([...(errorMessage as string[]), 'API取得エラー:' + (error as Error).message]);
@@ -136,12 +136,12 @@ export default function TournamentSearch() {
     const fetchData = async () => {
       try {
         // 仮のURL（繋ぎ込み時に変更すること）
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         // const tourTypeResponse = await axios.get<TourTypeResponse[]>('/tourType',);
         const tourTypeResponse = await axios.get('/getApprovalType');
         const tourTypeList = tourTypeResponse.data.map(({ appro_type_id, appro_type_id_name }: { appro_type_id: number; appro_type_id_name: string }) => ({ id: appro_type_id, name: appro_type_id_name }));
-        console.log(tourTypeList);
+        // console.log(tourTypeList);
         setTourType(tourTypeList);
 
         // const venueResponse = await axios.get<VenueResponse[]>('/venue');
