@@ -32,9 +32,9 @@ const CustomTd = ({
             : textType === 'error'
               ? 'text-systemErrorText'
               : textType === 'warning'
-                ? 'systemWarningText'
+                ? 'text-systemWarningText'
                 : 'text-primaryText'
-      }
+      }  
       ${className}
       `}
       align={align}

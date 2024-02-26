@@ -919,8 +919,8 @@ export default function PlayerInformation() {
               />
               <CustomDropdown
                 id='birthPrefecture'
-                readonly={mode === 'confirm'}
                 options={prefectures.map((item) => ({ key: item.id, value: item.name }))}
+                readonly={mode === 'confirm'}
                 value={
                   mode !== 'confirm'
                     ? formData.birth_prefecture?.toString() || ''
@@ -935,6 +935,7 @@ export default function PlayerInformation() {
                     prefectures.find((item) => item.id === Number(e))?.name || '',
                   );
                 }}
+                //errorMessages={birthPlacePrefectureErrorMessage}
                 className='rounded w-[300px] '
               />
             </div>
