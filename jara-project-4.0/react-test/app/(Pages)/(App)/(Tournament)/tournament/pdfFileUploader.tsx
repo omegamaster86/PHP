@@ -39,7 +39,7 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
       setcurrentShowFile({ file, isUploaded: true });
     } catch (error) {
       // エラーが発生した場合の処理
-      console.log(`アップロード中にエラーが発生しました: ${error}`);
+      // console.log(`アップロード中にエラーが発生しました: ${error}`);
     }
   };
 
@@ -65,10 +65,10 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
           }))[0],
         );
 
-        console.log(acceptedFiles[0] + 'is Uploaded');
+        // console.log(acceptedFiles[0] + 'is Uploaded');
       } catch (error) {
         // エラーが発生した場合の処理
-        console.log(`アップロード中にエラーが発生しました: ${error}`);
+        // console.log(`アップロード中にエラーが発生しました: ${error}`);
       }
     },
     [currentShowFile],

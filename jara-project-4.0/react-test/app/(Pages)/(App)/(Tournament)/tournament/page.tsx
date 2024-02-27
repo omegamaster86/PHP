@@ -78,6 +78,7 @@ export default function Tournament() {
       range: '',
       start_date_time: '',
       hasHistory: false,
+      tournName: '',
     },
   ]);
 
@@ -97,6 +98,7 @@ export default function Tournament() {
     range: '',
     start_date_time: '',
     hasHistory: false,
+    tournName: '',
   });
 
   //大会情報 20240202
@@ -114,12 +116,6 @@ export default function Tournament() {
     venue_name: '',
     tourn_url: '',
     tourn_info_faile_path: '',
-  });
-
-  //追加対象のデータをまとめて送信する 20240202
-  const [sendFormData, setSendDatas] = useState({
-    tournamentFormData: tournamentFormData, //選手情報
-    tableData: tableData //選手の出漕結果情報
   });
 
   // フォームの入力値を管理する関数
@@ -322,8 +318,8 @@ export default function Tournament() {
     const fetchData = async () => {
       // APIを叩いてデータを取得する
       // TODO: データ取得処理の実装置き換え
-      const csrf = () => axios.get('/sanctum/csrf-cookie')
-      await csrf()
+      const csrf = () => axios.get('/sanctum/csrf-cookie');
+      await csrf();
       axios
         // .get<TourTypeResponse[]>('/tourType') getOrganizationType
         .get('/getApprovalType')
@@ -408,14 +404,14 @@ export default function Tournament() {
       if (mode === 'update') {
         // APIを叩いて、大会情報とレース情報を取得する
         // TODO: データ取得処理の実装置き換え
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         axios
           // .get<Tournament>('http://localhost:3100/tournament')
           .post('/getTournamentInfoData', tourn_id) //大会IDを元に大会情報を取得する
           .then((response) => {
             setTournamentFormData(response.data.result);
-            console.log(response.data);
+            // console.log(response.data);
           })
           .catch((error) => {
             // TODO: エラー処理の実装置き換え
@@ -425,7 +421,7 @@ export default function Tournament() {
           // .get<Race[]>('/race')
           .post('/getRaceData', tourn_id)
           .then((response) => {
-            console.log(response.data.result);
+            // console.log(response.data.result);
             setTableData(response.data.result);
           })
           .catch((error) => {
@@ -453,14 +449,14 @@ export default function Tournament() {
               };
               // sendFormData.tournamentFormData = tournamentFormData;
               // sendFormData.tableData = tableData;
-              console.log(registerData);
-              const csrf = () => axios.get('/sanctum/csrf-cookie')
-              await csrf()
+              // console.log(registerData);
+              const csrf = () => axios.get('/sanctum/csrf-cookie');
+              await csrf();
               axios
                 // .post('http://localhost:3100/', registerData)
                 .post('/storeTournamentInfoData', registerData)
                 .then((response) => {
-                  console.log(response);
+                  // console.log(response);
                   // TODO: 処理成功時の処理
                   setTournamentFormData({} as Tournament);
                   setRaceFormData({
@@ -479,6 +475,7 @@ export default function Tournament() {
                     range: '',
                     start_date_time: '',
                     hasHistory: false,
+                    tournName: '',
                   });
                   setTableData([
                     {
@@ -497,10 +494,12 @@ export default function Tournament() {
                       range: '',
                       start_date_time: '',
                       hasHistory: false,
+                      tournName: '',
                     },
                   ]);
                   fileUploaderRef?.current?.clearFile();
                   window.confirm('大会情報を登録しました。');
+                  router.push(`/tournamentRef?tournId=${response.data.result}`);
                 })
                 .catch((error) => {
                   // TODO: 処理失敗時の処理
@@ -530,12 +529,15 @@ export default function Tournament() {
 
           if (!isError) {
             const updateTournamentInfo = async () => {
-              const csrf = () => axios.get('/sanctum/csrf-cookie')
-              await csrf()
-              const registerData = {};
+              const csrf = () => axios.get('/sanctum/csrf-cookie');
+              await csrf();
+              const registerData = {
+                tournamentFormData, //選手情報
+                tableData //選手の出漕結果情報
+              };
               axios
                 // .post('http://localhost:3100/', registerData)
-                .post('/updateTournamentInfoData', sendFormData)
+                .post('/updateTournamentInfoData', registerData)
                 .then((response) => {
                   // TODO: 処理成功時の処理
                   setTournamentFormData({} as Tournament);
@@ -555,6 +557,7 @@ export default function Tournament() {
                     range: '',
                     start_date_time: '',
                     hasHistory: false,
+                    tournName: '',
                   });
                   setTableData([
                     {
@@ -573,10 +576,12 @@ export default function Tournament() {
                       range: '',
                       start_date_time: '',
                       hasHistory: false,
+                      tournName: '',
                     },
                   ]);
                   fileUploaderRef?.current?.clearFile();
                   window.confirm('大会情報を更新しました。');
+                  router.push(`/tournamentRef?tournId=${registerData.tournamentFormData.tourn_id}`);
                 })
                 .catch((error) => {
                   // TODO: 処理失敗時の処理
@@ -647,6 +652,7 @@ export default function Tournament() {
           range: '',
           start_date_time: '',
           hasHistory: false,
+          tournName: '',
         });
       }}
     >

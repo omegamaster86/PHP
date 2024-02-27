@@ -108,7 +108,7 @@ interface Race {
   start_date_time: string; // 開始日時
   // 「出漕結果記録テーブル」に「レーステーブル」.「レースID」と紐づくデータが存在する場合、リンクボタンを表示するかどうかを制御するためにhasHistoryを利用
   hasHistory?: boolean; // 過去のレース結果があるかどうか
-  tournName: string; // 大会名
+  tournName?: string; // 大会名
 }
 
 // 承認種別
@@ -236,9 +236,12 @@ interface TeamPlayerInformationResponse {
   residence_country?: number; // 居住地（国）
   residencePrefectureName: string; // 居住地（都道府県）　#置き換え作業対応不要
   residence_prefecture?: number; // 居住地（都道府県）
+  orgId: string; // 団体ID
+  orgName: string; // 団体名
   photo: string; // 写真
-  deleteFlag?: boolean; // 削除フラグ
-  type?: string; // 種別
+  deleteFlag: boolean; // 削除フラグ
+  checked?: boolean; // チェックボックス
+  type: string; // 種別
 }
 
 // 障碍タイプ
@@ -302,33 +305,35 @@ interface Organization {
   org_id: string; // 団体ID
   org_name: string; // 団体名
   entrysystem_org_id: string; // エントリーシステムの団体ID
-  orgTypeName: string; // 団体種別名　#置き換え作業未対応
+  orgTypeName: string; // 団体種別名
   founding_year: number; // 設立年
   post_code: string; // 郵便番号
+  post_code1: string; // 郵便番号 分割した前3文字
+  post_code2: string; // 郵便番号 分割した後4文字
   location_country: number;// 所在地（国）
-  locationCountry: string; // 所在地（国）　#置き換え作業対応不要
+  locationCountry: string; // 所在地（国）
   location_prefecture: number; // 所在地（都道府県）
-  locationPrefectureName: string; // 所在地（都道府県）　#置き換え作業対応不要
+  locationPrefectureName: string; // 所在地（都道府県）
   address1: string; // 住所1
   address2: string; // 住所2
   org_class: number; // 団体区分
-  orgClassName: string; // 団体区分　#置き換え作業未対応
+  orgClassName: string; // 団体区分
   jara_org_type: number; // JARA団体種別
-  jaraOrgTypeName: string; // JARA団体種別　#置き換え作業未対応
+  jaraOrgTypeName: string; // JARA団体種別
   jara_org_reg_trail: string; // JARA団体登録状況
   pref_org_type: number; // 県ボ団体種別
-  prefOrgTypeName: string; // 県ボ団体種別　#置き換え作業未対応
+  prefOrgTypeName: string; // 県ボ団体種別
   pref_org_reg_trail: string; // 県ボ団体登録状況
 }
 
 // スタッフ情報
 interface Staff {
-  id: number; // ID　#置き換え作業未対応
+  id: number; // ID
   user_id: string; // ユーザーID
-  userName: string; // ユーザー名　#置き換え作業未対応
+  user_name: string; // ユーザー名
   staff_type_id: string[]; // スタッフ種別
-  delete_flag: boolean; // 削除フラグ]
-  isUserFound: boolean; // ユーザーが見つかったかどうか　#置き換え作業未対応
+  delete_flag: boolean; // 削除フラグ
+  isUserFound: boolean; // ユーザーが見つかったかどうか
 }
 
 //団体所属選手情報
@@ -374,6 +379,27 @@ interface Org {
 interface CheckRace {
   id: number; // ID
   hasMatch?: boolean; // 過去のレース結果があるかどうか
+  hasError?: boolean; // エラーがあるかどうか
+  hasRegisterdRace?: boolean; // 登録済みのレースがあるかどうか
+}
+
+// 出漕結果情報一覧チェック
+interface CheckRaceResultRecord {
+  id: number; // ID
+  hasError?: boolean; // エラーがあるかどうか
+}
+
+// ユーザIDに紐づいた情報 20240222
+interface UserIdType {
+  player_id: number; // 選手ID
+  volunteer_id: number; // ボランティアID
+  is_administrator: number; // 管理者
+  is_jara: number; // JARA
+  is_pref_boat_officer: number; // 県ボ
+  is_organization_manager: number; // 団体管理者
+  is_player: number; // 選手
+  is_volunteer: number; // ボランティア
+  is_audience: number; // 一般ユーザ
 }
 
 export type { SexResponse };
@@ -405,3 +431,5 @@ export type { CrewResponse };
 export type { OrganizationPlayer };
 export type { Org };
 export type { CheckRace };
+export type { UserIdType };
+export type { CheckRaceResultRecord };

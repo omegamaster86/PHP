@@ -19,6 +19,7 @@ import {
   CustomTitle,
 } from '@/app/components';
 import { useAuth } from '@/app/hooks/auth';
+import { NO_IMAGE_URL, USER_IMAGE_URL } from '@/app/utils/imageUrl';
 
 export default function UserInformationUpdate() {
   const router = useRouter();
@@ -75,8 +76,8 @@ export default function UserInformationUpdate() {
       try {
         // APIを叩いて、ユーザー情報を取得する
         // TODO: 仮のURL（繋ぎ込み時に変更すること）
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         const response = await axios.get('/getUserData');
         setFormData((prevFormData) => ({
           ...prevFormData,
@@ -129,8 +130,8 @@ export default function UserInformationUpdate() {
           if (isOk) {
             // TODO: ユーザーテーブルから削除する処理の実装
             const deleteUser = async()=>{
-              const csrf = () => axios.get('/sanctum/csrf-cookie')
-              await csrf()
+              const csrf = () => axios.get('/sanctum/csrf-cookie');
+              await csrf();
               axios
                 // .delete('http://localhost:3100/')
                 .post('/deleteUserData') //20240212 削除するデータを送信
@@ -176,7 +177,7 @@ export default function UserInformationUpdate() {
         <div className='flex flex-col justify-start gap-[10px]'>
           {/* 写真 */}
           <InputLabel displayHelp={false} label='写真' />
-          <img src={`http://localhost:8000/images/users/${formData.photo}`} className='w-[300px] h-[300px] rounded-[2px] object-cover' />
+          <img src={formData.photo?`${USER_IMAGE_URL}${formData.photo}`:`${NO_IMAGE_URL}`} className='w-[300px] h-[300px] rounded-[2px] object-cover' />
         </div>
         {/* ユーザーID */}
         <CustomTextField

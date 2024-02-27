@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class T_organization_staff extends Model
 {
@@ -19,7 +20,7 @@ class T_organization_staff extends Model
         $orgStaffs = DB::select('select
                                 `org_id`
                                 ,`user_id`
-                                ,`user_name` as `userName`
+                                ,`user_name`
                                 ,case
                                     when instr(`staff_type_array`,"1") > 0 then 1
                                     else 0
@@ -83,7 +84,7 @@ class T_organization_staff extends Model
     }
 
     //団体所属スタッフテーブルに挿入する
-    public function insertOrganizationStaff($replace_str,$values)
+    public function insertOrganizationStaff($replace_str,$org_id)
     {
         $sqlString = "insert into `t_organization_staff`
                     (
@@ -101,7 +102,7 @@ class T_organization_staff extends Model
                     (
                         SELECT
                         #ValuesReplace#
-                    ) as `value_table`
+                    ) `value_table`
                     where 1=1
                     and not EXISTS
                     (
@@ -109,12 +110,15 @@ class T_organization_staff extends Model
                         from `t_organization_staff`
                         where 1=1
                         and `delete_flag` = 0
-                        and `org_id` = :org_id
+                        and `org_id` = ?
                         and `t_organization_staff`.`user_id` = `value_table`.`user_id`
                         and `t_organization_staff`.`staff_type_id` = `value_table`.`staff_type_id`
                     )";
         $sqlString = str_replace("#ValuesReplace#",$replace_str,$sqlString);
-        DB::insert($sqlString,$values);
+        DB::insert($sqlString,[$org_id]);
+
+        $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
+        return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 
     //団体削除による団体所属スタッフの削除

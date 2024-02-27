@@ -98,11 +98,11 @@ export default function VolunteerInformationRef() {
     const fetchData = async () => {
       try {
         // TODO: 仮のURL（繋ぎ込み時に変更すること）
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         // const volunteerResponse = await axios.get<VolunteerResponse>('/volunteer',);
         const volunteerResponse = await axios.post('/getVolunteerData', volunteer_id); //ボランティア情報の取得 20240213
-        console.log(volunteerResponse.data.result);
+        // console.log(volunteerResponse.data.result);
         setVolunteerdata({
           volunteer_id: volunteerResponse.data.result.volunteer_id, // ボランティアID
           volunteer_name: volunteerResponse.data.result.volunteer_name, // 氏名
@@ -117,6 +117,7 @@ export default function VolunteerInformationRef() {
           dis_type_id: [''], // 障碍タイプ
           qualHold: [''], // 保有資格　#置き換え作業未対応
           language: [''], // 言語　#置き換え作業未対応
+          language_proficiency: '', //残件対応項目
           day_of_week: volunteerResponse.data.result.day_of_week, // 曜日
           time_zone: volunteerResponse.data.result.time_zone, // 時間帯
           photo: volunteerResponse.data.result.photo, // 写真　#置き換え作業未対応
@@ -124,7 +125,7 @@ export default function VolunteerInformationRef() {
         // const volunteerHistoriesResponse = await axios.get<VolunteerHistoriesResponse[]>(
         //   '/volunteerHistories',
         // );
-        console.log(volunteerResponse.data.volHistData)
+        // console.log(volunteerResponse.data.volHistData)
         setVolunteerHistoriesdata(volunteerResponse.data.volHistData);
       } catch (error) {
         // TODO: エラーハンドリングを実装
@@ -507,7 +508,19 @@ export default function VolunteerInformationRef() {
                     (volunteerHistoriesdata.tourn_type == activeTab || activeTab == 0) && (
                       <CustomTr key={volunteerHistoriesdata.tourn_name}>
                         {/* 大会名/イベント名 */}
-                        <CustomTd align='center'>{volunteerHistoriesdata.tourn_name}</CustomTd>
+                        <CustomTd align='center'>
+                          <Link
+                            className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                            href={{
+                              pathname: '/tournamentRef',
+                              query: { tournId: volunteerHistoriesdata.tourn_id },
+                            }}
+                            rel='noopener noreferrer'
+                            target='_blank'
+                          >
+                            {volunteerHistoriesdata.tourn_name}
+                          </Link>
+                        </CustomTd>
                         {/* 開催開始日 */}
                         <CustomTd align='center'>{volunteerHistoriesdata.event_start_date}</CustomTd>
                         {/* 開催終了日 */}
@@ -599,14 +612,13 @@ export default function VolunteerInformationRef() {
                  * 「ボランティア言語レベルテーブル」
                  * 「ボランティア支援可能障碍タイプテーブル」
                  */
-
                 // TODO: エラーハンドリングを実装
                 // 削除に失敗した場合、
                 // 以下のメッセージをシステムエラーとして赤文字で表示し、以降の処理は行わない。
                 // setErrorMessage(['ユーザー情報の登録に失敗しました。ユーザーサポートにお問い合わせください。']);
 
                 // 管理画面に遷移
-                router.push('/dashboard');
+                router.push('/tournamentSearch'); //大会検索画面に遷移する20240222
               }}
             >
               削除

@@ -2,7 +2,7 @@
 'use client';
 
 // Reactおよび関連モジュールのインポート
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/app/lib/axios';
 // コンポーネントのインポート
@@ -20,13 +20,14 @@ import {
 } from '@/app/components';
 import { Tournament, Race, UserResponse } from '@/app/types';
 import Link from 'next/link';
+import EditIcon from '@mui/icons-material/EditOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { ROLE } from '@/app/utils/consts';
 
 // 大会情報参照画面
-export default function tournamentRef() {
+export default function TournamentRef() {
   // フック
   const router = useRouter();
 
@@ -97,20 +98,20 @@ export default function tournamentRef() {
     // StrictModeの制約回避のため、APIの呼び出し実績の有無をuseEffectの中に記述
     if (!isApiFetched.current) {
       const fetchData = async () => {
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         // const userResponse = await axios.get<UserResponse>('http://localhost:3100/user');
         const userResponse = await axios.get('getUserData');
         setUserType(userResponse.data.result.user_type);
         // TODO: tournIdを元に大会情報を取得する処理の置き換え
         // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
         const tournamentResponse = await axios.post('/getTournamentInfoData', tourn_id); //大会IDを元に大会情報を取得する
-        console.log(tournamentResponse);
+        // console.log(tournamentResponse);
         setTournamentFormData(tournamentResponse.data.result);
         // TODO: tournIdを元にレース情報を取得する処理の置き換え
         // const raceResponse = await axios.get<Race[]>('http://localhost:3100/race');
         const raceResponse = await axios.post('/getRaceData', tourn_id);
-        console.log(raceResponse.data.result);
+        // console.log(raceResponse.data.result);
         raceResponse.data.result.map((data: any) => {
           setTableData((prevData) => [...prevData, { ...data }]);
         });
@@ -135,6 +136,19 @@ export default function tournamentRef() {
               {mode === 'delete' && '大会情報削除'}
               {mode !== 'delete' && '大会情報'}
             </CustomTitle>
+            {mode !== 'delete' && (
+              <Link
+                href={{
+                  pathname: '/tournament',
+                  query: { mode: 'update', tourn_id: tournId },
+                }}
+                target='_blank'
+                className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
+              >
+                <EditIcon className='cursor-pointer m-1 text-small md:text-h3' />
+                大会情報を更新
+              </Link>
+            )}
           </div>
           <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4 '>
             <div className='flex flex-col gap-[10px]'>
@@ -339,8 +353,8 @@ export default function tournamentRef() {
                   onClick={async () => {
                     // TODO: 削除ボタン押下イベントの実装
                     const isOk = window.confirm('大会情報を削除します。よろしいですか？');
-                    const csrf = () => axios.get('/sanctum/csrf-cookie')
-                    await csrf()
+                    const csrf = () => axios.get('/sanctum/csrf-cookie');
+                    await csrf();
                     if (!isOk) {
                       // TODO: 削除確認画面でOKボタンが押された場合、テーブルの当該項目に削除フラグを立てる処理の置き換え
                       axios
