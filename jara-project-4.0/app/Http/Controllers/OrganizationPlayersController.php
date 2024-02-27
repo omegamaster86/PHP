@@ -1030,4 +1030,28 @@ class OrganizationPlayersController extends Controller
                 //Status code 500 for internal server error
         }
     }
+
+    // 団体所属選手の更新処理 20240226
+    public function updateOrgPlayerData(Request $request)
+    {
+        Log::debug(sprintf("updateOrgPlayerData start"));
+        $reqData = $request->all();
+        //ここに処理を追加　二村さん作業
+
+        $result = "";
+        Log::debug(sprintf("updateOrgPlayerData end"));
+        return response()->json(['result' => $result]);
+    }
+
+    // 団体に登録する選手検索 20240226
+    public function teamPlayerSearch(Request $request)
+    {
+        Log::debug(sprintf("teamPlayerSearch start"));
+        $reqData = $request->all();
+        //ここに処理を追加　二村さん作業
+
+        
+        Log::debug(sprintf("teamPlayerSearch end"));
+        return response()->json(['result' => $reqData]);
+    }
 }

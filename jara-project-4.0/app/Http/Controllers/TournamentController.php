@@ -575,6 +575,8 @@ class TournamentController extends Controller
     public function updateTournamentInfoData(Request $request, T_tournaments $tTournament, T_races $tRace)
     {
         Log::debug(sprintf("storeTournamentInfoData start"));
+        Log::debug($request->all());
+        ddd("");
         $random_file_name = Str::random(12);
         //If new PDF is uploaded
         if ($request->hasfile('tournamentFormData')) {

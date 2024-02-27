@@ -209,8 +209,8 @@ export default function TournamentEntryBulkRegister() {
       const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
       setFormData((prevFormData) => ({
         ...prevFormData,
-        eventYear: tournamentResponse.data.eventStartDate.slice(0, 4),
-        tournName: tournamentResponse.data.tournName,
+        eventYear: tournamentResponse.data.event_start_date.slice(0, 4),
+        tournName: tournamentResponse.data.tourn_name,
       }));
       setDisplayFlg(false);
     } catch (error) {
