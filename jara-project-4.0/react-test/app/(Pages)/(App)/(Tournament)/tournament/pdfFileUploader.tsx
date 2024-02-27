@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useCallback, useRef, forwardRef, Dispatch, SetStateAction, useImperativeHandle, useEffect } from 'react';
 import type { FileRejection } from 'react-dropzone';
 import { useDropzone } from 'react-dropzone';
 import Papa from 'papaparse';
@@ -9,6 +9,8 @@ import CustomTextField from '@mui/material/TextField';
 interface Props {
   label: string; // ラベル
   readonly: boolean; // 読み取り専用かどうか
+  setTournamentFormData:Dispatch<
+  SetStateAction<any>>; //アップロードされた場合、退会ファイル名更新
 }
 
 // Handlerの型定義
@@ -27,19 +29,36 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
     };
   });
 
+  //アップロードされたファイルを保存するー開始
+  useEffect(() => {
+    if(currentShowFile?.file) {
+      console.log(currentShowFile?.file);
+      props.setTournamentFormData((prevFormData:any) => ({
+        ...prevFormData,
+        uploadedPDFFilePath:currentShowFile.file.name,
+        uploadedPDFFile: currentShowFile.file,
+        tourn_info_faile_path:''
+      }));
+    }
+  }, [currentShowFile]);//ファイルのアップロード終わったら
+  //アップロードされたファイルを保存するー完了
+
   // ファイルアップロード時の処理
   const onUploadFile = async (file: File) => {
     try {
       setcurrentShowFile({ file, isUploaded: false });
 
-      const uploadTime = Math.random() * 9000 + 1000; // 1秒から10秒
+      // const uploadTime = Math.random() * 9000 + 1000; // 1秒から10秒
+      const uploadTime = 1000; // 1秒
       await new Promise((resolve) => setTimeout(resolve, uploadTime));
 
       // アップロード成功時の処理
       setcurrentShowFile({ file, isUploaded: true });
+
     } catch (error) {
       // エラーが発生した場合の処理
       // console.log(`アップロード中にエラーが発生しました: ${error}`);
+      alert(`アップロード中にエラーが発生しました。`);
     }
   };
 
@@ -102,7 +121,7 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
     onDrop,
     onDropRejected,
     accept: {
-      'application/pdf': [],
+      'application/pdf': []
     },
     maxFiles: 1,
     maxSize: 50 * 1024 * 1024, // 50MB

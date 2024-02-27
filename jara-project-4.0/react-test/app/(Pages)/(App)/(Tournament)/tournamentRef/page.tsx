@@ -18,13 +18,14 @@ import {
   CustomTitle,
   CustomTbody,
 } from '@/app/components';
-import { Tournament, Race, UserResponse } from '@/app/types';
+import { Tournament, Race, UserResponse, UserIdType } from '@/app/types';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/EditOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { ROLE } from '@/app/utils/consts';
+import { TOURNAMENT_PDF_URL } from '@/app/utils/imageUrl';
 
 // 大会情報参照画面
 export default function TournamentRef() {
@@ -93,6 +94,8 @@ export default function TournamentRef() {
     tableData: tableData //選手の出漕結果情報
   });
 
+  const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
+
   // データ取得
   useEffect(() => {
     // StrictModeの制約回避のため、APIの呼び出し実績の有無をuseEffectの中に記述
@@ -115,6 +118,9 @@ export default function TournamentRef() {
         raceResponse.data.result.map((data: any) => {
           setTableData((prevData) => [...prevData, { ...data }]);
         });
+
+        const playerInf = await axios.get('/getIDsAssociatedWithUser');
+        setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
       };
       fetchData();
       isApiFetched.current = true;
@@ -160,16 +166,23 @@ export default function TournamentRef() {
                     textSize='h2'
                   ></Label>
                   {/* 大会要項ダウンロードボタン */}
-                  <CustomButton
+                  {/* <CustomButton
                     buttonType='white-outlined'
                     className='w-[220px] text-normal text-white hover:text-primary-100 hover:bg-transparent hover:border-primary-100'
                     onClick={() => {
                       // TODO: 大会要項のPDFをダウンロードする処理
+                      return `${TOURNAMENT_PDF_URL}${tournamentFormData.tourn_info_faile_path}`;
                     }}
                   >
                     <FileDownloadOutlinedIcon className='text-[16px] mr-1 hover:text-primary-100 '></FileDownloadOutlinedIcon>
                     大会要項ダウンロード
-                  </CustomButton>
+                  </CustomButton> */}
+                  {/* ダウンロードコード追加 開始*/}
+                  {tournamentFormData.tourn_info_faile_path && (<Link href={`${TOURNAMENT_PDF_URL}${tournamentFormData.tourn_info_faile_path}`} download className='w-[220px] text-normal text-white hover:text-primary-100 hover:bg-transparent hover:border-primary-100 ' target='_blank'>
+                    <FileDownloadOutlinedIcon className='text-[16px] mr-1 hover:text-primary-100 '></FileDownloadOutlinedIcon>
+                    大会要項ダウンロード
+                  </Link>)}
+                  {/* ダウンロードコード追加 終了*/}
                 </div>
                 <div className='flex flex-row'>
                   {/* 大会個別URL */}
@@ -252,10 +265,10 @@ export default function TournamentRef() {
                       textSize='caption1'
                     ></Label>
                   </div>
-                  {(userType === ROLE.SYSTEM_ADMIN ||
-                    userType === ROLE.GROUP_MANAGER ||
-                    userType === ROLE.JARA ||
-                    userType === ROLE.PREFECTURE) && (
+                  {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+                    userIdType.is_organization_manager == ROLE.GROUP_MANAGER ||
+                    userIdType.is_jara == ROLE.JARA ||
+                    userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
                       <div className='flex flex-row gap-[10px]'>
                         {/* エントリーシステムの大会ID */}
                         <div className='text-gray-40 text-caption1'>エントリーシステムの大会ID：</div>
@@ -342,10 +355,10 @@ export default function TournamentRef() {
             </CustomButton>
             {/* 参照モードかつ、権限がシステム管理者、大会団体管理者の時は表示 */}
             {mode === 'delete' &&
-              (userType === ROLE.SYSTEM_ADMIN ||
-                userType === ROLE.GROUP_MANAGER ||
-                userType === ROLE.JARA ||
-                userType === ROLE.PREFECTURE) && (
+              (userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+                userIdType.is_organization_manager == ROLE.GROUP_MANAGER ||
+                userIdType.is_jara == ROLE.JARA ||
+                userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
                 // 削除ボタン
                 <CustomButton
                   buttonType='primary'
