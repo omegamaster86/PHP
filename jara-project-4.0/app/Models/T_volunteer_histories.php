@@ -89,4 +89,16 @@ class T_volunteer_histories extends Model
                             ,$volunteer_id);
         return $histories;
     }
+
+    //delete_flagを有効にupdateする
+    public function updateDeleteFlagToValid($values)
+    {
+        DB::update("update `t_volunteer_histories`
+                    set updated_time = :current_datetime
+                    ,updated_user_id = :user_id
+                    ,delete_flag = 1
+                    where 1=1
+                    and volunteer_history_id = :volunteer_history_id
+                    ",$values);
+    }
 }
