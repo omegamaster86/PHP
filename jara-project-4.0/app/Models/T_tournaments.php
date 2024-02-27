@@ -85,9 +85,9 @@ class T_tournaments extends Model
                 $tournamentsInfo['tourn_url'],
                 $tournamentsInfo['tourn_info_faile_path'],
                 $tournamentsInfo['entrysystem_tourn_id'],
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 $tournamentsInfo['delete_flag']
             ]
@@ -160,9 +160,9 @@ class T_tournaments extends Model
                     $tournamentsInfo['tourn_url'],
                     $tournamentsInfo['tourn_info_faile_path'],
                     $tournamentsInfo['entrysystem_tourn_id'],
-                    NOW(),
+                    now()->format('Y-m-d H:i:s.u'),
                     Auth::user()->user_id,
-                    NOW(),
+                    now()->format('Y-m-d H:i:s.u'),
                     Auth::user()->user_id,
                     $tournamentsInfo['delete_flag'],
                     $tournamentsInfo['tourn_id'], //where条件
@@ -173,7 +173,7 @@ class T_tournaments extends Model
             return $result;
         } catch (\Throwable $e) {
             // dd($request->all());
-            return response()->json(['errMessage' => $e->getMessage()]); //DBの結果を返す
+            return response()->json("失敗しました。大会更新できませんでした。",500);  //DBの結果を返す
         }
     }
 
