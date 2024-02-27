@@ -85,9 +85,9 @@ class T_tournaments extends Model
                 $tournamentsInfo['tourn_url'],
                 $tournamentsInfo['tourn_info_faile_path'],
                 $tournamentsInfo['entrysystem_tourn_id'],
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 $tournamentsInfo['delete_flag']
             ]
@@ -145,6 +145,7 @@ class T_tournaments extends Model
         $result = "success";
         DB::beginTransaction();
         try {
+            
             DB::update(
                 'update t_tournaments set `tourn_id`=?,`tourn_name`=?,`sponsor_org_id`=?,`event_start_date`=?,`event_end_date`=?,`venue_id`=?,`venue_name`=?,`tourn_type`=?,`tourn_url`=?,`tourn_info_faile_path`=?,`entrysystem_tourn_id`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where tourn_id = ?',
                 [
@@ -159,9 +160,9 @@ class T_tournaments extends Model
                     $tournamentsInfo['tourn_url'],
                     $tournamentsInfo['tourn_info_faile_path'],
                     $tournamentsInfo['entrysystem_tourn_id'],
-                    NOW(),
+                    now()->format('Y-m-d H:i:s.u'),
                     Auth::user()->user_id,
-                    NOW(),
+                    now()->format('Y-m-d H:i:s.u'),
                     Auth::user()->user_id,
                     $tournamentsInfo['delete_flag'],
                     $tournamentsInfo['tourn_id'], //where条件
@@ -171,13 +172,8 @@ class T_tournaments extends Model
             DB::commit();
             return $result;
         } catch (\Throwable $e) {
-            dd($e);
             // dd($request->all());
-            dd("stop");
-            DB::rollBack();
-
-            $result = "failed";
-            return $result;
+            return response()->json("失敗しました。大会更新できませんでした。",500);  //DBの結果を返す
         }
     }
 

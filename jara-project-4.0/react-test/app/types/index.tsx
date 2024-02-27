@@ -87,6 +87,8 @@ interface Tournament {
   venue_name: string; // 開催場所名
   tourn_url: string; // 大会URL
   tourn_info_faile_path: string; // 大会情報ファイルパス
+  uploadedPDFFile?: File; // アップロードされて写真を保存する
+  uploadedPDFFilePath?: string; // アップロードされて写真の名前を保存する
 }
 
 // レース情報
