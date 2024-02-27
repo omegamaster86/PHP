@@ -1043,15 +1043,40 @@ class OrganizationPlayersController extends Controller
         return response()->json(['result' => $result]);
     }
 
-    // // 団体に登録する選手検索 20240226
-    // public function teamPlayerSearch(Request $request)
-    // {
-    //     Log::debug(sprintf("teamPlayerSearch start"));
-    //     $reqData = $request->all();
-    //     //ここに処理を追加　二村さん作業
-
-        
-    //     Log::debug(sprintf("teamPlayerSearch end"));
-    //     return response()->json(['result' => $reqData]);
-    // }
+    // 団体に登録する選手検索 20240226
+    public function teamPlayerSearch(Request $request, T_organization_players $t_organization_players)
+    {
+        Log::debug(sprintf("teamPlayerSearch start"));
+        $searchInfo = $request->all();
+        $searchValue = [];
+        $searchCondition = $this->generateOrganizationPlayersSearchCondition($searchInfo, $searchValue);
+        $players = $t_organization_players->getOrganizationPlayersFromCondition($searchCondition, $searchValue);
+        for ($i = 0; $i < count($players); $i++) {
+            $side_info = array();
+            if ($players[$i]->side_B == 1) {
+                array_push($side_info, 1);
+            }else{
+                array_push($side_info, 0);
+            }
+            if ($players[$i]->side_S == 1) {
+                array_push($side_info, 1);
+            }else{
+                array_push($side_info, 0);
+            }
+            if ($players[$i]->side_C == 1) {
+                array_push($side_info, 1);
+            }else{
+                array_push($side_info, 0);
+            }
+            if ($players[$i]->side_X == 1) {
+                array_push($side_info, 1);
+            }else{
+                array_push($side_info, 0);
+            }
+            $players[$i]->side_info = $side_info;
+            $players[$i]->id = ($i + 1);
+        }
+        Log::debug(sprintf("teamPlayerSearch end"));
+        return response()->json(['result' => $players]);
+    }
 }
