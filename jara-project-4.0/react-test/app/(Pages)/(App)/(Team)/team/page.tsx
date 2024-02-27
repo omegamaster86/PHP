@@ -698,15 +698,17 @@ export default function OrgInfo() {
             />
           </div>
           {/* JARA証跡 */}
-          {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+          {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
             userIdType.is_jara == ROLE.JARA ||
-            (userIdType.is_pref_boat_officer == ROLE.PREFECTURE && mode !== 'create')) && (
+            userIdType.is_pref_boat_officer == ROLE.PREFECTURE) &&
+            formData.jaraOrgTypeName == "正規") && (
               <CustomTextField
                 label='証跡'
                 displayHelp={false}
                 className='w-[300px]'
                 value={formData.jara_org_reg_trail}
-                readonly={mode === 'confirm' || userIdType.is_pref_boat_officer == ROLE.PREFECTURE}
+                // readonly={mode === 'confirm' || userIdType.is_pref_boat_officer == ROLE.PREFECTURE}
+                readonly={mode === 'confirm'}
                 onChange={(e) => handleInputChange('jara_org_reg_trail', e.target.value)}
               />
             )}
@@ -738,14 +740,16 @@ export default function OrgInfo() {
             />
           </div>
           {/* 県ボ証跡 */}
-          {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
-            (userIdType.is_jara == ROLE.JARA && mode !== 'create') ||
-            userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
+          {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+            userIdType.is_jara == ROLE.JARA ||
+            userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && 
+            formData.prefOrgTypeName == "正規") && (
               <CustomTextField
                 label='証跡'
                 className='w-[300px]'
                 displayHelp={false}
-                readonly={mode === 'confirm' || userIdType.is_jara == ROLE.JARA}
+                // readonly={mode === 'confirm' || userIdType.is_jara == ROLE.JARA}
+                readonly={mode === 'confirm'}
                 value={formData.pref_org_reg_trail}
                 onChange={(e) => handleInputChange('pref_org_reg_trail', e.target.value)}
               />
