@@ -508,7 +508,19 @@ export default function VolunteerInformationRef() {
                     (volunteerHistoriesdata.tourn_type == activeTab || activeTab == 0) && (
                       <CustomTr key={volunteerHistoriesdata.tourn_name}>
                         {/* 大会名/イベント名 */}
-                        <CustomTd align='center'>{volunteerHistoriesdata.tourn_name}</CustomTd>
+                        <CustomTd align='center'>
+                          <Link
+                            className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                            href={{
+                              pathname: '/tournamentRef',
+                              query: { tournId: volunteerHistoriesdata.tourn_id },
+                            }}
+                            rel='noopener noreferrer'
+                            target='_blank'
+                          >
+                            {volunteerHistoriesdata.tourn_name}
+                          </Link>
+                        </CustomTd>
                         {/* 開催開始日 */}
                         <CustomTd align='center'>{volunteerHistoriesdata.event_start_date}</CustomTd>
                         {/* 開催終了日 */}
