@@ -512,8 +512,9 @@ export default function Tournament() {
                 .catch((error) => {
                   // TODO: 処理失敗時の処理
                   setErrorMessages([
-                    ...(errorMessages as string[]),
-                    '登録に失敗しました。原因：' + (error as Error).message,
+                    // ...(errorMessages as string[]),
+                    // '登録に失敗しました。原因：' + (error as Error).message,
+                    '登録に失敗しました。'
                   ]);
                 })
                 .finally(() => {
@@ -599,8 +600,9 @@ export default function Tournament() {
                 .catch((error) => {
                   // TODO: 処理失敗時の処理
                   setErrorMessages([
-                    ...(errorMessages as string[]),
-                    '更新に失敗しました。原因：' + (error as Error).message,
+                    // ...(errorMessages as string[]),
+                    // '更新に失敗しました。原因：' + (error as Error).message,
+                    '更新に失敗しました。'
                   ]);
                 })
                 .finally(() => {

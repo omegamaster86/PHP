@@ -565,7 +565,7 @@ class TournamentController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::debug($e);
-            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+            return response()->json("失敗しました。大会登録できませんでした。",500); //エラーメッセージを返す
         }
 
         Log::debug(sprintf("storeTournamentInfoData end"));
@@ -586,13 +586,15 @@ class TournamentController extends Controller
         }
         $reqData = $request->all();
         //確認画面から登録
-        // $tTournament::$tournamentInfo['tourn_id'] = 1;
+        $tTournament::$tournamentInfo['tourn_id'] = $reqData['tournamentFormData']['tourn_id']; //大会ID
         $tTournament::$tournamentInfo['tourn_name'] = $reqData['tournamentFormData']['tourn_name']; //大会名
         $tTournament::$tournamentInfo['sponsor_org_id'] = $reqData['tournamentFormData']['sponsor_org_id']; //主催団体ID
         $tTournament::$tournamentInfo['event_start_date'] = $reqData['tournamentFormData']['event_start_date']; //大会開始日
         $tTournament::$tournamentInfo['event_end_date'] = $reqData['tournamentFormData']['event_end_date']; //大会終了日 
         $tTournament::$tournamentInfo['venue_id'] = $reqData['tournamentFormData']['venue_id']; //水域ID
         $tTournament::$tournamentInfo['venue_name'] = $reqData['tournamentFormData']['venue_name']; //水域名
+        $tTournament::$tournamentInfo['tourn_type'] = $reqData['tournamentFormData']['tourn_type']; //Tourn type
+        $tTournament::$tournamentInfo['tourn_url'] = $reqData['tournamentFormData']['tourn_url']; //Tourn URL
         $tTournament::$tournamentInfo['entrysystem_tourn_id'] = $reqData['tournamentFormData']['entrysystem_tourn_id']; //エントリーシステムの大会ID
         //If new PDF is uploaded
         if ($request->hasfile('tournamentFormData')) {
@@ -603,12 +605,10 @@ class TournamentController extends Controller
             //If  PDF is not uploaded
             $tTournament::$tournamentInfo['tourn_info_faile_path'] = $reqData['tournamentFormData']['tourn_info_faile_path']??''; //PDFファイル
         }
+        $tTournament->updateTournaments($tTournament::$tournamentInfo);
         DB::beginTransaction();
         try
         {
-            //大会更新
-            $tTournament->updateTournaments($tTournament::$tournamentInfo);
-            
             //レース登録リスト行数分登録する
             for ($i = 0; $i < count($reqData['tableData']); $i++) {
                 $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['race_number']; //レース番号
@@ -631,7 +631,7 @@ class TournamentController extends Controller
         catch (\Throwable $e)
         {
             DB::rollBack();
-            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+            return response()->json("失敗しました。大会更新できませんでした。",500); //エラーメッセージを返す
         }
     }
 

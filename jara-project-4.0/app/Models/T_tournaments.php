@@ -145,6 +145,7 @@ class T_tournaments extends Model
         $result = "success";
         DB::beginTransaction();
         try {
+            
             DB::update(
                 'update t_tournaments set `tourn_id`=?,`tourn_name`=?,`sponsor_org_id`=?,`event_start_date`=?,`event_end_date`=?,`venue_id`=?,`venue_name`=?,`tourn_type`=?,`tourn_url`=?,`tourn_info_faile_path`=?,`entrysystem_tourn_id`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where tourn_id = ?',
                 [
@@ -171,13 +172,8 @@ class T_tournaments extends Model
             DB::commit();
             return $result;
         } catch (\Throwable $e) {
-            dd($e);
             // dd($request->all());
-            dd("stop");
-            DB::rollBack();
-
-            $result = "failed";
-            return $result;
+            return response()->json(['errMessage' => $e->getMessage()]); //DBの結果を返す
         }
     }
 

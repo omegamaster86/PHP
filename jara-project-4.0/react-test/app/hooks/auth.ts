@@ -46,7 +46,7 @@ export const useAuth = ({
       await axios.post('/login', data);
       mutate();
     } catch (error) {
-      // throw error
+      throw error
     }
   };
 

@@ -47,7 +47,7 @@ const submitForm = async (
     await login(values)
   } catch (error: Error | AxiosError | any) {
     if (axios.isAxiosError(error) && error.response?.status === 422) {
-      setErrorText(error.response?.data?.errors?.system_error)
+      setErrorText(error.response?.data?.errors?.system_error);
     }
   } finally {
     // setSubmitting(false)
