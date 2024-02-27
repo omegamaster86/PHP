@@ -1,37 +1,11 @@
 'use client';
 import { useAuth } from '@/app/hooks/auth';
-import { Header, Footer, Loading } from '@/app/components';
-import { useState } from 'react';
-import { useIdleTimer } from "react-idle-timer"; // For logout a user after one hour of inactivity
+import { Header, Footer, CustomButton, Loading } from '@/app/components';
+import { useEffect, useState } from 'react';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  
   const [loggedIn, setLoggedIn] = useState(false);
-  const { user, logout, isLoading } = useAuth({ middleware: 'auth' });
-
-  const onIdle = () => {
-    if(user){
-      logout(); //The user will be automatically after 1 hour of inactivity.
-      // pause();// For stop counting idle time of a logged user because of logout.
-    }
-  };
-  const {start, pause} =  useIdleTimer({onIdle, timeout: 1000 * 60 * 60, events: [
-    'mousemove',
-    'keydown',
-    'wheel',
-    'DOMMouseScroll',
-    'mousewheel',
-    'mousedown',
-    'touchstart',
-    'touchmove',
-    'MSPointerDown',
-    'MSPointerMove',
-    'visibilitychange',
-    'focus'
-  ], 
-  crossTab: true,
-  syncTimers: 1000 * 60 * 60
-  }); //Set 1 hour inactivity time for logout .
+  const { user, logout, isLoading } = useAuth({ middleware: 'auth' })
 
   if(isLoading) {
     return (
@@ -41,15 +15,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   function authCheck(){
     if(user){
-      setLoggedIn(true);
-      start(); // For counting idle time of a logged user.
+      setLoggedIn(true)
     }
   }
   if(!loggedIn){
-    authCheck();
+    authCheck()
   }
   
-  // console.log("login status : ",loggedIn);
+
   
   return (
     <>
@@ -58,11 +31,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Header />
           <div className='flex-grow p-4 md:overflow-y-auto md:p-12 w-full max-w-7xl m-auto min-h-screen'>
             {/* This is a extra feature for logout - start */}
-            {/* <div className=' text-right mt-4 mr-2'>
-              { <CustomButton buttonType='primary' className='w-[200px]'  onClick={logout} >
+            <div className=' text-right mt-4 mr-2'>
+              <CustomButton buttonType='primary' className='w-[200px]'  onClick={logout} >
                     ログアウト
-              </CustomButton> }
-            </div> */}
+              </CustomButton>
+            </div>
             {children}
           </div>
         </div>

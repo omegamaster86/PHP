@@ -18,16 +18,16 @@ use App\Models\T_volunteer_supportable_disability;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
-// use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Session;
 
 class VolunteerInfoAlignmentController extends Controller
 {
     //ボランティア一括登録画面呼び出し
-    // public function createInfoAlignment(Request $request): View
-    // {
-    //     $csvList = "";
-    //     return view('volunteer.info_alignment', ["csvList" => $csvList, "errorMsg" => "", "checkList" => ""]);
-    // }
+    public function createInfoAlignment(Request $request): View
+    {
+        $csvList = "";
+        return view('volunteer.info_alignment', ["csvList" => $csvList, "errorMsg" => "", "checkList" => ""]);
+    }
 
     //読み込むボタンを押下
     public function csvread(Request $request,

@@ -149,6 +149,3 @@ $entrysystemOrgId_registered = '入力されたエントリーシステムの団
 $userId_not_found = '[対象項目名]のユーザーは、既にシステムより削除されているか、本登録されていないユーザーIDが入力されています。';
 $organization_commit_failed = '団体情報の登録に失敗しました。ユーザーサポートにお問い合わせください。';
 
-//大会レース結果入力画面のエラーメッセージ
-$race_result_record_have_been_registred = '当該レースの結果は、既に他のユーザーによって登録されています。';
-$race_result_record_have_been_deleted = '当該レースの結果は、他のユーザーによって削除されています。';

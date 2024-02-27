@@ -53,7 +53,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
       setcurrentShowFile({ file, isUploaded: true });
     } catch (error) {
       // エラーが発生した場合の処理
-      // console.log(`アップロード中にエラーが発生しました: ${error}`);
+      console.log(`アップロード中にエラーが発生しました: ${error}`);
     }
   };
 
@@ -79,7 +79,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           }))[0],
         );
 
-        // console.log(acceptedFiles[0] + 'is Uploaded');
+        console.log(acceptedFiles[0] + 'is Uploaded');
 
         // FileをList<List<String>>に変換
         Papa.parse(acceptedFiles[0], {
@@ -93,7 +93,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
         props.csvUploadProps.resetActivationFlg();
       } catch (error) {
         // エラーが発生した場合の処理
-        // console.log(`アップロード中にエラーが発生しました: ${error}`);
+        console.log(`アップロード中にエラーが発生しました: ${error}`);
       }
     },
     [props],
@@ -157,7 +157,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
-      // console.error('CSV Download Error:', error);
+      console.error('CSV Download Error:', error);
       alert('CSVのダウンロード中にエラーが発生しました。もう一度試してください。');
     }
   };

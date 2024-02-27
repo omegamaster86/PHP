@@ -427,12 +427,12 @@ class T_users extends Authenticatable
                             from `t_users`
                             left join `t_players`
                             on `t_users`.`user_id` = `t_players`.`user_id`
-                            and `t_players`.`delete_flag` = 0
                             left join `t_volunteers`
-                            on `t_users`.`user_id` = `t_volunteers`.`user_id`
-                            and `t_volunteers`.`delete_flag` = 0
+                            on `t_users`.`user_id` = `t_volunteers`.`user_id` 
                             where 1=1
                             and `t_users`.`delete_flag` = 0
+                            and (`t_players`.`delete_flag` = 0 or `t_players`.`delete_flag` is null)
+                            and (`t_volunteers`.`delete_flag` = 0 or `t_volunteers`.`delete_flag` is null)
                             and `t_users`.`user_id` = ?'
                             ,[$user_id]);
         return $users;

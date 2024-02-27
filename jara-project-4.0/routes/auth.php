@@ -100,7 +100,6 @@ Route::middleware('auth')->group(function () {
     Route::post('storePlayerTest', [PlayerController::class, 'storePlayerTest']); //選手登録確認画面から登録 20231228
     Route::post('getUpdatePlayerData', [PlayerController::class, 'getUpdatePlayerData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('updatePlayerData', [PlayerController::class, 'updatePlayerData']); //選手更新確認画面から更新 20240131
-    Route::post('checkJARAPlayerId', [PlayerController::class, 'checkJARAPlayerId']); //選手登録画面から登録 20240220
     Route::post('getPlayerInfoData', [PlayerController::class, 'getPlayerInfoData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('getRaceResultRecordsData', [PlayerController::class, 'getRaceResultRecordsData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('deletePlayerData', [PlayerController::class, 'deletePlayerData']); //該当データをDBから削除する 20240201
@@ -109,13 +108,11 @@ Route::middleware('auth')->group(function () {
     //団体関連
     Route::post('getOrgData', [OrganizationController::class, 'getOrgData']); //DBから団体管理画面にデータを渡す 20240201
     Route::post('storeOrgData', [OrganizationController::class, 'storeOrgData']); //団体情報をDBに送る 20240201
-    Route::post('getStaffData', [OrganizationController::class, 'getStaffData']); //団体所属スタッフを取得 20240212
+    Route::get('getStaffData', [OrganizationController::class, 'getStaffData']); //団体所属スタッフを取得 20240212
     Route::post('orgSearch', [OrganizationController::class, 'searchOrganization']); //団体検索 20240212
     Route::get('getOrganizationForOrgManagement', [OrganizationController::class, 'getOrganizationForOrgManagement']); //団体管理画面用に団体情報を取得 20240212
     Route::post('getEntryTournamentsViewForTeamRef', [OrganizationController::class, 'getEntryTournamentsViewForTeamRef']); //エントリー大会 20240212
     Route::post('searchOrganizationPlayersForTeamRef', [OrganizationPlayersController::class, 'searchOrganizationPlayersForTeamRef']); //主催大会 20240215
-    Route::post('updateOrgPlayerData', [OrganizationPlayersController::class, 'updateOrgPlayerData']); //団体所属選手更新 20240226
-    //Route::post('teamPlayerSearch', [OrganizationPlayersController::class, 'teamPlayerSearch']); //団体所属選手更新 20240226
 
     //スタッフ関連
     Route::post('getOrgStaffData', [OrganizationController::class, 'getOrgStaffData']); //スタッフ情報取得 20240214
@@ -138,7 +135,7 @@ Route::middleware('auth')->group(function () {
     Route::post('getCrewData', [TournamentController::class, 'getCrewData']); //クルー取得 20240216
 
     //ボランティア関連
-    Route::post('getVolunteerData', [VolunteerController::class, 'getVolunteerData']); //ボランティア情報取得 20240213 ※ボランティア履歴情報も取得する
+    Route::get('getVolunteerData', [VolunteerController::class, 'getVolunteerData']); //ボランティア情報取得 20240213 ※ボランティア履歴情報も取得する
     Route::post('volunteerSearch', [VolunteerController::class, 'searchVolunteers']); //ボランティア検索
 
 
@@ -185,29 +182,29 @@ Route::middleware('auth')->group(function () {
     // Player Register
 
     // Route::get('player/register', [PlayerController::class, 'createRegister'])->name('player.register');
-    // Route::post('player/register', [PlayerController::class, 'storeRegister']);
+    Route::post('player/register', [PlayerController::class, 'storeRegister']);
 
-    // // Route::get('player/register/confirm', [PlayerController::class, 'createRegisterConfirm'])->name('player.register.confirm');
-    // Route::post('player/register/confirm', [PlayerController::class, 'storeRegisterConfirm']);
+    // Route::get('player/register/confirm', [PlayerController::class, 'createRegisterConfirm'])->name('player.register.confirm');
+    Route::post('player/register/confirm', [PlayerController::class, 'storeRegisterConfirm']);
 
-    // // Player Edit
-
-
-    // // Route::get('player/edit', [PlayerController::class, 'createEdit'])->name('player.edit');
-    // Route::post('player/edit', [PlayerController::class, 'storeEdit']);
-
-    // // Route::get('player/edit/confirm', [PlayerController::class, 'createEditConfirm'])->name('player.edit.confirm');
-    // Route::post('player/edit/confirm', [PlayerController::class, 'storeEditConfirm']);
-
-    // // Player Delete
-    // // Route::get('player/delete', [PlayerController::class, 'createDelete'])->name('player.delete');
-    // Route::post('player/delete', [PlayerController::class, 'storeDelete']);
+    // Player Edit
 
 
-    // //Player search 
-    // // Route::get('player/search', [PlayerController::class, 'createSearch'])->name('player.search');
+    // Route::get('player/edit', [PlayerController::class, 'createEdit'])->name('player.edit');
+    Route::post('player/edit', [PlayerController::class, 'storeEdit']);
 
-    // Route::post('player/search', [PlayerController::class, 'searchPlayer']);
+    // Route::get('player/edit/confirm', [PlayerController::class, 'createEditConfirm'])->name('player.edit.confirm');
+    Route::post('player/edit/confirm', [PlayerController::class, 'storeEditConfirm']);
+
+    // Player Delete
+    // Route::get('player/delete', [PlayerController::class, 'createDelete'])->name('player.delete');
+    Route::post('player/delete', [PlayerController::class, 'storeDelete']);
+
+
+    //Player search 
+    // Route::get('player/search', [PlayerController::class, 'createSearch'])->name('player.search');
+
+    Route::post('player/search', [PlayerController::class, 'searchPlayer']);
 
     //Player Details
 
@@ -216,38 +213,38 @@ Route::middleware('auth')->group(function () {
     //20231129
     //-----大会関連-----
     // 大会登録・変更
-    // Route::get('tournament/register', [TournamentController::class, 'create'])->name('tournament.register'); //大会登録画面
-    // Route::post('tournament/register', [TournamentController::class, 'storeConfirm']);
+    Route::get('tournament/register', [TournamentController::class, 'create'])->name('tournament.register'); //大会登録画面
+    Route::post('tournament/register', [TournamentController::class, 'storeConfirm']);
 
-    // Route::get('tournament/edit', [TournamentController::class, 'createEdit'])->name('tournament.edit'); //大会更新画面    
-    // Route::post('tournament/edit', [TournamentController::class, 'storeEditConfirm']); //大会変更画面の確認ボタン押下時の処理
+    Route::get('tournament/edit', [TournamentController::class, 'createEdit'])->name('tournament.edit'); //大会更新画面    
+    Route::post('tournament/edit', [TournamentController::class, 'storeEditConfirm']); //大会変更画面の確認ボタン押下時の処理
 
-    // // 大会確認画面
-    // Route::get('tournament/register/confirm', [TournamentController::class, 'createConfirm'])->name('tournament.register.confirm');
-    // Route::post('tournament/register/confirm', [TournamentController::class, 'storeConfirmRegister']);
-    // Route::get('tournament/edit/confirm', [TournamentController::class, 'createEditConfirm'])->name('tournament.edit.confirm');
-    // Route::post('tournament/edit/confirm', [TournamentController::class, 'storeConfirmEdit']);
+    // 大会確認画面
+    Route::get('tournament/register/confirm', [TournamentController::class, 'createConfirm'])->name('tournament.register.confirm');
+    Route::post('tournament/register/confirm', [TournamentController::class, 'storeConfirmRegister']);
+    Route::get('tournament/edit/confirm', [TournamentController::class, 'createEditConfirm'])->name('tournament.edit.confirm');
+    Route::post('tournament/edit/confirm', [TournamentController::class, 'storeConfirmEdit']);
 
-    // // 大会削除画面
-    // Route::get('tournament/delete', [TournamentController::class, 'createDelete'])->name('tournament.delete'); //大会削除画面
-    // Route::post('tournament/delete', [TournamentController::class, 'deleteTournament']); //大会削除画面
-    // // 大会情報参照画面
-    // Route::get('tournament/reference', [TournamentController::class, 'createReference'])->name('tournament.reference');
-    // // 大会検索画面
-    // Route::get('tournament/search', [TournamentController::class, 'createSearch'])->name('tournament.search');
-    // Route::post('tournament/search', [TournamentController::class, 'searchTournament']);
+    // 大会削除画面
+    Route::get('tournament/delete', [TournamentController::class, 'createDelete'])->name('tournament.delete'); //大会削除画面
+    Route::post('tournament/delete', [TournamentController::class, 'deleteTournament']); //大会削除画面
+    // 大会情報参照画面
+    Route::get('tournament/reference', [TournamentController::class, 'createReference'])->name('tournament.reference');
+    // 大会検索画面
+    Route::get('tournament/search', [TournamentController::class, 'createSearch'])->name('tournament.search');
+    Route::post('tournament/search', [TournamentController::class, 'searchTournament']);
 
-    // // 大会レース結果参照画面
-    // Route::get('tournament/racereference', [TournamentRaceRefeController::class, 'createReference'])->name('tournament.racereference');
-    // Route::post('tournament/racereference', [TournamentRaceRefeController::class, 'showCrewData']);
+    // 大会レース結果参照画面
+    Route::get('tournament/racereference', [TournamentRaceRefeController::class, 'createReference'])->name('tournament.racereference');
+    Route::post('tournament/racereference', [TournamentRaceRefeController::class, 'showCrewData']);
 
-    // //大会エントリー一括登録
-    // Route::get('tournament-entry-register', [TournamentController::class, 'createEntryRegister'])->name('tournament-entry-register');
-    // Route::post('tournament-entry-register', [TournamentController::class, 'csvReadEntryRegister']);
+    //大会エントリー一括登録
+    Route::get('tournament-entry-register', [TournamentController::class, 'createEntryRegister'])->name('tournament-entry-register');
+    Route::post('tournament-entry-register', [TournamentController::class, 'csvReadEntryRegister']);
 
-    // //20240205 レース(大会)結果一括登録
-    // Route::get('tournamentInfoAlignment', [TournamentInfoAlignmentController::class, 'createEntryRegister'])->name('TournamentInfoAlignment');
-    // Route::post('tournamentInfoAlignment', [TournamentInfoAlignmentController::class, 'csvReadEntryRegister']);
+    //20240205 レース(大会)結果一括登録
+    Route::get('tournamentInfoAlignment', [TournamentInfoAlignmentController::class, 'createEntryRegister'])->name('TournamentInfoAlignment');
+    Route::post('tournamentInfoAlignment', [TournamentInfoAlignmentController::class, 'csvReadEntryRegister']);
 
     //-----大会関連ここまで-----------------------------
 
@@ -277,62 +274,62 @@ Route::middleware('auth')->group(function () {
     // Route::post('organization/search', [OrganizationController::class, 'searchOrganization']);
 
     //Organization Management
-    // Route::get('organization/management', [OrganizationController::class, 'createManagement'])->name('organization.management');
+    Route::get('organization/management', [OrganizationController::class, 'createManagement'])->name('organization.management');
 
 
-    // // 20231207
-    // // 選手情報連携画面
-    // Route::get('PlayerInfoAlignment/', [PlayerInfoAlignmentController::class, 'createInfoAlignment'])->name('PlayerInfoAlignment');
-    // Route::post('PlayerInfoAlignment/', [PlayerInfoAlignmentController::class, 'csvread'])->name('csv.upload');
+    // 20231207
+    // 選手情報連携画面
+    Route::get('PlayerInfoAlignment/', [PlayerInfoAlignmentController::class, 'createInfoAlignment'])->name('PlayerInfoAlignment');
+    Route::post('PlayerInfoAlignment/', [PlayerInfoAlignmentController::class, 'csvread'])->name('csv.upload');
 
-    // //20231227
-    // // ボランティア削除画面
-    // Route::get('volunteer/delete', [VolunteerController::class, 'createDelete'])->name('volunteer.delete');
-    // Route::post('volunteer/delete', [VolunteerController::class, 'deleteVolunteers']);
-    // // ボランティア参照画面
-    // Route::get('volunteer/reference', [VolunteerController::class, 'createReference'])->name('volunteer.reference');
-    // //20240116
-    // //ボランティア検索画面
-    // Route::get('volunteer/search', [VolunteerController::class, 'createSearch'])->name('volunteer.search');
-    // Route::post('volunteer/search', [VolunteerController::class, 'searchVolunteers']);
-    // //20240126
-    // //ボランティア一括登録画面
-    // Route::get('volunteerInfoAlignment/', [VolunteerInfoAlignmentController::class, 'createInfoAlignment'])->name('VolunteerInfoAlignment');
-    // Route::post('volunteerInfoAlignment/', [VolunteerInfoAlignmentController::class, 'csvread'])->name('volunteer.csv.read');
+    //20231227
+    // ボランティア削除画面
+    Route::get('volunteer/delete', [VolunteerController::class, 'createDelete'])->name('volunteer.delete');
+    Route::post('volunteer/delete', [VolunteerController::class, 'deleteVolunteers']);
+    // ボランティア参照画面
+    Route::get('volunteer/reference', [VolunteerController::class, 'createReference'])->name('volunteer.reference');
+    //20240116
+    //ボランティア検索画面
+    Route::get('volunteer/search', [VolunteerController::class, 'createSearch'])->name('volunteer.search');
+    Route::post('volunteer/search', [VolunteerController::class, 'searchVolunteers']);
+    //20240126
+    //ボランティア一括登録画面
+    Route::get('volunteerInfoAlignment/', [VolunteerInfoAlignmentController::class, 'createInfoAlignment'])->name('VolunteerInfoAlignment');
+    Route::post('volunteerInfoAlignment/', [VolunteerInfoAlignmentController::class, 'csvread'])->name('volunteer.csv.read');
 });
 
-// Route::group(['middleware' => ['auth', 'action_log']], function () {
-//     //Organizations
-//     //団体情報登録・更新画面
-//     Route::get('organization/register', [OrganizationController::class, 'create'])->name('organizations.register');
-//     Route::post('organization/register', [OrganizationController::class, 'storeConfirm']);
+Route::group(['middleware' => ['auth', 'action_log']], function () {
+    //Organizations
+    //団体情報登録・更新画面
+    Route::get('organization/register', [OrganizationController::class, 'create'])->name('organizations.register');
+    Route::post('organization/register', [OrganizationController::class, 'storeConfirm']);
 
-//     Route::get('organization/edit/{targetOrgId}', [OrganizationController::class, 'createEdit'])->name('organizations.edit');
-//     Route::post('organization/edit/{targetOrgId}', [OrganizationController::class, 'storeEditConfirm']);
+    Route::get('organization/edit/{targetOrgId}', [OrganizationController::class, 'createEdit'])->name('organizations.edit');
+    Route::post('organization/edit/{targetOrgId}', [OrganizationController::class, 'storeEditConfirm']);
 
-//     //団体情報登録・更新確認画面
-//     Route::get('organization/register/confirm', [OrganizationController::class, 'createConfirm'])->name('organizations.register.confirm');
-//     Route::post('organization/register/confirm', [OrganizationController::class, 'storeConfirmRegister']);
+    //団体情報登録・更新確認画面
+    Route::get('organization/register/confirm', [OrganizationController::class, 'createConfirm'])->name('organizations.register.confirm');
+    Route::post('organization/register/confirm', [OrganizationController::class, 'storeConfirmRegister']);
 
-//     Route::get('organization/edit/{targetOrgId}/confirm', [OrganizationController::class, 'createEditConfirm'])->name('organizations.edit.confirm');
-//     Route::post('organization/edit/{targetOrgId}/confirm', [OrganizationController::class, 'storeConfirmEdit']);
+    Route::get('organization/edit/{targetOrgId}/confirm', [OrganizationController::class, 'createEditConfirm'])->name('organizations.edit.confirm');
+    Route::post('organization/edit/{targetOrgId}/confirm', [OrganizationController::class, 'storeConfirmEdit']);
 
-//     //団体情報参照・削除画面
-//     Route::get('organization/reference/{targetOrgId}', [OrganizationController::class, 'createReference'])->name('organizations.reference');
+    //団体情報参照・削除画面
+    Route::get('organization/reference/{targetOrgId}', [OrganizationController::class, 'createReference'])->name('organizations.reference');
 
-//     Route::get('organization/delete/{targetOrgId}', [OrganizationController::class, 'createDeleteView'])->name('organizations.delete');
-//     Route::post('organization/delete/{targetOrgId}', [OrganizationController::class, 'deleteOrganization']);
+    Route::get('organization/delete/{targetOrgId}', [OrganizationController::class, 'createDeleteView'])->name('organizations.delete');
+    Route::post('organization/delete/{targetOrgId}', [OrganizationController::class, 'deleteOrganization']);
 
-//     //団体検索画面
-//     Route::get('organization/search', [OrganizationController::class, 'createSearchView'])->name('organizations.search');
-//     Route::post('organization/search', [OrganizationController::class, 'searchOrganization']);
+    //団体検索画面
+    Route::get('organization/search', [OrganizationController::class, 'createSearchView'])->name('organizations.search');
+    Route::post('organization/search', [OrganizationController::class, 'searchOrganization']);
 
-//     //20240118
-//     //団体所属選手登録画面
-//     Route::get('organization-players/edit/{targetOrgId}', [OrganizationPlayersController::class, 'createEdit'])->name('organization-players.edit');
+    //20240118
+    //団体所属選手登録画面
+    Route::get('organization-players/edit/{targetOrgId}', [OrganizationPlayersController::class, 'createEdit'])->name('organization-players.edit');
 
-//     //20240122
-//     //団体所属追加選手検索画面
-//     Route::get('organization-players/search/{targetOrgId}', [OrganizationPlayersController::class, 'createSearchView'])->name('organization-players.search');
-//     Route::post('organization-players/search/{targetOrgId}', [OrganizationPlayersController::class, 'searchOrganizationPlayers']);
-// });
+    //20240122
+    //団体所属追加選手検索画面
+    Route::get('organization-players/search/{targetOrgId}', [OrganizationPlayersController::class, 'createSearchView'])->name('organization-players.search');
+    Route::post('organization-players/search/{targetOrgId}', [OrganizationPlayersController::class, 'searchOrganizationPlayers']);
+});

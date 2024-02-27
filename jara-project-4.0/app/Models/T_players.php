@@ -188,7 +188,7 @@ class T_players extends Model
     // jara_player_idで登録されたことありますかどうかチェック
     public function checkJARAPlayerId($playersInfo){
         $result = DB::select(
-            'select `user_id`, `player_id`, `player_name` from `t_players` where `delete_flag` = 0 and `jara_player_id` = ?',
+            'select `player_id`, `player_name` from `t_players` where `delete_flag` = 0 and `jara_player_id` = ?',
             [
                 $playersInfo['jara_player_id'] //where条件用
             ]

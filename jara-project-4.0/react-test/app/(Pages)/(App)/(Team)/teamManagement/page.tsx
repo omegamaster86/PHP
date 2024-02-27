@@ -26,11 +26,11 @@ export default function TeamManagement() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
         // const response = await axios.get<TeamResponse[]>('/teams');
         const responseData = await axios.get('/getOrganizationForOrgManagement'); //団体データ取得 20240201
-        // console.log(responseData.data.result);
+        console.log(responseData.data.result);
         setTeamdata(responseData.data.result);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
@@ -41,15 +41,15 @@ export default function TeamManagement() {
 
   //React_Laravelデータ送信テスト 20240108
   const onClick = async () => {
-    const csrf = () => axios.get('/sanctum/csrf-cookie');
-    await csrf();
+    const csrf = () => axios.get('/sanctum/csrf-cookie')
+    await csrf()
     await axios.post('/postSample', "送信成功")
       .then((res) => {
-        // console.log(res);
+        console.log(res);
       }).catch(error => {
-        // console.log(error);
+        console.log(error);
       });
-  };
+  }
   //React_Laravelデータ送信テスト 20240108
 
   return (
@@ -89,8 +89,8 @@ export default function TeamManagement() {
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       href={{
-                        pathname: '/teamRef',
-                        query: { org_id: row.org_id.toString() },
+                        pathname: '/team',
+                        query: { mode: 'update', org_id: row.org_id.toString() },
                       }}
                       rel='noopener noreferrer'
                       target='_blank'
@@ -103,8 +103,8 @@ export default function TeamManagement() {
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       href={{
-                        pathname: '/teamRef',
-                        query: { org_id: row.org_id.toString() },
+                        pathname: '/team',
+                        query: { mode: 'update', org_id: row.org_id.toString() },
                       }}
                       rel='noopener noreferrer'
                       target='_blank'
