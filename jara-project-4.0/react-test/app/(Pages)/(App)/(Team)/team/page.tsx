@@ -40,8 +40,6 @@ export default function OrgInfo() {
     orgTypeName: '',
     founding_year: 0,
     post_code: '',
-    post_code1: '',
-    post_code2: '',
     location_prefecture: 0,
     locationPrefectureName: '',
     address1: '',
@@ -49,10 +47,10 @@ export default function OrgInfo() {
     org_class: 0,
     orgClassName: '',
     jara_org_type: 0,
-    jaraOrgTypeName: '任意',
+    jaraOrgTypeName: '',
     jara_org_reg_trail: '',
     pref_org_type: 0,
-    prefOrgTypeName: '任意',
+    prefOrgTypeName: '',
     pref_org_reg_trail: '',
   } as Organization);
   const router = useRouter();
@@ -93,18 +91,6 @@ export default function OrgInfo() {
       break;
   }
 
-  // クエリパラメータを取得する
-  const orgId = searchParams.get('org_id')?.toString() || '';
-  switch (orgId) {
-    case '':
-      break;
-    default:
-      break;
-  }
-  const [org_id, setOrgId] = useState<any>({
-    org_id: orgId,
-  });
-
   /**
    * 入力フォームの変更時の処理
    * @param name
@@ -137,8 +123,8 @@ export default function OrgInfo() {
     const fetchData = async () => {
       try {
         // TODO: APIを叩いて、マスタ情報を取得する処理の置き換え
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
         // const prefectures = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
         const prefectures = await axios.get('/getPrefecures'); //都道府県マスターの取得 20240208
         const stateList = prefectures.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
@@ -150,48 +136,45 @@ export default function OrgInfo() {
         // const orgType = await axios.get<OrgType[]>('http://localhost:3100/orgType');
         const orgType = await axios.get('/getOrganizationTypeData'); //団体種別マスターの取得 20240208
         const orgTypeList = orgType.data.map(({ org_type_id, org_type }: { org_type_id: number; org_type: string }) => ({ id: org_type_id, name: org_type }));
-        console.log(orgTypeList);
         setOrgTypeOptions(orgTypeList);
         // const user = await axios.get<UserResponse>('http://localhost:3100/user');
         const userData = await axios.get('/getUserData');
-        // console.log(userData);
+        console.log(userData);
         setUser(userData.data.result);
-        // console.log(user);
+        console.log(user);
         if (mode === 'update') {
           // const organization = await axios.get<Organization>('http://localhost:3100/organization');
-          const csrf = () => axios.get('/sanctum/csrf-cookie');
-          await csrf();
-          const organizationDataList = await axios.post('/getOrgData', org_id);
-          // console.log(organizationDataList.data.result);
+          const csrf = () => axios.get('/sanctum/csrf-cookie')
+          await csrf()
+          const organization = await axios.get('/getOrgData');
+          console.log(organization);
           setFormData((prevFormData) => ({
             ...prevFormData,
             ...{
-              org_id: organizationDataList.data.result.org_id,
-              org_name: organizationDataList.data.result.org_name,
-              entrysystem_org_id: organizationDataList.data.result.entrysystem_org_id,
-              orgTypName: organizationDataList.data.result.orgTypeName,
-              founding_year: organizationDataList.data.result.founding_year,
-              post_code: organizationDataList.data.result.post_code,
-              location_country: organizationDataList.data.result.location_country,
-              locationCountry: organizationDataList.data.result.locationCountry,
-              location_prefecture: organizationDataList.data.result.location_prefecture,
-              locationPrefectureName: organizationDataList.data.result.locationPrefectureName,
-              address1: organizationDataList.data.result.address1,
-              address2: organizationDataList.data.result.address2,
-              org_class: organizationDataList.data.result.org_class,
-              orgClassName: organizationDataList.data.result.orgClassName,
-              jara_org_type: organizationDataList.data.result.jara_org_type,
-              jaraOrgTypeName: organizationDataList.data.result.jaraOrgTypeName,
-              jara_org_reg_trail: organizationDataList.data.result.jara_org_reg_trail,
-              pref_org_type: organizationDataList.data.result.pref_org_type,
-              prefOrgTypeName: organizationDataList.data.result.prefOrgTypeName,
-              pref_org_reg_trail: organizationDataList.data.result.pref_org_reg_trail,
+              org_id: organization.data.org_id,
+              org_name: organization.data.org_name,
+              entrysystem_org_id: organization.data.entrysystem_org_id,
+              orgTypName: organization.data.orgTypeName,
+              founding_year: organization.data.founding_year,
+              post_code: organization.data.post_code,
+              location_prefecture: organization.data.location_prefecture,
+              locationPrefectureName: organization.data.locationPrefectureName,
+              address1: organization.data.address1,
+              address2: organization.data.address2,
+              org_class: organization.data.org_class,
+              orgClassName: organization.data.orgClassName,
+              jara_org_type: organization.data.jara_org_type,
+              jaraOrgTypeName: organization.data.jaraOrgTypeName,
+              jara_org_reg_trail: organization.data.jara_org_reg_trail,
+              pref_org_type: organization.data.pref_org_type,
+              prefOrgTypeName: organization.data.prefOrgTypeName,
+              pref_org_reg_trail: organization.data.pref_org_reg_trail,
             },
           }));
+          console.log(formData);
           // const staff = await axios.get<Staff[]>('http://localhost:3100/staff');
-          const staff = await axios.post('/getOrgStaffData', org_id);
-          console.log(staff.data);
-          setTableData(staff.data.result);
+          const staff = await axios.get('/getStaffData'); //残件対象項目
+          setTableData(staff.data);
         }
       } catch (error: any) {
         setErrorMessage(['API取得エラー:' + error.message]);
@@ -206,11 +189,7 @@ export default function OrgInfo() {
    * 郵便番号を-で分割して、stateを更新する
    */
   useEffect(() => {
-    // const addressNumbers = formData.post_code?.split('-');
-    const addressNumbers = Array();
-    addressNumbers.push(formData.post_code?.slice(0, 3)); //郵便番号の前半3文字
-    addressNumbers.push(formData.post_code?.slice(-4)); //郵便番号の後半4文字
-    // console.log(addressNumbers);
+    const addressNumbers = formData.post_code?.split('-');
     setAddressNumbers(addressNumbers);
   }, [formData.post_code]);
 
@@ -282,7 +261,7 @@ export default function OrgInfo() {
           {
             id: prevData.length + 1,
             user_id: '',
-            user_name: '',
+            userName: '',
             delete_flag: false,
             staff_type_id: [],
             isUserFound: true, //新規登録時は便宜的にtrue
@@ -337,27 +316,23 @@ export default function OrgInfo() {
         className='w-[200px]'
         onClick={() => {
           // TODO: APIを叩いて、登録・更新処理を行う
-          const requestBody = {
-            formData, //団体情報
-            tableData //スタッフ情報
-          };
+          const requestBody = {};
           //alert('TODO: APIを叩いて、登録・更新処理を行う');
           if (prevMode === 'create') {
             const storeOrgData = async () => {
-              // console.log(formData);
-              const csrf = () => axios.get('/sanctum/csrf-cookie');
-              await csrf();
+              console.log(formData);
+              const csrf = () => axios.get('/sanctum/csrf-cookie')
+              await csrf()
               axios
                 // .post('http://localhost:3100/', requestBody)
-                .post('/storeOrgData', requestBody) //20240226
+                .post('/storeOrgData', formData) //20240206
                 .then((response) => {
-                  // console.log(response);
+                  console.log(response);
                   // TODO: 登録処理成功時の処理
                   //window.confirm('団体情報を登録しました。');
-                  router.push('/teamRef?orgId=' + response.data.result);
                 })
                 .catch((error) => {
-                  // console.log(error);
+                  console.log(error);
                   // TODO: 登録処理失敗時の処理
                   // setErrorMessage([
                   //   ...(errorMessage as string[]),
@@ -369,15 +344,14 @@ export default function OrgInfo() {
 
           } else {
             const updateOrgData = async () => {
-              const csrf = () => axios.get('/sanctum/csrf-cookie');
-              await csrf();
+              const csrf = () => axios.get('/sanctum/csrf-cookie')
+              await csrf()
               axios
                 // .post('http://localhost:3100/', requestBody)
-                .post('/updateOrgData', requestBody) //20240226
+                .post('/updateOrgData', formData) //20240206
                 .then((response) => {
                   // TODO: 更新処理成功時の処理
                   window.confirm('団体情報を更新しました。');
-                  router.push('/teamRef?orgId=' + org_id);
                 })
                 .catch((error) => {
                   // TODO: 更新処理失敗時の処理
@@ -479,7 +453,7 @@ export default function OrgInfo() {
             <div className='w-full flex flex-row justify-start gap-[8px]'>
               <div className='h-[40px] self-end'>〒</div>
               {/* 郵便番号1 */}
-              {/* <CustomTextField
+              <CustomTextField
                 required={mode !== 'confirm'}
                 displayHelp={mode !== 'confirm'}
                 value={addressNumbers?.[0]}
@@ -491,18 +465,10 @@ export default function OrgInfo() {
                 }
                 isError={addressErrorMessages.length > 0}
                 className='w-[120px]'
-              /> */}
-              <CustomTextField
-                required={mode !== 'confirm'}
-                displayHelp={mode !== 'confirm'}
-                value={formData.post_code1}
-                onChange={(e) => handleInputChange('post_code1', e.target.value)}
-                isError={addressErrorMessages.length > 0}
-                className='w-[120px]'
               />
               <div className='h-[40px] self-end'>-</div>
               {/* 郵便番号2 */}
-              {/* <CustomTextField
+              <CustomTextField
                 required={mode !== 'confirm'}
                 value={addressNumbers?.[1]}
                 onChange={(e) =>
@@ -513,13 +479,6 @@ export default function OrgInfo() {
                 }
                 isError={addressErrorMessages.length > 0}
                 className='w-[120px] self-end'
-              /> */}
-              <CustomTextField
-                required={mode !== 'confirm'}
-                value={formData.post_code2}
-                onChange={(e) => handleInputChange('post_code2', e.target.value)}
-                isError={addressErrorMessages.length > 0}
-                className='w-[120px] self-end'
               />
               {/* 検索 */}
               <CustomButton
@@ -527,13 +486,10 @@ export default function OrgInfo() {
                 className='w-[80px] self-end'
                 disabled={disableFlag}
                 onClick={() => {
-                  formData.post_code = formData.post_code1 + '-' + formData.post_code2;
-                  console.log(formData.post_code);
                   const addressError = Validator.getErrorMessages([
                     Validator.validateRequired(formData.post_code, '郵便番号'),
                     Validator.validateAddressNumberFormat(formData.post_code),
                   ]);
-                  console.log(addressError.length);
                   if (addressError.length > 0) {
                     setAddressErrorMessages(addressError);
                     return;
@@ -587,7 +543,7 @@ export default function OrgInfo() {
             isError={addressErrorMessages.length > 0}
             value={
               (mode !== 'confirm'
-                ? formData.location_prefecture?.toString()
+                ? formData.location_prefecture.toString()
                 : formData.locationPrefectureName) || ''
             }
             readonly={mode === 'confirm'}
@@ -673,13 +629,11 @@ export default function OrgInfo() {
                 mode !== 'confirm' ? formData.jara_org_type?.toString() : formData.jaraOrgTypeName
               }
               onChange={(e) => {
-                console.log(formData.jara_org_type);
                 handleInputChange('jara_org_type', e);
                 handleInputChange(
                   'jaraOrgTypeName',
                   orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
                 );
-                console.log("sssssss", formData.jara_org_type);
               }}
               readonly={mode === 'confirm'}
               options={orgTypeOptions.map((orgType) => ({
@@ -850,7 +804,7 @@ export default function OrgInfo() {
                   <CustomTextField
                     displayHelp={false}
                     required={false}
-                    value={data.isUserFound ? data.user_name : '該当ユーザーなし'}
+                    value={data.isUserFound ? data.userName : '該当ユーザーなし'}
                     disabled={!data.isUserFound}
                     readonly={mode === 'confirm' || !data.isUserFound}
                     className={data.isUserFound ? '' : 'text-systemErrorText'}

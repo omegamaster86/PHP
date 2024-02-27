@@ -25,8 +25,10 @@ export default function Signup() {
   const [confirmEmail, setConfirmEmail] = useState('');
   const [checked, setChecked] = useState(false);
   const router = useRouter();
+
   return (
     <>
+      <Header />
       <div>
         <main className='flex flex-col items-center justify-start gap-[40px] my-[100px] m-auto p-4 md:max-w-[900px]'>
           {/* 画面名 */}
@@ -156,8 +158,8 @@ export default function Signup() {
                   ) {
                     return;
                   }
-                  const csrf = () => axios.get('/sanctum/csrf-cookie');
-                  await csrf();
+                  const csrf = () => axios.get('/sanctum/csrf-cookie')
+                  await csrf()
                   // 仮登録処理
                   axios
                     .post('/signup',  {
@@ -172,7 +174,7 @@ export default function Signup() {
                       } 
                     })
                     .catch((error) => {
-                      // console.log(error)
+                      console.log(error)
                       // エラー時の処理を実装
                       let systemError = [] as string[];
                       if(error.response?.status === 422){

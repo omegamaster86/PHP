@@ -442,7 +442,7 @@ class T_raceResultRecord extends Model
     {
         DB::insert('insert into t_race_result_record
                     (
-                        #`race_result_record_id`, 
+                        `race_result_record_id`, 
                         `tourn_id`, 
                         `tourn_name`,
                         `official`,  
@@ -1044,103 +1044,5 @@ class T_raceResultRecord extends Model
         $sqlString = str_replace("#ReplaceConditionString#",$conditions,$sqlString);
         $races = DB::select($sqlString,$conditionValues);
         return $races;
-    }
-
-    //レースIDを条件としてレース結果情報を取得する
-    public function getRaceResultRecordsFromRaceId($race_id)
-    {
-        $race_result_records = DB::select("select
-                                            rrr.`race_result_record_id`
-                                            ,rrr.`range`                        #距離
-                                            ,rrr.`start_datetime`               #発艇日時
-                                            ,rrr.`weather`                      #天候
-                                            ,rrr.`wind_direction_1000m_point`   #1000m地点風向
-                                            ,rrr.`wind_speed_1000m_point`       #1000m地点風速
-                                            ,rrr.`wind_direction_2000m_point`   #2000m地点風向
-                                            ,rrr.`wind_speed_2000m_point`       #2000m地点風速
-                                            ,case
-                                                when rrr.`org_id` is null then rrr.`org_id`
-                                                else rrr.`org_name`
-                                                end as `org_name              #所属団体`
-                                            ,rrr.`crew_name`                  #クルー名
-                                            ,rrr.`lane_number`                #出漕レーンNo.
-                                            ,rrr.`rank`                       #順位
-                                            ,rrr.`laptime_500m`               #500mラップタイム
-                                            ,rrr.`laptime_1000m`              #1000mラップタイム
-                                            ,rrr.`laptime_1500m`              #1500mラップタイム
-                                            ,rrr.`laptime_2000m`              #2000mラップタイム
-                                            ,rrr.`final_time`                 #最終タイム
-                                            ,rrr.`race_result_notes`          #備考
-                                            ,rrr.`stroke_rat_500m`            #500mストロークレート
-                                            ,rrr.`stroke_rat_1000m`           #1000mストロークレート
-                                            ,rrr.`stroke_rat_1500m`           #1500mストロークレート
-                                            ,rrr.`stroke_rat_2000m`           #2000mストロークレート
-                                            ,rrr.`stroke_rate_avg`            #ストロークレート(平均)
-                                            ,rrr.`player_id`                  #選手ID
-                                            ,rrr.`player_name`                #選手名
-                                            ,sex.`sex`                        #性別
-                                            ,case
-                                                when rrr.`player_height` is null then ply.`height`
-                                                else rrr.`player_height`
-                                                end as `player_height`        #身長
-                                            ,case
-                                                when rrr.`player_weight` is null then ply.`weight`
-                                                else rrr.`player_weight`
-                                                end as `player_weight`        #体重
-                                            ,rrr.`seat_number`                #シート番号
-                                            ,rrr.`heart_rate_500m`            #500m心拍数
-                                            ,rrr.`heart_rate_1000m`           #1000m心拍数
-                                            ,rrr.`heart_rate_1500m`           #1500m心拍数
-                                            ,rrr.`heart_rate_2000m`           #2000m心拍数
-                                            ,rrr.`heart_rate_avg`             #心拍数（平均）
-                                            ,rrr.`attendance`                 #立会有無
-                                            FROM `t_race_result_record` rrr
-                                            left join `t_players` ply
-                                            on rrr.`player_id` = ply.`player_id`
-                                            left join `m_sex` sex
-                                            on ply.`sex_id` = sex.`sex_id`
-                                            where 1=1
-                                            and rrr.`delete_flag` = 0
-                                            and (ply.`delete_flag` = 0 or ply.`delete_flag` is null)
-                                            and (sex.`delete_flag` = 0 or sex.`delete_flag` is null)
-                                            and rrr.race_id = :race_id"
-                                            ,$race_id);
-        return $race_result_records;
-    }
-
-    //対象のレースに出漕結果の件数を取得する
-    public function getIsExistsTargetRaceResult($race_id)
-    {
-        $is_exists = DB::select("select count(*) as `result`
-                                from t_race_result_record
-                                where 1=1
-                                and race_id = :race_id
-                                and delete_flag = 0"
-                                ,$race_id);
-        return $is_exists;
-    }
-
-    //対象の出漕結果の件数を取得する
-    public function getIsExistsTargetRaceResultRecord($race_result_record_id)
-    {
-        $is_exists = DB::select("select count(*) as `result`
-                                from t_race_result_record
-                                where 1=1
-                                and race_result_record_id = :race_result_record_id
-                                and delete_flag = 1"
-                                ,$race_result_record_id);
-        return $is_exists;
-    }
-
-    //対象のレース結果情報の削除フラグを有効にする
-    public function updateDeleteFlagToValid($values)
-    {
-        DB::update("update t_race_result_record
-                    set delete_flag = 1
-                    ,updated_time = :updated_datetime
-                    ,updated_user_id = :updated_user_id
-                    where 1=1
-                    and race_result_record_id = :race_result_record_id"
-                    ,$values);
     }
 }

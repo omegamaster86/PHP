@@ -13,52 +13,51 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 
 class OrganizationPlayersController extends Controller
 {
     //団体所属選手登録画面を開く
-    // public function createEdit(
-    //     $targetOrgId,
-    //     T_organizations $t_organizations,
-    //     T_organization_players $t_organization_players
-    // ) {
-    //     if (Auth::user()->temp_password_flag === 1) {
-    //         return redirect('user/password-change');
-    //     } else {
-    //         $organization = $t_organizations->getOrganization($targetOrgId);
-    //         $org_name = $organization->org_name;
-    //         $organization_players = $t_organization_players->getOrganizationPlayersInfo($targetOrgId);
+    public function createEdit(
+        $targetOrgId,
+        T_organizations $t_organizations,
+        T_organization_players $t_organization_players
+    ) {
+        if (Auth::user()->temp_password_flag === 1) {
+            return redirect('user/password-change');
+        } else {
+            $organization = $t_organizations->getOrganization($targetOrgId);
+            $org_name = $organization->org_name;
+            $organization_players = $t_organization_players->getOrganizationPlayersInfo($targetOrgId);
 
-    //         return view('organization-players.edit', ['org_name' => $org_name, 'org_players' => $organization_players]);
-    //     }
-    // }
+            return view('organization-players.edit', ['org_name' => $org_name, 'org_players' => $organization_players]);
+        }
+    }
 
     //団体選手検索画面を開く
-    // public function createSearchView(
-    //     $targetOrgId,
-    //     T_organizations $t_organizations,
-    //     M_sex $m_sex,
-    //     M_prefectures $m_prefectures,
-    //     M_events $m_events
-    // ) {
-    //     if (Auth::user()->temp_password_flag === 1) {
-    //         return redirect('user/password-change');
-    //     } else {
-    //         $organization = $t_organizations->getOrganization($targetOrgId);
-    //         $org_name = $organization->org_name;
-    //         $sex = $m_sex->getSexList();
-    //         $prefectures = $m_prefectures->getPrefecures();
-    //         $events = $m_events->getEvents();
+    public function createSearchView(
+        $targetOrgId,
+        T_organizations $t_organizations,
+        M_sex $m_sex,
+        M_prefectures $m_prefectures,
+        M_events $m_events
+    ) {
+        if (Auth::user()->temp_password_flag === 1) {
+            return redirect('user/password-change');
+        } else {
+            $organization = $t_organizations->getOrganization($targetOrgId);
+            $org_name = $organization->org_name;
+            $sex = $m_sex->getSexList();
+            $prefectures = $m_prefectures->getPrefecures();
+            $events = $m_events->getEvents();
 
-    //         return view('organization-players.search', [
-    //             'org_name' => $org_name,
-    //             'm_sex' => $sex,
-    //             'prefectures' => $prefectures,
-    //             'events' => $events
-    //         ]);
-    //     }
-    // }
+            return view('organization-players.search', [
+                'org_name' => $org_name,
+                'm_sex' => $sex,
+                'prefectures' => $prefectures,
+                'events' => $events
+            ]);
+        }
+    }
 
     //団体所属追加選手検索画面で、選手を検索する
     public function searchOrganizationPlayers(Request $request, T_organization_players $t_organization_players)
@@ -985,7 +984,6 @@ class OrganizationPlayersController extends Controller
                 array_push($side_info, 0);
             }
             $players[$i]->side_info = $side_info;
-            $players[$i]->id = ($i + 1);
         }
 
         Log::debug(sprintf("searchOrganizationPlayersForTeamRef end"));
@@ -1030,28 +1028,4 @@ class OrganizationPlayersController extends Controller
                 //Status code 500 for internal server error
         }
     }
-
-    // 団体所属選手の更新処理 20240226
-    public function updateOrgPlayerData(Request $request)
-    {
-        Log::debug(sprintf("updateOrgPlayerData start"));
-        $reqData = $request->all();
-        //ここに処理を追加　二村さん作業
-
-        $result = "";
-        Log::debug(sprintf("updateOrgPlayerData end"));
-        return response()->json(['result' => $result]);
-    }
-
-    // // 団体に登録する選手検索 20240226
-    // public function teamPlayerSearch(Request $request)
-    // {
-    //     Log::debug(sprintf("teamPlayerSearch start"));
-    //     $reqData = $request->all();
-    //     //ここに処理を追加　二村さん作業
-
-        
-    //     Log::debug(sprintf("teamPlayerSearch end"));
-    //     return response()->json(['result' => $reqData]);
-    // }
 }

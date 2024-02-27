@@ -324,13 +324,13 @@ export default function VolunteerSearch() {
    * 検索結果をstateにセットする
    */
   const handleSearch = async () => {
-    const csrf = () => axios.get('/sanctum/csrf-cookie');
-    await csrf();
+    const csrf = () => axios.get('/sanctum/csrf-cookie')
+    await csrf()
     axios
       // .get<VolunteerResponse[]>('http://localhost:3100/volunteerSearch')
       .post('/volunteerSearch', searchCond)
       .then((response) => {
-        // console.log(response.data.result);
+        console.log(response.data.result);
         // レスポンスからデータを取り出してstateにセット
         setSearchResponse(response.data.result as VolunteerResponse[]);
       })
@@ -345,8 +345,8 @@ export default function VolunteerSearch() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
         // 仮のURL（繋ぎ込み時に変更すること）
         // 性別マスタの取得
         // const response = await axios.get<SexResponse[]>('http://localhost:3100/sex');
@@ -400,7 +400,7 @@ export default function VolunteerSearch() {
         setPrefecture(stateList);
 
       } catch (error) {
-        // console.log(error);
+        console.log(error);
         // alert(error);
       }
     };

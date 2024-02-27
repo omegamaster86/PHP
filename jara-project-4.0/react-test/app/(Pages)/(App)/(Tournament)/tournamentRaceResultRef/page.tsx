@@ -85,31 +85,31 @@ export default function TournamentRaceResultRef() {
     const fetchData = async () => {
       try {
         // 仮のURL（繋ぎ込み時に変更すること）
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
         const response = await axios.post('/getTournRaceResultRecords', race_id); //残件対象項目
-        // console.log(response.data.result);
+        console.log(response.data.result);
         //クルー情報を取得するためのパラメータをセット
         setSearchCrewInfo(response.data.result);
         setResultRecordsData(response.data.result);
         response.data.length === 0
           ? setError({ isError: true, errorMessage: 'エントリー情報がありません。' })
           : null;
-        const raceNamesArray = response.data.result.map((item: any) => item.race_name); //残件対応項目
+        const raceNamesArray = response.data.result.map((item) => item.race_name);
         const uniqueRaceNamesSet = new Set(raceNamesArray);
         const uniqueRaceNamesArray = Array.from(uniqueRaceNamesSet);
         setRaceNameList(
-          uniqueRaceNamesArray.map((item: any, index: any) => ({ //残件対応項目
+          uniqueRaceNamesArray.map((item, index) => ({
             id: index,
             name: item,
           })),
         );
-        const byGroupsArray = response.data.result.map((item: any) => item.by_group); //残件対応項目
+        const byGroupsArray = response.data.result.map((item) => item.by_group);
         const uniqueByGroupsSet = new Set(byGroupsArray);
         const uniqueByGroupsArray = Array.from(uniqueByGroupsSet);
         setByGroupList(
-          uniqueByGroupsArray.map((item: any, index: any) => ({ //残件対応項目
+          uniqueByGroupsArray.map((item, index) => ({
             id: index,
             name: item,
           })),
@@ -216,13 +216,13 @@ export default function TournamentRaceResultRef() {
    */
   const getCrew = async (index: number) => {
     // var apiUri = 'http://localhost:3100/crew?';
-    const csrf = () => axios.get('/sanctum/csrf-cookie');
-    await csrf();
+    const csrf = () => axios.get('/sanctum/csrf-cookie')
+    await csrf()
     await axios
       // .get<CrewResponse[]>('/crew/') //残件対象項目
       .post('/getCrewData', searchCrewInfo[index])
       .then((response) => {
-        // console.log(response.data.result);
+        console.log(response.data.result);
         // レスポンスからデータを取り出してstateにセット
         setCrewRecordsData(response.data.result);
       })
@@ -307,8 +307,7 @@ export default function TournamentRaceResultRef() {
                         <CustomTh align='center' key={index}>
                           <div className='flex flex-row items-center gap-[10px]'>
                             {header}
-                            {/* 残件対応項目 */}
-                            <div onClick={(event) => handleRaceNameHeaderClick(header, event as any)}>
+                            <div onClick={(event) => handleRaceNameHeaderClick(header, event)}>
                               <FilterListIcon />
                             </div>
                           </div>
@@ -317,8 +316,7 @@ export default function TournamentRaceResultRef() {
                         <CustomTh align='center' key={index}>
                           <div className='flex flex-row items-center gap-[10px]'>
                             {header}
-                            {/* 残件対応項目 */}
-                            <div onClick={(event) => handleByGroupHeaderClick(header, event as any)}>
+                            <div onClick={(event) => handleByGroupHeaderClick(header, event)}>
                               <FilterListIcon />
                             </div>
                           </div>
@@ -371,7 +369,7 @@ export default function TournamentRaceResultRef() {
                         <CustomTd>
                           <div
                             onClick={(event) => {
-                              // console.log(index);
+                              console.log(index);
                               setOpen(true);
                               getCrew(index);
                             }}

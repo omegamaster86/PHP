@@ -28,6 +28,7 @@ import {
   ErrorBox,
   CustomTitle,
 } from '@/app/components';
+import { useAuth } from '@/app/hooks/auth';
 
 export default function UserInformationUpdate() {
   const router = useRouter();
@@ -146,8 +147,8 @@ export default function UserInformationUpdate() {
   useEffect(() => {
     const fetchMaster = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
         // TODO: APIを叩いて、マスタ情報を取得する処理の置き換え
         // const prefectureResponse = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
         const prefectureResponse = await axios.get('/getPrefecures');
@@ -180,8 +181,8 @@ export default function UserInformationUpdate() {
         // const response = await axios.get<UserResponse>('http://localhost:3100/user');
         // console.log("User : ", user);
         // 実装　ー　クマール　ー開始
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
         const response = await axios.get('/getUserData');
         // 実装　ー　クマール　ー終了
         setFormData((prevFormData) => ({
@@ -212,12 +213,14 @@ export default function UserInformationUpdate() {
         setErrorMessage(['API取得エラー:' + error.message]);
       }
     };
-    // 更新モード、参照モード、削除モードの時にユーザー情報を取得し、フォームにセットする。
+    // 更新モードの時にユーザー情報を取得し、フォームにセットする。
     if (mode === 'update') {
       fetchUser();
     }
     // APIを叩いて、ユーザー情報を取得する
   }, []);
+
+
 
   const modeCustomButtons = {
     update: (
@@ -282,8 +285,8 @@ export default function UserInformationUpdate() {
           if (isMailChanged === 'true') {
             if(isNumberVerified){
               const updateUser = async()=> {
-                const csrf = () => axios.get('/sanctum/csrf-cookie');
-                await csrf();
+                const csrf = () => axios.get('/sanctum/csrf-cookie')
+                await csrf()
                 const requestBody = {};
                 
                 axios
@@ -298,7 +301,7 @@ export default function UserInformationUpdate() {
                     // 成功時の処理を実装
                     window.confirm('ユーザー情報を更新しました。');
                     // router.push('/' + (prevScreen ? prevScreen : ''));
-                    router.push('/userInformationRef');
+                    router.push('/DummyMyPage');
                   })
                   .catch((error) => {
                     if(error?.response) {
@@ -316,8 +319,8 @@ export default function UserInformationUpdate() {
                 'メールアドレスが変更されている為、表示されているメールアドレス宛に6桁の認証番号が送られます。メール本文に記載されている認証番号を入力してください。※認証番号の有効期限は30分間です。',
               );
               if (isOK) {
-                const csrf = () => axios.get('/sanctum/csrf-cookie');
-                await csrf();
+                const csrf = () => axios.get('/sanctum/csrf-cookie')
+                await csrf()
                 axios
                 // .post('http://localhost:3100/', requestBody)
                 .post('/user/sent-certification-number',{
@@ -345,8 +348,8 @@ export default function UserInformationUpdate() {
             }
           } else {
             const updateUser = async()=> {
-              const csrf = () => axios.get('/sanctum/csrf-cookie');
-              await csrf();
+              const csrf = () => axios.get('/sanctum/csrf-cookie')
+              await csrf()
               const requestBody = {};
               
               axios
@@ -362,7 +365,7 @@ export default function UserInformationUpdate() {
                   // 成功時の処理を実装
                   window.confirm('ユーザー情報を更新しました。');
                   // router.push('/' + (prevScreen ? prevScreen : ''));
-                  router.push('/userInformationRef');
+                  router.push('/DummyMyPage');
                 })
                 .catch((error) => {
                   if(error?.response) {
@@ -401,6 +404,7 @@ export default function UserInformationUpdate() {
   if (paramError) {
     return <div>ページが見つかりません</div>;
   }
+  
   return (
     <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[46px] my-[80px]'>
       <div className='flex flex-col justify-start gap-[20px]'>
@@ -655,6 +659,7 @@ export default function UserInformationUpdate() {
             />
             <ErrorBox errorText={errorMessage} />
           </DialogContent>
+          
           <DialogActions>
             <CustomButton
               buttonType='white-outlined'
@@ -678,8 +683,8 @@ export default function UserInformationUpdate() {
                   return;
                 }
 
-                const csrf = () => axios.get('/sanctum/csrf-cookie');
-                await csrf();
+                const csrf = () => axios.get('/sanctum/csrf-cookie')
+                await csrf()
 
                 axios.post('/user/verify-certification-number',{
                   certification_number : authNumber
@@ -794,3 +799,4 @@ export default function UserInformationUpdate() {
     </main>
   );
 }
+

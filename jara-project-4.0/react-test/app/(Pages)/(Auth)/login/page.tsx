@@ -12,10 +12,10 @@ import {
   Header,
   Loading,
 } from '@/app/components';
-import { useAuth } from '@/app/hooks/auth';
+import { useAuth } from '@/app/hooks/auth'
 import Validator from '@/app/utils/validator';
 
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios'
 
 interface Values {
   email: string
@@ -33,7 +33,7 @@ export default function Login() {
 
   const { login, isLoading } = useAuth({
     middleware: 'guest',
-    redirectIfAuthenticated: '/tournamentSearch',
+    redirectIfAuthenticated: '/DummyMyPage',
 })
 
 if(isLoading) {
@@ -115,7 +115,7 @@ return (
               setPasswordErrorMessages(passwordErrorMessages);
               if (emailErrorMessages.length > 0 || passwordErrorMessages.length > 0) {
                 // TODO: バリデーションエラー時の処理を実装
-                // console.log('error');
+                console.log('error');
               } else {
                 // TODO: ログイン処理
                 // let isPasswordTemporary = true;
@@ -174,7 +174,7 @@ return (
         <div className='text-h3 text-black font-bold'>日本ローイング協会 サポートデスク</div>
         <CustomButton
           onClick={() => {
-            router.push('/inquiry');
+            router.push('/contact');
           }}
           buttonType='primary-outlined'
         >

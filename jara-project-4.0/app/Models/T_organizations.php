@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 class T_organizations extends Model
@@ -141,55 +140,52 @@ class T_organizations extends Model
 
     //interfaceのOrganizationを引数としてInsertを実行し、InsertしたレコードのID（主キー）を返す
     public function insertOrganization($organization)
-    {        
-        $current_datetime = now()->format('Y-m-d H:i:s.u');
-        $register_user_id = Auth::user()->user_id;
-        DB::insert('insert into t_organizations
+    {
+        DB::insert('insert into `t_organizations`
                     (
-                        org_name,
-                        entrysystem_org_id,
-                        founding_year,
-                        post_code,
-                        location_country,
-                        location_prefecture,
-                        address1,
-                        address2,
-                        org_class,
-                        jara_org_type,
-                        jara_org_reg_trail,
-                        pref_org_type,
-                        pref_org_reg_trail,
-                        registered_time,
-                        registered_user_id,
-                        updated_time,
-                        updated_user_id,
-                        delete_flag
+                        `org_name`,
+                        `entrysystem_org_id`,
+                        `founding_year`,
+                        `post_code`,
+                        `location_country`,
+                        `location_prefecture`,
+                        `address1`,
+                        `address2`,
+                        `org_class`,
+                        `jara_org_type`,
+                        `jara_org_reg_trail`,
+                        `pref_org_type`,
+                        `pref_org_reg_trail`,
+                        `registered_time`,
+                        `registered_user_id`,
+                        `updated_time`,
+                        `updated_user_id`,
+                        `delete_flag`
                     )
-                    values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
-                    ,[
-                        $organization['formData']['org_name'],
-                        $organization['formData']['entrysystem_org_id'],
-                        $organization['formData']['founding_year'],
-                        $organization['formData']['post_code'],
-                        $organization['formData']['location_country'],
-                        $organization['formData']['location_prefecture'],
-                        $organization['formData']['address1'],
-                        $organization['formData']['address2'],
-                        $organization['formData']['org_class'],
-                        $organization['formData']['jara_org_type'],
-                        $organization['formData']['jara_org_reg_trail'],
-                        $organization['formData']['pref_org_type'],
-                        $organization['formData']['pref_org_reg_trail'],
-                        $current_datetime,
-                        $register_user_id,
-                        $current_datetime,
-                        $register_user_id,
+                    values
+                    (
+                        :org_name,
+                        :entrysystem_org_id,
+                        :founding_year,
+                        :post_code,
+                        :location_country,
+                        :location_prefecture,
+                        :address1,
+                        :address2,
+                        :org_class,
+                        :jara_org_type,
+                        :jara_org_reg_trail,
+                        :pref_org_type,
+                        :pref_org_reg_trail,
+                        :current_datetime,
+                        :user_id,
+                        :current_time,
+                        :user_id,
                         0
-                    ]);
+                    )',
+                    $organization);
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
-        //Log::debug($insertId);
-        Log::debug(sprintf("insertOrganization end."));
         return $insertId;
     }
 
@@ -400,31 +396,6 @@ class T_organizations extends Model
                                     and (jmot.`delete_flag` = 0 or jmot.`delete_flag` is null)
                                     and (pmot.`delete_flag` = 0 or pmot.`delete_flag` is null)
                                     and `delete_flag` = 0');
-        return $organizations;
-    }
-
-    //ユーザーIDを条件にinterfaceのTeamResponseを取得する
-    public function getManagementOrganizations($user_id)
-    {
-        $organizations = DB::select("select distinct
-                                    case
-                                        when org.jara_org_type = 0 and org.pref_org_type = 0 then '任意'
-                                        else '正式'
-                                        end as `teamTyp`
-                                    ,org.entrysystem_org_id
-                                    ,org.org_id
-                                    ,org.org_name
-                                    from `t_organizations` org
-                                    left join `t_organization_staff` staff
-                                    on org.org_id = staff.org_id
-                                    left join `t_users` users
-                                    on staff.`user_id` = users.`user_id`
-                                    where 1=1
-                                    and org.delete_flag = 0
-                                    and (staff.delete_flag = 0 or staff.delete_flag is null)
-                                    and (users.delete_flag = 0 or users.delete_flag is null)
-                                    and users.user_id = ?"
-                                    ,[$user_id]);
         return $organizations;
     }
 }

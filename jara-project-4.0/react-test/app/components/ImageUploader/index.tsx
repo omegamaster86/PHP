@@ -11,7 +11,7 @@ interface ImageUploaderProps {
   setCurrentShowFile: Dispatch<
     SetStateAction<{ file: File; isUploaded: boolean; preview?: string } | undefined>
   >;
-  // // UserResponse , PlayerInformationResponse
+  // UserResponse , PlayerInformationResponse
   setFormData: Dispatch<
   SetStateAction<any>
 >;
@@ -70,7 +70,7 @@ const ImageUploader: FC<ImageUploaderProps> = ({
       } catch (error) {
         // ↓ここでエラーに関するユーザーへの通知や処理を行う
         // console.log(`アップロード中にエラーが発生しました: ${error}`);
-        // console.log(`アップロード中にエラーが発生しました。`);
+        console.log(`アップロード中にエラーが発生しました。`);
       }
     },
     [currentShowFile],
@@ -151,10 +151,8 @@ const ImageUploader: FC<ImageUploaderProps> = ({
                     e.stopPropagation();
                     setFormData((prevFormData:any) => ({
                       ...prevFormData,
-                      uploadedPhotoName:'',
-                      uploadedPhoto: undefined,
                       photo:''
-                    })) as void
+                    }))
                     setInitialPhoto('');
                   }}
                 >

@@ -75,7 +75,7 @@ const CustomTextField = ({
             onChange={onChange}
             onBlur={(e) => {
               if (onBlur) {
-                // onBlur(e);
+                onBlur(e);
               }
             }}
             placeholder={placeHolder}

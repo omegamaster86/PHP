@@ -3,35 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-// use App\Providers\RouteServiceProvider;
-// use Illuminate\Auth\Events\Registered;
-// use Illuminate\Http\RedirectResponse;
+use App\Providers\RouteServiceProvider;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\Auth;
-// use Illuminate\Support\Facades\Hash;
-// use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
-// use Illuminate\Support\Facades\Mail;
-// use App\Mail\WelcomeMail;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\DB;
-// use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-// use App\Models\Item;
-// use Illuminate\Validation\ValidationException;
-// use League\CommonMark\Node\Inline\Newline;
-// use Exception;
+use App\Models\Item;
+use Illuminate\Validation\ValidationException;
+use League\CommonMark\Node\Inline\Newline;
+use Exception;
 use Illuminate\Support\Facades\Session;
 use App\Models\T_players;
 
 class PlayerInfoAlignmentController extends Controller
 {
     // 大会情報確認画面呼び出し
-    // public function createInfoAlignment(Request $request): View
-    // {
-    //     //$csvList = array();
-    //     $csvList = "";
-    //     return view('player.info_alignment', ["csvList" => $csvList, "errorMsg" => "", "checkList" => ""]);
-    // }
+    public function createInfoAlignment(Request $request): View
+    {
+        //$csvList = array();
+        $csvList = "";
+        return view('player.info_alignment', ["csvList" => $csvList, "errorMsg" => "", "checkList" => ""]);
+    }
 
     public function csvread(Request $request, T_players $tPlayersData): View
     {
