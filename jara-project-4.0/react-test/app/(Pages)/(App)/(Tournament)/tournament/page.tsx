@@ -549,7 +549,7 @@ export default function Tournament() {
                   //ファイルを送るため
                   headers: { 
                     'content-type' : 'multipart/form-data' ,
-                   } ,
+                  } ,
                  })
                 .then((response) => {
                   // TODO: 処理成功時の処理
