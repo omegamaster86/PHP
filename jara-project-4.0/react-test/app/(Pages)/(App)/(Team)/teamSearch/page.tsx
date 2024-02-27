@@ -17,7 +17,7 @@ import {
 } from '@/app/components';
 import { useEffect, useState } from 'react';
 import axios from '@/app/lib/axios';
-import { OrgClass, OrgType, UserResponse, Org, PrefectureResponse } from '@/app/types';
+import { OrgClass, OrgType, UserResponse, Org, PrefectureResponse, UserIdType } from '@/app/types';
 import { Divider } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useRouter } from 'next/navigation';
@@ -73,7 +73,7 @@ export default function TeamSearch() {
   const [orgSearchResult, setOrgSearchResult] = useState<Org[]>([]); // 検索結果
   const [visibleData, setVisibleData] = useState<Org[]>([]); // 表示するデータ
   const [visibleItems, setVisibleItems] = useState(10); // 表示するデータの数
-
+  const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
   /**
    * 検索ボタン押下時の処理
    * @returns
@@ -147,6 +147,9 @@ export default function TeamSearch() {
         // const userInfo = await axios.get<UserResponse>('/api/user');
         const userInfo = await axios.get('/api/user');
         setUser(userInfo.data);
+
+        const playerInf = await axios.get('/getIDsAssociatedWithUser');
+        setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
       } catch (error: any) {
         setErrorMessages(['APIの呼び出しに失敗しました。']);
       }
@@ -292,9 +295,9 @@ export default function TeamSearch() {
                 toolTipText='サンプル用のツールチップ表示' //はてなボタン用
               />
               {!(
-                user.user_type === ROLE.SUPPORTER ||
-                user.user_type === ROLE.PLAYER ||
-                user.user_type === ROLE.VOLUNTEER
+                userIdType.is_audience == ROLE.SUPPORTER ||
+                userIdType.is_player == ROLE.PLAYER ||
+                userIdType.is_volunteer == ROLE.VOLUNTEER
               ) && (
                   // エントリーシステムの団体ID
                   <CustomTextField
