@@ -555,7 +555,6 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("storeTournamentInfoData start"));
         $reqData = $request->all();
-
         //確認画面から登録
         // $tTournament::$tournamentInfo['tourn_id'] = 1;
         $tTournament::$tournamentInfo['tourn_name'] = $reqData['tournamentFormData']['tourn_name']; //大会名
@@ -565,26 +564,37 @@ class TournamentController extends Controller
         $tTournament::$tournamentInfo['venue_id'] = $reqData['tournamentFormData']['venue_id']; //水域ID
         $tTournament::$tournamentInfo['venue_name'] = $reqData['tournamentFormData']['venue_name']; //水域名
         $tTournament::$tournamentInfo['entrysystem_tourn_id'] = $reqData['tournamentFormData']['entrysystem_tourn_id']; //エントリーシステムの大会ID
-        $result = $tTournament->updateTournaments($tTournament::$tournamentInfo);
-
-        //レース登録リスト行数分登録する
-        for ($i = 0; $i < count($reqData['tableData']); $i++) {
-            $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['race_number']; //レース番号
-            $tRace::$racesData['entrysystem_race_id'] = $reqData['tableData'][$i]['entrysystem_race_id']; //エントリーシステムのレースID
-            $tRace::$racesData['tourn_id'] = $reqData['tableData'][$i]['id']; //大会IDに紐づける
-            $tRace::$racesData['race_name'] = $reqData['tableData'][$i]['race_name']; //レース名
-            $tRace::$racesData['event_id'] = $reqData['tableData'][$i]['event_id']; //イベントID
-            $tRace::$racesData['event_name'] = $reqData['tableData'][$i]['event_name']; //イベント名
-            $tRace::$racesData['race_class_id'] = $reqData['tableData'][$i]['race_class_id']; //レース区分ID
-            $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['race_class_name']; //レース区分
-            $tRace::$racesData['by_group'] = $reqData['tableData'][$i]['by_group']; //レース区分
-            $tRace::$racesData['range'] = $reqData['tableData'][$i]['range']; //距離
-            $tRace::$racesData['start_date_time'] = $reqData['tableData'][$i]['start_date_time']; //発艇日時
-            $tRace->updateRaces($tRace::$racesData); //レーステーブルの挿入
+        
+        DB::beginTransaction();
+        try
+        {
+            //大会更新
+            $tTournament->updateTournaments($tTournament::$tournamentInfo);
+            
+            //レース登録リスト行数分登録する
+            for ($i = 0; $i < count($reqData['tableData']); $i++) {
+                $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['race_number']; //レース番号
+                $tRace::$racesData['entrysystem_race_id'] = $reqData['tableData'][$i]['entrysystem_race_id']; //エントリーシステムのレースID
+                $tRace::$racesData['tourn_id'] = $reqData['tableData'][$i]['tourn_id']; //大会IDに紐づける
+                $tRace::$racesData['race_name'] = $reqData['tableData'][$i]['race_name']; //レース名
+                $tRace::$racesData['event_id'] = $reqData['tableData'][$i]['event_id']; //イベントID
+                $tRace::$racesData['event_name'] = $reqData['tableData'][$i]['event_name']; //イベント名
+                $tRace::$racesData['race_class_id'] = $reqData['tableData'][$i]['race_class_id']; //レース区分ID
+                $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['race_class_name']; //レース区分
+                $tRace::$racesData['by_group'] = $reqData['tableData'][$i]['by_group']; //レース区分
+                $tRace::$racesData['range'] = $reqData['tableData'][$i]['range']; //距離
+                $tRace::$racesData['start_date_time'] = $reqData['tableData'][$i]['start_date_time']; //発艇日時
+                $tRace->updateRaces($tRace::$racesData); //レーステーブルの挿入
+            }
+            DB::commit();
+            Log::debug(sprintf("storeTournamentInfoData end"));
+            return response()->json(['reqData' => $reqData]); //DBの結果を返す
         }
-
-        Log::debug(sprintf("storeTournamentInfoData end"));
-        return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
+        catch (\Throwable $e)
+        {
+            DB::rollBack();
+            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+        }
     }
 
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
