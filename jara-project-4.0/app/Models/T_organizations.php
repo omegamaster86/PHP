@@ -141,9 +141,7 @@ class T_organizations extends Model
 
     //interfaceのOrganizationを引数としてInsertを実行し、InsertしたレコードのID（主キー）を返す
     public function insertOrganization($organization)
-    {
-        Log::debug(sprintf("insertOrganization start."));
-        Log::debug($organization);
+    {        
         $current_datetime = now()->format('Y-m-d H:i:s.u');
         $register_user_id = Auth::user()->user_id;
         DB::insert('insert into t_organizations
@@ -169,19 +167,19 @@ class T_organizations extends Model
                     )
                     values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
                     ,[
-                        $organization['org_name'],
-                        $organization['entrysystem_org_id'],
-                        $organization['founding_year'],
-                        $organization['post_code'],
-                        $organization['location_country'],
-                        $organization['location_prefecture'],
-                        $organization['address1'],
-                        $organization['address2'],
-                        $organization['org_class'],
-                        $organization['jara_org_type'],
-                        $organization['jara_org_reg_trail'],
-                        $organization['pref_org_type'],
-                        $organization['pref_org_reg_trail'],
+                        $organization['formData']['org_name'],
+                        $organization['formData']['entrysystem_org_id'],
+                        $organization['formData']['founding_year'],
+                        $organization['formData']['post_code'],
+                        $organization['formData']['location_country'],
+                        $organization['formData']['location_prefecture'],
+                        $organization['formData']['address1'],
+                        $organization['formData']['address2'],
+                        $organization['formData']['org_class'],
+                        $organization['formData']['jara_org_type'],
+                        $organization['formData']['jara_org_reg_trail'],
+                        $organization['formData']['pref_org_type'],
+                        $organization['formData']['pref_org_reg_trail'],
                         $current_datetime,
                         $register_user_id,
                         $current_datetime,
