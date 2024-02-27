@@ -15,6 +15,7 @@ use Illuminate\View\View;
 // use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 // use Illuminate\Validation\ValidationException;
 // use League\CommonMark\Node\Inline\Newline;
@@ -120,105 +121,105 @@ class TournamentController extends Controller
     // }
 
     //大会情報登録画面で確認ボタンを押した時
-    public function storeConfirm(Request $request, T_tournaments $t_organization, T_organizations $tOrganization)
-    {
-        $tournamentInfo = $request->all();
-        include('Auth/ErrorMessages/ErrorMessages.php');
-        $rules = [
-            'tName' => ['required'],          //大会名
-            'tId' => ['required'],    //主催団体ID            
-            'tStartDay' => ['required'],    //開催開始年月日            
-            'tEndDay' => ['required'],       //開催終了年月日
-            'tVenueSelect' => ['required'],         //開催場所
-            //'addrtVenueSelectTxtess1' => ['required'],         //開催場所入力欄
-        ];
+    // public function storeConfirm(Request $request, T_tournaments $t_organization, T_organizations $tOrganization)
+    // {
+    //     $tournamentInfo = $request->all();
+    //     include('Auth/ErrorMessages/ErrorMessages.php');
+    //     // $rules = [
+    //     //     'tName' => ['required'],          //大会名
+    //     //     'tId' => ['required'],    //主催団体ID            
+    //     //     'tStartDay' => ['required'],    //開催開始年月日            
+    //     //     'tEndDay' => ['required'],       //開催終了年月日
+    //     //     'tVenueSelect' => ['required'],         //開催場所
+    //     //     //'addrtVenueSelectTxtess1' => ['required'],         //開催場所入力欄
+    //     // ];
 
-        $errMessages = [
-            'tName.required' => $tournament_name_required,
-            'tId.required' => $tournament_id_required,
-            'tStartDay.required' => $tournament_startDay_required,
-            'tEndDay.required' => $tournament_endDay_required,
-            'tVenueSelect.required' => $tournament_venueSelect_required,
-            //'tVenueSelectTxt.required' => $tournament_venueSelectTxt_required,
-        ];
-        //
-        $validator = Validator::make($request->all(), $rules, $errMessages);
+    //     // $errMessages = [
+    //     //     'tName.required' => $tournament_name_required,
+    //     //     'tId.required' => $tournament_id_required,
+    //     //     'tStartDay.required' => $tournament_startDay_required,
+    //     //     'tEndDay.required' => $tournament_endDay_required,
+    //     //     'tVenueSelect.required' => $tournament_venueSelect_required,
+    //     //     //'tVenueSelectTxt.required' => $tournament_venueSelectTxt_required,
+    //     // ];
+    //     // //
+    //     // $validator = Validator::make($request->all(), $rules, $errMessages);
 
-        //追加でチェックを行う        
-        //主催団体が「任意団体」で大会種別が「公式」だった場合エラーメッセージを表示
-        if (!empty($tournamentInfo['tId'])) {
-            $orgDataList = $tOrganization->getOrganization((int)$tournamentInfo['tId']); //団体IDを元に団体情報を取得
-            $officialFlag = $tournamentInfo['officialFlag'];
-            if (($orgDataList->jara_org_type == 0 && $orgDataList->pref_org_type == 0) &&  $officialFlag == "2") {
-                $validator->errors()->add('officialFlag', $tournament_official);
-            }
-        }
+    //     //追加でチェックを行う        
+    //     //主催団体が「任意団体」で大会種別が「公式」だった場合エラーメッセージを表示
+    //     if (!empty($tournamentInfo['tId'])) {
+    //         $orgDataList = $tOrganization->getOrganization((int)$tournamentInfo['tId']); //団体IDを元に団体情報を取得
+    //         $officialFlag = $tournamentInfo['officialFlag'];
+    //         if (($orgDataList->jara_org_type == 0 && $orgDataList->pref_org_type == 0) &&  $officialFlag == "2") {
+    //             $validator->errors()->add('officialFlag', $tournament_official);
+    //         }
+    //     }
 
-        //開催開始年月日と終了年月日のチェックを行う
-        $tStartDay = (int)str_replace('-', '', $tournamentInfo['tStartDay']);
-        $tEndDay = (int)str_replace('-', '', $tournamentInfo['tEndDay']);
-        if (!empty($tStartDay) && !empty($tEndDay) && ($tEndDay < $tStartDay)) {
-            $validator->errors()->add('tEndDay', $tournament_endDayRange);
-        }
+    //     //開催開始年月日と終了年月日のチェックを行う
+    //     $tStartDay = (int)str_replace('-', '', $tournamentInfo['tStartDay']);
+    //     $tEndDay = (int)str_replace('-', '', $tournamentInfo['tEndDay']);
+    //     if (!empty($tStartDay) && !empty($tEndDay) && ($tEndDay < $tStartDay)) {
+    //         $validator->errors()->add('tEndDay', $tournament_endDayRange);
+    //     }
 
-        //バリデーション失敗時、セッションにエラーメッセージをフラッシュデータとして保存
-        if ($validator->errors()->count() > 0) {
-            return back()->withInput()->withErrors($validator);
-        }
+    //     //バリデーション失敗時、セッションにエラーメッセージをフラッシュデータとして保存
+    //     if ($validator->errors()->count() > 0) {
+    //         return back()->withInput()->withErrors($validator);
+    //     }
 
-        return redirect('tournament/register/confirm')->with('tournamentInfo', $tournamentInfo);
-    }
+    //     return redirect('tournament/register/confirm')->with('tournamentInfo', $tournamentInfo);
+    // }
 
 
     //大会情報更新画面で確認ボタンを押した時
-    public function storeEditConfirm(Request $request, T_tournaments $t_organization, T_organizations $tOrganization)
-    {
-        $tournamentInfo = $request->all();
-        include('Auth/ErrorMessages/ErrorMessages.php');
-        $rules = [
-            'tName' => ['required'],          //大会名
-            'tId' => ['required'],    //主催団体ID            
-            'tStartDay' => ['required'],    //開催開始年月日            
-            'tEndDay' => ['required'],       //開催終了年月日
-            'tVenueSelect' => ['required'],         //開催場所
-            //'addrtVenueSelectTxtess1' => ['required'],         //開催場所入力欄
-        ];
+    // public function storeEditConfirm(Request $request, T_tournaments $t_organization, T_organizations $tOrganization)
+    // {
+    //     $tournamentInfo = $request->all();
+    //     include('Auth/ErrorMessages/ErrorMessages.php');
+    //     $rules = [
+    //         'tName' => ['required'],          //大会名
+    //         'tId' => ['required'],    //主催団体ID            
+    //         'tStartDay' => ['required'],    //開催開始年月日            
+    //         'tEndDay' => ['required'],       //開催終了年月日
+    //         'tVenueSelect' => ['required'],         //開催場所
+    //         //'addrtVenueSelectTxtess1' => ['required'],         //開催場所入力欄
+    //     ];
 
-        $errMessages = [
-            'tName.required' => $tournament_name_required,
-            'tId.required' => $tournament_id_required,
-            'tStartDay.required' => $tournament_startDay_required,
-            'tEndDay.required' => $tournament_endDay_required,
-            'tVenueSelect.required' => $tournament_venueSelect_required,
-            //'tVenueSelectTxt.required' => $tournament_venueSelectTxt_required,
-        ];
-        //
-        $validator = Validator::make($request->all(), $rules, $errMessages);
+    //     $errMessages = [
+    //         'tName.required' => $tournament_name_required,
+    //         'tId.required' => $tournament_id_required,
+    //         'tStartDay.required' => $tournament_startDay_required,
+    //         'tEndDay.required' => $tournament_endDay_required,
+    //         'tVenueSelect.required' => $tournament_venueSelect_required,
+    //         //'tVenueSelectTxt.required' => $tournament_venueSelectTxt_required,
+    //     ];
+    //     //
+    //     $validator = Validator::make($request->all(), $rules, $errMessages);
 
-        //追加でチェックを行う
-        //主催団体が「任意団体」で大会種別が「公式」だった場合エラーメッセージを表示
-        if (!empty($tournamentInfo['tId'])) {
-            $orgDataList = $tOrganization->getOrganization((int)$tournamentInfo['tId']); //団体IDを元に団体情報を取得
-            $officialFlag = $tournamentInfo['officialFlag'];
-            if (($orgDataList->jara_org_type == 0 && $orgDataList->pref_org_type == 0) &&  $officialFlag == "2") {
-                $validator->errors()->add('officialFlag', $tournament_official);
-            }
-        }
+    //     //追加でチェックを行う
+    //     //主催団体が「任意団体」で大会種別が「公式」だった場合エラーメッセージを表示
+    //     if (!empty($tournamentInfo['tId'])) {
+    //         $orgDataList = $tOrganization->getOrganization((int)$tournamentInfo['tId']); //団体IDを元に団体情報を取得
+    //         $officialFlag = $tournamentInfo['officialFlag'];
+    //         if (($orgDataList->jara_org_type == 0 && $orgDataList->pref_org_type == 0) &&  $officialFlag == "2") {
+    //             $validator->errors()->add('officialFlag', $tournament_official);
+    //         }
+    //     }
 
-        //開催開始年月日と終了年月日のチェックを行う
-        $tStartDay = (int)str_replace('-', '', $tournamentInfo['tStartDay']);
-        $tEndDay = (int)str_replace('-', '', $tournamentInfo['tEndDay']);
-        if (!empty($tStartDay) && !empty($tEndDay) && ($tEndDay < $tStartDay)) {
-            $validator->errors()->add('tEndDay', $tournament_endDayRange);
-        }
+    //     //開催開始年月日と終了年月日のチェックを行う
+    //     $tStartDay = (int)str_replace('-', '', $tournamentInfo['tStartDay']);
+    //     $tEndDay = (int)str_replace('-', '', $tournamentInfo['tEndDay']);
+    //     if (!empty($tStartDay) && !empty($tEndDay) && ($tEndDay < $tStartDay)) {
+    //         $validator->errors()->add('tEndDay', $tournament_endDayRange);
+    //     }
 
-        //バリデーション失敗時、セッションにエラーメッセージをフラッシュデータとして保存
-        if ($validator->errors()->count() > 0) {
-            return back()->withInput()->withErrors($validator);
-        }
+    //     //バリデーション失敗時、セッションにエラーメッセージをフラッシュデータとして保存
+    //     if ($validator->errors()->count() > 0) {
+    //         return back()->withInput()->withErrors($validator);
+    //     }
 
-        return redirect('tournament/edit/confirm')->with('tournamentInfo', $tournamentInfo);
-    }
+    //     return redirect('tournament/edit/confirm')->with('tournamentInfo', $tournamentInfo);
+    // }
 
     //登録ボタンを押した時
     // public function storeConfirmRegister(Request $request, T_tournaments $tTournament, T_races $tRace, T_raceResultRecord $tRaceResultRecord)
@@ -507,6 +508,15 @@ class TournamentController extends Controller
     public function storeTournamentInfoData(Request $request, T_tournaments $tTournament, T_races $tRace)
     {
         Log::debug(sprintf("storeTournamentInfoData start"));
+        
+        $random_file_name = Str::random(12);
+        //If new PDF is uploaded
+        if ($request->hasfile('tournamentFormData')) {
+            $file = $request->tournamentFormData['uploadedPDFFile'];
+            $file_name = $random_file_name . '.' . $file->getClientOriginalExtension();
+            $destination_path = public_path().'/pdf/tournaments/';
+            $file->move($destination_path,$file_name);
+        }
         $reqData = $request->all();
         // Log::debug($reqData);
         //確認画面から登録
@@ -520,7 +530,18 @@ class TournamentController extends Controller
             $tTournament::$tournamentInfo['venue_name'] = $reqData['tournamentFormData']['venue_name']; //水域名
             $tTournament::$tournamentInfo['tourn_type'] = $reqData['tournamentFormData']['tourn_type']; //大会種別
             $tTournament::$tournamentInfo['tourn_url'] = $reqData['tournamentFormData']['tourn_url']; //大会個別URL
-            $tTournament::$tournamentInfo['tourn_info_faile_path'] = $reqData['tournamentFormData']['tourn_info_faile_path']; //大会要項PDFファイル
+            // $tTournament::$tournamentInfo['tourn_info_faile_path'] = $reqData['tournamentFormData']['tourn_info_faile_path']; //大会要項PDFファイル
+            //If new PDF is uploaded
+            if ($request->hasfile('tournamentFormData')) {
+                $file_name = $random_file_name . '.' . $request->tournamentFormData['uploadedPDFFile']->getClientOriginalExtension();
+                $tTournament::$tournamentInfo['tourn_info_faile_path'] = $file_name; //PDFファイル
+            }
+            else {
+                //If  PDF is not uploaded
+                $tTournament::$tournamentInfo['tourn_info_faile_path'] = $reqData['tournamentFormData']['tourn_info_faile_path']; //PDFファイル
+            }
+
+
             $tTournament::$tournamentInfo['entrysystem_tourn_id'] = $reqData['tournamentFormData']['entrysystem_tourn_id']; //エントリーシステムの大会ID
             $result = $tTournament->insertTournaments($tTournament::$tournamentInfo); //Insertを実行して、InsertしたレコードのID（主キー）を返す
 
@@ -544,6 +565,7 @@ class TournamentController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::debug($e);
+            return response()->json("失敗しました。大会登録できませんでした。",500); //エラーメッセージを返す
         }
 
         Log::debug(sprintf("storeTournamentInfoData end"));
@@ -553,24 +575,40 @@ class TournamentController extends Controller
     //reactからの大会登録 20240202
     public function updateTournamentInfoData(Request $request, T_tournaments $tTournament, T_races $tRace)
     {
-        Log::debug(sprintf("storeTournamentInfoData start"));
+        Log::debug(sprintf("updateTournamentInfoData start"));
+        $random_file_name = Str::random(12);
+        //If new PDF is uploaded
+        if ($request->hasfile('tournamentFormData')) {
+            $file = $request->tournamentFormData['uploadedPDFFile'];
+            $file_name = $random_file_name . '.' . $file->getClientOriginalExtension();
+            $destination_path = public_path().'/pdf/tournaments/';
+            $file->move($destination_path,$file_name);
+        }
         $reqData = $request->all();
         //確認画面から登録
-        // $tTournament::$tournamentInfo['tourn_id'] = 1;
+        $tTournament::$tournamentInfo['tourn_id'] = $reqData['tournamentFormData']['tourn_id']; //大会ID
         $tTournament::$tournamentInfo['tourn_name'] = $reqData['tournamentFormData']['tourn_name']; //大会名
         $tTournament::$tournamentInfo['sponsor_org_id'] = $reqData['tournamentFormData']['sponsor_org_id']; //主催団体ID
         $tTournament::$tournamentInfo['event_start_date'] = $reqData['tournamentFormData']['event_start_date']; //大会開始日
         $tTournament::$tournamentInfo['event_end_date'] = $reqData['tournamentFormData']['event_end_date']; //大会終了日 
         $tTournament::$tournamentInfo['venue_id'] = $reqData['tournamentFormData']['venue_id']; //水域ID
         $tTournament::$tournamentInfo['venue_name'] = $reqData['tournamentFormData']['venue_name']; //水域名
+        $tTournament::$tournamentInfo['tourn_type'] = $reqData['tournamentFormData']['tourn_type']; //Tourn type
+        $tTournament::$tournamentInfo['tourn_url'] = $reqData['tournamentFormData']['tourn_url']; //Tourn URL
         $tTournament::$tournamentInfo['entrysystem_tourn_id'] = $reqData['tournamentFormData']['entrysystem_tourn_id']; //エントリーシステムの大会ID
-        
+        //If new PDF is uploaded
+        if ($request->hasfile('tournamentFormData')) {
+            $file_name = $random_file_name . '.' . $request->tournamentFormData['uploadedPDFFile']->getClientOriginalExtension();
+            $tTournament::$tournamentInfo['tourn_info_faile_path'] = $file_name; //PDFファイル
+        }
+        else {
+            //If  PDF is not uploaded
+            $tTournament::$tournamentInfo['tourn_info_faile_path'] = $reqData['tournamentFormData']['tourn_info_faile_path']??''; //PDFファイル
+        }
+        $tTournament->updateTournaments($tTournament::$tournamentInfo);
         DB::beginTransaction();
         try
         {
-            //大会更新
-            $tTournament->updateTournaments($tTournament::$tournamentInfo);
-            
             //レース登録リスト行数分登録する
             for ($i = 0; $i < count($reqData['tableData']); $i++) {
                 $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['race_number']; //レース番号
@@ -587,13 +625,13 @@ class TournamentController extends Controller
                 $tRace->updateRaces($tRace::$racesData); //レーステーブルの挿入
             }
             DB::commit();
-            Log::debug(sprintf("storeTournamentInfoData end"));
+            Log::debug(sprintf("updateTournamentInfoData end"));
             return response()->json(['reqData' => $reqData]); //DBの結果を返す
         }
         catch (\Throwable $e)
         {
             DB::rollBack();
-            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+            return response()->json("失敗しました。大会更新できませんでした。",500); //エラーメッセージを返す
         }
     }
 
@@ -610,7 +648,7 @@ class TournamentController extends Controller
     //reactからの大会登録 20240202
     public function deleteTournamentInfoData(Request $request, T_tournaments $tTournament, T_races $tRace)
     {
-        Log::debug(sprintf("storeTournamentInfoData start"));
+        Log::debug(sprintf("deleteTournamentInfoData start"));
         $reqData = $request->all();
 
         //確認画面から登録
@@ -642,7 +680,7 @@ class TournamentController extends Controller
             $tRace->updateRaces($tRace::$racesData); //レーステーブルの挿入
         }
 
-        Log::debug(sprintf("storeTournamentInfoData end"));
+        Log::debug(sprintf("deleteTournamentInfoData end"));
         return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
     }
 
@@ -768,10 +806,10 @@ class TournamentController extends Controller
                 return response()->json(['errMessage' => $race_result_record_have_been_registred]); //エラーメッセージを返す
             }
         }
-        catch(Exception $ex)
+        catch(\Throwable $e)
         {
             DB::rollBack();
-            return response()->json(['errMessage' => $ex->getMessage()]); //エラーメッセージを返す
+            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }
 
@@ -800,10 +838,10 @@ class TournamentController extends Controller
                 return response()->json(['errMessage' => $race_result_record_have_been_deleted]); //エラーメッセージを返す
             }
         }
-        catch(Exception $ex)
+        catch(\Throwable $e)
         {
             DB::rollBack();
-            return response()->json(['errMessage' => $ex->getMessage()]); //エラーメッセージを返す
+            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }
 
@@ -832,10 +870,10 @@ class TournamentController extends Controller
                 return response()->json(['errMessage' => $race_result_record_have_been_deleted]); //エラーメッセージを返す
             }
         }
-        catch(Exception $ex)
+        catch(\Throwable $e)
         {
             DB::rollBack();
-            return response()->json(['errMessage' => $ex->getMessage()]); //エラーメッセージを返す
+            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }
 }

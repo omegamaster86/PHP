@@ -25,6 +25,7 @@ import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { ROLE } from '@/app/utils/consts';
+import { TOURNAMENT_PDF_URL } from '@/app/utils/imageUrl';
 
 // 大会情報参照画面
 export default function TournamentRef() {
@@ -165,16 +166,23 @@ export default function TournamentRef() {
                     textSize='h2'
                   ></Label>
                   {/* 大会要項ダウンロードボタン */}
-                  <CustomButton
+                  {/* <CustomButton
                     buttonType='white-outlined'
                     className='w-[220px] text-normal text-white hover:text-primary-100 hover:bg-transparent hover:border-primary-100'
                     onClick={() => {
                       // TODO: 大会要項のPDFをダウンロードする処理
+                      return `${TOURNAMENT_PDF_URL}${tournamentFormData.tourn_info_faile_path}`;
                     }}
                   >
                     <FileDownloadOutlinedIcon className='text-[16px] mr-1 hover:text-primary-100 '></FileDownloadOutlinedIcon>
                     大会要項ダウンロード
-                  </CustomButton>
+                  </CustomButton> */}
+                  {/* ダウンロードコード追加 開始*/}
+                  {tournamentFormData.tourn_info_faile_path && (<Link href={`${TOURNAMENT_PDF_URL}${tournamentFormData.tourn_info_faile_path}`} download className='w-[220px] text-normal text-white hover:text-primary-100 hover:bg-transparent hover:border-primary-100 ' target='_blank'>
+                    <FileDownloadOutlinedIcon className='text-[16px] mr-1 hover:text-primary-100 '></FileDownloadOutlinedIcon>
+                    大会要項ダウンロード
+                  </Link>)}
+                  {/* ダウンロードコード追加 終了*/}
                 </div>
                 <div className='flex flex-row'>
                   {/* 大会個別URL */}
