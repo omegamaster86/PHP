@@ -15,6 +15,7 @@ use Illuminate\View\View;
 // use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 // use Illuminate\Validation\ValidationException;
 // use League\CommonMark\Node\Inline\Newline;
@@ -124,25 +125,25 @@ class TournamentController extends Controller
     {
         $tournamentInfo = $request->all();
         include('Auth/ErrorMessages/ErrorMessages.php');
-        $rules = [
-            'tName' => ['required'],          //大会名
-            'tId' => ['required'],    //主催団体ID            
-            'tStartDay' => ['required'],    //開催開始年月日            
-            'tEndDay' => ['required'],       //開催終了年月日
-            'tVenueSelect' => ['required'],         //開催場所
-            //'addrtVenueSelectTxtess1' => ['required'],         //開催場所入力欄
-        ];
+        // $rules = [
+        //     'tName' => ['required'],          //大会名
+        //     'tId' => ['required'],    //主催団体ID            
+        //     'tStartDay' => ['required'],    //開催開始年月日            
+        //     'tEndDay' => ['required'],       //開催終了年月日
+        //     'tVenueSelect' => ['required'],         //開催場所
+        //     //'addrtVenueSelectTxtess1' => ['required'],         //開催場所入力欄
+        // ];
 
-        $errMessages = [
-            'tName.required' => $tournament_name_required,
-            'tId.required' => $tournament_id_required,
-            'tStartDay.required' => $tournament_startDay_required,
-            'tEndDay.required' => $tournament_endDay_required,
-            'tVenueSelect.required' => $tournament_venueSelect_required,
-            //'tVenueSelectTxt.required' => $tournament_venueSelectTxt_required,
-        ];
-        //
-        $validator = Validator::make($request->all(), $rules, $errMessages);
+        // $errMessages = [
+        //     'tName.required' => $tournament_name_required,
+        //     'tId.required' => $tournament_id_required,
+        //     'tStartDay.required' => $tournament_startDay_required,
+        //     'tEndDay.required' => $tournament_endDay_required,
+        //     'tVenueSelect.required' => $tournament_venueSelect_required,
+        //     //'tVenueSelectTxt.required' => $tournament_venueSelectTxt_required,
+        // ];
+        // //
+        // $validator = Validator::make($request->all(), $rules, $errMessages);
 
         //追加でチェックを行う        
         //主催団体が「任意団体」で大会種別が「公式」だった場合エラーメッセージを表示
@@ -507,6 +508,15 @@ class TournamentController extends Controller
     public function storeTournamentInfoData(Request $request, T_tournaments $tTournament, T_races $tRace)
     {
         Log::debug(sprintf("storeTournamentInfoData start"));
+        
+        $random_file_name = Str::random(12);
+        //If new PDF is uploaded
+        if ($request->hasfile('tournamentFormData')) {
+            $file = $request->tournamentFormData['uploadedPDFFile'];
+            $file_name = $random_file_name . '.' . $file->getClientOriginalExtension();
+            $destination_path = public_path().'/pdf/tournaments/';
+            $file->move($destination_path,$file_name);
+        }
         $reqData = $request->all();
         // Log::debug($reqData);
         //確認画面から登録
@@ -520,7 +530,18 @@ class TournamentController extends Controller
             $tTournament::$tournamentInfo['venue_name'] = $reqData['tournamentFormData']['venue_name']; //水域名
             $tTournament::$tournamentInfo['tourn_type'] = $reqData['tournamentFormData']['tourn_type']; //大会種別
             $tTournament::$tournamentInfo['tourn_url'] = $reqData['tournamentFormData']['tourn_url']; //大会個別URL
-            $tTournament::$tournamentInfo['tourn_info_faile_path'] = $reqData['tournamentFormData']['tourn_info_faile_path']; //大会要項PDFファイル
+            // $tTournament::$tournamentInfo['tourn_info_faile_path'] = $reqData['tournamentFormData']['tourn_info_faile_path']; //大会要項PDFファイル
+            //If new PDF is uploaded
+            if ($request->hasfile('tournamentFormData')) {
+                $file_name = $random_file_name . '.' . $request->tournamentFormData['uploadedPDFFile']->getClientOriginalExtension();
+                $tTournament::$tournamentInfo['tourn_info_faile_path'] = $file_name; //PDFファイル
+            }
+            else {
+                //If  PDF is not uploaded
+                $tTournament::$tournamentInfo['tourn_info_faile_path'] = $reqData['tournamentFormData']['tourn_info_faile_path']; //PDFファイル
+            }
+
+
             $tTournament::$tournamentInfo['entrysystem_tourn_id'] = $reqData['tournamentFormData']['entrysystem_tourn_id']; //エントリーシステムの大会ID
             $result = $tTournament->insertTournaments($tTournament::$tournamentInfo); //Insertを実行して、InsertしたレコードのID（主キー）を返す
 
@@ -554,6 +575,14 @@ class TournamentController extends Controller
     public function updateTournamentInfoData(Request $request, T_tournaments $tTournament, T_races $tRace)
     {
         Log::debug(sprintf("storeTournamentInfoData start"));
+        $random_file_name = Str::random(12);
+        //If new PDF is uploaded
+        if ($request->hasfile('tournamentFormData')) {
+            $file = $request->tournamentFormData['uploadedPDFFile'];
+            $file_name = $random_file_name . '.' . $file->getClientOriginalExtension();
+            $destination_path = public_path().'/pdf/tournaments/';
+            $file->move($destination_path,$file_name);
+        }
         $reqData = $request->all();
 
         //確認画面から登録
@@ -565,6 +594,17 @@ class TournamentController extends Controller
         $tTournament::$tournamentInfo['venue_id'] = $reqData['tournamentFormData']['venue_id']; //水域ID
         $tTournament::$tournamentInfo['venue_name'] = $reqData['tournamentFormData']['venue_name']; //水域名
         $tTournament::$tournamentInfo['entrysystem_tourn_id'] = $reqData['tournamentFormData']['entrysystem_tourn_id']; //エントリーシステムの大会ID
+        
+        //If new PDF is uploaded
+        if ($request->hasfile('tournamentFormData')) {
+            $file_name = $random_file_name . '.' . $request->tournamentFormData['uploadedPDFFile']->getClientOriginalExtension();
+            $tTournament::$tournamentInfo['tourn_info_faile_path'] = $file_name; //PDFファイル
+        }
+        else {
+            //If  PDF is not uploaded
+            $tTournament::$tournamentInfo['tourn_info_faile_path'] = $reqData['tournamentFormData']['tourn_info_faile_path']; //PDFファイル
+        }
+
         $result = $tTournament->updateTournaments($tTournament::$tournamentInfo);
 
         //レース登録リスト行数分登録する

@@ -34,11 +34,11 @@ export default function Login() {
   const { login, isLoading } = useAuth({
     middleware: 'guest',
     redirectIfAuthenticated: '/tournamentSearch',
-})
+  })
 
-if(isLoading) {
-  <Loading/>
-}
+  if(isLoading) {
+    <Loading/>
+  }
 
 const submitForm = async (
   values: Values,

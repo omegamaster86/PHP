@@ -22,9 +22,9 @@ export const useAuth = ({
       .get('/api/user')
       .then(res => res.data)
       .catch(error => {
-        if (error.response.status !== 409) {
-          // throw error
-        }
+        // if (error.response.status !== 409) {
+        //   // throw error
+        // }
         if(pathname==="signup" ||  pathname==="forgotpassword" || pathname==="inquiry"){
 
         }
@@ -32,7 +32,7 @@ export const useAuth = ({
           router.push('/login');
         }
         
-      }),
+      })
   );
 
   const csrf = () => axios.get('/sanctum/csrf-cookie');
@@ -56,10 +56,15 @@ export const useAuth = ({
 
       }
       else {
-        await axios.post('/logout').then(() => {
-          mutate();
-          window.history.replaceState(null, '', '/login');
-        })
+        try{
+          await axios.post('/logout').then(() => {
+            mutate();
+            window.history.replaceState(null, '', '/login');
+          })
+        }
+        catch(error){
+          router.push('/login');
+        };
       }
       
     }

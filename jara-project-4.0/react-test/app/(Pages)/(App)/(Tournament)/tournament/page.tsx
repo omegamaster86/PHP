@@ -2,7 +2,7 @@
 'use client';
 
 // Reactおよび関連モジュールのインポート
-import React, { useState, useEffect, ChangeEvent, useRef } from 'react';
+import React, { useState, useEffect, ChangeEvent, useRef, Dispatch, SetStateAction } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/app/lib/axios';
 // コンポーネントのインポート
@@ -45,6 +45,8 @@ export default function Tournament() {
   // フック
   const router = useRouter();
   const fileUploaderRef = useRef<FileHandler>(null);
+
+
 
   // クエリパラメータを取得する
   const searchParams = useSearchParams();
@@ -318,6 +320,7 @@ export default function Tournament() {
       return false;
     }
   };
+  
 
   // データ取得
   useEffect(() => {
@@ -460,7 +463,12 @@ export default function Tournament() {
               await csrf();
               axios
                 // .post('http://localhost:3100/', registerData)
-                .post('/storeTournamentInfoData', registerData)
+                .post('/storeTournamentInfoData', registerData,{ 
+                  //ファイルを送るため
+                  headers: { 
+                    'content-type' : 'multipart/form-data' ,
+                  } ,
+                 })
                 .then((response) => {
                   // console.log(response);
                   // TODO: 処理成功時の処理
@@ -540,7 +548,12 @@ export default function Tournament() {
               const registerData = {};
               axios
                 // .post('http://localhost:3100/', registerData)
-                .post('/updateTournamentInfoData', sendFormData)
+                .post('/updateTournamentInfoData', sendFormData,{ 
+                  //ファイルを送るため
+                  headers: { 
+                    'content-type' : 'multipart/form-data' ,
+                   } ,
+                 })
                 .then((response) => {
                   // TODO: 処理成功時の処理
                   setTournamentFormData({} as Tournament);
@@ -1027,6 +1040,7 @@ export default function Tournament() {
             label='大会要項PDFファイル'
             readonly={!displayFlg || mode === 'confirm'}
             ref={fileUploaderRef}
+            setTournamentFormData = {setTournamentFormData}
           ></PdfFileUploader>
           <p className='text-caption1 text-systemErrorText'>
             {tournInfoFailePathErrorMessage?.map((message) => {

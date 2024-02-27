@@ -154,7 +154,7 @@ const ImageUploader: FC<ImageUploaderProps> = ({
                       uploadedPhotoName:'',
                       uploadedPhoto: undefined,
                       photo:''
-                    })) as void
+                    })) as void;
                     setInitialPhoto('');
                   }}
                 >

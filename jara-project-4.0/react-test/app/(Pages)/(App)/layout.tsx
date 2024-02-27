@@ -3,16 +3,19 @@ import { useAuth } from '@/app/hooks/auth';
 import { Header, Footer, Loading } from '@/app/components';
 import { useState } from 'react';
 import { useIdleTimer } from "react-idle-timer"; // For logout a user after one hour of inactivity
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   
   const [loggedIn, setLoggedIn] = useState(false);
   const { user, logout, isLoading } = useAuth({ middleware: 'auth' });
+  const pathname = usePathname();
+  const router = useRouter();
 
   const onIdle = () => {
     if(user){
       logout(); //The user will be automatically after 1 hour of inactivity.
-      // pause();// For stop counting idle time of a logged user because of logout.
+      pause();// For stop counting idle time of a logged user because of logout.
     }
   };
   const {start, pause} =  useIdleTimer({onIdle, timeout: 1000 * 60 * 60, events: [
