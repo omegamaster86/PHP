@@ -141,53 +141,55 @@ class T_organizations extends Model
 
     //interfaceのOrganizationを引数としてInsertを実行し、InsertしたレコードのID（主キー）を返す
     public function insertOrganization($organization)
-    {
-        DB::insert('insert into `t_organizations`
+    {        
+        $current_datetime = now()->format('Y-m-d H:i:s.u');
+        $register_user_id = Auth::user()->user_id;
+        DB::insert('insert into t_organizations
                     (
-                        `org_name`,
-                        `entrysystem_org_id`,
-                        `founding_year`,
-                        `post_code`,
-                        `location_country`,
-                        `location_prefecture`,
-                        `address1`,
-                        `address2`,
-                        `org_class`,
-                        `jara_org_type`,
-                        `jara_org_reg_trail`,
-                        `pref_org_type`,
-                        `pref_org_reg_trail`,
-                        `registered_time`,
-                        `registered_user_id`,
-                        `updated_time`,
-                        `updated_user_id`,
-                        `delete_flag`
+                        org_name,
+                        entrysystem_org_id,
+                        founding_year,
+                        post_code,
+                        location_country,
+                        location_prefecture,
+                        address1,
+                        address2,
+                        org_class,
+                        jara_org_type,
+                        jara_org_reg_trail,
+                        pref_org_type,
+                        pref_org_reg_trail,
+                        registered_time,
+                        registered_user_id,
+                        updated_time,
+                        updated_user_id,
+                        delete_flag
                     )
-                    values
-                    (
-                        :org_name,
-                        :entrysystem_org_id,
-                        :founding_year,
-                        :post_code,
-                        :location_country,
-                        :location_prefecture,
-                        :address1,
-                        :address2,
-                        :org_class,
-                        :jara_org_type,
-                        :jara_org_reg_trail,
-                        :pref_org_type,
-                        :pref_org_reg_trail,
-                        :current_datetime,
-                        :user_id,
-                        :current_time,
-                        :user_id,
+                    values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+                    ,[
+                        $organization['formData']['org_name'],
+                        $organization['formData']['entrysystem_org_id'],
+                        $organization['formData']['founding_year'],
+                        $organization['formData']['post_code'],
+                        $organization['formData']['location_country'],
+                        $organization['formData']['location_prefecture'],
+                        $organization['formData']['address1'],
+                        $organization['formData']['address2'],
+                        $organization['formData']['org_class'],
+                        $organization['formData']['jara_org_type'],
+                        $organization['formData']['jara_org_reg_trail'],
+                        $organization['formData']['pref_org_type'],
+                        $organization['formData']['pref_org_reg_trail'],
+                        $current_datetime,
+                        $register_user_id,
+                        $current_datetime,
+                        $register_user_id,
                         0
-                    )',
-                    $organization);
+                    ]);
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
-        Log::debug($insertId);
+        //Log::debug($insertId);
+        Log::debug(sprintf("insertOrganization end."));
         return $insertId;
     }
 

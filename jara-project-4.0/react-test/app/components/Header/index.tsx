@@ -150,7 +150,7 @@ const Header: FC = () => {
               <MenuItem
                 onClick={(e) => {
                   handleClose();
-                  router.push('/DummyMyPage');
+                  router.push('/tournamentResultInfomationBulkRegister');
                 }}
                 className='text-caption1'
               >
@@ -164,7 +164,7 @@ const Header: FC = () => {
               <MenuItem
                 onClick={(e) => {
                   handleClose();
-                  router.push('/DummyMyPage');
+                  router.push('/tournamentEntryBulkRegister');
                 }}
                 className='text-caption1'
               >
@@ -242,11 +242,11 @@ const Header: FC = () => {
               <MenuItem
                 onClick={(e) => {
                   handleClose();
-                  router.push('/playerInformation?mode=create');
+                  router.push('/playerInformationLinking');
                 }}
                 className='text-caption1'
               >
-                選手一括登録
+                選手情報連携
               </MenuItem>
             ) : ''}
           </div>
@@ -341,7 +341,7 @@ const Header: FC = () => {
               <MenuItem
                 onClick={(e) => {
                   handleClose();
-                  router.push('/DummyMyPage');
+                  router.push('/volunteerBulkRegister');
                 }}
                 className='text-caption1'
               >

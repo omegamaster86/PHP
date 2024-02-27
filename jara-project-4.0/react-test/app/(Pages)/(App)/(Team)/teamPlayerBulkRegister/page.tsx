@@ -229,7 +229,7 @@ export default function TeamPlayerBulkRegister() {
           <CustomDropdown
             id='org'
             value={orgSelected}
-            options={orgs.map((org) => ({ value: org.orgName, key: org.orgId }))}
+            options={orgs.map((org) => ({ value: org.org_name, key: org.org_id }))}
             onChange={(e) => {
               setOrgSelected(e);
             }}

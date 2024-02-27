@@ -2,7 +2,7 @@
 // 団体所属追加選手検索画面
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import {
   TeamPlayerInformationResponse,
   TeamResponse,
@@ -133,8 +133,10 @@ export default function AddPlayerSearch() {
 
     try {
       // TODO: APIを叩いて検索結果を取得する
-      const response = await axios.get('http://localhost:3100/teamPlayerSearch');
+      // const response = await axios.get('http://localhost:3100/teamPlayerSearch');
+      const response = await axios.post('/teamPlayerSearch', searchCond);
       const data = response.data;
+      console.log(data);
       data.forEach((item: TeamPlayerInformationResponse) => {
         item.checked = false;
       });
@@ -207,19 +209,25 @@ export default function AddPlayerSearch() {
   useEffect(() => {
     const getTeam = async () => {
       try {
-        const teamResponse = await axios.get('http://localhost:3100/team');
-        setTeamData(teamResponse.data);
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
+        // const teamResponse = await axios.get('http://localhost:3100/team');
+        // setTeamData(teamResponse.data);
         // 性別
-        const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
-        setSex(sexResponse.data);
+        // const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
+        const sexResponse = await axios.get('/getSexList');
+        const sexList = sexResponse.data.map(({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }));
+        setSex(sexList);
         // TODO: 都道府県情報の取得処理を実装
-        const prefectureResponse = await axios.get<PrefectureResponse[]>(
-          'http://localhost:3100/prefecture',
-        );
-        setPrefectures(prefectureResponse.data);
+        // const prefectureResponse = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
+        const prefectures = await axios.get('/getPrefecures'); //都道府県マスターの取得 20240208
+        const stateList = prefectures.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
+        setPrefectures(stateList);
         // 種目
-        const eventResponse = await axios.get<EventResponse[]>('http://localhost:3100/event');
-        setEvent(eventResponse.data);
+        // const eventResponse = await axios.get<EventResponse[]>('http://localhost:3100/event');
+        const eventResponse = await axios.get('/getEvents');
+        const eventResponseList = eventResponse.data.map(({ event_id, event_name }: { event_id: number; event_name: string }) => ({ id: event_id, name: event_name }));
+        setEvent(eventResponseList);
       } catch (error) {
         console.log(error);
       }
@@ -231,7 +239,7 @@ export default function AddPlayerSearch() {
       <div className='relative flex flex-col justify-between w-full h-screen flex-wrap gap-[20px]'>
         <CustomTitle isCenter={false} displayBack>
           <div>
-            {teamData.name}
+            {teamData.org_name}
             <br />
             団体に登録する選手検索
           </div>
@@ -558,7 +566,7 @@ export default function AddPlayerSearch() {
                       rel='noopener noreferrer'
                       target='_blank'
                     >
-                      {data.playerId}
+                      {data.player_id}
                     </Link>
                   </CustomTd>
                   <CustomTd>
@@ -568,7 +576,7 @@ export default function AddPlayerSearch() {
                       rel='noopener noreferrer'
                       target='_blank'
                     >
-                      {data.jaraPlayerId}
+                      {data.jara_player_id}
                     </Link>
                   </CustomTd>
                   <CustomTd>
@@ -578,24 +586,24 @@ export default function AddPlayerSearch() {
                       rel='noopener noreferrer'
                       target='_blank'
                     >
-                      {data.playerName}
+                      {data.player_name}
                     </Link>
                   </CustomTd>
                   <CustomTd>{data.sexName}</CustomTd>
                   <CustomTd>
-                    {data.birthCountryId === JAPAN_COUNTRY_ID
+                    {data.birth_country === JAPAN_COUNTRY_ID
                       ? data.birthPrefectureName
                       : data.birthCountryName}
                   </CustomTd>
                   <CustomTd>
-                    {data.residenceCountryId === JAPAN_COUNTRY_ID
+                    {data.residence_country === JAPAN_COUNTRY_ID
                       ? data.residencePrefectureName
                       : data.residenceCountryName}
                   </CustomTd>
-                  <CustomTd>{data.sideInfo[0] ? '○' : '×'}</CustomTd>
-                  <CustomTd>{data.sideInfo[1] ? '○' : '×'}</CustomTd>
-                  <CustomTd>{data.sideInfo[2] ? '○' : '×'}</CustomTd>
-                  <CustomTd>{data.sideInfo[3] ? '○' : '×'}</CustomTd>
+                  <CustomTd>{data.side_info[0] ? '○' : '×'}</CustomTd>
+                  <CustomTd>{data.side_info[1] ? '○' : '×'}</CustomTd>
+                  <CustomTd>{data.side_info[2] ? '○' : '×'}</CustomTd>
+                  <CustomTd>{data.side_info[3] ? '○' : '×'}</CustomTd>
                   <CustomTd>
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'

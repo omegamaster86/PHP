@@ -89,8 +89,8 @@ export default function TeamManagement() {
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       href={{
-                        pathname: '/team',
-                        query: { mode: 'update', org_id: row.org_id.toString() },
+                        pathname: '/teamRef',
+                        query: { org_id: row.org_id.toString() },
                       }}
                       rel='noopener noreferrer'
                       target='_blank'
@@ -103,8 +103,8 @@ export default function TeamManagement() {
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       href={{
-                        pathname: '/team',
-                        query: { mode: 'update', org_id: row.org_id.toString() },
+                        pathname: '/teamRef',
+                        query: { org_id: row.org_id.toString() },
                       }}
                       rel='noopener noreferrer'
                       target='_blank'
