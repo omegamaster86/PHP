@@ -118,12 +118,6 @@ export default function Tournament() {
     tourn_info_faile_path: '',
   });
 
-  //追加対象のデータをまとめて送信する 20240202
-  const [sendFormData, setSendDatas] = useState({
-    tournamentFormData: tournamentFormData, //選手情報
-    tableData: tableData //選手の出漕結果情報
-  });
-
   // フォームの入力値を管理する関数
   const handleInputChangeTournament = (name: string, value: string) => {
     setTournamentFormData((prevFormData) => ({
@@ -537,10 +531,13 @@ export default function Tournament() {
             const updateTournamentInfo = async () => {
               const csrf = () => axios.get('/sanctum/csrf-cookie');
               await csrf();
-              const registerData = {};
+              const registerData = {
+                tournamentFormData, //選手情報
+                tableData //選手の出漕結果情報
+              };
               axios
                 // .post('http://localhost:3100/', registerData)
-                .post('/updateTournamentInfoData', sendFormData)
+                .post('/updateTournamentInfoData', registerData)
                 .then((response) => {
                   // TODO: 処理成功時の処理
                   setTournamentFormData({} as Tournament);
@@ -584,7 +581,7 @@ export default function Tournament() {
                   ]);
                   fileUploaderRef?.current?.clearFile();
                   window.confirm('大会情報を更新しました。');
-                  router.push(`/tournamentRef?tournId=${sendFormData.tournamentFormData.tourn_id}`);
+                  router.push(`/tournamentRef?tournId=${registerData.tournamentFormData.tourn_id}`);
                 })
                 .catch((error) => {
                   // TODO: 処理失敗時の処理
