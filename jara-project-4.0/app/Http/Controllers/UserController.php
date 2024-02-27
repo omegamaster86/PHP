@@ -700,7 +700,7 @@ class UserController extends Controller
     public function updateUserData(Request $request, T_users $t_users)
     {
         //If new picture is uploaded
-        if ($request->file('uploadedPhoto')) {
+        if ($request->hasFile('uploadedPhoto')) {
             $file = $request->file('uploadedPhoto');
             $file_name = Auth::user()->user_id . '.' . $file->getClientOriginalExtension();
             $destination_path = public_path().'/images/users/' ;
