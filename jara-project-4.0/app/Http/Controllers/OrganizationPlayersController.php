@@ -1043,15 +1043,15 @@ class OrganizationPlayersController extends Controller
         return response()->json(['result' => $result]);
     }
 
-    // 団体に登録する選手検索 20240226
-    public function teamPlayerSearch(Request $request)
-    {
-        Log::debug(sprintf("teamPlayerSearch start"));
-        $reqData = $request->all();
-        //ここに処理を追加　二村さん作業
+    // // 団体に登録する選手検索 20240226
+    // public function teamPlayerSearch(Request $request)
+    // {
+    //     Log::debug(sprintf("teamPlayerSearch start"));
+    //     $reqData = $request->all();
+    //     //ここに処理を追加　二村さん作業
 
         
-        Log::debug(sprintf("teamPlayerSearch end"));
-        return response()->json(['result' => $reqData]);
-    }
+    //     Log::debug(sprintf("teamPlayerSearch end"));
+    //     return response()->json(['result' => $reqData]);
+    // }
 }
