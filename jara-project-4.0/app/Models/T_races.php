@@ -134,40 +134,40 @@ class T_races extends Model
 
     public function updateRaces($racesInfo)
     {
-        $result = "success";
-        DB::beginTransaction();
-        try {
-            DB::update(
-                'update t_races set `race_number`=?,`entrysystem_race_id`=?,`tourn_id`=?,`race_name`=?,`event_id`=?,`event_name`=?,`race_class_id`=?,`race_class_name`=?,`by_group`=?,`range`=?,`start_date_time`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where tourn_id = ?',
-                [
-                    $racesInfo['race_number'],
-                    $racesInfo['entrysystem_race_id'],
-                    $racesInfo['tourn_id'],
-                    $racesInfo['race_name'],
-                    $racesInfo['event_id'],
-                    $racesInfo['event_name'],
-                    $racesInfo['race_class_id'],
-                    $racesInfo['race_class_name'],
-                    $racesInfo['by_group'],
-                    $racesInfo['range'],
-                    $racesInfo['start_date_time'],
-                    NOW(),
-                    Auth::user()->user_id,
-                    NOW(),
-                    Auth::user()->user_id,
-                    $racesInfo['delete_flag'],
-                    $racesInfo['tourn_id']
-                ]
-            );
+        // $result = "success";
+        // DB::beginTransaction();
+        // try {
+        DB::update(
+            'update t_races set `race_number`=?,`entrysystem_race_id`=?,`tourn_id`=?,`race_name`=?,`event_id`=?,`event_name`=?,`race_class_id`=?,`race_class_name`=?,`by_group`=?,`range`=?,`start_date_time`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where tourn_id = ?',
+            [
+                $racesInfo['race_number'],
+                $racesInfo['entrysystem_race_id'],
+                $racesInfo['tourn_id'],
+                $racesInfo['race_name'],
+                $racesInfo['event_id'],
+                $racesInfo['event_name'],
+                $racesInfo['race_class_id'],
+                $racesInfo['race_class_name'],
+                $racesInfo['by_group'],
+                $racesInfo['range'],
+                $racesInfo['start_date_time'],
+                NOW(),
+                Auth::user()->user_id,
+                NOW(),
+                Auth::user()->user_id,
+                $racesInfo['delete_flag'],
+                $racesInfo['tourn_id']
+            ]
+        );
 
-            DB::commit();
-            return $result;
-        } catch (\Throwable $e) {
-            DB::rollBack();
+            // DB::commit();
+        //     return $result;
+        // } catch (\Throwable $e) {
+        //     DB::rollBack();
 
-            $result = "failed";
-            return $result;
-        }
+        //     $result = "failed";
+        //     return $result;
+        // }
     }
 
     //interfaceのRaceを引数としてupdateを実行する
