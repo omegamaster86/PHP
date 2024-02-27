@@ -135,7 +135,7 @@ export default function AddPlayerSearch() {
       // TODO: APIを叩いて検索結果を取得する
       // const response = await axios.get('http://localhost:3100/teamPlayerSearch');
       const response = await axios.post('/teamPlayerSearch', searchCond);
-      const data = response.data;
+      const data = response.data.result;
       console.log(data);
       data.forEach((item: TeamPlayerInformationResponse) => {
         item.checked = false;
