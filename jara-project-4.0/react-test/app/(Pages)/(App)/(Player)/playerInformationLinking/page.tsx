@@ -9,6 +9,7 @@ import { ErrorBox, CustomTitle, CustomButton } from '@/app/components';
 import Validator from '@/app/utils/validator';
 // ローカルコンポーネントのインポート
 import CsvTable from './CsvTable';
+import axios from '@/app/lib/axios';
 
 // CSVデータの型定義
 interface CsvData {
@@ -97,6 +98,20 @@ export default function PlayerInformationLinking() {
     csvUpload: handleCsvUpload,
     resetActivationFlg: resetActivationFlg,
   } as CsvUploadProps;
+
+  //選手情報削除関数 20240201
+  const sendCsvData = async () => {
+    const csrf = () => axios.get('/sanctum/csrf-cookie');
+    await csrf();
+    await axios.post('/sendCsvData', csvData)
+      .then((res) => {
+        console.log(res.data);
+        // router.push('/tournamentSearch'); //大会検索画面に遷移する 20240222
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
 
   // CSVダウンロードのプロパティ
   const csvDownloadProps = {
@@ -234,10 +249,12 @@ export default function PlayerInformationLinking() {
               <CustomButton
                 buttonType='primary'
                 onClick={() => {
+                  console.log(csvData);
                   setActivationFlg(true);
-                  csvData.find((row) => row.checked)?.id === undefined
-                    ? window.confirm('1件以上選択してください。')
-                    : setCsvData([]),
+                  csvData.find((row) => row.checked)?.id === undefined ?
+                    window.confirm('1件以上選択してください。') :
+                    sendCsvData(), //読み込んだCSVデータをDBに連携する
+                    setCsvData([]),
                     setCsvFileData({ content: [], isSet: false }),
                     fileUploaderRef?.current?.clearFile(),
                     window.confirm('連携を完了しました。')

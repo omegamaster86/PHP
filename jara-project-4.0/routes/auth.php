@@ -105,6 +105,7 @@ Route::middleware('auth')->group(function () {
     Route::post('getRaceResultRecordsData', [PlayerController::class, 'getRaceResultRecordsData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('deletePlayerData', [PlayerController::class, 'deletePlayerData']); //該当データをDBから削除する 20240201
     Route::post('playerSearch', [PlayerController::class, 'searchPlayer']); //選手検索 20240212
+    Route::post('sendCsvData', [PlayerInfoAlignmentController::class, 'sendCsvData']); //選手検索 20240212
 
     //団体関連
     Route::post('getOrgData', [OrganizationController::class, 'getOrgData']); //DBから団体管理画面にデータを渡す 20240201
