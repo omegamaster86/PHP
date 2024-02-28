@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Storage;
 // use League\CommonMark\Node\Inline\Newline;
 // use Exception;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 use App\Models\T_players;
 
 class PlayerInfoAlignmentController extends Controller
@@ -188,5 +189,15 @@ class PlayerInfoAlignmentController extends Controller
         } else {
             return view('player.info_alignment', ["csvList" => "", "errorMsg" => "", "checkList" => ""]);
         }
+    }
+
+    //大会レース結果参照画面に表示する用 20240216
+    public function sendCsvData(Request $request)
+    {
+        Log::debug(sprintf("sendCsvData start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        Log::debug(sprintf("sendCsvData end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
     }
 }
