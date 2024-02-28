@@ -356,7 +356,7 @@ export default function VolunteerSearch() {
 
         // 大会マスタの取得
         // const tour = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments');
-        const TournamentsResponse = await axios.get('/getTournamentInfoData_vol'); //残件対象項目
+        const TournamentsResponse = await axios.get('/getTournamentInfoData_allData'); //残件対象項目
         const TournamentsResponseList = TournamentsResponse.data.result.map(({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({ id: tourn_id, name: tourn_name }));
         // console.log(TournamentsResponseList);
         setTour(TournamentsResponseList);

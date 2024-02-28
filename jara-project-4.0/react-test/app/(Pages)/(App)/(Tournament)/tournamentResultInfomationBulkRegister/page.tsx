@@ -18,7 +18,7 @@ import Validator from '@/app/utils/validator';
 import CsvHandler from './CsvHandler';
 import CsvTable from './CsvTable';
 import { Tournament, TournamentResponse, CheckRace } from '@/app/types';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import { Autocomplete, TextField } from '@mui/material';
 import { CsvData } from './CsvDataInterface';
 
@@ -234,13 +234,16 @@ export default function TournamentResultInfomationBulkRegister() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         // 仮のURL（繋ぎ込み時に変更すること）
         // TODO: ログインユーザーの権限によって取得する大会情報を変更すること
         // 大会名
-        const tournamentResponse = await axios.get<TournamentResponse[]>(
-          'http://localhost:3100/tournaments',
-        );
-        setTournamentList(tournamentResponse.data);
+        // const tournamentResponse = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments',);
+        const TournamentsResponse = await axios.get('/getTournamentInfoData_allData'); //残件対象項目
+        const TournamentsResponseList = TournamentsResponse.data.result.map(({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({ id: tourn_id, name: tourn_name }));
+        console.log(TournamentsResponseList);
+        setTournamentList(TournamentsResponseList);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
       }
@@ -250,12 +253,16 @@ export default function TournamentResultInfomationBulkRegister() {
 
   const handleSearchTournament = async (name: string, e: FocusEvent<HTMLInputElement>) => {
     // 大会IDが入力されている場合
+    console.log(e);
     if (formData.tournId !== 0) {
       try {
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         // 仮のURL（繋ぎ込み時に変更すること）
         const apiURL = `http://localhost:3100/tournament?${name}=${e.target.value}`;
         // 大会情報を取得
-        const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
+        // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
+        const tournamentResponse = await axios.post('/getTournamentInfoData', e.target.value); //大会IDを元に大会情報を取得する
         // 大会情報が取得できなかった場合
         if (tournamentResponse === undefined || tournamentResponse === null) {
           setTournIdErrorMessage(['入力された大会IDの大会は、存在しませんでした。']);
@@ -727,6 +734,7 @@ export default function TournamentResultInfomationBulkRegister() {
               placeHolder={new Date().toLocaleDateString('ja-JP').slice(0, 4)}
               selectedDate={formData?.eventYear}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                console.log(e);
                 if (e.target.value.length <= 4) {
                   handleInputChange('eventYear', e as unknown as string);
                 }
@@ -747,11 +755,11 @@ export default function TournamentResultInfomationBulkRegister() {
           <div
             className={
               prevScreen === 'tournamentRef' ||
-              !(
-                formData?.eventYear === '' ||
-                formData?.eventYear === null ||
-                formData?.eventYear === undefined
-              )
+                !(
+                  formData?.eventYear === '' ||
+                  formData?.eventYear === null ||
+                  formData?.eventYear === undefined
+                )
                 ? 'hidden'
                 : ''
             }
@@ -827,31 +835,31 @@ export default function TournamentResultInfomationBulkRegister() {
                 <p className='mb-1'>
                   【読み込み方法】
                   <br />
-                  　［準備］
+                  ［準備］
                   <br />
-                  　　　定型フォーマットに当該大会でのレース結果を選手単位で入力してください。
+                  定型フォーマットに当該大会でのレース結果を選手単位で入力してください。
                   <br />
-                  　　　※定型フォーマットが必要な場合は、「CSVフォーマット出力」をクリックしてください。
+                  ※定型フォーマットが必要な場合は、「CSVフォーマット出力」をクリックしてください。
                   <br />
-                  　　　　定型フォーマットがダウンロードされます。
+                  定型フォーマットがダウンロードされます。
                   <br />
-                  　［読み込む］
+                  ［読み込む］
                   <br />
-                  　　　①　「大会名」をレース結果を登録する大会を選択してください。
+                  ①　「大会名」をレース結果を登録する大会を選択してください。
                   <br />
-                  　　　　　※大会の絞り込み方法
+                  ※大会の絞り込み方法
                   <br />
-                  　　　　　　「大会ID」が分かる場合、「大会ID」を入力すると「大会開催年」「大会名」が自動で入力・選択されます。
+                  「大会ID」が分かる場合、「大会ID」を入力すると「大会開催年」「大会名」が自動で入力・選択されます。
                   <br />
-                  　　　　　　「大会ID」が分からない場合、「大会開催年」を入力すると当該年に開催された大会から
+                  「大会ID」が分からない場合、「大会開催年」を入力すると当該年に開催された大会から
                   <br />
-                  　　　②　「読み込みCSVファイル」に、読み込ませるCSVファイルをドラッグ＆ドロップしてください。
+                  ②　「読み込みCSVファイル」に、読み込ませるCSVファイルをドラッグ＆ドロップしてください。
                   <br />
-                  　　　　　※「参照」からファイルを指定することもできます。
+                  ※「参照」からファイルを指定することもできます。
                   <br />
-                  　　　③　「読み込み」をクリックすると、CSVフォーマットの内容を読み込み、内容を画面下部のレース結果一覧に表示します。
+                  ③　「読み込み」をクリックすると、CSVフォーマットの内容を読み込み、内容を画面下部のレース結果一覧に表示します。
                   <br />
-                  　　　　　※この状態では、まだシステムにレース結果は登録されません
+                  ※この状態では、まだシステムにレース結果は登録されません
                 </p>
                 <CustomButton
                   buttonType='primary'
@@ -900,15 +908,15 @@ export default function TournamentResultInfomationBulkRegister() {
             <p className='mb-1'>
               【登録方法】
               <br />
-              　①　「レース結果一覧」にCSVフォーマットを読み込んだ結果が表示されます。
+              ①　「レース結果一覧」にCSVフォーマットを読み込んだ結果が表示されます。
               <br />
-              　②　読み込むデータの「選択」にチェックを入れてください。※「全選択」で、エラー以外の全てのデータを選択状態にできます。
+              ②　読み込むデータの「選択」にチェックを入れてください。※「全選択」で、エラー以外の全てのデータを選択状態にできます。
               <br />
-              　③　「登録」をクリックすると「レース結果一覧」にて「選択」にチェックが入っているデータを対象に、本システムに登録されます。
+              ③　「登録」をクリックすると「レース結果一覧」にて「選択」にチェックが入っているデータを対象に、本システムに登録されます。
               <br />
-              　　　※既に登録されているレース結果は上書きされます。
+              ※既に登録されているレース結果は上書きされます。
               <br />
-              　　　※登録後、レース結果の更新・削除をする場合は「大会レース結果編集画面」から行ってください。
+              ※登録後、レース結果の更新・削除をする場合は「大会レース結果編集画面」から行ってください。
               <br />
             </p>
             <CsvTable
@@ -999,7 +1007,7 @@ export default function TournamentResultInfomationBulkRegister() {
                       setCsvFileData({ content: [], isSet: false });
                       fileUploaderRef?.current?.clearFile();
                       window.confirm('レース結果の登録が完了しました。')
-                      ? (setActivationFlg(false),
+                        ? (setActivationFlg(false),
                           setDialogDisplayFlg(false),
                           setDisplayRegisterButtonFlg(false))
                         : null;

@@ -99,11 +99,25 @@ export default function PlayerInformationLinking() {
     resetActivationFlg: resetActivationFlg,
   } as CsvUploadProps;
 
-  //選手情報削除関数 20240201
+  //読み込むボタン押下時 20240228
   const sendCsvData = async () => {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     await axios.post('/sendCsvData', csvData)
+      .then((res) => {
+        console.log(res.data);
+        // router.push('/tournamentSearch'); //大会検索画面に遷移する 20240222
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  //連携ボタン押下時 20240228
+  const registerCsvData = async () => {
+    const csrf = () => axios.get('/sanctum/csrf-cookie');
+    await csrf();
+    await axios.post('/registerCsvData', csvData)
       .then((res) => {
         console.log(res.data);
         // router.push('/tournamentSearch'); //大会検索画面に遷移する 20240222
@@ -165,9 +179,7 @@ export default function PlayerInformationLinking() {
                   onClick={() => {
                     setActivationFlg(true);
                     if (dialogDisplayFlg) {
-                      window.confirm(
-                        '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
-                      )
+                      window.confirm('読み込み結果に表示されているデータはクリアされます。よろしいですか？',)
                         ? (setCsvData([]),
                           csvFileData?.content?.slice(1).map((row, rowIndex) => {
                             setCsvData((prevData) => [
@@ -185,7 +197,9 @@ export default function PlayerInformationLinking() {
                               },
                             ]);
                             setDialogDisplayFlg(true);
-                          }))
+                          }),
+                          sendCsvData() //読み込んだCSVデータをDBに連携する
+                        )
                         : null;
                     } else {
                       setCsvData([]);
@@ -210,6 +224,7 @@ export default function PlayerInformationLinking() {
                           setDisplayLinkButtonFlg(true);
                         }
                       });
+                      sendCsvData(); //読み込んだCSVデータをDBに連携する
                     }
                     performValidation();
                     setActivationFlg(false);
@@ -253,7 +268,7 @@ export default function PlayerInformationLinking() {
                   setActivationFlg(true);
                   csvData.find((row) => row.checked)?.id === undefined ?
                     window.confirm('1件以上選択してください。') :
-                    sendCsvData(), //読み込んだCSVデータをDBに連携する
+                    registerCsvData(), //読み込んだCSVデータをDBに連携する
                     setCsvData([]),
                     setCsvFileData({ content: [], isSet: false }),
                     fileUploaderRef?.current?.clearFile(),

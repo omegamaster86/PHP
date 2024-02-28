@@ -191,13 +191,23 @@ class PlayerInfoAlignmentController extends Controller
         }
     }
 
-    //大会レース結果参照画面に表示する用 20240216
+    //読み込むボタン押下後 20240228
     public function sendCsvData(Request $request)
     {
         Log::debug(sprintf("sendCsvData start"));
         $reqData = $request->all();
         Log::debug($reqData);
         Log::debug(sprintf("sendCsvData end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
+    }
+
+    // 連携ボタン押下後 20240228
+    public function registerCsvData(Request $request)
+    {
+        Log::debug(sprintf("registerCsvData start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        Log::debug(sprintf("registerCsvData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
     }
 }
