@@ -370,7 +370,7 @@ export default function TeamRef() {
                       className='w-[120px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
                       buttonType='secondary'
                       onClick={() => {
-                        router.push('/teamPlayerBulkRegister');
+                        router.push('/teamPlayerBulkRegister?org_id=' + orgId);
                       }}
                     >
                       所属選手一括登録
