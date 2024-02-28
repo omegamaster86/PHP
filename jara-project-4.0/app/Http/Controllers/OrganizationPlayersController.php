@@ -132,6 +132,10 @@ class OrganizationPlayersController extends Controller
             $condition .= "and org.org_id = :org_id\r\n";
             $conditionValue['org_id'] = $searchInfo['orgId'];
         }
+        elseif (isset($searchInfo['org_id'])) {
+            $condition .= "and org.org_id = :org_id\r\n";
+            $conditionValue['org_id'] = $searchInfo['org_id'];
+        }
         //エントリーシステムID
         if (isset($searchInfo['entrysystemOrgId'])) {
             $condition .= "and org.entrysystem_org_id =:entry_system_id\r\n";
@@ -945,7 +949,7 @@ class OrganizationPlayersController extends Controller
     {
         Log::debug(sprintf("searchOrganizationPlayersForTeamRef start"));
         $searchInfo = $request->all();
-        Log::Debug($searchInfo);
+        //Log::Debug($searchInfo);
         $searchValue = [];
         $searchCondition = $this->generateOrganizationPlayersSearchCondition($searchInfo, $searchValue);
         $players = $t_organization_players->getOrganizationPlayersFromCondition($searchCondition, $searchValue);
@@ -1021,25 +1025,24 @@ class OrganizationPlayersController extends Controller
     {
         Log::debug(sprintf("updateOrgPlayerData start"));
         $reqData = $request->all();
-        //ここに処理を追加　二村さん作業
         DB::beginTransaction();
         try
         {
             foreach($reqData as $player)
             {
-            //     //削除にチェックが入っている場合
-            //     if($player["delete"] == 0)
-            //     {
-            //         $t_organization_players->updateDeleteFlagOrganizationPlayers($player["org_id"],$player["player_id"]);
-            //     }
-            //     //削除にチェックが入っていない場合
-            //     elseif($player["type"] == "追加")
-            //     {
-            //         //種別が「追加」の場合、insertする
+                $player_type = $player["type"];
+                $player_delete_flag = $player["deleteFlag"];
+                //既存、かつ削除にチェックが入っている場合
+                if($player_type == "既存" && $player_delete_flag == true)
+                {
+                    $t_organization_players->updateDeleteFlagOrganizationPlayers($player["org_id"],$player["player_id"]);
+                }
+                //追加、かつ削除にチェックが入っていない場合
+                elseif($player_type == "追加" && $player_delete_flag == false)
+                {
                     $t_organization_players->insertOrganizationPlayer($player);
-            //     }
+                }
             }
-            // //$result = "";
             DB::commit();
             Log::debug(sprintf("updateOrgPlayerData end"));
             return response()->json(['result' => $reqData]);
@@ -1047,7 +1050,6 @@ class OrganizationPlayersController extends Controller
         catch (\Throwable $e)
         {
             DB::rollBack();
-            Log::debug($e->getMessage());
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }
