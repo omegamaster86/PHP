@@ -303,4 +303,14 @@ class PlayerInfoAlignmentController extends Controller
         Log::debug(sprintf("sendCsvData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
     }
+
+    // 連携ボタン押下後 20240228
+    public function registerCsvData(Request $request)
+    {
+        Log::debug(sprintf("registerCsvData start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        Log::debug(sprintf("registerCsvData end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
+    }
 }
