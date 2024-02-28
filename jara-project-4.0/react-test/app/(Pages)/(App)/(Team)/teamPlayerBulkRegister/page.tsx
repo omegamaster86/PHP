@@ -7,7 +7,7 @@ import CsvTable from './CsvTable';
 import CsvHandler from './CsvHandler';
 import Validator from '@/app/utils/validator';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import { TeamResponse, Org } from '@/app/types';
 
 // CSVデータの型定義
@@ -54,6 +54,7 @@ export default function TeamPlayerBulkRegister() {
   const fileUploaderRef = useRef<FileHandler>(null);
 
   const [orgs, setOrgs] = useState([] as Org[]);
+  const [orgData, setOrg] = useState({} as Org);
   // ステート変数
   const [csvFileData, setCsvFileData] = useState<{
     content: Array<Array<string>>;
@@ -67,6 +68,20 @@ export default function TeamPlayerBulkRegister() {
   const [csvData, setCsvData] = useState<CsvData[]>([]);
   const [dialogDisplayFlg, setDialogDisplayFlg] = useState<boolean>(false);
   const [displayLinkButtonFlg, setDisplayLinkButtonFlg] = useState<boolean>(false);
+  const searchParams = useSearchParams();
+
+  // 所属団体名の活性状態を制御
+  let isOrgNameActive = false;
+  const org_id = searchParams.get('orgId')?.toString() || searchParams.get('org_id')?.toString() || searchParams.get('sponsor_org_id')?.toString() || '';
+  // orgIdの値を取得
+  switch (org_id) {
+    case '':
+      isOrgNameActive = true;
+      break;
+    default:
+      isOrgNameActive = false;
+      break;
+  }
 
   // CSVファイルのアップロードを処理する関数
   const handleCsvUpload = (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => {
@@ -153,8 +168,19 @@ export default function TeamPlayerBulkRegister() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const org = await axios.get<Org[]>('http://localhost:3100/orgSearch');
-        setOrgs(org.data);
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
+        if (isOrgNameActive == false) {
+          // const org = await axios.get<Org[]>('http://localhost:3100/orgSearch');
+          const orgSearchId = { org_id };
+          const org = await axios.post('/getOrgData', orgSearchId);
+          setOrg(org.data.result);
+        } else {
+          // const org = await axios.get<Org[]>('http://localhost:3100/orgSearch');
+          const responseData = await axios.get('/getOrganizationForOrgManagement'); //団体データ取得 20240201
+        // console.log(responseData.data.result);
+          setOrgs(responseData.data.result);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -228,12 +254,13 @@ export default function TeamPlayerBulkRegister() {
           <InputLabel label='所属団体名' displayHelp />
           <CustomDropdown
             id='org'
-            value={orgSelected}
+            value={isOrgNameActive ? orgSelected : orgData.org_name} //団体参照画面から遷移した場合は、該当の団体名を表示する
             options={orgs.map((org) => ({ value: org.org_name, key: org.org_id }))}
             onChange={(e) => {
               setOrgSelected(e);
             }}
             className='w-[300px]'
+            readonly={isOrgNameActive == false} //団体参照画面から遷移した場合は、読み取り専用とする
           />
         </div>
         <div className='flex flex-row justify-start'>
