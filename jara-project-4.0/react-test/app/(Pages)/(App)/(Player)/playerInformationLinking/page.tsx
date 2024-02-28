@@ -179,8 +179,10 @@ export default function PlayerInformationLinking() {
                   onClick={() => {
                     setActivationFlg(true);
                     if (dialogDisplayFlg) {
-                      window.confirm('読み込み結果に表示されているデータはクリアされます。よろしいですか？',)
-                        ? (setCsvData([]),
+                      window.confirm('読み込み結果に表示されているデータはクリアされます。よろしいですか？',) ?
+                        (
+                          sendCsvData(), //読み込んだCSVデータをDBに連携する
+                          setCsvData([]),
                           csvFileData?.content?.slice(1).map((row, rowIndex) => {
                             setCsvData((prevData) => [
                               ...(prevData as CsvData[]),
@@ -197,11 +199,11 @@ export default function PlayerInformationLinking() {
                               },
                             ]);
                             setDialogDisplayFlg(true);
-                          }),
-                          sendCsvData() //読み込んだCSVデータをDBに連携する
-                        )
-                        : null;
+                          })
+                        ) :
+                        null;
                     } else {
+                      sendCsvData(); //読み込んだCSVデータをDBに連携する
                       setCsvData([]);
                       csvFileData?.content?.slice(1).map((row, rowIndex) => {
                         setCsvData((prevData) => [
@@ -224,7 +226,6 @@ export default function PlayerInformationLinking() {
                           setDisplayLinkButtonFlg(true);
                         }
                       });
-                      sendCsvData(); //読み込んだCSVデータをDBに連携する
                     }
                     performValidation();
                     setActivationFlg(false);
