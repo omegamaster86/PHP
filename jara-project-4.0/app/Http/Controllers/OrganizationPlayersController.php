@@ -833,7 +833,7 @@ class OrganizationPlayersController extends Controller
                         //Sending mail to the user
 
                         try {
-                            Mail::to($request->get('mailaddress'))->send(new WelcomeMail($mail_data));
+                            //Mail::to($request->get('mailaddress'))->send(new WelcomeMail($mail_data));
                         } catch (Exception $e) {
                             DB::delete('delete from t_users where mailaddress = ?', [$request->mailaddress]);
                             //Store error message in the user_register log file.
@@ -1002,7 +1002,7 @@ class OrganizationPlayersController extends Controller
         //Sending mail to the user
 
         try {
-            Mail::to($mailaddress)->send(new WelcomeMail($mail_data));
+            //Mail::to($mailaddress)->send(new WelcomeMail($mail_data));
         } catch (Exception $e) {
             //DB::delete('delete from t_users where mailaddress = ?', [$mailaddress ]);
             //Store error message in the user_register log file.
@@ -1017,16 +1017,16 @@ class OrganizationPlayersController extends Controller
     }
 
     // 団体所属選手の更新処理 20240226
-    public function updateOrgPlayerData(Request $request, T_organization_players $t_organization_players)
+    public function updateOrgPlayerData(Request $request,T_organization_players $t_organization_players)
     {
         Log::debug(sprintf("updateOrgPlayerData start"));
         $reqData = $request->all();
-        Log::debug($reqData);
         //ここに処理を追加　二村さん作業
-        //DB::beginTransaction();
-        try {
-            // foreach($reqData as $player)
-            // {
+        DB::beginTransaction();
+        try
+        {
+            foreach($reqData as $player)
+            {
             //     //削除にチェックが入っている場合
             //     if($player["delete"] == 0)
             //     {
@@ -1036,16 +1036,18 @@ class OrganizationPlayersController extends Controller
             //     elseif($player["type"] == "追加")
             //     {
             //         //種別が「追加」の場合、insertする
-            //         $t_organization_players->insertOrganizationPlayer($player);
+                    $t_organization_players->insertOrganizationPlayer($player);
             //     }
-            // }
+            }
             // //$result = "";
-            // DB::commit();
-            $result = "";
+            DB::commit();
             Log::debug(sprintf("updateOrgPlayerData end"));
-            return response()->json(['result' => $result]);
-        } catch (\Throwable $e) {
-            //DB::rollBack();
+            return response()->json(['result' => $reqData]);
+        }
+        catch (\Throwable $e)
+        {
+            DB::rollBack();
+            Log::debug($e->getMessage());
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }

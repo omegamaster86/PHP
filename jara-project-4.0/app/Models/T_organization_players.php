@@ -140,58 +140,32 @@ class T_organization_players extends Model
         return $players;
     }
 
-    //団体所属選手テーブルへinsertする
-    public function insertOrganizationPlayers($replaceValueString,$insertValue)
-    {
-        $sqlString = 'INSERT INTO `t_organization_players`
-                        (
-                            `org_player_id`,
-                            `org_id`,
-                            `player_id`,
-                            `registered_time`,
-                            `registered_user_id`,
-                            `updated_time`,
-                            `updated_user_id`,
-                            `delete_flag`
-                        )VALUES
-                        (
-                            #ReplaceValueString#
-                        )';
-        $sqlString = str_replace('#ReplaceValueString#',$replaceValueString,$sqlString);
-        DB::insert($sqlString,$insertValue);
-
-        $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
-        return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
-    }
-
     //interfaceのTeamPlayerInformationResponseを引数としてinsertを実行する
     //登録日時、更新日時は「current_datetime」
     //登録ユーザー、更新ユーザーは「user_id」
     //で指定する
     public function insertOrganizationPlayer($organizationPlayer)
     {
+        $current_datetime = now()->format('Y-m-d H:i:s.u');
+        $user_id = Auth::user()->user_id;
         DB::insert('insert INTO `t_organization_players`
                     (
                         `org_id`,
                         `player_id`,
-                        `joining_date`,
-                        `deperture_date`
                         `registered_time`,
                         `registered_user_id`,
                         `updated_time`,
                         `updated_user_id`,
                         `delete_flag`
                     )
-                    VALUES(?,?,?,?,?,?,?,?,?)'
+                    VALUES(?,?,?,?,?,?,?)'
                     ,[
                         $organizationPlayer["org_id"]
-                        ,$organizationPlayer["org_id"]
-                        ,$organizationPlayer["org_id"]
-                        ,$organizationPlayer["org_id"]
-                        ,now()->format('Y-m-d H:i:s.u')
-                        ,Auth::user()->user_id
-                        ,now()->format('Y-m-d H:i:s.u')
-                        ,Auth::user()->user_id
+                        ,$organizationPlayer["player_id"]
+                        ,$current_datetime
+                        ,$user_id
+                        ,$current_datetime
+                        ,$user_id
                         ,0
                     ]);
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
