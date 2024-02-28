@@ -29,6 +29,7 @@ use App\Models\M_disability_type;
 use App\Models\M_volunteer_qualifications;
 use App\Models\M_languages;
 use App\Models\M_language_proficiency;
+use App\Models\M_clothes_size;
 
 Route::get('contact-us', [ContactUsController::class, 'create'])->name('contact-us');
 Route::get('contact-us/confirm', [ContactUsController::class, 'createConfirm'])->name('contact-us-confirm');
@@ -82,6 +83,7 @@ Route::middleware('auth')->group(function () {
     Route::get('getQualifications', [M_volunteer_qualifications::class, 'getQualifications']); //資格マスタ
     Route::get('getLanguages', [M_languages::class, 'getLanguages']); //言語マスタ
     Route::get('getLanguageProficiency', [M_language_proficiency::class, 'getLanguageProficiency']); //言語レベルマスタ
+    Route::get('getClothesSize', [M_clothes_size::class, 'getClothesSize']); //服のサイズマスタ
     Route::get('getIDsAssociatedWithUser', [UserController::class, 'getIDsAssociatedWithUser']); //ユーザIDに紐づいた情報を取得 20240221
 
     //ユーザー関連
@@ -105,7 +107,8 @@ Route::middleware('auth')->group(function () {
     Route::post('getRaceResultRecordsData', [PlayerController::class, 'getRaceResultRecordsData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('deletePlayerData', [PlayerController::class, 'deletePlayerData']); //該当データをDBから削除する 20240201
     Route::post('playerSearch', [PlayerController::class, 'searchPlayer']); //選手検索 20240212
-    Route::post('sendCsvData', [PlayerInfoAlignmentController::class, 'sendCsvData']); //選手検索 20240212
+    Route::post('sendCsvData', [PlayerInfoAlignmentController::class, 'sendCsvData']); //読み込みボタン押下時 20240228
+    Route::post('registerCsvData', [PlayerInfoAlignmentController::class, 'registerCsvData']); //連携ボタン押下時 20240228
 
     //団体関連
     Route::post('getOrgData', [OrganizationController::class, 'getOrgData']); //DBから団体管理画面にデータを渡す 20240201
@@ -129,7 +132,7 @@ Route::middleware('auth')->group(function () {
     Route::get('getRaceInfoData', [TournamentController::class, 'getRaceInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
     Route::post('deleteTournamentData', [TournamentController::class, 'deleteTournamentData']); //DBから大会情報を削除する 20240205
     Route::post('tournamentSearch', [TournamentController::class, 'searchTournament']); //大会検索 20240212
-    Route::get('getTournamentInfoData_vol', [TournamentController::class, 'getTournamentInfoData_vol']); //大会検索 20240212
+    Route::get('getTournamentInfoData_allData', [TournamentController::class, 'getTournamentInfoData_allData']); //大会検索 20240212
 
     //レース関連
     Route::post('getRaceData', [TournamentController::class, 'getRaceData']); //レース情報取得 20240214

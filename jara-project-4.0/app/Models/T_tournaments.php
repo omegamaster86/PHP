@@ -399,7 +399,7 @@ class T_tournaments extends Model
         return $target_tournament;
     }
 
-    public function getTournament_vol()
+    public function getTournament_allData()
     {
         $tournaments = DB::select('select
                                     `tourn_id`,

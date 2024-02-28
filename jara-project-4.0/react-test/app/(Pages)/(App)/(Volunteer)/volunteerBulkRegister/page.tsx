@@ -7,7 +7,7 @@ import Validator from '@/app/utils/validator';
 import { CustomTitle, ErrorBox, CustomButton } from '@/app/components';
 import CsvHandler from './CsvHandler';
 import CsvTable from './CsvTable';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 
 interface MasterData {
   id: number;
@@ -207,28 +207,44 @@ export default function VolunteerBulkRegister() {
     const fetchMasterData = async () => {
       // マスターデータの取得
       try {
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         // APIを叩いて、マスターデータを取得する
         // 国マスタ
-        const residenceCountryMaster = await axios.get('http://localhost:3100/countries');
-        setCountry(residenceCountryMaster.data);
+        // const residenceCountryMaster = await axios.get('http://localhost:3100/countries');
+        const countryResponse = await axios.get('/getCountries');
+        const countryList = countryResponse.data.map(({ country_id, country_name }: { country_id: number; country_name: string }) => ({ id: country_id, name: country_name }));
+        setCountry(countryList);
         // 都道府県マスタ
-        const residencePrefectureMaster = await axios.get('http://localhost:3100/prefecture');
-        setPrefecture(residencePrefectureMaster.data);
+        // const residencePrefectureMaster = await axios.get('http://localhost:3100/prefecture');
+        const prefectureResponse = await axios.get('/getPrefecures');
+        const stateList = prefectureResponse.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
+        setPrefecture(stateList);
         // 性別マスタ
-        const sexMaster = await axios.get('http://localhost:3100/sex');
-        setSex(sexMaster.data);
+        // const sexMaster = await axios.get('http://localhost:3100/sex');
+        const sexResponse = await axios.get('/getSexList');
+        const sexList = sexResponse.data.map(({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }));
+        setSex(sexList);
         // 服サイズマスタ
-        const clothesSizeMaster = await axios.get('http://localhost:3100/clothesSize');
-        setClothesSize(clothesSizeMaster.data);
+        // const clothesSizeMaster = await axios.get('http://localhost:3100/clothesSize');
+        const clothesSizeMaster = await axios.get('/getClothesSize');
+        const clothesSizeMasterList = clothesSizeMaster.data.map(({ clothes_size_id, clothes_size }: { clothes_size_id: number; clothes_size: string }) => ({ id: clothes_size_id, name: clothes_size }));
+        setClothesSize(clothesSizeMasterList);
         // 資格マスタ
-        const qualificationMaster = await axios.get('http://localhost:3100/qualHold');
-        setQualHold(qualificationMaster.data);
+        // const qualificationMaster = await axios.get('http://localhost:3100/qualHold');
+        const qualHold = await axios.get('/getQualifications');
+        const qualHoldList = qualHold.data.map(({ qual_id, qual_name }: { qual_id: number; qual_name: string }) => ({ id: qual_id, name: qual_name }));
+        setQualHold(qualHoldList);
         // 言語マスタ
-        const languageMaster = await axios.get('http://localhost:3100/language');
-        setLanguage(languageMaster.data);
+        // const languageMaster = await axios.get('http://localhost:3100/language');
+        const lang = await axios.get('/getLanguages');
+        const langList = lang.data.map(({ lang_id, lang_name }: { lang_id: number; lang_name: string }) => ({ id: lang_id, name: lang_name }));
+        setLanguage(langList);
         // 言語レベルマスタ
-        const languageProficiencyMaster = await axios.get('http://localhost:3100/languageLevel');
-        setLanguageLevel(languageProficiencyMaster.data);
+        // const languageProficiencyMaster = await axios.get('http://localhost:3100/languageLevel');
+        const langLevel = await axios.get('/getLanguageProficiency');
+        const langLevelList = langLevel.data.map(({ lang_pro_id, lang_pro_name }: { lang_pro_id: number; lang_pro_name: string }) => ({ id: lang_pro_id, name: lang_pro_name }));
+        setLanguageLevel(langLevelList);
       } catch (error) {
         console.error(`マスターデータの取得に失敗しました: ${error}`);
       }
@@ -365,7 +381,7 @@ export default function VolunteerBulkRegister() {
         isError: validateRequired(row[4])
           ? true
           : validateNumber(row[4], 3) ||
-            country.filter((item) => item.id === Number(row[4])).length !== 1,
+          country.filter((item) => item.id === Number(row[4])).length !== 1,
       },
       // 必須項目
       residencePrefectureId: {
@@ -373,7 +389,7 @@ export default function VolunteerBulkRegister() {
         isError: validateRequired(row[5])
           ? true
           : validateNumber(row[5], 2) ||
-            prefecture.filter((item) => item.id === Number(row[5])).length !== 1,
+          prefecture.filter((item) => item.id === Number(row[5])).length !== 1,
       },
       // 必須項目
       sexId: {
@@ -381,7 +397,7 @@ export default function VolunteerBulkRegister() {
         isError: validateRequired(row[3])
           ? true
           : validateNumber(row[3], 2) ||
-            sex.filter((item) => item.id === Number(row[3])).length !== 1,
+          sex.filter((item) => item.id === Number(row[3])).length !== 1,
       },
       // 必須項目
       clothesSizeId: {
@@ -389,7 +405,7 @@ export default function VolunteerBulkRegister() {
         isError: validateRequired(row[6])
           ? true
           : validateNumber(row[6], 1) ||
-            clothesSize.filter((item) => item.id === Number(row[6])).length !== 1,
+          clothesSize.filter((item) => item.id === Number(row[6])).length !== 1,
       },
       mailaddress: {
         value: row[7],
@@ -548,84 +564,84 @@ export default function VolunteerBulkRegister() {
       row.length !== 34
         ? '無効データ'
         : (validateRequired(row[0]) ? true : validateNumber(row[0], 7)) ||
-            (validateRequired(row[1]) ? true : validateVolunteerName(row[1])) ||
-            (validateRequired(row[2]) ? true : validateYmdFormat(row[2])) ||
-            (validateRequired(row[4])
-              ? true
-              : validateNumber(row[4], 3) ||
-                country.filter((item) => item.id === Number(row[4])).length !== 1) ||
-            (validateRequired(row[5])
-              ? true
-              : validateNumber(row[5], 2) ||
-                prefecture.filter((item) => item.id === Number(row[5])).length !== 1) ||
-            (validateRequired(row[3])
-              ? true
-              : validateNumber(row[3], 2) ||
-                sex.filter((item) => item.id === Number(row[3])).length !== 1) ||
-            (validateRequired(row[6])
-              ? true
-              : validateNumber(row[6], 1) ||
-                clothesSize.filter((item) => item.id === Number(row[6])).length !== 1) ||
-            (validateRequired(row[7]) ? false : validateEmailFormat(row[7])) ||
-            (validateRequired(row[8]) ? false : validateNumber(row[8], 15)) ||
-            (validateRequired(row[9]) ? false : validateZeroOrOne(row[9])) ||
-            (validateRequired(row[10]) ? false : validateZeroOrOne(row[10])) ||
-            (validateRequired(row[11]) ? false : validateZeroOrOne(row[11])) ||
-            (validateRequired(row[12])
-              ? false
-              : validateNumber(row[12], 3) ||
-                qualHold.filter((item) => item.id === Number(row[12])).length !== 1) ||
-            (validateRequired(row[13])
-              ? false
-              : validateNumber(row[13], 3) ||
-                qualHold.filter((item) => item.id === Number(row[13])).length !== 1) ||
-            (validateRequired(row[14])
-              ? false
-              : validateNumber(row[14], 3) ||
-                qualHold.filter((item) => item.id === Number(row[14])).length !== 1) ||
-            (validateRequired(row[15])
-              ? false
-              : validateNumber(row[15], 3) ||
-                qualHold.filter((item) => item.id === Number(row[15])).length !== 1) ||
-            (validateRequired(row[16])
-              ? false
-              : validateNumber(row[16], 3) ||
-                qualHold.filter((item) => item.id === Number(row[16])).length !== 1) ||
-            (validateRequired(row[17])
-              ? false
-              : validateNumber(row[17], 3) ||
-                language.filter((item) => item.id === Number(row[17])).length !== 1) ||
-            (validateRequired(row[18])
-              ? false
-              : validateNumber(row[18], 3) ||
-                language.filter((item) => item.id === Number(row[18])).length !== 1) ||
-            (validateRequired(row[19])
-              ? false
-              : validateNumber(row[19], 3) ||
-                language.filter((item) => item.id === Number(row[19])).length !== 1) ||
-            (validateRequired(row[20])
-              ? false
-              : validateNumber(row[20], 3) ||
-                languageLevel.filter((item) => item.id === Number(row[20])).length !== 1) ||
-            (validateRequired(row[21])
-              ? false
-              : validateNumber(row[21], 3) ||
-                languageLevel.filter((item) => item.id === Number(row[21])).length !== 1) ||
-            (validateRequired(row[22])
-              ? false
-              : validateNumber(row[22], 3) ||
-                languageLevel.filter((item) => item.id === Number(row[22])).length !== 1) ||
-            (validateRequired(row[23]) ? false : validateZeroOrOne(row[23])) ||
-            (validateRequired(row[24]) ? false : validateZeroOrOne(row[24])) ||
-            (validateRequired(row[25]) ? false : validateZeroOrOne(row[25])) ||
-            (validateRequired(row[26]) ? false : validateZeroOrOne(row[26])) ||
-            (validateRequired(row[27]) ? false : validateZeroOrOne(row[27])) ||
-            (validateRequired(row[28]) ? false : validateZeroOrOne(row[28])) ||
-            (validateRequired(row[29]) ? false : validateZeroOrOne(row[29])) ||
-            (validateRequired(row[30]) ? false : validateZeroOrOne(row[30])) ||
-            (validateRequired(row[31]) ? false : validateZeroOrOne(row[31])) ||
-            (validateRequired(row[32]) ? false : validateZeroOrOne(row[32])) ||
-            (validateRequired(row[33]) ? false : validateZeroOrOne(row[33]))
+          (validateRequired(row[1]) ? true : validateVolunteerName(row[1])) ||
+          (validateRequired(row[2]) ? true : validateYmdFormat(row[2])) ||
+          (validateRequired(row[4])
+            ? true
+            : validateNumber(row[4], 3) ||
+            country.filter((item) => item.id === Number(row[4])).length !== 1) ||
+          (validateRequired(row[5])
+            ? true
+            : validateNumber(row[5], 2) ||
+            prefecture.filter((item) => item.id === Number(row[5])).length !== 1) ||
+          (validateRequired(row[3])
+            ? true
+            : validateNumber(row[3], 2) ||
+            sex.filter((item) => item.id === Number(row[3])).length !== 1) ||
+          (validateRequired(row[6])
+            ? true
+            : validateNumber(row[6], 1) ||
+            clothesSize.filter((item) => item.id === Number(row[6])).length !== 1) ||
+          (validateRequired(row[7]) ? false : validateEmailFormat(row[7])) ||
+          (validateRequired(row[8]) ? false : validateNumber(row[8], 15)) ||
+          (validateRequired(row[9]) ? false : validateZeroOrOne(row[9])) ||
+          (validateRequired(row[10]) ? false : validateZeroOrOne(row[10])) ||
+          (validateRequired(row[11]) ? false : validateZeroOrOne(row[11])) ||
+          (validateRequired(row[12])
+            ? false
+            : validateNumber(row[12], 3) ||
+            qualHold.filter((item) => item.id === Number(row[12])).length !== 1) ||
+          (validateRequired(row[13])
+            ? false
+            : validateNumber(row[13], 3) ||
+            qualHold.filter((item) => item.id === Number(row[13])).length !== 1) ||
+          (validateRequired(row[14])
+            ? false
+            : validateNumber(row[14], 3) ||
+            qualHold.filter((item) => item.id === Number(row[14])).length !== 1) ||
+          (validateRequired(row[15])
+            ? false
+            : validateNumber(row[15], 3) ||
+            qualHold.filter((item) => item.id === Number(row[15])).length !== 1) ||
+          (validateRequired(row[16])
+            ? false
+            : validateNumber(row[16], 3) ||
+            qualHold.filter((item) => item.id === Number(row[16])).length !== 1) ||
+          (validateRequired(row[17])
+            ? false
+            : validateNumber(row[17], 3) ||
+            language.filter((item) => item.id === Number(row[17])).length !== 1) ||
+          (validateRequired(row[18])
+            ? false
+            : validateNumber(row[18], 3) ||
+            language.filter((item) => item.id === Number(row[18])).length !== 1) ||
+          (validateRequired(row[19])
+            ? false
+            : validateNumber(row[19], 3) ||
+            language.filter((item) => item.id === Number(row[19])).length !== 1) ||
+          (validateRequired(row[20])
+            ? false
+            : validateNumber(row[20], 3) ||
+            languageLevel.filter((item) => item.id === Number(row[20])).length !== 1) ||
+          (validateRequired(row[21])
+            ? false
+            : validateNumber(row[21], 3) ||
+            languageLevel.filter((item) => item.id === Number(row[21])).length !== 1) ||
+          (validateRequired(row[22])
+            ? false
+            : validateNumber(row[22], 3) ||
+            languageLevel.filter((item) => item.id === Number(row[22])).length !== 1) ||
+          (validateRequired(row[23]) ? false : validateZeroOrOne(row[23])) ||
+          (validateRequired(row[24]) ? false : validateZeroOrOne(row[24])) ||
+          (validateRequired(row[25]) ? false : validateZeroOrOne(row[25])) ||
+          (validateRequired(row[26]) ? false : validateZeroOrOne(row[26])) ||
+          (validateRequired(row[27]) ? false : validateZeroOrOne(row[27])) ||
+          (validateRequired(row[28]) ? false : validateZeroOrOne(row[28])) ||
+          (validateRequired(row[29]) ? false : validateZeroOrOne(row[29])) ||
+          (validateRequired(row[30]) ? false : validateZeroOrOne(row[30])) ||
+          (validateRequired(row[31]) ? false : validateZeroOrOne(row[31])) ||
+          (validateRequired(row[32]) ? false : validateZeroOrOne(row[32])) ||
+          (validateRequired(row[33]) ? false : validateZeroOrOne(row[33]))
           ? '登録不可データ'
           : '登録可能データ';
 
@@ -743,19 +759,19 @@ export default function VolunteerBulkRegister() {
               <p className='mb-1 text-systemErrorText'>
                 【読み込み方法】
                 <br />
-                　[準備]
+                [準備]
                 <br />
-                　　定型フォーマットにエントリー情報を入力してください。
+                定型フォーマットにエントリー情報を入力してください。
                 <br />
-                　　※定型フォーマットが必要な場合は、「CSVフォーマット出力」をクリックしてください。
+                ※定型フォーマットが必要な場合は、「CSVフォーマット出力」をクリックしてください。
                 <br />
-                　　定型フォーマットがダウンロードされます。
+                定型フォーマットがダウンロードされます。
                 <br />
                 [読み込む]
                 <br />
                 ①「読み込みCSVファイル」に、読み込ませるCSVファイルをドラッグ＆ドロップしてください。
                 <br />
-                　　※「参照」からファイルを指定することもできます。
+                ※「参照」からファイルを指定することもできます。
                 <br />
                 ②「読み込む」をクリックすると、CSVフォーマットの内容を読み込み、内容を画面下部の読み込み結果に表示します。
               </p>
@@ -795,16 +811,16 @@ export default function VolunteerBulkRegister() {
           <p className='mb-1 text-systemErrorText'>
             【登録方法】
             <br />
-            　①「読み込み結果」にCSVフォーマットを読み込んだ結果が表示されます。
+            ①「読み込み結果」にCSVフォーマットを読み込んだ結果が表示されます。
             <br />
-            　②読み込むデータの「選択」にチェックを入れてください。
+            ②読み込むデータの「選択」にチェックを入れてください。
             ※「全選択」で、全てのデータを選択状態にできます。
             <br />
-            　③「登録」をクリックすると「読み込み結果」にて「選択」にチェックが入っているデータを対象に、
+            ③「登録」をクリックすると「読み込み結果」にて「選択」にチェックが入っているデータを対象に、
             <br />
-            　　　本システムに登録されます。
+            本システムに登録されます。
             <br />
-            　　　※それまで登録されていたデータは全て削除され、読み込んだデータに置き換わります。
+            ※それまで登録されていたデータは全て削除され、読み込んだデータに置き換わります。
           </p>
           <CsvTable
             content={csvData}
