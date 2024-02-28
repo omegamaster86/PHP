@@ -14,6 +14,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Exception;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\WelcomeMail;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 
 class OrganizationPlayersController extends Controller
 {
@@ -104,21 +109,23 @@ class OrganizationPlayersController extends Controller
             $condition .= "and res_pref.pref_id =:residence_prefecture\r\n";
             $conditionValue['residence_prefecture'] = $searchInfo['residencePrefectureId'];
         }
-        //S(ストロークサイド)
-        if ($searchInfo['sideInfo']['S'] == true) {
-            $condition .= "and SUBSTRING(tp.`side_info`,8,1) = 1\r\n";
-        }
-        //B(バウサイド)
-        if ($searchInfo['sideInfo']['B'] == true) {
-            $condition .= "and SUBSTRING(tp.`side_info`,7,1) = 1\r\n";
-        }
-        //X(スカルサイド)
-        if ($searchInfo['sideInfo']['X'] == true) {
-            $condition .= "and SUBSTRING(tp.`side_info`,6,1) = 1\r\n";
-        }
-        //C(コックスサイド)
-        if ($searchInfo['sideInfo']['C'] == true) {
-            $condition .= "and SUBSTRING(tp.`side_info`,5,1) = 1\r\n";
+        if (isset($searchInfo['sideInfo'])) {
+            //S(ストロークサイド)
+            if ($searchInfo['sideInfo']['S'] == true) {
+                $condition .= "and SUBSTRING(tp.`side_info`,8,1) = 1\r\n";
+            }
+            //B(バウサイド)
+            if ($searchInfo['sideInfo']['B'] == true) {
+                $condition .= "and SUBSTRING(tp.`side_info`,7,1) = 1\r\n";
+            }
+            //X(スカルサイド)
+            if ($searchInfo['sideInfo']['X'] == true) {
+                $condition .= "and SUBSTRING(tp.`side_info`,6,1) = 1\r\n";
+            }
+            //C(コックスサイド)
+            if ($searchInfo['sideInfo']['C'] == true) {
+                $condition .= "and SUBSTRING(tp.`side_info`,5,1) = 1\r\n";
+            }
         }
         //団体ID
         if (isset($searchInfo['orgId'])) {
@@ -736,10 +743,8 @@ class OrganizationPlayersController extends Controller
             //配列は行列の形式、また1行の各フィールドはその名称で取得可能の想定
             $postData = $request->all();
             //foreachで1行ずつ処理
-            foreach($postData as $rowData)
-            {
-                if($rowData['check'] == "checked" && $rowData['renkei'] == "登録可能データ")
-                {
+            foreach ($postData as $rowData) {
+                if ($rowData['check'] == "checked" && $rowData['renkei'] == "登録可能データ") {
                     //登録・更新するユーザー名を取得
                     $register_user_id = Auth::user()->user_id;
                     //登録・更新日時のために現在の日時を取得
@@ -749,23 +754,21 @@ class OrganizationPlayersController extends Controller
                     $target_user_data = $t_users->getUserDataFromInputCsv($rowData);
 
                     //ユーザーデータが存在するかチェック
-                    if (empty($target_user_data))
-                    {
+                    if (empty($target_user_data)) {
                         //ユーザーが存在しない場合、ユーザーテーブルにinsertして仮登録のメール送信
 
                         // For Generate random password
-                        $temp_password = Str::random(8); 
-                        
+                        $temp_password = Str::random(8);
+
                         //For adding 1day with current time
-                        $converting_date=date_create($current_datetime);
-                        date_add($converting_date,date_interval_create_from_date_string("1 day"));
-                        $newDate = date_format($converting_date,"Y-m-d H:i:s.u");
-                
+                        $converting_date = date_create($current_datetime);
+                        date_add($converting_date, date_interval_create_from_date_string("1 day"));
+                        $newDate = date_format($converting_date, "Y-m-d H:i:s.u");
+
                         // Insert new user info in the database.(t_user table)
-                
+
                         DB::beginTransaction();
-                        try
-                        {
+                        try {
                             //ユーザー生成のためのデータを配列に格納
                             $hashed_password = Hash::make($temp_password);
                             $insert_user = [];
@@ -781,70 +784,66 @@ class OrganizationPlayersController extends Controller
                             $insert_user['user_id'] = $register_user_id;
                             //insert実行
                             $t_users->insertTemporaryUser($insert_user);
-                
+
                             DB::commit();
                         } catch (\Throwable $e) {
                             DB::rollBack();
-                
+
                             $e_message = $e->getMessage();
                             $e_code = $e->getCode();
                             $e_file = $e->getFile();
                             $e_line = $e->getLine();
                             $e_sql = $e->getSql();
                             $e_errorCode = $e->errorInfo[1];
-                            $e_bindings = implode(", ",$e->getBindings());
+                            $e_bindings = implode(", ", $e->getBindings());
                             $e_connectionName = $e->connectionName;
-                
-                
+
+
                             //Store error message in the register log file.
                             Log::channel('user_register')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-                            if($e_errorCode == 1213||$e_errorCode == 1205)
-                            {
+                            if ($e_errorCode == 1213 || $e_errorCode == 1205) {
                                 // throw ValidationException::withMessages([
                                 //     'datachecked_error' => $registration_failed
                                 // ]);
-                                return response()->json(['system_error' => $registration_failed],500);
+                                return response()->json(['system_error' => $registration_failed], 500);
                                 //Status code 500 for internal server error
-                            }
-                            else{
+                            } else {
                                 // throw ValidationException::withMessages([
                                 //     'datachecked_error' => $registration_failed
                                 // ]); 
-                                return response()->json(['system_error' => $registration_failed],500);
+                                return response()->json(['system_error' => $registration_failed], 500);
                                 //Status code 500 for internal server error
                             }
                         }
-                        
+
                         //For getting current time
                         $mail_date = date('Y/m/d H:i');
                         //For adding 24hour with current time
-                        $new_mail_date = date('Y/m/d H:i', strtotime($mail_date. ' + 24 hours'));
-                
+                        $new_mail_date = date('Y/m/d H:i', strtotime($mail_date . ' + 24 hours'));
+
                         //Store user information for sending email.
                         $mail_data = [
                             'user_name' => $request->user_name,
                             'to_mailaddress' => $request->mailaddress,
                             'from_mailaddress' => 'xxxxx@jara.or.jp',
                             'temporary_password' => $temp_password,
-                            'temporary_password_expiration_date'=> $new_mail_date
+                            'temporary_password_expiration_date' => $new_mail_date
                         ];
-                        
+
                         //Sending mail to the user
-                        
+
                         try {
                             Mail::to($request->get('mailaddress'))->send(new WelcomeMail($mail_data));
-                        }
-                        catch (Exception $e)
-                        {
-                            DB::delete('delete from t_users where mailaddress = ?', [$request->mailaddress ]);
+                        } catch (Exception $e) {
+                            DB::delete('delete from t_users where mailaddress = ?', [$request->mailaddress]);
                             //Store error message in the user_register log file.
                             Log::channel('user_register')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「EMAIL_SENT_ERROR_MESSAGE」  ： $e\r\n  \r\n ============================================================ \r\n \r\n");
                             //Display error message to the client
                             // throw ValidationException::withMessages([
                             //     'datachecked_error' => $mail_sent_failed,
                             // ]);
-                            return response()->json(['system_error' => $registration_failed],500);
-                                //Status code 500 for internal server error
+                            return response()->json(['system_error' => $registration_failed], 500);
+                            //Status code 500 for internal server error
                         }
                     }
 
@@ -854,8 +853,7 @@ class OrganizationPlayersController extends Controller
                     //選手情報を取得
                     $target_player_data = $t_players->getPlayer($rowData['player_id']);
                     //対象の選手が選手テーブルに存在するかをチェック
-                    if(empty($target_player_data))
-                    {   
+                    if (empty($target_player_data)) {
                         //選手未登録の場合、選手テーブルにinsertして通知メールを送信
                         $insert_player_data = [];
                         $insert_player_data['user_id'] = $rowData['user_id'];
@@ -874,14 +872,11 @@ class OrganizationPlayersController extends Controller
                         $insert_player_data['user_id'] = $register_user_id;
 
                         DB::beginTransaction();
-                        try
-                        {   
+                        try {
                             //insertを実行して、insertしたレコードのIDを取得
                             $insert_player_id = $t_players->insertPlayer($insert_player_data);
                             DB::commit();
-                        }
-                        catch (\Throwable $e)
-                        {
+                        } catch (\Throwable $e) {
                             DB::rollBack();
                         }
                     }
@@ -889,37 +884,28 @@ class OrganizationPlayersController extends Controller
                     $insert_organization_player_data = [];
                     $insert_organization_player_data['org_id'] = $input_org_id;
                     //選手IDは入力値になければ直近にinsertした選手IDを代入
-                    if(isset($rowData['player_id']))
-                    {
+                    if (isset($rowData['player_id'])) {
                         $insert_organization_player_data['player_id'] = $rowData['player_id'];
-                    }
-                    else
-                    {
+                    } else {
                         $insert_organization_player_data['player_id'] = $insert_player_id;
                     }
                     $insert_organization_player_data['joining_date'] = $rowData['joining_date'];
                     $insert_organization_player_data['deperture_date'] = $rowData['deperture_date'];
                     $insert_organization_player_data['current_datetime'] = $current_datetime;
                     $insert_organization_player_data['user_id'] = $register_user_id;
-                    
+
                     DB::beginTransaction();
-                    try
-                    {   
+                    try {
                         //insertを実行して、insertしたレコードのIDを取得
                         $insert_organization_player_id = $t_organization_players->insertOrganizationPlayer($insert_organization_player_data);
                         DB::commit();
-                    }
-                    catch (\Throwable $e)
-                    {
+                    } catch (\Throwable $e) {
                         DB::rollBack();
                     }
 
-                    try
-                    {
+                    try {
                         //メール送信
-                    }
-                    catch (\Throwable $e)
-                    {
+                    } catch (\Throwable $e) {
                         //メール送信に失敗したときのエラー
                     }
                 }
@@ -959,6 +945,7 @@ class OrganizationPlayersController extends Controller
     {
         Log::debug(sprintf("searchOrganizationPlayersForTeamRef start"));
         $searchInfo = $request->all();
+        Log::Debug($searchInfo);
         $searchValue = [];
         $searchCondition = $this->generateOrganizationPlayersSearchCondition($searchInfo, $searchValue);
         $players = $t_organization_players->getOrganizationPlayersFromCondition($searchCondition, $searchValue);
@@ -966,22 +953,22 @@ class OrganizationPlayersController extends Controller
             $side_info = array();
             if ($players[$i]->side_S == 1) {
                 array_push($side_info, 1);
-            }else{
+            } else {
                 array_push($side_info, 0);
             }
             if ($players[$i]->side_B == 1) {
                 array_push($side_info, 1);
-            }else{
+            } else {
                 array_push($side_info, 0);
             }
             if ($players[$i]->side_X == 1) {
                 array_push($side_info, 1);
-            }else{
+            } else {
                 array_push($side_info, 0);
             }
             if ($players[$i]->side_C == 1) {
                 array_push($side_info, 1);
-            }else{
+            } else {
                 array_push($side_info, 0);
             }
             $players[$i]->side_info = $side_info;
@@ -993,7 +980,7 @@ class OrganizationPlayersController extends Controller
     }
 
     //メールの送信
-    private function sendMail($user_name,$mailaddress,$temp_password,$mail_template,$error_message)
+    private function sendMail($user_name, $mailaddress, $temp_password, $mail_template, $error_message)
     {
         //任意のテンプレートを引数で選択してメールを送信
         //ユーザー名、メールアドレスなど必要な値は引数で指定する
@@ -1001,24 +988,22 @@ class OrganizationPlayersController extends Controller
         //For getting current time
         $mail_date = date('Y/m/d H:i');
         //For adding 24hour with current time
-        $new_mail_date = date('Y/m/d H:i', strtotime($mail_date. ' + 24 hours'));
+        $new_mail_date = date('Y/m/d H:i', strtotime($mail_date . ' + 24 hours'));
 
         //Store user information for sending email.
         $mail_data = [
-                        'user_name' => $user_name,
-                        'to_mailaddress' => $mailaddress,
-                        'from_mailaddress' => 'xxxxx@jara.or.jp',
-                        'temporary_password' => $temp_password,
-                        'temporary_password_expiration_date'=> $new_mail_date
-                    ];
-        
+            'user_name' => $user_name,
+            'to_mailaddress' => $mailaddress,
+            'from_mailaddress' => 'xxxxx@jara.or.jp',
+            'temporary_password' => $temp_password,
+            'temporary_password_expiration_date' => $new_mail_date
+        ];
+
         //Sending mail to the user
-        
+
         try {
             Mail::to($mailaddress)->send(new WelcomeMail($mail_data));
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             //DB::delete('delete from t_users where mailaddress = ?', [$mailaddress ]);
             //Store error message in the user_register log file.
             Log::channel('user_register')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $mailaddress,  \r\n \r\n ＊＊＊「EMAIL_SENT_ERROR_MESSAGE」  ： $e\r\n  \r\n ============================================================ \r\n \r\n");
@@ -1026,21 +1011,20 @@ class OrganizationPlayersController extends Controller
             // throw ValidationException::withMessages([
             //     'datachecked_error' => $mail_sent_failed,
             // ]);
-            return response()->json(['system_error' => $error_message],500);
-                //Status code 500 for internal server error
+            return response()->json(['system_error' => $error_message], 500);
+            //Status code 500 for internal server error
         }
     }
 
     // 団体所属選手の更新処理 20240226
-    public function updateOrgPlayerData(Request $request,T_organization_players $t_organization_players)
+    public function updateOrgPlayerData(Request $request, T_organization_players $t_organization_players)
     {
         Log::debug(sprintf("updateOrgPlayerData start"));
         $reqData = $request->all();
         Log::debug($reqData);
         //ここに処理を追加　二村さん作業
         //DB::beginTransaction();
-        try
-        {
+        try {
             // foreach($reqData as $player)
             // {
             //     //削除にチェックが入っている場合
@@ -1057,11 +1041,10 @@ class OrganizationPlayersController extends Controller
             // }
             // //$result = "";
             // DB::commit();
+            $result = "";
             Log::debug(sprintf("updateOrgPlayerData end"));
             return response()->json(['result' => $result]);
-        }
-        catch (\Throwable $e)
-        {
+        } catch (\Throwable $e) {
             //DB::rollBack();
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
@@ -1080,22 +1063,22 @@ class OrganizationPlayersController extends Controller
             $side_info = array();
             if ($players[$i]->side_S == 1) {
                 array_push($side_info, 1);
-            }else{
+            } else {
                 array_push($side_info, 0);
             }
             if ($players[$i]->side_B == 1) {
                 array_push($side_info, 1);
-            }else{
+            } else {
                 array_push($side_info, 0);
             }
             if ($players[$i]->side_X == 1) {
                 array_push($side_info, 1);
-            }else{
+            } else {
                 array_push($side_info, 0);
             }
             if ($players[$i]->side_C == 1) {
                 array_push($side_info, 1);
-            }else{
+            } else {
                 array_push($side_info, 0);
             }
             $players[$i]->side_info = $side_info;
