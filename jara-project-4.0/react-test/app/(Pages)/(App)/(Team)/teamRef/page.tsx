@@ -179,9 +179,9 @@ export default function TeamRef() {
                   <Label label={formData.jaraOrgTypeName} textColor='white' />
                   <Label label={formData.prefOrgTypeName} textColor='white' />
                 </div>
-                {(userData.user_type === ROLE.SYSTEM_ADMIN ||
-                  userData.user_type === ROLE.JARA ||
-                  userData.user_type === ROLE.PREFECTURE) && (
+                {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+                  userIdType.is_jara == ROLE.JARA ||
+                  userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
                     <div className='w-[100px]'>
                       <Label label={formData.jara_org_reg_trail} textColor='white' />
                       <Label label={formData.pref_org_reg_trail} textColor='white' />
@@ -370,7 +370,7 @@ export default function TeamRef() {
                       className='w-[120px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
                       buttonType='secondary'
                       onClick={() => {
-                        router.push('/teamPlayerBulkRegister');
+                        router.push('/teamPlayerBulkRegister?org_id=' + orgId);
                       }}
                     >
                       所属選手一括登録

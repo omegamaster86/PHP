@@ -18,7 +18,7 @@ import {
   CustomTitle,
   CustomTbody,
 } from '@/app/components';
-import { Tournament, Race, UserResponse } from '@/app/types';
+import { Tournament, Race, UserResponse, UserIdType } from '@/app/types';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/EditOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
@@ -94,6 +94,8 @@ export default function TournamentRef() {
     tableData: tableData //選手の出漕結果情報
   });
 
+  const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
+
   // データ取得
   useEffect(() => {
     // StrictModeの制約回避のため、APIの呼び出し実績の有無をuseEffectの中に記述
@@ -116,6 +118,9 @@ export default function TournamentRef() {
         raceResponse.data.result.map((data: any) => {
           setTableData((prevData) => [...prevData, { ...data }]);
         });
+
+        const playerInf = await axios.get('/getIDsAssociatedWithUser');
+        setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
       };
       fetchData();
       isApiFetched.current = true;
@@ -260,10 +265,10 @@ export default function TournamentRef() {
                       textSize='caption1'
                     ></Label>
                   </div>
-                  {(userType === ROLE.SYSTEM_ADMIN ||
-                    userType === ROLE.GROUP_MANAGER ||
-                    userType === ROLE.JARA ||
-                    userType === ROLE.PREFECTURE) && (
+                  {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+                    userIdType.is_organization_manager == ROLE.GROUP_MANAGER ||
+                    userIdType.is_jara == ROLE.JARA ||
+                    userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
                       <div className='flex flex-row gap-[10px]'>
                         {/* エントリーシステムの大会ID */}
                         <div className='text-gray-40 text-caption1'>エントリーシステムの大会ID：</div>
@@ -350,10 +355,10 @@ export default function TournamentRef() {
             </CustomButton>
             {/* 参照モードかつ、権限がシステム管理者、大会団体管理者の時は表示 */}
             {mode === 'delete' &&
-              (userType === ROLE.SYSTEM_ADMIN ||
-                userType === ROLE.GROUP_MANAGER ||
-                userType === ROLE.JARA ||
-                userType === ROLE.PREFECTURE) && (
+              (userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+                userIdType.is_organization_manager == ROLE.GROUP_MANAGER ||
+                userIdType.is_jara == ROLE.JARA ||
+                userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
                 // 削除ボタン
                 <CustomButton
                   buttonType='primary'

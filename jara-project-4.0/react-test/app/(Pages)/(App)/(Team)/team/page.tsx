@@ -12,6 +12,7 @@ import {
   PrefectureResponse,
   Staff,
   UserResponse,
+  UserIdType,
 } from '@/app/types';
 import Validator from '@/app/utils/validator';
 import { ROLE } from '@/app/utils/consts';
@@ -76,6 +77,7 @@ export default function OrgInfo() {
   const [user, setUser] = useState({} as UserResponse);
   const [jaraOrgTypeErrorMessages, setJaraOrgTypeErrorMessages] = useState([] as string[]);
   const [prefOrgTypeErrorMessages, setPrefOrgTypeErrorMessages] = useState([] as string[]);
+  const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
 
   // フォームデータを管理する状態
   const [tableData, setTableData] = useState<Staff[]>([]);
@@ -193,6 +195,10 @@ export default function OrgInfo() {
           console.log(staff.data);
           setTableData(staff.data.result);
         }
+
+        const playerInf = await axios.get('/getIDsAssociatedWithUser');
+        setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
+
       } catch (error: any) {
         setErrorMessage(['API取得エラー:' + error.message]);
       }
@@ -692,15 +698,17 @@ export default function OrgInfo() {
             />
           </div>
           {/* JARA証跡 */}
-          {(user.user_type === ROLE.SYSTEM_ADMIN ||
-            user.user_type === ROLE.JARA ||
-            (user.user_type === ROLE.PREFECTURE && mode !== 'create')) && (
+          {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+            userIdType.is_jara == ROLE.JARA ||
+            userIdType.is_pref_boat_officer == ROLE.PREFECTURE) &&
+            formData.jaraOrgTypeName == "正規") && (
               <CustomTextField
                 label='証跡'
                 displayHelp={false}
                 className='w-[300px]'
                 value={formData.jara_org_reg_trail}
-                readonly={mode === 'confirm' || user.user_type === ROLE.PREFECTURE}
+                // readonly={mode === 'confirm' || userIdType.is_pref_boat_officer == ROLE.PREFECTURE}
+                readonly={mode === 'confirm'}
                 onChange={(e) => handleInputChange('jara_org_reg_trail', e.target.value)}
               />
             )}
@@ -732,14 +740,16 @@ export default function OrgInfo() {
             />
           </div>
           {/* 県ボ証跡 */}
-          {(user.user_type === ROLE.SYSTEM_ADMIN ||
-            (user.user_type === ROLE.JARA && mode !== 'create') ||
-            user.user_type === ROLE.PREFECTURE) && (
+          {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+            userIdType.is_jara == ROLE.JARA ||
+            userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && 
+            formData.prefOrgTypeName == "正規") && (
               <CustomTextField
                 label='証跡'
                 className='w-[300px]'
                 displayHelp={false}
-                readonly={mode === 'confirm' || user.user_type === ROLE.JARA}
+                // readonly={mode === 'confirm' || userIdType.is_jara == ROLE.JARA}
+                readonly={mode === 'confirm'}
                 value={formData.pref_org_reg_trail}
                 onChange={(e) => handleInputChange('pref_org_reg_trail', e.target.value)}
               />
