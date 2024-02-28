@@ -102,10 +102,11 @@ export default function TeamPlayer() {
           setFormData(data);
           sessionStorage.removeItem('addPlayerList');
         } else {
-          if (mode == 'update') {
+          if (mode == 'create') {
             // const response = await axios.get('http://localhost:3100/teamPlayers');
             // const searchRes = setIndex(transformData(response.data, '既存'));
             const response = await axios.post('/searchOrganizationPlayersForTeamRef', orgId);
+            console.log(response);
             const searchRes = transformData(response.data.result, '既存');
             console.log(searchRes);
             setFormData(searchRes);
@@ -113,7 +114,8 @@ export default function TeamPlayer() {
         }
 
         // const teamResponse = await axios.get('/team');
-        const teamResponse = await axios.post('/getOrgData', orgId);
+        const sendId = { org_id: orgId }
+        const teamResponse = await axios.post('/getOrgData', sendId);
         console.log(teamResponse.data.result);
         setTeamData(teamResponse.data.result);
       } catch (error) {
