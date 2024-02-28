@@ -986,7 +986,7 @@ class OrganizationController extends Controller
     {
         Log::debug(sprintf("getOrgData start"));
         $result = $request->all();
-        //Log::debug($result);
+        Log::debug($result);
         $tOrg = $tOrganizations->getOrganization($result['org_id']);
         Log::debug(sprintf("getOrgData end"));
         return response()->json(['result' => $tOrg]); //DBの結果を返す
@@ -1068,7 +1068,7 @@ class OrganizationController extends Controller
             $tOrg[$i]->id = ($i + 1);
         }
         Log::debug(sprintf("getOrgStaffData end"));
-        Log::debug($tOrg);
+        //Log::debug($tOrg);
         return response()->json(['result' => $tOrg]); //DBの結果を返す
     }
 

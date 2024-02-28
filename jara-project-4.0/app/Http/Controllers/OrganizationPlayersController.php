@@ -75,75 +75,75 @@ class OrganizationPlayersController extends Controller
     {
         $condition = "";
         //JARA選手コード
-        if (isset($searchInfo['jara_player_id'])) {
+        if (isset($searchInfo['jaraPlayerId'])) {
             $condition .= "and tp.jara_player_id = :jara_player_id\r\n";
-            $conditionValue['jara_player_id'] = $searchInfo['jara_player_id'];
+            $conditionValue['jara_player_id'] = $searchInfo['jaraPlayerId'];
         }
         //選手ID
-        if (isset($searchInfo['player_id'])) {
+        if (isset($searchInfo['playerId'])) {
             $condition .= "and tp.player_id = :player_id\r\n";
-            $conditionValue['player_id'] = $searchInfo['player_id'];
+            $conditionValue['player_id'] = $searchInfo['playerId'];
         }
         //選手名
-        if (isset($searchInfo['player_name'])) {
+        if (isset($searchInfo['playerName'])) {
             $condition .= "and tp.player_name LIKE :player_name\r\n";
-            $conditionValue['player_name'] = "%" . $searchInfo['player_name'] . "%";
+            $conditionValue['player_name'] = "%" . $searchInfo['playerName'] . "%";
         }
         //性別
         if (isset($searchInfo['sex'])) {
             $condition .= "and `m_sex`.`sex_id` = :sex\r\n";
-            $conditionValue['sex'] = $searchInfo['sex'];
+            $conditionValue['sex'] = $searchInfo['sexId'];
         }
         //出身地（都道府県）
-        if (isset($searchInfo['birth_prefecture'])) {
+        if (isset($searchInfo['birthPrefectureId'])) {
             $condition .= "and bir_pref.pref_id =:birth_prefecture\r\n";
-            $conditionValue['birth_prefecture'] = $searchInfo['birth_prefecture'];
+            $conditionValue['birth_prefecture'] = $searchInfo['birthPrefectureId'];
         }
         //居住地（都道府県）
-        if (isset($searchInfo['residence_prefecture'])) {
+        if (isset($searchInfo['residencePrefectureId'])) {
             $condition .= "and res_pref.pref_id =:residence_prefecture\r\n";
-            $conditionValue['residence_prefecture'] = $searchInfo['residence_prefecture'];
+            $conditionValue['residence_prefecture'] = $searchInfo['residencePrefectureId'];
         }
         //S(ストロークサイド)
-        if (isset($searchInfo['side_S'])) {
+        if ($searchInfo['sideInfo']['S'] == true) {
             $condition .= "and SUBSTRING(tp.`side_info`,8,1) = 1\r\n";
         }
         //B(バウサイド)
-        if (isset($searchInfo['side_B'])) {
+        if ($searchInfo['sideInfo']['B'] == true) {
             $condition .= "and SUBSTRING(tp.`side_info`,7,1) = 1\r\n";
         }
         //X(スカルサイド)
-        if (isset($searchInfo['side_X'])) {
+        if ($searchInfo['sideInfo']['X'] == true) {
             $condition .= "and SUBSTRING(tp.`side_info`,6,1) = 1\r\n";
         }
         //C(コックスサイド)
-        if (isset($searchInfo['side_C'])) {
+        if ($searchInfo['sideInfo']['C'] == true) {
             $condition .= "and SUBSTRING(tp.`side_info`,5,1) = 1\r\n";
         }
         //団体ID
-        if (isset($searchInfo['org_id'])) {
+        if (isset($searchInfo['orgId'])) {
             $condition .= "and org.org_id = :org_id\r\n";
-            $conditionValue['org_id'] = $searchInfo['org_id'];
+            $conditionValue['org_id'] = $searchInfo['orgId'];
         }
         //エントリーシステムID
-        if (isset($searchInfo['entry_system_id'])) {
+        if (isset($searchInfo['entrysystemOrgId'])) {
             $condition .= "and org.entrysystem_org_id =:entry_system_id\r\n";
-            $conditionValue['entry_system_id'] = $searchInfo['entry_system_id'];
+            $conditionValue['entry_system_id'] = $searchInfo['entrysystemOrgId'];
         }
         //団体名
-        if (isset($searchInfo['org_name'])) {
+        if (isset($searchInfo['orgName'])) {
             $condition .= "and org.org_name LIKE :org_name\r\n";
-            $conditionValue['org_name'] = "%" . $searchInfo['org_name'] . "%";
+            $conditionValue['org_name'] = "%" . $searchInfo['orgName'] . "%";
         }
         //出漕大会名
-        if (isset($searchInfo['tourn_name'])) {
-            $condition .= "and tour.tourn_name LIKE :tourn_name\r\n";
-            $conditionValue['tourn_name'] = "%" . $searchInfo['tourn_name'] . "%";
+        if (isset($searchInfo['raceEventName'])) {
+            $condition .= "and trrr.tourn_name LIKE :tourn_name\r\n";
+            $conditionValue['tourn_name'] = "%" . $searchInfo['raceEventName'] . "%";
         }
         //出漕履歴情報
-        if (isset($searchInfo['event_id'])) {
+        if (isset($searchInfo['eventId'])) {
             $condition .= "and trrr.event_id = :event_id\r\n";
-            $conditionValue['event_id'] = $searchInfo['event_id'];
+            $conditionValue['event_id'] = $searchInfo['eventId'];
         }
         return $condition;
     }
@@ -964,22 +964,22 @@ class OrganizationPlayersController extends Controller
         $players = $t_organization_players->getOrganizationPlayersFromCondition($searchCondition, $searchValue);
         for ($i = 0; $i < count($players); $i++) {
             $side_info = array();
-            if ($players[$i]->side_B == 1) {
-                array_push($side_info, 1);
-            }else{
-                array_push($side_info, 0);
-            }
             if ($players[$i]->side_S == 1) {
                 array_push($side_info, 1);
             }else{
                 array_push($side_info, 0);
             }
-            if ($players[$i]->side_C == 1) {
+            if ($players[$i]->side_B == 1) {
                 array_push($side_info, 1);
             }else{
                 array_push($side_info, 0);
             }
             if ($players[$i]->side_X == 1) {
+                array_push($side_info, 1);
+            }else{
+                array_push($side_info, 0);
+            }
+            if ($players[$i]->side_C == 1) {
                 array_push($side_info, 1);
             }else{
                 array_push($side_info, 0);
@@ -1032,15 +1032,39 @@ class OrganizationPlayersController extends Controller
     }
 
     // 団体所属選手の更新処理 20240226
-    public function updateOrgPlayerData(Request $request)
+    public function updateOrgPlayerData(Request $request,T_organization_players $t_organization_players)
     {
         Log::debug(sprintf("updateOrgPlayerData start"));
         $reqData = $request->all();
+        Log::debug($reqData);
         //ここに処理を追加　二村さん作業
-
-        $result = "";
-        Log::debug(sprintf("updateOrgPlayerData end"));
-        return response()->json(['result' => $result]);
+        //DB::beginTransaction();
+        try
+        {
+            // foreach($reqData as $player)
+            // {
+            //     //削除にチェックが入っている場合
+            //     if($player["delete"] == 0)
+            //     {
+            //         $t_organization_players->updateDeleteFlagOrganizationPlayers($player["org_id"],$player["player_id"]);
+            //     }
+            //     //削除にチェックが入っていない場合
+            //     elseif($player["type"] == "追加")
+            //     {
+            //         //種別が「追加」の場合、insertする
+            //         $t_organization_players->insertOrganizationPlayer($player);
+            //     }
+            // }
+            // //$result = "";
+            // DB::commit();
+            Log::debug(sprintf("updateOrgPlayerData end"));
+            return response()->json(['result' => $result]);
+        }
+        catch (\Throwable $e)
+        {
+            //DB::rollBack();
+            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+        }
     }
 
     // 団体に登録する選手検索 20240226
@@ -1048,27 +1072,28 @@ class OrganizationPlayersController extends Controller
     {
         Log::debug(sprintf("teamPlayerSearch start"));
         $searchInfo = $request->all();
+        Log::debug($searchInfo);
         $searchValue = [];
         $searchCondition = $this->generateOrganizationPlayersSearchCondition($searchInfo, $searchValue);
         $players = $t_organization_players->getOrganizationPlayersFromCondition($searchCondition, $searchValue);
         for ($i = 0; $i < count($players); $i++) {
             $side_info = array();
-            if ($players[$i]->side_B == 1) {
-                array_push($side_info, 1);
-            }else{
-                array_push($side_info, 0);
-            }
             if ($players[$i]->side_S == 1) {
                 array_push($side_info, 1);
             }else{
                 array_push($side_info, 0);
             }
-            if ($players[$i]->side_C == 1) {
+            if ($players[$i]->side_B == 1) {
                 array_push($side_info, 1);
             }else{
                 array_push($side_info, 0);
             }
             if ($players[$i]->side_X == 1) {
+                array_push($side_info, 1);
+            }else{
+                array_push($side_info, 0);
+            }
+            if ($players[$i]->side_C == 1) {
                 array_push($side_info, 1);
             }else{
                 array_push($side_info, 0);
