@@ -570,7 +570,7 @@ class PlayerController extends Controller
     //===============================================================================================
 
     //reactからの選手登録 20240131
-    public function storePlayerTest(Request $request, T_players $tPlayersData, T_users $t_users)
+    public function storePlayerData(Request $request, T_players $tPlayersData, T_users $t_users)
     {
         $random_file_name = Str::random(12);
         //If new picture is uploaded
@@ -582,7 +582,7 @@ class PlayerController extends Controller
             // $file->storeAs('public/images/users', $file_name);
             // return response()->json(['message' => 'File uploaded successfully']);
         }
-        Log::debug(sprintf("storePlayerTest start"));
+        Log::debug(sprintf("storePlayerData start"));
         $reqData = $request->all();
 
         $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
@@ -619,7 +619,7 @@ class PlayerController extends Controller
         $result = $tPlayersData->insertPlayers($tPlayersData::$playerInfo); //DBに選手を登録 20240131
 
         $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
-        Log::debug(sprintf("storePlayerTest end"));
+        Log::debug(sprintf("storePlayerData end"));
         return response()->json(['users' => $users, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
     }
 
