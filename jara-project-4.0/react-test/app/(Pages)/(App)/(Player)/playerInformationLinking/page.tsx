@@ -103,10 +103,10 @@ export default function PlayerInformationLinking() {
   const sendCsvData = async () => {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
-    await axios.post('/sendCsvData', csvData)
+    await axios.post('/sendCsvData', csvFileData)
       .then((res) => {
         console.log(res.data);
-        // router.push('/tournamentSearch'); //大会検索画面に遷移する 20240222
+        // router.push('/tournamentSearch'); // 20240222
       })
       .catch(error => {
         console.log(error);
@@ -120,7 +120,7 @@ export default function PlayerInformationLinking() {
     await axios.post('/registerCsvData', csvData)
       .then((res) => {
         console.log(res.data);
-        // router.push('/tournamentSearch'); //大会検索画面に遷移する 20240222
+        // router.push('/tournamentSearch'); // 20240222
       })
       .catch(error => {
         console.log(error);
@@ -177,11 +177,12 @@ export default function PlayerInformationLinking() {
                 <CustomButton
                   buttonType='primary'
                   onClick={() => {
+                    console.log(csvFileData);
+                    sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
                     setActivationFlg(true);
                     if (dialogDisplayFlg) {
                       window.confirm('読み込み結果に表示されているデータはクリアされます。よろしいですか？',) ?
                         (
-                          sendCsvData(), //読み込んだCSVデータをDBに連携する
                           setCsvData([]),
                           csvFileData?.content?.slice(1).map((row, rowIndex) => {
                             setCsvData((prevData) => [
@@ -203,7 +204,6 @@ export default function PlayerInformationLinking() {
                         ) :
                         null;
                     } else {
-                      sendCsvData(); //読み込んだCSVデータをDBに連携する
                       setCsvData([]);
                       csvFileData?.content?.slice(1).map((row, rowIndex) => {
                         setCsvData((prevData) => [
