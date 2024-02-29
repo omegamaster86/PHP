@@ -317,6 +317,7 @@ class T_players extends Model
     //選手連携画面で選手登録を行うためのメソッド
     public function insertPlayerForPlayerInfoAlignment($playerInfo)
     {
+        Log::debug("insertPlayerForPlayerInfoAlignment start.");
         $current_datetime = now()->format('Y-m-d H:i:s.u');
         $user_id = Auth::user()->user_id;
         DB::insert('insert into t_players
@@ -339,27 +340,17 @@ class T_players extends Model
                         ,0
                     ]);
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
+        Log::debug("insertPlayerForPlayerInfoAlignment end.");
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 
+    //選手連携時の更新
     public function updatePlayers($playersInfo)
     {
-        $result = "success";
-        DB::beginTransaction();
-        try {
-            DB::update(
-                'update t_players set jara_player_id = ?, updated_time = ?, updated_user_id = ? where user_id = ?',
-                [$playersInfo['jaraPlayerId'], now(), Auth::user()->user_id, $playersInfo['playerId']]
-            );
-
-            DB::commit();
-            return $result;
-        } catch (\Throwable $e) {
-            DB::rollBack();
-
-            $result = "failed";
-            return $result;
-        }
+        DB::update(
+            'update t_players set jara_player_id = ?, updated_time = ?, updated_user_id = ? where user_id = ?',
+            [$playersInfo['oldPlayerId'], now(), Auth::user()->user_id, $playersInfo['playerId']]
+        );
     }
 
     //20231218 選手IDに一致する全ての選手情報を取得
