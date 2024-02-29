@@ -202,6 +202,7 @@ export default function TournamentEntryBulkRegister() {
 
   const handleSearchTournament = async (name: string, e: FocusEvent<HTMLInputElement>) => {
     try {
+      console.log(e);
       // 仮のURL（繋ぎ込み時に変更すること）
       const apiURL = `http://localhost:3100/tournament?${name}=${e.target.value}`;
       // 大会情報を取得

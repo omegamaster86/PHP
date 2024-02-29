@@ -259,6 +259,7 @@ export default function PlayerInformation() {
             // console.log(response.data);
             //サイド情報のデータ変換
             var data = response.data.result.side_info.split('');
+            data.splice(0, 4); //サイド情報の先頭４つ分の不要なデータを削除
             for (let i = 0; i < 4; i++) {
               if (data[i] == "1") {
                 data[i] = true;
@@ -494,6 +495,9 @@ export default function PlayerInformation() {
               .then((response) => {
                 // TODO: 更新処理成功時の処理
                 // console.log(response);
+                console.log(formData.side_info);
+                formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
+                console.log(formData.side_info);
                 setErrorMessage([]);
                 axios
                   // .post('http://localhost:3100/', registerData)
@@ -559,6 +563,9 @@ export default function PlayerInformation() {
               .then((response) => {
                 // TODO: 更新処理成功時の処理
                 // console.log(response);
+                console.log(formData.side_info);
+                formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
+                console.log(formData.side_info);
                 setErrorMessage([]);
                 axios
                   // .post('http://localhost:3100/', registerData)
@@ -635,9 +642,9 @@ export default function PlayerInformation() {
                     // TODO: アップロードされた写真を削除する処理に置き換える
                     setFormData((prevFormData) => ({
                       ...prevFormData,
-                      uploadedPhotoName:'',
+                      uploadedPhotoName: '',
                       uploadedPhoto: undefined,
-                      photo:''
+                      photo: ''
                     }));
                     setCurrentShowFile(undefined);
                   }}
