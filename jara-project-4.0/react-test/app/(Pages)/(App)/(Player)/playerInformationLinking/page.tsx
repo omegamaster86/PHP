@@ -9,6 +9,7 @@ import { ErrorBox, CustomTitle, CustomButton } from '@/app/components';
 import Validator from '@/app/utils/validator';
 // ローカルコンポーネントのインポート
 import CsvTable from './CsvTable';
+import axios from '@/app/lib/axios';
 
 // CSVデータの型定義
 interface CsvData {
@@ -98,6 +99,47 @@ export default function PlayerInformationLinking() {
     resetActivationFlg: resetActivationFlg,
   } as CsvUploadProps;
 
+  //読み込むボタン押下時 20240228
+  const sendCsvData = async () => {
+    var array = csvFileData?.content.map((value, index) => {
+      return {
+        id: index, // ID
+        checked: false, // 選択
+        link: '', // 連携
+        oldPlayerId: value[0],
+        playerId: value[1],
+        mailaddress: value[2],
+        playerName: value[3],
+        message: '',
+      }
+    });
+    var element = array as CsvData[];
+    const csrf = () => axios.get('/sanctum/csrf-cookie');
+    await csrf();
+    await axios.post('/sendCsvData', element)
+      .then((res) => {
+        console.log(res.data);
+        // router.push('/tournamentSearch'); // 20240222
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  //連携ボタン押下時 20240228
+  const registerCsvData = async () => {
+    const csrf = () => axios.get('/sanctum/csrf-cookie');
+    await csrf();
+    await axios.post('/registerCsvData', csvData)
+      .then((res) => {
+        console.log(res.data);
+        // router.push('/tournamentSearch'); // 20240222
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
   // CSVダウンロードのプロパティ
   const csvDownloadProps = {
     header: [
@@ -148,12 +190,13 @@ export default function PlayerInformationLinking() {
                 <CustomButton
                   buttonType='primary'
                   onClick={() => {
+                    console.log(csvFileData);
+                    sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
                     setActivationFlg(true);
                     if (dialogDisplayFlg) {
-                      window.confirm(
-                        '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
-                      )
-                        ? (setCsvData([]),
+                      window.confirm('読み込み結果に表示されているデータはクリアされます。よろしいですか？',) ?
+                        (
+                          setCsvData([]),
                           csvFileData?.content?.slice(1).map((row, rowIndex) => {
                             setCsvData((prevData) => [
                               ...(prevData as CsvData[]),
@@ -170,8 +213,9 @@ export default function PlayerInformationLinking() {
                               },
                             ]);
                             setDialogDisplayFlg(true);
-                          }))
-                        : null;
+                          })
+                        ) :
+                        null;
                     } else {
                       setCsvData([]);
                       csvFileData?.content?.slice(1).map((row, rowIndex) => {
@@ -234,10 +278,12 @@ export default function PlayerInformationLinking() {
               <CustomButton
                 buttonType='primary'
                 onClick={() => {
+                  console.log(csvData);
                   setActivationFlg(true);
-                  csvData.find((row) => row.checked)?.id === undefined
-                    ? window.confirm('1件以上選択してください。')
-                    : setCsvData([]),
+                  csvData.find((row) => row.checked)?.id === undefined ?
+                    window.confirm('1件以上選択してください。') :
+                    registerCsvData(), //読み込んだCSVデータをDBに連携する
+                    setCsvData([]),
                     setCsvFileData({ content: [], isSet: false }),
                     fileUploaderRef?.current?.clearFile(),
                     window.confirm('連携を完了しました。')

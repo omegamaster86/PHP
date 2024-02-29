@@ -57,15 +57,13 @@ export default function PlayerInformation() {
 
   // クエリパラメータを取得する
   const playerId = searchParams.get('player_id')?.toString() || '';
+  const player_id = { player_id: playerId };
   switch (playerId) {
     case '':
       break;
     default:
       break;
   };
-  const [player_id, setPlayerId] = useState<any>({
-    player_id: playerId,
-  });
 
   // フォームの入力値を管理する関数
   const handleInputChange = (name: string, value: string) => {
@@ -259,6 +257,7 @@ export default function PlayerInformation() {
             // console.log(response.data);
             //サイド情報のデータ変換
             var data = response.data.result.side_info.split('');
+            data.splice(0, 4); //サイド情報の先頭４つ分の不要なデータを削除
             for (let i = 0; i < 4; i++) {
               if (data[i] == "1") {
                 data[i] = true;
@@ -302,9 +301,33 @@ export default function PlayerInformation() {
       }
 
       fetchPlayerData();// APIを叩いて、選手情報を取得する
+    } else if (mode === 'create') {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        ...{
+          player_id: 0,
+          jara_player_id: '',
+          player_name: '',
+          sexName: '',
+          sex_id: 0,
+          height: '',
+          weight: '',
+          birth_country: 0,
+          birthCountryName: '日本国 （jpn）',
+          birth_prefecture: 0,
+          birthPrefectureName: '東京',
+          residence_country: 0,
+          residenceCountryName: '日本国 （jpn）',
+          residence_prefecture: 0,
+          residencePrefectureName: '東京',
+          date_of_birth: '',
+          side_info: [false, false, false, false],
+          photo: '',
+        },
+      }));
     }
 
-  }, []);
+  }, [mode]);
 
   /**
    * 入力チェック
@@ -494,6 +517,17 @@ export default function PlayerInformation() {
               .then((response) => {
                 // TODO: 更新処理成功時の処理
                 // console.log(response);
+                console.log(formData.side_info);
+                formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
+                if (formData.birth_country != 112) { //出身地が日本以外の場合、都道府県に関連したデータを削除する
+                  formData.birth_prefecture = 0;
+                  formData.birthPrefectureName = '';
+                }
+                if (formData.residence_country != 112) { //居住地が日本以外の場合、都道府県に関連したデータを削除する
+                  formData.residence_prefecture = 0;
+                  formData.residencePrefectureName = '';
+                }
+                console.log(formData.side_info);
                 setErrorMessage([]);
                 axios
                   // .post('http://localhost:3100/', registerData)
@@ -559,10 +593,21 @@ export default function PlayerInformation() {
               .then((response) => {
                 // TODO: 更新処理成功時の処理
                 // console.log(response);
+                console.log(formData.side_info);
+                formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
+                if (formData.birth_country != 112) { //出身地が日本以外の場合、都道府県に関連したデータを削除する
+                  formData.birth_prefecture = 0;
+                  formData.birthPrefectureName = '';
+                }
+                if (formData.residence_country != 112) { //居住地が日本以外の場合、都道府県に関連したデータを削除する
+                  formData.residence_prefecture = 0;
+                  formData.residencePrefectureName = '';
+                }
+                console.log(formData);
                 setErrorMessage([]);
                 axios
                   // .post('http://localhost:3100/', registerData)
-                  .post('/storePlayerTest', formData, {
+                  .post('/storePlayerData', formData, {
                     //ファイルを送るため
                     headers: {
                       'content-type': 'multipart/form-data',
@@ -635,9 +680,9 @@ export default function PlayerInformation() {
                     // TODO: アップロードされた写真を削除する処理に置き換える
                     setFormData((prevFormData) => ({
                       ...prevFormData,
-                      uploadedPhotoName:'',
+                      uploadedPhotoName: '',
                       uploadedPhoto: undefined,
-                      photo:''
+                      photo: ''
                     }));
                     setCurrentShowFile(undefined);
                   }}

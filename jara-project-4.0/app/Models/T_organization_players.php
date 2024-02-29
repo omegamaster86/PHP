@@ -299,9 +299,8 @@ class T_organization_players extends Model
                         join t_organizations org
                         on players.org_id = org.org_id
                         ';
-        $sqlString = str_replace("#ReplaceConditionString#",$condition,$sqlString);
-        Log::debug($sqlString);
-        $players = DB::select($sqlString,$conditionValue);
+        $sqlString = str_replace("#ReplaceConditionString#",$condition,$sqlString);        
+        $players = DB::select($sqlString,$conditionValue);        
         return $players;
     }
 

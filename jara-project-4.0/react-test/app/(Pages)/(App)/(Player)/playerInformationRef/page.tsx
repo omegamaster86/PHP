@@ -101,6 +101,7 @@ export default function PlayerInformationRef() {
         // console.log(playerInf.data.result);
         //サイド情報のデータ変換
         const sideList = playerInf.data.result.side_info.split('');
+        sideList.splice(0, 4); //サイド情報の先頭４つ分の不要なデータを削除
         for (let i = 0; i < 4; i++) {
           if (sideList[i] == "1") {
             sideList[i] = true;
@@ -108,6 +109,7 @@ export default function PlayerInformationRef() {
             sideList[i] = false;
           }
         }
+
         setplayerInformation({
           player_id: playerInf.data.result.player_id,
           jara_player_id: playerInf.data.result.jara_player_id,
@@ -188,7 +190,7 @@ export default function PlayerInformationRef() {
               <div>
                 {/* 写真 */}
                 <img
-                  src={playerInformation.photo?`${PLAYER_IMAGE_URL}${playerInformation.photo}`:`${NO_IMAGE_URL}`}
+                  src={playerInformation.photo ? `${PLAYER_IMAGE_URL}${playerInformation.photo}` : `${NO_IMAGE_URL}`}
                   width={200}
                   height={200}
                   alt='Random'
@@ -288,7 +290,7 @@ export default function PlayerInformationRef() {
                       <div
                         className={
                           !playerInformation.birthPrefectureName ||
-                          playerInformation.birthPrefectureName === ''
+                            playerInformation.birthPrefectureName === ''
                             ? 'hidden'
                             : ''
                         }
@@ -312,7 +314,7 @@ export default function PlayerInformationRef() {
                       <div
                         className={
                           !playerInformation.residencePrefectureName ||
-                          playerInformation.residencePrefectureName === ''
+                            playerInformation.residencePrefectureName === ''
                             ? 'hidden'
                             : ''
                         }
@@ -336,40 +338,36 @@ export default function PlayerInformationRef() {
                   ></Label>
                   <div className='flex flex-row justify-start gap-[10px]'>
                     <div
-                      className={`text-center px-[12px] py-[8px] rounded-full ${
-                        playerInformation.side_info?.at(0)
-                          ? 'border border-secondary-500 text-secondary-500'
-                          : 'border border-gray-30 text-white'
-                      }`}
+                      className={`text-center px-[12px] py-[8px] rounded-full ${playerInformation.side_info?.at(0)
+                        ? 'border border-secondary-500 text-secondary-500'
+                        : 'border border-gray-30 text-white'
+                        }`}
                     >
                       S（ストロークサイド）
                     </div>
                     <div
-                      className={`text-center px-[12px] py-[8px] rounded-full ${
-                        playerInformation.side_info?.at(1)
-                          ? 'border border-secondary-500 text-secondary-500'
-                          : 'border border-gray-30 text-white'
-                      }`}
+                      className={`text-center px-[12px] py-[8px] rounded-full ${playerInformation.side_info?.at(1)
+                        ? 'border border-secondary-500 text-secondary-500'
+                        : 'border border-gray-30 text-white'
+                        }`}
                     >
                       B（バウサイド）
                     </div>
                   </div>
                   <div className='flex flex-row justify-start gap-[10px]'>
                     <div
-                      className={`text-center px-[12px] py-[8px] rounded-full ${
-                        playerInformation.side_info?.at(2)
-                          ? 'border border-secondary-500 text-secondary-500'
-                          : 'border border-gray-30 text-white'
-                      }`}
+                      className={`text-center px-[12px] py-[8px] rounded-full ${playerInformation.side_info?.at(2)
+                        ? 'border border-secondary-500 text-secondary-500'
+                        : 'border border-gray-30 text-white'
+                        }`}
                     >
                       X（スカル）
                     </div>
                     <div
-                      className={`text-center px-[12px] py-[8px] rounded-full ${
-                        playerInformation.side_info?.at(3)
-                          ? 'border border-secondary-500 text-secondary-500'
-                          : 'border border-gray-30 text-white'
-                      }`}
+                      className={`text-center px-[12px] py-[8px] rounded-full ${playerInformation.side_info?.at(3)
+                        ? 'border border-secondary-500 text-secondary-500'
+                        : 'border border-gray-30 text-white'
+                        }`}
                     >
                       C（コックス）
                     </div>

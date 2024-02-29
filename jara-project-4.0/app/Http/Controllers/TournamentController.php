@@ -494,13 +494,13 @@ class TournamentController extends Controller
     }
 
     //ボランティア検索用
-    public function getTournamentInfoData_vol(Request $request, T_tournaments $tourn)
+    public function getTournamentInfoData_allData(Request $request, T_tournaments $tourn)
     {
-        Log::debug(sprintf("getTournamentInfoData_vol start"));
+        Log::debug(sprintf("getTournamentInfoData_allData start"));
         // $reqData = $request->all();
-        $result = $tourn->getTournament_vol(); //DBに選手を登録 20240131
+        $result = $tourn->getTournament_allData();
         // Log::debug($result);
-        Log::debug(sprintf("getTournamentInfoData_vol end"));
+        Log::debug(sprintf("getTournamentInfoData_allData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 

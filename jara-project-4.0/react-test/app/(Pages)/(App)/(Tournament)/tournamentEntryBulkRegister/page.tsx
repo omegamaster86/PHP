@@ -18,7 +18,7 @@ import Validator from '@/app/utils/validator';
 import CsvHandler from './CsvHandler';
 import CsvTable from './CsvTable';
 import { Tournament, TournamentResponse, CheckRace, CheckRaceResultRecord } from '@/app/types';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import { Autocomplete, TextField } from '@mui/material';
 import { CsvData } from './CsvDataInterface';
 import { FormData } from './FormDataInterface';
@@ -41,7 +41,7 @@ interface CsvDownloadProps {
 }
 
 // ファイル関連のアクションを扱うためのインターフェース
-interface FileHandler {}
+interface FileHandler { }
 
 // 選手情報連携のメインコンポーネント
 export default function TournamentEntryBulkRegister() {
@@ -116,6 +116,7 @@ export default function TournamentEntryBulkRegister() {
    * nameとvalueを受け取り、stateを更新する
    */
   const handleInputChange = (name: string, value: string) => {
+    console.log(value);
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -187,13 +188,16 @@ export default function TournamentEntryBulkRegister() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         // 仮のURL（繋ぎ込み時に変更すること）
         // TODO: ログインユーザーの権限によって取得する大会情報を変更すること
         // 大会名
-        const tournamentResponse = await axios.get<TournamentResponse[]>(
-          'http://localhost:3100/tournaments',
-        );
-        setTournamentList(tournamentResponse.data);
+        // const tournamentResponse = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments',);
+        const TournamentsResponse = await axios.get('/getTournamentInfoData_allData'); //残件対象項目
+        const TournamentsResponseList = TournamentsResponse.data.result.map(({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({ id: tourn_id, name: tourn_name }));
+        console.log(TournamentsResponseList);
+        setTournamentList(TournamentsResponseList);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
       }
@@ -203,15 +207,21 @@ export default function TournamentEntryBulkRegister() {
 
   const handleSearchTournament = async (name: string, e: FocusEvent<HTMLInputElement>) => {
     try {
+      console.log(e);
+      var eventYearVal = { event_start_year: e.target.value };
       // 仮のURL（繋ぎ込み時に変更すること）
       const apiURL = `http://localhost:3100/tournament?${name}=${e.target.value}`;
       // 大会情報を取得
-      const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        eventYear: tournamentResponse.data.event_start_date.slice(0, 4),
-        tournName: tournamentResponse.data.tourn_name,
-      }));
+      // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
+      const csrf = () => axios.get('/sanctum/csrf-cookie');
+      await csrf();
+      const tournamentResponse = await axios.post('/tournamentEntryYearSearch', eventYearVal);
+      console.log(tournamentResponse);
+      // setFormData((prevFormData) => ({
+      //   ...prevFormData,
+      //   eventYear: tournamentResponse.data.event_start_date.slice(0, 4),
+      //   tournName: tournamentResponse.data.tourn_name,
+      // }));
       setDisplayFlg(false);
     } catch (error) {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
@@ -436,8 +446,10 @@ export default function TournamentEntryBulkRegister() {
               placeHolder={new Date().toLocaleDateString('ja-JP').slice(0, 4)}
               selectedDate={formData?.eventYear}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                if (e.target.value.length === 4) {
-                  handleInputChange('eventYear', e as unknown as string);
+                var eventYearVal = e as any as Date;
+                if (eventYearVal.getFullYear().toString().length === 4) {
+                  // handleInputChange('eventYear', e as unknown as string);//eventYearVal.getFullYear().toString()
+                  handleInputChange('eventYear', eventYearVal.getFullYear().toString());
                 }
               }}
               onBlur={(e: FocusEvent<HTMLInputElement>) => {
@@ -448,6 +460,7 @@ export default function TournamentEntryBulkRegister() {
                 ) {
                   handleInputChange('tournName', '');
                 } else {
+                  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@");
                   handleSearchTournament('eventYear', e);
                 }
               }}
@@ -458,11 +471,11 @@ export default function TournamentEntryBulkRegister() {
           <div
             className={
               prevScreen === 'tournamentRef' ||
-              !(
-                formData?.eventYear === '' ||
-                formData?.eventYear === null ||
-                formData?.eventYear === undefined
-              )
+                !(
+                  formData?.eventYear === '' ||
+                  formData?.eventYear === null ||
+                  formData?.eventYear === undefined
+                )
                 ? 'hidden'
                 : ''
             }
@@ -538,23 +551,23 @@ export default function TournamentEntryBulkRegister() {
                 <p className='mb-1 text-red'>
                   【読み込み方法】
                   <br />
-                  　［準備］
+                  ［準備］
                   <br />
-                  　　　定型フォーマットにエントリー情報を入力してください。
+                  定型フォーマットにエントリー情報を入力してください。
                   <br />
-                  　　　※定型フォーマットが必要な場合は、「CSVフォーマット出力」をクリックしてください。
+                  ※定型フォーマットが必要な場合は、「CSVフォーマット出力」をクリックしてください。
                   <br />
-                  　　　※定型フォーマットがダウンロードされます。
+                  ※定型フォーマットがダウンロードされます。
                   <br />
-                  　［読み込む］
+                  ［読み込む］
                   <br />
-                  　　　①　「大会名」からエントリー情報を登録する大会を選択してください。
+                  ①　「大会名」からエントリー情報を登録する大会を選択してください。
                   <br />
-                  　　　②　「読み込みCSVファイル」に、読み込ませるCSVファイルをドラッグ＆ドロップしてください。
+                  ②　「読み込みCSVファイル」に、読み込ませるCSVファイルをドラッグ＆ドロップしてください。
                   <br />
-                  　　　　　※「参照」からファイルを指定することもできます。
+                  ※「参照」からファイルを指定することもできます。
                   <br />
-                  　　　③　「読み込み」をクリックすると、CSVフォーマットの内容を読み込み、内容を画面下部のエントリー一覧に表示します。
+                  ③　「読み込み」をクリックすると、CSVフォーマットの内容を読み込み、内容を画面下部のエントリー一覧に表示します。
                 </p>
                 <CustomButton
                   buttonType='primary'
@@ -603,13 +616,13 @@ export default function TournamentEntryBulkRegister() {
             <p className='mb-1 text-red'>
               【登録方法】
               <br />
-              　①　「エントリー一覧」にCSVフォーマットを読み込んだ結果が表示されます。
+              ①　「エントリー一覧」にCSVフォーマットを読み込んだ結果が表示されます。
               <br />
-              　②　読み込むデータの「選択」にチェックを入れてください。※「全選択」で、全てのデータを選択状態にできます。
+              ②　読み込むデータの「選択」にチェックを入れてください。※「全選択」で、全てのデータを選択状態にできます。
               <br />
-              　③　「登録」をクリックすると「エントリー一覧」にて「選択」にチェックが入っているデータを対象に、本システムに登録されます。
+              ③　「登録」をクリックすると「エントリー一覧」にて「選択」にチェックが入っているデータを対象に、本システムに登録されます。
               <br />
-              　　　※それまでに登録されていたデータは全て削除され、読み込んだデータに置き換わります。
+              ※それまでに登録されていたデータは全て削除され、読み込んだデータに置き換わります。
               <br />
             </p>
             <CsvTable

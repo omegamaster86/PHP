@@ -400,26 +400,26 @@ class PlayerController extends Controller
     //     $retreive_player_by_ID = DB::select('SELECT sex.sex_name, birth_country.birth_country_name,residence_country.residence_country_name, birth_prefecture.birth_prefecture_name, residence_prefecture.residence_prefecture_name, player.photo, player.player_id, player.jara_player_id, player.player_name, player.date_of_birth, player.sex, player.height, player.weight, player.side_info, player.birth_country, player.birth_prefecture, player.residence_country, player.residence_prefecture FROM t_players as player
 
     //     Left join (select sex_id, sex as sex_name from m_sex where delete_flag = ? ) as sex on player.sex = sex.sex_id
-        
+
     //     Left join (select country_id, country_name as birth_country_name from m_countries where delete_flag = ?)  as birth_country on player.birth_country = birth_country.country_id
-        
+
     //     Left join (select country_id, country_name as residence_country_name from m_countries where delete_flag = ?)  as residence_country on player.residence_country = residence_country.country_id
-        
+
     //     Left join (select pref_id, pref_name as birth_prefecture_name from m_prefectures where delete_flag = ?)  as birth_prefecture on player.birth_prefecture = birth_prefecture.pref_id
-        
+
     //     Left join (select pref_id, pref_name as residence_prefecture_name from m_prefectures where delete_flag = ?)  as residence_prefecture on player.residence_prefecture = residence_prefecture.pref_id
-        
+
     //     where player.user_id = ? AND player.delete_flag = ?', [0, 0, 0, 0, 0, $user_id, 0]);
 
 
 
     //     //searching race record info from database
     //     $retrieve_all_race_records = DB::select('SELECT tourn.event_start_date, race.event_name, record.tourn_name, record.official, record.org_name, record.race_number, record.race_name, record.by_group, record.crew_name, record.rank, record.laptime_500m, record.laptime_1000m, record.laptime_1500m, record.laptime_2000m, record.final_time, record.stroke_rate_avg, record.stroke_rat_500m, record.stroke_rat_1000m, record.stroke_rat_1500m, record.stroke_rat_2000m, record.attendance, record.ergo_weight, record.player_height, record.player_weight, record.sheet_name, record.race_result_record_name  FROM t_race_result_record as record
-        
+
     //     Left join (select race_id, event_name from t_races where delete_flag = ? ) as race on record.race_id = race.race_id
-        
+
     //     Left join (select tourn_id, event_start_date from t_tournaments where delete_flag = ?)  as tourn on record.tourn_id = tourn.tourn_id
-        
+
     //     where record.user_id = ? AND record.delete_flag = ?', [0, 0, $user_id, 0]);
 
     //     //if there is no player info send the user to the register page
@@ -561,7 +561,7 @@ class PlayerController extends Controller
 
 
         Log::debug(sprintf("searchPlayer end"));
-        
+
         return response()->json(['reqData' => $sex_list, 'result' => $player_list]); //送信データ(debug用)とDBの結果を返す
         // return view('player.search', ["page_mode" => "search", "sex_list" => $sex_list, "player_list" => $player_list, "searched_data" => (object)$searched_data]);
     }
@@ -570,7 +570,7 @@ class PlayerController extends Controller
     //===============================================================================================
 
     //reactからの選手登録 20240131
-    public function storePlayerTest(Request $request, T_players $tPlayersData, T_users $t_users)
+    public function storePlayerData(Request $request, T_players $tPlayersData, T_users $t_users)
     {
         $random_file_name = Str::random(12);
         //If new picture is uploaded
@@ -582,7 +582,7 @@ class PlayerController extends Controller
             // $file->storeAs('public/images/users', $file_name);
             // return response()->json(['message' => 'File uploaded successfully']);
         }
-        Log::debug(sprintf("storePlayerTest start"));
+        Log::debug(sprintf("storePlayerData start"));
         $reqData = $request->all();
 
         $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
@@ -594,8 +594,8 @@ class PlayerController extends Controller
         // $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
         //サイド情報
         $side_info = null;
-        for ($i = 0; $i < 4; $i++) {
-            if ($reqData['side_info'][$i]) {
+        for ($i = 0; $i < 8; $i++) {
+            if ($reqData['side_info'][$i] == "true") {
                 $side_info .= "1";
             } else {
                 $side_info .= "0";
@@ -611,16 +611,15 @@ class PlayerController extends Controller
         if ($request->hasFile('uploadedPhoto')) {
             $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
             $tPlayersData::$playerInfo['photo'] = $file_name; //写真
-        }
-        else {
-             //If  picture is not uploaded
+        } else {
+            //If  picture is not uploaded
 
             $tPlayersData::$playerInfo['photo'] = ''; //写真
         }
         $result = $tPlayersData->insertPlayers($tPlayersData::$playerInfo); //DBに選手を登録 20240131
 
         $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
-        Log::debug(sprintf("storePlayerTest end"));
+        Log::debug(sprintf("storePlayerData end"));
         return response()->json(['users' => $users, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
     }
 
@@ -661,8 +660,8 @@ class PlayerController extends Controller
         // $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
         //サイド情報
         $side_info = null;
-        for ($i = 0; $i < 4; $i++) {
-            if ($reqData['side_info'][$i]) {
+        for ($i = 0; $i < 8; $i++) {
+            if ($reqData['side_info'][$i] == "true") {
                 $side_info .= "1";
             } else {
                 $side_info .= "0";
@@ -679,16 +678,13 @@ class PlayerController extends Controller
         if ($request->hasFile('uploadedPhoto')) {
             $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
             $tPlayersData::$playerInfo['photo'] = $file_name; //写真
-        }
-        else {
-             //If  picture is not uploaded
-            if($reqData['photo']??"") {
+        } else {
+            //If  picture is not uploaded
+            if ($reqData['photo'] ?? "") {
                 $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
-            }
-            else {
+            } else {
                 $tPlayersData::$playerInfo['photo'] = ''; //写真
             }
-            
         }
         $result = $tPlayersData->updatePlayerData($tPlayersData::$playerInfo); //DBに選手を登録 20240131
 
@@ -719,12 +715,12 @@ class PlayerController extends Controller
     //react 選手情報削除画面から受け取ったデータを削除する 20240201
     public function deletePlayerData(Request $request, T_players $tPlayersData, T_raceResultRecord $tRaceResultRecord)
     {
-        
+
 
         Log::debug(sprintf("deletePlayerData start"));
         $reqData = $request->all();
-        if(empty($reqData['playerInformation'])){
-            return response()->json("選手情報がないため選手を削除できません。",400);
+        if (empty($reqData['playerInformation'])) {
+            return response()->json("選手情報がないため選手を削除できません。", 400);
         }
         Log::debug($reqData);
 
@@ -735,12 +731,10 @@ class PlayerController extends Controller
         $result = $tRaceResultRecord->deleteRaceResultRecord_playerId($tRaceResultRecord::$raceResultRecordInfo); //該当選手に削除フラグを立てる 20240208
 
         Log::debug(sprintf("deletePlayerData end"));
-        if($result==="success") {
-            return response()->json("選手情報の削除が完了しました。",200);
-            
-        }
-        else {
-            return response()->json("失敗しました。選手を削除できませんでした。",500);
+        if ($result === "success") {
+            return response()->json("選手情報の削除が完了しました。", 200);
+        } else {
+            return response()->json("失敗しました。選手を削除できませんでした。", 500);
         }
         // return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
     }
