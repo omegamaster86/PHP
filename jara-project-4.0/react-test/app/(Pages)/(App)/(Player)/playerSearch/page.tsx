@@ -22,6 +22,7 @@ import {
   CustomTd,
   OriginalCheckbox,
 } from '@/app/components/';
+import Link from 'next/link';
 import { EventResponse, SexResponse, Player } from '@/app/types';
 import Divider from '@mui/material/Divider';
 
@@ -548,57 +549,174 @@ export default function PlayerSearch() {
                   </CustomTd>
                   {/* TODO 仮実装なので、以下リンク設定があるものには、遷移時に必要なパラメータを設定 */}
                   {/* 選手名 */}
-                  <CustomTd transitionDest={'/playerInformationRef?playerId=' + row.player_id}>
-                    {row.player_name}
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/playerInformationRef',
+                        query: { playerId: row.player_id },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {row.player_name}
+                    </Link>
                   </CustomTd>
                   {/* JARA選手コード */}
-                  <CustomTd transitionDest={'/playerInformationRef?playerId=' + row.player_id}>
-                    {row.jara_player_id}
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/playerInformationRef',
+                        query: { playerId: row.player_id },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {row.jara_player_id}
+                    </Link>
                   </CustomTd>
                   {/* 選手ID */}
-                  <CustomTd transitionDest={'/playerInformationRef?playerId=' + row.player_id}>
-                    {row.player_id}
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/playerInformationRef',
+                        query: { playerId: row.player_id },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {row.player_id}
+                    </Link>
                   </CustomTd>
                   {/* 性別 */}
                   <CustomTd>{row.sex}</CustomTd>
                   {/* エントリーシステムの団体ID1 */}
-                  <CustomTd
-                    transitionDest={'/teamInfomationRef?entrysystemRaceId=' + row.entrysystemOrgId1}>
-                    {row.entrysystemOrgId1}
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/teamInfomationRef',
+                        query: { entrysystemRaceId: row.entrysystemOrgId1 },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {row.entrysystemOrgId1}
+                    </Link>
                   </CustomTd>
                   {/* エントリーシステムの団体ID2 */}
-                  <CustomTd
-                    transitionDest={'/teamInfomationRef?entrysystemRaceId=' + row.entrysystemOrgId2}>
-                    {row.entrysystemOrgId2}
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/teamInfomationRef',
+                        query: { entrysystemRaceId: row.entrysystemOrgId2 },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {row.entrysystemOrgId2}
+                    </Link>
                   </CustomTd>
                   {/* エントリーシステムの団体ID3 */}
-                  <CustomTd
-                    transitionDest={'/teamInfomationRef?entrysystemRaceId=' + row.entrysystemOrgId3}>
-                    {row.entrysystemOrgId3}
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/teamInfomationRef',
+                        query: { entrysystemRaceId: row.entrysystemOrgId3 },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {row.entrysystemOrgId3}
+                    </Link>
                   </CustomTd>
                   {/* 団体ID1 */}
-                  <CustomTd transitionDest={'/teamInfomationRef?orgId=' + row.orgId1}>
-                    {row.orgId1}
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/teamInfomationRef',
+                        query: { orgId: row.orgId1 },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {row.orgId1}
+                    </Link>
                   </CustomTd>
                   {/* 所属団体名1 */}
-                  <CustomTd transitionDest={'/teamInfomationRef?orgId=' + row.orgId1}>
-                    {row.orgName1}
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/teamInfomationRef',
+                        query: { orgId: row.orgId1 },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {row.orgName1}
+                    </Link>
                   </CustomTd>
                   {/* 団体ID2 */}
-                  <CustomTd transitionDest={'/teamInfomationRef?orgId=' + row.orgId2}>
-                    {row.orgId2}
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/teamInfomationRef',
+                        query: { orgId: row.orgId2 },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {row.orgId2}
+                    </Link>
                   </CustomTd>
                   {/* 所属団体名2 */}
-                  <CustomTd transitionDest={'/teamInfomationRef?orgId=' + row.orgId2}>
-                    {row.orgName2}
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/teamInfomationRef',
+                        query: { orgId: row.orgId2 },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {row.orgName2}
+                    </Link>
                   </CustomTd>
                   {/* 団体ID3 */}
-                  <CustomTd transitionDest={'/teamInfomationRef?orgId=' + row.orgId3}>
-                    {row.orgId3}
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/teamInfomationRef',
+                        query: { orgId: row.orgId3 },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {row.orgId3}
+                    </Link>
                   </CustomTd>
                   {/* 所属団体名3 */}
-                  <CustomTd transitionDest={'/teamInfomationRef?orgId=' + row.orgId3}>
-                    {row.orgName3}
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/teamInfomationRef',
+                        query: { orgId: row.orgId3 },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {row.orgName3}
+                    </Link>
                   </CustomTd>
                 </CustomTr>
               ))}
