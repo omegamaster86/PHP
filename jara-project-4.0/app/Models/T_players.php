@@ -199,7 +199,6 @@ class T_players extends Model
         }
         return $registeredPlayer;
     }
-
     
     public function insertPlayers($playersInfo)
     {
@@ -311,6 +310,34 @@ class T_players extends Model
                         0
                     )'
                     ,$playerInfo);
+        $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
+        return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
+    }
+
+    //選手連携画面で選手登録を行うためのメソッド
+    public function insertPlayerForPlayerInfoAlignment($playerInfo)
+    {
+        $current_datetime = now()->format('Y-m-d H:i:s.u');
+        $user_id = Auth::user()->user_id;
+        DB::insert('insert into t_players
+                    (
+                        `jara_player_id`,
+                        `registered_time`,
+                        `registered_user_id`,
+                        `updated_time`,
+                        `updated_user_id`,
+                        `delete_flag`
+                    )
+                    values
+                    (?,?,?,?,?,?)'
+                    ,[
+                        $playerInfo["oldPlayerId"]
+                        ,$current_datetime
+                        ,$user_id
+                        ,$current_datetime
+                        ,$user_id
+                        ,0
+                    ]);
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
@@ -612,8 +639,8 @@ class T_players extends Model
                                 and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
                                 and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
                                 and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
-                                and player_id = ?
-                                ', $player_id);
+                                and player_id = ?'
+                                ,[$player_id]);
         return $player;
     }
 
@@ -665,7 +692,7 @@ class T_players extends Model
                                 and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
                                 and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
                                 and `jara_player_id` = ?',
-                                $jara_player_id);
+                                [$jara_player_id]);
         return $players;
     }
 
