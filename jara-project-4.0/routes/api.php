@@ -56,7 +56,7 @@ Route::group(['middleware' => ['api', 'cors']], function () {
     Route::post('loginCheck', [AuthenticatedSessionController::class, 'loginCheck']); //ログインボタン押下時の処理 20240119
 
     //選手情報登録・更新画面
-    Route::post('storePlayerTest', [PlayerController::class, 'storePlayerTest']); //選手登録確認画面から登録 20231228
+    Route::post('storePlayerData', [PlayerController::class, 'storePlayerData']); //選手登録確認画面から登録 20231228
     Route::get('getUpdatePlayerData', [PlayerController::class, 'getUpdatePlayerData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('updatePlayerData', [PlayerController::class, 'updatePlayerData']); //選手更新確認画面から更新 20240131
     //選手情報参照・削除画面

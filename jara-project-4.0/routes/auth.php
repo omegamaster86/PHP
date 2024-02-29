@@ -99,7 +99,7 @@ Route::middleware('auth')->group(function () {
     Route::post('user/verify-certification-number', [UserController::class, 'verifyCertificationNumber']); //承認番号確認　20240213
 
     //選手関連
-    Route::post('storePlayerTest', [PlayerController::class, 'storePlayerTest']); //選手登録確認画面から登録 20231228
+    Route::post('storePlayerData', [PlayerController::class, 'storePlayerData']); //選手登録確認画面から登録 20231228
     Route::post('getUpdatePlayerData', [PlayerController::class, 'getUpdatePlayerData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('updatePlayerData', [PlayerController::class, 'updatePlayerData']); //選手更新確認画面から更新 20240131
     Route::post('checkJARAPlayerId', [PlayerController::class, 'checkJARAPlayerId']); //選手登録画面から登録 20240220
