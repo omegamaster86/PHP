@@ -658,6 +658,40 @@ export default function VolunteerBulkRegister() {
     resetActivationFlg: resetActivationFlg,
   } as CsvUploadProps;
 
+  //読み込むボタン押下時 20240228
+  const sendCsvData = async () => {
+    var array = Array() as CsvData[];
+    Promise.all(
+      csvFileData.content?.slice(1).map((row, index) => getJsonRow(row, index)),
+    ).then((results) => {
+      console.log(results);
+      array = results as CsvData[];
+    });
+    const csrf = () => axios.get('/sanctum/csrf-cookie');
+    await csrf();
+    await axios.post('/sendVolunteerCsvData', array)
+      .then((res) => {
+        console.log(res.data.result);
+        var contentData = res.data.result as CsvData[];
+
+        setActivationFlg(true);
+        if (dialogDisplayFlg) {
+          if (!window.confirm('読み込み結果に表示されているデータはクリアされます。よろしいですか？',)) {
+            setActivationFlg(false);
+            return;
+          }
+        }
+        setCsvData(contentData as CsvData[]);
+        setActivationFlg(false);
+        setDisplayLinkButtonFlg(true);
+        performValidation();
+
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
   const csvDownloadProps = {
     header: [
       { label: 'ユーザーID', key: 'userId' },
@@ -778,25 +812,8 @@ export default function VolunteerBulkRegister() {
               <CustomButton
                 buttonType='primary'
                 onClick={() => {
-                  setActivationFlg(true);
-                  if (dialogDisplayFlg) {
-                    if (
-                      !window.confirm(
-                        '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
-                      )
-                    ) {
-                      setActivationFlg(false);
-                      return;
-                    }
-                  }
-                  Promise.all(
-                    csvFileData.content?.slice(1).map((row, index) => getJsonRow(row, index)),
-                  ).then((results) => {
-                    setCsvData(results as CsvData[]);
-                    setActivationFlg(false);
-                    setDisplayLinkButtonFlg(true);
-                  });
-                  performValidation();
+                  console.log(csvFileData);
+                  sendCsvData();//読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
                 }}
               >
                 読み込む

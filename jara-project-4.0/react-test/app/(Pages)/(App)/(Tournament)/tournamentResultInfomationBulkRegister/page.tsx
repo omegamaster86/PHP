@@ -253,7 +253,6 @@ export default function TournamentResultInfomationBulkRegister() {
 
   const handleSearchTournament = async (name: string, e: FocusEvent<HTMLInputElement>) => {
     // 大会IDが入力されている場合
-    console.log(e);
     if (formData.tournId !== 0) {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
@@ -262,17 +261,20 @@ export default function TournamentResultInfomationBulkRegister() {
         const apiURL = `http://localhost:3100/tournament?${name}=${e.target.value}`;
         // 大会情報を取得
         // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
-        const tournamentResponse = await axios.post('/getTournamentInfoData', e.target.value); //大会IDを元に大会情報を取得する
+        const tornSearchVal = { torn_id: formData.tournId };
+        const tournamentResponse = await axios.post('/getTournamentInfoData', tornSearchVal);
+        console.log(tournamentResponse.data.result);
         // 大会情報が取得できなかった場合
-        if (tournamentResponse === undefined || tournamentResponse === null) {
+        if (tournamentResponse.data === undefined || tournamentResponse.data === null) {
           setTournIdErrorMessage(['入力された大会IDの大会は、存在しませんでした。']);
           return;
         } else {
           // 大会情報が取得できた場合
           setFormData((prevFormData) => ({
             ...prevFormData,
-            eventYear: tournamentResponse.data.event_start_date.slice(0, 4),
-            tournName: tournamentResponse.data.tourn_name,
+            // eventYear: tournamentResponse.data.result.event_start_date.slice(0, 4),
+            eventYear: tournamentResponse.data.result.event_start_date,
+            tournName: tournamentResponse.data.result.tourn_name,
           }));
           setDisplayFlg(false);
         }
@@ -281,8 +283,14 @@ export default function TournamentResultInfomationBulkRegister() {
       }
     } else {
       try {
+        console.log(e);
+        var eventYearVal = { event_start_year: e.target.value };
         // 大会情報を取得
-        const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
+        // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
+        const tournamentResponse = await axios.post('/tournamentEntryYearSearch', eventYearVal);
+        console.log(tournamentResponse);
         // 大会情報が取得できなかった場合
         if (tournamentResponse === undefined || tournamentResponse === null) {
           setTournIdErrorMessage(['大会IDを入力してください。']);
@@ -291,7 +299,8 @@ export default function TournamentResultInfomationBulkRegister() {
           // 大会情報が取得できた場合
           setFormData((prevFormData) => ({
             ...prevFormData,
-            eventYear: tournamentResponse.data.event_start_date.slice(0, 4),
+            // eventYear: tournamentResponse.data.event_start_date.slice(0, 4),
+            eventYear: tournamentResponse.data.event_start_date,
             tourn: {
               id: Number(tournamentResponse.data.tourn_id),
               name: tournamentResponse.data.tourn_name,
@@ -735,8 +744,9 @@ export default function TournamentResultInfomationBulkRegister() {
               selectedDate={formData?.eventYear}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 console.log(e);
-                if (e.target.value.length <= 4) {
-                  handleInputChange('eventYear', e as unknown as string);
+                var eventYearVal = e as any as Date;
+                if (eventYearVal.getFullYear().toString().length <= 4) {
+                  handleInputChange('eventYear', eventYearVal.getFullYear().toString());
                 }
               }}
               onBlur={(e: FocusEvent<HTMLInputElement>) => {
@@ -746,6 +756,8 @@ export default function TournamentResultInfomationBulkRegister() {
                   formData?.eventYear === undefined
                 ) {
                   handleInputChange('tournName', '');
+                } else {
+                  handleSearchTournament('eventYear', e);
                 }
               }}
               readonly={displayFlg}
