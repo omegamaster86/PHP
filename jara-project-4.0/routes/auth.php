@@ -133,6 +133,7 @@ Route::middleware('auth')->group(function () {
     Route::post('deleteTournamentData', [TournamentController::class, 'deleteTournamentData']); //DBから大会情報を削除する 20240205
     Route::post('tournamentSearch', [TournamentController::class, 'searchTournament']); //大会検索 20240212
     Route::get('getTournamentInfoData_allData', [TournamentController::class, 'getTournamentInfoData_allData']); //大会検索 20240212
+    Route::post('tournamentEntryYearSearch', [TournamentInfoAlignmentController::class, 'tournamentEntryYearSearch']); //大会エントリー一括登録 20240229
 
     //レース関連
     Route::post('getRaceData', [TournamentController::class, 'getRaceData']); //レース情報取得 20240214
