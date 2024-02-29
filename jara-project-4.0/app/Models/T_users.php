@@ -254,15 +254,15 @@ class T_users extends Authenticatable
     public function getUserDataFromMailAddress($mailaddress)
     {
         $users = DB::select('select 
-                                `user_id`, 
-                                `user_name`, 
-                                `mailaddress`, 
-                                `temp_password_flag`
-                                FROM `t_users`
-                                WHERE 1=1
-                                and `delete_flag` = 0
-                                and `mailaddress` = ?'
-                            ,$mailaddress);
+                            `user_id`, 
+                            `user_name`, 
+                            `mailaddress`, 
+                            `temp_password_flag`
+                            FROM `t_users`
+                            WHERE 1=1
+                            and `delete_flag` = 0
+                            and `mailaddress` = ?'
+                            ,[$mailaddress]);
         return $users;
     }
 
