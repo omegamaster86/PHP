@@ -118,8 +118,60 @@ export default function PlayerInformationLinking() {
     await csrf();
     await axios.post('/sendCsvData', element)
       .then((res) => {
-        console.log(res.data);
-        // router.push('/tournamentSearch'); // 20240222
+        console.log(res.data.result);
+        var contentData = res.data.result as CsvData[];
+        // contentData.map((row, rowIndex) => {
+        //   console.log(row, rowIndex);
+        // });
+
+        setActivationFlg(true);
+        if (dialogDisplayFlg) {
+          window.confirm('読み込み結果に表示されているデータはクリアされます。よろしいですか？',) ?
+            (
+              setCsvData([]),
+              contentData.map((row, rowIndex) => {
+                setCsvData((prevData) => [
+                  ...(prevData as CsvData[]),
+                  {
+                    id: rowIndex,
+                    checked: row.checked,
+                    link: row.link,
+                    oldPlayerId: row.oldPlayerId,
+                    playerId: row.playerId,
+                    mailaddress: row.mailaddress,
+                    playerName: row.playerName,
+                    message: row.message,
+                  },
+                ]);
+                setDialogDisplayFlg(true);
+              })
+            ) :
+            null;
+        } else {
+          setCsvData([]);
+          contentData.map((row, rowIndex) => {
+            setCsvData((prevData) => [
+              ...(prevData as CsvData[]),
+              {
+                id: rowIndex,
+                checked: row.checked,
+                link: row.link,
+                oldPlayerId: row.oldPlayerId,
+                playerId: row.playerId,
+                mailaddress: row.mailaddress,
+                playerName: row.playerName,
+                message: row.message,
+              },
+            ]);
+            setDialogDisplayFlg(true);
+            // 仮実装。チェック内容に応じて連携ボタンの表示を判定
+            if (row.oldPlayerId !== '') {
+              setDisplayLinkButtonFlg(true);
+            }
+          });
+        }
+        performValidation();
+        setActivationFlg(false);
       })
       .catch(error => {
         console.log(error);
@@ -192,56 +244,6 @@ export default function PlayerInformationLinking() {
                   onClick={() => {
                     console.log(csvFileData);
                     sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
-                    setActivationFlg(true);
-                    if (dialogDisplayFlg) {
-                      window.confirm('読み込み結果に表示されているデータはクリアされます。よろしいですか？',) ?
-                        (
-                          setCsvData([]),
-                          csvFileData?.content?.slice(1).map((row, rowIndex) => {
-                            setCsvData((prevData) => [
-                              ...(prevData as CsvData[]),
-                              {
-                                id: rowIndex,
-                                // 仮実装。チェック内容に応じて連携の可否とチェックの有無を判定
-                                checked: rowIndex % 2 === 0 ? true : false,
-                                link: rowIndex % 2 === 0 ? '連携' : '連携不可',
-                                oldPlayerId: row[0],
-                                playerId: row[1],
-                                mailaddress: row[2],
-                                playerName: row[3],
-                                message: 'メッセージ',
-                              },
-                            ]);
-                            setDialogDisplayFlg(true);
-                          })
-                        ) :
-                        null;
-                    } else {
-                      setCsvData([]);
-                      csvFileData?.content?.slice(1).map((row, rowIndex) => {
-                        setCsvData((prevData) => [
-                          ...(prevData as CsvData[]),
-                          {
-                            id: rowIndex,
-                            // 仮実装。チェック内容に応じて連携の可否とチェックの有無を判定
-                            checked: rowIndex % 2 === 0 ? true : false,
-                            link: rowIndex % 2 === 0 ? '連携' : '連携不可',
-                            oldPlayerId: row[0],
-                            playerId: row[1],
-                            mailaddress: row[2],
-                            playerName: row[3],
-                            message: 'メッセージ',
-                          },
-                        ]);
-                        setDialogDisplayFlg(true);
-                        // 仮実装。チェック内容に応じて連携ボタンの表示を判定
-                        if (row[0] !== '') {
-                          setDisplayLinkButtonFlg(true);
-                        }
-                      });
-                    }
-                    performValidation();
-                    setActivationFlg(false);
                   }}
                 >
                   読み込む
