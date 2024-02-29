@@ -460,7 +460,6 @@ export default function TournamentEntryBulkRegister() {
                 ) {
                   handleInputChange('tournName', '');
                 } else {
-                  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@");
                   handleSearchTournament('eventYear', e);
                 }
               }}
