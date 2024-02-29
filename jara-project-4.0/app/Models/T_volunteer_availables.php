@@ -43,9 +43,9 @@ class T_volunteer_availables extends Model
                 $volunteersInfo['volunteer_id'],
                 $volunteersInfo['day_of_week'],
                 $volunteersInfo['time_zone'],
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 $volunteersInfo['delete_flag'],
                 $volunteersInfo['volunteer_id'], //where条件

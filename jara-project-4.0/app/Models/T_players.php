@@ -116,9 +116,9 @@ class T_players extends Model
                     $playersInfo['residence_country'],
                     $playersInfo['residence_prefecture'],
                     $playersInfo['photo'],
-                    NOW(),
+                    now()->format('Y-m-d H:i:s.u'),
                     Auth::user()->user_id,
-                    NOW(),
+                    now()->format('Y-m-d H:i:s.u'),
                     Auth::user()->user_id,
                     $playersInfo['delete_flag'],
                     Auth::user()->user_id //where条件用
@@ -136,26 +136,26 @@ class T_players extends Model
     }
 
     //interfaceのPlayerInformationResponseを引数としてupdateを実行する
-    public function updatePlayerInformationResponse($playerInformationResponse)
-    {
-        DB::update('update `t_players`
-                    `jara_player_id`= :jara_player_id,
-                    `player_name`= :player_name,
-                    `date_of_birth`= :date_of_birth,
-                    `sex_id`= :sex_id,
-                    `height`= :height,
-                    `weight`= :weight,
-                    `side_info`= :side_info,
-                    `birth_country`= :birth_country,
-                    `birth_prefecture`= :birth_prefecture,
-                    `residence_country`= :residence_country,
-                    `residence_prefecture`= :residence_prefecture,
-                    `photo`= :photo,
-                    `updated_time`= :updated_time,
-                    `updated_user_id`= :updated_user_id,
-                    where `user_id` = :user_id'
-                    ,$playerInformationResponse);
-    }
+    // public function updatePlayerInformationResponse($playerInformationResponse)
+    // {
+    //     DB::update('update `t_players`
+    //                 `jara_player_id`= :jara_player_id,
+    //                 `player_name`= :player_name,
+    //                 `date_of_birth`= :date_of_birth,
+    //                 `sex_id`= :sex_id,
+    //                 `height`= :height,
+    //                 `weight`= :weight,
+    //                 `side_info`= :side_info,
+    //                 `birth_country`= :birth_country,
+    //                 `birth_prefecture`= :birth_prefecture,
+    //                 `residence_country`= :residence_country,
+    //                 `residence_prefecture`= :residence_prefecture,
+    //                 `photo`= :photo,
+    //                 `updated_time`= :updated_time,
+    //                 `updated_user_id`= :updated_user_id,
+    //                 where `user_id` = :user_id'
+    //                 ,$playerInformationResponse);
+    // }
 
     //react 選手情報更新画面用 選手情報の更新を行う 20240131
     public function deletePlayerData($playersInfo)
@@ -166,9 +166,9 @@ class T_players extends Model
             DB::update(
                 'update `t_players` set `registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where player_id = ?',
                 [
-                    NOW(),
+                    now()->format('Y-m-d H:i:s.u'),
                     Auth::user()->user_id,
-                    NOW(),
+                    now()->format('Y-m-d H:i:s.u'),
                     Auth::user()->user_id,
                     1,
                     $playersInfo['player_id'] //where条件用
@@ -243,9 +243,9 @@ class T_players extends Model
                     $playersInfo['residence_country'],
                     $playersInfo['residence_prefecture'],
                     $playersInfo['photo'],
-                    NOW(),
+                    now()->format('Y-m-d H:i:s.u'),
                     Auth::user()->user_id,
-                    NOW(),
+                    now()->format('Y-m-d H:i:s.u'),
                     Auth::user()->user_id,
                     0
                 ]
@@ -349,7 +349,7 @@ class T_players extends Model
     {
         DB::update(
             'update t_players set jara_player_id = ?, updated_time = ?, updated_user_id = ? where user_id = ?',
-            [$playersInfo['oldPlayerId'], now(), Auth::user()->user_id, $playersInfo['playerId']]
+            [$playersInfo['oldPlayerId'], now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id, $playersInfo['playerId']]
         );
     }
 

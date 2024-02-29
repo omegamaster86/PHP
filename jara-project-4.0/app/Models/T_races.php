@@ -70,9 +70,9 @@ class T_races extends Model
                 $racesInfo['by_group'],
                 $racesInfo['range'],
                 $racesInfo['start_date_time'],
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 $racesInfo['delete_flag'],
             ]
@@ -151,9 +151,9 @@ class T_races extends Model
                 $racesInfo['by_group'],
                 $racesInfo['range'],
                 $racesInfo['start_date_time'],
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 $racesInfo['delete_flag'],
                 $racesInfo['tourn_id']

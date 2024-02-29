@@ -790,7 +790,7 @@ class TournamentController extends Controller
             DB::transaction();
             //出漕結果記録テーブルを検索
             $reqData = $request->all();
-            $reqData['current_datetime'] = now();
+            $reqData['current_datetime'] = now()->format('Y-m-d H:i:s.u');
             $reqData['user_id'] = Auth::user()->user_id;
             $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData);
             //結果が0件なら、insertを実行
@@ -822,7 +822,7 @@ class TournamentController extends Controller
             DB::transaction();
             //出漕結果記録テーブルを検索
             $reqData = $request->all();
-            $reqData['updated_time'] = now();
+            $reqData['updated_time'] = now()->format('Y-m-d H:i:s.u');
             $reqData['updated_user_id'] = Auth::user()->user_id;
             $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData);
             //結果が0件なら、insertを実行
@@ -854,7 +854,7 @@ class TournamentController extends Controller
             DB::transaction();
             //出漕結果記録テーブルを検索
             $reqData = $request->all();
-            $reqData['updated_datetime'] = now();
+            $reqData['updated_datetime'] = now()->format('Y-m-d H:i:s.u');
             $reqData['updated_user_id'] = Auth::user()->user_id;
             $result_count = $t_raceResultRecord->getIsExistsTargetRaceResultRecord($reqData);
             //結果が0件なら、insertを実行
