@@ -101,9 +101,22 @@ export default function PlayerInformationLinking() {
 
   //読み込むボタン押下時 20240228
   const sendCsvData = async () => {
+    var array = csvFileData?.content.map((value, index) => {
+      return {
+        id: index, // ID
+        checked: false, // 選択
+        link: '', // 連携
+        oldPlayerId: value[0],
+        playerId: value[1],
+        mailaddress: value[2],
+        playerName: value[3],
+        message: '',
+      }
+    });
+    var element = array as CsvData[];
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
-    await axios.post('/sendCsvData', csvFileData)
+    await axios.post('/sendCsvData', element)
       .then((res) => {
         console.log(res.data);
         // router.push('/tournamentSearch'); // 20240222
