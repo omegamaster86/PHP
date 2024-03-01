@@ -536,22 +536,22 @@ class VolunteerController extends Controller
     }
 
     //ボランティアCSV読み込み時 20240229 
-    public function sendVolunteerCsvData(Request $request)
-    {
-        Log::debug(sprintf("sendVolunteerCsvData start"));
-        $reqData = $request->all();
-        Log::debug($reqData);
-        Log::debug(sprintf("sendVolunteerCsvData end"));
-        return response()->json(['result' => $reqData]); //DBの結果を返す
-    }
+    // public function sendVolunteerCsvData(Request $request)
+    // {
+    //     Log::debug(sprintf("sendVolunteerCsvData start"));
+    //     $reqData = $request->all();
+    //     Log::debug($reqData);
+    //     Log::debug(sprintf("sendVolunteerCsvData end"));
+    //     return response()->json(['result' => $reqData]); //DBの結果を返す
+    // }
 
-    //ボランティアCSV登録時 20240229 
-    public function registerVolunteerCsvData(Request $request)
-    {
-        Log::debug(sprintf("registerVolunteerCsvData start"));
-        $reqData = $request->all();
-        Log::debug($reqData);
-        Log::debug(sprintf("registerVolunteerCsvData end"));
-        return response()->json(['result' => $reqData]); //DBの結果を返す
-    }
+    // //ボランティアCSV登録時 20240229 
+    // public function registerVolunteerCsvData(Request $request)
+    // {
+    //     Log::debug(sprintf("registerVolunteerCsvData start"));
+    //     $reqData = $request->all();
+    //     Log::debug($reqData);
+    //     Log::debug(sprintf("registerVolunteerCsvData end"));
+    //     return response()->json(['result' => $reqData]); //DBの結果を返す
+    // }
 }

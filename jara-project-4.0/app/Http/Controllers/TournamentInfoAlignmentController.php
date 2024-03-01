@@ -933,12 +933,14 @@ class TournamentInfoAlignmentController extends Controller
     }
 
     //大会エントリー一括登録 20240229
-    public function tournamentEntryYearSearch(Request $request)
+    public function tournamentEntryYearSearch(Request $request,T_tournaments $t_tournaments)
     {
         Log::debug(sprintf("tournamentEntryYearSearch start"));
         $reqData = $request->all();
-        Log::debug($reqData);
+        $event_start_year = $reqData["event_start_year"];
+        $tournaments = $t_tournaments->getTournamentsFromEntryYear($event_start_year);
+        //Log::debug($tournaments);
         Log::debug(sprintf("tournamentEntryYearSearch end"));
-        return response()->json(['result' => $reqData]); //DBの結果を返す
+        return response()->json(['result' => $tournaments]); //DBの結果を返す
     }
 }
