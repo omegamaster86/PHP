@@ -145,8 +145,8 @@ Route::middleware('auth')->group(function () {
     //ボランティア関連
     Route::post('getVolunteerData', [VolunteerController::class, 'getVolunteerData']); //ボランティア情報取得 20240213 ※ボランティア履歴情報も取得する
     Route::post('volunteerSearch', [VolunteerController::class, 'searchVolunteers']); //ボランティア検索
-    Route::post('sendVolunteerCsvData', [VolunteerController::class, 'sendVolunteerCsvData']); //ボランティア一括 読み込むボタン押下
-    Route::post('registerVolunteerCsvData', [VolunteerController::class, 'registerVolunteerCsvData']); //ボランティア一括 登録ボタン押下
+    Route::post('sendVolunteerCsvData', [VolunteerInfoAlignmentController::class, 'sendVolunteerCsvData']); //ボランティア一括 読み込むボタン押下
+    Route::post('registerVolunteerCsvData', [VolunteerInfoAlignmentController::class, 'registerVolunteerCsvData']); //ボランティア一括 登録ボタン押下
 
 
     //React連携後APIここまで===========================================================

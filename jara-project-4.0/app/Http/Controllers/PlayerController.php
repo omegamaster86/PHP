@@ -268,7 +268,7 @@ class PlayerController extends Controller
             $user_id = (string) (Auth::user()->user_id);
             DB::beginTransaction();
             try {
-                $user = DB::insert('insert into t_players ( user_id, jara_player_id,  player_name, date_of_birth, sex, height, weight, side_info, birth_country, birth_prefecture, residence_country,residence_prefecture, photo, registered_time, registered_user_id,updated_time,updated_user_id) values (?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$user_id, $request->jara_player_id, $request->player_name, $request->date_of_birth, $request->sex, $request->height, $request->weight, $request->side_info, $request->birth_country, $request->birth_prefecture, $request->residence_country, $request->residence_prefecture, $request->photo, now(), Auth::user()->user_id, now(), Auth::user()->user_id]);
+                $user = DB::insert('insert into t_players ( user_id, jara_player_id,  player_name, date_of_birth, sex, height, weight, side_info, birth_country, birth_prefecture, residence_country,residence_prefecture, photo, registered_time, registered_user_id,updated_time,updated_user_id) values (?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$user_id, $request->jara_player_id, $request->player_name, $request->date_of_birth, $request->sex, $request->height, $request->weight, $request->side_info, $request->birth_country, $request->birth_prefecture, $request->residence_country, $request->residence_prefecture, $request->photo, now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id, now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id]);
                 DB::commit();
                 $page_status = "選手情報の登録が正常に完了しました。";
                 $page_url = route('my-page');

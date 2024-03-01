@@ -53,9 +53,9 @@ class T_volunteer_language_proficiency extends Model
                 $volunteersInfo['volunteer_id'],
                 $volunteersInfo['lang_id'],
                 $volunteersInfo['lang_pro'],
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 $volunteersInfo['delete_flag'],
                 $volunteersInfo['volunteer_id'], //where条件

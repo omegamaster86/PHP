@@ -452,7 +452,7 @@ class T_tournaments extends Model
                                     FROM `t_tournaments`
                                     WHERE 1=1
                                     and DATE_FORMAT(event_start_date, '%Y') = ?"
-                                ,$entry_year);
+                                ,[$entry_year]);
         return $tournaments;
     }
 }

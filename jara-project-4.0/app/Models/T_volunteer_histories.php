@@ -56,9 +56,9 @@ class T_volunteer_histories extends Model
                 $volunteersInfo['time_zone'],
                 $volunteersInfo['authority'],
                 $volunteersInfo['number_of_days'],
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 $volunteersInfo['delete_flag'],
                 $volunteersInfo['volunteer_id'], //where条件

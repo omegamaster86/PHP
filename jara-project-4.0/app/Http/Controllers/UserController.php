@@ -611,7 +611,7 @@ class UserController extends Controller
             DB::beginTransaction();
             try {
                 $hashed_password = Hash::make($temp_password);
-                DB::update('update t_users set password = ? , temp_password = ?, expiry_time_of_temp_password = ?, temp_password_flag = ?, updated_time = ?, updated_user_id = ? where mailaddress = ? and delete_flag = 0 ', [$hashed_password, $hashed_password,  $new_date, '1', now(), $user_id, $request->mailaddress]);
+                DB::update('update t_users set password = ? , temp_password = ?, expiry_time_of_temp_password = ?, temp_password_flag = ?, updated_time = ?, updated_user_id = ? where mailaddress = ? and delete_flag = 0 ', [$hashed_password, $hashed_password,  $new_date, '1', now()->format('Y-m-d H:i:s.u'), $user_id, $request->mailaddress]);
 
                 DB::commit();
             } catch (\Throwable $e) {

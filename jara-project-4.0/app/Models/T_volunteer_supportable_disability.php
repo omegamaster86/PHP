@@ -48,9 +48,9 @@ class T_volunteer_supportable_disability extends Model
                 $volunteersInfo['volunteer_sprt_id'],
                 $volunteersInfo['volunteer_id'],
                 $volunteersInfo['dis_type_id'],
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 $volunteersInfo['delete_flag'],
                 $volunteersInfo['volunteer_id'], //where条件

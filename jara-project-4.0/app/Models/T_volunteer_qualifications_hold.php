@@ -50,9 +50,9 @@ class T_volunteer_qualifications_hold extends Model
                 $volunteersInfo['volunteer_id'],
                 $volunteersInfo['qual_id'],
                 $volunteersInfo['others_qual'],
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 $volunteersInfo['delete_flag'],
                 $volunteersInfo['volunteer_id'], //where条件
