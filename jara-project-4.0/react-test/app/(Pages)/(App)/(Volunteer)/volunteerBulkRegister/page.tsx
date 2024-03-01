@@ -30,6 +30,10 @@ interface CsvData {
     value: string;
     isError: boolean;
   }; // 生年月日
+  sexId: {
+    value: string;
+    isError: boolean;
+  }; // 性別
   residenceCountryId: {
     value: string;
     isError: boolean;
@@ -38,14 +42,6 @@ interface CsvData {
     value: string;
     isError: boolean;
   }; // 居住都道府県
-  sexId: {
-    value: string;
-    isError: boolean;
-  }; // 性別
-  clothesSizeId: {
-    value: string;
-    isError: boolean;
-  }; // 服サイズ
   mailaddress: {
     value: string;
     isError: boolean;
@@ -54,6 +50,10 @@ interface CsvData {
     value: string;
     isError: boolean;
   }; // 電話番号
+  clothesSizeId: {
+    value: string;
+    isError: boolean;
+  }; // 服サイズ
   disTypeId1: {
     value: string;
     isError: boolean;
@@ -90,22 +90,22 @@ interface CsvData {
     value: string;
     isError: boolean;
   }; // 使用言語1
-  langId2: {
-    value: string;
-    isError: boolean;
-  }; // 使用言語2
-  langId3: {
-    value: string;
-    isError: boolean;
-  }; // 使用言語3
   langProId1: {
     value: string;
     isError: boolean;
   }; // 言語レベル1
+  langId2: {
+    value: string;
+    isError: boolean;
+  }; // 使用言語2
   langProId2: {
     value: string;
     isError: boolean;
   }; // 言語レベル2
+  langId3: {
+    value: string;
+    isError: boolean;
+  }; // 使用言語3
   langProId3: {
     value: string;
     isError: boolean;
@@ -376,6 +376,14 @@ export default function VolunteerBulkRegister() {
         isError: validateRequired(row[2]) ? true : validateYmdFormat(row[2]),
       },
       // 必須項目
+      sexId: {
+        value: sex.find((item) => item.id === Number(row[3]))?.name || row[3],
+        isError: validateRequired(row[3])
+          ? true
+          : validateNumber(row[3], 2) ||
+          sex.filter((item) => item.id === Number(row[3])).length !== 1,
+      },
+      // 必須項目
       residenceCountryId: {
         value: country.find((item) => item.id === Number(row[4]))?.name || row[4],
         isError: validateRequired(row[4])
@@ -391,13 +399,13 @@ export default function VolunteerBulkRegister() {
           : validateNumber(row[5], 2) ||
           prefecture.filter((item) => item.id === Number(row[5])).length !== 1,
       },
-      // 必須項目
-      sexId: {
-        value: sex.find((item) => item.id === Number(row[3]))?.name || row[3],
-        isError: validateRequired(row[3])
-          ? true
-          : validateNumber(row[3], 2) ||
-          sex.filter((item) => item.id === Number(row[3])).length !== 1,
+      mailaddress: {
+        value: row[7],
+        isError: !validateRequired(row[7]) && validateEmailFormat(row[7]),
+      },
+      telephoneNumber: {
+        value: row[8],
+        isError: !validateRequired(row[8]) && validateNumber(row[8], 15),
       },
       // 必須項目
       clothesSizeId: {
@@ -406,14 +414,6 @@ export default function VolunteerBulkRegister() {
           ? true
           : validateNumber(row[6], 1) ||
           clothesSize.filter((item) => item.id === Number(row[6])).length !== 1,
-      },
-      mailaddress: {
-        value: row[7],
-        isError: !validateRequired(row[7]) && validateEmailFormat(row[7]),
-      },
-      telephoneNumber: {
-        value: row[8],
-        isError: !validateRequired(row[8]) && validateNumber(row[8], 15),
       },
       disTypeId1: {
         value: row[9] === '1' ? '◯' : '',
@@ -469,20 +469,6 @@ export default function VolunteerBulkRegister() {
           (validateNumber(row[17], 3) ||
             language.filter((item) => item.id === Number(row[17])).length !== 1),
       },
-      langId2: {
-        value: language.find((item) => item.id === Number(row[18]))?.name,
-        isError:
-          !validateRequired(row[18]) &&
-          (validateNumber(row[18], 3) ||
-            language.filter((item) => item.id === Number(row[18])).length !== 1),
-      },
-      langId3: {
-        value: language.find((item) => item.id === Number(row[19]))?.name,
-        isError:
-          !validateRequired(row[19]) &&
-          (validateNumber(row[19], 3) ||
-            language.filter((item) => item.id === Number(row[19])).length !== 1),
-      },
       langProId1: {
         value: languageLevel.find((item) => item.id === Number(row[20]))?.name,
         isError:
@@ -490,12 +476,26 @@ export default function VolunteerBulkRegister() {
           (validateNumber(row[20], 3) ||
             languageLevel.filter((item) => item.id === Number(row[20])).length !== 1),
       },
+      langId2: {
+        value: language.find((item) => item.id === Number(row[18]))?.name,
+        isError:
+          !validateRequired(row[18]) &&
+          (validateNumber(row[18], 3) ||
+            language.filter((item) => item.id === Number(row[18])).length !== 1),
+      },
       langProId2: {
         value: languageLevel.find((item) => item.id === Number(row[21]))?.name,
         isError:
           !validateRequired(row[21]) &&
           (validateNumber(row[21], 3) ||
             languageLevel.filter((item) => item.id === Number(row[21])).length !== 1),
+      },
+      langId3: {
+        value: language.find((item) => item.id === Number(row[19]))?.name,
+        isError:
+          !validateRequired(row[19]) &&
+          (validateNumber(row[19], 3) ||
+            language.filter((item) => item.id === Number(row[19])).length !== 1),
       },
       langProId3: {
         value: languageLevel.find((item) => item.id === Number(row[22]))?.name,
@@ -700,9 +700,9 @@ export default function VolunteerBulkRegister() {
       { label: '性別', key: 'sexId' },
       { label: '居住地（国）', key: 'residenceCountryId' },
       { label: '居住地（都道府県）', key: 'residencePrefectureId' },
-      { label: '服サイズ', key: 'clothesSizeId' },
       { label: 'メールアドレス', key: 'mailaddress' },
       { label: '電話番号', key: 'telephoneNumber' },
+      { label: '服サイズ', key: 'clothesSizeId' },
       { label: 'PR1', key: 'disTypeId1' },
       { label: 'PR2', key: 'disTypeId2' },
       { label: 'PR3', key: 'disTypeId3' },
@@ -712,10 +712,10 @@ export default function VolunteerBulkRegister() {
       { label: '保有資格4', key: 'qualId4' },
       { label: '保有資格5', key: 'qualId5' },
       { label: '言語1', key: 'langId1' },
-      { label: '言語2', key: 'langId2' },
-      { label: '言語3', key: 'langId3' },
       { label: '言語レベル1', key: 'langProId1' },
+      { label: '言語2', key: 'langId2' },
       { label: '言語レベル2', key: 'langProId2' },
+      { label: '言語3', key: 'langId3' },
       { label: '言語レベル3', key: 'langProId3' },
       { label: '日曜日', key: 'dayOfWeek1' },
       { label: '月曜日', key: 'dayOfWeek2' },
@@ -739,9 +739,9 @@ export default function VolunteerBulkRegister() {
         residenceCountryId: '001',
         residencePrefectureId: '01',
         sexId: '01',
-        clothesSizeId: '1',
         mailaddress: 'sample@example.com',
         telephoneNumber: '00011112222',
+        clothesSizeId: '1',
         disTypeId1: '1',
         disTypeId2: '0',
         disTypeId3: '0',
@@ -751,10 +751,10 @@ export default function VolunteerBulkRegister() {
         qualId4: '001',
         qualId5: '002',
         langId1: '001',
-        langId2: '002',
-        langId3: '003',
         langProId1: '001',
+        langId2: '002',
         langProId2: '002',
+        langId3: '003',
         langProId3: '003',
         dayOfWeek1: '1',
         dayOfWeek2: '0',
