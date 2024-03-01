@@ -140,6 +140,21 @@ export default function TournamentEntryBulkRegister() {
     resetActivationFlg: resetActivationFlg,
   } as CsvUploadProps;
 
+  //読み込むボタン押下時 20240228
+  const sendCsvData = async () => {
+    const csrf = () => axios.get('/sanctum/csrf-cookie');
+    await csrf();
+    await axios.post('/sendTournamentEntryCsvData', "")
+      .then((res) => {
+        console.log(res.data.result);
+        var contentData = res.data.result as CsvData[];
+
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
   useEffect(() => {
     if (tournamentNameIsEmpty) {
       const tournNameError = Validator.getErrorMessages([
@@ -571,6 +586,8 @@ export default function TournamentEntryBulkRegister() {
                 <CustomButton
                   buttonType='primary'
                   onClick={() => {
+                    console.log(csvFileData);
+                    sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240301
                     setActivationFlg(true);
                     if (dialogDisplayFlg) {
                       window.confirm(
