@@ -933,12 +933,54 @@ class TournamentInfoAlignmentController extends Controller
     }
 
     //大会エントリー一括登録 20240229
-    public function tournamentEntryYearSearch(Request $request)
+    public function tournamentEntryYearSearch(Request $request,T_tournaments $t_tournaments)
     {
         Log::debug(sprintf("tournamentEntryYearSearch start"));
         $reqData = $request->all();
-        Log::debug($reqData);
+        $event_start_year = $reqData["event_start_year"];
+        $tournaments = $t_tournaments->getTournamentsFromEntryYear($event_start_year);
+        //Log::debug($tournaments);
         Log::debug(sprintf("tournamentEntryYearSearch end"));
+        return response()->json(['result' => $tournaments]); //DBの結果を返す
+    }
+
+    //大会エントリー一括登録 読み込むボタン押下 20240301
+    public function sendTournamentEntryCsvData(Request $request)
+    {
+        Log::debug(sprintf("sendTournamentEntryCsvData start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        Log::debug(sprintf("sendTournamentEntryCsvData end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
+    }
+
+    //大会エントリー一括登録 登録ボタン押下 20240301
+    public function registerTournamentEntryCsvData(Request $request)
+    {
+        Log::debug(sprintf("registerTournamentEntryCsvData start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        Log::debug(sprintf("registerTournamentEntryCsvData end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
+    }
+
+    //大会結果一括 読み込むボタン押下 20240301
+    public function sendTournamentResultCsvData(Request $request)
+    {
+        Log::debug(sprintf("sendTournamentResultCsvData start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        Log::debug(sprintf("sendTournamentResultCsvData end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
+    }
+
+    //大会結果一括 登録ボタン押下 20240301
+    public function registerTournamentResultCsvData(Request $request)
+    {
+        Log::debug(sprintf("registerTournamentResultCsvData start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        Log::debug(sprintf("registerTournamentResultCsvData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
     }
 }

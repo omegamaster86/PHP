@@ -76,9 +76,9 @@ class T_volunteers extends Model
                 $volunteersInfo['mailaddress'],
                 $volunteersInfo['users_email_flag'],
                 $volunteersInfo['clothes_size'],
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
-                NOW(),
+                now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 $volunteersInfo['delete_flag'],
                 $volunteersInfo['volunteer_id'], //where条件

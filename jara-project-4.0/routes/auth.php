@@ -133,7 +133,11 @@ Route::middleware('auth')->group(function () {
     Route::post('deleteTournamentData', [TournamentController::class, 'deleteTournamentData']); //DBから大会情報を削除する 20240205
     Route::post('tournamentSearch', [TournamentController::class, 'searchTournament']); //大会検索 20240212
     Route::get('getTournamentInfoData_allData', [TournamentController::class, 'getTournamentInfoData_allData']); //大会検索 20240212
-    Route::post('tournamentEntryYearSearch', [TournamentInfoAlignmentController::class, 'tournamentEntryYearSearch']); //大会エントリー一括登録 20240229
+    Route::post('tournamentEntryYearSearch', [TournamentInfoAlignmentController::class, 'tournamentEntryYearSearch']); //大会エントリー一括登録 20240229 sendTournamentEntryCsvData
+    Route::post('sendTournamentEntryCsvData', [TournamentInfoAlignmentController::class, 'sendTournamentEntryCsvData']); //大会エントリー一括登録 読み込むボタン押下 20240301
+    Route::post('registerTournamentEntryCsvData', [TournamentInfoAlignmentController::class, 'registerTournamentEntryCsvData']); //大会エントリー一括登録 登録ボタン押下 20240301
+    Route::post('sendTournamentResultCsvData', [TournamentInfoAlignmentController::class, 'sendTournamentResultCsvData']); //大会結果一括 読み込むボタン押下 20240301
+    Route::post('registerTournamentResultCsvData', [TournamentInfoAlignmentController::class, 'registerTournamentResultCsvData']); //大会結果一括 登録ボタン押下 20240301
 
     //レース関連
     Route::post('getRaceData', [TournamentController::class, 'getRaceData']); //レース情報取得 20240214
@@ -145,6 +149,8 @@ Route::middleware('auth')->group(function () {
     //ボランティア関連
     Route::post('getVolunteerData', [VolunteerController::class, 'getVolunteerData']); //ボランティア情報取得 20240213 ※ボランティア履歴情報も取得する
     Route::post('volunteerSearch', [VolunteerController::class, 'searchVolunteers']); //ボランティア検索
+    Route::post('sendVolunteerCsvData', [VolunteerInfoAlignmentController::class, 'sendVolunteerCsvData']); //ボランティア一括 読み込むボタン押下
+    Route::post('registerVolunteerCsvData', [VolunteerInfoAlignmentController::class, 'registerVolunteerCsvData']); //ボランティア一括 登録ボタン押下
 
 
     //React連携後APIここまで===========================================================

@@ -433,4 +433,26 @@ class T_tournaments extends Model
                                             
         return $tournaments; //大会テーブルの項目すべて渡す
     }
+
+    //開催年を条件に大会情報を取得する
+    public function getTournamentsFromEntryYear($entry_year)
+    {
+        $tournaments = DB::select("select
+                                    `tourn_id`
+                                    ,`tourn_name`
+                                    ,`sponsor_org_id`
+                                    ,`event_start_date`
+                                    ,`event_end_date`
+                                    ,`venue_id`
+                                    ,`venue_name`
+                                    ,`tourn_type`
+                                    ,`tourn_url`
+                                    ,`tourn_info_faile_path`
+                                    ,`entrysystem_tourn_id`
+                                    FROM `t_tournaments`
+                                    WHERE 1=1
+                                    and DATE_FORMAT(event_start_date, '%Y') = ?"
+                                ,[$entry_year]);
+        return $tournaments;
+    }
 }
