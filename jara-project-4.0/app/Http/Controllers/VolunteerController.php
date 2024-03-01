@@ -191,7 +191,7 @@ class VolunteerController extends Controller
             $searchInfo = $request->all();
             //参加しやすい曜日
             $pieces = str_split((string) $searchInfo['dayOfWeek']);
-           
+
             $searchInfo['sunday'] = $pieces[0];
             $searchInfo['monday'] = $pieces[1];
             $searchInfo['tuesday'] = $pieces[2];
@@ -522,16 +522,36 @@ class VolunteerController extends Controller
     }
 
     //ボランティア情報を取得する
-    public function getVolunteerResponse(Request $request,T_volunteers $t_volunteers)
+    public function getVolunteerResponse(Request $request, T_volunteers $t_volunteers)
     {
         $volunteerResponse = $t_volunteers->getVolunteerResponse($request); //ボランティアIDに基づいたボランティア情報を取得
         return response()->json(['result' => $volunteerResponse]); //DBの結果を返す
     }
 
     //ボランティア履歴情報を取得する
-    public function VolunteerHistoriesResponse(Request $request,T_volunteer_histories $t_volunteer_histories)
+    public function VolunteerHistoriesResponse(Request $request, T_volunteer_histories $t_volunteer_histories)
     {
         $volunteerHistoriesResponse = $t_volunteer_histories->getVolunteerHistoriesResponse($request); //ボランティアIDに基づいたボランティア履歴情報を取得
         return response()->json(['result' => $volunteerHistoriesResponse]); //DBの結果を返す
+    }
+
+    //ボランティアCSV読み込み時 20240229 
+    public function sendVolunteerCsvData(Request $request)
+    {
+        Log::debug(sprintf("sendVolunteerCsvData start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        Log::debug(sprintf("sendVolunteerCsvData end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
+    }
+
+    //ボランティアCSV登録時 20240229 
+    public function registerVolunteerCsvData(Request $request)
+    {
+        Log::debug(sprintf("registerVolunteerCsvData start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        Log::debug(sprintf("registerVolunteerCsvData end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
     }
 }
