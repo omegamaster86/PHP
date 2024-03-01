@@ -299,7 +299,7 @@ export default function VolunteerBulkRegister() {
     if (value === '') return false;
     // digits桁以下の数値かどうかを判定する
     // digits以下の時、かつ数値の文字列である場合はfalseを返す
-    return value.length <= digits || isNaN(Number(value));
+    return value.length > digits || isNaN(Number(value));
   };
 
   /**
