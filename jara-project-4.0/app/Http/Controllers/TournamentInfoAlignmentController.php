@@ -943,4 +943,44 @@ class TournamentInfoAlignmentController extends Controller
         Log::debug(sprintf("tournamentEntryYearSearch end"));
         return response()->json(['result' => $tournaments]); //DBの結果を返す
     }
+
+    //大会エントリー一括登録 読み込むボタン押下 20240301
+    public function sendTournamentEntryCsvData(Request $request)
+    {
+        Log::debug(sprintf("sendTournamentEntryCsvData start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        Log::debug(sprintf("sendTournamentEntryCsvData end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
+    }
+
+    //大会エントリー一括登録 登録ボタン押下 20240301
+    public function registerTournamentEntryCsvData(Request $request)
+    {
+        Log::debug(sprintf("registerTournamentEntryCsvData start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        Log::debug(sprintf("registerTournamentEntryCsvData end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
+    }
+
+    //大会結果一括 読み込むボタン押下 20240301
+    public function sendTournamentResultCsvData(Request $request)
+    {
+        Log::debug(sprintf("sendTournamentResultCsvData start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        Log::debug(sprintf("sendTournamentResultCsvData end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
+    }
+
+    //大会結果一括 登録ボタン押下 20240301
+    public function registerTournamentResultCsvData(Request $request)
+    {
+        Log::debug(sprintf("registerTournamentResultCsvData start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        Log::debug(sprintf("registerTournamentResultCsvData end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
+    }
 }
