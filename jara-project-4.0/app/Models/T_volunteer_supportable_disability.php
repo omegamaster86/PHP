@@ -60,7 +60,7 @@ class T_volunteer_supportable_disability extends Model
 
     public function insertVolunteerSupportableDisability($values)
     {
-        DB::insert('INSERT INTO `t_volunteer_supportable_disability`
+        DB::insert('insert into `t_volunteer_supportable_disability`
                     (
                         `volunteer_id`,
                         `dis_type_id`,
@@ -70,16 +70,16 @@ class T_volunteer_supportable_disability extends Model
                         `updated_user_id`,
                         `delete_flag`
                     )
-                    VALUES
-                    (
-                        :volunteer_id
-                        ,:dis_type_id
-                        ,:registered_time
-                        ,:registered_user_id
-                        ,:updated_time
-                        ,:updated_user_id
-                        ,:delete_flag
-                    )',$values);
+                    VALUES(?,?,?,?,?,?,?)'
+                    ,[
+                        $values['volunteer_id']
+                        ,$values['dis_type_id']
+                        ,$values['registered_time']
+                        ,$values['registered_user_id']
+                        ,$values['updated_time']
+                        ,$values['updated_user_id']
+                        ,$values['delete_flag']
+                    ]);
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
         return $insertId;
