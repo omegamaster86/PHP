@@ -1091,4 +1091,24 @@ class OrganizationPlayersController extends Controller
         Log::debug(sprintf("teamPlayerSearch end"));
         return response()->json(['result' => $players]);
     }
+
+        //団体一括 読み込むボタン押下 20240301
+        public function sendOrgCsvData(Request $request)
+        {
+            Log::debug(sprintf("sendOrgCsvData start"));
+            $reqData = $request->all();
+            Log::debug($reqData);
+            Log::debug(sprintf("sendOrgCsvData end"));
+            return response()->json(['result' => $reqData]); //DBの結果を返す
+        }
+    
+        //団体一括 登録ボタン押下 20240301
+        public function registerOrgCsvData(Request $request)
+        {
+            Log::debug(sprintf("registerOrgCsvData start"));
+            $reqData = $request->all();
+            Log::debug($reqData);
+            Log::debug(sprintf("registerOrgCsvData end"));
+            return response()->json(['result' => $reqData]); //DBの結果を返す
+        }
 }
