@@ -595,9 +595,9 @@ class T_raceResultRecord extends Model
                     $raceResultRecordInfo['wind_direction_2000m_point'],
                     $raceResultRecordInfo['wind_speed_1000m_point'],
                     $raceResultRecordInfo['wind_direction_1000m_point'],
-                    NOW(),
+                    now()->format('Y-m-d H:i:s.u'),
                     1, //Auth::user()->user_id,
-                    NOW(),
+                    now()->format('Y-m-d H:i:s.u'),
                     1, //Auth::user()->user_id,
                     $raceResultRecordInfo['delete_flag'],
                     $raceResultRecordInfo['tourn_id'], //where条件
@@ -673,9 +673,9 @@ class T_raceResultRecord extends Model
             DB::update(
                 'update t_race_result_record set `registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where `player_id` = ?',
                 [
-                    NOW(),
+                    now()->format('Y-m-d H:i:s.u'),
                     Auth::user()->user_id,
-                    NOW(),
+                    now()->format('Y-m-d H:i:s.u'),
                     Auth::user()->user_id,
                     1,
                     $raceResultRecordInfo['player_id'], //where条件
