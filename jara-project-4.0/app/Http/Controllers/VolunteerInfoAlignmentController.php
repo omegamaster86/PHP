@@ -747,11 +747,25 @@ class VolunteerInfoAlignmentController extends Controller
     }
 
     //ボランティアCSV読み込み時 20240229 
-    public function sendVolunteerCsvData(Request $request)
+    public function sendVolunteerCsvData(Request $request,T_volunteers $t_volunteers)
     {
         Log::debug(sprintf("sendVolunteerCsvData start"));
         $reqData = $request->all();
         Log::debug($reqData);
+        //重複チェック
+        //ボランティアの一覧を取得
+        $volunteer_list = $t_volunteers->getVolunteer();
+        for ($rowIndex = 0; $rowIndex < count($reqData); $rowIndex++)
+        {
+            $user_id = $reqData[$rowIndex]["user_id"]["value"];
+            //ユーザーIDの重複チェック
+            //「ボランティアテーブル」をファイルに記載されているユーザーIDで検索       
+            if(in_array($user_id,array_column($volunteer_list,'user_id')))
+            {
+                $reqData[$rowIndex]["result"] = "重複データ";
+                $reqData[$rowIndex]["checked"] = false;
+            }
+        }
         Log::debug(sprintf("sendVolunteerCsvData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
     }
@@ -762,6 +776,21 @@ class VolunteerInfoAlignmentController extends Controller
         Log::debug(sprintf("registerVolunteerCsvData start"));
         $reqData = $request->all();
         Log::debug($reqData);
+
+        DB::beginTransaction();
+        try
+        {
+            for ($rowIndex = 0; $rowIndex < count($reqData); $rowIndex++)
+            {
+
+            }
+        }
+        catch(\Throwable $e)
+        {
+            DB::rollBack();
+            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+        }
+
         Log::debug(sprintf("registerVolunteerCsvData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
     }
