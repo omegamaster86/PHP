@@ -686,11 +686,22 @@ class PlayerController extends Controller
                 $tPlayersData::$playerInfo['photo'] = ''; //写真
             }
         }
-        $result = $tPlayersData->updatePlayerData($tPlayersData::$playerInfo); //DBに選手を登録 20240131
 
-        $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
-        Log::debug(sprintf("updatePlayerData end"));
-        return response()->json(['users' => $users, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
+        DB::beginTransaction();
+        try
+        {
+            $result = $tPlayersData->updatePlayerData($tPlayersData::$playerInfo); //DBに選手を登録 20240131
+
+            $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
+            DB::commit();
+            Log::debug(sprintf("updatePlayerData end"));
+            return response()->json(['users' => $users, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
+        }
+        catch(\Throwable $e)
+        {
+            DB::rollBack();
+            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+        }
     }
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
     public function getPlayerInfoData(Request $request, T_players $tPlayersData)
