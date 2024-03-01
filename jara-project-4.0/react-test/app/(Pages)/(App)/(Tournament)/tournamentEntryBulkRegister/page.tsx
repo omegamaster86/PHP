@@ -149,6 +149,35 @@ export default function TournamentEntryBulkRegister() {
         console.log(res.data.result);
         var contentData = res.data.result as CsvData[];
 
+        setActivationFlg(true);
+        if (dialogDisplayFlg) {
+          window.confirm(
+            '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
+          )
+            ? (setCsvData([]),
+              csvFileData?.content?.slice(1).map((row, rowIndex) => {
+                handleCsvData(row, rowIndex);
+                setDialogDisplayFlg(true);
+              }))
+            : null;
+        } else {
+          if (formData.tournName === '' || formData.tournName === undefined) {
+            checkTournName(true);
+          } else {
+            setCsvData([]);
+            csvFileData?.content?.slice(1).map((row, rowIndex) => {
+              handleCsvData(row, rowIndex);
+              setDialogDisplayFlg(true);
+              // 仮実装。チェック内容に応じて登録ボタンの表示を判定
+              if (row[0] !== '') {
+                displayRegisterButton(true);
+              }
+            });
+          }
+        }
+        performValidation();
+        setActivationFlg(false);
+
       })
       .catch(error => {
         console.log(error);
@@ -231,11 +260,12 @@ export default function TournamentEntryBulkRegister() {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       const tournamentResponse = await axios.post('/tournamentEntryYearSearch', eventYearVal);
-      console.log(tournamentResponse);
+      const TournamentsResponseList = tournamentResponse.data.result.map(({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({ id: tourn_id, name: tourn_name }));
+      setTournamentList(TournamentsResponseList);
       // setFormData((prevFormData) => ({
       //   ...prevFormData,
-      //   eventYear: tournamentResponse.data.event_start_date.slice(0, 4),
-      //   tournName: tournamentResponse.data.tourn_name,
+      //   eventYear: tournamentResponse.data.result.event_start_date.slice(0, 4),
+      //   tournName: tournamentResponse.data.result.tourn_name,
       // }));
       setDisplayFlg(false);
     } catch (error) {
@@ -588,34 +618,6 @@ export default function TournamentEntryBulkRegister() {
                   onClick={() => {
                     console.log(csvFileData);
                     sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240301
-                    setActivationFlg(true);
-                    if (dialogDisplayFlg) {
-                      window.confirm(
-                        '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
-                      )
-                        ? (setCsvData([]),
-                          csvFileData?.content?.slice(1).map((row, rowIndex) => {
-                            handleCsvData(row, rowIndex);
-                            setDialogDisplayFlg(true);
-                          }))
-                        : null;
-                    } else {
-                      if (formData.tournName === '' || formData.tournName === undefined) {
-                        checkTournName(true);
-                      } else {
-                        setCsvData([]);
-                        csvFileData?.content?.slice(1).map((row, rowIndex) => {
-                          handleCsvData(row, rowIndex);
-                          setDialogDisplayFlg(true);
-                          // 仮実装。チェック内容に応じて登録ボタンの表示を判定
-                          if (row[0] !== '') {
-                            displayRegisterButton(true);
-                          }
-                        });
-                      }
-                    }
-                    performValidation();
-                    setActivationFlg(false);
                   }}
                 >
                   読み込む
