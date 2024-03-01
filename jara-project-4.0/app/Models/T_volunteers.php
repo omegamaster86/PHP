@@ -235,7 +235,7 @@ class T_volunteers extends Model
     //$values：挿入する値
     public function insertVolunteer($values)
     {
-        DB::insert("INSERT INTO `t_volunteers`
+        DB::insert("insert into `t_volunteers`
                     (
                         `user_id`,
                         `volunteer_name`,
@@ -254,25 +254,25 @@ class T_volunteers extends Model
                         `updated_user_id`,
                         `delete_flag`
                     )
-                    VALUES
-                    (
-                        :user_id
-                        ,:volunteer_name
-                        ,:residence_country
-                        ,:residence_prefecture
-                        ,:sex
-                        ,:date_of_birth
-                        ,:dis_type_id
-                        ,:telephone_number
-                        ,:mailaddress
-                        ,:users_email_flag
-                        ,:clothes_size
-                        ,:registered_time
-                        ,:register_user_id
-                        ,:updated_time
-                        ,updated_user_id
-                        ,:delete_flag
-                    )",$values);
+                    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+                    ,[
+                        $values["user_id"]
+                        ,$values["volunteer_name"]
+                        ,$values["residence_country"]
+                        ,$values["residence_prefecture"]
+                        ,$values["sex"]
+                        ,$values["date_of_birth"]
+                        ,NULL
+                        ,$values["telephone_number"]
+                        ,$values["mailaddress"]
+                        ,$values["users_email_flag"]
+                        ,$values["clothes_size"]
+                        ,$values["registered_time"]
+                        ,$values["registered_user_id"]
+                        ,$values["updated_time"]
+                        ,$values["updated_user_id"]
+                        ,$values["delete_flag"]
+                    ]);
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
         return $insertId;

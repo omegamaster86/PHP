@@ -57,7 +57,7 @@ class T_volunteer_availables extends Model
     //ボランティア一括登録画面用
     public function insertVolunteerAvailables($values)
     {
-        DB::insert('INSERT INTO `t_volunteer_availables`
+        DB::insert('insert into `t_volunteer_availables`
                     (
                         `volunteer_id`,
                         `day_of_week`,
@@ -68,17 +68,17 @@ class T_volunteer_availables extends Model
                         `updated_user_id`,
                         `delete_flag`
                     )
-                    VALUES
-                    (
-                        :volunteer_id
-                        ,:day_of_week
-                        ,:time_zone
-                        ,:registered_time
-                        ,:registered_user_id
-                        ,:updated_time
-                        ,:updated_user_id
-                        ,:delete_flag
-                    )',$values);
+                    VALUES(?,?,?,?,?,?,?,?)',
+                    [
+                        $values['volunteer_id']
+                        ,$values['day_of_week']
+                        ,$values['time_zone']
+                        ,$values['registered_time']
+                        ,$values['registered_user_id']
+                        ,$values['updated_time']
+                        ,$values['updated_user_id']
+                        ,$values['delete_flag']
+                    ]);
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
         return $insertId;
