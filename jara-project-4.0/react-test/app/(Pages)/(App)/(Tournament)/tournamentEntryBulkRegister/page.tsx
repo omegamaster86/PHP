@@ -140,21 +140,6 @@ export default function TournamentEntryBulkRegister() {
     resetActivationFlg: resetActivationFlg,
   } as CsvUploadProps;
 
-  //読み込むボタン押下時 20240228
-  const sendCsvData = async () => {
-    const csrf = () => axios.get('/sanctum/csrf-cookie');
-    await csrf();
-    await axios.post('/sendTournamentEntryCsvData', "")
-      .then((res) => {
-        console.log(res.data.result);
-        var contentData = res.data.result as CsvData[];
-
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }
-
   useEffect(() => {
     if (tournamentNameIsEmpty) {
       const tournNameError = Validator.getErrorMessages([
@@ -231,12 +216,13 @@ export default function TournamentEntryBulkRegister() {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       const tournamentResponse = await axios.post('/tournamentEntryYearSearch', eventYearVal);
-      console.log(tournamentResponse);
-      // setFormData((prevFormData) => ({
-      //   ...prevFormData,
-      //   eventYear: tournamentResponse.data.event_start_date.slice(0, 4),
-      //   tournName: tournamentResponse.data.tourn_name,
-      // }));
+      const TournamentsResponseList = tournamentResponse.data.result.map(({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({ id: tourn_id, name: tourn_name }));
+      setTournamentList(TournamentsResponseList);
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        eventYear: tournamentResponse.data.result.event_start_date.slice(0, 4),
+        tournName: tournamentResponse.data.result.tourn_name,
+      }));
       setDisplayFlg(false);
     } catch (error) {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
@@ -325,8 +311,51 @@ export default function TournamentEntryBulkRegister() {
       let apiUri = 'http://localhost:3100/checkRace/';
       let loadingResult = '';
       try {
-        const response = await axios.get<CheckRace>('http://localhost:3100/checkRace/');
-        const data = response.data;
+        var array = csvFileData?.content.map((row, rowIndex) => {
+          return {
+            id: rowIndex,
+            checked: false,
+            loadingResult: '',
+            tournId: row[0],
+            tournIdError: false,
+            tournName: row[1],
+            eventId: row[2],
+            eventIdError: false,
+            eventName: row[3],
+            raceTypeId: row[4],
+            raceTypeIdError: false,
+            raceTypeName: row[5],
+            raceId: row[6],
+            raceIdError: false,
+            raceName: row[7],
+            byGroup: row[8],
+            byGroupError: false,
+            raceNumber: row[9],
+            raceNumberError: false,
+            startDatetime: row[10],
+            orgId: row[11],
+            orgIdError: false,
+            orgName: row[12],
+            orgNameError: false,
+            crewName: row[13],
+            crewNameError: false,
+            mSheetNumber: row[14],
+            mSheetNumberError: false,
+            sheetName: row[15],
+            sheetNameError: false,
+            userId: row[16],
+            userIdError: false,
+            playerName: row[17],
+            playerNameError: false,
+          }
+        });
+        var element = array as CsvData[];
+        console.log(element);
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
+        // const response = await axios.get<CheckRace>('http://localhost:3100/checkRace/');
+        const response = await axios.post('/sendTournamentEntryCsvData', element);
+        const data = response.data.result;
 
         if (data.hasError) {
           loadingResult = '不一致情報あり';
@@ -420,9 +449,8 @@ export default function TournamentEntryBulkRegister() {
     let apiUri = 'http://localhost:3100/checkRaceResultRecord';
     try {
       // ToDo バックエンドの例外処理に関する仕様が決まり次第、エラーメッセージを修正すること
-      const response = await axios.get<CheckRaceResultRecord>(
-        'http://localhost:3100/checkRaceResultRecord/',
-      );
+      // const response = await axios.get<CheckRaceResultRecord>('http://localhost:3100/checkRaceResultRecord/',);
+      const response = await axios.post('/registerTournamentEntryCsvData', csvData);
       const data = response.data;
 
       if (data.hasError) {
@@ -586,8 +614,6 @@ export default function TournamentEntryBulkRegister() {
                 <CustomButton
                   buttonType='primary'
                   onClick={() => {
-                    console.log(csvFileData);
-                    sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240301
                     setActivationFlg(true);
                     if (dialogDisplayFlg) {
                       window.confirm(
