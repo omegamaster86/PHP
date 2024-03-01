@@ -96,43 +96,29 @@ class T_players extends Model
     //react 選手情報更新画面用 選手情報の更新を行う 20240131
     public function updatePlayerData($playersInfo)
     {
-        $result = "success";
-        DB::beginTransaction();
-        try {
-            DB::update(
-                'update `t_players` set `player_id`=?,`user_id`=?,`jara_player_id`=?,`player_name`=?,`date_of_birth`=?,`sex_id`=?,`height`=?,`weight`=?,`side_info`=?,`birth_country`=?, `birth_prefecture`=?,`residence_country`=?,`residence_prefecture`=?,`photo`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where user_id = ?',
-                [
-                    $playersInfo['player_id'],
-                    Auth::user()->user_id, //選手更新時に入力されるuserIdはログイン中のuserId
-                    $playersInfo['jara_player_id'],
-                    $playersInfo['player_name'],
-                    $playersInfo['date_of_birth'],
-                    $playersInfo['sex_id'],
-                    $playersInfo['height'],
-                    $playersInfo['weight'],
-                    $playersInfo['side_info'],
-                    $playersInfo['birth_country'],
-                    $playersInfo['birth_prefecture'],
-                    $playersInfo['residence_country'],
-                    $playersInfo['residence_prefecture'],
-                    $playersInfo['photo'],
-                    now()->format('Y-m-d H:i:s.u'),
-                    Auth::user()->user_id,
-                    now()->format('Y-m-d H:i:s.u'),
-                    Auth::user()->user_id,
-                    $playersInfo['delete_flag'],
-                    Auth::user()->user_id //where条件用
-                ]
-            );
-
-            DB::commit();
-            return $result = "success";
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            Log::debug($e);
-            $result = "failed";
-            return response()->json(["失敗しました。ユーザーサポートにお問い合わせください。"],500);
-        }
+        DB::update(
+            'update `t_players` set `jara_player_id`=?,`player_name`=?,`date_of_birth`=?,`sex_id`=?,`height`=?,`weight`=?,`side_info`=?,`birth_country`=?, `birth_prefecture`=?,`residence_country`=?,`residence_prefecture`=?,`photo`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where user_id = ?',
+            [
+                $playersInfo['jara_player_id'],
+                $playersInfo['player_name'],
+                $playersInfo['date_of_birth'],
+                $playersInfo['sex_id'],
+                $playersInfo['height'],
+                $playersInfo['weight'],
+                $playersInfo['side_info'],
+                $playersInfo['birth_country'],
+                $playersInfo['birth_prefecture'],
+                $playersInfo['residence_country'],
+                $playersInfo['residence_prefecture'],
+                $playersInfo['photo'],
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                $playersInfo['delete_flag'],
+                Auth::user()->user_id //where条件用
+            ]
+        );
     }
 
     //interfaceのPlayerInformationResponseを引数としてupdateを実行する
