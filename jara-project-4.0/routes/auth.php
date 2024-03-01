@@ -120,6 +120,8 @@ Route::middleware('auth')->group(function () {
     Route::post('searchOrganizationPlayersForTeamRef', [OrganizationPlayersController::class, 'searchOrganizationPlayersForTeamRef']); //主催大会 20240215
     Route::post('updateOrgPlayerData', [OrganizationPlayersController::class, 'updateOrgPlayerData']); //団体所属選手更新 20240226
     Route::post('teamPlayerSearch', [OrganizationPlayersController::class, 'teamPlayerSearch']); //団体所属選手更新 20240226
+    Route::post('sendOrgCsvData', [OrganizationPlayersController::class, 'sendOrgCsvData']); //団体一括 読み込むボタン押下 20240301
+    Route::post('registerOrgCsvData', [OrganizationPlayersController::class, 'registerOrgCsvData']); //団体一括 登録ボタン押下 20240301
 
     //スタッフ関連
     Route::post('getOrgStaffData', [OrganizationController::class, 'getOrgStaffData']); //スタッフ情報取得 20240214

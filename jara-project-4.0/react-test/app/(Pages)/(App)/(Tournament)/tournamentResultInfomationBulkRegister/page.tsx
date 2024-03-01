@@ -242,7 +242,7 @@ export default function TournamentResultInfomationBulkRegister() {
         // const tournamentResponse = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments',);
         const TournamentsResponse = await axios.get('/getTournamentInfoData_allData'); //残件対象項目
         const TournamentsResponseList = TournamentsResponse.data.result.map(({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({ id: tourn_id, name: tourn_name }));
-        console.log(TournamentsResponseList);
+        // console.log(TournamentsResponseList);
         setTournamentList(TournamentsResponseList);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
@@ -261,7 +261,7 @@ export default function TournamentResultInfomationBulkRegister() {
         const apiURL = `http://localhost:3100/tournament?${name}=${e.target.value}`;
         // 大会情報を取得
         // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
-        const tornSearchVal = { torn_id: formData.tournId };
+        const tornSearchVal = { tourn_id: formData.tournId };
         const tournamentResponse = await axios.post('/getTournamentInfoData', tornSearchVal);
         console.log(tournamentResponse.data.result);
         // 大会情報が取得できなかった場合
@@ -292,7 +292,7 @@ export default function TournamentResultInfomationBulkRegister() {
         const tournamentResponse = await axios.post('/tournamentEntryYearSearch', eventYearVal);
         console.log(tournamentResponse);
         // 大会情報が取得できなかった場合
-        if (tournamentResponse === undefined || tournamentResponse === null) {
+        if (tournamentResponse.data === undefined || tournamentResponse.data === null) {
           setTournIdErrorMessage(['大会IDを入力してください。']);
           return;
         } else {
@@ -300,10 +300,10 @@ export default function TournamentResultInfomationBulkRegister() {
           setFormData((prevFormData) => ({
             ...prevFormData,
             // eventYear: tournamentResponse.data.event_start_date.slice(0, 4),
-            eventYear: tournamentResponse.data.event_start_date,
+            eventYear: tournamentResponse.data.result.event_start_date,
             tourn: {
-              id: Number(tournamentResponse.data.tourn_id),
-              name: tournamentResponse.data.tourn_name,
+              id: Number(tournamentResponse.data.result.tourn_id),
+              name: tournamentResponse.data.result.tourn_name,
             },
           }));
           setDisplayFlg(false);
@@ -463,8 +463,122 @@ export default function TournamentResultInfomationBulkRegister() {
       let apiUri = 'http://localhost:3100/checkRace/';
       let loadingResult = '';
       try {
-        const response = await axios.get<CheckRace>('http://localhost:3100/checkRace/');
-        const data = response.data;
+        var array = csvFileData?.content.map((row, rowIndex) => {
+          return {
+            id: rowIndex,
+            checked: false,
+            loadingResult: '',
+            tournId: row[0],
+            tournIdError: false,
+            entrysystemTournId: row[1],
+            entrysystemTournIdError: false,
+            tournName: row[2],
+            tournNameError: false,
+            userId: row[3],
+            userIdError: false,
+            jaraPlayerId: row[4],
+            jaraPlayerIdError: false,
+            playerName: row[5],
+            playerNameError: false,
+            raceId: row[6],
+            raceIdError: false,
+            entrysystemRaceId: row[7],
+            entrysystemRaceIdError: false,
+            raceNumber: row[8],
+            raceNumberError: false,
+            raceName: row[9],
+            raceNameError: false,
+            raceTypeId: row[10],
+            raceTypeIdError: false,
+            raceTypeName: row[11],
+            raceTypeNameError: false,
+            orgId: row[12],
+            orgIdError: false,
+            entrysystemOrgId: row[13],
+            entrysystemOrgIdError: false,
+            orgName: row[14],
+            orgNameError: false,
+            crewName: row[15],
+            crewNameError: false,
+            byGroup: row[16],
+            byGroupError: false,
+            eventId: row[17],
+            eventIdError: false,
+            eventName: row[18],
+            eventNameError: false,
+            range: row[19],
+            rangeError: false,
+            rank: row[20],
+            rankError: false,
+            fiveHundredmLaptime: row[21],
+            fiveHundredmLaptimeError: false,
+            tenHundredmLaptime: row[22],
+            tenHundredmLaptimeError: false,
+            fifteenHundredmLaptime: row[23],
+            fifteenHundredmLaptimeError: false,
+            twentyHundredmLaptime: row[24],
+            twentyHundredmLaptimeError: false,
+            finalTime: row[25],
+            finalTimeError: false,
+            strokeRateAvg: row[26],
+            strokeRateAvgError: false,
+            fiveHundredmStrokeRat: row[27],
+            fiveHundredmStrokeRatError: false,
+            tenHundredmStrokeRat: row[28],
+            tenHundredmStrokeRatError: false,
+            fifteenHundredmStrokeRat: row[29],
+            fifteenHundredmStrokeRatError: false,
+            twentyHundredmStrokeRat: row[30],
+            twentyHundredmStrokeRatError: false,
+            heartRateAvg: row[31],
+            heartRateAvgError: false,
+            fiveHundredmHeartRate: row[32],
+            fiveHundredmHeartRateError: false,
+            tenHundredmHeartRate: row[33],
+            tenHundredmHeartRateError: false,
+            fifteenHundredmHeartRate: row[34],
+            fifteenHundredmHeartRateError: false,
+            twentyHundredmHeartRate: row[35],
+            twentyHundredmHeartRateError: false,
+            official: row[36],
+            officialError: false,
+            attendance: row[37],
+            attendanceError: false,
+            ergoWeight: row[38],
+            ergoWeightError: false,
+            playerHeight: row[39],
+            playerHeightError: false,
+            playerWeight: row[40],
+            playerWeightError: false,
+            mSheetNumber: row[41],
+            mSheetNumberError: false,
+            sheetName: row[42],
+            sheetNameError: false,
+            raceResultRecordName: row[43],
+            raceResultRecordNameError: false,
+            startDatetime: row[44],
+            startDatetimeError: false,
+            weather: row[45],
+            weatherError: false,
+            windSpeedTwentyHundredmPoint: row[46],
+            windSpeedTwentyHundredmPointError: false,
+            windDirectionTwentyHundredmPoint: row[47],
+            windDirectionTwentyHundredmPointError: false,
+            windSpeedTenHundredmPoint: row[48],
+            windSpeedTenHundredmPointError: false,
+            windDirectionTenHundredmPoint: row[49],
+            windDirectionTenHundredmPointError: false,
+            remark: row[50],
+            remarkError: false,
+          }
+        });
+        var element = array as CsvData[];
+        console.log(element);
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
+        // const response = await axios.get<CheckRace>('http://localhost:3100/checkRace/');
+        const response = await axios.post('/sendTournamentEntryCsvData', element);
+        const data = response.data.result;
 
         if (data.hasMatch) {
           loadingResult = '更新登録';
