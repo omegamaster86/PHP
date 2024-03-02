@@ -243,7 +243,7 @@ export default function OrgInfo() {
       Validator.validateAddressNumberFormat(formData.post_code),
       Validator.validateRequired(formData.locationPrefectureName, '都道府県'),
       Validator.validateRequired(formData.address1, '市区町村・町字番地'),
-      Validator.validateRequired(formData.address2, '建物名'),
+      // Validator.validateRequired(formData.address2, '建物名'),
     ]);
     setAddressErrorMessages(addressError);
 
@@ -615,6 +615,7 @@ export default function OrgInfo() {
           value={formData.address1}
           readonly={mode === 'confirm'}
           isError={addressErrorMessages.length > 0}
+          errorMessages={addressErrorMessages}
           onChange={(e) => handleInputChange('address1', e.target.value)}
           toolTipTitle='Title 市区町村・町字番地' //はてなボタン用
           toolTipText='サンプル用のツールチップ表示' //はてなボタン用
@@ -622,13 +623,13 @@ export default function OrgInfo() {
         {/* マンション・アパート */}
         <CustomTextField
           label='マンション・アパート'
-          required={mode !== 'confirm'}
+          // required={mode !== 'confirm'}
           displayHelp={mode !== 'confirm'}
           value={formData.address2}
           readonly={mode === 'confirm'}
           onChange={(e) => handleInputChange('address2', e.target.value)}
-          isError={addressErrorMessages.length > 0}
-          errorMessages={addressErrorMessages}
+          // isError={addressErrorMessages.length > 0}
+          // errorMessages={addressErrorMessages}
           toolTipTitle='Title マンション・アパート' //はてなボタン用
           toolTipText='サンプル用のツールチップ表示' //はてなボタン用
         />
