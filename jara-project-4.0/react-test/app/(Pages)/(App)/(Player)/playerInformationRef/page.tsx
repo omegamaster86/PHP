@@ -16,8 +16,10 @@ import {
   CustomTd,
   Tab,
   Label,
+  CustomTitle,
   ErrorBox,
 } from '@/app/components';
+import Link from 'next/link';
 import AddIcon from '@mui/icons-material/Add';
 import { RaceResultRecordsResponse, PlayerInformationResponse } from '@/app/types';
 import { NO_IMAGE_URL, PLAYER_IMAGE_URL } from '@/app/utils/imageUrl';
@@ -184,6 +186,12 @@ export default function PlayerInformationRef() {
     <div>
       <main>
         <div className='flex flex-col pt-[40px] pb-[60px] gap-[50px] md:w-[1000px] sm: w-[600px]'>
+          <div className='relative flex flex-row justify-between w-full h-screen flex-wrap'>
+            {/* 画面名*/}
+            <CustomTitle isCenter={false} displayBack>
+              {mode === 'delete' ? '選手情報削除' : '選手情報参照'}
+            </CustomTitle>
+          </div>
           <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
           <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4 '>
             <div className='flex flex-row gap-[40px]'>
@@ -217,7 +225,7 @@ export default function PlayerInformationRef() {
                     </div>
                     <div className='flex flex-row gap-[10px]'>
                       {/* 既存選手ID */}
-                      <div className='text-gray-40 text-caption1'>エントリーシステムの選手ID</div>
+                      <div className='text-gray-40 text-caption1'>JARA選手コード</div>
                       <Label
                         label={playerInformation.jara_player_id ?? ''}
                         textColor='white'
@@ -447,8 +455,18 @@ export default function PlayerInformationRef() {
                       isHidden={!(row.official + 1 === activeTab || activeTab === 0)}
                     >
                       {/* 大会名 */}
-                      <CustomTd transitionDest={`/tournamentRef?tournId=${row.tourn_id}`}>
-                        {row.tourn_name}
+                      <CustomTd>
+                        <Link
+                          className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                          href={{
+                            pathname: '/tournamentRef',
+                            query: { tournId: row.tourn_id },
+                          }}
+                          rel='noopener noreferrer'
+                          target='_blank'
+                        >
+                          {row.tourn_name}
+                        </Link>
                       </CustomTd>
                       {/* 公式／非公式 */}
                       <CustomTd>{row.official === 0 ? '非公式' : '公式'}</CustomTd>
