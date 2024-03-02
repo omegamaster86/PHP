@@ -950,11 +950,12 @@ class TournamentInfoAlignmentController extends Controller
                                                 T_races $t_races,
                                                 T_organizations $t_organizations,
                                                 M_seat_number $m_seat_number,
-                                                T_players $t_players)
+                                                T_players $t_players,
+                                                T_raceResultRecord $t_raceResultRecord)
     {
         Log::debug(sprintf("sendTournamentEntryCsvData start"));
         $reqData = $request->all();
-        //Log::debug($reqData);
+        Log::debug($reqData);
         for($rowIndex = 1;$rowIndex < count($reqData);$rowIndex++)
         {
             //選択されている大会の大会IDと一致していること
@@ -1023,10 +1024,41 @@ class TournamentInfoAlignmentController extends Controller
                 $reqData[$rowIndex]['userIdError'] = true;
                 $reqData[$rowIndex]['playerNameError'] = true;
             }
+            //出漕結果記録テーブルを検索して判定する
+            $condition_values = array();
+            $condition_values['tourn_id'] = $reqData[$rowIndex]['tournId']; //大会ID
+            $condition_values['race_id'] = $reqData[$rowIndex]['raceId'];   //レースID
+            $condition_values['org_id'] = $reqData[$rowIndex]['orgId'];     //団体ID
+            $condition_values['player_id'] = $reqData[$rowIndex]['userId']; //選手ID
+            $race_result_record_array = $t_raceResultRecord->getRaceResultRecordsWithSearchCondition($condition_values);
+            if(count($race_result_record_array) == 0)
+            {
+                //一致するデータがなかった場合
+                $reqData[$rowIndex]['loadingResult'] = "新規登録";
+            }
+            else
+            {   
+                $laptime_500m = $race_result_record_array[0]->{"laptime_500m"};
+                $laptime_1000m = $race_result_record_array[0]->{"laptime_1000m"};
+                $laptime_1500m = $race_result_record_array[0]->{"laptime_1500m"};
+                $laptime_2000m = $race_result_record_array[0]->{"laptime_2000m"};
+                $final_time = $race_result_record_array[0]->{"final_time"};
+                if(isset($laptime_500m)
+                    && isset($laptime_1000m)
+                    && isset($laptime_1500m)
+                    && isset($laptime_2000m)
+                    && isset($final_time))
+                {
+                    //レース結果情報が登録されているデータの場合
+                    $reqData[$rowIndex]['loadingResult'] = "記録情報あり";
+                }
+                else
+                {
+                    //レース結果情報が登録されていないデータの場合
+                    $reqData[$rowIndex]['loadingResult'] = "エントリー情報変更";
+                }
+            }
         }
-        //出漕結果記録テーブルを検索して判定する
-        
-
         Log::debug(sprintf("sendTournamentEntryCsvData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
     }
