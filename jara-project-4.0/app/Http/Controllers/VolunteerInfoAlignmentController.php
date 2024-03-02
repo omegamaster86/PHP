@@ -544,11 +544,11 @@ class VolunteerInfoAlignmentController extends Controller
             //配列は行列の形式、また1行の各フィールドはその名称で取得可能の想定
             $postData = $request->all();
             //foreachで1行ずつ処理
-            foreach($postData as $rowData)
+            foreach($postData as $reqData)
             {
                 //チェック済み、かつ登録可能データを登録する
                 //そうでなければ次の行の処理
-                if($rowData['check'] == "checked" && $rowData['renkei'] == "登録可能データ")
+                if($reqData['check'] == "checked" && $reqData['renkei'] == "登録可能データ")
                 {
                     //登録・更新するユーザー名を取得
                     $register_user_id = Auth::user()->user_id;
@@ -573,18 +573,18 @@ class VolunteerInfoAlignmentController extends Controller
                     {
                         //Insertの要素を持つ配列を生成する
                         //ボランティアテーブル
-                        $volunteer_data['user_id'] = $rowData['user_id'];
-                        $volunteer_data['volunteer_name'] = $rowData['volunteer_name'];
-                        $volunteer_data['residence_country'] = $rowData['residence_country'];
-                        $volunteer_data['residence_prefecture'] = $rowData['residence_prefecture'];
-                        $volunteer_data['sex'] = $rowData['sex'];
-                        $volunteer_data['date_of_birth'] = $rowData['date_of_birth'];
-                        $volunteer_data['dis_type_id'] = $rowData['dis_type_id'];
-                        $volunteer_data['telephone_number'] = $rowData['telephone_number'];
-                        $volunteer_data['mailaddress'] = $rowData['mailaddress'];
+                        $volunteer_data['user_id'] = $reqData['user_id'];
+                        $volunteer_data['volunteer_name'] = $reqData['volunteer_name'];
+                        $volunteer_data['residence_country'] = $reqData['residence_country'];
+                        $volunteer_data['residence_prefecture'] = $reqData['residence_prefecture'];
+                        $volunteer_data['sex'] = $reqData['sex'];
+                        $volunteer_data['date_of_birth'] = $reqData['date_of_birth'];
+                        $volunteer_data['dis_type_id'] = $reqData['dis_type_id'];
+                        $volunteer_data['telephone_number'] = $reqData['telephone_number'];
+                        $volunteer_data['mailaddress'] = $reqData['mailaddress'];
                         //users_email_flagはここで判定する必要がある？
-                        $volunteer_data['users_email_flag'] = $rowData['users_email_flag'];                    
-                        $volunteer_data['clothes_size'] = $rowData['clothes_size'];
+                        $volunteer_data['users_email_flag'] = $reqData['users_email_flag'];                    
+                        $volunteer_data['clothes_size'] = $reqData['clothes_size'];
                         $volunteer_data['registered_time'] = $current_datetime;
                         $volunteer_data['registered_user_id'] = $register_user_id;
                         $volunteer_data['updated_time'] = $current_datetime;
@@ -596,9 +596,9 @@ class VolunteerInfoAlignmentController extends Controller
                         //ボランティアアベイラブルテーブル
                         $volunteer_available_data['volunteer_id'] = $volunteer_id;
                         //※データの持ち方次第でday_of_weekを生成する必要がある
-                        $volunteer_available_data['day_of_week'] = $rowData['day_of_week'];
+                        $volunteer_available_data['day_of_week'] = $reqData['day_of_week'];
                         //※データの持ち方次第でtime_zoneを生成する必要がある
-                        $volunteer_available_data['time_zone'] = $rowData['time_zone'];
+                        $volunteer_available_data['time_zone'] = $reqData['time_zone'];
                         $volunteer_available_data['registered_time'] = $current_datetime;
                         $volunteer_available_data['registered_user_id'] = $register_user_id;
                         $volunteer_available_data['updated_time'] = $current_datetime;
@@ -614,21 +614,21 @@ class VolunteerInfoAlignmentController extends Controller
                         $volunteer_supportable_disability['updated_user_id'] = $register_user_id;
                         $volunteer_supportable_disability['delete_flag'] = $delete_flag;
                         //PR1が1なら挿入
-                        if(isset($rowData['PR1']) && $rowData['PR1'] == '1')
+                        if(isset($reqData['disTypeId1']) && $reqData['PR1'] == '1')
                         {
-                            $volunteer_supportable_disability['dis_type_id'] = $rowData['PR1'];
+                            $volunteer_supportable_disability['dis_type_id'] = $reqData['PR1'];
                             $t_volunteer_supportable_disability->insertVolunteerSupportableDisability($volunteer_supportable_disability);
                         }
                         //PR2が1なら挿入
-                        if(isset($rowData['PR2']) && $rowData['PR2'] == '1')
+                        if(isset($reqData['PR2']) && $reqData['PR2'] == '1')
                         {
-                            $volunteer_supportable_disability['dis_type_id'] = $rowData['PR2'];
+                            $volunteer_supportable_disability['dis_type_id'] = $reqData['PR2'];
                             $t_volunteer_supportable_disability->insertVolunteerSupportableDisability($volunteer_supportable_disability);
                         }
                         //PR3が1なら挿入
-                        if(isset($rowData['PR3']) && $rowData['PR3'] == '1')
+                        if(isset($reqData['PR3']) && $reqData['PR3'] == '1')
                         {
-                            $volunteer_supportable_disability['dis_type_id'] = $rowData['PR3'];
+                            $volunteer_supportable_disability['dis_type_id'] = $reqData['PR3'];
                             $t_volunteer_supportable_disability->insertVolunteerSupportableDisability($volunteer_supportable_disability);
                         }
 
@@ -642,13 +642,13 @@ class VolunteerInfoAlignmentController extends Controller
                         $volunteer_qualifications_hold_data['delete_flag'] = $delete_flag;
                         for ($i = 1; $i <= 5; $i++)
                         {
-                            if(isset($rowData['qualification'.$i]))
+                            if(isset($reqData['qualification'.$i]))
                             {
                                 //資格の数だけInsertを実行
-                                $volunteer_qualifications_hold_data['qual_id'] = $rowData['qualification'.$i];
-                                if(isset($rowData['others_qual1']))
+                                $volunteer_qualifications_hold_data['qual_id'] = $reqData['qualification'.$i];
+                                if(isset($reqData['others_qual1']))
                                 {
-                                    $volunteer_qualifications_hold_data['others_qual'] = $rowData['others_qual'.$i];
+                                    $volunteer_qualifications_hold_data['others_qual'] = $reqData['others_qual'.$i];
                                 }
                                 $t_volunteer_qualifications_hold->insertVolunteerQualificationsHold($volunteer_qualifications_hold_data);
                             }
@@ -663,10 +663,10 @@ class VolunteerInfoAlignmentController extends Controller
                         $volunteer_language_proficiency_data['delete_flag'] = $delete_flag;
                         for($i = 0;$i<=3;$i++)
                         {
-                            if(isset($rowData['language'.$i]) && isset($rowData['lang_pro'.$i]))
+                            if(isset($reqData['language'.$i]) && isset($reqData['lang_pro'.$i]))
                             {
-                                $volunteer_language_proficiency_data['lang_id'] = $rowData['language'.$i];
-                                $volunteer_language_proficiency_data['lang_pro'] = $rowData['lang_pro'.$i];
+                                $volunteer_language_proficiency_data['lang_id'] = $reqData['language'.$i];
+                                $volunteer_language_proficiency_data['lang_pro'] = $reqData['lang_pro'.$i];
                             }
                             $t_volunteer_language_proficiency->insertVolunteerLanguageProficiency($volunteer_language_proficiency_data);
                         }
@@ -755,9 +755,10 @@ class VolunteerInfoAlignmentController extends Controller
         //重複チェック
         //ボランティアの一覧を取得
         $volunteer_list = $t_volunteers->getVolunteer();
+
         for ($rowIndex = 0; $rowIndex < count($reqData); $rowIndex++)
         {
-            $user_id = $reqData[$rowIndex]["user_id"]["value"];
+            $user_id = $reqData[$rowIndex]["userId"]["value"];
             //ユーザーIDの重複チェック
             //「ボランティアテーブル」をファイルに記載されているユーザーIDで検索       
             if(in_array($user_id,array_column($volunteer_list,'user_id')))
@@ -771,27 +772,204 @@ class VolunteerInfoAlignmentController extends Controller
     }
 
     //ボランティアCSV登録時 20240229 
-    public function registerVolunteerCsvData(Request $request)
+    public function registerVolunteerCsvData(Request $request,
+                                            T_volunteers $t_volunteers,
+                                            T_users $t_users,
+                                            M_sex $m_sex,
+                                            M_countries $m_countries,
+                                            M_prefectures $m_prefectures,
+                                            M_clothes_size $m_clothes_size,
+                                            M_volunteer_qualifications $m_volunteer_qualifications,
+                                            M_languages $m_languages,
+                                            M_language_proficiency $m_language_proficiency,
+                                            T_volunteer_availables $t_volunteer_availables,
+                                            T_volunteer_qualifications_hold $t_volunteer_qualifications_hold,
+                                            T_volunteer_language_proficiency $t_volunteer_language_proficiency,
+                                            T_volunteer_supportable_disability $t_volunteer_supportable_disability)
     {
         Log::debug(sprintf("registerVolunteerCsvData start"));
         $reqData = $request->all();
         Log::debug($reqData);
+        //登録・更新するユーザー名を取得
+        $register_user_id = Auth::user()->user_id;
+        //登録・更新日時のために現在の日時を取得
+        $current_datetime = now()->format('Y-m-d H:i:s.u');
+        //削除フラグは全て0で登録する
+        $delete_flag = 0;
 
-        DB::beginTransaction();
-        try
+        //各マスターからIDの一覧を取得
+        //ユーザーIDの一覧
+        //$user_list = $t_users->getUserIDList();
+        //ボランティアの一覧
+        $volunteer_list = $t_volunteers->getVolunteer();
+        //性別の一覧
+        $sex_list = $m_sex->getSexList();
+        //国の一覧
+        $country_list = $m_countries->getCountries();
+        //都道府県の一覧
+        $prefecture_list = $m_prefectures->getPrefecures();
+        //服のサイズ
+        $clothes_size_list = $m_clothes_size->getClothesSize();
+        //ボランティア保有資格の一覧
+        $qualifications_list = $m_volunteer_qualifications->getQualifications();
+        //言語の一覧
+        $language_list = $m_languages->getLanguages();
+        //言語レベルの一覧
+        $language_proficientcy_list = $m_language_proficiency->getLanguageProficiency();
+
+        for ($rowIndex = 0; $rowIndex < count($reqData); $rowIndex++)
         {
-            for ($rowIndex = 0; $rowIndex < count($reqData); $rowIndex++)
+            $checked = $reqData[$rowIndex]["checked"];
+            $result = $reqData[$rowIndex]["result"];
+            if($checked == true && $result == "登録可能データ")
             {
+                //ボランティアテーブルに挿入する要素を格納する配列
+                $volunteer_data = array();
+                //ボランティアアベイラブルテーブルに挿入する要素を格納する配列
+                $volunteer_available_data = array();
+                //ボランティア支援可能障碍タイプテーブルに挿入する要素を格納する配列
+                $volunteer_supportable_disability = array();
+                //ボランティア保有資格情報テーブルに挿入する要素を格納する配列
+                $volunteer_qualifications_hold_data = array();
+                //ボランティア言語レベルテーブルに挿入する要素を格納する配列
+                $volunteer_language_proficiency_data = array();
 
+                DB::beginTransaction();
+                try
+                {     
+                    //Insertの要素を持つ配列を生成する
+                    //ボランティアテーブル
+                    $volunteer_data['user_id'] = $reqData[$rowIndex]['userId']['value'];
+                    $volunteer_data['volunteer_name'] = $reqData[$rowIndex]['volunteerName']['value'];
+                    $volunteer_data['residence_country'] = $reqData[$rowIndex]['residenceCountryId']['value'];
+                    $volunteer_data['residence_prefecture'] = $reqData[$rowIndex]['residencePrefectureId']['value'];
+                    $volunteer_data['sex'] = $reqData[$rowIndex]['sexId']['value'];
+                    $volunteer_data['date_of_birth'] = $reqData[$rowIndex]['dateOfBirth']['value'];
+                    //$volunteer_data['dis_type_id'] = $reqData[$rowIndex]['dis_type_id']['value'];
+                    $volunteer_data['telephone_number'] = $reqData[$rowIndex]['telephone_number']['value'];
+                    $volunteer_data['mailaddress'] = $reqData[$rowIndex]['mailaddress']['value'];
+                    //users_email_flagを判定する
+                    $target_id = $reqData[$rowIndex]['user_id']['value'];
+                    $user_list = $t_users->getUserDataFromUserId([$target_id]);
+                    $mailaddress = $reqData[$rowIndex]['mailaddress']['value'];
+                    $user_mailaddress = $user_list['mailaddress'];
+                    if($mailaddress == $user_mailaddress)
+                    {
+                        $volunteer_data['users_email_flag'] = 1;
+                    }
+                    else
+                    {
+                        $volunteer_data['users_email_flag'] = 0;
+                    }
+                    //服のサイズマスターで名前で検索したclothes_size_idを取得して、配列に格納する
+                    $volunteer_data['clothes_size'] = $reqData[$rowIndex]['clothesSizeId']['value'];
+                    $volunteer_data['registered_time'] = $current_datetime;
+                    $volunteer_data['registered_user_id'] = $register_user_id;
+                    $volunteer_data['updated_time'] = $current_datetime;
+                    $volunteer_data['updated_user_id'] = $register_user_id;
+                    $volunteer_data['delete_flag'] = $delete_flag;
+                    $volunteer_id = $t_volunteers->insertVolunteer($volunteer_data);
+
+                    //ボランティアアベイラブルテーブル
+                    $volunteer_available_data['volunteer_id'] = $volunteer_id;
+                    //day_of_weekを生成する
+                    $sunday = $reqData[$rowIndex]['dayOFWeek1']['value'] == '◯' ? '1' : '0';
+                    $monday = $reqData[$rowIndex]['dayOFWeek2']['value'] == '◯' ? '1' : '0';
+                    $tuesday = $reqData[$rowIndex]['dayOFWeek3']['value'] == '◯' ? '1' : '0';
+                    $wednesday = $reqData[$rowIndex]['dayOFWeek4']['value'] == '◯' ? '1' : '0';
+                    $thursday = $reqData[$rowIndex]['dayOFWeek5']['value'] == '◯' ? '1' : '0';
+                    $friday = $reqData[$rowIndex]['dayOFWeek6']['value'] == '◯' ? '1' : '0';
+                    $saturday = $reqData[$rowIndex]['dayOFWeek7']['value'] == '◯' ? '1' : '0';
+                    $day_of_week = '00000'.$saturday.$friday.$thursday.$wednesday.$tuesday.$monday.$sunday;
+                    $volunteer_available_data['day_of_week'] = $day_of_week;
+                    //time_zoneを生成する
+                    $early_morning = $reqData[$rowIndex]['timeZone1']['value'] == '◯' ? '1' : '0';
+                    $morning = $reqData[$rowIndex]['timeZone2']['value'] == '◯' ? '1' : '0';
+                    $afternoon = $reqData[$rowIndex]['timeZone3']['value'] == '◯' ? '1' : '0';
+                    $night = $reqData[$rowIndex]['timeZone4']['value'] == '◯' ? '1' : '0';
+                    $time_zone = '0000'.$early_morning.$morning.$afternoon.$night;
+                    $volunteer_available_data['time_zone'] = $time_zone;
+                    $volunteer_available_data['registered_time'] = $current_datetime;
+                    $volunteer_available_data['registered_user_id'] = $register_user_id;
+                    $volunteer_available_data['updated_time'] = $current_datetime;
+                    $volunteer_available_data['updated_user_id'] = $register_user_id;
+                    $volunteer_available_data['delete_flag'] = $delete_flag;
+                    $t_volunteer_availables->insertVolunteerAvailables($volunteer_available_data);
+
+                    //ボランティア支援可能障碍タイプテーブル                        
+                    $volunteer_supportable_disability['volunteer_id'] = $volunteer_id;                        
+                    $volunteer_supportable_disability['registered_time'] = $current_datetime;
+                    $volunteer_supportable_disability['registered_user_id'] = $register_user_id;
+                    $volunteer_supportable_disability['updated_time'] = $current_datetime;
+                    $volunteer_supportable_disability['updated_user_id'] = $register_user_id;
+                    $volunteer_supportable_disability['delete_flag'] = $delete_flag;
+                    //PR1が1なら挿入
+                    if($reqData[$rowIndex]['disTypeId1']['value'] == '◯')
+                    {
+                        $volunteer_supportable_disability['dis_type_id'] = 1;
+                        $t_volunteer_supportable_disability->insertVolunteerSupportableDisability($volunteer_supportable_disability);
+                    }
+                    //PR2が1なら挿入
+                    if($reqData[$rowIndex]['disTypeId2']['value'] == '◯')
+                    {
+                        $volunteer_supportable_disability['dis_type_id'] = 2;
+                        $t_volunteer_supportable_disability->insertVolunteerSupportableDisability($volunteer_supportable_disability);
+                    }
+                    //PR3が1なら挿入
+                    if($reqData[$rowIndex]['disTypeId3']['value'] == '◯')
+                    {
+                        $volunteer_supportable_disability['dis_type_id'] = 3;
+                        $t_volunteer_supportable_disability->insertVolunteerSupportableDisability($volunteer_supportable_disability);
+                    }
+
+                    //ボランティア保有資格情報テーブルに挿入
+                    $volunteer_qualifications_hold_data['volunteer_id'] = $volunteer_id;                        
+                    $volunteer_qualifications_hold_data['registered_time'] = $current_datetime;
+                    $volunteer_qualifications_hold_data['registered_user_id'] = $register_user_id;
+                    $volunteer_qualifications_hold_data['updated_time'] = $current_datetime;
+                    $volunteer_qualifications_hold_data['updated_user_id'] = $register_user_id;
+                    $volunteer_qualifications_hold_data['delete_flag'] = $delete_flag;
+                    for ($qualIndex = 1; $qualIndex <= 5; $qualIndex++)
+                    {
+                        if(isset($reqData[$rowIndex]['qualification'.$qualIndex]['value']))
+                        {
+                            //資格の数だけInsertを実行
+                            $volunteer_qualifications_hold_data['qual_id'] = $reqData[$rowIndex]['qualId'.$qualIndex]['value'];
+                            // if(isset($reqData[$rowIndex]['others_qual1']))
+                            // {
+                            //     $volunteer_qualifications_hold_data['others_qual'] = $reqData[$rowIndex]['others_qual'.$qualIndex];
+                            // }
+                            $t_volunteer_qualifications_hold->insertVolunteerQualificationsHold($volunteer_qualifications_hold_data);
+                        }
+                    }
+                    
+                    //ボランティア言語レベルテーブルに挿入
+                    $volunteer_language_proficiency_data['volunteer_id'] = $volunteer_id;
+                    $volunteer_language_proficiency_data['registered_time'] = $current_datetime;
+                    $volunteer_language_proficiency_data['registered_user_id'] = $register_user_id;
+                    $volunteer_language_proficiency_data['updated_time'] = $current_datetime;
+                    $volunteer_language_proficiency_data['updated_user_id'] = $register_user_id;
+                    $volunteer_language_proficiency_data['delete_flag'] = $delete_flag;
+                    for($langIndex = 1;$langIndex <= 3;$langIndex++)
+                    {
+                        if(isset($reqData[$rowIndex]['langId'.$langIndex]['value'])
+                            && isset($reqData[$rowIndex]['langProId'.$langIndex]['value']))
+                        {
+                            $volunteer_language_proficiency_data['lang_id'] = $reqData[$rowIndex]['langId'.$langIndex]['value'];
+                            $volunteer_language_proficiency_data['lang_pro'] = $reqData[$rowIndex]['langProId'.$langIndex]['value'];
+                        }
+                        $t_volunteer_language_proficiency->insertVolunteerLanguageProficiency($volunteer_language_proficiency_data);
+                    }
+                    DB::commit();
+                }
+                catch(\Throwable $e)
+                {
+                    DB::rollBack();
+                    return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+                }
             }
         }
-        catch(\Throwable $e)
-        {
-            DB::rollBack();
-            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
-        }
-
         Log::debug(sprintf("registerVolunteerCsvData end"));
-        return response()->json(['result' => $reqData]); //DBの結果を返す
+        return response()->json(['result' => true]); //DBの結果を返す
     }
 }
