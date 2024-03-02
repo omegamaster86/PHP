@@ -1,9 +1,7 @@
-// import { useRouter } from 'next/navigation';
-// const router = useRouter();
-const USER_IMAGE_URL = 'http://localhost:8000/images/users/';
-const PLAYER_IMAGE_URL = 'http://localhost:8000/images/players/';
-const TOURNAMENT_PDF_URL = 'http://localhost:8000/pdf/tournaments/';
-const NO_IMAGE_URL = 'http://localhost:8000/images/no-image.png';
+const USER_IMAGE_URL = [process.env.NEXT_PUBLIC_BACKEND_URL ,'/images/users/'].join("");
+const PLAYER_IMAGE_URL = [process.env.NEXT_PUBLIC_BACKEND_URL ,'/images/players/'].join("");
+const TOURNAMENT_PDF_URL = [process.env.NEXT_PUBLIC_BACKEND_URL ,'/pdf/tournaments/'].join("");
+const NO_IMAGE_URL = [process.env.NEXT_PUBLIC_BACKEND_URL ,'/images/no-image.png'].join("");
 
 export  {
     USER_IMAGE_URL,
