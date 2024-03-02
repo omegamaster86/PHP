@@ -178,7 +178,7 @@ export default function TeamPlayerBulkRegister() {
         } else {
           // const org = await axios.get<Org[]>('http://localhost:3100/orgSearch');
           const responseData = await axios.get('/getOrganizationForOrgManagement'); //団体データ取得 20240201
-        // console.log(responseData.data.result);
+          // console.log(responseData.data.result);
           setOrgs(responseData.data.result);
         }
       } catch (error) {
@@ -191,7 +191,8 @@ export default function TeamPlayerBulkRegister() {
   const getJsonRow = async (row: string[], index: number) => {
     return {
       id: index,
-      checked: handleCheckboxValue(await handleResult(row)),
+      // checked: handleCheckboxValue(await handleResult(row)),
+      checked: true,
       result: await handleResult(row),
       userId: row[0],
       playerId: row[1],
@@ -237,6 +238,34 @@ export default function TeamPlayerBulkRegister() {
     setDisplayLinkButtonFlg(true);
     return '連携';
   };
+
+  //読み込むボタン押下時 20240302
+  const sendCsvData = async (row: any[]) => {
+    try {
+      const csrf = () => axios.get('/sanctum/csrf-cookie');
+      await csrf();
+      const response = await axios.post('/sendOrgCsvData', row);
+      console.log(response.data.result);
+      setCsvData(response.data.result);
+      setActivationFlg(false);
+    } catch (error) {
+      setErrorMessage(['API取得エラー:' + (error as Error).message]);
+    }
+  }
+
+  //連携ボタン押下時 20240302
+  const registerCsvData = async () => {
+    const csrf = () => axios.get('/sanctum/csrf-cookie');
+    await csrf();
+    await axios.post('/registerOrgCsvData', csvData)
+      .then((res) => {
+        console.log(res.data.result);
+        // router.push('/tournamentSearch'); // 20240222
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
 
   const handleCheckboxValue = (result: string) => {
     return result.startsWith('無効データ')
@@ -293,8 +322,8 @@ export default function TeamPlayerBulkRegister() {
                   Promise.all(
                     csvFileData.content?.slice(1).map((row, index) => getJsonRow(row, index)),
                   ).then((results) => {
-                    setCsvData(results);
-                    setActivationFlg(false);
+                    console.log(results);
+                    sendCsvData(results); //バックエンド側のバリデーションチェックを行う為にデータを送信する 20240302
                   });
                   performValidation();
                 }}
@@ -347,6 +376,7 @@ export default function TeamPlayerBulkRegister() {
                     return;
                   }
                   window.confirm('連携を実施しますか？');
+                  registerCsvData(); //バックエンド側にデータを渡す 20240302
                   setActivationFlg(true);
                   setCsvData([]),
                     setCsvFileData({ content: [], isSet: false }),
