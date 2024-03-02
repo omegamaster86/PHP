@@ -67,7 +67,7 @@ class T_volunteer_language_proficiency extends Model
     //ボランティア一括登録画面用
     public function insertVolunteerLanguageProficiency($values)
     {
-        DB::insert('INSERT INTO `t_volunteer_language_proficiency`
+        DB::insert('insert into `t_volunteer_language_proficiency`
                     (
                         `volunteer_id`,
                         `lang_id`,
@@ -78,17 +78,17 @@ class T_volunteer_language_proficiency extends Model
                         `updated_user_id`,
                         `delete_flag`
                     )
-                    VALUES
-                    (
-                        :volunteer_id
-                        ,:lang_id
-                        ,:lang_pro
-                        ,:registered_time
-                        ,:registered_user_id
-                        ,:updated_time
-                        ,:updated_user_id
-                        ,:delete_flag
-                    )',$values);
+                    VALUES(?,?,?,?,?,?,?,?)'
+                    ,[
+                        $values['volunteer_id']
+                        ,$values['lang_id']
+                        ,$values['lang_pro']
+                        ,$values['registered_time']
+                        ,$values['registered_user_id']
+                        ,$values['updated_time']
+                        ,$values['updated_user_id']
+                        ,$values['delete_flag']
+                    ]);
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
         return $insertId;

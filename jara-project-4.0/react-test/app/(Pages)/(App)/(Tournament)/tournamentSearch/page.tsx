@@ -230,7 +230,8 @@ export default function TournamentSearch() {
               <div className='flex flex-col justify-start '>
                 <InputLabel label='開催年月' />
                 <CustomDatePicker
-                  placeHolder={new Date().toLocaleDateString('ja-JP')}
+                  // placeHolder={new Date().toLocaleDateString('ja-JP')}
+                  placeHolder={"YYYY/MM/DD"}
                   selectedDate={searchCond.event_start_date}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     handleInputChange('event_start_date', formatDate(e as unknown as Date));
@@ -243,7 +244,8 @@ export default function TournamentSearch() {
               {/* 開催終了年月日 */}
               <div className='flex flex-col justify-start self-end'>
                 <CustomDatePicker
-                  placeHolder={new Date().toLocaleDateString('ja-JP')}
+                  // placeHolder={new Date().toLocaleDateString('ja-JP')}
+                  placeHolder={"YYYY/MM/DD"}
                   selectedDate={searchCond.event_end_date}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     handleInputChange('event_end_date', formatDate(e as unknown as Date));
