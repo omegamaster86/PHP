@@ -35,4 +35,18 @@ class M_seat_number extends Model
         );
         return $result;
     }
+
+    //シート番号IDとシート名に一致するレコードの件数を抽出する
+    //大会結果情報一括登録画面用
+    public function getSeatNumberCountFromCsvData($seat_id,$seat_name)
+    {
+        $seat_number_count = DB::select("select count(*) as `count`
+                                        FROM `m_seat_number`
+                                        WHERE 1=1
+                                        and delete_flag = 0
+                                        and seat_id = :seat_id
+                                        and seat_name = :seat_name
+                                        ",["seat_id"=>$seat_id,"seat_name"=>$seat_name]);
+        return $seat_number_count;
+    }
 }

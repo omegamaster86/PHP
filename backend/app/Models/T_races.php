@@ -289,4 +289,23 @@ class T_races extends Model
                             ,$race_id);
         return $race;
     }
+
+    //条件に合致するレースの件数を取得する
+    //大会エントリー一括登録画面用
+    public function getRaceCount($condition,$values)
+    {
+        $sql_string = "select count(*)  as `count`
+                        from `t_races`
+                        where 1=1
+                        and delete_flag = 0
+                        and tourn_id = :tourn_id
+                        and event_id = :event_id
+                        and race_class_id = :race_class_id
+                        and by_group = :by_group
+                        and race_number = :race_number
+                        #ReplaceConditionString#";
+        $sql_string = str_replace("#ReplaceConditionString#",$condition,$sql_string);
+        $race_count = DB::select($sql_string,$values);
+        return $race_count;
+    }
 }

@@ -163,9 +163,9 @@ class T_users extends Authenticatable
                                     on user.residence_prefecture = pref.pref_id
                                     WHERE 1=1
                                     and user.delete_flag = 0
-                                    and sex.delete_flag = 0
-                                    and coun.delete_flag = 0
-                                    and pref.delete_flag = 0
+                                    and (sex.delete_flag = 0 or sex.delete_flag is null)
+                                    and (coun.delete_flag = 0 or coun.delete_flag is null)
+                                    and (pref.delete_flag = 0 or pref.delete_flag is null)
                                     and user_id = ?
                                 )user'
                                 ,[$targetUserId]
