@@ -725,17 +725,17 @@ class TournamentController extends Controller
     }
     
     //レース結果一覧を取得 
-    public function getRaceResultsData(Request $request,T_raceResultRecord $T_raceResultRecord)
-    {
-        $input = $request->all();
-        //検索条件の値
-        $searchValues = [];
-        //置換文字列の生成
-        $replaceString = $this->generateRaceResultSearchCondition($input,$searchValues);
-        //レース結果一覧を取得
-        $result = $T_raceResultRecord->getRacesWithSearchCondition($replaceString,$searchValues);
-        return response()->json(['result' => $result]); //取得結果を返す
-    }
+    // public function getRaceResultsData(Request $request,T_raceResultRecord $T_raceResultRecord)
+    // {
+    //     $input = $request->all();
+    //     //検索条件の値
+    //     $searchValues = [];
+    //     //置換文字列の生成
+    //     $replaceString = $this->generateRaceResultSearchCondition($input,$searchValues);
+    //     //レース結果一覧を取得
+    //     $result = $T_raceResultRecord->getRacesWithSearchCondition($replaceString,$searchValues);
+    //     return response()->json(['result' => $result]); //取得結果を返す
+    // }
 
     //レース結果一覧を取得するための検索条件の文字列を生成する
     //SQLの文字列を置き換える

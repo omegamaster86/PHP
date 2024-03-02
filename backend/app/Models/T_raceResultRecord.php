@@ -1028,21 +1028,28 @@ class T_raceResultRecord extends Model
     }
 
     //検索条件により、レース結果を取得する
-    public function getRacesWithSearchCondition($conditions,$conditionValues)
+    public function getRaceResultRecordsWithSearchCondition($conditionValues)
     {
-        $sqlString = 'select distinct
+        $races = DB::select('select
                         `t_race_result_record`.`race_id`
                         ,`t_race_result_record`.`race_name`
                         ,`t_race_result_record`.`race_number`
                         ,`t_race_result_record`.`race_class_id`
                         ,`t_race_result_record`.`race_class_name` 
                         ,`t_race_result_record`.`by_group`
+                        ,`laptime_500m`
+                        ,`laptime_1000m`
+                        ,`laptime_1500m`
+                        ,`laptime_2000m`
+                        ,`final_time`
                         FROM `t_race_result_record`
                         where 1=1
-                        #ReplaceConditionString#
-                        ';
-        $sqlString = str_replace("#ReplaceConditionString#",$conditions,$sqlString);
-        $races = DB::select($sqlString,$conditionValues);
+                        and delete_flag = 0
+                        and tourn_id = :tourn_id
+                        and race_id = :race_id
+                        and org_id = :org_id
+                        and player_id = :player_id
+                        ',$conditionValues);
         return $races;
     }
 
