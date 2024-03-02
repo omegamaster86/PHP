@@ -427,4 +427,19 @@ class T_organizations extends Model
                                     ,[$user_id]);
         return $organizations;
     }
+
+    //csvの団体ID、団体名に一致する団体情報が登録済みかを確認するため、
+    //条件に合う団体の数を返す
+    //大会結果情報一括登録画面用
+    public function getOrganizationCountFromCsvData($org_id,$org_name)
+    {
+        $org_count = DB::select("select count(*)    as `count`
+                                from t_organizations
+                                where 1=1
+                                and delete_flag = 0
+                                and org_id = :org_id
+                                and org_name = :org_name",
+                                ["org_id"=>$org_id,"org_name"=>$org_name]);
+        return $org_count;
+    }
 }
