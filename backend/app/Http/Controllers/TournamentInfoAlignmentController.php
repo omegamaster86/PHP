@@ -7,6 +7,7 @@ use App\Models\T_raceResultRecord;
 use App\Models\T_tournaments;
 use App\Models\T_races;
 use App\Models\T_players;
+use App\Models\M_seat_number;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -945,11 +946,87 @@ class TournamentInfoAlignmentController extends Controller
     }
 
     //大会エントリー一括登録 読み込むボタン押下 20240301
-    public function sendTournamentEntryCsvData(Request $request)
+    public function sendTournamentEntryCsvData(Request $request,
+                                                T_races $t_races,
+                                                T_organizations $t_organizations,
+                                                M_seat_number $m_seat_number,
+                                                T_players $t_players)
     {
         Log::debug(sprintf("sendTournamentEntryCsvData start"));
         $reqData = $request->all();
-        Log::debug($reqData);
+        //Log::debug($reqData);
+        for($rowIndex = 1;$rowIndex < count($reqData);$rowIndex++)
+        {
+            //選択されている大会の大会IDと一致していること
+            //選択している大会がわからないため保留
+
+            //レーステーブルからレース情報が1件見つかること
+            $search_values = array();
+            $search_values['tourn_id'] = $reqData[$rowIndex]['tournId'];
+            $search_values['event_id'] = $reqData[$rowIndex]['eventId'];
+            $search_values['race_class_id'] = $reqData[$rowIndex]['raceTypeId'];
+            $search_values['by_group'] = $reqData[$rowIndex]['byGroup'];
+            $search_values['race_number'] = $reqData[$rowIndex]['raceNumber'];
+            $replace_condition_string = $this->generateRaceSearchCondition($reqData[$rowIndex],$search_values);
+            $race_count_array = $t_races->getRaceCount($replace_condition_string,$search_values);
+            $race_count = $race_count_array[0]->{"count"};
+            Log::debug("race_count = ".$race_count);
+            if($race_count != 1)
+            {
+                $reqData[$rowIndex]['checked'] = false;
+                $reqData[$rowIndex]['loadingResult'] = "不一致情報あり";
+                $reqData[$rowIndex]['tournIdError'] = true;
+                $reqData[$rowIndex]['eventIdError'] = true;
+                $reqData[$rowIndex]['raceTypeIdError'] = true;
+                $reqData[$rowIndex]['byGroupError'] = true;
+                $reqData[$rowIndex]['raceNumberError'] = true;
+                continue;
+            }
+            //団体名
+            $org_id = $reqData[$rowIndex]['orgId'];
+            $org_name = $reqData[$rowIndex]['orgName'];
+            $org_count_array = $t_organizations->getOrganizationCountFromCsvData($org_id,$org_name);
+            $org_count = $org_count_array[0]->{"count"};
+            Log::debug("org_count = ".$org_count);
+            if($org_count != 1)
+            {
+                $reqData[$rowIndex]['checked'] = false;
+                $reqData[$rowIndex]['loadingResult'] = "不一致情報あり";
+                $reqData[$rowIndex]['orgIdError'] = true;
+                $reqData[$rowIndex]['orgNameError'] = true;
+                continue;
+            }
+            //シート番号
+            $seat_number = $reqData[$rowIndex]['mSheetNumber'];
+            $seat_name = $reqData[$rowIndex]['sheetName'];
+            $seat_count_array = $m_seat_number->getSeatNumberCountFromCsvData($seat_number,$seat_name);
+            $seat_count = $seat_count_array[0]->{"count"};
+            Log::debug("seat_count = ".$seat_count);
+            if($seat_count != 1)
+            {
+                $reqData[$rowIndex]['checked'] = false;
+                $reqData[$rowIndex]['loadingResult'] = "不一致情報あり";
+                $reqData[$rowIndex]['mSheetNumberError'] = true;
+                $reqData[$rowIndex]['sheetNameError'] = true;
+                continue;
+            }
+            //選手名
+            $player_id = $reqData[$rowIndex]['userId'];
+            $player_name = $reqData[$rowIndex]['playerName'];
+            $player_count_array = $t_players->getPlayerCountFromCsvData($player_id,$player_name);
+            $player_count = $player_count_array[0]->{"count"};
+            Log::debug("player_count = ".$player_count);
+            if($player_count != 1)
+            {
+                $reqData[$rowIndex]['checked'] = false;
+                $reqData[$rowIndex]['loadingResult'] = "不一致情報あり";
+                $reqData[$rowIndex]['userIdError'] = true;
+                $reqData[$rowIndex]['playerNameError'] = true;
+            }
+        }
+        //出漕結果記録テーブルを検索して判定する
+        
+
         Log::debug(sprintf("sendTournamentEntryCsvData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
     }
@@ -983,4 +1060,28 @@ class TournamentInfoAlignmentController extends Controller
         Log::debug(sprintf("registerTournamentResultCsvData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
     }
+
+    //レースの検索条件を生成
+    private function generateRaceSearchCondition($read_record,&$search_values)
+    {
+        $replace_condition_string = "";
+        $search_values['tourn_id'] = $read_record['tournId'];           //大会ID
+        $search_values['event_id'] = $read_record['eventId'];           //種目ID
+        $search_values['race_class_id'] = $read_record['raceTypeId'];   //レース区分ID
+        $search_values['by_group'] = $read_record['byGroup'];           //組別
+        $search_values['race_number'] = $read_record['raceNumber'];     //レースNo.
+        //種目IDが999(その他)の場合のみ条件に入れる
+        if($read_record['eventId'] == 999)
+        {
+            $search_values['event_name'] = $read_record['eventName'];           //種目名
+            $replace_condition_string = "and event_name = :event_name\r\n";
+        }
+        //レース区分IDが999(その他)の場合のみ条件に入れる
+        if($read_record['raceTypeId'] == 999)
+        {
+            $search_values['race_class_name'] = $read_record['raceTypeName'];           //レース区分名
+            $replace_condition_string = "and race_class_name = :race_class_name\r\n";
+        }
+        return $replace_condition_string;
+	}
 }
