@@ -1150,4 +1150,18 @@ class T_players extends Model
         $players = DB::select($sqlString,$conditionValues);
         return $players;
     }
+
+    //選手IDと選手名に一致する選手の件数を抽出する
+    //大会結果情報一括登録画面用
+    public function getPlayerCountFromCsvData($player_id,$player_name)
+    {
+        $player_count = DB::select("select count(*) as `count`
+                                    FROM `t_players`
+                                    WHERE 1=1
+                                    and delete_flag = 0
+                                    and player_id = :player_id
+                                    and player_name = :player_name"
+                                ,["player_id"=>$player_id,"player_name"=>$player_name]);
+        return $player_count;
+    }
 }
