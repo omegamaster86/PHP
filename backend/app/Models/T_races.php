@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class T_races extends Model
 {
@@ -286,7 +287,8 @@ class T_races extends Model
                             and race.`delete_flag` = 0
                             and (eve.`delete_flag` = 0 or eve.`delete_flag` is null) 
                             and race.race_id = :race_id"
-                            ,$race_id);
+                            ,['race_id'=>$race_id]);
+        //Log::debug($race);
         return $race;
     }
 

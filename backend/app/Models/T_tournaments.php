@@ -57,7 +57,8 @@ class T_tournaments extends Model
                                     where 1=1
                                     and `t_tournaments`.`delete_flag` = 0
                                     and (`t_organizations`.`delete_flag` = 0 or `t_organizations`.`delete_flag` is null)
-                                    and tourn_id = ?', [$trnId]);
+                                    and tourn_id = ?'
+                                    ,[$trnId]);
         //1つの団体IDを取得するため0番目だけを返す
         $targetTrn = null;
         if (!empty($tournaments)) {

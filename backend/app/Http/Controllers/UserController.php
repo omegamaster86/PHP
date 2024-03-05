@@ -773,7 +773,7 @@ class UserController extends Controller
     {
         Log::debug(Auth::user()->user_id);
         $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
-        // Log::debug($users);
+        Log::debug($users);
         return response()->json(['result' => $users]); //DBの結果を返す
     }
 }
