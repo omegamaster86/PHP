@@ -626,7 +626,7 @@ export default function TournamentEntryBulkRegister() {
                       if (formData.tournName === '' || formData.tournName === undefined) {
                         checkTournName(true);
                       } else {
-                        await sendCsvData();
+                        await sendCsvData(); //バックエンド側にCSVデータを送信 データ判定用
                         setCsvData([]);
                         csvFileData?.content?.slice(1).map((row, rowIndex) => {
                           handleCsvData(row, rowIndex);
@@ -716,7 +716,7 @@ export default function TournamentEntryBulkRegister() {
                     if (csvData.find((row) => row.checked)?.id === undefined) {
                       window.confirm('1件以上選択してください。');
                     } else {
-                      const errorFlg = await checkRaceResultRecords();
+                      const errorFlg = await checkRaceResultRecords(); //バックエンド側にCSVデータを送信 データ登録用
                       if (!errorFlg) {
                         window.confirm('レース結果の登録が完了しました。')
                           ? (setActivationFlg(false),
