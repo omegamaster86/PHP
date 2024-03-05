@@ -82,6 +82,8 @@ export default function TournamentEntryBulkRegister() {
   // TODO: ユーザーの権限を取得する処理をuseEffectに記述すること
   const [userType, setUserType] = useState('');
 
+  var [loadingResultList, setloadingResultList] = useState<string[]>([]); //バックエンド側の読み込み結果を受け取る 20230304
+
   // CSVファイルのアップロードを処理する関数
   const handleCsvUpload = (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => {
     setCsvFileData(newCsvData);
@@ -308,69 +310,6 @@ export default function TournamentEntryBulkRegister() {
         },
       ]);
     } else {
-      let apiUri = 'http://localhost:3100/checkRace/';
-      let loadingResult = '';
-      try {
-        var array = csvFileData?.content.map((row, rowIndex) => {
-          return {
-            id: rowIndex,
-            checked: false,
-            loadingResult: '',
-            tournId: row[0],
-            tournIdError: false,
-            tournName: row[1],
-            eventId: row[2],
-            eventIdError: false,
-            eventName: row[3],
-            raceTypeId: row[4],
-            raceTypeIdError: false,
-            raceTypeName: row[5],
-            raceId: row[6],
-            raceIdError: false,
-            raceName: row[7],
-            byGroup: row[8],
-            byGroupError: false,
-            raceNumber: row[9],
-            raceNumberError: false,
-            startDatetime: row[10],
-            orgId: row[11],
-            orgIdError: false,
-            orgName: row[12],
-            orgNameError: false,
-            crewName: row[13],
-            crewNameError: false,
-            mSheetNumber: row[14],
-            mSheetNumberError: false,
-            sheetName: row[15],
-            sheetNameError: false,
-            userId: row[16],
-            userIdError: false,
-            playerName: row[17],
-            playerNameError: false,
-          }
-        });
-        var element = array as CsvData[];
-        console.log(element);
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
-        // const response = await axios.get<CheckRace>('http://localhost:3100/checkRace/');
-        const response = await axios.post('/sendTournamentEntryCsvData', element);
-        const data = response.data.result;
-
-        if (data.hasError) {
-          loadingResult = '不一致情報あり';
-        } else if (data.hasMatch) {
-          if (data.hasRegisterdRace) {
-            loadingResult = '記録情報あり';
-          } else {
-            loadingResult = 'エントリー情報変更';
-          }
-        } else {
-          loadingResult = '新規登録';
-        }
-      } catch (error) {
-        setErrorMessage(['API取得エラー:' + (error as Error).message]);
-      }
 
       const tournIdError = checkMaxInt(row[0], 100000) || checkRequired(row[0]);
       const eventIdError = checkMaxInt(row[2], 1000) || checkRequired(row[2]);
@@ -386,28 +325,27 @@ export default function TournamentEntryBulkRegister() {
       const userIdError = checkMaxInt(row[16], 10000000) || checkRequired(row[16]);
       const playerNameError = checkStringLegnth(row[17], 100) || checkRequired(row[17]);
 
-      const error =
-        tournIdError ||
-        userIdError ||
-        playerNameError ||
-        raceIdError ||
-        raceNumberError ||
-        raceTypeIdError ||
-        orgIdError ||
-        orgNameError ||
-        crewNameError ||
-        byGroupError ||
-        eventIdError ||
-        mSheetNumberError ||
-        sheetNameError ||
-        loadingResult !== '新規登録';
+      // const error =
+      //   tournIdError ||
+      //   userIdError ||
+      //   playerNameError ||
+      //   raceIdError ||
+      //   raceNumberError ||
+      //   raceTypeIdError ||
+      //   orgIdError ||
+      //   orgNameError ||
+      //   crewNameError ||
+      //   byGroupError ||
+      //   eventIdError ||
+      //   mSheetNumberError ||
+      //   sheetNameError;
 
       setCsvData((prevData) => [
         ...(prevData as CsvData[]),
         {
           id: rowIndex,
-          checked: error ? false : true,
-          loadingResult: error ? '未入力項目あり' : loadingResult,
+          checked: (loadingResultList[rowIndex] != null) ? false : true,
+          loadingResult: loadingResultList[rowIndex],
           tournId: row[0],
           tournIdError: tournIdError,
           tournName: row[1],
@@ -444,6 +382,65 @@ export default function TournamentEntryBulkRegister() {
       setDisplayRegisterButtonFlg(true);
     }
   };
+
+  //読み込むボタン押下時 20240302
+  const sendCsvData = async () => {
+    try {
+      var array = csvFileData?.content.map((row, rowIndex) => {
+        return {
+          id: rowIndex,
+          checked: false,
+          loadingResult: '',
+          tournId: row[0],
+          tournIdError: false,
+          tournName: row[1],
+          eventId: row[2],
+          eventIdError: false,
+          eventName: row[3],
+          raceTypeId: row[4],
+          raceTypeIdError: false,
+          raceTypeName: row[5],
+          raceId: row[6],
+          raceIdError: false,
+          raceName: row[7],
+          byGroup: row[8],
+          byGroupError: false,
+          raceNumber: row[9],
+          raceNumberError: false,
+          startDatetime: row[10],
+          orgId: row[11],
+          orgIdError: false,
+          orgName: row[12],
+          orgNameError: false,
+          crewName: row[13],
+          crewNameError: false,
+          mSheetNumber: row[14],
+          mSheetNumberError: false,
+          sheetName: row[15],
+          sheetNameError: false,
+          userId: row[16],
+          userIdError: false,
+          playerName: row[17],
+          playerNameError: false,
+        }
+      });
+      var element = array as CsvData[];
+      console.log(element);
+      const csrf = () => axios.get('/sanctum/csrf-cookie');
+      await csrf();
+      const response = await axios.post('/sendTournamentEntryCsvData', element);
+      const data = response.data.result as CsvData[];
+      var resList = Array();
+      for (let index = 0; index < response.data.result.length; index++) {
+        const element = array[index];
+        resList.push(response.data.result[index].loadingResult);
+      }
+      console.log(resList);
+      setloadingResultList(resList);
+    } catch (error) {
+      setErrorMessage(['API取得エラー:' + (error as Error).message]);
+    }
+  }
 
   const checkRaceResultRecords = async () => {
     let apiUri = 'http://localhost:3100/checkRaceResultRecord';
@@ -613,7 +610,7 @@ export default function TournamentEntryBulkRegister() {
                 </p>
                 <CustomButton
                   buttonType='primary'
-                  onClick={() => {
+                  onClick={async () => {
                     setActivationFlg(true);
                     if (dialogDisplayFlg) {
                       window.confirm(
@@ -629,6 +626,7 @@ export default function TournamentEntryBulkRegister() {
                       if (formData.tournName === '' || formData.tournName === undefined) {
                         checkTournName(true);
                       } else {
+                        await sendCsvData(); //バックエンド側にCSVデータを送信 データ判定用
                         setCsvData([]);
                         csvFileData?.content?.slice(1).map((row, rowIndex) => {
                           handleCsvData(row, rowIndex);
@@ -718,7 +716,7 @@ export default function TournamentEntryBulkRegister() {
                     if (csvData.find((row) => row.checked)?.id === undefined) {
                       window.confirm('1件以上選択してください。');
                     } else {
-                      const errorFlg = await checkRaceResultRecords();
+                      const errorFlg = await checkRaceResultRecords(); //バックエンド側にCSVデータを送信 データ登録用
                       if (!errorFlg) {
                         window.confirm('レース結果の登録が完了しました。')
                           ? (setActivationFlg(false),
