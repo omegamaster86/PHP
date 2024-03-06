@@ -228,7 +228,7 @@ export default function TournamentSearch() {
             <div className='flex flex-row justify-start gap-[16px]'>
               {/* 開催開始年月日 */}
               <div className='flex flex-col justify-start '>
-                <InputLabel label='開催年月' />
+                <InputLabel label='開催年月日' />
                 <CustomDatePicker
                   // placeHolder={new Date().toLocaleDateString('ja-JP')}
                   placeHolder={"YYYY/MM/DD"}
@@ -271,7 +271,7 @@ export default function TournamentSearch() {
                 <div className='flex flex-row justify-start gap-[16px]'>
                   {/* JARA選手コード */}
                   <CustomTextField
-                    type='number'
+                    // type='number'
                     label='JARA選手コード'
                     placeHolder='JARA選手コード'
                     displayHelp={false}
@@ -282,7 +282,7 @@ export default function TournamentSearch() {
                   />
                   {/* 選手ID */}
                   <CustomTextField
-                    type='number'
+                    // type='number'
                     label='選手ID'
                     placeHolder='選手ID'
                     displayHelp={false}

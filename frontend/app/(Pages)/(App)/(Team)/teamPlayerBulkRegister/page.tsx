@@ -135,29 +135,9 @@ export default function TeamPlayerBulkRegister() {
       { label: '出身地', key: 'birthPlace' },
       { label: '居住地', key: 'residence' },
     ],
-    // 仮実装。ダウンロードするデータを設定
     data: [
       {
-        userId: '1',
-        playerId: '2',
-        jaraPlayerId: '3',
-        playerName: '4',
-        mailaddress: '5',
-        teamId: '6',
-        teamName: '7',
-        birthPlace: '8',
-        residence: '9',
-      },
-      {
-        userId: '1',
-        playerId: '2',
-        jaraPlayerId: '3',
-        playerName: '4',
-        mailaddress: '5',
-        teamId: '6',
-        teamName: '7',
-        birthPlace: '8',
-        residence: '9',
+
       },
     ],
     filename: '団体所属選手一括登録ファイル.csv',

@@ -307,7 +307,7 @@ class T_users extends Authenticatable
                     set `user_type` = 
                     (
                         select
-                        LPAD(conv((`user_type_decimal` - `input_decimal`),10,2),8,"0") as `user_type`
+                        LPAD(conv((`user_type_decimal` + `input_decimal`),10,2),8,"0") as `user_type`
                         FROM
                         (
                             SELECT
@@ -338,7 +338,7 @@ class T_users extends Authenticatable
                     set `user_type` = 
                     (
                         select
-                        LPAD(conv((`user_type_decimal` + `input_decimal`),10,2),8,"0") as `user_type`
+                        LPAD(conv((`user_type_decimal` - `input_decimal`),10,2),8,"0") as `user_type`
                         FROM
                         (
                             SELECT

@@ -618,7 +618,14 @@ class PlayerController extends Controller
         }
         $result = $tPlayersData->insertPlayers($tPlayersData::$playerInfo); //DBに選手を登録 20240131
 
+        //ユーザ種別の更新
+        $hoge = array();
+        $hoge['user_id'] = Auth::user()->user_id;
+        $hoge['input'] = '00000010';
+        $t_users->updateUserTypeRegist($hoge);
+
         $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
+
         Log::debug(sprintf("storePlayerData end"));
         return response()->json(['users' => $users, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
     }
@@ -688,17 +695,14 @@ class PlayerController extends Controller
         }
 
         DB::beginTransaction();
-        try
-        {
+        try {
             $result = $tPlayersData->updatePlayerData($tPlayersData::$playerInfo); //DBに選手を登録 20240131
 
             $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
             DB::commit();
             Log::debug(sprintf("updatePlayerData end"));
             return response()->json(['users' => $users, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
-        }
-        catch(\Throwable $e)
-        {
+        } catch (\Throwable $e) {
             DB::rollBack();
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
@@ -724,7 +728,7 @@ class PlayerController extends Controller
         return response()->json(['result' => $result]); //DBの結果を返す
     }
     //react 選手情報削除画面から受け取ったデータを削除する 20240201
-    public function deletePlayerData(Request $request, T_players $tPlayersData, T_raceResultRecord $tRaceResultRecord)
+    public function deletePlayerData(Request $request, T_players $tPlayersData, T_raceResultRecord $tRaceResultRecord, T_users $t_users)
     {
 
 
@@ -740,6 +744,12 @@ class PlayerController extends Controller
 
         $tRaceResultRecord::$raceResultRecordInfo['player_id'] = $reqData['playerInformation']['player_id']; //選手ID
         $result = $tRaceResultRecord->deleteRaceResultRecord_playerId($tRaceResultRecord::$raceResultRecordInfo); //該当選手に削除フラグを立てる 20240208
+
+        //ユーザ種別の更新
+        $hoge = array();
+        $hoge['user_id'] = Auth::user()->user_id;
+        $hoge['input'] = '00000010';
+        $t_users->updateUserTypeDelete($hoge);
 
         Log::debug(sprintf("deletePlayerData end"));
         if ($result === "success") {
@@ -762,6 +772,7 @@ class PlayerController extends Controller
                 ]
             );
             if (!empty($result)) {
+                Log::debug(sprintf("checkJARAPlayerId end 1"));
                 return response()->json(["選手IDはすでに登録されています。 複数作成することはできません。"], 403);
             }
         }
@@ -770,47 +781,59 @@ class PlayerController extends Controller
         if (!empty($registered_player)) {
             if ($request["mode"] === "create") {
                 if ($registered_player->user_id === Auth::user()->user_id) {
+                    Log::debug(sprintf("checkJARAPlayerId end 2"));
                     return response()->json(["選手IDはすでに登録されています。 複数作成することはできません。"], 403);
                 } else {
+                    Log::debug(sprintf("checkJARAPlayerId end 3"));
                     return response()->json(["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
                 }
             }
             if ($request["mode"] === "create_confirm") {
                 if ($registered_player->user_id === Auth::user()->user_id) {
+                    Log::debug(sprintf("checkJARAPlayerId end 4"));
                     return response()->json(["登録に失敗しました。選手IDはすでに登録されています。 複数作成することはできません。"], 403);
                 } else {
+                    Log::debug(sprintf("checkJARAPlayerId end 5"));
                     return response()->json(["登録に失敗しました。
                     別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
                 }
             } else if ($request["mode"] === "update") {
                 if ($registered_player->user_id === Auth::user()->user_id) {
+                    Log::debug(sprintf("checkJARAPlayerId end 6"));
                     return response()->json("");
                 } else {
+                    Log::debug(sprintf("checkJARAPlayerId end 7"));
                     return response()->json(["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
                 }
             } else if ($request["mode"] === "update_confirm") {
                 if ($registered_player->user_id === Auth::user()->user_id) {
+                    Log::debug(sprintf("checkJARAPlayerId end 8"));
                     return response()->json("");
                 } else {
+                    Log::debug(sprintf("checkJARAPlayerId end 9"));
                     return response()->json(["更新に失敗しました。
                     別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
                 }
             } else {
-
+                Log::debug(sprintf("checkJARAPlayerId end 10"));
                 return response()->json(["失敗しました。"], 400);
             }
         } else {
             if ($request["mode"] === "create") {
+                Log::debug(sprintf("checkJARAPlayerId end 11"));
                 return response()->json(["入力したJARA選手IDと紐づくデータが存在しません。\nこのJARA選手IDで登録しますか？"]);
             }
             if ($request["mode"] === "create_confirm") {
+                Log::debug(sprintf("checkJARAPlayerId end 12"));
                 return response()->json([""]);
             } else if ($request["mode"] === "update") {
+                Log::debug(sprintf("checkJARAPlayerId end 13"));
                 return response()->json(["入力したJARA選手IDと紐づくデータが存在しません。\nこのJARA選手IDで更新しますか？"]);
             } else if ($request["mode"] === "update_confirm") {
+                Log::debug(sprintf("checkJARAPlayerId end 14"));
                 return response()->json([""]);
             } else {
-
+                Log::debug(sprintf("checkJARAPlayerId end 14"));
                 return response()->json(["失敗しました。"], 400);
             }
         }

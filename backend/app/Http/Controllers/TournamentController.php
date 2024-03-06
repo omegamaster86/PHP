@@ -508,17 +508,18 @@ class TournamentController extends Controller
     public function storeTournamentInfoData(Request $request, T_tournaments $tTournament, T_races $tRace)
     {
         Log::debug(sprintf("storeTournamentInfoData start"));
-        
+        Log::debug($request);
         $random_file_name = Str::random(12);
         //If new PDF is uploaded
         if ($request->hasfile('tournamentFormData')) {
             $file = $request->tournamentFormData['uploadedPDFFile'];
             $file_name = $random_file_name . '.' . $file->getClientOriginalExtension();
-            $destination_path = public_path().'/pdf/tournaments/';
-            $file->move($destination_path,$file_name);
+            $destination_path = public_path() . '/pdf/tournaments/';
+            $file->move($destination_path, $file_name);
         }
         $reqData = $request->all();
         // Log::debug($reqData);
+        // Log::debug(isset($reqData['tableData']));
         //確認画面から登録
         DB::beginTransaction();
         try {
@@ -535,8 +536,7 @@ class TournamentController extends Controller
             if ($request->hasfile('tournamentFormData')) {
                 $file_name = $random_file_name . '.' . $request->tournamentFormData['uploadedPDFFile']->getClientOriginalExtension();
                 $tTournament::$tournamentInfo['tourn_info_faile_path'] = $file_name; //PDFファイル
-            }
-            else {
+            } else {
                 //If  PDF is not uploaded
                 $tTournament::$tournamentInfo['tourn_info_faile_path'] = $reqData['tournamentFormData']['tourn_info_faile_path']; //PDFファイル
             }
@@ -545,27 +545,29 @@ class TournamentController extends Controller
             $tTournament::$tournamentInfo['entrysystem_tourn_id'] = $reqData['tournamentFormData']['entrysystem_tourn_id']; //エントリーシステムの大会ID
             $result = $tTournament->insertTournaments($tTournament::$tournamentInfo); //Insertを実行して、InsertしたレコードのID（主キー）を返す
 
-            //レース登録リスト行数分登録する
-            for ($i = 0; $i < count($reqData['tableData']); $i++) {
-                $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['race_number']; //レース番号
-                $tRace::$racesData['entrysystem_race_id'] = $reqData['tableData'][$i]['entrysystem_race_id']; //エントリーシステムのレースID
-                $tRace::$racesData['tourn_id'] = $result; //大会IDに紐づける
-                $tRace::$racesData['race_name'] = $reqData['tableData'][$i]['race_name']; //レース名
-                $tRace::$racesData['event_id'] = $reqData['tableData'][$i]['event_id']; //イベントID
-                $tRace::$racesData['event_name'] = $reqData['tableData'][$i]['event_name']; //イベント名
-                $tRace::$racesData['race_class_id'] = $reqData['tableData'][$i]['race_class_id']; //レース区分ID
-                $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['race_class_name']; //レース区分
-                $tRace::$racesData['by_group'] = $reqData['tableData'][$i]['by_group']; //レース区分
-                $tRace::$racesData['range'] = $reqData['tableData'][$i]['range']; //距離
-                $tRace::$racesData['start_date_time'] = $reqData['tableData'][$i]['start_date_time']; //発艇日時
-                $tRace->insertRaces($tRace::$racesData); //レーステーブルの挿入
+            if (isset($reqData['tableData'])) { //レースに関するデータが存在する場合登録する
+                //レース登録リスト行数分登録する
+                for ($i = 0; $i < count($reqData['tableData']); $i++) {
+                    $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['race_number']; //レース番号
+                    $tRace::$racesData['entrysystem_race_id'] = $reqData['tableData'][$i]['entrysystem_race_id']; //エントリーシステムのレースID
+                    $tRace::$racesData['tourn_id'] = $result; //大会IDに紐づける
+                    $tRace::$racesData['race_name'] = $reqData['tableData'][$i]['race_name']; //レース名
+                    $tRace::$racesData['event_id'] = $reqData['tableData'][$i]['event_id']; //イベントID
+                    $tRace::$racesData['event_name'] = $reqData['tableData'][$i]['event_name']; //イベント名
+                    $tRace::$racesData['race_class_id'] = $reqData['tableData'][$i]['race_class_id']; //レース区分ID
+                    $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['race_class_name']; //レース区分
+                    $tRace::$racesData['by_group'] = $reqData['tableData'][$i]['by_group']; //レース区分
+                    $tRace::$racesData['range'] = $reqData['tableData'][$i]['range']; //距離
+                    $tRace::$racesData['start_date_time'] = $reqData['tableData'][$i]['start_date_time']; //発艇日時
+                    $tRace->insertRaces($tRace::$racesData); //レーステーブルの挿入
+                }
             }
 
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::debug($e);
-            return response()->json("失敗しました。大会登録できませんでした。",500); //エラーメッセージを返す
+            return response()->json("失敗しました。大会登録できませんでした。", 500); //エラーメッセージを返す
         }
 
         Log::debug(sprintf("storeTournamentInfoData end"));
@@ -581,8 +583,8 @@ class TournamentController extends Controller
         if ($request->hasfile('tournamentFormData')) {
             $file = $request->tournamentFormData['uploadedPDFFile'];
             $file_name = $random_file_name . '.' . $file->getClientOriginalExtension();
-            $destination_path = public_path().'/pdf/tournaments/';
-            $file->move($destination_path,$file_name);
+            $destination_path = public_path() . '/pdf/tournaments/';
+            $file->move($destination_path, $file_name);
         }
         $reqData = $request->all();
         //確認画面から登録
@@ -600,15 +602,13 @@ class TournamentController extends Controller
         if ($request->hasfile('tournamentFormData')) {
             $file_name = $random_file_name . '.' . $request->tournamentFormData['uploadedPDFFile']->getClientOriginalExtension();
             $tTournament::$tournamentInfo['tourn_info_faile_path'] = $file_name; //PDFファイル
-        }
-        else {
+        } else {
             //If  PDF is not uploaded
-            $tTournament::$tournamentInfo['tourn_info_faile_path'] = $reqData['tournamentFormData']['tourn_info_faile_path']??''; //PDFファイル
+            $tTournament::$tournamentInfo['tourn_info_faile_path'] = $reqData['tournamentFormData']['tourn_info_faile_path'] ?? ''; //PDFファイル
         }
         $tTournament->updateTournaments($tTournament::$tournamentInfo);
         DB::beginTransaction();
-        try
-        {
+        try {
             //レース登録リスト行数分登録する
             for ($i = 0; $i < count($reqData['tableData']); $i++) {
                 $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['race_number']; //レース番号
@@ -627,11 +627,9 @@ class TournamentController extends Controller
             DB::commit();
             Log::debug(sprintf("updateTournamentInfoData end"));
             return response()->json(['reqData' => $reqData]); //DBの結果を返す
-        }
-        catch (\Throwable $e)
-        {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response()->json("失敗しました。大会更新できませんでした。",500); //エラーメッセージを返す
+            return response()->json("失敗しました。大会更新できませんでした。", 500); //エラーメッセージを返す
         }
     }
 
@@ -692,7 +690,14 @@ class TournamentController extends Controller
         Log::debug($reqData['tourn_id']);
         //$result = $tRace->getRace($reqData['tourn_id']); //レース情報を取得
         $result = $tRace->getRaces($reqData); //レース情報を取得
+        if (isset($result)) {
+            for ($i = 0; $i < count($result); $i++) {
+                $result[$i]->id = $i;
+            }
+        }
+        // Log::debug($result);
         Log::debug(sprintf("getRaceData end"));
+        Log::debug($result);
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 
@@ -723,7 +728,7 @@ class TournamentController extends Controller
         Log::debug(sprintf("getCrewData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
-    
+
     //レース結果一覧を取得 
     // public function getRaceResultsData(Request $request,T_raceResultRecord $T_raceResultRecord)
     // {
@@ -739,42 +744,36 @@ class TournamentController extends Controller
 
     //レース結果一覧を取得するための検索条件の文字列を生成する
     //SQLの文字列を置き換える
-    private function generateRaceResultSearchCondition($request,&$searchValues)
+    private function generateRaceResultSearchCondition($request, &$searchValues)
     {
         $condition = "";
         //大会名
-        if(isset($request['tourn_name']))
-        {
+        if (isset($request['tourn_name'])) {
             $condition .= "and `tourn_name` LIKE :tourn_name\r\n";
-            $searchValues['event_year'] = "%".$request['tourn_name']."%";
+            $searchValues['event_year'] = "%" . $request['tourn_name'] . "%";
         }
         //種目
-        if(isset($request['event_id']))
-        {
+        if (isset($request['event_id'])) {
             $condition .= "and `event_id` = :event_id\r\n";
             $searchValues['event_id'] = $request['event_id'];
         }
         //種目名
-        if(isset($request['event_name']))
-        {
+        if (isset($request['event_name'])) {
             $condition .= "and event_name LIKE :event_name\r\n";
-            $searchValues['event_name'] = "%".$request['event_name']."%";
+            $searchValues['event_name'] = "%" . $request['event_name'] . "%";
         }
         //レース区分
-        if(isset($request['race_class_id']))
-        {
+        if (isset($request['race_class_id'])) {
             $condition .= "and race_class_id = :race_class_id\r\n";
             $searchValues['race_class_id'] = $request['race_class_id'];
         }
         //組別
-        if(isset($request['by_group']))
-        {
+        if (isset($request['by_group'])) {
             $condition .= "and by_group LIKE :by_group\r\n";
-            $searchValues['by_group'] = "%".$request['by_group']."%";
+            $searchValues['by_group'] = "%" . $request['by_group'] . "%";
         }
         //レースNo.
-        if(isset($request['race_number']))
-        {
+        if (isset($request['race_number'])) {
             $condition .= "and race_number = :race_number\r\n";
             $searchValues['race_number'] = $request['race_number'];
         }
@@ -782,11 +781,10 @@ class TournamentController extends Controller
     }
 
     //レース結果情報を登録(insert)する
-    public function registRaceResultRecord(Request $request,T_raceResultRecord $t_raceResultRecord)
+    public function registRaceResultRecord(Request $request, T_raceResultRecord $t_raceResultRecord)
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
-        try
-        {
+        try {
             DB::transaction();
             //出漕結果記録テーブルを検索
             $reqData = $request->all();
@@ -794,31 +792,25 @@ class TournamentController extends Controller
             $reqData['user_id'] = Auth::user()->user_id;
             $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData);
             //結果が0件なら、insertを実行
-            if($result_count['result'] == 0)
-            {
+            if ($result_count['result'] == 0) {
                 $t_raceResultRecord->insertRaceResultRecordResponse($reqData);
                 DB::commit();
-            }
-            else
-            {
+            } else {
                 DB::commit();
                 //結果が1件以上存在するとき
                 return response()->json(['errMessage' => $race_result_record_have_been_registred]); //エラーメッセージを返す
             }
-        }
-        catch(\Throwable $e)
-        {
+        } catch (\Throwable $e) {
             DB::rollBack();
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }
 
     //レース結果情報を更新(update)する
-    public function updateRaceResultRecord(Request $request,T_raceResultRecord $t_raceResultRecord)
+    public function updateRaceResultRecord(Request $request, T_raceResultRecord $t_raceResultRecord)
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
-        try
-        {
+        try {
             DB::transaction();
             //出漕結果記録テーブルを検索
             $reqData = $request->all();
@@ -826,31 +818,25 @@ class TournamentController extends Controller
             $reqData['updated_user_id'] = Auth::user()->user_id;
             $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData);
             //結果が0件なら、insertを実行
-            if($result_count['result'] > 0)
-            {
+            if ($result_count['result'] > 0) {
                 $t_raceResultRecord->updateRaceResultRecordsResponse($reqData);
                 DB::commit();
-            }
-            else
-            {
+            } else {
                 DB::commit();
                 //結果が存在しないとき
                 return response()->json(['errMessage' => $race_result_record_have_been_deleted]); //エラーメッセージを返す
             }
-        }
-        catch(\Throwable $e)
-        {
+        } catch (\Throwable $e) {
             DB::rollBack();
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }
 
     //レース結果情報を削除（update delete_flag)する
-    public function updateDeleteFlagOfRaceResultRecord(Request $request,T_raceResultRecord $t_raceResultRecord)
+    public function updateDeleteFlagOfRaceResultRecord(Request $request, T_raceResultRecord $t_raceResultRecord)
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
-        try
-        {
+        try {
             DB::transaction();
             //出漕結果記録テーブルを検索
             $reqData = $request->all();
@@ -858,20 +844,15 @@ class TournamentController extends Controller
             $reqData['updated_user_id'] = Auth::user()->user_id;
             $result_count = $t_raceResultRecord->getIsExistsTargetRaceResultRecord($reqData);
             //結果が0件なら、insertを実行
-            if($result_count['result'] == 0)
-            {
+            if ($result_count['result'] == 0) {
                 $t_raceResultRecord->updateDeleteFlagToValid($reqData);
                 DB::commit();
-            }
-            else
-            {
+            } else {
                 DB::commit();
                 //結果が存在しないとき
                 return response()->json(['errMessage' => $race_result_record_have_been_deleted]); //エラーメッセージを返す
             }
-        }
-        catch(\Throwable $e)
-        {
+        } catch (\Throwable $e) {
             DB::rollBack();
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
