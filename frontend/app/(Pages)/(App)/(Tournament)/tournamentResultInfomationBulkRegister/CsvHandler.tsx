@@ -194,7 +194,9 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
 
     try {
       // ダウンロード用のBlobを作成（UTF-8指定）
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+      // const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+      const bom = new Uint8Array([0xef, 0xbb, 0xbf]) //UTF-8を指定
+      const blob = new Blob([bom, csvContent], { type: 'text/csv' });
 
       // BlobからURLを生成
       const url = window.URL.createObjectURL(blob);

@@ -141,7 +141,9 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           .join('\n');
 
       // ダウンロード用のBlobを作成（UTF-8指定）
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+      // const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+      const bom = new Uint8Array([0xef, 0xbb, 0xbf]) //UTF-8を指定
+      const blob = new Blob([bom, csvContent], { type: 'text/csv' });
 
       // BlobからURLを生成
       const url = window.URL.createObjectURL(blob);
@@ -168,7 +170,12 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
   return (
     <div>
       <div className='flex flex-col gap-[10px] w-full'>
-        <CustomInputLabel label={props.csvUploadProps.label} displayHelp></CustomInputLabel>
+        <CustomInputLabel
+          label={props.csvUploadProps.label}
+          displayHelp
+          toolTipTitle='TitleCSV読み込み' //はてなボタン用
+          toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+        ></CustomInputLabel>
         <div className='flex flex-row gap-[4px]'>
           {!props.csvUploadProps.readonly && (
             <div {...getRootProps()} className='mb-1'>

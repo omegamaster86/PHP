@@ -200,13 +200,9 @@ export default function PlayerInformationLinking() {
       { label: 'メールアドレス', key: 'mailaddress' },
       { label: '選手名', key: 'playerName' },
     ],
-    // 仮実装。ダウンロードするデータを設定
     data: [
       {
-        oldPlayerId: 9999999,
-        newPlayerId: 9999999,
-        mailaddress: 'xxxxxx@xx.xx.xx',
-        playerName: 'ああああああああ',
+
       },
     ],
     filename: '選手情報連携ファイル.csv',

@@ -93,13 +93,13 @@ export default function PlayerInformation() {
     sex_id: 0,
     height: '',
     weight: '',
-    birth_country: 0,
+    birth_country: 112,
     birthCountryName: '日本国 （jpn）',
-    birth_prefecture: 0,
+    birth_prefecture: 13,
     birthPrefectureName: '東京',
-    residence_country: 0,
+    residence_country: 112,
     residenceCountryName: '日本国 （jpn）',
-    residence_prefecture: 0,
+    residence_prefecture: 13,
     residencePrefectureName: '東京',
     date_of_birth: '',
     side_info: [false, false, false, false],
@@ -136,10 +136,10 @@ export default function PlayerInformation() {
   // 選手情報登録・更新・入力確認画面の「居住地（国）」が「日本」の場合、「居住地（都道府県）」を「東京」で設定する
   useEffect(() => {
     // 居住地（国）が日本（=0）の時
-    if (formData.residence_country == 0) {
+    if (formData.residence_country == 112) {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        residencePrefectureId: 0, // 東京
+        residence_prefecture: 13, // 東京
         residencePrefectureName: '東京',
       }));
     }
@@ -147,10 +147,10 @@ export default function PlayerInformation() {
 
   // 選手情報登録・更新・入力確認画面の「出身地（国）」が「日本」の場合、「出身地（都道府県）」を「東京」で設定する
   useEffect(() => {
-    if (formData.birth_country == 0) {
+    if (formData.birth_country == 112) {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        birthPrefectureId: 0,
+        birth_prefecture: 13,
         birthPrefectureName: '東京',
       }));
     }
@@ -278,7 +278,7 @@ export default function PlayerInformation() {
                 height: response.data.result.height, // 身長
                 weight: response.data.result.weight, // 体重
                 side_info: data, // サイド情報
-                bir_country_name: response.data.result.birthCountryName, // 出身地（国）
+                birthCountryName: response.data.result.birthCountryName, // 出身地（国）
                 birth_country: response.data.result.birth_country, // 出身地（国）
                 birthPrefectureName: response.data.result.birthPrefectureName, // 出身地（都道府県）
                 birth_prefecture: response.data.result.birth_prefecture, // 出身地（都道府県）
@@ -312,13 +312,13 @@ export default function PlayerInformation() {
           sex_id: 0,
           height: '',
           weight: '',
-          birth_country: 0,
+          birth_country: 112,
           birthCountryName: '日本国 （jpn）',
-          birth_prefecture: 0,
+          birth_prefecture: 13,
           birthPrefectureName: '東京',
-          residence_country: 0,
+          residence_country: 112,
           residenceCountryName: '日本国 （jpn）',
-          residence_prefecture: 0,
+          residence_prefecture: 13,
           residencePrefectureName: '東京',
           date_of_birth: '',
           side_info: [false, false, false, false],
@@ -381,10 +381,11 @@ export default function PlayerInformation() {
 
     // 出身地（都道府県）の入力チェック
     const birthPlacePrefectureError = Validator.getErrorMessages([
-      formData.birthCountryName === '日本国 （jpn）'
+      formData.birth_country == 112
         ? Validator.validateSelectRequired(formData.birthPrefectureName, '出身地（都道府県）')
         : '',
     ]);
+    console.log(birthPlacePrefectureError);
 
     // 居住地（国）の入力チェック
     const residenceCountryNameError = Validator.getErrorMessages([
@@ -393,10 +394,11 @@ export default function PlayerInformation() {
 
     // 居住地（都道府県）の入力チェック
     const livingPrefectureError = Validator.getErrorMessages([
-      formData.residenceCountryName === '日本国 （jpn）'
+      formData.residence_country == 112
         ? Validator.validateSelectRequired(formData.residencePrefectureName, '居住地（都道府県）')
         : '',
     ]);
+    console.log(livingPrefectureError);
 
     // エラーメッセージを設定
     setJaraPlayerCodeErrorMessage(jaraPlayerCodeError);
@@ -661,8 +663,11 @@ export default function PlayerInformation() {
           <InputLabel
             label='写真'
             displayHelp={mode !== 'confirm'}
-            toolTipTitle='Title' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+            // toolTipTitle='写真' //はてなボタン用
+            toolTipText='登録可能な画像ファイルの種類は以下になります。
+            　jpg
+            　jpeg
+            　png' //はてなボタン用
           />
           <div className='flex flex-row justify-start gap-[4px]'>
             {mode !== 'confirm' && (
@@ -735,8 +740,8 @@ export default function PlayerInformation() {
             errorMessages={jaraPlayerCodeErrorMessage}
             value={formData.jara_player_id?.toString()}
             onChange={(e) => handleInputChange('jara_player_id', e.target.value)}
-            toolTipTitle='Title JARA選手コード' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+            // toolTipTitle='Title JARA選手コード' //はてなボタン用
+            toolTipText='日本ローイング協会より発行された、12桁の選手コードを入力してください。' //はてなボタン用
           />
         </div>
         <div className='flex flex-col justify-start'>
@@ -751,8 +756,15 @@ export default function PlayerInformation() {
             readonly={mode === 'confirm'}
             value={formData.player_name}
             onChange={(e) => handleInputChange('player_name', e.target.value)}
-            toolTipTitle='Title 選手名' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+            // toolTipTitle='Title 選手名' //はてなボタン用
+            toolTipText='文字制限
+            　最大文字数：32文字（全半角区別なし）
+            　利用可能文字：
+            　　　日本語
+            　　　英大文字：[A-Z]（26 文字）
+            　　　英小文字：[a-z]（26 文字）
+            　　　数字：[0-9]（10 文字）
+            　　　記号：-,_' //はてなボタン用
           />
         </div>
         <div className='flex flex-col justify-start'>
@@ -761,8 +773,8 @@ export default function PlayerInformation() {
             label='生年月日'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
-            toolTipTitle='Title 生年月日' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+            // toolTipTitle='Title 生年月日' //はてなボタン用
+            toolTipText='西暦で入力してください。' //はてなボタン用
           />
           <CustomDatePicker
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -780,8 +792,8 @@ export default function PlayerInformation() {
             label='性別'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
-            toolTipTitle='Title 性別'
-            toolTipText='サンプル用のツールチップ表示'
+            // toolTipTitle='Title 性別'
+            toolTipText='大会に登録する性別を選んでください。'
           />
           <CustomDropdown
             id='sex'
@@ -812,8 +824,8 @@ export default function PlayerInformation() {
             inputAdorment='cm'
             value={formData.height?.toString()}
             onChange={(e) => handleInputChange('height', e.target.value)}
-            toolTipTitle='Title 身長' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+            // toolTipTitle='Title 身長' //はてなボタン用
+            toolTipText='現在の身長を半角数字で入力してください。' //はてなボタン用
           />
         </div>
         <div className='flex flex-col justify-start'>
@@ -831,8 +843,8 @@ export default function PlayerInformation() {
             inputAdorment='kg'
             value={formData.weight?.toString()}
             onChange={(e) => handleInputChange('weight', e.target.value)}
-            toolTipTitle='Title 体重' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+            // toolTipTitle='Title 体重' //はてなボタン用
+            toolTipText='現在の体重を半角数字で入力してください。' //はてなボタン用
           />
         </div>
         <div className='flex flex-col justify-start'>
@@ -841,8 +853,8 @@ export default function PlayerInformation() {
             label='サイド情報'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
-            toolTipTitle='Title サイド情報' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+            // toolTipTitle='Title サイド情報' //はてなボタン用
+            toolTipText='経験のあるサイドを選択してください。' //はてなボタン用
           />
           <div className='flex justify-start flex-col gap-[4px] my-1'>
             <OriginalCheckbox
@@ -928,8 +940,9 @@ export default function PlayerInformation() {
               label='出身地'
               required={mode !== 'confirm'}
               displayHelp={mode !== 'confirm'}
-              toolTipTitle='Title 出身地' //はてなボタン用
-              toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+              // toolTipTitle='Title 出身地' //はてなボタン用
+              toolTipText='生まれた国を選択してください。
+              日本を選択した場合、都道府県も選択してください。' //はてなボタン用
             />
             <CustomDropdown
               id='birthCountry'
@@ -952,15 +965,16 @@ export default function PlayerInformation() {
               className='rounded w-[300px] '
             />
           </div>
-          {formData.birthCountryName === '日本国 （jpn）' && (
+          {/* 国コードが日本の場合のみ、都道府県の入力欄を表示する */}
+          {formData.birth_country == 112 && (
             <div className='flex flex-col justify-start'>
               {/* 出身地（都道府県） */}
               <InputLabel
                 label='都道府県'
                 required={mode !== 'confirm'}
                 displayHelp={mode !== 'confirm'}
-                toolTipTitle='Title 都道府県' //はてなボタン用
-                toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+                // toolTipTitle='Title 都道府県' //はてなボタン用
+                toolTipText='生まれた都道府県を選択してください。' //はてなボタン用
               />
               <CustomDropdown
                 id='birthPrefecture'
@@ -993,8 +1007,9 @@ export default function PlayerInformation() {
               label='居住地'
               required={mode !== 'confirm'}
               displayHelp={mode !== 'confirm'}
-              toolTipTitle='Title 居住地' //はてなボタン用
-              toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+              // toolTipTitle='Title 居住地' //はてなボタン用
+              toolTipText='現在住んでいる国を選択してください。
+              日本を選択した場合、都道府県も選択してください。' //はてなボタン用
             />
             <CustomDropdown
               id='residenceCountry'
@@ -1016,15 +1031,16 @@ export default function PlayerInformation() {
               className='rounded w-[300px] '
             />
           </div>
-          {formData.residenceCountryName === '日本国 （jpn）' && (
+          {/* 国コードが日本の場合のみ、都道府県の入力欄を表示する */}
+          {formData.residence_country == 112 && (
             <div className='flex flex-col justify-start'>
               {/* 居住地（都道府県） */}
               <InputLabel
                 label='都道府県'
                 required={mode !== 'confirm'}
                 displayHelp={mode !== 'confirm'}
-                toolTipTitle='Title 都道府県' //はてなボタン用
-                toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+                // toolTipTitle='Title 都道府県' //はてなボタン用
+                toolTipText='現在住んでいる都道府県を選択してください。' //はてなボタン用
               />
               <CustomDropdown
                 id='residencePrefecture'
