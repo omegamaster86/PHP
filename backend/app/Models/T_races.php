@@ -288,7 +288,7 @@ class T_races extends Model
                             and (eve.`delete_flag` = 0 or eve.`delete_flag` is null) 
                             and race.race_id = :race_id"
                             ,['race_id'=>$race_id]);
-        //Log::debug($race);
+        Log::debug($race);
         return $race;
     }
 

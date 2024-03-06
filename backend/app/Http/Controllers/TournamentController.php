@@ -693,6 +693,7 @@ class TournamentController extends Controller
         //$result = $tRace->getRace($reqData['tourn_id']); //レース情報を取得
         $result = $tRace->getRaces($reqData); //レース情報を取得
         Log::debug(sprintf("getRaceData end"));
+        Log::debug($result);
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 

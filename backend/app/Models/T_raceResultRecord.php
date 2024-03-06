@@ -469,7 +469,7 @@ class T_raceResultRecord extends Model
                         `updated_user_id`, 
                         `delete_flag`
                     )VALUES
-                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0)'
+                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
                 ,[
                     $raceResultRecordResponse["player_id"],
                     $raceResultRecordResponse["jara_player_id"],
@@ -604,10 +604,10 @@ class T_raceResultRecord extends Model
                     ,`by_group` = :by_group
                     ,`event_id` = :event_id
                     ,`event_name` = :event_name
-                    ,`range` = range
+                    ,`range` = :range
                     ,`start_datetime` = :start_datetime
-                    ,`update_time` = :update_time
-                    ,`update_user_id` = :update_user_id
+                    ,`updated_time` = :updated_time
+                    ,`updated_user_id` = :updated_user_id
                     WHERE `race_result_record_id` = :race_result_record_id'
                     ,$raceResultRecordsResponse);
     }

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-
+use Exception;
 use Illuminate\View\View;
 
 class TournamentInfoAlignmentController extends Controller
@@ -1077,7 +1077,7 @@ class TournamentInfoAlignmentController extends Controller
         $reqData = $request->all();
         //Log::debug($reqData);
 
-        $currentDatetime = now()->format('Y-m-d H:i:s.u');
+        $current_datetime = now()->format('Y-m-d H:i:s.u');
         $user_id = Auth::user()->user_id;        
 
         //読み込み結果の選択にチェックが入ってるレコード単位でチェック
@@ -1100,22 +1100,21 @@ class TournamentInfoAlignmentController extends Controller
                     $target_race = $t_races->getRaceFromRaceId($race_id);       //対象のレースデータを取得
                     $entrysystem_race_id = $target_race[0]->entrysystem_race_id; //エントリーレースID                    
                     $race_number = $reqData[$rowIndex]["raceNumber"];         //レースNo.
+                    $race_name = $target_race[0]->race_name;                  //レース名
                     $race_class_id = $reqData[$rowIndex]["raceTypeId"];       //レース区分ID
                     $race_class_name = $target_race[0]->race_class_name;         //レース区分名
                     $org_id = $reqData[$rowIndex]["orgId"];                   //団体ID
                     $target_organization = $t_organizations->getOrganization($org_id);  //対象の団体データを取得
                     $entrysystem_org_id = $target_organization->entrysystem_org_id;   //エントリー団体ID
-                    
-                    //ここまでOK
-
-                    $org_name = $target_organization["org_name"];               //団体名
+                    $org_name = $target_organization->org_name;               //団体名
                     $crew_name = $reqData[$rowIndex]["crewName"];             //クルー名
                     $by_group = $reqData[$rowIndex]["byGroup"];               //組別
-                    $event_id = $reqData[$rowIndex]["eventId"];              //種目ID                    
-                    $event = $m_events->getEventForEventID($event_id);          //種目マスタから対象の種目情報を取得
-                    $event_name = $event["event_name"];                         //種目名
-                    $range = $target_race["range"];                             //距離
-                    $start_datatime = $target_race["start_date_time"];          //発艇日時
+                    $event_id = $reqData[$rowIndex]["eventId"];               //種目ID
+                    $event = $m_events->getEventForEventID($event_id);        //種目マスタから対象の種目情報を取得
+                    $event_name = $event[0]->event_name;                      //種目名
+                    $range = $target_race[0]->range;                          //距離
+                    $start_datetime = $target_race[0]->start_date_time;       //発艇日時
+
                     //レース結果情報の検索
                     $search_values = array();
                     $search_values["tourn_id"] = $tourn_id;
@@ -1123,8 +1122,6 @@ class TournamentInfoAlignmentController extends Controller
                     $search_values["org_id"] = $org_id;
                     $search_values["player_id"] = $player_id;
                     $race_result_record_array = $t_raceResultRecord->getRaceResultRecordsWithSearchCondition($search_values);
-                    Log::debug("*****************race_result_record_array*****************");
-                    Log::debug($race_result_record_array);
                     //検索結果を確認
                     if(count($race_result_record_array) == 1)
                     {
@@ -1136,6 +1133,11 @@ class TournamentInfoAlignmentController extends Controller
                         $laptime_1500m = $race_result_record_array[0]->{"laptime_1500m"};
                         $laptime_2000m = $race_result_record_array[0]->{"laptime_2000m"};
                         $final_time = $race_result_record_array[0]->{"final_time"};
+                        Log::debug("laptime_500m = ".$laptime_500m);
+                        Log::debug("laptime_1000m = ".$laptime_1000m);
+                        Log::debug("laptime_1500m = ".$laptime_1500m);
+                        Log::debug("laptime_2000m = ".$laptime_2000m);
+                        Log::debug("final_time = ".$final_time);
                         if(isset($laptime_500m)
                             && isset($laptime_1000m)
                             && isset($laptime_1500m)
@@ -1170,14 +1172,14 @@ class TournamentInfoAlignmentController extends Controller
                             $update_values["event_id"] = $event_id;
                             $update_values["event_name"] = $event_name;
                             $update_values["range"] = $range;
-                            $update_values["start_datetime"] = $start_datatime;
-                            $update_values["update_time"] = $current_datetime;
-                            $update_values["update_user_id"] = $user_id;
+                            $update_values["start_datetime"] = $start_datetime;
+                            $update_values["updated_time"] = $current_datetime;
+                            $update_values["updated_user_id"] = $user_id;
                             $update_values["race_result_record_id"] = $race_result_record_id;
                             Log::debug("*****************update_values*****************");
                             Log::debug($update_values);
                             //更新実行
-                            //$t_raceResultRecord->updateRaceResultRecordsResponse($update_values);
+                            $t_raceResultRecord->updateRaceResultRecordsResponse($update_values);
                         }
                     }
                     elseif(count($race_result_record_array) == 0)
@@ -1204,13 +1206,14 @@ class TournamentInfoAlignmentController extends Controller
                         $insert_values["event_id"] = $event_id;
                         $insert_values["event_name"] = $event_name;
                         $insert_values["range"] = $range;
-                        $insert_values["start_datetime"] = $start_datatime;
+                        $insert_values["start_datetime"] = $start_datetime;
                         $insert_values["current_datetime"] = $current_datetime;
                         $insert_values["user_id"] = $user_id;
                         Log::debug("*****************insert_values*****************");
                         Log::debug($insert_values);
                         //新規登録実行
-                        //$t_raceResultRecord->insertRaceResultRecordResponse($insert_values);
+                        $inserted_id = $t_raceResultRecord->insertRaceResultRecordResponse($insert_values);
+                        Log::debug("inserted_id = ".$inserted_id);
                     }
                 }
             }
