@@ -213,7 +213,7 @@ export default function TeamPlayerBulkRegister() {
       return '無効データ（選手名未設定）';
     } else if (row[3].match(plaerNameRegex) === null) {
       return '無効データ（選手名不正）';
-    } else if (row.length !== 9) return '無効データ';
+    } else if (row.length !== 5) return '無効データ';
 
     setDisplayLinkButtonFlg(true);
     return '連携';
