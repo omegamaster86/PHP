@@ -85,7 +85,6 @@ export default function PlayerInformationRef() {
     await axios.post('/deletePlayerData', deleteData)
       .then((res) => {
         // console.log(res.data);
-        router.push('/tournamentSearch'); //大会検索画面に遷移する 20240222
       }).catch(error => {
         setError({ isError: true, errorMessage: error.response?.data });
       });
@@ -566,7 +565,8 @@ export default function PlayerInformationRef() {
                     ( //okを押したら下の処理を実行 キャンセルを押したらflagをtrueにしてそのまま
                       dataDelete(),
                       setDisplayFlg(true),
-                      window.alert('選手情報の削除が完了しました。')
+                      window.alert('選手情報の削除が完了しました。'),
+                      router.push('/tournamentSearch') //大会検索画面に遷移する 20240222
                       //router.push('/myPage') : setDisplayFlg(true)
                     ) : setDisplayFlg(true);
                 }}
