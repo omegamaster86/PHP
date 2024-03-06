@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\T_players;
 use App\Models\T_raceResultRecord;
 use App\Models\T_users;
+use App\Models\T_organization_players;
 use Illuminate\Validation\ValidationException;
 
 
@@ -727,38 +728,53 @@ class PlayerController extends Controller
         Log::debug(sprintf("getRaceResultRecordsData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
+
     //react 選手情報削除画面から受け取ったデータを削除する 20240201
-    public function deletePlayerData(Request $request, T_players $tPlayersData, T_raceResultRecord $tRaceResultRecord, T_users $t_users)
+    public function deletePlayerData(Request $request, T_players $tPlayersData, T_raceResultRecord $tRaceResultRecord, T_users $t_users, T_organization_players $t_org_players)
     {
+        $result = "success";
+        DB::beginTransaction();
+        try {
+            Log::debug(sprintf("deletePlayerData start"));
+            $reqData = $request->all();
+            if (empty($reqData['playerInformation'])) {
+                return response()->json("選手情報がないため選手を削除できません。", 400);
+            }
+            Log::debug($reqData);
 
+            $tPlayersData::$playerInfo['player_id'] = $reqData['playerInformation']['player_id']; //選手ID
+            $tPlayersData->deletePlayerData($tPlayersData::$playerInfo); //該当選手に削除フラグを立てる 20240208
 
-        Log::debug(sprintf("deletePlayerData start"));
-        $reqData = $request->all();
-        if (empty($reqData['playerInformation'])) {
-            return response()->json("選手情報がないため選手を削除できません。", 400);
-        }
-        Log::debug($reqData);
+            // $tRaceResultRecord::$raceResultRecordInfo['player_id'] = $reqData['playerInformation']['player_id']; //選手ID
+            // $result = $tRaceResultRecord->deleteRaceResultRecord_playerId($tRaceResultRecord::$raceResultRecordInfo); //該当選手に削除フラグを立てる 20240208
 
-        $tPlayersData::$playerInfo['player_id'] = $reqData['playerInformation']['player_id']; //選手ID
-        $result = $tPlayersData->deletePlayerData($tPlayersData::$playerInfo); //該当選手に削除フラグを立てる 20240208
+            $t_org_players->updateDeleteFlagAllOrganizations($reqData['playerInformation']['player_id']);
 
-        $tRaceResultRecord::$raceResultRecordInfo['player_id'] = $reqData['playerInformation']['player_id']; //選手ID
-        $result = $tRaceResultRecord->deleteRaceResultRecord_playerId($tRaceResultRecord::$raceResultRecordInfo); //該当選手に削除フラグを立てる 20240208
+            //ユーザ種別の更新
+            $hoge = array();
+            $hoge['user_id'] = Auth::user()->user_id;
+            $hoge['input'] = '00000010';
+            Log::debug($hoge);
+            $t_users->updateUserTypeDelete($hoge);
 
-        //ユーザ種別の更新
-        $hoge = array();
-        $hoge['user_id'] = Auth::user()->user_id;
-        $hoge['input'] = '00000010';
-        $t_users->updateUserTypeDelete($hoge);
+            DB::commit();
 
-        Log::debug(sprintf("deletePlayerData end"));
-        if ($result === "success") {
-            return response()->json("選手情報の削除が完了しました。", 200);
-        } else {
+            Log::debug(sprintf("deletePlayerData end"));
+            if ($result === "success") {
+                return response()->json("選手情報の削除が完了しました。", 200);
+            }
+            // else {
+            //     return response()->json("失敗しました。選手を削除できませんでした。", 500);
+            // }
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::debug($e);
             return response()->json("失敗しました。選手を削除できませんでした。", 500);
         }
         // return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
     }
+
+
     public function checkJARAPlayerId(Request $request, T_players $tPlayersData)
     {
         Log::debug(sprintf("checkJARAPlayerId start"));

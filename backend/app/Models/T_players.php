@@ -37,7 +37,8 @@ class T_players extends Model
     //選手情報更新画面用 plauerIdに紐づいた選手情報を取得 20240215
     public function getPlayerData($player_id)
     {
-        $result = DB::select('select
+        $result = DB::select(
+            'select
                                 `player_id`
                                 ,`user_id`
                                 ,`jara_player_id`
@@ -81,8 +82,9 @@ class T_players extends Model
                                 and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
                                 and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
                                 and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
-                                and `t_players`.player_id = ?'
-                                ,[$player_id]);
+                                and `t_players`.player_id = ?',
+            [$player_id]
+        );
 
         //1つのデータを取得するため0番目だけを返す
         // Log::debug($result);
@@ -146,33 +148,22 @@ class T_players extends Model
     //react 選手情報更新画面用 選手情報の更新を行う 20240131
     public function deletePlayerData($playersInfo)
     {
-        $result = "success";
-        DB::beginTransaction();
-        try {
-            DB::update(
-                'update `t_players` set `registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where player_id = ?',
-                [
-                    now()->format('Y-m-d H:i:s.u'),
-                    Auth::user()->user_id,
-                    now()->format('Y-m-d H:i:s.u'),
-                    Auth::user()->user_id,
-                    1,
-                    $playersInfo['player_id'] //where条件用
-                ]
-            );
-
-            DB::commit();
-            return $result = "success";
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            Log::debug($e);
-            $result = "failed";
-            return $result;
-        }
+        DB::update(
+            'update `t_players` set `registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where player_id = ?',
+            [
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                1,
+                $playersInfo['player_id'] //where条件用
+            ]
+        );
     }
 
     // jara_player_idで登録されたことありますかどうかチェック
-    public function checkJARAPlayerId($playersInfo){
+    public function checkJARAPlayerId($playersInfo)
+    {
         $result = DB::select(
             'select `user_id`, `player_id`, `player_name` from `t_players` where `delete_flag` = 0 and `jara_player_id` = ?',
             [
@@ -185,7 +176,7 @@ class T_players extends Model
         }
         return $registeredPlayer;
     }
-    
+
     public function insertPlayers($playersInfo)
     {
         $result = "success";
@@ -242,8 +233,7 @@ class T_players extends Model
             DB::rollBack();
             Log::debug($e);
             $result = "failed";
-            return response()->json(["失敗しました。ユーザーサポートにお問い合わせください。"],500);
-            
+            return response()->json(["失敗しました。ユーザーサポートにお問い合わせください。"], 500);
         }
     }
 
@@ -253,7 +243,8 @@ class T_players extends Model
     //で指定する
     public function insertPlayer($playerInfo)
     {
-        DB::insert('insert into t_players
+        DB::insert(
+            'insert into t_players
                     (
                         `user_id`,
                         `jara_player_id`,
@@ -294,8 +285,9 @@ class T_players extends Model
                         :current_datetime,
                         :user_id,
                         0
-                    )'
-                    ,$playerInfo);
+                    )',
+            $playerInfo
+        );
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
@@ -306,7 +298,8 @@ class T_players extends Model
         Log::debug("insertPlayerForPlayerInfoAlignment start.");
         $current_datetime = now()->format('Y-m-d H:i:s.u');
         $user_id = Auth::user()->user_id;
-        DB::insert('insert into t_players
+        DB::insert(
+            'insert into t_players
                     (
                         `jara_player_id`,
                         `registered_time`,
@@ -316,15 +309,11 @@ class T_players extends Model
                         `delete_flag`
                     )
                     values
-                    (?,?,?,?,?,?)'
-                    ,[
-                        $playerInfo["oldPlayerId"]
-                        ,$current_datetime
-                        ,$user_id
-                        ,$current_datetime
-                        ,$user_id
-                        ,0
-                    ]);
+                    (?,?,?,?,?,?)',
+            [
+                $playerInfo["oldPlayerId"], $current_datetime, $user_id, $current_datetime, $user_id, 0
+            ]
+        );
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
         Log::debug("insertPlayerForPlayerInfoAlignment end.");
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
@@ -573,7 +562,8 @@ class T_players extends Model
     //player_idが一致するプレイヤーを抽出する
     public function getPlayer($player_id)
     {
-        $player = DB::select('select
+        $player = DB::select(
+            'select
                                 `player_id`
                                 ,`user_id`
                                 ,`jara_player_id`
@@ -617,15 +607,17 @@ class T_players extends Model
                                 and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
                                 and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
                                 and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
-                                and player_id = ?'
-                                ,[$player_id]);
+                                and player_id = ?',
+            [$player_id]
+        );
         return $player;
     }
 
     //JARA選手IDを条件にプレイヤー情報を取得する
     public function getPlayerFromJaraPlayerId($jara_player_id)
     {
-        $players = DB::select('select
+        $players = DB::select(
+            'select
                                 `player_id`
                                 ,`user_id`
                                 ,`jara_player_id`
@@ -670,12 +662,13 @@ class T_players extends Model
                                 and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
                                 and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
                                 and `jara_player_id` = ?',
-                                [$jara_player_id]);
+            [$jara_player_id]
+        );
         return $players;
     }
 
     //選手検索でエントリーシステムの団体IDの条件込みで検索実行した結果を取得する
-    public function getPlayerSearchResultWithEntrySystemIdCondition($searchCondition,$conditionValues)
+    public function getPlayerSearchResultWithEntrySystemIdCondition($searchCondition, $conditionValues)
     {
         $sqlString = 'with player as
                         (
@@ -790,12 +783,12 @@ class T_players extends Model
                         and (sex.`delete_flag` = 0 or sex.`delete_flag` is null)
                         and (tp.`delete_flag` = 0 or tp.`delete_flag` is null)';
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
-        $players = DB::select($sqlString,$conditionValues);
+        $players = DB::select($sqlString, $conditionValues);
         return $players;
     }
 
     //選手検索で団体IDの条件込みで検索実行した結果を取得する
-    public function getPlayerSearchResultWithOrgIdCondition($searchCondition,$conditionValues)
+    public function getPlayerSearchResultWithOrgIdCondition($searchCondition, $conditionValues)
     {
         $sqlString = 'with player as
                         (
@@ -910,12 +903,12 @@ class T_players extends Model
                         and (sex.`delete_flag` = 0 or sex.`delete_flag` is null)
                         and (tp.`delete_flag` = 0 or tp.`delete_flag` is null)';
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
-        $players = DB::select($sqlString,$conditionValues);
+        $players = DB::select($sqlString, $conditionValues);
         return $players;
     }
 
     //選手検索で団体名の条件込みで検索実行した結果を取得する
-    public function getPlayerSearchResultWithOrgNameCondition($searchCondition,$conditionValues)
+    public function getPlayerSearchResultWithOrgNameCondition($searchCondition, $conditionValues)
     {
         $sqlString = 'with player as
                         (
@@ -1039,12 +1032,12 @@ class T_players extends Model
                         and (sex.`delete_flag` = 0 or sex.`delete_flag` is null)
                         and (tp.`delete_flag` = 0 or tp.`delete_flag` is null)';
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
-        $players = DB::select($sqlString,$conditionValues);
+        $players = DB::select($sqlString, $conditionValues);
         return $players;
     }
 
     //エントリーシステムの団体ID、団体ID、団体名以外の条件だけで選手検索
-    public function getPlayerSearchResult($searchCondition,$conditionValues)
+    public function getPlayerSearchResult($searchCondition, $conditionValues)
     {
         $sqlString = 'with player as
                         (
@@ -1148,21 +1141,23 @@ class T_players extends Model
                         and (sex.`delete_flag` = 0 or sex.`delete_flag` is null)
                         and (tp.`delete_flag` = 0 or tp.`delete_flag` is null)';
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
-        $players = DB::select($sqlString,$conditionValues);
+        $players = DB::select($sqlString, $conditionValues);
         return $players;
     }
 
     //選手IDと選手名に一致する選手の件数を抽出する
     //大会結果情報一括登録画面用
-    public function getPlayerCountFromCsvData($player_id,$player_name)
+    public function getPlayerCountFromCsvData($player_id, $player_name)
     {
-        $player_count = DB::select("select count(*) as `count`
+        $player_count = DB::select(
+            "select count(*) as `count`
                                     FROM `t_players`
                                     WHERE 1=1
                                     and delete_flag = 0
                                     and player_id = :player_id
-                                    and player_name = :player_name"
-                                ,["player_id"=>$player_id,"player_name"=>$player_name]);
+                                    and player_name = :player_name",
+            ["player_id" => $player_id, "player_name" => $player_name]
+        );
         return $player_count;
     }
 }

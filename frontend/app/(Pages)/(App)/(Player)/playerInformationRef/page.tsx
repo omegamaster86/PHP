@@ -528,8 +528,8 @@ export default function PlayerInformationRef() {
                       <CustomTd>{row.seat_name}</CustomTd>
                       {/* 出漕結果記録名 */}
                       <CustomTd>{row.race_result_record_name}</CustomTd>
-                      {/* 登録日時 */}
-                      <CustomTd>{row.registered_time}</CustomTd>
+                      {/* 発艇日時 */}
+                      <CustomTd>{row.start_datetime}</CustomTd>
                       {/* 2000m地点風速 */}
                       <CustomTd>{row.wind_speed_2000m_point}</CustomTd>
                       {/* 2000m地点風向 */}
@@ -562,11 +562,13 @@ export default function PlayerInformationRef() {
                 className={`w-[280px] m-auto ${displayFlg ? '' : 'hidden'}`}
                 onClick={() => {
                   setDisplayFlg(false);
-                  window.confirm('選手情報を削除します。よろしいですか？') ? ( //okを押したら下の三項演算子に遷移 キャンセルを押したらflagをtrueにしてそのまま
-                    window.confirm('選手情報の削除が完了しました。') ?
+                  window.confirm('選手情報を削除します。よろしいですか？') ?
+                    ( //okを押したら下の処理を実行 キャンセルを押したらflagをtrueにしてそのまま
+                      dataDelete(),
+                      setDisplayFlg(true),
+                      window.alert('選手情報の削除が完了しました。')
                       //router.push('/myPage') : setDisplayFlg(true)
-                      dataDelete() : setDisplayFlg(true) //okを押したら削除データをpostしてマイページに遷移する キャンセルを押したらflagをtrueにしてそのまま
-                  ) : setDisplayFlg(true);
+                    ) : setDisplayFlg(true);
                 }}
               >
                 削除
@@ -574,7 +576,7 @@ export default function PlayerInformationRef() {
             )}
           </div>
         </div>
-      </main>
-    </div>
+      </main >
+    </div >
   );
 }
