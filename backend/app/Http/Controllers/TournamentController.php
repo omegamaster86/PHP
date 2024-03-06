@@ -508,7 +508,7 @@ class TournamentController extends Controller
     public function storeTournamentInfoData(Request $request, T_tournaments $tTournament, T_races $tRace)
     {
         Log::debug(sprintf("storeTournamentInfoData start"));
-
+        Log::debug($request);
         $random_file_name = Str::random(12);
         //If new PDF is uploaded
         if ($request->hasfile('tournamentFormData')) {
@@ -697,6 +697,7 @@ class TournamentController extends Controller
         }
         // Log::debug($result);
         Log::debug(sprintf("getRaceData end"));
+        Log::debug($result);
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 
