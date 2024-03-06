@@ -335,10 +335,10 @@ export default function PlayerInformation() {
    */
   const validate = () => {
     // JARA選手コードの入力チェック
-    const jaraPlayerCodeError = Validator.getErrorMessages([
-      Validator.validateSelectRequired(formData.jara_player_id.toString(), 'JARA選手コード'),
-      Validator.validatePlayerIdFormat(formData.jara_player_id.toString()),
-    ]);
+    // const jaraPlayerCodeError = Validator.getErrorMessages([
+    //   Validator.validateSelectRequired(formData.jara_player_id.toString(), 'JARA選手コード'),
+    //   Validator.validatePlayerIdFormat(formData.jara_player_id.toString()),
+    // ]);
 
     // 選手名の入力チェック
     const playerNameError = Validator.getErrorMessages([
@@ -401,7 +401,7 @@ export default function PlayerInformation() {
     console.log(livingPrefectureError);
 
     // エラーメッセージを設定
-    setJaraPlayerCodeErrorMessage(jaraPlayerCodeError);
+    // setJaraPlayerCodeErrorMessage(jaraPlayerCodeError);
     setPlayerNameErrorMessage(playerNameError);
     setSideInfoErrorMessage(sideInfoError);
     setDateOfBirthErrorMessage(dateOfBirthError);
@@ -415,7 +415,7 @@ export default function PlayerInformation() {
 
     // エラーがある場合、後続の処理を中止
     if (
-      jaraPlayerCodeError.length > 0 ||
+      // jaraPlayerCodeError.length > 0 ||
       playerNameError.length > 0 ||
       sideInfoError.length > 0 ||
       dateOfBirthError.length > 0 ||
@@ -734,12 +734,12 @@ export default function PlayerInformation() {
           <CustomTextField
             label='JARA選手コード'
             // type='number'
-            required={mode !== 'confirm'}
+            // required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
-            isError={jaraPlayerCodeErrorMessage.length > 0}
+            // isError={jaraPlayerCodeErrorMessage.length > 0}
             placeHolder='123456789012'
             readonly={mode === 'confirm'}
-            errorMessages={jaraPlayerCodeErrorMessage}
+            // errorMessages={jaraPlayerCodeErrorMessage}
             value={formData.jara_player_id?.toString()}
             onChange={(e) => handleInputChange('jara_player_id', e.target.value)}
             // toolTipTitle='Title JARA選手コード' //はてなボタン用
