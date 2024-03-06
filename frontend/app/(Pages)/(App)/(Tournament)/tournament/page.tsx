@@ -787,7 +787,7 @@ export default function Tournament() {
         {/* 組別 */}
         <CustomTd>
           <TextField
-            type={'number'}
+            // type={'number'}
             value={row.by_group}
             onChange={(e) => handleInputChangeRace(row.id, 'by_group', e.target.value)}
             className='w-[150px]'

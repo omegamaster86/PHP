@@ -733,7 +733,7 @@ export default function PlayerInformation() {
           {/* JARA選手コード */}
           <CustomTextField
             label='JARA選手コード'
-            type='number'
+            // type='number'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
             isError={jaraPlayerCodeErrorMessage.length > 0}
