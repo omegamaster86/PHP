@@ -193,6 +193,25 @@ class T_organization_players extends Model
                 );
     }
 
+    //団体所属選手を削除する
+    //delete_flagを1にする
+    public function  updateDeleteFlagAllOrganizations($player_id)
+    {
+        DB::update('update `t_organization_players`
+                    set `delete_flag` = 1
+                    ,updated_time = ?
+                    ,updated_user_id = ?
+                    where 1=1
+                    and `delete_flag` = 0
+                    and `player_id` = ?'
+                    ,[
+                        now()->format('Y-m-d H:i:s.u')
+                        ,Auth::user()->user_id
+                        ,$player_id
+                    ]
+                );
+    }
+
     //検索条件で所属選手を取得する
     public function getOrganizationPlayersFromCondition($condition,$conditionValue)
     {
