@@ -453,9 +453,9 @@ export default function PlayerInformation() {
               // TODO: 更新処理成功時の処理
               // console.log(response);
               setErrorMessage([]);
-              window.alert('入力した既存選手IDと紐づくデータが存在しません。\nこの既存選手IDで登録しますか？');
-
-              router.push('/playerInformation?mode=confirm&prevMode=create');
+              // OK が押下された場合、確認画面に遷移する　※短絡評価
+              window.confirm('入力したJARA選手コードと紐づくデータが存在しません。\nこのJARA選手コードで登録しますか？') && router.push('/playerInformation?mode=confirm&prevMode=update');
+              // window.alert('入力したJARA選手コードと紐づくデータが存在しません。\nこのJARA選手コードで登録しますか？');
             })
             .catch((error) => {
               // TODO: 更新処理失敗時の処理
@@ -486,11 +486,13 @@ export default function PlayerInformation() {
               // TODO: 更新処理成功時の処理
               // console.log(response);
               setErrorMessage([]);
-              if (response?.data) {
-                window.alert(response?.data);
+              if (response?.data != '') {
+                // OK が押下された場合、確認画面に遷移する　※短絡評価
+                window.confirm(response?.data) && router.push('/playerInformation?mode=confirm&prevMode=update');
+                // window.alert(response?.data);
+              } else {
+                router.push('/playerInformation?mode=confirm&prevMode=update');
               }
-
-              router.push('/playerInformation?mode=confirm&prevMode=update');
             })
             .catch((error) => {
               // TODO: 更新処理失敗時の処理
@@ -541,7 +543,7 @@ export default function PlayerInformation() {
                   }) //20240123 送信テスト
                   .then((response) => {
                     // TODO: 更新処理成功時の処理
-                    window.confirm('選手情報を更新しました。');
+                    window.alert('選手情報を更新しました。');
                     const urlStr = '/playerInformationRef' + '?player_id=' + response.data.users[0].player_id;
                     router.push(urlStr); //選手情報参照画面に遷移する
                   })
@@ -617,7 +619,7 @@ export default function PlayerInformation() {
                   })
                   .then((response) => {
                     // TODO: 登録処理成功時の処理の実装
-                    window.confirm('選手情報を登録しました。');
+                    window.alert('選手情報を登録しました。');
                     const urlStr = '/playerInformationRef' + '?player_id=' + response.data.users[0].player_id;
                     router.push(urlStr); //選手情報参照画面に遷移する
                   })
