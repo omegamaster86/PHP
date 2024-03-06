@@ -506,7 +506,7 @@ export default function Tournament() {
                     },
                   ]);
                   fileUploaderRef?.current?.clearFile();
-                  window.confirm('大会情報を登録しました。');
+                  window.alert('大会情報を登録しました。');
                   router.push(`/tournamentRef?tournId=${response.data.result}`);
                 })
                 .catch((error) => {
@@ -594,7 +594,7 @@ export default function Tournament() {
                     },
                   ]);
                   fileUploaderRef?.current?.clearFile();
-                  window.confirm('大会情報を更新しました。');
+                  window.alert('大会情報を更新しました。');
                   router.push(`/tournamentRef?tournId=${registerData.tournamentFormData.tourn_id}`);
                 })
                 .catch((error) => {
@@ -787,7 +787,7 @@ export default function Tournament() {
         {/* 組別 */}
         <CustomTd>
           <TextField
-            type={'number'}
+            // type={'number'}
             value={row.by_group}
             onChange={(e) => handleInputChangeRace(row.id, 'by_group', e.target.value)}
             className='w-[150px]'
