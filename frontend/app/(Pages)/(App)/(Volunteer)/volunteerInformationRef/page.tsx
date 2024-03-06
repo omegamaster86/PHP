@@ -259,7 +259,16 @@ export default function VolunteerInformationRef() {
               onChange={(e) => { }}
             />
             {/* 障碍タイプ */}
-            <label htmlFor='disType'>補助が可能な障碍タイプ</label>
+            {/* <label htmlFor='disType'>補助が可能な障碍タイプ</label> */}
+            <InputLabel
+              label='補助が可能な障碍タイプ'
+              displayHelp={true}
+              toolTipText='PR1：
+              腕と肩は完全に動くが、脚の機能が失われている選手。脊椎損傷などが原因として考えられる。平衡機能が弱いため、体をボートに固定させる
+              PR2：
+              胴体と腕は十分に動くが、脚の機能が減少している選手。漕ぐ時はスライドするシートを使えない
+              PR3：
+              四肢と胴体に障害があるが、動かすことができる選手。視覚障害者もこのクラスに分類される' />
             <div className='flex flex-row gap-[16px] justify-start'>
               {volunteerdata.dis_type_id?.map((dis_type_id) => (
                 <OriginalCheckbox
@@ -274,7 +283,9 @@ export default function VolunteerInformationRef() {
               ))}
             </div>
             {/* 資格情報 */}
-            <label htmlFor='qualHold'>資格情報</label>
+            {/* <label htmlFor='qualHold'>資格情報</label> */}
+            <InputLabel
+              label='資格情報' />
             <div className='flex flex-row gap-[16px] justify-start'>
               {volunteerdata.qualHold?.map((qualHold) => (
                 <div id='qualHold' key={qualHold}>
@@ -282,7 +293,22 @@ export default function VolunteerInformationRef() {
                 </div>
               ))}
             </div>
-            <label htmlFor='language'>言語</label>
+            {/* <label htmlFor='language'>言語</label> */}
+            <InputLabel
+              label='言語'
+              displayHelp={true}
+              toolTipText='A1（初心者）：
+              自己紹介ができ、どこに住んでいるか、誰を知っているか、何を持っているかと言った個人的なことを聞き、こたえることができる。
+              A2（初級）：
+               慣れ親しんだ内容であれば単純で直接的な会話ができる。
+              B1（中級）：
+              仕事や学校、レジャーなど慣れ親しんだ環境の話題であれば、主な内容は理解・会話することができる。
+              B2（中級の上）：
+              ネイティブスピーカーと、ある程度流暢にストレスなく普通の会話をすることができる。
+              C1（上級）：
+              言葉や表現に悩まずに自身の考えを流暢によどみなく伝えることができる。
+              C2（ネイティブ）：
+              どんな複雑な状況下でも一貫して言葉のニュアンスの違いなどに気を配りながら流暢に正確に自己表現ができる。' />
             {volunteerdata.language?.map((language: any) => (
               <div
                 id='language'
