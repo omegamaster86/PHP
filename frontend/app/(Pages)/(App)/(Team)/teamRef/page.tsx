@@ -12,6 +12,7 @@ import {
   CustomTd,
   OriginalCheckbox,
   CustomButton,
+  CustomTitle,
   ErrorBox,
   Label,
 } from '@/app/components';
@@ -138,6 +139,12 @@ export default function TeamRef() {
   return (
     <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px]'>
       <div className='flex flex-col justify-start gap-[20px]'>
+        <div className='relative flex flex-row justify-between w-full h-screen flex-wrap'>
+          {/* 画面名*/}
+          <CustomTitle isCenter={false} displayBack>
+            {mode === 'delete' ? '団体情報削除' : '団体情報参照'}
+          </CustomTitle>
+        </div>
         <ErrorBox errorText={errorMessage} />
         {/* フォーム */}
         <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4 '>
@@ -257,9 +264,10 @@ export default function TeamRef() {
                       <CustomTd>
                         <Link
                           href={{
-                            pathname: '/tournament',
-                            query: { mode: 'update', tourn_id: row.tourn_id?.toString() },
+                            pathname: '/tournamentRef',
+                            query: { tournId: row.tourn_id?.toString() },
                           }}
+                          target='_blank'
                           className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                         >
                           {row.tourn_name}
@@ -314,9 +322,10 @@ export default function TeamRef() {
                     <CustomTd>
                       <Link
                         href={{
-                          pathname: '/tournament',
-                          query: { mode: 'update', tourn_id: row.tourn_id?.toString() },
+                          pathname: '/tournamentRef',
+                          query: { tournId: row.tourn_id?.toString() },
                         }}
+                        target='_blank'
                         className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       >
                         {row.tourn_name}

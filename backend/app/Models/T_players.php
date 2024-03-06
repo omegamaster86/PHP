@@ -473,7 +473,7 @@ class T_players extends Model
         if (isset($searched_data['player_name'])) {
             //'%' . $query . '%'
             $searched_data['player_name'] = '%' . $searched_data['player_name'] . '%';
-            $condition .= " and record.player_name like ?";
+            $condition .= " and player.player_name like ?";
             array_push($valid_data_array, $searched_data['player_name']);
         }
         if (isset($searched_data['org_name'])) {
@@ -510,8 +510,9 @@ class T_players extends Model
         left join m_sex 
         on player.sex_id = m_sex.sex_id
         where player.delete_flag = 0 #condition# LIMIT 100';
+        Log::debug($condition);
         $sql_string = str_replace('#condition#', $condition, $sql_string);
-        // Log::debug($sql_string);
+        Log::debug($sql_string);
         $race_records = DB::select($sql_string, $valid_data_array);
         // Log::debug($race_records);
         Log::debug(sprintf("getPlayerWithSearchCondition end"));

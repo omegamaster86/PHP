@@ -9,8 +9,8 @@ import CustomTextField from '@mui/material/TextField';
 interface Props {
   label: string; // ラベル
   readonly: boolean; // 読み取り専用かどうか
-  setTournamentFormData:Dispatch<
-  SetStateAction<any>>; //アップロードされた場合、退会ファイル名更新
+  setTournamentFormData: Dispatch<
+    SetStateAction<any>>; //アップロードされた場合、退会ファイル名更新
 }
 
 // Handlerの型定義
@@ -31,13 +31,13 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
 
   //アップロードされたファイルを保存するー開始
   useEffect(() => {
-    if(currentShowFile?.file) {
+    if (currentShowFile?.file) {
       console.log(currentShowFile?.file);
-      props.setTournamentFormData((prevFormData:any) => ({
+      props.setTournamentFormData((prevFormData: any) => ({
         ...prevFormData,
-        uploadedPDFFilePath:currentShowFile.file.name,
+        uploadedPDFFilePath: currentShowFile.file.name,
         uploadedPDFFile: currentShowFile.file,
-        tourn_info_faile_path:''
+        tourn_info_faile_path: ''
       }));
     }
   }, [currentShowFile]);//ファイルのアップロード終わったら
@@ -142,7 +142,11 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
                 {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : ''}
               </p>
               <div className='flex flex-col gap-[10px] w-full'>
-                <CustomInputLabel label={props.label} displayHelp></CustomInputLabel>
+                <CustomInputLabel
+                  label={props.label}
+                  displayHelp
+                  toolTipText='登録できるファイルの種類は、PDFファイルのみです。' //はてなボタン用
+                ></CustomInputLabel>
                 <div className='flex flex-row gap-[4px]'>
                   <CustomTextField
                     placeholder={'ここにファイルをドラッグ＆ドロップしてアップロード'}
