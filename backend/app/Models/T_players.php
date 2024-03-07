@@ -563,7 +563,7 @@ class T_players extends Model
     public function getPlayer($player_id)
     {
         $player = DB::select(
-            'select
+                                'select
                                 `player_id`
                                 ,`user_id`
                                 ,`jara_player_id`
@@ -607,9 +607,9 @@ class T_players extends Model
                                 and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
                                 and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
                                 and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
-                                and player_id = ?',
-            [$player_id]
-        );
+                                and player_id = ?'
+                                ,[$player_id]
+                            );
         return $player;
     }
 
