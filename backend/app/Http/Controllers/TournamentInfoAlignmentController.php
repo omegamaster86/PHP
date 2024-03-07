@@ -1133,11 +1133,11 @@ class TournamentInfoAlignmentController extends Controller
                         $laptime_1500m = $race_result_record_array[0]->{"laptime_1500m"};
                         $laptime_2000m = $race_result_record_array[0]->{"laptime_2000m"};
                         $final_time = $race_result_record_array[0]->{"final_time"};
-                        Log::debug("laptime_500m = ".$laptime_500m);
-                        Log::debug("laptime_1000m = ".$laptime_1000m);
-                        Log::debug("laptime_1500m = ".$laptime_1500m);
-                        Log::debug("laptime_2000m = ".$laptime_2000m);
-                        Log::debug("final_time = ".$final_time);
+                        // Log::debug("laptime_500m = ".$laptime_500m);
+                        // Log::debug("laptime_1000m = ".$laptime_1000m);
+                        // Log::debug("laptime_1500m = ".$laptime_1500m);
+                        // Log::debug("laptime_2000m = ".$laptime_2000m);
+                        // Log::debug("final_time = ".$final_time);
                         if(isset($laptime_500m)
                             && isset($laptime_1000m)
                             && isset($laptime_1500m)

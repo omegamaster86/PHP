@@ -55,6 +55,7 @@ interface RaceResultRecordsResponse {
   seat_name: string; // シート番号（出漕時点）
   race_result_record_name: string; // 出漕結果記録名
   registered_time: string; // 登録日時
+  start_datetime: string; // 登録日時
   wind_speed_2000m_point: number; // 2000m地点風速
   wind_direction_2000m_point: number; // 2000m地点風向
   wind_speed_1000m_point: number; // 1000m地点風速

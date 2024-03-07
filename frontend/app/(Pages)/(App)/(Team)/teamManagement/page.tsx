@@ -113,7 +113,19 @@ export default function TeamManagement() {
                     </Link>
                   </CustomTd>
                   {/* 団体名 */}
-                  <CustomTd>{row.org_name}</CustomTd>
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/teamRef',
+                        query: { org_id: row.org_id.toString() },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {row.org_name}
+                    </Link>
+                  </CustomTd>
                   <CustomTd>
                     <div>
                       <div className='flex justify-center items-center gap-[10px]'>

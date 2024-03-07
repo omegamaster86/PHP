@@ -229,7 +229,7 @@ class T_raceResultRecord extends Model
                                         `t_race_result_record`.`crew_name`, 
                                         `t_race_result_record`.`by_group`, 
                                         `t_race_result_record`.`event_id`, 
-                                        `t_race_result_record`.`event_name`, 
+                                        `t_race_result_record`.`event_name` as eventName, 
                                         `t_race_result_record`.`range`, 
                                         `t_race_result_record`.`rank`, 
                                         `t_race_result_record`.`laptime_500m`, 
@@ -263,7 +263,8 @@ class T_raceResultRecord extends Model
                                         `t_race_result_record`.`race_result_notes`,
                                         `m_seat_number`.`display_order` 	as "order",
                                         `t_tournaments`.`event_start_date` as "eventStartDate",
-                                        `m_venue`.`venue_name`
+                                        `m_venue`.`venue_name`,
+                                        `m_events`.`event_name` 
                                         FROM `t_race_result_record` 
                                         left join `m_seat_number`
                                         on `t_race_result_record`.`seat_number` = `m_seat_number`.`seat_id`
@@ -271,6 +272,8 @@ class T_raceResultRecord extends Model
                                         on `t_race_result_record`.`tourn_id` = `t_tournaments`.`tourn_id`
                                         left join `m_venue`
                                         on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
+                                        left join `m_events`
+                                        on `t_race_result_record`.`event_id` = `m_events`.`event_id`
                                         where 1=1
                                         and `t_race_result_record`.delete_flag = 0                                        
                                         and  (`t_tournaments`.`delete_flag` = 0 or `t_tournaments`.`delete_flag` is null)

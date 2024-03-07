@@ -125,6 +125,8 @@ export default function AddPlayerSearch() {
       searchCond.eventId === '' &&
       searchCond.eventName === '' &&
       searchCond.raceEventName === '' &&
+      searchCond.birthPrefectureId === '' &&
+      searchCond.residencePrefectureId === '' &&
       !Object.values(searchCond.sideInfo).some((value) => value)
     ) {
       setErrorMessage(['検索条件を1つ以上入力してください。']);
@@ -251,7 +253,7 @@ export default function AddPlayerSearch() {
             <div className='flex flex-row justify-start gap-[16px]'>
               {/* JARA選手コード */}
               <CustomTextField
-                type='number'
+                // type='number'
                 label='JARA選手コード'
                 displayHelp
                 value={searchCond.jaraPlayerId}
@@ -259,7 +261,7 @@ export default function AddPlayerSearch() {
               />
               {/* 選手ID */}
               <CustomTextField
-                type='number'
+                // type='number'
                 label='選手ID'
                 displayHelp
                 value={searchCond.playerId}
@@ -378,7 +380,7 @@ export default function AddPlayerSearch() {
                 <div className='flex flex-col justify-start'>
                   <CustomTextField
                     label='団体ID'
-                    type='number'
+                    // type='number'
                     displayHelp
                     value={searchCond.orgId}
                     onChange={(e) => handleInputChange('orgId', e.target.value)}
@@ -388,7 +390,7 @@ export default function AddPlayerSearch() {
                 <div className='flex flex-col justify-start'>
                   <CustomTextField
                     label='エントリー団体ID'
-                    type='number'
+                    // type='number'
                     displayHelp
                     value={searchCond.entrysystemOrgId}
                     onChange={(e) => handleInputChange('entrysystemOrgId', e.target.value)}
