@@ -591,8 +591,7 @@ class OrganizationController extends Controller
         M_organization_class $m_organization_class,
         M_staff_type $mStaffType
         */
-    )
-    {
+    ) {
         $organizationInfo = $request->all();
         include('Auth/ErrorMessages/ErrorMessages.php');
         // $rules = [
@@ -631,14 +630,13 @@ class OrganizationController extends Controller
 
         //入力されたエントリーシステムの団体IDは、既に別の団体で使用されています。[団体ID]：[団体名]
         $duplicateCount = $t_organizations->getEntrysystemOrgIdCountWithOrgId($entrysystemOrgId, $org_id);
-        if ($duplicateCount > 0)
-        {
+        if ($duplicateCount > 0) {
             //エントリー団体IDから団体名を取得
             $duplicateOrgInfo = $t_organizations->getOrgInfoFromEntrySystemOrgId($entrysystemOrgId);
             //エラーメッセージを整形
             $errorMessage = str_replace('[団体名]', $duplicateOrgInfo->org_name, str_replace('[団体ID]', $duplicateOrgInfo->org_id, $entrysystemOrgId_registered));
             //エラーを返す
-            return response()->json(['system_error' => $errorMessage],500);
+            return response()->json(['system_error' => $errorMessage], 500);
         }
 
         return true;
@@ -778,18 +776,14 @@ class OrganizationController extends Controller
         $currentDatetime = now()->format('Y-m-d H:i:s.u');
         $replace_string = "";
         //スタッフごとの処理
-        foreach($organizationInfo['tableData'] as $rowData)
-        {
-            if (isset($rowData['user_id']) && isset($rowData['user_name']))
-            {
-                for($staff_array_index = 0; $staff_array_index < count($rowData['staff_type_id']); $staff_array_index++)
-                {
+        foreach ($organizationInfo['tableData'] as $rowData) {
+            if (isset($rowData['user_id']) && isset($rowData['user_name'])) {
+                for ($staff_array_index = 0; $staff_array_index < count($rowData['staff_type_id']); $staff_array_index++) {
                     //置き換える文字列を生成
-                    $replace_string .= "union select ".$org_id." AS `org_id`,\r\n";
-                    $replace_string .= $rowData['user_id']." AS `user_id`,\r\n";
+                    $replace_string .= "union select " . $org_id . " AS `org_id`,\r\n";
+                    $replace_string .= $rowData['user_id'] . " AS `user_id`,\r\n";
                     //スタッフ種別は取得したデータの文字列を判定する
-                    switch ($rowData['staff_type_id'][$staff_array_index])
-                    {                    
+                    switch ($rowData['staff_type_id'][$staff_array_index]) {
                         case '監督':
                             $replace_string .= "1 AS `staff_type_id`,\r\n";
                             break;
@@ -808,10 +802,10 @@ class OrganizationController extends Controller
                         default:
                             $replace_string .= "NULL AS `staff_type_id`,\r\n";
                     }
-                    $replace_string .= "'".$currentDatetime."' AS `registered_time`,\r\n";
-                    $replace_string .= Auth::user()->user_id." AS `registered_user_id`,\r\n";
-                    $replace_string .= "'".$currentDatetime."' AS `updated_time`,\r\n";
-                    $replace_string .= Auth::user()->user_id." AS `updated_user_id`,\r\n";
+                    $replace_string .= "'" . $currentDatetime . "' AS `registered_time`,\r\n";
+                    $replace_string .= Auth::user()->user_id . " AS `registered_user_id`,\r\n";
+                    $replace_string .= "'" . $currentDatetime . "' AS `updated_time`,\r\n";
+                    $replace_string .= Auth::user()->user_id . " AS `updated_user_id`,\r\n";
                     $replace_string .= "0 AS `delete_flag`\r\n";
                 }
             }
@@ -1002,10 +996,9 @@ class OrganizationController extends Controller
         //郵便番号に「-(ハイフン)」が含まれていると、
         //DBのテーブルの設定が7文字固定であることから登録データの下一桁が欠落するため削除しておく
         $post_code = $organizationInfo['formData']['post_code'];
-        $organizationInfo['formData']['post_code'] = str_replace("-","",$post_code);        
+        $organizationInfo['formData']['post_code'] = str_replace("-", "", $post_code);
         //location_countryが入力されていなかったら、日本＝112を固定値として追加する
-        if(empty($organizationInfo['formData']['location_country']))
-        {
+        if (empty($organizationInfo['formData']['location_country'])) {
             //所在地（国）がnullなら、location_country=112を配列に追加する
             $japan_code = 112;
             $organizationInfo['formData']['location_country'] = $japan_code;
@@ -1094,5 +1087,16 @@ class OrganizationController extends Controller
 
         Log::debug(sprintf("getEntryTournamentsViewForTeamRef end"));
         return response()->json(['result' => $entryTournaments]); //DBの結果を返す
+    }
+
+    //団体削除 20240307
+    public function deleteOrgData(Request $request)
+    {
+        Log::debug(sprintf("deleteOrgData start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+
+        Log::debug(sprintf("deleteOrgData end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
     }
 }
