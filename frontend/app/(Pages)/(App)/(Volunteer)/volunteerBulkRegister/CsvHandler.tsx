@@ -139,13 +139,14 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
 
     try {
       // CSVダウンロードのロジック
-      const csvContent =
-        props.csvDownloadProps.header.map((h) => h.label).join(',') +
-        '\n' +
-        props.csvDownloadProps.data
-          .map((row) => props.csvDownloadProps.header.map((h) => row[h.key]).join(','))
-          .join('\n');
-
+      // const csvContent =
+      //   props.csvDownloadProps.header.map((h) => h.label).join(',') +
+      //   '\n' +
+      //   props.csvDownloadProps.data
+      //     .map((row) => props.csvDownloadProps.header.map((h) => row[h.key]).join(','))
+      //     .join('\n');
+      const csvContent = props.csvDownloadProps.header.map((h) => h.label).join(',') + '\n';
+      
       // ダウンロード用のBlobを作成（UTF-8指定）
       // const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
       const bom = new Uint8Array([0xef, 0xbb, 0xbf]) //UTF-8を指定
