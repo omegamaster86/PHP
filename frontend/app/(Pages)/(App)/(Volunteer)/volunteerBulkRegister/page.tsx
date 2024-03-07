@@ -340,7 +340,9 @@ export default function VolunteerBulkRegister() {
     if (value === '') return false;
     // 氏名の形式(全半角文字50文字以内であることを確認)かどうかを判定する
     // 氏名の形式の時、falseを返す
-    return !/^[a-zA-Z0-9ぁ-んァ-ヶー一-龠０-９々〆〤]+$/.test(value);
+    // return !/^[a-zA-Z0-9ぁ-んァ-ヶー一-龠０-９々〆〤]+$/.test(value);
+    const userNameRegex = new RegExp('/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/');
+    return userNameRegex.test(value);
   };
 
   /**
@@ -662,7 +664,8 @@ export default function VolunteerBulkRegister() {
   const sendCsvData = async () => {
     var array = Array() as CsvData[];
     Promise.all(
-      csvFileData.content?.slice(1).map((row, index) => getJsonRow(row, index)),
+      // EOF（末尾の改行）対策でフィルターを行う
+      csvFileData.content?.filter(function (x) { return x.length > 1 }).slice(1).map((row, index) => getJsonRow(row, index)),
     ).then((results) => {
       console.log(results);
       array = results as CsvData[];
@@ -686,6 +689,20 @@ export default function VolunteerBulkRegister() {
         setDisplayLinkButtonFlg(true);
         performValidation();
 
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  //登録ボタン押下時 20240307
+  const registerCsvData = async () => {
+    const csrf = () => axios.get('/sanctum/csrf-cookie');
+    await csrf();
+    await axios.post('/registerVolunteerCsvData', csvData)
+      .then((res) => {
+        console.log(res.data);
+        // router.push('/tournamentSearch'); // 20240222
       })
       .catch(error => {
         console.log(error);
@@ -777,7 +794,6 @@ export default function VolunteerBulkRegister() {
               <CustomButton
                 buttonType='primary'
                 onClick={() => {
-                  console.log(csvFileData);
                   sendCsvData();//読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
                 }}
               >
@@ -825,12 +841,13 @@ export default function VolunteerBulkRegister() {
             <CustomButton
               buttonType='primary'
               disabled={activationFlg}
-              onClick={() => {
+              onClick={async () => {
                 if (csvData.find((row) => row.checked)?.id === undefined) {
                   window.confirm('1件以上選択してください。');
                   return;
                 }
                 if (window.confirm('連携を実施しますか？')) {
+                  await registerCsvData(); //バックエンド側にデータを送信 20240307
                   setActivationFlg(true);
                   setCsvData([]),
                     setCsvFileData({ content: [], isSet: false }),
