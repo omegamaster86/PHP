@@ -155,6 +155,10 @@ export default function TeamPlayerBulkRegister() {
           const orgSearchId = { org_id };
           const org = await axios.post('/getOrgData', orgSearchId);
           setOrg(org.data.result);
+          setTargetOrgData({
+            targetOrgId: org.data.result.org_id,
+            targetOrgName: org.data.result.org_name,
+          });
         } else {
           // const org = await axios.get<Org[]>('http://localhost:3100/orgSearch');
           const responseData = await axios.get('/getOrganizationForOrgManagement'); //団体データ取得 20240201
@@ -219,12 +223,31 @@ export default function TeamPlayerBulkRegister() {
     return '連携';
   };
 
+  // 所属団体名の入力値を管理する関数 20240307
+  const handleFormInputChange = (name: string, value: string) => {
+    setTargetOrgData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+
+  //所属団体名の情報を受け取るパラメータ 20240307
+  const [targetOrgData, setTargetOrgData] = useState({
+    targetOrgId: '',
+    targetOrgName: '',
+  });
+
   //読み込むボタン押下時 20240302
   const sendCsvData = async (row: any[]) => {
+    const sendData = {
+      targetOrgData,
+      csvDataList: row
+    }
+    // console.log(sendData);
     try {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
-      const response = await axios.post('/sendOrgCsvData', row);
+      const response = await axios.post('/sendOrgCsvData', sendData);
       console.log(response.data.result);
       setCsvData(response.data.result);
       setActivationFlg(false);
@@ -235,9 +258,14 @@ export default function TeamPlayerBulkRegister() {
 
   //連携ボタン押下時 20240302
   const registerCsvData = async () => {
+    const sendData = {
+      targetOrgData,
+      csvDataList: csvData
+    }
+    // console.log(sendData);
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
-    await axios.post('/registerOrgCsvData', csvData)
+    await axios.post('/registerOrgCsvData', sendData)
       .then((res) => {
         console.log(res.data.result);
         // router.push('/tournamentSearch'); // 20240222
@@ -267,6 +295,12 @@ export default function TeamPlayerBulkRegister() {
             options={orgs.map((org) => ({ value: org.org_name, key: org.org_id }))}
             onChange={(e) => {
               setOrgSelected(e);
+              console.log(e);
+              handleFormInputChange('targetOrgId', e);
+              handleFormInputChange(
+                'targetOrgName',
+                orgs.find((item) => item.org_id === Number(e))?.org_name || '',
+              );
             }}
             className='w-[300px]'
             readonly={isOrgNameActive == false} //団体参照画面から遷移した場合は、読み取り専用とする

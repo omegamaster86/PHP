@@ -309,12 +309,11 @@ export default function OrgInfo() {
         onClick={() => {
           if (isValidateError()) {
             setDisableFlag(true);
-            return;
           } else {
-            setDisableFlag(false);
+            setDisableFlag(true);
+            router.push('/team?mode=confirm&prevMode=create');
           }
-
-          router.push('/team?mode=confirm&prevMode=create');
+          setDisableFlag(false);
         }}
       >
         確認
@@ -532,6 +531,8 @@ export default function OrgInfo() {
                 buttonType='primary'
                 className='w-[80px] self-end'
                 disabled={disableFlag}
+
+
                 onClick={() => {
                   formData.post_code = formData.post_code1 + '-' + formData.post_code2;
                   console.log(formData.post_code);
@@ -671,91 +672,95 @@ export default function OrgInfo() {
           toolTipTitle='Title 団体種別' //はてなボタン用
           toolTipText='サンプル用のツールチップ表示' //はてなボタン用
         />
-        <div className='w-full flex flex-row justify-start gap-[8px]'>
-          <div className='w-full flex flex-col justify-between gap-[8px]'>
-            <InputLabel label='JARA' />
-            <CustomDropdown
-              id='JARA'
-              value={
-                mode !== 'confirm' ? formData.jara_org_type?.toString() : formData.jaraOrgTypeName
-              }
-              onChange={(e) => {
-                console.log(formData.jara_org_type);
-                handleInputChange('jara_org_type', e);
-                handleInputChange(
-                  'jaraOrgTypeName',
-                  orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
-                );
-                console.log("sssssss", formData.jara_org_type);
-              }}
-              readonly={mode === 'confirm'}
-              options={orgTypeOptions.map((orgType) => ({
-                value: orgType.name,
-                key: orgType.id,
-              }))}
-              className='w-[300px]'
-              errorMessages={jaraOrgTypeErrorMessages}
-              isError={jaraOrgTypeErrorMessages.length > 0}
-            />
-          </div>
-          {/* JARA証跡 */}
-          {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
-            userIdType.is_jara == ROLE.JARA ||
-            userIdType.is_pref_boat_officer == ROLE.PREFECTURE) &&
-            formData.jaraOrgTypeName == "正規") && (
-              <CustomTextField
-                label='証跡'
-                displayHelp={false}
-                className='w-[300px]'
-                value={formData.jara_org_reg_trail}
-                // readonly={mode === 'confirm' || userIdType.is_pref_boat_officer == ROLE.PREFECTURE}
-                readonly={mode === 'confirm'}
-                onChange={(e) => handleInputChange('jara_org_reg_trail', e.target.value)}
-              />
-            )}
-        </div>
-        <div className='w-full flex flex-row justify-start gap-[8px]'>
-          <div className='w-full flex flex-col justify-between gap-[8px]'>
-            <InputLabel label='県ボ' />
-            {/* 県ボ団体種別 */}
-            <CustomDropdown
-              id='県ボ'
-              value={
-                mode !== 'confirm' ? formData.pref_org_type?.toString() : formData.prefOrgTypeName
-              }
-              onChange={(e) => {
-                handleInputChange('pref_org_type', e);
-                handleInputChange(
-                  'prefOrgTypeName',
-                  orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
-                );
-              }}
-              options={orgTypeOptions.map((orgType) => ({
-                value: orgType.name,
-                key: orgType.id,
-              }))}
-              readonly={mode === 'confirm'}
-              className='w-[300px]'
-              errorMessages={prefOrgTypeErrorMessages}
-              isError={prefOrgTypeErrorMessages.length > 0}
-            />
-          </div>
-          {/* 県ボ証跡 */}
-          {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
-            userIdType.is_jara == ROLE.JARA ||
-            userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && 
-            formData.prefOrgTypeName == "正規") && (
-              <CustomTextField
-                label='証跡'
-                className='w-[300px]'
-                displayHelp={false}
-                // readonly={mode === 'confirm' || userIdType.is_jara == ROLE.JARA}
-                readonly={mode === 'confirm'}
-                value={formData.pref_org_reg_trail}
-                onChange={(e) => handleInputChange('pref_org_reg_trail', e.target.value)}
-              />
-            )}
-        </div>
+        {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+          userIdType.is_jara == ROLE.JARA)) && (
+            <div className='w-full flex flex-row justify-start gap-[8px]'>
+              <div className='w-full flex flex-col justify-between gap-[8px]'>
+                <InputLabel label='JARA' />
+                <CustomDropdown
+                  id='JARA'
+                  value={
+                    mode !== 'confirm' ? formData.jara_org_type?.toString() : formData.jaraOrgTypeName
+                  }
+                  onChange={(e) => {
+                    console.log(formData.jara_org_type);
+                    handleInputChange('jara_org_type', e);
+                    handleInputChange(
+                      'jaraOrgTypeName',
+                      orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
+                    );
+                    console.log("sssssss", formData.jara_org_type);
+                  }}
+                  readonly={mode === 'confirm'}
+                  options={orgTypeOptions.map((orgType) => ({
+                    value: orgType.name,
+                    key: orgType.id,
+                  }))}
+                  className='w-[300px]'
+                  errorMessages={jaraOrgTypeErrorMessages}
+                  isError={jaraOrgTypeErrorMessages.length > 0}
+                />
+              </div>
+              {/* JARA証跡 */}
+              {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+                userIdType.is_jara == ROLE.JARA) &&
+                formData.jaraOrgTypeName == "正規") && (
+                  <CustomTextField
+                    label='証跡'
+                    displayHelp={false}
+                    className='w-[300px]'
+                    value={formData.jara_org_reg_trail}
+                    // readonly={mode === 'confirm' || userIdType.is_pref_boat_officer == ROLE.PREFECTURE}
+                    readonly={mode === 'confirm'}
+                    onChange={(e) => handleInputChange('jara_org_reg_trail', e.target.value)}
+                  />
+                )}
+            </div>
+          )}
+        {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+          userIdType.is_pref_boat_officer == ROLE.PREFECTURE)) && (
+            <div className='w-full flex flex-row justify-start gap-[8px]'>
+              <div className='w-full flex flex-col justify-between gap-[8px]'>
+                <InputLabel label='県ボ' />
+                {/* 県ボ団体種別 */}
+                <CustomDropdown
+                  id='県ボ'
+                  value={
+                    mode !== 'confirm' ? formData.pref_org_type?.toString() : formData.prefOrgTypeName
+                  }
+                  onChange={(e) => {
+                    handleInputChange('pref_org_type', e);
+                    handleInputChange(
+                      'prefOrgTypeName',
+                      orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
+                    );
+                  }}
+                  options={orgTypeOptions.map((orgType) => ({
+                    value: orgType.name,
+                    key: orgType.id,
+                  }))}
+                  readonly={mode === 'confirm'}
+                  className='w-[300px]'
+                  errorMessages={prefOrgTypeErrorMessages}
+                  isError={prefOrgTypeErrorMessages.length > 0}
+                />
+              </div>
+              {/* 県ボ証跡 */}
+              {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+                userIdType.is_pref_boat_officer == ROLE.PREFECTURE) &&
+                formData.prefOrgTypeName == "正規") && (
+                  <CustomTextField
+                    label='証跡'
+                    className='w-[300px]'
+                    displayHelp={false}
+                    // readonly={mode === 'confirm' || userIdType.is_jara == ROLE.JARA}
+                    readonly={mode === 'confirm'}
+                    value={formData.pref_org_reg_trail}
+                    onChange={(e) => handleInputChange('pref_org_reg_trail', e.target.value)}
+                  />
+                )}
+            </div>
+          )}
       </div>
       <div className='overflow-auto'>
         <CustomTable>

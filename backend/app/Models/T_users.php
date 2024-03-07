@@ -307,7 +307,7 @@ class T_users extends Authenticatable
                     set `user_type` = 
                     (
                         select
-                        LPAD(conv((`user_type_decimal` - `input_decimal`),10,2),8,"0") as `user_type`
+                        LPAD(conv((`user_type_decimal` + `input_decimal`),10,2),8,"0") as `user_type`
                         FROM
                         (
                             SELECT
@@ -316,15 +316,19 @@ class T_users extends Authenticatable
                             FROM
                             (
                                 select `user_type`
-                                ,:input	as `input`
+                                , ?	as `input`
                                 from `t_users`
                                 where 1=1
-                                and user_id = :user_id
+                                and user_id = ?
                             )t
                         )t
                     )
-                    where `user_id` = :user_id'
-                    ,$updateInfo);
+                    where `user_id` = ?'
+                    ,[
+                        $updateInfo['input'],
+                        $updateInfo['user_id'],
+                        $updateInfo['user_id']
+                    ]);
     }
 
     //ユーザー種別を更新する
@@ -338,7 +342,7 @@ class T_users extends Authenticatable
                     set `user_type` = 
                     (
                         select
-                        LPAD(conv((`user_type_decimal` + `input_decimal`),10,2),8,"0") as `user_type`
+                        LPAD(conv((`user_type_decimal` - `input_decimal`),10,2),8,"0") as `user_type`
                         FROM
                         (
                             SELECT
@@ -347,15 +351,19 @@ class T_users extends Authenticatable
                             FROM
                             (
                                 select `user_type`
-                                ,:input	as `input`
+                                , ?	as `input`
                                 from `t_users`
                                 where 1=1
-                                and user_id = :user_id
+                                and user_id = ?
                             )t
                         )t
                     )
-                    where `user_id` = :user_id'
-                    ,$updateInfo);
+                    where `user_id` = ?'
+                    ,[
+                        $updateInfo['input'],
+                        $updateInfo['user_id'],
+                        $updateInfo['user_id']
+                    ]);
     }
 
     //読み込んだcsvの情報を条件としてユーザー情報を取得

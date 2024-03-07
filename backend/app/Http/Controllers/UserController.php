@@ -739,7 +739,7 @@ class UserController extends Controller
             
         }
         
-        $result = $t_users->updateUserData($t_users::$userInfo); //レース情報を取得
+        $result = $t_users->updateUserData($t_users::$userInfo);
 
         
         return response()->json(['result' => $result]); //DBの結果を返す
