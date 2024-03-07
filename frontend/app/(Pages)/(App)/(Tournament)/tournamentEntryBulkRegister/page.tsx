@@ -426,9 +426,13 @@ export default function TournamentEntryBulkRegister() {
       });
       var element = array as CsvData[];
       console.log(element);
+      const sendTournData = {
+        tournData: formData,
+        csvDataList: element
+      }
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
-      const response = await axios.post('/sendTournamentEntryCsvData', element);
+      const response = await axios.post('/sendTournamentEntryCsvData', sendTournData);
       const data = response.data.result as CsvData[];
       var resList = Array();
       for (let index = 0; index < response.data.result.length; index++) {
@@ -445,9 +449,13 @@ export default function TournamentEntryBulkRegister() {
   const checkRaceResultRecords = async () => {
     let apiUri = 'http://localhost:3100/checkRaceResultRecord';
     try {
+      const sendTournData = {
+        tournData: formData,
+        csvDataList: csvData
+      }
       // ToDo バックエンドの例外処理に関する仕様が決まり次第、エラーメッセージを修正すること
       // const response = await axios.get<CheckRaceResultRecord>('http://localhost:3100/checkRaceResultRecord/',);
-      const response = await axios.post('/registerTournamentEntryCsvData', csvData);
+      const response = await axios.post('/registerTournamentEntryCsvData', sendTournData);
       const data = response.data;
 
       if (data.hasError) {
@@ -533,12 +541,18 @@ export default function TournamentEntryBulkRegister() {
             <Autocomplete
               options={tournamentList.map((item) => ({ id: item.id, name: item.name }))}
               getOptionLabel={(option) => option.name}
-              value={{ id: 0, name: formData.tournName } || ''}
+              value={{ id: formData.tournId, name: formData.tournName } || ''}
               onChange={(e: ChangeEvent<{}>, newValue) => {
+                // console.log((newValue as TournamentResponse).id);
+                handleInputChange(
+                  'tournId',
+                  newValue ? (newValue as TournamentResponse).id.toString() : '',
+                );
                 handleInputChange(
                   'tournName',
                   newValue ? (newValue as TournamentResponse).name : '',
                 );
+
                 setCsvDownloadProps((prevProps) => ({
                   ...prevProps,
                   filename: (newValue as TournamentResponse)?.name,
@@ -616,7 +630,9 @@ export default function TournamentEntryBulkRegister() {
                       window.confirm(
                         '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
                       )
-                        ? (setCsvData([]),
+                        ? (
+                          await sendCsvData(), //バックエンド側にCSVデータを送信 データ判定用
+                          setCsvData([]),
                           csvFileData?.content?.slice(1).map((row, rowIndex) => {
                             handleCsvData(row, rowIndex);
                             setDialogDisplayFlg(true);

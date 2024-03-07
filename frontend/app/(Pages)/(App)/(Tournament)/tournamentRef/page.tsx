@@ -142,6 +142,8 @@ export default function TournamentRef() {
               {mode === 'delete' && '大会情報削除'}
               {mode !== 'delete' && '大会情報'}
             </CustomTitle>
+          </div>
+          <div>
             {mode !== 'delete' && (
               <Link
                 href={{
@@ -153,6 +155,21 @@ export default function TournamentRef() {
               >
                 <EditIcon className='cursor-pointer m-1 text-small md:text-h3' />
                 大会情報を更新
+              </Link>
+            )}
+          </div>
+          <div>
+            {mode !== 'delete' && (
+              <Link
+                href={{
+                  pathname: '/tournamentRef',
+                  query: { mode: 'delete', tournId: tournId },
+                }}
+                target='_blank'
+                className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
+              >
+                <EditIcon className='cursor-pointer m-1 text-small md:text-h3' />
+                大会情報を削除
               </Link>
             )}
           </div>

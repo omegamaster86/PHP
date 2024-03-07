@@ -597,12 +597,15 @@ export default function TeamRef() {
                 await csrf();
                 if (!isOk) return;
                 axios
-                  .delete('/organization')
-                  .then(() => {
+                  // .delete('/organization')
+                  .post('/deleteOrgData', org_id)
+                  .then((res) => {
                     // TODO: 削除成功時の処理
+                    console.log(res);
                     router.back();
                   })
                   .catch((error) => {
+                    console.group(error);
                     setErrorMessage([
                       '団体情報の削除に失敗しました。ユーザーサポートにお問い合わせください。',
                     ]);
