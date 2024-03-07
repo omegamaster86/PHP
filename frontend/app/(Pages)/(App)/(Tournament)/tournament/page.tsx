@@ -31,6 +31,7 @@ import {
   VenueResponse,
   EventResponse,
   RaceTypeResponse,
+  UserIdType,
 } from '@/app/types';
 
 import Validator from '@/app/utils/validator';
@@ -46,7 +47,7 @@ export default function Tournament() {
   const router = useRouter();
   const fileUploaderRef = useRef<FileHandler>(null);
 
-
+  const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
 
   // クエリパラメータを取得する
   const searchParams = useSearchParams();
@@ -315,6 +316,20 @@ export default function Tournament() {
     }
   };
 
+  //選手IDに紐づいた情報の取得 20240221
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const csrf = () => axios.get('/sanctum/csrf-cookie')
+        await csrf()
+        const playerInf = await axios.get('/getIDsAssociatedWithUser');
+        setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
+      } catch (error: any) {
+
+      }
+    };
+    fetchData();
+  }, []);
 
   // データ取得
   useEffect(() => {
@@ -846,21 +861,24 @@ export default function Tournament() {
         </div>
         {/* エントリーシステムの大会ID */}
         <div className='flex flex-col justify-start'>
-          {/* TODO: 仮実装。ユーザー種別による表示制御部分の置き換え */}
-          {userType === 1 && (
-            <CustomTextField
-              label='エントリーシステムの大会ID'
-              isError={entrysystemRaceIdErrorMessage.length > 0}
-              errorMessages={entrysystemRaceIdErrorMessage}
-              readonly={mode === 'confirm'}
-              displayHelp={mode !== 'confirm'}
-              value={tournamentFormData.entrysystem_tourn_id}
-              onChange={(e) => handleInputChangeTournament('entrysystem_tourn_id', e.target.value)}
-              // toolTipTitle='Title エントリーシステムの大会ID' //はてなボタン用
-              toolTipText='大会エントリーシステムに発番される大会ID
+          {/* システム管理者 JARA職員 団体管理者 の場合、入力欄を表示する */}
+          {(userIdType.is_administrator == 1
+            || userIdType.is_jara == 1
+            || userIdType.is_pref_boat_officer == 1
+            || userIdType.is_organization_manager == 1) && (
+              <CustomTextField
+                label='エントリーシステムの大会ID'
+                isError={entrysystemRaceIdErrorMessage.length > 0}
+                errorMessages={entrysystemRaceIdErrorMessage}
+                readonly={mode === 'confirm'}
+                displayHelp={mode !== 'confirm'}
+                value={tournamentFormData.entrysystem_tourn_id}
+                onChange={(e) => handleInputChangeTournament('entrysystem_tourn_id', e.target.value)}
+                // toolTipTitle='Title エントリーシステムの大会ID' //はてなボタン用
+                toolTipText='大会エントリーシステムに発番される大会ID
               この大会IDについては、日本ローイング協会にお問い合わせください。' //はてなボタン用
-            />
-          )}
+              />
+            )}
         </div>
         <div className='flex flex-col justify-start gap-[8px]'>
           {/* 大会名 */}
