@@ -1099,4 +1099,15 @@ class OrganizationController extends Controller
         Log::debug(sprintf("deleteOrgData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
     }
+
+     //団体のバリデーションチェック 20240307
+     public function validateOrgData(Request $request)
+     {
+         Log::debug(sprintf("validateOrgData start"));
+         $reqData = $request->all();
+         Log::debug($reqData);
+ 
+         Log::debug(sprintf("validateOrgData end"));
+         return response()->json(['result' => $reqData]); //DBの結果を返す
+     }
 }
