@@ -717,13 +717,14 @@ export default function PlayerInformation() {
           </div>
         </div>
         {/* 選手ID */}
-        {mode !== 'create' && prevMode === 'update' && (
+
+        {(mode === 'update' || prevMode === 'update') && (
           <CustomTextField
             label='選手ID'
             isError={false}
-            errorMessages={[]}
-            required={mode !== 'confirm'}
-            displayHelp={mode !== 'confirm'}
+            // errorMessages={[]}
+            // required={mode !== 'confirm'}
+            displayHelp={false}
             readonly
             value={formData.player_id?.toString()}
             onChange={(e) => handleInputChange('player_id', e.target.value)}
