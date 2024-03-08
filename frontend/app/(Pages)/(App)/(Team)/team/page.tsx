@@ -79,6 +79,12 @@ export default function OrgInfo() {
   const [prefOrgTypeErrorMessages, setPrefOrgTypeErrorMessages] = useState([] as string[]);
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
 
+  // スタッフ登録のバリデーションチェック 20240307
+  const [userIdErrorMessage, setUserIdErrorMessage] = useState([] as string[]);
+  const [userNameErrorMessage, setUserNameErrorMessage] = useState([] as string[]);
+  const [userTypeErrorMessage, setUserTypeErrorMessage] = useState([] as string[]);
+
+
   // フォームデータを管理する状態
   const [tableData, setTableData] = useState<Staff[]>([]);
 
@@ -238,6 +244,7 @@ export default function OrgInfo() {
     ]);
     setFoundingYearErrorMessages(foundingYearError);
 
+    formData.post_code = formData.post_code1 + '-' + formData.post_code2;
     const addressError = Validator.getErrorMessages([
       Validator.validateRequired(formData.post_code, '郵便番号'),
       Validator.validateAddressNumberFormat(formData.post_code),
@@ -262,13 +269,57 @@ export default function OrgInfo() {
     ]);
     setPrefOrgTypeErrorMessages(prefTrailError);
 
+
+    //スタッフ登録のバリデーションチェック 20240308
+    // 削除欄にチェックが入っている場合、バリデーションチェックを行わない
+    const userIdErrorFlg = tableData.some((row) => {
+      if (row.delete_flag) return false;
+      return Validator.validateRequired(row.user_id, 'ユーザーID').length > 0;
+    });
+    const userNameErrorFlg = tableData.some((row) => {
+      if (row.delete_flag) return false;
+      return Validator.validateSelectRequired(row.user_name, 'ユーザー名').length > 0;
+    });
+    const userTypeErrorFlg = tableData.some((row) => {
+      if (row.delete_flag) return false;
+      var staff_type = null;
+      if (row.staff_type_id.length > 0) {
+        staff_type = "OK";
+      }
+      return Validator.validateRequired(staff_type, 'ユーザー種別').length > 0;
+    });
+    if (userIdErrorFlg) {
+      setUserIdErrorMessage(
+        Validator.getErrorMessages([Validator.validateRequired(null, 'ユーザーID')]),
+      );
+    } else {
+      setUserIdErrorMessage([]);
+    }
+    if (userNameErrorFlg) {
+      setUserNameErrorMessage(
+        Validator.getErrorMessages([Validator.validateRequired(null, 'ユーザー名')]),
+      );
+    } else {
+      setUserNameErrorMessage([]);
+    }
+    if (userTypeErrorFlg) {
+      setUserTypeErrorMessage(
+        Validator.getErrorMessages([Validator.validateSelectRequired(null, 'ユーザー種別')]),
+      );
+    } else {
+      setUserTypeErrorMessage([]);
+    }
+
     if (
       orgNameError.length > 0 ||
       foundingYearError.length > 0 ||
       addressError.length > 0 ||
       orgClassError.length > 0 ||
       jaraTrailError.length > 0 ||
-      prefTrailError.length > 0
+      prefTrailError.length > 0 ||
+      userIdErrorFlg ||
+      userNameErrorFlg ||
+      userTypeErrorFlg
     ) {
       return true;
     } else {
@@ -306,12 +357,35 @@ export default function OrgInfo() {
       <CustomButton
         buttonType='primary'
         className='w-[200px]'
-        onClick={() => {
+        onClick={async () => {
           if (isValidateError()) {
             setDisableFlag(true);
           } else {
-            setDisableFlag(true);
-            router.push('/team?mode=confirm&prevMode=create');
+            // バックエンド側のバリデーションチェックを行う 20240308
+            setDisableFlag(true); //バックエンド側へデータ送信中に操作できないようにする
+            // console.log(tableData);
+            //空行の削除
+            var staffList = tableData.filter(function (x) {
+              return !((x.delete_flag == true) && (x.user_id == "" || x.user_name == ""))
+            });
+            // console.log(staffList);
+            //送信データの作成
+            const sendData = {
+              formData,
+              staffList
+            }
+            const csrf = () => axios.get('/sanctum/csrf-cookie');
+            await csrf();
+            axios
+              .post('/validateOrgData', sendData) //20240308
+              .then((response) => {
+                console.log(response);
+                setDisableFlag(false);
+                router.push('/team?mode=confirm&prevMode=create');
+              })
+              .catch((error) => {
+                console.log(error);
+              });
           }
           setDisableFlag(false);
         }}
@@ -323,14 +397,37 @@ export default function OrgInfo() {
       <CustomButton
         buttonType='primary'
         className='w-[200px]'
-        onClick={() => {
+        onClick={async () => {
           if (isValidateError()) {
             setDisableFlag(true);
-            return;
           } else {
-            setDisableFlag(false);
+            // バックエンド側のバリデーションチェックを行う 20240308
+            setDisableFlag(true); //バックエンド側へデータ送信中に操作できないようにする
+            // console.log(tableData);
+            //空行の削除
+            var staffList = tableData.filter(function (x) {
+              return !((x.delete_flag == true) && (x.user_id == "" || x.user_name == ""))
+            });
+            // console.log(staffList);
+            //送信データの作成
+            const sendData = {
+              formData,
+              staffList
+            }
+            const csrf = () => axios.get('/sanctum/csrf-cookie');
+            await csrf();
+            axios
+              .post('/validateOrgData', sendData) //20240308
+              .then((response) => {
+                console.log(response);
+                setDisableFlag(false);
+                router.push('/team?mode=confirm&prevMode=create');
+              })
+              .catch((error) => {
+                console.log(error);
+              });
           }
-          router.push('/team?mode=confirm&prevMode=update');
+          setDisableFlag(false);
         }}
       >
         確認
@@ -465,7 +562,7 @@ export default function OrgInfo() {
           <CustomYearPicker
             selectedDate={formData.founding_year === 0 ? '' : formData.founding_year?.toString()}
             errorMessages={foundingYearErrorMessages}
-            onChange={(date: Date) => handleInputChange('founding_year', date.toString())}
+            onChange={(date: Date) => handleInputChange('founding_year', date.getFullYear().toString())} //創立年を4桁年で取得するように修正 200240308
             readonly={mode === 'confirm'}
             isError={foundingYearErrorMessages.length > 0}
             className='w-[300px]'
@@ -689,6 +786,7 @@ export default function OrgInfo() {
                       'jaraOrgTypeName',
                       orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
                     );
+                    handleInputChange('jara_org_reg_trail', ''); //団体種別を切り替えるごとに証跡をリセットする 20240308
                     console.log("sssssss", formData.jara_org_type);
                   }}
                   readonly={mode === 'confirm'}
@@ -734,6 +832,7 @@ export default function OrgInfo() {
                       'prefOrgTypeName',
                       orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
                     );
+                    handleInputChange('pref_org_reg_trail', ''); //団体種別を切り替えるごとに証跡をリセットする 20240308
                   }}
                   options={orgTypeOptions.map((orgType) => ({
                     value: orgType.name,
@@ -819,9 +918,18 @@ export default function OrgInfo() {
               )}
             </CustomTr>
             <CustomTr>
-              {mode !== 'confirm' ? <CustomTh align='center'>削除</CustomTh> : <></>}
-              <CustomTh align='center'>ユーザーID</CustomTh>
-              <CustomTh align='center'>ユーザー名</CustomTh>
+              {mode !== 'confirm' ? <CustomTh rowSpan={2} align='center'>削除</CustomTh> : <></>}
+              <CustomTh rowSpan={2} align='center'>
+                {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
+                ユーザーID</CustomTh>
+              <CustomTh rowSpan={2} align='center'>
+                {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
+                ユーザー名</CustomTh>
+              <CustomTh colSpan={5} align='center'>
+                {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
+                ユーザー種別</CustomTh>
+            </CustomTr>
+            <CustomTr>
               <CustomTh align='center'>管理者(監督)</CustomTh>
               <CustomTh align='center'>部長</CustomTh>
               <CustomTh align='center'>コーチ</CustomTh>
@@ -968,6 +1076,18 @@ export default function OrgInfo() {
           </CustomTbody>
         </CustomTable>
       </div>
+      {
+        // スタッフ登録のエラーメッセージの表示 20240308
+        (userIdErrorMessage.length > 0 ||
+          userNameErrorMessage.length > 0 ||
+          userTypeErrorMessage.length > 0) && (
+          <div key='tableErrorMessage' className='text-caption1 text-systemErrorText'>
+            <p>{userIdErrorMessage}</p>
+            <p>{userNameErrorMessage}</p>
+            <p>{userTypeErrorMessage}</p>
+          </div>
+        )
+      }
       <Divider className='w-[900px] h-[1px] bg-border' />
       <div className='flex flex-row justify-center gap-[16px]'>
         {/* 戻る */}

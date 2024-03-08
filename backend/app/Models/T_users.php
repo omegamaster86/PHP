@@ -45,6 +45,7 @@ class T_users extends Authenticatable
      */
     protected $table = 't_users';
     protected $primaryKey = 'user_id';
+
     
     public function getUserName($targetUserId)
     {

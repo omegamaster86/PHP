@@ -391,7 +391,7 @@ export default function TournamentSearch() {
               {searchResponse.map((row, index) => (
                 <CustomTr index={index} key={index}>
                   {/* 大会種別 */}
-                  <CustomTd>{row.tourn_type}</CustomTd>
+                  <CustomTd>{row.tournTypeName}</CustomTd>
                   {/* 大会名 */}
                   <CustomTd>
                     <Link

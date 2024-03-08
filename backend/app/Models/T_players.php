@@ -455,15 +455,15 @@ class T_players extends Model
             $condition .= " and record.entrysystem_org_id = ?";
             array_push($valid_data_array, $searched_data['entrysystem_org_id']);
         }
-        if (isset($searched_data['org_id'])) {
-            $condition .= " and record.org_id = ?";
-            array_push($valid_data_array, $searched_data['org_id']);
-        }
         if (isset($searched_data['player_name'])) {
             //'%' . $query . '%'
             $searched_data['player_name'] = '%' . $searched_data['player_name'] . '%';
             $condition .= " and player.player_name like ?";
             array_push($valid_data_array, $searched_data['player_name']);
+        }
+        if (isset($searched_data['org_id'])) {
+            $condition .= " and record.org_id = ?";
+            array_push($valid_data_array, $searched_data['org_id']);
         }
         if (isset($searched_data['org_name'])) {
             $searched_data['org_name'] = '%' . $searched_data['org_name'] . '%';
@@ -481,7 +481,7 @@ class T_players extends Model
             array_push($valid_data_array, $searched_data['event_name']);
         }
 
-        $sql_string = 'select 
+        $sql_string = 'select distinct
                         player.player_id,
                         player.player_name, 
                         player.jara_player_id, 
