@@ -622,7 +622,7 @@ class PlayerController extends Controller
         //ユーザ種別の更新
         $hoge = array();
         $hoge['user_id'] = Auth::user()->user_id;
-        $hoge['input'] = '00000010';
+        $hoge['input'] = '00000100'; //選手のユーザ種別を変更する
         $t_users->updateUserTypeRegist($hoge);
 
         $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
@@ -753,7 +753,7 @@ class PlayerController extends Controller
             //ユーザ種別の更新
             $hoge = array();
             $hoge['user_id'] = Auth::user()->user_id;
-            $hoge['input'] = '00000010';
+            $hoge['input'] = '00000100'; //選手のユーザ種別を変更する
             Log::debug($hoge);
             $t_users->updateUserTypeDelete($hoge);
 
