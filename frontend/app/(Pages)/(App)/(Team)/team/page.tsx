@@ -373,7 +373,7 @@ export default function OrgInfo() {
             const sendData = {
               formData,
               staffList
-            }
+            };
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
             axios
@@ -413,7 +413,7 @@ export default function OrgInfo() {
             const sendData = {
               formData,
               staffList
-            }
+            };
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
             axios
@@ -439,9 +439,15 @@ export default function OrgInfo() {
         className='w-[200px]'
         onClick={() => {
           // TODO: APIを叩いて、登録・更新処理を行う
-          const requestBody = {
-            formData, //団体情報
-            tableData //スタッフ情報
+          //空行の削除
+          var staffList = tableData.filter(function (x) {
+            return !((x.delete_flag == true) && (x.user_id == "" || x.user_name == ""))
+          });
+          // console.log(staffList);
+          //送信データの作成
+          const sendData = {
+            formData,
+            staffList
           };
           //alert('TODO: APIを叩いて、登録・更新処理を行う');
           if (prevMode === 'create') {
@@ -451,7 +457,7 @@ export default function OrgInfo() {
               await csrf();
               axios
                 // .post('http://localhost:3100/', requestBody)
-                .post('/storeOrgData', requestBody) //20240226
+                .post('/storeOrgData', sendData) //20240226
                 .then((response) => {
                   // console.log(response);
                   // TODO: 登録処理成功時の処理
@@ -475,7 +481,7 @@ export default function OrgInfo() {
               await csrf();
               axios
                 // .post('http://localhost:3100/', requestBody)
-                .post('/updateOrgData', requestBody) //20240226
+                .post('/updateOrgData', sendData) //20240226
                 .then((response) => {
                   // TODO: 更新処理成功時の処理
                   window.confirm('団体情報を更新しました。');
