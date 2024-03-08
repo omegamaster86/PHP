@@ -329,6 +329,7 @@ class T_organization_players extends Model
         $org_players_info = DB::select('select 
                                         `org_player_id` as `id`
                                         ,op.player_id
+                                        ,op.org_id
                                         ,tp.jara_player_id
                                         ,tp.player_name
                                         ,tp.date_of_birth
@@ -368,8 +369,59 @@ class T_organization_players extends Model
                                         and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
                                         and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
                                         and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
-                                        and `player_id` = :player_id
-                                        ',$player_id);
+                                        and op.`player_id` = ?'
+                                        ,[$player_id]);
+        return $org_players_info;
+    }
+
+    //JARA選手コードを条件に所属選手情報を取得する
+    public function getOrganizationPlayersInfoFromJaraPlayerId($jara_player_id)
+    {
+        $org_players_info = DB::select('select 
+                                        `org_player_id` as `id`
+                                        ,op.player_id
+                                        ,op.org_id
+                                        ,tp.jara_player_id
+                                        ,tp.player_name
+                                        ,tp.date_of_birth
+                                        ,sex.`sex` as `sexName`
+                                        ,tp.`sex_id`
+                                        ,tp.height
+                                        ,tp.weight
+                                        ,tp.side_info
+                                        ,bir_cont.`country_name` as `birthCountryName`
+                                        ,`birth_country`
+                                        ,bir_pref.`pref_name` as `birthPrefectureName`
+                                        ,`birth_prefecture`
+                                        ,res_cont.`country_name` as `residenceCountryName`
+                                        ,`residence_country`
+                                        ,res_pref.`pref_name` as `residencePrefectureName`
+                                        ,`residence_prefecture`
+                                        ,tp.photo
+                                        ,tp.delete_flag
+                                        from `t_organization_players` op
+                                        left join `t_players` tp
+                                        on op.player_id = tp.player_id
+                                        left join `m_sex` sex
+                                        on tp.sex_id = sex.sex_id
+                                        left join m_countries bir_cont
+                                        on tp.birth_country = bir_cont.country_id
+                                        left join m_prefectures bir_pref
+                                        on tp.birth_prefecture = bir_pref.pref_id
+                                        left join m_countries res_cont
+                                        on tp.residence_country = res_cont.country_id
+                                        left join m_prefectures res_pref
+                                        on tp.residence_prefecture = res_pref.pref_id
+                                        where 1=1
+                                        and op.`delete_flag` = 0
+                                        and  (tp.`delete_flag` = 0 or tp.`delete_flag` is null)
+                                        and  (sex.`delete_flag` = 0 or sex.`delete_flag` is null)
+                                        and  (bir_cont.`delete_flag` = 0 or bir_cont.`delete_flag` is null)
+                                        and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
+                                        and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
+                                        and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
+                                        and tp.`jara_player_id` = ?'
+                                        ,[$jara_player_id]);
         return $org_players_info;
     }
 }
