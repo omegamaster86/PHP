@@ -992,7 +992,7 @@ class OrganizationController extends Controller
         Log::debug(sprintf("storeOrgData start"));
         $lastInsertId = "";
         $organizationInfo = $request->all();
-        //Log::debug($organizationInfo);
+        Log::debug($organizationInfo);
         //郵便番号に「-(ハイフン)」が含まれていると、
         //DBのテーブルの設定が7文字固定であることから登録データの下一桁が欠落するため削除しておく
         $post_code = $organizationInfo['formData']['post_code'];

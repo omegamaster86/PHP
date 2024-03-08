@@ -238,6 +238,7 @@ export default function OrgInfo() {
     ]);
     setFoundingYearErrorMessages(foundingYearError);
 
+    formData.post_code = formData.post_code1 + '-' + formData.post_code2;
     const addressError = Validator.getErrorMessages([
       Validator.validateRequired(formData.post_code, '郵便番号'),
       Validator.validateAddressNumberFormat(formData.post_code),
@@ -689,6 +690,7 @@ export default function OrgInfo() {
                       'jaraOrgTypeName',
                       orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
                     );
+                    handleInputChange('jara_org_reg_trail', ''); //団体種別を切り替えるごとに証跡をリセットする 20240308
                     console.log("sssssss", formData.jara_org_type);
                   }}
                   readonly={mode === 'confirm'}
@@ -734,6 +736,7 @@ export default function OrgInfo() {
                       'prefOrgTypeName',
                       orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
                     );
+                    handleInputChange('pref_org_reg_trail', ''); //団体種別を切り替えるごとに証跡をリセットする 20240308
                   }}
                   options={orgTypeOptions.map((orgType) => ({
                     value: orgType.name,
