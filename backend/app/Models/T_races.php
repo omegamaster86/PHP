@@ -203,7 +203,7 @@ class T_races extends Model
                                 ,race.`tourn_id`
                                 ,race.`race_name`
                                 ,race.`event_id`
-                                ,race.`event_name`
+                                ,`m_events`.`event_name`
                                 ,race.`race_class_id`
                                 ,`m_race_class`.`race_class_name`
                                 ,race.`by_group`
@@ -218,6 +218,8 @@ class T_races extends Model
                                 on race.race_id = rrr.race_id
                                 left join `m_race_class`
                                 on race.`race_class_id` = `m_race_class`.`race_class_id`
+                                left join `m_events`
+                                on race.`event_id` = `m_events`.`event_id`
                                 where 1=1
                                 and race.delete_flag = 0
                                 and (rrr.delete_flag = 0 or rrr.delete_flag is null)
