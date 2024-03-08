@@ -781,6 +781,7 @@ export default function Tournament() {
                   'raceTypeName',
                   raceType.find((item) => item.id === Number(e))?.name || '',
                 );
+                handleInputChangeRace(row.id, 'otherRaceName', ''); //レース区分を切り替えた際に、その他のレース区分内容をリセットする 20240308
               }}
               className='border-[0.5px] border-solid border-gray-50 rounded self-end w-[150px]'
               readonly={mode === 'confirm'}
@@ -1150,7 +1151,7 @@ export default function Tournament() {
                 </CustomTh>
                 <CustomTh align='center'>
                   {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
-                  レース区分ID
+                  レース区分
                 </CustomTh>
                 <CustomTh align='center'>
                   {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
