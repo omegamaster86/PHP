@@ -502,7 +502,7 @@ class UserController extends Controller
        
         if (Auth::user()->temp_password_flag) {
             //If the entered password does matched with the database information
-            if (Hash::check($request->currentPassword, Auth::user()->temp_password)) {
+            if (Hash::check($request->currentPassword, Auth::user()->password)) {
 
                 DB::beginTransaction();
                 try {
