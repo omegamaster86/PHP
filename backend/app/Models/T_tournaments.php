@@ -456,4 +456,29 @@ class T_tournaments extends Model
                                 ,[$entry_year]);
         return $tournaments;
     }
+
+    //
+    public function getIsTournament()
+    {
+        // select 
+        // case count(*)
+        //     when 0 then 0
+        //     else 1
+        //     end as `is_tournament_exists`    
+        // from `t_tournaments` tor
+        // join `t_organizations` org
+        // on tor.sponsor_org_id = org.org_id
+        // join `t_organization_staff` staff
+        // on org.org_id = staff.org_id
+        // join `t_users` users
+        // on staff.user_id = users.user_id
+        // where 1=1
+        // and tor.delete_flag = 0
+        // and org.delete_flag = 0
+        // and staff.delete_flag = 0
+        // and users.delete_flag = 0
+        // and tor.tourn_id = :tourn_id
+        // and users.user_id = :user_id
+        // and users.user_type = :user_type
+    }
 }

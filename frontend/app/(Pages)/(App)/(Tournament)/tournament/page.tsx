@@ -215,9 +215,10 @@ export default function Tournament() {
       return Validator.validateRequired(row.race_class_id, 'レース区分').length > 0;
     });
     const raceTypeNameErrorFlg = tableData.some((row) => {
-      return row.race_class_id === '999'
-        ? Validator.validateRequired(row.race_class_name, 'レース区分').length > 0
-        : false;
+      // console.log(row.race_class_name);
+      // console.log(row.race_class_id);
+      // console.log(row.otherRaceName);
+      return row.race_class_id === '999' ? Validator.validateRequired(row.otherRaceName, 'レース区分').length > 0 : false;
     });
 
     const byGroupErrorFlg = tableData.some((row) => {
@@ -401,17 +402,7 @@ export default function Tournament() {
         .get('/getRaceClass')
         .then((response) => {
           //DBのカラム名と画面側のプロパティ名をマップする 20240202
-          const stateList = response.data.map(({
-            race_class_id,
-            race_class_name
-          }:
-            {
-              race_class_id: number;
-              race_class_name: string
-            }) => ({
-              id: race_class_id,
-              name: race_class_name
-            }));
+          const stateList = response.data.map(({ race_class_id, race_class_name }: { race_class_id: number; race_class_name: string }) => ({ id: race_class_id, name: race_class_name }));
           setRaceType(stateList);
         })
         .catch((error) => {
@@ -751,7 +742,7 @@ export default function Tournament() {
               handleInputChangeRace(row.id, 'event_id', e);
               handleInputChangeRace(
                 row.id,
-                'eventName',
+                'event_name',
                 event.find((item) => item.id === Number(e))?.name || '',
               );
             }}
@@ -778,9 +769,10 @@ export default function Tournament() {
                 handleInputChangeRace(row.id, 'race_class_id', e.toString());
                 handleInputChangeRace(
                   row.id,
-                  'raceTypeName',
+                  'race_class_name',
                   raceType.find((item) => item.id === Number(e))?.name || '',
                 );
+                handleInputChangeRace(row.id, 'otherRaceName', ''); //レース区分を切り替えた際に、その他のレース区分内容をリセットする 20240308
               }}
               className='border-[0.5px] border-solid border-gray-50 rounded self-end w-[150px]'
               readonly={mode === 'confirm'}
@@ -1150,7 +1142,7 @@ export default function Tournament() {
                 </CustomTh>
                 <CustomTh align='center'>
                   {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
-                  レース区分ID
+                  レース区分
                 </CustomTh>
                 <CustomTh align='center'>
                   {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}

@@ -24,6 +24,10 @@ interface CsvData {
   teamName: string; // 所属団体名
   birthPlace: string; // 出身地
   residence: string; // 居住地
+  birthCountryId: number; //出身地国ID
+  birthPrefectureId: number;  //出身地都道府県ID
+  residenceCountryId: number; //居住地国ID
+  residencePrefectureId: number;  //居住地都道府県ID
 }
 // CSVアップロードのプロパティの型定義
 interface CsvUploadProps {
@@ -243,7 +247,7 @@ export default function TeamPlayerBulkRegister() {
       targetOrgData,
       csvDataList: row
     }
-    // console.log(sendData);
+    console.log(sendData.csvDataList);
     try {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
@@ -262,7 +266,7 @@ export default function TeamPlayerBulkRegister() {
       targetOrgData,
       csvDataList: csvData
     }
-    // console.log(sendData);
+    console.log(sendData.csvDataList);
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     await axios.post('/registerOrgCsvData', sendData)
@@ -337,7 +341,16 @@ export default function TeamPlayerBulkRegister() {
                     csvFileData.content?.slice(1).map((row, index) => getJsonRow(row, index)),
                   ).then((results) => {
                     console.log(results);
-                    sendCsvData(results); //バックエンド側のバリデーションチェックを行う為にデータを送信する 20240302
+                    // テーブルに表示する項目の追加　※CSVには記載のない項目
+                    var resList = results as any;
+                    resList.forEach((element: any) => {
+                      element['birthCountryId'] = null;
+                      element['birthPrefectureId'] = null;
+                      element['residenceCountryId'] = null;
+                      element['residencePrefectureId'] = null;
+                    });
+                    console.log(resList);
+                    sendCsvData(resList); //バックエンド側のバリデーションチェックを行う為にデータを送信する 20240302
                   });
                   performValidation();
                 }}

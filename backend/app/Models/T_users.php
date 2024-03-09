@@ -279,7 +279,7 @@ class T_users extends Authenticatable
                                 WHERE 1=1
                                 and `delete_flag` = 0
                                 and `user_id` = ?'
-                            ,$user_id);
+                            ,[$user_id]);
         return $users;
     }
     //対象のユーザーの削除フラグを「１＝削除データ」に更新する 20240212
@@ -371,7 +371,12 @@ class T_users extends Authenticatable
     public function getUserDataFromInputCsv($user_data)
     {
         $user = DB::select('select
-                            `user_id`                            
+                            `user_id`
+                            ,`user_type`
+                            ,case
+                                when SUBSTR(`user_type`, 6, 1) > 0 then 1
+                                else 0
+                                end as `is_player`
                             ,expiry_time_of_temp_password
                             ,`temp_password_flag`
                             FROM `t_users`

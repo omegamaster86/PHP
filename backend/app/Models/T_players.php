@@ -95,6 +95,67 @@ class T_players extends Model
         return $targetTrn;
     }
 
+    //団体選手一括登録画面用 user_idに紐づいた選手情報を取得
+    public function getPlayerDataFromUserId($user_id)
+    {
+        $result = DB::select(
+            'select
+                                `player_id`
+                                ,`user_id`
+                                ,`jara_player_id`
+                                ,`player_name`
+                                ,`date_of_birth`
+                                ,`m_sex`.`sex` as `sexName`
+                                ,`t_players`.`sex_id`
+                                ,`height`
+                                ,`weight`
+                                ,`side_info`
+                                ,bir_cont.`country_name` as `birthCountryName`
+                                ,`birth_country`
+                                ,bir_pref.`pref_name` as `birthPrefectureName`
+                                ,`birth_prefecture`
+                                ,res_cont.`country_name` as `residenceCountryName`
+                                ,`residence_country`
+                                ,res_pref.`pref_name` as `residencePrefectureName`
+                                ,`residence_prefecture`
+                                ,`photo`
+                                ,`t_players`.`registered_time`
+                                ,`t_players`.`registered_user_id`
+                                ,`t_players`.`updated_time`
+                                ,`t_players`.`updated_user_id`
+                                ,`t_players`.`delete_flag`
+                                ,`m_sex`.`sex` as `sex_name`
+                                FROM `t_players`
+                                left join `m_sex`
+                                on `t_players`.`sex_id`=`m_sex`.`sex_id`
+                                left join m_countries bir_cont
+                                on `t_players`.birth_country = bir_cont.country_id
+                                left join m_prefectures bir_pref
+                                on `t_players`.birth_prefecture = bir_pref.pref_id
+                                left join m_countries res_cont
+                                on `t_players`.residence_country = res_cont.country_id
+                                left join m_prefectures res_pref
+                                on `t_players`.residence_prefecture = res_pref.pref_id
+                                where 1=1
+                                and `t_players`.delete_flag = 0
+                                and  (`m_sex`.`delete_flag` = 0 or `m_sex`.`delete_flag` is null)
+                                and  (bir_cont.`delete_flag` = 0 or bir_cont.`delete_flag` is null)
+                                and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
+                                and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
+                                and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
+                                and `t_players`.user_id = ?',
+            [$user_id]
+        );
+
+        //1つのデータを取得するため0番目だけを返す
+        // Log::debug($result);
+        $targetTrn = null;
+        if (!empty($result)) {
+            $targetTrn = $result[0];
+        }
+        return $targetTrn;
+    }
+
     //react 選手情報更新画面用 選手情報の更新を行う 20240131
     public function updatePlayerData($playersInfo)
     {
@@ -455,15 +516,15 @@ class T_players extends Model
             $condition .= " and record.entrysystem_org_id = ?";
             array_push($valid_data_array, $searched_data['entrysystem_org_id']);
         }
-        if (isset($searched_data['org_id'])) {
-            $condition .= " and record.org_id = ?";
-            array_push($valid_data_array, $searched_data['org_id']);
-        }
         if (isset($searched_data['player_name'])) {
             //'%' . $query . '%'
             $searched_data['player_name'] = '%' . $searched_data['player_name'] . '%';
             $condition .= " and player.player_name like ?";
             array_push($valid_data_array, $searched_data['player_name']);
+        }
+        if (isset($searched_data['org_id'])) {
+            $condition .= " and record.org_id = ?";
+            array_push($valid_data_array, $searched_data['org_id']);
         }
         if (isset($searched_data['org_name'])) {
             $searched_data['org_name'] = '%' . $searched_data['org_name'] . '%';
@@ -481,7 +542,7 @@ class T_players extends Model
             array_push($valid_data_array, $searched_data['event_name']);
         }
 
-        $sql_string = 'select 
+        $sql_string = 'select distinct
                         player.player_id,
                         player.player_name, 
                         player.jara_player_id, 
@@ -563,7 +624,7 @@ class T_players extends Model
     public function getPlayer($player_id)
     {
         $player = DB::select(
-            'select
+                                'select
                                 `player_id`
                                 ,`user_id`
                                 ,`jara_player_id`
@@ -607,9 +668,9 @@ class T_players extends Model
                                 and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
                                 and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
                                 and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
-                                and player_id = ?',
-            [$player_id]
-        );
+                                and player_id = ?'
+                                ,[$player_id]
+                            );
         return $player;
     }
 

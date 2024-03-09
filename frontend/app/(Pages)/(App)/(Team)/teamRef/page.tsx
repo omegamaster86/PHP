@@ -582,7 +582,7 @@ export default function TeamRef() {
           <CustomButton
             className='w-[300px] h-[50px]'
             onClick={() => {
-              router;
+              router.back();
             }}
           >
             戻る

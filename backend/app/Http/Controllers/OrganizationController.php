@@ -992,7 +992,7 @@ class OrganizationController extends Controller
         Log::debug(sprintf("storeOrgData start"));
         $lastInsertId = "";
         $organizationInfo = $request->all();
-        //Log::debug($organizationInfo);
+        Log::debug($organizationInfo);
         //郵便番号に「-(ハイフン)」が含まれていると、
         //DBのテーブルの設定が7文字固定であることから登録データの下一桁が欠落するため削除しておく
         $post_code = $organizationInfo['formData']['post_code'];
@@ -1099,4 +1099,15 @@ class OrganizationController extends Controller
         Log::debug(sprintf("deleteOrgData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
     }
+
+     //団体のバリデーションチェック 20240307
+     public function validateOrgData(Request $request)
+     {
+         Log::debug(sprintf("validateOrgData start"));
+         $reqData = $request->all();
+         Log::debug($reqData);
+ 
+         Log::debug(sprintf("validateOrgData end"));
+         return response()->json(['result' => $reqData]); //DBの結果を返す
+     }
 }
