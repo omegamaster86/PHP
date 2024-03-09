@@ -62,39 +62,25 @@ class RegisteredUserController extends Controller
         if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? ',[$request->mailaddress]))){
             if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 0',[$request->mailaddress]))){
                 if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and temp_password_flag = 0',[$request->mailaddress]))){
-                    //Display error message to the client
-
-                    // throw ValidationException::withMessages([
-                    //     'datachecked_error' => $email_register_check
-                    // ]);
+                    
                     return response()->json(['system_error' => $email_register_check],400);
                     //Status code 400 is for bad request from user
                 }
-                else {
+                // else {
                     
-                    if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and expiry_time_of_temp_password < ?',[$request->mailaddress, date('Y-m-d H:i:s')]))) {
-                        //Display error message to the client
-                        // throw ValidationException::withMessages([
-                        //     'datachecked_error' => $registration_failed
-                        // ]); 
-                        return response()->json(['system_error' => $registration_failed],400);
-                        //Status code 400 is for bad request from user
-                    }
-                    else {
-                        //Display error message to the client
-                        // throw ValidationException::withMessages([
-                        //     'datachecked_error' => $already_registered,
-                        // ]); 
-                        return response()->json(['system_error' => $already_registered],400);
-                        //Status code 400 is for bad request from user
-                    }
-                }
+                //     if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and expiry_time_of_temp_password < ?',[$request->mailaddress, date('Y-m-d H:i:s')]))) {
+                        
+                //         return response()->json(['system_error' => $registration_failed],400);
+                //         //Status code 400 is for bad request from user
+                //     }
+                //     else {
+                        
+                //         // return response()->json(['system_error' => $already_registered],400);
+                //         //Status code 400 is for bad request from user
+                //     }
+                // }
             }
             else {
-                //Display error message to the client
-                // throw ValidationException::withMessages([
-                //     'datachecked_error' => $registration_failed,
-                // ]);
                 return response()->json(['system_error' => $registration_failed],400);
                 //Status code 400 is for bad request from user
             }
@@ -115,7 +101,19 @@ class RegisteredUserController extends Controller
         DB::beginTransaction();
         try {
             $hashed_password = Hash::make($temp_password);
-            $user = DB::insert('insert into t_users (user_name, mailaddress, password, temp_password, expiry_time_of_temp_password, temp_password_flag, registered_time, registered_user_id, updated_time, updated_user_id, delete_flag) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$request->user_name, $request->mailaddress, $hashed_password, $hashed_password , $newDate, 1, $date, 9999999,$date, 9999999, 0 ]);
+            $find_user_id = DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 0 and temp_password_flag = 1 ',[$request->mailaddress]);
+            $user_id = '';
+            if(!empty($find_user_id)){
+                $user_id = $find_user_id[0]->user_id;
+            }
+
+            if($user_id){
+                DB::update('update t_users set user_name = ?, password  = ?, expiry_time_of_temp_password  = ?, registered_time  = ?, registered_user_id  = ?, updated_time  = ?, updated_user_id  = ? where mailaddress = ? and temp_password_flag  = 1', [$request->user_name, $hashed_password , $newDate,  $date, $user_id, $date, $user_id,  $request->mailaddress ]);
+            }
+            else{
+                DB::insert('insert into t_users (user_name, mailaddress, password, expiry_time_of_temp_password, temp_password_flag, registered_time, registered_user_id, updated_time, updated_user_id, delete_flag) values ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$request->user_name, $request->mailaddress, $hashed_password , $newDate, 1, $date, 9999999,$date, 9999999, 0 ]);
+            }
+            
 
             DB::commit();
         } catch (\Throwable $e) {
@@ -161,7 +159,8 @@ class RegisteredUserController extends Controller
             'to_mailaddress' => $request->mailaddress,
             'from_mailaddress' => 'xxxxx@jara.or.jp',
             'temporary_password' => $temp_password,
-            'temporary_password_expiration_date'=> $new_mail_date
+            'temporary_password_expiration_date'=> $new_mail_date,
+            'login_url'=> env('FRONTEND_URL').'/login'
         ];
 
         
@@ -170,9 +169,9 @@ class RegisteredUserController extends Controller
         try {
             Mail::to($request->get('mailaddress'))->send(new WelcomeMail($mail_data));
         } catch (Exception $e) {
-            DB::delete('delete from t_users where mailaddress = ?', [$request->mailaddress ]);
-            //Store error message in the user_register log file.
-            Log::channel('user_register')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「EMAIL_SENT_ERROR_MESSAGE」  ： $e\r\n  \r\n ============================================================ \r\n \r\n");
+            // DB::delete('delete from t_users where mailaddress = ?', [$request->mailaddress ]);
+            // //Store error message in the user_register log file.
+            // Log::channel('user_register')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「EMAIL_SENT_ERROR_MESSAGE」  ： $e\r\n  \r\n ============================================================ \r\n \r\n");
             //Display error message to the client
             // throw ValidationException::withMessages([
             //     'datachecked_error' => $mail_sent_failed,

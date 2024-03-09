@@ -44,7 +44,7 @@
         {{$mail_data['temporary_password_expiration_date']}} まで有効<br /><br />
 
         [ログイン用URL]<br />
-        https://www.[ポータルサイトのURL]/login/<br />
+        {{$mail_data['login_url']}}<br />
         --------------------<br /><br />
 
         有効期限が切れた場合は、<br />

@@ -12,6 +12,8 @@ export const useAuth = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
+  
+  console.log(pathname);
   const [isLoading, setIsLoading] = useState(true);
   const {
     data: user,
@@ -25,7 +27,7 @@ export const useAuth = ({
         // if (error.response.status !== 409) {
         //   // throw error
         // }
-        if(pathname==="signup" ||  pathname==="forgotpassword" || pathname==="inquiry"){
+        if(pathname==="/signup" ||  pathname==="/forgotpassword" || pathname==="/inquiry"){
 
         }
         else {
@@ -52,7 +54,7 @@ export const useAuth = ({
 
   const logout = async () => {
     if (!error) {
-      if(pathname==="signup" ||  pathname==="forgotpassword" || pathname==="inquiry"){
+      if(pathname==="/signup" ||  pathname==="/forgotpassword" || pathname==="/inquiry"){
 
       }
       else {
@@ -68,7 +70,7 @@ export const useAuth = ({
       }
       
     }
-    if(pathname==="signup" ||  pathname==="forgotpassword" || pathname==="inquiry"){
+    if(pathname==="/signup" ||  pathname==="/forgotpassword" || pathname==="/inquiry"){
 
     }
     else{
@@ -100,7 +102,8 @@ export const useAuth = ({
 
     
     if (middleware === 'auth' && error) {
-      if(pathname==="signup" ||  pathname==="forgotpassword" || pathname==="inquiry") {
+      
+      if(pathname==="/signup" ||  pathname==="/forgotpassword" || pathname==="/inquiry") {
 
       }
       else {

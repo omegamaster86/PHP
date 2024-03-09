@@ -500,14 +500,14 @@ class UserController extends Controller
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
        
-        if (Auth::user()->temp_password) {
+        if (Auth::user()->temp_password_flag) {
             //If the entered password does matched with the database information
-            if (Hash::check($request->currentPassword, Auth::user()->temp_password)) {
+            if (Hash::check($request->currentPassword, Auth::user()->password)) {
 
                 DB::beginTransaction();
                 try {
                     DB::update(
-                        'update t_users set password = ? , temp_password = ? , expiry_time_of_temp_password = ?, temp_password_flag = ?, updated_time =?, updated_user_id = ?  where user_id = ?',
+                        'update t_users set password = ? , password = ? , expiry_time_of_temp_password = ?, temp_password_flag = ?, updated_time =?, updated_user_id = ?  where user_id = ?',
                         [Hash::make($request->newPassword), NULL, NULL, 0, now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id , Auth::user()->user_id]
                     );
 
