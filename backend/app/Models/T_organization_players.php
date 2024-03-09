@@ -146,6 +146,7 @@ class T_organization_players extends Model
     //で指定する
     public function insertOrganizationPlayer($organizationPlayer)
     {
+        Log::debug('insertOrganizationPlayer start.');
         $current_datetime = now()->format('Y-m-d H:i:s.u');
         $user_id = Auth::user()->user_id;
         DB::insert('insert INTO `t_organization_players`
@@ -169,6 +170,7 @@ class T_organization_players extends Model
                         ,0
                     ]);
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
+        Log::debug('insertOrganizationPlayer end.');
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 

@@ -454,7 +454,7 @@ export default function PlayerInformation() {
               // console.log(response);
               setErrorMessage([]);
               // OK が押下された場合、確認画面に遷移する　※短絡評価
-              window.confirm('入力したJARA選手コードと紐づくデータが存在しません。\nこのJARA選手コードで登録しますか？') && router.push('/playerInformation?mode=confirm&prevMode=update');
+              window.confirm('入力したJARA選手コードと紐づくデータが存在しません。\nこのJARA選手コードで登録しますか？') && router.push('/playerInformation?mode=confirm&prevMode=create');
               // window.alert('入力したJARA選手コードと紐づくデータが存在しません。\nこのJARA選手コードで登録しますか？');
             })
             .catch((error) => {

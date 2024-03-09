@@ -304,6 +304,7 @@ class T_players extends Model
     //で指定する
     public function insertPlayer($playerInfo)
     {
+        Log::debug('insertPlayer start.');
         DB::insert(
             'insert into t_players
                     (
@@ -313,13 +314,11 @@ class T_players extends Model
                         `date_of_birth`,
                         `sex_id`,
                         `height`,
-                        `weight`,		
-                        `side_info`,
+                        `weight`,
                         `birth_country`,
                         `birth_prefecture`,
                         `residence_country`,
                         `residence_prefecture`,
-                        `photo`,
                         `registered_time`,
                         `registered_user_id`,
                         `updated_time`,
@@ -327,29 +326,27 @@ class T_players extends Model
                         `delete_flag`
                     )
                     values
-                    (
-                        :user_id,
-                        :jara_player_id,
-                        :player_name,
-                        :date_of_birth,
-                        :sex_id,
-                        :height,
-                        :weight,		
-                        :side_info,
-                        :birth_country,
-                        :birth_prefecture,
-                        :residence_country,
-                        :residence_prefecture,
-                        :photo,
-                        :current_datetime,
-                        :user_id,
-                        :current_datetime,
-                        :user_id,
+                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+                    ,[
+                        $playerInfo['user_id'],
+                        $playerInfo['jara_player_id'],
+                        $playerInfo['player_name'],
+                        $playerInfo['date_of_birth'],
+                        $playerInfo['sex_id'],
+                        $playerInfo['height'],
+                        $playerInfo['weight'],
+                        $playerInfo['birth_country'],
+                        $playerInfo['birth_prefecture'],
+                        $playerInfo['residence_country'],
+                        $playerInfo['residence_prefecture'],
+                        $playerInfo['current_datetime'],
+                        $playerInfo['update_user_id'],
+                        $playerInfo['current_datetime'],
+                        $playerInfo['update_user_id'],
                         0
-                    )',
-            $playerInfo
-        );
+                    ]);
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
+        Log::debug('insertPlayer end.');
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 

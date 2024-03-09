@@ -810,9 +810,13 @@ export default function TournamentResultInfomationBulkRegister() {
   //読み込むボタン押下時 20240302
   const sendCsvData = async (row: any[]) => {
     try {
+      const sendTournData = {
+        tournData: formData,
+        csvDataList: row
+      }
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
-      const response = await axios.post('/sendTournamentResultCsvData', row);
+      const response = await axios.post('/sendTournamentResultCsvData', sendTournData);
       console.log(response.data.result);
       setCsvData(response.data.result);
       setActivationFlg(false);
@@ -823,9 +827,13 @@ export default function TournamentResultInfomationBulkRegister() {
 
   //連携ボタン押下時 20240302
   const registerCsvData = async () => {
+    const sendTournData = {
+      tournData: formData,
+      csvDataList: csvData
+    }
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
-    await axios.post('/registerTournamentResultCsvData', csvData)
+    await axios.post('/registerTournamentResultCsvData', sendTournData)
       .then((res) => {
         console.log(res.data.result);
         // router.push('/tournamentSearch'); // 20240222
