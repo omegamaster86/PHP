@@ -776,7 +776,7 @@ class OrganizationController extends Controller
         $currentDatetime = now()->format('Y-m-d H:i:s.u');
         $replace_string = "";
         //スタッフごとの処理
-        foreach ($organizationInfo['tableData'] as $rowData) {
+        foreach ($organizationInfo['staffList'] as $rowData) {
             if (isset($rowData['user_id']) && isset($rowData['user_name'])) {
                 for ($staff_array_index = 0; $staff_array_index < count($rowData['staff_type_id']); $staff_array_index++) {
                     //置き換える文字列を生成
