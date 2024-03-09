@@ -23,7 +23,7 @@ import {
   OriginalCheckbox,
 } from '@/app/components/';
 import Link from 'next/link';
-import { EventResponse, SexResponse, Player } from '@/app/types';
+import { EventResponse, SexResponse, Player, UserIdType } from '@/app/types';
 import Divider from '@mui/material/Divider';
 
 // モデルのインポート
@@ -142,8 +142,10 @@ export default function PlayerSearch() {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       // const response = await axios.get<Player[]>('/playerSearch/');
+      console.log(searchCond);
       const response = await axios.post('/playerSearch', searchCond);
       const data = response.data.result;
+      console.log(data);
       if (data.length > 100) {
         window.alert('検索結果が100件を超えました、上位100件を表示しています。');
       }
@@ -167,6 +169,8 @@ export default function PlayerSearch() {
   const [event, setEvent] = useState<EventResponse[]>([]);
   const [errorMessage, setErrorMessage] = useState([] as string[]);
 
+  const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
+
   // データ取得
   useEffect(() => {
     const fetchData = async () => {
@@ -184,6 +188,9 @@ export default function PlayerSearch() {
         const eventResponse = await axios.get('/getEvents');
         const eventResponseList = eventResponse.data.map(({ event_id, event_name }: { event_id: number; event_name: string }) => ({ id: event_id, name: event_name }));
         setEvent(eventResponseList);
+
+        const playerInf = await axios.get('/getIDsAssociatedWithUser');
+        setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
       }
@@ -386,20 +393,23 @@ export default function PlayerSearch() {
                 <Label label={'団体'} isBold />
                 <div className='flex flex-row justify-start gap-[12px]'>
                   {/* エントリーシステムの団体ID */}
-                  {/* 仮実装。ユーザー種別による表示制御 */}
-                  {userType === 1 && (
-                    <div className='flex flex-col justify-start'>
-                      <CustomTextField
-                        label='エントリーシステムの団体ID'
-                        type='number'
-                        displayHelp
-                        value={searchCond.entrysystem_org_id}
-                        onChange={(e) => handleInputChange('entrysystem_org_id', e.target.value)}
-                        toolTipTitle='Title' //はてなボタン用
-                        toolTipText='サンプル用のツールチップ表示' //はてなボタン用
-                      />
-                    </div>
-                  )}
+                  {/* ユーザー種別による表示制御 */}
+                  {(userIdType.is_administrator == 1 ||
+                    userIdType.is_jara == 1 ||
+                    userIdType.is_pref_boat_officer == 1 ||
+                    userIdType.is_organization_manager == 1) && (
+                      <div className='flex flex-col justify-start'>
+                        <CustomTextField
+                          label='エントリーシステムの団体ID'
+                          type='number'
+                          displayHelp
+                          value={searchCond.entrysystem_org_id}
+                          onChange={(e) => handleInputChange('entrysystem_org_id', e.target.value)}
+                          toolTipTitle='Title' //はてなボタン用
+                          toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+                        />
+                      </div>
+                    )}
                   {/* 団体ID */}
                   <div className='flex flex-col justify-start'>
                     <CustomTextField

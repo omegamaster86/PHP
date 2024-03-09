@@ -105,6 +105,8 @@ export default function AddPlayerSearch() {
   const JAPAN_COUNTRY_ID = 0;
   const router = useRouter();
 
+  const orgId = useSearchParams().get('org_id')?.toString() || '';
+
   /**
    * 検索ボタン押下時の処理
    * @description
@@ -214,7 +216,9 @@ export default function AddPlayerSearch() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         // const teamResponse = await axios.get('http://localhost:3100/team');
-        // setTeamData(teamResponse.data);
+        const sendId = { org_id: orgId }
+        const teamResponse = await axios.post('/getOrgData', sendId);
+        setTeamData(teamResponse.data.result);
         // 性別
         // const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
         const sexResponse = await axios.get('/getSexList');

@@ -70,7 +70,7 @@ const Header: FC = () => {
     handleIndex();
   }, [page]);
 
-  //選手IDに紐づいた情報の取得 20240221
+  //ユーザIDに紐づいた情報の取得 20240221
   useEffect(() => {
     const fetchData = async () => {
       try {

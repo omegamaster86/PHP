@@ -184,7 +184,7 @@ export default function TeamPlayer() {
                 className='w-[120px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
                 buttonType='secondary'
                 onClick={() => {
-                  router.push('/addPlayerSearch');
+                  router.push('/addPlayerSearch?org_id=' + orgId);
                 }}
               >
                 追加選手の検索
