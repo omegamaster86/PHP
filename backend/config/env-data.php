@@ -3,5 +3,5 @@
 
 return  [ 
     // Put the contents of .env in config. 
-    'my-env'  => env ( 'FRONTEND_URL' ) ,
+    'frontend-url'  => env ( 'FRONTEND_URL' ) ,
  ] ;

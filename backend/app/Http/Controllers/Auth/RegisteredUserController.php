@@ -154,7 +154,7 @@ class RegisteredUserController extends Controller
         $new_mail_date = date('Y/m/d H:i', strtotime($mail_date. ' + 24 hours'));
 
         //Getting url information from env file.
-        $frontend_url  = config ( 'my-app.my-env' ) ;
+        $frontend_url  = config ( 'env-data.frontend-url' ) ;
 
         //Store user information for sending email.
 

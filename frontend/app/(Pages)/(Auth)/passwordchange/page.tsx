@@ -149,10 +149,8 @@ export default function Passwordchange() {
                   .then((response) => {
                     // 成功時の処理を実装
                     // console.log(response);
-                    // window.confirm('パスワードを変更しました。');
-                    if (window.confirm(response?.data) == true) {
-                      router.push('/tournamentSearch')
-                    }
+                    window.alert(response?.data);
+                    router.push('/tournamentSearch')
                   })
                   .catch((error) => {
                     // エラー時の処理を実装
