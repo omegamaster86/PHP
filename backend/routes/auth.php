@@ -106,7 +106,7 @@ Route::middleware('auth')->group(function () {
     Route::post('getPlayerInfoData', [PlayerController::class, 'getPlayerInfoData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('getRaceResultRecordsData', [PlayerController::class, 'getRaceResultRecordsData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('deletePlayerData', [PlayerController::class, 'deletePlayerData']); //該当データをDBから削除する 20240201
-    Route::post('playerSearch', [PlayerController::class, 'searchPlayer']); //選手検索 20240212
+    Route::post('playerSearch', [PlayerController::class, 'playerSearch']); //選手検索 20240309
     Route::post('sendCsvData', [PlayerInfoAlignmentController::class, 'sendCsvData']); //読み込みボタン押下時 20240228
     Route::post('registerCsvData', [PlayerInfoAlignmentController::class, 'registerCsvData']); //連携ボタン押下時 20240228
 

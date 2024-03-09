@@ -456,4 +456,22 @@ class T_tournaments extends Model
                                 ,[$entry_year]);
         return $tournaments;
     }
+
+    //大会の削除 20240309
+    //tourn_idをキーとして、該当所属選手のdelete_flagを1にする
+    public function updateDeleteFlag($tourn_id)
+    {
+        DB::update('update `t_tournaments`
+                    set `delete_flag` = 1
+                    ,updated_time = ?
+                    ,updated_user_id = ?
+                    where 1=1
+                    and `delete_flag` = 0
+                    and `tourn_id` = ?'
+                ,[
+                    now()->format('Y-m-d H:i:s.u')
+                    ,Auth::user()->user_id
+                    ,$tourn_id
+                ]);
+    }
 }

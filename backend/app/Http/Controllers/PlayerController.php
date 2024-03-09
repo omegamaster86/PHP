@@ -567,6 +567,18 @@ class PlayerController extends Controller
         // return view('player.search', ["page_mode" => "search", "sex_list" => $sex_list, "player_list" => $player_list, "searched_data" => (object)$searched_data]);
     }
 
+
+    //選手検索で使用する関数 200240309
+    public function playerSearch(Request $request)
+    {
+        Log::debug(sprintf("playerSearch start"));
+        $searched_data = $request->all();
+        Log::debug($searched_data);
+
+        Log::debug(sprintf("playerSearch end"));
+        return response()->json(['result' => $searched_data]); //送信データ(debug用)とDBの結果を返す
+    }
+
     //===============================================================================================
     //===============================================================================================
 

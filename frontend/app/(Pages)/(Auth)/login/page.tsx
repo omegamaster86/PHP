@@ -92,7 +92,7 @@ return (
               className='text-primary-500 '
               href='#'
               onClick={() => {
-                router.push('/passwordreset');
+                router.push('/forgotpassword');
               }}
             >
               パスワードを忘れましたか？
