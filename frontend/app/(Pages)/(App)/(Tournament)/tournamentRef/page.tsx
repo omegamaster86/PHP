@@ -88,12 +88,6 @@ export default function TournamentRef() {
   // エラーハンドリング用のステート
   const [error, setError] = useState({ isError: false, errorMessage: '' });
 
-  //追加対象のデータをまとめて送信する 20240202
-  const [sendFormData, setSendDatas] = useState({
-    tournamentFormData: tournamentFormData, //選手情報
-    tableData: tableData //選手の出漕結果情報
-  });
-
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
 
   // データ取得
@@ -382,10 +376,15 @@ export default function TournamentRef() {
                   className='w-[280px]'
                   onClick={async () => {
                     // TODO: 削除ボタン押下イベントの実装
+                    //追加対象のデータをまとめて送信する 20240202
+                    const sendFormData = {
+                      tournamentFormData: tournamentFormData, //選手情報
+                      tableData: tableData //選手の出漕結果情報
+                    };
                     const isOk = window.confirm('大会情報を削除します。よろしいですか？');
                     const csrf = () => axios.get('/sanctum/csrf-cookie');
                     await csrf();
-                    if (!isOk) {
+                    if (isOk) {
                       // TODO: 削除確認画面でOKボタンが押された場合、テーブルの当該項目に削除フラグを立てる処理の置き換え
                       axios
                         // .delete('http://localhost:3100/tournament')
