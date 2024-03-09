@@ -568,24 +568,6 @@ class UserController extends Controller
 
         include('Auth/ErrorMessages/ErrorMessages.php');
 
-        // $request->validate(
-        //     [
-        //         // Mail address validation rule
-        //         'mailaddress' => ['required', 'email'],
-        //         // Confirm mail address validation rule
-        //         'confirm_email' => ['required', 'same:mailaddress'],
-        //     ],
-        //     [
-        //         //Error message for mail address validation rule 
-        //         'mailaddress.required' => $mailAddress_required,
-        //         'mailaddress.email' => $email_validation,
-
-        //         //Error message for confirm mail address validation rule 
-        //         'confirm_email.required' => $mailAddress_required,
-        //         'confirm_email.same' => $confirm_email_for_password_reset_page,
-        //     ]
-        // );
-
         if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 0', [$request->mailaddress]))) {
             // For Generate random password
             $password = Str::random(8);
