@@ -1668,9 +1668,9 @@ class OrganizationPlayersController extends Controller
         Log::debug(sprintf("registerOrgCsvData start"));
         $inputData = $request->all();
         $reqData = $inputData["csvDataList"];
-        //Log::debug($reqData);
+        Log::debug($reqData);
         $input_org_id = $inputData["targetOrgData"]["targetOrgId"];
-        $input_org_name = $inputData["targetOrgData"]["targetOrgName"];
+        //$input_org_name = $inputData["targetOrgData"]["targetOrgName"];
         DB::beginTransaction();
         try
         {
@@ -1683,7 +1683,9 @@ class OrganizationPlayersController extends Controller
                 if($reqData[$rowIndex]['checked'] == true && $reqData[$rowIndex]['result'] == "登録可能")
                 {
                     //対象のユーザーデータを取得
-                    $target_user_data = $t_users->getUserDataFromInputCsv($reqData[$rowIndex]);
+                    $target_user_data = $t_users->getUserDataFromInputCsv($reqData[$rowIndex]['mailaddress']);
+                    Log::debug('********************target user data********************');
+                    Log::debug($target_user_data);
                     if(empty($target_user_data))
                     {
                         //ユーザーが存在しない場合、ユーザーテーブルにinsertして仮登録のメール送信
@@ -1696,7 +1698,7 @@ class OrganizationPlayersController extends Controller
                         //ユーザー生成のためのデータを配列に格納
                         $hashed_password = Hash::make($temp_password);
                         $insert_user_value = [];
-                        $insert_user_value['user_name'] = $reqData[$rowIndex]['player_name'];
+                        $insert_user_value['user_name'] = $reqData[$rowIndex]['playerName'];
                         $insert_user_value['mailaddress'] = $reqData[$rowIndex]['mailaddress'];
                         $insert_user_value['password'] = $hashed_password;
                         $insert_user_value['temp_password'] = $hashed_password;
@@ -1704,8 +1706,14 @@ class OrganizationPlayersController extends Controller
                         $insert_user_value['temp_password_flag'] = 1;
                         $insert_user_value['current_datetime'] = $current_datetime;
                         $insert_user_value['user_id'] = $register_user_id;
+                        
+                        Log::debug('********************insert user value********************');
+                        Log::debug($insert_user_value);
+                        
                         //insert実行
                         $t_users->insertTemporaryUser($insert_user_value);
+
+                        //メール送信
 
                         //For getting current time
                         $mail_date = date('Y/m/d H:i');
@@ -1728,29 +1736,32 @@ class OrganizationPlayersController extends Controller
                     //直近に挿入した選手のID
                     $insert_player_id = 0;
                     //選手情報を取得
-                    $target_player_data = $t_players->getPlayer($reqData[$rowIndex]['player_id']);
-                    
+                    $target_player_data = $t_players->getPlayer($reqData[$rowIndex]['playerId']);
+                    // Log::debug('********************target player data********************');
+                    // Log::debug($target_player_data);
                     //対象の選手が選手テーブルに存在するかをチェック
                     if (empty($target_player_data))
                     {
                         //選手未登録の場合、選手テーブルにinsertして通知メールを送信
-                        $insert_player_data = [];
+                        $insert_player_data = array();
                         $insert_player_data['user_id'] = $reqData[$rowIndex]['userId'];
-                        $insert_player_data['jara_player_id'] = $reqData[$rowIndex]['jaraPlayerId'];
-                        $insert_player_data['player_name'] = $reqData[$rowIndex]['playerName'];
-                        $insert_player_data['date_of_birth'] = $target_user_data['date_of_birth'];
-                        $insert_player_data['sex_id'] = $target_user_data['sex'];
-                        $insert_player_data['height'] = $target_user_data['height'];
-                        $insert_player_data['weight'] = $target_user_data['weight'];
-                        //$insert_player_data['side_info'] = $rowData['side_info'];
-                        $insert_player_data['birth_country'] = $reqData[$rowIndex]['birthCountryId'];
-                        $insert_player_data['birth_prefecture'] = $reqData[$rowIndex]['birthPrefectureId'];
-                        $insert_player_data['residence_country'] = $reqData[$rowIndex]['residenceCountryId'];
-                        $insert_player_data['residence_prefecture'] = $reqData[$rowIndex]['residencePrefectureId'];
+                        $insert_player_data['jara_player_id'] = isset($reqData[$rowIndex]['jaraPlayerId']) ? $reqData[$rowIndex]['jaraPlayerId'] : null;
+                        $insert_player_data['player_name'] = isset($reqData[$rowIndex]['playerName']) ? $reqData[$rowIndex]['playerName'] : null;
+                        $insert_player_data['date_of_birth'] = $target_user_data[0]->{'date_of_birth'};
+                        $insert_player_data['sex_id'] = $target_user_data[0]->{'sex'};
+                        $insert_player_data['height'] = $target_user_data[0]->{'height'};
+                        $insert_player_data['weight'] = $target_user_data[0]->{'weight'};
+                        $insert_player_data['birth_country'] = isset($reqData[$rowIndex]['birthCountryId']) ? $reqData[$rowIndex]['birthCountryId'] : null;
+                        $insert_player_data['birth_prefecture'] = isset($reqData[$rowIndex]['birthPrefectureId']) ? $reqData[$rowIndex]['birthPrefectureId'] : null;
+                        $insert_player_data['residence_country'] = isset($reqData[$rowIndex]['residenceCountryId']) ? $reqData[$rowIndex]['residenceCountryId'] : null;
+                        $insert_player_data['residence_prefecture'] = isset($reqData[$rowIndex]['residencePrefectureId']) ? $reqData[$rowIndex]['residencePrefectureId'] : null;
                         
                         $insert_player_data['current_datetime'] = $current_datetime;
-                        $insert_player_data['user_id'] = $register_user_id;
+                        $insert_player_data['update_user_id'] = $register_user_id;
                         
+                        Log::debug('********************insert player data********************');
+                        Log::debug($insert_player_data);
+
                         //insertを実行して、insertしたレコードのIDを取得
                         $insert_player_id = $t_players->insertPlayer($insert_player_data);
                     }
@@ -1758,27 +1769,18 @@ class OrganizationPlayersController extends Controller
                     $insert_organization_player_data = [];
                     $insert_organization_player_data['org_id'] = $input_org_id;
                     //選手IDは入力値になければ直近にinsertした選手IDを代入
-                    if (isset($reqData[$rowIndex]['playerId']))
-                    {
-                        $insert_organization_player_data['player_id'] = $reqData[$rowIndex]['playerId'];
-                    }
-                    else
-                    {
-                        $insert_organization_player_data['player_id'] = $insert_player_id;
-                    }
-                    // $insert_organization_player_data['joining_date'] = $reqData[$rowIndex]['joining_date'];
-                    // $insert_organization_player_data['deperture_date'] = $reqData[$rowIndex]['deperture_date'];
-                    $insert_organization_player_data['current_datetime'] = $current_datetime;
-                    $insert_organization_player_data['user_id'] = $register_user_id;
+                    $insert_organization_player_data['player_id'] = isset($reqData[$rowIndex]['playerId']) ? $reqData[$rowIndex]['playerId'] : $insert_player_id;
+                    // Log::debug('********************insert organization player data********************');
+                    // Log::debug($insert_organization_player_data);
                     //insertを実行して、insertしたレコードのIDを取得
                     $insert_organization_player_id = $t_organization_players->insertOrganizationPlayer($insert_organization_player_data);
                     
                     //ユーザー種別の更新処理
-                    $is_player = $target_user_data['is_player'];
+                    $is_player = $target_user_data[0]->{'is_player'};
                     if($is_player == 0)
                     {
                         $user_info = array();
-                        $user_info['user_info'] = $target_user_data['user_id'];
+                        $user_info['user_id'] = $target_user_data[0]->{'user_id'};
                         $user_info['input'] = '100';
                         $t_users->updateUserTypeRegist($user_info);
                     }
@@ -1793,7 +1795,8 @@ class OrganizationPlayersController extends Controller
         catch(\Throwable $e)
         {
             DB::rollBack();
-            Log::error($e->getMessage());
+            Log::error($e->getMessage().'-'.$e->getLine());
+            //Log::error($e->getMessage());
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }

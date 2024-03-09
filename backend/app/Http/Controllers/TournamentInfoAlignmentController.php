@@ -955,87 +955,98 @@ class TournamentInfoAlignmentController extends Controller
                                                 T_raceResultRecord $t_raceResultRecord)
     {
         Log::debug(sprintf("sendTournamentEntryCsvData start"));
-        $reqData = $request->all();
-        //Log::debug($reqData);
-        for($rowIndex = 1;$rowIndex < count($reqData);$rowIndex++)
+        $inputData = $request->all();
+        $input_event_year = $inputData['tournData']['eventYear'];
+        $input_tourn_id = $inputData['tournData']['tournId'];
+        $input_tourn_name = $inputData['tournData']['tournName'];
+        for($rowIndex = 1;$rowIndex < count($inputData['csvDataList']);$rowIndex++)
         {
-            //選択されている大会の大会IDと一致していること
-            //選択している大会がわからないため保留
-
             //レーステーブルからレース情報が1件見つかること
             $search_values = array();
-            $search_values['tourn_id'] = $reqData[$rowIndex]['tournId'];
-            $search_values['event_id'] = $reqData[$rowIndex]['eventId'];
-            $search_values['race_class_id'] = $reqData[$rowIndex]['raceTypeId'];
-            $search_values['by_group'] = $reqData[$rowIndex]['byGroup'];
-            $search_values['race_number'] = $reqData[$rowIndex]['raceNumber'];
-            $replace_condition_string = $this->generateRaceSearchCondition($reqData[$rowIndex],$search_values);
+            $search_values['tourn_id'] = $inputData['csvDataList'][$rowIndex]['tournId'];
+            $search_values['event_id'] = $inputData['csvDataList'][$rowIndex]['eventId'];
+            $search_values['race_class_id'] = $inputData['csvDataList'][$rowIndex]['raceTypeId'];
+            $search_values['by_group'] = $inputData['csvDataList'][$rowIndex]['byGroup'];
+            $search_values['race_number'] = $inputData['csvDataList'][$rowIndex]['raceNumber'];
+            //選択されている大会の大会IDと一致していること
+            // Log::debug("input_tourn_id = ".$input_tourn_id);
+            // Log::debug("csv tourn_id = ".$inputData['csvDataList'][$rowIndex]['tournId']);
+            if($input_tourn_id != $inputData['csvDataList'][$rowIndex]['tournId'])
+            {
+                //Log::debug("！！！！！選択されている大会の大会IDと不一致！！！！！");
+                $inputData['csvDataList'][$rowIndex]['checked'] = false;
+                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
+                $inputData['csvDataList'][$rowIndex]['tournIdError'] = true;
+                continue;
+            }
+            $replace_condition_string = $this->generateRaceSearchCondition($inputData['csvDataList'][$rowIndex],$search_values);
             $race_count_array = $t_races->getRaceCount($replace_condition_string,$search_values);
             $race_count = $race_count_array[0]->{"count"};
             //Log::debug("race_count = ".$race_count);
+            //「レーステーブル」から条件が全て一致するレース情報を検索し、1件のみ見つかること
             if($race_count != 1)
             {
-                $reqData[$rowIndex]['checked'] = false;
-                $reqData[$rowIndex]['loadingResult'] = "不一致情報あり";
-                $reqData[$rowIndex]['tournIdError'] = true;
-                $reqData[$rowIndex]['eventIdError'] = true;
-                $reqData[$rowIndex]['raceTypeIdError'] = true;
-                $reqData[$rowIndex]['byGroupError'] = true;
-                $reqData[$rowIndex]['raceNumberError'] = true;
+                $inputData['csvDataList'][$rowIndex]['checked'] = false;
+                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
+                $inputData['csvDataList'][$rowIndex]['tournIdError'] = true;
+                $inputData['csvDataList'][$rowIndex]['eventIdError'] = true;
+                $inputData['csvDataList'][$rowIndex]['raceTypeIdError'] = true;
+                $inputData['csvDataList'][$rowIndex]['byGroupError'] = true;
+                $inputData['csvDataList'][$rowIndex]['raceNumberError'] = true;
                 continue;
             }
             //団体名
-            $org_id = $reqData[$rowIndex]['orgId'];
-            $org_name = $reqData[$rowIndex]['orgName'];
+            $org_id = $inputData['csvDataList'][$rowIndex]['orgId'];
+            $org_name = $inputData['csvDataList'][$rowIndex]['orgName'];
             $org_count_array = $t_organizations->getOrganizationCountFromCsvData($org_id,$org_name);
             $org_count = $org_count_array[0]->{"count"};
             //Log::debug("org_count = ".$org_count);
             if($org_count != 1)
             {
-                $reqData[$rowIndex]['checked'] = false;
-                $reqData[$rowIndex]['loadingResult'] = "不一致情報あり";
-                $reqData[$rowIndex]['orgIdError'] = true;
-                $reqData[$rowIndex]['orgNameError'] = true;
+                $inputData['csvDataList'][$rowIndex]['checked'] = false;
+                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
+                $inputData['csvDataList'][$rowIndex]['orgIdError'] = true;
+                $inputData['csvDataList'][$rowIndex]['orgNameError'] = true;
                 continue;
             }
             //シート番号
-            $seat_number = $reqData[$rowIndex]['mSheetNumber'];
-            $seat_name = $reqData[$rowIndex]['sheetName'];
+            $seat_number = $inputData['csvDataList'][$rowIndex]['mSheetNumber'];
+            $seat_name = $inputData['csvDataList'][$rowIndex]['sheetName'];
             $seat_count_array = $m_seat_number->getSeatNumberCountFromCsvData($seat_number,$seat_name);
             $seat_count = $seat_count_array[0]->{"count"};
             //Log::debug("seat_count = ".$seat_count);
             if($seat_count != 1)
             {
-                $reqData[$rowIndex]['checked'] = false;
-                $reqData[$rowIndex]['loadingResult'] = "不一致情報あり";
-                $reqData[$rowIndex]['mSheetNumberError'] = true;
-                $reqData[$rowIndex]['sheetNameError'] = true;
+                $inputData['csvDataList'][$rowIndex]['checked'] = false;
+                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
+                $inputData['csvDataList'][$rowIndex]['mSheetNumberError'] = true;
+                $inputData['csvDataList'][$rowIndex]['sheetNameError'] = true;
                 continue;
             }
             //選手名
-            $player_id = $reqData[$rowIndex]['userId'];
-            $player_name = $reqData[$rowIndex]['playerName'];
+            $player_id = $inputData['csvDataList'][$rowIndex]['userId'];
+            $player_name = $inputData['csvDataList'][$rowIndex]['playerName'];
             $player_count_array = $t_players->getPlayerCountFromCsvData($player_id,$player_name);
             $player_count = $player_count_array[0]->{"count"};
             //Log::debug("player_count = ".$player_count);
             if($player_count != 1)
             {
-                $reqData[$rowIndex]['checked'] = false;
-                $reqData[$rowIndex]['loadingResult'] = "不一致情報あり";
-                $reqData[$rowIndex]['userIdError'] = true;
-                $reqData[$rowIndex]['playerNameError'] = true;
+                $inputData['csvDataList'][$rowIndex]['checked'] = false;
+                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
+                $inputData['csvDataList'][$rowIndex]['userIdError'] = true;
+                $inputData['csvDataList'][$rowIndex]['playerNameError'] = true;
             }
             //出漕結果記録テーブルを検索して判定する
             $condition_values = array();
-            $condition_values['tourn_id'] = $reqData[$rowIndex]['tournId']; //大会ID
-            $condition_values['race_id'] = $reqData[$rowIndex]['raceId'];   //レースID
-            $condition_values['org_id'] = $reqData[$rowIndex]['orgId'];     //団体ID
-            $condition_values['player_id'] = $reqData[$rowIndex]['userId']; //選手ID
+            $condition_values['tourn_id'] = $inputData['csvDataList'][$rowIndex]['tournId']; //大会ID
+            $condition_values['race_id'] = $inputData['csvDataList'][$rowIndex]['raceId'];   //レースID
+            $condition_values['org_id'] = $inputData['csvDataList'][$rowIndex]['orgId'];     //団体ID
+            $condition_values['player_id'] = $inputData['csvDataList'][$rowIndex]['userId']; //選手ID
             $race_result_record_array = $t_raceResultRecord->getRaceResultRecordsWithSearchCondition($condition_values);
             if(count($race_result_record_array) == 0)
             {
                 //一致するデータがなかった場合
-                $reqData[$rowIndex]['loadingResult'] = "新規登録";
+                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "新規登録";
             }
             else
             {   
@@ -1051,17 +1062,19 @@ class TournamentInfoAlignmentController extends Controller
                     && isset($final_time))
                 {
                     //レース結果情報が登録されているデータの場合
-                    $reqData[$rowIndex]['loadingResult'] = "記録情報あり";
+                    $inputData['csvDataList'][$rowIndex]['loadingResult'] = "記録情報あり";
                 }
                 else
                 {
                     //レース結果情報が登録されていないデータの場合
-                    $reqData[$rowIndex]['loadingResult'] = "エントリー情報変更";
+                    $inputData['csvDataList'][$rowIndex]['loadingResult'] = "エントリー情報変更";
                 }
             }
         }
         Log::debug(sprintf("sendTournamentEntryCsvData end"));
-        return response()->json(['result' => $reqData]); //DBの結果を返す
+        //$inputData['csvDataList'] = $inputData['csvDataList'];
+        Log::debug($inputData);
+        return response()->json(['result' => $inputData]); //DBの結果を返す
     }
 
     //大会エントリー一括登録 登録ボタン押下 20240301
@@ -1074,8 +1087,9 @@ class TournamentInfoAlignmentController extends Controller
                                                     M_events $m_events)
     {
         Log::debug(sprintf("registerTournamentEntryCsvData start"));
-        $reqData = $request->all();
-        //Log::debug($reqData);
+        $inputData = $request->all();
+        //$inputData['csvDataList'] = $request->all();
+        //Log::debug($inputData['csvDataList']);
 
         $current_datetime = now()->format('Y-m-d H:i:s.u');
         $user_id = Auth::user()->user_id;        
@@ -1084,32 +1098,32 @@ class TournamentInfoAlignmentController extends Controller
         DB::beginTransaction();
         try
         {
-            for($rowIndex = 0;$rowIndex < count($reqData); $rowIndex++)
+            for($rowIndex = 0;$rowIndex < count($inputData['csvDataList']); $rowIndex++)
             {
-                if($reqData[$rowIndex]["checked"] == true)
+                if($inputData['csvDataList'][$rowIndex]["checked"] == true)
                 {
-                    $player_id = $reqData[$rowIndex]["userId"];               //選手ID
+                    $player_id = $inputData['csvDataList'][$rowIndex]["userId"];               //選手ID
                     $target_player = $t_players->getPlayer($player_id);         //対象の選手データを取得
                     $player_name = $target_player[0]->{"player_name"};               //選手名
                     $jara_player_id = $target_player[0]->{"jara_player_id"};         //JARA選手ID
-                    $tourn_id = $reqData[$rowIndex]["tournId"];               //大会ID
+                    $tourn_id = $inputData['csvDataList'][$rowIndex]["tournId"];               //大会ID
                     $target_tournament = $t_tournaments->getTournament($tourn_id);  //対象の大会データを取得
                     $entrysystem_tourn_id = $target_tournament->entrysystem_tourn_id; //エントリー大会ID                    
                     $tourn_name = $target_tournament->tourn_name;             //大会名
-                    $race_id = $reqData[$rowIndex]["raceId"];                 //レースID                    
+                    $race_id = $inputData['csvDataList'][$rowIndex]["raceId"];                 //レースID                    
                     $target_race = $t_races->getRaceFromRaceId($race_id);       //対象のレースデータを取得
                     $entrysystem_race_id = $target_race[0]->entrysystem_race_id; //エントリーレースID                    
-                    $race_number = $reqData[$rowIndex]["raceNumber"];         //レースNo.
+                    $race_number = $inputData['csvDataList'][$rowIndex]["raceNumber"];         //レースNo.
                     $race_name = $target_race[0]->race_name;                  //レース名
-                    $race_class_id = $reqData[$rowIndex]["raceTypeId"];       //レース区分ID
+                    $race_class_id = $inputData['csvDataList'][$rowIndex]["raceTypeId"];       //レース区分ID
                     $race_class_name = $target_race[0]->race_class_name;         //レース区分名
-                    $org_id = $reqData[$rowIndex]["orgId"];                   //団体ID
+                    $org_id = $inputData['csvDataList'][$rowIndex]["orgId"];                   //団体ID
                     $target_organization = $t_organizations->getOrganization($org_id);  //対象の団体データを取得
                     $entrysystem_org_id = $target_organization->entrysystem_org_id;   //エントリー団体ID
                     $org_name = $target_organization->org_name;               //団体名
-                    $crew_name = $reqData[$rowIndex]["crewName"];             //クルー名
-                    $by_group = $reqData[$rowIndex]["byGroup"];               //組別
-                    $event_id = $reqData[$rowIndex]["eventId"];               //種目ID
+                    $crew_name = $inputData['csvDataList'][$rowIndex]["crewName"];             //クルー名
+                    $by_group = $inputData['csvDataList'][$rowIndex]["byGroup"];               //組別
+                    $event_id = $inputData['csvDataList'][$rowIndex]["eventId"];               //種目ID
                     $event = $m_events->getEventForEventID($event_id);        //種目マスタから対象の種目情報を取得
                     $event_name = $event[0]->event_name;                      //種目名
                     $range = $target_race[0]->range;                          //距離
@@ -1133,11 +1147,6 @@ class TournamentInfoAlignmentController extends Controller
                         $laptime_1500m = $race_result_record_array[0]->{"laptime_1500m"};
                         $laptime_2000m = $race_result_record_array[0]->{"laptime_2000m"};
                         $final_time = $race_result_record_array[0]->{"final_time"};
-                        // Log::debug("laptime_500m = ".$laptime_500m);
-                        // Log::debug("laptime_1000m = ".$laptime_1000m);
-                        // Log::debug("laptime_1500m = ".$laptime_1500m);
-                        // Log::debug("laptime_2000m = ".$laptime_2000m);
-                        // Log::debug("final_time = ".$final_time);
                         if(isset($laptime_500m)
                             && isset($laptime_1000m)
                             && isset($laptime_1500m)
@@ -1145,7 +1154,7 @@ class TournamentInfoAlignmentController extends Controller
                             && isset($final_time))
                         {
                             //登録されている場合
-                            $reqData[$rowIndex]['loadingResult'] = "登録エラー（記録情報あり）";
+                            $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録エラー（記録情報あり）";
                             throw new Exception("他のユーザーによりレース結果が登録されたレースが有ります。\r\n当該レースのエントリー情報は更新することは出来ません。");
                         }
                         else
@@ -1219,7 +1228,7 @@ class TournamentInfoAlignmentController extends Controller
             }
             DB::commit();
             Log::debug(sprintf("registerTournamentEntryCsvData end"));
-            return response()->json(['result' => $reqData]); //DBの結果を返す
+            return response()->json(['result' => $inputData['csvDataList']]); //DBの結果を返す
         }
         catch(\Throwable $e)
         {
@@ -1235,6 +1244,20 @@ class TournamentInfoAlignmentController extends Controller
         Log::debug(sprintf("sendTournamentResultCsvData start"));
         $reqData = $request->all();
         Log::debug($reqData);
+
+        //フロントエンドで入力された大会ID
+        $input_tourn_id = $reqData['tournData']['tournId'];
+        //対象の大会情報
+        $target_tournament = $t_tournaments->getTournamentInfoFromTournId($input_tourn_id);
+        //対象の大会が公式かどうか
+        $is_target_tournament_official = $target_tournament['official'];
+        //対象の大会に登録されているレース情報
+        $target_races = $t_races->getRace($input_tourn_id);
+        //団体情報
+        $organizations = $t_organizations->getOrganizations();
+        //選手情報
+        $players = $t_players->getPlayers();
+
         Log::debug(sprintf("sendTournamentResultCsvData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
     }

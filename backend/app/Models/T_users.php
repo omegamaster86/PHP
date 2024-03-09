@@ -368,22 +368,26 @@ class T_users extends Authenticatable
     }
 
     //読み込んだcsvの情報を条件としてユーザー情報を取得
-    public function getUserDataFromInputCsv($user_data)
+    public function getUserDataFromInputCsv($mailaddress)
     {
         $user = DB::select('select
                             `user_id`
+                            ,`sex`
+                            ,`date_of_birth`
+                            ,`height`
+                            ,`weight`
                             ,`user_type`
                             ,case
                                 when SUBSTR(`user_type`, 6, 1) > 0 then 1
                                 else 0
                                 end as `is_player`
-                            ,expiry_time_of_temp_password
+                            ,`expiry_time_of_temp_password`
                             ,`temp_password_flag`
                             FROM `t_users`
                             where 1=1
                             and `delete_flag` = 0
                             and `mailaddress` = :mailaddress'
-                            ,$user_data);
+                            ,['mailaddress' => $mailaddress]);
         return $user;
     }
 
