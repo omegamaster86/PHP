@@ -857,4 +857,32 @@ class TournamentController extends Controller
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }
+
+    //DBから大会情報を削除する 20240309
+    public function deleteTournamentData(Request $request, T_tournaments $tTournament)
+    {
+        try {
+            Log::debug(sprintf("deleteTournamentData start"));
+            $reqData = $request->all();
+            Log::debug($reqData);
+            Log::debug($reqData['tournamentFormData']['tourn_id']);
+            DB::transaction();
+
+            if (isset($reqData['tourn_id'])) {
+                $tTournament->updateDeleteFlag($reqData['tournamentFormData']['tourn_id']);
+                DB::commit();
+            } else {
+                DB::commit();
+                //結果が存在しないとき
+                Log::debug(sprintf("deleteTournamentData end"));
+                return response()->json(['errMessage' => "エラーメッセージ"]); //エラーメッセージを返す
+            }
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::debug($e);
+            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+        }
+        Log::debug(sprintf("deleteTournamentData end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
+    }
 }
