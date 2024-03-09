@@ -850,7 +850,7 @@ class VolunteerInfoAlignmentController extends Controller
                     $volunteer_data['mailaddress'] = $reqData[$rowIndex]['mailaddress']['value'];
                     //users_email_flagを判定する
                     $target_id = $reqData[$rowIndex]['user_id']['value'];
-                    $user_list = $t_users->getUserDataFromUserId([$target_id]);
+                    $user_list = $t_users->getUserDataFromUserId($target_id);
                     $mailaddress = $reqData[$rowIndex]['mailaddress']['value'];
                     $user_mailaddress = $user_list['mailaddress'];
                     if($mailaddress == $user_mailaddress)

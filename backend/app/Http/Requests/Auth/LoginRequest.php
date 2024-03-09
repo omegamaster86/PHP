@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -32,18 +33,18 @@ class LoginRequest extends FormRequest
     {
         return [
             'email' => ['required', 'string','email'],
-            'password' => ['required', 'string'],
+            // 'password' => ['required', 'string'],
         ];
     }
-    public function messages()
-    {
-        include(app_path() . '/Http/Controllers/Auth/ErrorMessages/ErrorMessages.php');
-        return [
-            'email.required' => $mailAddress_required,
-            'email.email'=> $email_validation,
-            'password.required' => $password_required 
-        ];
-    }
+    // public function messages()
+    // {
+    //     include(app_path() . '/Http/Controllers/Auth/ErrorMessages/ErrorMessages.php');
+    //     return [
+    //         'email.required' => $mailAddress_required,
+    //         'email.email'=> $email_validation,
+    //         // 'password.required' => $password_required 
+    //     ];
+    // }
 
     /**
      * Attempt to authenticate the request's credentials.
@@ -52,9 +53,8 @@ class LoginRequest extends FormRequest
      */
     public function authenticate(): void
     {
-        // test
         $input = $this->request->all();
-        // test
+
         include(app_path() . '/Http/Controllers/Auth/ErrorMessages/ErrorMessages.php');
         $this->ensureIsNotRateLimited();
         if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 1 ',[$input['email']]))) {
@@ -68,23 +68,30 @@ class LoginRequest extends FormRequest
                 'system_error' => $temp_password_timed_out
             ]); 
         }
-        
+
         if (! Auth::attempt(['mailaddress' => $input['email'], 'password' => $input['password']])) {
             RateLimiter::hit($this->throttleKey());
             
-            if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? ',[$input['email']]))) {
-                throw ValidationException::withMessages([
-                    'system_error' => $password_compare
-                ]);
-            }
+            throw ValidationException::withMessages([
+                'system_error' => $password_compare
+            ]);
+
+            // if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? ',[$input['email']]))) {
+            //     throw ValidationException::withMessages([
+            //         'system_error' => $password_compare
+            //     ]);
+            // }
             
-            else{
-                throw ValidationException::withMessages([
-                    'system_error' => $mailAddress_not_found,
-                ]);
+            // else{
+            //     throw ValidationException::withMessages([
+            //         'system_error' => $mailAddress_not_found,
+            //     ]);
                 
-            }
+            // }
         }
+
+
+
 
         $find_user_id = DB::select('SELECT user_id FROM t_users where mailaddress = ?',[$input['email']]);
         
