@@ -421,7 +421,7 @@ export default function OrgInfo() {
               .then((response) => {
                 console.log(response);
                 setDisableFlag(false);
-                router.push('/team?mode=confirm&prevMode=create');
+                router.push('/team?mode=confirm&prevMode=update');
               })
               .catch((error) => {
                 console.log(error);

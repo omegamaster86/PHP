@@ -484,4 +484,19 @@ class T_tournaments extends Model
                             ,['tourn_id' => $tourn_id, 'user_id' => $user_id, 'user_type' => $user_type]);        
         return $result;
     }
+
+    //大会を削除する
+    //delete_flagを1にする
+    public function  updateDeleteFlag($hoge,$fuga,$tourn_id)
+    {
+        DB::update('update `t_tournaments`
+                    set `delete_flag` = 1
+                    ,updated_time = ?
+                    ,updated_user_id = ?
+                    where 1=1
+                    and `delete_flag` = 0
+                    and `tourn_id` = ?'
+                    ,[$hoge,$fuga,$tourn_id]
+                );
+    }
 }

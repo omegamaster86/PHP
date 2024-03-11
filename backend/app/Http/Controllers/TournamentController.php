@@ -864,12 +864,13 @@ class TournamentController extends Controller
         try {
             Log::debug(sprintf("deleteTournamentData start"));
             $reqData = $request->all();
-            Log::debug($reqData);
+            // Log::debug($reqData);
             Log::debug($reqData['tournamentFormData']['tourn_id']);
             DB::transaction();
 
-            if (isset($reqData['tourn_id'])) {
-                $tTournament->updateDeleteFlag($reqData['tournamentFormData']['tourn_id']);
+            if (true) { //実装中 20240311
+                // $tTournament->updateDeleteFlag($reqData['tournamentFormData']['tourn_id']);
+                //$tTournament->updateDeleteFlag(now()->format('Y-m-d H:i:s.u'),Auth::user()->user_id,1);
                 DB::commit();
             } else {
                 DB::commit();
