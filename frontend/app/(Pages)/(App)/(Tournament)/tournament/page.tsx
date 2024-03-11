@@ -630,9 +630,10 @@ export default function Tournament() {
           const isError = performValidation();
           if (!isError) {
             setTableData((prevData) => {
-              return prevData.filter((row) => {
-                return !row.checked;
-              });
+              // return prevData.filter((row) => {
+              //   return !row.checked;
+              // });
+              return prevData; //全てのデータをバックエンド側に送る 20240311
             });
             router.push('/tournament?mode=confirm&prevMode=' + mode);
           }
@@ -1113,7 +1114,7 @@ export default function Tournament() {
                     </CustomTh>
                   </>
                 ) : prevMode === 'update' ? (
-                  <CustomTh align='center' colSpan={9}>
+                  <CustomTh align='center' colSpan={10}>
                     レース登録
                   </CustomTh>
                 ) : (
@@ -1124,6 +1125,7 @@ export default function Tournament() {
               </CustomTr>
               <CustomTr>
                 {mode !== 'confirm' ? <CustomTh align='center'>削除</CustomTh> : <></>}
+                {(mode === 'confirm' && prevMode === 'update') && (<CustomTh align='center'>削除</CustomTh>)}
                 {(mode === 'update' || prevMode === 'update') && (
                   <CustomTh align='center'>レースID</CustomTh>
                 )}
@@ -1173,17 +1175,30 @@ export default function Tournament() {
                       />
                     </CustomTd>
                   )}
+                  {(mode === 'confirm' && prevMode === 'update') && (
+                    <CustomTd align='center'>
+                      <OriginalCheckbox
+                        id={'delete-' + row.id}
+                        label={''}
+                        value={'delete-' + row.id}
+                        checked={row.checked}
+                        onChange={(e) => handleInputChangeRace(row.id, 'checked', e.target.checked)}
+                        readonly
+                      />
+                    </CustomTd>
+                  )}
                   {(mode === 'update' || prevMode === 'update') && (
                     <CustomTd>
                       {mode === 'confirm' ? (
                         <p className='h-12 text-secondaryText py-3 disable'>{row.race_id}</p>
                       ) : (
-                        <TextField
-                          type={'text'}
-                          value={row.race_id}
-                          onChange={(e) => handleInputChangeRace(row.id, 'race_id', e.target.value)}
-                          className='my-[8px]'
-                        />
+                        // <TextField
+                        //   type={'text'}
+                        //   value={row.race_id}
+                        //   onChange={(e) => handleInputChangeRace(row.id, 'race_id', e.target.value)}
+                        //   className='my-[8px]'
+                        // />
+                        <p className='h-12 text-secondaryText py-3 disable'>{row.race_id}</p>
                       )}
                     </CustomTd>
                   )}
