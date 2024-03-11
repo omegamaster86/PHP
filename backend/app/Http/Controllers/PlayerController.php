@@ -569,14 +569,54 @@ class PlayerController extends Controller
 
 
     //選手検索で使用する関数 200240309
-    public function playerSearch(Request $request)
+    private function generateSearchCondition($searchInfo)
+    {
+        Log::debug(sprintf("generateSearchCondition start"));
+        $condition = "";
+        if (isset($searchInfo['jara_player_id'])) {
+            $condition .= " and `t_players`.`jara_player_id`=" . $searchInfo['jara_player_id']; //JARA選手コード
+        }
+        if (isset($searchInfo['player_id'])) {
+            $condition .= " and `t_players`.`player_id`=" . $searchInfo['player_id']; //選手ID
+        }
+        if (isset($searchInfo['player_name'])) {
+            $condition .= " and `t_players`.`player_name` like " . "\"%" . $searchInfo['player_name'] . "%\""; //選手名
+        }
+
+        Log::debug(sprintf("generateSearchCondition end"));
+        return $condition;
+    }
+
+    //選手検索で使用する関数 200240309
+    public function playerSearch(Request $request, T_players $tPlayersData)
     {
         Log::debug(sprintf("playerSearch start"));
         $searched_data = $request->all();
         Log::debug($searched_data);
 
-        Log::debug(sprintf("playerSearch end"));
-        return response()->json(['result' => $searched_data]); //送信データ(debug用)とDBの結果を返す
+        if (isset($searched_data['org_name'])) {
+            // $this->generateSearchCondition();
+            // $tPlayersData->getPlayerSearchResultWithOrgNameCondition();
+            Log::debug(sprintf("playerSearch end"));
+            return response()->json(['result' => $searched_data]); //送信データ(debug用)とDBの結果を返す
+
+        } else if (isset($searched_data['org_id'])) {
+            // $this->generateSearchCondition();
+            // $tPlayersData->getPlayerSearchResultWithOrgIdCondition();
+            Log::debug(sprintf("playerSearch end"));
+            return response()->json(['result' => $searched_data]); //送信データ(debug用)とDBの結果を返す
+
+        } else if (isset($searched_data['entrysystem_org_id'])) {
+            // $this->generateSearchCondition();
+            // $tPlayersData->getPlayerSearchResultWithEntrySystemIdCondition();
+            Log::debug(sprintf("playerSearch end"));
+            return response()->json(['result' => $searched_data]); //送信データ(debug用)とDBの結果を返す
+
+        } else {
+            // $tPlayersData->getPlayerSearchResult();
+            Log::debug(sprintf("playerSearch end"));
+            return response()->json(['result' => $searched_data]); //送信データ(debug用)とDBの結果を返す
+        }
     }
 
     //===============================================================================================

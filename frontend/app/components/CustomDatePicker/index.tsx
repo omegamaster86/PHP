@@ -40,7 +40,7 @@ const CustomDatePicker = ({
           } ${className ? className : ''}`}
           {...(selectedDate && { selected: new Date(selectedDate) })}
           onChange={onChange}
-          {...(useTime ? { dateFormat: 'yyyy/MM/dd HH:mm:ss' } : { dateFormat: 'yyyy/MM/dd' })}
+          {...(useTime ? { dateFormat: 'yyyy/MM/dd HH:mm' } : { dateFormat: 'yyyy/MM/dd' })}
           maxDate={maxDate}
           {...(useTime
             ? { placeholderText: 'yyyy/MM/dd HH:mm' }
