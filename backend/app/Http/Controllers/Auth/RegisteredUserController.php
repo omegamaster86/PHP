@@ -153,17 +153,19 @@ class RegisteredUserController extends Controller
         //For adding 24hour with current time
         $new_mail_date = date('Y/m/d H:i', strtotime($mail_date. ' + 24 hours'));
 
+        //Getting url information from env file.
+        $frontend_url  = config ( 'env-data.frontend-url' ) ;
+
         //Store user information for sending email.
+
         $mail_data = [
             'user_name' => $request->user_name,
             'to_mailaddress' => $request->mailaddress,
             'from_mailaddress' => 'xxxxx@jara.or.jp',
             'temporary_password' => $temp_password,
             'temporary_password_expiration_date'=> $new_mail_date,
-            'login_url'=> env('FRONTEND_URL').'/login'
+            'login_url'=> $frontend_url.'/login'
         ];
-
-        
         //Sending mail to the user
         
         try {
