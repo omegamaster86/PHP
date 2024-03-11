@@ -870,15 +870,19 @@ class TournamentInfoAlignmentController extends Controller
     }
 
     //対象の変数が整数かつX桁以内であることをチェックする
-    private function checkInteger($value, $digits, $nullCheck, &$renkei, &$disabled, &$checkResult)
+    private function checkInteger($value, $digits, $nullCheck, &$checkResult, &$isError)
     {
         //nullCheck=trueとしたとき、nullチェックをする
         if ($nullCheck && is_null($value)) {
-            $this->assignInvalidData($renkei, $disabled, $checkResult);
+            //$this->assignInvalidData($renkei, $disabled, $checkResult);
+            $checkResult = false;
+            $isError = true;
         }
         //整数かつX桁以内であることをチェック
         if (!is_int($value) || mb_strlen($value) > $digits) {
-            $this->assignInvalidData($renkei, $disabled, $checkResult);
+            //$this->assignInvalidData($renkei, $disabled, $checkResult);
+            $checkResult = false;
+            $isError = true;
         }
     }
 
@@ -913,24 +917,31 @@ class TournamentInfoAlignmentController extends Controller
         }
     }
 
-    //対象の変数がXバイト以内であることをチェックする
-    private function checkWithinByte($value, $byte, $nullCheck, &$renkei, &$disabled, &$checkResult)
+    //対象の変数が$byteバイト以内であることをチェックする
+    private function checkWithinByte($value, $byte, $nullCheck, &$checkResult, &$isError)
     {
         //nullチェック
         if ($nullCheck && is_null($value)) {
-            $this->$this->assignInvalidData($renkei, $disabled, $checkResult);
+            //$this->$this->assignInvalidData($renkei, $disabled, $checkResult);
+            $checkResult = false;
+            $isError = true;
         }
         //Xバイト以内であることをチェック
         if (strlen($value) > $byte) {
-            $this->$this->assignInvalidData($renkei, $disabled, $checkResult);
+            //$this->$this->assignInvalidData($renkei, $disabled, $checkResult);
+            $checkResult = false;
+            $isError = true;
         }
     }
 
     //変数がテーブルの任意の列に含まれるかをチェックする
-    private function checkTableExists($value, $table, $column_name, &$renkei, &$disabled, &$checkResult)
+    private function checkTableExists($value, $table, $column_name, &$checkResult, &$isError)
     {
-        if (!in_array($value, array_column($table, $column_name))) {
-            $this->assignInvalidData($renkei, $disabled, $checkResult);
+        if (!in_array($value, array_column($table, $column_name)))
+        {
+            //$this->assignInvalidData($renkei, $disabled, $checkResult);
+            $checkResult = false;
+            $isError = true;
         }
     }
 
@@ -973,7 +984,7 @@ class TournamentInfoAlignmentController extends Controller
             // Log::debug("csv tourn_id = ".$inputData['csvDataList'][$rowIndex]['tournId']);
             if($input_tourn_id != $inputData['csvDataList'][$rowIndex]['tournId'])
             {
-                //Log::debug("！！！！！選択されている大会の大会IDと不一致！！！！！");
+                ////Log::debug("！！！！！選択されている大会の大会IDと不一致！！！！！");
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
                 $inputData['csvDataList'][$rowIndex]['tournIdError'] = true;
@@ -1239,7 +1250,11 @@ class TournamentInfoAlignmentController extends Controller
     }
 
     //大会結果一括 読み込むボタン押下 20240301
-    public function sendTournamentResultCsvData(Request $request)
+    public function sendTournamentResultCsvData(Request $request,
+                                                T_tournaments $t_tournaments,
+                                                T_races $t_races,
+                                                T_organizations $t_organizations,
+                                                T_players $t_players)
     {
         Log::debug(sprintf("sendTournamentResultCsvData start"));
         $reqData = $request->all();
@@ -1247,9 +1262,9 @@ class TournamentInfoAlignmentController extends Controller
 
         //フロントエンドで入力された大会ID
         $input_tourn_id = $reqData['tournData']['tournId'];
-        //対象の大会情報
+        // //対象の大会情報
         $target_tournament = $t_tournaments->getTournamentInfoFromTournId($input_tourn_id);
-        //対象の大会が公式かどうか
+        // //対象の大会が公式かどうか
         $is_target_tournament_official = $target_tournament['official'];
         //対象の大会に登録されているレース情報
         $target_races = $t_races->getRace($input_tourn_id);
@@ -1257,6 +1272,56 @@ class TournamentInfoAlignmentController extends Controller
         $organizations = $t_organizations->getOrganizations();
         //選手情報
         $players = $t_players->getPlayers();
+
+        //チェック結果
+        $checkResult = true;
+        for($rowIndex = 0;$rowIndex < count($reqData['csvDataList']); $rowIndex++)
+        {
+            // 大会ID
+            //非公式
+            if ($is_target_tournament_official == 0)
+            {
+                $this->checkInteger($reqData['csvDataList'][$rowIndex]['tournId'], 5, true, $checkResult, $reqData['csvDataList'][$rowIndex]['tournIdError']);
+            }
+            //公式
+            else
+            {
+                $this->checkInteger($reqData['csvDataList'][$rowIndex]['tournId'], 5, false, $checkResult, $reqData['csvDataList'][$rowIndex]['tournIdError']);
+            }
+            // エントリー大会ID
+            //非公式
+            if ($is_target_tournament_official == 0)
+            {
+                $this->checkInteger($reqData['csvDataList'][$rowIndex]['entrysystemTournId'], 8, false, $checkResult, $reqData['csvDataList'][$rowIndex]['entrysystemTournIdError']);
+            }
+            //公式
+            else
+            {
+                $this->checkInteger($reqData['csvDataList'][$rowIndex]['entrysystemTournId'], 8, true, $checkResult, $reqData['csvDataList'][$rowIndex]['entrysystemTournIdError']);
+            }
+            //対象大会の既存大会IDが一致するかを確認
+            $this->checkTableExists($reqData['csvDataList'][$rowIndex]['entrysystemTournId'], $target_tournament, 'entrysystem_tourn_id', $checkResult, $reqData['csvDataList'][$rowIndex]['entrysystemTournIdError']);
+            // 大会名
+            //非公式
+            if ($is_target_tournament_official == 0)
+            {
+                $this->checkWithinByte($reqData['csvDataList'][$rowIndex]['tournName'], 255, false, $checkResult, $reqData['csvDataList'][$rowIndex]['tournNameError']);
+            }
+            //公式
+            else
+            {
+                $this->checkWithinByte($reqData['csvDataList'][$rowIndex]['tournName'], 255, true, $checkResult,$reqData['csvDataList'][$rowIndex]['tournNameError']);
+            }
+            // 選手ID
+            //非公式
+            if ($is_target_tournament_official == 0) {
+                $this->checkInteger($rowArray['player_id'], 7, false, $renkei, $disabled, $checkResult);
+            }
+            //公式
+            else {
+                $this->checkInteger($rowArray['player_id'], 7, true, $renkei, $disabled, $checkResult);
+            }
+        }
 
         Log::debug(sprintf("sendTournamentResultCsvData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
