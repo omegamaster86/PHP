@@ -487,8 +487,9 @@ class T_tournaments extends Model
 
     //大会を削除する
     //delete_flagを1にする
-    public function  updateDeleteFlag($hoge,$fuga,$tourn_id)
+    public function updateDeleteFlag($tourn_id)
     {
+        Log::debug($tourn_id);
         DB::update('update `t_tournaments`
                     set `delete_flag` = 1
                     ,updated_time = ?
@@ -496,7 +497,11 @@ class T_tournaments extends Model
                     where 1=1
                     and `delete_flag` = 0
                     and `tourn_id` = ?'
-                    ,[$hoge,$fuga,$tourn_id]
+                    ,[
+                        now()->format('Y-m-d H:i:s.u')
+                        ,Auth::user()->user_id
+                        ,$tourn_id
+                    ]
                 );
     }
 }
