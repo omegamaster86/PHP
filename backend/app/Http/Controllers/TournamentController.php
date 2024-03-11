@@ -588,7 +588,7 @@ class TournamentController extends Controller
         }
         $reqData = $request->all();
 
-        // Log::debug($reqData);
+        Log::debug($reqData);
         //確認画面から登録
         $tTournament::$tournamentInfo['tourn_id'] = $reqData['tournamentFormData']['tourn_id']; //大会ID
         $tTournament::$tournamentInfo['tourn_name'] = $reqData['tournamentFormData']['tourn_name']; //大会名
@@ -626,7 +626,10 @@ class TournamentController extends Controller
                 $tRace::$racesData['by_group'] = $reqData['tableData'][$i]['by_group']; //レース区分
                 $tRace::$racesData['range'] = $reqData['tableData'][$i]['range']; //距離
                 $tRace::$racesData['start_date_time'] = $reqData['tableData'][$i]['start_date_time']; //発艇日時
-                if ($reqData['tableData'][$i]['checked'] == 'true') { //削除フラグ
+
+                if (!isset($reqData['tableData'][$i]['checked'])) { //削除フラグが存在しない場合、更新データ
+                    $tRace::$racesData['delete_flag'] = 0;
+                } else if ($reqData['tableData'][$i]['checked'] == 'true') { //削除フラグがtrueの場合、削除対象
                     $tRace::$racesData['delete_flag'] = 1;
                 } else {
                     $tRace::$racesData['delete_flag'] = 0;
