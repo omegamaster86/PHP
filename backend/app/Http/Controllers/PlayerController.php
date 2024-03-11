@@ -26,6 +26,9 @@ use App\Models\T_organization_players;
 use Illuminate\Validation\ValidationException;
 
 
+use Illuminate\Support\Facades\File;
+
+
 use App\Models\M_sex;
 // use App\Models\M_countries;
 // use App\Models\M_prefectures;
@@ -738,12 +741,26 @@ class PlayerController extends Controller
         if ($request->hasFile('uploadedPhoto')) {
             $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
             $tPlayersData::$playerInfo['photo'] = $file_name; //写真
+            
+            
+            if ($reqData['previousPhotoName'] ?? "") {
+                $file_path = public_path().'/images/players/'.$reqData['previousPhotoName'];
+                if (file_exists($file_path)){
+                    unlink($file_path); //前の写真削除
+                }
+            }
         } else {
             //If  picture is not uploaded
             if ($reqData['photo'] ?? "") {
                 $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
             } else {
                 $tPlayersData::$playerInfo['photo'] = ''; //写真
+                if ($reqData['previousPhotoName'] ?? "") {
+                    $file_path = public_path().'/images/players/'.$reqData['previousPhotoName'];
+                    if (file_exists($file_path)){
+                        unlink($file_path); //前の写真削除
+                    }
+                }
             }
         }
 
