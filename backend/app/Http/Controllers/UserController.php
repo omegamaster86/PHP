@@ -507,8 +507,8 @@ class UserController extends Controller
                 DB::beginTransaction();
                 try {
                     DB::update(
-                        'update t_users set password = ? , password = ? , expiry_time_of_temp_password = ?, temp_password_flag = ?, updated_time =?, updated_user_id = ?  where user_id = ?',
-                        [Hash::make($request->newPassword), NULL, NULL, 0, now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id , Auth::user()->user_id]
+                        'update t_users set password = ?, expiry_time_of_temp_password = ?, temp_password_flag = ?, updated_time =?, updated_user_id = ?  where user_id = ?',
+                        [Hash::make($request->newPassword), NULL, 0, now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id , Auth::user()->user_id]
                     );
 
                     DB::commit();
@@ -522,16 +522,11 @@ class UserController extends Controller
                     }
                 }
 
-                $page_status = "パスワードを変更の件、完了になりました。";
-                $page_url_text = "OK";
-                return response()->json(['reqData' => $page_url_text, 'result' => $page_status]); //送信データ(debug用)とDBの結果を返す
+                return response()->json("パスワードを変更の件、完了になりました。"); //送信データ(debug用)とDBの結果を返す
 
             }
             //If the entered password does not matched with the database information
             else {
-                // throw ValidationException::withMessages([
-                //     'system_error' => $previous_password_not_matched
-                // ]);
                 return response()->json(['system_error' => $previous_password_not_matched],400);
             }
         }
@@ -573,27 +568,9 @@ class UserController extends Controller
 
         include('Auth/ErrorMessages/ErrorMessages.php');
 
-        $request->validate(
-            [
-                // Mail address validation rule
-                'mailaddress' => ['required', 'email'],
-                // Confirm mail address validation rule
-                'confirm_email' => ['required', 'same:mailaddress'],
-            ],
-            [
-                //Error message for mail address validation rule 
-                'mailaddress.required' => $mailAddress_required,
-                'mailaddress.email' => $email_validation,
-
-                //Error message for confirm mail address validation rule 
-                'confirm_email.required' => $mailAddress_required,
-                'confirm_email.same' => $confirm_email_for_password_reset_page,
-            ]
-        );
-
         if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 0', [$request->mailaddress]))) {
             // For Generate random password
-            $temp_password = Str::random(8);
+            $password = Str::random(8);
             //For getting current time
             $date = date('Y-m-d H:i:s');
             //For adding 30 minutes with current time
@@ -610,8 +587,8 @@ class UserController extends Controller
 
             DB::beginTransaction();
             try {
-                $hashed_password = Hash::make($temp_password);
-                DB::update('update t_users set password = ? , temp_password = ?, expiry_time_of_temp_password = ?, temp_password_flag = ?, updated_time = ?, updated_user_id = ? where mailaddress = ? and delete_flag = 0 ', [$hashed_password, $hashed_password,  $new_date, '1', now()->format('Y-m-d H:i:s.u'), $user_id, $request->mailaddress]);
+                $hashed_password = Hash::make($password);
+                DB::update('update t_users set password = ? ,  expiry_time_of_temp_password = ?, temp_password_flag = ?, updated_time = ?, updated_user_id = ? where mailaddress = ? and delete_flag = 0 ', [$hashed_password,  $new_date, '1', now()->format('Y-m-d H:i:s.u'), $user_id, $request->mailaddress]);
 
                 DB::commit();
             } catch (\Throwable $e) {
@@ -646,7 +623,7 @@ class UserController extends Controller
             $mail_data = [
                 'user_name' => $user_name,
                 'mailaddress' => $request->mailaddress,
-                'temporary_password' => $temp_password,
+                'temporary_password' => $password,
                 'temporary_password_expiration_date' => $mail_date
             ];
 

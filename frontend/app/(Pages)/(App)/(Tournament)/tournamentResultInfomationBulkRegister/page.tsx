@@ -818,7 +818,7 @@ export default function TournamentResultInfomationBulkRegister() {
       await csrf();
       const response = await axios.post('/sendTournamentResultCsvData', sendTournData);
       console.log(response.data.result);
-      setCsvData(response.data.result);
+      setCsvData(response.data.result.csvDataList);
       setActivationFlg(false);
     } catch (error) {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
