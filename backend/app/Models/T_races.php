@@ -57,7 +57,25 @@ class T_races extends Model
     public function insertRaces($racesInfo)
     {
         DB::insert(
-            'insert into t_races (`race_id`, `race_number`, `entrysystem_race_id`, `tourn_id`, `race_name`, `event_id`, `event_name`, `race_class_id`, `race_class_name`, `by_group`, `range`, `start_date_time`, `registered_time`, `registered_user_id`, `updated_time`,`updated_user_id`, `delete_flag`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            'insert into t_races (
+                `race_id`, 
+                `race_number`, 
+                `entrysystem_race_id`, 
+                `tourn_id`, 
+                `race_name`, 
+                `event_id`, 
+                `event_name`, 
+                `race_class_id`, 
+                `race_class_name`, 
+                `by_group`, 
+                `range`,
+                `start_date_time`, 
+                `registered_time`, 
+                `registered_user_id`, 
+                `updated_time`,
+                `updated_user_id`, 
+                `delete_flag`
+            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
             [
                 null,
                 $racesInfo['race_number'],
@@ -75,7 +93,7 @@ class T_races extends Model
                 Auth::user()->user_id,
                 now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
-                $racesInfo['delete_flag'],
+                0,
             ]
         );
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
@@ -133,13 +151,28 @@ class T_races extends Model
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 
+    //レース更新
     public function updateRaces($racesInfo)
     {
-        // $result = "success";
-        // DB::beginTransaction();
-        // try {
         DB::update(
-            'update t_races set `race_number`=?,`entrysystem_race_id`=?,`tourn_id`=?,`race_name`=?,`event_id`=?,`event_name`=?,`race_class_id`=?,`race_class_name`=?,`by_group`=?,`range`=?,`start_date_time`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where tourn_id = ?',
+            'update t_races set 
+            `race_number`=?,
+            `entrysystem_race_id`=?,
+            `tourn_id`=?,
+            `race_name`=?,
+            `event_id`=?,
+            `event_name`=?,
+            `race_class_id`=?,
+            `race_class_name`=?,
+            `by_group`=?,
+            `range`=?,
+            `start_date_time`=?,
+            `updated_time`=?,
+            `updated_user_id`=?,
+            `delete_flag`=?
+             where 1=1
+             and delete_flag = 0
+             and tourn_id = ?',
             [
                 $racesInfo['race_number'],
                 $racesInfo['entrysystem_race_id'],
@@ -154,21 +187,10 @@ class T_races extends Model
                 $racesInfo['start_date_time'],
                 now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id,
                 $racesInfo['delete_flag'],
                 $racesInfo['tourn_id']
             ]
         );
-
-            // DB::commit();
-        //     return $result;
-        // } catch (\Throwable $e) {
-        //     DB::rollBack();
-
-        //     $result = "failed";
-        //     return $result;
-        // }
     }
 
     //interfaceのRaceを引数としてupdateを実行する
