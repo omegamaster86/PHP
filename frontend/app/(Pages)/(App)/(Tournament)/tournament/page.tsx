@@ -656,10 +656,10 @@ export default function Tournament() {
       onClick={() => {
         const newId = maxId + 1;
         setMaxId((prevMaxId) => prevMaxId + 1);
-        setTableData((prevData) => [...prevData, { ...raceFormData, id: newId }]);
+        setTableData((prevData) => [...prevData, { ...raceFormData, id: prevData.length + 1 }]);
         // フォームデータをリセット
         setRaceFormData({
-          id: 0,
+          id: 1,
           checked: false,
           race_id: '',
           entrysystem_race_id: '',
