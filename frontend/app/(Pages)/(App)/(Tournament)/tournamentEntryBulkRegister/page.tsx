@@ -82,7 +82,8 @@ export default function TournamentEntryBulkRegister() {
   // TODO: ユーザーの権限を取得する処理をuseEffectに記述すること
   const [userType, setUserType] = useState('');
 
-  var [loadingResultList, setloadingResultList] = useState<string[]>([]); //バックエンド側の読み込み結果を受け取る 20230304
+  // var [loadingResultList, setloadingResultList] = useState<string[]>([]); //バックエンド側の読み込み結果を受け取る 20230304
+  var loadingResultList = Array();
 
   // CSVファイルのアップロードを処理する関数
   const handleCsvUpload = (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => {
@@ -434,13 +435,15 @@ export default function TournamentEntryBulkRegister() {
       await csrf();
       const response = await axios.post('/sendTournamentEntryCsvData', sendTournData);
       const data = response.data.result as CsvData[];
+      console.log(data);
       var resList = Array();
-      for (let index = 0; index < response.data.result.length; index++) {
+      for (let index = 0; index < response.data.result.csvDataList.length; index++) {
         const element = array[index];
-        resList.push(response.data.result[index].loadingResult);
+        resList.push(response.data.result.csvDataList[index].loadingResult);
       }
       console.log(resList);
-      setloadingResultList(resList);
+      // setloadingResultList(resList);
+      loadingResultList = resList.filter(Boolean); //リスト内のnullを削除して渡す
     } catch (error) {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
     }
@@ -633,6 +636,7 @@ export default function TournamentEntryBulkRegister() {
                         ? (
                           await sendCsvData(), //バックエンド側にCSVデータを送信 データ判定用
                           setCsvData([]),
+                          // console.log(loadingResultList),
                           csvFileData?.content?.slice(1).map((row, rowIndex) => {
                             handleCsvData(row, rowIndex);
                             setDialogDisplayFlg(true);
@@ -644,6 +648,7 @@ export default function TournamentEntryBulkRegister() {
                       } else {
                         await sendCsvData(); //バックエンド側にCSVデータを送信 データ判定用
                         setCsvData([]);
+                        // console.log(loadingResultList);
                         csvFileData?.content?.slice(1).map((row, rowIndex) => {
                           handleCsvData(row, rowIndex);
                           setDialogDisplayFlg(true);
