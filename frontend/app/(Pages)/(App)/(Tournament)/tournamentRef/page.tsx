@@ -391,6 +391,8 @@ export default function TournamentRef() {
                         .post('/deleteTournamentData', sendFormData) //大会情報の削除 20240202
                         .then((response) => {
                           // TODO: 削除完了時の処理の置き換え
+                          window.alert('大会情報の削除が完了しました');
+                          router.push('/tournamentSearch'); //大会検索に遷移 20240311
                         })
                         .catch((error) => {
                           // TODO: エラーハンドリングの実装の置き換え
