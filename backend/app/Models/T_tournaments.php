@@ -396,7 +396,7 @@ class T_tournaments extends Model
                                         and (`t_organizations`.`delete_flag` = 0 or `t_organizations`.`delete_flag` is null)
                                         and (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
                                         and `t_tournaments`.`tourn_id` = :tourn_id'
-                                        ,$tourn_id);
+                                        ,['tourn_id' => $tourn_id]);
         return $target_tournament;
     }
 
@@ -483,5 +483,25 @@ class T_tournaments extends Model
                                 and users.user_type = :user_type'
                             ,['tourn_id' => $tourn_id, 'user_id' => $user_id, 'user_type' => $user_type]);        
         return $result;
+    }
+
+    //大会を削除する
+    //delete_flagを1にする
+    public function updateDeleteFlag($tourn_id)
+    {
+        Log::debug($tourn_id);
+        DB::update('update `t_tournaments`
+                    set `delete_flag` = 1
+                    ,updated_time = ?
+                    ,updated_user_id = ?
+                    where 1=1
+                    and `delete_flag` = 0
+                    and `tourn_id` = ?'
+                    ,[
+                        now()->format('Y-m-d H:i:s.u')
+                        ,Auth::user()->user_id
+                        ,$tourn_id
+                    ]
+                );
     }
 }

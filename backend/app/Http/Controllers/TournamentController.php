@@ -861,14 +861,14 @@ class TournamentController extends Controller
     //DBから大会情報を削除する 20240309
     public function deleteTournamentData(Request $request, T_tournaments $tTournament)
     {
+        Log::debug(sprintf("deleteTournamentData start"));
+        DB::beginTransaction();
         try {
-            Log::debug(sprintf("deleteTournamentData start"));
             $reqData = $request->all();
-            Log::debug($reqData);
+            // Log::debug($reqData);
             Log::debug($reqData['tournamentFormData']['tourn_id']);
-            DB::transaction();
 
-            if (isset($reqData['tourn_id'])) {
+            if (isset($reqData['tournamentFormData']['tourn_id'])) {
                 $tTournament->updateDeleteFlag($reqData['tournamentFormData']['tourn_id']);
                 DB::commit();
             } else {
