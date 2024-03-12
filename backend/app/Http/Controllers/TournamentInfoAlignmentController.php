@@ -950,6 +950,7 @@ class TournamentInfoAlignmentController extends Controller
     {
         Log::debug(sprintf("tournamentEntryYearSearch start"));
         $reqData = $request->all();
+        // Log::debug($reqData);
         $event_start_year = $reqData["event_start_year"];
         $tournaments = $t_tournaments->getTournamentsFromEntryYear($event_start_year);
         //Log::debug($tournaments);
