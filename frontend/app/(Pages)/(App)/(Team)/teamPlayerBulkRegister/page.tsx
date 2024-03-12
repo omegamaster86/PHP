@@ -182,11 +182,20 @@ export default function TeamPlayerBulkRegister() {
       // checked: handleCheckboxValue(await handleResult(row)),
       checked: true,
       result: await handleResult(row),
-      userId: row[0],
+      // userId: row[0],
+      // playerId: row[1],
+      // jaraPlayerId: row[2],
+      // playerName: row[3],
+      // mailaddress: row[4],
+      // teamId: row[5],
+      // teamName: row[6],
+      // birthPlace: row[7],
+      // residence: row[8],
+      userId: row[2],
       playerId: row[1],
-      jaraPlayerId: row[2],
-      playerName: row[3],
-      mailaddress: row[4],
+      jaraPlayerId: row[0],
+      playerName: row[4],
+      mailaddress: row[3],
       teamId: row[5],
       teamName: row[6],
       birthPlace: row[7],
@@ -257,6 +266,7 @@ export default function TeamPlayerBulkRegister() {
       setActivationFlg(false);
     } catch (error) {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
+      setActivationFlg(false);
     }
   }
 
