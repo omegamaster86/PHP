@@ -398,8 +398,8 @@ class T_organizations extends Model
                                     and (`m_prefectures`.`delete_flag` = 0 or `m_prefectures`.`delete_flag` is null)
                                     and (`m_organization_class`.`delete_flag` = 0 or `m_organization_class`.`delete_flag` is null)
                                     and (jmot.`delete_flag` = 0 or jmot.`delete_flag` is null)
-                                    and (pmot.`delete_flag` = 0 or pmot.`delete_flag` is null)
-                                    and `delete_flag` = 0');
+                                    and (pmot.`delete_flag` = 0 or pmot.`delete_flag` is null)'
+                                );
         return $organizations;
     }
 
