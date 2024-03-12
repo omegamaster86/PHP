@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\WelcomeMail;
+use Illuminate\Support\Facades\ForRegisteredPlayerOrganizationRegistrationNotificationMail;
+use Illuminate\Support\Facades\ForUnregisteredPlayerOrganizationRegistrationNotificationMail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 
@@ -1026,19 +1028,23 @@ class OrganizationPlayersController extends Controller
         //For adding 24hour with current time
         $new_mail_date = date('Y/m/d H:i', strtotime($mail_date . ' + 24 hours'));
 
+        //Getting url information from env file.
+        $frontend_url  = config ( 'env-data.frontend-url' ) ;
+
         //Store user information for sending email.
         $mail_data = [
             'user_name' => $user_name,
             'to_mailaddress' => $mailaddress,
             'from_mailaddress' => 'xxxxx@jara.or.jp',
             'temporary_password' => $temp_password,
-            'temporary_password_expiration_date' => $new_mail_date
+            'temporary_password_expiration_date' => $new_mail_date,
+            'login_url'=> $frontend_url.'/login'
         ];
 
         //Sending mail to the user
 
         try {
-            //Mail::to($mailaddress)->send(new WelcomeMail($mail_data));
+            Mail::to($mailaddress)->send(new WelcomeMail($mail_data));
         } catch (Exception $e) {
             //DB::delete('delete from t_users where mailaddress = ?', [$mailaddress ]);
             //Store error message in the user_register log file.
@@ -1701,7 +1707,7 @@ class OrganizationPlayersController extends Controller
                         $insert_user_value['user_name'] = $reqData[$rowIndex]['playerName'];
                         $insert_user_value['mailaddress'] = $reqData[$rowIndex]['mailaddress'];
                         $insert_user_value['password'] = $hashed_password;
-                        $insert_user_value['temp_password'] = $hashed_password;
+                        // $insert_user_value['temp_password'] = $hashed_password;
                         $insert_user_value['expiry_time_of_temp_password'] = $newDate;
                         $insert_user_value['temp_password_flag'] = 1;
                         $insert_user_value['current_datetime'] = $current_datetime;
@@ -1719,18 +1725,31 @@ class OrganizationPlayersController extends Controller
                         $mail_date = date('Y/m/d H:i');
                         //For adding 24hour with current time
                         $new_mail_date = date('Y/m/d H:i', strtotime($mail_date . ' + 24 hours'));
-
+                        //Getting url information from env file.
+                        $frontend_url  = config ( 'env-data.frontend-url' ) ;
+                        
                         //Store user information for sending email.
-                        // $mail_data = [
-                        //     'user_name' => $request->user_name,
-                        //     'to_mailaddress' => $request->mailaddress,
-                        //     'from_mailaddress' => 'xxxxx@jara.or.jp',
-                        //     'temporary_password' => $temp_password,
-                        //     'temporary_password_expiration_date' => $new_mail_date
-                        // ];
+                        $mail_data = [
+                            'user_name' => '....',
+                            'to_mailaddress' => '....',
+                            'from_mailaddress' => 'xxxxx@jara.or.jp',
+                            'temporary_password' => $temp_password,
+                            'temporary_password_expiration_date' => $new_mail_date,
+                            'login_url'=> $frontend_url.'/login'
 
-                        //Sending mail to the user
-                        //Mail::to($request->get('mailaddress'))->send(new WelcomeMail($mail_data));
+                        ];
+
+                        try {
+                            //Sending mail to the user
+                            Mail::to('....')->send(new WelcomeMail($mail_data));
+                        }
+                        catch (Exception $e) {
+                            Log::debug(sprintf("=====UserNotificationMail start====="));
+                            Log::debug($e);
+                            Log::debug(sprintf("=====UserNotificationMail end====="));
+                            return response()->json("メール送信に失敗しました。",500);
+                        }
+                        
                     }
                     //選手情報が存在しているかチェック
                     //直近に挿入した選手のID
@@ -1764,6 +1783,66 @@ class OrganizationPlayersController extends Controller
 
                         //insertを実行して、insertしたレコードのIDを取得
                         $insert_player_id = $t_players->insertPlayer($insert_player_data);
+
+                        //Getting url information from env file.
+                        $frontend_url  = config ( 'env-data.frontend-url' ) ;
+
+                        //Store player information for sending email.
+                        $unregistered_player_mail_data = [
+                            'to_mailaddress' => '....',  //[当該選手の「ユーザーテーブル」に登録されているメールアドレス]
+                            'from_mailaddress' => 'xxxxx@jara.or.jp',
+                            'organization_name' => '....',
+                            'organization_id' => '....',
+                            'player_name' => '....',
+                            'birth_date' => '....',
+                            'sex' => '....',
+                            'height' => '....',
+                            'weight' => '....',
+                            'side_info' => '....',
+                            'birth_country' => '....',
+                            'residence_country' => '....',
+                            'inquiry_url'=> $frontend_url.'/inquiry'
+                            
+                        ];
+
+                        try {
+                            //Sending mail to the unregistered
+                            Mail::to('....')->send(new ForUnregisteredPlayerOrganizationRegistrationNotificationMail($unregistered_player_mail_data));
+                        }
+                        catch (Exception $e) {
+                            Log::debug(sprintf("=====ForUnregisteredPlayerOrganizationRegistrationNotificationMail start====="));
+                            Log::debug($e);
+                            Log::debug(sprintf("=====ForUnregisteredPlayerOrganizationRegistrationNotificationMail end====="));
+                            return response()->json("メール送信に失敗しました。",500);
+                        }
+
+                    }
+                    else{
+                        //Store player information for sending email.
+                        $registered_player_mail_data = [
+                            'to_mailaddress' => '....',  //[当該選手の「ユーザーテーブル」に登録されているメールアドレス]
+                            'from_mailaddress' => 'xxxxx@jara.or.jp',
+                            'organization_name' => '....',
+                            'organization_id' => '....',
+                            'player_name' => '....',
+                            'inquiry_url'=> $frontend_url.'/inquiry'
+                            
+                        ];
+
+                        try {
+                            //Sending mail to the unregistered
+                            Mail::to('....')->send(new ForRegisteredPlayerOrganizationRegistrationNotificationMail($registered_player_mail_data));
+                        }
+                        catch (Exception $e) {
+                            Log::debug(sprintf("=====ForRegisteredPlayerOrganizationRegistrationNotificationMail start====="));
+                            Log::debug($e);
+                            Log::debug(sprintf("=====ForRegisteredPlayerOrganizationRegistrationNotificationMail end====="));
+                            return response()->json("メール送信に失敗しました。",500);
+                        }
+
+                        // mail address -> $reqData[$rowIndex]['mailaddress'];
+                        //send email to player
+                        //use for_registered_player_organization_registration_notification_mail.blade template
                     }
                     //団体所属選手テーブルに挿入
                     $insert_organization_player_data = [];
