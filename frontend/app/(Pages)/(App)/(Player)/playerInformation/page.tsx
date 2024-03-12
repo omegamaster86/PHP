@@ -866,7 +866,7 @@ export default function PlayerInformation() {
               readonly={mode === 'confirm'}
               label=': S (ストロークサイド)'
               value='S'
-              checked={formData.side_info?.at(0) ?? false}
+              checked={formData.side_info?.at(3) ?? false}
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
@@ -884,7 +884,7 @@ export default function PlayerInformation() {
               readonly={mode === 'confirm'}
               label=': B (バウサイド)'
               value='B'
-              checked={formData.side_info?.at(1) as boolean}
+              checked={formData.side_info?.at(2) as boolean}
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
@@ -902,7 +902,7 @@ export default function PlayerInformation() {
               label=': X (スカル)'
               value='X'
               readonly={mode === 'confirm'}
-              checked={formData.side_info?.at(2) as boolean}
+              checked={formData.side_info?.at(1) as boolean}
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
@@ -920,7 +920,7 @@ export default function PlayerInformation() {
               label=': C (コックス)'
               readonly={mode === 'confirm'}
               value='C'
-              checked={formData.side_info?.at(3) as boolean}
+              checked={formData.side_info?.at(0) as boolean}
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
