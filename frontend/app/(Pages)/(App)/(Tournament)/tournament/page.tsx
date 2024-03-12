@@ -419,8 +419,8 @@ export default function Tournament() {
           // .get<Tournament>('http://localhost:3100/tournament')
           .post('/getTournamentInfoData', tourn_id) //大会IDを元に大会情報を取得する
           .then((response) => {
-            setTournamentFormData(response.data.result);
             // console.log(response.data);
+            setTournamentFormData(response.data.result);
           })
           .catch((error) => {
             // TODO: エラー処理の実装置き換え
@@ -456,6 +456,10 @@ export default function Tournament() {
                 tournamentFormData,
                 tableData
               };
+              //nullのパラメータを空のパラメータに置き換える
+              Object.keys(registerData.tournamentFormData).forEach(key => {
+                (registerData.tournamentFormData as any)[key] = (registerData.tournamentFormData as any)[key] ?? '';
+              });
               // sendFormData.tournamentFormData = tournamentFormData;
               // sendFormData.tableData = tableData;
               // console.log(registerData);
@@ -550,6 +554,11 @@ export default function Tournament() {
                 tournamentFormData, //選手情報
                 tableData //選手の出漕結果情報
               };
+              //nullのパラメータを空のパラメータに置き換える
+              Object.keys(registerData.tournamentFormData).forEach(key => {
+                (registerData.tournamentFormData as any)[key] = (registerData.tournamentFormData as any)[key] ?? '';
+              });
+              // console.log(registerData);
               axios
                 // .post('http://localhost:3100/', registerData)
                 .post('/updateTournamentInfoData', registerData, {
