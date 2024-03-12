@@ -98,24 +98,25 @@ export default function ForgotPassword() {
                   const csrf = () => axios.get('/sanctum/csrf-cookie');
                   await csrf();
                   axios
-                    .get('/api/forgotpassword', {
-                      params: {
-                        email: email,
-                      },
+                    .post('/password-reset', {
+                      // params: {
+                      //   email: email,
+                      // },
+                      mailaddress: email,
                     })
                     .then((res) => {
                       // TODO: ユーザーテーブルに存在するかを検索し、結果によりメッセージを出し分ける
+                      setErrorText([]);
                       setMessageText([
                         '仮パスワードを記載したメールアドレスを送信しました。送信されたメールに記載されたパスワードを使用して、パスワードの再設定を行ってください。',
                       ]);
-                      setErrorText([
-                        '登録されていないメールアドレスです。メールアドレスを確認してください',
-                      ]);
+                      
                       // TODO: ユーザーテーブルの更新
                     })
                     .catch((err) => {
                       // TODO: エラー処理
-                      setErrorText([err.message]);
+                      setMessageText([]);
+                      setErrorText([...err?.response?.data]);
                     });
                 }
                 forgotPassword()
@@ -139,7 +140,7 @@ export default function ForgotPassword() {
         <div className='text-h3 text-black font-bold'>日本ローイング協会 サポートデスク</div>
         <CustomButton
           onClick={() => {
-            router.push('/contact');
+            router.push('/inquiry');
           }}
           buttonType='primary-outlined'
         >
