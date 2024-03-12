@@ -23,8 +23,9 @@ interface RaceResultRecordsResponse {
   tourn_id: number; // 大会ID
   tourn_name: string; // 大会名
   official: number; // 公式／非公式
-  eventStartDate: string; // 開催日　#置き換え作業未対応
+  eventStartDate: string; // 開催日
   org_name: string; // 団体所属
+  org_id: string; // 団体所属ID
   race_number: number; // レースNo.
   event_name: string; // 種目　
   race_name: string; // レース名
@@ -36,7 +37,9 @@ interface RaceResultRecordsResponse {
   laptime_1500m: number; // 1500mラップタイム
   laptime_2000m: number; // 2000mラップタイム
   final_time: number; // 最終タイム
+  bNo: number; // B.No
   race_result_notes: string; // 備考
+  remarkId: number; // 備考ID
   stroke_rate_avg: number; // ストロークレート（平均）
   stroke_rat_500m: number; // 500mlapストロークレート
   stroke_rat_1000m: number; // 1000mlapストロークレート
@@ -58,11 +61,45 @@ interface RaceResultRecordsResponse {
   start_datetime: string; // 登録日時
   wind_speed_2000m_point: number; // 2000m地点風速
   wind_direction_2000m_point: number; // 2000m地点風向
+  twentyHundredmWindDirectionName: string; // 2000m地点風向
   wind_speed_1000m_point: number; // 1000m地点風速
   wind_direction_1000m_point: number; // 1000m地点風向
-  venueName: string; // 開催場所　#置き換え作業対応不要
+  tenHundredmWindDirectionName: string; // 1000m地点風向
+  venueName: string; // 開催場所
   range: number; // 距離
   order: number; // 順番
+  weatherId: number; // 天候
+  weatherName: string; // 天候
+  startDateTime: string; // 発艇日時
+  deleteFlg: boolean; // 削除フラグ
+  crewPlayer: CrewPlayer[]; // 選手情報
+  laneNumber: number; // レーンNo
+  errorText: string; // エラーテキスト
+  laptimeErrorText: string; // ラップタイムエラーテキスト
+  strokeRateErrorText: string; // ストロークレートエラーテキスト
+  finalHeartRate: number; // 最終心拍数
+}
+
+interface CrewPlayer {
+  id: number; // 選手ID
+  playerPhoto: string; // 選手画像
+  playerName: string; // 選手名
+  jaraPlayerId: string; // JARA選手コード
+  playerId: string; // 選手ID
+  sexId: string;
+  height: number; // 身長
+  weight: number; // 体重
+  sheetName: string; // シート番号
+  sheetNameId: number; // シート番号
+  fiveHundredmHeartRate: number; // 500m
+  tenHundredmHeartRate: number; // 1000m
+  fifteenHundredmHeartRate: number; // 1500m
+  twentyHundredmHeartRate: number; // 2000m
+  heartRateAvg: number; // 平均
+  attendance: string; // 立ち合い有無
+  deleteFlg: boolean; // 削除フラグ
+  addonLineFlg: boolean; // 追加行フラグ
+  errorText: string; // エラーテキスト
 }
 
 // 団体情報
@@ -90,6 +127,30 @@ interface Tournament {
   tourn_info_faile_path: string; // 大会情報ファイルパス
   uploadedPDFFile?: File; // アップロードされて写真を保存する
   uploadedPDFFilePath?: string; // アップロードされて写真の名前を保存する
+}
+
+// レーステーブル
+interface RaceTable {
+  raceId: string; // レースID
+  raceNumber: number; // レースNo
+  entrysystemRaceId: number; // エントリーレースID
+  tournId: number; // 大会ID
+  raceName: string; // レース名
+  raceType: number; // レース区分
+  eventId: number; // 種目ID
+  eventName: string; // 種目名
+  byGroup: string; // 組別
+  range: number; // 距離
+  startDateTime: string; // 発艇日時
+  windSpeedGoalPoint: number; // ゴール地点風速
+  windDirectionGoalPoint: number; // ゴール地点風向
+  windSpeedStartPoint: number; // スタート地点風速
+  windDirectionStartPoint: number; // スタート地点風向
+  registeredTime: string; // 登録日時
+  registeredUserId: number; // 登録ユーザーID
+  updatedTime: string; // 更新日時
+  updatedUserId: number; // 更新ユーザーID
+  deleteFlag: number; // 削除フラグ
 }
 
 // レース情報
@@ -215,6 +276,7 @@ interface PlayerInformationResponse {
   residencePrefectureName: string; // 居住地（都道府県）　#置き換え作業対応不要
   residence_prefecture?: number; // 居住地（都道府県）
   photo: string; // 写真
+  previousPhotoName?: File; // アップロードされて写真を保存する
   uploadedPhoto?: File; // アップロードされて写真を保存する
   uploadedPhotoName?: string; // アップロードされて写真の名前を保存する
 }
@@ -245,6 +307,11 @@ interface TeamPlayerInformationResponse {
   deleteFlag: boolean; // 削除フラグ
   checked?: boolean; // チェックボックス
   type: string; // 種別
+}
+
+interface MasterResponse {
+  id: number;
+  name: string;
 }
 
 // 障碍タイプ
@@ -289,6 +356,24 @@ interface Player {
   entrysystemOrgId3: string; // エントリーシステムの団体ID3　#置き換え作業未対応
   orgId3: string; // 団体ID3　#置き換え作業未対応
   orgName3: string; // 所属団体名3　#置き換え作業未対応
+}
+
+// 大会レース結果入力画面
+interface CrewPlayer {
+  id: number; // 選手ID
+  playerPhoto: string; // 選手画像
+  playerName: string; // 選手名
+  jaraPlayerId: string; // JARA選手コード
+  playerId: string; // 選手ID
+  sexId: string; // 性別ID
+  sex: string; // 性別
+  entrysystemRaceId: string; // エントリーシステムの団体ID
+  orgId1: string; // 団体ID1
+  orgName1: string; // 所属団体名1
+  orgId2: string; // 団体ID2
+  orgName2: string; // 所属団体名2
+  orgId3: string; // 団体ID3
+  orgName3: string; // 所属団体名3
 }
 
 // クルー
@@ -405,6 +490,11 @@ interface UserIdType {
   is_audience: number; // 一般ユーザ
 }
 
+interface CheckRaceResultRecordDeleted {
+  id: number; // ID
+  isDeleted: boolean; // 削除済かどうか
+}
+
 export type { SexResponse };
 export type { PrefectureResponse };
 export type { CountryResponse };
@@ -414,6 +504,7 @@ export type { TeamPlayerInformationResponse };
 export type { TeamResponse };
 export type { Tournament };
 export type { Race };
+export type { RaceTable };
 export type { TourTypeResponse };
 export type { VenueResponse };
 export type { EventResponse };
@@ -436,3 +527,6 @@ export type { Org };
 export type { CheckRace };
 export type { UserIdType };
 export type { CheckRaceResultRecord };
+export type { MasterResponse };
+export type { CrewPlayer };
+export type { CheckRaceResultRecordDeleted };

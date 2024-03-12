@@ -587,6 +587,8 @@ class TournamentController extends Controller
             $file->move($destination_path, $file_name);
         }
         $reqData = $request->all();
+
+        Log::debug($reqData);
         //確認画面から登録
         $tTournament::$tournamentInfo['tourn_id'] = $reqData['tournamentFormData']['tourn_id']; //大会ID
         $tTournament::$tournamentInfo['tourn_name'] = $reqData['tournamentFormData']['tourn_name']; //大会名
@@ -612,7 +614,9 @@ class TournamentController extends Controller
             //レース登録リスト行数分登録する
             for ($i = 0; $i < count($reqData['tableData']); $i++) {
                 $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['race_number']; //レース番号
-                $tRace::$racesData['entrysystem_race_id'] = $reqData['tableData'][$i]['entrysystem_race_id']; //エントリーシステムのレースID
+                if (isset($reqData['tableData'][$i]['entrysystem_race_id'])) {
+                    $tRace::$racesData['entrysystem_race_id'] = $reqData['tableData'][$i]['entrysystem_race_id']; //エントリーシステムのレースID
+                }
                 $tRace::$racesData['tourn_id'] = $reqData['tableData'][$i]['tourn_id']; //大会IDに紐づける
                 $tRace::$racesData['race_name'] = $reqData['tableData'][$i]['race_name']; //レース名
                 $tRace::$racesData['event_id'] = $reqData['tableData'][$i]['event_id']; //イベントID
@@ -622,13 +626,29 @@ class TournamentController extends Controller
                 $tRace::$racesData['by_group'] = $reqData['tableData'][$i]['by_group']; //レース区分
                 $tRace::$racesData['range'] = $reqData['tableData'][$i]['range']; //距離
                 $tRace::$racesData['start_date_time'] = $reqData['tableData'][$i]['start_date_time']; //発艇日時
-                $tRace->updateRaces($tRace::$racesData); //レーステーブルの挿入
+
+                if (!isset($reqData['tableData'][$i]['checked'])) { //削除フラグが存在しない場合、更新データ
+                    $tRace::$racesData['delete_flag'] = 0;
+                } else if ($reqData['tableData'][$i]['checked'] == 'true') { //削除フラグがtrueの場合、削除対象
+                    $tRace::$racesData['delete_flag'] = 1;
+                } else {
+                    $tRace::$racesData['delete_flag'] = 0;
+                }
+
+                if (isset($reqData['tableData'][$i]['race_id'])) {
+                    $tRace->updateRaces($tRace::$racesData); //レースIDが存在する場合、更新処理
+                    Log::debug("race update");
+                } else {
+                    $tRace->insertRaces($tRace::$racesData); //レースIDが存在しない場合、挿入処理
+                    Log::debug("race insert");
+                }
             }
             DB::commit();
             Log::debug(sprintf("updateTournamentInfoData end"));
             return response()->json(['reqData' => $reqData]); //DBの結果を返す
         } catch (\Throwable $e) {
             DB::rollBack();
+            Log::debug($e);
             return response()->json("失敗しました。大会更新できませんでした。", 500); //エラーメッセージを返す
         }
     }
@@ -861,14 +881,14 @@ class TournamentController extends Controller
     //DBから大会情報を削除する 20240309
     public function deleteTournamentData(Request $request, T_tournaments $tTournament)
     {
+        Log::debug(sprintf("deleteTournamentData start"));
+        DB::beginTransaction();
         try {
-            Log::debug(sprintf("deleteTournamentData start"));
             $reqData = $request->all();
-            Log::debug($reqData);
+            // Log::debug($reqData);
             Log::debug($reqData['tournamentFormData']['tourn_id']);
-            DB::transaction();
 
-            if (isset($reqData['tourn_id'])) {
+            if (isset($reqData['tournamentFormData']['tourn_id'])) {
                 $tTournament->updateDeleteFlag($reqData['tournamentFormData']['tourn_id']);
                 DB::commit();
             } else {

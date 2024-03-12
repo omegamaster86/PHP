@@ -13,7 +13,6 @@ export const useAuth = ({
   const router = useRouter();
   const pathname = usePathname();
   
-  console.log(pathname);
   const [isLoading, setIsLoading] = useState(true);
   const {
     data: user,

@@ -16,6 +16,7 @@ import { useAuth } from '@/app/hooks/auth';
 import Validator from '@/app/utils/validator';
 
 import axios, { AxiosError } from 'axios';
+import Link from 'next/link';
 
 interface Values {
   email: string
@@ -88,15 +89,9 @@ return (
             />
           </div>
           <p className='flex justify-center text-small font-bold pt-[32px]'>
-            <a
-              className='text-primary-500 '
-              href='#'
-              onClick={() => {
-                router.push('/forgotpassword');
-              }}
-            >
+            <Link className='text-primary-500' href="/forgotpassword" >
               パスワードを忘れましたか？
-            </a>
+            </Link>
           </p>
           <CustomButton
             buttonType='primary'

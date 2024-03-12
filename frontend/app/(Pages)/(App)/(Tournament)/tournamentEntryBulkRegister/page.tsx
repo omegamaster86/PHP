@@ -208,23 +208,26 @@ export default function TournamentEntryBulkRegister() {
     fetchData();
   }, []);
 
-  const handleSearchTournament = async (name: string, e: FocusEvent<HTMLInputElement>) => {
+  const handleSearchTournament = async (name: string, eventYearVal: string) => {
     try {
-      console.log(e);
-      var eventYearVal = { event_start_year: e.target.value };
+      // console.log(eventYearVal);
+      // var eventYearVal = { event_start_year: e.target.value };
       // 仮のURL（繋ぎ込み時に変更すること）
-      const apiURL = `http://localhost:3100/tournament?${name}=${e.target.value}`;
+      // const apiURL = `http://localhost:3100/tournament?${name}=${e.target.value}`;
       // 大会情報を取得
       // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
+      const sendVal = { event_start_year: eventYearVal };
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
-      const tournamentResponse = await axios.post('/tournamentEntryYearSearch', eventYearVal);
+      const tournamentResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
+      // console.log(tournamentResponse.data.result);
       const TournamentsResponseList = tournamentResponse.data.result.map(({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({ id: tourn_id, name: tourn_name }));
+      // console.log(TournamentsResponseList);
       setTournamentList(TournamentsResponseList);
       setFormData((prevFormData) => ({
         ...prevFormData,
-        eventYear: tournamentResponse.data.result.event_start_date.slice(0, 4),
-        tournName: tournamentResponse.data.result.tourn_name,
+        eventYear: tournamentResponse.data?.result[0]?.event_start_date.slice(0, 4),
+        tournName: tournamentResponse.data?.result[0]?.tourn_name,
       }));
       setDisplayFlg(false);
     } catch (error) {
@@ -497,6 +500,7 @@ export default function TournamentEntryBulkRegister() {
               placeHolder={new Date().toLocaleDateString('ja-JP').slice(0, 4)}
               selectedDate={formData?.eventYear}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                // console.log(e);
                 var eventYearVal = e as any as Date;
                 if (eventYearVal.getFullYear().toString().length === 4) {
                   // handleInputChange('eventYear', e as unknown as string);//eventYearVal.getFullYear().toString()
@@ -511,7 +515,7 @@ export default function TournamentEntryBulkRegister() {
                 ) {
                   handleInputChange('tournName', '');
                 } else {
-                  handleSearchTournament('eventYear', e);
+                  handleSearchTournament('eventYear', formData?.eventYear);
                 }
               }}
               readonly={displayFlg}

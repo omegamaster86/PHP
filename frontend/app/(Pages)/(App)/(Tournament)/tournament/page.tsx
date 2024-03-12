@@ -419,8 +419,8 @@ export default function Tournament() {
           // .get<Tournament>('http://localhost:3100/tournament')
           .post('/getTournamentInfoData', tourn_id) //大会IDを元に大会情報を取得する
           .then((response) => {
-            setTournamentFormData(response.data.result);
             // console.log(response.data);
+            setTournamentFormData(response.data.result);
           })
           .catch((error) => {
             // TODO: エラー処理の実装置き換え
@@ -456,6 +456,10 @@ export default function Tournament() {
                 tournamentFormData,
                 tableData
               };
+              //nullのパラメータを空のパラメータに置き換える
+              Object.keys(registerData.tournamentFormData).forEach(key => {
+                (registerData.tournamentFormData as any)[key] = (registerData.tournamentFormData as any)[key] ?? '';
+              });
               // sendFormData.tournamentFormData = tournamentFormData;
               // sendFormData.tableData = tableData;
               // console.log(registerData);
@@ -550,6 +554,11 @@ export default function Tournament() {
                 tournamentFormData, //選手情報
                 tableData //選手の出漕結果情報
               };
+              //nullのパラメータを空のパラメータに置き換える
+              Object.keys(registerData.tournamentFormData).forEach(key => {
+                (registerData.tournamentFormData as any)[key] = (registerData.tournamentFormData as any)[key] ?? '';
+              });
+              // console.log(registerData);
               axios
                 // .post('http://localhost:3100/', registerData)
                 .post('/updateTournamentInfoData', registerData, {
@@ -630,9 +639,10 @@ export default function Tournament() {
           const isError = performValidation();
           if (!isError) {
             setTableData((prevData) => {
-              return prevData.filter((row) => {
-                return !row.checked;
-              });
+              // return prevData.filter((row) => {
+              //   return !row.checked;
+              // });
+              return prevData; //全てのデータをバックエンド側に送る 20240311
             });
             router.push('/tournament?mode=confirm&prevMode=' + mode);
           }
@@ -655,10 +665,10 @@ export default function Tournament() {
       onClick={() => {
         const newId = maxId + 1;
         setMaxId((prevMaxId) => prevMaxId + 1);
-        setTableData((prevData) => [...prevData, { ...raceFormData, id: newId }]);
+        setTableData((prevData) => [...prevData, { ...raceFormData, id: prevData.length + 1 }]);
         // フォームデータをリセット
         setRaceFormData({
-          id: 0,
+          id: 1,
           checked: false,
           race_id: '',
           entrysystem_race_id: '',
@@ -1113,7 +1123,7 @@ export default function Tournament() {
                     </CustomTh>
                   </>
                 ) : prevMode === 'update' ? (
-                  <CustomTh align='center' colSpan={9}>
+                  <CustomTh align='center' colSpan={10}>
                     レース登録
                   </CustomTh>
                 ) : (
@@ -1124,6 +1134,7 @@ export default function Tournament() {
               </CustomTr>
               <CustomTr>
                 {mode !== 'confirm' ? <CustomTh align='center'>削除</CustomTh> : <></>}
+                {(mode === 'confirm' && prevMode === 'update') && (<CustomTh align='center'>削除</CustomTh>)}
                 {(mode === 'update' || prevMode === 'update') && (
                   <CustomTh align='center'>レースID</CustomTh>
                 )}
@@ -1173,17 +1184,30 @@ export default function Tournament() {
                       />
                     </CustomTd>
                   )}
+                  {(mode === 'confirm' && prevMode === 'update') && (
+                    <CustomTd align='center'>
+                      <OriginalCheckbox
+                        id={'delete-' + row.id}
+                        label={''}
+                        value={'delete-' + row.id}
+                        checked={row.checked}
+                        onChange={(e) => handleInputChangeRace(row.id, 'checked', e.target.checked)}
+                        readonly
+                      />
+                    </CustomTd>
+                  )}
                   {(mode === 'update' || prevMode === 'update') && (
                     <CustomTd>
                       {mode === 'confirm' ? (
                         <p className='h-12 text-secondaryText py-3 disable'>{row.race_id}</p>
                       ) : (
-                        <TextField
-                          type={'text'}
-                          value={row.race_id}
-                          onChange={(e) => handleInputChangeRace(row.id, 'race_id', e.target.value)}
-                          className='my-[8px]'
-                        />
+                        // <TextField
+                        //   type={'text'}
+                        //   value={row.race_id}
+                        //   onChange={(e) => handleInputChangeRace(row.id, 'race_id', e.target.value)}
+                        //   className='my-[8px]'
+                        // />
+                        <p className='h-12 text-secondaryText py-3 disable'>{row.race_id}</p>
                       )}
                     </CustomTd>
                   )}

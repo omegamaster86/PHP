@@ -111,8 +111,8 @@ interface SearchCond {
 
 export default function VolunteerSearch() {
   /** 定数定義 **/
-  const JAPAN_COUNTRY_ID = 0;
-  const OTHERS_QUAL_ID = 0;
+  const JAPAN_COUNTRY_ID = 112; //居住地 日本国選択時
+  const OTHERS_QUAL_ID = 99; //保有資格 その他選択時
 
   /** フック **/
   const router = useRouter();

@@ -201,6 +201,19 @@ export default function OrgInfo() {
           console.log(staff.data);
           setTableData(staff.data.result);
         }
+        if (mode === 'create') {
+          setTableData((prevData) => [
+            ...prevData,
+            {
+              id: 1,
+              user_id: '',
+              user_name: '',
+              delete_flag: false,
+              staff_type_id: [],
+              isUserFound: true, //新規登録時は便宜的にtrue
+            },
+          ]);
+        }
 
         const playerInf = await axios.get('/getIDsAssociatedWithUser');
         setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
@@ -421,7 +434,7 @@ export default function OrgInfo() {
               .then((response) => {
                 console.log(response);
                 setDisableFlag(false);
-                router.push('/team?mode=confirm&prevMode=create');
+                router.push('/team?mode=confirm&prevMode=update');
               })
               .catch((error) => {
                 console.log(error);
