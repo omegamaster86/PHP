@@ -146,11 +146,14 @@ export default function Passwordchange() {
                 axios
                   // .post('http://localhost:3100/', requestBody)
                   .post('/user/password-change', requestBody)
-                  .then((response) => {
+                  .then(async(response) => {
                     // 成功時の処理を実装
                     // console.log(response);
                     window.alert(response?.data);
-                    router.push('/tournamentSearch')
+                    await csrf();
+                    await axios.get('/api/user');
+                    router.push('/userInformation?mode=update');
+                    
                   })
                   .catch((error) => {
                     // エラー時の処理を実装

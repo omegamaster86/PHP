@@ -287,6 +287,7 @@ export default function PlayerInformation() {
                 residencePrefectureName: response.data.result.residencePrefectureName, // 居住地（都道府県）
                 residence_prefecture: response.data.result.residence_prefecture, // 居住地（都道府県）
                 photo: response.data.result.photo, //写真
+                previousPhotoName: response.data.result.photo, //写真
               },
             }));
           })
