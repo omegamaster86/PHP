@@ -565,19 +565,34 @@ class UserController extends Controller
     }
     public function storePasswordReset(Request $request)
     {
+        Log::debug(sprintf("storePasswordReset start"));
+
+        Log::debug($request->mailaddress);
+        // ddd("");
 
         include('Auth/ErrorMessages/ErrorMessages.php');
 
         if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 0', [$request->mailaddress]))) {
             // For Generate random password
             $password = Str::random(8);
+            // //For getting current time
+            // $date = date('Y-m-d H:i:s');
+            // //For adding 30 minutes with current time
+            // $new_date = date('Y-m-d H:i:s', strtotime($date . ' + 30 minutes'));
+
             //For getting current time
-            $date = date('Y-m-d H:i:s');
-            //For adding 30 minutes with current time
-            $new_date = date('Y-m-d H:i:s', strtotime($date . ' + 30 minutes'));
+            $date = now()->format('Y-m-d H:i:s.u');
+
+            //For adding 1day with current time
+            $converting_date=date_create($date);
+            date_add($converting_date,date_interval_create_from_date_string("30 minutes"));
+            $new_date = date_format($converting_date,"Y-m-d H:i:s.u");
 
             //For converting date format from H:i:s to H:i 
             $mail_date  = date("Y/m/d H:i", strtotime($new_date));
+
+            //Getting url information from env file.
+            $frontend_url  = config ( 'env-data.frontend-url' ) ;
 
             // Insert new password info in the database.(t_user table)
 
@@ -606,15 +621,16 @@ class UserController extends Controller
 
                 //Store error message in the register log file.
                 Log::channel('user_password_reset')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-                if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                    throw ValidationException::withMessages([
-                        'datachecked_error' => $registration_failed
-                    ]);
-                } else {
-                    throw ValidationException::withMessages([
-                        'datachecked_error' => $registration_failed
-                    ]);
-                }
+                // if ($e_errorCode == 1213 || $e_errorCode == 1205) {
+                //     throw ValidationException::withMessages([
+                //         'datachecked_error' => $registration_failed
+                //     ]);
+                // } else {
+                //     throw ValidationException::withMessages([
+                //         'datachecked_error' => $registration_failed
+                //     ]);
+                // }
+                return response()->json($registration_failed,500);
             }
 
 
@@ -624,7 +640,8 @@ class UserController extends Controller
                 'user_name' => $user_name,
                 'mailaddress' => $request->mailaddress,
                 'temporary_password' => $password,
-                'temporary_password_expiration_date' => $mail_date
+                'temporary_password_expiration_date' => $mail_date,
+                'login_url'=> $frontend_url.'/login'
             ];
 
 
@@ -636,22 +653,23 @@ class UserController extends Controller
                 //Store error message in the user_password_reset log file.
                 Log::channel('user_password_reset')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「EMAIL_SENT_ERROR_MESSAGE」  ： $e\r\n  \r\n ============================================================ \r\n \r\n");
                 //Display error message to the client
-                throw ValidationException::withMessages([
-                    'datachecked_error' => $mail_sent_failed,
-                ]);
+                return response()->json($registration_failed,500);
             }
-            //Refresh the requested data
-            $request->merge(['mailaddress' => '']);
-            $request->merge(['confirm_email' => '']);
+            
 
-            $page_status = "仮パスワードを記載したメールアドレスを送信しました。<br/>送信されたメールに記載されたパスワードを使用して、パスワードの再設定を行ってください。";
+            // $page_status = "仮パスワードを記載したメールアドレスを送信しました。<br/>送信されたメールに記載されたパスワードを使用して、パスワードの再設定を行ってください。";
             //Redirect to password-reset page with success status.
-            return redirect('password-reset')->with(['status' => $page_status]);
+            // return redirect('password-reset')->with(['status' => $page_status]);
+            return response()->json("パスワード再発行の件、完了しました。",200);
         } else {
-            throw ValidationException::withMessages([
-                'datachecked_error' => $mailaddress_not_registered
-            ]);
+
+            return response()->json($mailaddress_not_registered,400);
+            // throw ValidationException::withMessages([
+            //     'datachecked_error' => $mailaddress_not_registered
+            // ]);
         }
+
+        Log::debug(sprintf("storePasswordReset end"));
     }
 
     //======================================================================================
