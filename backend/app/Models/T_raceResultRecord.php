@@ -654,17 +654,18 @@ class T_raceResultRecord extends Model
     }
 
     //エントリー大会ID、エントリーレースID、JARA選手IDが一致する公式のレース結果の件数を取得する
-    public function getTargetOfficialRaceCount($conditions)
+    public function getTargetOfficialRaceCount($values,$searchCondition)
     {
-        $target_race_count = DB::select('select count(*)    as "target_race_count"
-                                            FROM `t_race_result_record` rrr
-                                            where 1=1
-                                            and rrr.`delete_flag` = 0
-                                            and rrr.`official` = 1	#公式大会
-                                            and rrr.`entrysystem_tourn_id` = :entrysystem_tourn_id	#エントリーシステムID
-                                            and rrr.`entrysystem_race_id` = :entrysystem_race_id	#エントリーレースID
-                                            and rrr.`jara_player_id` = :jara_player_id				#jara選手コード
-                                        ',$conditions);
+        Log::debug("getTargetOfficialRaceCount start.");
+        $sqlString = 'select count(*)    as "target_race_count"
+                        FROM `t_race_result_record` rrr
+                        where 1=1
+                        and rrr.`delete_flag` = 0
+                        and rrr.`official` = 1	#公式大会
+                        #ReplaceConditionString#';
+        $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
+        $target_race_count = DB::select($sql_string,$values);
+        Log::debug("getTargetOfficialRaceCount end.");
         return $target_race_count;
     }
 
@@ -774,56 +775,44 @@ class T_raceResultRecord extends Model
     public function updateBulkRaceResultRecord($values)
     {
         DB::update('update `t_race_result_record`
-                        SET `player_id`=:player_id,
-                            `jara_player_id`=:jara_player_id,
-                            `player_name`=:player_name,
-                            `entrysystem_tourn_id`=:entrysystem_tourn_id,
-                            `tourn_id`=:tourn_id,
-                            `tourn_name`=:tourn_name,
-                            `race_id`=:race_id,
-                            `entrysystem_race_id`=:entrysystem_race_id,
-                            #`race_number`=:race_number,
-                            `race_name`=:race_name,
-                            `org_id`=:org_id,
-                            `entrysystem_org_id`=:entrysystem_org_id,
-                            `org_name`=:org_name,
-                            `crew_name`=:crew_name,
-                            #`by_group`=:by_group,
-                            #`event_id`=:event_id,
-                            #`event_name`=:event_name,
-                            #`range`=:range,
-                            `rank`=:rank,
-                            `laptime_500m`=:laptime_500m,
-                            `laptime_1000m`=:laptime_1000m,
-                            `laptime_1500m`=:laptime_1500m,
-                            `laptime_2000m`=:laptime_2000m,
-                            `final_time`=:final_time,
-                            `stroke_rate_avg`=:stroke_rate_avg,
-                            `stroke_rat_500m`=:stroke_rat_500m,
-                            `stroke_rat_1000m`=:stroke_rat_1000m,
-                            `stroke_rat_1500m`=:stroke_rat_1500m,
-                            `stroke_rat_2000m`=:stroke_rat_2000m,
-                            `heart_rate_avg`=:heart_rate_avg,
-                            `heart_rate_500m`=:heart_rate_500m,
-                            `heart_rate_1000m`=:heart_rate_1000m,
-                            `heart_rate_1500m`=:heart_rate_1500m,
-                            `heart_rate_2000m`=:heart_rate_2000m,
-                            `official`=:official,
-                            `attendance`=:attendance,
-                            `ergo_weight`=:ergo_weight,
-                            `crew_rep_record_flag`=:crew_rep_record_flag,
-                            `player_height`=:player_height,
-                            `player_weight`=:player_weight,
-                            `m_seat_number`=:m_seat_number,
-                            #`seat_name`=:seat_name,
-                            `race_result_record_name`=:race_result_record_name,
-                            #`start_datetime`=:start_datetime,
-                            #`wind_speed_2000m_point`=:wind_speed_2000m_point,
-                            #`wind_direction_2000m_point`=:wind_direction_2000m_point,
-                            #`wind_speed_1000m_point`=:wind_speed_1000m_point,
-                            #`wind_direction_1000m_point`=:wind_direction_1000m_point,
-                            `updated_time`=:updated_time,
-                            `updated_user_id`=:user_id
+                        SET `player_id`= :player_id,
+                            `jara_player_id`= :jara_player_id,
+                            `player_name`= :player_name,
+                            `entrysystem_tourn_id`= :entrysystem_tourn_id,
+                            `tourn_id`= :tourn_id,
+                            `tourn_name`= :tourn_name,
+                            `race_id`= :race_id,
+                            `entrysystem_race_id`= :entrysystem_race_id,
+                            `race_name`= :race_name,
+                            `org_id`= :org_id,
+                            `entrysystem_org_id`= :entrysystem_org_id,
+                            `org_name`= :org_name,
+                            `crew_name`= :crew_name,
+                            `rank`= :rank,
+                            `laptime_500m`= :laptime_500m,
+                            `laptime_1000m`= :laptime_1000m,
+                            `laptime_1500m`= :laptime_1500m,
+                            `laptime_2000m`= :laptime_2000m,
+                            `final_time`= :final_time,
+                            `stroke_rate_avg`= :stroke_rate_avg,
+                            `stroke_rat_500m`= :stroke_rat_500m,
+                            `stroke_rat_1000m`= :stroke_rat_1000m,
+                            `stroke_rat_1500m`= :stroke_rat_1500m,
+                            `stroke_rat_2000m`= :stroke_rat_2000m,
+                            `heart_rate_avg`= :heart_rate_avg,
+                            `heart_rate_500m`= :heart_rate_500m,
+                            `heart_rate_1000m`= :heart_rate_1000m,
+                            `heart_rate_1500m`= :heart_rate_1500m,
+                            `heart_rate_2000m`= :heart_rate_2000m,
+                            `official`= :official,
+                            `attendance`= :attendance,
+                            `ergo_weight`= :ergo_weight,
+                            `player_height`= :player_height,
+                            `player_weight`= :player_weight,
+                            `seat_number`= :seat_number,
+                            `race_result_record_name`= :race_result_record_name,
+                            `updated_time`= :updated_time,
+                            `updated_user_id`= :user_id
                             WHERE 1=1
                             and `race_result_record_id` = :race_result_record_id'
                             ,$values);
@@ -845,6 +834,8 @@ class T_raceResultRecord extends Model
                         `entrysystem_race_id`, 
                         `race_number`, 
                         `race_name`, 
+                        `race_class_id`,
+                        `race_class_name`,
                         `org_id`, 
                         `entrysystem_org_id`, 
                         `org_name`, 
@@ -872,80 +863,84 @@ class T_raceResultRecord extends Model
                         `official`, 
                         `attendance`, 
                         `ergo_weight`, 
-                        `crew_rep_record_flag`, 
                         `player_height`, 
                         `player_weight`, 
-                        `m_seat_number`, 
+                        `seat_number`, 
                         `seat_name`, 
                         `race_result_record_name`, 
                         `start_datetime`, 
+                        `weather`,
                         `wind_speed_2000m_point`, 
                         `wind_direction_2000m_point`, 
                         `wind_speed_1000m_point`, 
-                        `wind_direction_1000m_point`, 
-                        `registered_time`, 
+                        `wind_direction_1000m_point`,
+                        `race_result_notes`, 
+                        `registered_time`,
                         `registered_user_id`, 
                         `updated_time`, 
                         `updated_user_id`, 
                         `delete_flag`
                     )
                     VALUES
-                    (
-                        :player_id,
-                        :jara_player_id,
-                        :player_name, 
-                        :entrysystem_tourn_id, 
-                        :tourn_id, 
-                        :tourn_name, 
-                        :race_id,
-                        :entrysystem_race_id, 
-                        :race_number, 
-                        :race_name, 
-                        :org_id, 
-                        :entrysystem_org_id, 
-                        :org_name, 
-                        :crew_name, 
-                        :by_group, 
-                        :event_id, 
-                        :event_name, 
-                        :range, 
-                        :rank, 
-                        :laptime_500m, 
-                        :laptime_1000m, 
-                        :laptime_1500m, 
-                        :laptime_2000m, 
-                        :final_time, 
-                        :stroke_rate_avg, 
-                        :stroke_rat_500m, 
-                        :stroke_rat_1000m, 
-                        :stroke_rat_1500m, 
-                        :stroke_rat_2000m, 
-                        :heart_rate_avg, 
-                        :heart_rate_500m, 
-                        :heart_rate_1000m, 
-                        :heart_rate_1500m, 
-                        :heart_rate_2000m, 
-                        :official, 
-                        :attendance, 
-                        :ergo_weight, 
-                        :crew_rep_record_flag, 
-                        :player_height, 
-                        :player_weight, 
-                        :m_seat_number, 
-                        :seat_name, 
-                        :race_result_record_name, 
-                        :start_datetime, 
-                        :wind_speed_2000m_point, 
-                        :wind_direction_2000m_point, 
-                        :wind_speed_1000m_point, 
-                        :wind_direction_1000m_point, 
-                        :registered_time, 
-                        :user_id, 
-                        :registered_time,
-                        :user_id, 
-                        0
-                    )'
-                ,$values);
+                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+                ,[
+                    $values['player_id']
+                    ,$values['jara_player_id']
+                    ,$values['player_name']
+                    ,$values['entrysystem_tourn_id']
+                    ,$values['tourn_id']
+                    ,$values['tourn_name']
+                    ,$values['race_id']
+                    ,$values['entrysystem_race_id']
+                    ,$values['race_number']
+                    ,$values['race_name']
+                    ,$values['race_class_id']
+                    ,$values['race_class_name']
+                    ,$values['org_id']
+                    ,$values['entrysystem_org_id']
+                    ,$values['org_name']
+                    ,$values['crew_name']
+                    ,$values['by_group']
+                    ,$values['event_id']
+                    ,$values['event_name']
+                    ,$values['range']
+                    ,$values['rank']
+                    ,$values['laptime_500m']
+                    ,$values['laptime_1000m']
+                    ,$values['laptime_1500m']
+                    ,$values['laptime_2000m']
+                    ,$values['final_time']
+                    ,$values['stroke_rate_avg']
+                    ,$values['stroke_rat_500m']
+                    ,$values['stroke_rat_1000m']
+                    ,$values['stroke_rat_1500m']
+                    ,$values['stroke_rat_2000m']
+                    ,$values['heart_rate_avg']
+                    ,$values['heart_rate_500m']
+                    ,$values['heart_rate_1000m']
+                    ,$values['heart_rate_1500m']
+                    ,$values['heart_rate_2000m']
+                    ,$values['official']
+                    ,$values['attendance']
+                    ,$values['ergo_weight']
+                    ,$values['player_height']
+                    ,$values['player_weight']
+                    ,$values['seat_number']
+                    ,$values['seat_name']
+                    ,$values['race_result_record_name']
+                    ,$values['start_datetime']
+                    ,$values['weather']
+                    ,$values['wind_speed_2000m_point']
+                    ,$values['wind_direction_2000m_point']
+                    ,$values['wind_speed_1000m_point']
+                    ,$values['wind_direction_1000m_point']
+                    ,$values['race_result_notes']
+                    ,$values['registered_time']
+                    ,$values['user_id']
+                    ,$values['registered_time']
+                    ,$values['user_id']
+                    ,0
+                ]);
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
         return $insertId;
