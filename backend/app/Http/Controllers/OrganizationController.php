@@ -1100,14 +1100,31 @@ class OrganizationController extends Controller
         return response()->json(['result' => $reqData]); //DBの結果を返す
     }
 
-     //団体のバリデーションチェック 20240307
-     public function validateOrgData(Request $request)
-     {
-         Log::debug(sprintf("validateOrgData start"));
-         $reqData = $request->all();
-         Log::debug($reqData);
- 
-         Log::debug(sprintf("validateOrgData end"));
-         return response()->json(['result' => $reqData]); //DBの結果を返す
-     }
+    //団体のバリデーションチェック 20240307
+    public function validateOrgData(Request $request,  T_organizations $tOrganizations)
+    {
+        Log::debug(sprintf("validateOrgData start"));
+        $reqData = $request->all();
+        // Log::debug($reqData);
+        Log::debug($reqData['formData']['entrysystem_org_id']);
+
+        //団体IDがnullでエントリーシステムの団体IDが入力されている場合、登録時の重複チェックを行う
+        if (!isset($reqData['formData']['org_id']) && isset($reqData['formData']['entrysystem_org_id'])) {
+            Log::debug("call getEntrysystemOrgIdCount");
+            $duplicationCount = $tOrganizations->getEntrysystemOrgIdCount($reqData['formData']['entrysystem_org_id']);
+        }
+        //団体IDとエントリーシステムの団体IDが入力されている場合、更新時の重複チェックを行う
+        if (isset($reqData['formData']['org_id']) && isset($reqData['formData']['entrysystem_org_id'])) {
+            Log::debug("call getEntrysystemOrgIdCountWithOrgId");
+            $duplicationCount = $tOrganizations->getEntrysystemOrgIdCountWithOrgId($reqData['formData']['entrysystem_org_id'], $reqData['formData']['org_id']);
+        }
+
+        if ($duplicationCount > 0) {
+            Log::debug(sprintf("validateOrgData duplication"));
+            return response()->json(["エントリーシステムの団体IDが重複しています。"], 401);
+        }
+
+        Log::debug(sprintf("validateOrgData end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
+    }
 }

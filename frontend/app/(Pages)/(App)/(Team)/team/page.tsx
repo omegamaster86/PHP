@@ -392,12 +392,11 @@ export default function OrgInfo() {
             axios
               .post('/validateOrgData', sendData) //20240308
               .then((response) => {
-                console.log(response);
                 setDisableFlag(false);
                 router.push('/team?mode=confirm&prevMode=create');
               })
               .catch((error) => {
-                console.log(error);
+                setErrorMessage(['入力値エラー: ' + (error?.response?.data as string[])]);
               });
           }
           setDisableFlag(false);
@@ -437,7 +436,8 @@ export default function OrgInfo() {
                 router.push('/team?mode=confirm&prevMode=update');
               })
               .catch((error) => {
-                console.log(error);
+                // console.log(error);
+                setErrorMessage(['入力値エラー: ' + (error?.response?.data as string[])]);
               });
           }
           setDisableFlag(false);

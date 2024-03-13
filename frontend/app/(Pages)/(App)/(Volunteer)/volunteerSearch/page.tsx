@@ -324,6 +324,7 @@ export default function VolunteerSearch() {
    * 検索結果をstateにセットする
    */
   const handleSearch = async () => {
+    // console.log(searchCond);
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     axios
@@ -482,7 +483,7 @@ export default function VolunteerSearch() {
                 displayHelp={false}
                 isError={false}
                 errorMessages={[]}
-                value={searchCond.volunteer_name}
+                value={searchCond.volunteer_name?.toString() || ''}
                 onChange={(e) => {
                   handleInputChange('volunteer_name', e.target.value);
                 }}

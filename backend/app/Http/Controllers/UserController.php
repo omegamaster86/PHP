@@ -743,9 +743,14 @@ class UserController extends Controller
     //delete_flagを1にupdateする
     public function updateDeleteFlagInUserData(T_users $t_users)
     {
+        $orgFlag = substr(Auth::user()->user_type, 4, 1); //団体管理者の場合、削除処理を行わない
+        if($orgFlag == 1){
+            return response()->json(["団体管理者権限を保有しています。"],401);
+        }
+
+        DB::beginTransaction();
         try
         {
-            DB::beginTransaction();
             $t_users->updateDeleteFlagToInvalid();
             DB::commit();
         }
@@ -760,7 +765,7 @@ class UserController extends Controller
             Log::channel('user_update')->info("\r\n \r\n＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code  \r\n  \r\n ============================================================ \r\n \r\n");
             return response()->json(["失敗しました。ユーザーサポートにお問い合わせください。"],500);
         }
-        return response()->json(["退会の件、完了しました。"],200); //処理結果を返す
+        return response()->json(["退会が完了しました。"],200); //処理結果を返す
     }
 
     //ユーザーに関連付いたIDを取得する
