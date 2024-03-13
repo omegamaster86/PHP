@@ -31,10 +31,10 @@ use App\Models\M_languages;
 use App\Models\M_language_proficiency;
 use App\Models\M_clothes_size;
 
-Route::get('contact-us', [ContactUsController::class, 'create'])->name('contact-us');
-Route::get('contact-us/confirm', [ContactUsController::class, 'createConfirm'])->name('contact-us-confirm');
+// Route::get('contact-us', [ContactUsController::class, 'create'])->name('contact-us');
+// Route::get('contact-us/confirm', [ContactUsController::class, 'createConfirm'])->name('contact-us-confirm');
 Route::post('contact-us', [ContactUsController::class, 'store']);
-Route::post('contact-us/confirm', [ContactUsController::class, 'storeConfirm']);
+// Route::post('contact-us/confirm', [ContactUsController::class, 'storeConfirm']);
 
 
 //団体選手一括登録
