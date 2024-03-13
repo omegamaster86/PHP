@@ -104,6 +104,7 @@ export default function TournamentRef() {
         // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
         const tournamentResponse = await axios.post('/getTournamentInfoData', tourn_id); //大会IDを元に大会情報を取得する
         // console.log(tournamentResponse);
+        tournamentResponse.data.result.tourn_url = tournamentResponse.data.result.tourn_url ?? ''; //nullのパラメータを空のパラメータに置き換える
         setTournamentFormData(tournamentResponse.data.result);
         // TODO: tournIdを元にレース情報を取得する処理の置き換え
         // const raceResponse = await axios.get<Race[]>('http://localhost:3100/race');
@@ -341,7 +342,7 @@ export default function TournamentRef() {
                     {/* レースNo. */}
                     <CustomTd>{row.race_number}</CustomTd>
                     {/* 種目 */}
-                    <CustomTd>{row.race_class_name}</CustomTd>
+                    <CustomTd>{row.event_name}</CustomTd>
                     {/* 組別 */}
                     <CustomTd>{row.by_group}</CustomTd>
                     {/* 距離 */}
