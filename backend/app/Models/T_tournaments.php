@@ -282,13 +282,13 @@ class T_tournaments extends Model
     public function getTournamentWithSearchCondition($searchCondition)
     {
         //大会種別(公式・非公式)　大会名　開催開始年月日　開催終了年月日　開催場所　主催団体ID　主催団体名　を取得
-        $sqlString = 'select
-                        `tourn_id`,
-                        `tourn_name`,
-                        `sponsor_org_id`,
-                        `org_name` as `sponsorOrgName`,
-                        `event_start_date`,
-                        `event_end_date`,
+        $sqlString = 'select distinct
+                        `t_tournaments`.`tourn_id`,
+                        `t_tournaments`.`tourn_name`,
+                        `t_tournaments`.`sponsor_org_id`,
+                        `t_organizations`.`org_name` as `sponsorOrgName`,
+                        `t_tournaments`.`event_start_date`,
+                        `t_tournaments`.`event_end_date`,
                         `t_tournaments`.`venue_id`,
                         case `m_venue`.`venue_name`
                             when "その他" then `t_tournaments`.`venue_name`
@@ -302,14 +302,17 @@ class T_tournaments extends Model
                             end as `tournTypeName`,
                         `tourn_url`,
                         `tourn_info_faile_path`,
-                        `entrysystem_tourn_id`
+                        `t_tournaments`.`entrysystem_tourn_id`
                         from `t_tournaments`
                         left join `t_organizations`
                         on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
                         left join `m_venue`
                         on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
+                        left join `t_race_result_record`
+                        on `t_tournaments`.`tourn_id` = `t_race_result_record`.`tourn_id`
                         where `t_tournaments`.`delete_flag` = 0
                         and (`t_organizations`.`delete_flag` = 0 or `t_organizations`.`delete_flag` is null)
+                        and (`t_race_result_record`.`delete_flag` = 0 or `t_race_result_record`.`delete_flag` is null)
                         and (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
                         #SearchCondition#';
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);

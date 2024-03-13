@@ -314,6 +314,22 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("generateSearchCondition start"));
         $condition = "";
+
+        if (isset($searchInfo['tourn_name'])) {
+            $condition .= " and `t_tournaments`.`tourn_name` like " . "\"%" . $searchInfo['tourn_name'] . "%\""; //大会名
+        }
+        if (isset($searchInfo['tourn_type'])) {
+            $condition .= " and `t_tournaments`.`tourn_type`=" . $searchInfo['tourn_type']; //大会種別
+        }
+        if (isset($searchInfo['venue_id'])) {
+            $condition .= " and `t_tournaments`.`venue_id` = " . $searchInfo['venue_id']; //開催場所
+        }
+        if (isset($searchInfo['event_start_date'])) {
+            $condition .= " and `t_tournaments`.`event_start_date`>= CAST('" . $searchInfo['event_start_date'] . "' AS DATE)"; //開催開始年月日
+        }
+        if (isset($searchInfo['event_end_date'])) {
+            $condition .= " and `t_tournaments`.`event_end_date` <= CAST('" . $searchInfo['event_end_date'] . "' AS DATE)"; //開催終了年月日
+        }
         if (isset($searchInfo['jara_player_id'])) {
             $condition .= " and `t_race_result_record`.`jara_player_id`=" . $searchInfo['jara_player_id']; //JARA選手コード
         }
@@ -322,18 +338,6 @@ class TournamentController extends Controller
         }
         if (isset($searchInfo['player_name'])) {
             $condition .= " and `t_race_result_record`.`player_name` like " . "\"%" . $searchInfo['player_name'] . "%\""; //選手名
-        }
-        if (isset($searchInfo['tourn_name'])) {
-            $condition .= " and `t_tournaments`.`tourn_name` like " . "\"%" . $searchInfo['tourn_name'] . "%\""; //大会名
-        }
-        if (isset($searchInfo['event_start_date'])) {
-            $condition .= " and `t_tournaments`.`event_start_date`>= CAST('" . $searchInfo['event_start_date'] . "' AS DATE)"; //開催開始年月日
-        }
-        if (isset($searchInfo['event_end_date'])) {
-            $condition .= " and `t_tournaments`.`event_end_date` <= CAST('" . $searchInfo['event_end_date'] . "' AS DATE)"; //開催終了年月日
-        }
-        if (isset($searchInfo['venue_id'])) {
-            $condition .= " and `t_tournaments`.`venue_id` = " . $searchInfo['venue_id']; //開催場所
         }
         if (isset($searchInfo['sponsor_org_id'])) {
             $condition .= " and `t_tournaments`.`sponsor_org_id`= " . $searchInfo['sponsor_org_id']; //主催団体ID
