@@ -719,9 +719,9 @@ class T_raceResultRecord extends Model
                                             where 1=1
                                             and rrr.`delete_flag` = 0
                                             and rrr.`official` = 0	                                #非公式大会
-                                            and rrr.`entrysystem_tourn_id` = :entrysystem_tourn_id	#エントリーシステムID
-                                            and rrr.`entrysystem_race_id` = :entrysystem_race_id	#エントリーレースID
-                                            and rrr.`jara_player_id` = :jara_player_id				#jara選手コード
+                                            and rrr.`tourn_id` = :tourn_id	        #大会ID
+                                            and rrr.`race_id` = :race_id	        #レースID
+                                            and rrr.`player_id` = :player_id		#選手ID
                                         ',$conditions);
         return $target_race_count;
     }
