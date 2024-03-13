@@ -17,7 +17,7 @@
 $email_register_check = ["既に登録されているメールアドレスです。","同じメールアドレスでユーザーの登録は出来ません。"];
 $registration_failed = ["仮登録に失敗しました。","ユーザーサポートにお問い合わせください。"];
 $mail_sent_failed = ["メールの送信に失敗しました。" , "入力したメールアドレスを確認してください。"];
-$mail_sent_failed_for_contact_us = "メールの送信に失敗しました。<br/>もう一度送信してください。";
+$mail_sent_failed_for_contact_us = ["メールの送信に失敗しました。","もう一度送信してください。"];
 $database_system_error = ["内部処理エラーが発生しました、" , "サポートにご連絡ください。"];
 $database_registration_failed_try_again = ["他のユーザーが登録処理中です、" , "しばらく待ってから再度操作をお願いします。"];
 $already_registered = ["既に仮登録がされています。" , "発行された仮パスワードで、" , "ログイン画面からログインしてください。"];
