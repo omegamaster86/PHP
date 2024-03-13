@@ -351,12 +351,24 @@ class VolunteerController extends Controller
                             where 1=1
                             ";
 
-            //全ての言語を持っているかを判定するためのand条件を生成
-            for ($i = 1; $i <= $lang_max_count; $i++) {
-                if (isset($searchInfo['language' . $i])) {
-                    $condition .= "and vlp.lang" . $i . " > 0\r\n";
+            //いずれかの言語を持っているかを判定するためのor条件を生成
+            $is_add_andstr = false;
+            for ($i = 1; $i <= $lang_max_count; $i++)
+            {
+                if (isset($searchInfo['language' . $i]))
+                {
+                    if(!$is_add_andstr)
+                    {
+                        $condition .= "and (vlp.lang" . $i . " > 0\r\n";
+                        $is_add_andstr = true;
+                    }
+                    else
+                    {
+                        $condition .= "or vlp.lang" . $i . " > 0\r\n";
+                    }
                 }
             }
+            $condition .= ")\r\n";
             $condition .= ")\r\n";
         }
         return $condition;
@@ -440,11 +452,22 @@ class VolunteerController extends Controller
                            where 1=1
                            ";
 
+            //資格情報はor条件
+            $is_add_andstr = false;
             for ($i = 1; $i <= $qualifications_max; $i++) {
                 if (isset($searchInfo['qualifications' . $i])) {
-                    $condition .= "and qual.`qualifications" . $i . "` > 0\r\n";
+                    if($is_add_andstr)
+                    {
+                        $condition .= "and (qual.`qualifications" . $i . "` > 0\r\n";
+                        $is_add_andstr = true;
+                    }
+                    else
+                    {
+                        $condition .= "or qual.`qualifications" . $i . "` > 0\r\n";
+                    }
                 }
             }
+            $condition .= ")\r\n";
             $condition .= ")\r\n";
         }
         //参加しやすい曜日
