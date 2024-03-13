@@ -1,0 +1,47 @@
+{{--*************************************************************************
+* Project name: JARA
+* File name: for_registered_player_organization_registration_notification_mail.blade.php
+* File extension: .blade.php
+*************************************************************************
+* Author: DEY PRASHANTA KUMAR
+* Created At: 2024/3/12
+* Updated At: 2024/3/12
+*************************************************************************
+*
+* Copyright 2024 by DPT INC.
+*
+************************************************************************--}}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+</head>
+
+<body>
+    <p>
+        件名: {{$registered_player_mail_data['organization_name']}}の所属選手として登録されました。<br />
+        送信元: xxxxx@jara.or.jp<br />
+        宛先: {{$registered_player_mail_data['to_mailaddress']}}<br /><br />
+
+        ※本メールはシステムから自動送信されています。<br /><br />
+
+        {{$registered_player_mail_data['player_name']}} 様
+        {{$registered_player_mail_data['to_mailaddress']}} 
+
+        {{$registered_player_mail_data['organization_name']}}（{{$registered_player_mail_data['organization_id']}}）の管理者により、団体の所属選手として登録されました。
+
+        ※ このメールは送信専用です。返信できませんのでご注意ください。
+        ※ このメールに心当たりがない場合、お手数ですが管理者までお問い合わせください。
+        　　問い合わせ：{{$registered_player_mail_data['inquiry_url']}}
+
+
+        ====================================<br />
+        日本ローイング協会<br />
+        ====================================<br />
+    </p>
+</body>
+
+</html>
