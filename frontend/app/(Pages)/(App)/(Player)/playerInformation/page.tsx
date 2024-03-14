@@ -522,8 +522,6 @@ export default function PlayerInformation() {
               .then((response) => {
                 // TODO: 更新処理成功時の処理
                 // console.log(response);
-                console.log(formData.side_info);
-                formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
                 if (formData.birth_country != 112) { //出身地が日本以外の場合、都道府県に関連したデータを削除する
                   formData.birth_prefecture = 0;
                   formData.birthPrefectureName = '';
@@ -538,7 +536,9 @@ export default function PlayerInformation() {
                   tmpArray.push(formData.side_info[index]);
                 }
                 formData.side_info = tmpArray;
+                formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
                 console.log(formData.side_info);
+                
                 setErrorMessage([]);
                 axios
                   // .post('http://localhost:3100/', registerData)
@@ -604,8 +604,6 @@ export default function PlayerInformation() {
               .then((response) => {
                 // TODO: 更新処理成功時の処理
                 // console.log(response);
-                console.log(formData.side_info);
-                formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
                 if (formData.birth_country != 112) { //出身地が日本以外の場合、都道府県に関連したデータを削除する
                   formData.birth_prefecture = 0;
                   formData.birthPrefectureName = '';
@@ -620,7 +618,9 @@ export default function PlayerInformation() {
                   tmpArray.push(formData.side_info[index]);
                 }
                 formData.side_info = tmpArray;
-                console.log(formData);
+                formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
+                console.log(formData.side_info);
+
                 setErrorMessage([]);
                 axios
                   // .post('http://localhost:3100/', registerData)
