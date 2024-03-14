@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ContactUsMail extends Mailable
+class ForUnregisteredPlayerOrganizationRegistrationNotificationMail extends Mailable
 {
     use Queueable, SerializesModels;
     public $unregistered_player_mail_data;

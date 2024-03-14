@@ -661,69 +661,113 @@ class T_raceResultRecord extends Model
                         FROM `t_race_result_record` rrr
                         where 1=1
                         and rrr.`delete_flag` = 0
-                        and rrr.`official` = 1	#公式大会
+                        and rrr.`official` = 1
                         #ReplaceConditionString#';
-        $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
-        $target_race_count = DB::select($sql_string,$values);
+        $sqlString = str_replace('#ReplaceConditionString#', $searchCondition, $sqlString);
+        $target_race_count = DB::select($sqlString,$values);
         Log::debug("getTargetOfficialRaceCount end.");
         return $target_race_count;
     }
 
+    // //エントリー大会ID、エントリーレースID、JARA選手IDが一致する公式のレース結果を取得する
+    // public function getTargetOfficialRace($conditions)
+    // {
+    //     $target_race = DB::select('select
+    //                                     rrr.`race_result_record_id`
+    //                                     ,tour.`tourn_id`				#大会ID
+    //                                     ,tour.`entrysystem_tourn_id`	#既存大会ID
+    //                                     ,tour.`tourn_name`				#大会名
+    //                                     ,race.`race_id`					#レースID
+    //                                     ,race.`entrysystem_race_id`		#既存レースID
+    //                                     ,race.`race_number`             #レースNo.
+    //                                     ,race.`race_name`				#レース名
+    //                                     ,org.`org_id`					#団体ID
+    //                                     ,org.`entrysystem_org_id`		#既存団体ID
+    //                                     ,org.`org_name`					#団体名
+    //                                     ,ply.`player_id`				#選手名
+    //                                     ,ply.`jara_player_id`			#既存選手ID
+    //                                     ,ply.`player_name`				#選手名
+    //                                     ,ply.`height`					#選手身長
+    //                                     ,ply.`weight`					#選手体重
+    //                                     FROM `t_race_result_record` rrr
+    //                                     left join `t_tournaments` tour
+    //                                     on rrr.`tourn_id` = tour.`tourn_id`
+    //                                     left join `t_races` race
+    //                                     on rrr.`race_id` = race.`race_id`
+    //                                     left join `t_organizations` org
+    //                                     on rrr.`org_id` = org.`org_id`
+    //                                     left join t_players ply
+    //                                     on rrr.`player_id` = ply.`player_id`
+    //                                     where 1=1
+    //                                     and rrr.`delete_flag` = 0
+    //                                     and  (tour.`delete_flag` = 0 or tour.`delete_flag` is null)
+    //                                     and  (race.`delete_flag` = 0 or race.`delete_flag` is null)
+    //                                     and  (org.`delete_flag` = 0 or org.`delete_flag` is null)
+    //                                     and  (ply.`delete_flag` = 0 or ply.`delete_flag` is null)
+    //                                     and rrr.`official` = 1	#公式大会
+    //                                     and rrr.`entrysystem_tourn_id` = :entrysystem_tourn_id	#エントリーシステムID
+    //                                     and rrr.`entrysystem_race_id` = :entrysystem_race_id	#エントリーレースID
+    //                                     and rrr.`jara_player_id` = :jara_player_id				#jara選手コード
+    //                                 ',$conditions);
+    //     return $target_race;
+    // }
+
     //エントリー大会ID、エントリーレースID、JARA選手IDが一致する公式のレース結果を取得する
-    public function getTargetOfficialRace($conditions)
+    public function getTargetOfficialRace($values,$searchCondition)
     {
-        $target_race = DB::select('select
-                                        rrr.`race_result_record_id`
-                                        ,tour.`tourn_id`				#大会ID
-                                        ,tour.`entrysystem_tourn_id`	#既存大会ID
-                                        ,tour.`tourn_name`				#大会名
-                                        ,race.`race_id`					#レースID
-                                        ,race.`entrysystem_race_id`		#既存レースID
-                                        ,race.`race_number`             #レースNo.
-                                        ,race.`race_name`				#レース名
-                                        ,org.`org_id`					#団体ID
-                                        ,org.`entrysystem_org_id`		#既存団体ID
-                                        ,org.`org_name`					#団体名
-                                        ,ply.`player_id`				#選手名
-                                        ,ply.`jara_player_id`			#既存選手ID
-                                        ,ply.`player_name`				#選手名
-                                        ,ply.`height`					#選手身長
-                                        ,ply.`weight`					#選手体重
-                                        FROM `t_race_result_record` rrr
-                                        left join `t_tournaments` tour
-                                        on rrr.`tourn_id` = tour.`tourn_id`
-                                        left join `t_races` race
-                                        on rrr.`race_id` = race.`race_id`
-                                        left join `t_organizations` org
-                                        on rrr.`org_id` = org.`org_id`
-                                        left join t_players ply
-                                        on rrr.`player_id` = ply.`player_id`
-                                        where 1=1
-                                        and rrr.`delete_flag` = 0
-                                        and  (tour.`delete_flag` = 0 or tour.`delete_flag` is null)
-                                        and  (race.`delete_flag` = 0 or race.`delete_flag` is null)
-                                        and  (org.`delete_flag` = 0 or org.`delete_flag` is null)
-                                        and  (ply.`delete_flag` = 0 or ply.`delete_flag` is null)
-                                        and rrr.`official` = 1	#公式大会
-                                        and rrr.`entrysystem_tourn_id` = :entrysystem_tourn_id	#エントリーシステムID
-                                        and rrr.`entrysystem_race_id` = :entrysystem_race_id	#エントリーレースID
-                                        and rrr.`jara_player_id` = :jara_player_id				#jara選手コード
-                                    ',$conditions);
+        $sqlString = 'select
+                        rrr.`race_result_record_id`
+                        ,tour.`tourn_id`				#大会ID
+                        ,tour.`entrysystem_tourn_id`	#既存大会ID
+                        ,tour.`tourn_name`				#大会名
+                        ,race.`race_id`					#レースID
+                        ,race.`entrysystem_race_id`		#既存レースID
+                        ,race.`race_number`             #レースNo.
+                        ,race.`race_name`				#レース名
+                        ,org.`org_id`					#団体ID
+                        ,org.`entrysystem_org_id`		#既存団体ID
+                        ,org.`org_name`					#団体名
+                        ,ply.`player_id`				#選手名
+                        ,ply.`jara_player_id`			#既存選手ID
+                        ,ply.`player_name`				#選手名
+                        ,ply.`height`					#選手身長
+                        ,ply.`weight`					#選手体重
+                        FROM `t_race_result_record` rrr
+                        left join `t_tournaments` tour
+                        on rrr.`tourn_id` = tour.`tourn_id`
+                        left join `t_races` race
+                        on rrr.`race_id` = race.`race_id`
+                        left join `t_organizations` org
+                        on rrr.`org_id` = org.`org_id`
+                        left join t_players ply
+                        on rrr.`player_id` = ply.`player_id`
+                        where 1=1
+                        and rrr.`delete_flag` = 0
+                        and  (tour.`delete_flag` = 0 or tour.`delete_flag` is null)
+                        and  (race.`delete_flag` = 0 or race.`delete_flag` is null)
+                        and  (org.`delete_flag` = 0 or org.`delete_flag` is null)
+                        and  (ply.`delete_flag` = 0 or ply.`delete_flag` is null)
+                        and rrr.`official` = 1	#公式大会
+                        #ReplaceConditionString#';
+        $sqlString = str_replace('#ReplaceConditionString#', $searchCondition, $sqlString);
+        $target_race = DB::select($sqlString,$values);
         return $target_race;
     }
 
     //大会ID、レースID、選手IDが一致する非公式のレース結果件数を取得する
     public function getTargetUnofficialRaceCount($conditions)
     {
+        Log::debug("getTargetUnofficialRaceCount start.");
         $target_race_count = DB::select('select count(*)    as "target_race_count"
                                             FROM `t_race_result_record` rrr
                                             where 1=1
                                             and rrr.`delete_flag` = 0
-                                            and rrr.`official` = 0	                                #非公式大会
+                                            and rrr.`official` = 0	                #非公式大会
                                             and rrr.`tourn_id` = :tourn_id	        #大会ID
                                             and rrr.`race_id` = :race_id	        #レースID
                                             and rrr.`player_id` = :player_id		#選手ID
                                         ',$conditions);
+        Log::debug("getTargetUnofficialRaceCount end.");
         return $target_race_count;
     }
 
@@ -763,10 +807,10 @@ class T_raceResultRecord extends Model
                                             and  (org.`delete_flag` = 0 or org.`delete_flag` is null)
                                             and  (ply.`delete_flag` = 0 or ply.`delete_flag` is null)
                                             and rrr.`official` = 0	#非公式大会
-                                            and rrr.`entrysystem_tourn_id` = :entrysystem_tourn_id	#エントリーシステムID
-                                            and rrr.`entrysystem_race_id` = :entrysystem_race_id	#エントリーレースID
-                                            and rrr.`jara_player_id` = :jara_player_id				#jara選手コード
-                                        ',$conditions);
+                                            and rrr.tourn_id = :tourn_id    #大会ID
+                                            and rrr.race_id = :race_id      #レースID
+                                            and rrr.player_id = :player_id  #選手ID'
+                                        ,$conditions);
         return $target_race_count;
     }
 
@@ -775,19 +819,26 @@ class T_raceResultRecord extends Model
     public function updateBulkRaceResultRecord($values)
     {
         DB::update('update `t_race_result_record`
-                        SET `player_id`= :player_id,
-                            `jara_player_id`= :jara_player_id,
-                            `player_name`= :player_name,
-                            `entrysystem_tourn_id`= :entrysystem_tourn_id,
-                            `tourn_id`= :tourn_id,
-                            `tourn_name`= :tourn_name,
-                            `race_id`= :race_id,
-                            `entrysystem_race_id`= :entrysystem_race_id,
-                            `race_name`= :race_name,
-                            `org_id`= :org_id,
-                            `entrysystem_org_id`= :entrysystem_org_id,
-                            `org_name`= :org_name,
-                            `crew_name`= :crew_name,
+                        SET `player_id` = :player_id,
+                            `jara_player_id` = :jara_player_id,
+                            `player_name` = :player_name,
+                            `entrysystem_tourn_id` = :entrysystem_tourn_id,
+                            `tourn_id` = :tourn_id,
+                            `tourn_name` = :tourn_name,
+                            `race_id` = :race_id,
+                            `entrysystem_race_id` = :entrysystem_race_id,
+                            `race_number` = :race_number,
+                            `race_name` = :race_name,
+                            `race_class_id` = :race_class_id,
+                            `race_class_name` = :race_class_name,
+                            `org_id` = :org_id,
+                            `entrysystem_org_id` = :entrysystem_org_id,
+                            `org_name` = :org_name,
+                            `crew_name` = :crew_name,
+                            `by_group` = :by_group,
+                            `event_id` = :event_id,
+                            `event_name` = :event_name,
+                            `range` = :range,
                             `rank`= :rank,
                             `laptime_500m`= :laptime_500m,
                             `laptime_1000m`= :laptime_1000m,
@@ -810,7 +861,15 @@ class T_raceResultRecord extends Model
                             `player_height`= :player_height,
                             `player_weight`= :player_weight,
                             `seat_number`= :seat_number,
+                            `seat_name`= :seat_name,
                             `race_result_record_name`= :race_result_record_name,
+                            `start_datetime` = :start_datetime,
+                            `weather` = :weather,
+                            `wind_speed_2000m_point` = :wind_speed_2000m_point,
+                            `wind_direction_2000m_point` = :wind_direction_2000m_point,
+                            `wind_speed_1000m_point` = :wind_speed_1000m_point,
+                            `wind_direction_1000m_point` = :wind_direction_1000m_point,
+                            `race_result_notes` = :race_result_notes,
                             `updated_time`= :updated_time,
                             `updated_user_id`= :user_id
                             WHERE 1=1
@@ -882,7 +941,7 @@ class T_raceResultRecord extends Model
                         `delete_flag`
                     )
                     VALUES
-                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
                 ,[
                     $values['player_id']
                     ,$values['jara_player_id']
@@ -1080,7 +1139,7 @@ class T_raceResultRecord extends Model
                                 from t_race_result_record
                                 where 1=1
                                 and race_result_record_id = :race_result_record_id
-                                and delete_flag = 1"
+                                and delete_flag = 0"
                                 ,$race_result_record_id);
         return $is_exists;
     }
