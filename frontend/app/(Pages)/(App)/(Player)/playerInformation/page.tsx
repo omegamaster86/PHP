@@ -265,6 +265,11 @@ export default function PlayerInformation() {
                 data[i] = false;
               }
             }
+            var tmpArray = Array(); //サイド情報のエンディアン入れ替え
+            for (let index = data.length - 1; index >= 0; index--) {
+              tmpArray.push(data[index]);
+            }
+            data = tmpArray;
             // nameプロパティのみ抜き出してstringの配列に変換
             setFormData((prevFormData) => ({
               ...prevFormData,
@@ -537,7 +542,7 @@ export default function PlayerInformation() {
                 }
                 formData.side_info = tmpArray;
                 formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
-                console.log(formData.side_info);
+                console.log(formData);
 
                 //nullのパラメータを空のパラメータに置き換える
                 Object.keys(formData).forEach(key => {
@@ -621,7 +626,7 @@ export default function PlayerInformation() {
                 }
                 formData.side_info = tmpArray;
                 formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
-                console.log(formData.side_info);
+                console.log(formData);
 
                 //nullのパラメータを空のパラメータに置き換える
                 Object.keys(formData).forEach(key => {
