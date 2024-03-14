@@ -102,24 +102,27 @@ export default function VolunteerInformationRef() {
         await csrf();
         // const volunteerResponse = await axios.get<VolunteerResponse>('/volunteer',);
         const volunteerResponse = await axios.post('/getVolunteerData', volunteer_id); //ボランティア情報の取得 20240213
-        // console.log(volunteerResponse.data.result);
+        console.log(volunteerResponse.data);
+        const volLangProDataList = volunteerResponse.data.volLangProData.map(({ lang_pro_name, lang_name }: { lang_pro_name: number; lang_name: string }) => ({ level: lang_pro_name, languageName: lang_name }));
+        console.log(volLangProDataList);
+
         setVolunteerdata({
           volunteer_id: volunteerResponse.data.result.volunteer_id, // ボランティアID
           volunteer_name: volunteerResponse.data.result.volunteer_name, // 氏名
-          residence_country: volunteerResponse.data.result.residence_country, // 居住地（国）
-          residence_prefecture: volunteerResponse.data.result.residence_prefecture, // 居住地（都道府県）
-          sex: volunteerResponse.data.result.sex, // 性別　#置き換え作業未対応
+          residence_country: volunteerResponse.data.result.country_name, // 居住地（国）
+          residence_prefecture: volunteerResponse.data.result.pref_name, // 居住地（都道府県）
+          sex: volunteerResponse.data.result.master_sex_type, // 性別
           date_of_birth: volunteerResponse.data.result.date_of_birth, // 生年月日
           telephone_number: volunteerResponse.data.result.telephone_number, // 電話番号
           mailaddress: volunteerResponse.data.result.mailaddress, // メールアドレス
-          clothes_size: volunteerResponse.data.result.clothes_size, // 服のサイズ
-          personality: volunteerResponse.data.result.personality, // 性格　#置き換え作業未対応
-          dis_type_id: [''], // 障碍タイプ
-          qualHold: [''], // 保有資格　#置き換え作業未対応
-          language: [''], // 言語　#置き換え作業未対応
+          clothes_size: volunteerResponse.data.result.master_clothes_size, // 服のサイズ
+          personality: volunteerResponse.data.result.personality, // 性格
+          dis_type_id: volunteerResponse.data.volSupDisData, // 障碍タイプ
+          qualHold: volunteerResponse.data.volQualData, // 保有資格　
+          language: volLangProDataList, // 言語　
           language_proficiency: '', //残件対応項目
-          day_of_week: volunteerResponse.data.result.day_of_week, // 曜日
-          time_zone: volunteerResponse.data.result.time_zone, // 時間帯
+          day_of_week: volunteerResponse.data.volAvaData.day_of_week.split(''), // 曜日
+          time_zone: volunteerResponse.data.volAvaData.time_zone.split(''), // 時間帯
           photo: volunteerResponse.data.result.photo, // 写真　#置き換え作業未対応
         });
         // const volunteerHistoriesResponse = await axios.get<VolunteerHistoriesResponse[]>(
@@ -270,13 +273,13 @@ export default function VolunteerInformationRef() {
               PR3：
               四肢と胴体に障害があるが、動かすことができる選手。視覚障害者もこのクラスに分類される' />
             <div className='flex flex-row gap-[16px] justify-start'>
-              {volunteerdata.dis_type_id?.map((dis_type_id) => (
+              {volunteerdata.dis_type_id?.map((volSupDisData: any) => (
                 <OriginalCheckbox
                   id='disType'
-                  key={dis_type_id}
-                  label={dis_type_id}
-                  value={dis_type_id}
-                  checked={dis_type_id.length > 0}
+                  key={volSupDisData.dis_type_name as string}
+                  label={volSupDisData.dis_type_name}
+                  value={volSupDisData.dis_type_name}
+                  checked={volSupDisData.dis_type_name.length > 0}
                   readonly
                   onChange={(e) => { }}
                 />
@@ -287,9 +290,9 @@ export default function VolunteerInformationRef() {
             <InputLabel
               label='資格情報' />
             <div className='flex flex-row gap-[16px] justify-start'>
-              {volunteerdata.qualHold?.map((qualHold) => (
-                <div id='qualHold' key={qualHold}>
-                  <p className='text-secondaryText'>{qualHold}</p>
+              {volunteerdata.qualHold?.map((qualHold: any) => (
+                <div id='qualHold' key={qualHold.qual_name as string}>
+                  <p className='text-secondaryText'>{qualHold.qual_name as string}</p>
                 </div>
               ))}
             </div>

@@ -532,6 +532,12 @@ export default function PlayerInformation() {
                   formData.residence_prefecture = 0;
                   formData.residencePrefectureName = '';
                 }
+                //サイド情報のデータ位置入れ替え
+                var tmpArray = Array();
+                for (let index = formData.side_info.length - 1; index >= 0; index--) {
+                  tmpArray.push(formData.side_info[index]);
+                }
+                formData.side_info = tmpArray;
                 console.log(formData.side_info);
                 setErrorMessage([]);
                 axios
@@ -608,6 +614,12 @@ export default function PlayerInformation() {
                   formData.residence_prefecture = 0;
                   formData.residencePrefectureName = '';
                 }
+                //サイド情報のデータ位置入れ替え
+                var tmpArray = Array();
+                for (let index = formData.side_info.length - 1; index >= 0; index--) {
+                  tmpArray.push(formData.side_info[index]);
+                }
+                formData.side_info = tmpArray;
                 console.log(formData);
                 setErrorMessage([]);
                 axios
@@ -866,7 +878,7 @@ export default function PlayerInformation() {
               readonly={mode === 'confirm'}
               label=': S (ストロークサイド)'
               value='S'
-              checked={formData.side_info?.at(3) ?? false}
+              checked={formData.side_info?.at(0) ?? false}
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
@@ -884,7 +896,7 @@ export default function PlayerInformation() {
               readonly={mode === 'confirm'}
               label=': B (バウサイド)'
               value='B'
-              checked={formData.side_info?.at(2) as boolean}
+              checked={formData.side_info?.at(1) as boolean}
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
@@ -902,7 +914,7 @@ export default function PlayerInformation() {
               label=': X (スカル)'
               value='X'
               readonly={mode === 'confirm'}
-              checked={formData.side_info?.at(1) as boolean}
+              checked={formData.side_info?.at(2) as boolean}
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
@@ -920,7 +932,7 @@ export default function PlayerInformation() {
               label=': C (コックス)'
               readonly={mode === 'confirm'}
               value='C'
-              checked={formData.side_info?.at(0) as boolean}
+              checked={formData.side_info?.at(3) as boolean}
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
