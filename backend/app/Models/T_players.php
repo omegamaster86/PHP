@@ -160,7 +160,23 @@ class T_players extends Model
     public function updatePlayerData($playersInfo)
     {
         DB::update(
-            'update `t_players` set `jara_player_id`=?,`player_name`=?,`date_of_birth`=?,`sex_id`=?,`height`=?,`weight`=?,`side_info`=?,`birth_country`=?, `birth_prefecture`=?,`residence_country`=?,`residence_prefecture`=?,`photo`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where user_id = ?',
+            'update `t_players` set 
+            `jara_player_id`=?,
+            `player_name`=?,
+            `date_of_birth`=?,
+            `sex_id`=?,
+            `height`=?,
+            `weight`=?,
+            `side_info`=?,
+            `birth_country`=?,
+            `birth_prefecture`=?,
+            `residence_country`=?,
+            `residence_prefecture`=?,
+            `photo`=?,
+            `updated_time`=?,
+            `updated_user_id`=?,
+            `delete_flag`=?
+             where user_id = ?',
             [
                 $playersInfo['jara_player_id'],
                 $playersInfo['player_name'],
@@ -174,8 +190,6 @@ class T_players extends Model
                 $playersInfo['residence_country'],
                 $playersInfo['residence_prefecture'],
                 $playersInfo['photo'],
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id,
                 now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 $playersInfo['delete_flag'],

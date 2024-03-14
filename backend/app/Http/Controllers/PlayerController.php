@@ -646,7 +646,7 @@ class PlayerController extends Controller
         $tPlayersData::$playerInfo['date_of_birth'] = $reqData['date_of_birth']; //誕生日
         $tPlayersData::$playerInfo['height'] = $reqData['height']; //身長
         $tPlayersData::$playerInfo['weight'] = $reqData['weight']; //体重
-        $tPlayersData::$playerInfo['sex'] = $reqData['sex_id']; //性別ID
+        $tPlayersData::$playerInfo['sex_id'] = $reqData['sex_id']; //性別ID
         // $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
         //サイド情報
         $side_info = null;
@@ -713,7 +713,6 @@ class PlayerController extends Controller
         Log::debug(sprintf("updatePlayerData start"));
         $reqData = $request->all();
         Log::debug($reqData);
-        $tPlayersData::$playerInfo['player_id'] = $reqData['player_id']; //JARA選手コード
         $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
         $tPlayersData::$playerInfo['player_name'] = $reqData['player_name']; //選手名
         $tPlayersData::$playerInfo['date_of_birth'] = $reqData['date_of_birth']; //誕生日
@@ -766,6 +765,7 @@ class PlayerController extends Controller
 
         DB::beginTransaction();
         try {
+            Log::debug($tPlayersData::$playerInfo);
             $result = $tPlayersData->updatePlayerData($tPlayersData::$playerInfo); //DBに選手を登録 20240131
 
             $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
