@@ -646,7 +646,7 @@ class PlayerController extends Controller
         $tPlayersData::$playerInfo['date_of_birth'] = $reqData['date_of_birth']; //誕生日
         $tPlayersData::$playerInfo['height'] = $reqData['height']; //身長
         $tPlayersData::$playerInfo['weight'] = $reqData['weight']; //体重
-        $tPlayersData::$playerInfo['sex'] = $reqData['sex_id']; //性別ID
+        $tPlayersData::$playerInfo['sex_id'] = $reqData['sex_id']; //性別ID
         // $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
         //サイド情報
         $side_info = null;

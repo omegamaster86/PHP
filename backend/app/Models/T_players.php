@@ -207,10 +207,8 @@ class T_players extends Model
     public function deletePlayerData($playersInfo)
     {
         DB::update(
-            'update `t_players` set `registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where player_id = ?',
+            'update `t_players` set `updated_time`=?,`updated_user_id`=?,`delete_flag`=? where player_id = ? and delete_flag = 0',
             [
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id,
                 now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 1,
@@ -231,6 +229,22 @@ class T_players extends Model
         $registeredPlayer = [];
         if (!empty($result)) {
             $registeredPlayer = $result[0];
+
+            if($registeredPlayer->user_id ?? "") {
+
+            }
+            else {
+                DB::update(
+                    'update `t_players` set `updated_time` = ? , `updated_user_id` = ? , `delete_flag` = ? where `jara_player_id` = ?',
+                    [
+                        now()->format('Y-m-d H:i:s.u'),
+                        Auth::user()->user_id,
+                        1,
+                        $playersInfo['jara_player_id'] //where条件用
+                    ]
+                );
+                $registeredPlayer = [];
+            }
         }
         return $registeredPlayer;
     }
