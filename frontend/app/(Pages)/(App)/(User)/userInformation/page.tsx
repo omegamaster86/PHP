@@ -242,23 +242,23 @@ export default function UserInformationUpdate() {
             Validator.validateRequired(formData?.residencePrefectureName, '居住地'),
           ]);
 
-          const dateOfBirthError = Validator.getErrorMessages([
-            Validator.validateRequired(formData?.date_of_birth, '生年月日'),
-            Validator.validateBirthOfDateRange(new Date(formData?.date_of_birth), '生年月日', 5, 150),
-          ]);
+          // const dateOfBirthError = Validator.getErrorMessages([
+          //   Validator.validateRequired(formData?.date_of_birth, '生年月日'),
+          //   Validator.validateBirthOfDateRange(new Date(formData?.date_of_birth), '生年月日', 5, 150),
+          // ]);
 
           setUserNameErrorMessages(userNameError as string[]);
           setSexErrorMessages(sexError as string[]);
           setLivingCountryErrorMessages(livingCountryError as string[]);
           setLivingPrefectureErrorMessages(livingPrefectureError as string[]);
-          setDateOfBirthErrorMessages(dateOfBirthError as string[]);
+          // setDateOfBirthErrorMessages(dateOfBirthError as string[]);
 
           if (
             userNameError.length > 0 ||
             sexError.length > 0 ||
             livingCountryError.length > 0 ||
-            livingPrefectureError.length > 0 ||
-            dateOfBirthError.length > 0
+            livingPrefectureError.length > 0
+            // dateOfBirthError.length > 0
           ) {
             return;
           }
@@ -577,7 +577,7 @@ export default function UserInformationUpdate() {
               handleInputChange('date_of_birth', formatDate(e as unknown as Date));
             }}
             maxDate={new Date()}
-            errorMessages={dateOfBirthErrorMessages}
+            // errorMessages={dateOfBirthErrorMessages}
           />
         </div>
         <div className='flex flex-row justify-start gap-[16px]'>

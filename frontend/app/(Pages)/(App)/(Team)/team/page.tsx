@@ -383,6 +383,10 @@ export default function OrgInfo() {
             });
             // console.log(staffList);
             //送信データの作成
+            //nullのパラメータを空のパラメータに置き換える
+            Object.keys(formData).forEach(key => {
+              (formData as any)[key] = (formData as any)[key] ?? '';
+            });
             const sendData = {
               formData,
               staffList
@@ -422,6 +426,10 @@ export default function OrgInfo() {
             });
             // console.log(staffList);
             //送信データの作成
+            //nullのパラメータを空のパラメータに置き換える
+            Object.keys(formData).forEach(key => {
+              (formData as any)[key] = (formData as any)[key] ?? '';
+            });
             const sendData = {
               formData,
               staffList
@@ -458,6 +466,10 @@ export default function OrgInfo() {
           });
           // console.log(staffList);
           //送信データの作成
+          //nullのパラメータを空のパラメータに置き換える
+          Object.keys(formData).forEach(key => {
+            (formData as any)[key] = (formData as any)[key] ?? '';
+          });
           const sendData = {
             formData,
             staffList

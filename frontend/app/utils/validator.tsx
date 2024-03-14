@@ -430,7 +430,7 @@ const validatePlayerNameFormat = (playerName: string) => {
  * validateUrlFormat('sample.com') // 'URLが正しいことを確認してください'
  */
 const validateUrlFormat = (url: string) => {
-  if (url === '') {
+  if (url === '' || url === undefined || url === null) {
     return '';
   }
   let errorMessage = '';
