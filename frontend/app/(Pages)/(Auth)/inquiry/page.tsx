@@ -17,10 +17,12 @@ import Validator from '@/app/utils/validator';
 import axios from '@/app/lib/axios';
 import { TextareaAutosize } from '@mui/material';
 import { UserResponse } from '@/app/types';
+import { useAuth } from '@/app/hooks/auth';
 
 export default function Inquiry() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
 
   // modeの値を取得 default confirm
   const mode = searchParams.get('mode') ?? 'default';
@@ -33,6 +35,23 @@ export default function Inquiry() {
     user_name: '',
     mailaddress: '',
   } as UserResponse);
+  const { user: userInfo } = useAuth({ middleware: 'auth' }) ;
+
+  useEffect(() => {
+    if(userInfo){
+      setUser((prev)=>({
+        ...prev, 
+        user_name: userInfo.user_name,
+        mailaddress: userInfo.mailaddress,
+      }));
+      setIsLogIn(true);
+    }
+    else{
+      setIsLogIn(false);
+    }
+  }, [userInfo]);
+  
+    
   // お問い合わせ内容
   const [inquiry, setInquiry] = useState<string>();
   // お問い合わせ内容（改行ごとに配列に分割）
@@ -101,13 +120,16 @@ export default function Inquiry() {
         buttonType='primary'
         onClick={async () => {
           // 送信処理
-          const requestBody = {};
+          const requestBody = {
+            ...user,
+            content : inquiry
+          };
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
           axios
-            .post('/smtp', requestBody)
+            .post('/contact-us', requestBody)
             .then((response) => {
-              router.push('/login');
+              {isLogIn ? router.push('/tournamentSearch') : router.push('/login')}
             })
             .catch((error) => {
               setErrorMessage(['メール送信に失敗しました。もう一度送信してください。']);

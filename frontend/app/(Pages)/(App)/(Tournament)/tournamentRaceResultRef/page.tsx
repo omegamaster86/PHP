@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/app/lib/axios';
 // コンポーネントのインポート
 import {
+  CustomTitle,
   CustomButton,
   CustomTable,
   CustomThead,
@@ -245,6 +246,7 @@ export default function TournamentRaceResultRef() {
     <div>
       <main>
         <div className='flex flex-col pt-[40px] pb-[60px] gap-[50px] md:w-[1000px] sm: w-[600px]'>
+          <CustomTitle displayBack>大会レース結果参照</CustomTitle>
           <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
           <div className='bg-primary-900 p-4'>
             <div className='flex flex-col justify-start gap-[20px]'>

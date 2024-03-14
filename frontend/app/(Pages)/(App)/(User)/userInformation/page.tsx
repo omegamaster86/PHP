@@ -296,7 +296,7 @@ export default function UserInformationUpdate() {
                    })
                   .then((response) => {
                     // 成功時の処理を実装
-                    window.confirm('ユーザー情報を更新しました。');
+                    window.alert('ユーザー情報を更新しました。');
                     // router.push('/' + (prevScreen ? prevScreen : ''));
                     router.push('/userInformationRef');
                   })
@@ -360,7 +360,7 @@ export default function UserInformationUpdate() {
 
                 .then((response) => {
                   // 成功時の処理を実装
-                  window.confirm('ユーザー情報を更新しました。');
+                  window.alert('ユーザー情報を更新しました。');
                   // router.push('/' + (prevScreen ? prevScreen : ''));
                   router.push('/userInformationRef');
                 })

@@ -33,12 +33,8 @@ class T_volunteer_qualifications_hold extends Model
         left join `m_volunteer_qualifications`
         on `t_volunteer_qualifications_hold`.`qual_id` = `m_volunteer_qualifications`.`qual_id`
         where `t_volunteer_qualifications_hold`.delete_flag=0 and `t_volunteer_qualifications_hold`.volunteer_id = ?', [$vlntrId]);
-        //1つの団体IDを取得するため0番目だけを返す
-        $targetTrn = null;
-        if (!empty($volunteers)) {
-            $targetTrn = $volunteers[0];
-        }
-        return $targetTrn;
+
+        return $volunteers;
     }
 
     public function updateVolunteerQualificationsHold($volunteersInfo)

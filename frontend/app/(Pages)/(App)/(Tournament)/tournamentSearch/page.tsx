@@ -87,6 +87,8 @@ export default function TournamentSearch() {
   const [searchResponse, setSearchResponse] = useState<Tournament[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState([] as string[]);
+  const [visibleData, setVisibleData] = useState<Tournament[]>([]); // 表示するデータ
+  const [visibleItems, setVisibleItems] = useState(10); // 表示するデータの数
 
   // フォームの入力値を管理する関数
   const handleInputChange = (name: string, value: string) => {
@@ -121,7 +123,15 @@ export default function TournamentSearch() {
       await csrf();
       const response = await axios.post('/tournamentSearch', searchCond);
       // console.log(response.data);
+      if (response.data.result.length > 100) {
+        window.alert('検索結果が100件を超えました、上位100件を表示しています。');
+      }
+      // レスポンスからデータを取り出してstateにセット
       setSearchResponse(response.data.result);
+      // 最初は10件だけ表示
+      setVisibleItems(10);
+      setVisibleData(response.data.result.slice(0, 10));
+
     } catch (error) {
       setErrorMessage([...(errorMessage as string[]), 'API取得エラー:' + (error as Error).message]);
     }
@@ -161,6 +171,18 @@ export default function TournamentSearch() {
     const m = ('00' + (dt.getMonth() + 1)).slice(-2);
     const d = ('00' + dt.getDate()).slice(-2);
     return y + '/' + m + '/' + d;
+  };
+
+  /**
+   * データを10件ずつ増やす関数
+   * @description
+   * visibleDataに10件ずつデータを追加する
+   * visibleItemsに10を加算する
+   */
+  const loadMoreData = () => {
+    const newData = searchResponse.slice(0, visibleItems + 10);
+    setVisibleData(newData);
+    setVisibleItems((prevCount) => prevCount + 10);
   };
 
   // レンダリング
@@ -388,7 +410,7 @@ export default function TournamentSearch() {
             </CustomThead>
             {/* 大会一覧テーブル明細表示 */}
             <CustomTbody>
-              {searchResponse.map((row, index) => (
+              {visibleData.map((row, index) => (
                 <CustomTr index={index} key={index}>
                   {/* 大会種別 */}
                   <CustomTd>{row.tournTypeName}</CustomTd>
@@ -444,6 +466,12 @@ export default function TournamentSearch() {
               ))}
             </CustomTbody>
           </CustomTable>
+        </div>
+        <div
+          className='flex flex-row justify-center gap-[16px] my-[30px] text-primary-500 font-bold cursor-pointer'
+          onClick={loadMoreData}
+        >
+          <AddIcon /> 10件表示する
         </div>
         <div className='flex flex-row justify-center gap-[16px] my-[30px]'>
           <CustomButton
