@@ -35,14 +35,15 @@
         選手情報は、ユーザー情報を元に作成しています。
         システムにログインし、「選手情報更新」から選手情報の更新を行ってください。
         【確認が必要な情報】
-        　　{{$unregistered_player_mail_data['player_name']}}
-        　　{{$unregistered_player_mail_data['birth_date']}}
-        　　{{$unregistered_player_mail_data['sex']}}
-        　　{{$unregistered_player_mail_data['height']}}
-        　　{{$unregistered_player_mail_data['weight']}}
-        　　{{$unregistered_player_mail_data['side_info']}}
-        　　{{$unregistered_player_mail_data['birth_country']}}
-        　　{{$unregistered_player_mail_data['residence_country']}}
+        　　選手名
+        　　生年月日
+        　　性別
+        　　身長
+        　　体重
+        　　サイド情報
+        　　出身地
+        　　居住地
+
 
         ※ このメールは送信専用です。返信できませんのでご注意ください。
         ※ このメールに心当たりがない場合、お手数ですが管理者までお問い合わせください。
