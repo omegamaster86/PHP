@@ -817,11 +817,12 @@ export default function TournamentResultInfomationBulkRegister() {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       const response = await axios.post('/sendTournamentResultCsvData', sendTournData);
-      console.log(response.data.result);
+      console.log(response.data);
       setCsvData(response.data.result.csvDataList);
       setActivationFlg(false);
     } catch (error) {
-      setErrorMessage(['API取得エラー:' + (error as Error).message]);
+      console.log(error);
+      setErrorMessage(['エラー:  ' + (error as any).response?.data.result]);
     }
   }
 
