@@ -59,31 +59,25 @@ class RegisteredUserController extends Controller
         include('ErrorMessages/ErrorMessages.php');
         
 
-        if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? ',[$request->mailaddress]))){
-            if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 0',[$request->mailaddress]))){
-                if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and temp_password_flag = 0',[$request->mailaddress]))){
-                    
-                    return response()->json(['system_error' => $email_register_check],400);
-                    //Status code 400 is for bad request from user
-                }
-                // else {
-                    
-                //     if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and expiry_time_of_temp_password < ?',[$request->mailaddress, date('Y-m-d H:i:s')]))) {
-                        
-                //         return response()->json(['system_error' => $registration_failed],400);
-                //         //Status code 400 is for bad request from user
-                //     }
-                //     else {
-                        
-                //         // return response()->json(['system_error' => $already_registered],400);
-                //         //Status code 400 is for bad request from user
-                //     }
-                // }
-            }
-            else {
-                return response()->json(['system_error' => $registration_failed],400);
+        if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 0',[$request->mailaddress]))){
+            if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and temp_password_flag = 0',[$request->mailaddress]))){
+                
+                return response()->json(['system_error' => $email_register_check],400);
                 //Status code 400 is for bad request from user
             }
+            // else {
+                
+            //     if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and expiry_time_of_temp_password < ?',[$request->mailaddress, date('Y-m-d H:i:s')]))) {
+                    
+            //         return response()->json(['system_error' => $registration_failed],400);
+            //         //Status code 400 is for bad request from user
+            //     }
+            //     else {
+                    
+            //         // return response()->json(['system_error' => $already_registered],400);
+            //         //Status code 400 is for bad request from user
+            //     }
+            // }
         }
         
         // For Generate random password
