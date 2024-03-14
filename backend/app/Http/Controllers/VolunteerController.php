@@ -72,7 +72,14 @@ class VolunteerController extends Controller
         $volSupDisData = $tVolunteerSupportableDisability->getVolunteerSupportableDisability($requestData['volunteer_id']); //ボランティア支援可能障害タイプ情報を取得
 
         Log::debug(sprintf("createReference start"));
-        return response()->json(['result' => $volData, 'volHistData' => $volHistData]); //DBの結果を返す
+        return response()->json([
+            'result' => $volData,
+            'volAvaData' => $volAvaData,
+            'volHistData' => $volHistData,
+            'volLangProData' => $volLangProData,
+            'volQualData' => $volQualData,
+            'volSupDisData' => $volSupDisData
+        ]); //DBの結果を返す
     }
 
     //大会情報削除画面に遷移した時
@@ -353,17 +360,12 @@ class VolunteerController extends Controller
 
             //いずれかの言語を持っているかを判定するためのor条件を生成
             $is_add_andstr = false;
-            for ($i = 1; $i <= $lang_max_count; $i++)
-            {
-                if (isset($searchInfo['language' . $i]))
-                {
-                    if(!$is_add_andstr)
-                    {
+            for ($i = 1; $i <= $lang_max_count; $i++) {
+                if (isset($searchInfo['language' . $i])) {
+                    if (!$is_add_andstr) {
                         $condition .= "and (vlp.lang" . $i . " > 0\r\n";
                         $is_add_andstr = true;
-                    }
-                    else
-                    {
+                    } else {
                         $condition .= "or vlp.lang" . $i . " > 0\r\n";
                     }
                 }
@@ -456,13 +458,10 @@ class VolunteerController extends Controller
             $is_add_andstr = false;
             for ($i = 1; $i <= $qualifications_max; $i++) {
                 if (isset($searchInfo['qualifications' . $i])) {
-                    if($is_add_andstr)
-                    {
+                    if ($is_add_andstr) {
                         $condition .= "and (qual.`qualifications" . $i . "` > 0\r\n";
                         $is_add_andstr = true;
-                    }
-                    else
-                    {
+                    } else {
                         $condition .= "or qual.`qualifications" . $i . "` > 0\r\n";
                     }
                 }
