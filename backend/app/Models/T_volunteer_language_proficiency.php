@@ -33,14 +33,10 @@ class T_volunteer_language_proficiency extends Model
         left join `m_languages`
         on `t_volunteer_language_proficiency`.`lang_id` = `m_languages`.`lang_id`
         left join `m_language_proficiency`
-        on `t_volunteer_language_proficiency`.`lang_pro_id` = `m_language_proficiency`.`lang_pro_id`
+        on `t_volunteer_language_proficiency`.`lang_pro` = `m_language_proficiency`.`lang_pro_id`
         where `t_volunteer_language_proficiency`.delete_flag=0 and `t_volunteer_language_proficiency`.volunteer_id = ?', [$vlntrId]);
-        //1つの団体IDを取得するため0番目だけを返す
-        $targetTrn = null;
-        if (!empty($volunteers)) {
-            $targetTrn = $volunteers[0];
-        }
-        return $targetTrn;
+       
+        return $volunteers;
     }
 
     public function updateVolunteerLanguageProficiency($volunteersInfo)

@@ -522,8 +522,6 @@ export default function PlayerInformation() {
               .then((response) => {
                 // TODO: 更新処理成功時の処理
                 // console.log(response);
-                console.log(formData.side_info);
-                formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
                 if (formData.birth_country != 112) { //出身地が日本以外の場合、都道府県に関連したデータを削除する
                   formData.birth_prefecture = 0;
                   formData.birthPrefectureName = '';
@@ -532,15 +530,25 @@ export default function PlayerInformation() {
                   formData.residence_prefecture = 0;
                   formData.residencePrefectureName = '';
                 }
+                //サイド情報のデータ位置入れ替え
+                var tmpArray = Array();
+                for (let index = formData.side_info.length - 1; index >= 0; index--) {
+                  tmpArray.push(formData.side_info[index]);
+                }
+                formData.side_info = tmpArray;
+                formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
                 console.log(formData.side_info);
+
+                //nullのパラメータを空のパラメータに置き換える
+                Object.keys(formData).forEach(key => {
+                  (formData as any)[key] = (formData as any)[key] ?? '';
+                });
                 setErrorMessage([]);
                 axios
                   // .post('http://localhost:3100/', registerData)
                   .post('/updatePlayerData', formData, {
                     //ファイルを送るため
-                    headers: {
-                      'content-type': 'multipart/form-data',
-                    },
+                    headers: { 'content-type': 'multipart/form-data', },
                   }) //20240123 送信テスト
                   .then((response) => {
                     // TODO: 更新処理成功時の処理
@@ -598,8 +606,6 @@ export default function PlayerInformation() {
               .then((response) => {
                 // TODO: 更新処理成功時の処理
                 // console.log(response);
-                console.log(formData.side_info);
-                formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
                 if (formData.birth_country != 112) { //出身地が日本以外の場合、都道府県に関連したデータを削除する
                   formData.birth_prefecture = 0;
                   formData.birthPrefectureName = '';
@@ -608,15 +614,25 @@ export default function PlayerInformation() {
                   formData.residence_prefecture = 0;
                   formData.residencePrefectureName = '';
                 }
-                console.log(formData);
+                //サイド情報のデータ位置入れ替え
+                var tmpArray = Array();
+                for (let index = formData.side_info.length - 1; index >= 0; index--) {
+                  tmpArray.push(formData.side_info[index]);
+                }
+                formData.side_info = tmpArray;
+                formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
+                console.log(formData.side_info);
+
+                //nullのパラメータを空のパラメータに置き換える
+                Object.keys(formData).forEach(key => {
+                  (formData as any)[key] = (formData as any)[key] ?? '';
+                });
                 setErrorMessage([]);
                 axios
                   // .post('http://localhost:3100/', registerData)
                   .post('/storePlayerData', formData, {
                     //ファイルを送るため
-                    headers: {
-                      'content-type': 'multipart/form-data',
-                    },
+                    headers: { 'content-type': 'multipart/form-data', },
                   })
                   .then((response) => {
                     // TODO: 登録処理成功時の処理の実装
@@ -866,7 +882,7 @@ export default function PlayerInformation() {
               readonly={mode === 'confirm'}
               label=': S (ストロークサイド)'
               value='S'
-              checked={formData.side_info?.at(3) ?? false}
+              checked={formData.side_info?.at(0) ?? false}
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
@@ -884,7 +900,7 @@ export default function PlayerInformation() {
               readonly={mode === 'confirm'}
               label=': B (バウサイド)'
               value='B'
-              checked={formData.side_info?.at(2) as boolean}
+              checked={formData.side_info?.at(1) as boolean}
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
@@ -902,7 +918,7 @@ export default function PlayerInformation() {
               label=': X (スカル)'
               value='X'
               readonly={mode === 'confirm'}
-              checked={formData.side_info?.at(1) as boolean}
+              checked={formData.side_info?.at(2) as boolean}
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
@@ -920,7 +936,7 @@ export default function PlayerInformation() {
               label=': C (コックス)'
               readonly={mode === 'confirm'}
               value='C'
-              checked={formData.side_info?.at(0) as boolean}
+              checked={formData.side_info?.at(3) as boolean}
               onChange={() =>
                 setFormData((prevFormData) => ({
                   ...prevFormData,
