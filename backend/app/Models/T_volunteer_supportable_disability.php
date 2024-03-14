@@ -32,12 +32,8 @@ class T_volunteer_supportable_disability extends Model
         left join `m_disability_type`
         on `t_volunteer_supportable_disability`.`dis_type_id` = `m_disability_type`.`dis_type_id`
         where `t_volunteer_supportable_disability`.delete_flag=0 and `t_volunteer_supportable_disability`.volunteer_id = ?', [$vlntrId]);
-        //1つの団体IDを取得するため0番目だけを返す
-        $targetTrn = null;
-        if (!empty($volunteers)) {
-            $targetTrn = $volunteers[0];
-        }
-        return $targetTrn;
+
+        return $volunteers;
     }
 
     public function updateVolunteerSupportableDisability($volunteersInfo)
