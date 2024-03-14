@@ -538,15 +538,17 @@ export default function PlayerInformation() {
                 formData.side_info = tmpArray;
                 formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
                 console.log(formData.side_info);
-                
+
+                //nullのパラメータを空のパラメータに置き換える
+                Object.keys(formData).forEach(key => {
+                  (formData as any)[key] = (formData as any)[key] ?? '';
+                });
                 setErrorMessage([]);
                 axios
                   // .post('http://localhost:3100/', registerData)
                   .post('/updatePlayerData', formData, {
                     //ファイルを送るため
-                    headers: {
-                      'content-type': 'multipart/form-data',
-                    },
+                    headers: { 'content-type': 'multipart/form-data', },
                   }) //20240123 送信テスト
                   .then((response) => {
                     // TODO: 更新処理成功時の処理
@@ -621,14 +623,16 @@ export default function PlayerInformation() {
                 formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
                 console.log(formData.side_info);
 
+                //nullのパラメータを空のパラメータに置き換える
+                Object.keys(formData).forEach(key => {
+                  (formData as any)[key] = (formData as any)[key] ?? '';
+                });
                 setErrorMessage([]);
                 axios
                   // .post('http://localhost:3100/', registerData)
                   .post('/storePlayerData', formData, {
                     //ファイルを送るため
-                    headers: {
-                      'content-type': 'multipart/form-data',
-                    },
+                    headers: { 'content-type': 'multipart/form-data', },
                   })
                   .then((response) => {
                     // TODO: 登録処理成功時の処理の実装
