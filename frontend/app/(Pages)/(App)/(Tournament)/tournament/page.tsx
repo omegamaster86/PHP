@@ -437,10 +437,30 @@ export default function Tournament() {
             // TODO: エラー処理の実装置き換え
             // alert(error);
           });
+      } else if (mode === 'create') {
+        setTournamentFormData((prevFormData) => ({
+          ...prevFormData,
+          ...{
+            tourn_id: '',
+            entrysystem_tourn_id: '',
+            tourn_name: '',
+            tourn_type: '0',
+            tournTypeName: '',
+            sponsor_org_id: '',
+            sponsorOrgName: '',
+            event_start_date: new Date().toLocaleDateString('ja-JP'),
+            event_end_date: new Date().toLocaleDateString('ja-JP'),
+            venue_id: '',
+            venue_name: '',
+            tourn_url: '',
+            tourn_info_faile_path: '',
+          },
+        }));
+        setTableData([]);
       }
     };
     fetchData();
-  }, []);
+  }, [mode]);
 
   // モードに応じたボタンの設定
   const modeCustomButtons = {

@@ -944,9 +944,11 @@ class TournamentInfoAlignmentController extends Controller
             //Log::debug($reqData);
             Log::debug(sprintf("sendTournamentResultCsvData end"));
             return response()->json(['result' => $reqData]); //DBの結果を返す
-        } catch (\Throwable $e) {
-            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-            return response()->json(['result' => false]); //DBの結果を返す
+        }
+        catch (\Throwable $e)
+        {
+            Log::debug('Line:'.$e->getLine().' message:'.$e->getMessage());
+            return response()->json(['result' => $e->getMessage()],403); //DBの結果を返す
         }
     }
 

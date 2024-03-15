@@ -133,28 +133,28 @@ export default function PlayerInformation() {
   }>();
   const [errorMessage, setErrorMessage] = useState([] as string[]);
 
+  // 選手情報登録・更新・入力確認画面の「出身地（国）」が「日本」の場合、「出身地（都道府県）」を「東京」で設定する
+  useEffect(() => {
+    if (formData.birth_country == 112) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        birth_prefecture: (formData.birth_prefecture == 0) ? 13 : formData.birth_prefecture,
+        birthPrefectureName: (formData.birthPrefectureName == '') ? '東京' : formData.birthPrefectureName,
+      }));
+    }
+  }, [formData.birth_country]);
+
   // 選手情報登録・更新・入力確認画面の「居住地（国）」が「日本」の場合、「居住地（都道府県）」を「東京」で設定する
   useEffect(() => {
     // 居住地（国）が日本（=0）の時
     if (formData.residence_country == 112) {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        residence_prefecture: 13, // 東京
-        residencePrefectureName: '東京',
+        residence_prefecture: (formData.residence_prefecture == 0) ? 13 : formData.residence_prefecture, // 東京
+        residencePrefectureName: (formData.residencePrefectureName == '') ? '東京' : formData.residencePrefectureName,
       }));
     }
   }, [formData.residence_country]);
-
-  // 選手情報登録・更新・入力確認画面の「出身地（国）」が「日本」の場合、「出身地（都道府県）」を「東京」で設定する
-  useEffect(() => {
-    if (formData.birth_country == 112) {
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        birth_prefecture: 13,
-        birthPrefectureName: '東京',
-      }));
-    }
-  }, [formData.birth_country]);
 
   //アップロードされたファイルを保存するー開始
   useEffect(() => {
@@ -245,6 +245,8 @@ export default function PlayerInformation() {
     fetchPrefecture();
 
     if (mode === 'update') {
+      console.log("aaaaaaaaaaaaa");
+      console.log(formData.residencePrefectureName);
       // TODO: 選手情報を取得する処理を実装
       // searchParams.get('id')から選手IDを取得
       const fetchPlayerData = async () => {
@@ -253,7 +255,7 @@ export default function PlayerInformation() {
         axios
           // .get<PlayerInformationResponse>('http://localhost:3100/player')
           .post('/getUpdatePlayerData', player_id)
-          .then((response) => {
+          .then(async (response) => {
             // console.log(response.data);
             //サイド情報のデータ変換
             var data = response.data.result.side_info.split('');
@@ -305,8 +307,10 @@ export default function PlayerInformation() {
           });
 
       }
-
       fetchPlayerData();// APIを叩いて、選手情報を取得する
+      console.log("==============");
+      console.log(formData.birthPrefectureName);
+
     } else if (mode === 'create') {
       setFormData((prevFormData) => ({
         ...prevFormData,

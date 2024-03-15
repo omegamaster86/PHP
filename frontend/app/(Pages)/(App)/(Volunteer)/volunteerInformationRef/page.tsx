@@ -106,6 +106,21 @@ export default function VolunteerInformationRef() {
         const volLangProDataList = volunteerResponse.data.volLangProData.map(({ lang_pro_name, lang_name }: { lang_pro_name: number; lang_name: string }) => ({ level: lang_pro_name, languageName: lang_name }));
         console.log(volLangProDataList);
 
+        var day_of_week_List = volunteerResponse.data.volAvaData.day_of_week.split('');
+
+        var tmpArray = Array(); //サイド情報のエンディアン入れ替え
+        for (let index = day_of_week_List.length - 1; index >= 0; index--) {
+          tmpArray.push(day_of_week_List[index]);
+        }
+        day_of_week_List = tmpArray;
+
+        var time_zone_List = volunteerResponse.data.volAvaData.time_zone.split('');
+        var time_tmpArray = Array(); //サイド情報のエンディアン入れ替え
+        for (let index = time_zone_List.length - 1; index >= 0; index--) {
+          time_tmpArray.push(time_zone_List[index]);
+        }
+        time_zone_List = time_tmpArray;
+
         setVolunteerdata({
           volunteer_id: volunteerResponse.data.result.volunteer_id, // ボランティアID
           volunteer_name: volunteerResponse.data.result.volunteer_name, // 氏名
@@ -121,8 +136,8 @@ export default function VolunteerInformationRef() {
           qualHold: volunteerResponse.data.volQualData, // 保有資格　
           language: volLangProDataList, // 言語　
           language_proficiency: '', //残件対応項目
-          day_of_week: volunteerResponse.data.volAvaData.day_of_week.split(''), // 曜日
-          time_zone: volunteerResponse.data.volAvaData.time_zone.split(''), // 時間帯
+          day_of_week: day_of_week_List, // 曜日
+          time_zone: time_zone_List, // 時間帯
           photo: volunteerResponse.data.result.photo, // 写真　#置き換え作業未対応
         });
         // const volunteerHistoriesResponse = await axios.get<VolunteerHistoriesResponse[]>(
@@ -188,7 +203,7 @@ export default function VolunteerInformationRef() {
             {/* ボランティアID */}
             <CustomTextField
               label='ボランティアID'
-              value={volunteerdata.volunteer_id}
+              value={"v" + volunteerdata.volunteer_id}
               readonly
               displayHelp={false}
               onChange={(e) => { }}
