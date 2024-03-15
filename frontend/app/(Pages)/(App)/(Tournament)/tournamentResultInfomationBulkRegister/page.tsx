@@ -265,7 +265,7 @@ export default function TournamentResultInfomationBulkRegister() {
         const tournamentResponse = await axios.post('/getTournamentInfoData', tornSearchVal);
         console.log(tournamentResponse.data.result);
         // 大会情報が取得できなかった場合
-        if (tournamentResponse.data === undefined || tournamentResponse.data === null) {
+        if (tournamentResponse.data.result === undefined || tournamentResponse.data.result === null) {
           setTournIdErrorMessage(['入力された大会IDの大会は、存在しませんでした。']);
           return;
         } else {
@@ -814,6 +814,7 @@ export default function TournamentResultInfomationBulkRegister() {
         tournData: formData,
         csvDataList: row
       }
+      console.log(formData);
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       const response = await axios.post('/sendTournamentResultCsvData', sendTournData);
@@ -937,11 +938,15 @@ export default function TournamentResultInfomationBulkRegister() {
             <Autocomplete
               options={tournamentList.map((item) => ({ id: item.id, name: item.name }))}
               getOptionLabel={(option) => option.name}
-              value={{ id: 0, name: formData.tournName } || ''}
+              value={{ id: formData.tournId, name: formData.tournName } || ''}
               onChange={(e: ChangeEvent<{}>, newValue) => {
                 handleInputChange(
                   'tournName',
                   newValue ? (newValue as TournamentResponse).name : '',
+                );
+                handleInputChange(
+                  'tournId',
+                  newValue ? ((newValue as TournamentResponse).id.toString()) : '',
                 );
                 setCsvDownloadProps((prevProps) => ({
                   ...prevProps,

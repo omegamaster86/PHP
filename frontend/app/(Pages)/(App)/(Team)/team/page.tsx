@@ -170,7 +170,7 @@ export default function OrgInfo() {
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
           const organizationDataList = await axios.post('/getOrgData', org_id);
-          // console.log(organizationDataList.data.result);
+          console.log(organizationDataList.data.result);
           setFormData((prevFormData) => ({
             ...prevFormData,
             ...{
@@ -235,7 +235,9 @@ export default function OrgInfo() {
     const addressNumbers = Array();
     addressNumbers.push(formData.post_code?.slice(0, 3)); //郵便番号の前半3文字
     addressNumbers.push(formData.post_code?.slice(-4)); //郵便番号の後半4文字
-    // console.log(addressNumbers);
+    console.log(addressNumbers);
+    formData.post_code1 = addressNumbers[0];
+    formData.post_code2 = addressNumbers[1];
     setAddressNumbers(addressNumbers);
   }, [formData.post_code]);
 
