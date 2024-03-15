@@ -199,7 +199,33 @@ export default function OrgInfo() {
           console.log(staff.data);
           setTableData(staff.data.result);
         }
-        if (mode === 'create') {
+        else if (mode === 'create') {
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            ...{
+              org_id: '',
+              org_name: '',
+              entrysystem_org_id: '',
+              orgTypeName: '',
+              founding_year: 0,
+              post_code: '',
+              post_code1: '',
+              post_code2: '',
+              location_prefecture: 0,
+              locationPrefectureName: '',
+              address1: '',
+              address2: '',
+              org_class: 0,
+              orgClassName: '',
+              jara_org_type: 0,
+              jaraOrgTypeName: '任意',
+              jara_org_reg_trail: '',
+              pref_org_type: 0,
+              prefOrgTypeName: '任意',
+              pref_org_reg_trail: '',
+            },
+          }));
+
           setTableData((prevData) => [
             ...prevData,
             {
@@ -221,7 +247,7 @@ export default function OrgInfo() {
       }
     };
     fetchData();
-  }, []);
+  }, [mode]);
 
   /**
    * 郵便番号の変更時の処理
