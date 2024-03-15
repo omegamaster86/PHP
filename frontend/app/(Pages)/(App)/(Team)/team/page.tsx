@@ -832,7 +832,7 @@ export default function OrgInfo() {
               {/* JARA証跡 */}
               {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
                 userIdType.is_jara == ROLE.JARA) &&
-                formData.jaraOrgTypeName == "正規") && (
+                formData.jara_org_type == 1) && (
                   <CustomTextField
                     label='証跡'
                     displayHelp={false}
@@ -877,7 +877,7 @@ export default function OrgInfo() {
               {/* 県ボ証跡 */}
               {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
                 userIdType.is_pref_boat_officer == ROLE.PREFECTURE) &&
-                formData.prefOrgTypeName == "正規") && (
+                formData.pref_org_type == 1) && (
                   <CustomTextField
                     label='証跡'
                     className='w-[300px]'
