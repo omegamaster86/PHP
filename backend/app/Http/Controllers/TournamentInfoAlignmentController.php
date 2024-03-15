@@ -13,841 +13,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Exception;
-use Illuminate\View\View;
 
 class TournamentInfoAlignmentController extends Controller
 {
-    //
-    //レース結果一括登録画面呼び出し
-    // public function createEntryRegister(Request $request): View
-    // {
-    //     $csvList = "";
-    //     return view('tournament.info_alignment', ["csvList" => $csvList, "errorMsg" => "", "checkList" => ""]);
-    // }
-
-    //csv操作
-    public function csvReadEntryRegister(
-        Request $request,
-        T_tournaments $t_tournaments,
-        T_races $t_races,
-        T_organizations $t_organizations,
-        T_players $t_players,
-        T_raceResultRecord $t_raceResultRecord
-    ) {
-        //csv読み込み
-        if ($request->has('csvRead')) { //参照ボタンクリック
-            //拡張子がCSVであるかの確認
-            //getClientOriginalExtensionで拡張子を取得
-            // if ($request->csvFile->getClientOriginalExtension() !== "csv") {
-            //     //拡張子がCSVであるかの確認
-            //     //getClientOriginalExtensionで拡張子を取得
-            //     if ($request->csvFile->getClientOriginalExtension() !== "csv") {
-            //         // throw new Exception('このファイルはCSVファイルではありません');
-            //         return view('volunteer.info_alignment', ["csvList" => "", "errorMsg" => "このファイルはCSVファイルではありません", "checkList" => ""]);
-            //     }
-            //     //ファイルの保存
-            //     $newCsvFileName = $request->csvFile->getClientOriginalName();
-            //     $path = $request->csvFile->storeAs('public/csv', $newCsvFileName);
-            // } elseif (!isset($request->csvFile)) {
-            //     // throw new Exception('読み込むCSVファイルをフルパスで入力してください。');
-            //     return view('volunteer.info_alignment', ["csvList" => "", "errorMsg" => "読み込むCSVファイルをフルパスで入力してください。", "checkList" => ""]);
-            // } else {
-            //     // throw new Exception('ファイルを取得できませんでした');
-            //     return view('volunteer.info_alignment', ["csvList" => "", "errorMsg" => "ファイルを取得できませんでした。<br/>入力したファイルパスを確認してください", "checkList" => ""]);
-            // }
-            // //保存したCSVファイルの取得
-            // $csv = Storage::disk('local')->get("public/csv/{$newCsvFileName}");
-            // // OS間やファイルで違う改行コードをexplode統一
-            // $csv = str_replace(array("\r\n", "\r"), "\n", $csv);
-            // // $csvを元に行単位のコレクション作成。explodeで改行ごとに分解
-            // $csvList = collect(explode("\n", $csv));
-            // $csvList = $csvList->toArray();
-
-            // //$checkList = array();
-            // $dataList = array();    //フロントエンドに渡す多次元配列
-            // $renkei = "";       //読み込み結果
-            // //$tagName = 0;
-            // $disabled = "";
-            // $jaraIdList = array();
-            // $csv_column_count = 51;
-            // $csvHeaderLine = "大会ID,エントリー大会ID,大会名,選手ID,JARA選手コード,選手名,レースID,エントリーレースID,レースNo,レース名,レース区分ID,レース区分名,団体ID,エントリー団体コード,団体名,クルー名,組別,種目ID,種目名,距離,順位,500mlapタイム,1000mlapタイム,1500mlapタイム,2000mlapタイム,最終タイム,ストロークレート（平均）,500mストロークレート,1000mストロークレート,1500mストロークレート,2000mストロークレート,心拍数（平均）,500m心拍数,1000m心拍数,1500m心拍数,2000m心拍数,公式／非公式,立ち合い有無,エルゴ体重,選手身長,選手体重,シート番号ID,シート番号,出漕結果記録名,発艇日時,天候,2000m地点風速,2000m地点風向,1000m地点風速,1000m地点風向,備考";
-
-            // //フロントエンドで入力された大会ID
-            // $input_tourn_id = $request->tourn_id;
-            // //対象の大会情報
-            // $target_tournament = $t_tournaments->getTournamentInfoFromTournId($input_tourn_id);
-            // //対象の大会が公式かどうか
-            // $is_target_tournament_official = $target_tournament['official'];
-
-            // //対象の大会に登録されているレース情報
-            // $target_races = $t_races->getRace($input_tourn_id);
-
-            // //団体情報
-            // $organizations = $t_organizations->getOrganizations();
-            // //選手情報
-            // $players = $t_players->getPlayers();
-
-            // for ($rowIndex = 0; $rowIndex < count($csvList); $rowIndex++) {
-            //     $rowArray = array();
-            //     $value = explode(',', $csvList[$rowIndex]); //一行ごとのデータをカンマ区切りでリストに入れる
-            //     //各フィールドの値
-            //     //不正データの場合は全て「-]のため初期値を"-"にしておく
-            //     $rowArray['tourn_id'] = "-";                // 大会ID
-            //     $rowArray['entrysystem_tourn_id'] = "-";    // エントリー大会ID
-            //     $rowArray['tourn_name'] = "-";              // 大会名
-            //     $rowArray['player_id'] = "-";               // 選手ID
-            //     $rowArray['jara_player_code'] = "-";        // JARA選手コード
-            //     $rowArray['player_name'] = "-";             // 選手名
-            //     $rowArray['race_id'] = "-";                 // レースID
-            //     $rowArray['entrysystem_race_id'] = "-";     // エントリーレースID
-            //     $rowArray['race_number'] = "-";             // レースNo
-            //     $rowArray['race_name'] = "-";               // レース名
-            //     $rowArray['race_class_id'] = "-";           // レース区分ID
-            //     $rowArray['race_class_name'] = "-";         // レース区分名
-            //     $rowArray['org_id'] = "-";                  // 団体ID
-            //     $rowArray['entrysystem_org_id'] = "-";      // エントリー団体コード
-            //     $rowArray['org_name'] = "-";                // 団体名
-            //     $rowArray['crew_name'] = "-";               // クルー名
-            //     $rowArray['by_group'] = "-";                // 組別
-            //     $rowArray['event_id'] = "-";                // 種目ID
-            //     $rowArray['event_name'] = "-";              // 種目名
-            //     $rowArray['range'] = "-";                   // 距離
-            //     $rowArray['rank'] = "-";                    // 順位
-            //     $rowArray['laptime_500m'] = "-";            // 500mlapタイム
-            //     $rowArray['laptime_1000m'] = "-";           // 1000mlapタイム
-            //     $rowArray['laptime_1500m'] = "-";           // 1500mlapタイム
-            //     $rowArray['laptime_2000m'] = "-";           // 2000mlapタイム
-            //     $rowArray['final_time'] = "-";              // 最終タイム
-            //     $rowArray['stroke_rate_avg'] = "-";         // ストロークレート（平均）
-            //     $rowArray['stroke_rat_500m'] = "-";         // 500mストロークレート
-            //     $rowArray['stroke_rat_1000m'] = "-";        // 1000mストロークレート
-            //     $rowArray['stroke_rat_1500m'] = "-";        // 1500mストロークレート
-            //     $rowArray['stroke_rat_2000m'] = "-";        // 2000mストロークレート
-            //     $rowArray['heart_rate_avg'] = "-";          // 心拍数（平均）
-            //     $rowArray['heart_rate_500m'] = "-";         // 500m心拍数
-            //     $rowArray['heart_rate_1000m'] = "-";        // 1000m心拍数
-            //     $rowArray['heart_rate_1500m'] = "-";        // 1500m心拍数
-            //     $rowArray['heart_rate_2000m'] = "-";        // 2000m心拍数
-            //     $rowArray['official'] = "-";                // 公式／非公式
-            //     $rowArray['attendance'] = "-";              // 立ち合い有無
-            //     $rowArray['ergo_weight'] = "-";             // エルゴ体重
-            //     $rowArray['player_height'] = "-";           // 選手身長
-            //     $rowArray['player_weight'] = "-";           // 選手体重
-            //     $rowArray['seat_number'] = "-";            // シート番号ID
-            //     $rowArray['seat_name'] = "-";              // シート番号
-            //     $rowArray['race_result_record_name'] = "-"; // 出漕結果記録名
-            //     $rowArray['start_datetime'] = "-";          // 発艇日時
-            //     $rowArray['weather'] = "-";                 // 天候
-            //     $rowArray['wind_speed_2000m_point'] = "-";  // 2000m地点風速
-            //     $rowArray['wind_direction_2000m_point'] = "-";  // 2000m地点風向
-            //     $rowArray['wind_speed_1000m_point'] = "-";      // 1000m地点風速
-            //     $rowArray['wind_direction_1000m_point'] = "-";  // 1000m地点風向
-            //     $rowArray['race_result_notes'] = "-";          // 備考
-
-            //     if (($csvList[$rowIndex] == $csvHeaderLine) || empty($value[0]) || in_array($value[0], $jaraIdList)) {
-            //         continue; //各行がヘッダ行と一致する場合,ユーザーIDがない場合,ユーザーIDが重複リストに含まれている場合、以降の処理を行わない。
-            //     } elseif (count($value) != $csv_column_count) {
-            //         //行のデータ個数が正しくない場合
-            //         $renkei = '無効データ';
-            //         $disabled = "disabled";
-            //     } else {
-            //         //項目のチェック結果
-            //         $checkResult = true;
-            //         // 大会ID
-            //         $rowArray['tourn_id'] = $value[0];
-            //         if ($checkResult == true) {
-            //             //非公式
-            //             if ($is_target_tournament_official == 0) {
-            //                 $this->checkInteger($rowArray['tourn_id'], 5, true, $renkei, $disabled, $checkResult);
-            //             }
-            //             //公式
-            //             else {
-            //                 $this->checkInteger($rowArray['tourn_id'], 5, false, $renkei, $disabled, $checkResult);
-            //             }
-            //         }
-            //         // エントリー大会ID
-            //         $rowArray['entrysystem_tourn_id'] = $value[1];
-            //         if ($checkResult == true) {
-            //             //非公式
-            //             if ($is_target_tournament_official == 0) {
-            //                 $this->checkInteger($rowArray['entrysystem_tourn_id'], 8, false, $renkei, $disabled, $checkResult);
-            //             }
-            //             //公式
-            //             else {
-            //                 $this->checkInteger($rowArray['entrysystem_tourn_id'], 8, true, $renkei, $disabled, $checkResult);
-            //             }
-
-            //             //対象大会の既存大会IDが一致するかを確認
-            //             if ($checkResult == true) {
-            //                 $this->checkTableExists($rowArray['entrysystem_tourn_id'], $target_tournament, 'entrysystem_tourn_id', $renkei, $disabled, $checkResult);
-            //             }
-            //         }
-            //         // 大会名
-            //         $rowArray['tourn_name'] = $value[2];
-            //         if ($checkResult == true) {
-            //             //非公式
-            //             if ($is_target_tournament_official == 0) {
-            //                 $this->checkWithinByte($rowArray['tourn_name'], 255, false, $renkei, $disabled, $checkResult);
-            //             }
-            //             //公式
-            //             else {
-            //                 $this->checkWithinByte($rowArray['tourn_name'], 255, true, $renkei, $disabled, $checkResult);
-            //             }
-            //         }
-            //         // 選手ID
-            //         $rowArray['player_id'] = $value[3];
-            //         if ($checkResult == true) {
-            //             //非公式
-            //             if ($is_target_tournament_official == 0) {
-            //                 $this->checkInteger($rowArray['player_id'], 7, false, $renkei, $disabled, $checkResult);
-            //             }
-            //             //公式
-            //             else {
-            //                 $this->checkInteger($rowArray['player_id'], 7, true, $renkei, $disabled, $checkResult);
-            //             }
-            //         }
-            //         // JARA選手コード
-            //         $rowArray['jara_player_code'] = $value[4];
-            //         if ($checkResult == true) {
-            //             //非公式
-            //             if ($is_target_tournament_official == 0) {
-            //                 if (!(isset($rowArray['jara_player_code'])
-            //                     && is_numeric($rowArray['jara_player_code'])
-            //                     && mb_strlen($rowArray['jara_player_code']) == 12)) {
-            //                     $this->assignInvalidData($renkei, $disabled, $checkResult);
-            //                 }
-            //             }
-            //             //公式
-            //             else {
-            //                 //jara_player_codeにデータがあれば判定する
-            //                 if (isset($rowArray['jara_player_code'])) {
-            //                     if (!(is_numeric($rowArray['jara_player_code'])
-            //                         && mb_strlen($rowArray['jara_player_code']) == 12)) {
-            //                         $this->assignInvalidData($renkei, $disabled, $checkResult);
-            //                     }
-            //                 }
-            //             }
-            //         }
-            //         // 選手名
-            //         $rowArray['player_name'] = $value[5];
-            //         if ($checkResult == true) {
-            //             //非公式
-            //             if ($is_target_tournament_official == 0) {
-            //                 $this->checkWithinByte($rowArray['player_name'], 100, false, $renkei, $disabled, $checkResult);
-            //             }
-            //             //公式
-            //             else {
-            //                 $this->checkWithinByte($rowArray['player_name'], 100, true, $renkei, $disabled, $checkResult);
-            //             }
-            //         }
-            //         // レースID
-            //         $rowArray['race_id'] = $value[6];
-            //         if ($checkResult == true) {
-            //             $this->checkInteger($rowArray['race_id'], 8, true, $renkei, $disabled, $checkResult);
-            //         }
-            //         // エントリーレースID
-            //         $rowArray['entrysystem_race_id'] = $value[7];
-            //         if ($checkResult == true) {
-            //             //非公式
-            //             if ($is_target_tournament_official == 0) {
-            //                 $this->checkInteger($rowArray['entrysystem_race_id'], 8, true, $renkei, $disabled, $checkResult);
-            //             }
-            //             //公式
-            //             else {
-            //                 $this->checkInteger($rowArray['entrysystem_race_id'], 8, false, $renkei, $disabled, $checkResult);
-            //             }
-            //         }
-            //         // レースNo
-            //         $rowArray['race_number'] = $value[8];
-            //         if ($checkResult == true) {
-            //             //非公式
-            //             if ($is_target_tournament_official == 0) {
-            //                 $this->checkInteger($rowArray['race_number'], 3, true, $renkei, $disabled, $checkResult);
-            //             }
-            //             //公式
-            //             else {
-            //                 $this->checkInteger($rowArray['race_number'], 3, false, $renkei, $disabled, $checkResult);
-            //             }
-            //         }
-            //         // レース名
-            //         $rowArray['race_name'] = $value[9];
-            //         if ($checkResult == true) {
-            //             $this->checkWithinByte($rowArray['race_name'], 255, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // レース区分ID
-            //         $rowArray['race_class_id'] = $value[10];
-            //         if ($checkResult == true) {
-            //             //非公式
-            //             if ($is_target_tournament_official == 0) {
-            //                 $this->checkInteger($rowArray['race_class_id'], 3, true, $renkei, $disabled, $checkResult);
-            //             }
-            //             //公式
-            //             else {
-            //                 $this->checkInteger($rowArray['race_class_id'], 3, false, $renkei, $disabled, $checkResult);
-            //             }
-            //         }
-            //         // レース区分名
-            //         $rowArray['race_class_name'] = $value[11];
-            //         if ($checkResult == true) {
-            //             //非公式
-            //             if ($is_target_tournament_official == 0) {
-            //                 $this->checkWithinByte($rowArray['race_class_name'], 255, false, $renkei, $disabled, $checkResult);
-            //             }
-            //             //公式
-            //             else {
-            //                 $this->checkWithinByte($rowArray['race_class_name'], 255, true, $renkei, $disabled, $checkResult);
-            //             }
-            //         }
-            //         // 団体ID
-            //         $rowArray['org_id'] = $value[12];
-            //         if ($checkResult == true) {
-            //             $this->checkInteger($rowArray['org_id'], 4, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // エントリー団体コード
-            //         $rowArray['entrysystem_org_id'] = $value[13];
-            //         if ($checkResult == true) {
-            //             if (!(is_numeric($rowArray['entrysystem_org_id']) && mb_strlen($rowArray['entrysystem_org_id']) == 6)) {
-            //                 $this->assignInvalidData($renkei, $disabled, $checkResult);
-            //             }
-            //         }
-            //         // 団体名
-            //         $rowArray['org_name'] = $value[14];
-            //         if ($checkResult == true) {
-            //             $this->checkWithinByte($rowArray['org_name'], 255, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // クルー名
-            //         $rowArray['crew_name'] = $value[15];
-            //         if ($checkResult == true) {
-            //             $this->checkWithinByte($rowArray['crew_name'], 255, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 組別
-            //         $rowArray['by_group'] = $value[16];
-            //         if ($checkResult == true) {
-            //             $this->checkWithinByte($rowArray['by_group'], 255, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 種目ID
-            //         $rowArray['event_id'] = $value[17];
-            //         if ($checkResult == true) {
-            //             $this->checkInteger($rowArray['event_id'], 3, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 種目名
-            //         $rowArray['event_name'] = $value[18];
-            //         if ($checkResult == true) {
-            //             $this->checkWithinByte($rowArray['event_name'], 255, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 距離
-            //         $rowArray['range'] = $value[19];
-            //         if ($checkResult == true) {
-            //             $this->checkInteger($rowArray['range'], 4, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 順位
-            //         $rowArray['rank'] = $value[20];
-            //         if ($checkResult == true) {
-            //             $this->checkInteger($rowArray['rank'], 3, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 500mlapタイム
-            //         $rowArray['laptime_500m'] = $value[21];
-            //         if ($checkResult == true) {
-            //             $this->checkDecimal($rowArray['laptime_500m'], "5.2", false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 1000mlapタイム
-            //         $rowArray['laptime_1000m'] = $value[22];
-            //         if ($checkResult == true) {
-            //             $this->checkDecimal($rowArray['laptime_1000m'], "5.2", false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 1500mlapタイム
-            //         $rowArray['laptime_1500m'] = $value[23];
-            //         if ($checkResult == true) {
-            //             $this->checkDecimal($rowArray['laptime_1500m'], "5.2", false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 2000mlapタイム
-            //         $rowArray['laptime_2000m'] = $value[24];
-            //         if ($checkResult == true) {
-            //             $this->checkDecimal($rowArray['laptime_2000m'], "5.2", false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 最終タイム
-            //         $rowArray['final_time'] = $value[25];
-            //         if ($checkResult == true) {
-            //             $this->checkDecimal($rowArray['final_time'], "5.2", false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // ストロークレート（平均）
-            //         $rowArray['stroke_rate_avg'] = $value[26];
-            //         if ($checkResult == true) {
-            //             $this->checkInteger($rowArray['stroke_rate_avg'], 3, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 500mストロークレート
-            //         $rowArray['stroke_rat_500m'] = $value[27];
-            //         if ($checkResult == true) {
-            //             $this->checkInteger($rowArray['stroke_rat_500m'], 3, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 1000mストロークレート
-            //         $rowArray['stroke_rat_1000m'] = $value[28];
-            //         if ($checkResult == true) {
-            //             $this->checkInteger($rowArray['stroke_rat_1000m'], 3, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 1500mストロークレート
-            //         $rowArray['stroke_rat_1500m'] = $value[29];
-            //         if ($checkResult == true) {
-            //             $this->checkInteger($rowArray['stroke_rat_1500m'], 3, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 2000mストロークレート
-            //         $rowArray['stroke_rat_2000m'] = $value[30];
-            //         if ($checkResult == true) {
-            //             $this->checkInteger($rowArray['stroke_rat_2000m'], 3, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 心拍数（平均）
-            //         $rowArray['heart_rate_avg'] = $value[31];
-            //         if ($checkResult == true) {
-            //             $this->checkInteger($rowArray['heart_rate_avg'], 3, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 500m心拍数
-            //         $rowArray['heart_rate_500m'] = $value[32];
-            //         if ($checkResult == true) {
-            //             $this->checkInteger($rowArray['heart_rate_500m'], 3, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 1000m心拍数
-            //         $rowArray['heart_rate_1000m'] = $value[33];
-            //         if ($checkResult == true) {
-            //             $this->checkInteger($rowArray['heart_rate_1000m'], 3, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 1500m心拍数
-            //         $rowArray['heart_rate_1500m'] = $value[34];
-            //         if ($checkResult == true) {
-            //             $this->checkInteger($rowArray['heart_rate_1500m'], 3, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 2000m心拍数
-            //         $rowArray['heart_rate_2000m'] = $value[35];
-            //         if ($checkResult == true) {
-            //             $this->checkInteger($rowArray['heart_rate_2000m'], 3, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 公式／非公式
-            //         $rowArray['official'] = $value[36];
-            //         if ($checkResult == true) {
-            //             $this->checkZeroOrOne($rowArray['official'], $renkei, $disabled, $checkResult);
-            //         }
-            //         // 立ち合い有無
-            //         $rowArray['attendance'] = $value[37];
-            //         if ($checkResult == true) {
-            //             $this->checkZeroOrOne($rowArray['attendance'], $renkei, $disabled, $checkResult);
-            //         }
-            //         // エルゴ体重
-            //         $rowArray['ergo_weight'] = $value[38];
-            //         if ($checkResult == true) {
-            //             $this->checkDecimal($rowArray['ergo_weight'], "3.2", false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 選手身長
-            //         $rowArray['player_height'] = $value[39];
-            //         if ($checkResult == true) {
-            //             $this->checkDecimal($rowArray['player_height'], "3.2", false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 選手体重
-            //         $rowArray['player_weight'] = $value[40];
-            //         if ($checkResult == true) {
-            //             $this->checkDecimal($rowArray['player_weight'], "3.2", false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // シート番号ID
-            //         $rowArray['seat_number'] = $value[41];
-            //         if ($checkResult == true) {
-            //             $this->checkInteger($rowArray['seat_number'], 3, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // シート番号
-            //         $rowArray['seat_name'] = $value[42];
-            //         if ($checkResult == true) {
-            //             $this->checkWithinByte($rowArray['seat_name'], 255, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 出漕結果記録名
-            //         $rowArray['race_result_record_name'] = $value[43];
-            //         if ($checkResult == true) {
-            //             $this->checkWithinByte($rowArray['race_result_record_name'], 255, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 発艇日時
-            //         $rowArray['start_datetime'] = $value[44];
-            //         if ($checkResult == true) {
-            //             if (!$rowArray['start_datetime'] === date('YYYY/MM/DD H:i', strtotime($rowArray['start_datetime']))) {
-            //                 $this->assignInvalidData($renkei, $disabled, $checkResult);
-            //             }
-            //         }
-            //         // 天候
-            //         $rowArray['weather'] = $value[45];
-            //         if ($checkResult == true) {
-            //             $this->checkWithinByte($rowArray['weather'], 255, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 2000m地点風速
-            //         $rowArray['wind_speed_2000m_point'] = $value[46];
-            //         if ($checkResult == true) {
-            //             $this->checkDecimal($rowArray['wind_speed_2000m_point'], "3.2", false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 2000m地点風向
-            //         $rowArray['wind_direction_2000m_point'] = $value[47];
-            //         if ($checkResult == true) {
-            //             $this->checkWithinByte($rowArray['wind_direction_2000m_point'], 255, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 1000m地点風速
-            //         $rowArray['wind_speed_1000m_point'] = $value[48];
-            //         if ($checkResult == true) {
-            //             $this->checkDecimal($rowArray['wind_speed_1000m_point'], "3.2", false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 1000m地点風向
-            //         $rowArray['wind_direction_1000m_point'] = $value[49];
-            //         if ($checkResult == true) {
-            //             $this->checkWithinByte($rowArray['wind_direction_1000m_point'], 255, false, $renkei, $disabled, $checkResult);
-            //         }
-            //         // 備考
-            //         $rowArray['race_result_notes'] = $value[50];
-            //         if ($checkResult == true) {
-            //             $this->checkWithinByte($rowArray['race_result_notes'], 255, false, $renkei, $disabled, $checkResult);
-            //         }
-
-            //         //レース情報の一致確認
-            //         if ($checkResult == true) {
-            //             $is_race_exists = false;    //一致するレースの有無
-            //             foreach ($target_races as $race) {
-            //                 //種目IDがその他、かつレース区分IDがその他の場合
-            //                 if ($rowArray['event_id'] == 999 && $rowArray['race_class_id'] == 99) {
-            //                     if (
-            //                         $race['event_id'] == $rowArray['event_id']                   //種目ID
-            //                         && $race['event_name'] == $rowArray['event_name']           //種目名
-            //                         && $race['race_class_id'] == $rowArray['race_class_id']     //レース区分ID
-            //                         && $race['race_class_name'] == $rowArray['race_class_name'] //レース区分名
-            //                         && $race['by_group'] == $rowArray['by_group']               //組別
-            //                         && $race['race_number'] == $rowArray['race_number']
-            //                     )        //レースNo.
-            //                     {
-            //                         $is_race_exists = true;
-            //                     }
-            //                 }
-            //                 //種目IDがその他の場合
-            //                 elseif ($race['event_id'] == 999) {
-            //                     if (
-            //                         $race['event_id'] == $rowArray['event_id']                   //種目ID
-            //                         && $race['event_name'] == $rowArray['event_name']           //種目名
-            //                         && $race['race_class_id'] == $rowArray['race_class_id']     //レース区分ID
-            //                         && $race['by_group'] == $rowArray['by_group']               //組別
-            //                         && $race['race_number'] == $rowArray['race_number']
-            //                     )        //レースNo.
-            //                     {
-            //                         $is_race_exists = true;
-            //                     }
-            //                 }
-            //                 //レース区分がその他の場合
-            //                 elseif ($race['race_class_id'] == 99) {
-            //                     if (
-            //                         $race['event_id'] == $rowArray['event_id']                   //種目ID
-            //                         && $race['race_class_id'] == $rowArray['race_class_id']     //レース区分ID
-            //                         && $race['race_class_name'] == $rowArray['race_class_name'] //レース区分名
-            //                         && $race['by_group'] == $rowArray['by_group']               //組別
-            //                         && $race['race_number'] == $rowArray['race_number']
-            //                     )        //レースNo.
-            //                     {
-            //                         $is_race_exists = true;
-            //                     }
-            //                 } else {
-            //                     if (
-            //                         $race['event_id'] == $rowArray['event_id']                   //種目ID
-            //                         && $race['race_class_id'] == $rowArray['race_class_id']     //レース区分ID
-            //                         && $race['by_group'] == $rowArray['by_group']               //組別
-            //                         && $race['race_number'] == $rowArray['race_number']
-            //                     )        //レースNo.
-            //                     {
-            //                         $is_race_exists = true;
-            //                     }
-            //                 }
-
-            //                 if ($is_race_exists) {
-            //                     break;
-            //                 }
-            //             }
-            //             //一致の結果を確認して登録不可データかどうかを判断する
-            //             if (!$is_race_exists) {
-            //                 $this->assignInvalidData($renkei, $disabled, $checkResult);
-            //             }
-            //         }
-
-            //         //団体情報の一致確認
-            //         if ($checkResult == true) {
-            //             $is_organization_exists = false;
-            //             foreach ($organizations as $organization) {
-            //                 if (isset($entrysystem_org_id)) {
-            //                     if (
-            //                         $organization['org_id'] == $rowArray['org_id']
-            //                         && $organization['entrysystem_org_id'] == $entrysystem_org_id
-            //                     ) {
-            //                         $is_organization_exists = true;
-            //                     }
-            //                 } else {
-            //                     if ($organization['org_id'] == $rowArray['org_id']) {
-            //                         $is_organization_exists = true;
-            //                     }
-            //                 }
-
-            //                 if ($is_organization_exists) {
-            //                     break;
-            //                 }
-            //             }
-            //             if (!$is_organization_exists) {
-            //                 $this->assignInvalidData($renkei, $disabled, $checkResult);
-            //             }
-            //         }
-
-            //         //選手情報の一致確認
-            //         if ($checkResult == true) {
-            //             $is_player_exists = false;
-            //             foreach ($players as $player) {
-            //                 if (isset($jara_player_code)) {
-            //                     if (
-            //                         $player['player_id'] == $rowArray['player_id']
-            //                         && $player['jara_player_code'] == $jara_player_code
-            //                     ) {
-            //                         $is_player_exists = true;
-            //                     }
-            //                 } else {
-            //                     if ($player['player_id'] == $rowArray['player_id']) {
-            //                         $is_player_exists = true;
-            //                     }
-            //                 }
-
-            //                 if ($is_player_exists) {
-            //                     break;
-            //                 }
-            //             }
-            //             if (!$is_player_exists) {
-            //                 $this->assignInvalidData($renkei, $disabled, $checkResult);
-            //             }
-            //         }
-            //     }
-            //     $rowArray['renkei'] = $renkei;
-            //     $rowArray['disabled'] = $disabled;
-            //     //ここまでで作成した行のデータをフロントエンドに返すための配列に追加する
-            //     $dataList[$rowIndex] = $rowArray;
-            // }
-            // return $dataList;
-        }
-        //csv登録
-        elseif ($request->has('regist')) {
-            //入力値（テーブルの各要素）の配列をフロントから受け取る
-            //配列は行列の形式、また1行の各フィールドはその名称で取得可能の想定
-            $postData = $request->all();
-            //foreachで1行ずつ処理
-            foreach ($postData as $rowData) {
-                //チェック済み、かつ登録可能データを登録する
-                //そうでなければ次の行の処理
-                if (
-                    $rowData['check'] == "checked"
-                    && ($rowData['renkei'] == "新規登録" || $rowData['renkei'] == "更新登録")
-                ) {
-                    //登録・更新するユーザー名を取得
-                    $register_user_id = Auth::user()->user_id;
-                    //登録・更新日時のために現在の日時を取得
-                    $current_datetime = now()->format('Y-m-d H:i:s.u');
-                    //削除フラグは全て0で登録する
-                    $delete_flag = 0;
-
-                    //出漕結果記録テーブルに挿入する要素を格納するための配列
-                    $race_result_record = array();
-                    //入力データが公式／非公式を取得
-                    $is_official = $rowData['official'];
-                    //大会情報が既に登録済みかどうかをチェック
-                    //大会情報の検索に必要なデータを変数に用意
-                    $tournament_condition_data = array();
-                    //非公式のとき
-                    if ($is_official == 0) {
-                        $tournament_condition_data['tourn_id'] = $rowData['tourn_id'];
-                        $tournament_condition_data['race_id'] = $rowData['race_id'];
-                        $tournament_condition_data['player_id'] = $rowData['player_id'];
-
-                        $race_count = $t_raceResultRecord->getTargetUnofficialRaceCount($tournament_condition_data);
-                    }
-                    //公式のとき
-                    else {
-                        $tournament_condition_data['entrysystem_tourn_id'] = $rowData['entrysystem_tourn_id'];
-                        $tournament_condition_data['entrysystem_race_id'] = $rowData['entrysystem_race_id'];
-                        $tournament_condition_data['jara_player_id'] = $rowData['jara_player_id'];
-
-                        $race_count = $t_raceResultRecord->getTargetOfficialRaceCount($tournament_condition_data);
-                    }
-
-                    DB::beginTransaction();
-                    try {
-                        //登録済みならレース結果情報をupdate
-                        if ($race_count == 1) {
-                            if ($is_official == 0) {
-                                //非公式のレースデータを取得
-                                $race_data = $t_raceResultRecord->getTargetUnofficialRace($tournament_condition_data);
-                            } else {
-                                //公式のレースデータを取得
-                                $race_data = $t_raceResultRecord->getTargetOfficialRace($tournament_condition_data);
-                            }
-                            //更新データの各要素を配列に格納する
-                            //DBのテーブルから取得した値を格納
-                            $race_result_record['player_id'] = $race_data['player_id'];
-                            $race_result_record['jara_player_id'] = $race_data['jara_player_id'];
-                            $race_result_record['player_name'] = $race_data['player_name'];
-                            $race_result_record['entrysystem_tourn_id'] = $race_data['entrysystem_tourn_id'];
-                            $race_result_record['tourn_id'] = $race_data['tourn_id'];
-                            $race_result_record['tourn_name'] = $race_data['tourn_name'];
-                            $race_result_record['race_id'] = $race_data['race_id'];
-                            $race_result_record['entrysystem_race_id'] = $race_data['entrysystem_race_id'];
-                            $race_result_record['race_number'] = $race_data['race_number'];
-                            $race_result_record['race_name'] = $race_data['race_name'];
-                            $race_result_record['org_id'] = $race_data['org_id'];
-                            $race_result_record['entrysystem_org_id'] = $race_data['entrysystem_org_id'];
-                            $race_result_record['org_name'] = $race_data['org_name'];
-                            $race_result_record['player_height'] = $race_data['height'];
-                            $race_result_record['player_weight'] = $race_data['weight'];
-
-                            //入力データを格納
-                            $race_result_record['crew_name'] = $rowData['crew_name'];
-                            $race_result_record['rank'] = $rowData['rank'];
-                            $race_result_record['laptime_500m'] = $rowData['laptime_500m'];
-                            $race_result_record['laptime_1000m'] = $rowData['laptime_1000m'];
-                            $race_result_record['laptime_1500m'] = $rowData['laptime_1500m'];
-                            $race_result_record['laptime_2000m'] = $rowData['laptime_2000m'];
-                            $race_result_record['final_time'] = $rowData['final_time'];
-                            $race_result_record['stroke_rate_avg'] = $rowData['stroke_rate_avg'];
-                            $race_result_record['stroke_rat_500m'] = $rowData['stroke_rat_500m'];
-                            $race_result_record['stroke_rat_1000m'] = $rowData['stroke_rat_1000m'];
-                            $race_result_record['stroke_rat_1500m'] = $rowData['stroke_rat_1500m'];
-                            $race_result_record['stroke_rat_2000m'] = $rowData['stroke_rat_2000m'];
-                            $race_result_record['heart_rate_avg'] = $rowData['heart_rate_avg'];
-                            $race_result_record['heart_rate_500m'] = $rowData['heart_rate_500m'];
-                            $race_result_record['heart_rate_1000m'] = $rowData['heart_rate_1000m'];
-                            $race_result_record['heart_rate_1500m'] = $rowData['heart_rate_1500m'];
-                            $race_result_record['heart_rate_2000m'] = $rowData['heart_rate_2000m'];
-                            $race_result_record['official'] = $rowData['official'];
-                            $race_result_record['attendance'] = $rowData['attendance'];
-                            $race_result_record['ergo_weight'] = $rowData['ergo_weight'];
-                            $race_result_record['crew_rep_record_flag'] = $rowData['crew_rep_record_flag'];
-                            $race_result_record['m_seat_number'] = $rowData['m_seat_number'];
-                            $race_result_record['race_result_record_name'] = $rowData['race_result_record_name'];
-                            //その他データを格納
-                            $race_result_record['updated_time'] = $register_user_id;
-                            $race_result_record['user_id'] = $current_datetime;
-
-                            //更新実行
-                            $t_raceResultRecord->updateBulkRaceResultRecord($race_result_record);
-                        }
-                        //未登録ならレース結果情報をinsertする
-                        elseif ($race_count == 0) {
-                            //大会データをテーブルから取得
-                            if (isset($rowData['tourn_id'])) {
-                                $target_tournament = $t_tournaments->getTournamentInfoFromTournId($rowData['tourn_id']);
-                                if (isset($target_tournament)) {
-                                    $race_result_record['entrysystem_tourn_id'] = $target_tournament['entrysystem_tourn_id'];
-                                    $race_result_record['tourn_id'] = $target_tournament['tourn_id'];
-                                    $race_result_record['tourn_name'] = $target_tournament['tourn_name'];
-                                } else {
-                                    $race_result_record['entrysystem_tourn_id'] = $rowData['entrysystem_tourn_id'];
-                                    $race_result_record['tourn_id'] = $rowData['tourn_id'];
-                                    $race_result_record['tourn_name'] = $rowData['tourn_name'];
-                                }
-                            } else {
-                                $race_result_record['entrysystem_tourn_id'] = $rowData['entrysystem_tourn_id'];
-                                $race_result_record['tourn_id'] = $rowData['tourn_id'];
-                                $race_result_record['tourn_name'] = $rowData['tourn_name'];
-                            }
-                            //レースデータをテーブルから取得
-                            if (isset($rowData['race_id'])) {
-                                $target_race = $t_races->getRace($rowData['race_id']);
-                                if (isset($target_race)) {
-                                    $race_result_record['race_id'] = $target_race['race_id'];
-                                    $race_result_record['entrysystem_race_id'] = $target_race['entrysystem_race_id'];
-                                    $race_result_record['race_name'] = $target_race['race_name'];
-                                } else {
-                                    $race_result_record['race_id'] = $rowData['race_id'];
-                                    $race_result_record['entrysystem_race_id'] = $rowData['entrysystem_race_id'];
-                                    $race_result_record['race_name'] = $rowData['race_name'];
-                                }
-                            } else {
-                                $race_result_record['race_id'] = $rowData['race_id'];
-                                $race_result_record['entrysystem_race_id'] = $rowData['entrysystem_race_id'];
-                                $race_result_record['race_name'] = $rowData['race_name'];
-                            }
-                            //団体情報をテーブルから取得
-                            if (isset($rowData['org_id'])) {
-                                $target_organization = $t_organizations->getOrganization($rowData['org_id']);
-                                if (isset($target_organization)) {
-                                    $race_result_record['org_id'] = $target_organization['org_id'];
-                                    $race_result_record['entrysystem_org_id'] = $target_organization['entrysystem_org_id'];
-                                    $race_result_record['org_name'] = $target_organization['org_name'];
-                                } else {
-                                    $race_result_record['org_id'] = $rowData['org_id'];
-                                    $race_result_record['entrysystem_org_id'] = $rowData['entrysystem_org_id'];
-                                    $race_result_record['org_name'] = $rowData['org_name'];
-                                }
-                            } else {
-                                $race_result_record['org_id'] = $rowData['org_id'];
-                                $race_result_record['entrysystem_org_id'] = $rowData['entrysystem_org_id'];
-                                $race_result_record['org_name'] = $rowData['org_name'];
-                            }
-                            //選手情報をテーブルから取得
-                            if (isset($rowData['player_id'])) {
-                                $target_player = $t_players->getPlayer($rowData['player_id']);
-                                if (isset($target_player)) {
-                                    $race_result_record['player_id'] = $target_player['player_id'];
-                                    $race_result_record['jara_player_id'] = $target_player['jara_player_id'];
-                                    $race_result_record['player_name'] = $target_player['player_name'];
-                                    $race_result_record['player_height'] = $target_player['height'];
-                                    $race_result_record['player_weight'] = $target_player['weight'];
-                                } else {
-                                    $race_result_record['player_id'] = $rowData['player_id'];
-                                    $race_result_record['jara_player_id'] = $rowData['jara_player_id'];
-                                    $race_result_record['player_name'] = $rowData['player_name'];
-                                    $race_result_record['player_height'] = $rowData['player_height'];
-                                    $race_result_record['player_weight'] = $rowData['player_weight'];
-                                }
-                            } else {
-                                $race_result_record['player_id'] = $rowData['player_id'];
-                                $race_result_record['jara_player_id'] = $rowData['jara_player_id'];
-                                $race_result_record['player_name'] = $rowData['player_name'];
-                                $race_result_record['player_height'] = $rowData['player_height'];
-                                $race_result_record['player_weight'] = $rowData['player_weight'];
-                            }
-                            //他の要素を$race_result_recordに格納する
-                            //入力データを格納
-                            $race_result_record['crew_name'] = $rowData['crew_name'];
-                            $race_result_record['rank'] = $rowData['rank'];
-                            $race_result_record['laptime_500m'] = $rowData['laptime_500m'];
-                            $race_result_record['laptime_1000m'] = $rowData['laptime_1000m'];
-                            $race_result_record['laptime_1500m'] = $rowData['laptime_1500m'];
-                            $race_result_record['laptime_2000m'] = $rowData['laptime_2000m'];
-                            $race_result_record['final_time'] = $rowData['final_time'];
-                            $race_result_record['stroke_rate_avg'] = $rowData['stroke_rate_avg'];
-                            $race_result_record['stroke_rat_500m'] = $rowData['stroke_rat_500m'];
-                            $race_result_record['stroke_rat_1000m'] = $rowData['stroke_rat_1000m'];
-                            $race_result_record['stroke_rat_1500m'] = $rowData['stroke_rat_1500m'];
-                            $race_result_record['stroke_rat_2000m'] = $rowData['stroke_rat_2000m'];
-                            $race_result_record['heart_rate_avg'] = $rowData['heart_rate_avg'];
-                            $race_result_record['heart_rate_500m'] = $rowData['heart_rate_500m'];
-                            $race_result_record['heart_rate_1000m'] = $rowData['heart_rate_1000m'];
-                            $race_result_record['heart_rate_1500m'] = $rowData['heart_rate_1500m'];
-                            $race_result_record['heart_rate_2000m'] = $rowData['heart_rate_2000m'];
-                            $race_result_record['official'] = $rowData['official'];
-                            $race_result_record['attendance'] = $rowData['attendance'];
-                            $race_result_record['ergo_weight'] = $rowData['ergo_weight'];
-                            $race_result_record['crew_rep_record_flag'] = $rowData['crew_rep_record_flag'];
-                            $race_result_record['m_seat_number'] = $rowData['m_seat_number'];
-                            $race_result_record['race_result_record_name'] = $rowData['race_result_record_name'];
-                            //その他データを格納
-                            $race_result_record['updated_time'] = $register_user_id;
-                            $race_result_record['user_id'] = $current_datetime;
-
-                            //挿入実行
-                            $t_raceResultRecord->insertBulkRaceResultRecord($race_result_record);
-                        }
-                        DB::commit();
-                    } catch (\Throwable $e) {
-                        DB::rollBack();
-                        dd($e);
-                        dd("stop");
-                    }
-                }
-            }
-        }
-    }
-
     //フロントエンドから大会IDを取得し、
     //大会開催年（西暦）、大会名をフロントエンドへ返す
     public function getTournamentInfo(
@@ -861,25 +30,11 @@ class TournamentInfoAlignmentController extends Controller
         return $tournament;
     }
 
-    //データのチェックで不備があったときの変数代入処理
-    // private function assignInvalidData(&$renkei, &$disabled, &$checkResult)
-    // {
-    //     $renkei = '登録不可データ';
-    //     $disabled = "disabled";
-    //     $checkResult = false;
-    // }
-
     //対象の変数が整数かつX桁以内であることをチェックする
     private function checkInteger($value, $digits, &$checkResult, &$isError)
     {
-        //nullCheck=trueとしたとき、nullチェックをする
-        // if ($nullCheck && is_null($value)) {
-        //     $checkResult = false;
-        //     $isError = true;
-        // }
         //数値かつX桁以内であることをチェック
-        if (!is_numeric($value) || mb_strlen($value) > $digits)
-        {
+        if (!is_numeric($value) || mb_strlen($value) > $digits) {
             $checkResult = false;
             $isError = true;
         }
@@ -889,8 +44,7 @@ class TournamentInfoAlignmentController extends Controller
     private function checkZeroOrOne($value, &$checkResult, &$isError)
     {
         //0または1でないときは登録不可データとする
-        if (!($value == '0' || $value == '1'))
-        {
+        if (!($value == '0' || $value == '1')) {
             $checkResult = false;
             $isError = true;
         }
@@ -910,7 +64,6 @@ class TournamentInfoAlignmentController extends Controller
     {
         //小数かつ指定の桁数かチェック
         if (!($this->isDecimal($value, $format))) {
-            //$this->assignInvalidData($renkei, $disabled, $checkResult);
             $checkResult = false;
             $isError = true;
         }
@@ -919,11 +72,6 @@ class TournamentInfoAlignmentController extends Controller
     //対象の変数が$byteバイト以内であることをチェックする
     private function checkWithinByte($value, $byte, &$checkResult, &$isError)
     {
-        //nullチェック
-        // if ($nullCheck && is_null($value)) {
-        //     $checkResult = false;
-        //     $isError = true;
-        // }
         //Xバイト以内であることをチェック
         if (strlen($value) > $byte) {
             $checkResult = false;
@@ -931,19 +79,8 @@ class TournamentInfoAlignmentController extends Controller
         }
     }
 
-    //変数がテーブルの任意の列に含まれるかをチェックする
-    private function checkTableExists($value, $table, $column_name, &$checkResult, &$isError)
-    {
-        if (!in_array($value, array_column($table, $column_name)))
-        {
-            //$this->assignInvalidData($renkei, $disabled, $checkResult);
-            $checkResult = false;
-            $isError = true;
-        }
-    }
-
     //大会エントリー一括登録 20240229
-    public function tournamentEntryYearSearch(Request $request,T_tournaments $t_tournaments)
+    public function tournamentEntryYearSearch(Request $request, T_tournaments $t_tournaments)
     {
         Log::debug(sprintf("tournamentEntryYearSearch start"));
         $reqData = $request->all();
@@ -956,20 +93,20 @@ class TournamentInfoAlignmentController extends Controller
     }
 
     //大会エントリー一括登録 読み込むボタン押下 20240301
-    public function sendTournamentEntryCsvData(Request $request,
-                                                T_races $t_races,
-                                                T_organizations $t_organizations,
-                                                M_seat_number $m_seat_number,
-                                                T_players $t_players,
-                                                T_raceResultRecord $t_raceResultRecord)
-    {
+    public function sendTournamentEntryCsvData(
+        Request $request,
+        T_races $t_races,
+        T_organizations $t_organizations,
+        M_seat_number $m_seat_number,
+        T_players $t_players,
+        T_raceResultRecord $t_raceResultRecord
+    ) {
         Log::debug(sprintf("sendTournamentEntryCsvData start"));
         $inputData = $request->all();
         $input_event_year = $inputData['tournData']['eventYear'];
         $input_tourn_id = $inputData['tournData']['tournId'];
         $input_tourn_name = $inputData['tournData']['tournName'];
-        for($rowIndex = 1;$rowIndex < count($inputData['csvDataList']);$rowIndex++)
-        {
+        for ($rowIndex = 1; $rowIndex < count($inputData['csvDataList']); $rowIndex++) {
             //レーステーブルからレース情報が1件見つかること
             $search_values = array();
             $search_values['tourn_id'] = $inputData['csvDataList'][$rowIndex]['tournId'];
@@ -980,21 +117,19 @@ class TournamentInfoAlignmentController extends Controller
             //選択されている大会の大会IDと一致していること
             // Log::debug("input_tourn_id = ".$input_tourn_id);
             // Log::debug("csv tourn_id = ".$inputData['csvDataList'][$rowIndex]['tournId']);
-            if($input_tourn_id != $inputData['csvDataList'][$rowIndex]['tournId'])
-            {
+            if ($input_tourn_id != $inputData['csvDataList'][$rowIndex]['tournId']) {
                 ////Log::debug("！！！！！選択されている大会の大会IDと不一致！！！！！");
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
                 $inputData['csvDataList'][$rowIndex]['tournIdError'] = true;
                 continue;
             }
-            $replace_condition_string = $this->generateRaceSearchCondition($inputData['csvDataList'][$rowIndex],$search_values);
-            $race_count_array = $t_races->getRaceCount($replace_condition_string,$search_values);
+            $replace_condition_string = $this->generateRaceSearchCondition($inputData['csvDataList'][$rowIndex], $search_values);
+            $race_count_array = $t_races->getRaceCount($replace_condition_string, $search_values);
             $race_count = $race_count_array[0]->{"count"};
             //Log::debug("race_count = ".$race_count);
             //「レーステーブル」から条件が全て一致するレース情報を検索し、1件のみ見つかること
-            if($race_count != 1)
-            {
+            if ($race_count != 1) {
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
                 $inputData['csvDataList'][$rowIndex]['tournIdError'] = true;
@@ -1007,11 +142,10 @@ class TournamentInfoAlignmentController extends Controller
             //団体名
             $org_id = $inputData['csvDataList'][$rowIndex]['orgId'];
             $org_name = $inputData['csvDataList'][$rowIndex]['orgName'];
-            $org_count_array = $t_organizations->getOrganizationCountFromCsvData($org_id,$org_name);
+            $org_count_array = $t_organizations->getOrganizationCountFromCsvData($org_id, $org_name);
             $org_count = $org_count_array[0]->{"count"};
             //Log::debug("org_count = ".$org_count);
-            if($org_count != 1)
-            {
+            if ($org_count != 1) {
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
                 $inputData['csvDataList'][$rowIndex]['orgIdError'] = true;
@@ -1021,11 +155,10 @@ class TournamentInfoAlignmentController extends Controller
             //シート番号
             $seat_number = $inputData['csvDataList'][$rowIndex]['mSheetNumber'];
             $seat_name = $inputData['csvDataList'][$rowIndex]['sheetName'];
-            $seat_count_array = $m_seat_number->getSeatNumberCountFromCsvData($seat_number,$seat_name);
+            $seat_count_array = $m_seat_number->getSeatNumberCountFromCsvData($seat_number, $seat_name);
             $seat_count = $seat_count_array[0]->{"count"};
             //Log::debug("seat_count = ".$seat_count);
-            if($seat_count != 1)
-            {
+            if ($seat_count != 1) {
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
                 $inputData['csvDataList'][$rowIndex]['mSheetNumberError'] = true;
@@ -1035,11 +168,10 @@ class TournamentInfoAlignmentController extends Controller
             //選手名
             $player_id = $inputData['csvDataList'][$rowIndex]['userId'];
             $player_name = $inputData['csvDataList'][$rowIndex]['playerName'];
-            $player_count_array = $t_players->getPlayerCountFromCsvData($player_id,$player_name);
+            $player_count_array = $t_players->getPlayerCountFromCsvData($player_id, $player_name);
             $player_count = $player_count_array[0]->{"count"};
             //Log::debug("player_count = ".$player_count);
-            if($player_count != 1)
-            {
+            if ($player_count != 1) {
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
                 $inputData['csvDataList'][$rowIndex]['userIdError'] = true;
@@ -1052,29 +184,25 @@ class TournamentInfoAlignmentController extends Controller
             $condition_values['org_id'] = $inputData['csvDataList'][$rowIndex]['orgId'];     //団体ID
             $condition_values['player_id'] = $inputData['csvDataList'][$rowIndex]['userId']; //選手ID
             $race_result_record_array = $t_raceResultRecord->getRaceResultRecordsWithSearchCondition($condition_values);
-            if(count($race_result_record_array) == 0)
-            {
+            if (count($race_result_record_array) == 0) {
                 //一致するデータがなかった場合
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "新規登録";
-            }
-            else
-            {   
+            } else {
                 $laptime_500m = $race_result_record_array[0]->{"laptime_500m"};
                 $laptime_1000m = $race_result_record_array[0]->{"laptime_1000m"};
                 $laptime_1500m = $race_result_record_array[0]->{"laptime_1500m"};
                 $laptime_2000m = $race_result_record_array[0]->{"laptime_2000m"};
                 $final_time = $race_result_record_array[0]->{"final_time"};
-                if(isset($laptime_500m)
+                if (
+                    isset($laptime_500m)
                     && isset($laptime_1000m)
                     && isset($laptime_1500m)
                     && isset($laptime_2000m)
-                    && isset($final_time))
-                {
+                    && isset($final_time)
+                ) {
                     //レース結果情報が登録されているデータの場合
                     $inputData['csvDataList'][$rowIndex]['loadingResult'] = "記録情報あり";
-                }
-                else
-                {
+                } else {
                     //レース結果情報が登録されていないデータの場合
                     $inputData['csvDataList'][$rowIndex]['loadingResult'] = "エントリー情報変更";
                 }
@@ -1087,30 +215,28 @@ class TournamentInfoAlignmentController extends Controller
     }
 
     //大会エントリー一括登録 登録ボタン押下 20240301
-    public function registerTournamentEntryCsvData(Request $request,
-                                                    T_raceResultRecord $t_raceResultRecord,
-                                                    T_tournaments $t_tournaments,
-                                                    T_races $t_races,
-                                                    T_organizations $t_organizations,
-                                                    T_players $t_players,
-                                                    M_events $m_events)
-    {
+    public function registerTournamentEntryCsvData(
+        Request $request,
+        T_raceResultRecord $t_raceResultRecord,
+        T_tournaments $t_tournaments,
+        T_races $t_races,
+        T_organizations $t_organizations,
+        T_players $t_players,
+        M_events $m_events
+    ) {
         Log::debug(sprintf("registerTournamentEntryCsvData start"));
         $inputData = $request->all();
         //$inputData['csvDataList'] = $request->all();
         //Log::debug($inputData['csvDataList']);
 
         $current_datetime = now()->format('Y-m-d H:i:s.u');
-        $user_id = Auth::user()->user_id;        
+        $user_id = Auth::user()->user_id;
 
         //読み込み結果の選択にチェックが入ってるレコード単位でチェック
         DB::beginTransaction();
-        try
-        {
-            for($rowIndex = 0;$rowIndex < count($inputData['csvDataList']); $rowIndex++)
-            {
-                if($inputData['csvDataList'][$rowIndex]["checked"] == true)
-                {
+        try {
+            for ($rowIndex = 0; $rowIndex < count($inputData['csvDataList']); $rowIndex++) {
+                if ($inputData['csvDataList'][$rowIndex]["checked"] == true) {
                     $player_id = $inputData['csvDataList'][$rowIndex]["userId"];               //選手ID
                     $target_player = $t_players->getPlayer($player_id);         //対象の選手データを取得
                     $player_name = $target_player[0]->{"player_name"};               //選手名
@@ -1146,8 +272,7 @@ class TournamentInfoAlignmentController extends Controller
                     $search_values["player_id"] = $player_id;
                     $race_result_record_array = $t_raceResultRecord->getRaceResultRecordsWithSearchCondition($search_values);
                     //検索結果を確認
-                    if(count($race_result_record_array) == 1)
-                    {
+                    if (count($race_result_record_array) == 1) {
                         //レース結果データが1件以上ある存在する場合
                         //レース結果が登録されているかを確認
                         $race_result_record_id = $race_result_record_array[0]->{"race_result_record_id"};
@@ -1156,18 +281,17 @@ class TournamentInfoAlignmentController extends Controller
                         $laptime_1500m = $race_result_record_array[0]->{"laptime_1500m"};
                         $laptime_2000m = $race_result_record_array[0]->{"laptime_2000m"};
                         $final_time = $race_result_record_array[0]->{"final_time"};
-                        if(isset($laptime_500m)
+                        if (
+                            isset($laptime_500m)
                             && isset($laptime_1000m)
                             && isset($laptime_1500m)
                             && isset($laptime_2000m)
-                            && isset($final_time))
-                        {
+                            && isset($final_time)
+                        ) {
                             //登録されている場合
                             $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録エラー（記録情報あり）";
                             throw new Exception("他のユーザーによりレース結果が登録されたレースが有ります。\r\n当該レースのエントリー情報は更新することは出来ません。");
-                        }
-                        else
-                        {
+                        } else {
                             //登録されていない場合
                             $update_values = array();
                             $update_values["player_id"] = $player_id;
@@ -1199,9 +323,7 @@ class TournamentInfoAlignmentController extends Controller
                             //更新実行
                             $t_raceResultRecord->updateRaceResultRecordsResponse($update_values);
                         }
-                    }
-                    elseif(count($race_result_record_array) == 0)
-                    {
+                    } elseif (count($race_result_record_array) == 0) {
                         //レース結果データが0件の場合
                         $insert_values = array();
                         $insert_values["player_id"] = $player_id;
@@ -1231,16 +353,14 @@ class TournamentInfoAlignmentController extends Controller
                         Log::debug($insert_values);
                         //新規登録実行
                         $inserted_id = $t_raceResultRecord->insertRaceResultRecordResponse($insert_values);
-                        Log::debug("inserted_id = ".$inserted_id);
+                        Log::debug("inserted_id = " . $inserted_id);
                     }
                 }
             }
             DB::commit();
             Log::debug(sprintf("registerTournamentEntryCsvData end"));
             return response()->json(['result' => $inputData['csvDataList']]); //DBの結果を返す
-        }
-        catch(\Throwable $e)
-        {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error($e->getMessage());
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
@@ -1248,24 +368,22 @@ class TournamentInfoAlignmentController extends Controller
     }
 
     //大会結果一括 読み込むボタン押下 20240301
-    public function sendTournamentResultCsvData(Request $request,
-                                                T_tournaments $t_tournaments,
-                                                T_races $t_races,
-                                                T_organizations $t_organizations,
-                                                T_players $t_players,
-                                                T_raceResultRecord $t_raceResultRecord)
-    {
+    public function sendTournamentResultCsvData(
+        Request $request,
+        T_tournaments $t_tournaments,
+        T_races $t_races,
+        T_organizations $t_organizations,
+        T_players $t_players,
+        T_raceResultRecord $t_raceResultRecord
+    ) {
         Log::debug(sprintf("sendTournamentResultCsvData start"));
         $reqData = $request->all();
         //Log::debug($reqData);
-        try
-        {
+        try {
             //フロントエンドで入力された大会ID
             $input_tourn_id = $reqData['tournData']['tournId'];
             // //対象の大会情報
             $target_tournament = $t_tournaments->getTournamentInfoFromTournId($input_tourn_id);
-            Log::debug("**********target_tournament**********");
-            Log::debug($target_tournament);
             // //対象の大会が公式かどうか
             $is_target_tournament_official = $target_tournament[0]->{'tourn_type'};
             //団体情報
@@ -1274,10 +392,8 @@ class TournamentInfoAlignmentController extends Controller
             $players = $t_players->getPlayers();
             //チェック結果
             $checkResult = true;
-            for($rowIndex = 0;$rowIndex < count($reqData['csvDataList']); $rowIndex++)
-            {
+            for ($rowIndex = 0; $rowIndex < count($reqData['csvDataList']); $rowIndex++) {
                 $target_row = &$reqData['csvDataList'][$rowIndex];
-
                 $entrysystem_tourn_id = isset($target_row['entrysystemTournId']) ? $target_row['entrysystemTournId'] : null;  //既存大会ID
                 $entrysystem_race_id = isset($target_row['entrysystemRaceId']) ? $target_row['entrysystemRaceId'] : null;   //既存レースID
                 $jara_player_id = isset($target_row['jaraPlayerId']) ? $target_row['jaraPlayerId'] : null; //既存選手ID
@@ -1286,441 +402,378 @@ class TournamentInfoAlignmentController extends Controller
                 $player_id = isset($target_row['userId']) ? $target_row['userId'] : null; //選手ID
 
                 //非公式
-                if ($is_target_tournament_official == 0)
-                {
+                if ($is_target_tournament_official == 0) {
                     // 大会ID   非公式大会は必須入力
-                    if(isset($tourn_id))
-                    {
+                    if (isset($tourn_id)) {
                         $this->checkInteger($tourn_id, 5, $checkResult, $target_row['tournIdError']);
-                    }
-                    else
-                    {
+                    } else {
                         $checkResult = false;
                         $target_row['tournIdError'] = true;
                     }
                     // エントリー大会ID
-                    if(isset($entrysystem_tourn_id))
-                    {
+                    if (isset($entrysystem_tourn_id)) {
                         $this->checkInteger($entrysystem_tourn_id, 8, $checkResult, $target_row['entrysystemTournIdError']);
                     }
                     // 大会名
-                    if(isset($target_row['tournName']))
-                    {
+                    if (isset($target_row['tournName'])) {
                         $this->checkWithinByte($target_row['tournName'], 255, $checkResult, $target_row['tournNameError']);
                     }
                     // 選手ID   非公式大会は必須入力
-                    if(isset($player_id))
-                    {
+                    if (isset($player_id)) {
                         $this->checkInteger($player_id, 7, $checkResult, $target_row['userIdError']);
-                    }
-                    else
-                    {
+                    } else {
                         $checkResult = false;
                         $target_row['userIdError'] = true;
                     }
                     // JARA選手コード
-                    if(isset($jara_player_id))
-                    {
+                    if (isset($jara_player_id)) {
                         //半角数字かつ12桁でなければエラーとする
-                        if(!(is_numeric($jara_player_id) && mb_strlen($jara_player_id) == 12))
-                        {
+                        if (!(is_numeric($jara_player_id) && mb_strlen($jara_player_id) == 12)) {
                             $checkResult = false;
                             $target_row['jaraPlayerIdError'] = true;
                         }
                     }
                     // 選手名
-                    if(isset($target_row['playerName']))
-                    {
+                    if (isset($target_row['playerName'])) {
                         $this->checkWithinByte($target_row['playerName'], 100, $checkResult, $target_row['playerNameError']);
                     }
+                    // レースID
+                    if (isset($race_id)) {
+                        $this->checkInteger($race_id, 8, $checkResult, $target_row['raceIdError']);
+                    } else {
+                        $checkResult = false;
+                        $target_row['raceIdError'] = true;
+                    }
                     // エントリーレースID
-                    if(isset($entrysystem_race_id))
-                    {
+                    if (isset($entrysystem_race_id)) {
                         $this->checkInteger($entrysystem_race_id, 8, $checkResult, $target_row['entrysystemRaceIdError']);
                     }
-                    else
-                    {
-                        $checkResult = false;
-                        $target_row['entrysystemRaceIdError'] = true;
-                    }
                     //レースNo.
-                    if(isset($target_row['raceNumber']))
-                    {
+                    if (isset($target_row['raceNumber'])) {
                         $this->checkInteger($target_row['raceNumber'], 3, $checkResult, $target_row['raceNumberError']);
                     }
                     //レース区分ID
-                    if(isset($target_row['raceTypeId']))
-                    {
+                    if (isset($target_row['raceTypeId'])) {
                         $this->checkInteger($target_row['raceTypeId'], 3, $checkResult, $target_row['raceTypeIdError']);
-                    }
-                    else
-                    {
+                    } else {
                         $checkResult = false;
                         $target_row['raceTypeIdError'] = true;
                     }
                     // レース区分名
-                    if(isset($target_row['raceTypeName']))
-                    {
+                    if (isset($target_row['raceTypeName'])) {
                         $this->checkWithinByte($target_row['raceTypeName'], 255, $checkResult, $target_row['raceTypeNameError']);
                     }
                 }
                 //公式
-                else
-                {
+                else {
+                    //大会IDかエントリー大会IDのどちらかが入力されていることを確認
+                    //どちらも入力されていなかったら両項目をエラーとする
+                    if (!(isset($target_row['tournId']) || isset($target_row['entrysystemTournId']))) {
+                        $checkResult = false;
+                        $target_row['tournIdError'] = true;
+                        $target_row['entrysystemTournIdError'] = true;
+                    }
                     // 大会ID
-                    if(isset($target_row['tournId']))
-                    {
+                    if (isset($target_row['tournId'])) {
                         $this->checkInteger($target_row['tournId'], 5, $checkResult, $target_row['tournIdError']);
                     }
                     // エントリー大会ID
-                    if(isset($target_row['entrysystemTournId']))
-                    {
+                    if (isset($target_row['entrysystemTournId'])) {
                         $this->checkInteger($target_row['entrysystemTournId'], 8, $checkResult, $target_row['entrysystemTournIdError']);
-                    }
-                    else
-                    {
+                    } else {
                         $checkResult = false;
                         $target_row['entrysystemTournIdError'] = true;
                     }
                     //大会名
-                    if(isset($target_row['tournName']))
-                    {
+                    if (isset($target_row['tournName'])) {
                         $this->checkWithinByte($target_row['tournName'], 255, $checkResult, $target_row['tournNameError']);
-                    }
-                    else
-                    {
+                    } else {
                         $checkResult = false;
                         $target_row['tournNameError'] = true;
                     }
+                    //選手IDかJARA選手コードのいずれかが入力されていることを確認する
+                    //どちらも入力されていなかったら両項目をエラーとする
+                    if (!(isset($player_id) || isset($target_row['jaraPlayerId']))) {
+                        $checkResult = false;
+                        $target_row['userIdError'] = true;
+                        $target_row['jaraPlayerIdError'] = true;
+                    }
                     // 選手ID
-                    if($player_id)
-                    {
+                    if (isset($player_id)) {
                         $this->checkInteger($player_id, 7, $checkResult, $target_row['userIdError']);
                     }
                     // JARA選手コード
                     //jara_player_codeにデータがあれば判定する
-                    if (isset($target_row['jaraPlayerId']))
-                    {
+                    if (isset($target_row['jaraPlayerId'])) {
                         if (!(is_numeric($target_row['jaraPlayerId'])
-                            && mb_strlen($target_row['jaraPlayerId']) == 12))
-                        {
+                            && mb_strlen($target_row['jaraPlayerId']) == 12)) {
                             $checkResult = false;
                             $target_row['jaraPlayerIdError'] = true;
                         }
-                    }
-                    else
-                    {
+                    } else {
                         $checkResult = false;
                         $target_row['jaraPlayerIdError'] = true;
                     }
                     // 選手名
-                    if(isset($target_row['playerName']))
-                    {
+                    if (isset($target_row['playerName'])) {
                         $this->checkWithinByte($target_row['playerName'], 100, $checkResult, $target_row['playerNameError']);
-                    }
-                    else
-                    {
+                    } else {
                         $checkResult = false;
                         $target_row['playerNameError'] = true;
                     }
+                    //レースIDかエントリーレースIDのいずれかが入力されていることを確認
+                    //どちらも入力されていなかったら両項目をエラーとする
+                    if (!(isset($race_id) || isset($target_row['entrysystemRaceId']))) {
+                        $checkResult = false;
+                        $target_row['raceIdError'] = true;
+                        $target_row['entrysystemRaceIdError'] = true;
+                    }
+                    // レースID
+                    if (isset($race_id)) {
+                        $this->checkInteger($race_id, 8, $checkResult, $target_row['raceIdError']);
+                    }
                     // エントリーレースID
-                    if(isset($target_row['entrysystemRaceId']))
-                    {
+                    if (isset($target_row['entrysystemRaceId'])) {
                         $this->checkInteger($target_row['entrysystemRaceId'], 8, $checkResult, $target_row['entrysystemRaceIdError']);
                     }
                     //レースNo.
-                    if(isset($target_row['raceNumber']))
-                    {
+                    if (isset($target_row['raceNumber'])) {
                         $this->checkInteger($target_row['raceNumber'], 3, $checkResult, $target_row['raceNumberError']);
-                    }
-                    else
-                    {
+                    } else {
                         $checkResult = false;
                         $target_row['raceNumberError'] = true;
                     }
                     //レース区分ID
-                    if(isset($target_row['raceTypeId']))
-                    {
+                    if (isset($target_row['raceTypeId'])) {
                         $this->checkInteger($target_row['raceTypeId'], 3, $checkResult, $target_row['raceTypeIdError']);
                     }
                     //レース区分名
-                    if(isset($target_row['raceTypeName']))
-                    {
+                    if (isset($target_row['raceTypeName'])) {
                         $this->checkWithinByte($target_row['raceTypeName'], 255, $checkResult, $target_row['raceTypeNameError']);
-                    }
-                    else
-                    {
+                    } else {
                         $checkResult = false;
                         $target_row['raceTypeNameError'] = true;
                     }
+                    //団体IDとエントリー団体コードのいずれかが入力されていることを確認
+                    //どちらも入力されていなかったら両項目をエラーとする
+                    if (!(isset($target_row['orgId']) || isset($target_row['entrysystemOrgId']))) {
+                        Log::debug("団体IDとエントリー団体コードのいずれかが入力されていない");
+                        $checkResult = false;
+                        $target_row['orgIdError'] = true;
+                        $target_row['entrysystemOrgIdError'] = true;
+                    }
                 }
                 //公式・非公式で区別しない項目
-                // レースID
-                if(isset($race_id))
-                {
-                    $this->checkInteger($race_id, 8, $checkResult,$target_row['raceIdError']);
-                }
-                else
-                {
-                    $checkResult = false;
-                    $target_row['raceIdError'] = true;
-                }
                 //レース名
-                if(isset($target_row['raceName']))
-                {
+                if (isset($target_row['raceName'])) {
                     $this->checkWithinByte($target_row['raceName'], 255, $checkResult, $target_row['raceNameError']);
                 }
                 // 団体ID
-                if(isset($target_row['orgId']))
-                {
+                if (isset($target_row['orgId'])) {
                     $this->checkInteger($target_row['orgId'], 4, $checkResult, $target_row['orgIdError']);
                 }
                 // エントリー団体コード
-                if(isset($target_row['entrysystemOrgId']))
-                {
+                if (isset($target_row['entrysystemOrgId'])) {
                     if (!(is_numeric($target_row['entrysystemOrgId'])
-                            && mb_strlen($target_row['entrysystemOrgId']) == 6))
-                    {
+                        && mb_strlen($target_row['entrysystemOrgId']) == 6)) {
                         $checkResult = false;
                         $target_row['entrysystemOrgIdError'] = true;
                     }
                 }
                 //団体名
-                if(isset($target_row['orgName']))
-                {
+                if (isset($target_row['orgName'])) {
                     $this->checkWithinByte($target_row['orgName'], 255, $checkResult, $target_row['orgNameError']);
                 }
                 //クルー名
-                if(isset($target_row['crewName']))
-                {
+                if (isset($target_row['crewName'])) {
                     $this->checkWithinByte($target_row['crewName'], 255, $checkResult, $target_row['crewNameError']);
                 }
                 //組別
-                if(isset($target_row['byGroup']))
-                {
+                if (isset($target_row['byGroup'])) {
                     $this->checkWithinByte($target_row['byGroup'], 255, $checkResult, $target_row['byGroupError']);
                 }
                 //種目ID
-                if(isset($target_row['eventId']))
-                {
+                if (isset($target_row['eventId'])) {
                     $this->checkInteger($target_row['eventId'], 3, $checkResult, $target_row['eventIdError']);
                 }
                 //種目名
-                if(isset($target_row['eventName']))
-                {
+                if (isset($target_row['eventName'])) {
                     $this->checkWithinByte($target_row['eventName'], 255, $checkResult, $target_row['eventNameError']);
                 }
                 //距離
-                if(isset($target_row['range']))
-                {
+                if (isset($target_row['range'])) {
                     $this->checkInteger($target_row['range'], 4, $checkResult, $target_row['rangeError']);
                 }
                 //順位
-                if(isset($target_row['rank']))
-                {
+                if (isset($target_row['rank'])) {
                     $this->checkInteger($target_row['rank'], 3, $checkResult, $target_row['rankError']);
                 }
                 // 500mlapタイム
-                if(isset($target_row['fiveHundredmLaptime']))
-                {
+                if (isset($target_row['fiveHundredmLaptime'])) {
                     $this->checkDecimal($target_row['fiveHundredmLaptime'], "5.2", $checkResult, $target_row['fiveHundredmLaptimeError']);
                 }
                 //1000mlapタイム
-                if(isset($target_row['tenHundredmLaptime']))
-                {
+                if (isset($target_row['tenHundredmLaptime'])) {
                     $this->checkDecimal($target_row['tenHundredmLaptime'], "5.2", $checkResult, $target_row['tenHundredmLaptimeError']);
                 }
                 // 1500mlapタイム
-                if(isset($target_row['fifteenHundredmLaptime']))
-                {
+                if (isset($target_row['fifteenHundredmLaptime'])) {
                     $this->checkDecimal($target_row['fifteenHundredmLaptime'], "5.2", $checkResult, $target_row['fifteenHundredmLaptimeError']);
                 }
                 // 2000mlapタイム
-                if(isset($target_row['twentyHundredmLaptime']))
-                {
+                if (isset($target_row['twentyHundredmLaptime'])) {
                     $this->checkDecimal($target_row['twentyHundredmLaptime'], "5.2", $checkResult, $target_row['twentyHundredmLaptimeError']);
                 }
                 // 最終タイム
-                if(isset($target_row['finalTime']))
-                {
+                if (isset($target_row['finalTime'])) {
                     $this->checkDecimal($target_row['finalTime'], "5.2", $checkResult, $target_row['finalTimeError']);
                 }
                 // ストロークレート（平均）
-                if(isset($target_row['strokeRateAvg']))
-                {
+                if (isset($target_row['strokeRateAvg'])) {
                     $this->checkInteger($target_row['strokeRateAvg'], 3, $checkResult, $target_row['strokeRateAvgError']);
                 }
                 // 500mストロークレート
-                if(isset($target_row['fiveHundredmStrokeRat']))
-                {
+                if (isset($target_row['fiveHundredmStrokeRat'])) {
                     $this->checkInteger($target_row['fiveHundredmStrokeRat'], 3, $checkResult, $target_row['fiveHundredmStrokeRatError']);
                 }
                 // 1000mストロークレート
-                if(isset($target_row['tenHundredmStrokeRat']))
-                {
-                    $this->checkInteger($target_row['tenHundredmStrokeRat'], 3, $checkResult, $target_row['tenHundredmStrokeRatError']);            
+                if (isset($target_row['tenHundredmStrokeRat'])) {
+                    $this->checkInteger($target_row['tenHundredmStrokeRat'], 3, $checkResult, $target_row['tenHundredmStrokeRatError']);
                 }
                 // 1500mストロークレート
-                if(isset($target_row['fifteenHundredmStrokeRat']))
-                {
+                if (isset($target_row['fifteenHundredmStrokeRat'])) {
                     $this->checkInteger($target_row['fifteenHundredmStrokeRat'], 3, $checkResult, $target_row['fifteenHundredmStrokeRatError']);
                 }
                 // 2000mストロークレート
-                if(isset($target_row['twentyHundredmStrokeRat']))
-                {
+                if (isset($target_row['twentyHundredmStrokeRat'])) {
                     $this->checkInteger($target_row['twentyHundredmStrokeRat'], 3, $checkResult, $target_row['twentyHundredmStrokeRatError']);
                 }
                 // 心拍数（平均）
-                if(isset($target_row['heartRateAvg']))
-                {
+                if (isset($target_row['heartRateAvg'])) {
                     $this->checkInteger($target_row['heartRateAvg'], 3, $checkResult, $target_row['heartRateAvgError']);
                 }
                 // 500m心拍数
-                if(isset($target_row['fiveHundredmHeartRate']))
-                {
+                if (isset($target_row['fiveHundredmHeartRate'])) {
                     $this->checkInteger($target_row['fiveHundredmHeartRate'], 3, $checkResult, $target_row['fiveHundredmHeartRateError']);
                 }
                 // 1000m心拍数
-                if(isset($target_row['tenHundredmHeartRate']))
-                {
+                if (isset($target_row['tenHundredmHeartRate'])) {
                     $this->checkInteger($target_row['tenHundredmHeartRate'], 3, $checkResult, $target_row['tenHundredmHeartRateError']);
                 }
                 // 1500m心拍数
-                if(isset($target_row['fifteenHundredmHeartRate']))
-                {
+                if (isset($target_row['fifteenHundredmHeartRate'])) {
                     $this->checkInteger($target_row['fifteenHundredmHeartRate'], 3, $checkResult, $target_row['fifteenHundredmHeartRateError']);
                 }
                 // 2000m心拍数
-                if(isset($target_row['twentyHundredmHeartRate']))
-                {
+                if (isset($target_row['twentyHundredmHeartRate'])) {
                     $this->checkInteger($target_row['twentyHundredmHeartRate'], 3, $checkResult, $target_row['twentyHundredmHeartRateError']);
                 }
                 // 公式／非公式
-                if(isset($target_row['official']))
-                {
+                if (isset($target_row['official'])) {
                     $this->checkZeroOrOne($target_row['official'], $checkResult, $target_row['officialError']);
+                    //選択した大会と公式／非公式が一致していることを確認する
+                    if ($is_target_tournament_official != $target_row['official']) {
+                        $checkResult = false;
+                        $target_row['officialError'] = true;
+                    }
                 }
                 // 立ち合い有無
-                if(isset($target_row['attendance']))
-                {
+                if (isset($target_row['attendance'])) {
                     $this->checkZeroOrOne($target_row['attendance'], $checkResult, $target_row['attendanceError']);
                 }
                 // エルゴ体重
-                if(isset($target_row['ergoWeight']))
-                {
+                if (isset($target_row['ergoWeight'])) {
                     $this->checkDecimal($target_row['ergoWeight'], "3.2", $checkResult, $target_row['ergoWeightError']);
                 }
                 // 選手身長
-                if(isset($target_row['playerHeight']))
-                {
+                if (isset($target_row['playerHeight'])) {
                     $this->checkDecimal($target_row['playerHeight'], "3.2", $checkResult, $target_row['playerHeightError']);
                 }
                 // 選手体重
-                if(isset($target_row['playerWeight']))
-                {
+                if (isset($target_row['playerWeight'])) {
                     $this->checkDecimal($target_row['playerWeight'], "3.2", $checkResult, $target_row['playerWeightError']);
                 }
                 // シート番号ID
-                if(isset($target_row['mSheetNumber']))
-                {
+                if (isset($target_row['mSheetNumber'])) {
                     $this->checkInteger($target_row['mSheetNumber'], 3, $checkResult, $target_row['mSheetNumberError']);
                 }
                 // シート番号
-                if(isset($target_row['sheetName']))
-                {
+                if (isset($target_row['sheetName'])) {
                     $this->checkWithinByte($target_row['sheetName'], 255, $checkResult, $target_row['sheetNameError']);
                 }
                 // 出漕結果記録名
-                if(isset($target_row['raceResultRecordName']))
-                {
+                if (isset($target_row['raceResultRecordName'])) {
                     $this->checkWithinByte($target_row['raceResultRecordName'], 255, $checkResult, $target_row['raceResultRecordNameError']);
                 }
                 // 発艇日時
-                if(isset($target_row['startDatetime']))
-                {
-                    if (!$target_row['startDatetime'] === date('YYYY/MM/DD H:i', strtotime($target_row['startDatetime'])))
-                    {
+                if (isset($target_row['startDatetime'])) {
+                    if (!$target_row['startDatetime'] === date('YYYY/MM/DD H:i', strtotime($target_row['startDatetime']))) {
                         $checkResult = false;
                         $target_row['startDatetimeError'] = true;
                     }
                 }
                 // 天候
-                if(isset($target_row['weather']))
-                {
+                if (isset($target_row['weather'])) {
                     $this->checkWithinByte($target_row['weather'], 255, $checkResult, $target_row['weatherError']);
                 }
                 // 2000m地点風速
-                if(isset($target_row['windSpeedTwentyHundredmPoint']))
-                {
+                if (isset($target_row['windSpeedTwentyHundredmPoint'])) {
                     $this->checkDecimal($target_row['windSpeedTwentyHundredmPoint'], "3.2", $checkResult, $target_row['windSpeedTwentyHundredmPointError']);
                 }
                 // 2000m地点風向
-                if(isset($target_row['windDirectionTwentyHundredmPoint']))
-                {
+                if (isset($target_row['windDirectionTwentyHundredmPoint'])) {
                     $this->checkWithinByte($target_row['windDirectionTwentyHundredmPoint'], 255, $checkResult, $target_row['windDirectionTwentyHundredmPointError']);
                 }
                 // 1000m地点風速
-                if(isset($target_row['windSpeedTenHundredmPoint']))
-                {
+                if (isset($target_row['windSpeedTenHundredmPoint'])) {
                     $this->checkDecimal($target_row['windSpeedTenHundredmPoint'], "3.2", $checkResult, $target_row['windSpeedTenHundredmPointError']);
                 }
                 // 1000m地点風向
-                if(isset($target_row['windDirectionTenHundredmPoint']))
-                {
+                if (isset($target_row['windDirectionTenHundredmPoint'])) {
                     $this->checkWithinByte($target_row['windDirectionTenHundredmPoint'], 255, $checkResult, $target_row['windDirectionTenHundredmPointError']);
                 }
                 // 備考
-                if(isset($target_row['remark']))
-                {
+                if (isset($target_row['remark'])) {
                     $this->checkWithinByte($target_row['remark'], 255, $checkResult, $target_row['remarkError']);
                 }
                 //大会ID情報
-                if($checkResult == true)
-                {
-                    Log::debug("大会ID情報　チェック");
+                if ($checkResult == true) {
+                    //Log::debug("大会ID情報　チェック");
                     $is_tournament_exists = false;
-                    foreach($target_tournament as $tourn)
-                    {
-                        if(isset($target_row['entrysystemTournId']))
-                        {
-                            if($tourn->tourn_id == $target_row['tournId']
-                                && $tourn->entrysystem_tourn_id == $target_row['entrysystemTournId'])
-                            {
+                    foreach ($target_tournament as $tourn) {
+                        if (isset($target_row['entrysystemTournId'])) {
+                            if (
+                                $tourn->tourn_id == $target_row['tournId']
+                                && $tourn->entrysystem_tourn_id == $target_row['entrysystemTournId']
+                            ) {
                                 $is_tournament_exists = true;
                                 break;
                             }
-                        }
-                        else
-                        {
-                            if($tourn->tourn_id == $target_row['tournId'])
-                            {
+                        } else {
+                            if ($tourn->tourn_id == $target_row['tournId']) {
                                 $is_tournament_exists = true;
                                 break;
                             }
                         }
                     }
-                    if(!$is_tournament_exists)
-                    {
+                    if (!$is_tournament_exists) {
                         //大会ID
                         $target_row['tournIdError'] = true;
                         //既存大会ID
-                        $target_row['entrysystemTournIdError'] = isset($target_row['entrysystemTournId']) ? true : false;                        
+                        $target_row['entrysystemTournIdError'] = isset($target_row['entrysystemTournId']) ? true : false;
                         $checkResult = false;
                     }
                 }
 
                 //レース情報の一致確認
-                if ($checkResult == true)
-                {
-                    Log::debug("レース情報　チェック");
+                if ($checkResult == true) {
+                    //Log::debug("レース情報　チェック");
                     $is_race_exists = false;    //一致するレースの有無
                     //対象の大会に登録されているレース情報
                     $target_races = $t_races->getRace($input_tourn_id);
-                    foreach ($target_races as $race)
-                    {
+                    foreach ($target_races as $race) {
                         //種目IDがその他、かつレース区分IDがその他の場合
-                        if ($target_row['eventId'] == 999 && $target_row['raceTypeId'] == 99)
-                        {
+                        if ($target_row['eventId'] == 999 && $target_row['raceTypeId'] == 99) {
                             if (
                                 $race->event_id == $target_row['eventId']                  //種目ID
                                 && $race->event_name == $target_row['eventName']           //種目名
@@ -1729,14 +782,12 @@ class TournamentInfoAlignmentController extends Controller
                                 && $race->by_group == $target_row['byGroup']               //組別
                                 && $race->race_number == $target_row['raceNumber']         //レースNo.
                                 && $race->race_id == $target_row['raceId']                 //レースID
-                            )
-                            {
+                            ) {
                                 $is_race_exists = true;
                             }
                         }
                         //種目IDがその他の場合
-                        elseif ($race->event_id == 999)
-                        {
+                        elseif ($race->event_id == 999) {
                             if (
                                 $race->event_id == $target_row['eventId']                  //種目ID
                                 && $race->event_name == $target_row['eventName']           //種目名
@@ -1744,14 +795,12 @@ class TournamentInfoAlignmentController extends Controller
                                 && $race->by_group == $target_row['byGroup']               //組別
                                 && $race->race_number == $target_row['raceNumber']         //レースNo.
                                 && $race->race_id == $target_row['raceId']                 //レースID
-                            )
-                            {
+                            ) {
                                 $is_race_exists = true;
                             }
                         }
                         //レース区分がその他の場合
-                        elseif ($race->race_class_id == 99)
-                        {
+                        elseif ($race->race_class_id == 99) {
                             if (
                                 $race->event_id == $target_row['eventId']                  //種目ID
                                 && $race->race_class_id == $target_row['raceTypeId']       //レース区分ID
@@ -1759,34 +808,28 @@ class TournamentInfoAlignmentController extends Controller
                                 && $race->by_group == $target_row['byGroup']               //組別
                                 && $race->race_number == $target_row['raceNumber']         //レースNo.
                                 && $race->race_id == $target_row['raceId']                 //レースID
-                            )        
-                            {
+                            ) {
                                 $is_race_exists = true;
                             }
-                        }
-                        else
-                        {
+                        } else {
                             if (
                                 $race->event_id == $target_row['eventId']                  //種目ID
                                 && $race->race_class_id == $target_row['raceTypeId']       //レース区分ID
                                 && $race->by_group == $target_row['byGroup']               //組別
                                 && $race->race_number == $target_row['raceNumber']         //レースNo.
                                 && $race->race_id == $target_row['raceId']                 //レースID
-                            )
-                            {
+                            ) {
                                 $is_race_exists = true;
                             }
                         }
                         //一致するレースがあればループを抜ける
-                        if ($is_race_exists)
-                        {
+                        if ($is_race_exists) {
                             break;
                         }
                     }
                     //一致の結果を確認して登録不可データかどうかを判断する
-                    if (!$is_race_exists)
-                    {
-                        Log::debug("レース情報不一致");
+                    if (!$is_race_exists) {
+                        //Log::debug("レース情報不一致");
                         //レースID
                         $target_row['raceIdError'] = true;
                         //種目ID
@@ -1796,44 +839,36 @@ class TournamentInfoAlignmentController extends Controller
                         //レース区分ID                        
                         $target_row['raceTypeIdError'] = isset($target_row['raceTypeId']) ? true : false;
                         //レース区分名                        
-                        $target_row['raceTypeNameError'] = isset($target_row['raceTypeName']) ? true : false;                        
+                        $target_row['raceTypeNameError'] = isset($target_row['raceTypeName']) ? true : false;
                         //組別
-                        $target_row['byGroupError'] = isset($target_row['byGroup']) ? true : false;                        
+                        $target_row['byGroupError'] = isset($target_row['byGroup']) ? true : false;
                         //レースNo.                        
                         $target_row['raceNumberError'] = isset($target_row['raceNumber']) ? true : false;
                         $checkResult = false;
                     }
                 }
                 //団体情報の一致確認
-                if ($checkResult == true)
-                {
-                    Log::debug("団体情報　チェック");
+                if ($checkResult == true) {
+                    //Log::debug("団体情報　チェック");
                     $is_organization_exists = false;
-                    foreach ($organizations as $organization)
-                    {
-                        if (isset($target_row['entrysystemOrgId']))
-                        {
+                    foreach ($organizations as $organization) {
+                        if (isset($target_row['entrysystemOrgId'])) {
                             if (
                                 $organization->org_id == $target_row['orgId']
                                 && $organization->entrysystem_org_id == $target_row['entrysystemOrgId']
-                            )
-                            {
+                            ) {
                                 $is_organization_exists = true;
                                 break;
                             }
-                        }
-                        else
-                        {
-                            if ($organization->org_id == $target_row['orgId'])
-                            {
+                        } else {
+                            if ($organization->org_id == $target_row['orgId']) {
                                 $is_organization_exists = true;
                                 break;
                             }
                         }
                     }
-                    if (!$is_organization_exists)
-                    {
-                        Log::debug("団体情報不一致");
+                    if (!$is_organization_exists) {
+                        //Log::debug("団体情報不一致");
                         //団体ID
                         $target_row['orgIdError'] = true;
                         //既存団体ID
@@ -1842,34 +877,27 @@ class TournamentInfoAlignmentController extends Controller
                     }
                 }
                 //選手情報の一致確認
-                if ($checkResult == true)
-                {
-                    Log::debug("選手情報　チェック");
+                if ($checkResult == true) {
+                    //Log::debug("選手情報　チェック");
                     $is_player_exists = false;
                     foreach ($players as $player) {
-                        if (isset($target_row['jaraPlayerId']))
-                        {
+                        if (isset($target_row['jaraPlayerId'])) {
                             if (
                                 $player->player_id == $target_row['userId']
                                 && $player->jara_player_id == $target_row['jaraPlayerId']
-                            )
-                            {
+                            ) {
                                 $is_player_exists = true;
                                 break;
                             }
-                        }
-                        else
-                        {
-                            if ($player->player_id == $target_row['player_id'])
-                            {
+                        } else {
+                            if ($player->player_id == $target_row['player_id']) {
                                 $is_player_exists = true;
                                 break;
                             }
                         }
                     }
-                    if (!$is_player_exists)
-                    {                    
-                        Log::debug("選手情報不一致");
+                    if (!$is_player_exists) {
+                        //Log::debug("選手情報不一致");
                         //選手ID
                         $target_row['userIdError'] = true;
                         //JARA選手コード
@@ -1877,52 +905,44 @@ class TournamentInfoAlignmentController extends Controller
                         $checkResult = false;
                     }
                 }
-                
-                if($checkResult)
-                {
+
+                if ($checkResult) {
                     //新規データか更新データかのチェック
                     $tournament_condition_array = array();   //レース結果データ検索のための条件値を格納する配列
                     $target_race_count;
                     //非公式大会の場合
-                    if($is_target_tournament_official == 0)
-                    {
+                    if ($is_target_tournament_official == 0) {
+                        Log::debug("非公式大会の場合");
                         $tournament_condition_array['tourn_id'] = $tourn_id;
                         $tournament_condition_array['race_id'] = $race_id;
                         $tournament_condition_array['player_id'] = $player_id;
                         $target_race_count = $t_raceResultRecord->getTargetUnofficialRaceCount($tournament_condition_array);
                     }
                     //公式大会の場合
-                    elseif($is_target_tournament_official == 1)
-                    {
-                        $tournament_condition_array['entrysystem_tourn_id'] = $tourn_id;
-                        $tournament_condition_array['entrysystem_race_id'] = $race_id;
-                        $tournament_condition_array['jara_player_id'] = $player_id;
-
-                        $target_race_count = $t_raceResultRecord->getTargetOfficialRaceCount($tournament_condition_array);
+                    elseif ($is_target_tournament_official == 1) {
+                        Log::debug("公式大会の場合");
+                        $replaceString = $this->generateConditionStringOfOfficialRaceRecordCount($target_row, $tournament_condition_array);
+                        $target_race_count = $t_raceResultRecord->getTargetOfficialRaceCount($tournament_condition_array, $replaceString);
                     }
-                    Log::debug($target_race_count);
                     //一致するレース結果データがあった場合
-                    if($target_race_count[0]->target_race_count > 0 )
-                    {
+                    if ($target_race_count[0]->target_race_count > 0) {
                         $target_row['checked'] = true;
                         $target_row['loadingResult'] = "更新登録";
                     }
                     //一致するレース結果データがなかった場合
-                    else
-                    {
+                    else {
                         $target_row['checked'] = true;
                         $target_row['loadingResult'] = "新規登録";
                     }
                 }
                 //checkResultがfalseのとき、不正データとする
-                else
-                {
+                else {
                     $target_row['checked'] = false;
                     $target_row['loadingResult'] = "登録不可データ";
                 }
             }
-            Log::debug($reqData);
-            Log::debug(sprintf("sendTournamentResultCsvData end"));            
+            //Log::debug($reqData);
+            Log::debug(sprintf("sendTournamentResultCsvData end"));
             return response()->json(['result' => $reqData]); //DBの結果を返す
         }
         catch (\Throwable $e)
@@ -1933,17 +953,281 @@ class TournamentInfoAlignmentController extends Controller
     }
 
     //大会結果一括 登録ボタン押下 20240301
-    public function registerTournamentResultCsvData(Request $request)
-    {
+    public function registerTournamentResultCsvData(
+        Request $request,
+        T_tournaments $t_tournaments,
+        T_races $t_races,
+        T_organizations $t_organizations,
+        T_players $t_players,
+        T_raceResultRecord $t_raceResultRecord
+    ) {
         Log::debug(sprintf("registerTournamentResultCsvData start"));
         $reqData = $request->all();
-        Log::debug($reqData);
-        Log::debug(sprintf("registerTournamentResultCsvData end"));
-        return response()->json(['result' => $reqData]); //DBの結果を返す
+        //Log::debug($reqData);
+
+        //選択された大会ID
+        $input_tourn_id = $reqData['tournData']['tournId'];
+        // 対象の大会情報
+        $target_tournament = $t_tournaments->getTournamentInfoFromTournId($input_tourn_id);
+        // 対象の大会が公式かどうか
+        $is_target_tournament_official = $target_tournament[0]->{'tourn_type'};
+
+        //登録・更新するユーザー名を取得
+        $register_user_id = Auth::user()->user_id;
+        //登録・更新日時のために現在の日時を取得
+        $current_datetime = now()->format('Y-m-d H:i:s.u');
+        DB::beginTransaction();
+        try {
+            for ($rowIndex = 0; $rowIndex < count($reqData['csvDataList']); $rowIndex++) {
+                //対象の行情報
+                $target_row = &$reqData['csvDataList'][$rowIndex];
+                if (
+                    $target_row['checked'] == true
+                    && ($target_row['loadingResult'] == '新規登録' || $target_row['loadingResult'] == '更新登録')
+                ) {
+                    //出漕結果記録テーブルに挿入する要素を格納するための配列
+                    $race_result_array = array();
+                    //入力データが公式／非公式を取得
+                    $is_official = $target_row['official'];
+                    //入力値の公式／非公式が空の場合、選択した大会の公式／非公式で補完する
+                    if (!isset($is_official)) {
+                        $is_official = $is_target_tournament_official;
+                    }
+                    //大会情報が既に登録済みかどうかをチェック
+                    //大会情報の検索に必要なデータを変数に用意
+                    $tournament_condition_array = array();
+                    //対象のレース結果の件数
+                    $race_count = 0;
+                    //非公式のとき
+                    if ($is_official == '0') {
+                        $tournament_condition_array['tourn_id'] = $target_row['tournId'];
+                        $tournament_condition_array['race_id'] = $target_row['raceId'];
+                        $tournament_condition_array['player_id'] = $target_row['userId'];
+
+                        $race_count = $t_raceResultRecord->getTargetUnofficialRaceCount($tournament_condition_array);
+                    }
+                    //公式のとき
+                    else {
+                        $replaceString = $this->generateConditionStringOfOfficialRaceRecordCount($target_row, $tournament_condition_array);
+                        $race_count = $t_raceResultRecord->getTargetOfficialRaceCount($tournament_condition_array, $replaceString);
+                    }
+                    Log::debug($race_count);
+                    $target_race_count = $race_count[0]->{'target_race_count'};
+                    if ($target_race_count == 1) {
+                        Log::debug("update execute.");
+                        //更新登録
+                        //DBから取得したレース結果情報を格納する変数
+                        $race_data;
+                        if ($is_official == '0') {
+                            //非公式のレースデータを取得
+                            $race_data = $t_raceResultRecord->getTargetUnofficialRace($tournament_condition_array);
+                        } else {
+                            $replace_string = $this->generateConditionStringOfOfficialRaceRecordCount($target_row, $tournament_condition_array);
+                            //公式のレースデータを取得
+                            $race_data = $t_raceResultRecord->getTargetOfficialRace($tournament_condition_array, $replace_string);
+                        }
+                        Log::debug($race_data);
+                        //更新データの各要素を配列に格納する
+                        //DBのテーブルから取得した値を格納
+                        $race_result_array['tourn_id'] = $race_data[0]->{'tourn_id'};                                         //大会ID
+                        $race_result_array['entrysystem_tourn_id'] = $race_data[0]->{'entrysystem_tourn_id'};                 //既存大会ID
+                        $race_result_array['tourn_name'] = $race_data[0]->{'tourn_name'};                                     //大会名
+                        $race_result_array['race_id'] = $race_data[0]->{'race_id'};                                           //レースID
+                        $race_result_array['entrysystem_race_id'] = $race_data[0]->{'entrysystem_race_id'};                   //既存レースID
+                        $race_result_array['race_number'] = $race_data[0]->{'race_number'};                                   //レースNo
+                        $race_result_array['race_name'] = $race_data[0]->{'race_name'};                                       //レース名
+                        $race_result_array['race_class_id'] = $target_row['raceTypeId'];                                  //レース区分ID
+                        $race_result_array['race_class_name'] = $target_row['raceTypeName'];                              //レース区分名
+                        $race_result_array['crew_name'] = $target_row['crewName'];                                          //クルー名
+                        $race_result_array['by_group'] = $target_row['byGroup'];                                            //組別
+                        $race_result_array['event_id'] = $target_row['eventId'];                                            //種目ID
+                        $race_result_array['event_name'] = $target_row['eventName'];                                        //種目名
+                        $race_result_array['range'] = $target_row['range'];                                                 //距離
+                        $race_result_array['org_id'] = $race_data[0]->{'org_id'};                                             //団体ID
+                        $race_result_array['entrysystem_org_id'] = $race_data[0]->{'entrysystem_org_id'};                     //既存団体ID
+                        $race_result_array['org_name'] = $race_data[0]->{'org_name'};                                         //団体名
+                        $race_result_array['player_id'] = $race_data[0]->{'player_id'};                                       //選手ID
+                        $race_result_array['jara_player_id'] = $race_data[0]->{'jara_player_id'};                             //既存選手ID
+                        $race_result_array['player_name'] = $race_data[0]->{'player_name'};                                   //選手名
+                        $race_result_array['rank'] = $target_row['rank'];                                                   //順位
+                        $race_result_array['laptime_500m'] = $target_row['fiveHundredmLaptime'];                            //500mlapタイム
+                        $race_result_array['laptime_1000m'] = $target_row['tenHundredmLaptime'];                            //1000mlapタイム
+                        $race_result_array['laptime_1500m'] = $target_row['fifteenHundredmLaptime'];                        //1500mlapタイム
+                        $race_result_array['laptime_2000m'] = $target_row['twentyHundredmLaptime'];                         //2000mlapタイム
+                        $race_result_array['final_time'] = $target_row['finalTime'];                                        //最終タイム
+                        $race_result_array['stroke_rate_avg'] = $target_row['strokeRateAvg'];                               //ストロークレート(平均)
+                        $race_result_array['stroke_rat_500m'] = $target_row['fiveHundredmStrokeRat'];                       //500mストロークレート
+                        $race_result_array['stroke_rat_1000m'] = $target_row['tenHundredmStrokeRat'];                       //1000mストロークレート
+                        $race_result_array['stroke_rat_1500m'] = $target_row['fifteenHundredmStrokeRat'];                   //1500mストロークレート
+                        $race_result_array['stroke_rat_2000m'] = $target_row['twentyHundredmStrokeRat'];                    //2000mストロークレート
+                        $race_result_array['heart_rate_avg'] = $target_row['heartRateAvg'];                                 //心拍数（平均）
+                        $race_result_array['heart_rate_500m'] = $target_row['fiveHundredmHeartRate'];                       //500m心拍数
+                        $race_result_array['heart_rate_1000m'] = $target_row['tenHundredmHeartRate'];                       //1000m心拍数
+                        $race_result_array['heart_rate_1500m'] = $target_row['fifteenHundredmHeartRate'];                   //1500m心拍数
+                        $race_result_array['heart_rate_2000m'] = $target_row['twentyHundredmHeartRate'];                    //2000m心拍数                        
+                        $race_result_array['official'] = $is_official;                                                     //公式／非公式                        
+                        $race_result_array['attendance'] = $target_row['attendance'];                                       //立会有無
+                        $race_result_array['ergo_weight'] = $target_row['ergoWeight'];                                      //エルゴ体重
+                        $race_result_array['player_height'] = $race_data[0]->{'height'};                                      //選手身長
+                        $race_result_array['player_weight'] = $race_data[0]->{'weight'};                                      //選手体重
+                        $race_result_array['seat_number'] = $target_row['mSheetNumber'];                                    //シート番号ID
+                        $race_result_array['seat_name'] = $target_row['sheetName'];                                         //シート名
+                        $race_result_array['race_result_record_name'] = $target_row['raceResultRecordName'];                //出漕結果記録名
+                        $race_result_array['start_datetime'] = $target_row['startDatetime'];                                //発艇日時
+                        $race_result_array['weather'] = $target_row['weather'];                                             //天候
+                        $race_result_array['wind_speed_2000m_point'] = $target_row['windSpeedTwentyHundredmPoint'];         //2000m地点風速
+                        $race_result_array['wind_direction_2000m_point'] = $target_row['windDirectionTwentyHundredmPoint']; //2000m地点風向
+                        $race_result_array['wind_speed_1000m_point'] = $target_row['windSpeedTenHundredmPoint'];            //1000m地点風速
+                        $race_result_array['wind_direction_1000m_point'] = $target_row['windDirectionTenHundredmPoint'];    //1000m地点風向
+                        $race_result_array['race_result_notes'] = $target_row['remark'];                                    //備考
+                        $race_result_array['updated_time'] = $current_datetime;                                             //更新日時
+                        $race_result_array['user_id'] = $register_user_id;                                                  //更新ユーザーID
+                        //検索条件
+                        $race_result_array['race_result_record_id'] = $race_data[0]->{'race_result_record_id'};
+
+                        Log::debug("**********race_result_array**********");
+                        Log::debug($race_result_array);
+                        //更新実行
+                        $t_raceResultRecord->updateBulkRaceResultRecord($race_result_array);
+                    } elseif ($target_race_count == 0) {
+                        Log::debug("insert execute.");
+                        //未登録ならレース結果情報をinsertする
+                        //大会データをテーブルから取得
+                        if (isset($target_row['tournId'])) {
+                            $target_tournament = $t_tournaments->getTournamentInfoFromTournId($target_row['tournId']);
+                            if (isset($target_tournament)) {
+                                $race_result_array['tourn_id'] = $target_tournament[0]->{'tourn_id'};                           //大会ID
+                                $race_result_array['entrysystem_tourn_id'] = $target_tournament[0]->{'entrysystem_tourn_id'};   //エントリー大会ID
+                                $race_result_array['tourn_name'] = $target_tournament[0]->{'tourn_name'};                       //大会名
+                            } else {
+                                $race_result_array['tourn_id'] = $target_row['tournId'];                                        //大会ID    
+                                $race_result_array['entrysystem_tourn_id'] = $target_row['entrysystemTournId'];                 //エントリー大会ID
+                                $race_result_array['tourn_name'] = $target_row['tournName'];                                    //大会名
+                            }
+                        } else {
+                            $race_result_array['tourn_id'] = $target_row['tournId'];                                            //大会ID
+                            $race_result_array['entrysystem_tourn_id'] = $target_row['entrysystemTournId'];                     //エントリー大会ID       
+                            $race_result_array['tourn_name'] = $target_row['tournName'];                                        //大会名
+                        }
+                        //レースデータをテーブルから取得
+                        if (isset($target_row['raceId'])) {
+                            $target_race = $t_races->getRaceFromRaceId($target_row['raceId']);
+                            if (isset($target_race)) {
+                                $race_result_array['race_id'] = $target_race[0]->{'race_id'};                                   //レースID
+                                $race_result_array['entrysystem_race_id'] = $target_race[0]->{'entrysystem_race_id'};           //エントリーレースID
+                                $race_result_array['race_name'] = $target_race[0]->{'race_name'};                               //レース名
+                                $race_result_array['race_number'] = $target_race[0]->{'race_number'};                           //レース番号
+                            } else {
+                                $race_result_array['race_id'] = $target_row['raceName'];                                        //レースID    
+                                $race_result_array['entrysystem_race_id'] = $target_row['entrysystemRaceId'];                   //エントリーレースID
+                                $race_result_array['race_name'] = $target_row['raceName'];                                      //レース名     
+                                $race_result_array['race_number'] = $target_row['raceNumber'];                                  //レース番号
+                            }
+                        } else {
+                            $race_result_array['race_id'] = $target_row['raceId'];                                              //レースID    
+                            $race_result_array['entrysystem_race_id'] = $target_row['entrysystemRaceId'];                       //エントリーレースID
+                            $race_result_array['race_name'] = $target_row['raceName'];                                          //レース名     
+                            $race_result_array['race_number'] = $target_row['raceNumber'];                                      //レース番号    
+                        }
+                        //団体情報をテーブルから取得
+                        if (isset($target_row['orgId'])) {
+                            $target_organization = $t_organizations->getOrganization($target_row['orgId']);
+                            if (isset($target_organization)) {
+                                $race_result_array['org_id'] = $target_organization->org_id;                                    //団体ID
+                                $race_result_array['entrysystem_org_id'] = $target_organization->entrysystem_org_id;            //エントリーシステム団体ID
+                                $race_result_array['org_name'] = $target_organization->org_name;                                //団体名
+                            } else {
+                                $race_result_array['org_id'] = $target_row['orgId'];                                            //団体ID
+                                $race_result_array['entrysystem_org_id'] = $target_row['entrysystemOrgId'];                     //エントリーシステム団体ID
+                                $race_result_array['org_name'] = $target_row['orgName'];                                        //団体名
+                            }
+                        } else {
+                            $race_result_array['org_id'] = $target_row['org_id'];                                               //団体ID
+                            $race_result_array['entrysystem_org_id'] = $target_row['entrysystemOrgId'];                         //エントリーシステム団体ID
+                            $race_result_array['org_name'] = $target_row['orgName'];                                            //団体名
+                        }
+                        //選手情報をテーブルから取得
+                        if (isset($target_row['userId'])) {
+                            $target_player = $t_players->getPlayer($target_row['userId']);
+                            if (isset($target_player)) {
+                                $race_result_array['player_id'] = $target_player[0]->{'player_id'};                             //選手ID
+                                $race_result_array['jara_player_id'] = $target_player[0]->{'jara_player_id'};                   //エントリー選手ID
+                                $race_result_array['player_name'] = $target_player[0]->{'player_name'};                         //選手名
+                                $race_result_array['player_height'] = $target_player[0]->{'height'};                            //選手身長
+                                $race_result_array['player_weight'] = $target_player[0]->{'weight'};                            //選手体重
+                            } else {
+                                $race_result_array['player_id'] = $target_row['userId'];                                        //選手ID    
+                                $race_result_array['jara_player_id'] = $target_row['jaraPlayerId'];                             //エントリー選手ID    
+                                $race_result_array['player_name'] = $target_row['playerName'];                                  //選手名    
+                                $race_result_array['player_height'] = $target_row['playerHeight'];                              //選手身長    
+                                $race_result_array['player_weight'] = $target_row['playerWeight'];                              //選手体重
+                            }
+                        } else {
+                            $race_result_array['player_id'] = $target_row['userId'];                                            //選手ID    
+                            $race_result_array['jara_player_id'] = $target_row['jaraPlayerId'];                                 //エントリー選手ID
+                            $race_result_array['player_name'] = $target_row['playerName'];                                      //選手名
+                            $race_result_array['player_height'] = $target_row['playerHeight'];                                  //選手身長    
+                            $race_result_array['player_weight'] = $target_row['playerWeight'];                                  //選手体重
+                        }
+                        //他の要素を$race_result_arrayに格納する
+                        //入力データを格納
+                        $race_result_array['crew_name'] = $target_row['crewName'];                                              //クルー名
+                        $race_result_array['by_group'] = $target_row['byGroup'];                                                //組別
+                        $race_result_array['event_id'] = $target_row['eventId'];                                                //種目ID
+                        $race_result_array['event_name'] = $target_row['eventName'];                                            //種目名
+                        $race_result_array['range'] = $target_row['range'];                                                     //距離
+                        $race_result_array['rank'] = $target_row['rank'];                                                       //順位
+                        $race_result_array['race_class_id'] = $target_row['raceTypeId'];                                        //レース区分ID
+                        $race_result_array['race_class_name'] = $target_row['raceTypeName'];                                    //レース区分名
+                        $race_result_array['laptime_500m'] = $target_row['fiveHundredmLaptime'];                                //500mlapタイム
+                        $race_result_array['laptime_1000m'] = $target_row['tenHundredmLaptime'];                                //1000mlapタイム
+                        $race_result_array['laptime_1500m'] = $target_row['fifteenHundredmLaptime'];                            //1500mlapタイム
+                        $race_result_array['laptime_2000m'] = $target_row['twentyHundredmLaptime'];                             //2000mlapタイム
+                        $race_result_array['final_time'] = $target_row['finalTime'];                                            //最終タイム
+                        $race_result_array['stroke_rate_avg'] = $target_row['strokeRateAvg'];                                   //ストロークレート(平均)
+                        $race_result_array['stroke_rat_500m'] = $target_row['fiveHundredmStrokeRat'];                           //500mストロークレート
+                        $race_result_array['stroke_rat_1000m'] = $target_row['tenHundredmStrokeRat'];                           //1000mストロークレート
+                        $race_result_array['stroke_rat_1500m'] = $target_row['fifteenHundredmStrokeRat'];                       //1500mストロークレート
+                        $race_result_array['stroke_rat_2000m'] = $target_row['twentyHundredmStrokeRat'];                        //2000mストロークレート
+                        $race_result_array['heart_rate_avg'] = $target_row['heartRateAvg'];                                     //心拍数（平均）
+                        $race_result_array['heart_rate_500m'] = $target_row['fiveHundredmHeartRate'];                           //500m心拍数
+                        $race_result_array['heart_rate_1000m'] = $target_row['tenHundredmHeartRate'];                           //1000m心拍数
+                        $race_result_array['heart_rate_1500m'] = $target_row['fifteenHundredmHeartRate'];                       //1500m心拍数
+                        $race_result_array['heart_rate_2000m'] = $target_row['twentyHundredmHeartRate'];                        //2000m心拍数
+                        $race_result_array['official'] = isset($target_row['official']) ? $target_row['official'] : $is_target_tournament_official; //公式・非公式
+                        $race_result_array['attendance'] = $target_row['attendance'];                                           //立会有無
+                        $race_result_array['ergo_weight'] = $target_row['ergoWeight'];                                          //エルゴ体重
+                        $race_result_array['seat_number'] = $target_row['mSheetNumber'];                                        //シート番号ID
+                        $race_result_array['seat_name'] = $target_row['sheetName'];                                             //シート番号
+                        $race_result_array['race_result_record_name'] = $target_row['raceResultRecordName'];                    //出漕結果記録名
+                        $race_result_array['start_datetime'] = $target_row['startDatetime'];                                    //発艇日時
+                        $race_result_array['weather'] = $target_row['weather'];                                                 //天候
+                        $race_result_array['wind_speed_2000m_point'] = $target_row['windSpeedTwentyHundredmPoint'];             //2000m地点風速
+                        $race_result_array['wind_direction_2000m_point'] = $target_row['windDirectionTwentyHundredmPoint'];     //2000m地点風向
+                        $race_result_array['wind_speed_1000m_point'] = $target_row['windSpeedTenHundredmPoint'];                //1000m地点風速
+                        $race_result_array['wind_direction_1000m_point'] = $target_row['windDirectionTenHundredmPoint'];        //1000m地点風向
+                        $race_result_array['race_result_notes'] = $target_row['remark'];                                        //備考
+                        //その他データを格納
+                        $race_result_array['registered_time'] = $current_datetime;
+                        $race_result_array['user_id'] = $register_user_id;
+                        Log::debug($race_result_array);
+                        //挿入実行
+                        $t_raceResultRecord->insertBulkRaceResultRecord($race_result_array);
+                    }
+                }
+            }
+            DB::commit();
+            Log::debug(sprintf("registerTournamentResultCsvData end"));
+            return response()->json(['result' => true]); //DBの結果を返す
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
+            return response()->json(['result' => false]); //DBの結果を返す
+        }
     }
 
     //レースの検索条件を生成
-    private function generateRaceSearchCondition($read_record,&$search_values)
+    private function generateRaceSearchCondition($read_record, &$search_values)
     {
         $replace_condition_string = "";
         $search_values['tourn_id'] = $read_record['tournId'];           //大会ID
@@ -1952,17 +1236,40 @@ class TournamentInfoAlignmentController extends Controller
         $search_values['by_group'] = $read_record['byGroup'];           //組別
         $search_values['race_number'] = $read_record['raceNumber'];     //レースNo.
         //種目IDが999(その他)の場合のみ条件に入れる
-        if($read_record['eventId'] == 999)
-        {
+        if ($read_record['eventId'] == 999) {
             $search_values['event_name'] = $read_record['eventName'];           //種目名
             $replace_condition_string = "and event_name = :event_name\r\n";
         }
         //レース区分IDが999(その他)の場合のみ条件に入れる
-        if($read_record['raceTypeId'] == 999)
-        {
+        if ($read_record['raceTypeId'] == 999) {
             $search_values['race_class_name'] = $read_record['raceTypeName'];           //レース区分名
             $replace_condition_string = "and race_class_name = :race_class_name\r\n";
         }
         return $replace_condition_string;
-	}
+    }
+
+    //公式大会のレース結果数を取得するための条件文を生成する
+    private function generateConditionStringOfOfficialRaceRecordCount($target_row, &$value_array)
+    {
+        $condition = "";
+        if (!isset($target_row['entrysystemTournId'])) {
+            $condition .= "and rrr.`entrysystem_tourn_id` is null\r\n";
+        } else {
+            $condition .= "and rrr.`entrysystem_tourn_id` = :entrysystem_tourn_id\r\n";
+            $value_array['entrysystem_tourn_id'] = $target_row['entrysystemTournId'];
+        }
+        if (!isset($target_row['entrysystemRaceId'])) {
+            $condition .= "and rrr.`entrysystem_race_id` is null\r\n";
+        } else {
+            $condition .= "and rrr.`entrysystem_race_id` = :entrysystem_race_id\r\n";
+            $value_array['entrysystem_race_id'] = $target_row['entrysystemRaceId'];
+        }
+        if (!isset($target_row['jaraPlayerId'])) {
+            $condition .= "and rrr.`jara_player_id` is null\r\n";
+        } else {
+            $condition .= "and rrr.`jara_player_id` = :jara_player_id\r\n";
+            $value_array['jara_player_id'] = $target_row['jaraPlayerId'];
+        }
+        return $condition;
+    }
 }
