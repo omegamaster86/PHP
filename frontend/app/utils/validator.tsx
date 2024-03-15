@@ -525,14 +525,14 @@ const validateAddressNumberFormat = (addressNumber: string) => {
  * 証跡を設定しない場合、団体種別が任意であるかチェックする。
  * 証跡を設定する場合、団体種別が正式であるかチェックする。
  */
-const validateTrailError = (trail: string, orgType: string, labelText: string) => {
+const validateTrailError = (trail: string, orgType: number, labelText: string) => {
   let errorMessage = '';
-  if (!trail && orgType !== '任意') {
+  if (!trail && orgType != 0) {
     errorMessage =
       labelText + '証跡を設定しない場合、' + labelText + '団体種別は"任意"を選択してください。';
     return errorMessage;
   }
-  if (trail && orgType !== '正規') {
+  if (trail && orgType != 1) {
     errorMessage =
       labelText + '証跡を設定する場合、' + labelText + '団体種別は"正規"を選択してください。';
     return errorMessage;

@@ -1157,7 +1157,7 @@ class OrganizationController extends Controller
         $reqData = $request->all();
         // Log::debug($reqData);
         Log::debug($reqData['formData']['entrysystem_org_id']);
-
+        $duplicationCount = 0;
         //団体IDがnullでエントリーシステムの団体IDが入力されている場合、登録時の重複チェックを行う
         if (!isset($reqData['formData']['org_id']) && isset($reqData['formData']['entrysystem_org_id'])) {
             Log::debug("call getEntrysystemOrgIdCount");

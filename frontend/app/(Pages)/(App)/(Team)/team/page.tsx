@@ -256,13 +256,24 @@ export default function OrgInfo() {
    */
   useEffect(() => {
     // const addressNumbers = formData.post_code?.split('-');
-    const addressNumbers = Array();
-    addressNumbers.push(formData.post_code?.slice(0, 3)); //郵便番号の前半3文字
-    addressNumbers.push(formData.post_code?.slice(-4)); //郵便番号の後半4文字
-    console.log(addressNumbers);
-    formData.post_code1 = addressNumbers[0];
-    formData.post_code2 = addressNumbers[1];
-    setAddressNumbers(addressNumbers);
+    if (formData.post_code.includes('-')) { //バリデーションチェック時はハイフンが結合されるため
+      console.log(formData.post_code);
+      const addressNumbers = formData.post_code.split('-');
+      console.log(addressNumbers);
+      formData.post_code1 = addressNumbers[0];
+      formData.post_code2 = addressNumbers[1];
+    } else { //DBから受け取ったときはハイフンが無いため
+      console.log(formData.post_code);
+      if (formData.post_code.length == 7) {
+        const addressNumbers = Array();
+        addressNumbers.push(formData.post_code?.slice(0, 3)); //郵便番号の前半3文字
+        addressNumbers.push(formData.post_code?.slice(-4)); //郵便番号の後半4文字
+        console.log(addressNumbers);
+        formData.post_code1 = addressNumbers[0];
+        formData.post_code2 = addressNumbers[1];
+        // setAddressNumbers(addressNumbers);
+      }
+    }
   }, [formData.post_code]);
 
   /**
@@ -299,12 +310,12 @@ export default function OrgInfo() {
     setOrgClassErrorMessages(orgClassError);
 
     const jaraTrailError = Validator.getErrorMessages([
-      Validator.validateTrailError(formData.jara_org_reg_trail, formData.jaraOrgTypeName, 'JARA'),
+      Validator.validateTrailError(formData.jara_org_reg_trail, formData.jara_org_type, 'JARA'),
     ]);
     setJaraOrgTypeErrorMessages(jaraTrailError);
 
     const prefTrailError = Validator.getErrorMessages([
-      Validator.validateTrailError(formData.pref_org_reg_trail, formData.prefOrgTypeName, '県ボ'),
+      Validator.validateTrailError(formData.pref_org_reg_trail, formData.pref_org_type, '県ボ'),
     ]);
     setPrefOrgTypeErrorMessages(prefTrailError);
 
@@ -460,6 +471,7 @@ export default function OrgInfo() {
               formData,
               staffList
             };
+            console.log(sendData);
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
             axios
@@ -500,6 +512,7 @@ export default function OrgInfo() {
             formData,
             staffList
           };
+          console.log(sendData);
           //alert('TODO: APIを叩いて、登録・更新処理を行う');
           if (prevMode === 'create') {
             const storeOrgData = async () => {
