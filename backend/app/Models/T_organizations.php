@@ -17,6 +17,26 @@ class T_organizations extends Model
     protected $table = 't_organizations';
     protected $primaryKey = 'org_id';
 
+    //団体更新用
+    public static $tournamentUpdateInfo = [
+        'org_id' => null, //団体ID
+        'entrysystem_org_id' => "", //エントリーシステムの団体ID
+        'org_name' => null, //団体名
+        'jara_org_type' => null, //JARA団体種別
+        'jara_org_reg_trail' => null, //JARA団体証跡
+        'pref_org_type' => null, //県ボ団体種別
+        'pref_org_reg_trail' => null, //県ボ団体証跡
+        'org_class' => null, //団体区分
+        'founding_year' => null, //創立年
+        'location_country' => null, //所在地　国
+        'location_prefecture' => null, //所在地　都道府県
+        'post_code' => 0, //郵便番号 
+        'address1' => null, //住所1
+        'address2' => null, //住所2
+        'updated_time' => null, //更新日時
+        'updated_user_id' => null, //更新ユーザID
+    ];
+
     public function getOrganization($orgId)
     {
         $organization = DB::select('select 
@@ -198,19 +218,19 @@ class T_organizations extends Model
     {
         DB::update('update `t_organizations`
                     set
-                    `org_name` = :org_name,
                     `entrysystem_org_id` = :entrysystem_org_id,
-                    `founding_year` = :founding_year,
-                    `post_code` = :post_code,
-                    `location_country` = :location_country,
-                    `location_prefecture` = :location_prefecture,
-                    `address1` = :address1,
-                    `address2` = :address2,
-                    `org_class` = :org_class,
+                    `org_name` = :org_name,
                     `jara_org_type` = :jara_org_type,
                     `jara_org_reg_trail` = :jara_org_reg_trail,
                     `pref_org_type` = :pref_org_type,
                     `pref_org_reg_trail` = :pref_org_reg_trail,
+                    `org_class` = :org_class,
+                    `founding_year` = :founding_year,
+                    `location_country` = :location_country,
+                    `location_prefecture` = :location_prefecture,
+                    `post_code` = :post_code,
+                    `address1` = :address1,
+                    `address2` = :address2,
                     `updated_time` = :updated_time,
                     `updated_user_id` = :updated_user_id
                     where `org_id` = :org_id
