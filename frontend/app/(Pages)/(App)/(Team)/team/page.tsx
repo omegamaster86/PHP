@@ -618,7 +618,10 @@ export default function OrgInfo() {
           <CustomYearPicker
             selectedDate={formData.founding_year === 0 ? '' : formData.founding_year?.toString()}
             errorMessages={foundingYearErrorMessages}
-            onChange={(date: Date) => handleInputChange('founding_year', date.getFullYear().toString())} //創立年を4桁年で取得するように修正 200240308
+            onChange={(date: Date) => {
+              // console.log(date);
+              handleInputChange('founding_year', date == null ? '' : date.getFullYear().toString()); //創立年に空欄を入力できるように対応 ※nullの場合、空文字にする 20240315
+            }} //創立年を4桁年で取得するように修正 200240308
             readonly={mode === 'confirm'}
             isError={foundingYearErrorMessages.length > 0}
             className='w-[300px]'
