@@ -47,6 +47,9 @@ const submitForm = async (
   try {
     await login(values)
   } catch (error: Error | AxiosError | any) {
+    if (!error?.response) {
+        setErrorText(["ログインに失敗しました。"]);
+    } 
     if (axios.isAxiosError(error) && error.response?.status === 422) {
       setErrorText(error.response?.data?.errors?.system_error);
     }

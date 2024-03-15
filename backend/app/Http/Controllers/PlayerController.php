@@ -700,6 +700,7 @@ class PlayerController extends Controller
     //reactからの選手登録 20240131
     public function updatePlayerData(Request $request, T_players $tPlayersData, T_users $t_users)
     {
+        return response()->json(['errMessage' => $e->getMessage()],400); //エラーメッセージを返す
         $random_file_name = Str::random(12);
         //If new picture is uploaded
         if ($request->hasFile('uploadedPhoto')) {
@@ -774,7 +775,7 @@ class PlayerController extends Controller
             return response()->json(['users' => $users, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
         } catch (\Throwable $e) {
             DB::rollBack();
-            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+            return response()->json(['errMessage' => $e->getMessage()],400); //エラーメッセージを返す
         }
     }
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
