@@ -156,6 +156,7 @@ Route::middleware('auth')->group(function () {
     Route::post('volunteerSearch', [VolunteerController::class, 'searchVolunteers']); //ボランティア検索
     Route::post('sendVolunteerCsvData', [VolunteerInfoAlignmentController::class, 'sendVolunteerCsvData']); //ボランティア一括 読み込むボタン押下
     Route::post('registerVolunteerCsvData', [VolunteerInfoAlignmentController::class, 'registerVolunteerCsvData']); //ボランティア一括 登録ボタン押下
+    Route::post('deleteVolunteer', [VolunteerController::class, 'deleteVolunteer']); //ボランティア削除 20240315
 
 
     //React連携後APIここまで===========================================================
