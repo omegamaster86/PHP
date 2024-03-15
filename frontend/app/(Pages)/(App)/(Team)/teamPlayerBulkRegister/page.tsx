@@ -129,15 +129,11 @@ export default function TeamPlayerBulkRegister() {
   // CSVダウンロードのプロパティ
   const csvDownloadProps = {
     header: [
-      { label: 'ユーザーID', key: 'userId' },
-      { label: '選手ID', key: 'playerId' },
       { label: 'JARA選手コード', key: 'jaraPlayerId' },
-      { label: '選手名', key: 'playerName' },
+      { label: '選手ID', key: 'playerId' },
+      { label: 'ユーザーID', key: 'userId' },
       { label: 'メールアドレス', key: 'mailaddress' },
-      { label: '所属団体ID', key: 'teamId' },
-      { label: '所属団体名', key: 'teamName' },
-      { label: '出身地', key: 'birthPlace' },
-      { label: '居住地', key: 'residence' },
+      { label: '選手名', key: 'playerName' },
     ],
     data: [
       {

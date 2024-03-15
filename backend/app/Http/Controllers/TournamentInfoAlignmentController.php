@@ -1928,7 +1928,7 @@ class TournamentInfoAlignmentController extends Controller
         catch (\Throwable $e)
         {
             Log::debug('Line:'.$e->getLine().' message:'.$e->getMessage());
-            return response()->json(['result' => false]); //DBの結果を返す
+            return response()->json(['result' => $e->getMessage()],403); //DBの結果を返す
         }
     }
 

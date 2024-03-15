@@ -1020,6 +1020,56 @@ class OrganizationController extends Controller
         return response()->json(['result' => $lastInsertId]); //DBの結果を返す
     }
 
+    //react 団体登録画面からDBにデータを渡す 20240209
+    public function updateOrgData(Request $request, T_organizations $tOrganizations, T_organization_staff $tOrganizationStaff)
+    {
+        Log::debug(sprintf("updateOrgData start"));
+        $lastInsertId = "";
+        $organizationInfo = $request->all();
+        Log::debug($organizationInfo);
+        //郵便番号に「-(ハイフン)」が含まれていると、
+        //DBのテーブルの設定が7文字固定であることから登録データの下一桁が欠落するため削除しておく
+        $post_code = $organizationInfo['formData']['post_code'];
+        $organizationInfo['formData']['post_code'] = str_replace("-", "", $post_code);
+        //location_countryが入力されていなかったら、日本＝112を固定値として追加する
+        if (empty($organizationInfo['formData']['location_country'])) {
+            //所在地（国）がnullなら、location_country=112を配列に追加する
+            $japan_code = 112;
+            $organizationInfo['formData']['location_country'] = $japan_code;
+        }
+        DB::beginTransaction();
+        try {
+            $tOrganizations::$tournamentUpdateInfo['org_id'] = $organizationInfo['formData']['org_id']; //団体ID
+            $tOrganizations::$tournamentUpdateInfo['entrysystem_org_id'] = $organizationInfo['formData']['entrysystem_org_id']; //エントリーシステムの団体ID
+            $tOrganizations::$tournamentUpdateInfo['org_name'] = $organizationInfo['formData']['org_name']; //団体名
+            $tOrganizations::$tournamentUpdateInfo['jara_org_type'] = $organizationInfo['formData']['jara_org_type']; //JARA団体種別
+            $tOrganizations::$tournamentUpdateInfo['jara_org_reg_trail'] = $organizationInfo['formData']['jara_org_reg_trail']; //JARA団体証跡
+            $tOrganizations::$tournamentUpdateInfo['pref_org_type'] = $organizationInfo['formData']['pref_org_type']; //県ボ団体種別
+            $tOrganizations::$tournamentUpdateInfo['pref_org_reg_trail'] = $organizationInfo['formData']['pref_org_reg_trail']; //県ボ団体証跡
+            $tOrganizations::$tournamentUpdateInfo['org_class'] = $organizationInfo['formData']['org_class']; //団体区分
+            $tOrganizations::$tournamentUpdateInfo['founding_year'] = $organizationInfo['formData']['founding_year']; //創立年
+            $tOrganizations::$tournamentUpdateInfo['location_country'] = $organizationInfo['formData']['location_country']; //所在地　国
+            $tOrganizations::$tournamentUpdateInfo['location_prefecture'] = $organizationInfo['formData']['location_prefecture']; //所在地　都道府県
+            $tOrganizations::$tournamentUpdateInfo['post_code'] = $organizationInfo['formData']['post_code']; //郵便番号
+            $tOrganizations::$tournamentUpdateInfo['address1'] = $organizationInfo['formData']['address1']; //住所1
+            $tOrganizations::$tournamentUpdateInfo['address2'] = $organizationInfo['formData']['address2']; //住所2
+            $tOrganizations::$tournamentUpdateInfo['updated_time'] = now()->format('Y-m-d H:i:s.u'); //更新日時
+            $tOrganizations::$tournamentUpdateInfo['updated_user_id'] = Auth::user()->user_id; //更新ユーザID
+
+            $tOrganizations->updateOrganization($tOrganizations::$tournamentUpdateInfo);
+
+            //スタッフの更新未実装 20240315
+            $replace_string = $this->generateInsertStaffValues($organizationInfo, $organizationInfo['formData']['org_id']);
+            $tOrganizationStaff->insertOrganizationStaff($replace_string, $lastInsertId);
+            DB::commit();
+        } catch (\Throwable $e) {
+            Log::debug($e);
+            DB::rollBack();
+        }
+        Log::debug(sprintf("updateOrgData end"));
+        return response()->json(['result' => $lastInsertId]); //DBの結果を返す
+    }
+
     //userIDに紐づいたデータを送信 20240131
     public function getOrganizationForOrgManagement(T_organizations $tOrganization)
     {
@@ -1107,7 +1157,7 @@ class OrganizationController extends Controller
         $reqData = $request->all();
         // Log::debug($reqData);
         Log::debug($reqData['formData']['entrysystem_org_id']);
-
+        $duplicationCount = 0;
         //団体IDがnullでエントリーシステムの団体IDが入力されている場合、登録時の重複チェックを行う
         if (!isset($reqData['formData']['org_id']) && isset($reqData['formData']['entrysystem_org_id'])) {
             Log::debug("call getEntrysystemOrgIdCount");

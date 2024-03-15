@@ -109,9 +109,6 @@ export default function OrgInfo() {
     default:
       break;
   }
-  const [org_id, setOrgId] = useState<any>({
-    org_id: orgId,
-  });
 
   /**
    * 入力フォームの変更時の処理
@@ -167,10 +164,11 @@ export default function OrgInfo() {
         // console.log(user);
         if (mode === 'update') {
           // const organization = await axios.get<Organization>('http://localhost:3100/organization');
+          const sendId = { org_id: orgId };
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
-          const organizationDataList = await axios.post('/getOrgData', org_id);
-          // console.log(organizationDataList.data.result);
+          const organizationDataList = await axios.post('/getOrgData', sendId);
+          console.log(organizationDataList.data.result);
           setFormData((prevFormData) => ({
             ...prevFormData,
             ...{
@@ -197,11 +195,37 @@ export default function OrgInfo() {
             },
           }));
           // const staff = await axios.get<Staff[]>('http://localhost:3100/staff');
-          const staff = await axios.post('/getOrgStaffData', org_id);
+          const staff = await axios.post('/getOrgStaffData', sendId);
           console.log(staff.data);
           setTableData(staff.data.result);
         }
-        if (mode === 'create') {
+        else if (mode === 'create') {
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            ...{
+              org_id: '',
+              org_name: '',
+              entrysystem_org_id: '',
+              orgTypeName: '',
+              founding_year: 0,
+              post_code: '',
+              post_code1: '',
+              post_code2: '',
+              location_prefecture: 0,
+              locationPrefectureName: '',
+              address1: '',
+              address2: '',
+              org_class: 0,
+              orgClassName: '',
+              jara_org_type: 0,
+              jaraOrgTypeName: '任意',
+              jara_org_reg_trail: '',
+              pref_org_type: 0,
+              prefOrgTypeName: '任意',
+              pref_org_reg_trail: '',
+            },
+          }));
+
           setTableData((prevData) => [
             ...prevData,
             {
@@ -223,7 +247,7 @@ export default function OrgInfo() {
       }
     };
     fetchData();
-  }, []);
+  }, [mode]);
 
   /**
    * 郵便番号の変更時の処理
@@ -232,11 +256,24 @@ export default function OrgInfo() {
    */
   useEffect(() => {
     // const addressNumbers = formData.post_code?.split('-');
-    const addressNumbers = Array();
-    addressNumbers.push(formData.post_code?.slice(0, 3)); //郵便番号の前半3文字
-    addressNumbers.push(formData.post_code?.slice(-4)); //郵便番号の後半4文字
-    // console.log(addressNumbers);
-    setAddressNumbers(addressNumbers);
+    if (formData.post_code.includes('-')) { //バリデーションチェック時はハイフンが結合されるため
+      console.log(formData.post_code);
+      const addressNumbers = formData.post_code.split('-');
+      console.log(addressNumbers);
+      formData.post_code1 = addressNumbers[0];
+      formData.post_code2 = addressNumbers[1];
+    } else { //DBから受け取ったときはハイフンが無いため
+      console.log(formData.post_code);
+      if (formData.post_code.length == 7) {
+        const addressNumbers = Array();
+        addressNumbers.push(formData.post_code?.slice(0, 3)); //郵便番号の前半3文字
+        addressNumbers.push(formData.post_code?.slice(-4)); //郵便番号の後半4文字
+        console.log(addressNumbers);
+        formData.post_code1 = addressNumbers[0];
+        formData.post_code2 = addressNumbers[1];
+        // setAddressNumbers(addressNumbers);
+      }
+    }
   }, [formData.post_code]);
 
   /**
@@ -273,12 +310,12 @@ export default function OrgInfo() {
     setOrgClassErrorMessages(orgClassError);
 
     const jaraTrailError = Validator.getErrorMessages([
-      Validator.validateTrailError(formData.jara_org_reg_trail, formData.jaraOrgTypeName, 'JARA'),
+      Validator.validateTrailError(formData.jara_org_reg_trail, formData.jara_org_type, 'JARA'),
     ]);
     setJaraOrgTypeErrorMessages(jaraTrailError);
 
     const prefTrailError = Validator.getErrorMessages([
-      Validator.validateTrailError(formData.pref_org_reg_trail, formData.prefOrgTypeName, '県ボ'),
+      Validator.validateTrailError(formData.pref_org_reg_trail, formData.pref_org_type, '県ボ'),
     ]);
     setPrefOrgTypeErrorMessages(prefTrailError);
 
@@ -289,10 +326,10 @@ export default function OrgInfo() {
       if (row.delete_flag) return false;
       return Validator.validateRequired(row.user_id, 'ユーザーID').length > 0;
     });
-    const userNameErrorFlg = tableData.some((row) => {
-      if (row.delete_flag) return false;
-      return Validator.validateSelectRequired(row.user_name, 'ユーザー名').length > 0;
-    });
+    // const userNameErrorFlg = tableData.some((row) => {
+    //   if (row.delete_flag) return false;
+    //   return Validator.validateSelectRequired(row.user_name, 'ユーザー名').length > 0;
+    // });
     const userTypeErrorFlg = tableData.some((row) => {
       if (row.delete_flag) return false;
       var staff_type = null;
@@ -308,13 +345,13 @@ export default function OrgInfo() {
     } else {
       setUserIdErrorMessage([]);
     }
-    if (userNameErrorFlg) {
-      setUserNameErrorMessage(
-        Validator.getErrorMessages([Validator.validateRequired(null, 'ユーザー名')]),
-      );
-    } else {
-      setUserNameErrorMessage([]);
-    }
+    // if (userNameErrorFlg) {
+    //   setUserNameErrorMessage(
+    //     Validator.getErrorMessages([Validator.validateRequired(null, 'ユーザー名')]),
+    //   );
+    // } else {
+    //   setUserNameErrorMessage([]);
+    // }
     if (userTypeErrorFlg) {
       setUserTypeErrorMessage(
         Validator.getErrorMessages([Validator.validateSelectRequired(null, 'ユーザー種別')]),
@@ -331,7 +368,7 @@ export default function OrgInfo() {
       jaraTrailError.length > 0 ||
       prefTrailError.length > 0 ||
       userIdErrorFlg ||
-      userNameErrorFlg ||
+      // userNameErrorFlg ||
       userTypeErrorFlg
     ) {
       return true;
@@ -383,6 +420,10 @@ export default function OrgInfo() {
             });
             // console.log(staffList);
             //送信データの作成
+            //nullのパラメータを空のパラメータに置き換える
+            Object.keys(formData).forEach(key => {
+              (formData as any)[key] = (formData as any)[key] ?? '';
+            });
             const sendData = {
               formData,
               staffList
@@ -422,10 +463,15 @@ export default function OrgInfo() {
             });
             // console.log(staffList);
             //送信データの作成
+            //nullのパラメータを空のパラメータに置き換える
+            Object.keys(formData).forEach(key => {
+              (formData as any)[key] = (formData as any)[key] ?? '';
+            });
             const sendData = {
               formData,
               staffList
             };
+            console.log(sendData);
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
             axios
@@ -458,10 +504,15 @@ export default function OrgInfo() {
           });
           // console.log(staffList);
           //送信データの作成
+          //nullのパラメータを空のパラメータに置き換える
+          Object.keys(formData).forEach(key => {
+            (formData as any)[key] = (formData as any)[key] ?? '';
+          });
           const sendData = {
             formData,
             staffList
           };
+          console.log(sendData);
           //alert('TODO: APIを叩いて、登録・更新処理を行う');
           if (prevMode === 'create') {
             const storeOrgData = async () => {
@@ -497,8 +548,8 @@ export default function OrgInfo() {
                 .post('/updateOrgData', sendData) //20240226
                 .then((response) => {
                   // TODO: 更新処理成功時の処理
-                  window.confirm('団体情報を更新しました。');
-                  router.push('/teamRef?orgId=' + org_id);
+                  window.alert('団体情報を更新しました。');
+                  router.push('/teamRef?orgId=' + formData.org_id);
                 })
                 .catch((error) => {
                   // TODO: 更新処理失敗時の処理
@@ -535,18 +586,17 @@ export default function OrgInfo() {
           </CustomTitle>
         </div>
         {/* フォーム */}
-        {mode === 'update' ||
-          (prevMode === 'update' && (
-            // 団体ID
-            <CustomTextField
-              label='団体ID'
-              displayHelp={false}
-              readonly
-              required={false}
-              value={formData.org_id}
-              onChange={(e) => handleInputChange('org_id', e.target.value)}
-            />
-          ))}
+        {(mode === 'update' || prevMode === 'update') && (
+          // 団体ID
+          <CustomTextField
+            label='団体ID'
+            displayHelp={false}
+            readonly
+            required={false}
+            value={formData.org_id}
+            onChange={(e) => handleInputChange('org_id', e.target.value)}
+          />
+        )}
         {/* エントリーシステムの団体ID */}
         <CustomTextField
           label='エントリーシステムの団体ID'
@@ -581,7 +631,10 @@ export default function OrgInfo() {
           <CustomYearPicker
             selectedDate={formData.founding_year === 0 ? '' : formData.founding_year?.toString()}
             errorMessages={foundingYearErrorMessages}
-            onChange={(date: Date) => handleInputChange('founding_year', date.getFullYear().toString())} //創立年を4桁年で取得するように修正 200240308
+            onChange={(date: Date) => {
+              // console.log(date);
+              handleInputChange('founding_year', date == null ? '' : date.getFullYear().toString()); //創立年に空欄を入力できるように対応 ※nullの場合、空文字にする 20240315
+            }} //創立年を4桁年で取得するように修正 200240308
             readonly={mode === 'confirm'}
             isError={foundingYearErrorMessages.length > 0}
             className='w-[300px]'
@@ -821,7 +874,7 @@ export default function OrgInfo() {
               {/* JARA証跡 */}
               {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
                 userIdType.is_jara == ROLE.JARA) &&
-                formData.jaraOrgTypeName == "正規") && (
+                formData.jara_org_type == 1) && (
                   <CustomTextField
                     label='証跡'
                     displayHelp={false}
@@ -866,7 +919,7 @@ export default function OrgInfo() {
               {/* 県ボ証跡 */}
               {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
                 userIdType.is_pref_boat_officer == ROLE.PREFECTURE) &&
-                formData.prefOrgTypeName == "正規") && (
+                formData.pref_org_type == 1) && (
                   <CustomTextField
                     label='証跡'
                     className='w-[300px]'
@@ -942,7 +995,7 @@ export default function OrgInfo() {
                 {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
                 ユーザーID</CustomTh>
               <CustomTh rowSpan={2} align='center'>
-                {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
+                {/* {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>} */}
                 ユーザー名</CustomTh>
               <CustomTh colSpan={5} align='center'>
                 {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
