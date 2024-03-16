@@ -94,6 +94,21 @@ export default function VolunteerInformationRef() {
     return false;
   };
 
+  //ボランティア情報削除関数 20240315
+  const dataDelete = async () => {
+    const deleteData = {
+
+    }
+    const csrf = () => axios.get('/sanctum/csrf-cookie');
+    await csrf();
+    await axios.post('/deleteVolunteer', deleteData)
+      .then((res) => {
+        console.log(res.data);
+      }).catch(error => {
+        console.log(error);
+      });
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -661,8 +676,14 @@ export default function VolunteerInformationRef() {
                 // 以下のメッセージをシステムエラーとして赤文字で表示し、以降の処理は行わない。
                 // setErrorMessage(['ユーザー情報の登録に失敗しました。ユーザーサポートにお問い合わせください。']);
 
-                // 管理画面に遷移
-                router.push('/tournamentSearch'); //大会検索画面に遷移する20240222
+                // setDisplayFlg(false);
+                window.confirm('ボランティア情報を削除します。よろしいですか？') ?
+                  ( //okを押したら下の処理を実行 キャンセルを押したらflagをtrueにしてそのまま
+                    dataDelete(),
+                    // setDisplayFlg(true),
+                    window.alert('ボランティア情報の削除が完了しました。'),
+                    router.push('/tournamentSearch') //大会検索画面に遷移する 20240222
+                  ) : (console.log("何もしない"));
               }}
             >
               削除

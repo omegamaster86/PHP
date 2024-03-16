@@ -576,4 +576,17 @@ class VolunteerController extends Controller
     //     Log::debug(sprintf("registerVolunteerCsvData end"));
     //     return response()->json(['result' => $reqData]); //DBの結果を返す
     // }
+
+    //ボランティア削除 20240315
+    public function deleteVolunteer(Request $request)
+    {
+        Log::debug(sprintf("deleteVolunteer start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+
+        
+
+        Log::debug(sprintf("deleteVolunteer end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
+    }
 }

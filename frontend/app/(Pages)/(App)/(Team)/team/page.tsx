@@ -289,7 +289,7 @@ export default function OrgInfo() {
 
     const foundingYearError = Validator.getErrorMessages([
       Validator.validateFoundingYear(
-        formData.founding_year === 0 ? '' : formData.founding_year.toString(),
+        (formData.founding_year === 0 || formData.founding_year == null) ? '' : formData.founding_year.toString(),
       ),
     ]);
     setFoundingYearErrorMessages(foundingYearError);
