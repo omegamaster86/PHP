@@ -453,4 +453,93 @@ class T_users extends Authenticatable
                             ,[$user_id]);
         return $users;
     }
+
+    //団体所属スタッフテーブルに存在するユーザーのユーザー種別について、
+    //団体管理者のフラグを立てる
+    public function updateOrganizationManagerFlagAllUser()
+    {
+        DB::update("update `t_users`
+                    ,(
+                        select
+                        user_id
+                        ,LPAD(conv((`user_type_decimal` + `input_decimal`),10,2),8,'0') as `user_type`
+                        from
+                        (
+                            select
+                            user_id
+                            ,conv(`user_type`,2,10)	as `user_type_decimal`
+                            ,conv(`input`,2,10) as `input_decimal`
+                            from
+                            (
+                                select user_id
+                                ,`user_type`
+                                , '1000'	as `input`
+                                from `t_users`
+                                where 1=1
+                                and user_id in
+                                (
+                                    select user_id
+                                    from `t_organization_staff`
+                                    where 1=1
+                                    and delete_flag = 0
+                                )
+                                and SUBSTR(`t_users`.`user_type`,5,1) = 0
+                            )uuser
+                        )uuser
+                    )uuser
+                    set `t_users`.user_type = uuser.user_type
+                    ,`t_users`.`updated_time`= ?
+                    ,`t_users`.`updated_user_id`= ?
+                    where 1=1
+                    and `t_users`.user_id = uuser.user_id"
+                    ,[
+                        now()->format('Y-m-d H:i:s.u')
+                        ,Auth::user()->user_id
+                    ]);
+    }
+
+    //団体所属スタッフテーブルに存在しないユーザーのユーザー種別について、
+    //団体管理者のフラグを戻す
+    public function updateDeleteOrganizationManagerFlagAllUser()
+    {
+        DB::update("update `t_users`
+                    ,(
+                        select
+                        user_id
+                        ,LPAD(conv((`user_type_decimal` - `input_decimal`),10,2),8, '0') as `user_type`
+                        from
+                        (
+                            select
+                            user_id
+                            ,conv(`user_type`,2,10)	as `user_type_decimal`
+                            ,conv(`input`,2,10) as `input_decimal`
+                            from
+                            (
+                                select user_id
+                                ,`user_type`
+                                , '1000'	as `input`
+                                from `t_users`
+                                where 1=1
+                                and user_id not in
+                                (
+                                    select user_id
+                                    from `t_organization_staff`
+                                    where 1=1
+                                    and delete_flag = 0
+                                )
+                                and SUBSTR(`t_users`.`user_type`,5,1) = 1
+                            )uuser
+                        )uuser
+                    )uuser
+                    set `t_users`.user_type = uuser.user_type
+                    ,`t_users`.`updated_time` = ?
+                    ,`t_users`.`updated_user_id` = ?
+                    where 1=1
+                    and `t_users`.user_id = uuser.user_id"
+                    ,[
+                        now()->format('Y-m-d H:i:s.u')
+                        ,Auth::user()->user_id
+                    ]
+        );
+    }
 }

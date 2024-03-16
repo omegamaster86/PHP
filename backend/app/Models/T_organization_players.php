@@ -72,6 +72,7 @@ class T_organization_players extends Model
     //org_idをキーとして、該当所属選手のdelete_flagを1にする
     public function updateDeleteFlagByOrganizationDeletion($org_id)
     {
+        Log::debug("updateDeleteFlagByOrganizationDeletion start.");
         DB::update('update `t_organization_players`
                     set `delete_flag` = 1
                     ,updated_time = ?
@@ -84,6 +85,7 @@ class T_organization_players extends Model
                     ,Auth::user()->user_id
                     ,$org_id
                 ]);
+        Log::debug("updateDeleteFlagByOrganizationDeletion end.");
     }
 
     //団体所属選手登録画面用
