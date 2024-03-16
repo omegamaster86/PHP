@@ -245,7 +245,7 @@ export default function AddPlayerSearch() {
       <div className='relative flex flex-col justify-between w-full h-screen flex-wrap gap-[20px]'>
         <CustomTitle isCenter={false} displayBack>
           <div>
-            {teamData.org_name}
+            {teamData?.org_name}
             <br />
             団体に登録する選手検索
           </div>
@@ -284,9 +284,9 @@ export default function AddPlayerSearch() {
             <div className='flex flex-row justify-start gap-[16px]'>
               {/* 性別 */}
               <div className='flex flex-col justify-start gap-[8px]'>
-                <InputLabel label='性別' displayHelp={false} />
                 <CustomDropdown
                   id='sex'
+                  label='性別' displayHelp={false} 
                   options={sex.map((item) => ({ key: item.id, value: item.name }))}
                   value={searchCond.sexId}
                   errorMessages={[]}
@@ -294,14 +294,14 @@ export default function AddPlayerSearch() {
                     handleInputChange('sexId', e);
                     handleInputChange('sex', sex.find((item) => item.id === Number(e))?.name || '');
                   }}
-                  className='rounded w-[90px]'
+                  className='rounded w-[120px]'
                 />
               </div>
               <div className='flex flex-col justify-start gap-[8px]'>
                 {/* 出身地（都道府県） */}
-                <InputLabel label='出身地（都道府県）' />
                 <CustomDropdown
                   id='birthPrefecture'
+                  label='出身地（都道府県）'
                   options={prefectures.map((item) => ({ key: item.id, value: item.name }))}
                   value={searchCond.birthPrefectureId?.toString()}
                   onChange={(e) => {
@@ -316,9 +316,9 @@ export default function AddPlayerSearch() {
               </div>
               <div className='flex flex-col justify-start gap-[8px]'>
                 {/* 居住地（都道府県） */}
-                <InputLabel label='居住地（都道府県）' />
                 <CustomDropdown
                   id='residencePrefecture'
+                  label='居住地（都道府県）'
                   options={prefectures.map((item) => ({ key: item.id, value: item.name }))}
                   value={searchCond.residencePrefectureId?.toString()}
                   onChange={(e) => {
@@ -427,9 +427,9 @@ export default function AddPlayerSearch() {
             </div>
             {/* 出漕種目 */}
             <div className='flex flex-col justify-start gap-[8px]'>
-              <InputLabel label='出漕種目' displayHelp={false} />
               <CustomDropdown
                 id='event'
+                label='出漕種目' displayHelp={false} 
                 options={event.map((item) => ({ key: item.id, value: item.name }))}
                 value={searchCond.eventId}
                 placeHolder='未選択'

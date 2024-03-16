@@ -694,15 +694,13 @@ export default function OrgInfo() {
         </div>
         <div className='w-full flex flex-col justify-between gap-[8px]'>
           {/* 都道府県 */}
-          <InputLabel
+          <CustomDropdown
+            id='prefecture'
             label='都道府県'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
             toolTipTitle='Title 都道府県' //はてなボタン用
             toolTipText='サンプル用のツールチップ表示' //はてなボタン用
-          />
-          <CustomDropdown
-            id='prefecture'
             options={prefectureOptions.map((item) => ({
               value: item.name,
               key: item.id,
@@ -752,15 +750,13 @@ export default function OrgInfo() {
         />
         <div className='w-full flex flex-col justify-between gap-[8px]'>
           {/* 団体区分 */}
-          <InputLabel
+          <CustomDropdown
+            id='団体区分'
             label='団体区分'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
             toolTipTitle='Title 団体区分' //はてなボタン用
             toolTipText='サンプル用のツールチップ表示' //はてなボタン用
-          />
-          <CustomDropdown
-            id='団体区分'
             options={orgClassOptions.map((orgClass) => ({
               value: orgClass.name,
               key: orgClass.id,
@@ -792,9 +788,9 @@ export default function OrgInfo() {
           userIdType.is_jara == ROLE.JARA)) && (
             <div className='w-full flex flex-row justify-start gap-[8px]'>
               <div className='w-full flex flex-col justify-between gap-[8px]'>
-                <InputLabel label='JARA' />
                 <CustomDropdown
                   id='JARA'
+                  label='JARA' 
                   value={
                     mode !== 'confirm' ? formData.jara_org_type?.toString() : formData.jaraOrgTypeName
                   }
@@ -838,10 +834,10 @@ export default function OrgInfo() {
           userIdType.is_pref_boat_officer == ROLE.PREFECTURE)) && (
             <div className='w-full flex flex-row justify-start gap-[8px]'>
               <div className='w-full flex flex-col justify-between gap-[8px]'>
-                <InputLabel label='県ボ' />
                 {/* 県ボ団体種別 */}
                 <CustomDropdown
                   id='県ボ'
+                  label='県ボ'
                   value={
                     mode !== 'confirm' ? formData.pref_org_type?.toString() : formData.prefOrgTypeName
                   }

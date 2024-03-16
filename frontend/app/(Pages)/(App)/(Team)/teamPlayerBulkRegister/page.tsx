@@ -158,6 +158,7 @@ export default function TeamPlayerBulkRegister() {
           // const org = await axios.get<Org[]>('http://localhost:3100/orgSearch');
           const orgSearchId = { org_id };
           const org = await axios.post('/getOrgData', orgSearchId);
+          console.log(org.data.result);
           setOrg(org.data.result);
           setTargetOrgData({
             targetOrgId: org.data.result.org_id,
@@ -292,9 +293,9 @@ export default function TeamPlayerBulkRegister() {
         <CustomTitle displayBack>団体所属選手一括登録</CustomTitle>
         <ErrorBox errorText={errorMessage} />
         <div className='flex flex-col gap-[10px] w-[300px]'>
-          <InputLabel label='所属団体名' displayHelp />
           <CustomDropdown
             id='org'
+            label='所属団体名' displayHelp 
             value={isOrgNameActive ? orgSelected : orgData.org_name} //団体参照画面から遷移した場合は、該当の団体名を表示する
             options={orgs.map((org) => ({ value: org.org_name, key: org.org_id }))}
             onChange={(e) => {
