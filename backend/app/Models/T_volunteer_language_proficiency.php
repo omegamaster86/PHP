@@ -96,7 +96,7 @@ class T_volunteer_language_proficiency extends Model
     public function updateDeleteFlag($volunteer_id)
     {
         Log::debug($volunteer_id);
-        DB::update('update `t_tournaments`
+        DB::update('update `t_volunteer_language_proficiency`
                     set `delete_flag` = 1
                     ,updated_time = ?
                     ,updated_user_id = ?
