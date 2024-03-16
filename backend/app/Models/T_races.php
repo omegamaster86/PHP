@@ -322,7 +322,6 @@ class T_races extends Model
     //大会エントリー一括登録画面用
     public function getRaceCount($condition,$values)
     {
-        DB::enableQueryLog();
         $sql_string = "select count(*)  as `count`
                         from `t_races`
                         where 1=1
@@ -336,9 +335,6 @@ class T_races extends Model
                         #ReplaceConditionString#";
         $sql_string = str_replace("#ReplaceConditionString#",$condition,$sql_string);
         $race_count = DB::select($sql_string,$values);
-
-        Log::debug(DB::getQueryLog());
-        DB::disableQueryLog();
         return $race_count;
     }
 }
