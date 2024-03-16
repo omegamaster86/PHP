@@ -126,7 +126,7 @@ class T_organization_staff extends Model
     //org_idをキーとして、該当所属スタッフのdelete_flagを1にする
     public function updateDeleteFlagByOrganizationDeletion($org_id)
     {
-        Log::debug("updateDeleteFlagByOrganizationDeletion start.");
+        //Log::debug("updateDeleteFlagByOrganizationDeletion start.");
         DB::update('update `t_organization_staff`
                     set `delete_flag` = 1
                     ,`updated_time` = ?
@@ -138,7 +138,7 @@ class T_organization_staff extends Model
                         ,Auth::user()->user_id
                         ,$org_id
                     ]);
-        Log::debug("updateDeleteFlagByOrganizationDeletion end.");
+        //Log::debug("updateDeleteFlagByOrganizationDeletion end.");
     }
 
     public function getOrganizationStaff($org_id)
