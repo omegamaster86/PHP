@@ -688,8 +688,9 @@ class PlayerController extends Controller
                 Log::debug("エントリーシステムの団体ID、団体ID、団体名以外の条件が入力されている場合");
                 $search_result = $tPlayersData->getPlayerSearchResult($replace_condition_string,$search_values_array);
             }
-            Log::debug($search_result);
+            //Log::debug($search_result);
             Log::debug(sprintf("playerSearch end"));
+            return response()->json(['result' => $search_result]); //送信データ(debug用)とDBの結果を返す
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す

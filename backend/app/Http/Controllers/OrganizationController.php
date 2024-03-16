@@ -1146,8 +1146,26 @@ class OrganizationController extends Controller
         $reqData = $request->all();
         Log::debug($reqData);
 
-        Log::debug(sprintf("deleteOrgData end"));
-        return response()->json(['result' => $reqData]); //DBの結果を返す
+        DB::beginTransaction();
+        try {
+            $organizationInfo = $request->all();
+            $org_id = $organizationInfo['org_id'];
+
+            //団体所属スタッフを削除
+            $tOrganizationStaff->updateDeleteFlagByOrganizationDeletion($org_id);
+            //団体所属選手を削除
+            $tOrganizationPlayers->updateDeleteFlagByOrganizationDeletion($org_id);
+            //団体を削除
+            $tOrganization->updateDeleteFlag($org_id);
+
+            DB::commit();
+            Log::debug(sprintf("deleteOrgData end"));
+            return response()->json(['result' => true]); //DBの結果を返す
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error($e->getMessage());
+            return response()->json(['result' => false]); //DBの結果を返す
+        }
     }
 
     //団体のバリデーションチェック 20240307
