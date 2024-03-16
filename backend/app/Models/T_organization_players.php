@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+//use App\Models\Auth;
 
 class T_organization_players extends Model
 {
@@ -71,6 +72,7 @@ class T_organization_players extends Model
     //org_idをキーとして、該当所属選手のdelete_flagを1にする
     public function updateDeleteFlagByOrganizationDeletion($org_id)
     {
+        Log::debug("updateDeleteFlagByOrganizationDeletion start.");
         DB::update('update `t_organization_players`
                     set `delete_flag` = 1
                     ,updated_time = ?
@@ -83,6 +85,7 @@ class T_organization_players extends Model
                     ,Auth::user()->user_id
                     ,$org_id
                 ]);
+        Log::debug("updateDeleteFlagByOrganizationDeletion end.");
     }
 
     //団体所属選手登録画面用
@@ -146,7 +149,7 @@ class T_organization_players extends Model
     //で指定する
     public function insertOrganizationPlayer($organizationPlayer)
     {
-        Log::debug('insertOrganizationPlayer start.');
+        //Log::debug('insertOrganizationPlayer start.');
         $current_datetime = now()->format('Y-m-d H:i:s.u');
         $user_id = Auth::user()->user_id;
         DB::insert('insert INTO `t_organization_players`
@@ -170,7 +173,7 @@ class T_organization_players extends Model
                         ,0
                     ]);
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
-        Log::debug('insertOrganizationPlayer end.');
+        //Log::debug('insertOrganizationPlayer end.');
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 

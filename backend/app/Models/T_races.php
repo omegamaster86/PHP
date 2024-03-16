@@ -326,6 +326,7 @@ class T_races extends Model
                         from `t_races`
                         where 1=1
                         and delete_flag = 0
+                        and race_id = :race_id
                         and tourn_id = :tourn_id
                         and event_id = :event_id
                         and race_class_id = :race_class_id
