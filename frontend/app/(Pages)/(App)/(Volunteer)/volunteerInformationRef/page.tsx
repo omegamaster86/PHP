@@ -97,7 +97,7 @@ export default function VolunteerInformationRef() {
   //ボランティア情報削除関数 20240315
   const dataDelete = async () => {
     const deleteData = {
-
+      volunteer_id: volunteer_id
     }
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();

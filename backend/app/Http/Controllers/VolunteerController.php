@@ -71,7 +71,7 @@ class VolunteerController extends Controller
         $volQualData = $tVolunteerQualificationsHold->getVolunteerQualificationsHold($requestData['volunteer_id']); //ボランティア保有資格情報を取得
         $volSupDisData = $tVolunteerSupportableDisability->getVolunteerSupportableDisability($requestData['volunteer_id']); //ボランティア支援可能障害タイプ情報を取得
 
-        Log::debug(sprintf("createReference start"));
+        Log::debug(sprintf("createReference end"));
         return response()->json([
             'result' => $volData,
             'volAvaData' => $volAvaData,
@@ -578,13 +578,32 @@ class VolunteerController extends Controller
     // }
 
     //ボランティア削除 20240315
-    public function deleteVolunteer(Request $request)
-    {
+    public function deleteVolunteer(
+        Request $request,
+        T_volunteers $tVolunteer,
+        T_volunteer_availables $tVolunteerAvailables,
+        T_volunteer_histories $tVolunteerHistories,
+        T_volunteer_language_proficiency $tVolunteerLanguageProficiency,
+        T_volunteer_qualifications_hold $tVolunteerQualificationsHold,
+        T_volunteer_supportable_disability $tVolunteerSupportableDisability
+    ) {
         Log::debug(sprintf("deleteVolunteer start"));
         $reqData = $request->all();
         Log::debug($reqData);
 
-        
+        Log::debug(sprintf("createReference start"));
+        //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
+        if (Auth::user()->temp_password_flag === 1) {
+            //return redirect('user/password-change');
+        }
+        $requestData = $request->all();
+        Log::debug($requestData['volunteer_id']);
+        $volData = $tVolunteer->updateDeleteFlag($requestData['volunteer_id']); //ボランティア情報を取得
+        $volAvaData = $tVolunteerAvailables->updateDeleteFlag($requestData['volunteer_id']); //ボランティアアベイラブル情報を取得
+        $volHistData = $tVolunteerHistories->updateDeleteFlag($requestData['volunteer_id']); //ボランティア履歴情報を取得
+        $volLangProData = $tVolunteerLanguageProficiency->updateDeleteFlag($requestData['volunteer_id']); //ボランティア言語レベル情報を取得
+        $volQualData = $tVolunteerQualificationsHold->updateDeleteFlag($requestData['volunteer_id']); //ボランティア保有資格情報を取得
+        $volSupDisData = $tVolunteerSupportableDisability->updateDeleteFlag($requestData['volunteer_id']); //ボランティア支援可能障害タイプ情報を取得
 
         Log::debug(sprintf("deleteVolunteer end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
