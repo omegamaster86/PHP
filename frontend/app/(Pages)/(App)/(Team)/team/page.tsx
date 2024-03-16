@@ -404,14 +404,26 @@ export default function OrgInfo() {
 
   //所在地検索 20240315
   const getAddress = async (): Promise<void> => {
+    console.log("getAddress start");
     const res = await _axios.get("https://zipcloud.ibsnet.co.jp/api/search", {
-      params: { zipcode: "1000001" },
+      params: { zipcode: (formData.post_code1 + formData.post_code2) },
     });
     if (res.data.status === 200) {
-      // setPref(res.data.results[0].address1);
+      console.log(res.data);
+      if (res.data.results != null) {
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          ...{
+            location_prefecture: res.data.results[0].prefcode,
+            locationPrefectureName: res.data.results[0].address1,
+            address1: res.data.results[0].address2 + res.data.results[0].address3,
+          },
+        }));
+      }
       // setAddress(res.data.results[0].address2 + res.data.results[0].address3);
       // setMsg(null);
     } else {
+      console.log(res);
       // setPref('');
       // setAddress('');
       // setMsg(res.data.message);
@@ -736,15 +748,6 @@ export default function OrgInfo() {
                   // TODO: 検索ボタンが押された時の処理
                   alert('TODO: 検索ボタンが押された時の処理');
                   getAddress(); //外部サイトから所在地を検索 20240315
-                  setFormData((prevFormData) => ({
-                    ...prevFormData,
-                    ...{
-                      location_prefecture: 1,
-                      locationPrefectureName: '北海道',
-                      address1: '札幌市',
-                      address2: '中央区',
-                    },
-                  }));
                 }}
               >
                 検索
