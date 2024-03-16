@@ -25,6 +25,7 @@ use App\Models\T_volunteer_histories;
 use App\Models\T_volunteer_language_proficiency;
 use App\Models\T_volunteer_qualifications_hold;
 use App\Models\T_volunteer_supportable_disability;
+use App\Models\T_users;
 
 // use App\Models\M_sex;
 // use App\Models\M_countries;
@@ -585,17 +586,13 @@ class VolunteerController extends Controller
         T_volunteer_histories $tVolunteerHistories,
         T_volunteer_language_proficiency $tVolunteerLanguageProficiency,
         T_volunteer_qualifications_hold $tVolunteerQualificationsHold,
-        T_volunteer_supportable_disability $tVolunteerSupportableDisability
+        T_volunteer_supportable_disability $tVolunteerSupportableDisability,
+        T_users $t_users
     ) {
         Log::debug(sprintf("deleteVolunteer start"));
         $reqData = $request->all();
         Log::debug($reqData);
-
-        Log::debug(sprintf("createReference start"));
-        //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
-        if (Auth::user()->temp_password_flag === 1) {
-            //return redirect('user/password-change');
-        }
+        
         $requestData = $request->all();
         Log::debug($requestData['volunteer_id']);
         $volData = $tVolunteer->updateDeleteFlag($requestData['volunteer_id']); //ボランティア情報を取得
@@ -604,6 +601,13 @@ class VolunteerController extends Controller
         $volLangProData = $tVolunteerLanguageProficiency->updateDeleteFlag($requestData['volunteer_id']); //ボランティア言語レベル情報を取得
         $volQualData = $tVolunteerQualificationsHold->updateDeleteFlag($requestData['volunteer_id']); //ボランティア保有資格情報を取得
         $volSupDisData = $tVolunteerSupportableDisability->updateDeleteFlag($requestData['volunteer_id']); //ボランティア支援可能障害タイプ情報を取得
+
+        //ユーザ種別の更新
+        $hoge = array();
+        $hoge['user_id'] = Auth::user()->user_id;
+        $hoge['input'] = '00000010'; //選手のユーザ種別を変更する
+        Log::debug($hoge);
+        $t_users->updateUserTypeDelete($hoge);
 
         Log::debug(sprintf("deleteVolunteer end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
