@@ -66,22 +66,22 @@ class OrganizationController extends Controller
             Log::debug($targetOrgId['org_id']);
             //団体情報を取得 20231215 t_futamura
             $tOrg = $tOrganization->getOrganization($targetOrgId['org_id']);
-            //団体種別マスターを取得 20231215 t_futamura
-            $mOrgType = $mOrganizationType->getOrganizationType();
-            //団体区分マスターを取得 20231215 t_futamura
-            $mOrgClass = $mOrganizationClass->getOrganizationClass();
-            //都道府県マスターを取得 20231215 t_futamura
-            $mPref = $mPrefectures->getPrefecures();
+            // //団体種別マスターを取得 20231215 t_futamura
+            // $mOrgType = $mOrganizationType->getOrganizationType();
+            // //団体区分マスターを取得 20231215 t_futamura
+            // $mOrgClass = $mOrganizationClass->getOrganizationClass();
+            // //都道府県マスターを取得 20231215 t_futamura
+            // $mPref = $mPrefectures->getPrefecures();
             //団体所属スタッフテーブルを取得 20231215 t_futamura
             $tStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId['org_id']);
             //スタッフ種別マスターを取得 20231215 t_futamura
-            $mStfType = $mStaffType->getStaffType();
+            // $mStfType = $mStaffType->getStaffType();
             //郵便番号を分割して持たせておく
             $post_code = $tOrg->post_code;
             $tOrg->post_code_upper = Str::substr($post_code, 0, 3);
             $tOrg->post_code_lower = Str::substr($post_code, 3, 4);
 
-            $staff_tag = $this->generateStaffTag($tStaff, $mStfType);
+            //$staff_tag = $this->generateStaffTag($tStaff, $mStfType);
             //各データをViewに渡して開く
             // return view(
             //     'organizations.register-edit',
@@ -1140,30 +1140,32 @@ class OrganizationController extends Controller
     }
 
     //団体削除 20240307
-    public function deleteOrgData(Request $request)
+    public function deleteOrgData(Request $request,
+                                    T_organization_staff $t_organization_staff
+                                    ,T_organization_players $t_organization_players
+                                    ,T_organizations $t_organizations)
     {
         Log::debug(sprintf("deleteOrgData start"));
-        $reqData = $request->all();
-        Log::debug($reqData);
-
+        $organizationInfo = $request->all();
+        //Log::debug($reqData);
         DB::beginTransaction();
         try {
-            $organizationInfo = $request->all();
             $org_id = $organizationInfo['org_id'];
+            Log::debug("org_id = ".$org_id);
 
             //団体所属スタッフを削除
-            $tOrganizationStaff->updateDeleteFlagByOrganizationDeletion($org_id);
+            $t_organization_staff->updateDeleteFlagByOrganizationDeletion($org_id);
             //団体所属選手を削除
-            $tOrganizationPlayers->updateDeleteFlagByOrganizationDeletion($org_id);
+            $t_organization_players->updateDeleteFlagByOrganizationDeletion($org_id);
             //団体を削除
-            $tOrganization->updateDeleteFlag($org_id);
-
+            $t_organizations->updateDeleteFlag($org_id);
+            
             DB::commit();
             Log::debug(sprintf("deleteOrgData end"));
             return response()->json(['result' => true]); //DBの結果を返す
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error($e->getMessage());
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
             return response()->json(['result' => false]); //DBの結果を返す
         }
     }
