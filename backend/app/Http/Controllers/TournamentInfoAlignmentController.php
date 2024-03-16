@@ -103,9 +103,10 @@ class TournamentInfoAlignmentController extends Controller
     ) {
         Log::debug(sprintf("sendTournamentEntryCsvData start"));
         $inputData = $request->all();
-        $input_event_year = $inputData['tournData']['eventYear'];
+        //Log::debug($inputData);
+        //$input_event_year = $inputData['tournData']['eventYear'];
         $input_tourn_id = $inputData['tournData']['tournId'];
-        $input_tourn_name = $inputData['tournData']['tournName'];
+        //$input_tourn_name = $inputData['tournData']['tournName'];
         for ($rowIndex = 1; $rowIndex < count($inputData['csvDataList']); $rowIndex++) {
             //レーステーブルからレース情報が1件見つかること
             $search_values = array();
@@ -118,7 +119,6 @@ class TournamentInfoAlignmentController extends Controller
             // Log::debug("input_tourn_id = ".$input_tourn_id);
             // Log::debug("csv tourn_id = ".$inputData['csvDataList'][$rowIndex]['tournId']);
             if ($input_tourn_id != $inputData['csvDataList'][$rowIndex]['tournId']) {
-                ////Log::debug("！！！！！選択されている大会の大会IDと不一致！！！！！");
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
                 $inputData['csvDataList'][$rowIndex]['tournIdError'] = true;
@@ -1230,6 +1230,7 @@ class TournamentInfoAlignmentController extends Controller
     private function generateRaceSearchCondition($read_record, &$search_values)
     {
         $replace_condition_string = "";
+        $search_values['race_id'] = $read_record['raceId'];           //大会ID
         $search_values['tourn_id'] = $read_record['tournId'];           //大会ID
         $search_values['event_id'] = $read_record['eventId'];           //種目ID
         $search_values['race_class_id'] = $read_record['raceTypeId'];   //レース区分ID
