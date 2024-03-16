@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/app/lib/axios';
+import _axios from 'axios';
 import Divider from '@mui/material/Divider';
 import {
   OrgClass,
@@ -401,6 +402,22 @@ export default function OrgInfo() {
     </CustomButton>
   );
 
+  //所在地検索 20240315
+  const getAddress = async (): Promise<void> => {
+    const res = await _axios.get("https://zipcloud.ibsnet.co.jp/api/search", {
+      params: { zipcode: "1000001" },
+    });
+    if (res.data.status === 200) {
+      // setPref(res.data.results[0].address1);
+      // setAddress(res.data.results[0].address2 + res.data.results[0].address3);
+      // setMsg(null);
+    } else {
+      // setPref('');
+      // setAddress('');
+      // setMsg(res.data.message);
+    }
+  }
+
   // 確認
   const modeCustomButtons = {
     create: (
@@ -718,6 +735,7 @@ export default function OrgInfo() {
                   }
                   // TODO: 検索ボタンが押された時の処理
                   alert('TODO: 検索ボタンが押された時の処理');
+                  getAddress(); //外部サイトから所在地を検索 20240315
                   setFormData((prevFormData) => ({
                     ...prevFormData,
                     ...{
