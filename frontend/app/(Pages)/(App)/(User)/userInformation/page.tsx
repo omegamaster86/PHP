@@ -144,6 +144,10 @@ export default function UserInformationUpdate() {
   //アップロードされたファイルを保存するー完了
 
   useEffect(() => {
+    console.log(formData.sex);
+  }, [formData?.sex]);
+
+  useEffect(() => {
     const fetchMaster = async () => {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
@@ -552,9 +556,10 @@ export default function UserInformationUpdate() {
         </div>
         <div className='flex flex-col justify-start gap-[10px]'>
           {/* 性別 */}
-          <InputLabel label='性別' required={mode === 'update'} />
           <CustomDropdown
             id='性別'
+            label='性別'
+            required={mode === 'update'} 
             value={mode !== 'confirm' ? formData?.sex?.toString() || '' : formData?.sexName}
             options={sex.map((item) => ({ key: item.id, value: item.name }))}
             placeHolder='男性'
@@ -583,9 +588,9 @@ export default function UserInformationUpdate() {
         <div className='flex flex-row justify-start gap-[16px]'>
           <div className='flex flex-col justify-start'>
             {/* 居住地（国） */}
-            <InputLabel label='居住地' required={mode === 'update'} />
             <CustomDropdown
               id='residenceCountry'
+              label='居住地' required={mode === 'update'}
               readonly={mode === 'confirm'}
               options={countries.map((item) => ({ key: item.id, value: item.name })) || []}
               placeHolder='日本国 （jpn）'
@@ -608,9 +613,9 @@ export default function UserInformationUpdate() {
           {/* 居住地（都道府県） */}
           {formData?.residenceCountryName === '日本国 （jpn）' && (
             <div className='flex flex-col justify-start'>
-              <InputLabel label='都道府県' required={mode === 'update'} />
               <CustomDropdown
                 id='residencePrefecture'
+                label='都道府県' required={mode === 'update'}
                 readonly={mode === 'confirm'}
                 options={prefectures.map((item) => ({ key: item.id, value: item.name })) || []}
                 value={

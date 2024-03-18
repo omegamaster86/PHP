@@ -211,9 +211,9 @@ export default function TournamentSearch() {
               />
               {/* 大会種別 */}
               <div className='flex flex-col justify-start gap-[8px] w-[200px] h-[50px] border-[0.5px] border-solid border-gray-50 rounded'>
-                <InputLabel label='大会種別' />
                 <CustomDropdown
                   id='tournType'
+                  label='大会種別'
                   options={tournType.map((item) => ({ key: item.id, value: item.name }))}
                   value={searchCond.tourn_type}
                   onChange={(e) => {

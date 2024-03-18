@@ -77,6 +77,7 @@ export default function TeamPlayer() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
+        // SessionStorageに追加選手リストがある場合、追加選手リストを取得
         if (sessionStorage.getItem('addPlayerList') !== null) {
           const addPlayerList = JSON.parse(sessionStorage.getItem('addPlayerList') as string);
           let data = transformData(addPlayerList, '追加');
@@ -85,12 +86,13 @@ export default function TeamPlayer() {
             //const response = await axios.get('http://localhost:3100/teamPlayers');
             //const searchRes = transformData(response.data, '既存');
             //data = setIndex(searchRes.concat(data));
-
+         
             // const response = await axios.get('/teamPlayers');
             const response = await axios.post('/searchOrganizationPlayersForTeamRef', orgId);
             const searchRes = transformData(response.data.result, '既存');
             data = setIndex(searchRes.concat(data));
             console.log(response.data.result);
+
             // setFormData(
             //   response.data.result.map((data: TeamPlayerInformationResponse) => ({
             //     ...data,
@@ -98,6 +100,16 @@ export default function TeamPlayer() {
             //     type: '既存',
             //   })),
             // );
+          }
+          if (mode == 'create') {
+            // const response = await axios.get('http://localhost:3100/teamPlayers');
+            // const searchRes = setIndex(transformData(response.data, '既存'));
+            const response = await axios.post('/searchOrganizationPlayersForTeamRef', orgId);
+            console.log(response);
+            const searchRes = transformData(response.data.result, '既存');
+            console.log(searchRes);
+            data = setIndex(searchRes.concat(data));
+            
           }
           setFormData(data);
           sessionStorage.removeItem('addPlayerList');
@@ -131,7 +143,7 @@ export default function TeamPlayer() {
         {/* 画面名*/}
         <CustomTitle isCenter={false} displayBack>
           <div>
-            {teamData.org_name}
+            {teamData?.org_name}
             <br />
             団体への選手追加・削除{mode === 'confirm' && '確認'}
           </div>
