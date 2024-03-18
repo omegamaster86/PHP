@@ -57,9 +57,17 @@ export default function OrgInfo() {
     prefOrgTypeName: '任意',
     pref_org_reg_trail: '',
   } as Organization);
+
+  // Jsonの型定義
+  interface PrefResponse {
+    id: number;
+    prefCodeJis: string;
+    name: string;
+  }
+
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [prefectureOptions, setPrefectureOptions] = useState([] as PrefectureResponse[]);
+  const [prefectureOptions, setPrefectureOptions] = useState([] as PrefResponse[]);
   const [orgClassOptions, setOrgClassOptions] = useState([] as OrgClass[]);
   const [orgTypeOptions, setOrgTypeOptions] = useState([] as OrgType[]);
   const mode = searchParams.get('mode');
@@ -147,7 +155,11 @@ export default function OrgInfo() {
         await csrf();
         // const prefectures = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
         const prefectures = await axios.get('/getPrefecures'); //都道府県マスターの取得 20240208
-        const stateList = prefectures.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
+        // console.log(prefectures);
+        const stateList = prefectures.data.map(({
+          pref_id, pref_name, pref_code_jis }: { pref_id: number; pref_name: string; pref_code_jis: string }) => ({
+            id: pref_id, name: pref_name, prefCodeJis: pref_code_jis
+          }));
         setPrefectureOptions(stateList);
         // const orgClass = await axios.get<OrgClass[]>('http://localhost:3100/orgClass');
         const orgClass = await axios.get('/getOrganizationClass'); //団体区分マスターの取得 20240208
@@ -411,10 +423,20 @@ export default function OrgInfo() {
     if (res.data.status === 200) {
       console.log(res.data);
       if (res.data.results != null) {
+
+        //外部サイトから取得したprefCodeとDBのprefCodeを対応させる処理 20240318
+        var prefcode = 0;
+        // console.log(prefectureOptions);
+        for (let index = 0; index < prefectureOptions.length; index++) {
+          // console.log((prefectureOptions[index] as any).prefCodeJis);
+          if ((prefectureOptions[index] as any).prefCodeJis == res.data.results[0].prefcode) {
+            prefcode = (prefectureOptions[index] as any).id;
+          }
+        }
         setFormData((prevFormData) => ({
           ...prevFormData,
           ...{
-            location_prefecture: res.data.results[0].prefcode,
+            location_prefecture: prefcode,
             locationPrefectureName: res.data.results[0].address1,
             address1: res.data.results[0].address2 + res.data.results[0].address3,
           },
@@ -746,7 +768,7 @@ export default function OrgInfo() {
                     setAddressErrorMessages([]);
                   }
                   // TODO: 検索ボタンが押された時の処理
-                  alert('TODO: 検索ボタンが押された時の処理');
+                  // alert('TODO: 検索ボタンが押された時の処理');
                   getAddress(); //外部サイトから所在地を検索 20240315
                 }}
               >
@@ -864,7 +886,7 @@ export default function OrgInfo() {
               <div className='w-full flex flex-col justify-between gap-[8px]'>
                 <CustomDropdown
                   id='JARA'
-                  label='JARA' 
+                  label='JARA'
                   value={
                     mode !== 'confirm' ? formData.jara_org_type?.toString() : formData.jaraOrgTypeName
                   }
