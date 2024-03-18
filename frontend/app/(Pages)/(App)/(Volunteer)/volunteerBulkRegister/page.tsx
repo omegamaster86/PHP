@@ -661,6 +661,7 @@ export default function VolunteerBulkRegister() {
   //読み込むボタン押下時 20240228
   const sendCsvData = async () => {
     var array = Array() as CsvData[];
+    
     Promise.all(
       // EOF（末尾の改行）対策でフィルターを行う
       csvFileData.content?.filter(function (x) { return x.length > 1 }).slice(1).map((row, index) => getJsonRow(row, index)),
