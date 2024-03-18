@@ -89,6 +89,27 @@ export default function TeamRef() {
     };
   };
 
+  //都道府県を振り分ける 20240318
+  const prefVal = () => {
+    if (formData.location_prefecture != null) {
+      if (formData.location_prefecture == 1) {
+        return '';
+      }
+      else if (formData.location_prefecture == 13) {
+        return '都';
+      }
+      else if (formData.location_prefecture == 26) {
+        return '府';
+      }
+      else if (formData.location_prefecture == 27) {
+        return '府';
+      }
+      else {
+        return '県';
+      }
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -98,7 +119,7 @@ export default function TeamRef() {
         await csrf();
         // const response = await axios.get<Organization>('/organization');
         const response = await axios.post('/getOrgData', org_id); //団体情報取得
-        // console.log(response);
+        console.log(response.data.result);
         setFormData(response.data.result);
         // // 主催大会大会
         // const hostTournamentsResponse = await axios.get<Tournament[]>('/tournamentSearch',);
@@ -168,6 +189,7 @@ export default function TeamRef() {
                     formData.post_code +
                     ' ' +
                     formData.locationPrefectureName +
+                    prefVal() +
                     formData.address1 +
                     formData.address2
                   }
