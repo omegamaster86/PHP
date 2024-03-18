@@ -267,9 +267,9 @@ export default function PlayerSearch() {
               </div>
               {/* 性別 */}
               <div className='flex flex-col justify-start gap-[8px]'>
-                <InputLabel label='性別' displayHelp={false} />
                 <CustomDropdown
                   id='sex'
+                  label='性別' displayHelp={false} 
                   options={sex.map((item) => ({ key: item.id, value: item.name }))}
                   value={searchCond.sexId}
                   errorMessages={[]}
@@ -277,7 +277,7 @@ export default function PlayerSearch() {
                     handleInputChange('sexId', e);
                     handleInputChange('sex', sex.find((item) => item.id === Number(e))?.name || '');
                   }}
-                  className='rounded w-[90px]'
+                  className='rounded w-[120px]'
                 />
               </div>
               {/* サイド情報 */}
@@ -442,9 +442,9 @@ export default function PlayerSearch() {
                 <div className='flex flex-row justify-start gap-[12px]'>
                   {/* 出漕種目 */}
                   <div className='flex flex-col justify-start gap-[8px]'>
-                    <InputLabel label='出漕種目' displayHelp={false} />
                     <CustomDropdown
                       id='event'
+                      label='出漕種目' displayHelp={false}
                       options={event.map((item) => ({ key: item.id, value: item.name }))}
                       value={searchCond.event_id}
                       placeHolder='未選択'
@@ -455,7 +455,7 @@ export default function PlayerSearch() {
                           event.find((item) => item.id === Number(e))?.name || '',
                         );
                       }}
-                      className='rounded w-[90px]'
+                      className='rounded w-[200px]'
                     />
                   </div>
                   {/* 出漕大会名 */}

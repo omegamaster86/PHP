@@ -525,9 +525,9 @@ export default function VolunteerSearch() {
             </div>
             {/* 性別 */}
             <div className='flex flex-col justify-start gap-[8px]'>
-              <InputLabel label='性別' />
               <CustomDropdown
                 id='sex'
+                label='性別'
                 isError={false}
                 placeHolder='男性'
                 value={searchCond.sex?.toString() || ''}
@@ -545,9 +545,9 @@ export default function VolunteerSearch() {
             {/* 居住地（国） */}
             <div className='flex flex-row justify-start gap-[16px]'>
               <div className='flex flex-col justify-start gap-[8px]'>
-                <InputLabel label='居住地' />
                 <CustomDropdown
                   id='residenceCountry'
+                  label='居住地'
                   className='w-[210px]'
                   placeHolder='東京'
                   isError={false}
@@ -562,9 +562,9 @@ export default function VolunteerSearch() {
               {/* 居住地（都道府県） */}
               {searchCond.residence_country === JAPAN_COUNTRY_ID && (
                 <div className='flex flex-col justify-start gap-[8px]'>
-                  <InputLabel label='都道府県' />
                   <CustomDropdown
                     id='residencePrefecture'
+                    label='都道府県'
                     className='w-[210px]'
                     isError={false}
                     errorMessages={[]}
@@ -642,9 +642,9 @@ export default function VolunteerSearch() {
             <div className='flex flex-col justify-start gap-[16px]'>
               <div className='flex flex-row justify-start gap-[16px]'>
                 <div className='flex flex-col justify-start gap-[8px]'>
-                  <InputLabel label='言語' />
                   <CustomDropdown
                     id='lang1'
+                    label='言語'
                     placeHolder='言語1'
                     className='w-[467px]'
                     isError={false}
@@ -673,7 +673,8 @@ export default function VolunteerSearch() {
                   />
                 </div>
                 <div className='flex flex-col justify-start gap-[8px]'>
-                  <InputLabel
+                  <CustomDropdown
+                    id='言語レベル1'
                     label='言語レベル'
                     displayHelp={true}
                     toolTipText='A1（初心者）：
@@ -687,9 +688,7 @@ export default function VolunteerSearch() {
                     C1（上級）：
                     言葉や表現に悩まずに自身の考えを流暢によどみなく伝えることができる。
                     C2（ネイティブ）：
-                    どんな複雑な状況下でも一貫して言葉のニュアンスの違いなどに気を配りながら流暢に正確に自己表現ができる。' />
-                  <CustomDropdown
-                    id='言語レベル1'
+                    どんな複雑な状況下でも一貫して言葉のニュアンスの違いなどに気を配りながら流暢に正確に自己表現ができる。'
                     placeHolder='言語レベル'
                     className='w-[467px]'
                     isError={false}

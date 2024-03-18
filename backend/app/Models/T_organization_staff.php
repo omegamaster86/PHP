@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class T_organization_staff extends Model
 {
@@ -125,11 +126,19 @@ class T_organization_staff extends Model
     //org_idをキーとして、該当所属スタッフのdelete_flagを1にする
     public function updateDeleteFlagByOrganizationDeletion($org_id)
     {
+        //Log::debug("updateDeleteFlagByOrganizationDeletion start.");
         DB::update('update `t_organization_staff`
                     set `delete_flag` = 1
+                    ,`updated_time` = ?
+                    ,`updated_user_id` = ?
                     where 1=1
                     and `org_id` = ?'
-                    ,[$org_id]);
+                    ,[
+                        now()->format('Y-m-d H:i:s.u')
+                        ,Auth::user()->user_id
+                        ,$org_id
+                    ]);
+        //Log::debug("updateDeleteFlagByOrganizationDeletion end.");
     }
 
     public function getOrganizationStaff($org_id)

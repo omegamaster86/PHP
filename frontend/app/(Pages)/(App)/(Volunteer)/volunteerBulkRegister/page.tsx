@@ -296,7 +296,7 @@ export default function VolunteerBulkRegister() {
    * @returns true: エラーあり, false: エラーなし
    **/
   const validateNumber = (value: string, digits: number) => {
-    if (value === '') return false;
+    if (value === '' || value === undefined || value === null) return false;
     // digits桁以下の数値かどうかを判定する
     // digits以下の時、かつ数値の文字列である場合はfalseを返す
     return value.length > digits || isNaN(Number(value));
@@ -340,9 +340,7 @@ export default function VolunteerBulkRegister() {
     if (value === '') return false;
     // 氏名の形式(全半角文字50文字以内であることを確認)かどうかを判定する
     // 氏名の形式の時、falseを返す
-    // return !/^[a-zA-Z0-9ぁ-んァ-ヶー一-龠０-９々〆〤]+$/.test(value);
-    const userNameRegex = new RegExp('/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/');
-    return userNameRegex.test(value);
+    return !/^[a-zA-Z0-9０-９ぁ-んァ-ヶー一-龠ａ-ｚＡ-Ｚ]+$/g.test(value) || value.length > 50;    
   };
 
   /**
@@ -663,6 +661,7 @@ export default function VolunteerBulkRegister() {
   //読み込むボタン押下時 20240228
   const sendCsvData = async () => {
     var array = Array() as CsvData[];
+    
     Promise.all(
       // EOF（末尾の改行）対策でフィルターを行う
       csvFileData.content?.filter(function (x) { return x.length > 1 }).slice(1).map((row, index) => getJsonRow(row, index)),

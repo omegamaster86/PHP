@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import InputLabel from '../InputLabel';
 
 // Propsの型定義
 interface SelectProps {
@@ -13,6 +14,11 @@ interface SelectProps {
   placeHolder?: string;
   readonly?: boolean;
   isError?: boolean;
+  required?: boolean;
+  label?: string;
+  displayHelp?: boolean;
+  toolTipTitle?: string;
+  toolTipText?: string;
 }
 const CustomDropdown: FC<SelectProps> = ({
   id,
@@ -24,8 +30,25 @@ const CustomDropdown: FC<SelectProps> = ({
   placeHolder,
   readonly,
   isError,
+  required,
+  label,
+  displayHelp,
+  toolTipTitle,
+  toolTipText,
 }) => {
   return (
+    <div  
+      className='flex flex-col w-full gap-[6px]'
+    >
+      {label && (
+      <InputLabel
+        label={label || ''}
+        required={required}
+        displayHelp={displayHelp}
+        toolTipText={toolTipText || ''}
+        toolTipTitle={toolTipTitle || ''}
+      />
+      )}
     <div className={className}>
       {readonly && <p className='h-12 w-[300px] text-secondaryText py-3 disable'>{value}</p>}
       {!readonly && (
@@ -38,9 +61,16 @@ const CustomDropdown: FC<SelectProps> = ({
           placeholder={placeHolder}
           error={isError}
         >
+          {required && (
           <MenuItem key='default' disabled value='0'>
             未選択
           </MenuItem>
+          )}
+          {!required && (
+          <MenuItem key='default' value=''>
+            未選択
+          </MenuItem>
+          )}
           {options.map((option, index) => (
             <MenuItem key={index} value={option.key} className='text-primaryText'>
               {option.value}
@@ -55,6 +85,7 @@ const CustomDropdown: FC<SelectProps> = ({
           })}
         </p>
       )}
+    </div>
     </div>
   );
 };

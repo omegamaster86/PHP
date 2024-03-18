@@ -287,11 +287,22 @@ class T_organizations extends Model
     //org_idをキーとして、delete_flagを1にする
     public function updateDeleteFlag($org_id)
     {
+        // 確認したいSQLの前にこれを仕込んで
+        //DB::enableQueryLog();
         DB::update('update `t_organizations`
                     set `delete_flag` = ?
+                    ,`updated_time` = ?
+                    ,`updated_user_id` = ?
                     where 1=1
                     and `org_id` = ?'
-                    ,[1,$org_id]);
+                    ,[
+                        1
+                        ,now()->format('Y-m-d H:i:s.u')
+                        ,Auth::user()->user_id
+                        ,$org_id
+                    ]);
+        // Log::debug("***************************SQL LOG***************************");
+        // Log::debug(DB::getQueryLog());
     }
 
     //検索条件を受け取って、t_organizationを検索し、その結果を返す
