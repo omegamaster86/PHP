@@ -244,9 +244,9 @@ export default function TeamSearch() {
             <div className='flex flex-wrap justify-start items-center gap-[8px] w-[940px]'>
               {/* 団体種別 */}
               <div className='w-full flex flex-col justify-between gap-[8px]'>
-                <InputLabel label='団体種別' />
                 <CustomDropdown
                   id='団体種別'
+                  label='団体種別'
                   options={orgTypeOptions.map((orgType) => ({
                     value: orgType.name,
                     key: orgType.id,
@@ -265,9 +265,9 @@ export default function TeamSearch() {
               </div>
               {/* 団体区分 */}
               <div className='w-full flex flex-col justify-between gap-[8px]'>
-                <InputLabel label='団体区分' />
                 <CustomDropdown
                   id='団体区分'
+                  label='団体区分' 
                   options={orgClassOptions.map((orgClass) => ({
                     value: orgClass.name,
                     key: orgClass.id,

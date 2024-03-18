@@ -817,15 +817,12 @@ export default function PlayerInformation() {
         </div>
         <div className='flex flex-col justify-start'>
           {/* 性別 */}
-          <InputLabel
+          <CustomDropdown
+            id='sex'
             label='性別'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
-            // toolTipTitle='Title 性別'
             toolTipText='大会に登録する性別を選んでください。'
-          />
-          <CustomDropdown
-            id='sex'
             readonly={mode === 'confirm'}
             options={sex.map((item) => ({ key: item.id, value: item.name }))}
             value={mode !== 'confirm' ? formData.sex_id?.toString() || '' : formData.sexName}
@@ -965,16 +962,14 @@ export default function PlayerInformation() {
         <div className='flex flex-row justify-start gap-[100px]'>
           <div className='flex flex-col justify-start'>
             {/* 出身地（国） */}
-            <InputLabel
+            <CustomDropdown
+              id='birthCountry'
               label='出身地'
               required={mode !== 'confirm'}
               displayHelp={mode !== 'confirm'}
               // toolTipTitle='Title 出身地' //はてなボタン用
               toolTipText='生まれた国を選択してください。
               日本を選択した場合、都道府県も選択してください。' //はてなボタン用
-            />
-            <CustomDropdown
-              id='birthCountry'
               readonly={mode === 'confirm'}
               options={countries.map((item) => ({ key: item.id, value: item.name }))}
               value={
@@ -998,15 +993,13 @@ export default function PlayerInformation() {
           {formData.birth_country == 112 && (
             <div className='flex flex-col justify-start'>
               {/* 出身地（都道府県） */}
-              <InputLabel
+              <CustomDropdown
+                id='birthPrefecture'
                 label='都道府県'
                 required={mode !== 'confirm'}
                 displayHelp={mode !== 'confirm'}
                 // toolTipTitle='Title 都道府県' //はてなボタン用
                 toolTipText='生まれた都道府県を選択してください。' //はてなボタン用
-              />
-              <CustomDropdown
-                id='birthPrefecture'
                 options={prefectures.map((item) => ({ key: item.id, value: item.name }))}
                 readonly={mode === 'confirm'}
                 value={
@@ -1032,16 +1025,14 @@ export default function PlayerInformation() {
         <div className='flex flex-row justify-start gap-[100px]'>
           <div className='flex flex-col justify-start'>
             {/* 居住地（国） */}
-            <InputLabel
+            <CustomDropdown
+              id='residenceCountry'
               label='居住地'
               required={mode !== 'confirm'}
               displayHelp={mode !== 'confirm'}
               // toolTipTitle='Title 居住地' //はてなボタン用
               toolTipText='現在住んでいる国を選択してください。
               日本を選択した場合、都道府県も選択してください。' //はてなボタン用
-            />
-            <CustomDropdown
-              id='residenceCountry'
               options={countries.map((item) => ({ key: item.id, value: item.name }))}
               value={
                 mode !== 'confirm'
@@ -1064,15 +1055,13 @@ export default function PlayerInformation() {
           {formData.residence_country == 112 && (
             <div className='flex flex-col justify-start'>
               {/* 居住地（都道府県） */}
-              <InputLabel
+              <CustomDropdown
+                id='residencePrefecture'
                 label='都道府県'
                 required={mode !== 'confirm'}
                 displayHelp={mode !== 'confirm'}
                 // toolTipTitle='Title 都道府県' //はてなボタン用
                 toolTipText='現在住んでいる都道府県を選択してください。' //はてなボタン用
-              />
-              <CustomDropdown
-                id='residencePrefecture'
                 readonly={mode === 'confirm'}
                 options={prefectures.map((item) => ({ key: item.id, value: item.name }))}
                 value={

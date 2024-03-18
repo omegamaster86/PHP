@@ -925,7 +925,7 @@ export default function Tournament() {
                 mode !== 'confirm' ? tournamentFormData.tourn_type : tournamentFormData.tournTypeName
               }
               onChange={(e) => {
-                handleInputChangeTournament('tourn_type', e.toString());
+                handleInputChangeTournament('tourn_type', e?.toString());
                 handleInputChangeTournament(
                   'tournTypeName',
                   tournType.find((item) => item.id === Number(e))?.name || '',
@@ -1009,7 +1009,7 @@ export default function Tournament() {
             />
           </div>
         </div>
-        <div className='flex flex-col justify-start gap-[4px]'>
+        <div className='flex flex-col justify-start gap-[8px]'>
           {/* 開催場所 */}
           <InputLabel
             label={'開催場所'}
@@ -1021,18 +1021,19 @@ export default function Tournament() {
           <div className='flex flex-row justify-start gap-[4px]'>
             <CustomDropdown
               id='venue'
+              required={mode !== 'confirm'}
               options={venue.map((item) => ({ key: item.id, value: item.name }))}
               value={
                 mode !== 'confirm' ? tournamentFormData.venue_id : tournamentFormData.venue_name
               }
               onChange={(e) => {
-                handleInputChangeTournament('venue_id', e.toString());
+                handleInputChangeTournament('venue_id', e?.toString());
                 handleInputChangeTournament(
                   'venue_name',
                   venue.find((item) => item.id === Number(e))?.name || '',
                 );
               }}
-              className='rounded self-end'
+              className='rounded self-end w-[300px]'
               readonly={mode === 'confirm'}
             />
             {/* 開催場所入力欄 */}
