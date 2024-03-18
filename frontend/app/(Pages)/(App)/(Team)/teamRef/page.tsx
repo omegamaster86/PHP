@@ -109,6 +109,10 @@ export default function TeamRef() {
       }
     }
   }
+  //null防止用 20240318
+  const addressVal = () => {
+    return formData.address2 ?? ''
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -191,7 +195,7 @@ export default function TeamRef() {
                     formData.locationPrefectureName +
                     prefVal() +
                     formData.address1 +
-                    formData.address2
+                    addressVal()
                   }
                   textColor='white'
                 />
