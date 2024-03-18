@@ -26,28 +26,6 @@ use App\Models\M_countries;
 
 class OrganizationController extends Controller
 {
-    //団体情報登録画面を開く
-    // public function create(
-    //     M_organization_type $mOrganizationType,
-    //     M_organization_class $mOrganizationClass,
-    //     M_prefectures $mPrefectures,
-    //     M_staff_type $mStaffType
-    // ) {
-    //     if (Auth::user()->temp_password_flag === 1) {
-    //         return redirect('user/password-change');
-    //     } else {
-    //         $mOrgType = $mOrganizationType->getOrganizationType();
-    //         $mOrgClass = $mOrganizationClass->getOrganizationClass();
-    //         $mPref = $mPrefectures->getPrefecures();
-    //         $mStfType = $mStaffType->getStaffType();
-    //         $tStaff = null;
-    //         $staff_tag = $this->generateStaffTag($tStaff, $mStfType);
-    //         return view('organizations.register-edit', [
-    //             "pagemode" => "register", "organizationType" => $mOrgType, "organizationClass" => $mOrgClass, "prefectures" => $mPref, "staff_tag" => $staff_tag
-    //         ]);
-    //     }
-    // }
-
     //団体情報更新画面を開く
     public function getStaffData(
         Request $request,
@@ -66,22 +44,22 @@ class OrganizationController extends Controller
             Log::debug($targetOrgId['org_id']);
             //団体情報を取得 20231215 t_futamura
             $tOrg = $tOrganization->getOrganization($targetOrgId['org_id']);
-            //団体種別マスターを取得 20231215 t_futamura
-            $mOrgType = $mOrganizationType->getOrganizationType();
-            //団体区分マスターを取得 20231215 t_futamura
-            $mOrgClass = $mOrganizationClass->getOrganizationClass();
-            //都道府県マスターを取得 20231215 t_futamura
-            $mPref = $mPrefectures->getPrefecures();
+            // //団体種別マスターを取得 20231215 t_futamura
+            // $mOrgType = $mOrganizationType->getOrganizationType();
+            // //団体区分マスターを取得 20231215 t_futamura
+            // $mOrgClass = $mOrganizationClass->getOrganizationClass();
+            // //都道府県マスターを取得 20231215 t_futamura
+            // $mPref = $mPrefectures->getPrefecures();
             //団体所属スタッフテーブルを取得 20231215 t_futamura
             $tStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId['org_id']);
             //スタッフ種別マスターを取得 20231215 t_futamura
-            $mStfType = $mStaffType->getStaffType();
+            // $mStfType = $mStaffType->getStaffType();
             //郵便番号を分割して持たせておく
             $post_code = $tOrg->post_code;
             $tOrg->post_code_upper = Str::substr($post_code, 0, 3);
             $tOrg->post_code_lower = Str::substr($post_code, 3, 4);
 
-            $staff_tag = $this->generateStaffTag($tStaff, $mStfType);
+            //$staff_tag = $this->generateStaffTag($tStaff, $mStfType);
             //各データをViewに渡して開く
             // return view(
             //     'organizations.register-edit',
@@ -157,16 +135,6 @@ class OrganizationController extends Controller
         $tag .= '</table>';
         return $tag;
     }
-
-    //団体情報登録・更新確認画面を開く
-    // public function createConfirm()
-    // {
-    //     if (Auth::user()->temp_password_flag === 1) {
-    //         return redirect('user/password-change');
-    //     } else {
-    //         return view('organizations.register-confirm', ["pagemode" => "register"]);
-    //     }
-    // }
 
     //団体情報登録・更新確認画面を開く
     public function createEditConfirm()
@@ -713,34 +681,6 @@ class OrganizationController extends Controller
         // return redirect($targetUrl)->with(['organizationInfo' => $organizationInfo]);
     }
 
-    //登録（挿入）実行
-    // public function storeConfirmRegister(Request $request, T_organizations $tOrganizations, T_organization_staff $tOrganizationStaff)
-    // {
-    //     if (Auth::user()->temp_password_flag === 1) {
-    //         return redirect('user/password-change');
-    //     } else {
-    //         DB::beginTransaction();
-    //         try {
-    //             //確認画面から登録
-    //             $organizationInfo = $request->all();
-    //             $lastInsertId = $tOrganizations->insertOrganization($organizationInfo);
-    //             //新しく入力されたスタッフをInsertする
-    //             $insert_values = array();
-    //             $insertValues = $this->generateInsertStaffValues($organizationInfo, $lastInsertId, $insert_values);
-    //             $tOrganizationStaff->insertOrganizationStaff($insertValues, $insert_values);
-
-    //             DB::commit();
-    //             $page_status = "完了しました";
-    //             $page_url = route('my-page');
-    //             $page_url_text = "マイページ";
-
-    //             return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-    //         } catch (\Throwable $e) {
-    //             DB::rollBack();
-    //         }
-    //     }
-    // }
-
     //団体所属スタッフテーブルを更新するための条件文を生成する
     private function generateUpdateStaffCondition($organizationInfo, &$values)
     {
@@ -826,76 +766,6 @@ class OrganizationController extends Controller
         $conditionStr = rtrim($conditionStr, ",");
         return $conditionStr;
     }
-
-    //削除画面の[削除]ボタンで、団体情報の削除を実行
-    // public function deleteOrganization(
-    //     Request $request,
-    //     T_organizations $tOrganization,
-    //     T_organization_players $tOrganizationPlayers,
-    //     T_organization_staff $tOrganizationStaff
-    // ) {
-    //     if (Auth::user()->temp_password_flag === 1) {
-    //         return redirect('user/password-change');
-    //     } else {
-    //         DB::beginTransaction();
-    //         try {
-    //             $organizationInfo = $request->all();
-    //             $org_id = $organizationInfo['org_id'];
-
-    //             //団体所属スタッフを削除
-    //             $tOrganizationStaff->updateDeleteFlagByOrganizationDeletion($org_id);
-    //             //団体所属選手を削除
-    //             $tOrganizationPlayers->updateDeleteFlagByOrganizationDeletion($org_id);
-    //             //団体を削除
-    //             $tOrganization->updateDeleteFlag($org_id);
-
-    //             DB::commit();
-    //             $page_status = "完了しました";
-    //             $page_url = route('my-page');
-    //             $page_url_text = "マイページ";
-
-    //             return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-    //         } catch (\Throwable $e) {
-    //             DB::rollBack();
-    //             dd($e);
-    //             dd("stop");
-    //         }
-    //     }
-    // }
-
-    //更新実行
-    // public function storeConfirmEdit(Request $request, T_organizations $tOrganizations, T_organization_staff $tOrganizationStaff)
-    // {
-    //     if (Auth::user()->temp_password_flag === 1) {
-    //         return redirect('user/password-change');
-    //     } else {
-    //         DB::beginTransaction();
-    //         try {
-    //             //確認画面から登録
-    //             $organizationInfo = $request->all();
-    //             $tOrganizations->updateOrganization($organizationInfo);
-
-    //             //前のスタッフをupdateする。
-    //             $update_values = array();
-    //             $updateCondition = $this->generateUpdateStaffCondition($organizationInfo, $update_values);
-    //             $tOrganizationStaff->updateDeleteFlagInOrganizationStaff($updateCondition, $update_values);
-    //             //新しく入力されたスタッフをInsertする
-    //             $insert_values = array();
-    //             $insertValues = $this->generateInsertStaffValues($organizationInfo, $organizationInfo['org_id'], $insert_values);
-    //             $tOrganizationStaff->insertOrganizationStaff($insertValues, $insert_values);
-
-    //             DB::commit();
-    //             $page_status = "完了しました";
-    //             $page_url = route('my-page');
-    //             $page_url_text = "マイページ";
-    //             return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-    //         } catch (\Throwable $e) {
-    //             DB::rollBack();
-    //             dd($e);
-    //             dd("stop");
-    //         }
-    //     }
-    // }
 
     //団体検索を実行
     public function searchOrganization(Request $request, T_organizations $tOrganizations)
@@ -986,8 +856,8 @@ class OrganizationController extends Controller
         return response()->json(['result' => $tOrg]); //DBの結果を返す
     }
 
-    //react 団体登録画面からDBにデータを渡す 20240209
-    public function storeOrgData(Request $request, T_organizations $tOrganizations, T_organization_staff $tOrganizationStaff)
+    //react 団体登録確認画面からDBにデータを渡してInsertを実行する 20240209
+    public function storeOrgData(Request $request, T_organizations $tOrganizations, T_organization_staff $tOrganizationStaff,T_users $t_users)
     {
         Log::debug(sprintf("storeOrgData start"));
         $lastInsertId = "";
@@ -1011,6 +881,11 @@ class OrganizationController extends Controller
             //新しく入力されたスタッフをInsertする
             $replace_string = $this->generateInsertStaffValues($organizationInfo, $lastInsertId);
             $tOrganizationStaff->insertOrganizationStaff($replace_string, $lastInsertId);
+
+            //ユーザー種別の団体管理者を更新
+            $t_users->updateOrganizationManagerFlagAllUser();
+            $t_users->updateDeleteOrganizationManagerFlagAllUser();
+
             DB::commit();
         } catch (\Throwable $e) {
             Log::debug($e);
@@ -1021,7 +896,7 @@ class OrganizationController extends Controller
     }
 
     //react 団体登録画面からDBにデータを渡す 20240209
-    public function updateOrgData(Request $request, T_organizations $tOrganizations, T_organization_staff $tOrganizationStaff)
+    public function updateOrgData(Request $request, T_organizations $tOrganizations, T_organization_staff $tOrganizationStaff, T_users $t_users)
     {
         Log::debug(sprintf("updateOrgData start"));
         $lastInsertId = "";
@@ -1061,9 +936,14 @@ class OrganizationController extends Controller
             //スタッフの更新未実装 20240315
             $replace_string = $this->generateInsertStaffValues($organizationInfo, $organizationInfo['formData']['org_id']);
             $tOrganizationStaff->insertOrganizationStaff($replace_string, $lastInsertId);
+
+            //ユーザー種別の団体管理者を更新
+            $t_users->updateOrganizationManagerFlagAllUser();
+            $t_users->updateDeleteOrganizationManagerFlagAllUser();
+
             DB::commit();
         } catch (\Throwable $e) {
-            Log::debug($e);
+            Log::error($e);
             DB::rollBack();
         }
         Log::debug(sprintf("updateOrgData end"));
@@ -1140,14 +1020,34 @@ class OrganizationController extends Controller
     }
 
     //団体削除 20240307
-    public function deleteOrgData(Request $request)
+    public function deleteOrgData(Request $request,
+                                    T_organization_staff $t_organization_staff
+                                    ,T_organization_players $t_organization_players
+                                    ,T_organizations $t_organizations)
     {
         Log::debug(sprintf("deleteOrgData start"));
-        $reqData = $request->all();
-        Log::debug($reqData);
+        $organizationInfo = $request->all();
+        //Log::debug($organizationInfo);
+        DB::beginTransaction();
+        try {
+            $org_id = $organizationInfo['org_id'];
+            //Log::debug("org_id = ".$org_id);
 
-        Log::debug(sprintf("deleteOrgData end"));
-        return response()->json(['result' => $reqData]); //DBの結果を返す
+            //団体所属スタッフを削除
+            $t_organization_staff->updateDeleteFlagByOrganizationDeletion($org_id);
+            //団体所属選手を削除
+            $t_organization_players->updateDeleteFlagByOrganizationDeletion($org_id);
+            // //団体を削除
+            $t_organizations->updateDeleteFlag($org_id);
+            
+            DB::commit();
+            Log::debug(sprintf("deleteOrgData end"));
+            return response()->json(['result' => true]); //DBの結果を返す
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
+            return response()->json(['result' => false]); //DBの結果を返す
+        }
     }
 
     //団体のバリデーションチェック 20240307

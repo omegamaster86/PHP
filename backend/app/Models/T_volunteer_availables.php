@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class T_volunteer_availables extends Model
 {
@@ -82,5 +83,25 @@ class T_volunteer_availables extends Model
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
         return $insertId;
+    }
+
+    //ボランティア削除
+    //delete_flagを1にする
+    public function updateDeleteFlag($volunteer_id)
+    {
+        Log::debug($volunteer_id);
+        DB::update('update `t_volunteer_availables`
+                    set `delete_flag` = 1
+                    ,updated_time = ?
+                    ,updated_user_id = ?
+                    where 1=1
+                    and `delete_flag` = 0
+                    and `volunteer_id` = ?'
+                    ,[
+                        now()->format('Y-m-d H:i:s.u')
+                        ,Auth::user()->user_id
+                        ,$volunteer_id
+                    ]
+                );
     }
 }

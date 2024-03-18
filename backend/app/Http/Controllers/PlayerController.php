@@ -572,18 +572,88 @@ class PlayerController extends Controller
 
 
     //選手検索で使用する関数 200240309
-    private function generateSearchCondition($searchInfo)
+    private function generateSearchCondition($searchInfo, &$search_values_array)
     {
         Log::debug(sprintf("generateSearchCondition start"));
+        Log::debug($searchInfo);
         $condition = "";
+        //JARA選手コード
         if (isset($searchInfo['jara_player_id'])) {
-            $condition .= " and `t_players`.`jara_player_id`=" . $searchInfo['jara_player_id']; //JARA選手コード
+            $condition .= " and `tp`.`jara_player_id`= :jara_player_id\r\n";
+            $search_values_array['jara_player_id'] = $searchInfo['jara_player_id'];
         }
-        if (isset($searchInfo['player_id'])) {
-            $condition .= " and `t_players`.`player_id`=" . $searchInfo['player_id']; //選手ID
+        //選手ID
+        if (isset($searchInfo['player_id'])) {            
+            $condition .= " and `tp`.`player_id`= :player_id\r\n";
+            $search_values_array['player_id'] = $searchInfo['player_id'];
         }
+        //選手名
         if (isset($searchInfo['player_name'])) {
-            $condition .= " and `t_players`.`player_name` like " . "\"%" . $searchInfo['player_name'] . "%\""; //選手名
+            $condition .= " and `tp`.`player_name` LIKE :player_name\r\n";
+            $search_values_array['player_name'] = "%".$searchInfo['player_name']."%";
+        }
+        //性別
+        if(isset($searchInfo['sexId']))
+        {
+            $condition .= "and tp.`sex_id`= :sex_id\r\n";
+            $search_values_array['sex_id'] = $searchInfo['sexId'];
+        }
+        //生年月日
+        if(isset($searchInfo['startDateOfBirth']))
+        {
+            $condition .= "and tp.date_of_birth >= :start_date_of_birth\r\n";
+            $search_values_array['start_date_of_birth'] = $searchInfo['startDateOfBirth'];
+        }
+        if(isset($searchInfo['endDateOfBirth']))
+        {
+            $condition .= "and tp.date_of_birth <= :end_date_of_birth\r\n";
+            $search_values_array['end_date_of_birth'] = $searchInfo['endDateOfBirth'];
+        }
+        //サイド情報
+        if($searchInfo['side_info']['S'] == true)
+        {
+            $condition .= "and SUBSTRING(tp.`side_info`,8,1) = 1\r\n";
+        }
+        if($searchInfo['side_info']['B'] == true)
+        {
+            $condition .= "and SUBSTRING(tp.`side_info`,7,1) = 1\r\n";
+        }
+        if($searchInfo['side_info']['X'] == true)
+        {
+            $condition .= "and SUBSTRING(tp.`side_info`,6,1) = 1\r\n";
+        }
+        if($searchInfo['side_info']['X'] == true)
+        {
+            $condition .= "and SUBSTRING(tp.`side_info`,5,1) = 1\r\n";
+        }
+        //出漕大会名
+        if(isset($searchInfo['race_class_name']))
+        {
+            $condition .= "and rrr.tourn_name LIKE :tourn_name\r\n";
+            $search_values_array['tourn_name'] = "%".$searchInfo['race_class_name']."%";
+        }
+        //出漕種目
+        if(isset($searchInfo['event_id']))
+        {
+            $condition .= "and rrr.event_id = :event_id\r\n";
+            $search_values_array['event_id'] = $searchInfo['event_id'];
+        }
+
+        if (isset($searchInfo['org_id'])) {
+            Log::debug("org_idがNULLでない");
+            $search_values_array['org_id_1'] = $searchInfo['org_id'];
+            $search_values_array['org_id_2'] = $searchInfo['org_id'];
+
+        } else if (isset($searchInfo['entrysystem_org_id'])) {
+            Log::debug("entrysystem_org_idがNULLでない");
+            $search_values_array['entrysystem_id_1'] = $searchInfo['entrysystem_org_id'];
+            $search_values_array['entrysystem_id_2'] = $searchInfo['entrysystem_org_id'];
+
+        } else if (isset($searchInfo['org_name'])) {
+            Log::debug("org_nameがNULLでない");
+            $search_values_array['org_name_1'] = "%".$searchInfo['org_name']."%";
+            $search_values_array['org_name_2'] = "%".$searchInfo['org_name']."%";
+            $search_values_array['org_name_3'] = "%".$searchInfo['org_name']."%";
         }
 
         Log::debug(sprintf("generateSearchCondition end"));
@@ -595,30 +665,35 @@ class PlayerController extends Controller
     {
         Log::debug(sprintf("playerSearch start"));
         $searched_data = $request->all();
-        Log::debug($searched_data);
+        //Log::debug($searched_data);
+        $search_values_array = array();
+        $replace_condition_string = $this->generateSearchCondition($searched_data,$search_values_array);
+        
+        $search_result;
+        try
+        {
+            if (isset($searched_data['org_id'])) {
+                Log::debug("団体IDの条件が入力されている場合");
+                $search_result = $tPlayersData->getPlayerSearchResultWithOrgIdCondition($replace_condition_string,$search_values_array);
+                
+            } else if (isset($searched_data['entrysystem_org_id'])) {
+                Log::debug("エントリーシステムの団体IDの条件が入力されている場合");
+                $search_result = $tPlayersData->getPlayerSearchResultWithEntrySystemIdCondition($replace_condition_string,$search_values_array);
 
-        if (isset($searched_data['org_name'])) {
-            // $this->generateSearchCondition();
-            // $tPlayersData->getPlayerSearchResultWithOrgNameCondition();
-            Log::debug(sprintf("playerSearch end"));
-            return response()->json(['result' => $searched_data]); //送信データ(debug用)とDBの結果を返す
+            } else if (isset($searched_data['org_name'])) {
+                Log::debug("団体名の条件が入力されている場合");
+                $search_result = $tPlayersData->getPlayerSearchResultWithOrgNameCondition($replace_condition_string,$search_values_array);
 
-        } else if (isset($searched_data['org_id'])) {
-            // $this->generateSearchCondition();
-            // $tPlayersData->getPlayerSearchResultWithOrgIdCondition();
+            } else {
+                Log::debug("エントリーシステムの団体ID、団体ID、団体名以外の条件が入力されている場合");
+                $search_result = $tPlayersData->getPlayerSearchResult($replace_condition_string,$search_values_array);
+            }
+            //Log::debug($search_result);
             Log::debug(sprintf("playerSearch end"));
-            return response()->json(['result' => $searched_data]); //送信データ(debug用)とDBの結果を返す
-
-        } else if (isset($searched_data['entrysystem_org_id'])) {
-            // $this->generateSearchCondition();
-            // $tPlayersData->getPlayerSearchResultWithEntrySystemIdCondition();
-            Log::debug(sprintf("playerSearch end"));
-            return response()->json(['result' => $searched_data]); //送信データ(debug用)とDBの結果を返す
-
-        } else {
-            // $tPlayersData->getPlayerSearchResult();
-            Log::debug(sprintf("playerSearch end"));
-            return response()->json(['result' => $searched_data]); //送信データ(debug用)とDBの結果を返す
+            return response()->json(['result' => $search_result]); //送信データ(debug用)とDBの結果を返す
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }
 

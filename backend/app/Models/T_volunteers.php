@@ -408,4 +408,24 @@ class T_volunteers extends Model
                             ,$volunteer_id);
         return $volunteer;
     }
+
+    //ボランティア削除
+    //delete_flagを1にする
+    public function updateDeleteFlag($volunteer_id)
+    {
+        Log::debug($volunteer_id);
+        DB::update('update `t_volunteers`
+                    set `delete_flag` = 1
+                    ,updated_time = ?
+                    ,updated_user_id = ?
+                    where 1=1
+                    and `delete_flag` = 0
+                    and `volunteer_id` = ?'
+                    ,[
+                        now()->format('Y-m-d H:i:s.u')
+                        ,Auth::user()->user_id
+                        ,$volunteer_id
+                    ]
+                );
+    }
 }
