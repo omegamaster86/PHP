@@ -156,11 +156,18 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
       const tournId = props.csvDownloadProps.tournId;
       // レース情報を取得
       // 仮実装　レース情報取得処理に変更
-      const raceResponse = await axios.get<CsvData[]>('http://localhost:3100/raceResultRecords');
+      // const raceResponse = await axios.get<CsvData[]>('http://localhost:3100/raceResultRecords'); //残件対応項目
       // const raceResponse = await axios.get<CsvData[]>('http://localhost:3100/emptyRace');
       // const raceResponse = await axios.get<Race[]>(
       //   'http://localhost:3100/race?tournamentId=' + tournId,
       // );
+
+      //仮対応　20240319
+      const raceResponse = {
+        data: {
+          length: 0,
+        }
+      }
 
       const header = props.csvDownloadProps.header.map((h) => h.label).join(',');
 
@@ -172,17 +179,15 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           )
         ) {
           csvContent = header;
-          props.csvDownloadProps.filename =
-            raceResponse.data[0].tournName + '_レース結果一括登録用フォーマット.csv';
+          // props.csvDownloadProps.filename = raceResponse.data[0].tournName + '_レース結果一括登録用フォーマット.csv'; //残件対応項目
         } else {
           csvContent = '';
         }
       } else {
-        props.csvDownloadProps.filename =
-          raceResponse.data[0].tournName + '_レース結果一括登録用フォーマット.csv';
+        // props.csvDownloadProps.filename = raceResponse.data[0].tournName + '_レース結果一括登録用フォーマット.csv'; //残件対応項目
         // Todo: レース情報を取得してCSVに変換する処理を実装
-        csvContent =
-          header + '\n' + raceResponse.data.map((row) => Object.values(row).join(',')).join('\n');
+        // csvContent = header + '\n' + raceResponse.data.map((row) => Object.values(row).join(',')).join('\n'); //残件対応項目
+        csvContent = header + '\n';
       }
     } catch (error) {
       alert('APIの呼び出しに失敗しました。:' + error);
@@ -266,7 +271,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
             onClick={() => {
               props.csvDownloadProps.checkTournName(
                 props.csvDownloadProps.formData.tournName === '' ||
-                  props.csvDownloadProps.formData.tournName === undefined,
+                props.csvDownloadProps.formData.tournName === undefined,
               );
               if (
                 !(

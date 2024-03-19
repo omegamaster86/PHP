@@ -682,30 +682,45 @@ class OrganizationController extends Controller
     }
 
     //団体所属スタッフテーブルを更新するための条件文を生成する
-    private function generateUpdateStaffCondition($organizationInfo, &$values)
+    private function generateUpdateStaffCondition($organizationInfo)
     {
-        $staff_index = 1;
         $condition = "";
-        while (true) {
-            if (empty($organizationInfo["staff" . $staff_index . "_user_id"])) {
-                break;
+        $staffList = $organizationInfo['staffList'];        
+        foreach($staffList as $staff)
+        {
+            //団体IDを持つ、かつ削除フラグが立っていないとき
+            // = 新規スタッフでない、かつ削除対象ではないスタッフに対して処理する
+            if(isset($staff['org_id']) && !$staff['delete_flag'])
+            {
+                //監督にチェックが入っていない
+                if($staff['is_director'] == 0)
+                {
+                    $condition .= " or ( `user_id`= ".$staff['id']. " and `staff_type_id`= 1)\r\n";
+                }
+                //部長にチェックが入っていない
+                if($staff['is_head'] == 0)
+                {
+                    $condition .= " or ( `user_id`= ".$staff['id']. " and `staff_type_id`= 2)\r\n";
+                }
+                //コーチにチェックが入っていない
+                if($staff['is_coach'] == 0)
+                {
+                    $condition .= " or ( `user_id`= ".$staff['id']. " and `staff_type_id`= 3)\r\n";
+                }
+                //マネージャーにチェックが入っていない
+                if($staff['is_manager'] == 0)
+                {
+                    $condition .= " or ( `user_id`= ".$staff['id']. " and `staff_type_id`= 4)\r\n";
+                }
+                //管理代理にチェックが入っていない
+                if($staff['is_acting_director'] == 0)
+                {
+                    $condition .= " or ( `user_id`= ".$staff['id']. " and `staff_type_id`= 5)\r\n";
+                }
             }
-
-            if (
-                isset($organizationInfo["staff" . $staff_index . "_user_id"])
-                && isset($organizationInfo["staff" . $staff_index . "_user_name"])
-            ) {
-                //SQLのstringを置き換える文字列の生成
-                $condition .= "or ( `user_id`= :staff" . $staff_index . "_user_id"
-                    . "' and `staff_type_id`= :staff" . $staff_index . "_type)";
-                //代入する変数を連想配列に格納
-                $values["staff" . $staff_index . "_user_id"] = $organizationInfo["staff" . $staff_index . "_user_id"];
-                $values["staff" . $staff_index . "_type"] = $organizationInfo["staff" . $staff_index . "_type"];
-            }
-
-            $staff_index++;
+            //削除フラグが立っているときは別途処理
         }
-        $condition = ltrim($condition, "or ");
+        $condition = ltrim($condition, " or ");
         return $condition;
     }
 
@@ -717,7 +732,8 @@ class OrganizationController extends Controller
         $replace_string = "";
         //スタッフごとの処理
         foreach ($organizationInfo['staffList'] as $rowData) {
-            if (isset($rowData['user_id']) && isset($rowData['user_name'])) {
+            //if (isset($rowData['user_id']) && isset($rowData['user_name'])) {
+                if (!$rowData['delete_flag']) {
                 for ($staff_array_index = 0; $staff_array_index < count($rowData['staff_type_id']); $staff_array_index++) {
                     //置き換える文字列を生成
                     $replace_string .= "union select " . $org_id . " AS `org_id`,\r\n";
@@ -887,21 +903,23 @@ class OrganizationController extends Controller
             $t_users->updateDeleteOrganizationManagerFlagAllUser();
 
             DB::commit();
+            Log::debug(sprintf("storeOrgData end"));
+            return response()->json(['result' => $lastInsertId]); //DBの結果を返す
         } catch (\Throwable $e) {
-            Log::debug($e);
+            Log::error($e);
             DB::rollBack();
+            return response()->json(["団体登録に失敗しました。"], 403);
         }
-        Log::debug(sprintf("storeOrgData end"));
-        return response()->json(['result' => $lastInsertId]); //DBの結果を返す
     }
 
     //react 団体登録画面からDBにデータを渡す 20240209
     public function updateOrgData(Request $request, T_organizations $tOrganizations, T_organization_staff $tOrganizationStaff, T_users $t_users)
     {
         Log::debug(sprintf("updateOrgData start"));
-        $lastInsertId = "";
+        
         $organizationInfo = $request->all();
         Log::debug($organizationInfo);
+        $target_org_id = $organizationInfo['formData']['org_id'];   //更新対象の団体ID
         //郵便番号に「-(ハイフン)」が含まれていると、
         //DBのテーブルの設定が7文字固定であることから登録データの下一桁が欠落するため削除しておく
         $post_code = $organizationInfo['formData']['post_code'];
@@ -914,7 +932,7 @@ class OrganizationController extends Controller
         }
         DB::beginTransaction();
         try {
-            $tOrganizations::$tournamentUpdateInfo['org_id'] = $organizationInfo['formData']['org_id']; //団体ID
+            $tOrganizations::$tournamentUpdateInfo['org_id'] = $target_org_id; //団体ID
             $tOrganizations::$tournamentUpdateInfo['entrysystem_org_id'] = $organizationInfo['formData']['entrysystem_org_id']; //エントリーシステムの団体ID
             $tOrganizations::$tournamentUpdateInfo['org_name'] = $organizationInfo['formData']['org_name']; //団体名
             $tOrganizations::$tournamentUpdateInfo['jara_org_type'] = $organizationInfo['formData']['jara_org_type']; //JARA団体種別
@@ -933,21 +951,37 @@ class OrganizationController extends Controller
 
             $tOrganizations->updateOrganization($tOrganizations::$tournamentUpdateInfo);
 
-            //スタッフの更新未実装 20240315
-            $replace_string = $this->generateInsertStaffValues($organizationInfo, $organizationInfo['formData']['org_id']);
-            $tOrganizationStaff->insertOrganizationStaff($replace_string, $lastInsertId);
+            //スタッフの更新 20240318
+            //前のスタッフをupdateする
+            $updateCondition = $this->generateUpdateStaffCondition($organizationInfo);
+            $tOrganizationStaff->updateDeleteFlagInOrganizationStaff($updateCondition,$target_org_id);
 
+            //新しく入力されたスタッフをInsertする
+            $replace_string = $this->generateInsertStaffValues($organizationInfo, $organizationInfo['formData']['org_id']);
+            $tOrganizationStaff->insertOrganizationStaff($replace_string, $target_org_id);
+
+            //削除のチェックボックスにチェックしたユーザーを団体所属スタッフテーブルから削除する
+            foreach($organizationInfo['staffList'] as $staff)
+            {
+                if($staff['delete_flag'])
+                {
+                    $target_user_id = $staff['user_id'];
+                    $tOrganizationStaff->updateDeleteFlagByUserDeletion($target_user_id,$target_org_id);
+                }
+            }
+            
             //ユーザー種別の団体管理者を更新
             $t_users->updateOrganizationManagerFlagAllUser();
             $t_users->updateDeleteOrganizationManagerFlagAllUser();
 
             DB::commit();
+            Log::debug(sprintf("updateOrgData end"));
+            return response()->json(['result' => true]); //DBの結果を返す
         } catch (\Throwable $e) {
             Log::error($e);
-            DB::rollBack();
+            DB::rollBack();            
+            return response()->json(["団体更新に失敗しました。"], 403);
         }
-        Log::debug(sprintf("updateOrgData end"));
-        return response()->json(['result' => $lastInsertId]); //DBの結果を返す
     }
 
     //userIDに紐づいたデータを送信 20240131
@@ -1023,7 +1057,8 @@ class OrganizationController extends Controller
     public function deleteOrgData(Request $request,
                                     T_organization_staff $t_organization_staff
                                     ,T_organization_players $t_organization_players
-                                    ,T_organizations $t_organizations)
+                                    ,T_organizations $t_organizations
+                                    ,T_users $t_users)
     {
         Log::debug(sprintf("deleteOrgData start"));
         $organizationInfo = $request->all();
@@ -1039,6 +1074,10 @@ class OrganizationController extends Controller
             $t_organization_players->updateDeleteFlagByOrganizationDeletion($org_id);
             // //団体を削除
             $t_organizations->updateDeleteFlag($org_id);
+
+            //ユーザー種別の団体管理者を更新
+            //$t_users->updateOrganizationManagerFlagAllUser();
+            $t_users->updateDeleteOrganizationManagerFlagAllUser();
             
             DB::commit();
             Log::debug(sprintf("deleteOrgData end"));

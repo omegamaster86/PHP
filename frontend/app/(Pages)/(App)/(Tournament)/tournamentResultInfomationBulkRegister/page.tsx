@@ -28,6 +28,13 @@ interface FormData {
   tournName: string;
 }
 
+//大会名を変更した際に開催年を変更できるようにインターフェースを追加 20240318
+interface TournResponse {
+  id: number;
+  year: string;
+  name: string;
+}
+
 // CSVアップロードのプロパティの型定義
 interface CsvUploadProps {
   label: string; // ラベル
@@ -87,13 +94,18 @@ export default function TournamentResultInfomationBulkRegister() {
         : new Date().toLocaleDateString('ja-JP').slice(0, 4),
     tournName: prevScreen === 'tournamentRef' && tournName ? tournName : '',
   });
-  const [tournamentList, setTournamentList] = useState<TournamentResponse[]>([]);
+  const [tournamentList, setTournamentList] = useState<TournResponse[]>([]);
   // 大会情報参照画面から遷移してきた場合は、falseを設定
   const [displayFlg, setDisplayFlg] = useState<boolean>(
     prevScreen === 'tournamentRef' ? true : false,
   );
   // TODO: ユーザーの権限を取得する処理をuseEffectに記述すること
   const [userType, setUserType] = useState('');
+
+  const [tournIdActivFlag, setTournIdActivFlag] = useState<boolean>(false); //true:変更できない false:変更できる
+  const [tournStartYearActivFlag, setTournStartYearActivFlag] = useState<boolean>(false); //true:変更できない false:変更できる
+  const [tournNameActivFlag, setTournNameActivFlag] = useState<boolean>(false); //true:変更できない false:変更できる
+  const [readButtonActivFlag, setReadButtonActivFlag] = useState<boolean>(true); //true:変更できない false:変更できる
 
   // CSVファイルのアップロードを処理する関数
   const handleCsvUpload = (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => {
@@ -240,8 +252,12 @@ export default function TournamentResultInfomationBulkRegister() {
         // TODO: ログインユーザーの権限によって取得する大会情報を変更すること
         // 大会名
         // const tournamentResponse = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments',);
-        const TournamentsResponse = await axios.get('/getTournamentInfoData_allData'); //残件対象項目
-        const TournamentsResponseList = TournamentsResponse.data.result.map(({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({ id: tourn_id, name: tourn_name }));
+        const TournamentsResponse = await axios.get('/getTournamentInfoData_allData');
+        console.log(TournamentsResponse);
+        const TournamentsResponseList = TournamentsResponse.data.result.map(({
+          tourn_id, tourn_name, event_start_date }: { tourn_id: number; tourn_name: string; event_start_date: string }) => ({
+            id: tourn_id, name: tourn_name, year: event_start_date.substring(0, 4)
+          }));
         // console.log(TournamentsResponseList);
         setTournamentList(TournamentsResponseList);
       } catch (error) {
@@ -252,16 +268,18 @@ export default function TournamentResultInfomationBulkRegister() {
   }, []);
 
   const handleSearchTournament = async (name: string, e: FocusEvent<HTMLInputElement>) => {
+    console.log(formData.tournId);
     // 大会IDが入力されている場合
-    if (formData.tournId !== 0) {
+    if (formData.tournId != 0 && formData.tournId != null && formData.tournId != undefined) {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         // 仮のURL（繋ぎ込み時に変更すること）
-        const apiURL = `http://localhost:3100/tournament?${name}=${e.target.value}`;
+        // const apiURL = `http://localhost:3100/tournament?${name}=${e.target.value}`;
         // 大会情報を取得
         // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
         const tornSearchVal = { tourn_id: formData.tournId };
+        console.log(tornSearchVal);
         const tournamentResponse = await axios.post('/getTournamentInfoData', tornSearchVal);
         console.log(tournamentResponse.data.result);
         // 大会情報が取得できなかった場合
@@ -273,10 +291,15 @@ export default function TournamentResultInfomationBulkRegister() {
           setFormData((prevFormData) => ({
             ...prevFormData,
             // eventYear: tournamentResponse.data.result.event_start_date.slice(0, 4),
+            tournId: tournamentResponse.data.result.tourn_id,
             eventYear: tournamentResponse.data.result.event_start_date,
             tournName: tournamentResponse.data.result.tourn_name,
           }));
-          setDisplayFlg(false);
+          // setDisplayFlg(false);
+          setTournIdActivFlag(true); //true:変更できない false:変更できる
+          setTournStartYearActivFlag(true); //true:変更できない false:変更できる
+          setTournNameActivFlag(false); //true:変更できない false:変更できる
+          setReadButtonActivFlag(false); //true:変更できない false:変更できる
         }
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
@@ -284,29 +307,40 @@ export default function TournamentResultInfomationBulkRegister() {
     } else {
       try {
         console.log(e);
-        var eventYearVal = { event_start_year: e.target.value };
+        // var eventYearVal = { event_start_year: e.target.value };
+        var eventYearVal = { event_start_year: formData.eventYear };
+        console.log(eventYearVal);
         // 大会情報を取得
         // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const tournamentResponse = await axios.post('/tournamentEntryYearSearch', eventYearVal);
-        console.log(tournamentResponse);
+        console.log(tournamentResponse.data.result);
         // 大会情報が取得できなかった場合
         if (tournamentResponse.data === undefined || tournamentResponse.data === null) {
           setTournIdErrorMessage(['大会IDを入力してください。']);
           return;
         } else {
           // 大会情報が取得できた場合
-          setFormData((prevFormData) => ({
-            ...prevFormData,
-            // eventYear: tournamentResponse.data.event_start_date.slice(0, 4),
-            eventYear: tournamentResponse.data.result.event_start_date,
-            tourn: {
-              id: Number(tournamentResponse.data.result.tourn_id),
-              name: tournamentResponse.data.result.tourn_name,
-            },
-          }));
-          setDisplayFlg(false);
+          // setFormData((prevFormData) => ({
+          //   ...prevFormData,
+          //   // eventYear: tournamentResponse.data.event_start_date.slice(0, 4),
+          //   eventYear: tournamentResponse.data.result.event_start_date,
+          //   tourn: {
+          //     id: Number(tournamentResponse.data.result.tourn_id),
+          //     name: tournamentResponse.data.result.tourn_name,
+          //   },
+          // }));
+          // setDisplayFlg(false);
+          if (tournamentResponse.data.result.length > 0) {
+            const TournResList = tournamentResponse.data.result.map(({
+              tourn_id, tourn_name, event_start_date }: { tourn_id: number; tourn_name: string; event_start_date: string }) => ({
+                id: tourn_id, name: tourn_name, year: event_start_date.substring(0, 4)
+              }));
+            setTournamentList(TournResList);
+          } else {
+            setTournamentList([]);
+          }
         }
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
@@ -860,16 +894,26 @@ export default function TournamentResultInfomationBulkRegister() {
           <CustomTextField
             label='大会ID'
             displayHelp={false}
+            disabled={tournIdActivFlag}
             value={formData?.tournId === 0 ? '' : formData.tournId.toString()}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               if (e.target.value.length <= maxLength) {
                 handleInputChange('tournId', e.target.value);
               }
+              console.log(tournNameActivFlag, e.target.value.length);
+              // if (tournNameActivFlag == false) {
+              //   console.log("setFormActiveFlag call");
+              //   setTournNameActivFlag(true); //大会名の入力欄を変更できないようにする true:変更できない false:変更できる
+              // }
+              // if (tournNameActivFlag == true && e.target.value.length == 0) {
+              //   setTournNameActivFlag(false); //大会名の入力欄を変更できるようにする true:変更できない false:変更できる
+              // }
             }}
             onBlur={(e: FocusEvent<HTMLInputElement>) => {
+              console.log("==== CustomTextField");
               handleSearchTournament('tournId', e);
             }}
-            readonly={displayFlg}
+            // readonly={displayFlg}
             type='number'
             maxLength={maxLength}
             isError={tournIdErrorMessage.length > 0}
@@ -889,13 +933,19 @@ export default function TournamentResultInfomationBulkRegister() {
           <div className='flex flex-row justify-start'>
             <CustomYearPicker
               placeHolder={new Date().toLocaleDateString('ja-JP').slice(0, 4)}
+              readonly={tournStartYearActivFlag}
               selectedDate={formData?.eventYear}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 console.log(e);
                 var eventYearVal = e as any as Date;
-                if (eventYearVal.getFullYear().toString().length <= 4) {
-                  handleInputChange('eventYear', eventYearVal.getFullYear().toString());
+                if (eventYearVal != null) {
+                  if (eventYearVal.getFullYear().toString().length <= 4) {
+                    handleInputChange('eventYear', eventYearVal.getFullYear().toString());
+                  }
+                } else {
+                  // eventYearVal = '';
                 }
+
               }}
               onBlur={(e: FocusEvent<HTMLInputElement>) => {
                 if (
@@ -905,10 +955,11 @@ export default function TournamentResultInfomationBulkRegister() {
                 ) {
                   handleInputChange('tournName', '');
                 } else {
+                  console.log("==== CustomYearPicker");
                   handleSearchTournament('eventYear', e);
                 }
               }}
-              readonly={displayFlg}
+            // readonly={displayFlg}
             />
             <Label label='年' />
           </div>
@@ -936,29 +987,46 @@ export default function TournamentResultInfomationBulkRegister() {
           <InputLabel label='大会名' required />
           <div>
             <Autocomplete
-              options={tournamentList.map((item) => ({ id: item.id, name: item.name }))}
+              options={tournamentList.map((item) => ({ id: item.id, name: item.name, year: item.year }))}
               getOptionLabel={(option) => option.name}
-              value={{ id: formData.tournId, name: formData.tournName } || ''}
+              readOnly={tournNameActivFlag}
+              value={{ id: formData.tournId, name: formData.tournName, year: formData.eventYear } || ''}
               onChange={(e: ChangeEvent<{}>, newValue) => {
+                console.log(formData.tournName, newValue);
                 handleInputChange(
                   'tournName',
-                  newValue ? (newValue as TournamentResponse).name : '',
+                  newValue ? (newValue as TournResponse).name : '',
                 );
                 handleInputChange(
                   'tournId',
-                  newValue ? ((newValue as TournamentResponse).id.toString()) : '',
+                  newValue ? ((newValue as TournResponse).id.toString()) : '',
+                );
+                handleInputChange(
+                  'eventYear',
+                  newValue ? (newValue as TournResponse).year : '',
                 );
                 setCsvDownloadProps((prevProps) => ({
                   ...prevProps,
-                  filename: (newValue as TournamentResponse)?.name,
+                  filename: (newValue as TournResponse)?.name,
                   formData: {
                     tournId: formData.tournId,
                     eventYear: formData.eventYear,
-                    tournName: (newValue as TournamentResponse)?.name,
+                    tournName: (newValue as TournResponse)?.name,
                   },
                 }));
+                console.log(formData.tournName);
+                if (newValue == null) {
+                  setTournIdActivFlag(false); //大会名のリストが空の場合、大会IDの入力を可能にする
+                  setTournStartYearActivFlag(false); //大会名のリストが空の場合、開催年の入力を可能にする
+                  setReadButtonActivFlag(true); //大会名のリストが空の場合、読み込むボタンを押せないようにする
+                } else {
+                  setTournIdActivFlag(true); //大会名のリストに値がある場合、大会IDの入力をできなようにする
+                  setTournStartYearActivFlag(true); //大会名のリストに値がある場合、開催年の入力をできなようにする
+                  setReadButtonActivFlag(false); //大会名のリストに値がある場合、読み込むボタンを押せるようにする
+                }
+                setTournIdErrorMessage([]); //大会IDにエラーメッセージが残っている場合、削除する
               }}
-              renderOption={(props: any, option: TournamentResponse) => {
+              renderOption={(props: any, option: TournResponse) => {
                 return (
                   <li {...props} key={option.id}>
                     {option.name}
@@ -1027,6 +1095,7 @@ export default function TournamentResultInfomationBulkRegister() {
                 </p>
                 <CustomButton
                   buttonType='primary'
+                  disabled={readButtonActivFlag}
                   onClick={() => {
                     setActivationFlg(true);
                     if (dialogDisplayFlg) {
