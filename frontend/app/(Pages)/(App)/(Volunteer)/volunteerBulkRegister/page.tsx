@@ -330,10 +330,25 @@ export default function VolunteerBulkRegister() {
   const validateYmdFormat = (value: string) => {
     if (value === '') return false;
     // 日付の形式かどうかを判定する
+    // yyyy/MM/ddの形式を想定し、Dateオブジェクトに変換できるかどうかを判定する
     // 日付の形式の時、falseを返す
-    return !/^(?:(?!0000)[0-9]{4}\/(?:(?:0[1-9]|1[0-2])\/(?:0[1-9]|[12][0-9]|3[01])|(?:0[13-9]|1[0-2])\/(?:29|30)|(?:0[13578]|1[02])\/31))$/.test(
-      value,
-    );
+
+    // 正規表現で日付の形式がYYYY/MM/DDかどうかを判定する
+    // Dateオブジェクトへの変換だけでは、yyyy-MM-ddのような形式も変換できてしまうため、正規表現で形式をチェックする
+    const regex = /^\d{4}\/(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])$/;
+    if (value.match(regex) === null) {
+      return true;
+    }
+
+    // Dateオブジェクトに変換できるかどうかを判定する
+    // ただし、2000/4/31のような日付はオブジェクトに変換できるが、日付が2000/5/1に変換されることに注意
+    const date = new Date(value);
+
+    // Dateオブジェクトに変換後、年月日が一致するかどうかを判定する
+    // 例えば、2000/4/31のような日付はオブジェクトに変換できるが、日付が2000/5/1に変換されるため、エラーとする
+    return date.getFullYear() + '/' + 
+         ('0' + (date.getMonth() + 1)).slice(-2) + '/' + 
+         ('0' + date.getDate()).slice(-2) !== value;
   };
 
   const validateVolunteerName = (value: string) => {
@@ -684,6 +699,7 @@ export default function VolunteerBulkRegister() {
           }
         }
         setCsvData(contentData as CsvData[]);
+        setDialogDisplayFlg(true);
         setActivationFlg(false);
         setDisplayLinkButtonFlg(true);
         performValidation();
