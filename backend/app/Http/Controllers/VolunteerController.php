@@ -193,10 +193,10 @@ class VolunteerController extends Controller
     public function searchVolunteers(Request $request, T_volunteers $t_volunteers)
     {
         Log::debug(sprintf("searchVolunteers start"));
-        // if (Auth::user()->temp_password_flag === 1) {
-        //     // return redirect('user/password-change');
-        // } else {
-            $searchInfo = $request->all();
+        $searchInfo = $request->all();        
+        //Log::debug($searchInfo);
+        try
+        {
             //参加しやすい曜日
             $pieces = str_split((string) $searchInfo['dayOfWeek']);
             $searchInfo['sunday'] = $pieces[0];
@@ -229,8 +229,12 @@ class VolunteerController extends Controller
 
             //言語レベル
             for ($i = 0; $i < count($searchInfo['lang']); $i++) {
-                $searchInfo['language' . ($i + 1)] = $searchInfo['lang'][$i]['id'];
-                $searchInfo['lang_pro' . ($i + 1)] = $searchInfo['lang'][$i]['levelId'];
+                if(isset($searchInfo['lang'][$i]['id']) && $searchInfo['lang'][$i]['id'] != 0) {
+                    $searchInfo['language' . ($i + 1)] = $searchInfo['lang'][$i]['id'];
+                    if(isset($searchInfo['lang'][$i]['levelId'])) {
+                        $searchInfo['lang_pro' . ($i + 1)] = $searchInfo['lang'][$i]['levelId'];
+                    }
+                }
             }
 
             //障碍タイプ
@@ -239,8 +243,6 @@ class VolunteerController extends Controller
             }
 
             //過去に参加した大会 //残件対象項目
-
-            Log::debug($searchInfo);
             $conditionValue = array();  //検索条件の値を格納する配列
             $supportableDisabilityCondition = $this->generateSupportableDisabilityCondition($searchInfo); //障碍タイプ
             $languageCondition = $this->generateLanguageCondition($searchInfo, $conditionValue); //言語レベル 
@@ -266,8 +268,6 @@ class VolunteerController extends Controller
             } else {
                 $SupportableDisabilityJoinType = "left join";
             }
-            //Log::debug($searchInfo);
-            Log::debug($conditionValue);
 
             $result = $t_volunteers->getVolunteersWithSearchCondition(
                 $supportableDisabilityCondition,
@@ -295,7 +295,12 @@ class VolunteerController extends Controller
 
             Log::debug(sprintf("searchVolunteers end"));
             return response()->json(['result' => $result]); //DBの結果を返す
-        //}
+        }
+        catch(\Throwable $e)
+        {
+            Log::error($e->getMessage().'-'.$e->getLine());
+            return response()->json(['errMessage' => $e->getMessage()], 403);
+        }
     }
 
     //補助が可能な障碍タイプの条件を生成
@@ -327,6 +332,7 @@ class VolunteerController extends Controller
     //言語と言語レベルの検索条件を生成
     private function generateLanguageCondition($searchInfo, &$conditionValue)
     {
+        Log::debug("generateLanguageCondition start.");
         $condition = "";
         $lang_max_count = 3;    //入力可能な言語条件の最大値は3
         if (
@@ -376,6 +382,7 @@ class VolunteerController extends Controller
             $condition .= ")\r\n";
             $condition .= ")\r\n";
         }
+        Log::debug("generateLanguageCondition end.");
         return $condition;
     }
 
@@ -440,9 +447,9 @@ class VolunteerController extends Controller
                 if (isset($searchInfo['qualifications' . $i])) {
                     //「その他」の資格のとき
                     if ($searchInfo['qualifications' . $i] == $other_qualification_id) {
-                        $condition .= ",count((tq.qual_id = :qualifications" . $i . " and tq.others_qual = :other_qualification ) or null) as `qualifications" . $i . "`\r\n";
+                        $condition .= ",count((tq.qual_id = :qualifications" . $i . " and tq.others_qual LIKE :other_qualification ) or null) as `qualifications" . $i . "`\r\n";
                         $conditionValue['qualifications' . $i] = $searchInfo['qualifications' . $i];
-                        $conditionValue['other_qualification'] = $searchInfo['othersQual'];
+                        $conditionValue['other_qualification'] = "%".$searchInfo['othersQual']."%";
                     }
                     //「その他」ではない資格のとき
                     else {
