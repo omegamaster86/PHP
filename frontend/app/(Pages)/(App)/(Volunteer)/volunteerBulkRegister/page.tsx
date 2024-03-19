@@ -701,6 +701,7 @@ export default function VolunteerBulkRegister() {
         setCsvData(contentData as CsvData[]);
         setDialogDisplayFlg(true);
         setActivationFlg(false);
+        setDialogDisplayFlg(true);
         setDisplayLinkButtonFlg(true);
         performValidation();
 
