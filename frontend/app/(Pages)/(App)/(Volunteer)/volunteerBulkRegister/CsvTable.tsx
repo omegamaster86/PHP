@@ -200,312 +200,316 @@ const CsvTable = ({
           </CustomButton>
         </div>
       </div>
-      <CustomTable>
-        <CustomThead>
-          <CustomTr>
-            <CustomTh key={0} rowSpan={2}>
-              選択
-            </CustomTh>
-            <CustomTh key={1} rowSpan={2}>
-              読み込み結果
-            </CustomTh>
-            <CustomTh key={2} rowSpan={2}>
-              ユーザーID
-            </CustomTh>
-            <CustomTh key={3} rowSpan={2}>
-              氏名
-            </CustomTh>
-            <CustomTh key={4} rowSpan={2}>
-              生年月日
-            </CustomTh>
-            <CustomTh key={5} rowSpan={2}>
-              居住地
-            </CustomTh>
-            <CustomTh key={7} rowSpan={2}>
-              性別
-            </CustomTh>
-            <CustomTh key={8} rowSpan={2}>
-              服サイズ
-            </CustomTh>
-            <CustomTh key={9} rowSpan={2}>
-              メールアドレス
-            </CustomTh>
-            <CustomTh key={10} rowSpan={2}>
-              電話番号
-            </CustomTh>
-            <CustomTh key={11} rowSpan={1} colSpan={3}>
-              補助が可能な障碍タイプ
-            </CustomTh>
-            <CustomTh key={12} rowSpan={1} colSpan={5}>
-              保有資格情報
-            </CustomTh>
-            <CustomTh key={13} rowSpan={1} colSpan={6}>
-              言語
-            </CustomTh>
-            <CustomTh key={14} rowSpan={1} colSpan={7}>
-              参加しやすい曜日
-            </CustomTh>
-            <CustomTh key={15} rowSpan={1} colSpan={4}>
-              参加しやすい時間帯
-            </CustomTh>
-          </CustomTr>
-          <CustomTr>
-            <CustomTh>PR1</CustomTh>
-            <CustomTh>PR2</CustomTh>
-            <CustomTh>PR3</CustomTh>
-            <CustomTh>資格1</CustomTh>
-            <CustomTh>資格2</CustomTh>
-            <CustomTh>資格3</CustomTh>
-            <CustomTh>資格4</CustomTh>
-            <CustomTh>資格5</CustomTh>
-            <CustomTh>言語1</CustomTh>
-            <CustomTh>レベル</CustomTh>
-            <CustomTh>言語2</CustomTh>
-            <CustomTh>レベル</CustomTh>
-            <CustomTh>言語3</CustomTh>
-            <CustomTh>レベル</CustomTh>
-            <CustomTh>日</CustomTh>
-            <CustomTh>月</CustomTh>
-            <CustomTh>火</CustomTh>
-            <CustomTh>水</CustomTh>
-            <CustomTh>木</CustomTh>
-            <CustomTh>金</CustomTh>
-            <CustomTh>土</CustomTh>
-            <CustomTh>早朝</CustomTh>
-            <CustomTh>午前</CustomTh>
-            <CustomTh>午後</CustomTh>
-            <CustomTh>夜</CustomTh>
-          </CustomTr>
-        </CustomThead>
-        <CustomTbody>
-          {content.map((row, rowIndex) => (
-            <CustomTr index={rowIndex} key={rowIndex}>
-              <CustomTd align='center'>
-                <CustomCheckbox
-                  id={`delete-${rowIndex}`}
-                  label={''}
-                  value={`delete-${rowIndex}`}
-                  checked={row.checked}
-                  readonly={isResultError(row.result) || activationFlg}
-                  onChange={(e) => {
-                    // チェックボックスの変更時の処理
-                    handleInputChange(row.id, 'checked', e.target.checked);
-                    // チェックボックスの変更により連携ボタンの表示を切り替える
-                    e.target.checked ? displayLinkButton(true) : null;
-                  }}
-                ></CustomCheckbox>
-              </CustomTd>
-              <CustomTd textType={isResultError(row.result) ? 'error' : 'secondary'}>
-                {row.result}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.userId.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.userId.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.volunteerName.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.volunteerName.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.dateOfBirth.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.dateOfBirth.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={
-                  row.residenceCountryId.isError
-                    ? `bg-systemWarningBg`
-                    : row.residencePrefectureId.isError
-                      ? 'bg-systemWarningBg'
-                      : ''
-                }
-              >
-                {row.residenceCountryId.value}（{row.residencePrefectureId.value}）
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.sexId.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.sexId.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.clothesSizeId.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.clothesSizeId.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.mailaddress.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.mailaddress.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.telephoneNumber.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.telephoneNumber.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.disTypeId1.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.disTypeId1.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.disTypeId2.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.disTypeId2.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.disTypeId3.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.disTypeId3.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.qualId1.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.qualId1.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.qualId2.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.qualId2.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.qualId3.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.qualId3.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.qualId4.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.qualId4.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.qualId5.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.qualId5.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.langId1.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.langId1.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.langProId1.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.langProId1.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.langId2.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.langId2.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.langProId2.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.langProId2.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.langId3.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.langId3.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.langProId3.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.langProId3.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.dayOfWeek1.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.dayOfWeek1.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.dayOfWeek2.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.dayOfWeek2.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.dayOfWeek3.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.dayOfWeek3.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.dayOfWeek4.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.dayOfWeek4.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.dayOfWeek5.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.dayOfWeek5.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.dayOfWeek6.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.dayOfWeek6.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.dayOfWeek7.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.dayOfWeek7.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.timeZone1.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.timeZone1.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.timeZone2.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.timeZone2.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.timeZone3.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.timeZone3.value}
-              </CustomTd>
-              <CustomTd
-                textType={isResultError(row.result) ? 'error' : 'secondary'}
-                className={row.timeZone4.isError ? 'bg-systemWarningBg' : ''}
-              >
-                {row.timeZone4.value}
-              </CustomTd>
+      <div
+        className='relative overflow-auto h-[331px] w-[800px]'
+      >
+        <CustomTable>
+          <CustomThead>
+            <CustomTr>
+              <CustomTh key={0} rowSpan={2}>
+                選択
+              </CustomTh>
+              <CustomTh key={1} rowSpan={2}>
+                読み込み結果
+              </CustomTh>
+              <CustomTh key={2} rowSpan={2}>
+                ユーザーID
+              </CustomTh>
+              <CustomTh key={3} rowSpan={2}>
+                氏名
+              </CustomTh>
+              <CustomTh key={4} rowSpan={2}>
+                生年月日
+              </CustomTh>
+              <CustomTh key={5} rowSpan={2}>
+                居住地
+              </CustomTh>
+              <CustomTh key={7} rowSpan={2}>
+                性別
+              </CustomTh>
+              <CustomTh key={8} rowSpan={2}>
+                服サイズ
+              </CustomTh>
+              <CustomTh key={9} rowSpan={2}>
+                メールアドレス
+              </CustomTh>
+              <CustomTh key={10} rowSpan={2}>
+                電話番号
+              </CustomTh>
+              <CustomTh key={11} rowSpan={1} colSpan={3}>
+                補助が可能な障碍タイプ
+              </CustomTh>
+              <CustomTh key={12} rowSpan={1} colSpan={5}>
+                保有資格情報
+              </CustomTh>
+              <CustomTh key={13} rowSpan={1} colSpan={6}>
+                言語
+              </CustomTh>
+              <CustomTh key={14} rowSpan={1} colSpan={7}>
+                参加しやすい曜日
+              </CustomTh>
+              <CustomTh key={15} rowSpan={1} colSpan={4}>
+                参加しやすい時間帯
+              </CustomTh>
             </CustomTr>
-          ))}
-        </CustomTbody>
-      </CustomTable>
+            <CustomTr>
+              <CustomTh>PR1</CustomTh>
+              <CustomTh>PR2</CustomTh>
+              <CustomTh>PR3</CustomTh>
+              <CustomTh>資格1</CustomTh>
+              <CustomTh>資格2</CustomTh>
+              <CustomTh>資格3</CustomTh>
+              <CustomTh>資格4</CustomTh>
+              <CustomTh>資格5</CustomTh>
+              <CustomTh>言語1</CustomTh>
+              <CustomTh>レベル</CustomTh>
+              <CustomTh>言語2</CustomTh>
+              <CustomTh>レベル</CustomTh>
+              <CustomTh>言語3</CustomTh>
+              <CustomTh>レベル</CustomTh>
+              <CustomTh>日</CustomTh>
+              <CustomTh>月</CustomTh>
+              <CustomTh>火</CustomTh>
+              <CustomTh>水</CustomTh>
+              <CustomTh>木</CustomTh>
+              <CustomTh>金</CustomTh>
+              <CustomTh>土</CustomTh>
+              <CustomTh>早朝</CustomTh>
+              <CustomTh>午前</CustomTh>
+              <CustomTh>午後</CustomTh>
+              <CustomTh>夜</CustomTh>
+            </CustomTr>
+          </CustomThead>
+          <CustomTbody>
+            {content.map((row, rowIndex) => (
+              <CustomTr index={rowIndex} key={rowIndex}>
+                <CustomTd align='center'>
+                  <CustomCheckbox
+                    id={`delete-${rowIndex}`}
+                    label={''}
+                    value={`delete-${rowIndex}`}
+                    checked={row.checked}
+                    readonly={isResultError(row.result) || activationFlg}
+                    onChange={(e) => {
+                      // チェックボックスの変更時の処理
+                      handleInputChange(row.id, 'checked', e.target.checked);
+                      // チェックボックスの変更により連携ボタンの表示を切り替える
+                      e.target.checked ? displayLinkButton(true) : null;
+                    }}
+                  ></CustomCheckbox>
+                </CustomTd>
+                <CustomTd textType={isResultError(row.result) ? 'error' : 'secondary'}>
+                  {row.result}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.userId.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.userId.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.volunteerName.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.volunteerName.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.dateOfBirth.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.dateOfBirth.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={
+                    row.residenceCountryId.isError
+                      ? `bg-systemWarningBg`
+                      : row.residencePrefectureId.isError
+                        ? 'bg-systemWarningBg'
+                        : ''
+                  }
+                >
+                  {row.residenceCountryId.value}（{row.residencePrefectureId.value}）
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.sexId.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.sexId.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.clothesSizeId.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.clothesSizeId.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.mailaddress.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.mailaddress.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.telephoneNumber.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.telephoneNumber.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.disTypeId1.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.disTypeId1.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.disTypeId2.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.disTypeId2.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.disTypeId3.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.disTypeId3.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.qualId1.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.qualId1.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.qualId2.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.qualId2.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.qualId3.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.qualId3.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.qualId4.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.qualId4.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.qualId5.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.qualId5.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.langId1.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.langId1.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.langProId1.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.langProId1.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.langId2.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.langId2.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.langProId2.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.langProId2.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.langId3.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.langId3.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.langProId3.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.langProId3.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.dayOfWeek1.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.dayOfWeek1.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.dayOfWeek2.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.dayOfWeek2.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.dayOfWeek3.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.dayOfWeek3.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.dayOfWeek4.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.dayOfWeek4.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.dayOfWeek5.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.dayOfWeek5.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.dayOfWeek6.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.dayOfWeek6.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.dayOfWeek7.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.dayOfWeek7.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.timeZone1.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.timeZone1.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.timeZone2.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.timeZone2.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.timeZone3.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.timeZone3.value}
+                </CustomTd>
+                <CustomTd
+                  textType={isResultError(row.result) ? 'error' : 'secondary'}
+                  className={row.timeZone4.isError ? 'bg-systemWarningBg' : ''}
+                >
+                  {row.timeZone4.value}
+                </CustomTd>
+              </CustomTr>
+            ))}
+          </CustomTbody>
+        </CustomTable>
+      </div>
     </div>
   );
 };
