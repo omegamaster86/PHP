@@ -216,6 +216,7 @@ class T_organizations extends Model
     //interfaceのorganizationを引数として、任意の団体情報のupdateを実行する
     public function updateOrganization($organization)
     {
+        Log::debug('updateOrganization start.');
         DB::update('update `t_organizations`
                     set
                     `entrysystem_org_id` = :entrysystem_org_id,
@@ -235,6 +236,7 @@ class T_organizations extends Model
                     `updated_user_id` = :updated_user_id
                     where `org_id` = :org_id
                 ',$organization);
+        Log::debug('updateOrganization end.');
     }
 
     //エントリーシステムの団体IDの数を取得する

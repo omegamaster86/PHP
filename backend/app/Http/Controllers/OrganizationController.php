@@ -684,63 +684,43 @@ class OrganizationController extends Controller
     //団体所属スタッフテーブルを更新するための条件文を生成する
     private function generateUpdateStaffCondition($organizationInfo)
     {
-        // $staff_index = 1;
         $condition = "";
-        $staffList = $organizationInfo['staffList'];
-        // while (true) {
-        //     if (empty($organizationInfo["staff" . $staff_index . "_user_id"])) {
-        //         break;
-        //     }
-
-        //     if (
-        //         isset($organizationInfo["staff" . $staff_index . "_user_id"])
-        //         && isset($organizationInfo["staff" . $staff_index . "_user_name"])
-        //     ) {
-        //         //SQLのstringを置き換える文字列の生成
-        //         $condition .= "or ( `user_id`= :staff" . $staff_index . "_user_id"
-        //             . "' and `staff_type_id`= :staff" . $staff_index . "_type)";
-        //         //代入する変数を連想配列に格納
-        //         $values["staff" . $staff_index . "_user_id"] = $organizationInfo["staff" . $staff_index . "_user_id"];
-        //         $values["staff" . $staff_index . "_type"] = $organizationInfo["staff" . $staff_index . "_type"];
-        //     }
-
-        //     $staff_index++;
-        // }
-        // $condition = ltrim($condition, "or ");
+        $staffList = $organizationInfo['staffList'];        
         foreach($staffList as $staff)
         {
-            //削除フラグが立っていないとき
-            if(!$staff['delete_flag'])
+            //団体IDを持つ、かつ削除フラグが立っていないとき
+            // = 新規スタッフでない、かつ削除対象ではないスタッフに対して処理する
+            if(isset($staff['org_id']) && !$staff['delete_flag'])
             {
                 //監督にチェックが入っていない
                 if($staff['is_director'] == 0)
                 {
-                    $condition .= "or ( `user_id`= ".$staff['id']. "' and `staff_type_id`= 1)";
+                    $condition .= " or ( `user_id`= ".$staff['id']. " and `staff_type_id`= 1)\r\n";
                 }
                 //部長にチェックが入っていない
                 if($staff['is_head'] == 0)
                 {
-                    $condition .= "or ( `user_id`= ".$staff['id']. "' and `staff_type_id`= 2)";
+                    $condition .= " or ( `user_id`= ".$staff['id']. " and `staff_type_id`= 2)\r\n";
                 }
                 //コーチにチェックが入っていない
                 if($staff['is_coach'] == 0)
                 {
-                    $condition .= "or ( `user_id`= ".$staff['id']. "' and `staff_type_id`= 3)";
+                    $condition .= " or ( `user_id`= ".$staff['id']. " and `staff_type_id`= 3)\r\n";
                 }
                 //マネージャーにチェックが入っていない
                 if($staff['is_manager'] == 0)
                 {
-                    $condition .= "or ( `user_id`= ".$staff['id']. "' and `staff_type_id`= 4)";
+                    $condition .= " or ( `user_id`= ".$staff['id']. " and `staff_type_id`= 4)\r\n";
                 }
                 //管理代理にチェックが入っていない
                 if($staff['is_acting_director'] == 0)
                 {
-                    $condition .= "or ( `user_id`= ".$staff['id']. "' and `staff_type_id`= 5)";
+                    $condition .= " or ( `user_id`= ".$staff['id']. " and `staff_type_id`= 5)\r\n";
                 }
             }
             //削除フラグが立っているときは別途処理
         }
-        $condition = ltrim($condition, "or ");
+        $condition = ltrim($condition, " or ");
         return $condition;
     }
 
@@ -923,12 +903,13 @@ class OrganizationController extends Controller
             $t_users->updateDeleteOrganizationManagerFlagAllUser();
 
             DB::commit();
+            Log::debug(sprintf("storeOrgData end"));
+            return response()->json(['result' => $lastInsertId]); //DBの結果を返す
         } catch (\Throwable $e) {
-            Log::debug($e);
+            Log::error($e);
             DB::rollBack();
+            return response()->json(["団体登録に失敗しました。"], 403);
         }
-        Log::debug(sprintf("storeOrgData end"));
-        return response()->json(['result' => $lastInsertId]); //DBの結果を返す
     }
 
     //react 団体登録画面からDBにデータを渡す 20240209
@@ -995,11 +976,11 @@ class OrganizationController extends Controller
 
             DB::commit();
             Log::debug(sprintf("updateOrgData end"));
-            return response()->json(['result' => $lastInsertId]); //DBの結果を返す
+            return response()->json(['result' => true]); //DBの結果を返す
         } catch (\Throwable $e) {
             Log::error($e);
-            DB::rollBack();
-            return response()->json(['result' => false]); //DBの結果を返す
+            DB::rollBack();            
+            return response()->json(["団体更新に失敗しました。"], 403);
         }
     }
 

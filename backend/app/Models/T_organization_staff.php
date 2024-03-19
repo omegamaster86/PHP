@@ -65,12 +65,8 @@ class T_organization_staff extends Model
     //団体所属スタッフテーブルの削除フラグを更新する    
     public function updateDeleteFlagInOrganizationStaff($condition,$values)
     {
-        $sqlString = 'update `t_organization_staff`
-                        set `delete_flag` = 1
-                        where 1=1
-                        and `delete_flag` = 0
-                        and `org_id` = :org_id
-                        and `org_staff_id` not in
+        //Log::debug('updateDeleteFlagInOrganizationStaff start.');        
+        $sqlString = 'with target_ids as
                         (
                             SELECT `org_staff_id`
                             FROM `t_organization_staff`
@@ -79,14 +75,26 @@ class T_organization_staff extends Model
                             (
                                 #ConditionReplace#
                             )
+                        )
+                        update `t_organization_staff`
+                        set `delete_flag` = 1
+                        where 1=1
+                        and `delete_flag` = 0
+                        and `org_id` = :org_id
+                        and `org_staff_id` not in
+                        (
+                            SELECT `org_staff_id`
+                            FROM target_ids
                         )';
         $sqlString = str_replace('#ConditionReplace#',$condition,$sqlString);
         DB::update($sqlString,["org_id" => $values]);
+        //Log::debug('updateDeleteFlagInOrganizationStaff end.');
     }
 
     //団体所属スタッフテーブルに挿入する
     public function insertOrganizationStaff($replace_str,$org_id)
     {
+        //Log::debug('insertOrganizationStaff start.');
         $sqlString = "insert into `t_organization_staff`
                     (
                         `org_id`,
@@ -98,7 +106,7 @@ class T_organization_staff extends Model
                         `updated_user_id`,
                         `delete_flag`
                     )
-                    select *                    
+                    select *
                     FROM
                     (
                         SELECT
@@ -121,6 +129,8 @@ class T_organization_staff extends Model
         
         DB::insert($sqlString,[$org_id]);
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
+
+        //Log::debug('insertOrganizationStaff end.');
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 
@@ -177,7 +187,7 @@ class T_organization_staff extends Model
                     ,`updated_user_id` = ?
                     where 1=1
                     and `user_id` = ?
-                    and `org_id = ?`'                    
+                    and `org_id` = ?'
                     ,[
                         now()->format('Y-m-d H:i:s.u')
                         ,Auth::user()->user_id
