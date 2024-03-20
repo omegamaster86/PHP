@@ -461,97 +461,113 @@ export default function Tournament() {
     };
     fetchData();
   }, [mode]);
-
   // モードに応じたボタンの設定
   const modeCustomButtons = {
     create: (
       <CustomButton
         buttonType='primary'
-        onClick={() => {
+        onClick={async() => {
           setDisplayFlg(false);
           const isError = performValidation();
           if (!isError) {
-            const storeTournamentInfo = async () => {
-              const registerData = {
-                tournamentFormData,
-                tableData
-              };
-              //nullのパラメータを空のパラメータに置き換える
-              Object.keys(registerData.tournamentFormData).forEach(key => {
-                (registerData.tournamentFormData as any)[key] = (registerData.tournamentFormData as any)[key] ?? '';
-              });
-              // sendFormData.tournamentFormData = tournamentFormData;
-              // sendFormData.tableData = tableData;
-              // console.log(registerData);
-              const csrf = () => axios.get('/sanctum/csrf-cookie');
+            const csrf = () => axios.get('/sanctum/csrf-cookie');
               await csrf();
+
               axios
                 // .post('http://localhost:3100/', registerData)
-                .post('/storeTournamentInfoData', registerData, {
-                  //ファイルを送るため
-                  headers: {
-                    'content-type': 'multipart/form-data',
-                  },
-                })
+                .post('/checkTournIdOrgId', { "entrysystem_tourn_id": tournamentFormData.entrysystem_tourn_id, "tourn_type": tournamentFormData.tourn_type, "sponsor_org_id": tournamentFormData.sponsor_org_id, "mode": mode, "race_data": tableData})
                 .then((response) => {
-                  // console.log(response);
-                  // TODO: 処理成功時の処理
-                  setTournamentFormData({} as Tournament);
-                  setRaceFormData({
-                    id: 0,
-                    checked: false,
-                    race_id: '',
-                    entrysystem_race_id: '',
-                    tourn_id: 0,
-                    race_number: '',
-                    event_id: '',
-                    event_name: '',
-                    race_name: '',
-                    race_class_id: '',
-                    race_class_name: '',
-                    by_group: '',
-                    range: '',
-                    start_date_time: '',
-                    hasHistory: false,
-                    tournName: '',
-                  });
-                  setTableData([
-                    {
-                      id: 0,
-                      checked: false,
-                      race_id: '',
-                      entrysystem_race_id: '',
-                      tourn_id: 0,
-                      race_number: '',
-                      event_id: '',
-                      event_name: '',
-                      race_name: '',
-                      race_class_id: '',
-                      race_class_name: '',
-                      by_group: '',
-                      range: '',
-                      start_date_time: '',
-                      hasHistory: false,
-                      tournName: '',
-                    },
-                  ]);
-                  fileUploaderRef?.current?.clearFile();
-                  window.alert('大会情報を登録しました。');
-                  router.push(`/tournamentRef?tournId=${response.data.result}`);
-                })
-                .catch((error) => {
-                  // TODO: 処理失敗時の処理
-                  setErrorMessages([
-                    // ...(errorMessages as string[]),
-                    // '登録に失敗しました。原因：' + (error as Error).message,
-                    '登録に失敗しました。'
-                  ]);
-                })
-                .finally(() => {
-                  setDisplayFlg(true);
+                  const storeTournamentInfo = async () => {
+                    const registerData = {
+                      tournamentFormData,
+                      tableData
+                    };
+                    //nullのパラメータを空のパラメータに置き換える
+                    Object.keys(registerData.tournamentFormData).forEach(key => {
+                      (registerData.tournamentFormData as any)[key] = (registerData.tournamentFormData as any)[key] ?? '';
+                    });
+                    // sendFormData.tournamentFormData = tournamentFormData;
+                    // sendFormData.tableData = tableData;
+                    // console.log(registerData);
+                    const csrf = () => axios.get('/sanctum/csrf-cookie');
+                    await csrf();
+      
+                    axios
+                      // .post('http://localhost:3100/', registerData)
+                      .post('/storeTournamentInfoData', registerData, {
+                        //ファイルを送るため
+                        headers: {
+                          'content-type': 'multipart/form-data',
+                        },
+                      })
+                      .then((response) => {
+                        // console.log(response);
+                        // TODO: 処理成功時の処理
+                        setTournamentFormData({} as Tournament);
+                        setRaceFormData({
+                          id: 0,
+                          checked: false,
+                          race_id: '',
+                          entrysystem_race_id: '',
+                          tourn_id: 0,
+                          race_number: '',
+                          event_id: '',
+                          event_name: '',
+                          race_name: '',
+                          race_class_id: '',
+                          race_class_name: '',
+                          by_group: '',
+                          range: '',
+                          start_date_time: '',
+                          hasHistory: false,
+                          tournName: '',
+                        });
+                        setTableData([
+                          {
+                            id: 0,
+                            checked: false,
+                            race_id: '',
+                            entrysystem_race_id: '',
+                            tourn_id: 0,
+                            race_number: '',
+                            event_id: '',
+                            event_name: '',
+                            race_name: '',
+                            race_class_id: '',
+                            race_class_name: '',
+                            by_group: '',
+                            range: '',
+                            start_date_time: '',
+                            hasHistory: false,
+                            tournName: '',
+                          },
+                        ]);
+                        fileUploaderRef?.current?.clearFile();
+                        window.alert('大会情報を登録しました。');
+                        router.push(`/tournamentRef?tournId=${response.data.result}`);
+                      })
+                      .catch((error) => {
+                        // TODO: 処理失敗時の処理
+                        setErrorMessages([
+                          // ...(errorMessages as string[]),
+                          // '登録に失敗しました。原因：' + (error as Error).message,
+                          '登録に失敗しました。'
+                        ]);
+                      })
+                      .finally(() => {
+                        setDisplayFlg(true);
+                      });
+                  }
+                  storeTournamentInfo();
+                }).catch(error=>{
+                    error?.response?.data?.response_tourn_id && setEntrysystemRaceIdErrorMessage([error?.response?.data?.response_tourn_id]);
+                    error?.response?.data?.response_tourn_type && setTournNameErrorMessage([error?.response?.data?.response_tourn_type]);
+                    error?.response?.data?.response_org_id && setSponsorOrgIdErrorMessage([error?.response?.data?.response_org_id]);
+                    // error?.response?.data?.response_race_id && setRaceNumberErrorMessage(error?.response?.data?.response_race_id);
                 });
-            }
-            storeTournamentInfo()
+
+
+            
 
           }
         }}
@@ -654,17 +670,30 @@ export default function Tournament() {
     confirm: (
       <CustomButton
         buttonType='primary'
-        onClick={() => {
+        onClick={async() => {
           setDisplayFlg(false);
           const isError = performValidation();
           if (!isError) {
-            setTableData((prevData) => {
-              // return prevData.filter((row) => {
-              //   return !row.checked;
-              // });
-              return prevData; //全てのデータをバックエンド側に送る 20240311
-            });
-            router.push('/tournament?mode=confirm&prevMode=' + mode);
+            const csrf = () => axios.get('/sanctum/csrf-cookie');
+            await csrf();
+            axios
+              // .post('http://localhost:3100/', registerData)
+              .post('/checkTournIdOrgId', { "entrysystem_tourn_id": tournamentFormData.entrysystem_tourn_id, "tourn_type": tournamentFormData.tourn_type, "sponsor_org_id": tournamentFormData.sponsor_org_id, "mode": mode, "race_data": tableData})
+              .then((response) => {
+                setTableData((prevData) => {
+                  // return prevData.filter((row) => {
+                  //   return !row.checked;
+                  // });
+                  return prevData; //全てのデータをバックエンド側に送る 20240311
+                });
+                router.push('/tournament?mode=confirm&prevMode=' + mode);
+              }).catch(error=>{
+                  error?.response?.data?.response_tourn_id && setEntrysystemRaceIdErrorMessage([error?.response?.data?.response_tourn_id]);
+                  error?.response?.data?.response_tourn_type && setTournNameErrorMessage([error?.response?.data?.response_tourn_type]);
+                  error?.response?.data?.response_org_id && setSponsorOrgIdErrorMessage([error?.response?.data?.response_org_id]);
+                  // error?.response?.data?.response_race_id && setRaceNumberErrorMessage(error?.response?.data?.response_race_id);
+              });
+            
           }
           setDisplayFlg(true);
         }}
