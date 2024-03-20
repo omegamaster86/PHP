@@ -909,6 +909,7 @@ class TournamentController extends Controller
         Log::debug(sprintf("deleteTournamentData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
     }
+
     public function checkTournIdOrgId(Request $request, T_tournaments $tTournament){
         Log::debug(sprintf("checkTournIdOrgId start"));
         
@@ -961,7 +962,7 @@ class TournamentController extends Controller
                     ]
                 );
 
-                $raceInfo = $result_race_id ?? [];
+                $raceInfo = $result_race_id[0] ?? [];
 
                 if(!empty($raceInfo)){
                     array_push($response_race_id,"$raceInfo->entrysystem_race_id が重複しています。");
