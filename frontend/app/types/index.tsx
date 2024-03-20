@@ -65,7 +65,7 @@ interface RaceResultRecordsResponse {
   wind_speed_1000m_point: number; // 1000m地点風速
   wind_direction_1000m_point: number; // 1000m地点風向
   tenHundredmWindDirectionName: string; // 1000m地点風向
-  venueName: string; // 開催場所
+  venue_name: string; // 開催場所
   range: number; // 距離
   order: number; // 順番
   weatherId: number; // 天候
