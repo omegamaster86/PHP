@@ -925,9 +925,9 @@ class TournamentController extends Controller
             $result_org_id = DB::select(
                 'select `org_id`, `org_name`, `jara_org_type` from `t_organizations` where `delete_flag` = 0 and `org_id` = ?',
                 [
-                    $request["sponsor_org_id"] //where条件用
+                    $request["sponsor_org_id"] 
                 ]
-            );
+            );  //エントリーシステム大会ID確認
     
             $orgInfo = $result_org_id[0]??[];
     
@@ -967,10 +967,25 @@ class TournamentController extends Controller
 
                 $raceInfo = $result_race_id[0] ?? [];
 
-                // Log::debug($raceInfo->entrysystem_race_id);
 
                 if(!empty($raceInfo)){
-                    array_push($response_race_id,"$raceInfo->entrysystem_race_id が重複しています。");
+                    array_push($response_race_id,"「エントリーシステムのレースID」$raceInfo->entrysystem_race_id が重複しています。");
+                }
+
+
+                $result_race_number = DB::select(
+                    'select `race_number` from jara_new_pf.`t_races` where `delete_flag` = 0 and `race_number` = ?',
+                    [
+                        $reqData['race_data'][$i]['race_number']
+                    ]
+                );
+
+                $raceInfo2 = $result_race_number[0] ?? [];
+
+                // Log::debug($raceInfo->entrysystem_race_id);
+
+                if(!empty($raceInfo2)){
+                    array_push($response_race_id,"「レースNo.」$raceInfo2->race_number が重複しています。");
                 }
             }
 

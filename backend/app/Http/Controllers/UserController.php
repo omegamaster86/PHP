@@ -214,37 +214,37 @@ class UserController extends Controller
                 if (Auth::user()->expiry_time_of_certification_number < now()->format('Y-m-d H:i:s.u')) {
                     return response()->json($code_timed_out,400);
                 } else {
+                    DB::beginTransaction();
+                    try {
+                        DB::update(
+                            'update t_users set certification_number = ?,expiry_time_of_certification_number=?, updated_time = ?, updated_user_id = ?  where 1=1 and user_id = ?',
+                            [NULL, NULL, now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id , Auth::user()->user_id]
+                        );
 
+                        DB::commit();
+                    } catch (\Throwable $e) {
+                        DB::rollBack();
+                        $e_message = $e->getMessage();
+                        $e_code = $e->getCode();
+                        $e_file = $e->getFile();
+                        $e_line = $e->getLine();
+                        $e_sql = $e->getSql();
+                        $e_errorCode = $e->errorInfo[1];
+                        $e_bindings = implode(", ", $e->getBindings());
+                        $e_connectionName = $e->connectionName;
+
+                        //Store error message in the register log file.
+                        Log::channel('user_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
+                        if ($e_errorCode == 1213 || $e_errorCode == 1205) {
+                            return response()->json(["失敗しました。また試してみてください。"],500);
+                        } else {
+                            return response()->json(["失敗しました。ユーザーサポートと連絡してください。"],500);
+                        }
+                    }
                     return response()->json("承認されました。「更新」ボタンを押して情報更新してください。",200);
                 }
             } else {
-                DB::beginTransaction();
-                try {
-                    DB::update(
-                        'update t_users set certification_number = ?,expiry_time_of_certification_number=?, updated_time = ?, updated_user_id = ?  where user_id = ?',
-                        [NULL, NULL,now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id , Auth::user()->user_id]
-                    );
-
-                    DB::commit();
-                } catch (\Throwable $e) {
-                    DB::rollBack();
-                    $e_message = $e->getMessage();
-                    $e_code = $e->getCode();
-                    $e_file = $e->getFile();
-                    $e_line = $e->getLine();
-                    $e_sql = $e->getSql();
-                    $e_errorCode = $e->errorInfo[1];
-                    $e_bindings = implode(", ", $e->getBindings());
-                    $e_connectionName = $e->connectionName;
-
-                    //Store error message in the register log file.
-                    Log::channel('user_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-                    if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                        return response()->json(["失敗しました。また試してみてください。"],500);
-                    } else {
-                        return response()->json(["失敗しました。ユーザーサポートと連絡してください。"],500);
-                    }
-                }
+                
                 return response()->json($code_not_found,400);
             }
         } else {
