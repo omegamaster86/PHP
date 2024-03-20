@@ -147,9 +147,10 @@ class T_organization_players extends Model
     //登録日時、更新日時は「current_datetime」
     //登録ユーザー、更新ユーザーは「user_id」
     //で指定する
-    public function insertOrganizationPlayer($organizationPlayer)
+    public function insertOrganizationPlayer($organizationPlayer,$org_id)
     {
         //Log::debug('insertOrganizationPlayer start.');
+        //DB::enableQueryLog();
         $current_datetime = now()->format('Y-m-d H:i:s.u');
         $user_id = Auth::user()->user_id;
         DB::insert('insert INTO `t_organization_players`
@@ -164,7 +165,7 @@ class T_organization_players extends Model
                     )
                     VALUES(?,?,?,?,?,?,?)'
                     ,[
-                        $organizationPlayer["org_id"]
+                        $org_id
                         ,$organizationPlayer["player_id"]
                         ,$current_datetime
                         ,$user_id
@@ -173,6 +174,7 @@ class T_organization_players extends Model
                         ,0
                     ]);
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
+        //Log::debug(DB::getQueryLog());
         //Log::debug('insertOrganizationPlayer end.');
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
@@ -220,6 +222,8 @@ class T_organization_players extends Model
     //検索条件で所属選手を取得する
     public function getOrganizationPlayersFromCondition($condition,$conditionValue)
     {
+        DB::enableQueryLog();
+        Log::debug('getOrganizationPlayersFromCondition start.');
         $sqlString = 'select
                         player_id
                         ,jara_player_id
@@ -324,7 +328,9 @@ class T_organization_players extends Model
                         on players.org_id = org.org_id
                         ';
         $sqlString = str_replace("#ReplaceConditionString#",$condition,$sqlString);        
-        $players = DB::select($sqlString,$conditionValue);        
+        $players = DB::select($sqlString,$conditionValue);
+        Log::debug(DB::getQueryLog());
+        Log::debug('getOrganizationPlayersFromCondition end.');
         return $players;
     }
 
@@ -428,5 +434,19 @@ class T_organization_players extends Model
                                         and tp.`jara_player_id` = ?'
                                         ,[$jara_player_id]);
         return $org_players_info;
+    }
+
+    //選手IDと団体IDを指定した団体所属選手が存在するかを確認する
+    public function checkOrganizationPlayerIsExists($org_id,$player_id)
+    {
+        $check_count = DB::select('select count(*) as count
+                                    from `t_organization_players`
+                                    where 1=1
+                                    and delete_flag = 0
+                                    and org_id = :org_id
+                                    and player_id= :player_id'
+                                ,['org_id'=>$org_id,'player_id'=>$player_id]);
+        //select文の返り値は配列型なので0番目を返す
+        return $check_count;
     }
 }

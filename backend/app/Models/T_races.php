@@ -219,34 +219,33 @@ class T_races extends Model
     public function getRaces($trnId)
     {
         $races = DB::select('select
-                                race.`race_id`
-                                ,race.`race_number`
-                                ,race.`entrysystem_race_id`
-                                ,race.`tourn_id`
-                                ,race.`race_name`
-                                ,race.`event_id`
-                                ,`m_events`.`event_name`
-                                ,race.`race_class_id`
-                                ,`m_race_class`.`race_class_name`
-                                ,race.`by_group`
-                                ,race.`range`
-                                ,race.`start_date_time`
-                                ,case
-                                    when count(rrr.race_result_record_id) = 0 then 0
-                                    else 1
-                                    end as `hasHistory`
-                                FROM `t_races` race
-                                left join `t_race_result_record` rrr
-                                on race.race_id = rrr.race_id
-                                left join `m_race_class`
-                                on race.`race_class_id` = `m_race_class`.`race_class_id`
-                                left join `m_events`
-                                on race.`event_id` = `m_events`.`event_id`
-                                where 1=1
-                                and race.delete_flag = 0
-                                and (rrr.delete_flag = 0 or rrr.delete_flag is null)
-                                and race.`tourn_id` = :tourn_id
-                                group by race.`race_id`'
+                            race.`race_id`
+                            ,race.`race_number`
+                            ,race.`entrysystem_race_id`
+                            ,race.`tourn_id`
+                            ,race.`race_name`
+                            ,race.`event_id`
+                            ,`m_events`.`event_name`
+                            ,race.`race_class_id`
+                            ,`m_race_class`.`race_class_name`
+                            ,race.`by_group`
+                            ,race.`range`
+                            ,race.`start_date_time`
+                            ,case
+                                when sum(case rrr.delete_flag when 0 then 1 else 0 end) > 0 then 1
+                                else 0
+                                end as `has_history`
+                            FROM `t_races` race
+                            left join `t_race_result_record` rrr
+                            on race.race_id = rrr.race_id
+                            left join `m_race_class`
+                            on race.`race_class_id` = `m_race_class`.`race_class_id`
+                            left join `m_events`
+                            on race.`event_id` = `m_events`.`event_id`
+                            where 1=1
+                            and race.delete_flag = 0
+                            and race.`tourn_id` = :tourn_id
+                            group by race.`race_id`'
                         , $trnId);
         return $races;
     }

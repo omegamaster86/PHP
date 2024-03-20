@@ -267,22 +267,32 @@ class OrganizationPlayersController extends Controller
     {
         Log::debug(sprintf("updateOrgPlayerData start"));
         $reqData = $request->all();
+        //Log::debug($reqData);
+        $formData = $reqData['formData'];
+        $target_org_id = $reqData['target_org_id'];
         DB::beginTransaction();
         try
         {
-            foreach($reqData as $player)
+            foreach($formData as $player)
             {
-                $player_type = $player["type"];
-                $player_delete_flag = $player["deleteFlag"];
+                $player_type = $player['type'];
+                $player_delete_flag = $player['deleteFlag'];
                 //既存、かつ削除にチェックが入っている場合
-                if($player_type == "既存" && $player_delete_flag == true)
+                if($player_type == "既存" && $player_delete_flag == 1)
                 {
                     $t_organization_players->updateDeleteFlagOrganizationPlayers($player["org_id"],$player["player_id"]);
                 }
-                //追加、かつ削除にチェックが入っていない場合
-                elseif($player_type == "追加" && $player_delete_flag == false)
+                //追加の場合
+                //追加の場合deleteFlagが空
+                elseif($player_type == "追加")
                 {
-                    $t_organization_players->insertOrganizationPlayer($player);
+                    $target_player_id = $player['player_id'];
+                    $check_count = $t_organization_players->checkOrganizationPlayerIsExists($target_org_id,$target_player_id);
+                    Log::debug($check_count);
+                    if($check_count[0]->count == 0)
+                    {
+                        $t_organization_players->insertOrganizationPlayer($player,$target_org_id);
+                    }
                 }
             }
             DB::commit();
@@ -292,7 +302,8 @@ class OrganizationPlayersController extends Controller
         catch (\Throwable $e)
         {
             DB::rollBack();
-            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+            Log::error('Line:'.$e->getLine().' message:'.$e->getMessage());
+            return response()->json(['errMessage' => $e->getMessage()], 403); //エラーメッセージを返す
         }
     }
 
@@ -1053,7 +1064,7 @@ class OrganizationPlayersController extends Controller
                     // Log::debug('********************insert organization player data********************');
                     // Log::debug($insert_organization_player_data);
                     //insertを実行して、insertしたレコードのIDを取得
-                    $insert_organization_player_id = $t_organization_players->insertOrganizationPlayer($insert_organization_player_data);
+                    $insert_organization_player_id = $t_organization_players->insertOrganizationPlayer($insert_organization_player_data,$input_org_id);
                     
                     //ユーザー種別の更新処理
                     $is_player = $target_user_data[0]->{'is_player'};
@@ -1078,13 +1089,6 @@ class OrganizationPlayersController extends Controller
                             'organization_name' => $reqData[$rowIndex]['teamName'],
                             'organization_id' => $reqData[$rowIndex]['teamId'],
                             'player_name' => $reqData[$rowIndex]['playerName'],
-                            // 'birth_date' => '....',
-                            // 'sex' => '....',
-                            // 'height' => '....',
-                            // 'weight' => '....',
-                            // 'side_info' => '....',
-                            // 'birth_country' => '....',
-                            // 'residence_country' => '....',
                             'inquiry_url'=> $frontend_url.'/inquiry'                            
                         ];
 
@@ -1122,10 +1126,6 @@ class OrganizationPlayersController extends Controller
                             Log::debug(sprintf("=====ForRegisteredPlayerOrganizationRegistrationNotificationMail end====="));
                             return response()->json("メール送信に失敗しました。",500);
                         }
-
-                        // mail address -> $reqData[$rowIndex]['mailaddress'];
-                        //send email to player
-                        //use for_registered_player_organization_registration_notification_mail.blade template
                     }
                 }
             }
