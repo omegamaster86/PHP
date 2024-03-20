@@ -410,7 +410,7 @@ const validatePlayerNameFormat = (playerName: string) => {
     return '';
   }
   let errorMessage = '';
-  const playerNameRegex = new RegExp('^[a-zA-Z0-9-_ぁ-んァ-ン一-龠!-/:-@[-`{-~ ]+$');
+  const playerNameRegex = new RegExp('^[a-zA-Z0-9-_ぁ-んァ-ヶー一-龠!-/:-@[-`{-~ ]+$');
   if (!playerNameRegex.test(playerName)) {
     return '選手名に使用できる文字は以下になります。使用可能文字: 全角半角文字記号';
   }
