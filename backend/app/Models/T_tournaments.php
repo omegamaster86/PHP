@@ -36,8 +36,11 @@ class T_tournaments extends Model
                                     `t_organizations`.`org_name` as `sponsorOrgName`,
                                     `event_start_date`,
                                     `event_end_date`,
-                                    `venue_id`,
-                                    `venue_name`,
+                                    `t_tournaments`.`venue_id`,
+                                    case `m_venue`.`venue_name`
+                                        when "その他" then `t_tournaments`.`venue_name`
+                                        else `m_venue`.`venue_name`
+                                        end as `venue_name`,
                                     `tourn_type`,
                                     CASE
                                         when `tourn_type` = 0 then "非公式"
@@ -54,9 +57,12 @@ class T_tournaments extends Model
                                     from `t_tournaments`
                                     left join `t_organizations`
                                     on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
+                                    left join `m_venue`
+                                    on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
                                     where 1=1
                                     and `t_tournaments`.`delete_flag` = 0
                                     and (`t_organizations`.`delete_flag` = 0 or `t_organizations`.`delete_flag` is null)
+                                    and (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
                                     and tourn_id = ?'
                                     ,[$trnId]);
         //1つの団体IDを取得するため0番目だけを返す
