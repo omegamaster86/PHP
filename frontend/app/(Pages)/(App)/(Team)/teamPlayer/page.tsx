@@ -343,7 +343,7 @@ export default function TeamPlayer() {
               onClick={async () => {
                 // TODO: 反映処理　残件対応項目
                 const sendData = {
-                  target_org_id: orgId,
+                  target_org_id: teamData.org_id,
                   formData: formData
                 }
                 const csrf = () => axios.get('/sanctum/csrf-cookie');
