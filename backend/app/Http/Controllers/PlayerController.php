@@ -775,7 +775,7 @@ class PlayerController extends Controller
     //reactからの選手登録 20240131
     public function updatePlayerData(Request $request, T_players $tPlayersData, T_users $t_users)
     {
-        return response()->json(['errMessage' => $e->getMessage()],400); //エラーメッセージを返す
+        
         $random_file_name = Str::random(12);
         //If new picture is uploaded
         if ($request->hasFile('uploadedPhoto')) {
