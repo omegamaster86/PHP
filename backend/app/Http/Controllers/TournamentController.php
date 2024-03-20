@@ -936,7 +936,7 @@ class TournamentController extends Controller
                 $response_org_id = "[対象項目名]の団体は、既にシステムより削除されているか、本登録されていない団体IDが入力されています。"; 
             }
             else{
-                if($request["tourn_type"]==="0"){
+                if($request["tourn_type"]==="1"){
                     if($orgInfo->jara_org_type !== $request["tourn_type"]){
                         $response_tourn_type = " $orgInfo->org_id ：  $orgInfo->org_name は、任意団体の為、公式大会を主催することはできません。";
                     }
