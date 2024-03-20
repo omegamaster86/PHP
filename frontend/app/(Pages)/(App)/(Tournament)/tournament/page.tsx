@@ -466,12 +466,12 @@ export default function Tournament() {
     create: (
       <CustomButton
         buttonType='primary'
-        onClick={async() => {
+        onClick={async () => {
           setDisplayFlg(false);
           const isError = performValidation();
           if (!isError) {
             const csrf = () => axios.get('/sanctum/csrf-cookie');
-              await csrf();
+            await csrf();
 
               axios
                 // .post('http://localhost:3100/', registerData)
@@ -567,7 +567,6 @@ export default function Tournament() {
                 });
 
 
-            
 
           }
         }}
@@ -670,7 +669,7 @@ export default function Tournament() {
     confirm: (
       <CustomButton
         buttonType='primary'
-        onClick={async() => {
+        onClick={async () => {
           setDisplayFlg(false);
           const isError = performValidation();
           if (!isError) {
@@ -693,7 +692,7 @@ export default function Tournament() {
                   error?.response?.data?.response_org_id && setSponsorOrgIdErrorMessage([error?.response?.data?.response_org_id]);
                   error?.response?.data?.response_race_id && setRaceNumberErrorMessage(error?.response?.data?.response_race_id);
               });
-            
+
           }
           setDisplayFlg(true);
         }}
@@ -986,7 +985,7 @@ export default function Tournament() {
           />
         </div>
         {/* 主催団体名 */}
-        {mode === 'confirm' && prevMode === 'update' && (
+        {(mode === 'confirm' && (prevMode === 'create' || prevMode === 'update')) && (
           <div className='flex flex-col justify-start'>
             <CustomTextField
               label='主催団体名'
