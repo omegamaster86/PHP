@@ -802,53 +802,53 @@ class OrganizationController extends Controller
         $condition = "";
         //エントリーシステムの団体IDの条件
         if (isset($searchInfo['entrysystemOrgId'])) {
-            $condition .= " and `t_organizations`.`entrysystem_org_id`= ?";
+            $condition .= " and `t_organizations`.`entrysystem_org_id`= ?\r\n";
             array_push($searchValue, $searchInfo['entrysystemOrgId']);
         }
         //団体IDの条件
         if (isset($searchInfo['org_id'])) {
-            $condition .= " and `t_organizations`.`org_id`= ?";
+            $condition .= " and `t_organizations`.`org_id`= ?\r\n";
             array_push($searchValue, $searchInfo['org_id']);
         }
         //団体名の条件
         if (isset($searchInfo['org_name'])) {
-            $condition .= "and `t_organizations`.`org_name` LIKE ?";
+            $condition .= "and `t_organizations`.`org_name` LIKE ?\r\n";
             array_push($searchValue, '%' . $searchInfo['org_name'] . '%');
         }
         //団体種別の条件
         if (isset($searchInfo['org_type'])) {
             if ($searchInfo['org_type'] === "1") {
-                $condition .= " and (`t_organizations`.`jara_org_type`= ? or `t_organizations`.`pref_org_type`= ?)";
+                $condition .= " and (`t_organizations`.`jara_org_type`= ? or `t_organizations`.`pref_org_type`= ?)\r\n";
             } elseif ($searchInfo['org_type'] === "0") {
-                $condition .= " and (`t_organizations`.`jara_org_type`= ? and `t_organizations`.`pref_org_type`= ?)";
+                $condition .= " and (`t_organizations`.`jara_org_type`= ? and `t_organizations`.`pref_org_type`= ?)\r\n";
             }
             array_push($searchValue, $searchInfo['org_type']);
             array_push($searchValue, $searchInfo['org_type']);
         }
         //団体区分の条件
         if (isset($searchInfo['org_class'])) {
-            $condition .= " and `t_organizations`.`org_class`= ?";
+            $condition .= " and `t_organizations`.`org_class`= ?\r\n";
             array_push($searchValue, $searchInfo['org_class']);
         }
         //創立年開始の条件
         if (isset($searchInfo['foundingYear_start'])) {
-            $condition .= " and `t_organizations`.`founding_year`>= ?";
+            $condition .= " and `t_organizations`.`founding_year`>= ?\r\n";
             array_push($searchValue, $searchInfo['foundingYear_start']);
         }
         //創立年終了の条件
         if (isset($searchInfo['foundingYear_end'])) {
-            $condition .= " and `t_organizations`.`founding_year`<= ?";
+            $condition .= " and `t_organizations`.`founding_year`<= ?\r\n";
             array_push($searchValue, $searchInfo['foundingYear_end']);
         }
         //国の条件
         if (isset($searchInfo['residenceCountryId'])) {
-            $condition .= " and `t_organizations`.`location_country`= ?";
+            $condition .= " and `t_organizations`.`location_country`= ?\r\n";
             array_push($searchValue, $searchInfo['residenceCountryId']);
         }
         //都道府県の条件
         $japanCode = "112";   //日本の国コード
         if (isset($searchInfo['residencePrefectureId']) && ($searchInfo['residenceCountryId'] === $japanCode)) {
-            $condition .= " and `t_organizations`.`location_prefecture`= ?";
+            $condition .= " and `t_organizations`.`location_prefecture`= ?\r\n";
             array_push($searchValue, $searchInfo['residencePrefectureId']);
         }
         return $condition;
