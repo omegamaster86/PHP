@@ -119,7 +119,10 @@ class T_raceResultRecord extends Model
                                         `t_race_result_record`.`race_result_notes`,
                                         `m_seat_number`.`display_order` 	as "order",
                                         `t_tournaments`.`event_start_date` as "eventStartDate",
-                                        `m_venue`.`venue_name`
+                                        case `m_venue`.`venue_name`
+                                            when "その他" then `t_tournaments`.`venue_name`
+                                            else `m_venue`.`venue_name`
+                                            end as `venue_name`
                                         FROM `t_race_result_record` 
                                         left join `m_seat_number`
                                         on `t_race_result_record`.`seat_number` = `m_seat_number`.`seat_id`
