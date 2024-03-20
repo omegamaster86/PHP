@@ -90,7 +90,7 @@ export default function TournamentRaceResultRef() {
         await csrf();
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
         const response = await axios.post('/getTournRaceResultRecords', race_id); //残件対象項目
-        // console.log(response.data.result);
+        console.log(response.data.result);
         //クルー情報を取得するためのパラメータをセット
         setSearchCrewInfo(response.data.result);
         setResultRecordsData(response.data.result);
@@ -137,10 +137,10 @@ export default function TournamentRaceResultRef() {
     'B.No',
     'Qualify',
     'ストローク（平均）',
-    '500mlapストローク',
-    '1000mlapストローク',
-    '1500mlapストローク',
-    '2000mlapストローク',
+    '500mストローク',
+    '1000mストローク',
+    '1500mストローク',
+    '2000mストローク',
     '心拍数/分（平均）',
     '500m心拍数/分',
     '1000m心拍数/分',
@@ -215,6 +215,7 @@ export default function TournamentRaceResultRef() {
    * クルー情報取得
    * @description クルー情報を取得する
    */
+  const [currentCrewName, setCurrentCrewName] = useState('');
   const getCrew = async (index: number) => {
     // var apiUri = 'http://localhost:3100/crew?';
     const csrf = () => axios.get('/sanctum/csrf-cookie');
@@ -225,6 +226,9 @@ export default function TournamentRaceResultRef() {
       .then((response) => {
         // console.log(response.data.result);
         // レスポンスからデータを取り出してstateにセット
+        setCurrentCrewName(searchCrewInfo[index].crew_name);
+        console.log(currentCrewName);
+        console.log(searchCrewInfo[index]);
         setCrewRecordsData(response.data.result);
       })
       .catch((error) => {
@@ -280,7 +284,7 @@ export default function TournamentRaceResultRef() {
                     <div className='flex flex-col justify-start'>
                       {/* 開催場所 */}
                       <Label
-                        label={raceResultRecordsData.at(0)?.venueName as string}
+                        label={raceResultRecordsData.at(0)?.venue_name as string}
                         textColor='white'
                         textSize='caption1'
                       />
@@ -561,7 +565,7 @@ export default function TournamentRaceResultRef() {
             className='flex flex-col justify-center w-full gap-[20px]'
           >
             <DialogTitle id='alert-dialog-title' className='font-bold'>
-              クルー名
+              クルー名：  {currentCrewName}
             </DialogTitle>
             <DialogContent dividers>
               <CustomTable>
