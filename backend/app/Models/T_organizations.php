@@ -310,7 +310,7 @@ class T_organizations extends Model
     //検索条件を受け取って、t_organizationを検索し、その結果を返す
     public function getOrganizationWithSearchCondition($searchCondition,$value_array)
     {
-        DB::enableQueryLog();
+        //DB::enableQueryLog();
 
         $sqlString = 'select 
                         `org_id`,
@@ -366,7 +366,9 @@ class T_organizations extends Model
                         #SearchCondition#
                         order by `org_id`';
         $sqlString = str_replace('#SearchCondition#',$searchCondition,$sqlString);
+        //Log::debug($sqlString);
         $organizations = DB::select($sqlString,$value_array);
+        //Log::debug(DB::getQueryLog());
         return $organizations;
     }
 
