@@ -75,6 +75,7 @@ export default function TeamPlayer() {
           id: index,
         }));
       try {
+        const sendId = { org_id: orgId }
         const csrf = () => axios.get('/sanctum/csrf-cookie')
         await csrf()
         // SessionStorageに追加選手リストがある場合、追加選手リストを取得
@@ -86,9 +87,9 @@ export default function TeamPlayer() {
             //const response = await axios.get('http://localhost:3100/teamPlayers');
             //const searchRes = transformData(response.data, '既存');
             //data = setIndex(searchRes.concat(data));
-         
+
             // const response = await axios.get('/teamPlayers');
-            const response = await axios.post('/searchOrganizationPlayersForTeamRef', orgId);
+            const response = await axios.post('/searchOrganizationPlayersForTeamRef', sendId);
             const searchRes = transformData(response.data.result, '既存');
             data = setIndex(searchRes.concat(data));
             console.log(response.data.result);
@@ -104,12 +105,12 @@ export default function TeamPlayer() {
           if (mode == 'create') {
             // const response = await axios.get('http://localhost:3100/teamPlayers');
             // const searchRes = setIndex(transformData(response.data, '既存'));
-            const response = await axios.post('/searchOrganizationPlayersForTeamRef', orgId);
+            const response = await axios.post('/searchOrganizationPlayersForTeamRef', sendId);
             console.log(response);
             const searchRes = transformData(response.data.result, '既存');
             console.log(searchRes);
             data = setIndex(searchRes.concat(data));
-            
+
           }
           setFormData(data);
           sessionStorage.removeItem('addPlayerList');
@@ -117,7 +118,7 @@ export default function TeamPlayer() {
           if (mode == 'create') {
             // const response = await axios.get('http://localhost:3100/teamPlayers');
             // const searchRes = setIndex(transformData(response.data, '既存'));
-            const response = await axios.post('/searchOrganizationPlayersForTeamRef', orgId);
+            const response = await axios.post('/searchOrganizationPlayersForTeamRef', sendId);
             console.log(response);
             const searchRes = transformData(response.data.result, '既存');
             console.log(searchRes);
@@ -126,7 +127,6 @@ export default function TeamPlayer() {
         }
 
         // const teamResponse = await axios.get('/team');
-        const sendId = { org_id: orgId }
         const teamResponse = await axios.post('/getOrgData', sendId);
         console.log(teamResponse.data.result);
         setTeamData(teamResponse.data.result);
