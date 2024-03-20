@@ -155,7 +155,19 @@ export default function VolunteerInformationRef() {
         // const volunteerHistoriesResponse = await axios.get<VolunteerHistoriesResponse[]>(
         //   '/volunteerHistories',
         // );
-        // console.log(volunteerResponse.data.volHistData)
+        console.log(volunteerResponse.data.volHistData);
+        for (let index = 0; index < volunteerResponse.data.volHistData.length; index++) {
+          var hist_day_of_week_List = volunteerResponse.data.volHistData[index].day_of_week.split('');
+          var strData ='';
+          console.log(volunteerResponse.data.volHistData[index].day_of_week);
+          for (let j = hist_day_of_week_List.length - 1; j >= 0; j--) {
+            strData += hist_day_of_week_List[j];
+          }
+          console.log(strData);
+          volunteerResponse.data.volHistData[index].day_of_week = strData;
+          console.log(volunteerResponse.data.volHistData[index].day_of_week);
+        }
+        console.log(volunteerResponse.data.volHistData);
         setVolunteerHistoriesdata(volunteerResponse.data.volHistData);
       } catch (error) {
         // TODO: エラーハンドリングを実装
