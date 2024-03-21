@@ -1124,7 +1124,7 @@ class T_players extends Model
     //エントリーシステムの団体ID、団体ID、団体名以外の条件だけで選手検索
     public function getPlayerSearchResult($searchCondition, $conditionValues)
     {
-        DB::enableQueryLog();
+        //DB::enableQueryLog();
         $sqlString = 'with player as
                         (
                             SELECT
@@ -1235,8 +1235,8 @@ class T_players extends Model
                         and (tp.`delete_flag` = 0 or tp.`delete_flag` is null)';
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
         $players = DB::select($sqlString, $conditionValues);
-        Log::debug(DB::getQueryLog());
-        DB::disableQueryLog();
+        // Log::debug(DB::getQueryLog());
+        // DB::disableQueryLog();
         return $players;
     }
 
