@@ -542,4 +542,21 @@ class T_users extends Authenticatable
                     ]
         );
     }
+
+    //ユーザーIDが有効かを確認してその結果を返す
+    public function getUserIdIsValid($user_id)
+    {
+        $is_valid = DB::select("select
+                                case
+                                    when count(`user_id`) = 0 then false
+                                    when `temp_password_flag` = 1 then false
+                                    when `delete_flag` = 1 then false
+                                    else true
+                                    end as `is_valid`
+                                from `t_users`
+                                where 1=1
+                                and user_id = :user_id"
+                                ,['user_id' => $user_id]);
+        return $is_valid;
+    }
 }

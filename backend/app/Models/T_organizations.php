@@ -458,7 +458,8 @@ class T_organizations extends Model
                                     and org.delete_flag = 0
                                     and (staff.delete_flag = 0 or staff.delete_flag is null)
                                     and (users.delete_flag = 0 or users.delete_flag is null)
-                                    and users.user_id = ?"
+                                    and users.user_id = ?
+                                    order by org.org_id"
                                     ,[$user_id]);
         return $organizations;
     }

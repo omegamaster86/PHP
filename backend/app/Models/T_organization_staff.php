@@ -42,23 +42,32 @@ class T_organization_staff extends Model
                                     when instr(`staff_type_array`,"5") > 0 then 1
                                     else 0
                                     end as `is_acting_director`
+                                ,`enable`
                                 from
                                 (
                                     SELECT 
                                     `staff`.`org_id`
-                                    ,`staff`.`user_id`
-                                    ,`user`.`user_name`
+                                    ,`user`.`user_id`
+                                    ,case
+                                        when `user`.`user_name` is null then "該当ユーザー無し"
+                                        else `user`.`user_name`
+                                        end as `user_name`
                                     ,GROUP_CONCAT(`staff_type_id` order by `staff_type_id`)	AS "staff_type_array"
+                                    ,case
+                                        when `user`.`user_id` is null then false
+                                        when `user`.`temp_password_flag` = 1 then false
+                                        when `user`.`delete_flag` = 1 then false
+                                        else true
+                                        end as `enable`
                                     from `t_organization_staff` `staff`
-                                    join `t_users` `user`
+                                    left join `t_users` `user`
                                     on `staff`.`user_id` = `user`.`user_id`
                                     where `staff`.`delete_flag` = 0
-                                    and `user`.`delete_flag` = 0
+                                    and (`user`.`delete_flag` = 0 or `user`.`delete_flag` is null) 
                                     and `staff`.`org_id` = ?
                                     group by `staff`.`org_id`, `staff`.`user_id`,`user`.`user_name`
                                 ) as `staff`'
-                                ,[$orgId]
-                            );
+                                ,[$orgId]);
         return $orgStaffs;
     }
 
