@@ -466,6 +466,37 @@ class T_tournaments extends Model
         return $tournaments;
     }
 
+    //開催年とユーザーIDを条件に大会情報を取得する
+    //団体管理者用
+    public function getTournamentsFromEntryYearAndUserId($entry_year,$user_id)
+    {
+        $tournaments = DB::select("select distinct
+                                    `tourn_id`
+                                    ,`tourn_name`
+                                    ,`sponsor_org_id`
+                                    ,`event_start_date`
+                                    ,`event_end_date`
+                                    ,`venue_id`
+                                    ,`venue_name`
+                                    ,`tourn_type`
+                                    ,`tourn_url`
+                                    ,`tourn_info_faile_path`
+                                    ,`entrysystem_tourn_id`
+                                    FROM `t_tournaments` tour
+                                    left join `t_organizations` org
+                                    on `tour`.sponsor_org_id = org.org_id
+                                    left join `t_organization_staff` staff
+                                    on org.org_id = staff.org_id 
+                                    WHERE 1=1
+                                    and DATE_FORMAT(event_start_date, '%Y') = ?
+                                    and staff.user_id = ?"
+                                ,[
+                                    $entry_year
+                                    ,$user_id
+                                ]);
+        return $tournaments;
+    }
+
     //大会ID、ユーザーID、ユーザー種別の条件に該当する大会の件数を取得し、
     //0件なら0、1件以上あれば1を取得する
     public function getIsTournament($tourn_id,$user_id,$user_type)
