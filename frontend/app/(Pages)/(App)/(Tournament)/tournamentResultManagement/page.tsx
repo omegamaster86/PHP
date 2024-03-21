@@ -532,7 +532,7 @@ export default function TournamentResultManagement() {
                             'tournamentResultManagement',
                             JSON.stringify(searchCond),
                           );
-                          router.push('/tournamentResult?mode=update&raceId=' + row.raceId);
+                          router.push('/tournamentResult?mode=update&raceId=' + row.race_id);
                         }}
                       >
                         更新
@@ -545,7 +545,7 @@ export default function TournamentResultManagement() {
                             'tournamentResultManagement',
                             JSON.stringify(searchCond),
                           );
-                          router.push('/tournamentResultRef?mode=delete&raceId=' + row.raceId);
+                          router.push('/tournamentResultRef?mode=delete&raceId=' + row.race_id);
                         }}
                       >
                         削除
@@ -558,7 +558,7 @@ export default function TournamentResultManagement() {
                             'tournamentResultManagement',
                             JSON.stringify(searchCond),
                           );
-                          router.push('/tournamentResultRef?raceId=' + row.raceId);
+                          router.push('/tournamentResultRef?raceId=' + row.race_id);
                         }}
                       >
                         参照
@@ -566,15 +566,15 @@ export default function TournamentResultManagement() {
                     </div>
                   </CustomTd>
                   {/* レースID */}
-                  <CustomTd>{row.raceId}</CustomTd>
+                  <CustomTd>{row.race_id}</CustomTd>
                   {/* レース名 */}
-                  <CustomTd>{row.raceName}</CustomTd>
+                  <CustomTd>{row.race_name}</CustomTd>
                   {/* レースNo */}
-                  <CustomTd>{row.raceNumber}</CustomTd>
+                  <CustomTd>{row.race_number}</CustomTd>
                   {/* レース区分 */}
-                  <CustomTd>{row.raceTypeName}</CustomTd>
+                  <CustomTd>{row.race_class_name}</CustomTd>
                   {/* 組別 */}
-                  <CustomTd>{row.byGroup}</CustomTd>
+                  <CustomTd>{row.by_group}</CustomTd>
                 </CustomTr>
               ))}
             </CustomTbody>
