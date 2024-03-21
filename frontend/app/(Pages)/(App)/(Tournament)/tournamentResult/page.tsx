@@ -1,37 +1,37 @@
 // // 大会レース結果管理画面
-// 'use client';
-// // ライブラリのインポート
-// import React, { useState, useEffect, use } from 'react';
-// import { useRouter, useSearchParams } from 'next/navigation';
-// import AddIcon from '@mui/icons-material/Add';
-// import TextField from '@mui/material/TextField';
-// import Autocomplete from '@mui/material/Autocomplete';
-// // 共通コンポーネントのインポート
-// import {
-//   CustomTitle,
-//   CustomButton,
-//   ErrorBox,
-//   Label,
-//   CustomTextField,
-//   CustomDatePicker,
-//   CustomDropdown,
-//   CustomTable,
-//   CustomThead,
-//   InputLabel,
-//   CustomTr,
-//   CustomTd,
-//   CustomTh,
-//   CustomTbody,
-//   OriginalCheckbox,
-// } from '@/app/components';
-// import { RaceTable, RaceResultRecordsResponse, MasterResponse, CrewPlayer } from '@/app/types';
-// import axios from 'axios';
-// import Validator from '@/app/utils/validator';
+'use client';
+// ライブラリのインポート
+import React, { useState, useEffect, use } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import AddIcon from '@mui/icons-material/Add';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
+// 共通コンポーネントのインポート
+import {
+  CustomTitle,
+  CustomButton,
+  ErrorBox,
+  Label,
+  CustomTextField,
+  CustomDatePicker,
+  CustomDropdown,
+  CustomTable,
+  CustomThead,
+  InputLabel,
+  CustomTr,
+  CustomTd,
+  CustomTh,
+  CustomTbody,
+  OriginalCheckbox,
+} from '@/app/components';
+import { RaceTable, RaceResultRecordsResponse, MasterResponse, CrewPlayer } from '@/app/types';
+import axios from 'axios';
+import Validator from '@/app/utils/validator';
 
 // // 大会レース結果管理画面のメインコンポーネント
-// export default function TournamentResult() {
-//   // フック
-//   const router = useRouter();
+export default function TournamentResult() {
+  // フック
+  const router = useRouter();
 
 //   // ステート変数
 //   const [errorText, setErrorText] = useState([] as string[]);
@@ -2564,4 +2564,4 @@
 //       </div>
 //     </div>
 //   );
-// }
+}
