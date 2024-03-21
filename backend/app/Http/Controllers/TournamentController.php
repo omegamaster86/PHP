@@ -911,9 +911,10 @@ class TournamentController extends Controller
     }
 
     //エントリーシステム大会ID、団体ID、エントリーシステムレースID、レースNoのバリデーションチェック
-    public function tournamentRegistOrUpdateValidationCheck(Request $request, T_tournaments $tTournament){
+    public function tournamentRegistOrUpdateValidationCheck(Request $request, T_tournaments $tTournament)
+    {
         Log::debug(sprintf("checkTournIdOrgId start"));
-        
+
         $reqData = $request->all();
 
         if ($reqData["mode"] === "create") {
@@ -921,46 +922,44 @@ class TournamentController extends Controller
             $response_tourn_type = '';
             $response_tourn_id = '';
             $response_race_id = [];
-    
+
             $result_org_id = DB::select(
                 'select `org_id`, `org_name`, `jara_org_type` from `t_organizations` where `delete_flag` = 0 and `org_id` = ?',
                 [
-                    $request["sponsor_org_id"] 
+                    $request["sponsor_org_id"]
                 ]
             );  //エントリーシステム大会ID確認
-    
-            $orgInfo = $result_org_id[0]??[];
-    
+
+            $orgInfo = $result_org_id[0] ?? [];
+
             // Log::debug($orgInfo);
             if (empty($orgInfo)) {
-                $response_org_id = "[対象項目名]の団体は、既にシステムより削除されているか、本登録されていない団体IDが入力されています。"; 
-            }
-            else{
-                if($request["tourn_type"]==="1"){
-                    if($orgInfo->jara_org_type !== $request["tourn_type"]){
+                $response_org_id = "[対象項目名]の団体は、既にシステムより削除されているか、本登録されていない団体IDが入力されています。";
+            } else {
+                if ($request["tourn_type"] === "1") {
+                    if ($orgInfo->jara_org_type !== $request["tourn_type"]) {
                         $response_tourn_type = " $orgInfo->org_id ：  $orgInfo->org_name は、任意団体の為、公式大会を主催することはできません。";
                     }
                 }
-                
             }
 
-            if($request["entrysystem_tourn_id"] !== ""){
+            if ($request["entrysystem_tourn_id"] !== "") {
                 $result_tourn_id = DB::select(
                     'select `tourn_id`, `tourn_name` from `t_tournaments` where `delete_flag` = 0 and `entrysystem_tourn_id` = ?',
                     [
-                        $request["entrysystem_tourn_id"] 
+                        $request["entrysystem_tourn_id"]
                     ]
                 );
             }
 
-            $tournInfo = $result_tourn_id[0]??[];
-            
+            $tournInfo = $result_tourn_id[0] ?? [];
+
             if (!empty($tournInfo)) {
                 $response_tourn_id = "入力されたエントリーシステムの大会IDは、既に別の大会で使用されています。 [$tournInfo->tourn_id]：[$tournInfo->tourn_name]";
             }
 
-            for ($i = 0; $i < count($reqData['race_data']??[]); $i++) {
-               
+            for ($i = 0; $i < count($reqData['race_data'] ?? []); $i++) {
+
                 $result_race_id = DB::select(
                     'select `entrysystem_race_id` from jara_new_pf.`t_races` where `delete_flag` = 0 and `entrysystem_race_id` = ?',
                     [
@@ -971,8 +970,8 @@ class TournamentController extends Controller
                 $raceInfo = $result_race_id[0] ?? [];
 
 
-                if(!empty($raceInfo)){
-                    array_push($response_race_id,"「エントリーシステムのレースID」$raceInfo->entrysystem_race_id が重複しています。");
+                if (!empty($raceInfo)) {
+                    array_push($response_race_id, "「エントリーシステムのレースID」$raceInfo->entrysystem_race_id が重複しています。");
                 }
 
 
@@ -987,17 +986,17 @@ class TournamentController extends Controller
 
                 // Log::debug($raceInfo->entrysystem_race_id);
 
-                if(!empty($raceInfo2)){
-                    array_push($response_race_id,"「レースNo.」$raceInfo2->race_number が重複しています。");
+                if (!empty($raceInfo2)) {
+                    array_push($response_race_id, "「レースNo.」$raceInfo2->race_number が重複しています。");
                 }
             }
 
-            if($response_tourn_id or $response_tourn_type or $response_org_id or $response_race_id) {
-                return response()->json(["response_tourn_id"=>$response_tourn_id,"response_tourn_type"=>$response_tourn_type,"response_org_id"=>$response_org_id, "response_race_id"=>$response_race_id], 400);//エラーメッセージを返す
+            if ($response_tourn_id or $response_tourn_type or $response_org_id or $response_race_id) {
+                return response()->json(["response_tourn_id" => $response_tourn_id, "response_tourn_type" => $response_tourn_type, "response_org_id" => $response_org_id, "response_race_id" => $response_race_id], 400); //エラーメッセージを返す
             }
         }
 
-        return response()->json("success",200);//登録できる
+        return response()->json(["success" => $orgInfo], 200); //登録できる
 
     }
 }
