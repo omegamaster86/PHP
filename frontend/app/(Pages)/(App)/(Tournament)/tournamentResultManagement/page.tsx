@@ -1,0 +1,598 @@
+// 機能名: 大会レース結果管理画面
+'use client';
+
+// Reactおよび関連モジュールのインポート
+import { useState, useEffect, ChangeEvent, FocusEvent } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import axios from 'axios';
+// コンポーネントのインポート
+import {
+  CustomTitle,
+  ErrorBox,
+  CustomTextField,
+  CustomDropdown,
+  InputLabel,
+  CustomDatePicker,
+  CustomButton,
+  CustomTable,
+  CustomThead,
+  CustomTh,
+  CustomTr,
+  CustomTbody,
+  CustomTd,
+  Label,
+  CustomYearPicker,
+} from '@/app/components/';
+// モデルのインポート
+import { EventResponse, Race, RaceTypeResponse, Tournament, TournamentResponse } from '@/app/types';
+import SearchIcon from '@mui/icons-material/Search';
+import Validator from '@/app/utils/validator';
+import Divider from '@mui/material/Divider';
+import { Autocomplete, TextField } from '@mui/material';
+import { ClassNames } from '@emotion/react';
+
+// 検索条件フォームの型定義
+// 検索条件
+interface SearchCond {
+  eventYear: string;
+  tournId: string;
+  tournName: string;
+  eventId: string;
+  eventIdName: string;
+  eventName: string;
+  raceTypeId: string;
+  raceTypeName: string;
+  byGroup: string;
+  raceNo: string;
+}
+
+export default function TournamentResultManagement() {
+  // フック
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const prevScreen = searchParams.get('prevScreen') ?? 'default';
+  const [tournamentList, setTournamentList] = useState<TournamentResponse[]>([]);
+  const [event, setEvent] = useState<EventResponse[]>([]);
+  const [raceTypeList, setRaceTypeList] = useState<RaceTypeResponse[]>([]);
+  const sessionStorageData = JSON.parse(
+    sessionStorage.getItem('tournamentResultManagement') || '{}',
+  );
+
+  // フォームデータを管理する状態
+  const [searchCond, setSearchCond] = useState<SearchCond>({
+    eventYear:
+      prevScreen === 'tournamentResult'
+        ? sessionStorageData.eventYear
+        : new Date().toLocaleDateString(),
+    tournId: prevScreen === 'tournamentResult' ? sessionStorageData.tournId : '',
+    tournName: prevScreen === 'tournamentResult' ? sessionStorageData.tournName : '',
+    eventId: prevScreen === 'tournamentResult' ? sessionStorageData.eventId : '',
+    eventIdName: prevScreen === 'tournamentResult' ? sessionStorageData.eventIdName : '',
+    eventName: prevScreen === 'tournamentResult' ? sessionStorageData.eventName : '',
+    raceTypeId: prevScreen === 'tournamentResult' ? sessionStorageData.raceTypeId : '',
+    raceTypeName: prevScreen === 'tournamentResult' ? sessionStorageData.raceTypeName : '',
+    byGroup: prevScreen === 'tournamentResult' ? sessionStorageData.byGroup : '',
+    raceNo: prevScreen === 'tournamentResult' ? sessionStorageData.raceNo : '',
+  } as SearchCond);
+
+  const [searchResponse, setSearchResponse] = useState<Race[]>([]);
+  const [errorMessage, setErrorMessage] = useState([] as string[]);
+  const [eventYearErrorMessage, setEventYearErrorMessage] = useState([] as string[]);
+  const [tournNameErrorMessage, setTournNameErrorMessage] = useState([] as string[]);
+  const [eventIdErrorMessage, setEventIdErrorMessage] = useState([] as string[]);
+  const [eventNameErrorMessage, setEventNameErrorMessage] = useState([] as string[]);
+  const [tableHeight, setTableHeight] = useState(''); // デフォルトの行の高さを設定
+
+  const [messageDisplay, setMessageDisplay] = useState(
+    prevScreen !== 'tournamentResult' ||
+      !(
+        searchCond?.eventYear === '' ||
+        searchCond?.eventYear === null ||
+        searchCond?.eventYear === undefined
+      )
+      ? 'hidden'
+      : 'visible',
+  );
+
+  // フォームの入力値を管理する関数
+  const handleInputChange = (name: string, value: string) => {
+    setSearchCond((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+
+  function getNonEmptyProperties(obj: SearchCond): { key: string; value: any }[] {
+    return Object.entries(obj)
+      .filter(([key, value]) => value !== null && value !== undefined && value !== '')
+      .map(([key, value]) => ({
+        key,
+        value,
+      }));
+  }
+
+  const handleSearch = async () => {
+    var apiUri = 'http://localhost:3100/race?';
+
+    getNonEmptyProperties(searchCond).forEach((item) => {
+      apiUri += item.key + '=' + item.value + '&';
+    });
+    apiUri = apiUri.slice(0, -1);
+
+    try {
+      // 仮のURL（繋ぎ込み時に変更すること）
+      const response = await axios.get<Race[]>('http://localhost:3100/race/');
+      setSearchResponse(response.data);
+      const height = response.data.length * 73 + 100 < 830 ? response.data.length * 73 + 100 : 830;
+      setTableHeight('h-[' + height + 'px]');
+    } catch (error) {
+      setErrorMessage([...(errorMessage as string[]), 'API取得エラー:' + (error as Error).message]);
+    }
+  };
+
+  const getTournamentList = async () => {
+    try {
+      // 仮のURL（繋ぎ込み時に変更すること）
+      // TODO: ログインユーザーの権限によって取得する大会情報を変更すること
+      const response = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments');
+      setTournamentList(response.data);
+    } catch (error) {
+      setErrorMessage([...(errorMessage as string[]), 'API取得エラー:' + (error as Error).message]);
+    }
+  };
+
+  // データ取得
+  useEffect(() => {
+    const fetchData = async () => {
+      // 大会名
+      getTournamentList();
+
+      try {
+        // 仮のURL（繋ぎ込み時に変更すること）
+        const eventResponse = await axios.get<EventResponse[]>('http://localhost:3100/event');
+        setEvent(eventResponse.data);
+
+        const raceTypeResponse = await axios.get<RaceTypeResponse[]>(
+          'http://localhost:3100/raceType',
+        );
+        setRaceTypeList(raceTypeResponse.data);
+
+        if (prevScreen === 'tournamentResult') {
+          handleSearch();
+        }
+      } catch (error) {
+        setErrorMessage(['API取得エラー:' + (error as Error).message]);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // バリデーションを実行する関数
+  const performValidation = () => {
+    const eventYearError = Validator.getErrorMessages([
+      Validator.validateSelectRequired(searchCond.eventYear, '大会開催年'),
+    ]);
+    const tournNameError = Validator.getErrorMessages([
+      Validator.validateSelectRequired(searchCond.tournName, '大会名'),
+    ]);
+    const eventIdError = Validator.getErrorMessages([
+      Validator.validateSelectRequired(searchCond.eventId, '種目'),
+    ]);
+    const eventNameError =
+      searchCond.eventId === '0'
+        ? Validator.getErrorMessages([
+            Validator.validateSelectRequired(searchCond.eventName, '種目'),
+          ])
+        : [];
+
+    setEventYearErrorMessage(eventYearError);
+    setTournNameErrorMessage(tournNameError);
+    setEventIdErrorMessage(eventIdError);
+    setEventNameErrorMessage(eventNameError);
+
+    if (
+      eventYearError.length > 0 ||
+      tournNameError.length > 0 ||
+      eventIdError.length > 0 ||
+      eventNameError.length > 0
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  // レンダリング
+  return (
+    <div>
+      <main className='flex min-h-screen flex-col justify-start p-[10px] gap-[20px] my-[80px] md:w-[1200px] sm: w-[600px]'>
+        <div className='relative flex flex-row justify-between w-full h-screen flex-wrap'>
+          {/* 画面名 */}
+        </div>
+        <CustomTitle displayBack>大会レース結果管理</CustomTitle>
+        <div className='flex flex-col justify-center items-center'>
+          {/* 説明 */}
+          <p>
+            レース結果記録を変更したいレースが開催された大会と種目を選択し、「レース結果検索」ボタンをクリックしてください。
+            <br />
+            本システムに登録されているレース結果の中から検索条件に合うレース結果が、「レース結果一覧」に表示されます。
+          </p>
+        </div>
+        {/* エラーメッセージの表示 */}
+        <ErrorBox errorText={[]} />
+        <div className='bg-thinContainerBg p-[20px] flex flex-col gap-[12px]'>
+          <div className='flex flex-col justify-start gap-[16px]'>
+            <div className='flex flex-row justify-start gap-[16px]'>
+              {/* 大会開催年 */}
+              <div className='flex flex-col justify-start gap-[8px]'>
+                <InputLabel label='大会開催年（西暦）' required />
+                <div className='flex flex-row justify-start gap-[4px]'>
+                  <CustomYearPicker
+                    placeHolder={new Date().toLocaleDateString('ja-JP').slice(0, 4)}
+                    selectedDate={searchCond?.eventYear}
+                    onChange={(date: Date) => {
+                      handleInputChange('eventYear', date?.toLocaleDateString('ja-JP').slice(0, 4));
+                    }}
+                    onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                      if (
+                        searchCond?.eventYear === '' ||
+                        searchCond?.eventYear === null ||
+                        searchCond?.eventYear === undefined
+                      ) {
+                        handleInputChange('tournName', '');
+                        setMessageDisplay('visible');
+                      } else {
+                        getTournamentList();
+                        setMessageDisplay('hidden');
+                      }
+                    }}
+                    isError={eventYearErrorMessage.length > 0}
+                    errorMessages={eventYearErrorMessage}
+                  />
+                  <Label label='年' />
+                </div>
+              </div>
+            </div>
+            {/* 大会名 */}
+            <div className='flex flex-col justify-start'>
+              <div className='flex flex-row justify-start gap-[8px]'>
+                <div className='flex flex-col justify-start gap-[8px]'>
+                  <InputLabel label='大会名' required />
+                  <div>
+                    <Autocomplete
+                      options={tournamentList.map((item) => ({ id: item.id, name: item.name }))}
+                      getOptionLabel={(option) => option.name}
+                      value={{ id: Number(searchCond.tournId), name: searchCond.tournName } || ''}
+                      onChange={(e: ChangeEvent<{}>, newValue) => {
+                        handleInputChange(
+                          'tournId',
+                          newValue ? (newValue as TournamentResponse).id?.toString() : '',
+                        );
+                        handleInputChange(
+                          'tournName',
+                          newValue ? (newValue as TournamentResponse).name : '',
+                        );
+                      }}
+                      renderOption={(props: any, option: TournamentResponse) => {
+                        return (
+                          <li {...props} key={option.id}>
+                            {option.name}
+                          </li>
+                        );
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          key={params.id}
+                          className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                          {...params}
+                          value={searchCond.tournName || ''}
+                        />
+                      )}
+                      className={'w-[500px]'}
+                    />
+                    {tournNameErrorMessage?.map((message: string) => (
+                      <p key={message} className='pt-1 text-caption1 text-systemErrorText'>
+                        {message}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+                <div className={`flex flex-col justify-end ${messageDisplay}`}>
+                  <Label
+                    label='※「大会開催年」を入力してください。'
+                    textColor='red'
+                    textSize='caption1'
+                  />
+                </div>
+              </div>
+            </div>
+            <div className='flex flex-row justify-start gap-[16px]'>
+              <div className='flex flex-row justify-start gap-[12px]'>
+                {/* 種目 */}
+                <div className='flex flex-col justify-start gap-[8px]'>
+                  <InputLabel label='種目' required />
+                  <div>
+                    <Autocomplete
+                      options={event.map((item) => ({ id: item.id, name: item.name }))}
+                      getOptionLabel={(option) => option.name}
+                      value={
+                        { id: Number(searchCond?.eventId), name: searchCond?.eventIdName } || ''
+                      }
+                      onChange={(e: ChangeEvent<{}>, newValue) => {
+                        handleInputChange(
+                          'eventId',
+                          newValue ? (newValue as EventResponse).id.toString() : '',
+                        );
+                        handleInputChange(
+                          'eventIdName',
+                          newValue ? (newValue as EventResponse).name : '',
+                        );
+                      }}
+                      renderOption={(props: any, option: EventResponse) => {
+                        return (
+                          <li {...props} key={option.id}>
+                            {option.name}
+                          </li>
+                        );
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          key={params.id}
+                          className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                          {...params}
+                          value={searchCond?.tournName || ''}
+                        />
+                      )}
+                      className={'w-[200px]'}
+                    />
+                    {eventIdErrorMessage?.map((message: string) => (
+                      <p key={message} className='pt-1 text-caption1 text-systemErrorText'>
+                        {message}
+                      </p>
+                    ))}
+                    {eventNameErrorMessage?.map((message: string) => (
+                      <p key={message} className='pt-1 text-caption1 text-systemErrorText'>
+                        {message}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+                {/* 種目名 */}
+                <div
+                  className={`${
+                    (prevScreen === 'tournamentResult' && searchCond?.eventId !== '0') ||
+                    searchCond?.eventId !== '0'
+                      ? 'hidden'
+                      : ''
+                  }`}
+                >
+                  <CustomTextField
+                    label='種目名 ※部分一致'
+                    displayHelp={false}
+                    value={searchCond?.eventName}
+                    onChange={(e) => handleInputChange('eventName', e.target.value)}
+                    className='w-[300px]'
+                  />
+                </div>
+              </div>
+            </div>
+            {/* レース区分 */}
+            <div className='flex flex-col justify-start gap-[8px]'>
+              <InputLabel label='レース区分' />
+              <div>
+                <Autocomplete
+                  options={raceTypeList.map((item) => ({ id: item.id, name: item.name }))}
+                  getOptionLabel={(option) => option.name}
+                  value={
+                    { id: Number(searchCond?.raceTypeId), name: searchCond?.raceTypeName } || ''
+                  }
+                  onChange={(e: ChangeEvent<{}>, newValue) => {
+                    handleInputChange(
+                      'raceTypeId',
+                      newValue ? (newValue as EventResponse).id.toString() : '',
+                    );
+                    handleInputChange(
+                      'raceTypeName',
+                      newValue ? (newValue as EventResponse).name : '',
+                    );
+                  }}
+                  renderOption={(props: any, option: TournamentResponse) => {
+                    return (
+                      <li {...props} key={option.id}>
+                        {option.name}
+                      </li>
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      key={params.id}
+                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                      {...params}
+                      value={searchCond?.tournName || ''}
+                    />
+                  )}
+                  className={'w-[200px]'}
+                />
+              </div>
+            </div>
+            {/* 組別 */}
+            <div className='flex flex-col justify-start'>
+              <CustomTextField
+                label='組別 ※部分一致'
+                displayHelp={false}
+                value={searchCond?.byGroup}
+                onChange={(e) => handleInputChange('byGroup', e.target.value)}
+                className='w-[200px]'
+              />
+            </div>
+            {/* レースNo */}
+            <div className='flex flex-col justify-start'>
+              <CustomTextField
+                label='レースNo'
+                displayHelp={false}
+                value={searchCond?.raceNo}
+                onChange={(e) => handleInputChange('raceNo', e.target.value)}
+                className='w-[150px]'
+              />
+            </div>
+            <Divider />
+            <div className='flex flex-col justify-start'>
+              <div className='flex flex-row justify-center gap-[4px]'>
+                <CustomButton
+                  buttonType='primary'
+                  onClick={() => {
+                    if (!performValidation()) {
+                      handleSearch();
+                    }
+                  }}
+                  className='flex flex-row justify-center gap-[4px] w-[200px]'
+                >
+                  <SearchIcon />
+                  <div>レース結果検索</div>
+                </CustomButton>
+                <CustomButton
+                  buttonType='secondary'
+                  onClick={() => {
+                    setSearchCond({
+                      eventYear: '',
+                      tournId: '',
+                      tournName: '',
+                      eventId: '',
+                      eventIdName: '',
+                      eventName: '',
+                      raceTypeId: '',
+                      raceTypeName: '',
+                      byGroup: '',
+                      raceNo: '',
+                    } as SearchCond);
+                  }}
+                  className='w-[200px]'
+                >
+                  クリア
+                </CustomButton>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* レース結果一覧テーブル表示 */}
+        <div className='overflow-auto'>
+          <CustomTable>
+            {/* レース一覧テーブルヘッダー表示 */}
+            <CustomThead>
+              <CustomTr>
+                <th className='w-[280px] p-1 border border-gray-20 whitespace-nowrap text-caption1'>
+                  <CustomButton
+                    buttonType='primary'
+                    onClick={function (): void {
+                      sessionStorage.setItem(
+                        'tournamentResultManagement',
+                        JSON.stringify(searchCond),
+                      );
+                      let url = '/tournamentResult?mode=create';
+                      if (searchCond.tournId) {
+                        url += '&tournId=' + searchCond.tournId;
+                      }
+                      if (searchCond.eventId) {
+                        url += '&eventId=' + searchCond.eventId;
+                      }
+                      if (searchCond.eventName) {
+                        url += '&eventName=' + searchCond.eventName;
+                      }
+                      router.push(url);
+                    }}
+                    className='w-[150px]'
+                  >
+                    レース結果追加
+                  </CustomButton>
+                </th>
+                <CustomTh colSpan={5}>レース結果一覧</CustomTh>
+              </CustomTr>
+              <CustomTr>
+                <CustomTh>操作▼</CustomTh>
+                <CustomTh>レースID</CustomTh>
+                <CustomTh>レース名</CustomTh>
+                <CustomTh>レースNo▼</CustomTh>
+                <CustomTh>レース区分</CustomTh>
+                <CustomTh>組別</CustomTh>
+              </CustomTr>
+            </CustomThead>
+            {/* 大会一覧テーブル明細表示 */}
+            <CustomTbody>
+              {searchResponse.map((row, index) => (
+                <CustomTr index={index} key={index}>
+                  {/* 操作 */}
+                  <CustomTd>
+                    <div className='flex justify-center items-center gap-[10px]'>
+                      <CustomButton
+                        buttonType='primary'
+                        className='w-[80px]'
+                        onClick={function (): void {
+                          sessionStorage.setItem(
+                            'tournamentResultManagement',
+                            JSON.stringify(searchCond),
+                          );
+                          router.push('/tournamentResult?mode=update&raceId=' + row.raceId);
+                        }}
+                      >
+                        更新
+                      </CustomButton>
+                      <CustomButton
+                        buttonType='primary'
+                        className='w-[80px]'
+                        onClick={function (): void {
+                          sessionStorage.setItem(
+                            'tournamentResultManagement',
+                            JSON.stringify(searchCond),
+                          );
+                          router.push('/tournamentResultRef?mode=delete&raceId=' + row.raceId);
+                        }}
+                      >
+                        削除
+                      </CustomButton>
+                      <CustomButton
+                        buttonType='primary'
+                        className='w-[80px]'
+                        onClick={function (): void {
+                          sessionStorage.setItem(
+                            'tournamentResultManagement',
+                            JSON.stringify(searchCond),
+                          );
+                          router.push('/tournamentResultRef?raceId=' + row.raceId);
+                        }}
+                      >
+                        参照
+                      </CustomButton>
+                    </div>
+                  </CustomTd>
+                  {/* レースID */}
+                  <CustomTd>{row.raceId}</CustomTd>
+                  {/* レース名 */}
+                  <CustomTd>{row.raceName}</CustomTd>
+                  {/* レースNo */}
+                  <CustomTd>{row.raceNumber}</CustomTd>
+                  {/* レース区分 */}
+                  <CustomTd>{row.raceTypeName}</CustomTd>
+                  {/* 組別 */}
+                  <CustomTd>{row.byGroup}</CustomTd>
+                </CustomTr>
+              ))}
+            </CustomTbody>
+          </CustomTable>
+          {/* <CustomTable>
+          </CustomTable> */}
+        </div>
+        <div className='flex flex-row justify-center gap-[16px] my-[30px]'>
+          <CustomButton
+            onClick={() => {
+              router.back();
+            }}
+            buttonType='secondary'
+          >
+            戻る
+          </CustomButton>
+        </div>
+      </main>
+    </div>
+  );
+}
