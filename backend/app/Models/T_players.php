@@ -257,7 +257,6 @@ class T_players extends Model
             DB::insert(
                 'insert into t_players
                                 (
-                                    player_id,
                                     user_id,
                                     jara_player_id,
                                     player_name,
@@ -276,9 +275,8 @@ class T_players extends Model
                                     updated_time,
                                     updated_user_id,
                                     delete_flag
-                                )values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                )values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 [
-                    null,
                     Auth::user()->user_id, //選手登録時に入力されるuserIdはログイン中のuserId
                     $playersInfo['jara_player_id'],
                     $playersInfo['player_name'],

@@ -800,6 +800,10 @@ class VolunteerInfoAlignmentController extends Controller
                 $rowData["result"] = "重複データ";
                 $rowData["checked"] = false;
             }
+            if (DateTime::createFromFormat('Y-m-d', $rowData["dateOfBirth"]["value"]) == true) {                
+                $rowData["result"] = "重複データ";
+                $rowData["checked"] = false;
+            }
             //性別
             if(!isset($rowData['sexId']['value']))
             {
