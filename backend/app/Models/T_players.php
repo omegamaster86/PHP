@@ -257,7 +257,6 @@ class T_players extends Model
             DB::insert(
                 'insert into t_players
                                 (
-                                    player_id,
                                     user_id,
                                     jara_player_id,
                                     player_name,
@@ -276,9 +275,8 @@ class T_players extends Model
                                     updated_time,
                                     updated_user_id,
                                     delete_flag
-                                )values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                )values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 [
-                    null,
                     Auth::user()->user_id, //選手登録時に入力されるuserIdはログイン中のuserId
                     $playersInfo['jara_player_id'],
                     $playersInfo['player_name'],
@@ -1124,7 +1122,7 @@ class T_players extends Model
     //エントリーシステムの団体ID、団体ID、団体名以外の条件だけで選手検索
     public function getPlayerSearchResult($searchCondition, $conditionValues)
     {
-        DB::enableQueryLog();
+        //DB::enableQueryLog();
         $sqlString = 'with player as
                         (
                             SELECT
@@ -1235,8 +1233,8 @@ class T_players extends Model
                         and (tp.`delete_flag` = 0 or tp.`delete_flag` is null)';
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
         $players = DB::select($sqlString, $conditionValues);
-        Log::debug(DB::getQueryLog());
-        DB::disableQueryLog();
+        // Log::debug(DB::getQueryLog());
+        // DB::disableQueryLog();
         return $players;
     }
 

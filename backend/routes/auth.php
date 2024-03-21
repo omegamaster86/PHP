@@ -116,7 +116,7 @@ Route::middleware('auth')->group(function () {
     Route::post('storeOrgData', [OrganizationController::class, 'storeOrgData']); //団体情報をDBに送る 20240201
     Route::post('updateOrgData', [OrganizationController::class, 'updateOrgData']); //団体情報をDBに送る 20240201
     Route::post('validateOrgData', [OrganizationController::class, 'validateOrgData']); //団体のバリデーションチェック 20240308
-    Route::post('getStaffData', [OrganizationController::class, 'getStaffData']); //団体所属スタッフを取得 20240212
+    //Route::post('getStaffData', [OrganizationController::class, 'getStaffData']); //団体所属スタッフを取得 20240212
     Route::post('orgSearch', [OrganizationController::class, 'searchOrganization']); //団体検索 20240212
     Route::post('deleteOrgData', [OrganizationController::class, 'deleteOrgData']); //団体削除 20240307
     Route::get('getOrganizationForOrgManagement', [OrganizationController::class, 'getOrganizationForOrgManagement']); //団体管理画面用に団体情報を取得 20240212

@@ -82,13 +82,23 @@ class TournamentInfoAlignmentController extends Controller
     //大会エントリー一括登録 20240229
     public function tournamentEntryYearSearch(Request $request, T_tournaments $t_tournaments)
     {
-        Log::debug(sprintf("tournamentEntryYearSearch start"));
+        Log::debug(sprintf("tournamentEntryYearSearch start."));
         $reqData = $request->all();
         // Log::debug($reqData);
         $event_start_year = $reqData["event_start_year"];
-        $tournaments = $t_tournaments->getTournamentsFromEntryYear($event_start_year);
-        //Log::debug($tournaments);
-        Log::debug(sprintf("tournamentEntryYearSearch end"));
+        $user_type = Auth::user()->user_type;
+        //ログインユーザーの種別が団体管理者のみの場合、
+        //ログインユーザーの所属団体が主催した大会だけを表示する
+        if($user_type == '00001001')
+        {
+            $tournaments = $t_tournaments->getTournamentsFromEntryYearAndUserId($event_start_year,Auth::user()->user_id);
+        }
+        //そうでなければ開催年に該当する大会を表示する
+        else
+        {
+            $tournaments = $t_tournaments->getTournamentsFromEntryYear($event_start_year);
+        }
+        Log::debug(sprintf("tournamentEntryYearSearch end."));
         return response()->json(['result' => $tournaments]); //DBの結果を返す
     }
 
