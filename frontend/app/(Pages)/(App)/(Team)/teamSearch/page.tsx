@@ -322,14 +322,14 @@ export default function TeamSearch() {
                   <CustomYearPicker
                     selectedDate={formData.foundingYear_start}
                     onChange={(date: Date) =>
-                      handleInputChange('foundingYear_start', date.toString())
+                      handleInputChange('foundingYear_start', date.getFullYear().toString())
                     }
                   />
                   <div className='flex justify-center items-center'>〜</div>
                   {/* 創立年（終了年） */}
                   <CustomYearPicker
                     selectedDate={formData.foundingYear_end}
-                    onChange={(date: Date) => handleInputChange('foundingYear_end', date.toString())}
+                    onChange={(date: Date) => handleInputChange('foundingYear_end', date.getFullYear().toString())}
                   />
                 </div>
               </div>
