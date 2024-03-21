@@ -44,13 +44,13 @@ class T_organizations extends Model
                                     `entrysystem_org_id`,
                                     `org_name`,
                                     `jara_org_type`,
-                                    case jmot.org_type
+                                    case jmot.`org_type_id`
                                         when 0 then "任意"
                                         when 1 then "正式"
                                     end as `jaraOrgTypeName`,
                                     `jara_org_reg_trail`,
                                     `pref_org_type`,
-                                    case pmot.org_type
+                                    case pmot.`org_type_id`
                                         when 0 then "任意"
                                         when 1 then "正式"
                                     end as `prefOrgTypeName`,
