@@ -94,6 +94,13 @@ export default function PlayerInformationRef() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const currentPlayerId = searchParams.get('playerId')?.toString() || searchParams.get('player_id')?.toString() || '';
+        console.log(player_id, currentPlayerId);
+        //選手情報参照画面を表示している状態で、選手情報参照のタブをクリックした場合の処理 20240321
+        if (player_id.player_id != currentPlayerId) { 
+          player_id.player_id = currentPlayerId;
+          console.log(player_id);
+        }
         // 仮のURL（繋ぎ込み時に変更すること）
         // const playerInf = await axios.get<PlayerInformationResponse>('http://localhost:3100/player',);
         const csrf = () => axios.get('/sanctum/csrf-cookie');
@@ -140,7 +147,7 @@ export default function PlayerInformationRef() {
       }
     };
     fetchData();
-  }, []);
+  }, [playerId]);
 
   const headerArray = [
     '大会名',

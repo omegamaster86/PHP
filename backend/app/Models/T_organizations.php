@@ -44,13 +44,13 @@ class T_organizations extends Model
                                     `entrysystem_org_id`,
                                     `org_name`,
                                     `jara_org_type`,
-                                    case jmot.org_type
+                                    case jmot.`org_type_id`
                                         when 0 then "任意"
                                         when 1 then "正式"
                                     end as `jaraOrgTypeName`,
                                     `jara_org_reg_trail`,
                                     `pref_org_type`,
-                                    case pmot.org_type
+                                    case pmot.`org_type_id`
                                         when 0 then "任意"
                                         when 1 then "正式"
                                     end as `prefOrgTypeName`,
@@ -458,7 +458,8 @@ class T_organizations extends Model
                                     and org.delete_flag = 0
                                     and (staff.delete_flag = 0 or staff.delete_flag is null)
                                     and (users.delete_flag = 0 or users.delete_flag is null)
-                                    and users.user_id = ?"
+                                    and users.user_id = ?
+                                    order by org.org_id"
                                     ,[$user_id]);
         return $organizations;
     }

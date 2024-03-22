@@ -27,55 +27,58 @@ use App\Models\M_countries;
 class OrganizationController extends Controller
 {
     //団体情報更新画面を開く
-    public function getStaffData(
-        Request $request,
-        T_organizations $tOrganization,
-        M_organization_type $mOrganizationType,
-        M_organization_class $mOrganizationClass,
-        M_prefectures $mPrefectures,
-        T_organization_staff $tOrganizationStaff,
-        M_staff_type $mStaffType
-    ) {
-        Log::debug(sprintf("getStaffData start."));
-        if (Auth::user()->temp_password_flag === 1) {
-            // return redirect('user/password-change');
-        } else {
-            $targetOrgId = $request->all();
-            Log::debug($targetOrgId['org_id']);
-            //団体情報を取得 20231215 t_futamura
-            $tOrg = $tOrganization->getOrganization($targetOrgId['org_id']);
-            // //団体種別マスターを取得 20231215 t_futamura
-            // $mOrgType = $mOrganizationType->getOrganizationType();
-            // //団体区分マスターを取得 20231215 t_futamura
-            // $mOrgClass = $mOrganizationClass->getOrganizationClass();
-            // //都道府県マスターを取得 20231215 t_futamura
-            // $mPref = $mPrefectures->getPrefecures();
-            //団体所属スタッフテーブルを取得 20231215 t_futamura
-            $tStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId['org_id']);
-            //スタッフ種別マスターを取得 20231215 t_futamura
-            // $mStfType = $mStaffType->getStaffType();
-            //郵便番号を分割して持たせておく
-            $post_code = $tOrg->post_code;
-            $tOrg->post_code_upper = Str::substr($post_code, 0, 3);
-            $tOrg->post_code_lower = Str::substr($post_code, 3, 4);
+    // public function getStaffData(
+    //     Request $request,
+    //     T_organizations $tOrganization,
+    //     M_organization_type $mOrganizationType,
+    //     M_organization_class $mOrganizationClass,
+    //     M_prefectures $mPrefectures,
+    //     T_organization_staff $tOrganizationStaff,
+    //     M_staff_type $mStaffType
+    // ) {
+    //     Log::debug(sprintf("getStaffData start."));
+    //     // if (Auth::user()->temp_password_flag === 1) {
+    //     //     // return redirect('user/password-change');
+    //     // } else {
+    //         $targetOrgId = $request->all();
+    //         Log::debug($targetOrgId['org_id']);
+    //         //団体情報を取得 20231215 t_futamura
+    //         $tOrg = $tOrganization->getOrganization($targetOrgId['org_id']);
+    //         // //団体種別マスターを取得 20231215 t_futamura
+    //         // $mOrgType = $mOrganizationType->getOrganizationType();
+    //         // //団体区分マスターを取得 20231215 t_futamura
+    //         // $mOrgClass = $mOrganizationClass->getOrganizationClass();
+    //         // //都道府県マスターを取得 20231215 t_futamura
+    //         // $mPref = $mPrefectures->getPrefecures();
+    //         //団体所属スタッフテーブルを取得 20231215 t_futamura
+    //         $tStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId['org_id']);
+    //         //スタッフ種別マスターを取得 20231215 t_futamura
+    //         // $mStfType = $mStaffType->getStaffType();
+    //         //郵便番号を分割して持たせておく
+    //         $post_code = $tOrg->post_code;
+    //         $tOrg->post_code_upper = Str::substr($post_code, 0, 3);
+    //         $tOrg->post_code_lower = Str::substr($post_code, 3, 4);
 
-            //$staff_tag = $this->generateStaffTag($tStaff, $mStfType);
-            //各データをViewに渡して開く
-            // return view(
-            //     'organizations.register-edit',
-            //     [
-            //         "pagemode" => "edit",
-            //         "organization" => $tOrg,
-            //         "organizationType" => $mOrgType,
-            //         "organizationClass" => $mOrgClass,
-            //         "prefectures" => $mPref,
-            //         "staff_tag" => $staff_tag
-            //     ]
-            // );
-            Log::debug(sprintf("getStaffData end."));
-            return response()->json(['result' => $tStaff]); //処理結果を返す
-        }
-    }
+    //         //$staff_tag = $this->generateStaffTag($tStaff, $mStfType);
+    //         //各データをViewに渡して開く
+    //         // return view(
+    //         //     'organizations.register-edit',
+    //         //     [
+    //         //         "pagemode" => "edit",
+    //         //         "organization" => $tOrg,
+    //         //         "organizationType" => $mOrgType,
+    //         //         "organizationClass" => $mOrgClass,
+    //         //         "prefectures" => $mPref,
+    //         //         "staff_tag" => $staff_tag
+    //         //     ]
+    //         // );
+    //         Log::debug(sprintf("getStaffData end."));
+
+    //         Log::debug("**********tStaff**********");
+    //         Log::debug($tStaff);
+    //         return response()->json(['result' => $tStaff]); //処理結果を返す
+    //     //}
+    // }
 
     private function generateStaffTag($tStaff, $mStaffType)
     {
@@ -147,142 +150,142 @@ class OrganizationController extends Controller
     }
 
     //団体情報参照画面を開く
-    public function createReference(
-        $targetOrgId,
-        T_organizations $tOrganizations,
-        T_tournaments $tTournaments,
-        T_organization_players $tOrganizationPlayers,
-        T_players $tPlayers,
-        T_raceResultRecord $tRaceResultRecord,
-        T_organization_staff $tOrganizationStaff
-    ) {
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        } else {
-            //団体情報を取得 20231215 t_futamura
-            $organizations = $tOrganizations->getOrganization($targetOrgId);
-            //主催大会情報を取得
-            $organizedTournaments = $tTournaments->getTournamentsFromOrgId($targetOrgId);
-            //団体所属選手情報を取得
-            $orgPlayers = $tOrganizationPlayers->getOrganizationPlayers($targetOrgId);
-            //選手情報取得のための条件文を生成する
-            $playerIdColumnName = 'player_id';
-            $organizedPlayerIdCondition = $this->generateIdCondition($orgPlayers, $playerIdColumnName);
-            //選手情報を取得
-            $organizedPlayers = [];
-            if (!empty($organizedPlayerIdCondition)) {
-                $organizedPlayers = $tPlayers->getPlayersFromPlayerId($organizedPlayerIdCondition);
-            }
-            //出漕結果記録情報を取得
-            $tournamentIds = $tRaceResultRecord->getTournamentIdForResultsRecord($targetOrgId);
-            //エントリー大会情報取得のための条件文を生成する
-            $tournamentIdColumnName = 'tourn_id';
-            $tournamentsIdCondition = $this->generateIdCondition($tournamentIds, $tournamentIdColumnName);
-            //エントリー大会情報を取得
-            $entryTournaments = [];
-            if (!empty($tournamentsIdCondition)) {
-                $entryTournaments = $tTournaments->getEntryTournaments($tournamentsIdCondition);
-            }
-            //団体所属スタッフテーブルを取得 20231215 t_futamura
-            $organizedStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId);
+    // public function createReference(
+    //     $targetOrgId,
+    //     T_organizations $tOrganizations,
+    //     T_tournaments $tTournaments,
+    //     T_organization_players $tOrganizationPlayers,
+    //     T_players $tPlayers,
+    //     T_raceResultRecord $tRaceResultRecord,
+    //     T_organization_staff $tOrganizationStaff
+    // ) {
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     } else {
+    //         //団体情報を取得 20231215 t_futamura
+    //         $organizations = $tOrganizations->getOrganization($targetOrgId);
+    //         //主催大会情報を取得
+    //         $organizedTournaments = $tTournaments->getTournamentsFromOrgId($targetOrgId);
+    //         //団体所属選手情報を取得
+    //         $orgPlayers = $tOrganizationPlayers->getOrganizationPlayers($targetOrgId);
+    //         //選手情報取得のための条件文を生成する
+    //         $playerIdColumnName = 'player_id';
+    //         $organizedPlayerIdCondition = $this->generateIdCondition($orgPlayers, $playerIdColumnName);
+    //         //選手情報を取得
+    //         $organizedPlayers = [];
+    //         if (!empty($organizedPlayerIdCondition)) {
+    //             $organizedPlayers = $tPlayers->getPlayersFromPlayerId($organizedPlayerIdCondition);
+    //         }
+    //         //出漕結果記録情報を取得
+    //         $tournamentIds = $tRaceResultRecord->getTournamentIdForResultsRecord($targetOrgId);
+    //         //エントリー大会情報取得のための条件文を生成する
+    //         $tournamentIdColumnName = 'tourn_id';
+    //         $tournamentsIdCondition = $this->generateIdCondition($tournamentIds, $tournamentIdColumnName);
+    //         //エントリー大会情報を取得
+    //         $entryTournaments = [];
+    //         if (!empty($tournamentsIdCondition)) {
+    //             $entryTournaments = $tTournaments->getEntryTournaments($tournamentsIdCondition);
+    //         }
+    //         //団体所属スタッフテーブルを取得 20231215 t_futamura
+    //         $organizedStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId);
 
-            //ユーザー種別を取得
-            $user_type = Auth::user()->user_type;
-            return view('organizations.reference', [
-                "pagemode" => "refer",
-                "organization_info" => $organizations,
-                "organized_tournaments" => $organizedTournaments,
-                "organized_players" => $organizedPlayers,
-                "entryTournaments" => $entryTournaments,
-                "organized_staff" => $organizedStaff,
-                "user_type" => $user_type
-            ]);
-        }
-    }
+    //         //ユーザー種別を取得
+    //         $user_type = Auth::user()->user_type;
+    //         return view('organizations.reference', [
+    //             "pagemode" => "refer",
+    //             "organization_info" => $organizations,
+    //             "organized_tournaments" => $organizedTournaments,
+    //             "organized_players" => $organizedPlayers,
+    //             "entryTournaments" => $entryTournaments,
+    //             "organized_staff" => $organizedStaff,
+    //             "user_type" => $user_type
+    //         ]);
+    //     }
+    // }
 
     //団体情報削除画面を開く
-    public function createDeleteView(
-        $targetOrgId,
-        T_organizations $tOrganizations,
-        T_tournaments $tTournaments,
-        T_organization_players $tOrganizationPlayers,
-        T_players $tPlayers,
-        T_raceResultRecord $tRaceResultRecord,
-        T_organization_staff $tOrganizationStaff
-    ) {
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        } else {
-            //団体情報を取得 20231215 t_futamura
-            $organizations = $tOrganizations->getOrganization($targetOrgId);
-            //主催大会情報を取得
-            $organizedTournaments = $tTournaments->getTournamentsFromOrgId($targetOrgId);
-            //団体所属選手情報を取得
-            $orgPlayers = $tOrganizationPlayers->getOrganizationPlayers($targetOrgId);
-            //選手情報取得のための条件文を生成する
-            $playerIdColumnName = 'player_id';
-            $organizedPlayerIdCondition = $this->generateIdCondition($orgPlayers, $playerIdColumnName);
-            //選手情報を取得
-            $organizedPlayers = [];
-            if (!empty($organizedPlayerIdCondition)) {
-                $organizedPlayers = $tPlayers->getPlayersFromPlayerId($organizedPlayerIdCondition);
-            }
-            //出漕結果記録情報を取得
-            $tournamentIds = $tRaceResultRecord->getTournamentIdForResultsRecord($targetOrgId);
-            //エントリー大会情報取得のための条件文を生成する
-            $tournamentIdColumnName = 'tourn_id';
-            $tournamentsIdCondition = $this->generateIdCondition($tournamentIds, $tournamentIdColumnName);
-            //エントリー大会情報を取得
-            $entryTournaments = [];
-            if (!empty($tournamentsIdCondition)) {
-                $entryTournaments = $tTournaments->getEntryTournaments($tournamentsIdCondition);
-            }
-            //団体所属スタッフテーブルを取得 20231215 t_futamura
-            $organizedStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId);
+    // public function createDeleteView(
+    //     $targetOrgId,
+    //     T_organizations $tOrganizations,
+    //     T_tournaments $tTournaments,
+    //     T_organization_players $tOrganizationPlayers,
+    //     T_players $tPlayers,
+    //     T_raceResultRecord $tRaceResultRecord,
+    //     T_organization_staff $tOrganizationStaff
+    // ) {
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     } else {
+    //         //団体情報を取得 20231215 t_futamura
+    //         $organizations = $tOrganizations->getOrganization($targetOrgId);
+    //         //主催大会情報を取得
+    //         $organizedTournaments = $tTournaments->getTournamentsFromOrgId($targetOrgId);
+    //         //団体所属選手情報を取得
+    //         $orgPlayers = $tOrganizationPlayers->getOrganizationPlayers($targetOrgId);
+    //         //選手情報取得のための条件文を生成する
+    //         $playerIdColumnName = 'player_id';
+    //         $organizedPlayerIdCondition = $this->generateIdCondition($orgPlayers, $playerIdColumnName);
+    //         //選手情報を取得
+    //         $organizedPlayers = [];
+    //         if (!empty($organizedPlayerIdCondition)) {
+    //             $organizedPlayers = $tPlayers->getPlayersFromPlayerId($organizedPlayerIdCondition);
+    //         }
+    //         //出漕結果記録情報を取得
+    //         $tournamentIds = $tRaceResultRecord->getTournamentIdForResultsRecord($targetOrgId);
+    //         //エントリー大会情報取得のための条件文を生成する
+    //         $tournamentIdColumnName = 'tourn_id';
+    //         $tournamentsIdCondition = $this->generateIdCondition($tournamentIds, $tournamentIdColumnName);
+    //         //エントリー大会情報を取得
+    //         $entryTournaments = [];
+    //         if (!empty($tournamentsIdCondition)) {
+    //             $entryTournaments = $tTournaments->getEntryTournaments($tournamentsIdCondition);
+    //         }
+    //         //団体所属スタッフテーブルを取得 20231215 t_futamura
+    //         $organizedStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId);
 
-            //ユーザー種別を取得
-            $user_type = Auth::user()->user_type;
-            return view('organizations.reference', [
-                "pagemode" => "delete",
-                "organization_info" => $organizations,
-                "organized_tournaments" => $organizedTournaments,
-                "organized_players" => $organizedPlayers,
-                "entryTournaments" => $entryTournaments,
-                "organized_staff" => $organizedStaff,
-                "user_type" => $user_type
-            ]);
-        }
-    }
+    //         //ユーザー種別を取得
+    //         $user_type = Auth::user()->user_type;
+    //         return view('organizations.reference', [
+    //             "pagemode" => "delete",
+    //             "organization_info" => $organizations,
+    //             "organized_tournaments" => $organizedTournaments,
+    //             "organized_players" => $organizedPlayers,
+    //             "entryTournaments" => $entryTournaments,
+    //             "organized_staff" => $organizedStaff,
+    //             "user_type" => $user_type
+    //         ]);
+    //     }
+    // }
 
     //団体検索画面を開く
-    public function createSearchView(
-        M_prefectures $mPrefectures,
-        M_organization_type $mOrganizationType,
-        M_organization_class $mOrganizationClass,
-        M_countries $mCountries
-    ): View {
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        } else {
-            //国マスタを取得
-            $countries = $mCountries->getCountries();
-            //都道府県マスタを取得
-            $prefectures = $mPrefectures->getPrefecures();
-            //団体区分マスタを取得
-            $organizationClass = $mOrganizationClass->getOrganizationClass();
-            //団体種別マスタを取得
-            $organizationType = $mOrganizationType->getOrganizationType();
-            //ユーザー種別を取得
-            $user_type = Auth::user()->user_type;
-            return view('organizations.search', [
-                'countries' => $countries,
-                'prefectures' => $prefectures,
-                'organization_class' => $organizationClass,
-                'organization_type' => $organizationType,
-                'user_type' => $user_type
-            ]);
-        }
-    }
+    // public function createSearchView(
+    //     M_prefectures $mPrefectures,
+    //     M_organization_type $mOrganizationType,
+    //     M_organization_class $mOrganizationClass,
+    //     M_countries $mCountries
+    // ): View {
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     } else {
+    //         //国マスタを取得
+    //         $countries = $mCountries->getCountries();
+    //         //都道府県マスタを取得
+    //         $prefectures = $mPrefectures->getPrefecures();
+    //         //団体区分マスタを取得
+    //         $organizationClass = $mOrganizationClass->getOrganizationClass();
+    //         //団体種別マスタを取得
+    //         $organizationType = $mOrganizationType->getOrganizationType();
+    //         //ユーザー種別を取得
+    //         $user_type = Auth::user()->user_type;
+    //         return view('organizations.search', [
+    //             'countries' => $countries,
+    //             'prefectures' => $prefectures,
+    //             'organization_class' => $organizationClass,
+    //             'organization_type' => $organizationType,
+    //             'user_type' => $user_type
+    //         ]);
+    //     }
+    // }
 
     //団体情報登録画面で確認ボタンを押したときに発生するイベント
     public function storeConfirm(
@@ -1001,6 +1004,7 @@ class OrganizationController extends Controller
     {
         Log::debug(sprintf("getOrgStaffData start"));
         $result = $request->all();
+        $is_error = false;
         $tOrg = $tOrganizationStaff->getOrganizationStaffFromOrgId($result['org_id']); //userIDに紐づいた団体を取得するように修正する必要がある 二村さん残件対応箇所
         for ($i = 0; $i < count($tOrg); $i++) {
             $staff_type_id = array();
@@ -1023,10 +1027,25 @@ class OrganizationController extends Controller
             $tOrg[$i]->isUserFound = true;
             $tOrg[$i]->delete_flag = false;
             $tOrg[$i]->id = ($i + 1);
+            if(!$tOrg[$i]->enable)
+            {
+                $tOrg[$i]->delete_flag = true;
+                $is_error = true;
+            }
         }
         Log::debug(sprintf("getOrgStaffData end"));
         //Log::debug($tOrg);
-        return response()->json(['result' => $tOrg]); //DBの結果を返す
+
+        if($is_error)
+        {
+            //エラーがあった場合
+            return response()->json(['result' => $tOrg, $is_error => true]); //DBの結果を返す
+        }
+        else
+        {
+            //エラーがなかった場合
+            return response()->json(['result' => $tOrg, $is_error => false]); //DBの結果を返す
+        }
     }
 
     //エントリー大会取得
@@ -1090,22 +1109,25 @@ class OrganizationController extends Controller
     }
 
     //団体のバリデーションチェック 20240307
-    public function validateOrgData(Request $request,  T_organizations $tOrganizations)
+    public function validateOrgData(Request $request,  T_organizations $tOrganizations,T_users $t_users)
     {
         Log::debug(sprintf("validateOrgData start"));
         $reqData = $request->all();
-        // Log::debug($reqData);
-        Log::debug($reqData['formData']['entrysystem_org_id']);
+        Log::debug($reqData);
+        //Log::debug($reqData['formData']['entrysystem_org_id']);
+        $formData = $reqData['formData'];
+        $staff_list = $reqData['staffList'];
+
         $duplicationCount = 0;
         //団体IDがnullでエントリーシステムの団体IDが入力されている場合、登録時の重複チェックを行う
-        if (!isset($reqData['formData']['org_id']) && isset($reqData['formData']['entrysystem_org_id'])) {
+        if (!isset($formData['org_id']) && isset($formData['entrysystem_org_id'])) {
             Log::debug("call getEntrysystemOrgIdCount");
-            $duplicationCount = $tOrganizations->getEntrysystemOrgIdCount($reqData['formData']['entrysystem_org_id']);
+            $duplicationCount = $tOrganizations->getEntrysystemOrgIdCount($formData['entrysystem_org_id']);
         }
         //団体IDとエントリーシステムの団体IDが入力されている場合、更新時の重複チェックを行う
-        if (isset($reqData['formData']['org_id']) && isset($reqData['formData']['entrysystem_org_id'])) {
+        if (isset($formData['org_id']) && isset($formData['entrysystem_org_id'])) {
             Log::debug("call getEntrysystemOrgIdCountWithOrgId");
-            $duplicationCount = $tOrganizations->getEntrysystemOrgIdCountWithOrgId($reqData['formData']['entrysystem_org_id'], $reqData['formData']['org_id']);
+            $duplicationCount = $tOrganizations->getEntrysystemOrgIdCountWithOrgId($formData['entrysystem_org_id'], $formData['org_id']);
         }
 
         if ($duplicationCount > 0) {
@@ -1113,7 +1135,66 @@ class OrganizationController extends Controller
             return response()->json(["エントリーシステムの団体IDが重複しています。"], 401);
         }
 
+        //スタッフのユーザーID重複チェック
+        $user_ids = array_column($staff_list, 'user_id');
+        $duplicates = array_unique(array_diff_assoc($user_ids, array_unique($user_ids)));
+        if (!empty($duplicates)) {
+            Log::debug(sprintf("validateOrgData duplicate user id. "));
+            return response()->json(["重複して登録されているユーザーが有ります。ユーザーID：".implode(', ', $duplicates)], 401);
+        }
+
+        //スタッフのuser_idが有効かチェックする
+        //user_idを判定してenableに結果を格納する      
+        $this->checkUserIdIsValid($staff_list,$t_users);
+        //有効なユーザーかをチェック
+        //staffListを確認し、enableが0のuser_idを抽出
+        $disable_staffs_ids = array_column(array_filter($staff_list, function($item) {
+                                    return isset($item['enable']) && $item['enable'] == 0 && $item['delete_flag'] == false;
+                                }), 'user_id');
+        if(!empty($disable_staffs_ids))
+        {
+            Log::debug(sprintf("validateOrgData disable user id exists. "));
+            return response()->json(["本システムに本登録されていないユーザー登録されていないユーザーが含まれています。ユーザーID：".implode(', ', $disable_staffs_ids)], 401);
+        }
+
+        //スタッフの入力が100件以下のチェック
+        $enable_staff_count = 0;        
+        foreach($staff_list as $staff)
+        {
+            if(!$staff['delete_flag'])
+            {
+                $enable_staff_count++;
+            }
+            if($enable_staff_count > 100)
+            {
+                break;
+            }
+        }
+        if($enable_staff_count > 100)
+        {
+            Log::debug(sprintf("validateOrgData More than 100 staff entered. "));
+            return response()->json(["登録できるスタッフの人数が、100名を超えています。
+            1団体に登録できるスタッフ数は、100名までです。"], 401);
+        }
+
         Log::debug(sprintf("validateOrgData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
+    }
+
+    //入力されたuser_idが有効かをDBへ問い合わせ、その結果をstaff_listのenableに格納する
+    private function checkUserIdIsValid(&$staff_list, T_users $t_users)
+    {
+        Log::debug("checkUserIdIsValid start.");
+        for($iStaff = 0;$iStaff < count($staff_list);$iStaff++)
+        {
+            if(isset($staff_list[$iStaff]['user_id']) && $staff_list[$iStaff]['delete_flag'] == false)
+            {
+                $user_id = $staff_list[$iStaff]['user_id'];
+                $is_valid = $t_users->getUserIdIsValid($user_id);
+                $staff_list[$iStaff]['enable'] = $is_valid[0]->{'is_valid'};
+            }
+        }
+        Log::debug($staff_list);
+        Log::debug("checkUserIdIsValid end.");
     }
 }

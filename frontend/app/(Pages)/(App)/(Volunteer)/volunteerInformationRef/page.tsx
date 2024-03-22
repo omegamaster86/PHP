@@ -158,7 +158,7 @@ export default function VolunteerInformationRef() {
         console.log(volunteerResponse.data.volHistData);
         for (let index = 0; index < volunteerResponse.data.volHistData.length; index++) {
           var hist_day_of_week_List = volunteerResponse.data.volHistData[index].day_of_week.split('');
-          var strData ='';
+          var strData = '';
           console.log(volunteerResponse.data.volHistData[index].day_of_week);
           for (let j = hist_day_of_week_List.length - 1; j >= 0; j--) {
             strData += hist_day_of_week_List[j];
@@ -570,85 +570,84 @@ export default function VolunteerInformationRef() {
                 </CustomTr>
               </CustomThead>
               {/* ボランティア参加履歴一覧テーブル明細表示 */}
-              <CustomTbody>
-                {volunteerHistoriesdata.map(
-                  (volunteerHistoriesdata) =>
-                    (volunteerHistoriesdata.tourn_type == activeTab || activeTab == 0) && (
-                      <CustomTr key={volunteerHistoriesdata.tourn_name}>
-                        {/* 大会名/イベント名 */}
-                        <CustomTd align='center'>
-                          <Link
-                            className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                            href={{
-                              pathname: '/tournamentRef',
-                              query: { tournId: volunteerHistoriesdata.tourn_id },
-                            }}
-                            rel='noopener noreferrer'
-                            target='_blank'
-                          >
-                            {volunteerHistoriesdata.tourn_name}
-                          </Link>
-                        </CustomTd>
-                        {/* 開催開始日 */}
-                        <CustomTd align='center'>{volunteerHistoriesdata.event_start_date}</CustomTd>
-                        {/* 開催終了日 */}
-                        <CustomTd align='center'>{volunteerHistoriesdata.event_end_date}</CustomTd>
-                        {/* 役割 */}
-                        <CustomTd align='center'>{volunteerHistoriesdata.role}</CustomTd>
-                        {/* AD */}
-                        <CustomTd align='center'>{volunteerHistoriesdata.ad}</CustomTd>
-                        {/* 祝日 */}
-                        <CustomTd align='center'>
-                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 7) && (
-                            <p className='text-small'>可</p>
-                          )}
-                        </CustomTd>
-                        {/* 日曜 */}
-                        <CustomTd align='center'>
-                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 0) && (
-                            <p className='text-small'>◯</p>
-                          )}
-                        </CustomTd>
-                        {/* 月曜 */}
-                        <CustomTd align='center'>
-                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 1) && (
-                            <p className='text-small'>◯</p>
-                          )}
-                        </CustomTd>
-                        {/* 火曜 */}
-                        <CustomTd align='center'>
-                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 2) && (
-                            <p className='text-small'>◯</p>
-                          )}
-                        </CustomTd>
-                        {/* 水曜 */}
-                        <CustomTd align='center'>
-                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 3) && (
-                            <p className='text-small'>◯</p>
-                          )}
-                        </CustomTd>
-                        {/* 木曜 */}
-                        <CustomTd align='center'>
-                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 4) && (
-                            <p className='text-small'>◯</p>
-                          )}
-                        </CustomTd>
-                        {/* 金曜 */}
-                        <CustomTd align='center'>
-                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 5) && (
-                            <p className='text-small'>◯</p>
-                          )}
-                        </CustomTd>
-                        {/* 土曜 */}
-                        <CustomTd align='center'>
-                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 6) && (
-                            <p className='text-small'>◯</p>
-                          )}
-                        </CustomTd>
-                      </CustomTr>
-                    ),
-                )}
-              </CustomTbody>
+              {volunteerHistoriesdata.map((volunteerHistoriesdata) =>
+                ((volunteerHistoriesdata.tourn_type + 1) == activeTab || activeTab == 0) && (
+                  <CustomTbody key={volunteerHistoriesdata.tourn_name}>
+                    <CustomTr>
+                      {/* 大会名/イベント名 */}
+                      <CustomTd align='center'>
+                        <Link
+                          className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                          href={{
+                            pathname: '/tournamentRef',
+                            query: { tournId: volunteerHistoriesdata.tourn_id },
+                          }}
+                          rel='noopener noreferrer'
+                          target='_blank'
+                        >
+                          {volunteerHistoriesdata.tourn_name}
+                        </Link>
+                      </CustomTd>
+                      {/* 開催開始日 */}
+                      <CustomTd align='center'>{volunteerHistoriesdata.event_start_date}</CustomTd>
+                      {/* 開催終了日 */}
+                      <CustomTd align='center'>{volunteerHistoriesdata.event_end_date}</CustomTd>
+                      {/* 役割 */}
+                      <CustomTd align='center'>{volunteerHistoriesdata.role}</CustomTd>
+                      {/* AD */}
+                      <CustomTd align='center'>{volunteerHistoriesdata.ad}</CustomTd>
+                      {/* 祝日 */}
+                      <CustomTd align='center'>
+                        {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 7) && (
+                          <p className='text-small'>可</p>
+                        )}
+                      </CustomTd>
+                      {/* 日曜 */}
+                      <CustomTd align='center'>
+                        {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 0) && (
+                          <p className='text-small'>◯</p>
+                        )}
+                      </CustomTd>
+                      {/* 月曜 */}
+                      <CustomTd align='center'>
+                        {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 1) && (
+                          <p className='text-small'>◯</p>
+                        )}
+                      </CustomTd>
+                      {/* 火曜 */}
+                      <CustomTd align='center'>
+                        {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 2) && (
+                          <p className='text-small'>◯</p>
+                        )}
+                      </CustomTd>
+                      {/* 水曜 */}
+                      <CustomTd align='center'>
+                        {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 3) && (
+                          <p className='text-small'>◯</p>
+                        )}
+                      </CustomTd>
+                      {/* 木曜 */}
+                      <CustomTd align='center'>
+                        {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 4) && (
+                          <p className='text-small'>◯</p>
+                        )}
+                      </CustomTd>
+                      {/* 金曜 */}
+                      <CustomTd align='center'>
+                        {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 5) && (
+                          <p className='text-small'>◯</p>
+                        )}
+                      </CustomTd>
+                      {/* 土曜 */}
+                      <CustomTd align='center'>
+                        {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 6) && (
+                          <p className='text-small'>◯</p>
+                        )}
+                      </CustomTd>
+                    </CustomTr>
+                  </CustomTbody>
+                ),
+              )}
             </CustomTable>
           </div>
         </div>

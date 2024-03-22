@@ -239,6 +239,7 @@ export default function OrgInfo() {
             },
           }));
 
+          setTableData([]); //団体更新から団体登録に遷移する場合を考慮して、一回空にし直す 20240321
           setTableData((prevData) => [
             ...prevData,
             {
