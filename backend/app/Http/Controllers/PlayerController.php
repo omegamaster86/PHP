@@ -750,13 +750,14 @@ class PlayerController extends Controller
         $result = $tPlayersData->insertPlayers($tPlayersData::$playerInfo); //DBに選手を登録 20240131
 
         //ユーザ種別の更新
-        $hoge = array();
-        $hoge['user_id'] = Auth::user()->user_id;
-        $hoge['input'] = '00000100'; //選手のユーザ種別を変更する
-        $user_type = Auth::user()->user_type;
         //右から3桁目が0のときだけユーザー種別を更新する
-        if(substr($user_type,6,1) == '0')
+        $user_type = (string)Auth::user()->user_type;
+        Log::debug("user_type_is_player = ".substr($user_type,-3,1));
+        if(mb_substr($user_type,-3,1) == '0')
         {
+            $hoge = array();
+            $hoge['user_id'] = Auth::user()->user_id;
+            $hoge['input'] = '00000100'; //選手のユーザ種別を変更する
             $t_users->updateUserTypeRegist($hoge);
         }
         $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
@@ -905,9 +906,9 @@ class PlayerController extends Controller
             $hoge['user_id'] = Auth::user()->user_id;
             $hoge['input'] = '00000100'; //選手のユーザ種別を変更する
             Log::debug($hoge);
-            $user_type = Auth::user()->user_type;
+            $user_type = (string)Auth::user()->user_type;
             //右から3桁目が1のときだけユーザー種別を更新する
-            if(substr($user_type,6,1) == '1')
+            if(substr($user_type,-3,1) == '1')
             {
                 $t_users->updateUserTypeDelete($hoge);
             }

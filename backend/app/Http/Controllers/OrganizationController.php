@@ -951,8 +951,10 @@ class OrganizationController extends Controller
             //スタッフの更新 20240318
             //前のスタッフをupdateする
             $updateCondition = $this->generateUpdateStaffCondition($organizationInfo);
-            $tOrganizationStaff->updateDeleteFlagInOrganizationStaff($updateCondition,$target_org_id);
-
+            if(!empty($updateCondition))
+            {
+                $tOrganizationStaff->updateDeleteFlagInOrganizationStaff($updateCondition,$target_org_id);
+            }
             //新しく入力されたスタッフをInsertする
             $replace_string = $this->generateInsertStaffValues($organizationInfo, $organizationInfo['formData']['org_id']);
             $tOrganizationStaff->insertOrganizationStaff($replace_string, $target_org_id);

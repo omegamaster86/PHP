@@ -1074,9 +1074,9 @@ class OrganizationPlayersController extends Controller
                         $user_info['user_id'] = $target_user_data[0]->{'user_id'};
                         $user_info['input'] = '100';
                         //$t_users->updateUserTypeRegist($user_info);
-                        $user_type = Auth::user()->user_type;
+                        $user_type = (string)Auth::user()->user_type;
                         //右から3桁目が0のときだけユーザー種別を更新する
-                        if(substr($user_type,6,1) == '0')
+                        if(substr($user_type,-3,1) == '0')
                         {
                             $t_users->updateUserTypeRegist($user_info);
                         }

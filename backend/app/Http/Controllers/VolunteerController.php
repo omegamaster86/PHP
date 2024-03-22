@@ -620,9 +620,9 @@ class VolunteerController extends Controller
         $hoge['user_id'] = Auth::user()->user_id;
         $hoge['input'] = '00000010'; //選手のユーザ種別を変更する
         Log::debug($hoge);
-        $user_type = Auth::user()->user_type;
+        $user_type = (string)Auth::user()->user_type;
         //右から2桁目が1のときだけユーザー種別を更新する
-        if(substr($user_type,7,1) == '1')
+        if(substr($user_type,-2,1) == '1')
         {
             $t_users->updateUserTypeDelete($hoge);
         }

@@ -292,7 +292,8 @@ class T_users extends Authenticatable
     //で指定すること
     public function updateUserTypeRegist($updateInfo)
     {
-        DB::enableQueryLog();
+        // Log::debug("updateUserTypeRegist start.");
+        // DB::enableQueryLog();
         DB::update('update `t_users`
                     set `user_type` = 
                     (
@@ -319,7 +320,8 @@ class T_users extends Authenticatable
                         $updateInfo['user_id'],
                         $updateInfo['user_id']
                     ]);
-        Log::debug(DB::getQueryLog());
+        //Log::debug(DB::getQueryLog());
+        // Log::debug("updateUserTypeRegist end.");
     }
 
     //ユーザー種別を更新する
@@ -329,6 +331,8 @@ class T_users extends Authenticatable
     //で指定すること
     public function updateUserTypeDelete($updateInfo)
     {
+        // DB::enableQueryLog();
+        // Log::debug("updateUserTypeDelete start.");
         DB::update('update `t_users`
                     set `user_type` = 
                     (
@@ -355,6 +359,8 @@ class T_users extends Authenticatable
                         $updateInfo['user_id'],
                         $updateInfo['user_id']
                     ]);
+        // Log::debug(DB::getQueryLog());
+        // Log::debug("updateUserTypeDelete end.");
     }
 
     //読み込んだcsvの情報を条件としてユーザー情報を取得
