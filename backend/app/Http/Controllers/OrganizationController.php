@@ -556,12 +556,6 @@ class OrganizationController extends Controller
     public function checkEditValue(
         Request $request,
         T_organizations $t_organizations,
-        /*
-        M_prefectures $m_prefectures,
-        T_users $t_users,
-        M_organization_class $m_organization_class,
-        M_staff_type $mStaffType
-        */
     ) {
         $organizationInfo = $request->all();
         include('Auth/ErrorMessages/ErrorMessages.php');
@@ -908,9 +902,9 @@ class OrganizationController extends Controller
             DB::commit();
             Log::debug(sprintf("storeOrgData end"));
             return response()->json(['result' => $lastInsertId]); //DBの結果を返す
-        } catch (\Throwable $e) {
-            Log::error($e);
+        } catch (\Throwable $e) {            
             DB::rollBack();
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
             return response()->json(["団体登録に失敗しました。"], 403);
         }
     }
@@ -981,8 +975,8 @@ class OrganizationController extends Controller
             Log::debug(sprintf("updateOrgData end"));
             return response()->json(['result' => true]); //DBの結果を返す
         } catch (\Throwable $e) {
-            Log::error($e);
-            DB::rollBack();            
+            DB::rollBack();
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());        
             return response()->json(["団体更新に失敗しました。"], 403);
         }
     }

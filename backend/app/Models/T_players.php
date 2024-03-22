@@ -249,62 +249,53 @@ class T_players extends Model
         return $registeredPlayer;
     }
 
+    //選手テーブルに挿入する
+    //選手登録時に使用
     public function insertPlayers($playersInfo)
     {
-        $result = "success";
-        DB::beginTransaction();
-        try {
-            DB::insert(
-                'insert into t_players
-                                (
-                                    user_id,
-                                    jara_player_id,
-                                    player_name,
-                                    date_of_birth,
-                                    sex_id,
-                                    height,
-                                    weight,		
-                                    side_info,
-                                    birth_country,
-                                    birth_prefecture,
-                                    residence_country,
-                                    residence_prefecture,
-                                    photo,
-                                    registered_time,
-                                    registered_user_id,
-                                    updated_time,
-                                    updated_user_id,
-                                    delete_flag
-                                )values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                [
-                    Auth::user()->user_id, //選手登録時に入力されるuserIdはログイン中のuserId
-                    $playersInfo['jara_player_id'],
-                    $playersInfo['player_name'],
-                    $playersInfo['date_of_birth'],
-                    $playersInfo['sex_id'],
-                    $playersInfo['height'],
-                    $playersInfo['weight'],
-                    $playersInfo['side_info'],
-                    $playersInfo['birth_country'],
-                    $playersInfo['birth_prefecture'],
-                    $playersInfo['residence_country'],
-                    $playersInfo['residence_prefecture'],
-                    $playersInfo['photo'],
-                    now()->format('Y-m-d H:i:s.u'),
-                    Auth::user()->user_id,
-                    now()->format('Y-m-d H:i:s.u'),
-                    Auth::user()->user_id,
-                    0
-                ]
-            );
-            DB::commit();
-            return "登録完了";
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            Log::debug($e);
-            $result = "failed";
-            return response()->json(["失敗しました。ユーザーサポートにお問い合わせください。"], 500);
-        }
+        DB::insert(
+            'insert into t_players
+                            (
+                                user_id,
+                                jara_player_id,
+                                player_name,
+                                date_of_birth,
+                                sex_id,
+                                height,
+                                weight,		
+                                side_info,
+                                birth_country,
+                                birth_prefecture,
+                                residence_country,
+                                residence_prefecture,
+                                photo,
+                                registered_time,
+                                registered_user_id,
+                                updated_time,
+                                updated_user_id,
+                                delete_flag
+                            )values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [
+                Auth::user()->user_id, //選手登録時に入力されるuserIdはログイン中のuserId
+                $playersInfo['jara_player_id'],
+                $playersInfo['player_name'],
+                $playersInfo['date_of_birth'],
+                $playersInfo['sex_id'],
+                $playersInfo['height'],
+                $playersInfo['weight'],
+                $playersInfo['side_info'],
+                $playersInfo['birth_country'],
+                $playersInfo['birth_prefecture'],
+                $playersInfo['residence_country'],
+                $playersInfo['residence_prefecture'],
+                $playersInfo['photo'],
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                0
+            ]
+        );
     }
 
     //PlayerInformationResponseを引数としてinsertを実行する

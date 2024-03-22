@@ -192,7 +192,7 @@ class PlayerInfoAlignmentController extends Controller
         catch(\Throwable $e)
         {
             DB::rollBack();
-            Log::error($e->getMessage());
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
             return response()->json(['result' => false,'errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }

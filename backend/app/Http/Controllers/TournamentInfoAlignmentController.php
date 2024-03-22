@@ -372,7 +372,7 @@ class TournamentInfoAlignmentController extends Controller
             return response()->json(['result' => $inputData['csvDataList']]); //DBの結果を返す
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error($e->getMessage());
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }

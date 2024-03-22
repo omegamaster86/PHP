@@ -309,136 +309,136 @@ class T_raceResultRecord extends Model
         return $racesResultRecord;
     }
 
-    public function insertRaceResultRecord($raceResultRecordInfo)
-    {
-        $result = "success";
-        DB::beginTransaction();
-        try {
-            DB::insert(
-                'insert into t_race_result_record
-                (
-                    `race_result_record_id`, 
-                    `player_id`, 
-                    `jara_player_id`, 
-                    `player_name`, 
-                    `entrysystem_tourn_id`,
-                    `tourn_id`, 
-                    `tourn_name`, 
-                    `race_id`, 
-                    `entrysystem_race_id`, 
-                    `race_number`, 
-                    `race_name`, 
-                    `org_id`, 
-                    `entrysystem_org_id`, 
-                    `org_name`, 
-                    `crew_name`, 
-                    `by_group`, 
-                    `event_id`, 
-                    `event_name`, 
-                    `range`, 
-                    `rank`, 
-                    `laptime_500m`, 
-                    `laptime_1000m`, 
-                    `laptime_1500m`, 
-                    `laptime_2000m`, 
-                    `final_time`, 
-                    `stroke_rate_avg`, 
-                    `stroke_rat_500m`, 
-                    `stroke_rat_1000m`, 
-                    `stroke_rat_1500m`, 
-                    `stroke_rat_2000m`, 
-                    `heart_rate_avg`, 
-                    `heart_rate_500m`, 
-                    `heart_rate_1000m`, 
-                    `heart_rate_1500m`, 
-                    `heart_rate_2000m`, 
-                    `official`, 
-                    `attendance`, 
-                    `ergo_weight`, 
-                    `player_height`, 
-                    `player_weight`, 
-                    `seat_number`, 
-                    `seat_name`, 
-                    `race_result_record_name`, 
-                    `start_datetime`, 
-                    `wind_speed_2000m_point`, 
-                    `wind_direction_2000m_point`, 
-                    `wind_speed_1000m_point`, 
-                    `wind_direction_1000m_point`, 
-                    `registered_time`, 
-                    `registered_user_id`, 
-                    `updated_time`, 
-                    `updated_user_id`, 
-                    `delete_flag`
-                    )VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-                [
-                    $raceResultRecordInfo['race_result_record_id'],
-                    $raceResultRecordInfo['player_id'],
-                    $raceResultRecordInfo['jara_player_id'],
-                    $raceResultRecordInfo['player_name'],
-                    $raceResultRecordInfo['entrysystem_tourn_id'],
-                    $raceResultRecordInfo['tourn_id'],
-                    $raceResultRecordInfo['tourn_name'],
-                    $raceResultRecordInfo['race_id'],
-                    $raceResultRecordInfo['entrysystem_race_id'],
-                    $raceResultRecordInfo['race_number'],
-                    $raceResultRecordInfo['race_name'],
-                    $raceResultRecordInfo['org_id'],
-                    $raceResultRecordInfo['entrysystem_org_id'],
-                    $raceResultRecordInfo['org_name'],
-                    $raceResultRecordInfo['crew_name'],
-                    $raceResultRecordInfo['by_group'],
-                    $raceResultRecordInfo['event_id'],
-                    $raceResultRecordInfo['event_name'],
-                    $raceResultRecordInfo['range'],
-                    $raceResultRecordInfo['rank'],
-                    $raceResultRecordInfo['laptime_500m'],
-                    $raceResultRecordInfo['laptime_1000m'],
-                    $raceResultRecordInfo['laptime_1500m'],
-                    $raceResultRecordInfo['laptime_2000m'],
-                    $raceResultRecordInfo['final_time'],
-                    $raceResultRecordInfo['stroke_rate_avg'],
-                    $raceResultRecordInfo['stroke_rat_500m'],
-                    $raceResultRecordInfo['stroke_rat_1000m'],
-                    $raceResultRecordInfo['stroke_rat_1500m'],
-                    $raceResultRecordInfo['stroke_rat_2000m'],
-                    $raceResultRecordInfo['heart_rate_avg'],
-                    $raceResultRecordInfo['heart_rate_500m'],
-                    $raceResultRecordInfo['heart_rate_1000m'],
-                    $raceResultRecordInfo['heart_rate_1500m'],
-                    $raceResultRecordInfo['heart_rate_2000m'],
-                    $raceResultRecordInfo['official'],
-                    $raceResultRecordInfo['attendance'],
-                    $raceResultRecordInfo['ergo_weight'],
-                    $raceResultRecordInfo['player_height'],
-                    $raceResultRecordInfo['player_weight'],
-                    $raceResultRecordInfo['seat_number'],
-                    $raceResultRecordInfo['seat_name'],
-                    $raceResultRecordInfo['race_result_record_name'],
-                    $raceResultRecordInfo['start_datetime'],
-                    $raceResultRecordInfo['wind_speed_2000m_point'],
-                    $raceResultRecordInfo['wind_direction_2000m_point'],
-                    $raceResultRecordInfo['wind_speed_1000m_point'],
-                    $raceResultRecordInfo['wind_direction_1000m_point'],
-                    now()->format('Y-m-d H:i:s.u'),
-                    Auth::user()->user_id,
-                    now()->format('Y-m-d H:i:s.u'),
-                    Auth::user()->user_id,
-                    $raceResultRecordInfo['delete_flag']
-                ]
-            );
-            DB::commit();
-            return "登録完了";
-        } catch (\Throwable $e) {
-            dd($e);
-            // dd($request->all());
-            dd("stop");
-            DB::rollBack();
+    // public function insertRaceResultRecord($raceResultRecordInfo)
+    // {
+    //     $result = "success";
+    //     DB::beginTransaction();
+    //     try {
+    //         DB::insert(
+    //             'insert into t_race_result_record
+    //             (
+    //                 `race_result_record_id`, 
+    //                 `player_id`, 
+    //                 `jara_player_id`, 
+    //                 `player_name`, 
+    //                 `entrysystem_tourn_id`,
+    //                 `tourn_id`, 
+    //                 `tourn_name`, 
+    //                 `race_id`, 
+    //                 `entrysystem_race_id`, 
+    //                 `race_number`, 
+    //                 `race_name`, 
+    //                 `org_id`, 
+    //                 `entrysystem_org_id`, 
+    //                 `org_name`, 
+    //                 `crew_name`, 
+    //                 `by_group`, 
+    //                 `event_id`, 
+    //                 `event_name`, 
+    //                 `range`, 
+    //                 `rank`, 
+    //                 `laptime_500m`, 
+    //                 `laptime_1000m`, 
+    //                 `laptime_1500m`, 
+    //                 `laptime_2000m`, 
+    //                 `final_time`, 
+    //                 `stroke_rate_avg`, 
+    //                 `stroke_rat_500m`, 
+    //                 `stroke_rat_1000m`, 
+    //                 `stroke_rat_1500m`, 
+    //                 `stroke_rat_2000m`, 
+    //                 `heart_rate_avg`, 
+    //                 `heart_rate_500m`, 
+    //                 `heart_rate_1000m`, 
+    //                 `heart_rate_1500m`, 
+    //                 `heart_rate_2000m`, 
+    //                 `official`, 
+    //                 `attendance`, 
+    //                 `ergo_weight`, 
+    //                 `player_height`, 
+    //                 `player_weight`, 
+    //                 `seat_number`, 
+    //                 `seat_name`, 
+    //                 `race_result_record_name`, 
+    //                 `start_datetime`, 
+    //                 `wind_speed_2000m_point`, 
+    //                 `wind_direction_2000m_point`, 
+    //                 `wind_speed_1000m_point`, 
+    //                 `wind_direction_1000m_point`, 
+    //                 `registered_time`, 
+    //                 `registered_user_id`, 
+    //                 `updated_time`, 
+    //                 `updated_user_id`, 
+    //                 `delete_flag`
+    //                 )VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+    //             [
+    //                 $raceResultRecordInfo['race_result_record_id'],
+    //                 $raceResultRecordInfo['player_id'],
+    //                 $raceResultRecordInfo['jara_player_id'],
+    //                 $raceResultRecordInfo['player_name'],
+    //                 $raceResultRecordInfo['entrysystem_tourn_id'],
+    //                 $raceResultRecordInfo['tourn_id'],
+    //                 $raceResultRecordInfo['tourn_name'],
+    //                 $raceResultRecordInfo['race_id'],
+    //                 $raceResultRecordInfo['entrysystem_race_id'],
+    //                 $raceResultRecordInfo['race_number'],
+    //                 $raceResultRecordInfo['race_name'],
+    //                 $raceResultRecordInfo['org_id'],
+    //                 $raceResultRecordInfo['entrysystem_org_id'],
+    //                 $raceResultRecordInfo['org_name'],
+    //                 $raceResultRecordInfo['crew_name'],
+    //                 $raceResultRecordInfo['by_group'],
+    //                 $raceResultRecordInfo['event_id'],
+    //                 $raceResultRecordInfo['event_name'],
+    //                 $raceResultRecordInfo['range'],
+    //                 $raceResultRecordInfo['rank'],
+    //                 $raceResultRecordInfo['laptime_500m'],
+    //                 $raceResultRecordInfo['laptime_1000m'],
+    //                 $raceResultRecordInfo['laptime_1500m'],
+    //                 $raceResultRecordInfo['laptime_2000m'],
+    //                 $raceResultRecordInfo['final_time'],
+    //                 $raceResultRecordInfo['stroke_rate_avg'],
+    //                 $raceResultRecordInfo['stroke_rat_500m'],
+    //                 $raceResultRecordInfo['stroke_rat_1000m'],
+    //                 $raceResultRecordInfo['stroke_rat_1500m'],
+    //                 $raceResultRecordInfo['stroke_rat_2000m'],
+    //                 $raceResultRecordInfo['heart_rate_avg'],
+    //                 $raceResultRecordInfo['heart_rate_500m'],
+    //                 $raceResultRecordInfo['heart_rate_1000m'],
+    //                 $raceResultRecordInfo['heart_rate_1500m'],
+    //                 $raceResultRecordInfo['heart_rate_2000m'],
+    //                 $raceResultRecordInfo['official'],
+    //                 $raceResultRecordInfo['attendance'],
+    //                 $raceResultRecordInfo['ergo_weight'],
+    //                 $raceResultRecordInfo['player_height'],
+    //                 $raceResultRecordInfo['player_weight'],
+    //                 $raceResultRecordInfo['seat_number'],
+    //                 $raceResultRecordInfo['seat_name'],
+    //                 $raceResultRecordInfo['race_result_record_name'],
+    //                 $raceResultRecordInfo['start_datetime'],
+    //                 $raceResultRecordInfo['wind_speed_2000m_point'],
+    //                 $raceResultRecordInfo['wind_direction_2000m_point'],
+    //                 $raceResultRecordInfo['wind_speed_1000m_point'],
+    //                 $raceResultRecordInfo['wind_direction_1000m_point'],
+    //                 now()->format('Y-m-d H:i:s.u'),
+    //                 Auth::user()->user_id,
+    //                 now()->format('Y-m-d H:i:s.u'),
+    //                 Auth::user()->user_id,
+    //                 $raceResultRecordInfo['delete_flag']
+    //             ]
+    //         );
+    //         DB::commit();
+    //         return "登録完了";
+    //     } catch (\Throwable $e) {
+    //         dd($e);
+    //         // dd($request->all());
+    //         dd("stop");
+    //         DB::rollBack();
 
-            $result = "failed";
-            return $result;
-        }
-    }
+    //         $result = "failed";
+    //         return $result;
+    //     }
+    // }
 
     //出漕結果情報一覧のinterfaceでinsert実行
     //登録日時、更新日時は「current_time」
@@ -509,83 +509,83 @@ class T_raceResultRecord extends Model
         return $insertId;
     }
 
-    public function updateRaceResultRecord($raceResultRecordInfo)
-    {
-        //dd($raceResultRecordInfo['tourn_id'],$raceResultRecordInfo['delete_flag']);
-        $result = "success";
-        DB::beginTransaction();
-        try {
-            DB::update(
-                'update t_race_result_record set `player_id`=?,`jara_player_id`=?,`player_name`=?,`entrysystem_tourn_id`=?,`tourn_id`=?,`tourn_name`=?,`race_id`=?,`entrysystem_race_id`=?,`race_number`=?,`race_name`=?,`org_id`=?, `entrysystem_org_id`=?,`org_name`=?,`crew_name`=?,`by_group`=?,`event_id`=?,`event_name`=?,`range`=?,`rank`=?,`laptime_500m`=?,`laptime_1000m`=?,`laptime_1500m`=?,`laptime_2000m`=?,`final_time`=?, `stroke_rate_avg`=?,`stroke_rat_500m`=?,`stroke_rat_1000m`=?,`stroke_rat_1500m`=?,`stroke_rat_2000m`=?,`heart_rate_avg`=?,`heart_rate_500m`=?,`heart_rate_1000m`=?,`heart_rate_1500m`=?,`heart_rate_2000m`=?, `official`=?,`attendance`=?,`ergo_weight`=?,`player_height`=?,`player_weight`=?,`seat_number`=?,`seat_name`=?,`race_result_record_name`=?,`start_datetime`=?,`wind_speed_2000m_point`=?,`wind_direction_2000m_point`=?,`wind_speed_1000m_point`=?,`wind_direction_1000m_point`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? WHERE `tourn_id` = ?',
-                [
-                    $raceResultRecordInfo['player_id'],
-                    $raceResultRecordInfo['jara_player_id'],
-                    $raceResultRecordInfo['player_name'],
-                    $raceResultRecordInfo['entrysystem_tourn_id'],
-                    $raceResultRecordInfo['tourn_id'],
-                    $raceResultRecordInfo['tourn_name'],
-                    $raceResultRecordInfo['race_id'],
-                    $raceResultRecordInfo['entrysystem_race_id'],
-                    $raceResultRecordInfo['race_number'],
-                    $raceResultRecordInfo['race_name'],
-                    $raceResultRecordInfo['org_id'],
-                    $raceResultRecordInfo['entrysystem_org_id'],
-                    $raceResultRecordInfo['org_name'],
-                    $raceResultRecordInfo['crew_name'],
-                    $raceResultRecordInfo['by_group'],
-                    $raceResultRecordInfo['event_id'],
-                    $raceResultRecordInfo['event_name'],
-                    $raceResultRecordInfo['range'],
-                    $raceResultRecordInfo['rank'],
-                    $raceResultRecordInfo['laptime_500m'],
-                    $raceResultRecordInfo['laptime_1000m'],
-                    $raceResultRecordInfo['laptime_1500m'],
-                    $raceResultRecordInfo['laptime_2000m'],
-                    $raceResultRecordInfo['final_time'],
-                    $raceResultRecordInfo['stroke_rate_avg'],
-                    $raceResultRecordInfo['stroke_rat_500m'],
-                    $raceResultRecordInfo['stroke_rat_1000m'],
-                    $raceResultRecordInfo['stroke_rat_1500m'],
-                    $raceResultRecordInfo['stroke_rat_2000m'],
-                    $raceResultRecordInfo['heart_rate_avg'],
-                    $raceResultRecordInfo['heart_rate_500m'],
-                    $raceResultRecordInfo['heart_rate_1000m'],
-                    $raceResultRecordInfo['heart_rate_1500m'],
-                    $raceResultRecordInfo['heart_rate_2000m'],
-                    $raceResultRecordInfo['official'],
-                    $raceResultRecordInfo['attendance'],
-                    $raceResultRecordInfo['ergo_weight'],
-                    $raceResultRecordInfo['player_height'],
-                    $raceResultRecordInfo['player_weight'],
-                    $raceResultRecordInfo['seat_number'],
-                    $raceResultRecordInfo['seat_name'],
-                    $raceResultRecordInfo['race_result_record_name'],
-                    $raceResultRecordInfo['start_datetime'],
-                    $raceResultRecordInfo['wind_speed_2000m_point'],
-                    $raceResultRecordInfo['wind_direction_2000m_point'],
-                    $raceResultRecordInfo['wind_speed_1000m_point'],
-                    $raceResultRecordInfo['wind_direction_1000m_point'],
-                    now()->format('Y-m-d H:i:s.u'),
-                    1, //Auth::user()->user_id,
-                    now()->format('Y-m-d H:i:s.u'),
-                    1, //Auth::user()->user_id,
-                    $raceResultRecordInfo['delete_flag'],
-                    $raceResultRecordInfo['tourn_id'], //where条件
-                ]
-            );
+    // public function updateRaceResultRecord($raceResultRecordInfo)
+    // {
+    //     //dd($raceResultRecordInfo['tourn_id'],$raceResultRecordInfo['delete_flag']);
+    //     $result = "success";
+    //     DB::beginTransaction();
+    //     try {
+    //         DB::update(
+    //             'update t_race_result_record set `player_id`=?,`jara_player_id`=?,`player_name`=?,`entrysystem_tourn_id`=?,`tourn_id`=?,`tourn_name`=?,`race_id`=?,`entrysystem_race_id`=?,`race_number`=?,`race_name`=?,`org_id`=?, `entrysystem_org_id`=?,`org_name`=?,`crew_name`=?,`by_group`=?,`event_id`=?,`event_name`=?,`range`=?,`rank`=?,`laptime_500m`=?,`laptime_1000m`=?,`laptime_1500m`=?,`laptime_2000m`=?,`final_time`=?, `stroke_rate_avg`=?,`stroke_rat_500m`=?,`stroke_rat_1000m`=?,`stroke_rat_1500m`=?,`stroke_rat_2000m`=?,`heart_rate_avg`=?,`heart_rate_500m`=?,`heart_rate_1000m`=?,`heart_rate_1500m`=?,`heart_rate_2000m`=?, `official`=?,`attendance`=?,`ergo_weight`=?,`player_height`=?,`player_weight`=?,`seat_number`=?,`seat_name`=?,`race_result_record_name`=?,`start_datetime`=?,`wind_speed_2000m_point`=?,`wind_direction_2000m_point`=?,`wind_speed_1000m_point`=?,`wind_direction_1000m_point`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? WHERE `tourn_id` = ?',
+    //             [
+    //                 $raceResultRecordInfo['player_id'],
+    //                 $raceResultRecordInfo['jara_player_id'],
+    //                 $raceResultRecordInfo['player_name'],
+    //                 $raceResultRecordInfo['entrysystem_tourn_id'],
+    //                 $raceResultRecordInfo['tourn_id'],
+    //                 $raceResultRecordInfo['tourn_name'],
+    //                 $raceResultRecordInfo['race_id'],
+    //                 $raceResultRecordInfo['entrysystem_race_id'],
+    //                 $raceResultRecordInfo['race_number'],
+    //                 $raceResultRecordInfo['race_name'],
+    //                 $raceResultRecordInfo['org_id'],
+    //                 $raceResultRecordInfo['entrysystem_org_id'],
+    //                 $raceResultRecordInfo['org_name'],
+    //                 $raceResultRecordInfo['crew_name'],
+    //                 $raceResultRecordInfo['by_group'],
+    //                 $raceResultRecordInfo['event_id'],
+    //                 $raceResultRecordInfo['event_name'],
+    //                 $raceResultRecordInfo['range'],
+    //                 $raceResultRecordInfo['rank'],
+    //                 $raceResultRecordInfo['laptime_500m'],
+    //                 $raceResultRecordInfo['laptime_1000m'],
+    //                 $raceResultRecordInfo['laptime_1500m'],
+    //                 $raceResultRecordInfo['laptime_2000m'],
+    //                 $raceResultRecordInfo['final_time'],
+    //                 $raceResultRecordInfo['stroke_rate_avg'],
+    //                 $raceResultRecordInfo['stroke_rat_500m'],
+    //                 $raceResultRecordInfo['stroke_rat_1000m'],
+    //                 $raceResultRecordInfo['stroke_rat_1500m'],
+    //                 $raceResultRecordInfo['stroke_rat_2000m'],
+    //                 $raceResultRecordInfo['heart_rate_avg'],
+    //                 $raceResultRecordInfo['heart_rate_500m'],
+    //                 $raceResultRecordInfo['heart_rate_1000m'],
+    //                 $raceResultRecordInfo['heart_rate_1500m'],
+    //                 $raceResultRecordInfo['heart_rate_2000m'],
+    //                 $raceResultRecordInfo['official'],
+    //                 $raceResultRecordInfo['attendance'],
+    //                 $raceResultRecordInfo['ergo_weight'],
+    //                 $raceResultRecordInfo['player_height'],
+    //                 $raceResultRecordInfo['player_weight'],
+    //                 $raceResultRecordInfo['seat_number'],
+    //                 $raceResultRecordInfo['seat_name'],
+    //                 $raceResultRecordInfo['race_result_record_name'],
+    //                 $raceResultRecordInfo['start_datetime'],
+    //                 $raceResultRecordInfo['wind_speed_2000m_point'],
+    //                 $raceResultRecordInfo['wind_direction_2000m_point'],
+    //                 $raceResultRecordInfo['wind_speed_1000m_point'],
+    //                 $raceResultRecordInfo['wind_direction_1000m_point'],
+    //                 now()->format('Y-m-d H:i:s.u'),
+    //                 1, //Auth::user()->user_id,
+    //                 now()->format('Y-m-d H:i:s.u'),
+    //                 1, //Auth::user()->user_id,
+    //                 $raceResultRecordInfo['delete_flag'],
+    //                 $raceResultRecordInfo['tourn_id'], //where条件
+    //             ]
+    //         );
 
-            DB::commit();
-            return $result;
-        } catch (\Throwable $e) {
-            dd($e);
-            // dd($request->all());
-            dd("stop");
-            DB::rollBack();
+    //         DB::commit();
+    //         return $result;
+    //     } catch (\Throwable $e) {
+    //         dd($e);
+    //         // dd($request->all());
+    //         dd("stop");
+    //         DB::rollBack();
 
-            $result = "failed";
-            return $result;
-        }
-    }
+    //         $result = "failed";
+    //         return $result;
+    //     }
+    // }
 
     public function updateRaceResultRecordsResponse($raceResultRecordsResponse)
     {
@@ -618,30 +618,30 @@ class T_raceResultRecord extends Model
                     ,$raceResultRecordsResponse);
     }
 
-    public function deleteRaceResultRecord_playerId($raceResultRecordInfo)
-    {
-        $result = "success";
-        DB::beginTransaction();
-        try {
-            DB::update(
-                'update t_race_result_record set `registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where `player_id` = ?',
-                [
-                    now()->format('Y-m-d H:i:s.u'),
-                    Auth::user()->user_id,
-                    now()->format('Y-m-d H:i:s.u'),
-                    Auth::user()->user_id,
-                    1,
-                    $raceResultRecordInfo['player_id'], //where条件
-                ]
-            );
+    // public function deleteRaceResultRecord_playerId($raceResultRecordInfo)
+    // {
+    //     $result = "success";
+    //     DB::beginTransaction();
+    //     try {
+    //         DB::update(
+    //             'update t_race_result_record set `registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where `player_id` = ?',
+    //             [
+    //                 now()->format('Y-m-d H:i:s.u'),
+    //                 Auth::user()->user_id,
+    //                 now()->format('Y-m-d H:i:s.u'),
+    //                 Auth::user()->user_id,
+    //                 1,
+    //                 $raceResultRecordInfo['player_id'], //where条件
+    //             ]
+    //         );
 
-            DB::commit();
-            return $result;
-        } catch (\Throwable $e) {
-            $result = "failed";
-            return $result;
-        }
-    }
+    //         DB::commit();
+    //         return $result;
+    //     } catch (\Throwable $e) {
+    //         $result = "failed";
+    //         return $result;
+    //     }
+    // }
 
     //団体IDを条件として出漕結果記録テーブル内の大会IDを取得する
     public function getTournamentIdForResultsRecord($targetOrgId)

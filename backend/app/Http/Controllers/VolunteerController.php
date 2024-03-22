@@ -620,7 +620,12 @@ class VolunteerController extends Controller
         $hoge['user_id'] = Auth::user()->user_id;
         $hoge['input'] = '00000010'; //選手のユーザ種別を変更する
         Log::debug($hoge);
-        $t_users->updateUserTypeDelete($hoge);
+        $user_type = Auth::user()->user_type;
+        //右から2桁目が1のときだけユーザー種別を更新する
+        if(substr($user_type,7,1) == '1')
+        {
+            $t_users->updateUserTypeDelete($hoge);
+        }
 
         Log::debug(sprintf("deleteVolunteer end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
