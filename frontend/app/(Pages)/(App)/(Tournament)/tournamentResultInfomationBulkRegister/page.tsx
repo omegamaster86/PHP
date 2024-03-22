@@ -932,7 +932,8 @@ export default function TournamentResultInfomationBulkRegister() {
           <InputLabel label='大会開催年（西暦）' required />
           <div className='flex flex-row justify-start'>
             <CustomYearPicker
-              placeHolder={new Date().toLocaleDateString('ja-JP').slice(0, 4)}
+              // placeHolder={new Date().toLocaleDateString('ja-JP').slice(0, 4)}
+              placeHolder={'YYYY'}
               readonly={tournStartYearActivFlag}
               selectedDate={formData?.eventYear}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
