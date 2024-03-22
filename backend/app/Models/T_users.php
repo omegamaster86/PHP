@@ -177,56 +177,44 @@ class T_users extends Authenticatable
         return $users;
     }
 
+    //ユーザー更新
     public function updateUserData($targetUserId)
     {
-        Log::debug(Auth::user()->user_id);
-        $result = "success";
-        DB::beginTransaction();
-        try {
-            DB::update(
-                'update `t_users` set 
-                `user_id`=?,
-                `user_name`=?,
-                `mailaddress`=?,
-                `sex`=?,
-                `residence_country`=?,
-                `residence_prefecture`=?,
-                `date_of_birth`=?,
-                `height`=?,
-                `weight`=?,
-                `user_type`=?,
-                `photo`=?,
-                `updated_time`=?,
-                `updated_user_id`=?,
-                `delete_flag`=?
-                where user_id = ?',
-                [
-                    $targetUserId['user_id'],
-                    $targetUserId['user_name'],
-                    $targetUserId['mailaddress'],
-                    $targetUserId['sex'],
-                    $targetUserId['residence_country'],
-                    $targetUserId['residence_prefecture'],
-                    $targetUserId['date_of_birth'],
-                    $targetUserId['height'],
-                    $targetUserId['weight'],
-                    $targetUserId['user_type'],
-                    $targetUserId['photo'],
-                    NOW()->format('Y-m-d H:i:s.u'),
-                    Auth::user()->user_id,
-                    $targetUserId['delete_flag'],
-                    $targetUserId['user_id'], //where条件
-                ]
-            );
-
-            DB::commit();
-            return $result;
-        } catch (\Throwable $e) {
-            DB::rollBack();
-
-            $result = "failed";
-            return $result;
-        }
+        DB::update(
+            'update `t_users` set 
+            `user_id`=?,
+            `user_name`=?,
+            `mailaddress`=?,
+            `sex`=?,
+            `residence_country`=?,
+            `residence_prefecture`=?,
+            `date_of_birth`=?,
+            `height`=?,
+            `weight`=?,
+            `user_type`=?,
+            `photo`=?,
+            `updated_time`=?,
+            `updated_user_id`=?,
+            `delete_flag`=?
+            where user_id = ?',
+            [
+                $targetUserId['user_id'],
+                $targetUserId['user_name'],
+                $targetUserId['mailaddress'],
+                $targetUserId['sex'],
+                $targetUserId['residence_country'],
+                $targetUserId['residence_prefecture'],
+                $targetUserId['date_of_birth'],
+                $targetUserId['height'],
+                $targetUserId['weight'],
+                $targetUserId['user_type'],
+                $targetUserId['photo'],
+                NOW()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                $targetUserId['delete_flag'],
+                $targetUserId['user_id'], //where条件
+            ]
+        );
     }
 
     //UserResponseを引数としてupdateを実行
@@ -304,6 +292,8 @@ class T_users extends Authenticatable
     //で指定すること
     public function updateUserTypeRegist($updateInfo)
     {
+        // Log::debug("updateUserTypeRegist start.");
+        // DB::enableQueryLog();
         DB::update('update `t_users`
                     set `user_type` = 
                     (
@@ -330,6 +320,8 @@ class T_users extends Authenticatable
                         $updateInfo['user_id'],
                         $updateInfo['user_id']
                     ]);
+        //Log::debug(DB::getQueryLog());
+        // Log::debug("updateUserTypeRegist end.");
     }
 
     //ユーザー種別を更新する
@@ -339,6 +331,8 @@ class T_users extends Authenticatable
     //で指定すること
     public function updateUserTypeDelete($updateInfo)
     {
+        // DB::enableQueryLog();
+        // Log::debug("updateUserTypeDelete start.");
         DB::update('update `t_users`
                     set `user_type` = 
                     (
@@ -365,6 +359,8 @@ class T_users extends Authenticatable
                         $updateInfo['user_id'],
                         $updateInfo['user_id']
                     ]);
+        // Log::debug(DB::getQueryLog());
+        // Log::debug("updateUserTypeDelete end.");
     }
 
     //読み込んだcsvの情報を条件としてユーザー情報を取得

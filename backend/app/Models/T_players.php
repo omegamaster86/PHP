@@ -265,6 +265,8 @@ class T_players extends Model
         return $registeredPlayer;
     }
 
+    //選手テーブルに挿入する
+    //選手登録時に使用
     public function insertPlayers($playersInfo)
     {
         $result = "success";

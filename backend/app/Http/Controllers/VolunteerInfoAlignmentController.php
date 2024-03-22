@@ -1085,6 +1085,7 @@ class VolunteerInfoAlignmentController extends Controller
                 catch(\Throwable $e)
                 {
                     DB::rollBack();
+                    Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
                     return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
                 }
             }
