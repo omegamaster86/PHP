@@ -92,7 +92,12 @@ export default function TeamSearch() {
       .post('/orgSearch', formData)
       .then((response) => {
         const data = response.data.result;
-        // console.log(data);
+        for (let index = 0; index < data.length; index++) {
+          if (data[index].orgTypeName == 'JARA・県ボ' || data[index].orgTypeName == 'JARA' || data[index].orgTypeName == '県ボ') {
+            data[index].orgTypeName = '正規';
+          }
+        }
+        console.log(data);
         if (data.length > 100) {
           window.alert('検索結果が100件を超えました、上位100件を表示しています。');
         }
@@ -130,7 +135,7 @@ export default function TeamSearch() {
         //団体種別マスターの取得 20240209
         // const orgType = await axios.get<OrgType[]>('/orgType');
         const orgType = await axios.get('/getOrganizationTypeData');
-        // console.log(orgType.data);
+        console.log(orgType.data);
         const orgTypeList = orgType.data.map(({ org_type_id, org_type }: { org_type_id: number; org_type: string }) => ({ id: org_type_id, name: org_type }));
         setOrgTypeOptions(orgTypeList);
 
@@ -138,6 +143,7 @@ export default function TeamSearch() {
         // const orgClass = await axios.get<OrgClass[]>('/orgClass');
         const orgClass = await axios.get('/getOrganizationClass');
         const orgClassList = orgClass.data.map(({ org_class_id, org_class_name }: { org_class_id: number; org_class_name: string }) => ({ id: org_class_id, name: org_class_name }));
+        console.log(orgClassList);
         setOrgClassOptions(orgClassList);
 
         const prefectures = await axios.get('/getPrefecures'); //都道府県マスターの取得 20240208
@@ -267,7 +273,7 @@ export default function TeamSearch() {
               <div className='w-full flex flex-col justify-between gap-[8px]'>
                 <CustomDropdown
                   id='団体区分'
-                  label='団体区分' 
+                  label='団体区分'
                   options={orgClassOptions.map((orgClass) => ({
                     value: orgClass.name,
                     key: orgClass.id,
@@ -407,7 +413,7 @@ export default function TeamSearch() {
                     rel='noopener noreferrer'
                     target='_blank'
                   >
-                    {org.org_class}
+                    {org.org_id}
                   </Link>
                 </CustomTd>
                 {/* 団体名 */}
