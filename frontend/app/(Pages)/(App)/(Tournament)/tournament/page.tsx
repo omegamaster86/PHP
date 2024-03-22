@@ -475,7 +475,7 @@ export default function Tournament() {
 
               axios
                 // .post('http://localhost:3100/', registerData)
-                .post('/tournamentRegistOrUpdateValidationCheck', { "entrysystem_tourn_id": tournamentFormData.entrysystem_tourn_id, "tourn_type": tournamentFormData.tourn_type, "sponsor_org_id": tournamentFormData.sponsor_org_id, "mode": mode, "race_data": tableData})
+                .post('/tournamentRegistOrUpdateValidationCheck', { "entrysystem_tourn_id": tournamentFormData.entrysystem_tourn_id, "tourn_type": tournamentFormData.tourn_type, "sponsor_org_id": tournamentFormData.sponsor_org_id, "mode": prevMode, "race_data": tableData})
                 .then((response) => {
                   const storeTournamentInfo = async () => {
                     const registerData = {
@@ -564,6 +564,8 @@ export default function Tournament() {
                     error?.response?.data?.response_tourn_type && setTournNameErrorMessage([error?.response?.data?.response_tourn_type]);
                     error?.response?.data?.response_org_id && setSponsorOrgIdErrorMessage([error?.response?.data?.response_org_id]);
                     error?.response?.data?.response_race_id && setRaceNumberErrorMessage(error?.response?.data?.response_race_id);
+                }).finally(() => {
+                  setDisplayFlg(true);
                 });
 
 

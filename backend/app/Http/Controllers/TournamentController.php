@@ -916,7 +916,7 @@ class TournamentController extends Controller
         
         $reqData = $request->all();
 
-        if ($reqData["mode"] === "create") {
+        if ($reqData["mode"] === "create" ) {
             $response_org_id = '';
             $response_tourn_type = '';
             $response_tourn_id = '';
