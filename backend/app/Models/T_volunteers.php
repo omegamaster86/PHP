@@ -209,8 +209,7 @@ class T_volunteers extends Model
         $sqlString = str_replace("#languageCondition#",$languageCondition,$sqlString);
         $sqlString = str_replace("#Condition#",$condition,$sqlString);
         $sqlString = str_replace("#langJoinType#",$langJoinType,$sqlString);
-        $sqlString = str_replace("#SupportableDisabilityJoinType#",$SupportableDisabilityJoinType,$sqlString);
-        Log::debug($sqlString);
+        $sqlString = str_replace("#SupportableDisabilityJoinType#",$SupportableDisabilityJoinType,$sqlString);        
         $volunteers = DB::select($sqlString,$conditionValue);
         return $volunteers;
     }
