@@ -151,99 +151,99 @@ class PlayerController extends Controller
      */
 
 
-    public function storeEdit(Request $request): RedirectResponse
-    {
-        include('Auth/ErrorMessages/ErrorMessages.php');
-        if ($request->hasFile('photo')) {
+    // public function storeEdit(Request $request): RedirectResponse
+    // {
+    //     include('Auth/ErrorMessages/ErrorMessages.php');
+    //     if ($request->hasFile('photo')) {
 
-            // Storage::disk('local')->put('example.txt', $request->file('photo'));
+    //         // Storage::disk('local')->put('example.txt', $request->file('photo'));
 
-            $file = $request->file('photo');
-            // $file->store('toPath', ['disk' => 'public']);
+    //         $file = $request->file('photo');
+    //         // $file->store('toPath', ['disk' => 'public']);
 
-            $fileName = DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('player_id') . '.' . $request->file('photo')->getClientOriginalExtension();
-            // Storage::disk('public')->put($fileName, $file);
+    //         $fileName = DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('player_id') . '.' . $request->file('photo')->getClientOriginalExtension();
+    //         // Storage::disk('public')->put($fileName, $file);
 
-            // Storage::disk('public')->putFileAs('uploads', $file, $fileName);
+    //         // Storage::disk('public')->putFileAs('uploads', $file, $fileName);
 
-            $destinationPath = public_path() . '/images/players/';
-            $file->move($destinationPath, $fileName);
+    //         $destinationPath = public_path() . '/images/players/';
+    //         $file->move($destinationPath, $fileName);
 
-            // You can now save the $filePath to the database or use it as needed
-            // ...
-            // return response()->json(['message' => 'File uploaded successfully']);
-        }
+    //         // You can now save the $filePath to the database or use it as needed
+    //         // ...
+    //         // return response()->json(['message' => 'File uploaded successfully']);
+    //     }
 
-        $request->validate([
-            'playerCode' => ['required', 'string', 'regex:/^[0-9a-zA-Z]+$/'],
-            'playerName' => ['required', 'string', 'regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]+$/'],
-            'dateOfBirth' => ['required'],
-            'sex' => ['required', 'regex:/^[1-3]+$/'],
-            'height' => ['required'],
-            'weight' => ['required'],
-            'sideInfo' => ['required_without_all'],
-        ], [
-            'playerCode.required' => $playerCode_required,
-            'playerCode.regex' => $playerCode_regex,
-            'playerName.required' => $playerName_required,
-            'playerName.regex' => $playerName_regex,
-            'dateOfBirth.required' => $dateOfBirth_required,
-            'dateOfBirth.regex' => $dateOfBirth_required,
-            'sex.required' => $sex_required,
-            'sex.regex' => $sex_required,
-            'height.required' => $height_required,
-            'weight.required' => $weight_required,
-            'sideInfo.required_without_all' => $sideInfo_required,
-        ]);
-        if (DB::table('t_players')->where('jara_player_id', $request->playerCode)->where('delete_flag', 0)->exists()) {
-            $retrieve_player = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
-            if ($retrieve_player[count($retrieve_player) - 1]->JARAPlayerCode === $request->playerCode) {
-                $player_info = $request->all();
-                if ($request->hasFile('photo')) {
-                    $player_info['photo'] = DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('player_id') . '.' . $request->file('photo')->getClientOriginalExtension();
-                } else {
-                    if ($request->playerPictureStatus === "delete")
-                        $player_info['photo'] = "";
-                    else
-                        $player_info['photo'] = DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('photo');
-                }
-                $sideInfo_xor = "00000000";
-                foreach ($request->sideInfo as $sideInfo) {
-                    $sideInfo_xor = $sideInfo_xor ^ $sideInfo;
-                }
-                if (count($request->sideInfo) % 2)
-                    $sideInfo_xor = $sideInfo_xor ^ "00000000";
-                $player_info['sideInfo'] = $sideInfo_xor;
-                $player_info['playerId'] = $retrieve_player[0]->playerId;
-                // dd($player_info['photo']);
-                return redirect('player/edit/confirm')->with('player_info', $player_info);
-            }
-            $retrieve_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->playerCode]);
-            $existing_player_name = $retrieve_player_name[0]->player_name;
-            //Display error message to the client
-            throw ValidationException::withMessages([
-                'system_error' => "このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手I：[$request->playerCode] [$existing_player_name]"
-            ]);
-        } else {
-        }
-        $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+    //     $request->validate([
+    //         'playerCode' => ['required', 'string', 'regex:/^[0-9a-zA-Z]+$/'],
+    //         'playerName' => ['required', 'string', 'regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]+$/'],
+    //         'dateOfBirth' => ['required'],
+    //         'sex' => ['required', 'regex:/^[1-3]+$/'],
+    //         'height' => ['required'],
+    //         'weight' => ['required'],
+    //         'sideInfo' => ['required_without_all'],
+    //     ], [
+    //         'playerCode.required' => $playerCode_required,
+    //         'playerCode.regex' => $playerCode_regex,
+    //         'playerName.required' => $playerName_required,
+    //         'playerName.regex' => $playerName_regex,
+    //         'dateOfBirth.required' => $dateOfBirth_required,
+    //         'dateOfBirth.regex' => $dateOfBirth_required,
+    //         'sex.required' => $sex_required,
+    //         'sex.regex' => $sex_required,
+    //         'height.required' => $height_required,
+    //         'weight.required' => $weight_required,
+    //         'sideInfo.required_without_all' => $sideInfo_required,
+    //     ]);
+    //     if (DB::table('t_players')->where('jara_player_id', $request->playerCode)->where('delete_flag', 0)->exists()) {
+    //         $retrieve_player = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+    //         if ($retrieve_player[count($retrieve_player) - 1]->JARAPlayerCode === $request->playerCode) {
+    //             $player_info = $request->all();
+    //             if ($request->hasFile('photo')) {
+    //                 $player_info['photo'] = DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('player_id') . '.' . $request->file('photo')->getClientOriginalExtension();
+    //             } else {
+    //                 if ($request->playerPictureStatus === "delete")
+    //                     $player_info['photo'] = "";
+    //                 else
+    //                     $player_info['photo'] = DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('photo');
+    //             }
+    //             $sideInfo_xor = "00000000";
+    //             foreach ($request->sideInfo as $sideInfo) {
+    //                 $sideInfo_xor = $sideInfo_xor ^ $sideInfo;
+    //             }
+    //             if (count($request->sideInfo) % 2)
+    //                 $sideInfo_xor = $sideInfo_xor ^ "00000000";
+    //             $player_info['sideInfo'] = $sideInfo_xor;
+    //             $player_info['playerId'] = $retrieve_player[0]->playerId;
+    //             // dd($player_info['photo']);
+    //             return redirect('player/edit/confirm')->with('player_info', $player_info);
+    //         }
+    //         $retrieve_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->playerCode]);
+    //         $existing_player_name = $retrieve_player_name[0]->player_name;
+    //         //Display error message to the client
+    //         throw ValidationException::withMessages([
+    //             'system_error' => "このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手I：[$request->playerCode] [$existing_player_name]"
+    //         ]);
+    //     } else {
+    //     }
+    //     $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
 
-        $player_info = $request->all();
+    //     $player_info = $request->all();
 
 
 
-        $sideInfo_xor = "00000000";
-        foreach ($request->sideInfo as $sideInfo) {
-            $sideInfo_xor = $sideInfo_xor ^ $sideInfo;
-        }
-        if (count($request->sideInfo) % 2)
-            $sideInfo_xor = $sideInfo_xor ^ "00000000";
-        $player_info['sideInfo'] = $sideInfo_xor;
-        $player_info['playerId'] = $retrieve_player_by_ID[0]->playerId;
-        $player_info['previousPageStatus'] = "success";
-        return redirect('player/edit/confirm')->with('player_info', $player_info);
-        dd("stop");
-    }
+    //     $sideInfo_xor = "00000000";
+    //     foreach ($request->sideInfo as $sideInfo) {
+    //         $sideInfo_xor = $sideInfo_xor ^ $sideInfo;
+    //     }
+    //     if (count($request->sideInfo) % 2)
+    //         $sideInfo_xor = $sideInfo_xor ^ "00000000";
+    //     $player_info['sideInfo'] = $sideInfo_xor;
+    //     $player_info['playerId'] = $retrieve_player_by_ID[0]->playerId;
+    //     $player_info['previousPageStatus'] = "success";
+    //     return redirect('player/edit/confirm')->with('player_info', $player_info);
+    //     dd("stop");
+    // }
     /**
      * Display the registration view.
      */
@@ -259,52 +259,52 @@ class PlayerController extends Controller
      */
 
 
-    public function storeRegisterConfirm(Request $request): RedirectResponse
-    {
-        if (DB::table('t_players')->where('jara_player_id', $request->jar_player_id)->where('delete_flag', 0)->exists()) {
-            $retrieve_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->jara_player_id]);
-            $existing_player_name = $retrieve_player_name[0]->player_name;
-            //Display error message to the client
-            return redirect('player/register')->with('system_error', "登録に失敗しました。別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：[$request->jara_player_id] [$existing_player_name]");
-            dd("stop");
-        } else {
-            // Insert new user info in the database.(t_user table)
-            $user_id = (string) (Auth::user()->user_id);
-            DB::beginTransaction();
-            try {
-                $user = DB::insert('insert into t_players ( user_id, jara_player_id,  player_name, date_of_birth, sex, height, weight, side_info, birth_country, birth_prefecture, residence_country,residence_prefecture, photo, registered_time, registered_user_id,updated_time,updated_user_id) values (?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$user_id, $request->jara_player_id, $request->player_name, $request->date_of_birth, $request->sex, $request->height, $request->weight, $request->side_info, $request->birth_country, $request->birth_prefecture, $request->residence_country, $request->residence_prefecture, $request->photo, now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id, now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id]);
-                DB::commit();
-                $page_status = "選手情報の登録が正常に完了しました。";
-                $page_url = route('my-page');
-                $page_url_text = "マイページ";
+    // public function storeRegisterConfirm(Request $request): RedirectResponse
+    // {
+    //     if (DB::table('t_players')->where('jara_player_id', $request->jar_player_id)->where('delete_flag', 0)->exists()) {
+    //         $retrieve_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->jara_player_id]);
+    //         $existing_player_name = $retrieve_player_name[0]->player_name;
+    //         //Display error message to the client
+    //         return redirect('player/register')->with('system_error', "登録に失敗しました。別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：[$request->jara_player_id] [$existing_player_name]");
+    //         dd("stop");
+    //     } else {
+    //         // Insert new user info in the database.(t_user table)
+    //         $user_id = (string) (Auth::user()->user_id);
+    //         DB::beginTransaction();
+    //         try {
+    //             $user = DB::insert('insert into t_players ( user_id, jara_player_id,  player_name, date_of_birth, sex, height, weight, side_info, birth_country, birth_prefecture, residence_country,residence_prefecture, photo, registered_time, registered_user_id,updated_time,updated_user_id) values (?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$user_id, $request->jara_player_id, $request->player_name, $request->date_of_birth, $request->sex, $request->height, $request->weight, $request->side_info, $request->birth_country, $request->birth_prefecture, $request->residence_country, $request->residence_prefecture, $request->photo, now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id, now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id]);
+    //             DB::commit();
+    //             $page_status = "選手情報の登録が正常に完了しました。";
+    //             $page_url = route('my-page');
+    //             $page_url_text = "マイページ";
 
-                return redirect('change-notification')->with(['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-            } catch (\Throwable $e) {
-                DB::rollBack();
+    //             return redirect('change-notification')->with(['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+    //         } catch (\Throwable $e) {
+    //             DB::rollBack();
 
-                $e_message = $e->getMessage();
-                $e_code = $e->getCode();
-                $e_file = $e->getFile();
-                $e_line = $e->getLine();
-                $e_errorCode = $e->errorInfo[1];
-                $e_bindings = implode(", ", $e->getBindings());
-                $e_connectionName = $e->connectionName;
+    //             $e_message = $e->getMessage();
+    //             $e_code = $e->getCode();
+    //             $e_file = $e->getFile();
+    //             $e_line = $e->getLine();
+    //             $e_errorCode = $e->errorInfo[1];
+    //             $e_bindings = implode(", ", $e->getBindings());
+    //             $e_connectionName = $e->connectionName;
 
-                $user_id = Auth::user()->user_id;
-                //Store error message in the player register log file.
-                Log::channel('player_register')->info("\r\n \r\n ＊＊＊「USER_ID」 ：  $user_id,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-                if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                    throw ValidationException::withMessages([
-                        'datachecked_error' => $database_registration_failed
-                    ]);
-                } else {
-                    throw ValidationException::withMessages([
-                        'datachecked_error' => $database_registration_failed
-                    ]);
-                }
-            }
-        }
-    }
+    //             $user_id = Auth::user()->user_id;
+    //             //Store error message in the player register log file.
+    //             Log::channel('player_register')->info("\r\n \r\n ＊＊＊「USER_ID」 ：  $user_id,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
+    //             if ($e_errorCode == 1213 || $e_errorCode == 1205) {
+    //                 throw ValidationException::withMessages([
+    //                     'datachecked_error' => $database_registration_failed
+    //                 ]);
+    //             } else {
+    //                 throw ValidationException::withMessages([
+    //                     'datachecked_error' => $database_registration_failed
+    //                 ]);
+    //             }
+    //         }
+    //     }
+    // }
 
     /**
      * Display the edit confirm view.
@@ -322,78 +322,78 @@ class PlayerController extends Controller
      */
 
 
-    public function storeEditConfirm(Request $request): RedirectResponse
-    {
-        if (DB::table('t_players')->where('jara_player_id', '=', $request->jara_player_id)->where('delete_flag', '=', 0)->exists()) {
-            $retrieve_player = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
-            if (empty($retrieve_player)) {
-                dd("stop");
-                $retrieve_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->jara_player_id]);
-                $existing_player_name = $retrieve_player_name[0]->player_name;
-                //Display error message to the client
-                return redirect('player/edit')->with('system_error', "登録に失敗しました。別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：[$request->jara_player_id] [$existing_player_name]");
-            } else {
-                DB::beginTransaction();
-                try {
-                    DB::update(
-                        'update t_players set jara_player_id = ? , player_name = ?, date_of_birth = ?, sex = ?, height = ?, weight = ?,side_info = ?,birth_country = ?,birth_prefecture = ?,residence_country = ?,residence_prefecture = ?,photo = ? where user_id = ?',
-                        [$request->jara_player_id, $request->player_name, $request->date_of_birth, $request->sex, $request->height, $request->weight, $request->side_info, $request->birth_country, $request->birth_prefecture, $request->residence_country, $request->residence_prefecture, $request->photo, Auth::user()->user_id]
-                    );
+    // public function storeEditConfirm(Request $request): RedirectResponse
+    // {
+    //     if (DB::table('t_players')->where('jara_player_id', '=', $request->jara_player_id)->where('delete_flag', '=', 0)->exists()) {
+    //         $retrieve_player = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+    //         if (empty($retrieve_player)) {
+    //             dd("stop");
+    //             $retrieve_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->jara_player_id]);
+    //             $existing_player_name = $retrieve_player_name[0]->player_name;
+    //             //Display error message to the client
+    //             return redirect('player/edit')->with('system_error', "登録に失敗しました。別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：[$request->jara_player_id] [$existing_player_name]");
+    //         } else {
+    //             DB::beginTransaction();
+    //             try {
+    //                 DB::update(
+    //                     'update t_players set jara_player_id = ? , player_name = ?, date_of_birth = ?, sex = ?, height = ?, weight = ?,side_info = ?,birth_country = ?,birth_prefecture = ?,residence_country = ?,residence_prefecture = ?,photo = ? where user_id = ?',
+    //                     [$request->jara_player_id, $request->player_name, $request->date_of_birth, $request->sex, $request->height, $request->weight, $request->side_info, $request->birth_country, $request->birth_prefecture, $request->residence_country, $request->residence_prefecture, $request->photo, Auth::user()->user_id]
+    //                 );
 
-                    DB::commit();
-                    $page_status = "選手情報の更新が正常に完了しました。";
-                    $page_url = route('my-page');
-                    $page_url_text = "マイページ";
+    //                 DB::commit();
+    //                 $page_status = "選手情報の更新が正常に完了しました。";
+    //                 $page_url = route('my-page');
+    //                 $page_url_text = "マイページ";
 
-                    return redirect('change-notification')->with(['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-                } catch (\Throwable $e) {
-                    dd($request->all());
-                    dd("stop");
-                    DB::rollBack();
-                    //Store error message in the register log file.
-                    Log::channel('player_update')->info(" error-message  -> $update_failed");
-                    throw ValidationException::withMessages([
-                        'datachecked_error' => $update_failed
-                    ]);
-                }
+    //                 return redirect('change-notification')->with(['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+    //             } catch (\Throwable $e) {
+    //                 dd($request->all());
+    //                 dd("stop");
+    //                 DB::rollBack();
+    //                 //Store error message in the register log file.
+    //                 Log::channel('player_update')->info(" error-message  -> $update_failed");
+    //                 throw ValidationException::withMessages([
+    //                     'datachecked_error' => $update_failed
+    //                 ]);
+    //             }
 
-                $page_status = "選手情報の更新が正常に完了しました。";
-                $page_url = route('my-page');
-                $page_url_text = "マイページ";
+    //             $page_status = "選手情報の更新が正常に完了しました。";
+    //             $page_url = route('my-page');
+    //             $page_url_text = "マイページ";
 
-                return redirect('change-notification')->with(['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-            }
-        } else {
-            DB::beginTransaction();
-            try {
-                DB::update(
-                    'update t_players set jara_player_id = ? , player_name = ?, date_of_birth = ?, sex = ?, height = ?, weight = ?,side_info = ?,birth_country = ?,birth_prefecture = ?,residence_country = ?,residence_prefecture = ?,photo = ? where user_id = ?',
-                    [$request->jara_player_id, $request->player_name, $request->date_of_birth, $request->sex, $request->height, $request->weight, $request->side_info, $request->birth_country, $request->birth_prefecture, $request->residence_country, $request->residence_prefecture, $request->photo, Auth::user()->user_id]
-                );
+    //             return redirect('change-notification')->with(['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+    //         }
+    //     } else {
+    //         DB::beginTransaction();
+    //         try {
+    //             DB::update(
+    //                 'update t_players set jara_player_id = ? , player_name = ?, date_of_birth = ?, sex = ?, height = ?, weight = ?,side_info = ?,birth_country = ?,birth_prefecture = ?,residence_country = ?,residence_prefecture = ?,photo = ? where user_id = ?',
+    //                 [$request->jara_player_id, $request->player_name, $request->date_of_birth, $request->sex, $request->height, $request->weight, $request->side_info, $request->birth_country, $request->birth_prefecture, $request->residence_country, $request->residence_prefecture, $request->photo, Auth::user()->user_id]
+    //             );
 
-                DB::commit();
-                $page_status = "選手情報の更新が正常に完了しました。";
-                $page_url = route('my-page');
-                $page_url_text = "マイページ";
+    //             DB::commit();
+    //             $page_status = "選手情報の更新が正常に完了しました。";
+    //             $page_url = route('my-page');
+    //             $page_url_text = "マイページ";
 
-                return redirect('change-notification')->with(['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-            } catch (\Throwable $e) {
-                DB::rollBack();
-                //Store error message in the player update log file.
-                Log::channel('player_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-                throw ValidationException::withMessages([
-                    'datachecked_error' => $update_failed
-                ]);
-            }
+    //             return redirect('change-notification')->with(['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+    //         } catch (\Throwable $e) {
+    //             DB::rollBack();
+    //             //Store error message in the player update log file.
+    //             Log::channel('player_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
+    //             throw ValidationException::withMessages([
+    //                 'datachecked_error' => $update_failed
+    //             ]);
+    //         }
 
-            $page_status = "選手情報の更新が正常に完了しました。";
-            $page_url = route('my-page');
-            $page_url_text = "マイページ";
+    //         $page_status = "選手情報の更新が正常に完了しました。";
+    //         $page_url = route('my-page');
+    //         $page_url_text = "マイページ";
 
-            return redirect('change-notification')->with(['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-        }
-        return redirect('player/edit');
-    }
+    //         return redirect('change-notification')->with(['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
+    //     }
+    //     return redirect('player/edit');
+    // }
 
     /**
      * Display the edit confirm view.
@@ -692,7 +692,7 @@ class PlayerController extends Controller
             Log::debug(sprintf("playerSearch end"));
             return response()->json(['result' => $search_result]); //送信データ(debug用)とDBの結果を返す
         } catch (\Exception $e) {
-            Log::error($e->getMessage());
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }
@@ -750,11 +750,16 @@ class PlayerController extends Controller
         $result = $tPlayersData->insertPlayers($tPlayersData::$playerInfo); //DBに選手を登録 20240131
 
         //ユーザ種別の更新
-        $hoge = array();
-        $hoge['user_id'] = Auth::user()->user_id;
-        $hoge['input'] = '00000100'; //選手のユーザ種別を変更する
-        $t_users->updateUserTypeRegist($hoge);
-
+        //右から3桁目が0のときだけユーザー種別を更新する
+        $user_type = (string)Auth::user()->user_type;
+        Log::debug("user_type_is_player = ".substr($user_type,-3,1));
+        if(mb_substr($user_type,-3,1) == '0')
+        {
+            $hoge = array();
+            $hoge['user_id'] = Auth::user()->user_id;
+            $hoge['input'] = '00000100'; //選手のユーザ種別を変更する
+            $t_users->updateUserTypeRegist($hoge);
+        }
         $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
 
         Log::debug(sprintf("storePlayerData end"));
@@ -775,7 +780,6 @@ class PlayerController extends Controller
     //reactからの選手登録 20240131
     public function updatePlayerData(Request $request, T_players $tPlayersData, T_users $t_users)
     {
-        
         $random_file_name = Str::random(12);
         //If new picture is uploaded
         if ($request->hasFile('uploadedPhoto')) {
@@ -850,6 +854,7 @@ class PlayerController extends Controller
             return response()->json(['users' => $users, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
         } catch (\Throwable $e) {
             DB::rollBack();
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
             return response()->json(['errMessage' => $e->getMessage()],400); //エラーメッセージを返す
         }
     }
@@ -900,7 +905,12 @@ class PlayerController extends Controller
             $hoge['user_id'] = Auth::user()->user_id;
             $hoge['input'] = '00000100'; //選手のユーザ種別を変更する
             Log::debug($hoge);
-            $t_users->updateUserTypeDelete($hoge);
+            $user_type = (string)Auth::user()->user_type;
+            //右から3桁目が1のときだけユーザー種別を更新する
+            if(substr($user_type,-3,1) == '1')
+            {
+                $t_users->updateUserTypeDelete($hoge);
+            }
 
             DB::commit();
 
@@ -913,7 +923,7 @@ class PlayerController extends Controller
             // }
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::debug($e);
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
             return response()->json("失敗しました。選手を削除できませんでした。", 500);
         }
         // return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
@@ -923,13 +933,21 @@ class PlayerController extends Controller
     public function checkJARAPlayerId(Request $request, T_players $tPlayersData)
     {
         Log::debug(sprintf("checkJARAPlayerId start"));
+
         $reqData = $request->all();
 
+        Log::debug($reqData['jara_player_id']);
+
+        if($reqData['jara_player_id']==""){
+            return response()->json([""]);
+        }//JARA選手コードを入力されてない場合
+
         if ($request["mode"] === "create") {
+            
             $result = DB::select(
                 'select `player_id`, `player_name` from `t_players` where `delete_flag` = 0 and `user_id` = ?',
                 [
-                    Auth::user()->user_id //where条件用
+                    Auth::user()->user_id 
                 ]
             );
             if (!empty($result)) {
@@ -939,45 +957,56 @@ class PlayerController extends Controller
         }
         $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
         $registered_player = $tPlayersData->checkJARAPlayerId($tPlayersData::$playerInfo);
+
+        
+
         if (!empty($registered_player)) {
-            if ($request["mode"] === "create") {
-                if ($registered_player->user_id === Auth::user()->user_id) {
-                    Log::debug(sprintf("checkJARAPlayerId end 2"));
-                    return response()->json(["選手IDはすでに登録されています。 複数作成することはできません。"], 403);
-                } else {
-                    Log::debug(sprintf("checkJARAPlayerId end 3"));
-                    return response()->json(["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
+            Log::debug($registered_player->user_id);
+
+            if($registered_player->user_id === NULL or $registeredPlayer->user_id === "") {
+                return response()->json([""]);
+            } //マッピング用なJARA選手コードの場合
+
+            else{
+                if ($request["mode"] === "create") {
+                    if ($registered_player->user_id === Auth::user()->user_id) {
+                        Log::debug(sprintf("checkJARAPlayerId end 2"));
+                        return response()->json(["選手IDはすでに登録されています。 複数作成することはできません。"], 403);
+                    } else {
+                        Log::debug(sprintf("checkJARAPlayerId end 3"));
+                        return response()->json(["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
+                    }
                 }
-            }
-            if ($request["mode"] === "create_confirm") {
-                if ($registered_player->user_id === Auth::user()->user_id) {
-                    Log::debug(sprintf("checkJARAPlayerId end 4"));
-                    return response()->json(["登録に失敗しました。選手IDはすでに登録されています。 複数作成することはできません。"], 403);
+                if ($request["mode"] === "create_confirm") {
+                    if ($registered_player->user_id === Auth::user()->user_id) {
+                        Log::debug(sprintf("checkJARAPlayerId end 4"));
+                        return response()->json(["登録に失敗しました。選手IDはすでに登録されています。 複数作成することはできません。"], 403);
+                    } else {
+                        Log::debug(sprintf("checkJARAPlayerId end 5"));
+                        return response()->json(["登録に失敗しました。
+                        別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
+                    }
+                } else if ($request["mode"] === "update") {
+                    if ($registered_player->user_id === Auth::user()->user_id) {
+                        Log::debug(sprintf("checkJARAPlayerId end 6"));
+                        return response()->json("");
+                    } else {
+                        Log::debug(sprintf("checkJARAPlayerId end 7"));
+                        return response()->json(["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
+                    }
+                } else if ($request["mode"] === "update_confirm") {
+                    if ($registered_player->user_id === Auth::user()->user_id) {
+                        Log::debug(sprintf("checkJARAPlayerId end 8"));
+                        return response()->json("");
+                    } else {
+                        Log::debug(sprintf("checkJARAPlayerId end 9"));
+                        return response()->json(["更新に失敗しました。
+                        別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
+                    }
                 } else {
-                    Log::debug(sprintf("checkJARAPlayerId end 5"));
-                    return response()->json(["登録に失敗しました。
-                    別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
+                    Log::debug(sprintf("checkJARAPlayerId end 10"));
+                    return response()->json(["失敗しました。"], 400);
                 }
-            } else if ($request["mode"] === "update") {
-                if ($registered_player->user_id === Auth::user()->user_id) {
-                    Log::debug(sprintf("checkJARAPlayerId end 6"));
-                    return response()->json("");
-                } else {
-                    Log::debug(sprintf("checkJARAPlayerId end 7"));
-                    return response()->json(["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
-                }
-            } else if ($request["mode"] === "update_confirm") {
-                if ($registered_player->user_id === Auth::user()->user_id) {
-                    Log::debug(sprintf("checkJARAPlayerId end 8"));
-                    return response()->json("");
-                } else {
-                    Log::debug(sprintf("checkJARAPlayerId end 9"));
-                    return response()->json(["更新に失敗しました。
-                    別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
-                }
-            } else {
-                Log::debug(sprintf("checkJARAPlayerId end 10"));
-                return response()->json(["失敗しました。"], 400);
             }
         } else {
             if ($request["mode"] === "create") {

@@ -522,7 +522,7 @@ class UserController extends Controller
                     }
                 }
 
-                return response()->json("パスワードを変更の件、完了になりました。"); //送信データ(debug用)とDBの結果を返す
+                return response()->json("パスワードを変更しました。"); //送信データ(debug用)とDBの結果を返す
 
             }
             //If the entered password does not matched with the database information
@@ -733,11 +733,18 @@ class UserController extends Controller
             }
             
         }
-        
-        $result = $t_users->updateUserData($t_users::$userInfo);
-
-        
-        return response()->json(['result' => $result]); //DBの結果を返す
+        DB::beginTransaction();
+        try {
+            //更新実行
+            $t_users->updateUserData($t_users::$userInfo);
+            DB::commit();
+            return response()->json(['result' => "success"]); //DBの結果を返す
+        }
+        catch(\Throwable $e) {
+            DB::rollBack();
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
+            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+        }
     }
     //react ユーザー情報の削除 20240212
     //delete_flagを1にupdateする

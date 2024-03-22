@@ -568,14 +568,13 @@ class TournamentController extends Controller
             }
 
             DB::commit();
+            Log::debug(sprintf("storeTournamentInfoData end"));
+            return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::debug($e);
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
             return response()->json("失敗しました。大会登録できませんでした。", 500); //エラーメッセージを返す
         }
-
-        Log::debug(sprintf("storeTournamentInfoData end"));
-        return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
     }
 
     //reactからの大会登録 20240202
@@ -652,7 +651,7 @@ class TournamentController extends Controller
             return response()->json(['reqData' => $reqData]); //DBの結果を返す
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::debug($e);
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
             return response()->json("失敗しました。大会更新できませんでした。", 500); //エラーメッセージを返す
         }
     }
@@ -809,7 +808,7 @@ class TournamentController extends Controller
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
         try {
-            DB::transaction();
+            DB::beginTransaction();
             //出漕結果記録テーブルを検索
             $reqData = $request->all();
             $reqData['current_datetime'] = now()->format('Y-m-d H:i:s.u');
@@ -819,6 +818,7 @@ class TournamentController extends Controller
             if ($result_count['result'] == 0) {
                 $t_raceResultRecord->insertRaceResultRecordResponse($reqData);
                 DB::commit();
+                return response()->json(['errMessage' => ""]); //エラーメッセージを返す
             } else {
                 DB::commit();
                 //結果が1件以上存在するとき
@@ -826,6 +826,7 @@ class TournamentController extends Controller
             }
         } catch (\Throwable $e) {
             DB::rollBack();
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }
@@ -852,6 +853,7 @@ class TournamentController extends Controller
             }
         } catch (\Throwable $e) {
             DB::rollBack();
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }
@@ -878,6 +880,7 @@ class TournamentController extends Controller
             }
         } catch (\Throwable $e) {
             DB::rollBack();
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }
@@ -903,7 +906,7 @@ class TournamentController extends Controller
             }
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::debug($e);
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
         Log::debug(sprintf("deleteTournamentData end"));
@@ -917,7 +920,7 @@ class TournamentController extends Controller
 
         $reqData = $request->all();
 
-        if ($reqData["mode"] === "create") {
+        if ($reqData["mode"] === "create" ) {
             $response_org_id = '';
             $response_tourn_type = '';
             $response_tourn_id = '';
@@ -994,6 +997,7 @@ class TournamentController extends Controller
             if ($response_tourn_id or $response_tourn_type or $response_org_id or $response_race_id) {
                 return response()->json(["response_tourn_id" => $response_tourn_id, "response_tourn_type" => $response_tourn_type, "response_org_id" => $response_org_id, "response_race_id" => $response_race_id], 400); //エラーメッセージを返す
             }
+            
         }
 
         return response()->json(["success" => $orgInfo], 200); //登録できる
