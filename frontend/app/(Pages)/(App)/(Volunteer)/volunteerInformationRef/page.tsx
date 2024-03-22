@@ -572,8 +572,8 @@ export default function VolunteerInformationRef() {
               {/* ボランティア参加履歴一覧テーブル明細表示 */}
               {volunteerHistoriesdata.map((volunteerHistoriesdata) =>
                 ((volunteerHistoriesdata.tourn_type + 1) == activeTab || activeTab == 0) && (
-                  <CustomTbody>
-                    <CustomTr key={volunteerHistoriesdata.tourn_name}>
+                  <CustomTbody key={volunteerHistoriesdata.tourn_name}>
+                    <CustomTr>
                       {/* 大会名/イベント名 */}
                       <CustomTd align='center'>
                         <Link
