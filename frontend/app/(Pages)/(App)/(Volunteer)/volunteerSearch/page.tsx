@@ -331,7 +331,7 @@ export default function VolunteerSearch() {
       // .get<VolunteerResponse[]>('http://localhost:3100/volunteerSearch')
       .post('/volunteerSearch', searchCond)
       .then((response) => {
-        // console.log(response.data.result);
+        console.log(response.data.result);
         // レスポンスからデータを取り出してstateにセット
         setSearchResponse(response.data.result as VolunteerResponse[]);
       })
@@ -1225,7 +1225,7 @@ export default function VolunteerSearch() {
                 </Link>
               </CustomTd>
               <CustomTd>
-                {row.residence_country === '日本' ? row.residence_prefecture : row.residence_country}
+                {row.residence_country.includes('日本') ? row.residence_prefecture : row.residence_country}
               </CustomTd>
               <CustomTd>{row.sex}</CustomTd>
               <CustomTd>{calculateAgeFromBirthday(row.date_of_birth)}</CustomTd>
