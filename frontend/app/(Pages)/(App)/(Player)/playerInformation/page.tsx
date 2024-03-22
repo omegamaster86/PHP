@@ -464,8 +464,15 @@ export default function PlayerInformation() {
               // console.log(response);
               setErrorMessage([]);
               // OK が押下された場合、確認画面に遷移する　※短絡評価
-              window.confirm('入力したJARA選手コードと紐づくデータが存在しません。\nこのJARA選手コードで登録しますか？') && router.push('/playerInformation?mode=confirm&prevMode=create');
+              // window.confirm('入力したJARA選手コードと紐づくデータが存在しません。\nこのJARA選手コードで登録しますか？') && router.push('/playerInformation?mode=confirm&prevMode=create');
               // window.alert('入力したJARA選手コードと紐づくデータが存在しません。\nこのJARA選手コードで登録しますか？');
+              if (response?.data != '') {
+                // OK が押下された場合、確認画面に遷移する　※短絡評価
+                window.confirm(response?.data) && router.push('/playerInformation?mode=confirm&prevMode=create');
+                // window.alert(response?.data);
+              } else {
+                router.push('/playerInformation?mode=confirm&prevMode=create');
+              }
             })
             .catch((error) => {
               // TODO: 更新処理失敗時の処理
@@ -630,7 +637,7 @@ export default function PlayerInformation() {
                 }
                 formData.side_info = tmpArray;
                 formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
-                console.log(formData);
+                // console.log(formData);
 
                 //nullのパラメータを空のパラメータに置き換える
                 Object.keys(formData).forEach(key => {

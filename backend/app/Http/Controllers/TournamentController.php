@@ -920,7 +920,7 @@ class TournamentController extends Controller
 
         $reqData = $request->all();
 
-        if ($reqData["mode"] === "create") {
+        if ($reqData["mode"] === "create" ) {
             $response_org_id = '';
             $response_tourn_type = '';
             $response_tourn_id = '';
@@ -997,6 +997,7 @@ class TournamentController extends Controller
             if ($response_tourn_id or $response_tourn_type or $response_org_id or $response_race_id) {
                 return response()->json(["response_tourn_id" => $response_tourn_id, "response_tourn_type" => $response_tourn_type, "response_org_id" => $response_org_id, "response_race_id" => $response_race_id], 400); //エラーメッセージを返す
             }
+            
         }
 
         return response()->json(["success" => $orgInfo], 200); //登録できる

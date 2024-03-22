@@ -522,7 +522,7 @@ class UserController extends Controller
                     }
                 }
 
-                return response()->json("パスワードを変更の件、完了になりました。"); //送信データ(debug用)とDBの結果を返す
+                return response()->json("パスワードを変更しました。"); //送信データ(debug用)とDBの結果を返す
 
             }
             //If the entered password does not matched with the database information
