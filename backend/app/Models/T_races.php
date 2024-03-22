@@ -234,7 +234,7 @@ class T_races extends Model
                             ,case
                                 when sum(case rrr.delete_flag when 0 then 1 else 0 end) > 0 then 1
                                 else 0
-                                end as `has_history`
+                                end as `hasHistory`
                             FROM `t_races` race
                             left join `t_race_result_record` rrr
                             on race.race_id = rrr.race_id

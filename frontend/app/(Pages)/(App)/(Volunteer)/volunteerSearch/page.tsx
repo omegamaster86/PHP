@@ -792,7 +792,7 @@ export default function VolunteerSearch() {
                         prevFormData.lang?.[0],
                         prevFormData.lang?.[1],
                         {
-                          id: Number(e) || 2,
+                          id: Number(e) || 0,
                           name: lang.find((item) => item.id === Number(e))?.name || '未選択',
                           levelId: prevFormData.lang?.[2]?.levelId || 0,
                           levelName: prevFormData.lang?.[2]?.levelName || '未選択',
