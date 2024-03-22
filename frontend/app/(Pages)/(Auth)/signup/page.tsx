@@ -46,6 +46,14 @@ export default function Signup() {
                   value={userName}
                   placeHolder='山田 太郎'
                   onChange={(e) => setUserName(e.target.value)}
+                  toolTipText='文字制限
+                  　最大文字数：32文字（全半角区別なし）
+                  　利用可能文字：
+                  　　　日本語
+                  　　　英大文字：[A-Z]（26 文字）
+                  　　　英小文字：[a-z]（26 文字）
+                  　　　数字：[0-9]（10 文字）
+                  　　　記号：-,_' //はてなボタン用
                 />
               </div>
             </div>
@@ -60,6 +68,7 @@ export default function Signup() {
                 placeHolder='メールアドレスを入力してください。'
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                toolTipText='入力したメールアドレスは、ログインの時に使用します。'
               />
             </div>
             {/* メールアドレス確認 */}
