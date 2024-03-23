@@ -200,9 +200,7 @@ const CsvTable = ({
           </CustomButton>
         </div>
       </div>
-      <div
-        className='relative overflow-auto h-[331px] w-[800px]'
-      >
+      <div className='relative overflow-auto h-[331px] w-[800px]'>
         <CustomTable>
           <CustomThead>
             <CustomTr>
@@ -329,7 +327,11 @@ const CsvTable = ({
                         : ''
                   }
                 >
-                  {row.residenceCountryId.value}（{row.residencePrefectureId.value}）
+                  {/* 日本の場合のみ都道府県を表示 */}
+                  {row.residenceCountryId.value}
+                  {row.residenceCountryId.value === '日本国 （jpn）'
+                    ? row.residencePrefectureId.value
+                    : ''}
                 </CustomTd>
                 <CustomTd
                   textType={isResultError(row.result) ? 'error' : 'secondary'}
