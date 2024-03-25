@@ -846,7 +846,7 @@ class PlayerController extends Controller
         DB::beginTransaction();
         try {
             Log::debug($tPlayersData::$playerInfo);
-            $result = $tPlayersData->updatePlayerData($tPlayersData::$playerInfo); //DBに選手を登録 20240131
+            $result = $tPlayersData->updatePlayerData($tPlayersData::$playerInfo); //DBに選手を更新 20240131
 
             $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
             DB::commit();
@@ -855,7 +855,7 @@ class PlayerController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-            return response()->json(['errMessage' => $e->getMessage()],400); //エラーメッセージを返す
+            return response()->json(["選手情報の更新に失敗しました。ユーザーサポートにお問い合わせください。"],400); //エラーメッセージを返す
         }
     }
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
