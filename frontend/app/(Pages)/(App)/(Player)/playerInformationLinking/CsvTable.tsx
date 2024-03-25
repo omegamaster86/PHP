@@ -37,7 +37,7 @@ const CsvTable = ({
   return content.length === 0 ? (
     <div className='text-primaryText'></div>
   ) : (
-    <div className='overflow-auto h-[331px] w-[800px]'>
+    <div className='overflow-auto h-[331px] w-[1000px]'>
       <CustomTable>
         <CustomThead>
           {/* contentがundefinedまたは空の配列でないことを確認 */}
