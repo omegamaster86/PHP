@@ -963,7 +963,7 @@ class PlayerController extends Controller
         if (!empty($registered_player)) {
             Log::debug($registered_player->user_id);
 
-            if($registered_player->user_id === NULL or $registeredPlayer->user_id === "") {
+            if($registered_player->user_id === NULL or $registered_player->user_id === "") {
                 return response()->json([""]);
             } //マッピング用なJARA選手コードの場合
 
