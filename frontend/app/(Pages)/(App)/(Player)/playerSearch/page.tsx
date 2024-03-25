@@ -96,7 +96,7 @@ export default function PlayerSearch() {
 
   /**
    * 入力フォームの変更時の処理
-   * @param name 
+   * @param name
    * @param value
    * @description
    * nameとvalueを受け取り、stateを更新する
@@ -181,12 +181,19 @@ export default function PlayerSearch() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const sexResponse = await axios.get('/getSexList');
-        const sexList = sexResponse.data.map(({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }));
+        const sexList = sexResponse.data.map(
+          ({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }),
+        );
         setSex(sexList);
         // 種目
         // const eventResponse = await axios.get<EventResponse[]>('/event');
         const eventResponse = await axios.get('/getEvents');
-        const eventResponseList = eventResponse.data.map(({ event_id, event_name }: { event_id: number; event_name: string }) => ({ id: event_id, name: event_name }));
+        const eventResponseList = eventResponse.data.map(
+          ({ event_id, event_name }: { event_id: number; event_name: string }) => ({
+            id: event_id,
+            name: event_name,
+          }),
+        );
         setEvent(eventResponseList);
 
         const playerInf = await axios.get('/getIDsAssociatedWithUser');
@@ -269,7 +276,8 @@ export default function PlayerSearch() {
               <div className='flex flex-col justify-start gap-[8px]'>
                 <CustomDropdown
                   id='sex'
-                  label='性別' displayHelp={false} 
+                  label='性別'
+                  displayHelp={false}
                   options={sex.map((item) => ({ key: item.id, value: item.name }))}
                   value={searchCond.sexId}
                   errorMessages={[]}
@@ -398,18 +406,18 @@ export default function PlayerSearch() {
                     userIdType.is_jara == 1 ||
                     userIdType.is_pref_boat_officer == 1 ||
                     userIdType.is_organization_manager == 1) && (
-                      <div className='flex flex-col justify-start'>
-                        <CustomTextField
-                          label='エントリーシステムの団体ID'
-                          type='number'
-                          displayHelp
-                          value={searchCond.entrysystem_org_id}
-                          onChange={(e) => handleInputChange('entrysystem_org_id', e.target.value)}
-                          toolTipTitle='Title' //はてなボタン用
-                          toolTipText='サンプル用のツールチップ表示' //はてなボタン用
-                        />
-                      </div>
-                    )}
+                    <div className='flex flex-col justify-start'>
+                      <CustomTextField
+                        label='エントリーシステムの団体ID'
+                        type='number'
+                        displayHelp
+                        value={searchCond.entrysystem_org_id}
+                        onChange={(e) => handleInputChange('entrysystem_org_id', e.target.value)}
+                        toolTipTitle='Title' //はてなボタン用
+                        toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+                      />
+                    </div>
+                  )}
                   {/* 団体ID */}
                   <div className='flex flex-col justify-start'>
                     <CustomTextField
@@ -444,7 +452,8 @@ export default function PlayerSearch() {
                   <div className='flex flex-col justify-start gap-[8px]'>
                     <CustomDropdown
                       id='event'
-                      label='出漕種目' displayHelp={false}
+                      label='出漕種目'
+                      displayHelp={false}
                       options={event.map((item) => ({ key: item.id, value: item.name }))}
                       value={searchCond.event_id}
                       placeHolder='未選択'

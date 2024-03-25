@@ -166,8 +166,8 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
       const raceResponse = {
         data: {
           length: 0,
-        }
-      }
+        },
+      };
 
       const header = props.csvDownloadProps.header.map((h) => h.label).join(',');
 
@@ -200,7 +200,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
     try {
       // ダウンロード用のBlobを作成（UTF-8指定）
       // const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
-      const bom = new Uint8Array([0xef, 0xbb, 0xbf]) //UTF-8を指定
+      const bom = new Uint8Array([0xef, 0xbb, 0xbf]); //UTF-8を指定
       const blob = new Blob([bom, csvContent], { type: 'text/csv' });
 
       // BlobからURLを生成
@@ -271,7 +271,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
             onClick={() => {
               props.csvDownloadProps.checkTournName(
                 props.csvDownloadProps.formData.tournName === '' ||
-                props.csvDownloadProps.formData.tournName === undefined,
+                  props.csvDownloadProps.formData.tournName === undefined,
               );
               if (
                 !(

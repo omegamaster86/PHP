@@ -43,10 +43,12 @@ export default function TeamManagement() {
   const onClick = async () => {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
-    await axios.post('/postSample', "送信成功")
+    await axios
+      .post('/postSample', '送信成功')
       .then((res) => {
         // console.log(res);
-      }).catch(error => {
+      })
+      .catch((error) => {
         // console.log(error);
       });
   };

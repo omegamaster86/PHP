@@ -32,7 +32,13 @@ const Footer: FC = () => {
             <br />
             ジャパンスポーツオリンピックスクエア 606
           </p>
-          <CustomButton buttonType='primary' className='text-white mt-[12px]' onClick={() => {router.push('/inquiry');}}>
+          <CustomButton
+            buttonType='primary'
+            className='text-white mt-[12px]'
+            onClick={() => {
+              router.push('/inquiry');
+            }}
+          >
             お問い合わせはこちらへ
           </CustomButton>
         </div>

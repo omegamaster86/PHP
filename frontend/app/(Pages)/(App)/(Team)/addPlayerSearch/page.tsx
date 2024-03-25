@@ -216,23 +216,35 @@ export default function AddPlayerSearch() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         // const teamResponse = await axios.get('http://localhost:3100/team');
-        const sendId = { org_id: orgId }
+        const sendId = { org_id: orgId };
         const teamResponse = await axios.post('/getOrgData', sendId);
         setTeamData(teamResponse.data.result);
         // 性別
         // const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
         const sexResponse = await axios.get('/getSexList');
-        const sexList = sexResponse.data.map(({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }));
+        const sexList = sexResponse.data.map(
+          ({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }),
+        );
         setSex(sexList);
         // TODO: 都道府県情報の取得処理を実装
         // const prefectureResponse = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
         const prefectures = await axios.get('/getPrefecures'); //都道府県マスターの取得 20240208
-        const stateList = prefectures.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
+        const stateList = prefectures.data.map(
+          ({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({
+            id: pref_id,
+            name: pref_name,
+          }),
+        );
         setPrefectures(stateList);
         // 種目
         // const eventResponse = await axios.get<EventResponse[]>('http://localhost:3100/event');
         const eventResponse = await axios.get('/getEvents');
-        const eventResponseList = eventResponse.data.map(({ event_id, event_name }: { event_id: number; event_name: string }) => ({ id: event_id, name: event_name }));
+        const eventResponseList = eventResponse.data.map(
+          ({ event_id, event_name }: { event_id: number; event_name: string }) => ({
+            id: event_id,
+            name: event_name,
+          }),
+        );
         setEvent(eventResponseList);
       } catch (error) {
         console.log(error);
@@ -286,7 +298,8 @@ export default function AddPlayerSearch() {
               <div className='flex flex-col justify-start gap-[8px]'>
                 <CustomDropdown
                   id='sex'
-                  label='性別' displayHelp={false} 
+                  label='性別'
+                  displayHelp={false}
                   options={sex.map((item) => ({ key: item.id, value: item.name }))}
                   value={searchCond.sexId}
                   errorMessages={[]}
@@ -429,7 +442,8 @@ export default function AddPlayerSearch() {
             <div className='flex flex-col justify-start gap-[8px]'>
               <CustomDropdown
                 id='event'
-                label='出漕種目' displayHelp={false} 
+                label='出漕種目'
+                displayHelp={false}
                 options={event.map((item) => ({ key: item.id, value: item.name }))}
                 value={searchCond.eventId}
                 placeHolder='未選択'

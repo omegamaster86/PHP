@@ -2,7 +2,7 @@
 
 'use client';
 import { useState } from 'react';
-import { useAuth } from '@/app/hooks/auth'
+import { useAuth } from '@/app/hooks/auth';
 import CustomPasswordField from '@/app/components/CustomPasswordField';
 import CustomButton from '@/app/components/CustomButton';
 import Loading from '@/app/components/Loading';
@@ -102,9 +102,7 @@ export default function Passwordchange() {
                 const currentPasswordErrorMessages = Validator.getErrorMessages([
                   Validator.validateRequired(currentPassword, '旧パスワード'),
                 ]);
-                setCurrentPasswordErrorMessages(
-                  currentPasswordErrorMessages
-                );
+                setCurrentPasswordErrorMessages(currentPasswordErrorMessages);
 
                 const newPasswordErrorMessages = Validator.getErrorMessages([
                   Validator.validateRequired(newPassword, '新パスワード'),
@@ -117,17 +115,13 @@ export default function Passwordchange() {
                     'パスワード',
                   ),
                 ]);
-                setNewPasswordErrorMessages(
-                  newPasswordErrorMessages
-                );
+                setNewPasswordErrorMessages(newPasswordErrorMessages);
 
                 const confirmPasswordErrorMessages = Validator.getErrorMessages([
                   Validator.validateRequired(confirmNewPassword, '確認用のパスワード'),
                   Validator.validateEqual(newPassword, confirmNewPassword, 'パスワード'),
                 ]);
-                setConfirmNewPasswordErrorMessages(
-                  confirmPasswordErrorMessages
-                );
+                setConfirmNewPasswordErrorMessages(confirmPasswordErrorMessages);
                 // エラーがある場合、後続の処理を中止
                 if (
                   currentPasswordErrorMessages.length > 0 ||
@@ -139,35 +133,34 @@ export default function Passwordchange() {
                 const requestBody = {
                   currentPassword,
                   newPassword,
-                  confirmNewPassword
+                  confirmNewPassword,
                 };
-                const csrf = () => axios.get('/sanctum/csrf-cookie')
-                await csrf()
+                const csrf = () => axios.get('/sanctum/csrf-cookie');
+                await csrf();
                 axios
                   // .post('http://localhost:3100/', requestBody)
                   .post('/user/password-change', requestBody)
-                  .then(async(response) => {
+                  .then(async (response) => {
                     // 成功時の処理を実装
                     // console.log(response);
                     window.alert(response?.data);
                     await csrf();
                     await axios.get('/api/user');
                     router.push('/userInformation?mode=update');
-                    
                   })
                   .catch((error) => {
                     // エラー時の処理を実装
                     // console.log(error);
                     let systemError = [] as string[];
                     if (error.response?.status === 422) {
-                      systemError.push(error?.response?.data?.message)
-                    }
-
-                    else if (error.response?.status === 400) {
-                      systemError = [...error?.response?.data?.system_error]
-                    }
-                    else {
-                      systemError = ["内部処理エラーが発生しました、", "サポートにご連絡ください。"]
+                      systemError.push(error?.response?.data?.message);
+                    } else if (error.response?.status === 400) {
+                      systemError = [...error?.response?.data?.system_error];
+                    } else {
+                      systemError = [
+                        '内部処理エラーが発生しました、',
+                        'サポートにご連絡ください。',
+                      ];
                     }
                     setErrorText(systemError);
                   });

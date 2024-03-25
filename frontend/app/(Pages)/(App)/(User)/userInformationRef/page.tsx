@@ -26,7 +26,7 @@ export default function UserInformationUpdate() {
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode');
   let paramError = false;
-  const {  logout } = useAuth({ middleware: 'auth' })
+  const { logout } = useAuth({ middleware: 'auth' });
 
   // フォームの入力値を管理するステート
   const [formData, setFormData] = useState<UserResponse>({
@@ -95,7 +95,7 @@ export default function UserInformationUpdate() {
             residenceCountryName: response.data.result.residenceCountryName
               ? response.data.result.residenceCountryName
               : '日本国 （jpn）',
-              residence_prefecture: response.data.result.residence_prefecture,
+            residence_prefecture: response.data.result.residence_prefecture,
             residencePrefectureName: response.data.result.residencePrefectureName,
             mailaddress: response.data.result.mailaddress,
             temp_password_flag: response.data.result.temp_password_flag,
@@ -129,7 +129,7 @@ export default function UserInformationUpdate() {
           );
           if (isOk) {
             // TODO: ユーザーテーブルから削除する処理の実装
-            const deleteUser = async()=>{
+            const deleteUser = async () => {
               const csrf = () => axios.get('/sanctum/csrf-cookie');
               await csrf();
               axios
@@ -141,17 +141,14 @@ export default function UserInformationUpdate() {
                 })
                 .catch((error) => {
                   // TODO: エラー処理
-                  if(error?.response){
+                  if (error?.response) {
                     setErrorMessage([...error?.response?.data]);
-                  }
-                  else{
+                  } else {
                     setErrorMessage([...error?.message]);
                   }
-                  
                 });
-            }
-            deleteUser()
-            
+            };
+            deleteUser();
           }
         }}
       >
@@ -177,7 +174,10 @@ export default function UserInformationUpdate() {
         <div className='flex flex-col justify-start gap-[10px]'>
           {/* 写真 */}
           <InputLabel displayHelp={false} label='写真' />
-          <img src={formData.photo?`${USER_IMAGE_URL}${formData.photo}`:`${NO_IMAGE_URL}`} className='w-[300px] h-[300px] rounded-[2px] object-cover' />
+          <img
+            src={formData.photo ? `${USER_IMAGE_URL}${formData.photo}` : `${NO_IMAGE_URL}`}
+            className='w-[300px] h-[300px] rounded-[2px] object-cover'
+          />
         </div>
         {/* ユーザーID */}
         <CustomTextField

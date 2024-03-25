@@ -131,7 +131,6 @@ export default function TournamentSearch() {
       // 最初は10件だけ表示
       setVisibleItems(10);
       setVisibleData(response.data.result.slice(0, 10));
-
     } catch (error) {
       setErrorMessage([...(errorMessage as string[]), 'API取得エラー:' + (error as Error).message]);
     }
@@ -150,13 +149,26 @@ export default function TournamentSearch() {
         await csrf();
         // const tourTypeResponse = await axios.get<TourTypeResponse[]>('/tourType',);
         const tourTypeResponse = await axios.get('/getApprovalType');
-        const tourTypeList = tourTypeResponse.data.map(({ appro_type_id, appro_type_id_name }: { appro_type_id: number; appro_type_id_name: string }) => ({ id: appro_type_id, name: appro_type_id_name }));
+        const tourTypeList = tourTypeResponse.data.map(
+          ({
+            appro_type_id,
+            appro_type_id_name,
+          }: {
+            appro_type_id: number;
+            appro_type_id_name: string;
+          }) => ({ id: appro_type_id, name: appro_type_id_name }),
+        );
         // console.log(tourTypeList);
         setTourType(tourTypeList);
 
         // const venueResponse = await axios.get<VenueResponse[]>('/venue');
         const venueResponse = await axios.get('/getVenueList');
-        const stateList = venueResponse.data.map(({ venue_id, venue_name }: { venue_id: number; venue_name: string }) => ({ id: venue_id, name: venue_name }));
+        const stateList = venueResponse.data.map(
+          ({ venue_id, venue_name }: { venue_id: number; venue_name: string }) => ({
+            id: venue_id,
+            name: venue_name,
+          }),
+        );
         setVenue(stateList);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
@@ -253,7 +265,7 @@ export default function TournamentSearch() {
                 <InputLabel label='開催年月日' />
                 <CustomDatePicker
                   // placeHolder={new Date().toLocaleDateString('ja-JP')}
-                  placeHolder={"YYYY/MM/DD"}
+                  placeHolder={'YYYY/MM/DD'}
                   selectedDate={searchCond.event_start_date}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     handleInputChange('event_start_date', formatDate(e as unknown as Date));
@@ -267,7 +279,7 @@ export default function TournamentSearch() {
               <div className='flex flex-col justify-start self-end'>
                 <CustomDatePicker
                   // placeHolder={new Date().toLocaleDateString('ja-JP')}
-                  placeHolder={"YYYY/MM/DD"}
+                  placeHolder={'YYYY/MM/DD'}
                   selectedDate={searchCond.event_end_date}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     handleInputChange('event_end_date', formatDate(e as unknown as Date));

@@ -75,7 +75,7 @@ export default function TournamentRaceResultRef() {
     race_id: number; //レースID
     crew_name: string; //クルー名
     org_id: number; //団体ID
-  };
+  }
   const [searchCrewInfo, setSearchCrewInfo] = useState([] as SearchCrewList[]);
 
   // Next.jsのRouterを利用
@@ -101,7 +101,8 @@ export default function TournamentRaceResultRef() {
         const uniqueRaceNamesSet = new Set(raceNamesArray);
         const uniqueRaceNamesArray = Array.from(uniqueRaceNamesSet);
         setRaceNameList(
-          uniqueRaceNamesArray.map((item: any, index: any) => ({ //残件対応項目
+          uniqueRaceNamesArray.map((item: any, index: any) => ({
+            //残件対応項目
             id: index,
             name: item,
           })),
@@ -110,7 +111,8 @@ export default function TournamentRaceResultRef() {
         const uniqueByGroupsSet = new Set(byGroupsArray);
         const uniqueByGroupsArray = Array.from(uniqueByGroupsSet);
         setByGroupList(
-          uniqueByGroupsArray.map((item: any, index: any) => ({ //残件対応項目
+          uniqueByGroupsArray.map((item: any, index: any) => ({
+            //残件対応項目
             id: index,
             name: item,
           })),
@@ -314,7 +316,9 @@ export default function TournamentRaceResultRef() {
                           <div className='flex flex-row items-center gap-[10px]'>
                             {header}
                             {/* 残件対応項目 */}
-                            <div onClick={(event) => handleRaceNameHeaderClick(header, event as any)}>
+                            <div
+                              onClick={(event) => handleRaceNameHeaderClick(header, event as any)}
+                            >
                               <FilterListIcon />
                             </div>
                           </div>
@@ -324,7 +328,9 @@ export default function TournamentRaceResultRef() {
                           <div className='flex flex-row items-center gap-[10px]'>
                             {header}
                             {/* 残件対応項目 */}
-                            <div onClick={(event) => handleByGroupHeaderClick(header, event as any)}>
+                            <div
+                              onClick={(event) => handleByGroupHeaderClick(header, event as any)}
+                            >
                               <FilterListIcon />
                             </div>
                           </div>
@@ -565,7 +571,7 @@ export default function TournamentRaceResultRef() {
             className='flex flex-col justify-center w-full gap-[20px]'
           >
             <DialogTitle id='alert-dialog-title' className='font-bold'>
-              クルー名：  {currentCrewName}
+              クルー名： {currentCrewName}
             </DialogTitle>
             <DialogContent dividers>
               <CustomTable>

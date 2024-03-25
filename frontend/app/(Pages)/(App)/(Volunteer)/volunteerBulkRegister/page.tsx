@@ -831,7 +831,9 @@ export default function VolunteerBulkRegister() {
         setDisplayLinkButtonFlg(true);
         performValidation();
       })
-      .catch((error) => {});
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   //登録ボタン押下時 20240307
