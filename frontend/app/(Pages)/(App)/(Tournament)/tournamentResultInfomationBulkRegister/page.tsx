@@ -254,10 +254,21 @@ export default function TournamentResultInfomationBulkRegister() {
         // const tournamentResponse = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments',);
         const TournamentsResponse = await axios.get('/getTournamentInfoData_allData');
         console.log(TournamentsResponse);
-        const TournamentsResponseList = TournamentsResponse.data.result.map(({
-          tourn_id, tourn_name, event_start_date }: { tourn_id: number; tourn_name: string; event_start_date: string }) => ({
-            id: tourn_id, name: tourn_name, year: event_start_date.substring(0, 4)
-          }));
+        const TournamentsResponseList = TournamentsResponse.data.result.map(
+          ({
+            tourn_id,
+            tourn_name,
+            event_start_date,
+          }: {
+            tourn_id: number;
+            tourn_name: string;
+            event_start_date: string;
+          }) => ({
+            id: tourn_id,
+            name: tourn_name,
+            year: event_start_date.substring(0, 4),
+          }),
+        );
         // console.log(TournamentsResponseList);
         setTournamentList(TournamentsResponseList);
       } catch (error) {
@@ -283,7 +294,10 @@ export default function TournamentResultInfomationBulkRegister() {
         const tournamentResponse = await axios.post('/getTournamentInfoData', tornSearchVal);
         console.log(tournamentResponse.data.result);
         // 大会情報が取得できなかった場合
-        if (tournamentResponse.data.result === undefined || tournamentResponse.data.result === null) {
+        if (
+          tournamentResponse.data.result === undefined ||
+          tournamentResponse.data.result === null
+        ) {
           setTournIdErrorMessage(['入力された大会IDの大会は、存在しませんでした。']);
           return;
         } else {
@@ -333,10 +347,21 @@ export default function TournamentResultInfomationBulkRegister() {
           // }));
           // setDisplayFlg(false);
           if (tournamentResponse.data.result.length > 0) {
-            const TournResList = tournamentResponse.data.result.map(({
-              tourn_id, tourn_name, event_start_date }: { tourn_id: number; tourn_name: string; event_start_date: string }) => ({
-                id: tourn_id, name: tourn_name, year: event_start_date.substring(0, 4)
-              }));
+            const TournResList = tournamentResponse.data.result.map(
+              ({
+                tourn_id,
+                tourn_name,
+                event_start_date,
+              }: {
+                tourn_id: number;
+                tourn_name: string;
+                event_start_date: string;
+              }) => ({
+                id: tourn_id,
+                name: tourn_name,
+                year: event_start_date.substring(0, 4),
+              }),
+            );
             setTournamentList(TournResList);
           } else {
             setTournamentList([]);
@@ -846,8 +871,8 @@ export default function TournamentResultInfomationBulkRegister() {
     try {
       const sendTournData = {
         tournData: formData,
-        csvDataList: row
-      }
+        csvDataList: row,
+      };
       console.log(formData);
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
@@ -859,25 +884,26 @@ export default function TournamentResultInfomationBulkRegister() {
       console.log(error);
       setErrorMessage(['エラー:  ' + (error as any).response?.data.result]);
     }
-  }
+  };
 
   //連携ボタン押下時 20240302
   const registerCsvData = async () => {
     const sendTournData = {
       tournData: formData,
-      csvDataList: csvData
-    }
+      csvDataList: csvData,
+    };
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
-    await axios.post('/registerTournamentResultCsvData', sendTournData)
+    await axios
+      .post('/registerTournamentResultCsvData', sendTournData)
       .then((res) => {
         console.log(res.data.result);
         // router.push('/tournamentSearch'); // 20240222
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
-  }
+  };
 
   // レンダリング
   return (
@@ -910,7 +936,7 @@ export default function TournamentResultInfomationBulkRegister() {
               // }
             }}
             onBlur={(e: FocusEvent<HTMLInputElement>) => {
-              console.log("==== CustomTextField");
+              console.log('==== CustomTextField');
               handleSearchTournament('tournId', e);
             }}
             // readonly={displayFlg}
@@ -946,7 +972,6 @@ export default function TournamentResultInfomationBulkRegister() {
                 } else {
                   // eventYearVal = '';
                 }
-
               }}
               onBlur={(e: FocusEvent<HTMLInputElement>) => {
                 if (
@@ -956,22 +981,22 @@ export default function TournamentResultInfomationBulkRegister() {
                 ) {
                   handleInputChange('tournName', '');
                 } else {
-                  console.log("==== CustomYearPicker");
+                  console.log('==== CustomYearPicker');
                   handleSearchTournament('eventYear', e);
                 }
               }}
-            // readonly={displayFlg}
+              // readonly={displayFlg}
             />
             <Label label='年' />
           </div>
           <div
             className={
               prevScreen === 'tournamentRef' ||
-                !(
-                  formData?.eventYear === '' ||
-                  formData?.eventYear === null ||
-                  formData?.eventYear === undefined
-                )
+              !(
+                formData?.eventYear === '' ||
+                formData?.eventYear === null ||
+                formData?.eventYear === undefined
+              )
                 ? 'hidden'
                 : ''
             }
@@ -988,24 +1013,24 @@ export default function TournamentResultInfomationBulkRegister() {
           <InputLabel label='大会名' required />
           <div>
             <Autocomplete
-              options={tournamentList.map((item) => ({ id: item.id, name: item.name, year: item.year }))}
+              options={tournamentList.map((item) => ({
+                id: item.id,
+                name: item.name,
+                year: item.year,
+              }))}
               getOptionLabel={(option) => option.name}
               readOnly={tournNameActivFlag}
-              value={{ id: formData.tournId, name: formData.tournName, year: formData.eventYear } || ''}
+              value={
+                { id: formData.tournId, name: formData.tournName, year: formData.eventYear } || ''
+              }
               onChange={(e: ChangeEvent<{}>, newValue) => {
                 console.log(formData.tournName, newValue);
-                handleInputChange(
-                  'tournName',
-                  newValue ? (newValue as TournResponse).name : '',
-                );
+                handleInputChange('tournName', newValue ? (newValue as TournResponse).name : '');
                 handleInputChange(
                   'tournId',
-                  newValue ? ((newValue as TournResponse).id.toString()) : '',
+                  newValue ? (newValue as TournResponse).id.toString() : '',
                 );
-                handleInputChange(
-                  'eventYear',
-                  newValue ? (newValue as TournResponse).year : '',
-                );
+                handleInputChange('eventYear', newValue ? (newValue as TournResponse).year : '');
                 setCsvDownloadProps((prevProps) => ({
                   ...prevProps,
                   filename: (newValue as TournResponse)?.name,
@@ -1122,7 +1147,7 @@ export default function TournamentResultInfomationBulkRegister() {
                         //     displayRegisterButton(true);
                         //   }
                         // });
-                        console.log("=====================");
+                        console.log('=====================');
                         setCsvData([]);
                         Promise.all(
                           csvFileData.content?.slice(1).map((row, index) => getJsonRow(row, index)),

@@ -1,6 +1,6 @@
 // 機能名: 選手情報登録・更新・入力確認
 'use client';
-import { PLAYER_IMAGE_URL, NO_IMAGE_URL } from "../../../../utils/imageUrl"; //For importing image url from a single source of truth
+import { PLAYER_IMAGE_URL, NO_IMAGE_URL } from '../../../../utils/imageUrl'; //For importing image url from a single source of truth
 import { useEffect, useState, ChangeEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/app/lib/axios';
@@ -63,7 +63,7 @@ export default function PlayerInformation() {
       break;
     default:
       break;
-  };
+  }
 
   // フォームの入力値を管理する関数
   const handleInputChange = (name: string, value: string) => {
@@ -138,8 +138,9 @@ export default function PlayerInformation() {
     if (formData.birth_country == 112) {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        birth_prefecture: (formData.birth_prefecture == 0) ? 13 : formData.birth_prefecture,
-        birthPrefectureName: (formData.birthPrefectureName == '') ? '東京' : formData.birthPrefectureName,
+        birth_prefecture: formData.birth_prefecture == 0 ? 13 : formData.birth_prefecture,
+        birthPrefectureName:
+          formData.birthPrefectureName == '' ? '東京' : formData.birthPrefectureName,
       }));
     }
   }, [formData.birth_country]);
@@ -150,8 +151,10 @@ export default function PlayerInformation() {
     if (formData.residence_country == 112) {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        residence_prefecture: (formData.residence_prefecture == 0) ? 13 : formData.residence_prefecture, // 東京
-        residencePrefectureName: (formData.residencePrefectureName == '') ? '東京' : formData.residencePrefectureName,
+        residence_prefecture:
+          formData.residence_prefecture == 0 ? 13 : formData.residence_prefecture, // 東京
+        residencePrefectureName:
+          formData.residencePrefectureName == '' ? '東京' : formData.residencePrefectureName,
       }));
     }
   }, [formData.residence_country]);
@@ -163,18 +166,17 @@ export default function PlayerInformation() {
         ...prevFormData,
         uploadedPhotoName: currentShowFile.file.name,
         uploadedPhoto: currentShowFile.file,
-        photo: ''
-      }))
-    }
-    else {
+        photo: '',
+      }));
+    } else {
       setFormData((prevFormData) => ({
         ...prevFormData,
         uploadedPhotoName: '',
         uploadedPhoto: undefined,
-        photo: ''
-      }))
+        photo: '',
+      }));
     }
-  }, [currentShowFile]);//ファイルのアップロード終わったら
+  }, [currentShowFile]); //ファイルのアップロード終わったら
   //アップロードされたファイルを保存するー完了
 
   // 更新モードの時に、選手情報を取得する
@@ -190,7 +192,12 @@ export default function PlayerInformation() {
           // .get<PrefectureResponse[]>('http://localhost:3100/prefecture')
           .get('/getPrefecures')
           .then((response) => {
-            const stateList = response.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
+            const stateList = response.data.map(
+              ({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({
+                id: pref_id,
+                name: pref_name,
+              }),
+            );
             //console.log(stateList);
             setPrefectures(stateList);
             // setPrefectures(response.data);
@@ -208,7 +215,9 @@ export default function PlayerInformation() {
           .get('/getSexList') //20240123 DBからデータ取得
           .then((response) => {
             // console.log(response.data);
-            const sexList = response.data.map(({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }));
+            const sexList = response.data.map(
+              ({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }),
+            );
             setSex(sexList);
           })
           .catch((error) => {
@@ -224,7 +233,12 @@ export default function PlayerInformation() {
           // .get<CountryResponse[]>('http://localhost:3100/countries')
           .get('/getCountries')
           .then((response) => {
-            const countryList = response.data.map(({ country_id, country_name }: { country_id: number; country_name: string }) => ({ id: country_id, name: country_name }));
+            const countryList = response.data.map(
+              ({ country_id, country_name }: { country_id: number; country_name: string }) => ({
+                id: country_id,
+                name: country_name,
+              }),
+            );
             setCountries(countryList);
             // setCountries(response.data);
           })
@@ -245,7 +259,7 @@ export default function PlayerInformation() {
     fetchPrefecture();
 
     if (mode === 'update') {
-      console.log("aaaaaaaaaaaaa");
+      console.log('aaaaaaaaaaaaa');
       console.log(formData.residencePrefectureName);
       // TODO: 選手情報を取得する処理を実装
       // searchParams.get('id')から選手IDを取得
@@ -261,7 +275,7 @@ export default function PlayerInformation() {
             var data = response.data.result.side_info.split('');
             data.splice(0, 4); //サイド情報の先頭４つ分の不要なデータを削除
             for (let i = 0; i < 4; i++) {
-              if (data[i] == "1") {
+              if (data[i] == '1') {
                 data[i] = true;
               } else {
                 data[i] = false;
@@ -305,12 +319,10 @@ export default function PlayerInformation() {
               'API取得エラー:' + (error as Error).message,
             ]);
           });
-
-      }
-      fetchPlayerData();// APIを叩いて、選手情報を取得する
-      console.log("==============");
+      };
+      fetchPlayerData(); // APIを叩いて、選手情報を取得する
+      console.log('==============');
       console.log(formData.birthPrefectureName);
-
     } else if (mode === 'create') {
       setFormData((prevFormData) => ({
         ...prevFormData,
@@ -336,7 +348,6 @@ export default function PlayerInformation() {
         },
       }));
     }
-
   }, [mode]);
 
   /**
@@ -458,7 +469,7 @@ export default function PlayerInformation() {
           await csrf();
           axios
             // .post('http://localhost:3100/', registerData)
-            .post('/checkJARAPlayerId', { "jara_player_id": formData.jara_player_id, "mode": "create" })
+            .post('/checkJARAPlayerId', { jara_player_id: formData.jara_player_id, mode: 'create' })
             .then((response) => {
               // TODO: 更新処理成功時の処理
               // console.log(response);
@@ -468,7 +479,8 @@ export default function PlayerInformation() {
               // window.alert('入力したJARA選手コードと紐づくデータが存在しません。\nこのJARA選手コードで登録しますか？');
               if (response?.data != '') {
                 // OK が押下された場合、確認画面に遷移する　※短絡評価
-                window.confirm(response?.data) && router.push('/playerInformation?mode=confirm&prevMode=create');
+                window.confirm(response?.data) &&
+                  router.push('/playerInformation?mode=confirm&prevMode=create');
                 // window.alert(response?.data);
               } else {
                 router.push('/playerInformation?mode=confirm&prevMode=create');
@@ -476,9 +488,7 @@ export default function PlayerInformation() {
             })
             .catch((error) => {
               // TODO: 更新処理失敗時の処理
-              setErrorMessage([
-                ...(error?.response?.data as string[]),
-              ]);
+              setErrorMessage([...(error?.response?.data as string[])]);
             });
         }}
       >
@@ -498,14 +508,15 @@ export default function PlayerInformation() {
           await csrf();
           axios
             // .post('http://localhost:3100/', registerData)
-            .post('/checkJARAPlayerId', { "jara_player_id": formData.jara_player_id, "mode": "update" })
+            .post('/checkJARAPlayerId', { jara_player_id: formData.jara_player_id, mode: 'update' })
             .then((response) => {
               // TODO: 更新処理成功時の処理
               // console.log(response);
               setErrorMessage([]);
               if (response?.data != '') {
                 // OK が押下された場合、確認画面に遷移する　※短絡評価
-                window.confirm(response?.data) && router.push('/playerInformation?mode=confirm&prevMode=update');
+                window.confirm(response?.data) &&
+                  router.push('/playerInformation?mode=confirm&prevMode=update');
                 // window.alert(response?.data);
               } else {
                 router.push('/playerInformation?mode=confirm&prevMode=update');
@@ -513,9 +524,7 @@ export default function PlayerInformation() {
             })
             .catch((error) => {
               // TODO: 更新処理失敗時の処理
-              setErrorMessage([
-                ...(error?.response?.data as string[]),
-              ]);
+              setErrorMessage([...(error?.response?.data as string[])]);
             });
         }}
       >
@@ -534,15 +543,20 @@ export default function PlayerInformation() {
 
             // jara_player_id登録されているかどうかチェック
             await axios
-              .post('/checkJARAPlayerId', { "jara_player_id": formData.jara_player_id, "mode": "update_confirm" }) //20240123 送信テスト
+              .post('/checkJARAPlayerId', {
+                jara_player_id: formData.jara_player_id,
+                mode: 'update_confirm',
+              }) //20240123 送信テスト
               .then((response) => {
                 // TODO: 更新処理成功時の処理
                 // console.log(response);
-                if (formData.birth_country != 112) { //出身地が日本以外の場合、都道府県に関連したデータを削除する
+                if (formData.birth_country != 112) {
+                  //出身地が日本以外の場合、都道府県に関連したデータを削除する
                   formData.birth_prefecture = 0;
                   formData.birthPrefectureName = '';
                 }
-                if (formData.residence_country != 112) { //居住地が日本以外の場合、都道府県に関連したデータを削除する
+                if (formData.residence_country != 112) {
+                  //居住地が日本以外の場合、都道府県に関連したデータを削除する
                   formData.residence_prefecture = 0;
                   formData.residencePrefectureName = '';
                 }
@@ -556,7 +570,7 @@ export default function PlayerInformation() {
                 console.log(formData);
 
                 //nullのパラメータを空のパラメータに置き換える
-                Object.keys(formData).forEach(key => {
+                Object.keys(formData).forEach((key) => {
                   (formData as any)[key] = (formData as any)[key] ?? '';
                 });
                 setErrorMessage([]);
@@ -564,12 +578,13 @@ export default function PlayerInformation() {
                   // .post('http://localhost:3100/', registerData)
                   .post('/updatePlayerData', formData, {
                     //ファイルを送るため
-                    headers: { 'content-type': 'multipart/form-data', },
+                    headers: { 'content-type': 'multipart/form-data' },
                   }) //20240123 送信テスト
                   .then((response) => {
                     // TODO: 更新処理成功時の処理
                     window.alert('選手情報を更新しました。');
-                    const urlStr = '/playerInformationRef' + '?player_id=' + response.data.users[0].player_id;
+                    const urlStr =
+                      '/playerInformationRef' + '?player_id=' + response.data.users[0].player_id;
                     router.push(urlStr); //選手情報参照画面に遷移する
                   })
                   .catch((error) => {
@@ -582,17 +597,15 @@ export default function PlayerInformation() {
               })
               .catch((error) => {
                 // TODO: 更新処理失敗時の処理
-                setErrorMessage([
-                  ...(error?.response?.data as string[]),
-                ]);
+                setErrorMessage([...(error?.response?.data as string[])]);
 
                 return;
               });
             // axios
             //   // .post('http://localhost:3100/', registerData)
-            //   .post('/updatePlayerData', formData,{ 
+            //   .post('/updatePlayerData', formData,{
             //     //ファイルを送るため
-            //     headers: { 
+            //     headers: {
             //       'content-type' : 'multipart/form-data' ,
             //      } ,
             //    }) //20240123 送信テスト
@@ -618,15 +631,20 @@ export default function PlayerInformation() {
             // jara_player_id登録されているかどうかチェック
             await axios
               // .post('http://localhost:3100/', registerData)
-              .post('/checkJARAPlayerId', { "jara_player_id": formData.jara_player_id, "mode": "create_confirm" })
+              .post('/checkJARAPlayerId', {
+                jara_player_id: formData.jara_player_id,
+                mode: 'create_confirm',
+              })
               .then((response) => {
                 // TODO: 更新処理成功時の処理
                 // console.log(response);
-                if (formData.birth_country != 112) { //出身地が日本以外の場合、都道府県に関連したデータを削除する
+                if (formData.birth_country != 112) {
+                  //出身地が日本以外の場合、都道府県に関連したデータを削除する
                   formData.birth_prefecture = 0;
                   formData.birthPrefectureName = '';
                 }
-                if (formData.residence_country != 112) { //居住地が日本以外の場合、都道府県に関連したデータを削除する
+                if (formData.residence_country != 112) {
+                  //居住地が日本以外の場合、都道府県に関連したデータを削除する
                   formData.residence_prefecture = 0;
                   formData.residencePrefectureName = '';
                 }
@@ -640,7 +658,7 @@ export default function PlayerInformation() {
                 // console.log(formData);
 
                 //nullのパラメータを空のパラメータに置き換える
-                Object.keys(formData).forEach(key => {
+                Object.keys(formData).forEach((key) => {
                   (formData as any)[key] = (formData as any)[key] ?? '';
                 });
                 setErrorMessage([]);
@@ -648,12 +666,13 @@ export default function PlayerInformation() {
                   // .post('http://localhost:3100/', registerData)
                   .post('/storePlayerData', formData, {
                     //ファイルを送るため
-                    headers: { 'content-type': 'multipart/form-data', },
+                    headers: { 'content-type': 'multipart/form-data' },
                   })
                   .then((response) => {
                     // TODO: 登録処理成功時の処理の実装
                     window.alert('選手情報を登録しました。');
-                    const urlStr = '/playerInformationRef' + '?player_id=' + response.data.users[0].player_id;
+                    const urlStr =
+                      '/playerInformationRef' + '?player_id=' + response.data.users[0].player_id;
                     router.push(urlStr); //選手情報参照画面に遷移する
                   })
                   .catch((error) => {
@@ -666,9 +685,7 @@ export default function PlayerInformation() {
               })
               .catch((error) => {
                 // TODO: 更新処理失敗時の処理
-                setErrorMessage([
-                  ...(error?.response?.data as string[]),
-                ]);
+                setErrorMessage([...(error?.response?.data as string[])]);
 
                 return;
               });
@@ -710,7 +727,8 @@ export default function PlayerInformation() {
                 <ImageUploader
                   currentShowFile={currentShowFile}
                   setCurrentShowFile={setCurrentShowFile}
-                  setFormData={setFormData} initialPhotoUrl={formData?.photo ? `${PLAYER_IMAGE_URL}${formData.photo}` : ''}
+                  setFormData={setFormData}
+                  initialPhotoUrl={formData?.photo ? `${PLAYER_IMAGE_URL}${formData.photo}` : ''}
                 />
                 {/* 写真削除ボタン */}
                 <CustomButton
@@ -722,7 +740,7 @@ export default function PlayerInformation() {
                       ...prevFormData,
                       uploadedPhotoName: '',
                       uploadedPhoto: undefined,
-                      photo: ''
+                      photo: '',
                     }));
                     setCurrentShowFile(undefined);
                   }}
@@ -737,13 +755,15 @@ export default function PlayerInformation() {
                 {/* 写真 */}
                 <img
                   className='object-cover w-[320px] h-[320px] rounded-[2px]'
-                  src={currentShowFile?.preview ?? (formData.photo ? `${PLAYER_IMAGE_URL}${formData.photo}` : `${NO_IMAGE_URL}`)}
-
-                  alt="Profile Photo"
-                // Revoke data uri after image is loaded
-                // onLoad={() => {
-                //   console.log(currentShowFile);
-                // }}
+                  src={
+                    currentShowFile?.preview ??
+                    (formData.photo ? `${PLAYER_IMAGE_URL}${formData.photo}` : `${NO_IMAGE_URL}`)
+                  }
+                  alt='Profile Photo'
+                  // Revoke data uri after image is loaded
+                  // onLoad={() => {
+                  //   console.log(currentShowFile);
+                  // }}
                 />
               </div>
             )}

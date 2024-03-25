@@ -37,55 +37,53 @@ const CustomDropdown: FC<SelectProps> = ({
   toolTipText,
 }) => {
   return (
-    <div  
-      className='flex flex-col w-full gap-[6px]'
-    >
+    <div className='flex flex-col w-full gap-[6px]'>
       {label && (
-      <InputLabel
-        label={label || ''}
-        required={required}
-        displayHelp={displayHelp}
-        toolTipText={toolTipText || ''}
-        toolTipTitle={toolTipTitle || ''}
-      />
+        <InputLabel
+          label={label || ''}
+          required={required}
+          displayHelp={displayHelp}
+          toolTipText={toolTipText || ''}
+          toolTipTitle={toolTipTitle || ''}
+        />
       )}
-    <div className={className}>
-      {readonly && <p className='h-12 w-[300px] text-secondaryText py-3 disable'>{value}</p>}
-      {!readonly && (
-        <Select
-          id={id}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className={className + ' bg-white'}
-          readOnly={readonly}
-          placeholder={placeHolder}
-          error={isError}
-        >
-          {required && (
-          <MenuItem key='default' disabled value='0'>
-            未選択
-          </MenuItem>
-          )}
-          {!required && (
-          <MenuItem key='default' value=''>
-            未選択
-          </MenuItem>
-          )}
-          {options.map((option, index) => (
-            <MenuItem key={index} value={option.key} className='text-primaryText'>
-              {option.value}
-            </MenuItem>
-          ))}
-        </Select>
-      )}
-      {(errorMessages?.length || 0) > 0 && (
-        <p className='text-caption1 text-systemErrorText mt-1'>
-          {errorMessages?.map((message) => {
-            return message;
-          })}
-        </p>
-      )}
-    </div>
+      <div className={className}>
+        {readonly && <p className='h-12 w-[300px] text-secondaryText py-3 disable'>{value}</p>}
+        {!readonly && (
+          <Select
+            id={id}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className={className + ' bg-white'}
+            readOnly={readonly}
+            placeholder={placeHolder}
+            error={isError}
+          >
+            {required && (
+              <MenuItem key='default' disabled value='0'>
+                未選択
+              </MenuItem>
+            )}
+            {!required && (
+              <MenuItem key='default' value=''>
+                未選択
+              </MenuItem>
+            )}
+            {options.map((option, index) => (
+              <MenuItem key={index} value={option.key} className='text-primaryText'>
+                {option.value}
+              </MenuItem>
+            ))}
+          </Select>
+        )}
+        {(errorMessages?.length || 0) > 0 && (
+          <p className='text-caption1 text-systemErrorText mt-1'>
+            {errorMessages?.map((message) => {
+              return message;
+            })}
+          </p>
+        )}
+      </div>
     </div>
   );
 };

@@ -190,10 +190,17 @@ export default function TournamentRef() {
                     大会要項ダウンロード
                   </CustomButton> */}
                   {/* ダウンロードコード追加 開始*/}
-                  {tournamentFormData.tourn_info_faile_path && (<Link href={`${TOURNAMENT_PDF_URL}${tournamentFormData.tourn_info_faile_path}`} download className='w-[220px] text-normal text-white hover:text-primary-100 hover:bg-transparent hover:border-primary-100 ' target='_blank'>
-                    <FileDownloadOutlinedIcon className='text-[16px] mr-1 hover:text-primary-100 '></FileDownloadOutlinedIcon>
-                    大会要項ダウンロード
-                  </Link>)}
+                  {tournamentFormData.tourn_info_faile_path && (
+                    <Link
+                      href={`${TOURNAMENT_PDF_URL}${tournamentFormData.tourn_info_faile_path}`}
+                      download
+                      className='w-[220px] text-normal text-white hover:text-primary-100 hover:bg-transparent hover:border-primary-100 '
+                      target='_blank'
+                    >
+                      <FileDownloadOutlinedIcon className='text-[16px] mr-1 hover:text-primary-100 '></FileDownloadOutlinedIcon>
+                      大会要項ダウンロード
+                    </Link>
+                  )}
                   {/* ダウンロードコード追加 終了*/}
                 </div>
                 <div className='flex flex-row'>
@@ -281,16 +288,16 @@ export default function TournamentRef() {
                     userIdType.is_organization_manager == ROLE.GROUP_MANAGER ||
                     userIdType.is_jara == ROLE.JARA ||
                     userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
-                      <div className='flex flex-row gap-[10px]'>
-                        {/* エントリーシステムの大会ID */}
-                        <div className='text-gray-40 text-caption1'>エントリーシステムの大会ID：</div>
-                        <Label
-                          label={tournamentFormData.entrysystem_tourn_id}
-                          textColor='white'
-                          textSize='caption1'
-                        ></Label>
-                      </div>
-                    )}
+                    <div className='flex flex-row gap-[10px]'>
+                      {/* エントリーシステムの大会ID */}
+                      <div className='text-gray-40 text-caption1'>エントリーシステムの大会ID：</div>
+                      <Label
+                        label={tournamentFormData.entrysystem_tourn_id}
+                        textColor='white'
+                        textSize='caption1'
+                      ></Label>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -320,19 +327,23 @@ export default function TournamentRef() {
                 {tableData.map((row, index) => (
                   <CustomTr key={index}>
                     {/* 「出漕結果記録テーブル」に「レーステーブル」.「レースID」と紐づくデータが存在する場合、リンクボタンを表示するかどうかを制御するためにhasHistoryを利用 */}
-                    {(row.hasHistory == true) && (
+                    {row.hasHistory == true && (
                       // TODO: 遷移先のURLは仮置き。置き換えること。
                       <CustomTd
-                        transitionDest={'/tournamentRaceResultRef?raceId=' + row.race_id?.toString()}
+                        transitionDest={
+                          '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
+                        }
                       >
                         {row.race_id}
                       </CustomTd>
                     )}
                     {!row.hasHistory && <CustomTd>{row.race_id}</CustomTd>}
-                    {(row.hasHistory == true) && (
+                    {row.hasHistory == true && (
                       // TODO: 遷移先のURLは仮置き。置き換えること。
                       <CustomTd
-                        transitionDest={'/tournamentRaceResultRef?raceId=' + row.race_id?.toString()}
+                        transitionDest={
+                          '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
+                        }
                       >
                         {row.race_name}
                       </CustomTd>
@@ -380,7 +391,7 @@ export default function TournamentRef() {
                     //追加対象のデータをまとめて送信する 20240202
                     const sendFormData = {
                       tournamentFormData: tournamentFormData, //選手情報
-                      tableData: tableData //選手の出漕結果情報
+                      tableData: tableData, //選手の出漕結果情報
                     };
                     const isOk = window.confirm('大会情報を削除します。よろしいですか？');
                     const csrf = () => axios.get('/sanctum/csrf-cookie');

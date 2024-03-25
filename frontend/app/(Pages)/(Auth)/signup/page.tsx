@@ -127,7 +127,7 @@ export default function Signup() {
               <CustomButton
                 className='w-[120px] md:w-[240px]'
                 buttonType='primary'
-                onClick={async() => {
+                onClick={async () => {
                   // エラーがあればエラーメッセージを表示
                   const userNameError = Validator.getErrorMessages([
                     Validator.validateRequired(userName, 'ユーザー名'),
@@ -169,30 +169,30 @@ export default function Signup() {
                   await csrf();
                   // 仮登録処理
                   axios
-                    .post('/signup',  {
+                    .post('/signup', {
                       userName,
                       email,
                       confirmEmail,
-                      checked
+                      checked,
                     })
                     .then((response) => {
                       if (window.confirm(response?.data) == true) {
-                        router.push('/login')
-                      } 
+                        router.push('/login');
+                      }
                     })
                     .catch((error) => {
                       // console.log(error)
                       // エラー時の処理を実装
                       let systemError = [] as string[];
-                      if(error.response?.status === 422){
-                        systemError.push(error?.response?.data?.message)
-                      }
-
-                      else if(error.response?.status === 400){
-                        systemError = [...error?.response?.data?.system_error]
-                      }
-                      else{
-                        systemError = ["仮登録に失敗しました。","ユーザーサポートにお問い合わせください。"]
+                      if (error.response?.status === 422) {
+                        systemError.push(error?.response?.data?.message);
+                      } else if (error.response?.status === 400) {
+                        systemError = [...error?.response?.data?.system_error];
+                      } else {
+                        systemError = [
+                          '仮登録に失敗しました。',
+                          'ユーザーサポートにお問い合わせください。',
+                        ];
                       }
                       setErrorText(systemError);
                     });

@@ -25,9 +25,9 @@ interface CsvData {
   birthPlace: string; // 出身地
   residence: string; // 居住地
   birthCountryId: number; //出身地国ID
-  birthPrefectureId: number;  //出身地都道府県ID
+  birthPrefectureId: number; //出身地都道府県ID
   residenceCountryId: number; //居住地国ID
-  residencePrefectureId: number;  //居住地都道府県ID
+  residencePrefectureId: number; //居住地都道府県ID
 }
 // CSVアップロードのプロパティの型定義
 interface CsvUploadProps {
@@ -76,7 +76,11 @@ export default function TeamPlayerBulkRegister() {
 
   // 所属団体名の活性状態を制御
   let isOrgNameActive = false;
-  const org_id = searchParams.get('orgId')?.toString() || searchParams.get('org_id')?.toString() || searchParams.get('sponsor_org_id')?.toString() || '';
+  const org_id =
+    searchParams.get('orgId')?.toString() ||
+    searchParams.get('org_id')?.toString() ||
+    searchParams.get('sponsor_org_id')?.toString() ||
+    '';
   // orgIdの値を取得
   switch (org_id) {
     case '':
@@ -135,11 +139,7 @@ export default function TeamPlayerBulkRegister() {
       { label: 'メールアドレス', key: 'mailaddress' },
       { label: '選手名', key: 'playerName' },
     ],
-    data: [
-      {
-
-      },
-    ],
+    data: [{}],
     filename: '団体所属選手一括登録ファイル.csv',
     label: 'CSVフォーマット出力',
     isOrgSelected: orgSelected !== '',
@@ -251,8 +251,8 @@ export default function TeamPlayerBulkRegister() {
   const sendCsvData = async (row: any[]) => {
     const sendData = {
       targetOrgData,
-      csvDataList: row
-    }
+      csvDataList: row,
+    };
     console.log(sendData.csvDataList);
     try {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
@@ -265,26 +265,27 @@ export default function TeamPlayerBulkRegister() {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
       setActivationFlg(false);
     }
-  }
+  };
 
   //連携ボタン押下時 20240302
   const registerCsvData = async () => {
     const sendData = {
       targetOrgData,
-      csvDataList: csvData
-    }
+      csvDataList: csvData,
+    };
     console.log(sendData.csvDataList);
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
-    await axios.post('/registerOrgCsvData', sendData)
+    await axios
+      .post('/registerOrgCsvData', sendData)
       .then((res) => {
         console.log(res.data.result);
         // router.push('/tournamentSearch'); // 20240222
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
-  }
+  };
 
   const handleCheckboxValue = (result: string) => {
     return result.startsWith('無効データ')
@@ -301,7 +302,8 @@ export default function TeamPlayerBulkRegister() {
         <div className='flex flex-col gap-[10px] w-[300px]'>
           <CustomDropdown
             id='org'
-            label='所属団体名' displayHelp 
+            label='所属団体名'
+            displayHelp
             value={isOrgNameActive ? orgSelected : orgData.org_name} //団体参照画面から遷移した場合は、該当の団体名を表示する
             options={orgs.map((org) => ({ value: org.org_name, key: org.org_id }))}
             onChange={(e) => {

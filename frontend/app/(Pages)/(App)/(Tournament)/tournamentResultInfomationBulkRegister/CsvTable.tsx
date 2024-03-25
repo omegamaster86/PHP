@@ -23,7 +23,6 @@ const CsvTable = ({
   displayRegisterButton: (flg: boolean) => void;
   activationFlg: boolean;
 }) => {
-
   if (content.length === 0) {
     return <div className='text-primaryText'>CSVファイルをアップロードしてください。</div>;
   }

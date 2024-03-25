@@ -93,7 +93,6 @@ export default function ForgotPassword() {
               if (emailErrorMessages.length > 0 || emailConfirmErrorMessages.length > 0) {
                 // TODO: バリデーションエラー時の処理を実装
               } else {
-
                 const forgotPassword = async () => {
                   const csrf = () => axios.get('/sanctum/csrf-cookie');
                   await csrf();
@@ -110,7 +109,7 @@ export default function ForgotPassword() {
                       setMessageText([
                         '仮パスワードを記載したメールアドレスを送信しました。送信されたメールに記載されたパスワードを使用して、パスワードの再設定を行ってください。',
                       ]);
-                      
+
                       // TODO: ユーザーテーブルの更新
                     })
                     .catch((err) => {
@@ -118,8 +117,8 @@ export default function ForgotPassword() {
                       setMessageText([]);
                       setErrorText([...err?.response?.data]);
                     });
-                }
-                forgotPassword()
+                };
+                forgotPassword();
               }
             }}
           >

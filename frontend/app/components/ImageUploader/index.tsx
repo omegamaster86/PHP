@@ -12,9 +12,7 @@ interface ImageUploaderProps {
     SetStateAction<{ file: File; isUploaded: boolean; preview?: string } | undefined>
   >;
   // // UserResponse , PlayerInformationResponse
-  setFormData: Dispatch<
-  SetStateAction<any>
->;
+  setFormData: Dispatch<SetStateAction<any>>;
   initialPhotoUrl?: string;
   displayCloseIcon?: boolean;
 }
@@ -115,8 +113,6 @@ const ImageUploader: FC<ImageUploaderProps> = ({
     }
   }, [initialPhotoUrl]);
 
- 
-
   return (
     <div>
       <div>
@@ -149,11 +145,11 @@ const ImageUploader: FC<ImageUploaderProps> = ({
                   onClick={(e) => {
                     // 画像をクリアする
                     e.stopPropagation();
-                    setFormData((prevFormData:any) => ({
+                    setFormData((prevFormData: any) => ({
                       ...prevFormData,
-                      uploadedPhotoName:'',
+                      uploadedPhotoName: '',
                       uploadedPhoto: undefined,
-                      photo:''
+                      photo: '',
                     })) as void;
                     setInitialPhoto('');
                   }}
@@ -161,12 +157,14 @@ const ImageUploader: FC<ImageUploaderProps> = ({
                   <CloseIcon />
                 </button>
               )}
-              {initialPhoto ? (<img
-                className='object-cover w-[320px] h-[320px] cursor-pointer'
-                src={initialPhoto}
-                // Revoke data uri after image is loaded
-                onLoad={() => {}}
-              />) :  (
+              {initialPhoto ? (
+                <img
+                  className='object-cover w-[320px] h-[320px] cursor-pointer'
+                  src={initialPhoto}
+                  // Revoke data uri after image is loaded
+                  onLoad={() => {}}
+                />
+              ) : (
                 <div className='w-[320px] h-[320px] bg-containerBg m-auto mt-auto justify-center flex items-center flex-col gap-[10px]'>
                   <input {...getInputProps()} />
                   <UploadFileIcon className='w-full h-5 w-[32px] h-[32px] text-primaryText' />
