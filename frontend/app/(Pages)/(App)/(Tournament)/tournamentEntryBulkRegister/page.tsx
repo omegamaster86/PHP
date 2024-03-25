@@ -41,7 +41,7 @@ interface CsvDownloadProps {
 }
 
 // ファイル関連のアクションを扱うためのインターフェース
-interface FileHandler { }
+interface FileHandler {}
 
 // 選手情報連携のメインコンポーネント
 export default function TournamentEntryBulkRegister() {
@@ -198,7 +198,12 @@ export default function TournamentEntryBulkRegister() {
         // 大会名
         // const tournamentResponse = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments',);
         const TournamentsResponse = await axios.get('/getTournamentInfoData_allData'); //残件対象項目
-        const TournamentsResponseList = TournamentsResponse.data.result.map(({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({ id: tourn_id, name: tourn_name }));
+        const TournamentsResponseList = TournamentsResponse.data.result.map(
+          ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
+            id: tourn_id,
+            name: tourn_name,
+          }),
+        );
         console.log(TournamentsResponseList);
         setTournamentList(TournamentsResponseList);
       } catch (error) {
@@ -221,7 +226,12 @@ export default function TournamentEntryBulkRegister() {
       await csrf();
       const tournamentResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
       // console.log(tournamentResponse.data.result);
-      const TournamentsResponseList = tournamentResponse.data.result.map(({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({ id: tourn_id, name: tourn_name }));
+      const TournamentsResponseList = tournamentResponse.data.result.map(
+        ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
+          id: tourn_id,
+          name: tourn_name,
+        }),
+      );
       // console.log(TournamentsResponseList);
       setTournamentList(TournamentsResponseList);
       setFormData((prevFormData) => ({
@@ -314,7 +324,6 @@ export default function TournamentEntryBulkRegister() {
         },
       ]);
     } else {
-
       const tournIdError = checkMaxInt(row[0], 100000) || checkRequired(row[0]);
       const eventIdError = checkMaxInt(row[2], 1000) || checkRequired(row[2]);
       const raceTypeIdError = checkMaxInt(row[4], 1000) || checkRequired(row[4]);
@@ -348,7 +357,7 @@ export default function TournamentEntryBulkRegister() {
         ...(prevData as CsvData[]),
         {
           id: rowIndex,
-          checked: (loadingResultList[rowIndex] != null) ? false : true,
+          checked: loadingResultList[rowIndex] != null ? false : true,
           loadingResult: loadingResultList[rowIndex],
           tournId: row[0],
           tournIdError: tournIdError,
@@ -426,14 +435,14 @@ export default function TournamentEntryBulkRegister() {
           userIdError: false,
           playerName: row[17],
           playerNameError: false,
-        }
+        };
       });
       var element = array as CsvData[];
       console.log(element);
       const sendTournData = {
         tournData: formData,
-        csvDataList: element
-      }
+        csvDataList: element,
+      };
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       const response = await axios.post('/sendTournamentEntryCsvData', sendTournData);
@@ -450,15 +459,15 @@ export default function TournamentEntryBulkRegister() {
     } catch (error) {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
     }
-  }
+  };
 
   const checkRaceResultRecords = async () => {
     let apiUri = 'http://localhost:3100/checkRaceResultRecord';
     try {
       const sendTournData = {
         tournData: formData,
-        csvDataList: csvData
-      }
+        csvDataList: csvData,
+      };
       // ToDo バックエンドの例外処理に関する仕様が決まり次第、エラーメッセージを修正すること
       // const response = await axios.get<CheckRaceResultRecord>('http://localhost:3100/checkRaceResultRecord/',);
       const response = await axios.post('/registerTournamentEntryCsvData', sendTournData);
@@ -525,11 +534,11 @@ export default function TournamentEntryBulkRegister() {
           <div
             className={
               prevScreen === 'tournamentRef' ||
-                !(
-                  formData?.eventYear === '' ||
-                  formData?.eventYear === null ||
-                  formData?.eventYear === undefined
-                )
+              !(
+                formData?.eventYear === '' ||
+                formData?.eventYear === null ||
+                formData?.eventYear === undefined
+              )
                 ? 'hidden'
                 : ''
             }
@@ -637,8 +646,7 @@ export default function TournamentEntryBulkRegister() {
                       window.confirm(
                         '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
                       )
-                        ? (
-                          await sendCsvData(), //バックエンド側にCSVデータを送信 データ判定用
+                        ? (await sendCsvData(), //バックエンド側にCSVデータを送信 データ判定用
                           setCsvData([]),
                           // console.log(loadingResultList),
                           csvFileData?.content?.slice(1).map((row, rowIndex) => {

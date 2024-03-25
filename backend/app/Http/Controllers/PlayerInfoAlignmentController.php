@@ -35,7 +35,9 @@ class PlayerInfoAlignmentController extends Controller
         //Log::debug($reqData);
         //処理済み行の既存選手IDを格納する
         $processed_player_id_array = [];
+        //for($rowIndex = 0; $rowIndex < count($reqData); $rowIndex++)
         //1行ずつ処理する
+        //ヘッダーが含まれているから0行目は処理対象としない
         for($rowIndex = 1; $rowIndex < count($reqData); $rowIndex++)
         {
             $old_player_id = $reqData[$rowIndex]["oldPlayerId"];    //既存選手ID

@@ -83,7 +83,7 @@ export default function TeamSearch() {
    * 検索結果をstateにセットする
    */
   const handleSearch = async () => {
-    formData.residenceCountryId = "112"; //仕様変更により、日本の固定値を代入 20240223
+    formData.residenceCountryId = '112'; //仕様変更により、日本の固定値を代入 20240223
     console.log(formData);
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
@@ -93,7 +93,11 @@ export default function TeamSearch() {
       .then((response) => {
         const data = response.data.result;
         for (let index = 0; index < data.length; index++) {
-          if (data[index].orgTypeName == 'JARA・県ボ' || data[index].orgTypeName == 'JARA' || data[index].orgTypeName == '県ボ') {
+          if (
+            data[index].orgTypeName == 'JARA・県ボ' ||
+            data[index].orgTypeName == 'JARA' ||
+            data[index].orgTypeName == '県ボ'
+          ) {
             data[index].orgTypeName = '正規';
           }
         }
@@ -136,18 +140,33 @@ export default function TeamSearch() {
         // const orgType = await axios.get<OrgType[]>('/orgType');
         const orgType = await axios.get('/getOrganizationTypeData');
         console.log(orgType.data);
-        const orgTypeList = orgType.data.map(({ org_type_id, org_type }: { org_type_id: number; org_type: string }) => ({ id: org_type_id, name: org_type }));
+        const orgTypeList = orgType.data.map(
+          ({ org_type_id, org_type }: { org_type_id: number; org_type: string }) => ({
+            id: org_type_id,
+            name: org_type,
+          }),
+        );
         setOrgTypeOptions(orgTypeList);
 
         //団体区分マスターの取得 20240209
         // const orgClass = await axios.get<OrgClass[]>('/orgClass');
         const orgClass = await axios.get('/getOrganizationClass');
-        const orgClassList = orgClass.data.map(({ org_class_id, org_class_name }: { org_class_id: number; org_class_name: string }) => ({ id: org_class_id, name: org_class_name }));
+        const orgClassList = orgClass.data.map(
+          ({ org_class_id, org_class_name }: { org_class_id: number; org_class_name: string }) => ({
+            id: org_class_id,
+            name: org_class_name,
+          }),
+        );
         console.log(orgClassList);
         setOrgClassOptions(orgClassList);
 
         const prefectures = await axios.get('/getPrefecures'); //都道府県マスターの取得 20240208
-        const stateList = prefectures.data.map(({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({ id: pref_id, name: pref_name }));
+        const stateList = prefectures.data.map(
+          ({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({
+            id: pref_id,
+            name: pref_name,
+          }),
+        );
         setPrefectureOptions(stateList);
 
         // const userInfo = await axios.get<UserResponse>('/api/user');
@@ -305,17 +324,17 @@ export default function TeamSearch() {
                 userIdType.is_player == ROLE.PLAYER ||
                 userIdType.is_volunteer == ROLE.VOLUNTEER
               ) && (
-                  // エントリーシステムの団体ID
-                  <CustomTextField
-                    label='エントリーシステムID'
-                    onChange={(e) => {
-                      handleInputChange('entrySystemId', e.target.value);
-                    }}
-                    value={formData?.entrySystemId || ''}
-                    toolTipTitle='Title' //はてなボタン用
-                    toolTipText='サンプル用のツールチップ表示' //はてなボタン用
-                  />
-                )}
+                // エントリーシステムの団体ID
+                <CustomTextField
+                  label='エントリーシステムID'
+                  onChange={(e) => {
+                    handleInputChange('entrySystemId', e.target.value);
+                  }}
+                  value={formData?.entrySystemId || ''}
+                  toolTipTitle='Title' //はてなボタン用
+                  toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+                />
+              )}
               <div className='w-full flex flex-col justify-start gap-[8px]'>
                 <InputLabel
                   label='設立年'
@@ -335,7 +354,9 @@ export default function TeamSearch() {
                   {/* 創立年（終了年） */}
                   <CustomYearPicker
                     selectedDate={formData.foundingYear_end}
-                    onChange={(date: Date) => handleInputChange('foundingYear_end', date.getFullYear().toString())}
+                    onChange={(date: Date) =>
+                      handleInputChange('foundingYear_end', date.getFullYear().toString())
+                    }
                   />
                 </div>
               </div>

@@ -27,7 +27,7 @@ interface RaceResultRecordsResponse {
   org_name: string; // 団体所属
   org_id: string; // 団体所属ID
   race_number: number; // レースNo.
-  event_name: string; // 種目　
+  event_name: string; // 種目
   race_name: string; // レース名
   by_group: string; // 組別
   crew_name: string; // クルー名
@@ -236,7 +236,7 @@ interface VolunteerResponse {
   dis_type_id: string[]; // 障碍タイプ
   qualHold: string[]; // 保有資格　#置き換え作業未対応
   language: any; // 言語　#置き換え作業未対応
-  language_proficiency: any;  //言語レベル
+  language_proficiency: any; //言語レベル
   day_of_week: string; // 曜日
   time_zone: string; // 時間帯
   photo: string; // 写真　#置き換え作業未対応
@@ -380,7 +380,7 @@ interface CrewPlayer {
 interface CrewResponse {
   player_id: number; // 選手ID
   seat_id: number; // シート番号（出漕時点）
-  seat_name: string;  //シート名
+  seat_name: string; //シート名
   seat_addr_name: string; //シート略称
   player_name: string; // 選手名
   player_height: number; // 選手身長（出漕時点）
@@ -398,7 +398,7 @@ interface Organization {
   post_code: string; // 郵便番号
   post_code1: string; // 郵便番号 分割した前3文字
   post_code2: string; // 郵便番号 分割した後4文字
-  location_country: number;// 所在地（国）
+  location_country: number; // 所在地（国）
   locationCountry: string; // 所在地（国）
   location_prefecture: number; // 所在地（都道府県）
   locationPrefectureName: string; // 所在地（都道府県）
@@ -425,12 +425,11 @@ interface Staff {
 }
 
 //団体所属選手情報
-interface OrganizationPlayer
-{
-  org_player_id: number;  //団体所属ID
-  org_id: number;         //団体ID
-  player_id: number;      //選手ID
-  joining_date: string;   //団体登録年月日
+interface OrganizationPlayer {
+  org_player_id: number; //団体所属ID
+  org_id: number; //団体ID
+  player_id: number; //選手ID
+  joining_date: string; //団体登録年月日
   deperture_date: string; //退団年月日
 }
 
@@ -450,17 +449,17 @@ interface OrgClass {
 // 団体情報
 interface Org {
   entrysystem_org_id: number;
-  org_id: number;// 団体ID
-  org_name: string;// 団体名
-  org_class: number;// 団体区分
+  org_id: number; // 団体ID
+  org_name: string; // 団体名
+  org_class: number; // 団体区分
   orgClassName: string; // 　#置き換え作業未対応
   orgTypeId: number; // 　#置き換え作業未対応
   orgTypeName: string; // 　#置き換え作業未対応
-  founding_year: string;// 創立年
-  location_country: number;// 所在地（国）
-  residenceCountryName: string;// 　#置き換え作業対応不要
-  location_prefecture: number;// 所在地（都道府県）
-  residencePrefectureName: string;// 　#置き換え作業対応不要
+  founding_year: string; // 創立年
+  location_country: number; // 所在地（国）
+  residenceCountryName: string; // 　#置き換え作業対応不要
+  location_prefecture: number; // 所在地（都道府県）
+  residencePrefectureName: string; // 　#置き換え作業対応不要
 }
 
 // レース情報

@@ -40,12 +40,7 @@
       "sexId": 1,
       "orgName": "団体A",
       "orgId": 3847803275,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false]
     },
     {
       "playerId": 1000002,
@@ -64,12 +59,7 @@
       "sexId": 1,
       "orgName": "団体A",
       "orgId": 3847803275,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false]
     },
     {
       "playerId": 1000003,
@@ -88,12 +78,7 @@
       "sexId": 1,
       "orgName": "団体A",
       "orgId": 3847803275,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false]
     },
     {
       "playerId": 1000004,
@@ -112,12 +97,7 @@
       "sexId": 1,
       "orgName": "団体A",
       "orgId": 3847803275,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false]
     },
     {
       "playerId": 1000005,
@@ -136,12 +116,7 @@
       "sexId": 1,
       "orgName": "団体A",
       "orgId": 3847803275,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false]
     },
     {
       "playerId": 1000006,
@@ -160,12 +135,7 @@
       "sexId": 1,
       "orgName": "団体A",
       "orgId": 3847803275,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false]
     },
     {
       "playerId": 1000007,
@@ -184,12 +154,7 @@
       "sexId": 1,
       "orgName": "団体A",
       "orgId": 3847803275,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false]
     },
     {
       "playerId": 1000008,
@@ -208,12 +173,7 @@
       "sexId": 1,
       "orgName": "団体A",
       "orgId": 3847803275,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false]
     },
     {
       "playerId": 1000009,
@@ -232,12 +192,7 @@
       "sexId": 1,
       "orgName": "団体A",
       "orgId": 3847803275,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false]
     },
     {
       "playerId": 1000010,
@@ -256,12 +211,7 @@
       "sexId": 1,
       "orgName": "団体A",
       "orgId": 3847803275,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false]
     },
     {
       "playerId": 1000011,
@@ -280,12 +230,7 @@
       "sexId": 1,
       "orgName": "団体A",
       "orgId": 3847803275,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false]
     }
   ],
   "teamPlayers": [
@@ -302,12 +247,7 @@
       "residenceCountryId": 0,
       "residencePrefectureName": "東京",
       "residencePrefectureId": 0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false]
     },
     {
       "playerId": 1000002,
@@ -322,12 +262,7 @@
       "residenceCountryId": 0,
       "residencePrefectureName": "東京",
       "residencePrefectureId": 0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false]
     },
     {
       "playerId": 1000003,
@@ -342,12 +277,7 @@
       "residenceCountryId": 0,
       "residencePrefectureName": "東京",
       "residencePrefectureId": 0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false]
     },
     {
       "playerId": 1000004,
@@ -362,12 +292,7 @@
       "residenceCountryId": 1,
       "residencePrefectureName": "未設定",
       "residencePrefectureId": 1,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false]
     }
   ],
   "player": {
@@ -388,12 +313,7 @@
     "residenceCountryId": 0,
     "residencePrefectureName": "東京",
     "residencePrefectureId": 0,
-    "sideInfo": [
-      true,
-      false,
-      true,
-      false
-    ],
+    "sideInfo": [true, false, true, false],
     "photo": "https://source.unsplash.com/random"
   },
   "prefecture": [
@@ -679,7 +599,7 @@
       ],
       "finalHeratRate": 129,
       "laneNumber": 1,
-      "startDateTime":"2021/01/01 10:00",
+      "startDateTime": "2021/01/01 10:00",
       "weatherId": 1,
       "weatherName": "晴れ"
     },
@@ -736,7 +656,7 @@
       "crewPlayer": [],
       "finalHeratRate": 229,
       "laneNumber": 2,
-      "startDateTime":"2021/01/02 10:00",
+      "startDateTime": "2021/01/02 10:00",
       "weatherId": 2,
       "weatherName": "曇り"
     },
@@ -788,7 +708,7 @@
       "crewPlayer": [],
       "finalHeratRate": 329,
       "laneNumber": 3,
-      "startDateTime":"2021/01/03 10:00",
+      "startDateTime": "2021/01/03 10:00",
       "weatherId": 3,
       "weatherName": "雨"
     },
@@ -839,7 +759,7 @@
       "crewPlayer": [],
       "finalHeratRate": 429,
       "laneNumber": 4,
-      "startDateTime":"2021/01/04 10:00",
+      "startDateTime": "2021/01/04 10:00",
       "weatherId": 1,
       "weatherName": "晴れ"
     },
@@ -890,7 +810,7 @@
       "crewPlayer": [],
       "finalHeratRate": 529,
       "laneNumber": 5,
-      "startDateTime":"2021/01/05 10:00",
+      "startDateTime": "2021/01/05 10:00",
       "weatherId": 1,
       "weatherName": "晴れ"
     },
@@ -941,7 +861,7 @@
       "crewPlayer": [],
       "finalHeratRate": 629,
       "laneNumber": 6,
-      "startDateTime":"2021/01/06 10:00",
+      "startDateTime": "2021/01/06 10:00",
       "weatherId": 1,
       "weatherName": "晴れ"
     },
@@ -992,7 +912,7 @@
       "crewPlayer": [],
       "finalHeratRate": 729,
       "laneNumber": 7,
-      "startDateTime":"2021/01/07 10:00",
+      "startDateTime": "2021/01/07 10:00",
       "weatherId": 1,
       "weatherName": "晴れ"
     },
@@ -1043,7 +963,7 @@
       "crewPlayer": [],
       "finalHeratRate": 829,
       "laneNumber": 8,
-      "startDateTime":"2021/01/08 10:00",
+      "startDateTime": "2021/01/08 10:00",
       "weatherId": 1,
       "weatherName": "晴れ"
     },
@@ -1094,7 +1014,7 @@
       "crewPlayer": [],
       "finalHeratRate": 929,
       "laneNumber": 9,
-      "startDateTime":"2021/01/09 10:00",
+      "startDateTime": "2021/01/09 10:00",
       "weatherId": 1,
       "weatherName": "晴れ"
     },
@@ -1145,7 +1065,7 @@
       "crewPlayer": [],
       "finalHeratRate": 1029,
       "laneNumber": 10,
-      "startDateTime":"2021/01/10 10:00",
+      "startDateTime": "2021/01/10 10:00",
       "weatherId": 1,
       "weatherName": "晴れ"
     },
@@ -1196,7 +1116,7 @@
       "crewPlayer": [],
       "finalHeratRate": 1129,
       "laneNumber": 11,
-      "startDateTime":"2021/01/11 10:00",
+      "startDateTime": "2021/01/11 10:00",
       "weatherId": 1,
       "weatherName": "晴れ"
     }
@@ -1738,16 +1658,8 @@
     "mailaddress": "sample@mail.com",
     "clothesSize": "M",
     "personality": "性格",
-    "disType": [
-      "PR1",
-      "PR2",
-      "PR3"
-    ],
-    "qualHold": [
-      "資格1",
-      "資格2",
-      "資格3"
-    ],
+    "disType": ["PR1", "PR2", "PR3"],
+    "qualHold": ["資格1", "資格2", "資格3"],
     "language": [
       {
         "languageName": "言語1",
@@ -1901,16 +1813,8 @@
       "sex": "男性",
       "telephoneNumber": "090-1234-5678",
       "mailaddress": "sample@mail.com",
-      "disType": [
-        "PR1",
-        "PR2",
-        "PR3"
-      ],
-      "qualHold": [
-        "資格1",
-        "資格2",
-        "資格3"
-      ],
+      "disType": ["PR1", "PR2", "PR3"],
+      "qualHold": ["資格1", "資格2", "資格3"],
       "language": [
         {
           "languageName": "言語1",
@@ -1935,16 +1839,8 @@
       "sex": "男性",
       "telephoneNumber": "090-1234-5678",
       "mailaddress": "sample@mail.com",
-      "disType": [
-        "PR1",
-        "",
-        "PR3"
-      ],
-      "qualHold": [
-        "資格1",
-        "",
-        "資格3"
-      ],
+      "disType": ["PR1", "", "PR3"],
+      "qualHold": ["資格1", "", "資格3"],
       "language": [
         {
           "languageName": "日本語",
@@ -1969,16 +1865,8 @@
       "sex": "男性",
       "telephoneNumber": "090-1234-5678",
       "mailaddress": "sample@mail.com",
-      "disType": [
-        "PR1",
-        "PR2",
-        "PR3"
-      ],
-      "qualHold": [
-        "資格1",
-        "資格2",
-        "資格3"
-      ],
+      "disType": ["PR1", "PR2", "PR3"],
+      "qualHold": ["資格1", "資格2", "資格3"],
       "language": [
         {
           "languageName": "言語1",
@@ -2022,10 +1910,7 @@
       "id": 1,
       "userId": 1000001,
       "userName": "ユーザー名1",
-      "staffType": [
-        "マネージャー",
-        "コーチ"
-      ],
+      "staffType": ["マネージャー", "コーチ"],
       "deleteFlag": false,
       "isUserFound": true
     },
@@ -2041,9 +1926,7 @@
       "id": 3,
       "userId": 1000003,
       "userName": "",
-      "staffType": [
-        "監督"
-      ],
+      "staffType": ["監督"],
       "deleteFlag": false,
       "isUserFound": false
     }
@@ -2270,16 +2153,7 @@
       "residencePrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     },
     {
       "id": 3,
@@ -2307,16 +2181,7 @@
       "residencePrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     },
     {
       "id": 2,
@@ -2344,16 +2209,7 @@
       "residencePrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     }
   ],
   "playerSearch": [
@@ -2378,16 +2234,7 @@
       "birthPrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     },
     {
       "id": 2,
@@ -2410,16 +2257,7 @@
       "birthPrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     },
     {
       "id": 3,
@@ -2442,16 +2280,7 @@
       "birthPrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     },
     {
       "id": 4,
@@ -2474,16 +2303,7 @@
       "birthPrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     },
     {
       "id": 5,
@@ -2506,16 +2326,7 @@
       "birthPrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     },
     {
       "id": 6,
@@ -2538,16 +2349,7 @@
       "birthPrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     },
     {
       "id": 7,
@@ -2571,16 +2373,7 @@
       "birthPrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     },
     {
       "id": 8,
@@ -2604,16 +2397,7 @@
       "birthPrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     },
     {
       "id": 9,
@@ -2637,16 +2421,7 @@
       "birthPrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     },
     {
       "id": 10,
@@ -2670,16 +2445,7 @@
       "birthPrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     },
     {
       "id": 11,
@@ -2703,16 +2469,7 @@
       "birthPrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     },
     {
       "id": 12,
@@ -2736,16 +2493,7 @@
       "birthPrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     },
     {
       "id": 13,
@@ -2769,16 +2517,7 @@
       "birthPrefectureName": "東京",
       "weight": 60.0,
       "height": 180.0,
-      "sideInfo": [
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false
-      ]
+      "sideInfo": [true, false, true, false, true, false, true, false]
     }
   ],
   "raceName": [

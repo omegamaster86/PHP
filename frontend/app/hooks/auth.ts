@@ -7,12 +7,12 @@ export const useAuth = ({
   middleware,
   redirectIfAuthenticated,
 }: {
-  middleware?: string
-  redirectIfAuthenticated?: string
+  middleware?: string;
+  redirectIfAuthenticated?: string;
 }) => {
   const router = useRouter();
   const pathname = usePathname();
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const {
     data: user,
@@ -21,101 +21,80 @@ export const useAuth = ({
   } = useSWR('/api/user', () =>
     axios
       .get('/api/user')
-      .then(res => res.data)
-      .catch(error => {
+      .then((res) => res.data)
+      .catch((error) => {
         // if (error.response.status !== 409) {
         //   // throw error
         // }
-        if(pathname==="/signup" ||  pathname==="/forgotpassword" || pathname==="/inquiry"){
-
-        }
-        else {
+        if (pathname === '/signup' || pathname === '/forgotpassword' || pathname === '/inquiry') {
+        } else {
           router.push('/login');
         }
-        
-      })
+      }),
   );
 
   const csrf = () => axios.get('/sanctum/csrf-cookie');
 
-  const login = async (data: {
-    email: string
-    password: string
-  }) => {
+  const login = async (data: { email: string; password: string }) => {
     try {
       await csrf();
       await axios.post('/login', data);
       mutate();
     } catch (error) {
-      throw error
+      throw error;
     }
   };
 
   const logout = async () => {
     if (!error) {
-      if(pathname==="/signup" ||  pathname==="/forgotpassword" || pathname==="/inquiry"){
-
-      }
-      else {
-        try{
+      if (pathname === '/signup' || pathname === '/forgotpassword' || pathname === '/inquiry') {
+      } else {
+        try {
           await axios.post('/logout').then(() => {
             mutate();
             window.history.replaceState(null, '', '/login');
-          })
-        }
-        catch(error){
+          });
+        } catch (error) {
           router.push('/login');
-        };
+        }
       }
-      
     }
-    if(pathname==="/signup" ||  pathname==="/forgotpassword" || pathname==="/inquiry"){
-
-    }
-    else{
+    if (pathname === '/signup' || pathname === '/forgotpassword' || pathname === '/inquiry') {
+    } else {
       window.history.replaceState(null, '', '/login');
       window.location.pathname = '/login';
     }
-    
-  }
+  };
 
   useEffect(() => {
-
-    if(user || error) {
+    if (user || error) {
       setIsLoading(false);
     }
 
     if (user?.temp_password_flag) {
       router.push('/passwordchange');
     }
-    
+
     if (middleware === 'guest' && redirectIfAuthenticated && user) {
       if (user?.temp_password_flag) {
         router.push('/passwordchange');
-      }
-      else{
+      } else {
         router.push(redirectIfAuthenticated);
       }
-      
     }
 
-    
     if (middleware === 'auth' && error) {
-      
-      if(pathname==="/signup" ||  pathname==="/forgotpassword" || pathname==="/inquiry") {
-
-      }
-      else {
+      if (pathname === '/signup' || pathname === '/forgotpassword' || pathname === '/inquiry') {
+      } else {
         logout();
       }
-      
     }
-  }, [user, error, middleware, redirectIfAuthenticated])
+  }, [user, error, middleware, redirectIfAuthenticated]);
 
   return {
     user,
     login,
     logout,
     isLoading,
-  }
-}
+  };
+};

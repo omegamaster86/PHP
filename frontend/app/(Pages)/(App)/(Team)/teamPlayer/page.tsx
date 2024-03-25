@@ -75,9 +75,9 @@ export default function TeamPlayer() {
           id: index,
         }));
       try {
-        const sendId = { org_id: orgId }
-        const csrf = () => axios.get('/sanctum/csrf-cookie')
-        await csrf()
+        const sendId = { org_id: orgId };
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
         // SessionStorageに追加選手リストがある場合、追加選手リストを取得
         if (sessionStorage.getItem('addPlayerList') !== null) {
           const addPlayerList = JSON.parse(sessionStorage.getItem('addPlayerList') as string);
@@ -110,7 +110,6 @@ export default function TeamPlayer() {
             const searchRes = transformData(response.data.result, '既存');
             console.log(searchRes);
             data = setIndex(searchRes.concat(data));
-
           }
           setFormData(data);
           sessionStorage.removeItem('addPlayerList');
@@ -344,8 +343,8 @@ export default function TeamPlayer() {
                 // TODO: 反映処理　残件対応項目
                 const sendData = {
                   target_org_id: teamData.org_id,
-                  formData: formData
-                }
+                  formData: formData,
+                };
                 const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
                 axios
@@ -354,9 +353,7 @@ export default function TeamPlayer() {
                     // TODO: 更新処理成功時の処理
                     console.log(response.data);
                   })
-                  .catch((error) => {
-
-                  });
+                  .catch((error) => {});
               }}
             >
               反映

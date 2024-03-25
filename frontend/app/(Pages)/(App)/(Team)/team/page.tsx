@@ -93,7 +93,6 @@ export default function OrgInfo() {
   const [userNameErrorMessage, setUserNameErrorMessage] = useState([] as string[]);
   const [userTypeErrorMessage, setUserTypeErrorMessage] = useState([] as string[]);
 
-
   // フォームデータを管理する状態
   const [tableData, setTableData] = useState<Staff[]>([]);
 
@@ -156,18 +155,39 @@ export default function OrgInfo() {
         // const prefectures = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
         const prefectures = await axios.get('/getPrefecures'); //都道府県マスターの取得 20240208
         // console.log(prefectures);
-        const stateList = prefectures.data.map(({
-          pref_id, pref_name, pref_code_jis }: { pref_id: number; pref_name: string; pref_code_jis: string }) => ({
-            id: pref_id, name: pref_name, prefCodeJis: pref_code_jis
-          }));
+        const stateList = prefectures.data.map(
+          ({
+            pref_id,
+            pref_name,
+            pref_code_jis,
+          }: {
+            pref_id: number;
+            pref_name: string;
+            pref_code_jis: string;
+          }) => ({
+            id: pref_id,
+            name: pref_name,
+            prefCodeJis: pref_code_jis,
+          }),
+        );
         setPrefectureOptions(stateList);
         // const orgClass = await axios.get<OrgClass[]>('http://localhost:3100/orgClass');
         const orgClass = await axios.get('/getOrganizationClass'); //団体区分マスターの取得 20240208
-        const orgClassList = orgClass.data.map(({ org_class_id, org_class_name }: { org_class_id: number; org_class_name: string }) => ({ id: org_class_id, name: org_class_name }));
+        const orgClassList = orgClass.data.map(
+          ({ org_class_id, org_class_name }: { org_class_id: number; org_class_name: string }) => ({
+            id: org_class_id,
+            name: org_class_name,
+          }),
+        );
         setOrgClassOptions(orgClassList);
         // const orgType = await axios.get<OrgType[]>('http://localhost:3100/orgType');
         const orgType = await axios.get('/getOrganizationTypeData'); //団体種別マスターの取得 20240208
-        const orgTypeList = orgType.data.map(({ org_type_id, org_type }: { org_type_id: number; org_type: string }) => ({ id: org_type_id, name: org_type }));
+        const orgTypeList = orgType.data.map(
+          ({ org_type_id, org_type }: { org_type_id: number; org_type: string }) => ({
+            id: org_type_id,
+            name: org_type,
+          }),
+        );
         console.log(orgTypeList);
         setOrgTypeOptions(orgTypeList);
         // const user = await axios.get<UserResponse>('http://localhost:3100/user');
@@ -211,8 +231,7 @@ export default function OrgInfo() {
           const staff = await axios.post('/getOrgStaffData', sendId);
           console.log(staff.data);
           setTableData(staff.data.result);
-        }
-        else if (mode === 'create') {
+        } else if (mode === 'create') {
           setFormData((prevFormData) => ({
             ...prevFormData,
             ...{
@@ -255,7 +274,6 @@ export default function OrgInfo() {
 
         const playerInf = await axios.get('/getIDsAssociatedWithUser');
         setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
-
       } catch (error: any) {
         setErrorMessage(['API取得エラー:' + error.message]);
       }
@@ -270,13 +288,15 @@ export default function OrgInfo() {
    */
   useEffect(() => {
     // const addressNumbers = formData.post_code?.split('-');
-    if (formData.post_code.includes('-')) { //バリデーションチェック時はハイフンが結合されるため
+    if (formData.post_code.includes('-')) {
+      //バリデーションチェック時はハイフンが結合されるため
       console.log(formData.post_code);
       const addressNumbers = formData.post_code.split('-');
       console.log(addressNumbers);
       formData.post_code1 = addressNumbers[0];
       formData.post_code2 = addressNumbers[1];
-    } else { //DBから受け取ったときはハイフンが無いため
+    } else {
+      //DBから受け取ったときはハイフンが無いため
       console.log(formData.post_code);
       if (formData.post_code.length == 7) {
         const addressNumbers = Array();
@@ -303,7 +323,9 @@ export default function OrgInfo() {
 
     const foundingYearError = Validator.getErrorMessages([
       Validator.validateFoundingYear(
-        (formData.founding_year === 0 || formData.founding_year == null) ? '' : formData.founding_year.toString(),
+        formData.founding_year === 0 || formData.founding_year == null
+          ? ''
+          : formData.founding_year.toString(),
       ),
     ]);
     setFoundingYearErrorMessages(foundingYearError);
@@ -333,7 +355,6 @@ export default function OrgInfo() {
     ]);
     setPrefOrgTypeErrorMessages(prefTrailError);
 
-
     //スタッフ登録のバリデーションチェック 20240308
     // 削除欄にチェックが入っている場合、バリデーションチェックを行わない
     const userIdErrorFlg = tableData.some((row) => {
@@ -348,7 +369,7 @@ export default function OrgInfo() {
       if (row.delete_flag) return false;
       var staff_type = null;
       if (row.staff_type_id.length > 0) {
-        staff_type = "OK";
+        staff_type = 'OK';
       }
       return Validator.validateRequired(staff_type, 'ユーザー種別').length > 0;
     });
@@ -417,14 +438,13 @@ export default function OrgInfo() {
 
   //所在地検索 20240315
   const getAddress = async (): Promise<void> => {
-    console.log("getAddress start");
-    const res = await _axios.get("https://zipcloud.ibsnet.co.jp/api/search", {
-      params: { zipcode: (formData.post_code1 + formData.post_code2) },
+    console.log('getAddress start');
+    const res = await _axios.get('https://zipcloud.ibsnet.co.jp/api/search', {
+      params: { zipcode: formData.post_code1 + formData.post_code2 },
     });
     if (res.data.status === 200) {
       console.log(res.data);
       if (res.data.results != null) {
-
         //外部サイトから取得したprefCodeとDBのprefCodeを対応させる処理 20240318
         var prefcode = 0;
         // console.log(prefectureOptions);
@@ -451,7 +471,7 @@ export default function OrgInfo() {
       // setAddress('');
       // setMsg(res.data.message);
     }
-  }
+  };
 
   // 確認
   const modeCustomButtons = {
@@ -468,17 +488,17 @@ export default function OrgInfo() {
             // console.log(tableData);
             //空行の削除
             var staffList = tableData.filter(function (x) {
-              return !((x.delete_flag == true) && (x.user_id == "" || x.user_name == ""))
+              return !(x.delete_flag == true && (x.user_id == '' || x.user_name == ''));
             });
             // console.log(staffList);
             //送信データの作成
             //nullのパラメータを空のパラメータに置き換える
-            Object.keys(formData).forEach(key => {
+            Object.keys(formData).forEach((key) => {
               (formData as any)[key] = (formData as any)[key] ?? '';
             });
             const sendData = {
               formData,
-              staffList
+              staffList,
             };
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
@@ -511,17 +531,17 @@ export default function OrgInfo() {
             // console.log(tableData);
             //空行の削除
             var staffList = tableData.filter(function (x) {
-              return !((x.delete_flag == true) && (x.user_id == "" || x.user_name == ""))
+              return !(x.delete_flag == true && (x.user_id == '' || x.user_name == ''));
             });
             // console.log(staffList);
             //送信データの作成
             //nullのパラメータを空のパラメータに置き換える
-            Object.keys(formData).forEach(key => {
+            Object.keys(formData).forEach((key) => {
               (formData as any)[key] = (formData as any)[key] ?? '';
             });
             const sendData = {
               formData,
-              staffList
+              staffList,
             };
             console.log(sendData);
             const csrf = () => axios.get('/sanctum/csrf-cookie');
@@ -552,17 +572,17 @@ export default function OrgInfo() {
           // TODO: APIを叩いて、登録・更新処理を行う
           //空行の削除
           var staffList = tableData.filter(function (x) {
-            return !((x.delete_flag == true) && (x.user_id == "" || x.user_name == ""))
+            return !(x.delete_flag == true && (x.user_id == '' || x.user_name == ''));
           });
           // console.log(staffList);
           //送信データの作成
           //nullのパラメータを空のパラメータに置き換える
-          Object.keys(formData).forEach(key => {
+          Object.keys(formData).forEach((key) => {
             (formData as any)[key] = (formData as any)[key] ?? '';
           });
           const sendData = {
             formData,
-            staffList
+            staffList,
           };
           console.log(sendData);
           //alert('TODO: APIを叩いて、登録・更新処理を行う');
@@ -588,9 +608,8 @@ export default function OrgInfo() {
                   //   '登録に失敗しました。原因：' + (error as Error).message,
                   // ]);
                 });
-            }
-            storeOrgData()
-
+            };
+            storeOrgData();
           } else {
             const updateOrgData = async () => {
               const csrf = () => axios.get('/sanctum/csrf-cookie');
@@ -610,8 +629,8 @@ export default function OrgInfo() {
                     '更新に失敗しました。原因：' + (error as Error).message,
                   ]);
                 });
-            }
-            updateOrgData()
+            };
+            updateOrgData();
           }
         }}
       >
@@ -752,8 +771,6 @@ export default function OrgInfo() {
                 buttonType='primary'
                 className='w-[80px] self-end'
                 disabled={disableFlag}
-
-
                 onClick={() => {
                   formData.post_code = formData.post_code1 + '-' + formData.post_code2;
                   console.log(formData.post_code);
@@ -881,97 +898,96 @@ export default function OrgInfo() {
           toolTipTitle='Title 団体種別' //はてなボタン用
           toolTipText='サンプル用のツールチップ表示' //はてなボタン用
         />
-        {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
-          userIdType.is_jara == ROLE.JARA)) && (
-            <div className='w-full flex flex-row justify-start gap-[8px]'>
-              <div className='w-full flex flex-col justify-between gap-[8px]'>
-                <CustomDropdown
-                  id='JARA'
-                  label='JARA'
-                  value={
-                    mode !== 'confirm' ? formData.jara_org_type?.toString() : formData.jaraOrgTypeName
-                  }
-                  onChange={(e) => {
-                    console.log(formData.jara_org_type);
-                    handleInputChange('jara_org_type', e);
-                    handleInputChange(
-                      'jaraOrgTypeName',
-                      orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
-                    );
-                    handleInputChange('jara_org_reg_trail', ''); //団体種別を切り替えるごとに証跡をリセットする 20240308
-                    console.log("sssssss", formData.jara_org_type);
-                  }}
-                  readonly={mode === 'confirm'}
-                  options={orgTypeOptions.map((orgType) => ({
-                    value: orgType.name,
-                    key: orgType.id,
-                  }))}
-                  className='w-[300px]'
-                  errorMessages={jaraOrgTypeErrorMessages}
-                  isError={jaraOrgTypeErrorMessages.length > 0}
-                />
-              </div>
-              {/* JARA証跡 */}
-              {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
-                userIdType.is_jara == ROLE.JARA) &&
-                formData.jara_org_type == 1) && (
-                  <CustomTextField
-                    label='証跡'
-                    displayHelp={false}
-                    className='w-[300px]'
-                    value={formData.jara_org_reg_trail}
-                    // readonly={mode === 'confirm' || userIdType.is_pref_boat_officer == ROLE.PREFECTURE}
-                    readonly={mode === 'confirm'}
-                    onChange={(e) => handleInputChange('jara_org_reg_trail', e.target.value)}
-                  />
-                )}
+        {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN || userIdType.is_jara == ROLE.JARA) && (
+          <div className='w-full flex flex-row justify-start gap-[8px]'>
+            <div className='w-full flex flex-col justify-between gap-[8px]'>
+              <CustomDropdown
+                id='JARA'
+                label='JARA'
+                value={
+                  mode !== 'confirm' ? formData.jara_org_type?.toString() : formData.jaraOrgTypeName
+                }
+                onChange={(e) => {
+                  console.log(formData.jara_org_type);
+                  handleInputChange('jara_org_type', e);
+                  handleInputChange(
+                    'jaraOrgTypeName',
+                    orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
+                  );
+                  handleInputChange('jara_org_reg_trail', ''); //団体種別を切り替えるごとに証跡をリセットする 20240308
+                  console.log('sssssss', formData.jara_org_type);
+                }}
+                readonly={mode === 'confirm'}
+                options={orgTypeOptions.map((orgType) => ({
+                  value: orgType.name,
+                  key: orgType.id,
+                }))}
+                className='w-[300px]'
+                errorMessages={jaraOrgTypeErrorMessages}
+                isError={jaraOrgTypeErrorMessages.length > 0}
+              />
             </div>
-          )}
-        {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
-          userIdType.is_pref_boat_officer == ROLE.PREFECTURE)) && (
-            <div className='w-full flex flex-row justify-start gap-[8px]'>
-              <div className='w-full flex flex-col justify-between gap-[8px]'>
-                {/* 県ボ団体種別 */}
-                <CustomDropdown
-                  id='県ボ'
-                  label='県ボ'
-                  value={
-                    mode !== 'confirm' ? formData.pref_org_type?.toString() : formData.prefOrgTypeName
-                  }
-                  onChange={(e) => {
-                    handleInputChange('pref_org_type', e);
-                    handleInputChange(
-                      'prefOrgTypeName',
-                      orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
-                    );
-                    handleInputChange('pref_org_reg_trail', ''); //団体種別を切り替えるごとに証跡をリセットする 20240308
-                  }}
-                  options={orgTypeOptions.map((orgType) => ({
-                    value: orgType.name,
-                    key: orgType.id,
-                  }))}
-                  readonly={mode === 'confirm'}
+            {/* JARA証跡 */}
+            {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+              userIdType.is_jara == ROLE.JARA) &&
+              formData.jara_org_type == 1 && (
+                <CustomTextField
+                  label='証跡'
+                  displayHelp={false}
                   className='w-[300px]'
-                  errorMessages={prefOrgTypeErrorMessages}
-                  isError={prefOrgTypeErrorMessages.length > 0}
+                  value={formData.jara_org_reg_trail}
+                  // readonly={mode === 'confirm' || userIdType.is_pref_boat_officer == ROLE.PREFECTURE}
+                  readonly={mode === 'confirm'}
+                  onChange={(e) => handleInputChange('jara_org_reg_trail', e.target.value)}
                 />
-              </div>
-              {/* 県ボ証跡 */}
-              {((userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
-                userIdType.is_pref_boat_officer == ROLE.PREFECTURE) &&
-                formData.pref_org_type == 1) && (
-                  <CustomTextField
-                    label='証跡'
-                    className='w-[300px]'
-                    displayHelp={false}
-                    // readonly={mode === 'confirm' || userIdType.is_jara == ROLE.JARA}
-                    readonly={mode === 'confirm'}
-                    value={formData.pref_org_reg_trail}
-                    onChange={(e) => handleInputChange('pref_org_reg_trail', e.target.value)}
-                  />
-                )}
+              )}
+          </div>
+        )}
+        {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+          userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
+          <div className='w-full flex flex-row justify-start gap-[8px]'>
+            <div className='w-full flex flex-col justify-between gap-[8px]'>
+              {/* 県ボ団体種別 */}
+              <CustomDropdown
+                id='県ボ'
+                label='県ボ'
+                value={
+                  mode !== 'confirm' ? formData.pref_org_type?.toString() : formData.prefOrgTypeName
+                }
+                onChange={(e) => {
+                  handleInputChange('pref_org_type', e);
+                  handleInputChange(
+                    'prefOrgTypeName',
+                    orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
+                  );
+                  handleInputChange('pref_org_reg_trail', ''); //団体種別を切り替えるごとに証跡をリセットする 20240308
+                }}
+                options={orgTypeOptions.map((orgType) => ({
+                  value: orgType.name,
+                  key: orgType.id,
+                }))}
+                readonly={mode === 'confirm'}
+                className='w-[300px]'
+                errorMessages={prefOrgTypeErrorMessages}
+                isError={prefOrgTypeErrorMessages.length > 0}
+              />
             </div>
-          )}
+            {/* 県ボ証跡 */}
+            {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+              userIdType.is_pref_boat_officer == ROLE.PREFECTURE) &&
+              formData.pref_org_type == 1 && (
+                <CustomTextField
+                  label='証跡'
+                  className='w-[300px]'
+                  displayHelp={false}
+                  // readonly={mode === 'confirm' || userIdType.is_jara == ROLE.JARA}
+                  readonly={mode === 'confirm'}
+                  value={formData.pref_org_reg_trail}
+                  onChange={(e) => handleInputChange('pref_org_reg_trail', e.target.value)}
+                />
+              )}
+          </div>
+        )}
       </div>
       <div className='overflow-auto'>
         <CustomTable>
@@ -1030,16 +1046,25 @@ export default function OrgInfo() {
               )}
             </CustomTr>
             <CustomTr>
-              {mode !== 'confirm' ? <CustomTh rowSpan={2} align='center'>削除</CustomTh> : <></>}
+              {mode !== 'confirm' ? (
+                <CustomTh rowSpan={2} align='center'>
+                  削除
+                </CustomTh>
+              ) : (
+                <></>
+              )}
               <CustomTh rowSpan={2} align='center'>
                 {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
-                ユーザーID</CustomTh>
+                ユーザーID
+              </CustomTh>
               <CustomTh rowSpan={2} align='center'>
                 {/* {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>} */}
-                ユーザー名</CustomTh>
+                ユーザー名
+              </CustomTh>
               <CustomTh colSpan={5} align='center'>
                 {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
-                ユーザー種別</CustomTh>
+                ユーザー種別
+              </CustomTh>
             </CustomTr>
             <CustomTr>
               <CustomTh align='center'>管理者(監督)</CustomTh>
