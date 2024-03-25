@@ -590,8 +590,8 @@ export default function PlayerInformation() {
                   .catch((error) => {
                     // TODO: 更新処理失敗時の処理
                     setErrorMessage([
-                      ...(errorMessage as string[]),
-                      '更新に失敗しました。原因：' + (error as Error).message,
+                      '選手情報の更新に失敗しました。',
+                      'ユーザーサポートにお問い合わせください。',
                     ]);
                   });
               })

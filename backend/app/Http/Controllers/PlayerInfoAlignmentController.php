@@ -30,17 +30,21 @@ class PlayerInfoAlignmentController extends Controller
     //大会レース結果参照画面に表示する用 20240216
     public function sendCsvData(Request $request,T_players $t_players,T_users $t_users)
     {
+        Log::debug("sendCsvData start.");
         $reqData = $request->all();
         //Log::debug($reqData);
         //処理済み行の既存選手IDを格納する
         $processed_player_id_array = [];
+        //for($rowIndex = 0; $rowIndex < count($reqData); $rowIndex++)
         //1行ずつ処理する
-        for($rowIndex = 1; $rowIndex<count($reqData); $rowIndex++)
+        //ヘッダーが含まれているから0行目は処理対象としない
+        for($rowIndex = 1; $rowIndex < count($reqData); $rowIndex++)
         {
             $old_player_id = $reqData[$rowIndex]["oldPlayerId"];    //既存選手ID
             //既存選手IDが記載されているかをチェック
             if(empty($old_player_id))
             {
+                //Log::debug("csvの既存選手IDが空です.");
                 $reqData[$rowIndex]["link"] = "連携不可";
                 $reqData[$rowIndex]["message"] = "無効なデータ";
                 $reqData[$rowIndex]["checked"] = false;
@@ -51,6 +55,7 @@ class PlayerInfoAlignmentController extends Controller
                 //既存選手IDが半角数字かつ12桁以内であることを判定
                 if(!preg_match( '/^[0-9]+$/', $old_player_id) or mb_strlen($old_player_id) > 12)
                 {  
+                    //Log::debug("csvの既存選手IDが半角数字かつ12桁以内です.");
                     $reqData[$rowIndex]["link"] = "連携不可";
                     $reqData[$rowIndex]["message"] = "無効なデータ";
                     $reqData[$rowIndex]["checked"] = false;
@@ -65,6 +70,7 @@ class PlayerInfoAlignmentController extends Controller
             }
             if($is_duplicate)
             {
+                //Log::debug("重複データです.");
                 $reqData[$rowIndex]["link"] = "連携不可";
                 $reqData[$rowIndex]["message"] = "読み込みファイル内重複データ";
                 $reqData[$rowIndex]["checked"] = false;
@@ -75,54 +81,105 @@ class PlayerInfoAlignmentController extends Controller
             $registered_player = $t_players->getPlayerFromJaraPlayerId($old_player_id);
             if(empty($registered_player)) //既存選手IDが登録されていない場合
             {
+                //Log::debug("既存選手IDが登録されていません.");
                 $player_id = $reqData[$rowIndex]["playerId"];  //新選手ID
                 if(isset($player_id))               //ファイルの新選手IDにIDが設定されている
                 {
+                    //Log::debug("ファイルの新選手IDにIDが設定されています.");                    
                     $player_data = $t_players->getPlayer($player_id);
+                    //Log::debug($player_data);                  
                     if(empty($player_data))     //選手テーブルに選手データなし
                     {
-                        $reqData[$rowIndex]["link"] = "連携待ち";
-                        $reqData[$rowIndex]["message"] = "連携待ちデータとして登録します。";
-                        $reqData[$rowIndex]["checked"] = true;
+                        //⑥
+                        //Log::debug("選手テーブルに選手データがありません.");
+                        $reqData[$rowIndex]["link"] = "連携不可";
+                        $reqData[$rowIndex]["message"] = "システムに登録されていない選手IDです。";
+                        $reqData[$rowIndex]["checked"] = false;
                     }
                     else    //ユーザーIDが登録されている場合
                     {
-                        $reqData[$rowIndex]["link"] = "連携不可";
-                        $reqData[$rowIndex]["message"] = "既にマッピングされている既存選手IDです。マッピングされてる選手:[".$player_data[0]->player_name."]([".$player_data[0]->player_id."])";
-                        $reqData[$rowIndex]["checked"] = false;
+                        $player_user_id = $player_data[0]->{'user_id'};
+                        if(isset($player_user_id))
+                        {
+                            if(isset($player_data[0]->{"jara_player_id"}))
+                            {
+                                //③
+                                //当該データに既存選手IDが登録されている
+                                //Log::debug("ユーザーIDが登録済みです.");
+                                $reqData[$rowIndex]["link"] = "連携不可";
+                                $reqData[$rowIndex]["message"] = "既にマッピングされている既存選手IDです。マッピングされてる選手:[".$player_data[0]->{'player_name'}."]([".$player_data[0]->{'player_id'}."])";
+                                $reqData[$rowIndex]["checked"] = false;
+                            }
+                            else
+                            {
+                                //④
+                                //当該データに既存選手IDが登録されていない
+                                $reqData[$rowIndex]["link"] = "連携可能";
+                                $reqData[$rowIndex]["message"] = "登録されている選手と連携できます。選手:[".$player_data[0]->{'player_name'}."]([".$player_data[0]->{'player_id'}."])";
+                                $reqData[$rowIndex]["checked"] = true;
+                            }
+                        }
+                        else
+                        {
+                            //⑤
+                            //ユーザーIDが登録されていない
+                            $reqData[$rowIndex]["link"] = "連携不可";
+                            $reqData[$rowIndex]["message"] = "使用できない選手IDです。";
+                            $reqData[$rowIndex]["checked"] = false;
+                        }
                     }
                 }
                 else    //ファイルの新選手IDにIDが設定されていない
                 {
+                    //Log::debug("ファイルの新選手IDにIDが設定されていない.");
                     $mailaddress = $reqData[$rowIndex]["mailaddress"]; //メールアドレス
                     if(isset($mailaddress))     //ファイルのメールアドレスが設定されている
                     {
+                        //Log::debug("ファイルのメールアドレスが設定されている.");
+                        //メールアドレスでユーザーテーブルを検索
                         $user_data = $t_users->getUserDataFromMailAddress($mailaddress);
+                        // Log::debug("********************user_data********************");
+                        // Log::debug($user_data);
                         if(empty($user_data))   //ユーザーテーブルにデータなし
                         {
+                            //⑨
+                            //Log::debug("ユーザーテーブルにデータなし.");
                             $reqData[$rowIndex]["link"] = "連携待ち";
                             $reqData[$rowIndex]["message"] = "連携待ちデータとして登録します。";
                             $reqData[$rowIndex]["checked"] = true;
                         }
                         else    //ユーザーテーブルにデータあり
                         {
-                            $player_data = $t_players->getPlayer($user_data[0]->user_id);
-                            if(empty($player_data)) //選手テーブルに選手データなし
+                            //当該ユーザーデータのユーザーIDで選手データを検索
+                            $player_data = $t_players->getPlayerFromUserId($user_data[0]->{'user_id'});
+                            if(empty($player_data))
                             {
+                                //⑨
+                                //選手テーブルに選手データなし
+                                //Log::debug("選手テーブルに選手データなし.");
                                 $reqData[$rowIndex]["link"] = "連携待ち";
                                 $reqData[$rowIndex]["message"] = "連携待ちデータとして登録します。";
                                 $reqData[$rowIndex]["checked"] = true;
                             }
-                            else    //選手テーブルに選手データあり
+                            else
                             {
-                                if(empty($player_data[0]->user_id)) //ユーザーIDが登録されていない場合
+                                //選手テーブルに選手データあり
+                                //Log::debug("選手テーブルに選手データあり.");
+                                //当該データに既存選手IDが登録されているか
+                                if(empty($player_data[0]->jara_player_id))
                                 {
+                                    //⑧
+                                    //既存選手IDが登録されていない場合
+                                    //Log::debug("既存選手IDが登録されていない.");
                                     $reqData[$rowIndex]["link"] = "連携可能";
                                     $reqData[$rowIndex]["message"] = "登録されている選手と連結できます。選手：[".$player_data[0]->player_name."]([".$player_data[0]->player_id."])";
                                     $reqData[$rowIndex]["checked"] = true;
                                 }
-                                else    //ユーザーIDが登録されている場合
+                                else
                                 {
+                                    //⑦
+                                    //既存選手IDが登録されている場合
+                                    //Log::debug("既存選手IDが登録されている.");
                                     $reqData[$rowIndex]["link"] = "連携不可";
                                     $reqData[$rowIndex]["message"] = "既にマッピングされている既存選手IDです。マッピングされてる選手:[".$player_data[0]->player_name."]([".$player_data[0]->player_id."])";
                                     $reqData[$rowIndex]["checked"] = false;
@@ -132,7 +189,9 @@ class PlayerInfoAlignmentController extends Controller
                     }
                     else
                     {
+                        //⑨
                         //ファイルのメールアドレスが設定されていない
+                        //Log::debug("ファイルのメールアドレスが設定されていない.");
                         $reqData[$rowIndex]["link"] = "連携待ち";
                         $reqData[$rowIndex]["message"] = "連携待ちデータとして登録します。";
                         $reqData[$rowIndex]["checked"] = true;
@@ -141,15 +200,20 @@ class PlayerInfoAlignmentController extends Controller
             }
             else //既存選手IDが登録されている場合
             {
+                //Log::debug("既存選手IDが登録されている.");
                 $registered_player_user_id = $registered_player[0]->user_id;
                 if(empty($registered_player_user_id))   //ユーザーIDが登録されていない場合
                 {
+                    //②
+                    //Log::debug("ユーザーIDが登録されていない.");
                     $reqData[$rowIndex]["link"] = "連携不可";
                     $reqData[$rowIndex]["message"] = "既に連携待ちデータとして登録されています。";
                     $reqData[$rowIndex]["checked"] = false;
                 }
                 else    //ユーザーIDが登録されている場合
                 {
+                    //①
+                    //Log::debug("ユーザーIDが登録されている.");
                     $reqData[$rowIndex]["link"] = "連携不可";
                     $reqData[$rowIndex]["message"] = "既にマッピングされている既存選手IDです。マッピングされてる選手:[".$registered_player[0]->player_name."]([".$registered_player[0]->player_id."])。";
                     $reqData[$rowIndex]["checked"] = false;
@@ -157,6 +221,7 @@ class PlayerInfoAlignmentController extends Controller
             }
             array_push($processed_player_id_array, $reqData[$rowIndex]["oldPlayerId"]);
         }
+        Log::debug("sendCsvData end.");
         return response()->json(['result' => $reqData]); //DBの結果を返す
     }
 
