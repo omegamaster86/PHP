@@ -420,7 +420,7 @@ export default function VolunteerBulkRegister() {
     // 居住国が日本=112の時のみ、居住都道府県の形式をチェックする
     // 居住国が日本=112の時、falseを返す
     return key !== '112';
-  }
+  };
 
   /**
    * CSVの行データをエラー込みで取得する関数
@@ -476,14 +476,12 @@ export default function VolunteerBulkRegister() {
       residencePrefectureId: {
         key: row[5],
         value: prefecture.find((item) => item.id === Number(row[5]))?.name || row[5],
-        isError: 
-        validateCountryIsNotJapan(row[4])
-        ? false
-        : validateRequired(row[5])
-          ? true
-          : validateNumber(row[5], 2) ||
-            prefecture.filter((item) => item.id === Number(row[5])).length !== 1,
-
+        isError: validateCountryIsNotJapan(row[4])
+          ? false
+          : validateRequired(row[5])
+            ? true
+            : validateNumber(row[5], 2) ||
+              prefecture.filter((item) => item.id === Number(row[5])).length !== 1,
       },
       mailaddress: {
         value: row[6],
@@ -675,12 +673,12 @@ export default function VolunteerBulkRegister() {
                 country.filter((item) => item.id === Number(row[4])).length !== 1) ||
             // 居住都道府県の形式かどうかを判定する
             // 居住国が日本=112の時のみ、居住都道府県の形式をチェックする
-            (
-              validateCountryIsNotJapan(row[4]) ? false :
-              (validateRequired(row[5])
-              ? true
-              : validateNumber(row[5], 2) ||
-                prefecture.filter((item) => item.id === Number(row[5])).length !== 1)) ||
+            (validateCountryIsNotJapan(row[4])
+              ? false
+              : validateRequired(row[5])
+                ? true
+                : validateNumber(row[5], 2) ||
+                  prefecture.filter((item) => item.id === Number(row[5])).length !== 1) ||
             // 性別の形式かどうかを判定する
             (validateRequired(row[3])
               ? true
