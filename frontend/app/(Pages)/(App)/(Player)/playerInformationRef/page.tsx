@@ -40,7 +40,8 @@ export default function PlayerInformationRef() {
   }
 
   // 選手IDを取得
-  const playerId = searchParams.get('playerId')?.toString() || searchParams.get('player_id')?.toString() || '';
+  const playerId =
+    searchParams.get('playerId')?.toString() || searchParams.get('player_id')?.toString() || '';
   switch (playerId) {
     case '':
       break;
@@ -50,7 +51,6 @@ export default function PlayerInformationRef() {
   const [player_id, setPlayerId] = useState<any>({
     player_id: playerId,
   });
-
 
   // タブ切り替え用のステート
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -73,7 +73,7 @@ export default function PlayerInformationRef() {
   //削除対象のデータをまとめて送信する 20240202
   const [deleteData, setDeleteDatas] = useState({
     playerInformation: playerInformation, //選手情報
-    raceResultRecordsData: raceResultRecordsData //選手の出漕結果情報
+    raceResultRecordsData: raceResultRecordsData, //選手の出漕結果情報
   });
 
   //選手情報削除関数 20240201
@@ -82,22 +82,27 @@ export default function PlayerInformationRef() {
     deleteData.raceResultRecordsData = raceResultRecordsData;
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
-    await axios.post('/deletePlayerData', deleteData)
+    await axios
+      .post('/deletePlayerData', deleteData)
       .then((res) => {
         // console.log(res.data);
-      }).catch(error => {
+      })
+      .catch((error) => {
         setError({ isError: true, errorMessage: error.response?.data });
       });
-  }
+  };
 
   // データ取得用のEffect
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const currentPlayerId = searchParams.get('playerId')?.toString() || searchParams.get('player_id')?.toString() || '';
+        const currentPlayerId =
+          searchParams.get('playerId')?.toString() ||
+          searchParams.get('player_id')?.toString() ||
+          '';
         console.log(player_id, currentPlayerId);
         //選手情報参照画面を表示している状態で、選手情報参照のタブをクリックした場合の処理 20240321
-        if (player_id.player_id != currentPlayerId) { 
+        if (player_id.player_id != currentPlayerId) {
           player_id.player_id = currentPlayerId;
           console.log(player_id);
         }
@@ -111,7 +116,7 @@ export default function PlayerInformationRef() {
         const sideList = playerInf.data.result.side_info.split('');
         sideList.splice(0, 4); //サイド情報の先頭４つ分の不要なデータを削除
         for (let i = 0; i < 4; i++) {
-          if (sideList[i] == "1") {
+          if (sideList[i] == '1') {
             sideList[i] = true;
           } else {
             sideList[i] = false;
@@ -204,7 +209,11 @@ export default function PlayerInformationRef() {
               <div>
                 {/* 写真 */}
                 <img
-                  src={playerInformation.photo ? `${PLAYER_IMAGE_URL}${playerInformation.photo}` : `${NO_IMAGE_URL}`}
+                  src={
+                    playerInformation.photo
+                      ? `${PLAYER_IMAGE_URL}${playerInformation.photo}`
+                      : `${NO_IMAGE_URL}`
+                  }
                   width={200}
                   height={200}
                   alt='Random'
@@ -304,7 +313,7 @@ export default function PlayerInformationRef() {
                       <div
                         className={
                           !playerInformation.birthPrefectureName ||
-                            playerInformation.birthPrefectureName === ''
+                          playerInformation.birthPrefectureName === ''
                             ? 'hidden'
                             : ''
                         }
@@ -328,7 +337,7 @@ export default function PlayerInformationRef() {
                       <div
                         className={
                           !playerInformation.residencePrefectureName ||
-                            playerInformation.residencePrefectureName === ''
+                          playerInformation.residencePrefectureName === ''
                             ? 'hidden'
                             : ''
                         }
@@ -352,36 +361,40 @@ export default function PlayerInformationRef() {
                   ></Label>
                   <div className='flex flex-row justify-start gap-[10px]'>
                     <div
-                      className={`text-center px-[12px] py-[8px] rounded-full ${playerInformation.side_info?.at(3)
-                        ? 'border border-secondary-500 text-secondary-500'
-                        : 'border border-gray-30 text-white'
-                        }`}
+                      className={`text-center px-[12px] py-[8px] rounded-full ${
+                        playerInformation.side_info?.at(3)
+                          ? 'border border-secondary-500 text-secondary-500'
+                          : 'border border-gray-30 text-white'
+                      }`}
                     >
                       S（ストロークサイド）
                     </div>
                     <div
-                      className={`text-center px-[12px] py-[8px] rounded-full ${playerInformation.side_info?.at(2)
-                        ? 'border border-secondary-500 text-secondary-500'
-                        : 'border border-gray-30 text-white'
-                        }`}
+                      className={`text-center px-[12px] py-[8px] rounded-full ${
+                        playerInformation.side_info?.at(2)
+                          ? 'border border-secondary-500 text-secondary-500'
+                          : 'border border-gray-30 text-white'
+                      }`}
                     >
                       B（バウサイド）
                     </div>
                   </div>
                   <div className='flex flex-row justify-start gap-[10px]'>
                     <div
-                      className={`text-center px-[12px] py-[8px] rounded-full ${playerInformation.side_info?.at(1)
-                        ? 'border border-secondary-500 text-secondary-500'
-                        : 'border border-gray-30 text-white'
-                        }`}
+                      className={`text-center px-[12px] py-[8px] rounded-full ${
+                        playerInformation.side_info?.at(1)
+                          ? 'border border-secondary-500 text-secondary-500'
+                          : 'border border-gray-30 text-white'
+                      }`}
                     >
                       X（スカル）
                     </div>
                     <div
-                      className={`text-center px-[12px] py-[8px] rounded-full ${playerInformation.side_info?.at(0)
-                        ? 'border border-secondary-500 text-secondary-500'
-                        : 'border border-gray-30 text-white'
-                        }`}
+                      className={`text-center px-[12px] py-[8px] rounded-full ${
+                        playerInformation.side_info?.at(0)
+                          ? 'border border-secondary-500 text-secondary-500'
+                          : 'border border-gray-30 text-white'
+                      }`}
                     >
                       C（コックス）
                     </div>
@@ -568,14 +581,14 @@ export default function PlayerInformationRef() {
                 className={`w-[280px] m-auto ${displayFlg ? '' : 'hidden'}`}
                 onClick={() => {
                   setDisplayFlg(false);
-                  window.confirm('選手情報を削除します。よろしいですか？') ?
-                    ( //okを押したら下の処理を実行 キャンセルを押したらflagをtrueにしてそのまま
-                      dataDelete(),
+                  window.confirm('選手情報を削除します。よろしいですか？')
+                    ? //okを押したら下の処理を実行 キャンセルを押したらflagをtrueにしてそのまま
+                      (dataDelete(),
                       setDisplayFlg(true),
                       window.alert('選手情報の削除が完了しました。'),
-                      router.push('/tournamentSearch') //大会検索画面に遷移する 20240222
-                      //router.push('/myPage') : setDisplayFlg(true)
-                    ) : setDisplayFlg(true);
+                      router.push('/tournamentSearch')) //大会検索画面に遷移する 20240222
+                    : //router.push('/myPage') : setDisplayFlg(true)
+                      setDisplayFlg(true);
                 }}
               >
                 削除
@@ -583,7 +596,7 @@ export default function PlayerInformationRef() {
             )}
           </div>
         </div>
-      </main >
-    </div >
+      </main>
+    </div>
   );
 }

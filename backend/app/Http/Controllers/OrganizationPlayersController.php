@@ -1073,7 +1073,13 @@ class OrganizationPlayersController extends Controller
                         $user_info = array();
                         $user_info['user_id'] = $target_user_data[0]->{'user_id'};
                         $user_info['input'] = '100';
-                        $t_users->updateUserTypeRegist($user_info);
+                        //$t_users->updateUserTypeRegist($user_info);
+                        $user_type = (string)Auth::user()->user_type;
+                        //右から3桁目が0のときだけユーザー種別を更新する
+                        if(substr($user_type,-3,1) == '0')
+                        {
+                            $t_users->updateUserTypeRegist($user_info);
+                        }
                     }
 
                     //メール送信
@@ -1136,8 +1142,7 @@ class OrganizationPlayersController extends Controller
         catch(\Throwable $e)
         {
             DB::rollBack();
-            Log::error($e->getMessage().'-'.$e->getLine());
-            //Log::error($e->getMessage());
+            Log::error('Line:'.$e->getLine().' message:'.$e->getMessage());
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }

@@ -1,4 +1,13 @@
-import React, { useState, useCallback, useRef, forwardRef, Dispatch, SetStateAction, useImperativeHandle, useEffect } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  forwardRef,
+  Dispatch,
+  SetStateAction,
+  useImperativeHandle,
+  useEffect,
+} from 'react';
 import type { FileRejection } from 'react-dropzone';
 import { useDropzone } from 'react-dropzone';
 import Papa from 'papaparse';
@@ -9,8 +18,7 @@ import CustomTextField from '@mui/material/TextField';
 interface Props {
   label: string; // ラベル
   readonly: boolean; // 読み取り専用かどうか
-  setTournamentFormData: Dispatch<
-    SetStateAction<any>>; //アップロードされた場合、退会ファイル名更新
+  setTournamentFormData: Dispatch<SetStateAction<any>>; //アップロードされた場合、退会ファイル名更新
 }
 
 // Handlerの型定義
@@ -37,10 +45,10 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
         ...prevFormData,
         uploadedPDFFilePath: currentShowFile.file.name,
         uploadedPDFFile: currentShowFile.file,
-        tourn_info_faile_path: ''
+        tourn_info_faile_path: '',
       }));
     }
-  }, [currentShowFile]);//ファイルのアップロード終わったら
+  }, [currentShowFile]); //ファイルのアップロード終わったら
   //アップロードされたファイルを保存するー完了
 
   // ファイルアップロード時の処理
@@ -54,7 +62,6 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
 
       // アップロード成功時の処理
       setcurrentShowFile({ file, isUploaded: true });
-
     } catch (error) {
       // エラーが発生した場合の処理
       // console.log(`アップロード中にエラーが発生しました: ${error}`);
@@ -121,7 +128,7 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
     onDrop,
     onDropRejected,
     accept: {
-      'application/pdf': []
+      'application/pdf': [],
     },
     maxFiles: 1,
     maxSize: 50 * 1024 * 1024, // 50MB

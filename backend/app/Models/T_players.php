@@ -265,6 +265,8 @@ class T_players extends Model
         return $registeredPlayer;
     }
 
+    //選手テーブルに挿入する
+    //選手登録時に使用
     public function insertPlayers($playersInfo)
     {
         $result = "success";
@@ -783,6 +785,60 @@ class T_players extends Model
                                 and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
                                 and `jara_player_id` = ?',
             [$jara_player_id]
+        );
+        return $players;
+    }
+
+    //UserIDを条件にプレイヤー情報を取得する
+    public function getPlayerFromUserId($user_id)
+    {
+        $players = DB::select(
+                                'select
+                                `player_id`
+                                ,`user_id`
+                                ,`jara_player_id`
+                                ,`player_name`
+                                ,`date_of_birth`
+                                ,`m_sex`.`sex` as `sexName`
+                                ,`t_players`.`sex_id`
+                                ,`height`
+                                ,`weight`
+                                ,`side_info`
+                                ,bir_cont.`country_name` as `birthCountryName`
+                                ,`birth_country`
+                                ,bir_pref.`pref_name` as `birthPrefectureName`
+                                ,`birth_prefecture`
+                                ,res_cont.`country_name` as `residenceCountryName`
+                                ,`residence_country`
+                                ,res_pref.`pref_name` as `residencePrefectureName`
+                                ,`residence_prefecture`
+                                ,`photo`
+                                ,`t_players`.`registered_time`
+                                ,`t_players`.`registered_user_id`
+                                ,`t_players`.`updated_time`
+                                ,`t_players`.`updated_user_id`
+                                ,`t_players`.`delete_flag`
+                                ,`m_sex`.`sex` as `sex_name`
+                                FROM `t_players`
+                                left join `m_sex`
+                                on `t_players`.`sex_id`=`m_sex`.`sex_id`
+                                left join m_countries bir_cont
+                                on `t_players`.birth_country = bir_cont.country_id
+                                left join m_prefectures bir_pref
+                                on `t_players`.birth_prefecture = bir_pref.pref_id
+                                left join m_countries res_cont
+                                on `t_players`.residence_country = res_cont.country_id
+                                left join m_prefectures res_pref
+                                on `t_players`.residence_prefecture = res_pref.pref_id
+                                where 1=1
+                                and `t_players`.delete_flag = 0
+                                and  (`m_sex`.`delete_flag` = 0 or `m_sex`.`delete_flag` is null)
+                                and  (bir_cont.`delete_flag` = 0 or bir_cont.`delete_flag` is null)
+                                and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
+                                and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
+                                and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
+                                and `user_id` = ?',
+            [$user_id]
         );
         return $players;
     }

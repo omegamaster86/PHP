@@ -23,7 +23,6 @@ export default function Inquiry() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-
   // modeの値を取得 default confirm
   const mode = searchParams.get('mode') ?? 'default';
   // modeの値に応じてボタンの表示を変更
@@ -35,23 +34,21 @@ export default function Inquiry() {
     user_name: '',
     mailaddress: '',
   } as UserResponse);
-  const { user: userInfo } = useAuth({ middleware: 'auth' }) ;
+  const { user: userInfo } = useAuth({ middleware: 'auth' });
 
   useEffect(() => {
-    if(userInfo){
-      setUser((prev)=>({
-        ...prev, 
+    if (userInfo) {
+      setUser((prev) => ({
+        ...prev,
         user_name: userInfo.user_name,
         mailaddress: userInfo.mailaddress,
       }));
       setIsLogIn(true);
-    }
-    else{
+    } else {
       setIsLogIn(false);
     }
   }, [userInfo]);
-  
-    
+
   // お問い合わせ内容
   const [inquiry, setInquiry] = useState<string>();
   // お問い合わせ内容（改行ごとに配列に分割）
@@ -122,14 +119,16 @@ export default function Inquiry() {
           // 送信処理
           const requestBody = {
             ...user,
-            content : inquiry
+            content: inquiry,
           };
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
           axios
             .post('/contact-us', requestBody)
             .then((response) => {
-              {isLogIn ? router.push('/tournamentSearch') : router.push('/login')}
+              {
+                isLogIn ? router.push('/tournamentSearch') : router.push('/login');
+              }
             })
             .catch((error) => {
               setErrorMessage(['メール送信に失敗しました。もう一度送信してください。']);
@@ -197,8 +196,9 @@ export default function Inquiry() {
                   </div>
                 ) : (
                   <TextareaAutosize
-                    className={`bg-white border-[1px] border-solid rounded-md p-4 ${inquiryErrorMessages.length > 0 ? 'border-red' : 'border-gray-100'
-                      }`}
+                    className={`bg-white border-[1px] border-solid rounded-md p-4 ${
+                      inquiryErrorMessages.length > 0 ? 'border-red' : 'border-gray-100'
+                    }`}
                     value={inquiry}
                     onChange={(e) => setInquiry(e.target.value)}
                   />
@@ -263,6 +263,5 @@ export default function Inquiry() {
         </main>
       </div>
     </>
-
   );
 }

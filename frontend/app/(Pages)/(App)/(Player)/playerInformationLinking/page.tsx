@@ -111,12 +111,13 @@ export default function PlayerInformationLinking() {
         mailaddress: value[2],
         playerName: value[3],
         message: '',
-      }
+      };
     });
     var element = array as CsvData[];
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
-    await axios.post('/sendCsvData', element)
+    await axios
+      .post('/sendCsvData', element)
       .then((res) => {
         console.log(res.data.result);
         var contentData = res.data.result as CsvData[];
@@ -126,9 +127,8 @@ export default function PlayerInformationLinking() {
 
         setActivationFlg(true);
         if (dialogDisplayFlg) {
-          window.confirm('読み込み結果に表示されているデータはクリアされます。よろしいですか？',) ?
-            (
-              setCsvData([]),
+          window.confirm('読み込み結果に表示されているデータはクリアされます。よろしいですか？')
+            ? (setCsvData([]),
               contentData.map((row, rowIndex) => {
                 setCsvData((prevData) => [
                   ...(prevData as CsvData[]),
@@ -144,9 +144,8 @@ export default function PlayerInformationLinking() {
                   },
                 ]);
                 setDialogDisplayFlg(true);
-              })
-            ) :
-            null;
+              }))
+            : null;
         } else {
           setCsvData([]);
           contentData.map((row, rowIndex) => {
@@ -173,24 +172,25 @@ export default function PlayerInformationLinking() {
         performValidation();
         setActivationFlg(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
-  }
+  };
 
   //連携ボタン押下時 20240228
   const registerCsvData = async () => {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
-    await axios.post('/registerCsvData', csvData)
+    await axios
+      .post('/registerCsvData', csvData)
       .then((res) => {
         console.log(res.data);
         // router.push('/tournamentSearch'); // 20240222
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
-  }
+  };
 
   // CSVダウンロードのプロパティ
   const csvDownloadProps = {
@@ -200,11 +200,7 @@ export default function PlayerInformationLinking() {
       { label: 'メールアドレス', key: 'mailaddress' },
       { label: '選手名', key: 'playerName' },
     ],
-    data: [
-      {
-
-      },
-    ],
+    data: [{}],
     filename: '選手情報連携ファイル.csv',
     label: 'CSVフォーマット出力',
   } as CsvDownloadProps;
@@ -278,9 +274,9 @@ export default function PlayerInformationLinking() {
                 onClick={() => {
                   console.log(csvData);
                   setActivationFlg(true);
-                  csvData.find((row) => row.checked)?.id === undefined ?
-                    window.confirm('1件以上選択してください。') :
-                    registerCsvData(), //読み込んだCSVデータをDBに連携する
+                  csvData.find((row) => row.checked)?.id === undefined
+                    ? window.confirm('1件以上選択してください。')
+                    : registerCsvData(), //読み込んだCSVデータをDBに連携する
                     setCsvData([]),
                     setCsvFileData({ content: [], isSet: false }),
                     fileUploaderRef?.current?.clearFile(),
