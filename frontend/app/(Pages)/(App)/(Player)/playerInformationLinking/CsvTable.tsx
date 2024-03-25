@@ -35,7 +35,7 @@ const CsvTable = ({
   activationFlg: boolean;
 }) => {
   return content.length === 0 ? (
-    <div className='text-primaryText'>CSVファイルをアップロードしてください。</div>
+    <div className='text-primaryText'></div>
   ) : (
     <div className='overflow-auto h-[331px] w-[800px]'>
       <CustomTable>
