@@ -316,8 +316,7 @@ export default function TeamSearch() {
                   handleInputChange('org_id', e.target.value);
                 }}
                 value={formData?.org_id || ''}
-                toolTipTitle='Title' //はてなボタン用
-                toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+                toolTipText='団体IDは団体情報参照画面で確認できます。' //はてなボタン用
               />
               {!(
                 userIdType.is_audience == ROLE.SUPPORTER ||
@@ -331,16 +330,14 @@ export default function TeamSearch() {
                     handleInputChange('entrySystemId', e.target.value);
                   }}
                   value={formData?.entrySystemId || ''}
-                  toolTipTitle='Title' //はてなボタン用
-                  toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+                  toolTipText='日本ローイング協会より発行された、6桁の団体コードを入力してください。' //はてなボタン用
                 />
               )}
               <div className='w-full flex flex-col justify-start gap-[8px]'>
                 <InputLabel
                   label='設立年'
                   displayHelp
-                  toolTipTitle='Title' //はてなボタン用
-                  toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+                  toolTipText='団体の創立念を西暦で入力してください。' //はてなボタン用
                 />
                 <div className='w-full flex flex-row justify-start gap-[8px]'>
                   {/* 創立年（開始年） */}

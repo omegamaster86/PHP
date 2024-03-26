@@ -170,12 +170,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
   return (
     <div>
       <div className='flex flex-col gap-[10px] w-full'>
-        <CustomInputLabel
-          label={props.csvUploadProps.label}
-          displayHelp
-          toolTipTitle='TitleCSV読み込み' //はてなボタン用
-          toolTipText='サンプル用のツールチップ表示' //はてなボタン用
-        ></CustomInputLabel>
+        <CustomInputLabel label={props.csvUploadProps.label}></CustomInputLabel>
         <div className='flex flex-row gap-[4px]'>
           {!props.csvUploadProps.readonly && (
             <div {...getRootProps()} className='mb-1'>
