@@ -293,8 +293,7 @@ export default function PlayerSearch() {
                 <InputLabel
                   label='サイド情報'
                   displayHelp
-                  toolTipTitle='Title' //はてなボタン用
-                  toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+                  toolTipText='選手が担当する役割になります。' //はてなボタン用
                 />
                 <div className='flex flex-row gap-[4px]'>
                   <div className='flex justify-start flex-col gap-[4px] my-1'>
@@ -356,8 +355,7 @@ export default function PlayerSearch() {
                     displayHelp
                     value={searchCond.jara_player_id}
                     onChange={(e) => handleInputChange('jara_player_id', e.target.value)}
-                    toolTipTitle='Title' //はてなボタン用
-                    toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+                    toolTipText='日本ローイング協会より発行された、12桁の選手コードになります。' //はてなボタン用
                   />
                   {/* 選手ID */}
                   <CustomTextField
@@ -366,8 +364,8 @@ export default function PlayerSearch() {
                     displayHelp
                     value={searchCond.player_id}
                     onChange={(e) => handleInputChange('player_id', e.target.value)}
-                    toolTipTitle='Title' //はてなボタン用
-                    toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+                    toolTipText='本システムでの選手情報管理用のIDとなります。
+                    選手情報参照画面にて確認できます。' //はてなボタン用
                   />
                   <div className='flex flex-col justify-start gap-[8px]'>
                     <InputLabel label='生年月日' />
@@ -413,8 +411,7 @@ export default function PlayerSearch() {
                         displayHelp
                         value={searchCond.entrysystem_org_id}
                         onChange={(e) => handleInputChange('entrysystem_org_id', e.target.value)}
-                        toolTipTitle='Title' //はてなボタン用
-                        toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+                        toolTipText='日本ローイング協会より発行された、6桁の団体コードになります。選手が所属している団体のコードを入力してください。' //はてなボタン用
                       />
                     </div>
                   )}
@@ -428,19 +425,18 @@ export default function PlayerSearch() {
                       errorMessages={sponsorOrgIdErrorMessage}
                       value={searchCond.org_id}
                       onChange={(e) => handleInputChange('org_id', e.target.value)}
-                      toolTipTitle='Title' //はてなボタン用
-                      toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+                      toolTipText='本システムでの団体情報管理用のIDとなります。
+                      選手が所属している団体のIDを入力してください。
+                      団体情報参照画面にて確認できます。' //はてなボタン用
                     />
                   </div>
                   {/* 団体名 */}
                   <div className='flex flex-col justify-start'>
                     <CustomTextField
                       label='団体名'
-                      displayHelp
+                      displayHelp={false}
                       value={searchCond.org_name}
                       onChange={(e) => handleInputChange('org_name', e.target.value)}
-                      toolTipTitle='Title' //はてなボタン用
-                      toolTipText='サンプル用のツールチップ表示' //はてなボタン用
                     />
                   </div>
                 </div>
