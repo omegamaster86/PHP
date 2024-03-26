@@ -1393,4 +1393,3 @@ export default function Tournament() {
     </div>
   );
 }
-// 20240336 test
