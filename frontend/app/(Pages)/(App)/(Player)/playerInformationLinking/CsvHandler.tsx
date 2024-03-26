@@ -17,6 +17,7 @@ interface CsvUploadProps {
   readonly: boolean; // 読み取り専用かどうか
   csvUpload: (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => void; // CSVアップロード時のコールバック
   resetActivationFlg: () => void; // アクティベーションフラグのリセット
+  setActivationFlg: (flg: boolean) => void; // アクティベーションフラグのセット
 }
 // CSVダウンロードのプロパティの型定義
 interface CsvDownloadProps {
@@ -46,9 +47,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
     try {
       setcurrentShowFile({ file, isUploaded: false });
 
-      const uploadTime = Math.random() * 9000 + 1000; // 1秒から10秒
-      await new Promise((resolve) => setTimeout(resolve, uploadTime));
-
       // アップロード成功時の処理
       setcurrentShowFile({ file, isUploaded: true });
     } catch (error) {
@@ -66,6 +64,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
   // useCallback は、関数のメモ化を行うフックです。
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
+      props.csvUploadProps.setActivationFlg(true);
       // アップロード可能なファイルが存在する場合、アップロード中のスイッチを true にし、アップロードを開始する
       try {
         await Promise.all(acceptedFiles.map(onUploadFile));
@@ -208,21 +207,15 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
               </div>
             </div>
           )}
-          {props.csvUploadProps.readonly && (
-            <div>
-              <CustomInputLabel label={props.csvUploadProps.label}></CustomInputLabel>
-              <p className='h-12 w-[300px] text-secondaryText p-3 disable'>
-                {currentShowFile?.file.name}
-              </p>
-            </div>
+          {!props.csvUploadProps.readonly && (
+            <CustomButton
+              buttonType='primary'
+              onClick={handleDownload}
+              className='w-[200px] h-[57px]'
+            >
+              {props.csvDownloadProps.label}
+            </CustomButton>
           )}
-          <CustomButton
-            buttonType='primary'
-            onClick={handleDownload}
-            className='w-[200px] h-[57px]'
-          >
-            {props.csvDownloadProps.label}
-          </CustomButton>
         </div>
       </div>
       {/* ファイルアップロード中の表示 */}
