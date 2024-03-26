@@ -661,7 +661,29 @@ export default function AddPlayerSearch() {
             onClick={() => {
               // チェック済みのデータのみを取得
               const checkedData = visibleData.filter((data) => data.checked);
-              sessionStorage.setItem('addPlayerList', JSON.stringify(checkedData));
+              if (sessionStorage.getItem('addPlayerList') !== null) {
+                //Get the player data from session storage
+                const currentPlayerList = JSON.parse(
+                  sessionStorage.getItem('addPlayerList') as string,
+                );
+
+                //Merge checked player data with previous data
+                const mergeCurrentArrayWithCheckedData = [...currentPlayerList, ...checkedData];
+
+                //Remove duplicate data from array
+                const mapFromMergedArray = new Map(
+                  mergeCurrentArrayWithCheckedData.map((c) => [c.player_id, c]),
+                );
+                const uniquePlayers = [...mapFromMergedArray.values()];
+
+                //Store merged data in session storage
+                sessionStorage.setItem('addPlayerList', JSON.stringify(uniquePlayers));
+              } else {
+                //Store checked data in session storage
+                sessionStorage.setItem('addPlayerList', JSON.stringify(checkedData));
+              }
+
+              // sessionStorage.setItem('addPlayerList', JSON.stringify(checkedData));
               router.back();
             }}
           >
