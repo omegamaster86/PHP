@@ -32,7 +32,7 @@ class PlayerInfoAlignmentController extends Controller
     {
         Log::debug("sendCsvData start.");
         $reqData = $request->all();
-        //Log::debug($reqData);
+        Log::debug($reqData);
         //処理済み行の既存選手IDを格納する
         $processed_player_id_array = [];
         //for($rowIndex = 0; $rowIndex < count($reqData); $rowIndex++)
@@ -172,6 +172,7 @@ class PlayerInfoAlignmentController extends Controller
                                     //既存選手IDが登録されていない場合
                                     //Log::debug("既存選手IDが登録されていない.");
                                     $reqData[$rowIndex]["link"] = "連携可能";
+                                    //$reqData[$rowIndex]["player_id"] = $player_data[0]->player_id;
                                     $reqData[$rowIndex]["message"] = "登録されている選手と連結できます。選手：[".$player_data[0]->player_name."]([".$player_data[0]->player_id."])";
                                     $reqData[$rowIndex]["checked"] = true;
                                 }
@@ -226,9 +227,10 @@ class PlayerInfoAlignmentController extends Controller
     }
 
     // 連携ボタン押下後 20240228
-    public function registerCsvData(Request $request,T_players $t_players)
+    public function registerCsvData(Request $request,T_players $t_players,T_users $t_users)
     {
         $reqData = $request->all();
+        Log::debug($reqData);
         //1行ずつ確認して登録処理を行う
         DB::beginTransaction();
         try
@@ -241,6 +243,20 @@ class PlayerInfoAlignmentController extends Controller
                 {
                     if($link == "連携可能")
                     {
+                        //選手IDの有無を確認
+                        //有る場合はそれを用いてに更新実行
+                        //無い場合はメールアドレスを条件にユーザーIDを取得し、そのユーザーIDを条件に選手IDを取得する
+                        $target_player_id = $reqData[$rowIndex]['playerId'];
+                        Log::debug($target_player_id);
+                        if(empty($target_player_id))
+                        {
+                            $mailaddress = $reqData[$rowIndex]["mailaddress"]; //メールアドレス
+                            $user_data = $t_users->getUserDataFromMailAddress($mailaddress);
+                            //当該ユーザーデータのユーザーIDで選手データを検索
+                            $player_data = $t_players->getPlayerFromUserId($user_data[0]->{'user_id'});
+                            $target_player_id = $player_data[0]->player_id;
+                            $reqData[$rowIndex]['playerId'] = $target_player_id;
+                        }
                         //選手テーブルで対象の選手に既存選手IDを登録（更新）する
                         $t_players->updatePlayers($reqData[$rowIndex]);
                     }
