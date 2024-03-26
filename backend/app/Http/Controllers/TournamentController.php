@@ -612,48 +612,55 @@ class TournamentController extends Controller
             $tTournament::$tournamentInfo['tourn_info_faile_path'] = $reqData['tournamentFormData']['tourn_info_faile_path'] ?? ''; //PDFファイル
         }
         $tTournament->updateTournaments($tTournament::$tournamentInfo);
-        DB::beginTransaction();
-        try {
-            //レース登録リスト行数分登録する
-            for ($i = 0; $i < count($reqData['tableData']); $i++) {
-                $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['race_number']; //レース番号
-                if (isset($reqData['tableData'][$i]['entrysystem_race_id'])) {
-                    $tRace::$racesData['entrysystem_race_id'] = $reqData['tableData'][$i]['entrysystem_race_id']; //エントリーシステムのレースID
-                }
-                $tRace::$racesData['tourn_id'] = $reqData['tableData'][$i]['tourn_id']; //大会IDに紐づける
-                $tRace::$racesData['race_name'] = $reqData['tableData'][$i]['race_name']; //レース名
-                $tRace::$racesData['event_id'] = $reqData['tableData'][$i]['event_id']; //イベントID
-                $tRace::$racesData['event_name'] = $reqData['tableData'][$i]['event_name']; //イベント名
-                $tRace::$racesData['race_class_id'] = $reqData['tableData'][$i]['race_class_id']; //レース区分ID
-                $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['race_class_name']; //レース区分
-                $tRace::$racesData['by_group'] = $reqData['tableData'][$i]['by_group']; //レース区分
-                $tRace::$racesData['range'] = $reqData['tableData'][$i]['range']; //距離
-                $tRace::$racesData['start_date_time'] = $reqData['tableData'][$i]['start_date_time']; //発艇日時
 
-                if (!isset($reqData['tableData'][$i]['checked'])) { //削除フラグが存在しない場合、更新データ
-                    $tRace::$racesData['delete_flag'] = 0;
-                } else if ($reqData['tableData'][$i]['checked'] == 'true') { //削除フラグがtrueの場合、削除対象
-                    $tRace::$racesData['delete_flag'] = 1;
-                } else {
-                    $tRace::$racesData['delete_flag'] = 0;
-                }
+        if(empty($reqData['tableData']??[])){
+            return response()->json("success",200);
+        }   
+        else{
+            DB::beginTransaction();
+            try {
+                //レース登録リスト行数分登録する
+                for ($i = 0; $i < count($reqData['tableData']); $i++) {
+                    $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['race_number']; //レース番号
+                    if (isset($reqData['tableData'][$i]['entrysystem_race_id'])) {
+                        $tRace::$racesData['entrysystem_race_id'] = $reqData['tableData'][$i]['entrysystem_race_id']; //エントリーシステムのレースID
+                    }
+                    $tRace::$racesData['tourn_id'] = $reqData['tableData'][$i]['tourn_id']; //大会IDに紐づける
+                    $tRace::$racesData['race_name'] = $reqData['tableData'][$i]['race_name']; //レース名
+                    $tRace::$racesData['event_id'] = $reqData['tableData'][$i]['event_id']; //イベントID
+                    $tRace::$racesData['event_name'] = $reqData['tableData'][$i]['event_name']; //イベント名
+                    $tRace::$racesData['race_class_id'] = $reqData['tableData'][$i]['race_class_id']; //レース区分ID
+                    $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['race_class_name']; //レース区分
+                    $tRace::$racesData['by_group'] = $reqData['tableData'][$i]['by_group']; //レース区分
+                    $tRace::$racesData['range'] = $reqData['tableData'][$i]['range']; //距離
+                    $tRace::$racesData['start_date_time'] = $reqData['tableData'][$i]['start_date_time']; //発艇日時
 
-                if (isset($reqData['tableData'][$i]['race_id'])) {
-                    $tRace->updateRaces($tRace::$racesData); //レースIDが存在する場合、更新処理
-                    Log::debug("race update");
-                } else {
-                    $tRace->insertRaces($tRace::$racesData); //レースIDが存在しない場合、挿入処理
-                    Log::debug("race insert");
+                    if (!isset($reqData['tableData'][$i]['checked'])) { //削除フラグが存在しない場合、更新データ
+                        $tRace::$racesData['delete_flag'] = 0;
+                    } else if ($reqData['tableData'][$i]['checked'] == 'true') { //削除フラグがtrueの場合、削除対象
+                        $tRace::$racesData['delete_flag'] = 1;
+                    } else {
+                        $tRace::$racesData['delete_flag'] = 0;
+                    }
+
+                    if (isset($reqData['tableData'][$i]['race_id'])) {
+                        $tRace->updateRaces($tRace::$racesData); //レースIDが存在する場合、更新処理
+                        Log::debug("race update");
+                    } else {
+                        $tRace->insertRaces($tRace::$racesData); //レースIDが存在しない場合、挿入処理
+                        Log::debug("race insert");
+                    }
                 }
+                DB::commit();
+                Log::debug(sprintf("updateTournamentInfoData end"));
+                return response()->json(['reqData' => $reqData]); //DBの結果を返す
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
+                return response()->json("失敗しました。大会更新できませんでした。", 500); //エラーメッセージを返す
             }
-            DB::commit();
-            Log::debug(sprintf("updateTournamentInfoData end"));
-            return response()->json(['reqData' => $reqData]); //DBの結果を返す
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-            return response()->json("失敗しました。大会更新できませんでした。", 500); //エラーメッセージを返す
         }
+        
     }
 
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
