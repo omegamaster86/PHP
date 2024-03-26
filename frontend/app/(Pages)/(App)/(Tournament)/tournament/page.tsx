@@ -991,6 +991,7 @@ export default function Tournament() {
                   ? tournamentFormData.tourn_type
                   : tournamentFormData.tournTypeName
               }
+              required={mode !== 'confirm'}
               onChange={(e) => {
                 handleInputChangeTournament('tourn_type', e?.toString());
                 handleInputChangeTournament(
