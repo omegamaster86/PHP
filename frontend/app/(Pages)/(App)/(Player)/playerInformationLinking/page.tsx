@@ -1,7 +1,7 @@
 // 機能名: 選手情報連携
 'use client';
 // ライブラリのインポート
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, use, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 // 共通コンポーネントのインポート
 import CsvHandler from '@/app/(Pages)/(App)/(Player)/playerInformationLinking/CsvHandler';
@@ -28,6 +28,8 @@ interface CsvUploadProps {
   readonly: boolean; // 読み取り専用かどうか
   csvUpload: (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => void; // CSVアップロード時のコールバック
   resetActivationFlg: () => void; // アクティベーションフラグのリセット
+  setActivationFlg: (flg: boolean) => void; // アクティベーションフラグのセット
+  loading: boolean;
 }
 // CSVダウンロードのプロパティの型定義
 interface CsvDownloadProps {
@@ -97,11 +99,16 @@ export default function PlayerInformationLinking() {
     readonly: activationFlg,
     csvUpload: handleCsvUpload,
     resetActivationFlg: resetActivationFlg,
+    setActivationFlg: setActivationFlg,
   } as CsvUploadProps;
 
   //読み込むボタン押下時 20240228
   const sendCsvData = async () => {
-    var array = csvFileData?.content.map((value, index) => {
+    // ヘッダー行は削除する
+    var array = csvFileData?.content?.filter(function (x) {
+      return x.length > 1; // 1列以上のデータを抽出
+    })
+    .slice(1).map((value, index) => {
       return {
         id: index, // ID
         checked: false, // 選択
@@ -114,6 +121,7 @@ export default function PlayerInformationLinking() {
       };
     });
     var element = array as CsvData[];
+    setActivationFlg(true);
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     await axios
@@ -125,7 +133,6 @@ export default function PlayerInformationLinking() {
         //   console.log(row, rowIndex);
         // });
 
-        setActivationFlg(true);
         if (dialogDisplayFlg) {
           window.confirm('読み込み結果に表示されているデータはクリアされます。よろしいですか？')
             ? (setCsvData([]),
@@ -170,11 +177,14 @@ export default function PlayerInformationLinking() {
           });
         }
         performValidation();
-        setActivationFlg(false);
       })
       .catch((error) => {
         console.log(error);
-      });
+      })
+      .finally(() => {
+        setActivationFlg(false);
+      })
+      ;
   };
 
   //連携ボタン押下時 20240228
@@ -247,7 +257,9 @@ export default function PlayerInformationLinking() {
           <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
           {/* 読み込み結果の表示 */}
           <div className='flex flex-col items-center'>
-            <p className='mb-1'>読み込んだデータの連携方法についての説明文を記載</p>
+            {!activationFlg && (
+              <p className='mb-1'>読み込んだデータの連携方法についての説明文を記載</p>
+            )}
             <CsvTable
               content={csvData}
               header={['連携', '選手ID', '既存選手ID', '選手名', 'メールアドレス', 'エラー内容']}

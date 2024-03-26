@@ -327,7 +327,11 @@ const CsvTable = ({
                         : ''
                   }
                 >
-                  {row.residenceCountryId.value}（{row.residencePrefectureId.value}）
+                  {/* 日本の場合のみ都道府県を表示 */}
+                  {row.residenceCountryId.value}
+                  {row.residenceCountryId.value === '日本国 （jpn）'
+                    ? row.residencePrefectureId.value
+                    : ''}
                 </CustomTd>
                 <CustomTd
                   textType={isResultError(row.result) ? 'error' : 'secondary'}

@@ -444,10 +444,13 @@ class T_players extends Model
     //選手連携時の更新
     public function updatePlayers($playersInfo)
     {
+        DB::enableQueryLog();
         DB::update(
-            'update t_players set jara_player_id = ?, updated_time = ?, updated_user_id = ? where user_id = ?',
+            'update t_players set jara_player_id = ?, updated_time = ?, updated_user_id = ? where player_id = ?',
             [$playersInfo['oldPlayerId'], now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id, $playersInfo['playerId']]
         );
+
+        Log::debug(DB::getQueryLog());
     }
 
     //20231218 選手IDに一致する全ての選手情報を取得
@@ -785,6 +788,60 @@ class T_players extends Model
                                 and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
                                 and `jara_player_id` = ?',
             [$jara_player_id]
+        );
+        return $players;
+    }
+
+    //UserIDを条件にプレイヤー情報を取得する
+    public function getPlayerFromUserId($user_id)
+    {
+        $players = DB::select(
+                                'select
+                                `player_id`
+                                ,`user_id`
+                                ,`jara_player_id`
+                                ,`player_name`
+                                ,`date_of_birth`
+                                ,`m_sex`.`sex` as `sexName`
+                                ,`t_players`.`sex_id`
+                                ,`height`
+                                ,`weight`
+                                ,`side_info`
+                                ,bir_cont.`country_name` as `birthCountryName`
+                                ,`birth_country`
+                                ,bir_pref.`pref_name` as `birthPrefectureName`
+                                ,`birth_prefecture`
+                                ,res_cont.`country_name` as `residenceCountryName`
+                                ,`residence_country`
+                                ,res_pref.`pref_name` as `residencePrefectureName`
+                                ,`residence_prefecture`
+                                ,`photo`
+                                ,`t_players`.`registered_time`
+                                ,`t_players`.`registered_user_id`
+                                ,`t_players`.`updated_time`
+                                ,`t_players`.`updated_user_id`
+                                ,`t_players`.`delete_flag`
+                                ,`m_sex`.`sex` as `sex_name`
+                                FROM `t_players`
+                                left join `m_sex`
+                                on `t_players`.`sex_id`=`m_sex`.`sex_id`
+                                left join m_countries bir_cont
+                                on `t_players`.birth_country = bir_cont.country_id
+                                left join m_prefectures bir_pref
+                                on `t_players`.birth_prefecture = bir_pref.pref_id
+                                left join m_countries res_cont
+                                on `t_players`.residence_country = res_cont.country_id
+                                left join m_prefectures res_pref
+                                on `t_players`.residence_prefecture = res_pref.pref_id
+                                where 1=1
+                                and `t_players`.delete_flag = 0
+                                and  (`m_sex`.`delete_flag` = 0 or `m_sex`.`delete_flag` is null)
+                                and  (bir_cont.`delete_flag` = 0 or bir_cont.`delete_flag` is null)
+                                and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
+                                and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
+                                and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
+                                and `user_id` = ?',
+            [$user_id]
         );
         return $players;
     }

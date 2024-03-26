@@ -920,20 +920,20 @@ class TournamentController extends Controller
 
         $reqData = $request->all();
 
+        $result_org_id = DB::select(
+            'select `org_id`, `org_name`, `jara_org_type` from `t_organizations` where `delete_flag` = 0 and `org_id` = ?',
+            [
+                $request["sponsor_org_id"]
+            ]
+        );  //エントリーシステム大会ID確認
+
+        $orgInfo = $result_org_id[0] ?? [];
+
         if ($reqData["mode"] === "create" ) {
             $response_org_id = '';
             $response_tourn_type = '';
             $response_tourn_id = '';
             $response_race_id = [];
-
-            $result_org_id = DB::select(
-                'select `org_id`, `org_name`, `jara_org_type` from `t_organizations` where `delete_flag` = 0 and `org_id` = ?',
-                [
-                    $request["sponsor_org_id"]
-                ]
-            );  //エントリーシステム大会ID確認
-
-            $orgInfo = $result_org_id[0] ?? [];
 
             // Log::debug($orgInfo);
             if (empty($orgInfo)) {
