@@ -444,10 +444,13 @@ class T_players extends Model
     //選手連携時の更新
     public function updatePlayers($playersInfo)
     {
+        DB::enableQueryLog();
         DB::update(
-            'update t_players set jara_player_id = ?, updated_time = ?, updated_user_id = ? where user_id = ?',
+            'update t_players set jara_player_id = ?, updated_time = ?, updated_user_id = ? where player_id = ?',
             [$playersInfo['oldPlayerId'], now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id, $playersInfo['playerId']]
         );
+
+        Log::debug(DB::getQueryLog());
     }
 
     //20231218 選手IDに一致する全ての選手情報を取得
