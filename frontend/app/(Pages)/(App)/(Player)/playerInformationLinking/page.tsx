@@ -105,21 +105,23 @@ export default function PlayerInformationLinking() {
   //読み込むボタン押下時 20240228
   const sendCsvData = async () => {
     // ヘッダー行は削除する
-    var array = csvFileData?.content?.filter(function (x) {
-      return x.length > 1; // 1列以上のデータを抽出
-    })
-    .slice(1).map((value, index) => {
-      return {
-        id: index, // ID
-        checked: false, // 選択
-        link: '', // 連携
-        oldPlayerId: value[0],
-        playerId: value[1],
-        mailaddress: value[2],
-        playerName: value[3],
-        message: '',
-      };
-    });
+    var array = csvFileData?.content
+      ?.filter(function (x) {
+        return x.length > 1; // 1列以上のデータを抽出
+      })
+      .slice(1)
+      .map((value, index) => {
+        return {
+          id: index, // ID
+          checked: false, // 選択
+          link: '', // 連携
+          oldPlayerId: value[0],
+          playerId: value[1],
+          mailaddress: value[2],
+          playerName: value[3],
+          message: '',
+        };
+      });
     var element = array as CsvData[];
     setActivationFlg(true);
     const csrf = () => axios.get('/sanctum/csrf-cookie');
@@ -183,8 +185,7 @@ export default function PlayerInformationLinking() {
       })
       .finally(() => {
         setActivationFlg(false);
-      })
-      ;
+      });
   };
 
   //連携ボタン押下時 20240228
