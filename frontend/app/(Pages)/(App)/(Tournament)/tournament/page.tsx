@@ -1104,7 +1104,7 @@ export default function Tournament() {
               readonly={mode === 'confirm'}
             />
             {/* 開催場所入力欄 */}
-            <div className={`${tournamentFormData.venue_id === '9999' ? '' : 'hidden'} `}>
+            <div className={`${tournamentFormData.venue_id == '9999' ? '' : 'hidden'} `}>
               <CustomTextField
                 label=''
                 isError={venueNameErrorMessage.length > 0}
