@@ -133,6 +133,8 @@ export default function PlayerInformation() {
   }>();
   const [errorMessage, setErrorMessage] = useState([] as string[]);
 
+  const [backKeyFlag, setBackKeyFlag] = useState<boolean>(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+
   // 選手情報登録・更新・入力確認画面の「出身地（国）」が「日本」の場合、「出身地（都道府県）」を「東京」で設定する
   useEffect(() => {
     if (formData.birth_country == 112) {
@@ -258,7 +260,8 @@ export default function PlayerInformation() {
     };
     fetchPrefecture();
 
-    if (mode === 'update') {
+    console.log(backKeyFlag);
+    if (mode === 'update' && !backKeyFlag) {
       console.log('aaaaaaaaaaaaa');
       console.log(formData.residencePrefectureName);
       // TODO: 選手情報を取得する処理を実装
@@ -323,7 +326,7 @@ export default function PlayerInformation() {
       fetchPlayerData(); // APIを叩いて、選手情報を取得する
       console.log('==============');
       console.log(formData.birthPrefectureName);
-    } else if (mode === 'create') {
+    } else if (mode === 'create' && !backKeyFlag) {
       setFormData((prevFormData) => ({
         ...prevFormData,
         ...{
@@ -348,6 +351,8 @@ export default function PlayerInformation() {
         },
       }));
     }
+    setBackKeyFlag(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+    console.log(backKeyFlag);
   }, [mode]);
 
   /**
@@ -1112,7 +1117,10 @@ export default function PlayerInformation() {
         <div className='flex flex-row justify-center gap-[16px] my-[30px]'>
           {/* 戻るボタン */}
           <CustomButton
-            onClick={() => {
+            onClick={async () => {
+              console.log(backKeyFlag);
+              await setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+              console.log(backKeyFlag);
               router.back();
             }}
             buttonType='white-outlined'

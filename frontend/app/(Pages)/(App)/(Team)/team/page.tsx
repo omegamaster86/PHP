@@ -93,6 +93,8 @@ export default function OrgInfo() {
   const [userNameErrorMessage, setUserNameErrorMessage] = useState([] as string[]);
   const [userTypeErrorMessage, setUserTypeErrorMessage] = useState([] as string[]);
 
+  const [backKeyFlag, setBackKeyFlag] = useState<boolean>(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+
   // フォームデータを管理する状態
   const [tableData, setTableData] = useState<Staff[]>([]);
 
@@ -195,7 +197,7 @@ export default function OrgInfo() {
         // console.log(userData);
         setUser(userData.data.result);
         // console.log(user);
-        if (mode === 'update') {
+        if (mode === 'update' && !backKeyFlag) {
           // const organization = await axios.get<Organization>('http://localhost:3100/organization');
           const sendId = { org_id: orgId };
           const csrf = () => axios.get('/sanctum/csrf-cookie');
@@ -231,7 +233,7 @@ export default function OrgInfo() {
           const staff = await axios.post('/getOrgStaffData', sendId);
           console.log(staff.data);
           setTableData(staff.data.result);
-        } else if (mode === 'create') {
+        } else if (mode === 'create' && !backKeyFlag) {
           setFormData((prevFormData) => ({
             ...prevFormData,
             ...{
@@ -277,6 +279,8 @@ export default function OrgInfo() {
       } catch (error: any) {
         setErrorMessage(['API取得エラー:' + error.message]);
       }
+      setBackKeyFlag(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+      console.log(backKeyFlag);
     };
     fetchData();
   }, [mode]);
@@ -675,8 +679,7 @@ export default function OrgInfo() {
           value={formData.entrysystem_org_id}
           displayHelp={mode !== 'confirm'}
           onChange={(e) => handleInputChange('entrysystem_org_id', e.target.value)}
-          toolTipTitle='Title エントリーシステムの団体ID' //はてなボタン用
-          toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+          toolTipText='日本ローイング協会より発行された、6桁の団体コードを入力してください。' //はてなボタン用
         />
         {/* 団体名 */}
         <CustomTextField
@@ -688,16 +691,14 @@ export default function OrgInfo() {
           displayHelp={mode !== 'confirm'}
           value={formData.org_name}
           onChange={(e) => handleInputChange('org_name', e.target.value)}
-          toolTipTitle='Title 団体名' //はてなボタン用
-          toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+          toolTipText='登録する団体名を入力してください。' //はてなボタン用
         />
         {/* 創立年 */}
         <div className='w-full flex flex-col justify-between gap-[8px]'>
           <InputLabel
             label='創立年'
             displayHelp={mode !== 'confirm'}
-            toolTipTitle='Title 創立年' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+            toolTipText='団体の創立念を西暦で入力してください。' //はてなボタン用
           />
           <CustomYearPicker
             selectedDate={formData.founding_year === 0 ? '' : formData.founding_year?.toString()}
@@ -713,13 +714,7 @@ export default function OrgInfo() {
         </div>
         <div className='w-full flex flex-col justify-between gap-[8px]'>
           {/* 所在地 */}
-          <InputLabel
-            label='所在地'
-            required={mode !== 'confirm'}
-            displayHelp={mode !== 'confirm'}
-            toolTipTitle='Title 所在地' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
-          />
+          <InputLabel label='所在地' required={mode !== 'confirm'} displayHelp={false} />
           {mode !== 'confirm' && (
             <div className='w-full flex flex-row justify-start gap-[8px]'>
               <div className='h-[40px] self-end'>〒</div>
@@ -812,9 +807,7 @@ export default function OrgInfo() {
             id='prefecture'
             label='都道府県'
             required={mode !== 'confirm'}
-            displayHelp={mode !== 'confirm'}
-            toolTipTitle='Title 都道府県' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+            displayHelp={false}
             options={prefectureOptions.map((item) => ({
               value: item.name,
               key: item.id,
@@ -840,27 +833,23 @@ export default function OrgInfo() {
         <CustomTextField
           label='市区町村・町字番地'
           required={mode !== 'confirm'}
-          displayHelp={mode !== 'confirm'}
+          displayHelp={false}
           value={formData.address1}
           readonly={mode === 'confirm'}
           isError={addressErrorMessages.length > 0}
           errorMessages={addressErrorMessages}
           onChange={(e) => handleInputChange('address1', e.target.value)}
-          toolTipTitle='Title 市区町村・町字番地' //はてなボタン用
-          toolTipText='サンプル用のツールチップ表示' //はてなボタン用
         />
         {/* マンション・アパート */}
         <CustomTextField
           label='マンション・アパート'
           // required={mode !== 'confirm'}
-          displayHelp={mode !== 'confirm'}
+          displayHelp={false}
           value={formData.address2}
           readonly={mode === 'confirm'}
           onChange={(e) => handleInputChange('address2', e.target.value)}
           // isError={addressErrorMessages.length > 0}
           // errorMessages={addressErrorMessages}
-          toolTipTitle='Title マンション・アパート' //はてなボタン用
-          toolTipText='サンプル用のツールチップ表示' //はてなボタン用
         />
         <div className='w-full flex flex-col justify-between gap-[8px]'>
           {/* 団体区分 */}
@@ -869,8 +858,7 @@ export default function OrgInfo() {
             label='団体区分'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
-            toolTipTitle='Title 団体区分' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
+            toolTipText='保留' //はてなボタン用
             options={orgClassOptions.map((orgClass) => ({
               value: orgClass.name,
               key: orgClass.id,
@@ -892,12 +880,18 @@ export default function OrgInfo() {
           />
         </div>
         {/* JARA団体種別 */}
-        <InputLabel
-          label='団体種別'
-          displayHelp={mode !== 'confirm'}
-          toolTipTitle='Title 団体種別' //はてなボタン用
-          toolTipText='サンプル用のツールチップ表示' //はてなボタン用
-        />
+        {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN || userIdType.is_jara == ROLE.JARA) && (
+          <InputLabel
+            label='団体種別'
+            displayHelp={mode !== 'confirm'}
+            toolTipText='JARA
+          　日本ローイング協会より証跡が発行されている場合、"正規" を選択し
+          　発行された証跡を入力してください。
+          県ボ
+          　都道府県ボート協会より証跡が発行されている場合、"正規" を選択し
+          　発行された証跡を入力してください。' //はてなボタン用
+          />
+        )}
         {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN || userIdType.is_jara == ROLE.JARA) && (
           <div className='w-full flex flex-row justify-start gap-[8px]'>
             <div className='w-full flex flex-col justify-between gap-[8px]'>
@@ -1232,6 +1226,9 @@ export default function OrgInfo() {
           buttonType='white-outlined'
           className='w-[200px]'
           onClick={() => {
+            console.log(backKeyFlag);
+            setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+            console.log(backKeyFlag);
             router.back();
           }}
         >

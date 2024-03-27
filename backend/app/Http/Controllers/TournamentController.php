@@ -927,6 +927,8 @@ class TournamentController extends Controller
 
         $reqData = $request->all();
 
+        Log::debug($reqData);
+
         $result_org_id = DB::select(
             'select `org_id`, `org_name`, `jara_org_type` from `t_organizations` where `delete_flag` = 0 and `org_id` = ?',
             [
@@ -936,69 +938,90 @@ class TournamentController extends Controller
 
         $orgInfo = $result_org_id[0] ?? [];
 
-        if ($reqData["mode"] === "create" ) {
-            $response_org_id = '';
-            $response_tourn_type = '';
-            $response_tourn_id = '';
-            $response_race_id = [];
+        $response_org_id = '';
+        $response_tourn_type = '';
+        $response_tourn_id = '';
+        $response_race_id = [];
 
-            // Log::debug($orgInfo);
-            if (empty($orgInfo)) {
-                $response_org_id = "[対象項目名]の団体は、既にシステムより削除されているか、本登録されていない団体IDが入力されています。";
-            } else {
-                if ($request["tourn_type"] === "1") {
-                    if ($orgInfo->jara_org_type !== $request["tourn_type"]) {
-                        $response_tourn_type = " $orgInfo->org_id ：  $orgInfo->org_name は、任意団体の為、公式大会を主催することはできません。";
-                    }
+        // Log::debug($orgInfo);
+        if (empty($orgInfo)) {
+            $response_org_id = "[対象項目名]の団体は、既にシステムより削除されているか、本登録されていない団体IDが入力されています。";
+        } else {
+            if ($request["tourn_type"] === "1") {
+                if ($orgInfo->jara_org_type !== $request["tourn_type"]) {
+                    $response_tourn_type = " $orgInfo->org_id ：  $orgInfo->org_name は、任意団体の為、公式大会を主催することはできません。";
                 }
             }
+        }
 
-            if ($request["entrysystem_tourn_id"] !== "") {
-                $result_tourn_id = DB::select(
-                    'select `tourn_id`, `tourn_name` from `t_tournaments` where `delete_flag` = 0 and `entrysystem_tourn_id` = ?',
-                    [
-                        $request["entrysystem_tourn_id"]
-                    ]
-                );
+        if ($request["entrysystem_tourn_id"] !== "") {
+            $result_tourn_id = DB::select(
+                'select `tourn_id`, `tourn_name` from `t_tournaments` where `delete_flag` = 0 and `entrysystem_tourn_id` = ?',
+                [
+                    $request["entrysystem_tourn_id"]
+                ]
+            );
+        }
+
+        $tournInfo = $result_tourn_id[0] ?? [];
+
+        if (!empty($tournInfo)) {
+            if($reqData["mode"] === "update"){
+                if($tournInfo->tourn_id !== $request["tourn_id"]){
+                    $response_tourn_id = "入力されたエントリーシステムの大会IDは、既に別の大会で使用されています。 [$tournInfo->tourn_id]：[$tournInfo->tourn_name]";
+                }
             }
-
-            $tournInfo = $result_tourn_id[0] ?? [];
-
-            if (!empty($tournInfo)) {
+            else{
                 $response_tourn_id = "入力されたエントリーシステムの大会IDは、既に別の大会で使用されています。 [$tournInfo->tourn_id]：[$tournInfo->tourn_name]";
             }
+        }
 
-            for ($i = 0; $i < count($reqData['race_data'] ?? []); $i++) {
+        for ($i = 0; $i < count($reqData['race_data'] ?? []); $i++) {
 
-                $result_race_id = DB::select(
-                    'select `entrysystem_race_id` from jara_new_pf.`t_races` where `delete_flag` = 0 and `entrysystem_race_id` = ?',
-                    [
-                        $reqData['race_data'][$i]['entrysystem_race_id']
-                    ]
-                );
+            $result_race_id = DB::select(
+                'select `race_id`, `entrysystem_race_id` from jara_new_pf.`t_races` where `delete_flag` = 0 and `entrysystem_race_id` = ?',
+                [
+                    $reqData['race_data'][$i]['entrysystem_race_id']
+                ]
+            );
 
-                $raceInfo = $result_race_id[0] ?? [];
+            $raceInfo = $result_race_id[0] ?? [];
 
 
-                if (!empty($raceInfo)) {
+            if (!empty($raceInfo)) {
+                if($reqData["mode"] === "update"){
+                    if($raceInfo->race_id !== $reqData['race_data'][$i]['race_id']){
+                        array_push($response_race_id, "「エントリーシステムのレースID」$raceInfo->entrysystem_race_id が重複しています。");
+                    }
+                }
+                else{
                     array_push($response_race_id, "「エントリーシステムのレースID」$raceInfo->entrysystem_race_id が重複しています。");
                 }
+                
+            }
 
 
-                $result_race_number = DB::select(
-                    'select `race_number` from jara_new_pf.`t_races` where `delete_flag` = 0 and `race_number` = ?',
-                    [
-                        $reqData['race_data'][$i]['race_number']
-                    ]
-                );
+            $result_race_number = DB::select(
+                'select `race_id`, `race_number` from jara_new_pf.`t_races` where `delete_flag` = 0 and `race_number` = ?',
+                [
+                    $reqData['race_data'][$i]['race_number']
+                ]
+            );
 
-                $raceInfo2 = $result_race_number[0] ?? [];
+            $raceInfo2 = $result_race_number[0] ?? [];
 
-                // Log::debug($raceInfo->entrysystem_race_id);
+            // Log::debug($raceInfo->entrysystem_race_id);
 
-                if (!empty($raceInfo2)) {
+            if (!empty($raceInfo2)) {
+                if($reqData["mode"] === "update"){
+                    if($raceInfo2->race_id !== $reqData['race_data'][$i]['race_id']){
+                        array_push($response_race_id, "「レースNo.」$raceInfo2->race_number が重複しています。");
+                    }
+                }
+                else{
                     array_push($response_race_id, "「レースNo.」$raceInfo2->race_number が重複しています。");
                 }
+                
             }
 
             if ($response_tourn_id or $response_tourn_type or $response_org_id or $response_race_id) {
@@ -1006,6 +1029,7 @@ class TournamentController extends Controller
             }
             
         }
+
 
         return response()->json(["success" => $orgInfo], 200); //登録できる
 
