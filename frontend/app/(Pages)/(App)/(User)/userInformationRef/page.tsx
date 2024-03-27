@@ -87,7 +87,7 @@ export default function UserInformationUpdate() {
             user_type: response.data.result.user_type,
             userTypeName: response.data.result.userTypeName,
             date_of_birth: response.data.result.date_of_birth,
-            sexName: response.data.result.sexName,
+            sexName: response.data.result.sex_name,
             // sexName: response.data.result.sexName ? response.data.sexName : '男性',
             sex: response.data.result.sex,
             height: response.data.result.height,
