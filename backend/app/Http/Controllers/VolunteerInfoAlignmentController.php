@@ -15,10 +15,7 @@ use App\Models\T_volunteer_availables;
 use App\Models\T_volunteer_language_proficiency;
 use App\Models\T_volunteer_qualifications_hold;
 use App\Models\T_volunteer_supportable_disability;
-use Datetime;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -691,68 +688,76 @@ class VolunteerInfoAlignmentController extends Controller
     // }
 
     //データのチェックで不備があったときの変数代入処理
-    private function assignInvalidData(&$renkei,&$checked,&$isError)
-    {
-        $renkei = '登録不可データ';
-        $checked = false;
-        $isError = true;
-    }
+    // private function assignInvalidData(&$renkei,&$checked,&$isError)
+    // {
+    //     $renkei = '登録不可データ';
+    //     $checked = false;
+    //     $isError = true;
+    // }
 
     //対象の変数が整数かつX桁以内であることをチェックする
-    private function checkInteger($value,$digits,$nullCheck,&$renkei,&$checked,&$isError)
-    {
-        //nullCheck=trueとしたとき、nullチェックをする
-        if($nullCheck && is_null($value))
-        {
-            $this->assignInvalidData($renkei,$checked,$isError);
-        }
-        //整数かつX桁以内であることをチェック
-        if(!is_int($value) || mb_strlen($value) > $digits)
-        {   
-            $this->assignInvalidData($renkei,$checked,$isError);
-        }
-    }
+    // private function checkInteger($value,$digits,$nullCheck,&$renkei,&$checked,&$isError)
+    // {
+    //     //nullCheck=trueとしたとき、nullチェックをする
+    //     if($nullCheck && is_null($value))
+    //     {
+    //         $this->assignInvalidData($renkei,$checked,$isError);
+    //     }
+    //     //整数かつX桁以内であることをチェック
+    //     if(!is_int($value) || mb_strlen($value) > $digits)
+    //     {   
+    //         $this->assignInvalidData($renkei,$checked,$isError);
+    //     }
+    // }
 
-    //変数がマスターの任意の列に含まれるかをチェックする
-    private function checkMasterExists($value,$master,$column_name,&$renkei,&$checked,&$isError)
-    {
-        if(!in_array($value,array_column($master,$column_name)))
-        {
-            $this->assignInvalidData($renkei,$checked,$isError);
-        }
-    }
+    // //変数がマスターの任意の列に含まれるかをチェックする
+    // private function checkMasterExists($value,$master,$column_name,&$renkei,&$checked,&$isError)
+    // {
+    //     if(!in_array($value,array_column($master,$column_name)))
+    //     {
+    //         $this->assignInvalidData($renkei,$checked,$isError);
+    //     }
+    // }
 
-    //対象の変数が0か1であるかをチェックする
-    private function checkZeroOrOne($value,&$renkei,&$checked,&$isError)
-    {
-        //空でない、かつ0または1でないときは登録不可データとする
-        if(!isset($value) && !($value == '0' || $value == '1'))
-        {
-            $this->assignInvalidData($renkei,$checked,$isError);
-        }
-    }
+    // //対象の変数が0か1であるかをチェックする
+    // private function checkZeroOrOne($value,&$renkei,&$checked,&$isError)
+    // {
+    //     //空でない、かつ0または1でないときは登録不可データとする
+    //     if(!isset($value) && !($value == '0' || $value == '1'))
+    //     {
+    //         $this->assignInvalidData($renkei,$checked,$isError);
+    //     }
+    // }
 
-    //PRを記号に変換する
-    private function convertPRtoDisplaySign($PR)
-    {
-        $sign = '';
-        if($PR == '0')
-        {
-            $sign = '×';
-        }
-        elseif($PR == '1')
-        {
-            $sign = '◯';
-        } 
-        return $sign;
-    }
+    // //PRを記号に変換する
+    // private function convertPRtoDisplaySign($PR)
+    // {
+    //     $sign = '';
+    //     if($PR == '0')
+    //     {
+    //         $sign = '×';
+    //     }
+    //     elseif($PR == '1')
+    //     {
+    //         $sign = '◯';
+    //     } 
+    //     return $sign;
+    // }
 
     //マスターのIDと一致する行を取得する
     private function getMachingMasterRow($target_key,$master,$target_column)
     {
         $keyIndex = array_search($target_key, array_column($master, $target_column));
-        $result = $master[$keyIndex];
-
+        //マスターから取得できない場合はfalseが返る
+        //インデックスが0の場合と区別したい
+        if($keyIndex === false)
+        {
+            $result = null;
+        }
+        else
+        {
+            $result = $master[$keyIndex];
+        }
         return $result;
     }
 
@@ -771,241 +776,180 @@ class VolunteerInfoAlignmentController extends Controller
     {
         Log::debug(sprintf("sendVolunteerCsvData start"));
         $reqData = $request->all();
-        // Log::debug($reqData);
-        
-        // //ボランティアの一覧を取得
-        // $volunteer_list = $t_volunteers->getVolunteer();
-        // //性別の一覧
-        // $sex_list = $m_sex->getSexList();
-        // //国の一覧
-        // $country_list = $m_countries->getCountries();
-        // //都道府県の一覧
-        // $prefecture_list = $m_prefectures->getPrefecures();
-        // //服のサイズ
-        // $clothes_size_list = $m_clothes_size->getClothesSize();
-        // //ボランティア保有資格の一覧
-        // $qualifications_list = $m_volunteer_qualifications->getQualifications();
-        // //言語の一覧
-        // $language_list = $m_languages->getLanguages();
-        // //言語レベルの一覧
-        // $language_proficientcy_list = $m_language_proficiency->getLanguageProficiency();
+        //Log::debug($reqData);
 
-        // try
-        // {
+        //ボランティアの一覧を取得
+        $volunteer_list = $t_volunteers->getVolunteer();
+        //性別の一覧
+        $sex_list = $m_sex->getSexList();
+        //国の一覧
+        $country_list = $m_countries->getCountries();
+        //都道府県の一覧
+        $prefecture_list = $m_prefectures->getPrefecures();
+        //服のサイズ
+        $clothes_size_list = $m_clothes_size->getClothesSize();        
+        //ボランティア保有資格の一覧
+        $qualifications_list = $m_volunteer_qualifications->getQualifications();
+        //言語の一覧
+        $language_list = $m_languages->getLanguages();
+        //言語レベルの一覧
+        $language_proficientcy_list = $m_language_proficiency->getLanguageProficiency();
+        
+        try
+        {
             for ($rowIndex = 0; $rowIndex < count($reqData); $rowIndex++)
             {
-                $rowData = $reqData[$rowIndex];
-
+                $rowData = &$reqData[$rowIndex];
                 //この時点で既に「連携不可」となっている場合はフォーマット不備の行のため、
                 //次の行を処理する
                 if($rowData["result"] == "連携不可")
                 {
                     continue;
                 }
-
-                //ユーザーID
-                // $user_id = $rowData["userId"]["value"];
-                // $this->checkInteger($user_id,7,true,$rowData["result"],$rowData["checked"],$rowData["userId"]["isError"]);
-                // //氏名
-                // $volunteer_name = $rowData["volunteerName"]["value"];
-                // //空文字でない、かつ50文字以下をチェック
-                // if(empty($volunteer_name) || mb_strlen($volunteer_name) > 50)
-                // {   
-                //     $this->assignInvalidData($rowData["result"],$rowData["checked"],$rowData["volunteerName"]["isError"]);
-                // }
-                // //生年月日
-                // //日付として適切であることを確認
-                // $date_of_birth =  $rowData["dateOfBirth"]["value"];
-                // if (empty($date_of_birth) || DateTime::createFromFormat('Y-m-d', $date_of_birth) == false) {
-                //     $this->assignInvalidData($rowData["result"],$rowData["checked"],$rowData["dateOfBirth"]["isError"]);
-                // }
-                // //性別
-                // $sex_id = $rowData['sexId']['key'];
-                // $sex_value = $rowData['sexId']['value'];
-                // $this->checkInteger($sex,2,true,$rowData["result"],$rowData["checked"],$rowData["sexId"]["isError"]);
-                // if(!$rowData["sexId"]["isError"])
-                // {
-                //     //性別の表示名が無い場合はマスターから取得を試みる
-                //     //性別の表示名がある場合はIDは有効として何もしない
-                //     if(isset($sex_id) && empty($sex_value))
-                //     {
-                //         $target_sex_row = $this->getMachingMasterRow($sex_id,$sex_list,"sex_id");
-                //         if(isset($target_sex_row["sex"]))
-                //         {
-                //             $rowData['sexId']['value'] = $target_sex_row["sex"];
-                //         }
-                //         else
-                //         {
-                //             $this->assignInvalidData($rowData["result"],$rowData["checked"],$rowData["sexId"]["isError"]);
-                //         }
-                //     }
-                // }
-                // //居住地（国）
-                // $country_id = $rowData['residenceCountryId']['key'];
-                // $country_value = $rowData['residenceCountryId']['value'];
-                // //空文字でない、かつ3桁以内の整数であることをチェック
-                // $this->checkInteger($country,3,true,$rowData["result"],$rowData["checked"],$rowData["residenceCountryId"]["isError"]);
-                // if($rowData["residenceCountryId"]["isError"])
-                // {
-                //     $this->assignInvalidData($rowData["result"],$rowData["checked"],$rowData["residenceCountryId"]["isError"]);
-                // }
-                // elseif(empty($country_value))
-                // {
-                //     $target_country_row = $this->getMachingMasterRow($country_id,$country_list,"country_id");
-                //     if(isset($target_country_row["country_name"]))
-                //     {
-                //         $rowData['residenceCountryId']['value'] = $target_country_row["country_name"];
-                //     }
-                //     //IDに対応する国名が無い場合、そのIDは無効と見做す
-                //     else
-                //     {
-                //         $this->assignInvalidData($rowData["result"],$rowData["checked"],$rowData["residenceCountryId"]["isError"]);
-                //     }
-                // }
-                // //居住地（都道府県）
-                // $prefecture_id = $rowData['residencePrefectureId']['key'];
-                // $prefecture_value = $rowData['residencePrefectureId']['value'];
-                // //居住国が日本の場合
-                // if($country_id == 112)
-                // {
-                //     $this->checkInteger($prefecture_id,2,true,$rowData["result"],$rowData["checked"],$rowData["residencePrefectureId"]["isError"]);
-                //     if(!$rowData["residencePrefectureId"]["isError"] && isset($prefecture_id) && empty($prefecture_value))
-                //     {
-                //         //都道府県IDが正しいことをチェックする
-                //         $target_prefecture_row = $this->getMachingMasterRow($prefecture_id,$prefecture_list,"pref_id");
-                //         if(isset($target_prefecture_row["pref_name"]))
-                //         {
-                //             $rowData['residencePrefectureId']['value'] = $target_prefecture_row["pref_name"];
-                //         }
-                //     }
-                // }
-                // //居住国が日本以外の場合
-                // else
-                // {
-                //     if(isset($prefecture_id))
-                //     {
-                //         $this->checkInteger($prefecture_id,2,true,$rowData["result"],$rowData["checked"],$rowData["residencePrefectureId"]["isError"]);
-                //     }
-                // }
-                // //メールアドレス
-                // $mail_address = $rowData['mailaddress']['value'];
-                // if(isset($mail_address) && !filter_var($mail_address, FILTER_VALIDATE_EMAIL))
-                // {
-                //     $this->assignInvalidData($rowData["result"],$rowData["checked"],$rowData["mailaddress"]["isError"]);
-                // }
-                // //電話番号
-                // $telephone_number = $rowData['telephoneNumber']['value'];
-                // $this->checkInteger($telephone_number,15,false,$rowData["result"],$rowData["checked"],$rowData["telephoneNumber"]["isError"]);
-                // //服のサイズ
-                // $cloth_size_id = $rowData['clothesSizeId']['key'];
-                // $cloth_size_value = $rowData['clothesSizeId']['value'];
-                // //空文字でない、桁以内の整数であることをチェック
-                // $this->checkInteger($cloth_size_id,1,true,$rowData["result"],$rowData["checked"],$rowData["clothesSizeId"]["isError"]);
-                // if(!$rowData["clothesSizeId"]["isError"] && isset($cloth_size_id) && empty($cloth_size_value))
-                // {
-                //     //服のサイズの表示名が無い場合はマスターから取得を試みる
-                //     //服のサイズの表示名がある場合はIDは有効として何もしない
-                //     $target_clothes_size_row = $this->getMachingMasterRow($clothes_size_id,$clothes_size_list,"clothes_size_id");
-                //     if(isset($target_clothes_size_row["clothes_size"]))
-                //     {
-                //         $rowData['clothesSizeId']['value'] = $target_clothes_size_row["clothes_size"];
-                //     }
-                //     //取得できなかったら無効なID
-                //     else
-                //     {
-                //         $this->assignInvalidData($rowData["result"],$rowData["checked"],$rowData["clothesSizeId"]["isError"]);
-                //     }
-                // }
-                // //PR
-                // $dis_type_max_index = 3;
-                // for($i=1;$i<=$dis_type_max_index;$i++)
-                // {
-                //     $dis_type_id = $rowData['disTypeId'.$i]['key'];
-                //     //0か1であることをチェック
-                //     $this->checkZeroOrOne($dis_type_id,$rowData["result"],$rowData["checked"],$rowData["disTypeId".$i]["isError"]);
-                //     if(!$rowData["disTypeId".$i]["isError"])
-                //     {
-                //         $rowData["disTypeId".$i]["value"] = $this->convertPRtoDisplaySign($dis_type_id);
-                //     }
-                // }
-                // //資格
-                // $qual_max_index = 5;    //資格は最大5件入力可
-                // for($i=1;$i<=$qual_max_index;$i++)
-                // {
-                //     $qual_id = $rowData['qualId'.$i]['key'];
-                //     $qual_value = $rowData['qualId'.$i]['value'];
-                //     //IDが3桁以内の整数であることをチェック
-                //     $this->checkInteger($qual_id,3,false,$rowData["result"],$rowData["checked"],$rowData["qualId".$i]["isError"]);
-                //     //保有資格の表示名が無い場合はマスターから取得を試みる
-                //     //保有資格の表示名がある場合はIDは有効として何もしない
-                //     if(!$rowData["qualId".$i]["isError"] && isset($qual_id) && empty($qual_value))
-                //     {
-                //         $target_qual_row = $this->getMachingMasterRow($qual_id,$qualifications_list,"qual_id");
-                //         if(isset($target_qual_row['qual_name']))
-                //         {
-                //             $rowData['qualId'.$i]['value'] = $target_qual_row['qual_name'];
-                //         }
-                //         //取得できなかったら無効なID
-                //         else
-                //         {
-                //             $this->assignInvalidData($rowData["result"],$rowData["checked"],$rowData["qualId".$i]["isError"]);
-                //         }
-                //     }
-                // }
-                // //言語
-                // $lang_max_index = 3;    //言語は最大3件入力可
-                // for($i=1;$i<=$lang_max_index;$i++)
-                // {
-                //     $lang_id = $rowData['langId'.$i]['key'];
-                //     $lang_value = $rowData['langId'.$i]['value'];
-                //     //IDが3桁以内の整数であることをチェック
-                //     $this->checkInteger($lang_id,3,false,$rowData["result"],$rowData["checked"],$rowData["langId".$i]["isError"]);
-                //     //言語の表示名が無い場合はマスターから取得を試みる
-                //     //言語の表示名がある場合はIDは有効として何もしない
-                //     if(!$rowData["langId".$i]["isError"] && empty($lang_value) && isset($lang_id))
-                //     {
-                //         $target_lang_row = $this->getMachingMasterRow($lang_id,$language_list,"lang_id");
-                //         if(isset($target_lang_row['lang_name']))
-                //         {
-                //             $rowData['langId'.$i]['value'] = $target_lang_row['lang_name'];
-                //         }
-                //         //取得できなかったら無効なID
-                //         else
-                //         {
-                //             $this->assignInvalidData($rowData["result"],$rowData["checked"],$rowData["langId".$i]["isError"]);
-                //         }
-                //     }
-                // }
-                // //言語レベル
-                // $lang_pro_max_index = 3;    //言語は最大3件入力可
-                // for($i=1;$i<=$lang_pro_max_index;$i++)
-                // {
-                //     $lang_pro_id = $rowData['langProId'.$i]['key'];
-                //     $lang_pro_value = $rowData['langProId'.$i]['value'];
-                //     //IDが3桁以内の整数であることをチェック
-                //     $this->checkInteger($lang_pro_id,3,false,$rowData["result"],$rowData["checked"],$rowData["langProId".$i]["isError"]);
-                //     //言語レベルの表示名が無い場合はマスターから取得を試みる
-                //     //言語レベルの表示名がある場合はIDは有効として何もしない
-                //     if(!$rowData["langProId".$i]["isError"] && empty($lang_pro_value) && isset($lang_pro_id))
-                //     {
-                //         $target_lang_pro_row = $this->getMachingMasterRow($lang_pro_id,$language_proficientcy_list,"lang_pro_id");
-                //         if(isset($target_lang_pro_row['lang_pro_name']))
-                //         {
-                //             $rowData['langProId'.$i]['value'] = $target_lang_pro_row['lang_pro_name'];
-                //         }
-                //         //取得できなかったら無効なID
-                //         else
-                //         {
-                //             $this->assignInvalidData($rowData["result"],$rowData["checked"],$rowData["langProId".$i]["isError"]);
-                //         }
-                //     }
-                // }
-
+                //性別            
+                if(isset($rowData['sexId']['key']) && empty($rowData['sexId']['value']))
+                {
+                    $sex_id = $rowData['sexId']['key'];
+                    $target_sex_row = $this->getMachingMasterRow($sex_id,$sex_list,"sex_id");
+                    if(isset($target_sex_row->sex))
+                    {
+                        $rowData['sexId']['value'] = $target_sex_row->sex;
+                    }
+                    //検索で見つからなかったら入力値(ID)を表示してその項目をエラーとする
+                    else
+                    {
+                        $rowData["sexId"]["value"] = $rowData["sexId"]["key"];
+                        $rowData["result"] = "登録不可データ";
+                        $rowData["checked"] = false;
+                        $rowData["sexId"]["isError"] = true;
+                    }
+                }
+                //居住地（国）
+                if(isset($rowData['residenceCountryId']['key']) && empty($rowData['residenceCountryId']['value']))
+                {
+                    $country_id = $rowData['residenceCountryId']['key'];
+                    $target_country_row = $this->getMachingMasterRow($country_id,$country_list,"country_id");
+                    if(isset($target_country_row->country_name))
+                    {
+                        $rowData['residenceCountryId']['value'] = $target_country_row->country_name;
+                    }
+                    //検索で見つからなかったら入力値を表示してその項目をエラーとする
+                    else
+                    {
+                        $rowData["residenceCountryId"]["value"] = $rowData["residenceCountryId"]["key"];
+                        $rowData["result"] = "登録不可データ";
+                        $rowData["checked"] = false;
+                        $rowData["residenceCountryId"]["isError"] = true;
+                    }
+                }
+                //居住地（都道府県）
+                if(isset($rowData['residencePrefectureId']['key']) && $rowData['residenceCountryId']['key'] == 112 && empty($rowData['residencePrefectureId']['value']))
+                {
+                    $prefecture_id = $rowData['residencePrefectureId']['key'];
+                    $target_prefecture_row = $this->getMachingMasterRow($prefecture_id,$prefecture_list,"pref_id");
+                    if(isset($target_prefecture_row->pref_name))
+                    {
+                        $rowData['residencePrefectureId']['value'] = $target_prefecture_row->pref_name;
+                    }
+                    //検索で見つからなかったら入力値を表示してその項目をエラーとする
+                    else
+                    {
+                        $rowData["residencePrefectureId"]["value"] = $rowData["residencePrefectureId"]["key"];
+                        $rowData["result"] = "登録不可データ";
+                        $rowData["checked"] = false;
+                        $rowData["residencePrefectureId"]["isError"] = true;
+                    }
+                }
+                //服のサイズ
+                if(isset($rowData['clothesSizeId']['key']) && empty($rowData['clothesSizeId']['value']))
+                {
+                    $clothes_size_id = $rowData['clothesSizeId']['key'];
+                    $target_clothes_size_row = $this->getMachingMasterRow($clothes_size_id,$clothes_size_list,"clothes_size_id");
+                    if(isset($target_clothes_size_row->clothes_size))
+                    {
+                        $rowData['clothesSizeId']['value'] = $target_clothes_size_row->clothes_size;
+                    }
+                    //検索で見つからなかったら入力値を表示してその項目をエラーとする
+                    else
+                    {
+                        $rowData["clothesSizeId"]["value"] = $rowData["clothesSizeId"]["key"];
+                        $rowData["result"] = "登録不可データ";
+                        $rowData["checked"] = false;
+                        $rowData["clothesSizeId"]["isError"] = true;
+                    }
+                }
+                //資格            
+                $qual_max_index = 5;    //資格は最大5件入力可
+                for($i=1;$i<=$qual_max_index;$i++)
+                {
+                    if(isset($rowData['qualId'.$i]['key']) && !isset($rowData["qualId".$i]["value"]))
+                    {
+                        $qual_id = $rowData['qualId'.$i]['key'];
+                        $target_qual_row = $this->getMachingMasterRow($qual_id,$qualifications_list,"qual_id");
+                        if(isset($target_qual_row->qual_name))
+                        {
+                            $rowData['qualId'.$i]['value'] = $target_qual_row->qual_name;
+                        }
+                        //検索で見つからなかったら入力値を表示してその項目をエラーとする
+                        else
+                        {
+                            $rowData["qualId".$i]["value"] = $rowData["qualId".$i]["key"];                            
+                            $rowData["result"] = "登録不可データ";
+                            $rowData["checked"] = false;
+                            $rowData["qualId".$i]["isError"] = true;
+                        }
+                    }
+                }
+                //言語
+                $lang_max_index = 3;    //言語は最大3件入力可
+                for($i=1;$i<=$lang_max_index;$i++)
+                {
+                    if(isset($rowData['langId'.$i]['key']) && empty($rowData['langId'.$i]['value']))
+                    {
+                        $lang_id = $rowData['langId'.$i]['key'];
+                        $target_lang_row = $this->getMachingMasterRow($lang_id,$language_list,"lang_id");
+                        if(isset($target_lang_row->lang_name))
+                        {
+                            $rowData['langId'.$i]['value'] = $target_lang_row->lang_name;
+                        }
+                        //検索で見つからなかったら入力値を表示してその項目をエラーとする
+                        else
+                        {
+                            $rowData["langId".$i]["value"] = $rowData["langId".$i]["key"];
+                            $rowData["result"] = "登録不可データ";
+                            $rowData["checked"] = false;
+                            $rowData["langId".$i]["isError"] = true;
+                        }
+                    }
+                }
+                //言語レベル
+                $lang_pro_max_index = 3;    //言語は最大3件入力可
+                for($i=1;$i<=$lang_pro_max_index;$i++)
+                {
+                    if(isset($rowData['langProId'.$i]['key']) && empty($rowData['langProId'.$i]['value']) )
+                    {
+                        $lang_pro_id = $rowData['langProId'.$i]['key'];
+                        $target_lang_pro_row = $this->getMachingMasterRow($lang_pro_id,$language_proficientcy_list,"lang_pro_id");
+                        if(isset($target_lang_pro_row->lang_pro_name))
+                        {
+                            $rowData['langProId'.$i]['value'] = $target_lang_pro_row->lang_pro_name;
+                        }
+                        //検索で見つからなかったら入力値を表示してその項目をエラーとする
+                        else
+                        {
+                            $rowData["langProId".$i]["value"] = $rowData["langProId".$i]["key"];
+                            $rowData["result"] = "登録不可データ";
+                            $rowData["checked"] = false;
+                            $rowData["langProId".$i]["isError"] = true;
+                        }
+                    }
+                }
                 //登録不可データでなければ重複チェックする
                 if($rowData["checked"])
                 {
                     //ユーザーIDの重複チェック
-                    //「ボランティアテーブル」をファイルに記載されているユーザーIDで検索                    
+                    //「ボランティアテーブル」をファイルに記載されているユーザーIDで検索
+                    $user_id = $rowData["userId"]["value"];
                     if(in_array($user_id,array_column($volunteer_list,'user_id')))
                     {
                         $rowData["result"] = "重複データ";
@@ -1016,24 +960,17 @@ class VolunteerInfoAlignmentController extends Controller
             }
             Log::debug(sprintf("sendVolunteerCsvData end"));
             return response()->json(['result' => $reqData]); //DBの結果を返す
-        // }
-        // catch (\Throwable $e)
-        // {
-        //     Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-        // }
+        }
+        catch(\Throwable $e)
+        {
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
+        }
     }
 
     //ボランティアCSV登録時 20240229 
     public function registerVolunteerCsvData(Request $request,
                                             T_volunteers $t_volunteers,
                                             T_users $t_users,
-                                            M_sex $m_sex,
-                                            M_countries $m_countries,
-                                            M_prefectures $m_prefectures,
-                                            M_clothes_size $m_clothes_size,
-                                            M_volunteer_qualifications $m_volunteer_qualifications,
-                                            M_languages $m_languages,
-                                            M_language_proficiency $m_language_proficiency,
                                             T_volunteer_availables $t_volunteer_availables,
                                             T_volunteer_qualifications_hold $t_volunteer_qualifications_hold,
                                             T_volunteer_language_proficiency $t_volunteer_language_proficiency,
@@ -1041,71 +978,49 @@ class VolunteerInfoAlignmentController extends Controller
     {
         Log::debug(sprintf("registerVolunteerCsvData start"));
         $reqData = $request->all();
-        Log::debug($reqData);
+        //Log::debug($reqData);
         //登録・更新するユーザー名を取得
         $register_user_id = Auth::user()->user_id;
         //登録・更新日時のために現在の日時を取得
         $current_datetime = now()->format('Y-m-d H:i:s.u');
         //削除フラグは全て0で登録する
         $delete_flag = 0;
-
-        //各マスターからIDの一覧を取得
-        //ユーザーIDの一覧
-        //$user_list = $t_users->getUserIDList();
-        //ボランティアの一覧
-        $volunteer_list = $t_volunteers->getVolunteer();
-        //性別の一覧
-        $sex_list = $m_sex->getSexList();
-        //国の一覧
-        $country_list = $m_countries->getCountries();
-        //都道府県の一覧
-        $prefecture_list = $m_prefectures->getPrefecures();
-        //服のサイズ
-        $clothes_size_list = $m_clothes_size->getClothesSize();
-        //ボランティア保有資格の一覧
-        $qualifications_list = $m_volunteer_qualifications->getQualifications();
-        //言語の一覧
-        $language_list = $m_languages->getLanguages();
-        //言語レベルの一覧
-        $language_proficientcy_list = $m_language_proficiency->getLanguageProficiency();
-
-        for ($rowIndex = 0; $rowIndex < count($reqData); $rowIndex++)
+        DB::beginTransaction();
+        try
         {
-            $rowData = 
-            $checked = $reqData[$rowIndex]["checked"];
-            $result = $reqData[$rowIndex]["result"];
-            if($checked == true && $result == "登録可能データ")
+            for ($rowIndex = 0; $rowIndex < count($reqData); $rowIndex++)
             {
-                //ボランティアテーブルに挿入する要素を格納する配列
-                $volunteer_data = array();
-                //ボランティアアベイラブルテーブルに挿入する要素を格納する配列
-                $volunteer_available_data = array();
-                //ボランティア支援可能障碍タイプテーブルに挿入する要素を格納する配列
-                $volunteer_supportable_disability = array();
-                //ボランティア保有資格情報テーブルに挿入する要素を格納する配列
-                $volunteer_qualifications_hold_data = array();
-                //ボランティア言語レベルテーブルに挿入する要素を格納する配列
-                $volunteer_language_proficiency_data = array();
+                $rowData = $reqData[$rowIndex];
+                $checked = $rowData["checked"];
+                $result = $rowData["result"];
+                if($checked == true && $result == "登録可能データ")
+                {
+                    //ボランティアテーブルに挿入する要素を格納する配列
+                    $volunteer_data = array();
+                    //ボランティアアベイラブルテーブルに挿入する要素を格納する配列
+                    $volunteer_available_data = array();
+                    //ボランティア支援可能障碍タイプテーブルに挿入する要素を格納する配列
+                    $volunteer_supportable_disability = array();
+                    //ボランティア保有資格情報テーブルに挿入する要素を格納する配列
+                    $volunteer_qualifications_hold_data = array();
+                    //ボランティア言語レベルテーブルに挿入する要素を格納する配列
+                    $volunteer_language_proficiency_data = array();
 
-                DB::beginTransaction();
-                try
-                {     
                     //Insertの要素を持つ配列を生成する
                     //ボランティアテーブル
-                    $volunteer_data['user_id'] = $reqData[$rowIndex]['userId']['value'];
-                    $volunteer_data['volunteer_name'] = $reqData[$rowIndex]['volunteerName']['value'];
-                    $volunteer_data['residence_country'] = $reqData[$rowIndex]['residenceCountryId']['value'];
-                    $volunteer_data['residence_prefecture'] = $reqData[$rowIndex]['residencePrefectureId']['value'];
-                    $volunteer_data['sex'] = $reqData[$rowIndex]['sexId']['value'];
-                    $volunteer_data['date_of_birth'] = $reqData[$rowIndex]['dateOfBirth']['value'];
-                    //$volunteer_data['dis_type_id'] = $reqData[$rowIndex]['dis_type_id']['value'];
-                    $volunteer_data['telephone_number'] = $reqData[$rowIndex]['telephone_number']['value'];
-                    $volunteer_data['mailaddress'] = $reqData[$rowIndex]['mailaddress']['value'];
+                    $volunteer_data['user_id'] = $rowData['userId']['value'];
+                    $volunteer_data['volunteer_name'] = $rowData['volunteerName']['value'];
+                    $volunteer_data['residence_country'] = $rowData['residenceCountryId']['key'];
+                    $volunteer_data['residence_prefecture'] = $rowData['residencePrefectureId']['key'];
+                    $volunteer_data['sex'] = $rowData['sexId']['key'];
+                    $volunteer_data['date_of_birth'] = $rowData['dateOfBirth']['value'];
+                    $volunteer_data['telephone_number'] = $rowData['telephoneNumber']['value'];
+                    $volunteer_data['mailaddress'] = $rowData['mailaddress']['value'];
                     //users_email_flagを判定する
-                    $target_id = $reqData[$rowIndex]['user_id']['value'];
+                    $target_id = $rowData['userId']['value'];
                     $user_list = $t_users->getUserDataFromUserId($target_id);
-                    $mailaddress = $reqData[$rowIndex]['mailaddress']['value'];
-                    $user_mailaddress = $user_list['mailaddress'];
+                    $mailaddress = $rowData['mailaddress']['value'];
+                    $user_mailaddress = $user_list[0]->{'mailaddress'};
                     if($mailaddress == $user_mailaddress)
                     {
                         $volunteer_data['users_email_flag'] = 1;
@@ -1115,7 +1030,7 @@ class VolunteerInfoAlignmentController extends Controller
                         $volunteer_data['users_email_flag'] = 0;
                     }
                     //服のサイズマスターで名前で検索したclothes_size_idを取得して、配列に格納する
-                    $volunteer_data['clothes_size'] = $reqData[$rowIndex]['clothesSizeId']['value'];
+                    $volunteer_data['clothes_size'] = $rowData['clothesSizeId']['key'];
                     $volunteer_data['registered_time'] = $current_datetime;
                     $volunteer_data['registered_user_id'] = $register_user_id;
                     $volunteer_data['updated_time'] = $current_datetime;
@@ -1124,22 +1039,22 @@ class VolunteerInfoAlignmentController extends Controller
                     $volunteer_id = $t_volunteers->insertVolunteer($volunteer_data);
 
                     //ボランティアアベイラブルテーブル
-                    $volunteer_available_data['volunteer_id'] = $volunteer_id;
+                    $volunteer_available_data['volunteer_id'] = $volunteer_id;                    
                     //day_of_weekを生成する
-                    $sunday = $reqData[$rowIndex]['dayOFWeek1']['value'] == '◯' ? '1' : '0';
-                    $monday = $reqData[$rowIndex]['dayOFWeek2']['value'] == '◯' ? '1' : '0';
-                    $tuesday = $reqData[$rowIndex]['dayOFWeek3']['value'] == '◯' ? '1' : '0';
-                    $wednesday = $reqData[$rowIndex]['dayOFWeek4']['value'] == '◯' ? '1' : '0';
-                    $thursday = $reqData[$rowIndex]['dayOFWeek5']['value'] == '◯' ? '1' : '0';
-                    $friday = $reqData[$rowIndex]['dayOFWeek6']['value'] == '◯' ? '1' : '0';
-                    $saturday = $reqData[$rowIndex]['dayOFWeek7']['value'] == '◯' ? '1' : '0';
+                    $sunday = $rowData['dayOfWeek1']['value'] == '◯' ? '1' : '0';
+                    $monday = $rowData['dayOfWeek2']['value'] == '◯' ? '1' : '0';
+                    $tuesday = $rowData['dayOfWeek3']['value'] == '◯' ? '1' : '0';
+                    $wednesday = $rowData['dayOfWeek4']['value'] == '◯' ? '1' : '0';
+                    $thursday = $rowData['dayOfWeek5']['value'] == '◯' ? '1' : '0';
+                    $friday = $rowData['dayOfWeek6']['value'] == '◯' ? '1' : '0';
+                    $saturday = $rowData['dayOfWeek7']['value'] == '◯' ? '1' : '0';
                     $day_of_week = '00000'.$saturday.$friday.$thursday.$wednesday.$tuesday.$monday.$sunday;
                     $volunteer_available_data['day_of_week'] = $day_of_week;
                     //time_zoneを生成する
-                    $early_morning = $reqData[$rowIndex]['timeZone1']['value'] == '◯' ? '1' : '0';
-                    $morning = $reqData[$rowIndex]['timeZone2']['value'] == '◯' ? '1' : '0';
-                    $afternoon = $reqData[$rowIndex]['timeZone3']['value'] == '◯' ? '1' : '0';
-                    $night = $reqData[$rowIndex]['timeZone4']['value'] == '◯' ? '1' : '0';
+                    $early_morning = $rowData['timeZone1']['value'] == '◯' ? '1' : '0';
+                    $morning = $rowData['timeZone2']['value'] == '◯' ? '1' : '0';
+                    $afternoon = $rowData['timeZone3']['value'] == '◯' ? '1' : '0';
+                    $night = $rowData['timeZone4']['value'] == '◯' ? '1' : '0';
                     $time_zone = '0000'.$early_morning.$morning.$afternoon.$night;
                     $volunteer_available_data['time_zone'] = $time_zone;
                     $volunteer_available_data['registered_time'] = $current_datetime;
@@ -1157,19 +1072,19 @@ class VolunteerInfoAlignmentController extends Controller
                     $volunteer_supportable_disability['updated_user_id'] = $register_user_id;
                     $volunteer_supportable_disability['delete_flag'] = $delete_flag;
                     //PR1が1なら挿入
-                    if($reqData[$rowIndex]['disTypeId1']['value'] == '◯')
+                    if($rowData['disTypeId1']['value'] == '◯')
                     {
                         $volunteer_supportable_disability['dis_type_id'] = 1;
                         $t_volunteer_supportable_disability->insertVolunteerSupportableDisability($volunteer_supportable_disability);
                     }
                     //PR2が1なら挿入
-                    if($reqData[$rowIndex]['disTypeId2']['value'] == '◯')
+                    if($rowData['disTypeId2']['value'] == '◯')
                     {
                         $volunteer_supportable_disability['dis_type_id'] = 2;
                         $t_volunteer_supportable_disability->insertVolunteerSupportableDisability($volunteer_supportable_disability);
                     }
                     //PR3が1なら挿入
-                    if($reqData[$rowIndex]['disTypeId3']['value'] == '◯')
+                    if($rowData['disTypeId3']['value'] == '◯')
                     {
                         $volunteer_supportable_disability['dis_type_id'] = 3;
                         $t_volunteer_supportable_disability->insertVolunteerSupportableDisability($volunteer_supportable_disability);
@@ -1185,10 +1100,10 @@ class VolunteerInfoAlignmentController extends Controller
                     $volunteer_qualifications_hold_data['delete_flag'] = $delete_flag;
                     for ($qualIndex = 1; $qualIndex <= $max_qual_count; $qualIndex++)
                     {
-                        if(isset($reqData[$rowIndex]['qualification'.$qualIndex]['value']))
+                        if(isset($rowData['qualId'.$qualIndex]['value']))
                         {
                             //資格の数だけInsertを実行
-                            $volunteer_qualifications_hold_data['qual_id'] = $reqData[$rowIndex]['qualId'.$qualIndex]['value'];
+                            $volunteer_qualifications_hold_data['qual_id'] = $rowData['qualId'.$qualIndex]['key'];
                             $t_volunteer_qualifications_hold->insertVolunteerQualificationsHold($volunteer_qualifications_hold_data);
                         }
                     }
@@ -1203,25 +1118,25 @@ class VolunteerInfoAlignmentController extends Controller
                     $volunteer_language_proficiency_data['delete_flag'] = $delete_flag;
                     for($langIndex = 1;$langIndex <= $max_language_count;$langIndex++)
                     {
-                        if(isset($reqData[$rowIndex]['langId'.$langIndex]['value'])
-                            && isset($reqData[$rowIndex]['langProId'.$langIndex]['value']))
+                        if(isset($rowData['langId'.$langIndex]['key'])
+                            && isset($rowData['langProId'.$langIndex]['key']))
                         {
-                            $volunteer_language_proficiency_data['lang_id'] = $reqData[$rowIndex]['langId'.$langIndex]['value'];
-                            $volunteer_language_proficiency_data['lang_pro'] = $reqData[$rowIndex]['langProId'.$langIndex]['value'];
+                            $volunteer_language_proficiency_data['lang_id'] = $rowData['langId'.$langIndex]['key'];
+                            $volunteer_language_proficiency_data['lang_pro'] = $rowData['langProId'.$langIndex]['key'];
+                            $t_volunteer_language_proficiency->insertVolunteerLanguageProficiency($volunteer_language_proficiency_data);
                         }
-                        $t_volunteer_language_proficiency->insertVolunteerLanguageProficiency($volunteer_language_proficiency_data);
                     }
                     DB::commit();
                 }
-                catch(\Throwable $e)
-                {
-                    DB::rollBack();
-                    Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-                    return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
-                }
             }
+            Log::debug(sprintf("registerVolunteerCsvData end"));
+            return response()->json(['result' => true]); //DBの結果を返す
         }
-        Log::debug(sprintf("registerVolunteerCsvData end"));
-        return response()->json(['result' => true]); //DBの結果を返す
+        catch(\Throwable $e)
+        {
+            DB::rollBack();
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
+            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+        }
     }
 }

@@ -57,6 +57,7 @@ class T_volunteer_supportable_disability extends Model
 
     public function insertVolunteerSupportableDisability($values)
     {
+        //DB::enableQueryLog();
         DB::insert('insert into `t_volunteer_supportable_disability`
                     (
                         `volunteer_id`,
@@ -79,6 +80,7 @@ class T_volunteer_supportable_disability extends Model
                     ]);
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
+        //Log::debug(DB::getQueryLog());
         return $insertId;
     }
 
