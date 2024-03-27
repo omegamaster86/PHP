@@ -99,6 +99,8 @@ export default function UserInformationUpdate() {
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [authNumber, setAuthNumber] = useState('' as string);
 
+  const [backKeyFlag, setBackKeyFlag] = useState<boolean>(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+
   // // 実装　ー　クマール　ー開始
   // const { user} = useAuth({ middleware: 'auth' }) //簡単にユーザー情報もらうため
   // // 実装　ー　クマール　ー終了
@@ -229,9 +231,11 @@ export default function UserInformationUpdate() {
       }
     };
     // 更新モード、参照モード、削除モードの時にユーザー情報を取得し、フォームにセットする。
-    if (mode === 'update') {
+    if (mode === 'update' && !backKeyFlag) {
       fetchUser();
     }
+    setBackKeyFlag(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+    console.log(backKeyFlag);
     // APIを叩いて、ユーザー情報を取得する
   }, []);
 
@@ -804,6 +808,9 @@ export default function UserInformationUpdate() {
           buttonType='white-outlined'
           className='w-[200px]'
           onClick={() => {
+            console.log(backKeyFlag);
+            setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+            console.log(backKeyFlag);
             setErrorMessage([]);
             router.back();
           }}

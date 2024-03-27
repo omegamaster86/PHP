@@ -93,6 +93,8 @@ export default function OrgInfo() {
   const [userNameErrorMessage, setUserNameErrorMessage] = useState([] as string[]);
   const [userTypeErrorMessage, setUserTypeErrorMessage] = useState([] as string[]);
 
+  const [backKeyFlag, setBackKeyFlag] = useState<boolean>(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+
   // フォームデータを管理する状態
   const [tableData, setTableData] = useState<Staff[]>([]);
 
@@ -195,7 +197,7 @@ export default function OrgInfo() {
         // console.log(userData);
         setUser(userData.data.result);
         // console.log(user);
-        if (mode === 'update') {
+        if (mode === 'update' && !backKeyFlag) {
           // const organization = await axios.get<Organization>('http://localhost:3100/organization');
           const sendId = { org_id: orgId };
           const csrf = () => axios.get('/sanctum/csrf-cookie');
@@ -231,7 +233,7 @@ export default function OrgInfo() {
           const staff = await axios.post('/getOrgStaffData', sendId);
           console.log(staff.data);
           setTableData(staff.data.result);
-        } else if (mode === 'create') {
+        } else if (mode === 'create' && !backKeyFlag) {
           setFormData((prevFormData) => ({
             ...prevFormData,
             ...{
@@ -277,6 +279,8 @@ export default function OrgInfo() {
       } catch (error: any) {
         setErrorMessage(['API取得エラー:' + error.message]);
       }
+      setBackKeyFlag(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+      console.log(backKeyFlag);
     };
     fetchData();
   }, [mode]);
@@ -1232,6 +1236,9 @@ export default function OrgInfo() {
           buttonType='white-outlined'
           className='w-[200px]'
           onClick={() => {
+            console.log(backKeyFlag);
+            setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+            console.log(backKeyFlag);
             router.back();
           }}
         >
