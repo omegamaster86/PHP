@@ -599,90 +599,117 @@ export default function Tournament() {
     update: (
       <CustomButton
         buttonType='primary'
-        onClick={() => {
+        onClick={async () => {
           setDisplayFlg(false);
           const isError = performValidation();
 
           if (!isError) {
-            const updateTournamentInfo = async () => {
-              const csrf = () => axios.get('/sanctum/csrf-cookie');
-              await csrf();
-              const registerData = {
-                tournamentFormData, //選手情報
-                tableData, //選手の出漕結果情報
-              };
-              //nullのパラメータを空のパラメータに置き換える
-              Object.keys(registerData.tournamentFormData).forEach((key) => {
-                (registerData.tournamentFormData as any)[key] =
-                  (registerData.tournamentFormData as any)[key] ?? '';
-              });
-              // console.log(registerData);
-              axios
-                // .post('http://localhost:3100/', registerData)
-                .post('/updateTournamentInfoData', registerData, {
-                  //ファイルを送るため
-                  headers: {
-                    'content-type': 'multipart/form-data',
-                  },
-                })
-                .then((response) => {
-                  // TODO: 処理成功時の処理
-                  setTournamentFormData({} as Tournament);
-                  setRaceFormData({
-                    id: 0,
-                    checked: false,
-                    race_id: '',
-                    entrysystem_race_id: '',
-                    tourn_id: 0,
-                    race_number: '',
-                    event_id: '',
-                    event_name: '',
-                    race_name: '',
-                    race_class_id: '',
-                    race_class_name: '',
-                    by_group: '',
-                    range: '',
-                    start_date_time: '',
-                    hasHistory: false,
-                    tournName: '',
+            const csrf = () => axios.get('/sanctum/csrf-cookie');
+            await csrf();
+
+            axios
+              // .post('http://localhost:3100/', registerData)
+              .post('/tournamentRegistOrUpdateValidationCheck', {
+                entrysystem_tourn_id: tournamentFormData.entrysystem_tourn_id,
+                tourn_type: tournamentFormData.tourn_type,
+                sponsor_org_id: tournamentFormData.sponsor_org_id,
+                mode: prevMode,
+                race_data: tableData,
+              })
+              .then((response) => {
+                const updateTournamentInfo = async () => {
+                  const registerData = {
+                    tournamentFormData, //選手情報
+                    tableData, //選手の出漕結果情報
+                  };
+                  //nullのパラメータを空のパラメータに置き換える
+                  Object.keys(registerData.tournamentFormData).forEach((key) => {
+                    (registerData.tournamentFormData as any)[key] =
+                      (registerData.tournamentFormData as any)[key] ?? '';
                   });
-                  setTableData([
-                    {
-                      id: 0,
-                      checked: false,
-                      race_id: '',
-                      entrysystem_race_id: '',
-                      tourn_id: 0,
-                      race_number: '',
-                      event_id: '',
-                      event_name: '',
-                      race_name: '',
-                      race_class_id: '',
-                      race_class_name: '',
-                      by_group: '',
-                      range: '',
-                      start_date_time: '',
-                      hasHistory: false,
-                      tournName: '',
-                    },
-                  ]);
-                  fileUploaderRef?.current?.clearFile();
-                  window.alert('大会情報を更新しました。');
-                  router.push(`/tournamentRef?tournId=${registerData.tournamentFormData.tourn_id}`);
-                })
-                .catch((error) => {
-                  // TODO: 処理失敗時の処理
-                  setErrorMessages([
-                    // ...(errorMessages as string[]),
-                    // '更新に失敗しました。原因：' + (error as Error).message,
-                    '更新に失敗しました。',
-                  ]);
-                })
-                .finally(() => {
-                  setDisplayFlg(true);
-                });
-            };
-            updateTournamentInfo();
+                  // console.log(registerData);
+                  axios
+                    // .post('http://localhost:3100/', registerData)
+                    .post('/updateTournamentInfoData', registerData, {
+                      //ファイルを送るため
+                      headers: {
+                        'content-type': 'multipart/form-data',
+                      },
+                    })
+                    .then((response) => {
+                      // TODO: 処理成功時の処理
+                      setTournamentFormData({} as Tournament);
+                      setRaceFormData({
+                        id: 0,
+                        checked: false,
+                        race_id: '',
+                        entrysystem_race_id: '',
+                        tourn_id: 0,
+                        race_number: '',
+                        event_id: '',
+                        event_name: '',
+                        race_name: '',
+                        race_class_id: '',
+                        race_class_name: '',
+                        by_group: '',
+                        range: '',
+                        start_date_time: '',
+                        hasHistory: false,
+                        tournName: '',
+                      });
+                      setTableData([
+                        {
+                          id: 0,
+                          checked: false,
+                          race_id: '',
+                          entrysystem_race_id: '',
+                          tourn_id: 0,
+                          race_number: '',
+                          event_id: '',
+                          event_name: '',
+                          race_name: '',
+                          race_class_id: '',
+                          race_class_name: '',
+                          by_group: '',
+                          range: '',
+                          start_date_time: '',
+                          hasHistory: false,
+                          tournName: '',
+                        },
+                      ]);
+                      fileUploaderRef?.current?.clearFile();
+                      window.alert('大会情報を更新しました。');
+                      router.push(
+                        `/tournamentRef?tournId=${registerData.tournamentFormData.tourn_id}`,
+                      );
+                    })
+                    .catch((error) => {
+                      // TODO: 処理失敗時の処理
+                      setErrorMessages([
+                        // ...(errorMessages as string[]),
+                        // '更新に失敗しました。原因：' + (error as Error).message,
+                        '更新に失敗しました。',
+                      ]);
+                    })
+                    .finally(() => {
+                      setDisplayFlg(true);
+                    });
+                };
+                updateTournamentInfo();
+              })
+              .catch((error) => {
+                error?.response?.data?.response_tourn_id &&
+                  setEntrysystemRaceIdErrorMessage([error?.response?.data?.response_tourn_id]);
+                error?.response?.data?.response_tourn_type &&
+                  setTournNameErrorMessage([error?.response?.data?.response_tourn_type]);
+                error?.response?.data?.response_org_id &&
+                  setSponsorOrgIdErrorMessage([error?.response?.data?.response_org_id]);
+                error?.response?.data?.response_race_id &&
+                  setRaceNumberErrorMessage(error?.response?.data?.response_race_id);
+              })
+              .finally(() => {
+                setDisplayFlg(true);
+              });
           }
         }}
       >
@@ -701,6 +728,7 @@ export default function Tournament() {
             axios
               // .post('http://localhost:3100/', registerData)
               .post('/tournamentRegistOrUpdateValidationCheck', {
+                tourn_id: tournamentFormData.tourn_id,
                 entrysystem_tourn_id: tournamentFormData.entrysystem_tourn_id,
                 tourn_type: tournamentFormData.tourn_type,
                 sponsor_org_id: tournamentFormData.sponsor_org_id,
