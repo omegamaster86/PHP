@@ -81,6 +81,7 @@ export default function TeamPlayer() {
         // SessionStorageに追加選手リストがある場合、追加選手リストを取得
         if (sessionStorage.getItem('addPlayerList') !== null) {
           const addPlayerList = JSON.parse(sessionStorage.getItem('addPlayerList') as string);
+          console.log(addPlayerList);
           let data = transformData(addPlayerList, '追加');
 
           if (mode == 'update') {
@@ -112,7 +113,7 @@ export default function TeamPlayer() {
             data = setIndex(searchRes.concat(data));
           }
           setFormData(data);
-          sessionStorage.removeItem('addPlayerList');
+          // sessionStorage.removeItem('addPlayerList');
         } else {
           if (mode == 'create') {
             // const response = await axios.get('http://localhost:3100/teamPlayers');

@@ -304,6 +304,7 @@ export default function TeamPlayerBulkRegister() {
             id='org'
             label='所属団体名'
             displayHelp
+            toolTipText='選手を登録したい団体を選択してください。'
             value={isOrgNameActive ? orgSelected : orgData.org_name} //団体参照画面から遷移した場合は、該当の団体名を表示する
             options={orgs.map((org) => ({ value: org.org_name, key: org.org_id }))}
             onChange={(e) => {
