@@ -318,11 +318,10 @@ export default function TeamSearch() {
                 value={formData?.org_id || ''}
                 toolTipText='団体IDは団体情報参照画面で確認できます。' //はてなボタン用
               />
-              {!(
-                userIdType.is_audience == ROLE.SUPPORTER ||
-                userIdType.is_player == ROLE.PLAYER ||
-                userIdType.is_volunteer == ROLE.VOLUNTEER
-              ) && (
+              {userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+              userIdType.is_jara == ROLE.JARA ||
+              userIdType.is_pref_boat_officer == ROLE.PREFECTURE ||
+              userIdType.is_organization_manager == ROLE.GROUP_MANAGER ? (
                 // エントリーシステムの団体ID
                 <CustomTextField
                   label='エントリーシステムID'
@@ -332,6 +331,8 @@ export default function TeamSearch() {
                   value={formData?.entrySystemId || ''}
                   toolTipText='日本ローイング協会より発行された、6桁の団体コードを入力してください。' //はてなボタン用
                 />
+              ) : (
+                ''
               )}
               <div className='w-full flex flex-col justify-start gap-[8px]'>
                 <InputLabel
