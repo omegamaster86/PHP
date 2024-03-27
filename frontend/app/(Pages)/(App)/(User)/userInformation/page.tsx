@@ -210,14 +210,15 @@ export default function UserInformationUpdate() {
             user_type: response.data.result.user_type,
             userTypeName: response.data.result.userTypeName,
             date_of_birth: response.data.result.date_of_birth,
-            sexName: response.data.result.sexName ? response.data.sexName : '男性',
+            sexName: response.data.result.sexName,
             sex: response.data.result.sex,
             height: response.data.result.height,
             weight: response.data.result.weight,
             residence_country: response.data.result.residence_country,
-            residenceCountryName: response.data.result.residenceCountryName
-              ? response.data.result.residenceCountryName
-              : '日本国 （jpn）',
+            residenceCountryName: response.data.result.residenceCountryName,
+            // residenceCountryName: response.data.result.residenceCountryName
+            //   ? response.data.result.residenceCountryName
+            //   : '日本国 （jpn）',
             residence_prefecture: response.data.result.residence_prefecture,
             residencePrefectureName: response.data.result.residencePrefectureName,
             mailaddress: response.data.result.mailaddress,
@@ -258,9 +259,14 @@ export default function UserInformationUpdate() {
             Validator.validateRequired(formData?.residenceCountryName, '居住地'),
           ]);
 
-          const livingPrefectureError = Validator.getErrorMessages([
-            Validator.validateRequired(formData?.residencePrefectureName, '居住地'),
-          ]);
+          let livingPrefectureError = [];
+
+          if (formData?.residenceCountryName === '日本国 （jpn）') {
+            livingPrefectureError = Validator.getErrorMessages([
+              Validator.validateRequired(formData?.residencePrefectureName, '居住地'),
+            ]);
+            setLivingPrefectureErrorMessages(livingPrefectureError as string[]);
+          }
 
           // const dateOfBirthError = Validator.getErrorMessages([
           //   Validator.validateRequired(formData?.date_of_birth, '生年月日'),
@@ -270,7 +276,7 @@ export default function UserInformationUpdate() {
           setUserNameErrorMessages(userNameError as string[]);
           setSexErrorMessages(sexError as string[]);
           setLivingCountryErrorMessages(livingCountryError as string[]);
-          setLivingPrefectureErrorMessages(livingPrefectureError as string[]);
+
           // setDateOfBirthErrorMessages(dateOfBirthError as string[]);
 
           if (
