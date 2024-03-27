@@ -430,7 +430,14 @@ export default function UserInformationUpdate() {
         <div className='flex flex-col justify-start gap-[10px]'>
           {/* 写真 */}
           {/*写真　は　必要ものではありませんので "required" は　はずしました。*/}
-          <InputLabel displayHelp={mode !== 'confirm'} label='写真' />
+          <InputLabel
+            displayHelp={mode !== 'confirm'}
+            label='写真'
+            toolTipText='登録可能な画像ファイルの種類は以下になります。
+          　jpg
+          　jpeg
+          　png'
+          />
           {mode === 'update' && (
             <ImageUploader
               currentShowFile={currentShowFile}
@@ -473,6 +480,14 @@ export default function UserInformationUpdate() {
           label='ユーザー名'
           placeHolder='山田 太郎'
           readonly={mode === 'confirm'}
+          toolTipText='文字制限
+          　最大文字数：32文字（全半角区別なし）
+          　利用可能文字：
+          　　　日本語
+          　　　英大文字：[A-Z]（26 文字）
+          　　　英小文字：[a-z]（26 文字）
+          　　　数字：[0-9]（10 文字）
+          　　　記号：-,_'
           onChange={(e) => {
             handleInputChange('user_name', e.target.value);
           }}
@@ -493,6 +508,7 @@ export default function UserInformationUpdate() {
             placeHolder='メールアドレスを入力してください。'
             type='email'
             value={formData?.mailaddress}
+            toolTipText='入力したメールアドレスは、ログインの時に使用します。'
             onChange={() => {
               handleInputChange('mailaddress', '');
             }}
@@ -591,7 +607,11 @@ export default function UserInformationUpdate() {
         </div>
         <div className='flex flex-col justify-start gap-[10px]'>
           {/* 生年月日 */}
-          <InputLabel label='生年月日' displayHelp={mode === 'update'} />
+          <InputLabel
+            label='生年月日'
+            displayHelp={mode === 'update'}
+            toolTipText='西暦で入力してください。'
+          />
           <CustomDatePicker
             readonly={mode === 'confirm'}
             selectedDate={formData?.date_of_birth}
@@ -783,6 +803,7 @@ export default function UserInformationUpdate() {
             }}
             displayHelp={mode === 'update'}
             inputAdorment='cm'
+            toolTipText='半角数字で入力してください。'
           />
           {/* 体重 */}
           <CustomTextField
@@ -797,6 +818,7 @@ export default function UserInformationUpdate() {
             }}
             placeHolder='80'
             displayHelp={mode === 'update'}
+            toolTipText='半角数字で入力してください。'
             inputAdorment='kg'
           />
         </div>
