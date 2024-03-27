@@ -118,7 +118,7 @@ const Header: FC = () => {
               <MenuItem
                 onClick={(e) => {
                   handleClose();
-                  router.push('/DummyMyPage');
+                  router.push('/tournamentResult');
                 }}
                 className='text-caption1'
               >
@@ -190,11 +190,12 @@ const Header: FC = () => {
             >
               選手検索
             </MenuItem>
-            {userIdType.is_jara == 1 ||
-            userIdType.is_pref_boat_officer == 1 ||
-            userIdType.is_organization_manager == 1 ||
-            userIdType.is_volunteer == 1 ||
-            userIdType.is_audience == 1 ? (
+            {userIdType.is_player == 0 &&
+            (userIdType.is_jara == 1 ||
+              userIdType.is_pref_boat_officer == 1 ||
+              userIdType.is_organization_manager == 1 ||
+              userIdType.is_volunteer == 1 ||
+              userIdType.is_audience == 1) ? (
               <MenuItem
                 onClick={(e) => {
                   handleClose();
