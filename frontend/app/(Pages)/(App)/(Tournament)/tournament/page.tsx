@@ -168,6 +168,8 @@ export default function Tournament() {
   const [startDateTimeErrorMessage, setStartDateTimeErrorMessage] = useState([] as string[]);
   const [errorMessages, setErrorMessages] = useState([] as string[]);
 
+  const [backKeyFlag, setBackKeyFlag] = useState<boolean>(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+
   // バリデーションを実行する関数
   const performValidation = () => {
     const entrysystemRaceIdError = Validator.getErrorMessages([]);
@@ -416,7 +418,7 @@ export default function Tournament() {
           // alert(error);
         });
       // 更新モードの時に、大会情報を取得する
-      if (mode === 'update') {
+      if (mode === 'update' && !backKeyFlag) {
         // APIを叩いて、大会情報とレース情報を取得する
         // TODO: データ取得処理の実装置き換え
         const csrf = () => axios.get('/sanctum/csrf-cookie');
@@ -443,7 +445,7 @@ export default function Tournament() {
             // TODO: エラー処理の実装置き換え
             // alert(error);
           });
-      } else if (mode === 'create') {
+      } else if (mode === 'create' && !backKeyFlag) {
         setTournamentFormData((prevFormData) => ({
           ...prevFormData,
           ...{
@@ -464,6 +466,8 @@ export default function Tournament() {
         }));
         setTableData([]);
       }
+      setBackKeyFlag(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+      console.log(backKeyFlag);
     };
     fetchData();
   }, [mode]);
@@ -1381,6 +1385,9 @@ export default function Tournament() {
           {displayFlg && (
             <CustomButton
               onClick={() => {
+                console.log(backKeyFlag);
+                setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+                console.log(backKeyFlag);
                 router.back();
               }}
               buttonType='secondary'
