@@ -541,7 +541,7 @@ const validateTrailError = (trail: string, orgType: number, labelText: string) =
 };
 
 /**
- * 設立年の形式チェック
+ * 番号チェック
  * @param insertedNumber
  * @returns
  * @description
@@ -560,6 +560,15 @@ const validatePositiveNumber = (insertedNumber: string) => {
 
   return errorMessage;
 };
+
+/**
+ * 日付比較
+ * @param startDate
+ * @param endDate
+ * @returns
+ * @description
+ * 開始日から終了日大きいかどうか確認する
+ */
 
 const compareDates = (startDate: string, endDate: string) => {
   let errorMessage = '';
