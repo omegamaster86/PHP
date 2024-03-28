@@ -491,6 +491,26 @@ const validateFoundingYear = (foundingYear: string) => {
 
   return errorMessage;
 };
+/**
+ * 設立年の形式チェック
+ * @param insertedNumber
+ * @returns
+ * @description
+ * Positive number かどうか確認する
+ */
+const validatePositiveNumber = (insertedNumber: string) => {
+  let errorMessage = '';
+  if (insertedNumber === '') {
+    return '';
+  }
+
+  if (Number(insertedNumber) < 1) {
+    errorMessage = `不正な番号です、${insertedNumber}は1 以上数値を入力してください。`;
+    return errorMessage;
+  }
+
+  return errorMessage;
+};
 
 /**
  * 郵便番号の形式チェック
@@ -540,6 +560,8 @@ const validateTrailError = (trail: string, orgType: number, labelText: string) =
   return errorMessage;
 };
 
+const validateStartEndDateError = () => {};
+
 const Validator = {
   getErrorMessages,
   validateRequired,
@@ -564,6 +586,7 @@ const Validator = {
   validateFoundingYear,
   validateAddressNumberFormat,
   validateTrailError,
+  validatePositiveNumber,
 };
 
 export default Validator;

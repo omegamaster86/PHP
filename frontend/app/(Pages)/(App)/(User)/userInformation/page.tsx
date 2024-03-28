@@ -210,7 +210,7 @@ export default function UserInformationUpdate() {
             user_type: response.data.result.user_type,
             userTypeName: response.data.result.userTypeName,
             date_of_birth: response.data.result.date_of_birth,
-            sexName: response.data.result.sexName,
+            sexName: response.data.result.sex_name,
             sex: response.data.result.sex,
             height: response.data.result.height,
             weight: response.data.result.weight,
@@ -387,7 +387,7 @@ export default function UserInformationUpdate() {
                   router.push('/userInformationRef');
                 })
                 .catch((error) => {
-                  if (error?.response) {
+                  if (error?.response?.response?.data) {
                     setErrorMessage([...error?.response?.data]);
                   } else {
                     setErrorMessage([error?.message]);
