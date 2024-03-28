@@ -345,10 +345,12 @@ export default function Tournament() {
       tournUrlError.length > 0 ||
       eventIdErrorFlg ||
       raceNameErrorFlg ||
+      raceNumberNegativeErrorFlg ||
       raceTypeErrorFlg ||
       raceTypeNameErrorFlg ||
       byGroupErrorFlg ||
       rangeErrorFlg ||
+      rangeNegativeErrorFlg ||
       startDateTimeErrorFlg
     ) {
       return true;
