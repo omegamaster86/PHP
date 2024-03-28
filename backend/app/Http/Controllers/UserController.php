@@ -554,7 +554,7 @@ class UserController extends Controller
                     }
                 }
                 
-                return response()->json("パスワードを変更の件、完了になりました。");
+                return response()->json("パスワードを変更しました。");
 
             }
             //If the entered password does not matched with the database information
