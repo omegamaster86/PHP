@@ -64,9 +64,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
     try {
       setcurrentShowFile({ file, isUploaded: false });
 
-      const uploadTime = Math.random() * 9000 + 1000; // 1秒から10秒
-      await new Promise((resolve) => setTimeout(resolve, uploadTime));
-
       // アップロード成功時の処理
       setcurrentShowFile({ file, isUploaded: true });
     } catch (error) {
@@ -260,12 +257,12 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           )}
           {props.csvUploadProps.readonly && (
             <div>
-              <CustomInputLabel label={props.csvUploadProps.label}></CustomInputLabel>
               <p className='h-12 w-[300px] text-secondaryText p-3 disable'>
                 {currentShowFile?.file.name}
               </p>
             </div>
           )}
+           {!props.csvUploadProps.readonly && (
           <CustomButton
             buttonType='primary'
             onClick={() => {
@@ -286,6 +283,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           >
             {props.csvDownloadProps.label}
           </CustomButton>
+        )}
         </div>
       </div>
       {/* ファイルアップロード中の表示 */}
