@@ -851,6 +851,7 @@ export default function Tournament() {
             onChange={(e) => {
               handleInputChangeRace(row.id, 'race_number', e.target.value);
             }}
+            InputProps={{ inputProps: { min: 1 } }}
             className='w-[150px]'
           />
         </CustomTd>
@@ -929,6 +930,7 @@ export default function Tournament() {
             value={row.range}
             onChange={(e) => handleInputChangeRace(row.id, 'range', e.target.value)}
             className='w-[150px]'
+            InputProps={{ inputProps: { min: 1 } }}
           />
         </CustomTd>
         {/* 発艇日時 */}
