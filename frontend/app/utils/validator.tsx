@@ -560,6 +560,8 @@ const validateTrailError = (trail: string, orgType: number, labelText: string) =
   return errorMessage;
 };
 
+const validateStartEndDateError = () => {};
+
 const Validator = {
   getErrorMessages,
   validateRequired,

@@ -387,7 +387,7 @@ export default function UserInformationUpdate() {
                   router.push('/userInformationRef');
                 })
                 .catch((error) => {
-                  if (error?.response) {
+                  if (error?.response?.response?.data) {
                     setErrorMessage([...error?.response?.data]);
                   } else {
                     setErrorMessage([error?.message]);
