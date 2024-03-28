@@ -179,12 +179,21 @@ export default function Tournament() {
     const sponsorOrgIdError = Validator.getErrorMessages([
       Validator.validateRequired(tournamentFormData.sponsor_org_id, '主催団体ID'),
     ]);
-    const eventStartDateError = Validator.getErrorMessages([
+    let eventStartDateError = Validator.getErrorMessages([
       Validator.validateRequired(tournamentFormData.event_start_date, '開催日時'),
     ]);
     const eventEndDateError = Validator.getErrorMessages([
       Validator.validateRequired(tournamentFormData.event_end_date, '終了日時'),
     ]);
+
+    if (eventStartDateError.length < 1) {
+      eventStartDateError = Validator.getErrorMessages([
+        Validator.compareDates(
+          tournamentFormData.event_start_date,
+          tournamentFormData.event_end_date,
+        ),
+      ]);
+    }
     const venueIdError = Validator.getErrorMessages([
       Validator.validateRequired(
         tournamentFormData.venue_id,
@@ -204,12 +213,25 @@ export default function Tournament() {
     const tournUrlError = Validator.getErrorMessages([
       Validator.validateUrlFormat(tournamentFormData.tourn_url),
     ]);
+
     const raceNumberErrorFlg = tableData.some((row) => {
       return Validator.validateRequired(row.race_number, 'レースNo.').length > 0;
+      // if () {
+      //   console.log(Validator.getErrorMessages([Validator.validatePositiveNumber(row.race_number)]));
+      //   setRaceNumberErrorMessage(Validator.getErrorMessages([Validator.validatePositiveNumber(row.race_number)]));
+
+      //   return false;
+      // } else {
+      //   return true;
+      // }
+    });
+    const raceNumberNegativeErrorFlg = tableData.some((row) => {
+      return Validator.validatePositiveNumber(row.race_number).length > 0;
     });
     const eventIdErrorFlg = tableData.some((row) => {
       return Validator.validateSelectRequired(row.event_id, '種目').length > 0;
     });
+
     const raceNameErrorFlg = tableData.some((row) => {
       return Validator.validateRequired(row.race_name, 'レース名').length > 0;
     });
@@ -232,6 +254,9 @@ export default function Tournament() {
     const rangeErrorFlg = tableData.some((row) => {
       return Validator.validateRequired(row.range, '距離').length > 0;
     });
+    const rangeNegativeErrorFlg = tableData.some((row) => {
+      return Validator.validatePositiveNumber(row.range).length > 0;
+    });
 
     const startDateTimeErrorFlg = tableData.some((row) => {
       return Validator.validateRequired(row.start_date_time, '発艇日時').length > 0;
@@ -250,8 +275,13 @@ export default function Tournament() {
         Validator.getErrorMessages([Validator.validateRequired(null, 'レースNo.')]),
       );
     } else {
-      setRaceNumberErrorMessage([]);
+      if (raceNumberNegativeErrorFlg) {
+        setRaceNumberErrorMessage(['レースNo.は不正な番号です、1 以上数値を入力してください。']);
+      } else {
+        setRaceNumberErrorMessage([]);
+      }
     }
+
     if (eventIdErrorFlg) {
       setEventIdErrorMessage(
         Validator.getErrorMessages([Validator.validateSelectRequired(null, '種目')]),
@@ -259,6 +289,7 @@ export default function Tournament() {
     } else {
       setEventIdErrorMessage([]);
     }
+
     if (raceNameErrorFlg) {
       setRaceNameErrorMessage(
         Validator.getErrorMessages([Validator.validateRequired(null, 'レース名')]),
@@ -290,7 +321,11 @@ export default function Tournament() {
     if (rangeErrorFlg) {
       setRangeErrorMessage(Validator.getErrorMessages([Validator.validateRequired(null, '距離')]));
     } else {
-      setRangeErrorMessage([]);
+      if (rangeNegativeErrorFlg) {
+        setRangeErrorMessage(['距離は不正な番号です、1 以上数値を入力してください。']);
+      } else {
+        setRangeErrorMessage([]);
+      }
     }
     if (startDateTimeErrorFlg) {
       setStartDateTimeErrorMessage(
@@ -299,6 +334,7 @@ export default function Tournament() {
     } else {
       setStartDateTimeErrorMessage([]);
     }
+
     if (
       tournNameError.length > 0 ||
       sponsorOrgIdError.length > 0 ||
@@ -309,10 +345,12 @@ export default function Tournament() {
       tournUrlError.length > 0 ||
       eventIdErrorFlg ||
       raceNameErrorFlg ||
+      raceNumberNegativeErrorFlg ||
       raceTypeErrorFlg ||
       raceTypeNameErrorFlg ||
       byGroupErrorFlg ||
       rangeErrorFlg ||
+      rangeNegativeErrorFlg ||
       startDateTimeErrorFlg
     ) {
       return true;
@@ -467,7 +505,7 @@ export default function Tournament() {
         setTableData([]);
       }
       setBackKeyFlag(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
-      console.log(backKeyFlag);
+      // console.log(backKeyFlag);
     };
     fetchData();
   }, [mode]);
