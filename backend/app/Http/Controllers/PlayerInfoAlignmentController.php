@@ -38,7 +38,7 @@ class PlayerInfoAlignmentController extends Controller
         //for($rowIndex = 0; $rowIndex < count($reqData); $rowIndex++)
         //1行ずつ処理する
         //ヘッダーが含まれているから0行目は処理対象としない
-        for($rowIndex = 1; $rowIndex < count($reqData); $rowIndex++)
+        for($rowIndex = 0; $rowIndex < count($reqData); $rowIndex++)
         {
             $old_player_id = $reqData[$rowIndex]["oldPlayerId"];    //既存選手ID
             //既存選手IDが記載されているかをチェック
@@ -235,7 +235,7 @@ class PlayerInfoAlignmentController extends Controller
         DB::beginTransaction();
         try
         {
-            for($rowIndex = 1; $rowIndex < count($reqData); $rowIndex++)
+            for($rowIndex = 0; $rowIndex < count($reqData); $rowIndex++)
             {
                 $checked = $reqData[$rowIndex]["checked"]; //チェック状態
                 $link = $reqData[$rowIndex]["link"];       //リンク

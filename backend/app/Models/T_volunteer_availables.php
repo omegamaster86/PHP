@@ -58,6 +58,7 @@ class T_volunteer_availables extends Model
     //ボランティア一括登録画面用
     public function insertVolunteerAvailables($values)
     {
+        //DB::enableQueryLog();
         DB::insert('insert into `t_volunteer_availables`
                     (
                         `volunteer_id`,
@@ -82,6 +83,7 @@ class T_volunteer_availables extends Model
                     ]);
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
+        //Log::debug(DB::getQueryLog());
         return $insertId;
     }
 
