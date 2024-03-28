@@ -179,12 +179,21 @@ export default function Tournament() {
     const sponsorOrgIdError = Validator.getErrorMessages([
       Validator.validateRequired(tournamentFormData.sponsor_org_id, '主催団体ID'),
     ]);
-    const eventStartDateError = Validator.getErrorMessages([
+    let eventStartDateError = Validator.getErrorMessages([
       Validator.validateRequired(tournamentFormData.event_start_date, '開催日時'),
     ]);
     const eventEndDateError = Validator.getErrorMessages([
       Validator.validateRequired(tournamentFormData.event_end_date, '終了日時'),
     ]);
+
+    if (eventStartDateError.length < 1) {
+      eventStartDateError = Validator.getErrorMessages([
+        Validator.compareDates(
+          tournamentFormData.event_start_date,
+          tournamentFormData.event_end_date,
+        ),
+      ]);
+    }
     const venueIdError = Validator.getErrorMessages([
       Validator.validateRequired(
         tournamentFormData.venue_id,
@@ -204,6 +213,7 @@ export default function Tournament() {
     const tournUrlError = Validator.getErrorMessages([
       Validator.validateUrlFormat(tournamentFormData.tourn_url),
     ]);
+
     const raceNumberErrorFlg = tableData.some((row) => {
       return Validator.validateRequired(row.race_number, 'レースNo.').length > 0;
     });
@@ -299,6 +309,7 @@ export default function Tournament() {
     } else {
       setStartDateTimeErrorMessage([]);
     }
+
     if (
       tournNameError.length > 0 ||
       sponsorOrgIdError.length > 0 ||
