@@ -880,16 +880,18 @@ export default function OrgInfo() {
           />
         </div>
         {/* JARA団体種別 */}
-        <InputLabel
-          label='団体種別'
-          displayHelp={mode !== 'confirm'}
-          toolTipText='JARA
+        {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN || userIdType.is_jara == ROLE.JARA) && (
+          <InputLabel
+            label='団体種別'
+            displayHelp={mode !== 'confirm'}
+            toolTipText='JARA
           　日本ローイング協会より証跡が発行されている場合、"正規" を選択し
           　発行された証跡を入力してください。
           県ボ
           　都道府県ボート協会より証跡が発行されている場合、"正規" を選択し
           　発行された証跡を入力してください。' //はてなボタン用
-        />
+          />
+        )}
         {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN || userIdType.is_jara == ROLE.JARA) && (
           <div className='w-full flex flex-row justify-start gap-[8px]'>
             <div className='w-full flex flex-col justify-between gap-[8px]'>

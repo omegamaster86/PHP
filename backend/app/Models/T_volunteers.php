@@ -234,6 +234,7 @@ class T_volunteers extends Model
     //$values：挿入する値
     public function insertVolunteer($values)
     {
+        //DB::enableQueryLog();
         DB::insert("insert into `t_volunteers`
                     (
                         `user_id`,
@@ -274,6 +275,7 @@ class T_volunteers extends Model
                     ]);
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
+        //Log::debug(DB::getQueryLog());
         return $insertId;
     }
 
