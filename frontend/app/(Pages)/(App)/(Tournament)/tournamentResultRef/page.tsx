@@ -71,22 +71,30 @@ export default function TournamentResultRef() {
               {/* レースID */}
               <div className='flex flex-col gap-[8px]'>
                 <Label label='レースID' textSize='small' isBold />
-                { <p className='h-12 text-secondaryText py-3 disable'>{raceInfo.race_id || ''}</p> }
+                {<p className='h-12 text-secondaryText py-3 disable'>{raceInfo.race_id || ''}</p>}
               </div>
               {/* レース名 */}
               <div className='flex flex-col gap-[8px]'>
                 <Label label='レース名' textSize='small' isBold />
-                { <p className='h-12 text-secondaryText py-3 disable'>{raceInfo.race_name || ''}</p> }
+                {<p className='h-12 text-secondaryText py-3 disable'>{raceInfo.race_name || ''}</p>}
               </div>
               {/* レースNo */}
               <div className='flex flex-col gap-[8px]'>
                 <Label label='レースNo' textSize='small' isBold />
-                { <p className='h-12 text-secondaryText py-3 disable'>{raceInfo.race_number || ''}</p> }
+                {
+                  <p className='h-12 text-secondaryText py-3 disable'>
+                    {raceInfo.race_number || ''}
+                  </p>
+                }
               </div>
               {/* 種目 */}
               <div className='flex flex-col gap-[8px]'>
                 <Label label='種目' textSize='small' isBold />
-                { <p className='h-12 text-secondaryText py-3 disable'>{raceInfo.event_name || ''}</p> }
+                {
+                  <p className='h-12 text-secondaryText py-3 disable'>
+                    {raceInfo.event_name || ''}
+                  </p>
+                }
               </div>
             </div>
             <div className='flex flex-col gap-[8px]'>
@@ -94,13 +102,13 @@ export default function TournamentResultRef() {
               <div className='flex flex-col gap-[8px]'>
                 <Label label='レース区分' textSize='small' isBold />
                 <p className='h-12 text-secondaryText py-3 disable'>
-                  { raceInfo.race_class_name || ''}
+                  {raceInfo.race_class_name || ''}
                 </p>
               </div>
               {/* 組別 */}
               <div className='flex flex-col gap-[8px]'>
                 <Label label='組別' textSize='small' isBold />
-                { <p className='h-12 text-secondaryText py-3 disable'>{raceInfo.by_group || ''}</p> }
+                {<p className='h-12 text-secondaryText py-3 disable'>{raceInfo.by_group || ''}</p>}
               </div>
               {/* 距離 */}
               <div className='flex flex-col gap-[8px]'>
@@ -111,7 +119,7 @@ export default function TournamentResultRef() {
               <div className='flex flex-col gap-[8px]'>
                 <Label label='発艇予定日時' textSize='small' isBold />
                 <p className='h-12 text-secondaryText py-3 disable'>
-                  { raceInfo.start_date_time || '' }
+                  {raceInfo.start_date_time || ''}
                 </p>
               </div>
             </div>
@@ -141,7 +149,7 @@ export default function TournamentResultRef() {
             <div className='flex flex-col gap-[8px]'>
               <Label label='1000m地点風向' textSize='small' isBold />
               <p className='h-12 text-secondaryText py-3 disable'>
-                { raceResultRecords[0]?.wind_direction_1000m_point || '' }
+                {raceResultRecords[0]?.wind_direction_1000m_point || ''}
               </p>
             </div>
             {/* 単位はm/秒 */}
@@ -149,7 +157,7 @@ export default function TournamentResultRef() {
             <div className='flex flex-col gap-[8px]'>
               <Label label='1000m地点風速' textSize='small' isBold />
               <p className='h-12 text-secondaryText py-3 disable'>
-                { raceResultRecords[0]?.wind_speed_1000m_point || '' }
+                {raceResultRecords[0]?.wind_speed_1000m_point || ''}
               </p>
             </div>
           </div>
@@ -157,13 +165,13 @@ export default function TournamentResultRef() {
             <div className='flex flex-col gap-[8px]'>
               <Label label='2000m地点風向' textSize='small' isBold />
               <p className='h-12 text-secondaryText py-3 disable'>
-                { raceResultRecords[0]?.wind_direction_2000m_point || '' }
+                {raceResultRecords[0]?.wind_direction_2000m_point || ''}
               </p>
             </div>
             <div className='flex flex-col gap-[8px]'>
               <Label label='2000m地点風速' textSize='small' isBold />
               <p className='h-12 text-secondaryText py-3 disable'>
-                { raceResultRecords[0]?.wind_speed_2000m_point || ''}
+                {raceResultRecords[0]?.wind_speed_2000m_point || ''}
               </p>
             </div>
           </div>
@@ -197,13 +205,13 @@ export default function TournamentResultRef() {
                   <div className='flex flex-col gap-[8px]'>
                     <Label label='所属団体' textSize='small' isBold />
                     <p className='h-12 text-secondaryText py-3 disable'>
-                      { raceResultRecords[0]?.org_name || ''}
+                      {raceResultRecords[0]?.org_name || ''}
                     </p>
                   </div>
                   <div className='flex flex-col gap-[8px]'>
                     <Label label='クルー名' textSize='small' isBold />
                     <p className='h-12 text-secondaryText py-3 disable'>
-                      { raceResultRecords[0]?.crew_name || ''}
+                      {raceResultRecords[0]?.crew_name || ''}
                     </p>
                   </div>
                   <div className='flex flex-col gap-[8px]'>
@@ -235,37 +243,37 @@ export default function TournamentResultRef() {
                         <div className='flex flex-col gap-[8px]'>
                           <Label label='500m' textSize='small' isBold />
                           <p className='h-12 text-secondaryText py-3 disable'>
-                            { raceResultRecords[0]?.laptime_500m || '' }
+                            {raceResultRecords[0]?.laptime_500m || ''}
                           </p>
                         </div>
                         <div className='flex flex-col gap-[8px]'>
                           <Label label='1000m' textSize='small' isBold />
                           <p className='h-12 text-secondaryText py-3 disable'>
-                            { raceResultRecords[0]?.laptime_1000m || '' }
+                            {raceResultRecords[0]?.laptime_1000m || ''}
                           </p>
                         </div>
                         <div className='flex flex-col gap-[8px]'>
                           <Label label='1500m' textSize='small' isBold />
                           <p className='h-12 text-secondaryText py-3 disable'>
-                            { raceResultRecords[0]?.laptime_1500m || '' }
+                            {raceResultRecords[0]?.laptime_1500m || ''}
                           </p>
                         </div>
                         <div className='flex flex-col gap-[8px]'>
                           <Label label='2000m' textSize='small' isBold />
                           <p className='h-12 text-secondaryText py-3 disable'>
-                            { raceResultRecords[0]?.laptime_2000m || '' }
+                            {raceResultRecords[0]?.laptime_2000m || ''}
                           </p>
                         </div>
                         <div className='flex flex-col gap-[8px]'>
                           <Label label='最終' textSize='small' isBold />
                           <p className='h-12 text-secondaryText py-3 disable'>
-                            { raceResultRecords[0]?.final_time || '' }
+                            {raceResultRecords[0]?.final_time || ''}
                           </p>
                         </div>
                         <div className='flex flex-col gap-[8px]'>
                           <Label label='備考' textSize='small' isBold />
                           <p className='h-12 text-secondaryText py-3 disable'>
-                            { raceResultRecords[0]?.remarkId || '' }
+                            {raceResultRecords[0]?.remarkId || ''}
                           </p>
                         </div>
                       </div>
@@ -286,32 +294,32 @@ export default function TournamentResultRef() {
                         <div className='flex flex-col gap-[8px]'>
                           <Label label='500m' textSize='small' isBold />
                           <p className='h-12 text-secondaryText py-3 disable'>
-                            { raceResultRecords[0]?.stroke_rat_500m || '' }
+                            {raceResultRecords[0]?.stroke_rat_500m || ''}
                           </p>
                         </div>
                         <div className='flex flex-col gap-[8px]'>
                           <Label label='1000m' textSize='small' isBold />
                           <p className='h-12 text-secondaryText py-3 disable'>
-                            { raceResultRecords[0]?.stroke_rat_1000m || '' }
+                            {raceResultRecords[0]?.stroke_rat_1000m || ''}
                           </p>
                         </div>
                         <div className='flex flex-col gap-[8px]'>
                           <Label label='1500m' textSize='small' isBold />
                           <p className='h-12 text-secondaryText py-3 disable'>
-                            { raceResultRecords[0]?.stroke_rat_1500m || '' }
+                            {raceResultRecords[0]?.stroke_rat_1500m || ''}
                           </p>
                         </div>
                         <div className='flex flex-col gap-[8px]'>
                           <Label label='2000m' textSize='small' isBold />
                           <p className='h-12 text-secondaryText py-3 disable'>
-                            { raceResultRecords[0]?.stroke_rat_2000m || '' }
+                            {raceResultRecords[0]?.stroke_rat_2000m || ''}
                           </p>
                         </div>
 
                         <div className='flex flex-col gap-[8px]'>
                           <Label label='平均' textSize='small' isBold />
                           <p className='h-12 text-secondaryText py-3 disable'>
-                            { raceResultRecords[0]?.stroke_rate_avg || '' }
+                            {raceResultRecords[0]?.stroke_rate_avg || ''}
                           </p>
                         </div>
                       </div>
