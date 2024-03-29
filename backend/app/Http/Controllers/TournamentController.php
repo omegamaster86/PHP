@@ -1042,10 +1042,44 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("getRaceResultSearch start."));
         $reqData = $request->all();
-        Log::debug($reqData);
-        
+        Log::debug($reqData);        
+        $values = array();
+        //検索条件の文字列を生成
+        $conditionString = $this->generateRaceSearchCondition($reqData,$values);
+        $getData = $t_races->getRaceResultWithCondition($conditionString,$values);
         Log::debug(sprintf("getRaceResultSearch end."));
         return response()->json(['result' => $getData]); //DBの結果を返す
+    }
+
+    //レース結果一覧を取得する検索条件の文字列を生成する
+    private function generateRaceSearchCondition($reqData, &$valueArray)
+    {
+        $condition = "";
+        //大会名(必須項目)
+        $condition .= "and race.tourn_id = :tourn_id\r\n";
+        $valueArray["tourn_id"] = $reqData["tourn_id"];
+        //種目(必須項目)
+        $condition .= "and race.event_id = :event_id\r\n";
+        $valueArray["event_id"] = $reqData["event_id"];
+        //レース区分
+        if(isset($reqData["race_class_id"]))
+        {
+            $condition .= "and race.race_class_id = :race_class_id\r\n";
+            $valueArray["race_class_id"] = $reqData["race_class_id"];
+        }
+        //組別
+        if(isset($reqData["by_group"]))
+        {
+            $condition .= "and race.by_group = :by_group\r\n";
+            $valueArray["by_group"] = $reqData["by_group"];
+        }
+        //レースNo.
+        if(isset($reqData["race_number"]))
+        {
+            $condition .= "and race.race_number = :race_number\r\n";
+            $valueArray["race_number"] = $reqData["race_number"];
+        }
+        return $condition;
     }
 
     //大会レース結果入力画面

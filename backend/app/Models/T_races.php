@@ -366,4 +366,35 @@ class T_races extends Model
                             and (eve.`delete_flag` = 0 or eve.`delete_flag` is null)');
         return $races;
     }
+
+    //大会レース結果管理画面用
+    //検索条件を入力して出漕記録結果が存在するレース情報を取得する
+    public function getRaceResultWithCondition($conditionString,$values)
+    {
+        $sqlString = 'select
+                        race.`race_id`
+                        ,race.`race_name`
+                        ,race.`race_number`
+                        ,race.`race_class_id`
+                        ,case
+                            when race.race_class_name is null then mrc.`race_class_name` 
+                            else race.race_class_name
+                            end as race_class_name
+                        ,race.`by_group`
+                        FROM `t_races` race
+                        left join `t_race_result_record` rrr
+                        on race.race_id = rrr.race_id
+                        left join `m_race_class` mrc
+                        on race.`race_class_id` = mrc.`race_class_id`
+                        where 1=1
+                        and race.delete_flag = 0
+                        and mrc.delete_flag = 0
+                        #ReplaceConditionString#
+                        group by race.`race_id`
+                        having sum(case rrr.delete_flag when 0 then 1 else 0 end) > 0   -- 出漕記録結果が存在するレースを条件とする
+                        ';
+        $sqlString = str_replace('#ReplaceConditionString#', $conditionString, $sqlString);
+        $races = DB::select($sqlString,$values);
+        return $races;
+    }
 }
