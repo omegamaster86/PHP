@@ -1112,7 +1112,7 @@ class OrganizationController extends Controller
         Log::debug($reqData);
         //Log::debug($reqData['formData']['entrysystem_org_id']);
         $formData = $reqData['formData'];
-        $staff_list = $reqData['staffList'];
+        $staff_list = &$reqData['staffList'];
 
         $duplicationCount = 0;
         //団体IDがnullでエントリーシステムの団体IDが入力されている場合、登録時の重複チェックを行う
@@ -1188,6 +1188,7 @@ class OrganizationController extends Controller
                 $user_id = $staff_list[$iStaff]['user_id'];
                 $is_valid = $t_users->getUserIdIsValid($user_id);
                 $staff_list[$iStaff]['enable'] = $is_valid[0]->{'is_valid'};
+                $staff_list[$iStaff]['user_name'] = $is_valid[0]->{'user_name'};
             }
         }
         Log::debug($staff_list);

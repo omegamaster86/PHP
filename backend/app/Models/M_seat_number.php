@@ -26,7 +26,7 @@ class M_seat_number extends Model
                 , updated_user_id
                 , delete_flag 
             from
-                jara_new_pf.m_seat_number 
+                m_seat_number 
             where
                 delete_flag = ?
             order by display_order
