@@ -540,6 +540,53 @@ const validateTrailError = (trail: string, orgType: number, labelText: string) =
   return errorMessage;
 };
 
+/**
+ * 番号チェック
+ * @param insertedNumber
+ * @returns
+ * @description
+ * Positive number かどうか確認する
+ */
+const validatePositiveNumber = (insertedNumber: string) => {
+  let errorMessage = '';
+  if (insertedNumber === '') {
+    return '';
+  }
+
+  if (Number(insertedNumber) < 1) {
+    errorMessage = `不正な番号です、${insertedNumber}は1 以上数値を入力してください。`;
+    return errorMessage;
+  }
+
+  return errorMessage;
+};
+
+/**
+ * 日付比較
+ * @param startDate
+ * @param endDate
+ * @returns
+ * @description
+ * 開始日から終了日大きいかどうか確認する
+ */
+
+const compareDates = (startDate: string, endDate: string) => {
+  let errorMessage = '';
+  if (startDate === '' || endDate === '') {
+    return '';
+  }
+
+  let date1 = new Date(startDate).getTime();
+  let date2 = new Date(endDate).getTime();
+
+  if (date1 > date2) {
+    errorMessage =
+      '開催終了年月日の値が不正です。開催開始年月日より前の日付を選択することはできません。';
+    return errorMessage;
+  }
+  return errorMessage;
+};
+
 const Validator = {
   getErrorMessages,
   validateRequired,
@@ -564,6 +611,8 @@ const Validator = {
   validateFoundingYear,
   validateAddressNumberFormat,
   validateTrailError,
+  validatePositiveNumber,
+  compareDates,
 };
 
 export default Validator;

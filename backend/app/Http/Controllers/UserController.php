@@ -554,7 +554,7 @@ class UserController extends Controller
                     }
                 }
                 
-                return response()->json("パスワードを変更の件、完了になりました。");
+                return response()->json("パスワードを変更しました。");
 
             }
             //If the entered password does not matched with the database information
@@ -712,10 +712,10 @@ class UserController extends Controller
         $t_users::$userInfo['mailaddress'] = $reqData['mailaddress']; //メールアドレス
         $t_users::$userInfo['sex'] = $reqData['sex']; //性別
         $t_users::$userInfo['residence_country'] = $reqData['residence_country']; //居住地国
-        $t_users::$userInfo['residence_prefecture'] = $reqData['residence_prefecture']; //居住都道府県
-        $t_users::$userInfo['date_of_birth'] = $reqData['date_of_birth']; //誕生日
-        $t_users::$userInfo['height'] = $reqData['height']; //身長
-        $t_users::$userInfo['weight'] = $reqData['weight']; //体重
+        $t_users::$userInfo['residence_prefecture'] = $reqData['residence_prefecture']??NULL; //居住都道府県
+        $t_users::$userInfo['date_of_birth'] = $reqData['date_of_birth']??NULL; //誕生日
+        $t_users::$userInfo['height'] = $reqData['height']??NULL; //身長
+        $t_users::$userInfo['weight'] = $reqData['weight']??NULL; //体重
         $t_users::$userInfo['user_type'] = $reqData['user_type']; //ユーザ種別
 
         //If new picture is uploaded

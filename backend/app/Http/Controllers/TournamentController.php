@@ -1024,11 +1024,11 @@ class TournamentController extends Controller
                 }
                 
             }
-
-            if ($response_tourn_id or $response_tourn_type or $response_org_id or $response_race_id) {
-                return response()->json(["response_tourn_id" => $response_tourn_id, "response_tourn_type" => $response_tourn_type, "response_org_id" => $response_org_id, "response_race_id" => $response_race_id], 400); //エラーメッセージを返す
-            }
             
+            
+        }
+        if ($response_tourn_id or $response_tourn_type or $response_org_id or $response_race_id) {
+            return response()->json(["response_tourn_id" => $response_tourn_id, "response_tourn_type" => $response_tourn_type, "response_org_id" => $response_org_id, "response_race_id" => $response_race_id], 400); //エラーメッセージを返す
         }
 
 

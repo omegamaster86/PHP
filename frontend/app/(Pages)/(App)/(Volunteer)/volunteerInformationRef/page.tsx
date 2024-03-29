@@ -512,8 +512,8 @@ export default function VolunteerInformationRef() {
               </Tab>
               {/* 公式大会トグルボタン */}
               <Tab
-                number={1}
-                isActive={activeTab === 1}
+                number={2}
+                isActive={activeTab === 2}
                 onClick={handleTabChange}
                 rounded='rounded-none'
               >
@@ -521,8 +521,8 @@ export default function VolunteerInformationRef() {
               </Tab>
               {/* 非公式大会トグルボタン */}
               <Tab
-                number={2}
-                isActive={activeTab === 2}
+                number={1}
+                isActive={activeTab === 1}
                 onClick={handleTabChange}
                 rounded='rounded-r'
               >
