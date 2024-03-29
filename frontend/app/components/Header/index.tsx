@@ -118,7 +118,8 @@ const Header: FC = () => {
               <MenuItem
                 onClick={(e) => {
                   handleClose();
-                  router.push('/tournamentResult');
+                  //router.push('/tournamentResult');
+                  router.push('/tournamentResultManagement');                  
                 }}
                 className='text-caption1'
               >

@@ -1036,21 +1036,49 @@ class TournamentController extends Controller
 
     }
 
+    //大会レース結果管理画面
+    //レース結果検索
+    public function getRaceResultSearch(Request $request, T_races $t_races)
+    {
+        Log::debug(sprintf("getRaceResultSearch start."));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        
+        Log::debug(sprintf("getRaceResultSearch end."));
+        return response()->json(['result' => $getData]); //DBの結果を返す
+    }
+
+    //大会レース結果入力画面
     //選手情報とレース情報を取得
     public function getRaceResultRecord(Request $request,T_players $t_players)
     {
-
+        Log::debug(sprintf("getRaceResultRecord start."));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        $player_id = $reqData['player_id'];
+        $race_id = $reqData['race_id'];
+        $getData = $t_players->getPlayerInfoAndRaceResultRecord($player_id,$race_id);
+        Log::debug(sprintf("getRaceResultRecord end."));
+        return response()->json(['result' => $getData]); //DBの結果を返す
     }
 
+    //大会レース結果入力画面
     //レース結果情報をフロントエンドに返す
     public function postRaceResultInfo()
     {
 
     }
 
+    //大会レース結果入力確認画面
     //レース結果情報を登録する
-    public function registerRaceResultRecord()
+    public function registerRaceResultRecord(Request $request,T_raceResultRecord $t_raceResultRecord)
     {
+        Log::debug(sprintf("registerRaceResultRecord start."));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        
+        Log::debug(sprintf("registerRaceResultRecord end."));
+        return response()->json(['result' => true]); //DBの結果を返す
 
     }
 }

@@ -27,6 +27,7 @@ import {
 import { RaceTable, RaceResultRecordsResponse, MasterResponse, CrewPlayer } from '@/app/types';
 import axios from '@/app/lib/axios';
 import Validator from '@/app/utils/validator';
+import { Console } from 'console';
 
 // // 大会レース結果管理画面のメインコンポーネント
 export default function TournamentResult() {
@@ -122,9 +123,7 @@ export default function TournamentResult() {
       setRaceResultRecords((prevFormData) => {
         const newFormData = [...(prevFormData as RaceResultRecordsResponse[])];
         if (newFormData[index]) {
-          //修正方法についてGenAiに確認
           (newFormData[index] as any)[name] = value;
-          //newFormData[index][name] = value;
         }
         return newFormData;
       });
@@ -158,9 +157,14 @@ export default function TournamentResult() {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       //const playerSearch = await axios.get('http://localhost:3100/teamPlayers?id=' + value);
-      const sendId = {player_id: value}
-      const playerSearch = await axios.post('/searchOrganizationPlayersForTeamRef', sendId);
-
+      const sendIds = {
+                        player_id: value,
+                        race_id:  raceId
+                      }
+      const playerSearch = await axios.post('/getRaceResultRecord', sendIds);
+      console.log('player_id', value);
+      console.log('race_id', raceId);
+      console.log('playerSearch',playerSearch);
       const player = playerSearch.data[0];
 
       if (value === '') {
@@ -1412,29 +1416,56 @@ export default function TournamentResult() {
        */
       const fetchMaster = async () => {
         try {
+          const csrf = () => axios.get('/sanctum/csrf-cookie');
+          await csrf();
           // レース名（マスタ）の取得
-          const response = await axios.get('http://localhost:3100/raceName');
-          setRaceNameOptions(response.data);
+          //const response = await axios.get('http://localhost:3100/raceName');
+          const response = await axios.get('/getAllRaces');
+          //console.log(response);
+          const raceList = response.data.map(
+            ({ race_id, race_name }: { race_id: number; race_name: string }) => ({ id: race_id, name: race_name }),
+          );
+          setRaceNameOptions(raceList);
 
           // 所属団体（マスタ）の取得
-          const response2 = await axios.get('http://localhost:3100/orgName');
-          setOrgOptions(response2.data);
+          //const response2 = await axios.get('http://localhost:3100/orgName');
+          const response2 = await axios.get('/getOrganizations');
+          const orgList = response2.data.map(
+            ({ org_id, org_name }: { org_id: number; org_name: string }) => ({ id: org_id, name: org_name }),
+          );
+          setOrgOptions(orgList);
 
           // 天候（マスタ）の取得
-          const response3 = await axios.get('http://localhost:3100/weather');
-          setWeatherOptions(response3.data);
+          //const response3 = await axios.get('http://localhost:3100/weather');
+          const response3 = await axios.get('/getWeatherType');
+          const weatherList = response3.data.map(
+            ({ weather_id, weather_name }: { weather_id: number; weather_name: string }) => ({ id: weather_id, name: weather_name }),
+          );
+          setWeatherOptions(weatherList);
 
           // 風向き（マスタ）の取得
-          const response4 = await axios.get('http://localhost:3100/windDirection');
-          setWindDirectionOptions(response4.data);
+          //const response4 = await axios.get('http://localhost:3100/windDirection');
+          const response4 = await axios.get('/getWindDirection');
+          const windDirectionList = response4.data.map(
+            ({ wind_direction_id, wind_direction }: { wind_direction_id: number; wind_direction: string }) => ({ id: wind_direction_id, name: wind_direction }),
+          );
+          setWindDirectionOptions(windDirectionList);
 
           // レース結果備考（マスタ）の取得
-          const response5 = await axios.get('http://localhost:3100/remark');
-          setRemarkOptions(response5.data);
+          //const response5 = await axios.get('http://localhost:3100/remark');
+          const response5 = await axios.get('/getRaceResultNotes');
+          const raceResultNoteList = response5.data.map(
+            ({ race_result_notes_id, race_result_notes }: { race_result_notes_id: number; race_result_notes: string }) => ({ id: race_result_notes_id, name: race_result_notes }),
+          );
+          setRemarkOptions(raceResultNoteList);
 
           // シート番号（マスタ）の取得
-          const response6 = await axios.get('http://localhost:3100/seatNo');
-          setSheetNameIdOptions(response6.data);
+          //const response6 = await axios.get('http://localhost:3100/seatNo');
+          const response6 = await axios.get('/getSeatNumber');
+          const seatNumberList = response6.data.map(
+            ({ seat_id, seat_name }: { seat_id: number; seat_name: string }) => ({ id: seat_id, name: seat_name }),
+          );
+          setSheetNameIdOptions(seatNumberList);
         } catch (error: any) {
           setErrorText([error.message]);
         }
@@ -1530,24 +1561,39 @@ export default function TournamentResult() {
             // 選手情報の件数が種目マスタに紐づく選手の人数より少ない場合、足りない件数分追加行を追加する
 
             raceResultRecords.map((record) => {
-              // if (record.crewPlayer?.length < response2) {
-              //   record.crewPlayer = record.crewPlayer.concat(
-              //     Array.from({ length: response2 - record.crewPlayer.length }, () => ({
-              //       playerId: null,
-              //       playerName: '',
-              //       height: null,
-              //       weight: null,
-              //       sheetName: null,
-              //       fiveHundredmHeartRate: null,
-              //       tenHundredmHeartRate: null,
-              //       fifteenHundredmHeartRate: null,
-              //       twentyHundredmHeartRate: null,
-              //       heartRateAvg: null,
-              //       attendance: null,
-              //       errorText: '',
-              //     })),
-              //   );
-              // }
+              if (record.crewPlayer?.length < response2) {
+                record.crewPlayer = record.crewPlayer.concat(
+                  Array.from({ length: response2 - record.crewPlayer.length }, () => ({
+                    //id: undefined,
+                    playerPhoto: '',
+                    playerName: '',
+                    jaraPlayerId: '',
+                    playerId: '',
+                    sexId: '',
+                    sex: '',
+                    height: undefined,
+                    weight: undefined,
+                    sheetName: '',
+                    sheetNameId: undefined,
+                    entrysystemRaceId: '',
+                    orgId1: '',
+                    orgName1: '',
+                    orgId2: '',
+                    orgName2: '',
+                    orgId3: '',
+                    orgName3: '',
+                    fiveHundredmHeartRate: undefined,
+                    tenHundredmHeartRate: undefined,
+                    fifteenHundredmHeartRate: undefined,
+                    twentyHundredmHeartRate: undefined,
+                    heartRateAvg: undefined,
+                    attendance: '',
+                    deleteFlg: false,
+                    addonLineFlg: false,
+                    errorText: ''
+                  })),
+                );
+              }
               // 種目マスタに紐づく選手の人数より多い場合、余分な行を削除する
               if (record.crewPlayer?.length > response2) {
                 record.crewPlayer = record.crewPlayer.slice(0, response2);
@@ -1769,7 +1815,7 @@ export default function TournamentResult() {
                   }))}
                   className='w-[200px]'
                   onChange={(e) => {
-                    handleRaceResultRecordInputChange('tenHundredmWindDirection', e);
+                    handleRaceResultRecordInputChange('wind_direction_1000m_point', e);
                     handleRaceResultRecordInputChange(
                       'tenHundredmWindDirectionName',
                       windDirectionOptions.find((item) => item.id === Number(e))?.name || '',
@@ -1807,7 +1853,7 @@ export default function TournamentResult() {
                   }))}
                   className='w-[200px]'
                   onChange={(e) => {
-                    handleRaceResultRecordInputChange('twentyHundredmWindDirection', e);
+                    handleRaceResultRecordInputChange('wind_direction_2000m_point', e);
                     handleRaceResultRecordInputChange(
                       'twentyHundredmWindDirectionName',
                       windDirectionOptions.find((item) => item.id === Number(e))?.name || '',
@@ -1927,7 +1973,7 @@ export default function TournamentResult() {
                         id='orgName'
                         readonly={mode === 'confirm'}
                         onChange={(e: any) => {
-                          handleRaceResultRecordsInputChangebyIndex(index, 'orgId', e);
+                          handleRaceResultRecordsInputChangebyIndex(index, 'org_id', e);
                           handleRaceResultRecordsInputChangebyIndex(
                             index,
                             'orgName',
