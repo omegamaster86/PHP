@@ -1365,4 +1365,35 @@ class T_players extends Model
         );
         return $player_count;
     }
+
+    //大会結果登録画面で選手IDを入力したとき、選手情報とレース結果情報を取得する
+    public function getPlayerInfoAndRaceResultRecord($player_id,$race_id)
+    {
+        $player_info = DB::select('select
+                                    ply.player_id
+                                    ,ply.player_name
+                                    ,msex.sex_id
+                                    ,msex.sex
+                                    ,ply.height
+                                    ,ply.weight
+                                    ,rrr.seat_number
+                                    ,seat.seat_name
+                                    ,rrr.heart_rate_500m
+                                    ,rrr.heart_rate_1000m
+                                    ,rrr.heart_rate_1500m
+                                    ,rrr.heart_rate_2000m
+                                    ,rrr.attendance
+                                    from `t_players` ply
+                                    left join `t_race_result_record` rrr
+                                    on ply.player_id = rrr.player_id
+                                    left join `m_sex` msex
+                                    on ply.sex_id = msex.sex_id
+                                    left join `m_seat_number` seat
+                                    on rrr.seat_number = seat.seat_id
+                                    where 1=1
+                                    and ply.player_id = :player_id
+                                    and rrr.race_id = :race_id'
+                                ,["player_id" => $player_id, "race_id" => $race_id]);
+        return $player_info;
+    }
 }

@@ -26,6 +26,7 @@ use App\Models\T_tournaments;
 use App\Models\T_races;
 use App\Models\T_raceResultRecord;
 use App\Models\T_organizations;
+use App\Models\T_players;
 use App\Models\M_venue;
 use Exception;
 use Illuminate\Support\Facades\Validator;
@@ -1032,6 +1033,24 @@ class TournamentController extends Controller
 
 
         return response()->json(["success" => $orgInfo], 200); //登録できる
+
+    }
+
+    //選手情報とレース情報を取得
+    public function getRaceResultRecord(Request $request,T_players $t_players)
+    {
+
+    }
+
+    //レース結果情報をフロントエンドに返す
+    public function postRaceResultInfo()
+    {
+
+    }
+
+    //レース結果情報を登録する
+    public function registerRaceResultRecord()
+    {
 
     }
 }
