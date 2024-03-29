@@ -60,7 +60,7 @@ const CsvTable = ({
                         ? handleInputChange(data.id, 'checked', true)
                         : null,
                     );
-                    content?.some((row) => checkLoadingResult(row)) 
+                    content?.some((row) => checkLoadingResult(row))
                       ? displayRegisterButton(false)
                       : displayRegisterButton(true);
                   }}
