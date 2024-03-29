@@ -60,7 +60,9 @@ const CsvTable = ({
                         ? handleInputChange(data.id, 'checked', true)
                         : null,
                     );
-                    content?.some((row) => checkLoadingResult(row)) && displayRegisterButton(true);
+                    content?.some((row) => checkLoadingResult(row)) 
+                      ? displayRegisterButton(false)
+                      : displayRegisterButton(true);
                   }}
                 >
                   全選択
@@ -91,7 +93,7 @@ const CsvTable = ({
         </CustomThead>
         <CustomTbody>
           {content.map((row, rowIndex) => (
-            <CustomTr index={rowIndex} key={0}>
+            <CustomTr index={rowIndex} key={rowIndex}>
               {/* 選択 */}
               <CustomTd align='center'>
                 <CustomCheckbox
@@ -115,7 +117,13 @@ const CsvTable = ({
                 textType={checkLoadingResult(row) ? 'error' : ''}
                 className={checkError(row.tournIdError)}
               >
-                {row.tournIdError}
+                {row.tournId}
+              </CustomTd>
+              <CustomTd
+                textType={checkLoadingResult(row) ? 'error' : ''}
+                className={checkError(row.entrysystemTournIdError)}
+              >
+                {row.entrysystemTournId}
               </CustomTd>
               <CustomTd
                 textType={checkLoadingResult(row) ? 'error' : ''}
