@@ -268,11 +268,11 @@ class T_organization_players extends Model
                             ,m_sex.sex_id		    #性別ID
                             ,CASE 
                                 when tp.`birth_country` = 112 then bir_pref.`pref_name`
-                                else bir_cont.`country_name`
+                                else null
                                 end as birthPrefectureName	#出身地
                             ,CASE
                                 when tp.`residence_country` = 112 then res_pref.`pref_name`
-                                else res_cont.country_name
+                                else null
                                 end as residencePrefectureName	#居住地
                             ,CASE
                                 when SUBSTRING(tp.`side_info`,8,1) = 1 then 1

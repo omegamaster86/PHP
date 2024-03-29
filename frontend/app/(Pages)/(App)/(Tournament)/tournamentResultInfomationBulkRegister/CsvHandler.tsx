@@ -262,28 +262,28 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
               </p>
             </div>
           )}
-           {!props.csvUploadProps.readonly && (
-          <CustomButton
-            buttonType='primary'
-            onClick={() => {
-              props.csvDownloadProps.checkTournName(
-                props.csvDownloadProps.formData.tournName === '' ||
-                  props.csvDownloadProps.formData.tournName === undefined,
-              );
-              if (
-                !(
+          {!props.csvUploadProps.readonly && (
+            <CustomButton
+              buttonType='primary'
+              onClick={() => {
+                props.csvDownloadProps.checkTournName(
                   props.csvDownloadProps.formData.tournName === '' ||
-                  props.csvDownloadProps.formData.tournName === undefined
-                )
-              ) {
-                handleDownload();
-              }
-            }}
-            className='w-[200px] h-[57px]'
-          >
-            {props.csvDownloadProps.label}
-          </CustomButton>
-        )}
+                    props.csvDownloadProps.formData.tournName === undefined,
+                );
+                if (
+                  !(
+                    props.csvDownloadProps.formData.tournName === '' ||
+                    props.csvDownloadProps.formData.tournName === undefined
+                  )
+                ) {
+                  handleDownload();
+                }
+              }}
+              className='w-[200px] h-[57px]'
+            >
+              {props.csvDownloadProps.label}
+            </CustomButton>
+          )}
         </div>
       </div>
       {/* ファイルアップロード中の表示 */}

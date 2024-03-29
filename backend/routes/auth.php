@@ -30,6 +30,12 @@ use App\Models\M_volunteer_qualifications;
 use App\Models\M_languages;
 use App\Models\M_language_proficiency;
 use App\Models\M_clothes_size;
+use App\Models\T_races;
+use App\Models\T_organizations;
+use App\Models\M_weather_type;
+use App\Models\M_wind_direction;
+use App\Models\M_race_result_notes;
+use App\Models\M_seat_number;
 
 // Route::get('contact-us', [ContactUsController::class, 'create'])->name('contact-us');
 // Route::get('contact-us/confirm', [ContactUsController::class, 'createConfirm'])->name('contact-us-confirm');
@@ -85,6 +91,12 @@ Route::middleware('auth')->group(function () {
     Route::get('getLanguageProficiency', [M_language_proficiency::class, 'getLanguageProficiency']); //言語レベルマスタ
     Route::get('getClothesSize', [M_clothes_size::class, 'getClothesSize']); //服のサイズマスタ
     Route::get('getIDsAssociatedWithUser', [UserController::class, 'getIDsAssociatedWithUser']); //ユーザIDに紐づいた情報を取得 20240221
+    Route::get('getAllRaces', [T_races::class, 'getAllRaces']); //全レース情報取得 20240329
+    Route::get('getOrganizations', [T_organizations::class, 'getOrganizations']); //全レース情報取得 20240329
+    Route::get('getWeatherType', [M_weather_type::class, 'getWeatherType']); //天気マスタ
+    Route::get('getWindDirection', [M_wind_direction::class, 'getWindDirection']); // 風向き（マスタ）
+    Route::get('getRaceResultNotes', [M_race_result_notes::class, 'getRaceResultNotes']); // 備考（マスタ）
+    Route::get('getSeatNumber', [M_seat_number::class, 'getSeatNumber']); // シート番号（マスタ）
 
     //ユーザー関連
     Route::get('getUserData', [UserController::class, 'getUserData']); //DBからユーザ情報を取得 20240131
@@ -126,7 +138,7 @@ Route::middleware('auth')->group(function () {
     Route::post('teamPlayerSearch', [OrganizationPlayersController::class, 'teamPlayerSearch']); //団体所属選手更新 20240226
     Route::post('sendOrgCsvData', [OrganizationPlayersController::class, 'sendOrgCsvData']); //団体一括 読み込むボタン押下 20240301
     Route::post('registerOrgCsvData', [OrganizationPlayersController::class, 'registerOrgCsvData']); //団体一括 登録ボタン押下 20240301
-
+    
     //スタッフ関連
     Route::post('getOrgStaffData', [OrganizationController::class, 'getOrgStaffData']); //スタッフ情報取得 20240214
 
@@ -147,7 +159,9 @@ Route::middleware('auth')->group(function () {
     Route::post('registerTournamentResultCsvData', [TournamentInfoAlignmentController::class, 'registerTournamentResultCsvData']); //大会結果一括 登録ボタン押下 20240301
 
     //レース関連
-    Route::post('getRaceData', [TournamentController::class, 'getRaceData']); //レース情報取得 20240214
+    Route::post('getRaceData', [TournamentController::class, 'getRaceData']); //レース情報取得 20240214 大会情報に基づくレース情報
+    Route::post('getRaceResultRecord', [TournamentController::class, 'getRaceResultRecord']);   //20240329 選手情報とレース結果情報
+    Route::post('searchRaceData', [TournamentController::class, 'searchRaceData']); //大会レース結果管理　レース結果検索 20240329
 
     //レース結果(出漕結果記録)関連
     Route::post('getTournRaceResultRecords', [TournamentController::class, 'getTournRaceResultRecords']); //大会レース結果参照画面 20240216

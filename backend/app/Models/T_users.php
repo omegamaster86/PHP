@@ -543,7 +543,9 @@ class T_users extends Authenticatable
     public function getUserIdIsValid($user_id)
     {
         $is_valid = DB::select("select
-                                case
+                                user_id
+                                ,user_name
+                                ,case
                                     when count(`user_id`) = 0 then false
                                     when `temp_password_flag` = 1 then false
                                     when `delete_flag` = 1 then false
