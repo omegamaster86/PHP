@@ -81,21 +81,29 @@ interface RaceResultRecordsResponse {
 }
 
 interface CrewPlayer {
-  id: number; // 選手ID
+  id?: number; // 選手ID
   playerPhoto: string; // 選手画像
   playerName: string; // 選手名
   jaraPlayerId: string; // JARA選手コード
   playerId: string; // 選手ID
   sexId: string;
-  height: number; // 身長
-  weight: number; // 体重
+  sex: string; // 性別
+  height?: number; // 身長
+  weight?: number; // 体重
   sheetName: string; // シート番号
-  sheetNameId: number; // シート番号
-  fiveHundredmHeartRate: number; // 500m
-  tenHundredmHeartRate: number; // 1000m
-  fifteenHundredmHeartRate: number; // 1500m
-  twentyHundredmHeartRate: number; // 2000m
-  heartRateAvg: number; // 平均
+  sheetNameId?: number; // シート番号
+  entrysystemRaceId: string; // エントリーシステムの団体ID
+  orgId1: string; // 団体ID1
+  orgName1: string; // 所属団体名1
+  orgId2: string; // 団体ID2
+  orgName2: string; // 所属団体名2
+  orgId3: string; // 団体ID3
+  orgName3: string; // 所属団体名3
+  fiveHundredmHeartRate?: number; // 500m
+  tenHundredmHeartRate?: number; // 1000m
+  fifteenHundredmHeartRate?: number; // 1500m
+  twentyHundredmHeartRate?: number; // 2000m
+  heartRateAvg?: number; // 平均
   attendance: string; // 立ち合い有無
   deleteFlg: boolean; // 削除フラグ
   addonLineFlg: boolean; // 追加行フラグ
@@ -359,22 +367,22 @@ interface Player {
 }
 
 // 大会レース結果入力画面
-interface CrewPlayer {
-  id: number; // 選手ID
-  playerPhoto: string; // 選手画像
-  playerName: string; // 選手名
-  jaraPlayerId: string; // JARA選手コード
-  playerId: string; // 選手ID
-  sexId: string; // 性別ID
-  sex: string; // 性別
-  entrysystemRaceId: string; // エントリーシステムの団体ID
-  orgId1: string; // 団体ID1
-  orgName1: string; // 所属団体名1
-  orgId2: string; // 団体ID2
-  orgName2: string; // 所属団体名2
-  orgId3: string; // 団体ID3
-  orgName3: string; // 所属団体名3
-}
+// interface CrewPlayer {
+//   id: number; // 選手ID
+//   playerPhoto: string; // 選手画像
+//   playerName: string; // 選手名
+//   jaraPlayerId: string; // JARA選手コード
+//   playerId: string; // 選手ID
+//   sexId: string; // 性別ID
+//   sex: string; // 性別
+//   entrysystemRaceId: string; // エントリーシステムの団体ID
+//   orgId1: string; // 団体ID1
+//   orgName1: string; // 所属団体名1
+//   orgId2: string; // 団体ID2
+//   orgName2: string; // 所属団体名2
+//   orgId3: string; // 団体ID3
+//   orgName3: string; // 所属団体名3
+// }
 
 // クルー
 interface CrewResponse {
