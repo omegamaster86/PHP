@@ -56,9 +56,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
     try {
       setcurrentShowFile({ file, isUploaded: false });
 
-      const uploadTime = Math.random() * 9000 + 1000; // 1秒から10秒
-      await new Promise((resolve) => setTimeout(resolve, uploadTime));
-
       // アップロード成功時の処理
       setcurrentShowFile({ file, isUploaded: true });
     } catch (error) {

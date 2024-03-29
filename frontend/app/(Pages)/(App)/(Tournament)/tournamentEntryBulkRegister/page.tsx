@@ -162,7 +162,7 @@ export default function TournamentEntryBulkRegister() {
       { label: '種目ID', key: 'eventId' },
       { label: '種目名', key: 'eventName' },
       { label: 'レース区分ID', key: 'raceTypeId' },
-      { label: 'レース区分名', key: 'raceTypeName' },
+      { label: 'レース区分', key: 'raceTypeName' },
       { label: 'レースID', key: 'raceId' },
       { label: 'レース名', key: 'raceName' },
       { label: '組別', key: 'byGroup' },
@@ -642,6 +642,9 @@ export default function TournamentEntryBulkRegister() {
                   buttonType='primary'
                   onClick={async () => {
                     setActivationFlg(true);
+                    const specifiedHeader = "大会ID,大会名,種目ID,種目名,レース区分ID,レース区分,レースID,レース名,組別,レースNo,発艇日時,団体ID,団体名,クルー名,シート番号ID,シート番号,選手ID,選手名"; // 指定のヘッダー文字列
+                    const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
+                    const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
                     if (dialogDisplayFlg) {
                       window.confirm(
                         '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
@@ -649,7 +652,10 @@ export default function TournamentEntryBulkRegister() {
                         ? (await sendCsvData(), //バックエンド側にCSVデータを送信 データ判定用
                           setCsvData([]),
                           // console.log(loadingResultList),
-                          csvFileData?.content?.slice(1).map((row, rowIndex) => {
+                          csvFileData?.content?.filter(function (x) {
+                            // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
+                            return x.length > 0 && x.some((y) => y.length > 0);
+                          }).slice(isHeaderMatch? 1 : 0).map((row, rowIndex) => {
                             handleCsvData(row, rowIndex);
                             setDialogDisplayFlg(true);
                           }))
