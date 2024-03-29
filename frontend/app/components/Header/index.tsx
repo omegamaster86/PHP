@@ -119,7 +119,7 @@ const Header: FC = () => {
                 onClick={(e) => {
                   handleClose();
                   //router.push('/tournamentResult');
-                  router.push('/tournamentResultManagement');                  
+                  router.push('/tournamentResultManagement');
                 }}
                 className='text-caption1'
               >

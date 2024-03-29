@@ -4,7 +4,8 @@
 // Reactおよび関連モジュールのインポート
 import { useState, useEffect, ChangeEvent, FocusEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
+// import axios from 'axios';
+import axios from '@/app/lib/axios';
 // コンポーネントのインポート
 import {
   CustomTitle,
@@ -122,8 +123,13 @@ export default function TournamentResultManagement() {
 
     try {
       // 仮のURL（繋ぎ込み時に変更すること）
-      const response = await axios.get<Race[]>('http://localhost:3100/race/');
-      setSearchResponse(response.data);
+      // const response = await axios.get<Race[]>('http://localhost:3100/race/');
+      const csrf = () => axios.get('/sanctum/csrf-cookie');
+      await csrf();
+      const response = await axios.post('searchRaceData', searchCond);
+      console.log(response);
+      // setSearchResponse(response.data); //残件対応
+
       const height = response.data.length * 73 + 100 < 830 ? response.data.length * 73 + 100 : 830;
       setTableHeight('h-[' + height + 'px]');
     } catch (error) {
@@ -135,8 +141,25 @@ export default function TournamentResultManagement() {
     try {
       // 仮のURL（繋ぎ込み時に変更すること）
       // TODO: ログインユーザーの権限によって取得する大会情報を変更すること
-      const response = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments');
-      setTournamentList(response.data);
+      // const response = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments');
+      if (
+        searchCond?.eventYear != '' &&
+        searchCond?.eventYear != null &&
+        searchCond?.eventYear != undefined
+      ) {
+        const sendVal = { event_start_year: searchCond?.eventYear };
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
+        const tournamentResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
+        const TournamentsResponseList = tournamentResponse.data.result.map(
+          ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
+            id: tourn_id,
+            name: tourn_name,
+          }),
+        );
+        // console.log(TournamentsResponseList);
+        setTournamentList(TournamentsResponseList);
+      }
     } catch (error) {
       setErrorMessage([...(errorMessage as string[]), 'API取得エラー:' + (error as Error).message]);
     }
@@ -150,13 +173,31 @@ export default function TournamentResultManagement() {
 
       try {
         // 仮のURL（繋ぎ込み時に変更すること）
-        const eventResponse = await axios.get<EventResponse[]>('http://localhost:3100/event');
-        setEvent(eventResponse.data);
 
-        const raceTypeResponse = await axios.get<RaceTypeResponse[]>(
-          'http://localhost:3100/raceType',
+        // const eventResponse = await axios.get<EventResponse[]>('http://localhost:3100/event');
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
+        const eventResponse = await axios.get('/getEvents');
+        const eventResponseList = eventResponse.data.map(
+          ({ event_id, event_name }: { event_id: number; event_name: string }) => ({
+            id: event_id,
+            name: event_name,
+          }),
         );
-        setRaceTypeList(raceTypeResponse.data);
+        setEvent(eventResponseList);
+
+        // const raceTypeResponse = await axios.get<RaceTypeResponse[]>('http://localhost:3100/raceType',);
+        const raceTypeResponse = await axios.get('/getRaceClass');
+        const stateList = raceTypeResponse.data.map(
+          ({
+            race_class_id,
+            race_class_name,
+          }: {
+            race_class_id: number;
+            race_class_name: string;
+          }) => ({ id: race_class_id, name: race_class_name }),
+        );
+        setRaceTypeList(stateList);
 
         if (prevScreen === 'tournamentResult') {
           handleSearch();
