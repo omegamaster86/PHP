@@ -1827,7 +1827,7 @@ export default function TournamentResult() {
               type='number'
               inputAdorment='m/秒'
               onChange={(e) => {
-                handleRaceResultRecordInputChange('tenHundredmWindSpeed', e.target.value);
+                handleRaceResultRecordInputChange('wind_speed_1000m_point', e.target.value);
               }}
               readonly={mode === 'confirm'}
             />
@@ -1864,7 +1864,7 @@ export default function TournamentResult() {
               type='number'
               inputAdorment='m/秒'
               onChange={(e) => {
-                handleRaceResultRecordInputChange('twentyHundredmWindSpeed', e.target.value);
+                handleRaceResultRecordInputChange('wind_speed_2000m_point', e.target.value);
               }}
               readonly={mode === 'confirm'}
             />
@@ -1987,7 +1987,7 @@ export default function TournamentResult() {
                     required={mode === 'create' || mode === 'update'}
                     displayHelp={false}
                     onChange={(e) => {
-                      handleRaceResultRecordsInputChangebyIndex(index, 'crewName', e.target.value);
+                      handleRaceResultRecordsInputChangebyIndex(index, 'crew_name', e.target.value);
                     }}
                     readonly={mode === 'confirm'}
                   />
@@ -2037,7 +2037,7 @@ export default function TournamentResult() {
                           onChange={(e) => {
                             handleRaceResultRecordsInputChangebyIndex(
                               index,
-                              'fiveHundredmLaptime',
+                              'laptime_500m',
                               e.target.value,
                             );
                           }}
@@ -2050,7 +2050,7 @@ export default function TournamentResult() {
                           onChange={(e) => {
                             handleRaceResultRecordsInputChangebyIndex(
                               index,
-                              'tenHundredmLaptime',
+                              'laptime_1000m',
                               e.target.value,
                             );
                           }}
@@ -2063,7 +2063,7 @@ export default function TournamentResult() {
                           onChange={(e) => {
                             handleRaceResultRecordsInputChangebyIndex(
                               index,
-                              'fifteenHundredmLaptime',
+                              'laptime_1500m',
                               e.target.value,
                             );
                           }}
@@ -2076,7 +2076,7 @@ export default function TournamentResult() {
                           onChange={(e) => {
                             handleRaceResultRecordsInputChangebyIndex(
                               index,
-                              'twentyHundredmLaptime',
+                              'laptime_2000m',
                               e.target.value,
                             );
                           }}
@@ -2089,7 +2089,7 @@ export default function TournamentResult() {
                           onChange={(e) => {
                             handleRaceResultRecordsInputChangebyIndex(
                               index,
-                              'finalTime',
+                              'final_time',
                               e.target.value,
                             );
                           }}
@@ -2143,7 +2143,7 @@ export default function TournamentResult() {
                           onChange={(e) => {
                             handleRaceResultRecordsInputChangebyIndex(
                               index,
-                              'fiveHundredmStrokeRat',
+                              'stroke_rat_500m',
                               e.target.value,
                             );
                           }}
@@ -2158,7 +2158,7 @@ export default function TournamentResult() {
                           onChange={(e) => {
                             handleRaceResultRecordsInputChangebyIndex(
                               index,
-                              'tenHundredmStrokeRat',
+                              'stroke_rat_1000m',
                               e.target.value,
                             );
                           }}
@@ -2173,7 +2173,7 @@ export default function TournamentResult() {
                           onChange={(e) => {
                             handleRaceResultRecordsInputChangebyIndex(
                               index,
-                              'fifteenHundredmStrokeRat',
+                              'stroke_rat_1500m',
                               e.target.value,
                             );
                           }}
@@ -2188,7 +2188,7 @@ export default function TournamentResult() {
                           onChange={(e) => {
                             handleRaceResultRecordsInputChangebyIndex(
                               index,
-                              'twentyHundredmStrokeRat',
+                              'stroke_rat_2000m',
                               e.target.value,
                             );
                           }}
@@ -2203,7 +2203,7 @@ export default function TournamentResult() {
                           onChange={(e) => {
                             handleRaceResultRecordsInputChangebyIndex(
                               index,
-                              'strokeRateAvg',
+                              'stroke_rate_avg',
                               e.target.value,
                             );
                           }}
