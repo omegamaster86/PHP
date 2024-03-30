@@ -856,27 +856,39 @@ class TournamentController extends Controller
     public function getRaceDataRaceId(Request $request, T_races $tRace, T_raceResultRecord $t_raceResultRecord)
     {
         Log::debug(sprintf("getRaceDataRaceId start"));
-        $reqData = $request->all();
-        Log::debug($reqData['race_id']);
-        $race_result = $tRace->getRaceFromRaceId($reqData['race_id']); //レース情報を取得
-        //検索結果にインデックスを付与する 20240330
-        if (isset($race_result)) {
-            for ($i = 0; $i < count($race_result); $i++) {
-                $race_result[$i]->id = $i;
+        try
+        {
+            $reqData = $request->all();
+            Log::debug($reqData['race_id']);
+            $race_result = $tRace->getRaceFromRaceId($reqData['race_id']); //レース情報を取得
+            //検索結果にインデックスを付与する 20240330
+            if (isset($race_result)) {
+                for ($i = 0; $i < count($race_result); $i++) {
+                    $race_result[$i]->id = $i;
+                }
             }
+            //出漕時点情報を取得
+            $record_result = $t_raceResultRecord->getRaceResultRecordOnRowingPoint($reqData['race_id']);
+
+            //レース結果情報を取得
+            //$
+
+            //レース結果情報の選手情報を取得して、レース結果情報に配列のプロパティを作成する
+            // foreach($record_result as $record)
+            // {
+            //     $target_player_id = $record["player_id"];
+            //     $target_crew_name = $record["crew_name"];
+            // }
+            Log::debug($race_result);
+            Log::debug($record_result);
+            Log::debug(sprintf("getRaceDataRaceId end"));
+            return response()->json(['race_result' => $race_result,'record_result' => $record_result]); //DBの結果を返す
+            //return response()->json(['race_result' => $race_result,'record_result' => $record_result, 'record_result_list' => $record_result_list]); //DBの結果を返す
         }
-        //出漕時点情報を取得
-        $record_result = $t_raceResultRecord->getRaceResultRecordOnRowingPoint($reqData['race_id']);
-
-        //レース結果情報を取得
-        //$record_result_list;
-
-
-        Log::debug(sprintf("getRaceDataRaceId end"));
-        Log::debug($race_result);
-        Log::debug($record_result);
-        return response()->json(['race_result' => $race_result,'record_result' => $record_result]); //DBの結果を返す
-        //return response()->json(['race_result' => $race_result,'record_result' => $record_result, 'record_result_list' => $record_result_list]); //DBの結果を返す
+        catch(\Throwable $e)
+        {
+            Log::error('Line:'.$e->getLine().' message:'.$e->getMessage());
+        }
     }
 
     //大会レース結果入力確認画面

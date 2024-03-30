@@ -1391,9 +1391,49 @@ class T_players extends Model
                                     left join `m_seat_number` seat
                                     on rrr.seat_number = seat.seat_id
                                     where 1=1
+                                    and ply.delete_flag = 0
+                                    and (rrr.delete_flag = 0 or rrr.delete_flag is null)
+                                    and (msex.delete_flag = 0 or msex.delete_flag is null)
+                                    and (seat.delete_flag = 0 or seat.delete_flag is null)
                                     and ply.player_id = :player_id
                                     and rrr.race_id = :race_id'
                                 ,["player_id" => $player_id, "race_id" => $race_id]);
         return $player_info;
+    }
+
+    //レースIDを条件に、出漕結果記録テーブルから選手情報を取得する
+    //
+    public function getRecordResultPlayers($race_id,$crew_name,$org_id)
+    {
+        $record_players = DB::select('select 
+                                    ply.player_id
+                                    ,ply.player_name
+                                    ,msex.sex_id
+                                    ,msex.sex
+                                    ,ply.height
+                                    ,ply.weight
+                                    ,rrr.seat_number
+                                    ,seat.seat_name
+                                    ,rrr.heart_rate_500m
+                                    ,rrr.heart_rate_1000m
+                                    ,rrr.heart_rate_1500m
+                                    ,rrr.heart_rate_2000m
+                                    ,rrr.attendance
+                                    from `t_players` ply
+                                    left join `t_race_result_record` rrr
+                                    on ply.player_id = rrr.player_id
+                                    left join `m_sex` msex
+                                    on ply.sex_id = msex.sex_id
+                                    left join `m_seat_number` seat
+                                    on rrr.seat_number = seat.seat_id
+                                    where 1=1
+                                    and ply.delete_flag = 0
+                                    and (rrr.delete_flag = 0 or rrr.delete_flag is null)
+                                    and (msex.delete_flag = 0 or msex.delete_flag is null)
+                                    and (seat.delete_flag = 0 or seat.delete_flag is null)
+                                    and race_id = :race_id
+                                    order by seat_number'
+                                    ,["race_id" => $race_id]);
+        return $record_players;
     }
 }
