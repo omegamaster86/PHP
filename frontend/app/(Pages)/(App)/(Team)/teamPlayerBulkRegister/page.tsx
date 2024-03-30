@@ -145,6 +145,21 @@ export default function TeamPlayerBulkRegister() {
     isOrgSelected: orgSelected !== '',
   } as CsvDownloadProps;
 
+    // 所属団体名の入力値を管理する関数 20240307
+    const handleFormInputChange = (name: string, value: string) => {
+      setTargetOrgData((prevFormData) => ({
+        ...prevFormData,
+        [name]: value,
+      }));
+    };
+  
+    //所属団体名の情報を受け取るパラメータ 20240307
+    const [targetOrgData, setTargetOrgData] = useState({
+      targetOrgId: '',
+      targetOrgName: '',
+    });
+  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -173,42 +188,12 @@ export default function TeamPlayerBulkRegister() {
     fetchData();
   }, []);
 
-  const getJsonRow = async (row: string[], index: number) => {
-    return {
-      id: index,
-      // checked: handleCheckboxValue(await handleResult(row)),
-      checked: true,
-      result: await handleResult(row),
-      // userId: row[0],
-      // playerId: row[1],
-      // jaraPlayerId: row[2],
-      // playerName: row[3],
-      // mailaddress: row[4],
-      // teamId: row[5],
-      // teamName: row[6],
-      // birthPlace: row[7],
-      // residence: row[8],
-      userId: row[2],
-      playerId: row[1],
-      jaraPlayerId: row[0],
-      playerName: row[4],
-      mailaddress: row[3],
-      teamId: row[5],
-      teamName: row[6],
-      birthPlace: row[7],
-      residence: row[8],
-    };
-  };
-
   /**
    * CSV行に対しバリデーションを実行する関数
    * @param row
    * @returns
    */
   const handleResult = async (row: string[]) => {
-    // 仮実装 サーバサイドでのチェック処理
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
     // 選手名の形式
     //　日本語：^[ぁ-んァ-ヶｱ-ﾝﾞﾟ一-龠]*$
     //　半角英数字：^[0-9a-zA-Z]*$
@@ -233,19 +218,51 @@ export default function TeamPlayerBulkRegister() {
     return '連携';
   };
 
-  // 所属団体名の入力値を管理する関数 20240307
-  const handleFormInputChange = (name: string, value: string) => {
-    setTargetOrgData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
+  const getJsonRow = async (row: string[], index: number) => {
+    const expectedColumnCount = 4; // 期待する列数
+    if (row.length !== expectedColumnCount) {
+      return {
+        id: index,
+        checked: false,
+        result: '無効データ',
+        userId: '-',
+        playerId: '-',
+        jaraPlayerId: '-',
+        playerName: '-',
+        mailaddress: '-',
+        teamId: '',
+        teamName: '',
+        birthPlace: '',
+        residence: '',
+      };
+    } else {
+      return {
+        id: index,
+        // checked: handleCheckboxValue(await handleResult(row)),
+        checked: true,
+        result: await handleResult(row),
+        // userId: row[0],
+        // playerId: row[1],
+        // jaraPlayerId: row[2],
+        // playerName: row[3],
+        // mailaddress: row[4],
+        // teamId: row[5],
+        // teamName: row[6],
+        // birthPlace: row[7],
+        // residence: row[8],
+        userId: row[2],
+        playerId: row[1],
+        jaraPlayerId: row[0],
+        playerName: row[4],
+        mailaddress: row[3],
+        teamId: row[5],
+        teamName: row[6],
+        birthPlace: row[7],
+        residence: row[8],
+      };
   };
+};
 
-  //所属団体名の情報を受け取るパラメータ 20240307
-  const [targetOrgData, setTargetOrgData] = useState({
-    targetOrgId: '',
-    targetOrgName: '',
-  });
 
   //読み込むボタン押下時 20240302
   const sendCsvData = async (row: any[]) => {
@@ -347,11 +364,19 @@ export default function TeamPlayerBulkRegister() {
                       return;
                     }
                   }
+                  
+                  const specifiedHeader = "既存選手ID,新選手ID,ユーザーID,メールアドレス,選手名"; // 指定のヘッダー文字列
+                  const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
+                  const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
+
                   Promise.all(
-                    csvFileData.content?.slice(1).map((row, index) => getJsonRow(row, index)),
+                    csvFileData.content
+                      ?.filter(function (x) {
+                      // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
+                      return x.length > 0 && x.some((y) => y.length > 0);
+                    }).slice(isHeaderMatch? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
+                    .map((row, index) => getJsonRow(row, index)),
                   ).then((results) => {
-                    console.log(results);
-                    // テーブルに表示する項目の追加　※CSVには記載のない項目
                     var resList = results as any;
                     resList.forEach((element: any) => {
                       element['birthCountryId'] = null;
@@ -362,6 +387,7 @@ export default function TeamPlayerBulkRegister() {
                     console.log(resList);
                     sendCsvData(resList); //バックエンド側のバリデーションチェックを行う為にデータを送信する 20240302
                   });
+
                   performValidation();
                 }}
               >

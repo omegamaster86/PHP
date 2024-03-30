@@ -104,23 +104,45 @@ export default function PlayerInformationLinking() {
 
   //読み込むボタン押下時 20240228
   const sendCsvData = async () => {
+
+    const specifiedHeader = "既存選手ID,新選手ID,メールアドレス,選手名"; // 指定のヘッダー文字列
+    const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
+    const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
+    const expectedColumnCount = 4; // 期待する列数
+
     // ヘッダー行は削除する
     var array = csvFileData?.content
       ?.filter(function (x) {
-        return x.length > 1; // 1列以上のデータを抽出
+        // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
+        return x.length > 0 && x.some((y) => y.length > 0);
       })
-      .slice(1)
-      .map((value, index) => {
-        return {
-          id: index, // ID
-          checked: false, // 選択
-          link: '', // 連携
-          oldPlayerId: value[0],
-          playerId: value[1],
-          mailaddress: value[2],
-          playerName: value[3],
-          message: '',
-        };
+      .slice(isHeaderMatch? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
+      .map((value, index) => {        
+        if (value.length !== expectedColumnCount) {
+          // 列数が期待する列数と異なる場合
+          return {
+            id: index, // ID
+            checked: false, // 選択
+            link: '連携不可', // 連携不可
+            oldPlayerId: '-',
+            playerId: '-',
+            mailaddress: '-',
+            playerName: '-',
+            message: '',
+          };
+        } else {
+          // 列数が期待する列数と一致する場合
+          return {
+            id: index, // ID
+            checked: false, // 選択
+            link: '', // 連携
+            oldPlayerId: value[0],
+            playerId: value[1],
+            mailaddress: value[2],
+            playerName: value[3],
+            message: '',
+          };
+        }
       });
     var element = array as CsvData[];
     setActivationFlg(true);
