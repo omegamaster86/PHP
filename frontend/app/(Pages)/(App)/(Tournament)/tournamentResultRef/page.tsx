@@ -18,7 +18,7 @@ import {
   CustomTd,
 } from '@/app/components';
 import { Race, RaceResultRecordsResponse } from '@/app/types';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 
 // 大会結果登録（参照・削除）画面のメインコンポーネント
 export default function TournamentResultRef() {
@@ -43,11 +43,19 @@ export default function TournamentResultRef() {
     const fetch = async () => {
       try {
         // レース情報の取得
-        const raceResponse = await axios.get('http://localhost:3100/raceInfo');
+        // const raceResponse = await axios.get('http://localhost:3100/raceInfo');
+        const sendData ={
+          race_id: '1' //残件項目 20240329
+        }
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
+        const raceResponse = await axios.post('/getRaceDataRaceId',sendData);
+        console.log(raceResponse);
+
         setRaceInfo(raceResponse.data[0]);
 
         // 出漕結果記録情報の取得
-        const raceResultRecords = await axios.get('http://localhost:3100/raceResultRecords');
+        const raceResultRecords = await axios.get('http://localhost:3100/raceResultRecords'); //残件項目
         setRaceResultRecords(raceResultRecords.data);
       } catch (error: any) {
         setErrorText([error.message]);
@@ -179,9 +187,8 @@ export default function TournamentResultRef() {
       </div>
 
       <div
-        className={`flex flex-col gap-[20px] border border-solid p-[20px] ${
-          raceInfo.checked ? 'bg-gray-500' : ''
-        }`}
+        className={`flex flex-col gap-[20px] border border-solid p-[20px] ${raceInfo.checked ? 'bg-gray-500' : ''
+          }`}
       >
         {/* レース結果情報2 */}
         <Label label='レース結果情報2' />
@@ -193,7 +200,7 @@ export default function TournamentResultRef() {
                 value={'raceResultDeleted'}
                 checked={raceInfo.checked}
                 readonly
-                onChange={() => {}}
+                onChange={() => { }}
               />
               <p className='text-systemErrorText'>このレース結果情報を削除する</p>
             </div>
@@ -399,7 +406,7 @@ export default function TournamentResultRef() {
                             value={''}
                             readonly
                             checked={false}
-                            onChange={() => {}}
+                            onChange={() => { }}
                           />
                         </div>
                       </CustomTd>
@@ -439,9 +446,10 @@ export default function TournamentResultRef() {
             onClick={async () => {
               try {
                 // 削除済かどうかのチェック
-                const response = await axios.get(
-                  'http://localhost:3100/checkRaceResultRecordDeleted',
-                );
+                const response = await axios.get('http://localhost:3100/checkRaceResultRecordDeleted',); //残件項目
+                
+                const csrf = () => axios.get('/sanctum/csrf-cookie');
+                await csrf();
 
                 if (response.data.isDeleted) {
                   setErrorText(['当該レースの結果は、他のユーザーによって削除されています。']);
