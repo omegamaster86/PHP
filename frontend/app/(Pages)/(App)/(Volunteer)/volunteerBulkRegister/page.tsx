@@ -838,7 +838,8 @@ export default function VolunteerBulkRegister() {
 
   //読み込むボタン押下時 20240228
   const sendCsvData = async () => {
-    const specifiedHeader = "ユーザーID,氏名,生年月日,性別,居住地（国）,居住地（都道府県）,メールアドレス,電話番号,服のサイズ,PR1,PR2,PR3,保有資格1,保有資格2,保有資格3,保有資格4,保有資格5,言語1,言語1語学力,言語2,言語2語学力,言語3,言語3語学力,日曜日,月曜日,火曜日,水曜日,木曜日,金曜日,土曜日,早朝,午前,午後,夜"; // 指定のヘッダー文字列
+    const specifiedHeader =
+      'ユーザーID,氏名,生年月日,性別,居住地（国）,居住地（都道府県）,メールアドレス,電話番号,服のサイズ,PR1,PR2,PR3,保有資格1,保有資格2,保有資格3,保有資格4,保有資格5,言語1,言語1語学力,言語2,言語2語学力,言語3,言語3語学力,日曜日,月曜日,火曜日,水曜日,木曜日,金曜日,土曜日,早朝,午前,午後,夜'; // 指定のヘッダー文字列
     const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
     const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
 
@@ -850,7 +851,7 @@ export default function VolunteerBulkRegister() {
           // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
           return x.length > 0 && x.some((y) => y.length > 0);
         })
-        .slice(isHeaderMatch? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
+        .slice(isHeaderMatch ? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
         .map((row, index) => getJsonRow(row, index)),
     ).then((results) => {
       array = results as CsvData[];
