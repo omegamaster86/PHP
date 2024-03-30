@@ -52,7 +52,7 @@ export default function TournamentResultRef() {
         const raceResponse = await axios.post('/getRaceDataRaceId', sendData);
         console.log(raceResponse);
 
-        setRaceInfo(raceResponse.data[0]);
+        setRaceInfo(raceResponse.data.result[0]);
 
         // 出漕結果記録情報の取得
         const raceResultRecords = await axios.get('http://localhost:3100/raceResultRecords'); //残件項目
