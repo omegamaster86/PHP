@@ -44,12 +44,12 @@ export default function TournamentResultRef() {
       try {
         // レース情報の取得
         // const raceResponse = await axios.get('http://localhost:3100/raceInfo');
-        const sendData ={
-          race_id: '1' //残件項目 20240329
-        }
+        const sendData = {
+          race_id: '1', //残件項目 20240329
+        };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const raceResponse = await axios.post('/getRaceDataRaceId',sendData);
+        const raceResponse = await axios.post('/getRaceDataRaceId', sendData);
         console.log(raceResponse);
 
         setRaceInfo(raceResponse.data[0]);
@@ -187,8 +187,9 @@ export default function TournamentResultRef() {
       </div>
 
       <div
-        className={`flex flex-col gap-[20px] border border-solid p-[20px] ${raceInfo.checked ? 'bg-gray-500' : ''
-          }`}
+        className={`flex flex-col gap-[20px] border border-solid p-[20px] ${
+          raceInfo.checked ? 'bg-gray-500' : ''
+        }`}
       >
         {/* レース結果情報2 */}
         <Label label='レース結果情報2' />
@@ -200,7 +201,7 @@ export default function TournamentResultRef() {
                 value={'raceResultDeleted'}
                 checked={raceInfo.checked}
                 readonly
-                onChange={() => { }}
+                onChange={() => {}}
               />
               <p className='text-systemErrorText'>このレース結果情報を削除する</p>
             </div>
@@ -406,7 +407,7 @@ export default function TournamentResultRef() {
                             value={''}
                             readonly
                             checked={false}
-                            onChange={() => { }}
+                            onChange={() => {}}
                           />
                         </div>
                       </CustomTd>
@@ -446,8 +447,10 @@ export default function TournamentResultRef() {
             onClick={async () => {
               try {
                 // 削除済かどうかのチェック
-                const response = await axios.get('http://localhost:3100/checkRaceResultRecordDeleted',); //残件項目
-                
+                const response = await axios.get(
+                  'http://localhost:3100/checkRaceResultRecordDeleted',
+                ); //残件項目
+
                 const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
 

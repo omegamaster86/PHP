@@ -1480,8 +1480,8 @@ export default function TournamentResult() {
         // TODO: 検索処理に置き換え
         // const response = await axios.get('http://localhost:3100/raceInfo?id=1');
         const sendData = {
-          race_id: '1' //残件項目 20240329
-        }
+          race_id: '1', //残件項目 20240329
+        };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.post('/getRaceDataRaceId', sendData);
@@ -1511,8 +1511,8 @@ export default function TournamentResult() {
         // レース情報の取得
         // const response = await axios.get('http://localhost:3100/raceInfo?id=' + raceId);
         const sendData = {
-          race_id: '1' //残件項目 20240329
-        }
+          race_id: '1', //残件項目 20240329
+        };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.post('/getRaceDataRaceId', sendData);
@@ -1554,8 +1554,8 @@ export default function TournamentResult() {
         // レース情報の取得
         // const response = await axios.get('http://localhost:3100/raceInfo?id=' + raceInfo?.race_id);
         const sendData = {
-          race_id: '1' //残件項目 20240329
-        }
+          race_id: '1', //残件項目 20240329
+        };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.post('/getRaceDataRaceId', sendData);
@@ -1616,7 +1616,7 @@ export default function TournamentResult() {
             }
           }, []);
         }
-      } catch (error: any) { }
+      } catch (error: any) {}
     };
     fetchRaceInfo();
   }, [raceInfo?.race_id]);
@@ -1950,7 +1950,7 @@ export default function TournamentResult() {
                   id={'deleteFlg' + index}
                   value='deleteFlg'
                   checked={item.deleteFlg || false}
-                  onChange={() => { }}
+                  onChange={() => {}}
                 />
                 <p className='text-systemErrorText'>このレース結果情報を削除する</p>
               </div>
@@ -2590,7 +2590,6 @@ export default function TournamentResult() {
             } else {
               router.push('/tournamentResultManagement');
             }
-
           }}
           className='w-[170px]'
         >
