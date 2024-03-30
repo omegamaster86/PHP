@@ -435,219 +435,263 @@ export default function VolunteerBulkRegister() {
     // 任意項目は入力が空の場合、エラーとしない。
     // 空ではない場合、バリデーションを実行し、エラーがある場合はエラーとする。
 
-    return {
-      id: index,
-      checked: (await handleResult(row)) === '登録可能データ' ? true : false,
-      result: await handleResult(row),
-      // 必須項目
-      userId: {
-        value: row[0],
-        isError: validateRequired(row[0]) ? true : validateNumber(row[0], 7),
-      },
-      // 必須項目
-      volunteerName: {
-        value: row[1],
-        isError: validateRequired(row[1]) ? true : validateVolunteerName(row[1]),
-      },
-      // 必須項目
-      dateOfBirth: {
-        value: row[2],
-        isError: validateRequired(row[2]) ? true : validateYmdFormat(row[2]),
-      },
-      // 必須項目
-      sexId: {
-        key: row[3],
-        value: sex.find((item) => item.id === Number(row[3]))?.name || row[3],
-        isError: validateRequired(row[3])
-          ? true
-          : validateNumber(row[3], 2) ||
-            sex.filter((item) => item.id === Number(row[3])).length !== 1,
-      },
-      // 必須項目
-      residenceCountryId: {
-        key: row[4],
-        value: country.find((item) => item.id === Number(row[4]))?.name || row[4],
-        isError: validateRequired(row[4])
-          ? true
-          : validateNumber(row[4], 3) ||
-            country.filter((item) => item.id === Number(row[4])).length !== 1,
-      },
-      // 必須項目
-      residencePrefectureId: {
-        key: row[5],
-        value: prefecture.find((item) => item.id === Number(row[5]))?.name || row[5],
-        isError: validateCountryIsNotJapan(row[4])
-          ? false
-          : validateRequired(row[5])
+    const expectedColumnCount = 34; // 期待する列数
+    if (row.length !== expectedColumnCount) {
+      // resultは無効データとし、各項目は-とする
+      return {
+        id: index,
+        checked: false,
+        result: '無効データ',
+        userId: { value: '-', isError: true },
+        volunteerName: { value: '-', isError: true },
+        dateOfBirth: { value: '-', isError: true },
+        sexId: { key: '-', value: '-', isError: true },
+        residenceCountryId: { key: '-', value: '-', isError: true },
+        residencePrefectureId: { key: '-', value: '-', isError: true },
+        mailaddress: { value: '-', isError: true },
+        telephoneNumber: { value: '-', isError: true },
+        clothesSizeId: { key: '-', value: '-', isError: true },
+        disTypeId1: { key: '-', value: '-', isError: true },
+        disTypeId2: { key: '-', value: '-', isError: true },
+        disTypeId3: { key: '-', value: '-', isError: true },
+        qualId1: { key: '-', value: '-', isError: true },
+        qualId2: { key: '-', value: '-', isError: true },
+        qualId3: { key: '-', value: '-', isError: true },
+        qualId4: { key: '-', value: '-', isError: true },
+        qualId5: { key: '-', value: '-', isError: true },
+        langId1: { key: '-', value: '-', isError: true },
+        langProId1: { key: '-', value: '-', isError: true },
+        langId2: { key: '-', value: '-', isError: true },
+        langProId2: { key: '-', value: '-', isError: true },
+        langId3: { key: '-', value: '-', isError: true },
+        langProId3: { key: '-', value: '-', isError: true },
+        dayOfWeek1: { value: '-', isError: true },
+        dayOfWeek2: { value: '-', isError: true },
+        dayOfWeek3: { value: '-', isError: true },
+        dayOfWeek4: { value: '-', isError: true },
+        dayOfWeek5: { value: '-', isError: true },
+        dayOfWeek6: { value: '-', isError: true },
+        dayOfWeek7: { value: '-', isError: true },
+        timeZone1: { value: '-', isError: true },
+        timeZone2: { value: '-', isError: true },
+        timeZone3: { value: '-', isError: true },
+        timeZone4: { value: '-', isError: true },
+      };
+    } else {
+      return {
+        id: index,
+        checked: (await handleResult(row)) === '登録可能データ' ? true : false,
+        result: await handleResult(row),
+        // 必須項目
+        userId: {
+          value: row[0],
+          isError: validateRequired(row[0]) ? true : validateNumber(row[0], 7),
+        },
+        // 必須項目
+        volunteerName: {
+          value: row[1],
+          isError: validateRequired(row[1]) ? true : validateVolunteerName(row[1]),
+        },
+        // 必須項目
+        dateOfBirth: {
+          value: row[2],
+          isError: validateRequired(row[2]) ? true : validateYmdFormat(row[2]),
+        },
+        // 必須項目
+        sexId: {
+          key: row[3],
+          value: sex.find((item) => item.id === Number(row[3]))?.name || row[3],
+          isError: validateRequired(row[3])
             ? true
-            : validateNumber(row[5], 2) ||
-              prefecture.filter((item) => item.id === Number(row[5])).length !== 1,
-      },
-      mailaddress: {
-        value: row[6],
-        isError: !validateRequired(row[6]) && validateEmailFormat(row[6]),
-      },
-      telephoneNumber: {
-        value: row[7],
-        isError: !validateRequired(row[7]) && validateNumber(row[7], 15),
-      },
-      // 必須項目
-      clothesSizeId: {
-        key: row[8],
-        value: clothesSize.find((item) => item.id === Number(row[8]))?.name || row[8],
-        isError: validateRequired(row[8])
-          ? true
-          : validateNumber(row[8], 1) ||
-            clothesSize.filter((item) => item.id === Number(row[8])).length !== 1,
-      },
-      disTypeId1: {
-        key: row[9],
-        value: row[9] === '1' ? '◯' : '',
-        isError: !validateRequired(row[9]) && validateZeroOrOne(row[9]),
-      },
-      disTypeId2: {
-        key: row[10],
-        value: row[10] === '1' ? '◯' : '',
-        isError: !validateRequired(row[10]) && validateZeroOrOne(row[10]),
-      },
-      disTypeId3: {
-        key: row[11],
-        value: row[11] === '1' ? '◯' : '',
-        isError: !validateRequired(row[11]) && validateZeroOrOne(row[11]),
-      },
-      qualId1: {
-        key: row[12],
-        value: qualHold.find((item) => item.id === Number(row[12]))?.name || row[12],
-        isError:
-          !validateRequired(row[12]) &&
-          (validateNumber(row[12], 3) ||
-            qualHold.filter((item) => item.id === Number(row[12])).length !== 1),
-      },
-      qualId2: {
-        key: row[13],
-        value: qualHold.find((item) => item.id === Number(row[13]))?.name || row[13],
-        isError:
-          !validateRequired(row[13]) &&
-          (validateNumber(row[13], 3) ||
-            qualHold.filter((item) => item.id === Number(row[13])).length !== 1),
-      },
-      qualId3: {
-        key: row[14],
-        value: qualHold.find((item) => item.id === Number(row[14]))?.name || row[14],
-        isError:
-          !validateRequired(row[14]) &&
-          (validateNumber(row[14], 3) ||
-            qualHold.filter((item) => item.id === Number(row[14])).length !== 1),
-      },
-      qualId4: {
-        key: row[15],
-        value: qualHold.find((item) => item.id === Number(row[15]))?.name,
-        isError:
-          !validateRequired(row[15]) &&
-          (validateNumber(row[15], 3) ||
-            qualHold.filter((item) => item.id === Number(row[15])).length !== 1),
-      },
-      qualId5: {
-        key: row[16],
-        value: qualHold.find((item) => item.id === Number(row[16]))?.name,
-        isError:
-          !validateRequired(row[16]) &&
-          (validateNumber(row[16], 3) ||
-            qualHold.filter((item) => item.id === Number(row[16])).length !== 1),
-      },
-      langId1: {
-        key: row[17],
-        value: language.find((item) => item.id === Number(row[17]))?.name,
-        isError:
-          !validateRequired(row[17]) &&
-          (validateNumber(row[17], 3) ||
-            language.filter((item) => item.id === Number(row[17])).length !== 1),
-      },
-      langProId1: {
-        key: row[18],
-        value: languageLevel.find((item) => item.id === Number(row[18]))?.name,
-        isError:
-          !validateRequired(row[18]) &&
-          (validateNumber(row[18], 3) ||
-            languageLevel.filter((item) => item.id === Number(row[18])).length !== 1),
-      },
-      langId2: {
-        key: row[19],
-        value: language.find((item) => item.id === Number(row[19]))?.name,
-        isError:
-          !validateRequired(row[19]) &&
-          (validateNumber(row[19], 3) ||
-            language.filter((item) => item.id === Number(row[19])).length !== 1),
-      },
-      langProId2: {
-        key: row[20],
-        value: languageLevel.find((item) => item.id === Number(row[20]))?.name,
-        isError:
-          !validateRequired(row[20]) &&
-          (validateNumber(row[20], 3) ||
-            languageLevel.filter((item) => item.id === Number(row[20])).length !== 1),
-      },
-      langId3: {
-        key: row[21],
-        value: language.find((item) => item.id === Number(row[21]))?.name,
-        isError:
-          !validateRequired(row[21]) &&
-          (validateNumber(row[21], 3) ||
-            language.filter((item) => item.id === Number(row[21])).length !== 1),
-      },
-      langProId3: {
-        key: row[22],
-        value: languageLevel.find((item) => item.id === Number(row[22]))?.name,
-        isError:
-          !validateRequired(row[22]) &&
-          (validateNumber(row[22], 3) ||
-            languageLevel.filter((item) => item.id === Number(row[22])).length !== 1),
-      },
-      dayOfWeek1: {
-        value: row[23] === '1' ? '◯' : '',
-        isError: !validateRequired(row[23]) && validateZeroOrOne(row[23]),
-      },
-      dayOfWeek2: {
-        value: row[24] === '1' ? '◯' : '',
-        isError: !validateRequired(row[24]) && validateZeroOrOne(row[24]),
-      },
-      dayOfWeek3: {
-        value: row[25] === '1' ? '◯' : '',
-        isError: !validateRequired(row[25]) && validateZeroOrOne(row[25]),
-      },
-      dayOfWeek4: {
-        value: row[26] === '1' ? '◯' : '',
-        isError: !validateRequired(row[26]) && validateZeroOrOne(row[26]),
-      },
-      dayOfWeek5: {
-        value: row[27] === '1' ? '◯' : '',
-        isError: !validateRequired(row[27]) && validateZeroOrOne(row[27]),
-      },
-      dayOfWeek6: {
-        value: row[28] === '1' ? '◯' : '',
-        isError: !validateRequired(row[28]) && validateZeroOrOne(row[28]),
-      },
-      dayOfWeek7: {
-        value: row[29] === '1' ? '◯' : '',
-        isError: !validateRequired(row[29]) && validateZeroOrOne(row[29]),
-      },
-      timeZone1: {
-        value: row[30] === '1' ? '◯' : '',
-        isError: !validateRequired(row[30]) && validateZeroOrOne(row[30]),
-      },
-      timeZone2: {
-        value: row[31] === '1' ? '◯' : '',
-        isError: !validateRequired(row[31]) && validateZeroOrOne(row[31]),
-      },
-      timeZone3: {
-        value: row[32] === '1' ? '◯' : '',
-        isError: !validateRequired(row[32]) && validateZeroOrOne(row[32]),
-      },
-      timeZone4: {
-        value: row[33] === '1' ? '◯' : '',
-        isError: !validateRequired(row[33]) && validateZeroOrOne(row[33]),
-      },
-    };
+            : validateNumber(row[3], 2) ||
+              sex.filter((item) => item.id === Number(row[3])).length !== 1,
+        },
+        // 必須項目
+        residenceCountryId: {
+          key: row[4],
+          value: country.find((item) => item.id === Number(row[4]))?.name || row[4],
+          isError: validateRequired(row[4])
+            ? true
+            : validateNumber(row[4], 3) ||
+              country.filter((item) => item.id === Number(row[4])).length !== 1,
+        },
+        // 必須項目
+        residencePrefectureId: {
+          key: row[5],
+          value: prefecture.find((item) => item.id === Number(row[5]))?.name || row[5],
+          isError: validateCountryIsNotJapan(row[4])
+            ? false
+            : validateRequired(row[5])
+              ? true
+              : validateNumber(row[5], 2) ||
+                prefecture.filter((item) => item.id === Number(row[5])).length !== 1,
+        },
+        mailaddress: {
+          value: row[6],
+          isError: !validateRequired(row[6]) && validateEmailFormat(row[6]),
+        },
+        telephoneNumber: {
+          value: row[7],
+          isError: !validateRequired(row[7]) && validateNumber(row[7], 15),
+        },
+        // 必須項目
+        clothesSizeId: {
+          key: row[8],
+          value: clothesSize.find((item) => item.id === Number(row[8]))?.name || row[8],
+          isError: validateRequired(row[8])
+            ? true
+            : validateNumber(row[8], 1) ||
+              clothesSize.filter((item) => item.id === Number(row[8])).length !== 1,
+        },
+        disTypeId1: {
+          key: row[9],
+          value: row[9] === '1' ? '◯' : '',
+          isError: !validateRequired(row[9]) && validateZeroOrOne(row[9]),
+        },
+        disTypeId2: {
+          key: row[10],
+          value: row[10] === '1' ? '◯' : '',
+          isError: !validateRequired(row[10]) && validateZeroOrOne(row[10]),
+        },
+        disTypeId3: {
+          key: row[11],
+          value: row[11] === '1' ? '◯' : '',
+          isError: !validateRequired(row[11]) && validateZeroOrOne(row[11]),
+        },
+        qualId1: {
+          key: row[12],
+          value: qualHold.find((item) => item.id === Number(row[12]))?.name || row[12],
+          isError:
+            !validateRequired(row[12]) &&
+            (validateNumber(row[12], 3) ||
+              qualHold.filter((item) => item.id === Number(row[12])).length !== 1),
+        },
+        qualId2: {
+          key: row[13],
+          value: qualHold.find((item) => item.id === Number(row[13]))?.name || row[13],
+          isError:
+            !validateRequired(row[13]) &&
+            (validateNumber(row[13], 3) ||
+              qualHold.filter((item) => item.id === Number(row[13])).length !== 1),
+        },
+        qualId3: {
+          key: row[14],
+          value: qualHold.find((item) => item.id === Number(row[14]))?.name || row[14],
+          isError:
+            !validateRequired(row[14]) &&
+            (validateNumber(row[14], 3) ||
+              qualHold.filter((item) => item.id === Number(row[14])).length !== 1),
+        },
+        qualId4: {
+          key: row[15],
+          value: qualHold.find((item) => item.id === Number(row[15]))?.name,
+          isError:
+            !validateRequired(row[15]) &&
+            (validateNumber(row[15], 3) ||
+              qualHold.filter((item) => item.id === Number(row[15])).length !== 1),
+        },
+        qualId5: {
+          key: row[16],
+          value: qualHold.find((item) => item.id === Number(row[16]))?.name,
+          isError:
+            !validateRequired(row[16]) &&
+            (validateNumber(row[16], 3) ||
+              qualHold.filter((item) => item.id === Number(row[16])).length !== 1),
+        },
+        langId1: {
+          key: row[17],
+          value: language.find((item) => item.id === Number(row[17]))?.name,
+          isError:
+            !validateRequired(row[17]) &&
+            (validateNumber(row[17], 3) ||
+              language.filter((item) => item.id === Number(row[17])).length !== 1),
+        },
+        langProId1: {
+          key: row[18],
+          value: languageLevel.find((item) => item.id === Number(row[18]))?.name,
+          isError:
+            !validateRequired(row[18]) &&
+            (validateNumber(row[18], 3) ||
+              languageLevel.filter((item) => item.id === Number(row[18])).length !== 1),
+        },
+        langId2: {
+          key: row[19],
+          value: language.find((item) => item.id === Number(row[19]))?.name,
+          isError:
+            !validateRequired(row[19]) &&
+            (validateNumber(row[19], 3) ||
+              language.filter((item) => item.id === Number(row[19])).length !== 1),
+        },
+        langProId2: {
+          key: row[20],
+          value: languageLevel.find((item) => item.id === Number(row[20]))?.name,
+          isError:
+            !validateRequired(row[20]) &&
+            (validateNumber(row[20], 3) ||
+              languageLevel.filter((item) => item.id === Number(row[20])).length !== 1),
+        },
+        langId3: {
+          key: row[21],
+          value: language.find((item) => item.id === Number(row[21]))?.name,
+          isError:
+            !validateRequired(row[21]) &&
+            (validateNumber(row[21], 3) ||
+              language.filter((item) => item.id === Number(row[21])).length !== 1),
+        },
+        langProId3: {
+          key: row[22],
+          value: languageLevel.find((item) => item.id === Number(row[22]))?.name,
+          isError:
+            !validateRequired(row[22]) &&
+            (validateNumber(row[22], 3) ||
+              languageLevel.filter((item) => item.id === Number(row[22])).length !== 1),
+        },
+        dayOfWeek1: {
+          value: row[23] === '1' ? '◯' : '',
+          isError: !validateRequired(row[23]) && validateZeroOrOne(row[23]),
+        },
+        dayOfWeek2: {
+          value: row[24] === '1' ? '◯' : '',
+          isError: !validateRequired(row[24]) && validateZeroOrOne(row[24]),
+        },
+        dayOfWeek3: {
+          value: row[25] === '1' ? '◯' : '',
+          isError: !validateRequired(row[25]) && validateZeroOrOne(row[25]),
+        },
+        dayOfWeek4: {
+          value: row[26] === '1' ? '◯' : '',
+          isError: !validateRequired(row[26]) && validateZeroOrOne(row[26]),
+        },
+        dayOfWeek5: {
+          value: row[27] === '1' ? '◯' : '',
+          isError: !validateRequired(row[27]) && validateZeroOrOne(row[27]),
+        },
+        dayOfWeek6: {
+          value: row[28] === '1' ? '◯' : '',
+          isError: !validateRequired(row[28]) && validateZeroOrOne(row[28]),
+        },
+        dayOfWeek7: {
+          value: row[29] === '1' ? '◯' : '',
+          isError: !validateRequired(row[29]) && validateZeroOrOne(row[29]),
+        },
+        timeZone1: {
+          value: row[30] === '1' ? '◯' : '',
+          isError: !validateRequired(row[30]) && validateZeroOrOne(row[30]),
+        },
+        timeZone2: {
+          value: row[31] === '1' ? '◯' : '',
+          isError: !validateRequired(row[31]) && validateZeroOrOne(row[31]),
+        },
+        timeZone3: {
+          value: row[32] === '1' ? '◯' : '',
+          isError: !validateRequired(row[32]) && validateZeroOrOne(row[32]),
+        },
+        timeZone4: {
+          value: row[33] === '1' ? '◯' : '',
+          isError: !validateRequired(row[33]) && validateZeroOrOne(row[33]),
+        },
+      };
+    }
   };
 
   /**
@@ -794,14 +838,19 @@ export default function VolunteerBulkRegister() {
 
   //読み込むボタン押下時 20240228
   const sendCsvData = async () => {
+    const specifiedHeader = "ユーザーID,氏名,生年月日,性別,居住地（国）,居住地（都道府県）,メールアドレス,電話番号,服のサイズ,PR1,PR2,PR3,保有資格1,保有資格2,保有資格3,保有資格4,保有資格5,言語1,言語1語学力,言語2,言語2語学力,言語3,言語3語学力,日曜日,月曜日,火曜日,水曜日,木曜日,金曜日,土曜日,早朝,午前,午後,夜"; // 指定のヘッダー文字列
+    const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
+    const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
+
     var array = Array() as CsvData[];
     Promise.all(
       // EOF（末尾の改行）対策でフィルターを行う
       csvFileData.content
         ?.filter(function (x) {
-          return x.length > 1;
+          // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
+          return x.length > 0 && x.some((y) => y.length > 0);
         })
-        .slice(1)
+        .slice(isHeaderMatch? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
         .map((row, index) => getJsonRow(row, index)),
     ).then((results) => {
       array = results as CsvData[];
@@ -861,7 +910,7 @@ export default function VolunteerBulkRegister() {
       { label: '居住地（都道府県）', key: 'residencePrefectureId' },
       { label: 'メールアドレス', key: 'mailaddress' },
       { label: '電話番号', key: 'telephoneNumber' },
-      { label: '服サイズ', key: 'clothesSizeId' },
+      { label: '服のサイズ', key: 'clothesSizeId' },
       { label: 'PR1', key: 'disTypeId1' },
       { label: 'PR2', key: 'disTypeId2' },
       { label: 'PR3', key: 'disTypeId3' },
@@ -871,11 +920,11 @@ export default function VolunteerBulkRegister() {
       { label: '保有資格4', key: 'qualId4' },
       { label: '保有資格5', key: 'qualId5' },
       { label: '言語1', key: 'langId1' },
-      { label: '言語レベル1', key: 'langProId1' },
+      { label: '言語1語学力', key: 'langProId1' },
       { label: '言語2', key: 'langId2' },
-      { label: '言語レベル2', key: 'langProId2' },
+      { label: '言語2語学力', key: 'langProId2' },
       { label: '言語3', key: 'langId3' },
-      { label: '言語レベル3', key: 'langProId3' },
+      { label: '言語3語学力', key: 'langProId3' },
       { label: '日曜日', key: 'dayOfWeek1' },
       { label: '月曜日', key: 'dayOfWeek2' },
       { label: '火曜日', key: 'dayOfWeek3' },

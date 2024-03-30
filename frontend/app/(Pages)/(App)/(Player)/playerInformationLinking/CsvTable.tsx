@@ -88,7 +88,7 @@ const CsvTable = ({
         </CustomThead>
         <CustomTbody>
           {content.map((row, rowIndex) => (
-            <CustomTr index={rowIndex} key={0}>
+            <CustomTr index={rowIndex} key={rowIndex}>
               <CustomTd align='center'>
                 <CustomCheckbox
                   id={`delete-${rowIndex}`}
