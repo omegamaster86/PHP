@@ -139,15 +139,15 @@ interface Tournament {
 
 // レーステーブル
 interface RaceTable {
-  raceId: string; // レースID
-  raceNumber: number; // レースNo
-  entrysystemRaceId: number; // エントリーレースID
-  tournId: number; // 大会ID
-  raceName: string; // レース名
-  raceType: number; // レース区分
-  eventId: number; // 種目ID
-  eventName: string; // 種目名
-  byGroup: string; // 組別
+  race_id: string; // レースID
+  race_number: number; // レースNo
+  entrysystem_race_id: number; // エントリーレースID
+  tourn_id: number; // 大会ID
+  race_name: string; // レース名
+  race_class_name: number; // レース区分
+  event_id: number; // 種目ID
+  event_name: string; // 種目名
+  by_group: string; // 組別
   range: number; // 距離
   startDateTime: string; // 発艇日時
   windSpeedGoalPoint: number; // ゴール地点風速
