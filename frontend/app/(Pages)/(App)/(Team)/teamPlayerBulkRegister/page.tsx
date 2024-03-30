@@ -145,20 +145,19 @@ export default function TeamPlayerBulkRegister() {
     isOrgSelected: orgSelected !== '',
   } as CsvDownloadProps;
 
-    // 所属団体名の入力値を管理する関数 20240307
-    const handleFormInputChange = (name: string, value: string) => {
-      setTargetOrgData((prevFormData) => ({
-        ...prevFormData,
-        [name]: value,
-      }));
-    };
-  
-    //所属団体名の情報を受け取るパラメータ 20240307
-    const [targetOrgData, setTargetOrgData] = useState({
-      targetOrgId: '',
-      targetOrgName: '',
-    });
-  
+  // 所属団体名の入力値を管理する関数 20240307
+  const handleFormInputChange = (name: string, value: string) => {
+    setTargetOrgData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+
+  //所属団体名の情報を受け取るパラメータ 20240307
+  const [targetOrgData, setTargetOrgData] = useState({
+    targetOrgId: '',
+    targetOrgName: '',
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -260,9 +259,8 @@ export default function TeamPlayerBulkRegister() {
         birthPlace: row[7],
         residence: row[8],
       };
+    }
   };
-};
-
 
   //読み込むボタン押下時 20240302
   const sendCsvData = async (row: any[]) => {
@@ -364,18 +362,19 @@ export default function TeamPlayerBulkRegister() {
                       return;
                     }
                   }
-                  
-                  const specifiedHeader = "既存選手ID,新選手ID,ユーザーID,メールアドレス,選手名"; // 指定のヘッダー文字列
+
+                  const specifiedHeader = '既存選手ID,新選手ID,ユーザーID,メールアドレス,選手名'; // 指定のヘッダー文字列
                   const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
                   const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
 
                   Promise.all(
                     csvFileData.content
                       ?.filter(function (x) {
-                      // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
-                      return x.length > 0 && x.some((y) => y.length > 0);
-                    }).slice(isHeaderMatch? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
-                    .map((row, index) => getJsonRow(row, index)),
+                        // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
+                        return x.length > 0 && x.some((y) => y.length > 0);
+                      })
+                      .slice(isHeaderMatch ? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
+                      .map((row, index) => getJsonRow(row, index)),
                   ).then((results) => {
                     var resList = results as any;
                     resList.forEach((element: any) => {

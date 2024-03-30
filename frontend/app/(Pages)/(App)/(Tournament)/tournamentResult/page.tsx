@@ -74,6 +74,12 @@ export default function TournamentResult() {
   const tournId = param.get('tournId'); // 大会ID
   const eventId = param.get('eventId'); // 種目ID
   const prevMode = param.get('prevMode'); // 遷移元画面のモード
+  console.log(param);
+  console.log(mode);
+  console.log(raceId);
+  console.log(tournId);
+  console.log(eventId);
+  console.log(prevMode);
   switch (mode) {
     case 'create':
       break;
@@ -1479,12 +1485,13 @@ export default function TournamentResult() {
         // レース情報の取得
         // TODO: 検索処理に置き換え
         // const response = await axios.get('http://localhost:3100/raceInfo?id=1');
-        const sendData ={
-          race_id: '1' //残件項目 20240329
-        }
+        const sendData = {
+          tourn_id: tournId,
+          event_id: eventId,
+        };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.post('/getRaceDataRaceId',sendData);
+        const response = await axios.post('/getRaceDataFromTournIdAndEventId', sendData);
         console.log(response);
         const data = response.data.result;
         if (data.length === 0) {
@@ -1499,7 +1506,9 @@ export default function TournamentResult() {
         setErrorText([error.message]);
       }
     };
-    if (mode === 'create') fetchRaceInfo();
+    if (mode == 'create') {
+      fetchRaceInfo();
+    }
 
     /**
      * 更新モード
@@ -1508,35 +1517,38 @@ export default function TournamentResult() {
      */
     const fetchRaceInfoForUpdate = async () => {
       try {
+        console.log('aaaaaaaaaaaaa');
         // レース情報の取得
         // const response = await axios.get('http://localhost:3100/raceInfo?id=' + raceId);
-        const sendData ={
-          race_id: '1' //残件項目 20240329
-        }
+        const sendData = {
+          race_id: raceId,
+        };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.post('/getRaceDataRaceId',sendData);
-        console.log(response); 
-        if (response.data.length === 0) {
+        const response = await axios.post('/getRaceDataRaceId', sendData);
+        console.log(response.data.result);
+        // window.alert("hoge");
+        const data = response.data.result;
+        if (data.length === 0) {
           setErrorText(['レース情報が取得できませんでした。']);
           setRaceInfo({} as RaceTable);
           scrollTo(0, 0);
         } else {
-          setRaceInfo(response.data[0]);
+          setRaceInfo(data[0]);
         }
 
         // 出漕結果記録情報の取得
-        const response2 = await axios.get('http://localhost:3100/raceResultRecord'); //残件項目
-        setRaceResultRecordResponse(response2.data);
+        // const response2 = await axios.get('http://localhost:3100/raceResultRecord');
+        setRaceResultRecordResponse(data);
 
         // レース結果情報の取得
-        const response3 = await axios.get('http://localhost:3100/raceResultRecords'); //残件項目
+        // const response3 = await axios.get('http://localhost:3100/raceResultRecords');
 
         // 10件以上は表示できないため、エラーメッセージを表示する
-        if (response3.data.length > 10) {
+        if (data.length > 10) {
           setErrorText(['1つのレースに登録できるクルーは、10クルーまでです。']);
           // 設定するのは10件まで
-          setRaceResultRecords(response3.data.slice(0, 10));
+          setRaceResultRecords(data.slice(0, 10));
           scrollTo(0, 0);
         }
       } catch (error: any) {
@@ -1544,7 +1556,10 @@ export default function TournamentResult() {
         scrollTo(0, 0);
       }
     };
-    if (mode === 'update') fetchRaceInfoForUpdate();
+    console.log('====================');
+    if (mode == 'update') {
+      fetchRaceInfoForUpdate();
+    }
   }, []);
 
   // レース情報の取得
@@ -1553,19 +1568,20 @@ export default function TournamentResult() {
       try {
         // レース情報の取得
         // const response = await axios.get('http://localhost:3100/raceInfo?id=' + raceInfo?.race_id);
-        const sendData ={
-          race_id: '1' //残件項目 20240329
-        }
+        const sendData = {
+          race_id: raceId,
+        };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.post('/getRaceDataRaceId',sendData);
-        console.log(response); 
+        const response = await axios.post('/getRaceDataRaceId', sendData);
+        console.log(response.data.result);
 
+        const data = response.data.result;
         // 遷移元からイベントIDが取得できる時だけ、遷移元からのイベントIDをセットする。セットされていない時は、レース情報からイベントIDをセットする。
 
         setRaceInfo({
-          ...response.data[0],
-          eventId: eventId || response.data[0].eventId,
+          ...data[0],
+          eventId: eventId || data[0].eventId,
         });
 
         // 種目マスタに紐づく選手の人数 (バックエンドからの取得方法不明のためDummy)
@@ -1616,7 +1632,7 @@ export default function TournamentResult() {
             }
           }, []);
         }
-      } catch (error: any) { }
+      } catch (error: any) {}
     };
     fetchRaceInfo();
   }, [raceInfo?.race_id]);
@@ -1950,7 +1966,7 @@ export default function TournamentResult() {
                   id={'deleteFlg' + index}
                   value='deleteFlg'
                   checked={item.deleteFlg || false}
-                  onChange={() => { }}
+                  onChange={() => {}}
                 />
                 <p className='text-systemErrorText'>このレース結果情報を削除する</p>
               </div>
@@ -2585,11 +2601,15 @@ export default function TournamentResult() {
         <CustomButton
           buttonType='secondary'
           onClick={() => {
-            router.back();
+            if (mode == 'comfirm') {
+              router.back();
+            } else {
+              router.push('/tournamentResultManagement');
+            }
           }}
           className='w-[170px]'
         >
-          戻る
+          {mode == 'confirm' ? '管理画面に戻る' : '戻る'}
         </CustomButton>
         <CustomButton
           buttonType='primary'
@@ -2603,6 +2623,7 @@ export default function TournamentResult() {
             const isAllPlayerChecked = raceResultRecords.some(
               (item) => item.crewPlayer?.every((player) => player.deleteFlg),
             );
+            console.log(isAllPlayerChecked);
             if (isAllPlayerChecked) {
               const isOK = confirm(
                 '全ての選手が削除対象となっている「レース結果情報」があります。当該「レース結果情報」は、削除されますがよろしいですか？',
@@ -2618,6 +2639,7 @@ export default function TournamentResult() {
             }
             // バリデーション
             const isValid = validateRaceResultRecords();
+            console.log(isValid);
             if (isValid) {
               if (mode === 'create') {
                 // 登録処理

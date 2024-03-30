@@ -127,8 +127,8 @@ export default function TournamentResultManagement() {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       const response = await axios.post('searchRaceData', searchCond);
-      console.log(response);
-      // setSearchResponse(response.data); //残件対応
+      console.log(response.data.result);
+      setSearchResponse(response.data.result);
 
       const height = response.data.length * 73 + 100 < 830 ? response.data.length * 73 + 100 : 830;
       setTableHeight('h-[' + height + 'px]');
