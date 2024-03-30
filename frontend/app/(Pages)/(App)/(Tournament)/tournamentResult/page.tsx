@@ -74,12 +74,11 @@ export default function TournamentResult() {
   const tournId = param.get('tournId'); // 大会ID
   const eventId = param.get('eventId'); // 種目ID
   const prevMode = param.get('prevMode'); // 遷移元画面のモード
-  console.log(param);
-  console.log(mode);
-  console.log(raceId);
-  console.log(tournId);
-  console.log(eventId);
-  console.log(prevMode);
+  // console.log(mode);
+  // console.log(raceId);
+  // console.log(tournId);
+  // console.log(eventId);
+  // console.log(prevMode);
   switch (mode) {
     case 'create':
       break;
@@ -1482,6 +1481,7 @@ export default function TournamentResult() {
      */
     const fetchRaceInfo = async () => {
       try {
+        console.log('====================');
         // レース情報の取得
         // TODO: 検索処理に置き換え
         // const response = await axios.get('http://localhost:3100/raceInfo?id=1');
@@ -1489,6 +1489,7 @@ export default function TournamentResult() {
           tourn_id: tournId,
           event_id: eventId,
         };
+        console.log(sendData);
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.post('/getRaceDataFromTournIdAndEventId', sendData);
@@ -1502,6 +1503,7 @@ export default function TournamentResult() {
         } else {
           setRaceInfo(data[0]);
         }
+        console.log('====================');
       } catch (error: any) {
         setErrorText([error.message]);
       }
@@ -1523,13 +1525,14 @@ export default function TournamentResult() {
         const sendData = {
           race_id: raceId,
         };
+        console.log(sendData);
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.post('/getRaceDataRaceId', sendData);
         console.log(response.data.result);
         // window.alert("hoge");
         const data = response.data.result;
-        if (data.length === 0) {
+        if (data.length == 0) {
           setErrorText(['レース情報が取得できませんでした。']);
           setRaceInfo({} as RaceTable);
           scrollTo(0, 0);
@@ -1551,12 +1554,12 @@ export default function TournamentResult() {
           setRaceResultRecords(data.slice(0, 10));
           scrollTo(0, 0);
         }
+        console.log('aaaaaaaaaaaaa');
       } catch (error: any) {
         setErrorText([error.message]);
         scrollTo(0, 0);
       }
     };
-    console.log('====================');
     if (mode == 'update') {
       fetchRaceInfoForUpdate();
     }
