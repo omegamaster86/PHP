@@ -397,4 +397,46 @@ class T_races extends Model
         $races = DB::select($sqlString,$values);
         return $races;
     }
+
+    //レース基本情報を取得
+    //レース結果編集画面用 登録モード
+    public function getBasicRaceInfoList($tourn_id,$event_id)
+    {
+        $races = DB::select("select 
+                            race.race_id
+                            ,race.race_name
+                            ,race.race_number
+                            ,race.event_id
+                            ,case
+                                when race.event_name is null then me.event_name
+                                else race.event_name
+                                end as event_name
+                            ,race.race_class_id
+                            ,case
+                                when race.race_class_name is null then mrc.race_class_name
+                                else race.race_class_name
+                                end as race_class_name
+                            ,race.by_group
+                            ,race.range
+                            ,race.start_date_time
+                            ,race.tourn_id
+                            from `t_races` race
+                            left join `m_events` me
+                            on race.event_id = me.event_id
+                            left join `m_race_class` mrc
+                            on race.race_class_id = mrc.race_class_id 
+                            where 1=1
+                            and race.delete_flag = 0
+                            and race.tourn_id = :tourn_id
+                            and race.event_id = :event_id"
+                        ,["tourn_id" => $tourn_id, "event_id" => $event_id]);
+        return $races;
+    }
+
+    //レース基本情報を取得
+    //レース結果編集画面用 更新モード
+    public function getBasicRaceInfo($race_id)
+    {
+        
+    }
 }
