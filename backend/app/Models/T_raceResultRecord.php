@@ -1158,4 +1158,54 @@ class T_raceResultRecord extends Model
                     and race_result_record_id = :race_result_record_id"
                     ,$values);
     }
+
+    //出漕時点情報を取得
+    //レース結果編集画面更新モード用
+    //レース結果参照・削除画面用
+    public function getRaceResultRecordOnRowingPoint($race_id)
+    {
+        $race_result_record = DB::select("select distinct
+                                        race_id
+                                        ,start_datetime
+                                        ,weather
+                                        ,wind_speed_2000m_point
+                                        ,wind_direction_2000m_point
+                                        ,wind_speed_1000m_point
+                                        ,wind_direction_1000m_point
+                                        from `t_race_result_record`
+                                        where 1=1
+                                        and race_id = :race_id"
+                                        ,["race_id" => $race_id]);
+        return $race_result_record;
+    }
+
+    //レース結果情報を取得
+    //レース結果編集画面更新モード用
+    //レース結果参照・削除画面用
+    public function getRaceResultRecordList($race_id)
+    {
+        $race_result_record_list = DB::select("select 
+                                                race_id
+                                                ,`org_id`
+                                                ,`org_name`
+                                                ,`crew_name`
+                                                ,`lane_number`
+                                                ,`rank`
+                                                ,`laptime_500m`
+                                                ,`laptime_1000m`
+                                                ,`laptime_1500m`
+                                                ,`laptime_2000m`
+                                                ,`final_time`
+                                                ,`race_result_notes`
+                                                ,`stroke_rat_500m`
+                                                ,`stroke_rat_1000m`
+                                                ,`stroke_rat_1500m`
+                                                ,`stroke_rat_2000m`
+                                                ,`stroke_rate_avg`
+                                                from `t_race_result_record` rrr
+                                                where 1=1
+                                                and race_id = :race_id"
+                                            ,["race_id" => $race_id]);
+        return $race_result_record_list;
+    }
 }

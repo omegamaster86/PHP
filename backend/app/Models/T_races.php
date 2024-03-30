@@ -399,11 +399,12 @@ class T_races extends Model
     }
 
     //レース基本情報を取得
-    //レース結果編集画面用 登録モード
+    //レース結果編集画面登録モード用
     public function getBasicRaceInfoList($tourn_id,$event_id)
     {
-        $races = DB::select("select 
-                            race.race_id
+        $races = DB::select("select
+                            row_number() over (order by race_id) as `id`
+                            ,race.race_id
                             ,race.race_name
                             ,race.race_number
                             ,race.event_id
@@ -431,12 +432,5 @@ class T_races extends Model
                             and race.event_id = :event_id"
                         ,["tourn_id" => $tourn_id, "event_id" => $event_id]);
         return $races;
-    }
-
-    //レース基本情報を取得
-    //レース結果編集画面用 更新モード
-    public function getBasicRaceInfo($race_id)
-    {
-        
     }
 }
