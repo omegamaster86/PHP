@@ -1487,7 +1487,7 @@ export default function TournamentResult() {
         // const response = await axios.get('http://localhost:3100/raceInfo?id=1');
         const sendData = {
           tourn_id: tournId,
-          event_id: eventId
+          event_id: eventId,
         };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
@@ -1517,11 +1517,11 @@ export default function TournamentResult() {
      */
     const fetchRaceInfoForUpdate = async () => {
       try {
-        console.log("aaaaaaaaaaaaa");
+        console.log('aaaaaaaaaaaaa');
         // レース情報の取得
         // const response = await axios.get('http://localhost:3100/raceInfo?id=' + raceId);
         const sendData = {
-          race_id: raceId
+          race_id: raceId,
         };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
@@ -1556,7 +1556,7 @@ export default function TournamentResult() {
         scrollTo(0, 0);
       }
     };
-    console.log("====================");
+    console.log('====================');
     if (mode == 'update') {
       fetchRaceInfoForUpdate();
     }
@@ -1569,13 +1569,13 @@ export default function TournamentResult() {
         // レース情報の取得
         // const response = await axios.get('http://localhost:3100/raceInfo?id=' + raceInfo?.race_id);
         const sendData = {
-          race_id: raceId
+          race_id: raceId,
         };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.post('/getRaceDataRaceId', sendData);
-        console.log(esponse.data.result);
-        
+        console.log(response.data.result);
+
         const data = response.data.result;
         // 遷移元からイベントIDが取得できる時だけ、遷移元からのイベントIDをセットする。セットされていない時は、レース情報からイベントIDをセットする。
 
