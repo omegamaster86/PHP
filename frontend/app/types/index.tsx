@@ -81,21 +81,29 @@ interface RaceResultRecordsResponse {
 }
 
 interface CrewPlayer {
-  id: number; // 選手ID
+  id?: number; // 選手ID
   playerPhoto: string; // 選手画像
   playerName: string; // 選手名
   jaraPlayerId: string; // JARA選手コード
   playerId: string; // 選手ID
   sexId: string;
-  height: number; // 身長
-  weight: number; // 体重
+  sex: string; // 性別
+  height?: number; // 身長
+  weight?: number; // 体重
   sheetName: string; // シート番号
-  sheetNameId: number; // シート番号
-  fiveHundredmHeartRate: number; // 500m
-  tenHundredmHeartRate: number; // 1000m
-  fifteenHundredmHeartRate: number; // 1500m
-  twentyHundredmHeartRate: number; // 2000m
-  heartRateAvg: number; // 平均
+  sheetNameId?: number; // シート番号
+  entrysystemRaceId: string; // エントリーシステムの団体ID
+  orgId1: string; // 団体ID1
+  orgName1: string; // 所属団体名1
+  orgId2: string; // 団体ID2
+  orgName2: string; // 所属団体名2
+  orgId3: string; // 団体ID3
+  orgName3: string; // 所属団体名3
+  fiveHundredmHeartRate?: number; // 500m
+  tenHundredmHeartRate?: number; // 1000m
+  fifteenHundredmHeartRate?: number; // 1500m
+  twentyHundredmHeartRate?: number; // 2000m
+  heartRateAvg?: number; // 平均
   attendance: string; // 立ち合い有無
   deleteFlg: boolean; // 削除フラグ
   addonLineFlg: boolean; // 追加行フラグ
@@ -131,15 +139,15 @@ interface Tournament {
 
 // レーステーブル
 interface RaceTable {
-  raceId: string; // レースID
-  raceNumber: number; // レースNo
-  entrysystemRaceId: number; // エントリーレースID
-  tournId: number; // 大会ID
-  raceName: string; // レース名
-  raceType: number; // レース区分
-  eventId: number; // 種目ID
-  eventName: string; // 種目名
-  byGroup: string; // 組別
+  race_id: string; // レースID
+  race_number: number; // レースNo
+  entrysystem_race_id: number; // エントリーレースID
+  tourn_id: number; // 大会ID
+  race_name: string; // レース名
+  race_class_name: number; // レース区分
+  event_id: number; // 種目ID
+  event_name: string; // 種目名
+  by_group: string; // 組別
   range: number; // 距離
   startDateTime: string; // 発艇日時
   windSpeedGoalPoint: number; // ゴール地点風速
@@ -359,22 +367,22 @@ interface Player {
 }
 
 // 大会レース結果入力画面
-interface CrewPlayer {
-  id: number; // 選手ID
-  playerPhoto: string; // 選手画像
-  playerName: string; // 選手名
-  jaraPlayerId: string; // JARA選手コード
-  playerId: string; // 選手ID
-  sexId: string; // 性別ID
-  sex: string; // 性別
-  entrysystemRaceId: string; // エントリーシステムの団体ID
-  orgId1: string; // 団体ID1
-  orgName1: string; // 所属団体名1
-  orgId2: string; // 団体ID2
-  orgName2: string; // 所属団体名2
-  orgId3: string; // 団体ID3
-  orgName3: string; // 所属団体名3
-}
+// interface CrewPlayer {
+//   id: number; // 選手ID
+//   playerPhoto: string; // 選手画像
+//   playerName: string; // 選手名
+//   jaraPlayerId: string; // JARA選手コード
+//   playerId: string; // 選手ID
+//   sexId: string; // 性別ID
+//   sex: string; // 性別
+//   entrysystemRaceId: string; // エントリーシステムの団体ID
+//   orgId1: string; // 団体ID1
+//   orgName1: string; // 所属団体名1
+//   orgId2: string; // 団体ID2
+//   orgName2: string; // 所属団体名2
+//   orgId3: string; // 団体ID3
+//   orgName3: string; // 所属団体名3
+// }
 
 // クルー
 interface CrewResponse {

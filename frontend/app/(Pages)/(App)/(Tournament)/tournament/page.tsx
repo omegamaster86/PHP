@@ -1071,7 +1071,7 @@ export default function Tournament() {
                   tournType.find((item) => item.id === Number(e))?.name || '',
                 );
               }}
-              className='rounded self-end w-[100px]'
+              className='rounded self-end w-[100px] mt-auto'
               readonly={mode === 'confirm'}
             />
           </div>

@@ -311,8 +311,8 @@ class T_races extends Model
                             where 1=1
                             and race.`delete_flag` = 0
                             and (eve.`delete_flag` = 0 or eve.`delete_flag` is null) 
-                            and race.race_id = :race_id"
-                            ,['race_id'=>$race_id]);
+                            and race.race_id = ?"
+                            ,[$race_id]);
         Log::debug($race);
         return $race;
     }
@@ -335,5 +335,35 @@ class T_races extends Model
         $sql_string = str_replace("#ReplaceConditionString#",$condition,$sql_string);
         $race_count = DB::select($sql_string,$values);
         return $race_count;
+    }
+
+    //レース情報を全取得
+    public function getAllRaces()
+    {
+        $races = DB::select('select
+                            race.`race_id`
+                            ,race.`race_number`
+                            ,race.`entrysystem_race_id`
+                            ,race.`tourn_id`
+                            ,race.`race_name`
+                            ,race.`event_id`
+                            ,case
+                                when race.`event_name` is null then eve.`event_name` 
+                                else race.`event_name`
+                                end as `event_name`
+                            ,race.`race_class_id`
+                            ,mrc.`race_class_name`
+                            ,race.`by_group`
+                            ,race.`range`
+                            ,race.`start_date_time`
+                            FROM `t_races` race
+                            left join `m_events` eve
+                            on race.`event_id` = eve.`event_id`
+                            left join `m_race_class` mrc
+                            on race.`race_class_id` = mrc.`race_class_id`
+                            where 1=1
+                            and race.`delete_flag` = 0
+                            and (eve.`delete_flag` = 0 or eve.`delete_flag` is null)');
+        return $races;
     }
 }
