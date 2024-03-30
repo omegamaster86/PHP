@@ -74,6 +74,12 @@ export default function TournamentResult() {
   const tournId = param.get('tournId'); // 大会ID
   const eventId = param.get('eventId'); // 種目ID
   const prevMode = param.get('prevMode'); // 遷移元画面のモード
+  console.log(param);
+  console.log(mode);
+  console.log(raceId);
+  console.log(tournId);
+  console.log(eventId);
+  console.log(prevMode);
   switch (mode) {
     case 'create':
       break;
