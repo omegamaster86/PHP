@@ -105,7 +105,7 @@ const CsvTable = ({
               console.log('row'),
               console.log(row),
               (
-                <CustomTr index={rowIndex} key={0}>
+                <CustomTr index={rowIndex} key={rowIndex}>
                   {/* 選択 */}
                   <CustomTd align='center'>
                     <CustomCheckbox
