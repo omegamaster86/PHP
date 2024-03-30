@@ -1479,12 +1479,12 @@ export default function TournamentResult() {
         // レース情報の取得
         // TODO: 検索処理に置き換え
         // const response = await axios.get('http://localhost:3100/raceInfo?id=1');
-        const sendData ={
-          race_id: '1' //残件項目 20240329
-        }
+        const sendData = {
+          race_id: '1', //残件項目 20240329
+        };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.post('/getRaceDataRaceId',sendData);
+        const response = await axios.post('/getRaceDataRaceId', sendData);
         console.log(response);
         const data = response.data.result;
         if (data.length === 0) {
@@ -1510,13 +1510,13 @@ export default function TournamentResult() {
       try {
         // レース情報の取得
         // const response = await axios.get('http://localhost:3100/raceInfo?id=' + raceId);
-        const sendData ={
-          race_id: '1' //残件項目 20240329
-        }
+        const sendData = {
+          race_id: '1', //残件項目 20240329
+        };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.post('/getRaceDataRaceId',sendData);
-        console.log(response); 
+        const response = await axios.post('/getRaceDataRaceId', sendData);
+        console.log(response);
         if (response.data.length === 0) {
           setErrorText(['レース情報が取得できませんでした。']);
           setRaceInfo({} as RaceTable);
@@ -1553,13 +1553,13 @@ export default function TournamentResult() {
       try {
         // レース情報の取得
         // const response = await axios.get('http://localhost:3100/raceInfo?id=' + raceInfo?.race_id);
-        const sendData ={
-          race_id: '1' //残件項目 20240329
-        }
+        const sendData = {
+          race_id: '1', //残件項目 20240329
+        };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.post('/getRaceDataRaceId',sendData);
-        console.log(response); 
+        const response = await axios.post('/getRaceDataRaceId', sendData);
+        console.log(response);
 
         // 遷移元からイベントIDが取得できる時だけ、遷移元からのイベントIDをセットする。セットされていない時は、レース情報からイベントIDをセットする。
 
@@ -1616,7 +1616,7 @@ export default function TournamentResult() {
             }
           }, []);
         }
-      } catch (error: any) { }
+      } catch (error: any) {}
     };
     fetchRaceInfo();
   }, [raceInfo?.race_id]);
@@ -1950,7 +1950,7 @@ export default function TournamentResult() {
                   id={'deleteFlg' + index}
                   value='deleteFlg'
                   checked={item.deleteFlg || false}
-                  onChange={() => { }}
+                  onChange={() => {}}
                 />
                 <p className='text-systemErrorText'>このレース結果情報を削除する</p>
               </div>
@@ -2585,11 +2585,15 @@ export default function TournamentResult() {
         <CustomButton
           buttonType='secondary'
           onClick={() => {
-            router.back();
+            if (mode == 'comfirm') {
+              router.back();
+            } else {
+              router.push('/tournamentResultManagement');
+            }
           }}
           className='w-[170px]'
         >
-          戻る
+          {mode == 'confirm' ? '管理画面に戻る' : '戻る'}
         </CustomButton>
         <CustomButton
           buttonType='primary'
@@ -2603,6 +2607,7 @@ export default function TournamentResult() {
             const isAllPlayerChecked = raceResultRecords.some(
               (item) => item.crewPlayer?.every((player) => player.deleteFlg),
             );
+            console.log(isAllPlayerChecked);
             if (isAllPlayerChecked) {
               const isOK = confirm(
                 '全ての選手が削除対象となっている「レース結果情報」があります。当該「レース結果情報」は、削除されますがよろしいですか？',
@@ -2618,6 +2623,7 @@ export default function TournamentResult() {
             }
             // バリデーション
             const isValid = validateRaceResultRecords();
+            console.log(isValid);
             if (isValid) {
               if (mode === 'create') {
                 // 登録処理
