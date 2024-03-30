@@ -277,7 +277,7 @@ export default function TournamentResult() {
      * 空行が選択されている場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
      * 「レースIDを選択してください。」
      */
-    const raceId = Validator.validateRequired(raceInfo?.raceId, 'レースID');
+    const raceId = Validator.validateRequired(raceInfo?.race_id, 'レースID');
     if (raceId) {
       setErrorText([raceId]);
       scrollTo(0, 0);
@@ -289,7 +289,7 @@ export default function TournamentResult() {
      * 空行が選択されている場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
      * 「レース名を選択してください。」
      */
-    const raceName = Validator.validateRequired(raceInfo?.raceName, 'レース名');
+    const raceName = Validator.validateRequired(raceInfo?.race_name, 'レース名');
     if (raceName) {
       setErrorText([raceName]);
       scrollTo(0, 0);
@@ -1478,8 +1478,15 @@ export default function TournamentResult() {
       try {
         // レース情報の取得
         // TODO: 検索処理に置き換え
-        const response = await axios.get('http://localhost:3100/raceInfo?id=1');
-        const data = response.data;
+        // const response = await axios.get('http://localhost:3100/raceInfo?id=1');
+        const sendData ={
+          race_id: '1' //残件項目 20240329
+        }
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
+        const response = await axios.post('/getRaceDataRaceId',sendData);
+        console.log(response);
+        const data = response.data.result;
         if (data.length === 0) {
           alert(
             '既に全てのレース結果が登録されています。新たにレース結果を登録することはできません。',
@@ -1502,7 +1509,14 @@ export default function TournamentResult() {
     const fetchRaceInfoForUpdate = async () => {
       try {
         // レース情報の取得
-        const response = await axios.get('http://localhost:3100/raceInfo?id=' + raceId);
+        // const response = await axios.get('http://localhost:3100/raceInfo?id=' + raceId);
+        const sendData ={
+          race_id: '1' //残件項目 20240329
+        }
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
+        const response = await axios.post('/getRaceDataRaceId',sendData);
+        console.log(response); 
         if (response.data.length === 0) {
           setErrorText(['レース情報が取得できませんでした。']);
           setRaceInfo({} as RaceTable);
@@ -1512,11 +1526,11 @@ export default function TournamentResult() {
         }
 
         // 出漕結果記録情報の取得
-        const response2 = await axios.get('http://localhost:3100/raceResultRecord');
+        const response2 = await axios.get('http://localhost:3100/raceResultRecord'); //残件項目
         setRaceResultRecordResponse(response2.data);
 
         // レース結果情報の取得
-        const response3 = await axios.get('http://localhost:3100/raceResultRecords');
+        const response3 = await axios.get('http://localhost:3100/raceResultRecords'); //残件項目
 
         // 10件以上は表示できないため、エラーメッセージを表示する
         if (response3.data.length > 10) {
@@ -1538,7 +1552,14 @@ export default function TournamentResult() {
     const fetchRaceInfo = async () => {
       try {
         // レース情報の取得
-        const response = await axios.get('http://localhost:3100/raceInfo?id=' + raceInfo?.raceId);
+        // const response = await axios.get('http://localhost:3100/raceInfo?id=' + raceInfo?.race_id);
+        const sendData ={
+          race_id: '1' //残件項目 20240329
+        }
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
+        const response = await axios.post('/getRaceDataRaceId',sendData);
+        console.log(response); 
 
         // 遷移元からイベントIDが取得できる時だけ、遷移元からのイベントIDをセットする。セットされていない時は、レース情報からイベントIDをセットする。
 
@@ -1595,10 +1616,10 @@ export default function TournamentResult() {
             }
           }, []);
         }
-      } catch (error: any) {}
+      } catch (error: any) { }
     };
     fetchRaceInfo();
-  }, [raceInfo?.raceId]);
+  }, [raceInfo?.race_id]);
 
   // レンダリング
   return (
@@ -1616,17 +1637,17 @@ export default function TournamentResult() {
               <div className='flex flex-col gap-[8px]'>
                 <InputLabel label='レースID' required={mode === 'create' || mode === 'update'} />
                 <CustomDropdown
-                  id='raceId'
-                  value={raceInfo?.raceId || ''}
+                  id='race_id'
+                  value={raceInfo?.race_id || ''}
                   options={raceNameOptions.map((item) => ({
                     key: item.id,
                     value: item.id.toString(),
                   }))}
                   className='w-[270px]'
                   onChange={(e: any) => {
-                    handleRaceInputChange('raceId', e as string);
+                    handleRaceInputChange('race_id', e as string);
                     handleRaceInputChange(
-                      'raceName',
+                      'race_name',
                       raceNameOptions.find((item) => item.id === e)?.name || '',
                     );
                   }}
@@ -1641,9 +1662,9 @@ export default function TournamentResult() {
                       required={mode === 'create' || mode === 'update'}
                     />
                     <Autocomplete
-                      id='raceName'
+                      id='race_name'
                       value={
-                        ({ name: raceInfo?.raceName, id: raceInfo?.raceId } as any) ||
+                        ({ name: raceInfo?.race_name, id: raceInfo?.race_id } as any) ||
                         ({ id: 0, name: '' } as MasterResponse)
                       }
                       disableClearable
@@ -1655,8 +1676,8 @@ export default function TournamentResult() {
                       }
                       getOptionLabel={(option) => option.name || ''}
                       onChange={(e, newTarget) => {
-                        handleRaceInputChange('raceId', newTarget?.id.toString() || '');
-                        handleRaceInputChange('raceName', newTarget?.name || '');
+                        handleRaceInputChange('race_id', newTarget?.id.toString() || '');
+                        handleRaceInputChange('race_name', newTarget?.name || '');
                       }}
                       renderOption={(props: any, option: MasterResponse) => {
                         return (
@@ -1670,7 +1691,7 @@ export default function TournamentResult() {
                           key={params.id}
                           className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
                           {...params}
-                          value={raceInfo?.raceName || ''}
+                          value={raceInfo?.race_name || ''}
                         />
                       )}
                     ></Autocomplete>
@@ -1679,7 +1700,7 @@ export default function TournamentResult() {
                   <CustomTextField
                     required={mode === 'update'}
                     label='レース名'
-                    value={raceInfo?.raceName || ''}
+                    value={raceInfo?.race_name || ''}
                     readonly
                     displayHelp={false}
                   ></CustomTextField>
@@ -1688,13 +1709,13 @@ export default function TournamentResult() {
 
               <CustomTextField
                 label='レースNo'
-                value={raceInfo?.raceNumber?.toString() || ''}
+                value={raceInfo?.race_number?.toString() || ''}
                 readonly
                 displayHelp={false}
               />
               <CustomTextField
                 label='種目'
-                value={raceInfo?.eventName || ''}
+                value={raceInfo?.event_name || ''}
                 readonly
                 displayHelp={false}
               />
@@ -1702,13 +1723,13 @@ export default function TournamentResult() {
             <div className='flex flex-col justify-between gap-[1px] w-[50%]'>
               <CustomTextField
                 label='レース区分'
-                value={raceInfo?.raceType?.toString() || ''}
+                value={raceInfo?.race_class_name?.toString() || ''}
                 readonly
                 displayHelp={false}
               />
               <CustomTextField
                 label='組別'
-                value={raceInfo?.byGroup || ''}
+                value={raceInfo?.by_group || ''}
                 readonly
                 displayHelp={false}
               />
@@ -1929,7 +1950,7 @@ export default function TournamentResult() {
                   id={'deleteFlg' + index}
                   value='deleteFlg'
                   checked={item.deleteFlg || false}
-                  onChange={() => {}}
+                  onChange={() => { }}
                 />
                 <p className='text-systemErrorText'>このレース結果情報を削除する</p>
               </div>
