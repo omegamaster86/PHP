@@ -783,6 +783,7 @@ export default function Tournament() {
                   // });
                   return prevData; //全てのデータをバックエンド側に送る 20240311
                 });
+                setErrorMessages([]);
                 router.push('/tournament?mode=confirm&prevMode=' + mode);
               })
               .catch((error) => {
