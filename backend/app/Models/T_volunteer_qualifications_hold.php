@@ -26,10 +26,17 @@ class T_volunteer_qualifications_hold extends Model
 
     public function getVolunteerQualificationsHold($vlntrId)
     {
-        $volunteers = DB::select('select `t_volunteer_qualifications_hold`.`qual_hold_id`, `t_volunteer_qualifications_hold`.`volunteer_id`, `t_volunteer_qualifications_hold`.`qual_id`, 
-        `t_volunteer_qualifications_hold`.`others_qual`, `t_volunteer_qualifications_hold`.`registered_time`, `t_volunteer_qualifications_hold`.`registered_user_id`, 
-        `t_volunteer_qualifications_hold`.`updated_time`, `t_volunteer_qualifications_hold`.`updated_user_id`, `t_volunteer_qualifications_hold`.`delete_flag`, 
-        `m_volunteer_qualifications`.`qual_name`
+        $volunteers = DB::select('select 
+        `t_volunteer_qualifications_hold`.`qual_hold_id`
+        , `t_volunteer_qualifications_hold`.`volunteer_id`
+        , `t_volunteer_qualifications_hold`.`qual_id`
+        , `t_volunteer_qualifications_hold`.`others_qual`
+        , `t_volunteer_qualifications_hold`.`registered_time`
+        , `t_volunteer_qualifications_hold`.`registered_user_id`
+        , `t_volunteer_qualifications_hold`.`updated_time`
+        , `t_volunteer_qualifications_hold`.`updated_user_id`
+        , `t_volunteer_qualifications_hold`.`delete_flag`
+        , `m_volunteer_qualifications`.`qual_name`
         FROM `t_volunteer_qualifications_hold` 
         left join `m_volunteer_qualifications`
         on `t_volunteer_qualifications_hold`.`qual_id` = `m_volunteer_qualifications`.`qual_id`
