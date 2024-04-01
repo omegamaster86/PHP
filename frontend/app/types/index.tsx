@@ -29,6 +29,7 @@ interface RaceResultRecordsResponse {
   race_number: number; // レースNo.
   event_name: string; // 種目
   race_name: string; // レース名
+  race_id: string; //レースID
   by_group: string; // 組別
   crew_name: string; // クルー名
   rank: number; // 順位

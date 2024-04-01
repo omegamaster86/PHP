@@ -480,6 +480,7 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("getCrewData start"));
         $reqData = $request->all();
+        // Log::debug($reqData);
         foreach ($reqData as $key => $val) { //foreachで取り出す配列と要素の値を格納する変数を指定する。
             if ($key == 'race_id' || $key == 'crew_name' || $key == 'org_id') {
                 continue;
