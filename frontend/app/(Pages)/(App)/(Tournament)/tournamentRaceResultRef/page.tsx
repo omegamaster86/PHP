@@ -136,7 +136,7 @@ export default function TournamentRaceResultRef() {
     '1500mlapタイム',
     '2000mlapタイム',
     '最終タイム',
-    'B.No',
+    // 'B.No',
     'Qualify',
     'ストローク（平均）',
     '500mストローク',
@@ -376,7 +376,7 @@ export default function TournamentRaceResultRef() {
                         {/* 組別 */}
                         <CustomTd>{row.by_group}</CustomTd>
                         {/* 発艇日時 */}
-                        <CustomTd>{row.eventStartDate}</CustomTd>
+                        <CustomTd>{row.start_datetime}</CustomTd>
                         {/* 順位 */}
                         <CustomTd>{row.rank}</CustomTd>
                         {/* クルー名 */}
@@ -403,7 +403,7 @@ export default function TournamentRaceResultRef() {
                         {/* 最終タイム */}
                         <CustomTd>{row.final_time}</CustomTd>
                         {/* B.No */}
-                        <CustomTd>{row.bNo}</CustomTd>
+                        {/* <CustomTd>{row.bNo}</CustomTd> */}
                         {/* 備考 */}
                         <CustomTd>{row.race_result_notes}</CustomTd>
                         {/* ストローク（平均） */}

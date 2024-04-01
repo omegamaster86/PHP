@@ -58,7 +58,7 @@ interface RaceResultRecordsResponse {
   seat_name: string; // シート番号（出漕時点）
   race_result_record_name: string; // 出漕結果記録名
   registered_time: string; // 登録日時
-  start_datetime: string; // 登録日時
+  start_datetime: string; // 発艇日時
   wind_speed_2000m_point: number; // 2000m地点風速
   wind_direction_2000m_point: number; // 2000m地点風向
   twentyHundredmWindDirectionName: string; // 2000m地点風向
@@ -262,7 +262,7 @@ interface VolunteerHistoriesResponse {
   event_start_date: string; // 開催日
   event_end_date: string; // 終了日
   role: string; // 役割名
-  ad: string; // 役割名　#置き換え作業未対応
+  ad: string; // 役割名
   date_type: number; // 平日/休日（祝日）
   day_of_week: string; // 曜日
   time_zone: string; // 時間帯
