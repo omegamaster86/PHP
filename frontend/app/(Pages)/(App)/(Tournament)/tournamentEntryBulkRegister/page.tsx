@@ -191,13 +191,16 @@ export default function TournamentEntryBulkRegister() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         // 仮のURL（繋ぎ込み時に変更すること）
         // TODO: ログインユーザーの権限によって取得する大会情報を変更すること
         // 大会名
         // const tournamentResponse = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments',);
-        const TournamentsResponse = await axios.get('/getTournamentInfoData_allData'); //残件対象項目
+        // const TournamentsResponse = await axios.get('/getTournamentInfoData_allData');
+        console.log(formData?.eventYear);
+        const sendVal = { event_start_year: formData?.eventYear };
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
+        const TournamentsResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
         const TournamentsResponseList = TournamentsResponse.data.result.map(
           ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
             id: tourn_id,
