@@ -425,7 +425,8 @@ export default function OrgInfo() {
       disabled={disableFlag}
       onClick={() => {
         console.log(tableData.length);
-        if(tableData.length > 199){ //行数が200を超えたときに、「スタッフ追加」ボタンを非表示にする
+        if (tableData.length > 199) {
+          //行数が200を超えたときに、「スタッフ追加」ボタンを非表示にする
           setAddStaffDisplayFlg(false);
           return;
         }
