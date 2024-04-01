@@ -669,7 +669,7 @@ class PlayerController extends Controller
         $search_values_array = array();
         $replace_condition_string = $this->generateSearchCondition($searched_data,$search_values_array);
         
-        $search_result;
+        $search_result = null;
         try
         {
             if (isset($searched_data['org_id'])) {

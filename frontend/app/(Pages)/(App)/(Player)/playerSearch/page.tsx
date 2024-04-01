@@ -540,11 +540,13 @@ export default function PlayerSearch() {
                 <CustomTh>JARA選手コード</CustomTh>
                 <CustomTh>選手ID</CustomTh>
                 <CustomTh>性別</CustomTh>
-                <CustomTh>エントリーシステムの団体ID</CustomTh>
+                <CustomTh>エントリーシステムの団体ID1</CustomTh>
                 <CustomTh>団体ID1</CustomTh>
                 <CustomTh>所属団体名1</CustomTh>
+                <CustomTh>エントリーシステムの団体ID2</CustomTh>
                 <CustomTh>団体ID2</CustomTh>
                 <CustomTh>所属団体名2</CustomTh>
+                <CustomTh>エントリーシステムの団体ID3</CustomTh>
                 <CustomTh>団体ID3</CustomTh>
                 <CustomTh>所属団体名3</CustomTh>
               </CustomTr>
@@ -612,8 +614,8 @@ export default function PlayerSearch() {
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       href={{
-                        pathname: '/teamInfomationRef',
-                        query: { entrysystemRaceId: row.entrysystemOrgId1 },
+                        pathname: '/teamRef',
+                        query: { orgId: row.orgId1 },
                       }}
                       rel='noopener noreferrer'
                       target='_blank'
@@ -621,40 +623,12 @@ export default function PlayerSearch() {
                       {row.entrysystemOrgId1}
                     </Link>
                   </CustomTd>
-                  {/* エントリーシステムの団体ID2 */}
-                  <CustomTd>
-                    <Link
-                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                      href={{
-                        pathname: '/teamInfomationRef',
-                        query: { entrysystemRaceId: row.entrysystemOrgId2 },
-                      }}
-                      rel='noopener noreferrer'
-                      target='_blank'
-                    >
-                      {row.entrysystemOrgId2}
-                    </Link>
-                  </CustomTd>
-                  {/* エントリーシステムの団体ID3 */}
-                  <CustomTd>
-                    <Link
-                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                      href={{
-                        pathname: '/teamInfomationRef',
-                        query: { entrysystemRaceId: row.entrysystemOrgId3 },
-                      }}
-                      rel='noopener noreferrer'
-                      target='_blank'
-                    >
-                      {row.entrysystemOrgId3}
-                    </Link>
-                  </CustomTd>
                   {/* 団体ID1 */}
                   <CustomTd>
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       href={{
-                        pathname: '/teamInfomationRef',
+                        pathname: '/teamRef',
                         query: { orgId: row.orgId1 },
                       }}
                       rel='noopener noreferrer'
@@ -668,7 +642,7 @@ export default function PlayerSearch() {
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       href={{
-                        pathname: '/teamInfomationRef',
+                        pathname: '/teamRef',
                         query: { orgId: row.orgId1 },
                       }}
                       rel='noopener noreferrer'
@@ -677,12 +651,26 @@ export default function PlayerSearch() {
                       {row.orgName1}
                     </Link>
                   </CustomTd>
+                  {/* エントリーシステムの団体ID2 */}
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/teamRef',
+                        query: { orgId: row.orgId2 },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {row.entrysystemOrgId2}
+                    </Link>
+                  </CustomTd>
                   {/* 団体ID2 */}
                   <CustomTd>
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       href={{
-                        pathname: '/teamInfomationRef',
+                        pathname: '/teamRef',
                         query: { orgId: row.orgId2 },
                       }}
                       rel='noopener noreferrer'
@@ -696,7 +684,7 @@ export default function PlayerSearch() {
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       href={{
-                        pathname: '/teamInfomationRef',
+                        pathname: '/teamRef',
                         query: { orgId: row.orgId2 },
                       }}
                       rel='noopener noreferrer'
@@ -705,12 +693,26 @@ export default function PlayerSearch() {
                       {row.orgName2}
                     </Link>
                   </CustomTd>
+                  {/* エントリーシステムの団体ID3 */}
+                  <CustomTd>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/teamRef',
+                        query: { orgId: row.orgId3 },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {row.entrysystemOrgId3}
+                    </Link>
+                  </CustomTd>
                   {/* 団体ID3 */}
                   <CustomTd>
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       href={{
-                        pathname: '/teamInfomationRef',
+                        pathname: '/teamRef',
                         query: { orgId: row.orgId3 },
                       }}
                       rel='noopener noreferrer'
@@ -724,7 +726,7 @@ export default function PlayerSearch() {
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                       href={{
-                        pathname: '/teamInfomationRef',
+                        pathname: '/teamRef',
                         query: { orgId: row.orgId3 },
                       }}
                       rel='noopener noreferrer'
