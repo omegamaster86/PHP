@@ -440,10 +440,10 @@ export default function TournamentResult() {
      */
     var indexList10 = [] as number[];
     const isError8 = raceResultRecords.some((record, i) => {
-      if (record.laneNumber && !/^\d{1,2}$/.test(record?.laneNumber.toString())) {
+      if (record.lane_number && !/^\d{1,2}$/.test(record?.lane_number.toString())) {
         indexList10.push(i);
       }
-      return record.laneNumber && !/^\d{1,2}$/.test(record?.laneNumber.toString());
+      return record.lane_number && !/^\d{1,2}$/.test(record?.lane_number.toString());
     });
     if (isError8) {
       indexList10.map((index) => {
@@ -472,13 +472,13 @@ export default function TournamentResult() {
       return raceResultRecords.some((record2, j) => {
         if (
           i !== j &&
-          record.laneNumber === record2.laneNumber &&
-          (record.laneNumber || record2.laneNumber)
+          record.lane_number === record2.lane_number &&
+          (record.lane_number || record2.lane_number)
         ) {
           indexList.push(i);
           indexList.push(j);
         }
-        return i !== j && record.laneNumber === record2.laneNumber;
+        return i !== j && record.lane_number === record2.lane_number;
       });
     });
 
@@ -1548,15 +1548,16 @@ export default function TournamentResult() {
         // const response3 = await axios.get('http://localhost:3100/raceResultRecords');
 
         // 10件以上は表示できないため、エラーメッセージを表示する
-        if (data.length > 10) {
-          setErrorText(['1つのレースに登録できるクルーは、10クルーまでです。']);
-          // 設定するのは10件まで
-          setRaceResultRecords(data.slice(0, 10));
-          scrollTo(0, 0);
-        }
-        console.log('aaaaaaaaaaaaa');
+        // if (data.length > 10) {
+        //   setErrorText(['1つのレースに登録できるクルーは、10クルーまでです。']);
+        //   // 設定するのは10件まで
+        //   setRaceResultRecords(data.slice(0, 10));
+        //   scrollTo(0, 0);
+        // }
+        console.log('eeeeeeeeeee');
       } catch (error: any) {
-        setErrorText([error.message]);
+        console.log(error);
+        // setErrorText([error.message]);
         scrollTo(0, 0);
       }
     };
@@ -2033,7 +2034,7 @@ export default function TournamentResult() {
                   />
                   <CustomTextField
                     label='出漕レーンNo'
-                    value={item?.laneNumber?.toString() || ''}
+                    value={item?.lane_number?.toString() || ''}
                     displayHelp={false}
                     type='number'
                     onChange={(e) => {
@@ -2605,14 +2606,14 @@ export default function TournamentResult() {
           buttonType='secondary'
           onClick={() => {
             if (mode == 'comfirm') {
-              router.back();
+              router.back(); //確認画面の場合、1つ前の画面に戻る
             } else {
               router.push('/tournamentResultManagement');
             }
           }}
           className='w-[170px]'
         >
-          {mode == 'confirm' ? '管理画面に戻る' : '戻る'}
+          {mode == 'confirm' ? '戻る' : '管理画面に戻る'}
         </CustomButton>
         <CustomButton
           buttonType='primary'
