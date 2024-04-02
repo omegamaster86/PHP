@@ -143,23 +143,23 @@ export default function TournamentRaceResultRef() {
     '1000mストローク',
     '1500mストローク',
     '2000mストローク',
-    '心拍数/分（平均）',
-    '500m心拍数/分',
-    '1000m心拍数/分',
-    '1500m心拍数/分',
-    '2000m心拍数/分',
+    // '心拍数/分（平均）',
+    // '500m心拍数/分',
+    // '1000m心拍数/分',
+    // '1500m心拍数/分',
+    // '2000m心拍数/分',
     '非公式／公式',
-    '立ち合い有無',
-    'エルゴ体重',
-    '選手身長',
-    '選手体重',
-    'シート番号ID',
-    'シート番号',
-    '出漕結果記録名',
-    '500m地点風速',
-    '1000m地点風速',
-    '1500m地点風速',
+    // '立ち合い有無',
+    // 'エルゴ体重',
+    // '選手身長',
+    // '選手体重',
+    // 'シート番号ID',
+    // 'シート番号',
+    // '出漕結果記録名',
     '2000m地点風速',
+    '2000m地点風向',
+    '1000m地点風速',
+    '1000m地点風向',
   ];
 
   // フィルター用のステート
@@ -432,31 +432,31 @@ export default function TournamentRaceResultRef() {
                         {/* 2000mlapストローク */}
                         <CustomTd>{row.stroke_rat_2000m}</CustomTd>
                         {/* 心拍数/分（平均） */}
-                        <CustomTd>{row.heart_rate_avg}</CustomTd>
+                        {/* <CustomTd>{row.heart_rate_avg}</CustomTd> */}
                         {/* 500m心拍数/分 */}
-                        <CustomTd>{row.heart_rate_500m}</CustomTd>
+                        {/* <CustomTd>{row.heart_rate_500m}</CustomTd> */}
                         {/* 1000m心拍数/分 */}
-                        <CustomTd>{row.heart_rate_1000m}</CustomTd>
+                        {/* <CustomTd>{row.heart_rate_1000m}</CustomTd> */}
                         {/* 1500m心拍数/分 */}
-                        <CustomTd>{row.heart_rate_1500m}</CustomTd>
+                        {/* <CustomTd>{row.heart_rate_1500m}</CustomTd> */}
                         {/* 2000m心拍数/分 */}
-                        <CustomTd>{row.heart_rate_2000m}</CustomTd>
+                        {/* <CustomTd>{row.heart_rate_2000m}</CustomTd> */}
                         {/* 非公式／公式 */}
                         <CustomTd>{row.official === 0 ? '非公式' : '公式'}</CustomTd>
                         {/* 立ち合い有無 */}
-                        <CustomTd>{row.attendance}</CustomTd>
+                        {/* <CustomTd>{row.attendance}</CustomTd> */}
                         {/* エルゴ体重 */}
-                        <CustomTd>{row.ergo_weight}</CustomTd>
+                        {/* <CustomTd>{row.ergo_weight}</CustomTd> */}
                         {/* 選手身長 */}
-                        <CustomTd>{row.player_height}</CustomTd>
+                        {/* <CustomTd>{row.player_height}</CustomTd> */}
                         {/* 選手体重 */}
-                        <CustomTd>{row.player_weight}</CustomTd>
+                        {/* <CustomTd>{row.player_weight}</CustomTd> */}
                         {/* シート番号ID */}
-                        <CustomTd>{row.seat_number}</CustomTd>
+                        {/* <CustomTd>{row.seat_number}</CustomTd> */}
                         {/* シート番号 */}
-                        <CustomTd>{row.seat_name}</CustomTd>
+                        {/* <CustomTd>{row.seat_name}</CustomTd> */}
                         {/* 出漕結果記録名 */}
-                        <CustomTd>{row.race_result_record_name}</CustomTd>
+                        {/* <CustomTd>{row.race_result_record_name}</CustomTd> */}
                         {/* 2000m地点風速 */}
                         <CustomTd>{row.wind_speed_2000m_point}</CustomTd>
                         {/* 2000m地点風向 */}

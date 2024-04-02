@@ -85,6 +85,8 @@ export default function TournamentRef() {
   // APIの呼び出し実績の有無を管理する状態
   const isApiFetched = useRef(false);
 
+  const orgManagerFlag = 1; //20240401 該当の団体管理者かどうかを判別するためのフラグ 残件項目
+
   // エラーハンドリング用のステート
   const [error, setError] = useState({ isError: false, errorMessage: '' });
 
@@ -116,6 +118,13 @@ export default function TournamentRef() {
 
         const playerInf = await axios.get('/getIDsAssociatedWithUser');
         setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
+
+        const sendData = {
+          userInfo: playerInf.data.result[0],
+          tournInfo: tournamentResponse.data.result,
+        };
+        const hoge = await axios.post('/checkOrgManager', sendData); //大会情報参照画面 主催団体管理者の判別 20240402
+        console.log(hoge);
       };
       fetchData();
       isApiFetched.current = true;
@@ -139,7 +148,7 @@ export default function TournamentRef() {
             </CustomTitle>
           </div>
           <div>
-            {mode !== 'delete' && (
+            {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag == 1) && (
               <Link
                 href={{
                   pathname: '/tournament',
@@ -154,7 +163,7 @@ export default function TournamentRef() {
             )}
           </div>
           <div>
-            {mode !== 'delete' && (
+            {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag == 1) && (
               <Link
                 href={{
                   pathname: '/tournamentRef',
