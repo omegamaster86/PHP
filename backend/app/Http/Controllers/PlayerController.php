@@ -1018,7 +1018,7 @@ class PlayerController extends Controller
                 return response()->json([""]);
             } else if ($request["mode"] === "update") {
                 Log::debug(sprintf("checkJARAPlayerId end 13"));
-                return response()->json(["エントリーシステムの選手IDが変更されています。\n過去のレース結果との紐づけが失われます。変更しますか？"]);
+                return response()->json(["エントリーシステムの選手IDが変更されています。\n過去のレース結果との紐づけが失われます。\n変更しますか？"]);
             } else if ($request["mode"] === "update_confirm") {
                 Log::debug(sprintf("checkJARAPlayerId end 14"));
                 return response()->json([""]);
