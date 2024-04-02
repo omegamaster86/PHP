@@ -446,6 +446,9 @@ class TournamentInfoAlignmentController extends Controller
                     // 選手名
                     if (isset($target_row['playerName'])) {
                         $this->checkWithinByte($target_row['playerName'], 100, $checkResult, $target_row['playerNameError']);
+                    } else {
+                        $checkResult = false;
+                        $target_row['playerNameError'] = true;
                     }
                     // レースID
                     if (isset($race_id)) {
@@ -473,11 +476,17 @@ class TournamentInfoAlignmentController extends Controller
                     if (isset($target_row['raceTypeName'])) {
                         $this->checkWithinByte($target_row['raceTypeName'], 255, $checkResult, $target_row['raceTypeNameError']);
                     }
+                    //団体名
+                    if (!(isset($target_row['orgId']))) {
+                        $checkResult = false;
+                        $target_row['orgIdError'] = true;
+                    } 
                 }
                 //公式
                 else {
                     //大会IDかエントリー大会IDのどちらかが入力されていることを確認
                     //どちらも入力されていなかったら両項目をエラーとする
+                    
                     if (!(isset($target_row['tournId']) || isset($target_row['entrysystemTournId']))) {
                         $checkResult = false;
                         $target_row['tournIdError'] = true;
@@ -490,10 +499,11 @@ class TournamentInfoAlignmentController extends Controller
                     // エントリー大会ID
                     if (isset($target_row['entrysystemTournId'])) {
                         $this->checkInteger($target_row['entrysystemTournId'], 8, $checkResult, $target_row['entrysystemTournIdError']);
-                    } else {
-                        $checkResult = false;
-                        $target_row['entrysystemTournIdError'] = true;
-                    }
+                    } 
+                    // else {
+                    //     $checkResult = false;
+                    //     $target_row['entrysystemTournIdError'] = true;
+                    // }
                     //大会名
                     if (isset($target_row['tournName'])) {
                         $this->checkWithinByte($target_row['tournName'], 255, $checkResult, $target_row['tournNameError']);
@@ -520,10 +530,11 @@ class TournamentInfoAlignmentController extends Controller
                             $checkResult = false;
                             $target_row['jaraPlayerIdError'] = true;
                         }
-                    } else {
-                        $checkResult = false;
-                        $target_row['jaraPlayerIdError'] = true;
-                    }
+                    } 
+                    // else {
+                    //     $checkResult = false;
+                    //     $target_row['jaraPlayerIdError'] = true;
+                    // }
                     // 選手名
                     if (isset($target_row['playerName'])) {
                         $this->checkWithinByte($target_row['playerName'], 100, $checkResult, $target_row['playerNameError']);
@@ -556,6 +567,9 @@ class TournamentInfoAlignmentController extends Controller
                     //レース区分ID
                     if (isset($target_row['raceTypeId'])) {
                         $this->checkInteger($target_row['raceTypeId'], 3, $checkResult, $target_row['raceTypeIdError']);
+                    } else {
+                        $checkResult = false;
+                        $target_row['raceTypeId'] = true;
                     }
                     //レース区分名
                     if (isset($target_row['raceTypeName'])) {
@@ -572,6 +586,11 @@ class TournamentInfoAlignmentController extends Controller
                         $target_row['orgIdError'] = true;
                         $target_row['entrysystemOrgIdError'] = true;
                     }
+                    //団体名
+                    if (!(isset($target_row['orgName']))) {
+                        $checkResult = false;
+                        $target_row['orgNameError'] = true;
+                    } 
                 }
                 //公式・非公式で区別しない項目
                 //レース名
@@ -597,18 +616,30 @@ class TournamentInfoAlignmentController extends Controller
                 //クルー名
                 if (isset($target_row['crewName'])) {
                     $this->checkWithinByte($target_row['crewName'], 255, $checkResult, $target_row['crewNameError']);
+                } else {
+                    $checkResult = false;
+                    $target_row['crewNameError'] = true;
                 }
                 //組別
                 if (isset($target_row['byGroup'])) {
                     $this->checkWithinByte($target_row['byGroup'], 255, $checkResult, $target_row['byGroupError']);
+                } else {
+                    $checkResult = false;
+                    $target_row['byGroupError'] = true;
                 }
                 //種目ID
                 if (isset($target_row['eventId'])) {
                     $this->checkInteger($target_row['eventId'], 3, $checkResult, $target_row['eventIdError']);
+                } else {
+                    $checkResult = false;
+                    $target_row['eventIdError'] = true;
                 }
                 //種目名
                 if (isset($target_row['eventName'])) {
                     $this->checkWithinByte($target_row['eventName'], 255, $checkResult, $target_row['eventNameError']);
+                } else {
+                    $checkResult = false;
+                    $target_row['eventNameError'] = true;
                 }
                 //距離
                 if (isset($target_row['range'])) {
@@ -617,7 +648,22 @@ class TournamentInfoAlignmentController extends Controller
                 //順位
                 if (isset($target_row['rank'])) {
                     $this->checkInteger($target_row['rank'], 3, $checkResult, $target_row['rankError']);
+                } else {
+                    $checkResult = false;
+                    $target_row['rankError'] = true;
                 }
+
+                //ラップタイムは500m～最終までの何れかの入力が必須
+                    
+                if (!(isset($target_row['fiveHundredmLaptime']) || isset($target_row['tenHundredmLaptime']) || isset($target_row['fifteenHundredmLaptime']) || isset($target_row['twentyHundredmLaptime']) || isset($target_row['finalTime']))) {
+                    $checkResult = false;
+                    $target_row['fiveHundredmLaptime'] = true;
+                    $target_row['tenHundredmLaptime'] = true;
+                    $target_row['fifteenHundredmLaptime'] = true;
+                    $target_row['twentyHundredmLaptime'] = true;
+                    $target_row['finalTime'] = true;
+                }
+
                 // 500mlapタイム
                 if (isset($target_row['fiveHundredmLaptime'])) {
                     $this->checkDecimal($target_row['fiveHundredmLaptime'], "5.2", $checkResult, $target_row['fiveHundredmLaptimeError']);
@@ -706,10 +752,16 @@ class TournamentInfoAlignmentController extends Controller
                 // シート番号ID
                 if (isset($target_row['mSheetNumber'])) {
                     $this->checkInteger($target_row['mSheetNumber'], 3, $checkResult, $target_row['mSheetNumberError']);
+                } else {
+                    $checkResult = false;
+                    $target_row['mSheetNumberError'] = true;
                 }
                 // シート番号
                 if (isset($target_row['sheetName'])) {
                     $this->checkWithinByte($target_row['sheetName'], 255, $checkResult, $target_row['sheetNameError']);
+                } else {
+                    $checkResult = false;
+                    $target_row['sheetNameError'] = true;
                 }
                 // 出漕結果記録名
                 if (isset($target_row['raceResultRecordName'])) {
