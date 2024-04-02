@@ -157,6 +157,7 @@ Route::middleware('auth')->group(function () {
     Route::post('registerTournamentEntryCsvData', [TournamentInfoAlignmentController::class, 'registerTournamentEntryCsvData']); //大会エントリー一括登録 登録ボタン押下 20240301
     Route::post('sendTournamentResultCsvData', [TournamentInfoAlignmentController::class, 'sendTournamentResultCsvData']); //大会結果一括 読み込むボタン押下 20240301
     Route::post('registerTournamentResultCsvData', [TournamentInfoAlignmentController::class, 'registerTournamentResultCsvData']); //大会結果一括 登録ボタン押下 20240301
+    Route::post('checkOrgManager', [TournamentController::class, 'checkOrgManager']); //大会情報参照画面 主催団体管理者の判別 20240402
 
     //レース関連
     Route::post('getRaceData', [TournamentController::class, 'getRaceData']); //レース情報取得 20240214 大会情報に基づくレース情報
