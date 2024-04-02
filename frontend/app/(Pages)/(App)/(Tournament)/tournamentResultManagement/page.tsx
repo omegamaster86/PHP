@@ -65,7 +65,7 @@ export default function TournamentResultManagement() {
     eventYear:
       prevScreen === 'tournamentResult'
         ? sessionStorageData.eventYear
-        : new Date().toLocaleDateString(),
+        : new Date().getFullYear().toString(), //new Date().toLocaleDateString(),
     tournId: prevScreen === 'tournamentResult' ? sessionStorageData.tournId : '',
     tournName: prevScreen === 'tournamentResult' ? sessionStorageData.tournName : '',
     eventId: prevScreen === 'tournamentResult' ? sessionStorageData.eventId : '',
@@ -114,12 +114,12 @@ export default function TournamentResultManagement() {
   }
 
   const handleSearch = async () => {
-    var apiUri = 'http://localhost:3100/race?';
+    // var apiUri = 'http://localhost:3100/race?';
 
-    getNonEmptyProperties(searchCond).forEach((item) => {
-      apiUri += item.key + '=' + item.value + '&';
-    });
-    apiUri = apiUri.slice(0, -1);
+    // getNonEmptyProperties(searchCond).forEach((item) => {
+    //   apiUri += item.key + '=' + item.value + '&';
+    // });
+    // apiUri = apiUri.slice(0, -1);
 
     try {
       // 仮のURL（繋ぎ込み時に変更すること）
@@ -127,8 +127,8 @@ export default function TournamentResultManagement() {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       const response = await axios.post('searchRaceData', searchCond);
-      console.log(response);
-      // setSearchResponse(response.data); //残件対応
+      console.log(response.data.result);
+      setSearchResponse(response.data.result);
 
       const height = response.data.length * 73 + 100 < 830 ? response.data.length * 73 + 100 : 830;
       setTableHeight('h-[' + height + 'px]');
@@ -150,6 +150,7 @@ export default function TournamentResultManagement() {
         const sendVal = { event_start_year: searchCond?.eventYear };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
+        console.log(sendVal);
         const tournamentResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
         const TournamentsResponseList = tournamentResponse.data.result.map(
           ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
@@ -168,16 +169,15 @@ export default function TournamentResultManagement() {
   // データ取得
   useEffect(() => {
     const fetchData = async () => {
+      console.log(searchCond?.eventYear);
       // 大会名
       getTournamentList();
 
       try {
-        // 仮のURL（繋ぎ込み時に変更すること）
-
         // const eventResponse = await axios.get<EventResponse[]>('http://localhost:3100/event');
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const eventResponse = await axios.get('/getEvents');
+        const eventResponse = await axios.get('/getEvents'); //イベント(種目)マスター取得
         const eventResponseList = eventResponse.data.map(
           ({ event_id, event_name }: { event_id: number; event_name: string }) => ({
             id: event_id,
@@ -187,7 +187,7 @@ export default function TournamentResultManagement() {
         setEvent(eventResponseList);
 
         // const raceTypeResponse = await axios.get<RaceTypeResponse[]>('http://localhost:3100/raceType',);
-        const raceTypeResponse = await axios.get('/getRaceClass');
+        const raceTypeResponse = await axios.get('/getRaceClass'); //レース区分マスター取得
         const stateList = raceTypeResponse.data.map(
           ({
             race_class_id,
@@ -526,21 +526,23 @@ export default function TournamentResultManagement() {
                   <CustomButton
                     buttonType='primary'
                     onClick={function (): void {
-                      sessionStorage.setItem(
-                        'tournamentResultManagement',
-                        JSON.stringify(searchCond),
-                      );
-                      let url = '/tournamentResult?mode=create';
-                      if (searchCond.tournId) {
-                        url += '&tournId=' + searchCond.tournId;
+                      if (!performValidation()) {
+                        sessionStorage.setItem(
+                          'tournamentResultManagement',
+                          JSON.stringify(searchCond),
+                        );
+                        let url = '/tournamentResult?mode=create';
+                        if (searchCond.tournId) {
+                          url += '&tournId=' + searchCond.tournId;
+                        }
+                        if (searchCond.eventId) {
+                          url += '&eventId=' + searchCond.eventId;
+                        }
+                        if (searchCond.eventName) {
+                          url += '&eventName=' + searchCond.eventName;
+                        }
+                        router.push(url);
                       }
-                      if (searchCond.eventId) {
-                        url += '&eventId=' + searchCond.eventId;
-                      }
-                      if (searchCond.eventName) {
-                        url += '&eventName=' + searchCond.eventName;
-                      }
-                      router.push(url);
                     }}
                     className='w-[150px]'
                   >

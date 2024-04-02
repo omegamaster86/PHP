@@ -136,7 +136,7 @@ export default function TournamentRaceResultRef() {
     '1500mlapタイム',
     '2000mlapタイム',
     '最終タイム',
-    'B.No',
+    // 'B.No',
     'Qualify',
     'ストローク（平均）',
     '500mストローク',
@@ -218,8 +218,21 @@ export default function TournamentRaceResultRef() {
    * @description クルー情報を取得する
    */
   const [currentCrewName, setCurrentCrewName] = useState('');
-  const getCrew = async (index: number) => {
+  const getCrew = async (rowData: RaceResultRecordsResponse) => {
     // var apiUri = 'http://localhost:3100/crew?';
+    // クルー名、団体ID、レースIDのすべてが一致するクルー情報を取得
+    console.log(searchCrewInfo);
+    var index = 0;
+    for (; index < searchCrewInfo.length; index++) {
+      if (
+        searchCrewInfo[index].crew_name == rowData.crew_name &&
+        searchCrewInfo[index].org_id.toString() == rowData.org_id &&
+        searchCrewInfo[index].race_id.toString() == rowData.race_id
+      ) {
+        break;
+      }
+    }
+    console.log(index);
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     await axios
@@ -229,8 +242,8 @@ export default function TournamentRaceResultRef() {
         // console.log(response.data.result);
         // レスポンスからデータを取り出してstateにセット
         setCurrentCrewName(searchCrewInfo[index].crew_name);
-        console.log(currentCrewName);
-        console.log(searchCrewInfo[index]);
+        // console.log(currentCrewName);
+        // console.log(searchCrewInfo[index]);
         setCrewRecordsData(response.data.result);
       })
       .catch((error) => {
@@ -376,7 +389,7 @@ export default function TournamentRaceResultRef() {
                         {/* 組別 */}
                         <CustomTd>{row.by_group}</CustomTd>
                         {/* 発艇日時 */}
-                        <CustomTd>{row.eventStartDate}</CustomTd>
+                        <CustomTd>{row.start_datetime}</CustomTd>
                         {/* 順位 */}
                         <CustomTd>{row.rank}</CustomTd>
                         {/* クルー名 */}
@@ -384,8 +397,10 @@ export default function TournamentRaceResultRef() {
                           <div
                             onClick={(event) => {
                               // console.log(index);
+                              // console.log(row);
+                              // console.log(event.currentTarget.innerText);
                               setOpen(true);
-                              getCrew(index);
+                              getCrew(row);
                             }}
                             className='text-primary-300 underline hover:text-primary-50 cursor-pointer text-caption1'
                           >
@@ -403,7 +418,7 @@ export default function TournamentRaceResultRef() {
                         {/* 最終タイム */}
                         <CustomTd>{row.final_time}</CustomTd>
                         {/* B.No */}
-                        <CustomTd>{row.bNo}</CustomTd>
+                        {/* <CustomTd>{row.bNo}</CustomTd> */}
                         {/* 備考 */}
                         <CustomTd>{row.race_result_notes}</CustomTd>
                         {/* ストローク（平均） */}

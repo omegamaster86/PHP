@@ -359,7 +359,7 @@ export default function VolunteerSearch() {
 
         // 大会マスタの取得
         // const tour = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments');
-        const TournamentsResponse = await axios.get('/getTournamentInfoData_allData'); //残件対象項目
+        const TournamentsResponse = await axios.get('/getTournamentInfoData_allData');
         const TournamentsResponseList = TournamentsResponse.data.result.map(
           ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
             id: tourn_id,
@@ -1165,7 +1165,47 @@ export default function VolunteerSearch() {
             {/* 過去に参加した大会 */}
             <div>
               <InputLabel label='過去に参加した大会' />
-              <CustomAutocomplete
+              <Select
+                id='tournament'
+                multiple
+                className='self-end border-[0.1px] border-solid border-gray-50 rounded-md bg-white w-[467px] my-1'
+                value={searchCond.tour?.map((item) => item?.id) || []}
+                onChange={(e) => {
+                  let currentData = Array.isArray(e.target.value)
+                    ? e.target.value.map((item: any) => {
+                        return {
+                          id: item,
+                          name: tour.find((tour) => tour.id === item)?.name || '',
+                        };
+                      })
+                    : [];
+                  setSearchCond((prevFormData) => ({
+                    ...prevFormData,
+                    tour: currentData as [TournamentResponse],
+                  }));
+                }}
+                renderValue={() => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {searchCond.tour?.map((value, index) =>
+                      value?.id === 0 ? null : <Chip key={index} label={value?.name} />,
+                    )}
+                  </Box>
+                )}
+              >
+                {tour
+                  ? tour
+                      .filter((item) => item.id !== undefined)
+                      .filter((item) => item.name !== undefined)
+                      .map((item, index) => {
+                        return (
+                          <MenuItem key={index} value={item.id}>
+                            {item.name}
+                          </MenuItem>
+                        );
+                      })
+                  : null}
+              </Select>
+              {/* <CustomAutocomplete
                 id='tournament'
                 errorMessages={[]}
                 placeholder='大会名'
@@ -1177,7 +1217,7 @@ export default function VolunteerSearch() {
                   }));
                 }}
                 options={tour.map((item) => ({ id: item.id, name: item.name }))}
-              />
+              /> */}
               <p className='self-start text-small text-gray-400'>※複数選択可（3大会まで）</p>
             </div>
           </div>

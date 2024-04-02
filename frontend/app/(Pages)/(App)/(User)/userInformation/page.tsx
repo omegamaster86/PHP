@@ -288,6 +288,7 @@ export default function UserInformationUpdate() {
           ) {
             return;
           }
+          setErrorMessage([]);
           router.push(
             '/userInformation?mode=confirm&isMailChanged=' +
               (email && email !== prevEmail ? 'true' : 'false') +

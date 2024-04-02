@@ -29,6 +29,7 @@ interface RaceResultRecordsResponse {
   race_number: number; // レースNo.
   event_name: string; // 種目
   race_name: string; // レース名
+  race_id: string; //レースID
   by_group: string; // 組別
   crew_name: string; // クルー名
   rank: number; // 順位
@@ -58,7 +59,7 @@ interface RaceResultRecordsResponse {
   seat_name: string; // シート番号（出漕時点）
   race_result_record_name: string; // 出漕結果記録名
   registered_time: string; // 登録日時
-  start_datetime: string; // 登録日時
+  start_datetime: string; // 発艇日時
   wind_speed_2000m_point: number; // 2000m地点風速
   wind_direction_2000m_point: number; // 2000m地点風向
   twentyHundredmWindDirectionName: string; // 2000m地点風向
@@ -73,11 +74,15 @@ interface RaceResultRecordsResponse {
   startDateTime: string; // 発艇日時
   deleteFlg: boolean; // 削除フラグ
   crewPlayer: CrewPlayer[]; // 選手情報
-  laneNumber: number; // レーンNo
+  lane_number: number; // レーンNo
   errorText: string; // エラーテキスト
   laptimeErrorText: string; // ラップタイムエラーテキスト
   strokeRateErrorText: string; // ストロークレートエラーテキスト
   finalHeartRate: number; // 最終心拍数
+  //選手に関する情報を追加 20240401---------
+  player_id: string; // 選手ID
+  player_name: string; // 選手名
+  sex: number; // 天候
 }
 
 interface CrewPlayer {
@@ -258,7 +263,7 @@ interface VolunteerHistoriesResponse {
   event_start_date: string; // 開催日
   event_end_date: string; // 終了日
   role: string; // 役割名
-  ad: string; // 役割名　#置き換え作業未対応
+  ad: string; // 役割名
   date_type: number; // 平日/休日（祝日）
   day_of_week: string; // 曜日
   time_zone: string; // 時間帯

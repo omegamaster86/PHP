@@ -191,13 +191,16 @@ export default function TournamentEntryBulkRegister() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         // 仮のURL（繋ぎ込み時に変更すること）
         // TODO: ログインユーザーの権限によって取得する大会情報を変更すること
         // 大会名
         // const tournamentResponse = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments',);
-        const TournamentsResponse = await axios.get('/getTournamentInfoData_allData'); //残件対象項目
+        // const TournamentsResponse = await axios.get('/getTournamentInfoData_allData');
+        console.log(formData?.eventYear);
+        const sendVal = { event_start_year: formData?.eventYear };
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
+        const TournamentsResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
         const TournamentsResponseList = TournamentsResponse.data.result.map(
           ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
             id: tourn_id,
@@ -642,7 +645,8 @@ export default function TournamentEntryBulkRegister() {
                   buttonType='primary'
                   onClick={async () => {
                     setActivationFlg(true);
-                    const specifiedHeader = "大会ID,大会名,種目ID,種目名,レース区分ID,レース区分,レースID,レース名,組別,レースNo,発艇日時,団体ID,団体名,クルー名,シート番号ID,シート番号,選手ID,選手名"; // 指定のヘッダー文字列
+                    const specifiedHeader =
+                      '大会ID,大会名,種目ID,種目名,レース区分ID,レース区分,レースID,レース名,組別,レースNo,発艇日時,団体ID,団体名,クルー名,シート番号ID,シート番号,選手ID,選手名'; // 指定のヘッダー文字列
                     const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
                     const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
                     if (dialogDisplayFlg) {
@@ -652,13 +656,16 @@ export default function TournamentEntryBulkRegister() {
                         ? (await sendCsvData(), //バックエンド側にCSVデータを送信 データ判定用
                           setCsvData([]),
                           // console.log(loadingResultList),
-                          csvFileData?.content?.filter(function (x) {
-                            // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
-                            return x.length > 0 && x.some((y) => y.length > 0);
-                          }).slice(isHeaderMatch? 1 : 0).map((row, rowIndex) => {
-                            handleCsvData(row, rowIndex);
-                            setDialogDisplayFlg(true);
-                          }))
+                          csvFileData?.content
+                            ?.filter(function (x) {
+                              // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
+                              return x.length > 0 && x.some((y) => y.length > 0);
+                            })
+                            .slice(isHeaderMatch ? 1 : 0)
+                            .map((row, rowIndex) => {
+                              handleCsvData(row, rowIndex);
+                              setDialogDisplayFlg(true);
+                            }))
                         : null;
                     } else {
                       if (formData.tournName === '' || formData.tournName === undefined) {

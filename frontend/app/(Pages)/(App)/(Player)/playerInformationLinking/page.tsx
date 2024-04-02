@@ -104,8 +104,7 @@ export default function PlayerInformationLinking() {
 
   //読み込むボタン押下時 20240228
   const sendCsvData = async () => {
-
-    const specifiedHeader = "既存選手ID,新選手ID,メールアドレス,選手名"; // 指定のヘッダー文字列
+    const specifiedHeader = '既存選手ID,新選手ID,メールアドレス,選手名'; // 指定のヘッダー文字列
     const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
     const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
     const expectedColumnCount = 4; // 期待する列数
@@ -116,8 +115,8 @@ export default function PlayerInformationLinking() {
         // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
         return x.length > 0 && x.some((y) => y.length > 0);
       })
-      .slice(isHeaderMatch? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
-      .map((value, index) => {        
+      .slice(isHeaderMatch ? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
+      .map((value, index) => {
         if (value.length !== expectedColumnCount) {
           // 列数が期待する列数と異なる場合
           return {

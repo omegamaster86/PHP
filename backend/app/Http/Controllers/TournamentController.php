@@ -480,6 +480,7 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("getCrewData start"));
         $reqData = $request->all();
+        // Log::debug($reqData);
         foreach ($reqData as $key => $val) { //foreachで取り出す配列と要素の値を格納する変数を指定する。
             if ($key == 'race_id' || $key == 'crew_name' || $key == 'org_id') {
                 continue;
@@ -770,14 +771,49 @@ class TournamentController extends Controller
 
     //大会レース結果管理画面
     //レース結果検索
-    public function getRaceResultSearch(Request $request, T_races $t_races)
+    public function searchRaceData(Request $request, T_races $t_races)
     {
-        Log::debug(sprintf("getRaceResultSearch start."));
+        Log::debug(sprintf("searchRaceData start."));
         $reqData = $request->all();
-        Log::debug($reqData);
-        
-        Log::debug(sprintf("getRaceResultSearch end."));
+        Log::debug($reqData);        
+        $values = array();
+        //検索条件の文字列を生成
+        $conditionString = $this->generateRaceSearchCondition($reqData,$values);
+        $getData = $t_races->getRaceResultWithCondition($conditionString,$values);
+        Log::debug($getData);
+        Log::debug(sprintf("searchRaceData end."));
         return response()->json(['result' => $getData]); //DBの結果を返す
+    }
+
+    //レース結果一覧を取得する検索条件の文字列を生成する
+    private function generateRaceSearchCondition($reqData, &$valueArray)
+    {
+        $condition = "";
+        //大会名(必須項目)
+        $condition .= "and race.tourn_id = :tourn_id\r\n";
+        $valueArray["tourn_id"] = $reqData["tournId"];
+        //種目(必須項目)
+        $condition .= "and race.event_id = :event_id\r\n";
+        $valueArray["event_id"] = $reqData["eventId"];
+        //レース区分
+        if(isset($reqData["raceTypeId"]))
+        {
+            $condition .= "and race.race_class_id = :race_class_id\r\n";
+            $valueArray["race_class_id"] = $reqData["raceTypeId"];
+        }
+        //組別
+        if(isset($reqData["byGroup"]))
+        {
+            $condition .= "and race.by_group = :by_group\r\n";
+            $valueArray["by_group"] = $reqData["byGroup"];
+        }
+        //レースNo.
+        if(isset($reqData["raceNo"]))
+        {
+            $condition .= "and race.race_number = :race_number\r\n";
+            $valueArray["race_number"] = $reqData["raceNo"];
+        }
+        return $condition;
     }
 
     //大会レース結果入力画面
@@ -809,27 +845,52 @@ class TournamentController extends Controller
         $reqData = $request->all();
         Log::debug($reqData);
         
+        //登録処理
+
+
         Log::debug(sprintf("registerRaceResultRecord end."));
         return response()->json(['result' => true]); //DBの結果を返す
-
     }
 
     //大会レース結果入力確認画面
-    //レース結果情報を登録する
-    public function getRaceDataRaceId(Request $request, T_races $tRace)
+    //更新ボタンを押して大会レース結果入力画面に遷移するときに、レース情報を取得する
+    public function getRaceDataRaceId(Request $request, T_races $tRace, T_raceResultRecord $t_raceResultRecord)
     {
         Log::debug(sprintf("getRaceDataRaceId start"));
         $reqData = $request->all();
         Log::debug($reqData['race_id']);
-        //$result = $tRace->getRace($reqData['tourn_id']); //レース情報を取得
-        $result = $tRace->getRaceFromRaceId($reqData['race_id']); //レース情報を取得
-        if (isset($result)) {
-            for ($i = 0; $i < count($result); $i++) {
-                $result[$i]->id = $i;
+        $race_result = $tRace->getRaceFromRaceId($reqData['race_id']); //レース情報を取得
+        //検索結果にインデックスを付与する 20240330
+        if (isset($race_result)) {
+            for ($i = 0; $i < count($race_result); $i++) {
+                $race_result[$i]->id = $i;
             }
         }
-        // Log::debug($result);
+        //出漕時点情報を取得
+        $record_result = $t_raceResultRecord->getRaceResultRecordOnRowingPoint($reqData['race_id']);
+
+        //レース結果情報を取得
+        //$record_result_list;
+
+
         Log::debug(sprintf("getRaceDataRaceId end"));
+        Log::debug($race_result);
+        Log::debug($record_result);
+        return response()->json(['race_result' => $race_result,'record_result' => $record_result]); //DBの結果を返す
+        //return response()->json(['race_result' => $race_result,'record_result' => $record_result, 'record_result_list' => $record_result_list]); //DBの結果を返す
+    }
+
+    //大会レース結果入力確認画面
+    //レース結果追加ボタンを押して大会レース結果入力画面に遷移するときに、レース情報を取得する
+    public function getRaceDataFromTournIdAndEventId(Request $request, T_races $tRace)
+    {
+        Log::debug(sprintf("getRaceDataFromTournIdAndEventId start."));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        $tourn_id = $reqData['tourn_id'];
+        $event_id = $reqData['event_id'];
+        $result = $tRace->getBasicRaceInfoList($tourn_id,$event_id); //レース情報を取得
+        Log::debug(sprintf("getRaceDataFromTournIdAndEventId end."));
         Log::debug($result);
         return response()->json(['result' => $result]); //DBの結果を返す
     }

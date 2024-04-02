@@ -31,10 +31,25 @@ class T_volunteer_histories extends Model
 
     public function getVolunteerHistories($vlntrId)
     {
-        $volunteers = DB::select('select `volunteer_history_id`, `volunteer_id`, `t_volunteer_histories`.`tourn_id`, `role`, `date_type`, 
-        `day_of_week`, `time_zone`, `authority`, `number_of_days`, `t_volunteer_histories`.`registered_time`, `t_volunteer_histories`.`registered_user_id`, 
-        `t_volunteer_histories`.`updated_time`, `t_volunteer_histories`.`updated_user_id`, `t_volunteer_histories`.`delete_flag`, 
-        `t_tournaments`.`tourn_name`, `t_tournaments`.`event_start_date`, `t_tournaments`.`event_end_date`, `t_tournaments`.`tourn_type`
+        $volunteers = DB::select('select 
+        `volunteer_history_id`
+        , `volunteer_id`
+        , `t_volunteer_histories`.`tourn_id`
+        , `role`
+        , `date_type`
+        , `day_of_week`
+        , `time_zone`
+        , `authority` as ad
+        , `number_of_days`
+        , `t_volunteer_histories`.`registered_time`
+        , `t_volunteer_histories`.`registered_user_id`
+        , `t_volunteer_histories`.`updated_time`
+        , `t_volunteer_histories`.`updated_user_id`
+        , `t_volunteer_histories`.`delete_flag`
+        , `t_tournaments`.`tourn_name`
+        , `t_tournaments`.`event_start_date`
+        , `t_tournaments`.`event_end_date`
+        , `t_tournaments`.`tourn_type`
         FROM `t_volunteer_histories` 
         left join `t_tournaments`
         on `t_volunteer_histories`.`tourn_id` = `t_tournaments`.`tourn_id`

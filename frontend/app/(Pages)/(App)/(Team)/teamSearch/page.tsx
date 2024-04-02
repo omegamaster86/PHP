@@ -411,7 +411,7 @@ export default function TeamSearch() {
               <CustomTh>エントリーシステムID</CustomTh>
               <CustomTh>団体ID</CustomTh>
               <CustomTh>団体名</CustomTh>
-              <CustomTh>設立年</CustomTh>
+              <CustomTh>創立年</CustomTh>
               <CustomTh>団体種別</CustomTh>
               <CustomTh>団体区分</CustomTh>
             </CustomTr>
@@ -449,7 +449,7 @@ export default function TeamSearch() {
                     {org.org_name}
                   </Link>
                 </CustomTd>
-                {/* 設立年 */}
+                {/* 創立年 */}
                 <CustomTd>{org.founding_year}</CustomTd>
                 {/* 団体種別 */}
                 <CustomTd>{org.orgTypeName}</CustomTd>
