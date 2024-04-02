@@ -31,6 +31,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import Label from '@/app/components/Label';
+import { NO_IMAGE_URL, PLAYER_IMAGE_URL } from '@/app/utils/imageUrl';
 
 // 検索条件フォームの型定義
 // 検索条件
@@ -557,10 +558,10 @@ export default function PlayerSearch() {
                 <CustomTr index={index} key={index}>
                   <CustomTd>
                     <img
-                      src={row.photo}
+                      src={row.photo ? `${PLAYER_IMAGE_URL}${row.photo}` : `${NO_IMAGE_URL}`}
                       width={100}
                       height={50}
-                      alt='Random'
+                      alt='Player Photo'
                       className='rounded-full'
                     />
                   </CustomTd>
