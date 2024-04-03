@@ -493,6 +493,24 @@ const validateFoundingYear = (foundingYear: string) => {
 };
 
 /**
+ * 設立年の形式チェック
+ * @param insertedDate
+ * @returns
+ * @description
+ * 日付を現在あるかどうか確認
+ */
+const validateDateExists = (insertedDate: string) => {
+  let errorMessage = '';
+
+  if (new Date(insertedDate) > new Date()) {
+    errorMessage = `入力された日付が誤っています。※${insertedDate}`;
+    return errorMessage;
+  }
+
+  return errorMessage;
+};
+
+/**
  * 郵便番号の形式チェック
  * @param addressNumber
  * @returns
@@ -591,6 +609,22 @@ const compareDates = (startDate: string, endDate: string) => {
   }
   return errorMessage;
 };
+const compareDatesVolunteer = (startDate: string, endDate: string) => {
+  let errorMessage = '';
+  if (startDate === '' || endDate === '') {
+    return '';
+  }
+
+  let date1 = new Date(startDate).getTime();
+  let date2 = new Date(endDate).getTime();
+
+  if (date1 > date2) {
+    errorMessage =
+      '終了生年月日の値が不正です。開始生年月日より前の日付を選択することはできません。';
+    return errorMessage;
+  }
+  return errorMessage;
+};
 
 const Validator = {
   getErrorMessages,
@@ -619,6 +653,8 @@ const Validator = {
   validateTrailError,
   validatePositiveNumber,
   compareDates,
+  validateDateExists,
+  compareDatesVolunteer,
 };
 
 export default Validator;

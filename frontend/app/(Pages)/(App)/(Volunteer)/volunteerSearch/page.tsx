@@ -58,13 +58,15 @@ import {
 } from '@mui/material';
 import CustomAutocomplete from '@/app/components/CustomAutocomplete';
 
+import Validator from '@/app/utils/validator';
+
 // 検索条件フォームの型定義
 // 検索条件
 interface SearchCond {
   volunteer_id?: number; // ボランティアID
   volunteer_name?: string; // 氏名
-  date_of_birth_start?: string; // 生年月日
-  date_of_birth_end?: string; // 生年月日
+  date_of_birth_start: string; // 生年月日
+  date_of_birth_end: string; // 生年月日
   sex?: number; // 性別
   sexName?: string; // 性別
   residence_country?: number; // 居住地（国）
@@ -152,6 +154,8 @@ export default function VolunteerSearch() {
   const [country, setCountry] = useState<CountryResponse[]>([]); // 国マスタ
   const [prefecture, setPrefecture] = useState<PrefectureResponse[]>([]); // 都道府県マスタ
 
+  const [startDateExistsErrorMessages, setStartDateExistsErrorMessages] = useState([] as string[]);
+  const [endDateExistsErrorMessages, setEndDateExistsErrorMessages] = useState([] as string[]);
   /** 関数 **/
 
   /**
@@ -542,6 +546,7 @@ export default function VolunteerSearch() {
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
                       handleInputChange('date_of_birth_start', formatDate(e as unknown as Date));
                     }}
+                    errorMessages={startDateExistsErrorMessages}
                     className='w-[210px] border-[1px] border-solid border-border rounded-md bg-white h-[56px]'
                   />
                   <p className='self-center text-small text-gray-400'>〜</p>
@@ -552,6 +557,7 @@ export default function VolunteerSearch() {
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
                       handleInputChange('date_of_birth_end', formatDate(e as unknown as Date));
                     }}
+                    errorMessages={endDateExistsErrorMessages}
                     className='w-[210px] border-[1px] border-solid border-border rounded-md bg-white h-[56px]'
                   />
                 </div>
@@ -1229,6 +1235,35 @@ export default function VolunteerSearch() {
           <CustomButton
             buttonType='primary'
             onClick={() => {
+              const startDateExistsError = Validator.getErrorMessages([
+                Validator.validateDateExists(searchCond?.date_of_birth_start),
+              ]);
+              const endDateExistsError = Validator.getErrorMessages([
+                Validator.validateDateExists(searchCond?.date_of_birth_end),
+              ]);
+              const compareDatesVolunteerError = Validator.getErrorMessages([
+                Validator.compareDatesVolunteer(
+                  searchCond?.date_of_birth_start,
+                  searchCond?.date_of_birth_end,
+                ),
+              ]);
+
+              setStartDateExistsErrorMessages(startDateExistsError as string[]);
+              setEndDateExistsErrorMessages(endDateExistsError as string[]);
+
+              if (startDateExistsError.length < 1) {
+                setStartDateExistsErrorMessages(compareDatesVolunteerError as string[]);
+              }
+
+              if (
+                startDateExistsError.length > 0 ||
+                endDateExistsError.length > 0 ||
+                compareDatesVolunteerError.length > 0
+                // dateOfBirthError.length > 0
+              ) {
+                return;
+              }
+
               handleSearch();
             }}
             className='flex flex-row justify-center gap-[4px] w-[100px]'
