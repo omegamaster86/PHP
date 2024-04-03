@@ -514,6 +514,11 @@ const validateAddressNumberFormat = (addressNumber: string) => {
   return errorMessage;
 };
 
+const validateAddressrResultFormat = () => {
+  let errorMessage = '郵便番号が無効です';
+  return errorMessage;
+};
+
 /**
  * 証跡のエラーチェック
  * @param trail
@@ -610,6 +615,7 @@ const Validator = {
   validateEqual2,
   validateFoundingYear,
   validateAddressNumberFormat,
+  validateAddressrResultFormat,
   validateTrailError,
   validatePositiveNumber,
   compareDates,

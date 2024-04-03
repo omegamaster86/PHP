@@ -339,7 +339,11 @@ export default function VolunteerInformationRef() {
             <div className='flex flex-row gap-[16px] justify-start'>
               {volunteerdata.qualHold?.map((qualHold: any) => (
                 <div id='qualHold' key={qualHold.qual_name as string}>
-                  <p className='text-secondaryText'>{qualHold.qual_name as string}</p>
+                  <p className='text-secondaryText'>
+                    {qualHold.qual_id == 99
+                      ? (qualHold.others_qual as string)
+                      : (qualHold.qual_name as string)}
+                  </p>
                 </div>
               ))}
             </div>

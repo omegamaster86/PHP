@@ -67,7 +67,7 @@ class T_raceResultRecord extends Model
     //レースIDに紐づいたレース結果情報を取得
     public function getRaceResultRecord_receId($raceId)
     {
-        $racesResultRecord = DB::select('select 
+        $racesResultRecord = DB::select('select
                                         `t_race_result_record`.`race_result_record_id`, 
                                         `t_race_result_record`.`player_id`, 
                                         `t_race_result_record`.`jara_player_id`, 
@@ -113,9 +113,9 @@ class T_raceResultRecord extends Model
                                         `t_race_result_record`.`race_result_record_name`, 
                                         `t_race_result_record`.`start_datetime`, 
                                         `t_race_result_record`.`wind_speed_2000m_point`, 
-                                        `t_race_result_record`.`wind_direction_2000m_point`, 
+                                        wd2000p.`wind_direction` as wind_direction_2000m_point, 
                                         `t_race_result_record`.`wind_speed_1000m_point`, 
-                                        `t_race_result_record`.`wind_direction_1000m_point`, 
+                                        wd1000p.`wind_direction` as wind_direction_1000m_point, 
                                         `t_race_result_record`.`race_result_notes`,
                                         `m_seat_number`.`display_order` 	as "order",
                                         `t_tournaments`.`event_start_date` as "eventStartDate",
@@ -130,11 +130,17 @@ class T_raceResultRecord extends Model
                                         on `t_race_result_record`.`tourn_id` = `t_tournaments`.`tourn_id`
                                         left join `m_venue`
                                         on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
+                                        left join `m_wind_direction` wd2000p
+                                        on `t_race_result_record`.`wind_direction_2000m_point` = wd2000p.`wind_direction_id`
+                                        left join `m_wind_direction` wd1000p
+                                        on `t_race_result_record`.`wind_direction_1000m_point` = wd1000p.`wind_direction_id`
                                         where 1=1
                                         and `t_race_result_record`.delete_flag = 0                                        
                                         and  (`t_tournaments`.`delete_flag` = 0 or `t_tournaments`.`delete_flag` is null)
                                         and  (`m_seat_number`.`delete_flag` = 0 or `m_seat_number`.`delete_flag` is null)
                                         and  (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
+                                        and  (wd2000p.`delete_flag` = 0 or wd2000p.`delete_flag` is null)
+                                        and  (wd1000p.`delete_flag` = 0 or wd1000p.`delete_flag` is null)
                                         and `t_race_result_record`.race_id = ?', [$raceId]);
         return $racesResultRecord;
     }
@@ -1167,16 +1173,65 @@ class T_raceResultRecord extends Model
     {
         Log::debug("getRaceResultRecordOnRowingPoint start.");
         $race_result_record = DB::select("select distinct
-                                        race_id
-                                        ,start_datetime
-                                        ,weather
-                                        ,wind_speed_2000m_point
-                                        ,wind_direction_2000m_point
-                                        ,wind_speed_1000m_point
-                                        ,wind_direction_1000m_point
-                                        from `t_race_result_record`
+                                        rrr.race_id
+                                        ,`m_weather_type`.`weather_name` as weatherName
+                                        ,rrr.`range`                        #距離
+                                        ,rrr.`start_datetime`               #発艇日時
+                                        ,rrr.`weather`                      #天候
+                                        ,rrr.`wind_direction_1000m_point`   #1000m地点風向
+                                        ,rrr.`wind_speed_1000m_point`       #1000m地点風速
+                                        ,rrr.`wind_direction_2000m_point`   #2000m地点風向
+                                        ,rrr.`wind_speed_2000m_point`       #2000m地点風速
+                                        ,case
+                                            when rrr.`org_id` is null then rrr.`org_id`
+                                            else rrr.`org_name`
+                                            end as `org_name              #所属団体`
+                                        ,rrr.`crew_name`                  #クルー名
+                                        ,rrr.`lane_number`                #出漕レーンNo.
+                                        ,rrr.`rank`                       #順位
+                                        ,rrr.`laptime_500m`               #500mラップタイム
+                                        ,rrr.`laptime_1000m`              #1000mラップタイム
+                                        ,rrr.`laptime_1500m`              #1500mラップタイム
+                                        ,rrr.`laptime_2000m`              #2000mラップタイム
+                                        ,rrr.`final_time`                 #最終タイム
+                                        ,rrr.`race_result_notes`          #備考
+                                        ,rrr.`stroke_rat_500m`            #500mストロークレート
+                                        ,rrr.`stroke_rat_1000m`           #1000mストロークレート
+                                        ,rrr.`stroke_rat_1500m`           #1500mストロークレート
+                                        ,rrr.`stroke_rat_2000m`           #2000mストロークレート
+                                        ,rrr.`stroke_rate_avg`            #ストロークレート(平均)
+                                        ,rrr.`player_id`                  #選手ID
+                                        ,rrr.`player_name`                #選手名
+                                        ,sex.`sex`                        #性別
+                                        ,case
+                                            when rrr.`player_height` is null then ply.`height`
+                                            else rrr.`player_height`
+                                            end as `player_height`        #身長
+                                        ,case
+                                            when rrr.`player_weight` is null then ply.`weight`
+                                            else rrr.`player_weight`
+                                            end as `player_weight`        #体重
+                                        ,rrr.`seat_number`                #シート番号
+                                        ,rrr.`heart_rate_500m`            #500m心拍数
+                                        ,rrr.`heart_rate_1000m`           #1000m心拍数
+                                        ,rrr.`heart_rate_1500m`           #1500m心拍数
+                                        ,rrr.`heart_rate_2000m`           #2000m心拍数
+                                        ,rrr.`heart_rate_avg`             #心拍数（平均）
+                                        ,rrr.`attendance`                 #立会有無
+                                        ,org.`org_name`                   #所属団体
+                                        from `t_race_result_record` rrr
+                                        left join `t_players` ply
+                                        on rrr.`player_id` = ply.`player_id`
+                                        left join `m_sex` sex
+                                        on ply.`sex_id` = sex.`sex_id`
+                                        left join `m_weather_type`
+                                        on rrr.`weather` = `m_weather_type`.`weather_id`
+                                        left join `t_organizations` org
+                                        on rrr.`org_id` = org.`org_id`
                                         where 1=1
-                                        and delete_flag = 0
+                                        and rrr.`delete_flag` = 0
+                                        and (ply.`delete_flag` = 0 or ply.`delete_flag` is null)
+                                        and (sex.`delete_flag` = 0 or sex.`delete_flag` is null)
                                         and race_id = :race_id"
                                         ,["race_id" => $race_id]);
         Log::debug("getRaceResultRecordOnRowingPoint end.");

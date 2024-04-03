@@ -32,6 +32,7 @@ export default function TournamentResultRef() {
   const param = useSearchParams();
   // 遷移元画面の情報を取得
   const mode = param.get('mode');
+  const [raceId, setRaceId] = useState<string | null>(param.get('raceId')); // レースID
 
   // レース基本情報のモデル
   const [raceInfo, setRaceInfo] = useState<Race>({} as Race);
@@ -45,18 +46,18 @@ export default function TournamentResultRef() {
         // レース情報の取得
         // const raceResponse = await axios.get('http://localhost:3100/raceInfo');
         const sendData = {
-          race_id: '1', //残件項目 20240329
+          race_id: raceId,
         };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const raceResponse = await axios.post('/getRaceDataRaceId', sendData);
         console.log(raceResponse);
 
-        setRaceInfo(raceResponse.data.result[0]);
+        setRaceInfo(raceResponse.data.race_result[0]);
 
         // 出漕結果記録情報の取得
-        const raceResultRecords = await axios.get('http://localhost:3100/raceResultRecords'); //残件項目
-        setRaceResultRecords(raceResultRecords.data);
+        // const raceResultRecords = await axios.get('http://localhost:3100/raceResultRecords');
+        setRaceResultRecords(raceResponse.data.record_result);
       } catch (error: any) {
         setErrorText([error.message]);
       }
@@ -142,7 +143,7 @@ export default function TournamentResultRef() {
           <div className='flex flex-col gap-[8px]'>
             <Label label='発艇日時' textSize='small' isBold />
             <p className='h-12 text-secondaryText py-3 disable'>
-              {raceResultRecords[0]?.startDateTime || ''}
+              {raceResultRecords[0]?.start_datetime || ''}
             </p>
           </div>
           {/* 天気 */}
@@ -225,7 +226,7 @@ export default function TournamentResultRef() {
                   <div className='flex flex-col gap-[8px]'>
                     <Label label='出漕レーンNo' textSize='small' isBold />
                     <p className='h-12 text-secondaryText py-3 disable'>
-                      {raceResultRecords[0]?.laneNumber || ''}
+                      {raceResultRecords[0]?.lane_number || ''}
                     </p>
                   </div>
                 </div>
@@ -281,7 +282,7 @@ export default function TournamentResultRef() {
                         <div className='flex flex-col gap-[8px]'>
                           <Label label='備考' textSize='small' isBold />
                           <p className='h-12 text-secondaryText py-3 disable'>
-                            {raceResultRecords[0]?.remarkId || ''}
+                            {raceResultRecords[0]?.race_result_notes || ''}
                           </p>
                         </div>
                       </div>
@@ -411,9 +412,9 @@ export default function TournamentResultRef() {
                           />
                         </div>
                       </CustomTd>
-                      <CustomTd>{''}</CustomTd>
-                      <CustomTd>{''}</CustomTd>
-                      <CustomTd>{''}</CustomTd>
+                      <CustomTd>{item.player_id}</CustomTd>
+                      <CustomTd>{item.player_name}</CustomTd>
+                      <CustomTd>{item.sex}</CustomTd>
                       <CustomTd>{item.player_height}</CustomTd>
                       <CustomTd>{item.player_weight}</CustomTd>
                       <CustomTd>{item.seat_number}</CustomTd>
@@ -421,7 +422,7 @@ export default function TournamentResultRef() {
                       <CustomTd>{item.heart_rate_1000m}</CustomTd>
                       <CustomTd>{item.heart_rate_1500m}</CustomTd>
                       <CustomTd>{item.heart_rate_2000m}</CustomTd>
-                      <CustomTd>{item.finalHeartRate}</CustomTd>
+                      <CustomTd>{item.heart_rate_avg}</CustomTd>
                       <CustomTd>{item.attendance}</CustomTd>
                     </CustomTr>
                   ))}
@@ -447,12 +448,13 @@ export default function TournamentResultRef() {
             onClick={async () => {
               try {
                 // 削除済かどうかのチェック
-                const response = await axios.get(
-                  'http://localhost:3100/checkRaceResultRecordDeleted',
-                ); //残件項目
+                // const response = await axios.get('http://localhost:3100/checkRaceResultRecordDeleted',); //残件項目
 
                 const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
+                const response = await axios.post(
+                  'http://localhost:3100/checkRaceResultRecordDeleted',
+                ); //残件項目
 
                 if (response.data.isDeleted) {
                   setErrorText(['当該レースの結果は、他のユーザーによって削除されています。']);

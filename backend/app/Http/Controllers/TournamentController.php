@@ -480,6 +480,7 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("getCrewData start"));
         $reqData = $request->all();
+        // Log::debug($reqData);
         foreach ($reqData as $key => $val) { //foreachで取り出す配列と要素の値を格納する変数を指定する。
             if ($key == 'race_id' || $key == 'crew_name' || $key == 'org_id') {
                 continue;
@@ -904,5 +905,16 @@ class TournamentController extends Controller
         Log::debug(sprintf("getRaceDataFromTournIdAndEventId end."));
         Log::debug($result);
         return response()->json(['result' => $result]); //DBの結果を返す
+    }
+
+    //大会情報参照画面用 主催団体管理者の判別 20240402
+    public function checkOrgManager(Request $request)
+    {
+        Log::debug(sprintf("checkOrgManager start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+
+        Log::debug(sprintf("checkOrgManager end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
     }
 }

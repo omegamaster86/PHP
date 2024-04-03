@@ -77,6 +77,7 @@ export default function OrgInfo() {
   const [addressNumbers, setAddressNumbers] = useState([] as string[]);
   // ボタンの活性・非活性を保持するステート
   const [displayFlg, setDisplayFlg] = useState<boolean>(true);
+  const [addStaffDisplayFlg, setAddStaffDisplayFlg] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState([] as string[]);
   const [orgNameErrorMessages, setOrgNameErrorMessages] = useState([] as string[]);
   const [foundingYearErrorMessages, setFoundingYearErrorMessages] = useState([] as string[]);
@@ -417,12 +418,18 @@ export default function OrgInfo() {
   };
 
   // スタッフ追加
-  const addCustomButton = displayFlg && (
+  const addCustomButton = addStaffDisplayFlg && (
     <CustomButton
       className='w-[120px] text-small'
       buttonType='primary'
       disabled={disableFlag}
       onClick={() => {
+        console.log(tableData.length);
+        if (tableData.length > 199) {
+          //行数が200を超えたときに、「スタッフ追加」ボタンを非表示にする
+          setAddStaffDisplayFlg(false);
+          return;
+        }
         setTableData((prevData) => [
           ...prevData,
           {
@@ -466,6 +473,15 @@ export default function OrgInfo() {
             address1: res.data.results[0].address2 + res.data.results[0].address3,
           },
         }));
+      } else {
+        const addressError = Validator.getErrorMessages([Validator.validateAddressrResultFormat()]);
+        console.log(addressError.length);
+        if (addressError.length > 0) {
+          setAddressErrorMessages(addressError);
+          return;
+        } else {
+          setAddressErrorMessages([]);
+        }
       }
       // setAddress(res.data.results[0].address2 + res.data.results[0].address3);
       // setMsg(null);
@@ -510,6 +526,7 @@ export default function OrgInfo() {
               .post('/validateOrgData', sendData) //20240308
               .then((response) => {
                 setDisableFlag(false);
+                setErrorMessage([]);
                 router.push('/team?mode=confirm&prevMode=create');
               })
               .catch((error) => {
@@ -555,6 +572,7 @@ export default function OrgInfo() {
               .then((response) => {
                 console.log(response);
                 setDisableFlag(false);
+                setErrorMessage([]);
                 router.push('/team?mode=confirm&prevMode=update');
               })
               .catch((error) => {
