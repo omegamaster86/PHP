@@ -540,6 +540,11 @@ export default function PlayerInformation() {
       <CustomButton
         buttonType='primary'
         onClick={async () => {
+          //確認画面で更新処理（F5,リロードボタン）された場合、formDataの値が空になるのでバックエンドに送信させないようにする 20240402
+          if (formData.player_name == null || formData.player_name == '') {
+            setErrorMessage([...('データが空です。もう一度必須項目を入力してください' as string)]);
+            return;
+          }
           if (prevMode == 'update') {
             // TODO: 更新処理を実装
             const registerData = {};
@@ -1120,6 +1125,7 @@ export default function PlayerInformation() {
             onClick={async () => {
               console.log(backKeyFlag);
               await setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+              setErrorMessage([]);
               console.log(backKeyFlag);
               router.back();
             }}

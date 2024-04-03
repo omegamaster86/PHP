@@ -435,4 +435,22 @@ class T_races extends Model
                         ,["tourn_id" => $tourn_id, "event_id" => $event_id]);
         return $races;
     }
+
+    //対象のレース情報の削除フラグを有効にする 20240403
+    public function updateDeleteFlagToValid($values)
+    {
+        DB::update('update t_races
+                    set `delete_flag` = 1
+                    ,updated_time = ?
+                    ,updated_user_id = ?
+                    where 1=1
+                    and `delete_flag` = 0
+                    and `tourn_id` = ?'
+                    ,[
+                        now()->format('Y-m-d H:i:s.u')
+                        ,Auth::user()->user_id
+                        ,$values
+                    ]
+                );
+    }
 }

@@ -73,7 +73,8 @@ const Header: FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (Object.keys(user).length > 0) {
+        //ユーザ情報が存在し、仮パスワードフラグが0の場合ヘッダーメニューを表示 20240403
+        if (Object.keys(user).length > 0 && user.temp_password_flag == 0) {
           setHeaderMenuFlag(1);
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
