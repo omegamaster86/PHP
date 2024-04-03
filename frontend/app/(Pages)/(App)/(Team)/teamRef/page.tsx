@@ -28,6 +28,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ROLE } from '@/app/utils/consts';
 import { Tab, Tabs } from '@mui/material';
+import { NO_IMAGE_URL, PLAYER_IMAGE_URL } from '@/app/utils/imageUrl';
 
 export default function TeamRef() {
   const [errorMessage, setErrorMessage] = useState([] as string[]);
@@ -460,7 +461,7 @@ export default function TeamRef() {
                     {/* 選手画像 */}
                     <CustomTd align='center'>
                       <img
-                        src={row.photo}
+                        src={row.photo ? `${PLAYER_IMAGE_URL}${row.photo}` : `${NO_IMAGE_URL}`}
                         alt={row.player_name}
                         className='w-[50px] h-[50px] rounded-full'
                       />
