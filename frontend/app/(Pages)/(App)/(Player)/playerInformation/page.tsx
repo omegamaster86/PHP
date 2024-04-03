@@ -541,9 +541,8 @@ export default function PlayerInformation() {
         buttonType='primary'
         onClick={async () => {
           //確認画面で更新処理（F5,リロードボタン）された場合、formDataの値が空になるのでバックエンドに送信させないようにする 20240402
-          if(formData.player_name == null || formData.player_name == ''){
-            console.log("444444444");
-            setErrorMessage([...("データが空です。もう一度必須項目を入力してください" as string)]);
+          if (formData.player_name == null || formData.player_name == '') {
+            setErrorMessage([...('データが空です。もう一度必須項目を入力してください' as string)]);
             return;
           }
           if (prevMode == 'update') {

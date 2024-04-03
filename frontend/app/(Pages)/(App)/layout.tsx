@@ -59,7 +59,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {loggedIn && (
         <div className='flex h-screen flex-col justify-between'>
           <div className='flex flex-col justify-start'>
-            <Header />
+            {user.temp_password_flag == 0 && <Header />}
             <div className='flex-grow p-4 md:overflow-y-auto md:p-12 w-full max-w-7xl m-auto min-h-screen'>
               {/* This is a extra feature for logout - start */}
               {/* <div className=' text-right mt-4 mr-2'>
