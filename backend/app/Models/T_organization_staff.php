@@ -205,4 +205,30 @@ class T_organization_staff extends Model
                     ]);
         //Log::debug("updateDeleteFlagByUserDeletion end.");
     }
+
+    //ユーザーが大会の主催団体に所属しているスタッフかを判定する
+    public function getIsOrgManager($tourn_id,$org_id,$user_id)
+    {
+        $is_org_manager = DB::select("select 
+                                        case count(*)
+                                            when 0 then 0
+                                            else 1
+                                            end as 'is_org_manager'
+                                        from `t_organization_staff` staff
+                                        join `t_tournaments` tour
+                                        on staff.org_id = tour.sponsor_org_id
+                                        where 1=1
+                                        and tour.delete_flag = 0
+                                        and staff.delete_flag = 0 
+                                        and tourn_id = :tourn_id
+                                        and staff.org_id = :org_id
+                                        and user_id = :user_id"
+                                    ,[
+                                        "tourn_id" => $tourn_id,
+                                        "org_id" => $org_id,
+                                        "user_id" => $user_id
+                                    ]);
+        //主催団体管理者であれば1、そうでなければ0を返す
+        return $is_org_manager;
+    }
 }
