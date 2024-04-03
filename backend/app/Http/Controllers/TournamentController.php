@@ -627,7 +627,7 @@ class TournamentController extends Controller
     }
 
     //DBから大会情報を削除する 20240309
-    public function deleteTournamentData(Request $request, T_tournaments $tTournament)
+    public function deleteTournamentData(Request $request, T_tournaments $tTournament, T_races $tRace)
     {
         Log::debug(sprintf("deleteTournamentData start"));
         DB::beginTransaction();
@@ -637,7 +637,8 @@ class TournamentController extends Controller
             Log::debug($reqData['tournamentFormData']['tourn_id']);
 
             if (isset($reqData['tournamentFormData']['tourn_id'])) {
-                $tTournament->updateDeleteFlag($reqData['tournamentFormData']['tourn_id']);
+                $tTournament->updateDeleteFlag($reqData['tournamentFormData']['tourn_id']); //大会情報の削除
+                $tRace->updateDeleteFlagToValid($reqData['tournamentFormData']['tourn_id']); //レース情報の削除 20240403
                 DB::commit();
             } else {
                 DB::commit();
