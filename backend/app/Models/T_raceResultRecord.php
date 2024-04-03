@@ -92,7 +92,10 @@ class T_raceResultRecord extends Model
                                         wd2000p.`wind_direction` as wind_direction_2000m_point, 
                                         `t_race_result_record`.`wind_speed_1000m_point`, 
                                         wd1000p.`wind_direction` as wind_direction_1000m_point, 
-                                        `t_race_result_record`.`race_result_notes`
+                                        `t_race_result_record`.`race_result_notes`,
+                                        `t_tournaments`.`tourn_name`,
+                                        `t_race_result_record`.range,
+                                        `m_venue`.venue_name
                                         FROM `t_race_result_record` 
                                         left join `t_tournaments`
                                         on `t_race_result_record`.`tourn_id` = `t_tournaments`.`tourn_id`
@@ -100,6 +103,8 @@ class T_raceResultRecord extends Model
                                         on `t_race_result_record`.`wind_direction_2000m_point` = wd2000p.`wind_direction_id`
                                         left join `m_wind_direction` wd1000p
                                         on `t_race_result_record`.`wind_direction_1000m_point` = wd1000p.`wind_direction_id`
+                                        left join `m_venue`
+                                        on `t_tournaments`.venue_id = `m_venue`.venue_id
                                         where 1=1
                                         and `t_race_result_record`.delete_flag = 0                                        
                                         and  (`t_tournaments`.`delete_flag` = 0 or `t_tournaments`.`delete_flag` is null)
