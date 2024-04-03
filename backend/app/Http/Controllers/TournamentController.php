@@ -470,7 +470,7 @@ class TournamentController extends Controller
         Log::debug(sprintf("getTournRaceResultRecords start"));
         $reqData = $request->all();
         Log::debug($reqData);
-        $result = $tRaceResultRecord->getRaceResultRecord_receId($reqData['race_id']);
+        $result = $tRaceResultRecord->getRaceResultRecord_raceId($reqData['race_id']);
         Log::debug(sprintf("getTournRaceResultRecords end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
