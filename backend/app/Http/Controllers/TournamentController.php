@@ -861,34 +861,36 @@ class TournamentController extends Controller
         {
             $reqData = $request->all();
             Log::debug($reqData['race_id']);
-            $race_result = $tRace->getRaceFromRaceId($reqData['race_id']); //レース情報を取得
-            //検索結果にインデックスを付与する 20240330
-            if (isset($race_result)) {
-                for ($i = 0; $i < count($race_result); $i++) {
-                    $race_result[$i]->id = $i;
-                }
-            }
+            $target_race_id = $reqData['race_id'];
+            $race_result = $tRace->getRaceFromRaceId($target_race_id); //レース情報を取得
+            // //検索結果にインデックスを付与する 20240330
+            // if (isset($race_result)) {
+            //     for ($i = 0; $i < count($race_result); $i++) {
+            //         $race_result[$i]->id = $i;
+            //     }
+            // }
             //出漕時点情報を取得
-            $record_result = $t_raceResultRecord->getRaceResultRecordOnRowingPoint($reqData['race_id']);
-
-            //レース結果情報を取得
-            //$
+            $record_result = $t_raceResultRecord->getRaceResultRecordOnRowingPoint($target_race_id);
 
             //レース結果情報の選手情報を取得して、レース結果情報に配列のプロパティを作成する
-            // foreach($record_result as $record)
-            // {
-            //     $target_player_id = $record["player_id"];
-            //     $target_crew_name = $record["crew_name"];
-            // }
+            for($index = 0; $index < count($record_result); $index++)
+            {   
+                $target_crew_name = $record_result[$index]->{'crew_name'};
+                $target_org_id = $record_result[$index]->{'org_id'};
+                $player_result = $t_raceResultRecord->getRaceResultRecordList($target_race_id,$target_crew_name,$target_org_id);
+
+                //crewPlayerのプロパティにレース結果情報
+                $record_result[$index]->{'crew_player'} = $player_result;
+            }
             Log::debug($race_result);
             Log::debug($record_result);
             Log::debug(sprintf("getRaceDataRaceId end"));
             return response()->json(['race_result' => $race_result,'record_result' => $record_result]); //DBの結果を返す
-            //return response()->json(['race_result' => $race_result,'record_result' => $record_result, 'record_result_list' => $record_result_list]); //DBの結果を返す
         }
         catch(\Throwable $e)
         {
             Log::error('Line:'.$e->getLine().' message:'.$e->getMessage());
+            return response()->json(['errMessage' => "レース結果の取得に失敗しました。"], 403);
         }
     }
 
