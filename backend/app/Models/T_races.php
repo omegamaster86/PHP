@@ -287,6 +287,7 @@ class T_races extends Model
     //レースIDを条件にレース情報を取得する
     public function getRaceFromRaceId($race_id)
     {
+        Log::debug("getRaceFromRaceId start.");
         $race = DB::select("select
                             race.`race_id`
                             ,race.`race_number`
@@ -313,7 +314,8 @@ class T_races extends Model
                             and (eve.`delete_flag` = 0 or eve.`delete_flag` is null) 
                             and race.race_id = ?"
                             ,[$race_id]);
-        Log::debug($race);
+        //Log::debug($race);
+        Log::debug("getRaceFromRaceId end.");
         return $race;
     }
 
