@@ -27,6 +27,7 @@ use App\Models\T_races;
 use App\Models\T_raceResultRecord;
 use App\Models\T_organizations;
 use App\Models\T_players;
+use App\Models\T_organization_staff;
 use App\Models\M_venue;
 use Exception;
 use Illuminate\Support\Facades\Validator;
@@ -910,13 +911,17 @@ class TournamentController extends Controller
     }
 
     //大会情報参照画面用 主催団体管理者の判別 20240402
-    public function checkOrgManager(Request $request)
+    public function checkOrgManager(Request $request, T_organization_staff $t_organization_staff)
     {
         Log::debug(sprintf("checkOrgManager start"));
         $reqData = $request->all();
         Log::debug($reqData);
-
+        $target_tourn_id = $reqData['tournInfo']['tourn_id'];
+        $target_org_id = $reqData['tournInfo']['sponsor_org_id'];
+        $target_user_id = $reqData['userInfo']['user_id'];
+        $is_org_manager = $t_organization_staff->getIsOrgManager($target_tourn_id, $target_org_id, $target_user_id);
         Log::debug(sprintf("checkOrgManager end"));
-        return response()->json(['result' => $reqData]); //DBの結果を返す
+        //主催団体管理者であれば1、そうでなければ0を返す
+        return response()->json(['result' => $is_org_manager[0]->{'is_org_manager'}]); //DBの結果を返す
     }
 }

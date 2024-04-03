@@ -92,7 +92,7 @@ class T_raceResultRecord extends Model
                                         wd2000p.`wind_direction` as wind_direction_2000m_point, 
                                         `t_race_result_record`.`wind_speed_1000m_point`, 
                                         wd1000p.`wind_direction` as wind_direction_1000m_point, 
-                                        `t_race_result_record`.`race_result_notes`,
+                                        `t_race_result_record`.`race_result_notes`
                                         FROM `t_race_result_record` 
                                         left join `t_tournaments`
                                         on `t_race_result_record`.`tourn_id` = `t_tournaments`.`tourn_id`
