@@ -399,10 +399,10 @@ class TournamentInfoAlignmentController extends Controller
             //団体情報
             $organizations = $t_organizations->getOrganizations();
             //選手情報
-            $players = $t_players->getPlayers();
+            $players = $t_players->getPlayers();            
             //チェック結果
-            $checkResult = true;
             for ($rowIndex = 0; $rowIndex < count($reqData['csvDataList']); $rowIndex++) {
+                $checkResult = true;
                 $target_row = &$reqData['csvDataList'][$rowIndex];
                 $entrysystem_tourn_id = isset($target_row['entrysystemTournId']) ? $target_row['entrysystemTournId'] : null;  //既存大会ID
                 $entrysystem_race_id = isset($target_row['entrysystemRaceId']) ? $target_row['entrysystemRaceId'] : null;   //既存レースID

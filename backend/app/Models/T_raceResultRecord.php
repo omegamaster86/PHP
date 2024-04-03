@@ -65,28 +65,16 @@ class T_raceResultRecord extends Model
     ];
 
     //レースIDに紐づいたレース結果情報を取得
-    public function getRaceResultRecord_receId($raceId)
+    public function getRaceResultRecord_raceId($raceId)
     {
-        $racesResultRecord = DB::select('select
-                                        `t_race_result_record`.`race_result_record_id`, 
-                                        `t_race_result_record`.`player_id`, 
-                                        `t_race_result_record`.`jara_player_id`, 
-                                        `t_race_result_record`.`player_name`, 
-                                        `t_race_result_record`.`entrysystem_tourn_id`, 
-                                        `t_race_result_record`.`tourn_id`, 
-                                        `t_race_result_record`.`tourn_name`, 
+        $racesResultRecord = DB::select('select distinct
                                         `t_race_result_record`.`race_id`, 
-                                        `t_race_result_record`.`entrysystem_race_id`, 
                                         `t_race_result_record`.`race_number`, 
                                         `t_race_result_record`.`race_name`, 
-                                        `t_race_result_record`.`org_id`, 
-                                        `t_race_result_record`.`entrysystem_org_id`, 
-                                        `t_race_result_record`.`org_name`, 
                                         `t_race_result_record`.`crew_name`, 
                                         `t_race_result_record`.`by_group`, 
                                         `t_race_result_record`.`event_id`, 
-                                        `t_race_result_record`.`event_name`, 
-                                        `t_race_result_record`.`range`, 
+                                        `t_race_result_record`.`event_name`,
                                         `t_race_result_record`.`rank`, 
                                         `t_race_result_record`.`laptime_500m`, 
                                         `t_race_result_record`.`laptime_1000m`, 
@@ -98,38 +86,16 @@ class T_raceResultRecord extends Model
                                         `t_race_result_record`.`stroke_rat_1000m`, 
                                         `t_race_result_record`.`stroke_rat_1500m`, 
                                         `t_race_result_record`.`stroke_rat_2000m`, 
-                                        `t_race_result_record`.`heart_rate_avg`, 
-                                        `t_race_result_record`.`heart_rate_500m`, 
-                                        `t_race_result_record`.`heart_rate_1000m`, 
-                                        `t_race_result_record`.`heart_rate_1500m`, 
-                                        `t_race_result_record`.`heart_rate_2000m`, 
                                         `t_race_result_record`.`official`, 
-                                        `t_race_result_record`.`attendance`, 
-                                        `t_race_result_record`.`ergo_weight`, 
-                                        `t_race_result_record`.`player_height`, 
-                                        `t_race_result_record`.`player_weight`, 
-                                        `t_race_result_record`.`seat_number`, 
-                                        `t_race_result_record`.`seat_name`, 
-                                        `t_race_result_record`.`race_result_record_name`, 
                                         `t_race_result_record`.`start_datetime`, 
                                         `t_race_result_record`.`wind_speed_2000m_point`, 
                                         wd2000p.`wind_direction` as wind_direction_2000m_point, 
                                         `t_race_result_record`.`wind_speed_1000m_point`, 
                                         wd1000p.`wind_direction` as wind_direction_1000m_point, 
                                         `t_race_result_record`.`race_result_notes`,
-                                        `m_seat_number`.`display_order` 	as "order",
-                                        `t_tournaments`.`event_start_date` as "eventStartDate",
-                                        case `m_venue`.`venue_name`
-                                            when "その他" then `t_tournaments`.`venue_name`
-                                            else `m_venue`.`venue_name`
-                                            end as `venue_name`
                                         FROM `t_race_result_record` 
-                                        left join `m_seat_number`
-                                        on `t_race_result_record`.`seat_number` = `m_seat_number`.`seat_id`
                                         left join `t_tournaments`
                                         on `t_race_result_record`.`tourn_id` = `t_tournaments`.`tourn_id`
-                                        left join `m_venue`
-                                        on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
                                         left join `m_wind_direction` wd2000p
                                         on `t_race_result_record`.`wind_direction_2000m_point` = wd2000p.`wind_direction_id`
                                         left join `m_wind_direction` wd1000p
@@ -137,8 +103,6 @@ class T_raceResultRecord extends Model
                                         where 1=1
                                         and `t_race_result_record`.delete_flag = 0                                        
                                         and  (`t_tournaments`.`delete_flag` = 0 or `t_tournaments`.`delete_flag` is null)
-                                        and  (`m_seat_number`.`delete_flag` = 0 or `m_seat_number`.`delete_flag` is null)
-                                        and  (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
                                         and  (wd2000p.`delete_flag` = 0 or wd2000p.`delete_flag` is null)
                                         and  (wd1000p.`delete_flag` = 0 or wd1000p.`delete_flag` is null)
                                         and `t_race_result_record`.race_id = ?', [$raceId]);
