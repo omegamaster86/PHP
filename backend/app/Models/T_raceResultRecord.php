@@ -67,7 +67,7 @@ class T_raceResultRecord extends Model
     //レースIDに紐づいたレース結果情報を取得
     public function getRaceResultRecord_receId($raceId)
     {
-        $racesResultRecord = DB::select('select 
+        $racesResultRecord = DB::select('select
                                         `t_race_result_record`.`race_result_record_id`, 
                                         `t_race_result_record`.`player_id`, 
                                         `t_race_result_record`.`jara_player_id`, 
@@ -113,9 +113,9 @@ class T_raceResultRecord extends Model
                                         `t_race_result_record`.`race_result_record_name`, 
                                         `t_race_result_record`.`start_datetime`, 
                                         `t_race_result_record`.`wind_speed_2000m_point`, 
-                                        `t_race_result_record`.`wind_direction_2000m_point`, 
+                                        wd2000p.`wind_direction` as wind_direction_2000m_point, 
                                         `t_race_result_record`.`wind_speed_1000m_point`, 
-                                        `t_race_result_record`.`wind_direction_1000m_point`, 
+                                        wd1000p.`wind_direction` as wind_direction_1000m_point, 
                                         `t_race_result_record`.`race_result_notes`,
                                         `m_seat_number`.`display_order` 	as "order",
                                         `t_tournaments`.`event_start_date` as "eventStartDate",
@@ -130,11 +130,17 @@ class T_raceResultRecord extends Model
                                         on `t_race_result_record`.`tourn_id` = `t_tournaments`.`tourn_id`
                                         left join `m_venue`
                                         on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
+                                        left join `m_wind_direction` wd2000p
+                                        on `t_race_result_record`.`wind_direction_2000m_point` = wd2000p.`wind_direction_id`
+                                        left join `m_wind_direction` wd1000p
+                                        on `t_race_result_record`.`wind_direction_1000m_point` = wd1000p.`wind_direction_id`
                                         where 1=1
                                         and `t_race_result_record`.delete_flag = 0                                        
                                         and  (`t_tournaments`.`delete_flag` = 0 or `t_tournaments`.`delete_flag` is null)
                                         and  (`m_seat_number`.`delete_flag` = 0 or `m_seat_number`.`delete_flag` is null)
                                         and  (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
+                                        and  (wd2000p.`delete_flag` = 0 or wd2000p.`delete_flag` is null)
+                                        and  (wd1000p.`delete_flag` = 0 or wd1000p.`delete_flag` is null)
                                         and `t_race_result_record`.race_id = ?', [$raceId]);
         return $racesResultRecord;
     }
@@ -1091,6 +1097,7 @@ class T_raceResultRecord extends Model
                                             ,rrr.`stroke_rat_1500m`           #1500mストロークレート
                                             ,rrr.`stroke_rat_2000m`           #2000mストロークレート
                                             ,rrr.`stroke_rate_avg`            #ストロークレート(平均)
+                                            
                                             ,rrr.`player_id`                  #選手ID
                                             ,rrr.`player_name`                #選手名
                                             ,sex.`sex`                        #性別
@@ -1164,6 +1171,7 @@ class T_raceResultRecord extends Model
     //レース結果参照・削除画面用
     public function getRaceResultRecordOnRowingPoint($race_id)
     {
+        Log::debug("getRaceResultRecordOnRowingPoint start.");
         $race_result_record = DB::select("select distinct
                                         rrr.race_id
                                         ,`m_weather_type`.`weather_name` as weatherName
@@ -1226,36 +1234,52 @@ class T_raceResultRecord extends Model
                                         and (sex.`delete_flag` = 0 or sex.`delete_flag` is null)
                                         and race_id = :race_id"
                                         ,["race_id" => $race_id]);
+        Log::debug("getRaceResultRecordOnRowingPoint end.");
         return $race_result_record;
     }
 
     //レース結果情報を取得
-    //レース結果編集画面更新モード用
+    //レース結果編集画面 更新モード用
     //レース結果参照・削除画面用
-    public function getRaceResultRecordList($race_id)
+    public function getRaceResultRecordList($race_id, $crew_name, $org_id)
     {
         $race_result_record_list = DB::select("select 
-                                                race_id
-                                                ,`org_id`
-                                                ,`org_name`
-                                                ,`crew_name`
-                                                ,`lane_number`
-                                                ,`rank`
-                                                ,`laptime_500m`
-                                                ,`laptime_1000m`
-                                                ,`laptime_1500m`
-                                                ,`laptime_2000m`
-                                                ,`final_time`
-                                                ,`race_result_notes`
-                                                ,`stroke_rat_500m`
-                                                ,`stroke_rat_1000m`
-                                                ,`stroke_rat_1500m`
-                                                ,`stroke_rat_2000m`
-                                                ,`stroke_rate_avg`
+                                                ply.player_id
+                                                ,ply.player_name
+                                                ,msex.sex_id
+                                                ,msex.sex
+                                                ,ply.height
+                                                ,ply.weight
+                                                ,rrr.seat_number
+                                                ,seat.seat_name
+                                                ,rrr.heart_rate_500m
+                                                ,rrr.heart_rate_1000m
+                                                ,rrr.heart_rate_1500m
+                                                ,rrr.heart_rate_2000m
+                                                ,rrr.attendance
+                                                ,rrr.org_id
+                                                ,rrr.crew_name
                                                 from `t_race_result_record` rrr
+                                                left join `t_players` ply
+                                                on rrr.player_id = ply.player_id 
+                                                left join `m_sex` msex
+                                                on ply.sex_id = msex.sex_id
+                                                left join `m_seat_number` seat
+                                                on rrr.seat_number = seat.seat_id
                                                 where 1=1
-                                                and race_id = :race_id"
-                                            ,["race_id" => $race_id]);
+                                                and rrr.delete_flag = 0
+                                                and (ply.delete_flag = 0 or ply.delete_flag is null)
+                                                and (msex.delete_flag = 0 or msex.delete_flag is null)
+                                                and (seat.delete_flag = 0 or seat.delete_flag is null)
+                                                and race_id = :race_id
+                                                and org_id = :org_id
+                                                and crew_name = :crew_name
+                                                order by seat_number"
+                                            ,[
+                                                "race_id" => $race_id
+                                                ,"crew_name" => $crew_name
+                                                ,"org_id" => $org_id
+                                            ,]);
         return $race_result_record_list;
     }
 }

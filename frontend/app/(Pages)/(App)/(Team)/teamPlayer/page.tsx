@@ -351,8 +351,8 @@ export default function TeamPlayer() {
                 axios
                   .post('/updateOrgPlayerData', sendData) //20240226
                   .then((response) => {
-                    // TODO: 更新処理成功時の処理
                     console.log(response.data);
+                    router.push('/teamRef?orgId=' + teamData.org_id); //変更後は、該当の団体参照画面に遷移する 20240401
                   })
                   .catch((error) => {});
               }}
