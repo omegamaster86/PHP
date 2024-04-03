@@ -27,6 +27,7 @@ use App\Models\T_races;
 use App\Models\T_raceResultRecord;
 use App\Models\T_organizations;
 use App\Models\T_players;
+use App\Models\T_organization_staff;
 use App\Models\M_venue;
 use Exception;
 use Illuminate\Support\Facades\Validator;
@@ -862,34 +863,36 @@ class TournamentController extends Controller
         {
             $reqData = $request->all();
             Log::debug($reqData['race_id']);
-            $race_result = $tRace->getRaceFromRaceId($reqData['race_id']); //レース情報を取得
-            //検索結果にインデックスを付与する 20240330
-            if (isset($race_result)) {
-                for ($i = 0; $i < count($race_result); $i++) {
-                    $race_result[$i]->id = $i;
-                }
-            }
+            $target_race_id = $reqData['race_id'];
+            $race_result = $tRace->getRaceFromRaceId($target_race_id); //レース情報を取得
+            // //検索結果にインデックスを付与する 20240330
+            // if (isset($race_result)) {
+            //     for ($i = 0; $i < count($race_result); $i++) {
+            //         $race_result[$i]->id = $i;
+            //     }
+            // }
             //出漕時点情報を取得
-            $record_result = $t_raceResultRecord->getRaceResultRecordOnRowingPoint($reqData['race_id']);
-
-            //レース結果情報を取得
-            //$
+            $record_result = $t_raceResultRecord->getRaceResultRecordOnRowingPoint($target_race_id);
 
             //レース結果情報の選手情報を取得して、レース結果情報に配列のプロパティを作成する
-            // foreach($record_result as $record)
-            // {
-            //     $target_player_id = $record["player_id"];
-            //     $target_crew_name = $record["crew_name"];
-            // }
+            for($index = 0; $index < count($record_result); $index++)
+            {   
+                $target_crew_name = $record_result[$index]->{'crew_name'};
+                $target_org_id = $record_result[$index]->{'org_id'};
+                $player_result = $t_raceResultRecord->getRaceResultRecordList($target_race_id,$target_crew_name,$target_org_id);
+
+                //crewPlayerのプロパティにレース結果情報
+                $record_result[$index]->{'crew_player'} = $player_result;
+            }
             Log::debug($race_result);
             Log::debug($record_result);
             Log::debug(sprintf("getRaceDataRaceId end"));
             return response()->json(['race_result' => $race_result,'record_result' => $record_result]); //DBの結果を返す
-            //return response()->json(['race_result' => $race_result,'record_result' => $record_result, 'record_result_list' => $record_result_list]); //DBの結果を返す
         }
         catch(\Throwable $e)
         {
             Log::error('Line:'.$e->getLine().' message:'.$e->getMessage());
+            return response()->json(['errMessage' => "レース結果の取得に失敗しました。"], 403);
         }
     }
 
@@ -909,13 +912,17 @@ class TournamentController extends Controller
     }
 
     //大会情報参照画面用 主催団体管理者の判別 20240402
-    public function checkOrgManager(Request $request)
+    public function checkOrgManager(Request $request, T_organization_staff $t_organization_staff)
     {
         Log::debug(sprintf("checkOrgManager start"));
         $reqData = $request->all();
         Log::debug($reqData);
-
+        $target_tourn_id = $reqData['tournInfo']['tourn_id'];
+        $target_org_id = $reqData['tournInfo']['sponsor_org_id'];
+        $target_user_id = $reqData['userInfo']['user_id'];
+        $is_org_manager = $t_organization_staff->getIsOrgManager($target_tourn_id, $target_org_id, $target_user_id);
         Log::debug(sprintf("checkOrgManager end"));
-        return response()->json(['result' => $reqData]); //DBの結果を返す
+        //主催団体管理者であれば1、そうでなければ0を返す
+        return response()->json(['result' => $is_org_manager[0]->{'is_org_manager'}]); //DBの結果を返す
     }
 }
