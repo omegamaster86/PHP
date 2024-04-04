@@ -95,7 +95,8 @@ class T_raceResultRecord extends Model
                                         `t_race_result_record`.`race_result_notes`,
                                         `t_tournaments`.`tourn_name`,
                                         `t_race_result_record`.range,
-                                        `m_venue`.venue_name
+                                        `m_venue`.venue_name,
+                                        `t_race_result_record`.org_id
                                         FROM `t_race_result_record` 
                                         left join `t_tournaments`
                                         on `t_race_result_record`.`tourn_id` = `t_tournaments`.`tourn_id`
@@ -986,6 +987,7 @@ class T_raceResultRecord extends Model
     //クルーの情報を取得
     public function getCrews($values)
     {
+        DB::enableQueryLog();
         $crews = DB::select('select
                             rrr.`player_id`
                             ,msn.`seat_id`
@@ -1006,7 +1008,8 @@ class T_raceResultRecord extends Model
                             and rrr.org_id = :org_id
                             order by msn.`display_order`'
                         ,$values);
-        return $crews;    
+        Log::debug(DB::getQueryLog());
+        return $crews;
     }
 
     //検索条件により、レース結果を取得する

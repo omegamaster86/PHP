@@ -481,7 +481,7 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("getCrewData start"));
         $reqData = $request->all();
-        // Log::debug($reqData);
+        Log::debug($reqData);
         foreach ($reqData as $key => $val) { //foreachで取り出す配列と要素の値を格納する変数を指定する。
             if ($key == 'race_id' || $key == 'crew_name' || $key == 'org_id') {
                 continue;
@@ -489,7 +489,13 @@ class TournamentController extends Controller
             unset($reqData[$key]);
         }
         Log::debug($reqData);
-        $result = $tRaceResultRecord->getCrews($reqData);
+
+        $search_values = array();
+        $search_values['race_id'] = $reqData['race_id'];
+        $search_values['crew_name'] = $reqData['crew_name'];
+        $search_values['org_id'] = $reqData['org_id'];
+        Log::debug($search_values);
+        $result = $tRaceResultRecord->getCrews($search_values);
         Log::debug(sprintf("getCrewData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
