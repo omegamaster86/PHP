@@ -808,6 +808,7 @@ export default function PlayerInformation() {
             onChange={(e) => handleInputChange('jara_player_id', e.target.value)}
             // toolTipTitle='Title JARA選手コード' //はてなボタン用
             toolTipText='日本ローイング協会より発行された、12桁の選手コードを入力してください。' //はてなボタン用
+            maxLength={12}
           />
         </div>
         <div className='flex flex-col justify-start'>

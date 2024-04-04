@@ -85,7 +85,8 @@ export default function TournamentRef() {
   // APIの呼び出し実績の有無を管理する状態
   const isApiFetched = useRef(false);
 
-  const orgManagerFlag = 1; //20240401 該当の団体管理者かどうかを判別するためのフラグ 残件項目
+  //20240401 該当の団体管理者かどうかを判別するためのフラグ
+  const [orgManagerFlag, setOrgManagerFlag] = useState(0);
 
   // エラーハンドリング用のステート
   const [error, setError] = useState({ isError: false, errorMessage: '' });
@@ -123,8 +124,9 @@ export default function TournamentRef() {
           userInfo: playerInf.data.result[0],
           tournInfo: tournamentResponse.data.result,
         };
-        const hoge = await axios.post('/checkOrgManager', sendData); //大会情報参照画面 主催団体管理者の判別 20240402
-        console.log(hoge);
+        const resData = await axios.post('/checkOrgManager', sendData); //大会情報参照画面 主催団体管理者の判別 20240402
+        console.log(resData.data.result);
+        setOrgManagerFlag(resData.data.result);
       };
       fetchData();
       isApiFetched.current = true;
@@ -146,36 +148,38 @@ export default function TournamentRef() {
               {mode === 'delete' && '大会情報削除'}
               {mode !== 'delete' && '大会情報'}
             </CustomTitle>
-          </div>
-          <div>
-            {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag == 1) && (
-              <Link
-                href={{
-                  pathname: '/tournament',
-                  query: { mode: 'update', tourn_id: tournId },
-                }}
-                target='_blank'
-                className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
-              >
-                <EditIcon className='cursor-pointer m-1 text-small md:text-h3' />
-                大会情報を更新
-              </Link>
-            )}
-          </div>
-          <div>
-            {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag == 1) && (
-              <Link
-                href={{
-                  pathname: '/tournamentRef',
-                  query: { mode: 'delete', tournId: tournId },
-                }}
-                target='_blank'
-                className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
-              >
-                <EditIcon className='cursor-pointer m-1 text-small md:text-h3' />
-                大会情報を削除
-              </Link>
-            )}
+            <div>
+              <div>
+                {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag == 1) && (
+                  <Link
+                    href={{
+                      pathname: '/tournament',
+                      query: { mode: 'update', tourn_id: tournId },
+                    }}
+                    target='_blank'
+                    className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
+                  >
+                    <EditIcon className='cursor-pointer m-1 text-small md:text-h3' />
+                    大会情報を更新
+                  </Link>
+                )}
+              </div>
+              <div>
+                {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag == 1) && (
+                  <Link
+                    href={{
+                      pathname: '/tournamentRef',
+                      query: { mode: 'delete', tournId: tournId },
+                    }}
+                    target='_blank'
+                    className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
+                  >
+                    <EditIcon className='cursor-pointer m-1 text-small md:text-h3' />
+                    大会情報を削除
+                  </Link>
+                )}
+              </div>
+            </div>
           </div>
           <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4 '>
             <div className='flex flex-col gap-[10px]'>
