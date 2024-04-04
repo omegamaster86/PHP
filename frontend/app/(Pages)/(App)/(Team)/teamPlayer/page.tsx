@@ -10,7 +10,6 @@ import {
   CustomTh,
   CustomTbody,
   CustomTd,
-  CustomTextField,
   OriginalCheckbox,
   CustomButton,
   ErrorBox,
@@ -33,6 +32,7 @@ export default function TeamPlayer() {
 
   const [teamData, setTeamData] = useState({} as TeamResponse);
   const [formData, setFormData] = useState<TeamPlayerInformationResponse[]>([]);
+  const [tmpFormData, setTmpFormData] = useState<TeamPlayerInformationResponse[]>([]);
   const [errorMessage, setErrorMessage] = useState([] as string[]);
   const mode = useSearchParams().get('mode');
   const orgId = useSearchParams().get('org_id')?.toString() || '';
@@ -46,7 +46,6 @@ export default function TeamPlayer() {
         break;
       case 'confirm':
         // 種別が追加かつ削除フラグが立っているデータを削除
-
         const deleteData = formData.filter((data) => data.type === '追加' && data.deleteFlag);
 
         if (deleteData.length > 0) {
@@ -92,7 +91,7 @@ export default function TeamPlayer() {
             // const response = await axios.get('/teamPlayers');
             const response = await axios.post('/searchOrganizationPlayersForTeamRef', sendId);
             const searchRes = transformData(response.data.result, '既存');
-            data = setIndex(searchRes.concat(data));
+            data = setIndex(data.concat(searchRes));
             console.log(response.data.result);
 
             // setFormData(
@@ -110,7 +109,7 @@ export default function TeamPlayer() {
             console.log(response);
             const searchRes = transformData(response.data.result, '既存');
             console.log(searchRes);
-            data = setIndex(searchRes.concat(data));
+            data = setIndex(data.concat(searchRes));
           }
           setFormData(data);
           // sessionStorage.removeItem('addPlayerList');
@@ -136,6 +135,15 @@ export default function TeamPlayer() {
     };
     getTeamPlayer();
   }, []);
+
+  // フィルタリングをリセットして元の配列に戻す関数
+  const resetFilter = () => {
+    // 元の配列をセット
+    setFormData((prevFormData) => tmpFormData);
+  };
+
+  // 戻るボタンを押した際にフィルタリングをリセットする
+  window.addEventListener('popstate', resetFilter);
 
   return (
     <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px]'>
@@ -331,6 +339,8 @@ export default function TeamPlayer() {
             <CustomButton
               buttonType='primary'
               onClick={() => {
+                // 確認画面に遷移する際、現在のformDataを復元のために一時待避
+                setTmpFormData(formData);
                 router.push('/teamPlayer?mode=confirm');
               }}
             >
