@@ -987,7 +987,7 @@ class T_raceResultRecord extends Model
     //クルーの情報を取得
     public function getCrews($values)
     {
-        DB::enableQueryLog();
+        //DB::enableQueryLog();
         $crews = DB::select('select
                             rrr.`player_id`
                             ,msn.`seat_id`
@@ -1008,7 +1008,7 @@ class T_raceResultRecord extends Model
                             and rrr.org_id = :org_id
                             order by msn.`display_order`'
                         ,$values);
-        Log::debug(DB::getQueryLog());
+        //Log::debug(DB::getQueryLog());
         return $crews;
     }
 
