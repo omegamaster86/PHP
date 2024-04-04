@@ -698,6 +698,7 @@ export default function OrgInfo() {
           displayHelp={mode !== 'confirm'}
           onChange={(e) => handleInputChange('entrysystem_org_id', e.target.value)}
           toolTipText='日本ローイング協会より発行された、6桁の団体コードを入力してください。' //はてなボタン用
+          maxLength={6}
         />
         {/* 団体名 */}
         <CustomTextField
