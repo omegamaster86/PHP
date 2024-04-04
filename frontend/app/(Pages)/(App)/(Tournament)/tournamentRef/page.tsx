@@ -85,7 +85,8 @@ export default function TournamentRef() {
   // APIの呼び出し実績の有無を管理する状態
   const isApiFetched = useRef(false);
 
-  const orgManagerFlag = 1; //20240401 該当の団体管理者かどうかを判別するためのフラグ 残件項目
+  //20240401 該当の団体管理者かどうかを判別するためのフラグ
+  const [orgManagerFlag, setOrgManagerFlag] = useState(0);
 
   // エラーハンドリング用のステート
   const [error, setError] = useState({ isError: false, errorMessage: '' });
@@ -123,8 +124,9 @@ export default function TournamentRef() {
           userInfo: playerInf.data.result[0],
           tournInfo: tournamentResponse.data.result,
         };
-        const hoge = await axios.post('/checkOrgManager', sendData); //大会情報参照画面 主催団体管理者の判別 20240402
-        console.log(hoge);
+        const resData = await axios.post('/checkOrgManager', sendData); //大会情報参照画面 主催団体管理者の判別 20240402
+        console.log(resData.data.result);
+        setOrgManagerFlag(resData.data.result);
       };
       fetchData();
       isApiFetched.current = true;
