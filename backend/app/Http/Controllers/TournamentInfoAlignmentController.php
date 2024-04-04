@@ -89,7 +89,10 @@ class TournamentInfoAlignmentController extends Controller
         $user_type = Auth::user()->user_type;
         //ログインユーザーの種別が団体管理者のみの場合、
         //ログインユーザーの所属団体が主催した大会だけを表示する
-        if($user_type == '00001001')
+        if($user_type == '00001001'
+            || $user_type == '00001011'
+            || $user_type == '00001101'
+            || $user_type == '00001111')
         {
             $tournaments = $t_tournaments->getTournamentsFromEntryYearAndUserId($event_start_year,Auth::user()->user_id);
         }
@@ -113,7 +116,7 @@ class TournamentInfoAlignmentController extends Controller
     ) {
         Log::debug(sprintf("sendTournamentEntryCsvData start"));
         $inputData = $request->all();
-        //Log::debug($inputData);
+        Log::debug($inputData);
         //$input_event_year = $inputData['tournData']['eventYear'];
         $input_tourn_id = $inputData['tournData']['tournId'];
         //$input_tourn_name = $inputData['tournData']['tournName'];
@@ -129,6 +132,7 @@ class TournamentInfoAlignmentController extends Controller
             // Log::debug("input_tourn_id = ".$input_tourn_id);
             // Log::debug("csv tourn_id = ".$inputData['csvDataList'][$rowIndex]['tournId']);
             if ($input_tourn_id != $inputData['csvDataList'][$rowIndex]['tournId']) {
+                Log::debug("選択されている大会の大会IDと一致していません.");
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
                 $inputData['csvDataList'][$rowIndex]['tournIdError'] = true;
@@ -140,6 +144,7 @@ class TournamentInfoAlignmentController extends Controller
             //Log::debug("race_count = ".$race_count);
             //「レーステーブル」から条件が全て一致するレース情報を検索し、1件のみ見つかること
             if ($race_count != 1) {
+                Log::debug("「レーステーブル」から条件が全て一致するレース情報を検索し、1件のみ見つかることが不正.");
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
                 $inputData['csvDataList'][$rowIndex]['tournIdError'] = true;
