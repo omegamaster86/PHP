@@ -1,6 +1,6 @@
 'use client';
 import { useIdleTimer } from 'react-idle-timer'; // For logout a user after one hour of inactivity
-import Header from '../../components/Header';
+import { Header, Footer, Loading } from '@/app/components';
 import { ReactNode, useState } from 'react';
 import { useAuth } from '@/app/hooks/auth';
 import { usePathname, useRouter } from 'next/navigation';
@@ -37,6 +37,10 @@ export default function Layout({ children }: { children: ReactNode }) {
     crossTab: true,
     syncTimers: 1000 * 60 * 60,
   }); //Set 1 hour inactivity time for logout .
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   function authCheck() {
     if (user) {
