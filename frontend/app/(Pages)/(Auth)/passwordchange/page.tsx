@@ -1,7 +1,7 @@
 // パスワード変更画面
 
 'use client';
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/app/hooks/auth';
 import CustomPasswordField from '@/app/components/CustomPasswordField';
 import CustomButton from '@/app/components/CustomButton';
@@ -90,9 +90,9 @@ export default function Passwordchange() {
               className='w-[200px]'
               onClick={() => {
                 console.log(user.temp_password_flag);
-                if(user.temp_password_flag == 1){
+                if (user.temp_password_flag == 1) {
                   logout(); // 仮パスワードフラグが1の場合、ログイン画面に遷移する 20240404
-                }else{
+                } else {
                   router.back();
                 }
               }}
