@@ -1,7 +1,7 @@
 // パスワード変更画面
 
 'use client';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useAuth } from '@/app/hooks/auth';
 import CustomPasswordField from '@/app/components/CustomPasswordField';
 import CustomButton from '@/app/components/CustomButton';
@@ -24,6 +24,7 @@ export default function Passwordchange() {
   const [confirmNewPasswordErrorMessages, setConfirmNewPasswordErrorMessages] = useState(
     [] as string[],
   );
+  const { user, logout } = useAuth({ middleware: 'auth' });
 
   const router = useRouter();
 
@@ -88,8 +89,12 @@ export default function Passwordchange() {
               buttonType='white-outlined'
               className='w-[200px]'
               onClick={() => {
-                // パスワード変更画面に遷移
-                router.back();
+                console.log(user.temp_password_flag);
+                if(user.temp_password_flag == 1){
+                  logout(); // 仮パスワードフラグが1の場合、ログイン画面に遷移する 20240404
+                }else{
+                  router.back();
+                }
               }}
             >
               戻る
