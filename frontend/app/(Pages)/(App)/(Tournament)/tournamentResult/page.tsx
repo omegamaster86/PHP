@@ -1529,31 +1529,31 @@ export default function TournamentResult() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.post('/getRaceDataRaceId', sendData);
-        console.log(response.data.result);
+        console.log(response.data);
         // window.alert("hoge");
-        const data = response.data.result;
+        const data = response.data;
         if (data.length == 0) {
           setErrorText(['レース情報が取得できませんでした。']);
           setRaceInfo({} as RaceTable);
           scrollTo(0, 0);
         } else {
-          setRaceInfo(data[0]);
+          setRaceInfo(data.race_result[0]);
         }
 
         // 出漕結果記録情報の取得
         // const response2 = await axios.get('http://localhost:3100/raceResultRecord');
-        setRaceResultRecordResponse(data);
+        setRaceResultRecordResponse(data.record_result[0]);
 
         // レース結果情報の取得
         // const response3 = await axios.get('http://localhost:3100/raceResultRecords');
 
         // 10件以上は表示できないため、エラーメッセージを表示する
-        // if (data.length > 10) {
-        //   setErrorText(['1つのレースに登録できるクルーは、10クルーまでです。']);
-        //   // 設定するのは10件まで
-        //   setRaceResultRecords(data.slice(0, 10));
-        //   scrollTo(0, 0);
-        // }
+        if (data.record_result.length > 10) {
+          setErrorText(['1つのレースに登録できるクルーは、10クルーまでです。']);
+          // 設定するのは10件まで
+          setRaceResultRecords(data.record_result.slice(0, 10));
+          scrollTo(0, 0);
+        }
         console.log('eeeeeeeeeee');
       } catch (error: any) {
         console.log(error);
