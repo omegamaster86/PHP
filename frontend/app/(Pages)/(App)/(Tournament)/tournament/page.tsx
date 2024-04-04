@@ -158,6 +158,7 @@ export default function Tournament() {
   const [tournInfoFailePathErrorMessage, setTournInfoFailePathErrorMessageErrorMessage] = useState(
     [] as string[],
   );
+  const [raceIdErrorMessage, setRaceIdErrorMessage] = useState([] as string[]);
   const [raceNumberErrorMessage, setRaceNumberErrorMessage] = useState([] as string[]);
   const [eventIdErrorMessage, setEventIdErrorMessage] = useState([] as string[]);
   const [raceNameErrorMessage, setRaceNameErrorMessage] = useState([] as string[]);
@@ -172,7 +173,9 @@ export default function Tournament() {
 
   // バリデーションを実行する関数
   const performValidation = () => {
-    const entrysystemRaceIdError = Validator.getErrorMessages([]);
+    const entrysystemRaceIdError = Validator.getErrorMessages([
+      Validator.validateIntegerRange(tournamentFormData.entrysystem_tourn_id),
+    ]);
     const tournNameError = Validator.getErrorMessages([
       Validator.validateRequired(tournamentFormData.tourn_name, '大会名'),
     ]);
@@ -224,6 +227,9 @@ export default function Tournament() {
       // } else {
       //   return true;
       // }
+    });
+    const raceIdErrorFlg = tableData.some((row) => {
+      return Validator.validateIntegerRange(row.entrysystem_race_id).length > 0;
     });
     const raceNumberNegativeErrorFlg = tableData.some((row) => {
       return Validator.validatePositiveNumber(row.race_number).length > 0;
@@ -282,6 +288,15 @@ export default function Tournament() {
       }
     }
 
+    if (raceIdErrorFlg) {
+      setRaceIdErrorMessage(
+        Validator.getErrorMessages([
+          'エントリーシステムのレースIDは不正な番号です、1以上数値と　2147483647以下数値を入力してください。',
+        ]),
+      );
+    } else {
+      setRaceIdErrorMessage([]);
+    }
     if (eventIdErrorFlg) {
       setEventIdErrorMessage(
         Validator.getErrorMessages([Validator.validateSelectRequired(null, '種目')]),
@@ -336,6 +351,7 @@ export default function Tournament() {
     }
 
     if (
+      entrysystemRaceIdErrorMessage.length > 0 ||
       tournNameError.length > 0 ||
       sponsorOrgIdError.length > 0 ||
       eventStartDateError.length > 0 ||
@@ -345,6 +361,7 @@ export default function Tournament() {
       tournUrlError.length > 0 ||
       eventIdErrorFlg ||
       raceNameErrorFlg ||
+      raceIdErrorFlg ||
       raceNumberNegativeErrorFlg ||
       raceTypeErrorFlg ||
       raceTypeNameErrorFlg ||
@@ -880,6 +897,7 @@ export default function Tournament() {
             value={row.entrysystem_race_id}
             onChange={(e) => handleInputChangeRace(row.id, 'entrysystem_race_id', e.target.value)}
             className='my-[8px]'
+            inputProps={{ maxLength: 10 }}
           />
         </CustomTd>
         {/* レースNo. */}
@@ -1037,6 +1055,7 @@ export default function Tournament() {
               // toolTipTitle='Title エントリーシステムの大会ID' //はてなボタン用
               toolTipText='大会エントリーシステムに発番される大会ID
               この大会IDについては、日本ローイング協会にお問い合わせください。' //はてなボタン用
+              maxLength={10}
             />
           )}
         </div>
@@ -1430,6 +1449,7 @@ export default function Tournament() {
         {
           // エラーメッセージの表示
           (raceNumberErrorMessage.length > 0 ||
+            raceIdErrorMessage.length > 0 ||
             eventIdErrorMessage.length > 0 ||
             raceNameErrorMessage.length > 0 ||
             raceTypeErrorMessage.length > 0 ||
@@ -1438,6 +1458,7 @@ export default function Tournament() {
             rangeErrorMessage.length > 0 ||
             startDateTimeErrorMessage.length > 0) && (
             <div key='tableErrorMessage' className='text-caption1 text-systemErrorText'>
+              <p>{raceIdErrorMessage}</p>
               <p>{raceNumberErrorMessage}</p>
               <p>{eventIdErrorMessage}</p>
               <p>{raceNameErrorMessage}</p>
