@@ -832,13 +832,6 @@ class TournamentController extends Controller
         return response()->json(['result' => $getData]); //DBの結果を返す
     }
 
-    //大会レース結果入力画面
-    //レース結果情報をフロントエンドに返す
-    public function postRaceResultInfo()
-    {
-
-    }
-
     //大会レース結果入力確認画面
     //レース結果情報を登録する
     public function registerRaceResultRecord(Request $request,T_raceResultRecord $t_raceResultRecord)
