@@ -19,7 +19,7 @@ import Link from 'next/link';
 import axios from '@/app/lib/axios';
 import { TeamPlayerInformationResponse, TeamResponse } from '@/app/types';
 
-const JAPAN_COUNTRY_ID = 0;
+const JAPAN_COUNTRY_ID = 112;
 
 export default function TeamPlayer() {
   const router = useRouter();
@@ -306,12 +306,12 @@ export default function TeamPlayer() {
                   </Link>
                 </CustomTd>
                 <CustomTd align='center'>
-                  {data.birth_country === JAPAN_COUNTRY_ID
+                  {data.birth_country == JAPAN_COUNTRY_ID
                     ? data.birthPrefectureName
                     : data.birthCountryName}
                 </CustomTd>
                 <CustomTd align='center'>
-                  {data.residence_country === JAPAN_COUNTRY_ID
+                  {data.residence_country == JAPAN_COUNTRY_ID
                     ? data.residencePrefectureName
                     : data.residenceCountryName}
                 </CustomTd>

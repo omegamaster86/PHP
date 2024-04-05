@@ -315,7 +315,7 @@ interface TeamPlayerInformationResponse {
   residencePrefectureName: string; // 居住地（都道府県）　#置き換え作業対応不要
   residence_prefecture?: number; // 居住地（都道府県）
   orgId: string; // 団体ID
-  orgName: string; // 団体名
+  org_name: string; // 団体名
   photo: string; // 写真
   deleteFlag: boolean; // 削除フラグ
   checked?: boolean; // チェックボックス
