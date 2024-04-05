@@ -169,6 +169,7 @@ Route::middleware('auth')->group(function () {
     //レース結果(出漕結果記録)関連
     Route::post('getTournRaceResultRecords', [TournamentController::class, 'getTournRaceResultRecords']); //大会レース結果参照画面 20240216
     Route::post('getCrewData', [TournamentController::class, 'getCrewData']); //クルー取得 20240216
+    Route::post('getCrewNumberForEventId', [TournamentController::class, 'getCrewNumberForEventId']); //種目名毎のクルー人数を取得 20240405
 
     //ボランティア関連
     Route::post('getVolunteerData', [VolunteerController::class, 'getVolunteerData']); //ボランティア情報取得 20240213 ※ボランティア履歴情報も取得する
