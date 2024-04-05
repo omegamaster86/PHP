@@ -783,12 +783,12 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("searchRaceData start."));
         $reqData = $request->all();
-        Log::debug($reqData);        
+        // Log::debug($reqData);        
         $values = array();
         //検索条件の文字列を生成
         $conditionString = $this->generateRaceSearchCondition($reqData,$values);
         $getData = $t_races->getRaceResultWithCondition($conditionString,$values);
-        Log::debug($getData);
+        // Log::debug($getData);
         Log::debug(sprintf("searchRaceData end."));
         return response()->json(['result' => $getData]); //DBの結果を返す
     }
@@ -830,7 +830,7 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("getRaceResultRecord start."));
         $reqData = $request->all();
-        Log::debug($reqData);
+        // Log::debug($reqData);
         $player_id = $reqData['player_id'];
         $race_id = $reqData['race_id'];
         $getData = $t_players->getPlayerInfoAndRaceResultRecord($player_id,$race_id);
@@ -840,17 +840,60 @@ class TournamentController extends Controller
 
     //大会レース結果入力確認画面
     //レース結果情報を登録する
-    public function registerRaceResultRecord(Request $request,T_raceResultRecord $t_raceResultRecord)
+    public function registerRaceResultRecord(Request $request,
+                                                T_raceResultRecord $t_raceResultRecord,
+                                                T_players $t_players,
+                                                T_races $t_races,
+                                                T_tournaments $t_tournaments
+                                            )
+    {
+        Log::debug(sprintf("registerRaceResultRecord start."));
+        $reqData = $request->all();
+        Log::debug($reqData);
+
+        //jara_player_idが空のとき
+        //選手テーブルからjara_player_idを取得
+        
+        //エントリーレースIDが空のとき
+        //レーステーブルからエントリーレースIDを取得
+
+        //エントリー大会IDが空のとき
+        //レーステーブルから大会IDを取得して大会情報を取得
+        //取得した大会情報からエントリー大会IDを取得
+        
+        //登録処理
+
+        Log::debug(sprintf("registerRaceResultRecord end."));
+        return response()->json(['result' => true]); //DBの結果を返す
+    }
+
+    //大会レース結果更新確認画面
+    //レース結果更新確認画面で更新処理を実行する
+    public function updateRaceResultRecordForUpdateConfirm(Request $request,
+                                                            T_raceResultRecord $t_raceResultRecord,
+                                                            T_players $t_players,
+                                                            T_races $t_races,
+                                                            T_tournaments $t_tournaments)
     {
         Log::debug(sprintf("registerRaceResultRecord start."));
         $reqData = $request->all();
         Log::debug($reqData);
         
-        //登録処理
+        //jara_player_idが空のとき
+        //選手テーブルからjara_player_idを取得
+        
+        //エントリーレースIDが空のとき
+        //レーステーブルからエントリーレースIDを取得
 
+        //エントリー大会IDが空のとき
+        //レースIDを条件に大会情報を取得
+        //取得した大会情報からエントリー大会IDを取得
+
+        //更新処理
 
         Log::debug(sprintf("registerRaceResultRecord end."));
         return response()->json(['result' => true]); //DBの結果を返す
+
     }
 
     //大会レース結果入力確認画面
@@ -864,12 +907,6 @@ class TournamentController extends Controller
             Log::debug($reqData['race_id']);
             $target_race_id = $reqData['race_id'];
             $race_result = $tRace->getRaceFromRaceId($target_race_id); //レース情報を取得
-            // //検索結果にインデックスを付与する 20240330
-            // if (isset($race_result)) {
-            //     for ($i = 0; $i < count($race_result); $i++) {
-            //         $race_result[$i]->id = $i;
-            //     }
-            // }
             //出漕時点情報を取得
             $record_result = $t_raceResultRecord->getRaceResultRecordOnRowingPoint($target_race_id);
 
@@ -923,5 +960,17 @@ class TournamentController extends Controller
         Log::debug(sprintf("checkOrgManager end"));
         //主催団体管理者であれば1、そうでなければ0を返す
         return response()->json(['result' => $is_org_manager[0]->{'is_org_manager'}]); //DBの結果を返す
+    }
+
+    //種目IDを受け取り、種目テーブルから人数を取得する
+    public function getCrewNumberForEventId(Request $request, M_events $m_events)
+    {
+        Log::debug(sprintf("getCrewNumberForEventId start."));
+        $reqData = $request->all();
+        $target_event_id = $reqData["event_id"];
+        $events = $m_events->getEventForEventID($target_event_id);
+        $crew_number = $events[0]->{"crew_number"};
+        Log::debug(sprintf("getCrewNumberForEventId end."));
+        return response()->json(['result' => $crew_number]); //DBの結果を返す
     }
 }

@@ -1109,7 +1109,7 @@ class OrganizationController extends Controller
     {
         Log::debug(sprintf("validateOrgData start"));
         $reqData = $request->all();
-        Log::debug($reqData);
+        //Log::debug($reqData);
         //Log::debug($reqData['formData']['entrysystem_org_id']);
         $formData = $reqData['formData'];
         $staff_list = &$reqData['staffList'];
@@ -1117,17 +1117,17 @@ class OrganizationController extends Controller
         $duplicationCount = 0;
         //団体IDがnullでエントリーシステムの団体IDが入力されている場合、登録時の重複チェックを行う
         if (!isset($formData['org_id']) && isset($formData['entrysystem_org_id'])) {
-            Log::debug("call getEntrysystemOrgIdCount");
+            // Log::debug("call getEntrysystemOrgIdCount");
             $duplicationCount = $tOrganizations->getEntrysystemOrgIdCount($formData['entrysystem_org_id']);
         }
         //団体IDとエントリーシステムの団体IDが入力されている場合、更新時の重複チェックを行う
         if (isset($formData['org_id']) && isset($formData['entrysystem_org_id'])) {
-            Log::debug("call getEntrysystemOrgIdCountWithOrgId");
+            // Log::debug("call getEntrysystemOrgIdCountWithOrgId");
             $duplicationCount = $tOrganizations->getEntrysystemOrgIdCountWithOrgId($formData['entrysystem_org_id'], $formData['org_id']);
         }
 
         if ($duplicationCount > 0) {
-            Log::debug(sprintf("validateOrgData duplication"));
+            // Log::debug(sprintf("validateOrgData duplication"));
             return response()->json(["エントリーシステムの団体IDが重複しています。"], 401);
         }
 
@@ -1135,7 +1135,7 @@ class OrganizationController extends Controller
         $user_ids = array_column($staff_list, 'user_id');
         $duplicates = array_unique(array_diff_assoc($user_ids, array_unique($user_ids)));
         if (!empty($duplicates)) {
-            Log::debug(sprintf("validateOrgData duplicate user id. "));
+            // Log::debug(sprintf("validateOrgData duplicate user id. "));
             return response()->json(["重複して登録されているユーザーが有ります。ユーザーID：".implode(', ', $duplicates)], 401);
         }
 
@@ -1149,12 +1149,12 @@ class OrganizationController extends Controller
                                 }), 'user_id');
         if(!empty($disable_staffs_ids))
         {
-            Log::debug(sprintf("validateOrgData disable user id exists. "));
+            // Log::debug(sprintf("validateOrgData disable user id exists. "));
             return response()->json(["本システムに本登録されていないユーザー登録されていないユーザーが含まれています。ユーザーID：".implode(', ', $disable_staffs_ids)], 401);
         }
 
         //スタッフの入力が100件以下のチェック
-        $enable_staff_count = 0;        
+        $enable_staff_count = 0;
         foreach($staff_list as $staff)
         {
             if(!$staff['delete_flag'])
@@ -1168,11 +1168,10 @@ class OrganizationController extends Controller
         }
         if($enable_staff_count > 100)
         {
-            Log::debug(sprintf("validateOrgData More than 100 staff entered. "));
+            // Log::debug(sprintf("validateOrgData More than 100 staff entered. "));
             return response()->json(["登録できるスタッフの人数が、100名を超えています。
             1団体に登録できるスタッフ数は、100名までです。"], 401);
         }
-
         Log::debug(sprintf("validateOrgData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
     }

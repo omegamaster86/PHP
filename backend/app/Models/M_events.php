@@ -32,6 +32,7 @@ class M_events extends Model
                                 ,`event_name`
                                 ,`abbr_name`
                                 ,`mixed_sex`
+                                ,`crew_number`
                                 from `m_events`
                                 where 1=1
                                 and `delete_flag` = ?
