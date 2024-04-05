@@ -2647,7 +2647,7 @@ export default function TournamentResult() {
         </CustomButton>
         <CustomButton
           buttonType='primary'
-          onClick={() => {
+          onClick={async () => {
             /**
              * 各「レース結果情報入力」.「選手情報一覧」.「削除」にて、全ての選手がチェック状態の「レース結果情報」が存在する場合、
              * 以下のメッセージをポップアップ表示する。
@@ -2682,6 +2682,18 @@ export default function TournamentResult() {
               } else if (mode === 'update') {
                 // 更新処理
                 router.push('/tournamentResult?mode=confirm&prevMode=update');
+              } else if (mode === 'confirm') {
+                //登録・更新確認画面からバックエンド側にデータを送る 20240405
+                const sendData = {
+                  raceInfo: raceInfo,
+                  raceResultRecordResponse: raceResultRecordResponse,
+                  raceResultRecords: raceResultRecords,
+                };
+                const csrf = () => axios.get('/sanctum/csrf-cookie');
+                await csrf();
+                const raceResponse = await axios.post('/getCrewNumberForEventId', sendData);
+                console.log(raceResponse);
+                // router.push('/tournamentResult?mode=confirm&prevMode=update');
               }
             }
           }}
