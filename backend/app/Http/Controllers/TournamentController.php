@@ -481,15 +481,21 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("getCrewData start"));
         $reqData = $request->all();
-        // Log::debug($reqData);
+        //Log::debug($reqData);
         foreach ($reqData as $key => $val) { //foreachで取り出す配列と要素の値を格納する変数を指定する。
             if ($key == 'race_id' || $key == 'crew_name' || $key == 'org_id') {
                 continue;
             }
             unset($reqData[$key]);
         }
-        Log::debug($reqData);
-        $result = $tRaceResultRecord->getCrews($reqData);
+        //Log::debug($reqData);
+
+        $search_values = array();
+        $search_values['race_id'] = $reqData['race_id'];
+        $search_values['crew_name'] = $reqData['crew_name'];
+        $search_values['org_id'] = $reqData['org_id'];
+
+        $result = $tRaceResultRecord->getCrews($search_values);
         Log::debug(sprintf("getCrewData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
@@ -830,13 +836,6 @@ class TournamentController extends Controller
         $getData = $t_players->getPlayerInfoAndRaceResultRecord($player_id,$race_id);
         Log::debug(sprintf("getRaceResultRecord end."));
         return response()->json(['result' => $getData]); //DBの結果を返す
-    }
-
-    //大会レース結果入力画面
-    //レース結果情報をフロントエンドに返す
-    public function postRaceResultInfo()
-    {
-
     }
 
     //大会レース結果入力確認画面

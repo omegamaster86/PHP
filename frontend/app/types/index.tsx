@@ -82,7 +82,7 @@ interface RaceResultRecordsResponse {
   //選手に関する情報を追加 20240401---------
   player_id: string; // 選手ID
   player_name: string; // 選手名
-  sex: number; // 天候
+  sex: number; // 性別ID
 }
 
 interface CrewPlayer {
