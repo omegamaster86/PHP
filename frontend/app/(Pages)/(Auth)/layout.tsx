@@ -38,9 +38,9 @@ export default function Layout({ children }: { children: ReactNode }) {
     syncTimers: 1000 * 60 * 60,
   }); //Set 1 hour inactivity time for logout .
 
-  if (isLoading) {
-    return <Loading />;
-  }
+  // if (isLoading) {
+  //   return <Loading />;
+  // }
 
   function authCheck() {
     if (user) {
