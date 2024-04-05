@@ -1549,7 +1549,7 @@ export default function TournamentResult() {
 
         // 10件以上は表示できないため、エラーメッセージを表示する
         if (data.record_result.length > 10) {
-          setErrorText(['1つのレースに登録できるクルーは、10クルーまでです。']);
+          // setErrorText(['1つのレースに登録できるクルーは、10クルーまでです。']); //既に注釈で同じ文章が記載されているため不要 20240405
           // 設定するのは10件まで
           setRaceResultRecords(data.record_result.slice(0, 10));
           scrollTo(0, 0);
@@ -1664,12 +1664,27 @@ export default function TournamentResult() {
                     value: item.id.toString(),
                   }))}
                   className='w-[270px]'
-                  onChange={(e: any) => {
+                  onChange={async (e: any) => {
                     handleRaceInputChange('race_id', e as string);
                     handleRaceInputChange(
                       'race_name',
                       raceNameOptions.find((item) => item.id === e)?.name || '',
                     );
+                    const sendData = {
+                      race_id: e as string,
+                    };
+                    const csrf = () => axios.get('/sanctum/csrf-cookie');
+                    await csrf();
+                    const response = await axios.post('/getRaceDataRaceId', sendData);
+                    console.log(response.data);
+                    const data = response.data;
+                    if (data.length == 0) {
+                      setErrorText(['レース情報が取得できませんでした。']);
+                      setRaceInfo({} as RaceTable);
+                      scrollTo(0, 0);
+                    } else {
+                      setRaceInfo(data.race_result[0]);
+                    }
                   }}
                   readonly={mode === 'update' || mode === 'confirm'}
                 />
@@ -1695,9 +1710,24 @@ export default function TournamentResult() {
                         ]
                       }
                       getOptionLabel={(option) => option.name || ''}
-                      onChange={(e, newTarget) => {
+                      onChange={async (e, newTarget) => {
                         handleRaceInputChange('race_id', newTarget?.id.toString() || '');
                         handleRaceInputChange('race_name', newTarget?.name || '');
+                        const sendData = {
+                          race_id: newTarget?.id,
+                        };
+                        const csrf = () => axios.get('/sanctum/csrf-cookie');
+                        await csrf();
+                        const response = await axios.post('/getRaceDataRaceId', sendData);
+                        console.log(response.data);
+                        const data = response.data;
+                        if (data.length == 0) {
+                          setErrorText(['レース情報が取得できませんでした。']);
+                          setRaceInfo({} as RaceTable);
+                          scrollTo(0, 0);
+                        } else {
+                          setRaceInfo(data.race_result[0]);
+                        }
                       }}
                       renderOption={(props: any, option: MasterResponse) => {
                         return (
@@ -1916,7 +1946,7 @@ export default function TournamentResult() {
         <div></div>
         {mode !== 'confirm' && (
           <p className='text-systemErrorText leading-loose'>
-            1つのレースに登録できるクルーは、10クルーまでです。
+            ※1つのレースに登録できるクルーは、10クルーまでです。
           </p>
         )}
         {mode !== 'confirm' && (
@@ -1938,7 +1968,7 @@ export default function TournamentResult() {
                   },
                 ]);
               } else {
-                setErrorText(['1つのレースに登録できるクルーは、10クルーまでです。']);
+                // setErrorText(['1つのレースに登録できるクルーは、10クルーまでです。']);
                 scrollTo(0, 0);
               }
             }}
@@ -2617,7 +2647,7 @@ export default function TournamentResult() {
         </CustomButton>
         <CustomButton
           buttonType='primary'
-          onClick={() => {
+          onClick={async () => {
             /**
              * 各「レース結果情報入力」.「選手情報一覧」.「削除」にて、全ての選手がチェック状態の「レース結果情報」が存在する場合、
              * 以下のメッセージをポップアップ表示する。
@@ -2652,6 +2682,18 @@ export default function TournamentResult() {
               } else if (mode === 'update') {
                 // 更新処理
                 router.push('/tournamentResult?mode=confirm&prevMode=update');
+              } else if (mode === 'confirm') {
+                //登録・更新確認画面からバックエンド側にデータを送る 20240405
+                const sendData = {
+                  raceInfo: raceInfo,
+                  raceResultRecordResponse: raceResultRecordResponse,
+                  raceResultRecords: raceResultRecords,
+                };
+                const csrf = () => axios.get('/sanctum/csrf-cookie');
+                await csrf();
+                const raceResponse = await axios.post('/getCrewNumberForEventId', sendData);
+                console.log(raceResponse);
+                // router.push('/tournamentResult?mode=confirm&prevMode=update');
               }
             }
           }}

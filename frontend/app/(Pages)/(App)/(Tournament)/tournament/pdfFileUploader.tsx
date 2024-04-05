@@ -148,13 +148,13 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
             toolTipText='登録できるファイルの種類は、PDFファイルのみです。' //はてなボタン用
           ></CustomInputLabel>
           {!props.readonly && (
-            <div {...getRootProps()} className='mb-1'>
-              <div className='mb-1'>
+            <div {...getRootProps()} className='w-[555px]'>
+              <div>
                 <input {...getInputProps()} />
                 <p className='text-secondaryText text-sm'>
                   {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : ''}
                 </p>
-                <div className='flex flex-col gap-[10px] w-full'>
+                <div className='flex flex-col w-full'>
                   <div className='flex flex-row gap-[4px]'>
                     <CustomTextField
                       placeholder={'ここにファイルをドラッグ＆ドロップしてアップロード'}
