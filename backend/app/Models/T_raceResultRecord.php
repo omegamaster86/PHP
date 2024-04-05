@@ -93,6 +93,7 @@ class T_raceResultRecord extends Model
                                         `t_race_result_record`.`wind_speed_1000m_point`, 
                                         wd1000p.`wind_direction` as wind_direction_1000m_point, 
                                         `t_race_result_record`.`race_result_notes`,
+                                        `t_tournaments`.`tourn_id`,
                                         `t_tournaments`.`tourn_name`,
                                         `t_race_result_record`.range,
                                         `m_venue`.venue_name,
