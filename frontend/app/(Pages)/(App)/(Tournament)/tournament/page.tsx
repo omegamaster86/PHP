@@ -173,9 +173,9 @@ export default function Tournament() {
 
   // バリデーションを実行する関数
   const performValidation = () => {
-    const entrysystemRaceIdError = Validator.getErrorMessages([
-      Validator.validateIntegerRange(tournamentFormData.entrysystem_tourn_id),
-    ]);
+    // const entrysystemRaceIdError = Validator.getErrorMessages([
+    //   Validator.validateIntegerRange(tournamentFormData.entrysystem_tourn_id),
+    // ]);
     const tournNameError = Validator.getErrorMessages([
       Validator.validateRequired(tournamentFormData.tourn_name, '大会名'),
     ]);
@@ -268,7 +268,7 @@ export default function Tournament() {
       return Validator.validateRequired(row.start_date_time, '発艇日時').length > 0;
     });
 
-    setEntrysystemRaceIdErrorMessage(entrysystemRaceIdError);
+    // setEntrysystemRaceIdErrorMessage(entrysystemRaceIdError);
     setTournNameErrorMessage(tournNameError);
     setSponsorOrgIdErrorMessage(sponsorOrgIdError);
     setEventStartDateErrorMessage(eventStartDateError);
