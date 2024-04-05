@@ -29,6 +29,7 @@ use App\Models\T_organizations;
 use App\Models\T_players;
 use App\Models\T_organization_staff;
 use App\Models\M_venue;
+use App\Models\M_events;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 
@@ -840,7 +841,7 @@ class TournamentController extends Controller
 
     //大会レース結果入力確認画面
     //レース結果情報を登録する
-    public function registerRaceResultRecord(Request $request,
+    public function registerRaceResultRecordForRegisterConfirm(Request $request,
                                                 T_raceResultRecord $t_raceResultRecord,
                                                 T_players $t_players,
                                                 T_races $t_races,
@@ -879,21 +880,37 @@ class TournamentController extends Controller
         $reqData = $request->all();
         Log::debug($reqData);
         
-        //jara_player_idが空のとき
-        //選手テーブルからjara_player_idを取得
-        
-        //エントリーレースIDが空のとき
-        //レーステーブルからエントリーレースIDを取得
+        DB::beginTransaction();
+        try
+        {
+            for($index=0;$index < count($reqData);$index++)
+            {
+                //jara_player_idが空のとき
+                //選手テーブルからjara_player_idを取得
+                $target_player_id = $reqData[$index]->{"player_id"};
+                $target_player = $t_players->getPlayerData($target_player_id);
+                
+                //エントリーレースIDが空のとき
+                //レーステーブルからエントリーレースIDを取得
 
-        //エントリー大会IDが空のとき
-        //レースIDを条件に大会情報を取得
-        //取得した大会情報からエントリー大会IDを取得
+                //エントリー大会IDが空のとき
+                //レースIDを条件に大会情報を取得
+                //取得した大会情報からエントリー大会IDを取得
+                //$target_tourn = $t_tournaments->getTournamentFromTournId();
 
-        //更新処理
+                //チェックがついている場合、団体ID、クルー名、レースIDが一致するレース結果を削除する
 
-        Log::debug(sprintf("registerRaceResultRecord end."));
-        return response()->json(['result' => true]); //DBの結果を返す
-
+                //更新処理
+            }
+            //DB::commit();
+            Log::debug(sprintf("registerRaceResultRecord end."));
+            return response()->json(['result' => true]); //DBの結果を返す
+        }
+        catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
+            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+        }
     }
 
     //大会レース結果入力確認画面
