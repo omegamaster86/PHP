@@ -176,6 +176,8 @@ export default function Tournament() {
     // const entrysystemRaceIdError = Validator.getErrorMessages([
     //   Validator.validateIntegerRange(tournamentFormData.entrysystem_tourn_id),
     // ]);
+    const entrysystemRaceIdError = Validator.getErrorMessages([]);
+
     const tournNameError = Validator.getErrorMessages([
       Validator.validateRequired(tournamentFormData.tourn_name, '大会名'),
     ]);
@@ -288,15 +290,15 @@ export default function Tournament() {
       }
     }
 
-    if (raceIdErrorFlg) {
-      setRaceIdErrorMessage(
-        Validator.getErrorMessages([
-          'エントリーシステムのレースIDは不正な番号です、1以上数値と　2147483647以下数値を入力してください。',
-        ]),
-      );
-    } else {
-      setRaceIdErrorMessage([]);
-    }
+    // if (raceIdErrorFlg) {
+    //   setRaceIdErrorMessage(
+    //     Validator.getErrorMessages([
+    //       'エントリーシステムのレースIDは不正な番号です、1以上数値と　2147483647以下数値を入力してください。',
+    //     ]),
+    //   );
+    // } else {
+    //   setRaceIdErrorMessage([]);
+    // }
     if (eventIdErrorFlg) {
       setEventIdErrorMessage(
         Validator.getErrorMessages([Validator.validateSelectRequired(null, '種目')]),
@@ -370,6 +372,15 @@ export default function Tournament() {
       rangeNegativeErrorFlg ||
       startDateTimeErrorFlg
     ) {
+      console.log(entrysystemRaceIdErrorMessage);
+      console.log(tournNameError);
+      console.log(sponsorOrgIdError);
+      console.log(eventStartDateError);
+      console.log(eventEndDateError);
+      console.log(venueIdError);
+      console.log(venueNameError);
+      console.log(raceIdErrorFlg);
+
       return true;
     } else {
       return false;
@@ -777,6 +788,7 @@ export default function Tournament() {
         onClick={async () => {
           setDisplayFlg(false);
           const isError = performValidation();
+          console.log(isError);
           if (!isError) {
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
@@ -1055,7 +1067,7 @@ export default function Tournament() {
               // toolTipTitle='Title エントリーシステムの大会ID' //はてなボタン用
               toolTipText='大会エントリーシステムに発番される大会ID
               この大会IDについては、日本ローイング協会にお問い合わせください。' //はてなボタン用
-              maxLength={10}
+              maxLength={8}
             />
           )}
         </div>
