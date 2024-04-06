@@ -113,19 +113,19 @@ interface CrewPlayer {
   deleteFlg: boolean; // 削除フラグ
   addonLineFlg: boolean; // 追加行フラグ
   errorText: string; // エラーテキスト
-  laneNumber: number; // レーンNo
-  rank: number; // 順位
-  laptime_500m: number; // 500mラップタイム
-  laptime_1000m: number; // 1000mラップタイム
-  laptime_1500m: number; // 1500mラップタイム
-  laptime_2000m: number; // 2000mラップタイム
-  stroke_rat_500m: number; // 500mlapストロークレート
-  stroke_rat_1000m: number; // 1000mlapストロークレート
-  stroke_rat_1500m: number; // 1500mlapストロークレート
-  stroke_rat_2000m: number; // 2000mlapストロークレート
-  stroke_rate_avg: number; // ストロークレート（平均）
-  final_time: number; // 最終タイム
-  race_result_notes: string; // 備考
+  laneNumber?: number; // レーンNo
+  rank?: number; // 順位
+  laptime_500m?: number; // 500mラップタイム
+  laptime_1000m?: number; // 1000mラップタイム
+  laptime_1500m?: number; // 1500mラップタイム
+  laptime_2000m?: number; // 2000mラップタイム
+  stroke_rat_500m?: number; // 500mlapストロークレート
+  stroke_rat_1000m?: number; // 1000mlapストロークレート
+  stroke_rat_1500m?: number; // 1500mlapストロークレート
+  stroke_rat_2000m?: number; // 2000mlapストロークレート
+  stroke_rate_avg?: number; // ストロークレート（平均）
+  final_time?: number; // 最終タイム
+  race_result_notes?: string; // 備考
 }
 
 // 団体情報

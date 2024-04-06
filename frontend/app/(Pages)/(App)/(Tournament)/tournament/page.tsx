@@ -42,7 +42,7 @@ interface FileHandler {
   clearFile(): void;
 }
 
-export default function Tournament() {
+export default function Tournaments() {
   // フック
   const router = useRouter();
   const fileUploaderRef = useRef<FileHandler>(null);
@@ -230,9 +230,9 @@ export default function Tournament() {
       //   return true;
       // }
     });
-    const raceIdErrorFlg = tableData.some((row) => {
-      return Validator.validateIntegerRange(row.entrysystem_race_id).length > 0;
-    });
+    // const raceIdErrorFlg = tableData.some((row) => {
+    //   return Validator.validateIntegerRange(row.entrysystem_race_id).length > 0;
+    // });
     const raceNumberNegativeErrorFlg = tableData.some((row) => {
       return Validator.validatePositiveNumber(row.race_number).length > 0;
     });
@@ -363,7 +363,7 @@ export default function Tournament() {
       tournUrlError.length > 0 ||
       eventIdErrorFlg ||
       raceNameErrorFlg ||
-      raceIdErrorFlg ||
+      // raceIdErrorFlg ||
       raceNumberNegativeErrorFlg ||
       raceTypeErrorFlg ||
       raceTypeNameErrorFlg ||
@@ -379,7 +379,7 @@ export default function Tournament() {
       console.log(eventEndDateError);
       console.log(venueIdError);
       console.log(venueNameError);
-      console.log(raceIdErrorFlg);
+      // console.log(raceIdErrorFlg);
 
       return true;
     } else {
