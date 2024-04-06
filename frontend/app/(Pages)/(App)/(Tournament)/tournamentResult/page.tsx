@@ -1578,19 +1578,27 @@ export default function TournamentResult() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.post('/getRaceDataRaceId', sendData);
-        console.log(response.data.result);
+        console.log(response.data.race_result);
 
-        const data = response.data.result;
+        const data = response.data.race_result;
         // 遷移元からイベントIDが取得できる時だけ、遷移元からのイベントIDをセットする。セットされていない時は、レース情報からイベントIDをセットする。
 
         setRaceInfo({
           ...data[0],
-          eventId: eventId || data[0].eventId,
+          event_id: eventId || data[0].event_id,
         });
 
         // 種目マスタに紐づく選手の人数 (バックエンドからの取得方法不明のためDummy)
         // TODO: 種目マスタに紐づく選手の人数を取得する
-        const response2 = Math.floor(Math.random() * 5) + 1;
+        // const response2 = Math.floor(Math.random() * 5) + 1;
+        const sendEventId = {
+          event_id: eventId || data[0].event_id,
+        };
+        console.log('kkkkkkkkkkkkk');
+        console.log(sendEventId);
+        const res2 = await axios.post('/getCrewNumberForEventId', sendEventId);
+        const response2 = res2.data.result;
+        console.log(response2);
         setPlayerCount(response2);
         if (mode === 'create') {
           // レース結果情報の取得
@@ -2683,17 +2691,37 @@ export default function TournamentResult() {
                 // 更新処理
                 router.push('/tournamentResult?mode=confirm&prevMode=update');
               } else if (mode === 'confirm') {
-                //登録・更新確認画面からバックエンド側にデータを送る 20240405
-                const sendData = {
-                  raceInfo: raceInfo,
-                  raceResultRecordResponse: raceResultRecordResponse,
-                  raceResultRecords: raceResultRecords,
-                };
-                const csrf = () => axios.get('/sanctum/csrf-cookie');
-                await csrf();
-                const raceResponse = await axios.post('/getCrewNumberForEventId', sendData);
-                console.log(raceResponse);
-                // router.push('/tournamentResult?mode=confirm&prevMode=update');
+                if (prevMode == 'create') {
+                  //登録・更新確認画面からバックエンド側にデータを送る 20240405
+                  const sendData = {
+                    raceInfo: raceInfo,
+                    raceResultRecordResponse: raceResultRecordResponse,
+                    raceResultRecords: raceResultRecords,
+                  };
+                  const csrf = () => axios.get('/sanctum/csrf-cookie');
+                  await csrf();
+                  const raceResponse = await axios.post(
+                    '/registerRaceResultRecordForRegisterConfirm',
+                    sendData,
+                  );
+                  console.log(raceResponse);
+                  // router.push('/tournamentResult?mode=confirm&prevMode=update');
+                } else if (prevMode == 'update') {
+                  //登録・更新確認画面からバックエンド側にデータを送る 20240405
+                  const sendData = {
+                    raceInfo: raceInfo,
+                    raceResultRecordResponse: raceResultRecordResponse,
+                    raceResultRecords: raceResultRecords,
+                  };
+                  const csrf = () => axios.get('/sanctum/csrf-cookie');
+                  await csrf();
+                  const raceResponse = await axios.post(
+                    '/updateRaceResultRecordForUpdateConfirm',
+                    sendData,
+                  );
+                  console.log(raceResponse);
+                  // router.push('/tournamentResult?mode=confirm&prevMode=update');
+                }
               }
             }
           }}
