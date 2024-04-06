@@ -902,14 +902,14 @@ export default function Tournaments() {
   const raceRowComp = (row: Race) => {
     return (
       <>
-        {/* レースID */}
+        {/* エントリーシステムのレースID */}
         <CustomTd>
           <TextField
             type={'text'}
             value={row.entrysystem_race_id}
             onChange={(e) => handleInputChangeRace(row.id, 'entrysystem_race_id', e.target.value)}
             className='my-[8px]'
-            inputProps={{ maxLength: 10 }}
+            inputProps={{ maxLength: 8 }}
           />
         </CustomTd>
         {/* レースNo. */}
