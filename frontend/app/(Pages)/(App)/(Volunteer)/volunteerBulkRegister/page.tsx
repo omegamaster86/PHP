@@ -870,6 +870,7 @@ export default function VolunteerBulkRegister() {
             !window.confirm('読み込み結果に表示されているデータはクリアされます。よろしいですか？')
           ) {
             setActivationFlg(false);
+            setVisibilityFlg(false); //CSVテーブルの表示切替フラグ 20240406
             return;
           }
         }
@@ -984,7 +985,6 @@ export default function VolunteerBulkRegister() {
               <CustomButton
                 buttonType='primary'
                 onClick={() => {
-                  setVisibilityFlg(false); //CSVテーブルの表示切替フラグ 20240406
                   sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
                 }}
               >
