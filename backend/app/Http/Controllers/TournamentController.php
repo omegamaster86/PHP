@@ -672,62 +672,58 @@ class TournamentController extends Controller
         Log::debug(sprintf("tournamentRegistOrUpdateValidationCheck start"));
         $reqData = $request->all();
         Log::debug($reqData);
-        try
+        //エントリーシステム大会ID
+        $mode = $reqData["mode"];   //入力モード
+        $entrysystem_tourn_id = $reqData["entrysystem_tourn_id"];
+        $tourn_id = $reqData["tourn_id"];
+        if(isset($entrysystem_tourn_id))
         {
-            //エントリーシステム大会ID
-            $mode = $reqData["mode"];   //入力モード
-            $entrysystem_tourn_id = $reqData["entrysystem_tourn_id"];
-            $tourn_id = $reqData["tourn_id"];
-            if(isset($entrysystem_tourn_id))
+            //エントリーシステム大会IDが重複する大会を取得
+            //更新画面では自身の大会IDを除く
+            if($mode === "create")
             {
-                //エントリーシステム大会IDが重複する大会を取得
-                //更新画面では自身の大会IDを除く
-                if($mode === "create")
-                {
-                    $duplicate_tournnaments = $t_tournaments->getEntrysystemTournIdDuplicateRecord($entrysystem_tourn_id);
-                }
-                elseif($mode === "update")
-                {
-                    $duplicate_tournnaments = $t_tournaments->getEntrysystemTournIdDuplicateRecordWithTournId($entrysystem_tourn_id,$tourn_id);
-                }
-                //重複する大会があればエラーとする
-                if(isset($duplicate_tournnaments))
-                {
-                    $errMessage = "入力されたエントリーシステムの大会IDは、既に別の大会で使用されています。\r\n";
-                    foreach($duplicate_tournnaments as $tourn)
-                    {
-                        $errMessage .= "[大会ID ".$tourn->{"tourn_id"}."]：[大会名 ".$tourn->{"tourn_name"}."]\r\n";
-                    }
-                    //Log::debug($errMessage);                    
-                    return response()->json(["response_tourn_id" => $errMessage], 403);
-                }
+                $duplicate_tournnaments = $t_tournaments->getEntrysystemTournIdDuplicateRecord($entrysystem_tourn_id);
             }
-            //主催団体ID
-            $sponsor_org_id = $reqData["sponsor_org_id"];
-            $target_organization = $t_organizations->getOrganization($sponsor_org_id);
-            Log::debug(print_r($target_organization, true));
-            //主催団体IDに該当する団体が取得できなければエラーとする
-            if(empty($target_organization))
+            elseif($mode === "update")
             {
-                Log::debug("主催団体IDに該当する団体が存在しない.");
-                $errMessage = "[主催団体ID ".$sponsor_org_id."]の団体は、既にシステムより削除されているか、本登録されていない団体IDが入力されています。";
-                Log::debug($errMessage);
-                return response()->json(["response_org_id" => $errMessage], 403);
+                $duplicate_tournnaments = $t_tournaments->getEntrysystemTournIdDuplicateRecordWithTournId($entrysystem_tourn_id,$tourn_id);
             }
-            //大会種別を確認する
-            //JARA、県ボのどちらかが正式なら正式
-            $tourn_type = $reqData["tourn_type"];
-            //大会種別=公式、かつ団体種別=任意はエラーとする
-            $org_type_name = $target_organization->orgTypeName;
-            if($tourn_type == 1 && $org_type_name == "任意")
+            //重複する大会があればエラーとする
+            if(count($duplicate_tournnaments) > 0)
             {
-                $errMessage = "[団体ID ".$sponsor_org_id."]：[団体名 ".$target_organization->org_name."]は、任意団体の為、公式大会を主催することはできません。";
-                Log::debug($errMessage);
-                return response()->json(["response_org_id" => $errMessage], 403);
+                $errMessage = "入力されたエントリーシステムの大会IDは、既に別の大会で使用されています。\r\n";
+                foreach($duplicate_tournnaments as $tourn)
+                {
+                    $errMessage .= "[大会ID ".$tourn->{"tourn_id"}."]：[大会名 ".$tourn->{"tourn_name"}."]\r\n";
+                }                
+                return response()->json(["response_tourn_id" => $errMessage], 403);
             }
-            //エントリーシステムレースID
-            $error_entrysystem_race_id_array = array();
-            foreach($reqData["race_data"] as $race_data)
+        }
+        //主催団体ID
+        $sponsor_org_id = $reqData["sponsor_org_id"];
+        $target_organization = $t_organizations->getOrganization($sponsor_org_id);            
+        //主催団体IDに該当する団体が取得できなければエラーとする
+        if(empty($target_organization))
+        {
+            Log::debug("主催団体IDに該当する団体が存在しない.");
+            $errMessage = "[主催団体ID ".$sponsor_org_id."]の団体は、既にシステムより削除されているか、本登録されていない団体IDが入力されています。";
+            return response()->json(["response_org_id" => $errMessage], 403);
+        }
+        //大会種別を確認する
+        //JARA、県ボのどちらかが正式なら正式
+        $tourn_type = $reqData["tourn_type"];
+        //大会種別=公式、かつ団体種別=任意はエラーとする
+        $org_type_name = $target_organization->orgTypeName;
+        if($tourn_type == 1 && $org_type_name == "任意")
+        {
+            $errMessage = "[団体ID ".$sponsor_org_id."]：[団体名 ".$target_organization->org_name."]は、任意団体の為、公式大会を主催することはできません。";
+            return response()->json(["response_org_id" => $errMessage], 403);
+        }
+        //エントリーシステムレースID
+        $error_entrysystem_race_id_array = array();
+        foreach($reqData["race_data"] as $race_data)
+        {
+            if(!isset($race_data["checked"]) || $race_data["checked"] === false)
             {
                 $target_race_id = $race_data["race_id"];
                 $entrysystem_race_id = $race_data["entrysystem_race_id"];
@@ -750,22 +746,17 @@ class TournamentController extends Controller
                     }
                 }
             }
-            //エラーとしたエントリーシステムレースIDが配列に格納されていたらエラーとする
-            if(isset($error_entrysystem_race_id_array))
-            {
-                $errMessage = "「エントリーシステムのレースID」が重複しています。\r\n";
-                //配列をカンマ区切りで文字列に展開
-                $errMessage .= implode(",", $error_entrysystem_race_id_array);
-                Log::debug($errMessage);
-                return response()->json(["response_race_id" => $errMessage], 403);
-            }
-            Log::debug(sprintf("tournamentRegistOrUpdateValidationCheck end."));
-            return response()->json(["result" => true], 200); //登録できる
         }
-        catch(\Throwable $e)
+        //エラーとしたエントリーシステムレースIDが配列に格納されていたらエラーとする
+        if(count($error_entrysystem_race_id_array) > 0)
         {
-            Log::error('Line:'.$e->getLine().' message:'.$e->getMessage());
+            $errMessage = "「エントリーシステムのレースID」が重複しています。\r\n";
+            //配列をカンマ区切りで文字列に展開
+            $errMessage .= implode(",", $error_entrysystem_race_id_array);
+            return response()->json(["response_race_id" => $errMessage], 403);
         }
+        Log::debug(sprintf("tournamentRegistOrUpdateValidationCheck end."));
+        return response()->json(["success" => $reqData], 200); //登録できる
     }
 
     //大会レース結果管理画面
