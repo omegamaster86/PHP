@@ -591,14 +591,14 @@ const validatePositiveNumber = (insertedNumber: string) => {
  * @description
  * Int number かどうか確認する
  */
-const validateIntegerRange = (insertedNumber: string) => {
-  if (insertedNumber == '' || insertedNumber == null || insertedNumber == undefined) {
-    return '';
-  }
-  else if (Number(insertedNumber) < 1 || Number(insertedNumber) > 2147483647) {
-    return '不正な番号です、${insertedNumber}は　1以上数値と　2147483647以下数値を入力してください。';
-  }
-};
+// const validateIntegerRange = (insertedNumber: string) => {
+//   if (insertedNumber == '' || insertedNumber == null || insertedNumber == undefined) {
+//     return '';
+//   }
+//   else if (Number(insertedNumber) < 1 || Number(insertedNumber) > 2147483647) {
+//     return '不正な番号です、${insertedNumber}は　1以上数値と　2147483647以下数値を入力してください。';
+//   }
+// };
 
 /**
  * 日付比較
@@ -671,7 +671,7 @@ const Validator = {
   compareDates,
   validateDateExists,
   compareDatesVolunteer,
-  validateIntegerRange,
+  // validateIntegerRange,
 };
 
 export default Validator;

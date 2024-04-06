@@ -573,6 +573,7 @@ export default function OrgInfo() {
               .post('/validateOrgData', sendData) //20240308
               .then((response) => {
                 console.log(response);
+                setTableData(response.data.result.staffList); //ユーザIDを元にユーザ名を表示する 20240405
                 setDisableFlag(false);
                 setErrorMessage([]);
                 router.push('/team?mode=confirm&prevMode=update');
