@@ -270,7 +270,7 @@ export default function PlayerInformationRef() {
                         </div>
                         <div className='flex flex-row'>
                           {/* 生年月日 */}
-                          <div className='text-gray-40 text-caption1'>誕生　</div>
+                          <div className='text-gray-40 text-caption1'>生年月日　</div>
                           <Label
                             label={playerInformation.date_of_birth}
                             textColor='white'
