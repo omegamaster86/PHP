@@ -863,7 +863,7 @@ export default function VolunteerBulkRegister() {
       .post('/sendVolunteerCsvData', array)
       .then((res) => {
         var contentData = res.data.result as CsvData[];
-        
+
         setActivationFlg(true);
         if (dialogDisplayFlg) {
           if (
