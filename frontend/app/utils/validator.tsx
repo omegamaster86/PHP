@@ -592,17 +592,12 @@ const validatePositiveNumber = (insertedNumber: string) => {
  * Int number かどうか確認する
  */
 const validateIntegerRange = (insertedNumber: string) => {
-  let errorMessage = '';
-  if (insertedNumber === '') {
+  if (insertedNumber == '' || insertedNumber == null || insertedNumber == undefined) {
     return '';
   }
-
-  if (Number(insertedNumber) < 1 || Number(insertedNumber) > 2147483647) {
-    errorMessage = `不正な番号です、${insertedNumber}は　1以上数値と　2147483647以下数値を入力してください。`;
-    return errorMessage;
+  else if (Number(insertedNumber) < 1 || Number(insertedNumber) > 2147483647) {
+    return '不正な番号です、${insertedNumber}は　1以上数値と　2147483647以下数値を入力してください。';
   }
-
-  return errorMessage;
 };
 
 /**
