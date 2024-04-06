@@ -221,6 +221,7 @@ export default function VolunteerBulkRegister() {
   const [qualHold, setQualHold] = useState<MasterData[]>([]);
   const [language, setLanguage] = useState<MasterData[]>([]);
   const [languageLevel, setLanguageLevel] = useState<MasterData[]>([]);
+  const [visibilityFlg, setVisibilityFlg] = useState<boolean>(false); //CSVテーブルの表示切替フラグ 20240406
 
   useEffect(() => {
     const fetchMasterData = async () => {
@@ -862,7 +863,7 @@ export default function VolunteerBulkRegister() {
       .post('/sendVolunteerCsvData', array)
       .then((res) => {
         var contentData = res.data.result as CsvData[];
-
+        
         setActivationFlg(true);
         if (dialogDisplayFlg) {
           if (
@@ -875,6 +876,7 @@ export default function VolunteerBulkRegister() {
         setCsvData(contentData as CsvData[]);
         setDialogDisplayFlg(true);
         setActivationFlg(false);
+        setVisibilityFlg(true); //CSVテーブルの表示切替フラグ 20240406
         setDialogDisplayFlg(true);
         setDisplayLinkButtonFlg(true);
         performValidation();
@@ -982,6 +984,7 @@ export default function VolunteerBulkRegister() {
               <CustomButton
                 buttonType='primary'
                 onClick={() => {
+                  setVisibilityFlg(false); //CSVテーブルの表示切替フラグ 20240406
                   sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
                 }}
               >
@@ -1013,6 +1016,7 @@ export default function VolunteerBulkRegister() {
             handleInputChange={handleInputChange}
             displayLinkButton={displayLinkButton}
             activationFlg={activationFlg}
+            visibilityFlg={visibilityFlg}
           />
         </div>
         <div className='flex flex-row justify-center gap-[8px]'>
