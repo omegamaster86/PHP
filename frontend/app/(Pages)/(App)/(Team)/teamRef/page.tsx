@@ -218,8 +218,14 @@ export default function TeamRef() {
                   userIdType.is_jara == ROLE.JARA ||
                   userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
                   <div className='w-[100px]'>
-                    <Label label={formData.jara_org_reg_trail} textColor='white' />
-                    <Label label={formData.pref_org_reg_trail} textColor='white' />
+                    <Label
+                      label={formData.jara_org_type == 1 ? formData.jara_org_reg_trail : '　'}
+                      textColor='white'
+                    />
+                    <Label
+                      label={formData.pref_org_type == 1 ? formData.pref_org_reg_trail : '　'}
+                      textColor='white'
+                    />
                   </div>
                 )}
               </div>
