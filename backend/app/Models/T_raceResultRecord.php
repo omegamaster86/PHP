@@ -1143,8 +1143,6 @@ class T_raceResultRecord extends Model
                         , wind_speed_1000m_point = :wind_speed_1000m_point
                         , wind_direction_1000m_point = :wind_direction_1000m_point
                         , race_result_notes = :race_result_notes
-                        , registered_time = :registered_time
-                        , registered_user_id = :registered_user_id
                         , updated_time = :updated_time
                         , updated_user_id = :updated_user_id
                         WHERE
