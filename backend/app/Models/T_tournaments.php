@@ -544,4 +544,39 @@ class T_tournaments extends Model
                     ]
                 );
     }
+
+    //エントリーシステムの大会IDが一致する大会を取得する
+    //重複有無を確認するため
+    //tourn_idが一致するレコードを除く（更新画面用）
+    public function getEntrysystemTournIdDuplicateRecordWithTournId($entrySystemTournId,$tourn_id)
+    {
+        $tournaments = DB::select(
+                                    'select 
+                                    tourn_id
+                                    ,tourn_name
+                                    from `t_tournaments`
+                                    where `delete_flag`=0
+                                    and `entrysystem_tourn_id` = ?
+                                    and `tourn_id` <> ?'
+                                    ,[$entrySystemTournId,$tourn_id]
+                                );
+        return $tournaments;
+    }
+
+    //エントリーシステムの大会IDが一致する大会を取得する
+    //重複有無を確認するため
+    //（登録画面用）
+    public function getEntrysystemTournIdDuplicateRecord($entrySystemTournId)
+    {
+        $tournaments = DB::select(
+                                    'select 
+                                    tourn_id
+                                    ,tourn_name
+                                    from `t_tournaments`
+                                    where `delete_flag`=0
+                                    and `entrysystem_tourn_id` = ?'
+                                    ,[$entrySystemTournId]
+                                );
+        return $tournaments;
+    }
 }
