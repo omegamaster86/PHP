@@ -359,6 +359,8 @@ class TournamentController extends Controller
                     $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['race_number']; //レース番号
                     if (isset($reqData['tableData'][$i]['entrysystem_race_id'])) {
                         $tRace::$racesData['entrysystem_race_id'] = $reqData['tableData'][$i]['entrysystem_race_id']; //エントリーシステムのレースID
+                    } else {
+                        $tRace::$racesData['entrysystem_race_id'] = '';
                     }
                     $tRace::$racesData['tourn_id'] = $reqData['tableData'][$i]['tourn_id']; //大会IDに紐づける
                     $tRace::$racesData['race_name'] = $reqData['tableData'][$i]['race_name']; //レース名
@@ -747,6 +749,9 @@ class TournamentController extends Controller
                     elseif($mode === "update")
                     {
                         $count = $t_races->getEntrysystemRaceIdCountWithRaceId($entrysystem_race_id,$target_race_id);
+                        // Log::debug($count);
+                        // Log::debug($target_race_id);
+                        // Log::debug($entrysystem_race_id);
                     }
 
                     if($count > 0)

@@ -467,7 +467,7 @@ class T_races extends Model
                                 where 1=1
                                 and `delete_flag`=0
                                 and `entrysystem_race_id` = ?
-                                and `race_id` = ?'
+                                and `race_id` <> ?'
                                 ,[$entrySystemRaceId,$race_id]
                             );
         $count = $counts[0]->count;
