@@ -60,7 +60,70 @@ export default function TournamentResult() {
   // 出漕結果記録情報（レース結果情報）のモデル
   const [raceResultRecords, setRaceResultRecords] = useState<RaceResultRecordsResponse[]>([
     {
+      race_result_record_id: 0, // 出漕結果記録ID
+      tourn_id: 0, // 大会ID
+      tourn_name: '', // 大会名
+      official: 0, // 公式／非公式
+      eventStartDate: '', // 開催日
+      org_name: '', // 団体所属
+      org_id: '', // 団体所属ID
+      race_number: 0, // レースNo.
+      event_name: '', // 種目
+      race_name: '', // レース名
+      race_id: '', // レースID
+      by_group: '', // 組別
+      crew_name: '', // クルー名
+      rank: 0, // 順位
+      laptime_500m: 0, // 500mラップタイム
+      laptime_1000m: 0, // 1000mラップタイム
+      laptime_1500m: 0, // 1500mラップタイム
+      laptime_2000m: 0, // 2000mラップタイム
+      final_time: 0, // 最終タイム
+      bNo: 0, // B.No
+      race_result_notes: '', // 備考
+      remarkId: 0, // 備考ID
+      stroke_rate_avg: 0, // ストロークレート（平均）
+      stroke_rat_500m: 0, // 500mlapストロークレート
+      stroke_rat_1000m: 0, // 1000mlapストロークレート
+      stroke_rat_1500m: 0, // 1500mlapストロークレート
+      stroke_rat_2000m: 0, // 2000mlapストロークレート
+      heart_rate_avg: 0, // 心拍数/分（平均）
+      heart_rate_500m: 0, // 500mlap心拍数/分
+      heart_rate_1000m: 0, // 1000mlap心拍数/分
+      heart_rate_1500m: 0, // 1500mlap心拍数/分
+      heart_rate_2000m: 0, // 2000mlap心拍数/分
+      attendance: 0, // 立ち合い有無
+      ergo_weight: 0, // エルゴ体重
+      player_height: 0, // 選手身長（出漕時点）
+      player_weight: 0, // 選手体重（出漕時点）
+      seat_number: 0, // シート番号ID（出漕時点）
+      seat_name: '', // シート番号（出漕時点）
+      race_result_record_name: '', // 出漕結果記録名
+      registered_time: '', // 登録日時
+      start_datetime: '', // 発艇日時
+      wind_speed_2000m_point: 0, // 2000m地点風速
+      wind_direction_2000m_point: 0, // 2000m地点風向
+      twentyHundredmWindDirectionName: '', // 2000m地点風向
+      wind_speed_1000m_point: 0, // 1000m地点風速
+      wind_direction_1000m_point: 0, // 1000m地点風向
+      tenHundredmWindDirectionName: '', // 1000m地点風向
+      venue_name: '', // 開催場所
+      range: 0, // 距離
+      order: 0, // 順番
+      weatherId: 0, // 天候
+      weatherName: '', // 天候
+      startDateTime: '', // 発艇日時
+      deleteFlg: false, // 削除フラグ
       crewPlayer: [{} as CrewPlayer],
+      lane_number: 0, // レーンNo
+      errorText: '', // エラーテキスト
+      laptimeErrorText: '', // ラップタイムエラーテキスト
+      strokeRateErrorText: '', // ストロークレートエラーテキスト
+      finalHeartRate: 0, // 最終心拍数
+      player_id: '', // 選手ID
+      player_name: '', // 選手名
+      sex: 0, // 性別ID
+      event_id: 0, //種目ID
     } as RaceResultRecordsResponse,
   ]);
 
@@ -1564,6 +1627,7 @@ export default function TournamentResult() {
         if (data.record_result.length > 10) {
           // setErrorText(['1つのレースに登録できるクルーは、10クルーまでです。']); //既に注釈で同じ文章が記載されているため不要 20240405
           // 設定するのは10件まで
+          console.log(data.record_result);
           setRaceResultRecords(data.record_result.slice(0, 10));
           scrollTo(0, 0);
         }
@@ -1670,7 +1734,7 @@ export default function TournamentResult() {
             }, []);
           }
         }
-      } catch (error: any) {}
+      } catch (error: any) { }
     };
     fetchRaceInfo();
   }, [raceInfo?.race_id]);
@@ -2015,6 +2079,8 @@ export default function TournamentResult() {
       </div>
       {/* レース結果情報 */}
       {raceResultRecords.map((item, index) => (
+        console.log(raceResultRecords),
+        console.log(item),
         <div className='flex flex-col gap-[20px] border border-solid p-[20px]' key={index}>
           <InputLabel label={'レース結果情報' + (index + 1)} />
           <ErrorBox errorText={item.errorText ? [item.errorText] : []} />
@@ -2034,7 +2100,7 @@ export default function TournamentResult() {
                   id={'deleteFlg' + index}
                   value='deleteFlg'
                   checked={item.deleteFlg || false}
-                  onChange={() => {}}
+                  onChange={() => { }}
                 />
                 <p className='text-systemErrorText'>このレース結果情報を削除する</p>
               </div>
