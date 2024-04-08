@@ -1570,79 +1570,92 @@ export default function TournamentResult() {
   useEffect(() => {
     const fetchRaceInfo = async () => {
       try {
+        var data = null;
         // レース情報の取得
         // const response = await axios.get('http://localhost:3100/raceInfo?id=' + raceInfo?.race_id);
-        const sendData = {
-          race_id: raceId,
-        };
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
-        const response = await axios.post('/getRaceDataRaceId', sendData);
-        console.log(response.data.race_result);
+        if (raceId != '' && raceId != null && raceId != undefined) {
+          const sendData = {
+            race_id: raceId,
+          };
+          console.log(raceId);
+          const csrf = () => axios.get('/sanctum/csrf-cookie');
+          await csrf();
+          const response = await axios.post('/getRaceDataRaceId', sendData);
+          console.log(response.data.race_result);
 
-        const data = response.data.race_result;
-        // 遷移元からイベントIDが取得できる時だけ、遷移元からのイベントIDをセットする。セットされていない時は、レース情報からイベントIDをセットする。
+          data = response.data.race_result;
+          // 遷移元からイベントIDが取得できる時だけ、遷移元からのイベントIDをセットする。セットされていない時は、レース情報からイベントIDをセットする。
 
-        setRaceInfo({
-          ...data[0],
-          event_id: eventId || data[0].event_id,
-        });
+          setRaceInfo({
+            ...data[0],
+            event_id: eventId || data[0].event_id,
+          });
+        }
 
-        // 種目マスタに紐づく選手の人数 (バックエンドからの取得方法不明のためDummy)
-        // TODO: 種目マスタに紐づく選手の人数を取得する
-        // const response2 = Math.floor(Math.random() * 5) + 1;
-        const sendEventId = {
-          event_id: eventId || data[0].event_id,
-        };
-        console.log('kkkkkkkkkkkkk');
-        console.log(sendEventId);
-        const res2 = await axios.post('/getCrewNumberForEventId', sendEventId);
-        const response2 = res2.data.result;
-        console.log(response2);
-        setPlayerCount(response2);
-        if (mode === 'create') {
-          // レース結果情報の取得
-          // 選手情報の件数が種目マスタに紐づく選手の人数より少ない場合、足りない件数分追加行を追加する
+        if (
+          eventId != '' &&
+          eventId != null &&
+          eventId != undefined &&
+          data[0].event_id != '' &&
+          data[0].event_id != null &&
+          data[0].event_id != undefined
+        ) {
+          // 種目マスタに紐づく選手の人数 (バックエンドからの取得方法不明のためDummy)
+          // TODO: 種目マスタに紐づく選手の人数を取得する
+          // const response2 = Math.floor(Math.random() * 5) + 1;
+          const sendEventId = {
+            event_id: eventId || data[0].event_id,
+          };
+          console.log('kkkkkkkkkkkkk');
+          console.log(sendEventId);
+          const res2 = await axios.post('/getCrewNumberForEventId', sendEventId);
+          const response2 = res2.data.result;
+          console.log(response2);
+          setPlayerCount(response2);
+          if (mode === 'create') {
+            // レース結果情報の取得
+            // 選手情報の件数が種目マスタに紐づく選手の人数より少ない場合、足りない件数分追加行を追加する
 
-          raceResultRecords.map((record) => {
-            if (record.crewPlayer?.length < response2) {
-              record.crewPlayer = record.crewPlayer.concat(
-                Array.from({ length: response2 - record.crewPlayer.length }, () => ({
-                  //id: undefined,
-                  playerPhoto: '',
-                  playerName: '',
-                  jaraPlayerId: '',
-                  playerId: '',
-                  sexId: '',
-                  sex: '',
-                  height: undefined,
-                  weight: undefined,
-                  sheetName: '',
-                  sheetNameId: undefined,
-                  entrysystemRaceId: '',
-                  orgId1: '',
-                  orgName1: '',
-                  orgId2: '',
-                  orgName2: '',
-                  orgId3: '',
-                  orgName3: '',
-                  fiveHundredmHeartRate: undefined,
-                  tenHundredmHeartRate: undefined,
-                  fifteenHundredmHeartRate: undefined,
-                  twentyHundredmHeartRate: undefined,
-                  heartRateAvg: undefined,
-                  attendance: '',
-                  deleteFlg: false,
-                  addonLineFlg: false,
-                  errorText: '',
-                })),
-              );
-            }
-            // 種目マスタに紐づく選手の人数より多い場合、余分な行を削除する
-            if (record.crewPlayer?.length > response2) {
-              record.crewPlayer = record.crewPlayer.slice(0, response2);
-            }
-          }, []);
+            raceResultRecords.map((record) => {
+              if (record.crewPlayer?.length < response2) {
+                record.crewPlayer = record.crewPlayer.concat(
+                  Array.from({ length: response2 - record.crewPlayer.length }, () => ({
+                    //id: undefined,
+                    playerPhoto: '',
+                    playerName: '',
+                    jaraPlayerId: '',
+                    playerId: '',
+                    sexId: '',
+                    sex: '',
+                    height: undefined,
+                    weight: undefined,
+                    sheetName: '',
+                    sheetNameId: undefined,
+                    entrysystemRaceId: '',
+                    orgId1: '',
+                    orgName1: '',
+                    orgId2: '',
+                    orgName2: '',
+                    orgId3: '',
+                    orgName3: '',
+                    fiveHundredmHeartRate: undefined,
+                    tenHundredmHeartRate: undefined,
+                    fifteenHundredmHeartRate: undefined,
+                    twentyHundredmHeartRate: undefined,
+                    heartRateAvg: undefined,
+                    attendance: '',
+                    deleteFlg: false,
+                    addonLineFlg: false,
+                    errorText: '',
+                  })),
+                );
+              }
+              // 種目マスタに紐づく選手の人数より多い場合、余分な行を削除する
+              if (record.crewPlayer?.length > response2) {
+                record.crewPlayer = record.crewPlayer.slice(0, response2);
+              }
+            }, []);
+          }
         }
       } catch (error: any) {}
     };
