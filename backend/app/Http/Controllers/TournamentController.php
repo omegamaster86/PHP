@@ -360,7 +360,7 @@ class TournamentController extends Controller
                     if (isset($reqData['tableData'][$i]['entrysystem_race_id'])) {
                         $tRace::$racesData['entrysystem_race_id'] = $reqData['tableData'][$i]['entrysystem_race_id']; //エントリーシステムのレースID
                     } else {
-                        $tRace::$racesData['entrysystem_race_id'] = '';
+                        $tRace::$racesData['entrysystem_race_id'] = null;
                     }
                     $tRace::$racesData['tourn_id'] = $reqData['tableData'][$i]['tourn_id']; //大会IDに紐づける
                     $tRace::$racesData['race_name'] = $reqData['tableData'][$i]['race_name']; //レース名
