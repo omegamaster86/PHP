@@ -676,6 +676,7 @@ export default function Tournaments() {
             axios
               // .post('http://localhost:3100/', registerData)
               .post('/tournamentRegistOrUpdateValidationCheck', {
+                tourn_id: tournamentFormData.tourn_id,
                 entrysystem_tourn_id: tournamentFormData.entrysystem_tourn_id,
                 tourn_type: tournamentFormData.tourn_type,
                 sponsor_org_id: tournamentFormData.sponsor_org_id,
