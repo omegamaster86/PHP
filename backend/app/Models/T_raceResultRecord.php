@@ -872,8 +872,8 @@ class T_raceResultRecord extends Model
                                             rrr.race_id
                                             ,`m_weather_type`.`weather_name` as weatherName
                                             ,rrr.`range`                        #距離
-                                            ,rrr.`start_datetime`               #発艇日時
-                                            ,rrr.`weather`                      #天候
+                                            ,rrr.`start_datetime` as `startDateTime` #発艇日時
+                                            ,rrr.`weather`  as `weatherId`      #天候
                                             ,rrr.`wind_direction_1000m_point`   #1000m地点風向
                                             ,rrr.`wind_speed_1000m_point`       #1000m地点風速
                                             ,rrr.`wind_direction_2000m_point`   #2000m地点風向
