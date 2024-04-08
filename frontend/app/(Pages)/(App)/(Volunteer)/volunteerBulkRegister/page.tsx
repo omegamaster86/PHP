@@ -870,7 +870,6 @@ export default function VolunteerBulkRegister() {
             !window.confirm('読み込み結果に表示されているデータはクリアされます。よろしいですか？')
           ) {
             setActivationFlg(false);
-            setVisibilityFlg(false); //CSVテーブルの表示切替フラグ 20240406
             return;
           }
         }
