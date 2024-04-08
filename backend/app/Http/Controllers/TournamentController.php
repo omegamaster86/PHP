@@ -675,7 +675,12 @@ class TournamentController extends Controller
         //エントリーシステム大会ID
         $mode = $reqData["mode"];   //入力モード
         $entrysystem_tourn_id = $reqData["entrysystem_tourn_id"];
-        $tourn_id = $reqData["tourn_id"];
+
+        //大会登録の場合、tourn_idは登録時点で存在しないため、条件分岐を追加 20240408
+        if($mode == "update" && isset($reqData["tourn_id"])){
+            $tourn_id = $reqData["tourn_id"];
+        }
+
         if(isset($entrysystem_tourn_id))
         {
             //エントリーシステム大会IDが重複する大会を取得
