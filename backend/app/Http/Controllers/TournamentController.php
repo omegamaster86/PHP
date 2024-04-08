@@ -1021,7 +1021,8 @@ class TournamentController extends Controller
                 $player_result = $t_raceResultRecord->getRaceResultRecordList($target_race_id,$target_crew_name,$target_org_id);
 
                 //crewPlayerのプロパティにレース結果情報
-                $record_result[$index]->{'crew_player'} = $player_result;
+                // $record_result[$index]->{'crew_player'} = $player_result;
+                $record_result[$index]->{'crewPlayer'} = $player_result;
             }
             Log::debug("********************race_result********************");
             Log::debug($race_result);
