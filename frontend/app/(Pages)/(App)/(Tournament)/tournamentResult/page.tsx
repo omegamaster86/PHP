@@ -133,6 +133,19 @@ export default function TournamentResult() {
       return newFormData;
     });
   };
+  const handleRaceResultRecordsInputChangeBooleanbyIndex = (
+    index: number,
+    name: string,
+    value: boolean,
+  ) => {
+    setRaceResultRecords((prevFormData) => {
+      const newFormData = [...(prevFormData as RaceResultRecordsResponse[])];
+      if (newFormData[index]) {
+        (newFormData[index] as any)[name] = value;
+      }
+      return newFormData;
+    });
+  };
 
   /**
    * クルー選手情報の入力値を管理する関数
@@ -2009,10 +2022,10 @@ export default function TournamentResult() {
             {mode === 'update' && (
               <div
                 onClick={() => {
-                  handleRaceResultRecordsInputChangebyIndex(
+                  handleRaceResultRecordsInputChangeBooleanbyIndex(
                     index,
                     'deleteFlg',
-                    (!item.deleteFlg).toString(),
+                    !item.deleteFlg,
                   );
                 }}
                 className='leading-loose text-primary-500 flex flex-row gap-[8px] items-center cursor-pointer'
