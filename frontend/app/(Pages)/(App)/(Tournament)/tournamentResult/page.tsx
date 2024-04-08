@@ -1630,6 +1630,11 @@ export default function TournamentResult() {
           console.log(data.record_result);
           setRaceResultRecords(data.record_result.slice(0, 10));
           scrollTo(0, 0);
+        } else if (data.record_result.length > 0 && data.record_result.length < 10) {
+          //データが10件未満の場合の処理がなかったため追加 20240408
+          console.log(data.record_result);
+          setRaceResultRecords(data.record_result);
+          scrollTo(0, 0);
         }
         console.log('eeeeeeeeeee');
       } catch (error: any) {
