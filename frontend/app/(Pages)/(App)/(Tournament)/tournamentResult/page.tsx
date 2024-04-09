@@ -114,7 +114,11 @@ export default function TournamentResult() {
       weatherName: '', // 天候
       startDateTime: '', // 発艇日時
       deleteFlg: false, // 削除フラグ
-      crewPlayer: [{} as CrewPlayer],
+      crewPlayer: [
+        {
+          deleteFlg: false, // 削除フラグ
+        } as CrewPlayer,
+      ],
       lane_number: 0, // レーンNo
       errorText: '', // エラーテキスト
       laptimeErrorText: '', // ラップタイムエラーテキスト
@@ -222,6 +226,7 @@ export default function TournamentResult() {
       // 多次元配列のシャローコピーは2件レコードができるため、ディープコピー
       const newFormData = JSON.parse(JSON.stringify(prevFormData));
       newFormData[index].crewPlayer?.push({
+        deleteFlg: false, // 削除フラグ
         addonLineFlg: true,
       } as CrewPlayer);
       return newFormData;
@@ -1434,16 +1439,26 @@ export default function TournamentResult() {
     const playerNum = raceResultRecords.some((record, i) => {
       var count = 0;
       record.crewPlayer?.map((player, j) => {
-        if (!player.deleteFlg && !player.errorText) {
+        if (
+          player.deleteFlg != null && //削除フラグに値が設定されている　かつ
+          player.deleteFlg != undefined && //削除フラグが定義されている　かつ
+          player.deleteFlg != true && //削除フラグがチェックされていない　かつ
+          player.errorText != null && //エラーメッセージに値が設定されている　かつ
+          player.errorText != undefined && //エラーメッセージが定義されている　かつ
+          player.errorText == '' //エラーメッセージが空の場合
+        ) {
           count++;
         }
       });
       if (count !== playerCount) {
         indexList25.push(i);
       }
+      console.log(indexList25.length > 0);
       return indexList25.length > 0;
     });
 
+    console.log(playerNum);
+    console.log(playerCount);
     if (playerNum) {
       indexList25.map((index) => {
         handleRaceResultRecordsInputChangebyIndex(
@@ -1675,12 +1690,8 @@ export default function TournamentResult() {
         }
 
         if (
-          eventId != '' &&
-          eventId != null &&
-          eventId != undefined &&
-          data[0].event_id != '' &&
-          data[0].event_id != null &&
-          data[0].event_id != undefined
+          (eventId != '' && eventId != null && eventId != undefined) ||
+          (data[0].event_id != '' && data[0].event_id != null && data[0].event_id != undefined)
         ) {
           // 種目マスタに紐づく選手の人数 (バックエンドからの取得方法不明のためDummy)
           // TODO: 種目マスタに紐づく選手の人数を取得する
@@ -2065,6 +2076,7 @@ export default function TournamentResult() {
                       { length: playerCount },
                       () =>
                         ({
+                          deleteFlg: false, // 削除フラグ
                           addonLineFlg: true,
                         }) as CrewPlayer,
                     ),
