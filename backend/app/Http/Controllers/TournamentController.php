@@ -704,7 +704,7 @@ class TournamentController extends Controller
                 {
                     $errMessage .= "[大会ID ".$tourn->{"tourn_id"}."]：[大会名 ".$tourn->{"tourn_name"}."]\r\n";
                 }                
-                return response()->json(["response_tourn_id" => $errMessage], 403);
+                return response()->json(["response_entrysystem_tourn_id" => $errMessage], 403);
             }
         }
         //主催団体ID
