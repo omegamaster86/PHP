@@ -221,6 +221,7 @@ export default function VolunteerBulkRegister() {
   const [qualHold, setQualHold] = useState<MasterData[]>([]);
   const [language, setLanguage] = useState<MasterData[]>([]);
   const [languageLevel, setLanguageLevel] = useState<MasterData[]>([]);
+  const [visibilityFlg, setVisibilityFlg] = useState<boolean>(false); //CSVテーブルの表示切替フラグ 20240406
 
   useEffect(() => {
     const fetchMasterData = async () => {
@@ -875,6 +876,7 @@ export default function VolunteerBulkRegister() {
         setCsvData(contentData as CsvData[]);
         setDialogDisplayFlg(true);
         setActivationFlg(false);
+        setVisibilityFlg(true); //CSVテーブルの表示切替フラグ 20240406
         setDialogDisplayFlg(true);
         setDisplayLinkButtonFlg(true);
         performValidation();
@@ -1013,6 +1015,7 @@ export default function VolunteerBulkRegister() {
             handleInputChange={handleInputChange}
             displayLinkButton={displayLinkButton}
             activationFlg={activationFlg}
+            visibilityFlg={visibilityFlg}
           />
         </div>
         <div className='flex flex-row justify-center gap-[8px]'>

@@ -525,6 +525,8 @@ export default function OrgInfo() {
             axios
               .post('/validateOrgData', sendData) //20240308
               .then((response) => {
+                // console.log(response.data);
+                setTableData(response.data.result.staffList); //ユーザIDを元にユーザ名を表示する 20240405
                 setDisableFlag(false);
                 setErrorMessage([]);
                 router.push('/team?mode=confirm&prevMode=create');
@@ -571,6 +573,7 @@ export default function OrgInfo() {
               .post('/validateOrgData', sendData) //20240308
               .then((response) => {
                 console.log(response);
+                setTableData(response.data.result.staffList); //ユーザIDを元にユーザ名を表示する 20240405
                 setDisableFlag(false);
                 setErrorMessage([]);
                 router.push('/team?mode=confirm&prevMode=update');
@@ -1126,7 +1129,8 @@ export default function OrgInfo() {
                     required={false}
                     value={data.isUserFound ? data.user_name : '該当ユーザーなし'}
                     disabled={!data.isUserFound}
-                    readonly={mode === 'confirm' || !data.isUserFound}
+                    // readonly={mode === 'confirm' || !data.isUserFound}
+                    readonly={true}
                     className={data.isUserFound ? '' : 'text-systemErrorText'}
                     onChange={(e) => handleInputChangeStaff(data.id, 'user_name', e.target.value)}
                   />

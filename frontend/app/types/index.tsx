@@ -83,6 +83,8 @@ interface RaceResultRecordsResponse {
   player_id: string; // 選手ID
   player_name: string; // 選手名
   sex: number; // 性別ID
+  //種目IDを追加 20240405---------
+  event_id: number; //種目ID
 }
 
 interface CrewPlayer {
@@ -113,6 +115,19 @@ interface CrewPlayer {
   deleteFlg: boolean; // 削除フラグ
   addonLineFlg: boolean; // 追加行フラグ
   errorText: string; // エラーテキスト
+  laneNumber?: number; // レーンNo
+  rank?: number; // 順位
+  laptime_500m?: number; // 500mラップタイム
+  laptime_1000m?: number; // 1000mラップタイム
+  laptime_1500m?: number; // 1500mラップタイム
+  laptime_2000m?: number; // 2000mラップタイム
+  stroke_rat_500m?: number; // 500mlapストロークレート
+  stroke_rat_1000m?: number; // 1000mlapストロークレート
+  stroke_rat_1500m?: number; // 1500mlapストロークレート
+  stroke_rat_2000m?: number; // 2000mlapストロークレート
+  stroke_rate_avg?: number; // ストロークレート（平均）
+  final_time?: number; // 最終タイム
+  race_result_notes?: string; // 備考
 }
 
 // 団体情報
@@ -315,7 +330,7 @@ interface TeamPlayerInformationResponse {
   residencePrefectureName: string; // 居住地（都道府県）　#置き換え作業対応不要
   residence_prefecture?: number; // 居住地（都道府県）
   orgId: string; // 団体ID
-  orgName: string; // 団体名
+  org_name: string; // 団体名
   photo: string; // 写真
   deleteFlag: boolean; // 削除フラグ
   checked?: boolean; // チェックボックス

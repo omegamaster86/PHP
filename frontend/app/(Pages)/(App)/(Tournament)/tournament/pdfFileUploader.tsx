@@ -142,39 +142,45 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
     <div>
       <div>
         <div className='flex flex-col gap-[8px] w-full'>
-          <CustomInputLabel
-            label={props.label}
-            displayHelp
-            toolTipText='登録できるファイルの種類は、PDFファイルのみです。' //はてなボタン用
-          ></CustomInputLabel>
           {!props.readonly && (
-            <div {...getRootProps()} className='mb-1'>
-              <div className='mb-1'>
-                <input {...getInputProps()} />
-                <p className='text-secondaryText text-sm'>
-                  {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : ''}
-                </p>
-                <div className='flex flex-col gap-[10px] w-full'>
-                  <div className='flex flex-row gap-[4px]'>
-                    <CustomTextField
-                      placeholder={'ここにファイルをドラッグ＆ドロップしてアップロード'}
-                      value={currentShowFile?.isUploaded ? currentShowFile?.file.name : ''}
-                      className='w-[450px]'
-                    ></CustomTextField>
-                    <button
-                      className='text-normal w-[100px] border-solid border-[1px] rounded-md p-2 bg-transparent text-primaryText hover:bg-gray-50 border-gray-200'
-                      disabled={isDragReject}
-                      type='button'
-                    >
-                      参照
-                    </button>
-                  </div>
-                  <div>
-                    {isDragAccept ? 'ファイルをアップロードします。' : isDragReject ? 'エラー' : ''}
+            <>
+              <CustomInputLabel
+                label={props.label}
+                displayHelp
+                toolTipText='登録できるファイルの種類は、PDFファイルのみです。' //はてなボタン用
+              ></CustomInputLabel>
+              <div {...getRootProps()} className='w-[555px]'>
+                <div>
+                  <input {...getInputProps()} />
+                  <p className='text-secondaryText text-sm'>
+                    {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : ''}
+                  </p>
+                  <div className='flex flex-col w-full'>
+                    <div className='flex flex-row gap-[4px]'>
+                      <CustomTextField
+                        placeholder={'ここにファイルをドラッグ＆ドロップしてアップロード'}
+                        value={currentShowFile?.isUploaded ? currentShowFile?.file.name : ''}
+                        className='w-[450px]'
+                      ></CustomTextField>
+                      <button
+                        className='text-normal w-[100px] border-solid border-[1px] rounded-md p-2 bg-transparent text-primaryText hover:bg-gray-50 border-gray-200'
+                        disabled={isDragReject}
+                        type='button'
+                      >
+                        参照
+                      </button>
+                    </div>
+                    <div>
+                      {isDragAccept
+                        ? 'ファイルをアップロードします。'
+                        : isDragReject
+                          ? 'エラー'
+                          : ''}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </>
           )}
           {props.readonly && (
             <div>

@@ -42,7 +42,7 @@ interface FileHandler {
   clearFile(): void;
 }
 
-export default function Tournament() {
+export default function Tournaments() {
   // フック
   const router = useRouter();
   const fileUploaderRef = useRef<FileHandler>(null);
@@ -173,9 +173,11 @@ export default function Tournament() {
 
   // バリデーションを実行する関数
   const performValidation = () => {
-    const entrysystemRaceIdError = Validator.getErrorMessages([
-      Validator.validateIntegerRange(tournamentFormData.entrysystem_tourn_id),
-    ]);
+    // const entrysystemRaceIdError = Validator.getErrorMessages([
+    //   Validator.validateIntegerRange(tournamentFormData.entrysystem_tourn_id),
+    // ]);
+    const entrysystemRaceIdError = Validator.getErrorMessages([]);
+
     const tournNameError = Validator.getErrorMessages([
       Validator.validateRequired(tournamentFormData.tourn_name, '大会名'),
     ]);
@@ -228,9 +230,9 @@ export default function Tournament() {
       //   return true;
       // }
     });
-    const raceIdErrorFlg = tableData.some((row) => {
-      return Validator.validateIntegerRange(row.entrysystem_race_id).length > 0;
-    });
+    // const raceIdErrorFlg = tableData.some((row) => {
+    //   return Validator.validateIntegerRange(row.entrysystem_race_id).length > 0;
+    // });
     const raceNumberNegativeErrorFlg = tableData.some((row) => {
       return Validator.validatePositiveNumber(row.race_number).length > 0;
     });
@@ -268,7 +270,7 @@ export default function Tournament() {
       return Validator.validateRequired(row.start_date_time, '発艇日時').length > 0;
     });
 
-    setEntrysystemRaceIdErrorMessage(entrysystemRaceIdError);
+    // setEntrysystemRaceIdErrorMessage(entrysystemRaceIdError);
     setTournNameErrorMessage(tournNameError);
     setSponsorOrgIdErrorMessage(sponsorOrgIdError);
     setEventStartDateErrorMessage(eventStartDateError);
@@ -288,15 +290,15 @@ export default function Tournament() {
       }
     }
 
-    if (raceIdErrorFlg) {
-      setRaceIdErrorMessage(
-        Validator.getErrorMessages([
-          'エントリーシステムのレースIDは不正な番号です、1以上数値と　2147483647以下数値を入力してください。',
-        ]),
-      );
-    } else {
-      setRaceIdErrorMessage([]);
-    }
+    // if (raceIdErrorFlg) {
+    //   setRaceIdErrorMessage(
+    //     Validator.getErrorMessages([
+    //       'エントリーシステムのレースIDは不正な番号です、1以上数値と　2147483647以下数値を入力してください。',
+    //     ]),
+    //   );
+    // } else {
+    //   setRaceIdErrorMessage([]);
+    // }
     if (eventIdErrorFlg) {
       setEventIdErrorMessage(
         Validator.getErrorMessages([Validator.validateSelectRequired(null, '種目')]),
@@ -361,7 +363,7 @@ export default function Tournament() {
       tournUrlError.length > 0 ||
       eventIdErrorFlg ||
       raceNameErrorFlg ||
-      raceIdErrorFlg ||
+      // raceIdErrorFlg ||
       raceNumberNegativeErrorFlg ||
       raceTypeErrorFlg ||
       raceTypeNameErrorFlg ||
@@ -370,6 +372,15 @@ export default function Tournament() {
       rangeNegativeErrorFlg ||
       startDateTimeErrorFlg
     ) {
+      console.log(entrysystemRaceIdErrorMessage);
+      console.log(tournNameError);
+      console.log(sponsorOrgIdError);
+      console.log(eventStartDateError);
+      console.log(eventEndDateError);
+      console.log(venueIdError);
+      console.log(venueNameError);
+      // console.log(raceIdErrorFlg);
+
       return true;
     } else {
       return false;
@@ -665,6 +676,7 @@ export default function Tournament() {
             axios
               // .post('http://localhost:3100/', registerData)
               .post('/tournamentRegistOrUpdateValidationCheck', {
+                tourn_id: tournamentFormData.tourn_id,
                 entrysystem_tourn_id: tournamentFormData.entrysystem_tourn_id,
                 tourn_type: tournamentFormData.tourn_type,
                 sponsor_org_id: tournamentFormData.sponsor_org_id,
@@ -777,6 +789,7 @@ export default function Tournament() {
         onClick={async () => {
           setDisplayFlg(false);
           const isError = performValidation();
+          console.log(isError);
           if (!isError) {
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
@@ -890,14 +903,14 @@ export default function Tournament() {
   const raceRowComp = (row: Race) => {
     return (
       <>
-        {/* レースID */}
+        {/* エントリーシステムのレースID */}
         <CustomTd>
           <TextField
             type={'text'}
             value={row.entrysystem_race_id}
             onChange={(e) => handleInputChangeRace(row.id, 'entrysystem_race_id', e.target.value)}
             className='my-[8px]'
-            inputProps={{ maxLength: 10 }}
+            inputProps={{ maxLength: 8 }}
           />
         </CustomTd>
         {/* レースNo. */}
@@ -1055,7 +1068,7 @@ export default function Tournament() {
               // toolTipTitle='Title エントリーシステムの大会ID' //はてなボタン用
               toolTipText='大会エントリーシステムに発番される大会ID
               この大会IDについては、日本ローイング協会にお問い合わせください。' //はてなボタン用
-              maxLength={10}
+              maxLength={8}
             />
           )}
         </div>

@@ -172,7 +172,8 @@ class T_races extends Model
             `delete_flag`=?
              where 1=1
              and delete_flag = 0
-             and tourn_id = ?',
+             and tourn_id = ?
+             and race_id = ?',
             [
                 $racesInfo['race_number'],
                 $racesInfo['entrysystem_race_id'],
@@ -188,7 +189,8 @@ class T_races extends Model
                 now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 $racesInfo['delete_flag'],
-                $racesInfo['tourn_id']
+                $racesInfo['tourn_id'],
+                $racesInfo['race_id'],
             ]
         );
     }
@@ -452,5 +454,40 @@ class T_races extends Model
                         ,$values
                     ]
                 );
+    }
+
+    //エントリーシステムのレースIDの数を取得する
+    //重複有無を確認するため
+    //race_idが一致するレコードを除く（更新画面用）
+    public function getEntrysystemRaceIdCountWithRaceId($entrySystemRaceId,$race_id)
+    {
+        $counts = DB::select(
+                                'select count(*) as "count"
+                                from `t_races`
+                                where 1=1
+                                and `delete_flag`=0
+                                and `entrysystem_race_id` = ?
+                                and `race_id` <> ?'
+                                ,[$entrySystemRaceId,$race_id]
+                            );
+        $count = $counts[0]->count;
+        return $count;
+    }
+
+    //エントリーシステムのレースIDの数を取得する
+    //重複有無を確認するため
+    //（登録画面用）
+    public function getEntrysystemRaceIdCount($entrySystemRaceId)
+    {
+        $counts = DB::select(
+                                'select count(*) as "count"
+                                from `t_races`
+                                where 1=1
+                                and `delete_flag`=0
+                                and `entrysystem_race_id` = ?'
+                                ,[$entrySystemRaceId]
+                            );
+        $count = $counts[0]->count;
+        return $count;
     }
 }
