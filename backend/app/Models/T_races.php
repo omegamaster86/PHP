@@ -172,7 +172,8 @@ class T_races extends Model
             `delete_flag`=?
              where 1=1
              and delete_flag = 0
-             and tourn_id = ?',
+             and tourn_id = ?
+             and race_id = ?',
             [
                 $racesInfo['race_number'],
                 $racesInfo['entrysystem_race_id'],
@@ -188,7 +189,8 @@ class T_races extends Model
                 now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 $racesInfo['delete_flag'],
-                $racesInfo['tourn_id']
+                $racesInfo['tourn_id'],
+                $racesInfo['race_id'],
             ]
         );
     }
@@ -465,7 +467,7 @@ class T_races extends Model
                                 where 1=1
                                 and `delete_flag`=0
                                 and `entrysystem_race_id` = ?
-                                and `race_id` = ?'
+                                and `race_id` <> ?'
                                 ,[$entrySystemRaceId,$race_id]
                             );
         $count = $counts[0]->count;

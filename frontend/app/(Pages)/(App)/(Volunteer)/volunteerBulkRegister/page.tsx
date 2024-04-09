@@ -863,7 +863,7 @@ export default function VolunteerBulkRegister() {
       .post('/sendVolunteerCsvData', array)
       .then((res) => {
         var contentData = res.data.result as CsvData[];
-        
+
         setActivationFlg(true);
         if (dialogDisplayFlg) {
           if (
@@ -984,7 +984,6 @@ export default function VolunteerBulkRegister() {
               <CustomButton
                 buttonType='primary'
                 onClick={() => {
-                  setVisibilityFlg(false); //CSVテーブルの表示切替フラグ 20240406
                   sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
                 }}
               >

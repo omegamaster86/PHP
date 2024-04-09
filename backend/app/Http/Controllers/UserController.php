@@ -41,11 +41,11 @@ class UserController extends Controller
 
             $certification_number = Str::random(6); // For Creating random password
             $date = now()->format('Y-m-d H:i:s.u');
-            
+
             //For adding 30 minutes with current time
-            $converting_date=date_create($date);
-            date_add($converting_date,date_interval_create_from_date_string("30 minutes"));
-            $newDate = date_format($converting_date,"Y-m-d H:i:s.u");
+            $converting_date = date_create($date);
+            date_add($converting_date, date_interval_create_from_date_string("30 minutes"));
+            $newDate = date_format($converting_date, "Y-m-d H:i:s.u");
 
             DB::beginTransaction();
             try {
@@ -132,39 +132,39 @@ class UserController extends Controller
         }
     }
 
-    public function sentCertificationNumber(Request $request) {
+    public function sentCertificationNumber(Request $request)
+    {
         include('Auth/ErrorMessages/ErrorMessages.php');
         // $certification_number = Str::random(6); // For Creating random password
         // $certification_number = rand(1000000,100); // For Creating random password
-        if($request->mailaddress!==Auth::user()->mailaddress){
-            $user = DB::select('select user_name
+        if ($request->mailaddress !== Auth::user()->mailaddress) {
+            $user = DB::select(
+                'select user_name
                                 from t_users
                                 where delete_flag=0
-                                and mailaddress = ?'
-                                ,[$request->mailaddress]
-                            );
+                                and mailaddress = ?',
+                [$request->mailaddress]
+            );
             //userは一意に決まるため0番目を返す
-            if(isset($user[0])){
-                return response()->json($mailAddress_already_exists,409);
+            if (isset($user[0])) {
+                return response()->json($mailAddress_already_exists, 409);
             }
         }
-        $certification_number = substr(number_format(time() * rand(),0,'',''),0,6);
+        $certification_number = substr(number_format(time() * rand(), 0, '', ''), 0, 6);
         $date = now()->format('Y-m-d H:i:s.u');
-        
+
         // For adding 30 minutes with current time
-        $converting_date=date_create($date);
-        date_add($converting_date,date_interval_create_from_date_string("30 minutes"));
-        $newDate = date_format($converting_date,"Y-m-d H:i:s.u");
+        $converting_date = date_create($date);
+        date_add($converting_date, date_interval_create_from_date_string("30 minutes"));
+        $newDate = date_format($converting_date, "Y-m-d H:i:s.u");
 
         DB::beginTransaction();
         try {
             DB::update(
                 'update t_users set  certification_number = ? , expiry_time_of_certification_number = ?,updated_time = ?,updated_user_id = ? where 1=1 and user_id = ?',
-                [Hash::make($certification_number), $newDate,$date,Auth::user()->user_id, Auth::user()->user_id]
+                [Hash::make($certification_number), $newDate, $date, Auth::user()->user_id, Auth::user()->user_id]
             );
             DB::commit();
-
-           
         } catch (\Throwable $e) {
             DB::rollBack();
 
@@ -181,44 +181,43 @@ class UserController extends Controller
             //Store error message in the register log file.
             Log::channel('user_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
             if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                return response()->json(["メールを送信に失敗しました。ユーザーサポートにお問い合わせください。"],500);
+                return response()->json(["メールを送信に失敗しました。ユーザーサポートにお問い合わせください。"], 500);
             } else {
-                return response()->json(["メールを送信に失敗しました。ユーザーサポートにお問い合わせください。"],500);
+                return response()->json(["メールを送信に失敗しました。ユーザーサポートにお問い合わせください。"], 500);
             }
         }
-         //Sending mail to the user
-         $mail_date = date('Y/m/d H:i');
-         $new_mail_date = date('Y/m/d H:i', strtotime($mail_date . ' + 30 minutes'));
-         $mail_data = [
-             'user_name' => $request->user_name,
-             'mailaddress' => $request->mailaddress,
-             'certification_number' => $certification_number,
-             'expiry_time_of_certification_number' => $new_mail_date
-         ];
-         try {
-             Mail::to($request->get('mailaddress'))->send(new VerificationMail($mail_data));
-         }
-         catch(\Throwable $e){
-             return response()->json(["メールを送信に失敗しました。ユーザーサポートにお問い合わせください。"],550);
-         }
+        //Sending mail to the user
+        $mail_date = date('Y/m/d H:i');
+        $new_mail_date = date('Y/m/d H:i', strtotime($mail_date . ' + 30 minutes'));
+        $mail_data = [
+            'user_name' => $request->user_name,
+            'mailaddress' => $request->mailaddress,
+            'certification_number' => $certification_number,
+            'expiry_time_of_certification_number' => $new_mail_date
+        ];
+        try {
+            Mail::to($request->get('mailaddress'))->send(new VerificationMail($mail_data));
+        } catch (\Throwable $e) {
+            return response()->json(["メールを送信に失敗しました。ユーザーサポートにお問い合わせください。"], 550);
+        }
 
-        return response()->json(["メールを送信しました。"],200);
-        
+        return response()->json(["メールを送信しました。"], 200);
     }
 
-    public function verifyCertificationNumber(Request $request){
+    public function verifyCertificationNumber(Request $request)
+    {
         include('Auth/ErrorMessages/ErrorMessages.php');
 
         if (!Auth::user()->delete_flag) {
             if (Hash::check($request->certification_number, Auth::user()->certification_number)) {
                 if (Auth::user()->expiry_time_of_certification_number < now()->format('Y-m-d H:i:s.u')) {
-                    return response()->json($code_timed_out,400);
+                    return response()->json($code_timed_out, 400);
                 } else {
                     DB::beginTransaction();
                     try {
                         DB::update(
                             'update t_users set certification_number = ?,expiry_time_of_certification_number=?, updated_time = ?, updated_user_id = ?  where 1=1 and user_id = ?',
-                            [NULL, NULL, now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id , Auth::user()->user_id]
+                            [NULL, NULL, now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id, Auth::user()->user_id]
                         );
 
                         DB::commit();
@@ -236,23 +235,22 @@ class UserController extends Controller
                         //Store error message in the register log file.
                         Log::channel('user_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
                         if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                            return response()->json(["失敗しました。また試してみてください。"],500);
+                            return response()->json(["失敗しました。また試してみてください。"], 500);
                         } else {
-                            return response()->json(["失敗しました。ユーザーサポートと連絡してください。"],500);
+                            return response()->json(["失敗しました。ユーザーサポートと連絡してください。"], 500);
                         }
                     }
-                    return response()->json("承認されました。「更新」ボタンを押して情報更新してください。",200);
+                    return response()->json("承認されました。「更新」ボタンを押して情報更新してください。", 200);
                 }
             } else {
-                
-                return response()->json($code_not_found,400);
+
+                return response()->json($code_not_found, 400);
             }
         } else {
             redirect('/logout');
         }
-        
     }
-    
+
 
     public function storeEditVerifiCation(Request $request): View
     {
@@ -315,7 +313,6 @@ class UserController extends Controller
                 'verification_error' => $code_not_found
             ]);
         }
-        
     }
 
     public function createDetails(Request $request, M_sex $sex, M_countries $countries, M_prefectures $prefectures): View
@@ -495,20 +492,19 @@ class UserController extends Controller
             ]);
         }
     }
-    
+
     public function storePasswordChange(Request $request)
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
-       
+
         if (Auth::user()->temp_password_flag) {
             //If the entered password does matched with the database information
             if (Hash::check($request->currentPassword, Auth::user()->password)) {
-
                 DB::beginTransaction();
                 try {
                     DB::update(
                         'update t_users set password = ?, expiry_time_of_temp_password = ?, temp_password_flag = ?, updated_time =?, updated_user_id = ?  where user_id = ?',
-                        [Hash::make($request->newPassword), NULL, 0, now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id , Auth::user()->user_id]
+                        [Hash::make($request->newPassword), NULL, 0, now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id, Auth::user()->user_id]
                     );
 
                     DB::commit();
@@ -516,53 +512,45 @@ class UserController extends Controller
                     DB::rollBack();
                     $e_errorCode = $e->errorInfo[1];
                     if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                        return response()->json(['system_error' => $database_system_error],500);
+                        return response()->json(['system_error' => $database_system_error], 500);
                     } else {
-                        return response()->json(['system_error' => $database_system_error],500);
+                        return response()->json(['system_error' => $database_system_error], 500);
                     }
                 }
-
                 return response()->json("パスワードを変更しました。"); //送信データ(debug用)とDBの結果を返す
-
             }
-            //If the entered password does not matched with the database information
             else {
-                return response()->json(['system_error' => $previous_password_not_matched],400);
+                return response()->json(['system_error' => $previous_password_not_matched], 400);
             }
         }
         //When logged as a registered user
         else {
             //If the entered password does matched with the database information
             if (Hash::check($request->currentPassword, Auth::user()->password)) {
-
                 DB::beginTransaction();
                 try {
-
                     DB::update(
                         'update t_users set password = ?, updated_time =?, updated_user_id =?  where user_id = ?',
                         [Hash::make($request->newPassword),  now()->format('Y-m-d H:i:s.u'),  Auth::user()->user_id, Auth::user()->user_id]
                     );
-
                     DB::commit();
                 } catch (\Throwable $e) {
                     DB::rollBack();
                     $e_errorCode = $e->errorInfo[1];
                     if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                        return response()->json(['system_error' => $database_system_error],500);
+                        return response()->json(['system_error' => $database_system_error], 500);
                     } else {
-                        return response()->json(['system_error' => $database_system_error],500);
+                        return response()->json(['system_error' => $database_system_error], 500);
                     }
                 }
-                
-                return response()->json("パスワードを変更しました。");
-
+                return response()->json(['result_message' => 'パスワードを変更しました','temp_password_flag' => Auth::user()->temp_password_flag]); //DBの結果を返す
             }
-            //If the entered password does not matched with the database information
             else {
-                return response()->json(['system_error' => $previous_password_not_matched],400);
+                return response()->json(['system_error' => $previous_password_not_matched], 400);
             }
         }
     }
+
     public function storePasswordReset(Request $request)
     {
         Log::debug(sprintf("storePasswordReset start"));
@@ -584,15 +572,15 @@ class UserController extends Controller
             $date = now()->format('Y-m-d H:i:s.u');
 
             //For adding 1day with current time
-            $converting_date=date_create($date);
-            date_add($converting_date,date_interval_create_from_date_string("30 minutes"));
-            $new_date = date_format($converting_date,"Y-m-d H:i:s.u");
+            $converting_date = date_create($date);
+            date_add($converting_date, date_interval_create_from_date_string("30 minutes"));
+            $new_date = date_format($converting_date, "Y-m-d H:i:s.u");
 
             //For converting date format from H:i:s to H:i 
             $mail_date  = date("Y/m/d H:i", strtotime($new_date));
 
             //Getting url information from env file.
-            $frontend_url  = config ( 'env-data.frontend-url' ) ;
+            $frontend_url  = config('env-data.frontend-url');
 
             // Insert new password info in the database.(t_user table)
 
@@ -630,7 +618,7 @@ class UserController extends Controller
                 //         'datachecked_error' => $registration_failed
                 //     ]);
                 // }
-                return response()->json($registration_failed,500);
+                return response()->json($registration_failed, 500);
             }
 
 
@@ -641,7 +629,7 @@ class UserController extends Controller
                 'mailaddress' => $request->mailaddress,
                 'temporary_password' => $password,
                 'temporary_password_expiration_date' => $mail_date,
-                'login_url'=> $frontend_url.'/login'
+                'login_url' => $frontend_url . '/login'
             ];
 
 
@@ -653,17 +641,17 @@ class UserController extends Controller
                 //Store error message in the user_password_reset log file.
                 Log::channel('user_password_reset')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「EMAIL_SENT_ERROR_MESSAGE」  ： $e\r\n  \r\n ============================================================ \r\n \r\n");
                 //Display error message to the client
-                return response()->json($registration_failed,500);
+                return response()->json($registration_failed, 500);
             }
-            
+
 
             // $page_status = "仮パスワードを記載したメールアドレスを送信しました。<br/>送信されたメールに記載されたパスワードを使用して、パスワードの再設定を行ってください。";
             //Redirect to password-reset page with success status.
             // return redirect('password-reset')->with(['status' => $page_status]);
-            return response()->json("パスワード再発行の件、完了しました。",200);
+            return response()->json("パスワード再発行の件、完了しました。", 200);
         } else {
 
-            return response()->json($mailaddress_not_registered,400);
+            return response()->json($mailaddress_not_registered, 400);
             // throw ValidationException::withMessages([
             //     'datachecked_error' => $mailaddress_not_registered
             // ]);
@@ -698,8 +686,8 @@ class UserController extends Controller
         if ($request->hasFile('uploadedPhoto')) {
             $file = $request->file('uploadedPhoto');
             $file_name = Auth::user()->user_id . '.' . $file->getClientOriginalExtension();
-            $destination_path = public_path().'/images/users/' ;
-            $file->move($destination_path,$file_name);
+            $destination_path = public_path() . '/images/users/';
+            $file->move($destination_path, $file_name);
             // $file->storeAs('public/images/users', $file_name);
             // return response()->json(['message' => 'File uploaded successfully']);
         }
@@ -712,26 +700,23 @@ class UserController extends Controller
         $t_users::$userInfo['mailaddress'] = $reqData['mailaddress']; //メールアドレス
         $t_users::$userInfo['sex'] = $reqData['sex']; //性別
         $t_users::$userInfo['residence_country'] = $reqData['residence_country']; //居住地国
-        $t_users::$userInfo['residence_prefecture'] = $reqData['residence_prefecture']??NULL; //居住都道府県
-        $t_users::$userInfo['date_of_birth'] = $reqData['date_of_birth']??NULL; //誕生日
-        $t_users::$userInfo['height'] = $reqData['height']??NULL; //身長
-        $t_users::$userInfo['weight'] = $reqData['weight']??NULL; //体重
+        $t_users::$userInfo['residence_prefecture'] = $reqData['residence_prefecture'] ?? NULL; //居住都道府県
+        $t_users::$userInfo['date_of_birth'] = $reqData['date_of_birth'] ?? NULL; //誕生日
+        $t_users::$userInfo['height'] = $reqData['height'] ?? NULL; //身長
+        $t_users::$userInfo['weight'] = $reqData['weight'] ?? NULL; //体重
         $t_users::$userInfo['user_type'] = $reqData['user_type']; //ユーザ種別
 
         //If new picture is uploaded
-        if($request->hasFile('uploadedPhoto')){
+        if ($request->hasFile('uploadedPhoto')) {
             $file_name = Auth::user()->user_id . '.' . $file->getClientOriginalExtension();
             $t_users::$userInfo['photo'] = $file_name; //写真
-        }
-        else {
-             //If  picture is not uploaded
-            if($reqData['photo']??"") {
+        } else {
+            //If  picture is not uploaded
+            if ($reqData['photo'] ?? "") {
                 $t_users::$userInfo['photo'] = $reqData['photo']; //写真
-            }
-            else {
+            } else {
                 $t_users::$userInfo['photo'] = ''; //写真
             }
-            
         }
         DB::beginTransaction();
         try {
@@ -739,8 +724,7 @@ class UserController extends Controller
             $t_users->updateUserData($t_users::$userInfo);
             DB::commit();
             return response()->json(['result' => "success"]); //DBの結果を返す
-        }
-        catch(\Throwable $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
@@ -751,18 +735,15 @@ class UserController extends Controller
     public function updateDeleteFlagInUserData(T_users $t_users)
     {
         $orgFlag = substr(Auth::user()->user_type, 4, 1); //団体管理者の場合、削除処理を行わない
-        if($orgFlag == 1){
-            return response()->json(["団体管理者権限を保有しています。"],401);
+        if ($orgFlag == 1) {
+            return response()->json(["団体管理者権限を保有しています。"], 401);
         }
 
         DB::beginTransaction();
-        try
-        {
+        try {
             $t_users->updateDeleteFlagToInvalid();
             DB::commit();
-        }
-        catch(\Throwable $e)
-        {
+        } catch (\Throwable $e) {
             DB::rollback();
 
             $e_message = $e->getMessage();
@@ -770,15 +751,15 @@ class UserController extends Controller
 
             //Store error message in the register log file.
             Log::channel('user_update')->info("\r\n \r\n＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code  \r\n  \r\n ============================================================ \r\n \r\n");
-            return response()->json(["失敗しました。ユーザーサポートにお問い合わせください。"],500);
+            return response()->json(["失敗しました。ユーザーサポートにお問い合わせください。"], 500);
         }
-        return response()->json(["退会が完了しました。"],200); //処理結果を返す
+        return response()->json(["退会が完了しました。"], 200); //処理結果を返す
     }
 
     //ユーザーに関連付いたIDを取得する
     public function getIDsAssociatedWithUser(T_users $t_users)
     {
-        Log::debug("user_id = ".Auth::user()->user_id);
+        Log::debug("user_id = " . Auth::user()->user_id);
         $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
         Log::debug($users);
         return response()->json(['result' => $users]); //DBの結果を返す

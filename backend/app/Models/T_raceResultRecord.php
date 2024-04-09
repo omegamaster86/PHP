@@ -922,18 +922,18 @@ class T_raceResultRecord extends Model
     public function getRaceResultRecordList($race_id, $crew_name, $org_id)
     {
         $race_result_record_list = DB::select("select 
-                                                ply.player_id
-                                                ,ply.player_name
+                                                ply.player_id as playerId
+                                                ,ply.player_name as playerName
                                                 ,msex.sex_id
                                                 ,msex.sex
                                                 ,ply.height
                                                 ,ply.weight
                                                 ,rrr.seat_number
-                                                ,seat.seat_name
-                                                ,rrr.heart_rate_500m
-                                                ,rrr.heart_rate_1000m
-                                                ,rrr.heart_rate_1500m
-                                                ,rrr.heart_rate_2000m
+                                                ,seat.seat_name as sheetName
+                                                ,rrr.heart_rate_500m as fiveHundredmHeartRate
+                                                ,rrr.heart_rate_1000m as tenHundredmHeartRate
+                                                ,rrr.heart_rate_1500m as fifteenHundredmHeartRate
+                                                ,rrr.heart_rate_2000m as twentyHundredmHeartRate
                                                 ,rrr.attendance
                                                 ,rrr.org_id
                                                 ,rrr.crew_name

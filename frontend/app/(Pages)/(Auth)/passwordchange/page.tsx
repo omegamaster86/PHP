@@ -147,11 +147,15 @@ export default function Passwordchange() {
                   .post('/user/password-change', requestBody)
                   .then(async (response) => {
                     // 成功時の処理を実装
-                    // console.log(response);
-                    window.alert(response?.data);
+                    console.log(response);
+                    window.alert(response?.data.result_message);
                     await csrf();
                     await axios.get('/api/user');
-                    router.push('/userInformation?mode=update');
+                    if (response?.data.temp_password_flag == 0) {
+                      router.push('/tournamentSearch'); //本登録済みのユーザは大会検索画面に遷移させる 20240408
+                    } else {
+                      router.push('/userInformation?mode=update'); //仮登録状態のユーザはユーザ情報更新画面に遷移させる 20240408
+                    }
                   })
                   .catch((error) => {
                     // エラー時の処理を実装

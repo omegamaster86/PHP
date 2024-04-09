@@ -676,6 +676,7 @@ export default function Tournaments() {
             axios
               // .post('http://localhost:3100/', registerData)
               .post('/tournamentRegistOrUpdateValidationCheck', {
+                tourn_id: tournamentFormData.tourn_id,
                 entrysystem_tourn_id: tournamentFormData.entrysystem_tourn_id,
                 tourn_type: tournamentFormData.tourn_type,
                 sponsor_org_id: tournamentFormData.sponsor_org_id,
@@ -902,14 +903,14 @@ export default function Tournaments() {
   const raceRowComp = (row: Race) => {
     return (
       <>
-        {/* レースID */}
+        {/* エントリーシステムのレースID */}
         <CustomTd>
           <TextField
             type={'text'}
             value={row.entrysystem_race_id}
             onChange={(e) => handleInputChangeRace(row.id, 'entrysystem_race_id', e.target.value)}
             className='my-[8px]'
-            inputProps={{ maxLength: 10 }}
+            inputProps={{ maxLength: 8 }}
           />
         </CustomTd>
         {/* レースNo. */}
