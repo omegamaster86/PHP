@@ -848,20 +848,30 @@ class TournamentController extends Controller
         $reqData = $request->all();
         Log::debug($reqData);
 
-        //jara_player_idが空のとき
-        //選手テーブルからjara_player_idを取得
-        
-        //エントリーレースIDが空のとき
-        //レーステーブルからエントリーレースIDを取得
+        $current_datetime = now()->format('Y-m-d H:i:s.u');
+        $update_user_id = Auth::user()->user_id;
+        try
+        {
+            //jara_player_idが空のとき
+            //選手テーブルからjara_player_idを取得
+            
+            //エントリーレースIDが空のとき
+            //レーステーブルからエントリーレースIDを取得
 
-        //エントリー大会IDが空のとき
-        //レーステーブルから大会IDを取得して大会情報を取得
-        //取得した大会情報からエントリー大会IDを取得
-        
-        //登録処理
+            //エントリー大会IDが空のとき
+            //レーステーブルから大会IDを取得して大会情報を取得
+            //取得した大会情報からエントリー大会IDを取得
+            
+            //登録処理
 
-        Log::debug(sprintf("registerRaceResultRecord end."));
-        return response()->json(['result' => true]); //DBの結果を返す
+            Log::debug(sprintf("registerRaceResultRecord end."));
+            return response()->json(['result' => true]); //DBの結果を返す
+        }
+        catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
+            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+        }
     }
 
     //大会レース結果更新確認画面
@@ -877,8 +887,8 @@ class TournamentController extends Controller
         $reqData = $request->all();
         Log::debug($reqData);
         
-        // $current_datetime = now()->format('Y-m-d H:i:s.u');
-        // $update_user_id = Auth::user()->user_id;
+        $current_datetime = now()->format('Y-m-d H:i:s.u');
+        $update_user_id = Auth::user()->user_id;
 
         // DB::beginTransaction();
         try
