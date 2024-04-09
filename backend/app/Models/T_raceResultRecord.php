@@ -929,7 +929,7 @@ class T_raceResultRecord extends Model
                                                 ,rrr.attendance
                                                 ,rrr.org_id
                                                 ,rrr.crew_name
-                                                ,0 as `delete_flag`
+                                                ,0 as `deleteFlg`
                                                 from `t_race_result_record` rrr
                                                 left join `t_players` ply
                                                 on rrr.player_id = ply.player_id 
