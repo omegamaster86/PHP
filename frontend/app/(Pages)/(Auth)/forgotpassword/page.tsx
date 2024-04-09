@@ -75,55 +75,67 @@ export default function ForgotPassword() {
               onChange={(e) => setEmailConfirm(e.target.value)}
             />
           </div>
-          {/* 送信 */}
-          <CustomButton
-            buttonType='primary'
-            className='self-center'
-            onClick={() => {
-              const emailErrorMessages = Validator.getErrorMessages([
-                Validator.validateRequired(email, 'メールアドレス'),
-                Validator.validateEmailFormat(email),
-              ]);
-              const emailConfirmErrorMessages = Validator.getErrorMessages([
-                Validator.validateRequired(emailConfirm, 'メールアドレス'),
-                Validator.validateEqual2(email, emailConfirm),
-              ]);
-              setEmailErrorMessages(emailErrorMessages);
-              setEmailConfirmErrorMessages(emailConfirmErrorMessages);
-              if (emailErrorMessages.length > 0 || emailConfirmErrorMessages.length > 0) {
-                // TODO: バリデーションエラー時の処理を実装
-              } else {
-                const forgotPassword = async () => {
-                  const csrf = () => axios.get('/sanctum/csrf-cookie');
-                  await csrf();
-                  axios
-                    .post('/password-reset', {
-                      // params: {
-                      //   email: email,
-                      // },
-                      mailaddress: email,
-                    })
-                    .then((res) => {
-                      // TODO: ユーザーテーブルに存在するかを検索し、結果によりメッセージを出し分ける
-                      setErrorText([]);
-                      setMessageText([
-                        '仮パスワードを記載したメールアドレスを送信しました。送信されたメールに記載されたパスワードを使用して、パスワードの再設定を行ってください。',
-                      ]);
+          <div className='flex justify-center flex-row items-center gap-[16px]'>
+            <CustomButton
+              // buttonType='white-outlined'
+              // className='w-[200px]'
+              onClick={() => {
+                router.push('/login');
+              }}
+            >
+              戻る
+            </CustomButton>
+            {/* 送信 */}
+            <CustomButton
+              buttonType='primary'
+              // className='self-center'
+              onClick={() => {
+                const emailErrorMessages = Validator.getErrorMessages([
+                  Validator.validateRequired(email, 'メールアドレス'),
+                  Validator.validateEmailFormat(email),
+                ]);
+                const emailConfirmErrorMessages = Validator.getErrorMessages([
+                  Validator.validateRequired(emailConfirm, 'メールアドレス'),
+                  Validator.validateEqual2(email, emailConfirm),
+                ]);
+                setEmailErrorMessages(emailErrorMessages);
+                setEmailConfirmErrorMessages(emailConfirmErrorMessages);
+                if (emailErrorMessages.length > 0 || emailConfirmErrorMessages.length > 0) {
+                  // TODO: バリデーションエラー時の処理を実装
+                } else {
+                  const forgotPassword = async () => {
+                    const csrf = () => axios.get('/sanctum/csrf-cookie');
+                    await csrf();
+                    axios
+                      .post('/password-reset', {
+                        // params: {
+                        //   email: email,
+                        // },
+                        mailaddress: email,
+                      })
+                      .then((res) => {
+                        // TODO: ユーザーテーブルに存在するかを検索し、結果によりメッセージを出し分ける
+                        setErrorText([]);
+                        setMessageText([
+                          '仮パスワードを記載したメールアドレスを送信しました。送信されたメールに記載されたパスワードを使用して、パスワードの再設定を行ってください。',
+                        ]);
 
-                      // TODO: ユーザーテーブルの更新
-                    })
-                    .catch((err) => {
-                      // TODO: エラー処理
-                      setMessageText([]);
-                      setErrorText([...err?.response?.data]);
-                    });
-                };
-                forgotPassword();
-              }
-            }}
-          >
-            送信
-          </CustomButton>
+                        // TODO: ユーザーテーブルの更新
+                      })
+                      .catch((err) => {
+                        // TODO: エラー処理
+                        setMessageText([]);
+                        setErrorText([...err?.response?.data]);
+                      });
+                  };
+                  forgotPassword();
+                }
+              }}
+            >
+              送信
+            </CustomButton>
+          </div>
+
           {/* 説明文 */}
           <div className='flex flex-col gap-[8px] bg-systemWarningBg border-systemWarningText border-solid border-[1px] p-2 justify-center break-words bg-opacity-40'>
             <WarningAmberOutlinedIcon className='text-systemWarningText text-h3' />
