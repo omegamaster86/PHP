@@ -847,13 +847,20 @@ class TournamentController extends Controller
         Log::debug(sprintf("registerRaceResultRecord start."));
         $reqData = $request->all();
         Log::debug($reqData);
-
+        //日時 登録用
         $current_datetime = now()->format('Y-m-d H:i:s.u');
+        //ユーザーID　登録用
         $update_user_id = Auth::user()->user_id;
+        //入力値
+        $raceInfo = &$reqData['raceInfo'];
+        $raceResultRecordResponse = &$reqData['raceResultRecordResponse'];
+        $raceResultRecords = &$reqData['raceResultRecords'];
         try
         {
             //jara_player_idが空のとき
             //選手テーブルからjara_player_idを取得
+
+            
             
             //エントリーレースIDが空のとき
             //レーステーブルからエントリーレースIDを取得
