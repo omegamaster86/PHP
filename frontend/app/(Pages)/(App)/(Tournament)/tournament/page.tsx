@@ -90,7 +90,7 @@ export default function Tournaments() {
     checked: false,
     race_id: '',
     entrysystem_race_id: '',
-    tourn_id: 0,
+    tourn_id: Number(tournId) ?? 0, //大会更新の場合は既に存在する大会IDに紐づける 20240409
     race_number: '',
     event_id: '',
     event_name: '',
@@ -809,6 +809,7 @@ export default function Tournaments() {
                 race_data: tableData,
               })
               .then((response) => {
+                console.log(tableData);
                 console.log(response);
                 console.log(tournamentFormData);
                 tournamentFormData.sponsorOrgName = response.data.success.org_name;
@@ -1375,6 +1376,7 @@ export default function Tournaments() {
             {/* レース登録テーブル明細表示 */}
             <CustomTbody>
               {tableData.map((row) => (
+                console.log(row),
                 <CustomTr key={row.id}>
                   {mode === 'update' && (
                     <CustomTd align='center'>
