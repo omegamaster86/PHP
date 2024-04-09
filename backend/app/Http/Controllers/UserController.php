@@ -517,7 +517,7 @@ class UserController extends Controller
                         return response()->json(['system_error' => $database_system_error], 500);
                     }
                 }
-                return response()->json("パスワードを変更しました。"); //送信データ(debug用)とDBの結果を返す
+                return response()->json(['result_message' => 'パスワードを変更しました','temp_password_flag' => Auth::user()->temp_password_flag]); //送信データ(debug用)とDBの結果を返す
             }
             else {
                 return response()->json(['system_error' => $previous_password_not_matched], 400);
