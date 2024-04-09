@@ -270,7 +270,7 @@ export default function PlayerInformationRef() {
                         </div>
                         <div className='flex flex-row'>
                           {/* 生年月日 */}
-                          <div className='text-gray-40 text-caption1'>生年月日　</div>
+                          <div className='text-gray-40 text-caption1'>誕生　</div>
                           <Label
                             label={playerInformation.date_of_birth}
                             textColor='white'
@@ -536,7 +536,9 @@ export default function PlayerInformationRef() {
                       {/* 2000mlap心拍数/分 */}
                       <CustomTd>{row.heart_rate_2000m}</CustomTd>
                       {/* 立ち合い有無 */}
-                      <CustomTd>{row.attendance}</CustomTd>
+                      <CustomTd>
+                        {row.attendance === 0 ? '無' : row.attendance === 1 ? '有' : ''}
+                      </CustomTd>
                       {/* エルゴ体重 */}
                       <CustomTd>{row.ergo_weight}</CustomTd>
                       {/* 選手身長（出漕時点） */}
