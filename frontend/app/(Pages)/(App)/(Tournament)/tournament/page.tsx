@@ -1376,7 +1376,6 @@ export default function Tournaments() {
             {/* レース登録テーブル明細表示 */}
             <CustomTbody>
               {tableData.map((row) => (
-                console.log(row),
                 <CustomTr key={row.id}>
                   {mode === 'update' && (
                     <CustomTd align='center'>

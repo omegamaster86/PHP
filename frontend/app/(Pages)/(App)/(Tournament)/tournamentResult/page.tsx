@@ -337,6 +337,18 @@ export default function TournamentResult() {
       return newFormData;
     });
   };
+  const handleRaceResultRecordsCrewPlayerChangeBooleanbyIndex = (
+    index: number,
+    crewIndex: number,
+    name: keyof CrewPlayer,
+    value: boolean,
+  ) => {
+    setRaceResultRecords((prevFormData) => {
+      const newFormData = [...prevFormData];
+      newFormData[index].crewPlayer[crewIndex][name] = value as never;
+      return newFormData;
+    });
+  };
 
   const clearError = () => {
     // レース結果ごとのエラーメッセージをクリア
@@ -2542,11 +2554,11 @@ export default function TournamentResult() {
                                 value='deleteFlg'
                                 checked={player.deleteFlg || false}
                                 onChange={(e) => {
-                                  handleRaceResultRecordsCrewPlayerChangebyIndex(
+                                  handleRaceResultRecordsCrewPlayerChangeBooleanbyIndex(
                                     index,
                                     crewIndex,
                                     'deleteFlg',
-                                    e.target.checked ? 'true' : 'false',
+                                    e.target.checked,
                                   );
                                 }}
                                 readonly={mode === 'confirm'}
