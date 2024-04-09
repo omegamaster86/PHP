@@ -219,7 +219,7 @@ export default function TournamentResultRef() {
                     <div className='flex flex-col gap-[8px]'>
                       <Label label='クルー名' textSize='small' isBold />
                       <p className='h-12 text-secondaryText py-3 disable'>
-                        {item?.player_name || ''}
+                        {item?.crew_name || ''}
                       </p>
                     </div>
                     <div className='flex flex-col gap-[8px]'>
@@ -397,7 +397,8 @@ export default function TournamentResultRef() {
                   <CustomTbody>
                     {raceResultRecords.map(
                       (item, index) =>
-                        item?.crewPlayer?.map((item, index) => (
+                        (
+                          console.log(item),
                           <CustomTr key={index}>
                             <CustomTd>
                               <div className='flex justify-center'>
@@ -410,20 +411,20 @@ export default function TournamentResultRef() {
                                 />
                               </div>
                             </CustomTd>
-                            <CustomTd>{item.playerId}</CustomTd>
-                            <CustomTd>{item.playerName}</CustomTd>
-                            <CustomTd>{item.sex}</CustomTd>
-                            <CustomTd>{item.height}</CustomTd>
-                            <CustomTd>{item.weight}</CustomTd>
-                            <CustomTd>{item.sheetName}</CustomTd>
-                            <CustomTd>{item.fiveHundredmHeartRate}</CustomTd>
-                            <CustomTd>{item.tenHundredmHeartRate}</CustomTd>
-                            <CustomTd>{item.fifteenHundredmHeartRate}</CustomTd>
-                            <CustomTd>{item.twentyHundredmHeartRate}</CustomTd>
-                            <CustomTd>{item.heartRateAvg}</CustomTd>
-                            <CustomTd>{item.attendance}</CustomTd>
+                            <CustomTd>{item.crewPlayer[index]?.playerId}</CustomTd>
+                            <CustomTd>{item.crewPlayer[index]?.playerName}</CustomTd>
+                            <CustomTd>{item.crewPlayer[index]?.sex}</CustomTd>
+                            <CustomTd>{item.crewPlayer[index]?.height}</CustomTd>
+                            <CustomTd>{item.crewPlayer[index]?.weight}</CustomTd>
+                            <CustomTd>{item.crewPlayer[index]?.sheetName}</CustomTd>
+                            <CustomTd>{item.crewPlayer[index]?.fiveHundredmHeartRate}</CustomTd>
+                            <CustomTd>{item.crewPlayer[index]?.tenHundredmHeartRate}</CustomTd>
+                            <CustomTd>{item.crewPlayer[index]?.fifteenHundredmHeartRate}</CustomTd>
+                            <CustomTd>{item.crewPlayer[index]?.twentyHundredmHeartRate}</CustomTd>
+                            <CustomTd>{item.crewPlayer[index]?.heartRateAvg}</CustomTd>
+                            <CustomTd>{item.crewPlayer[index]?.attendance}</CustomTd>
                           </CustomTr>
-                        )),
+                        ),
                     )}
                   </CustomTbody>
                 </CustomTable>
