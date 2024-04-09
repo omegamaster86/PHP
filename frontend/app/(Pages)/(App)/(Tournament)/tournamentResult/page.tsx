@@ -2183,7 +2183,7 @@ export default function TournamentResult() {
                         onChange={(e) => {
                           handleRaceResultRecordsInputChangebyIndex(
                             index,
-                            'laneNumber',
+                            'lane_number',
                             e.target.value,
                           );
                         }}
