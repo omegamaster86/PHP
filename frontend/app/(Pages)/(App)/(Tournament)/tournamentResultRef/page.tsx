@@ -396,9 +396,9 @@ export default function TournamentResultRef() {
                   </CustomThead>
                   <CustomTbody>
                     {raceResultRecords.map(
-                      (item, index) =>
+                      (item, index) => (
+                        console.log(item),
                         (
-                          console.log(item),
                           <CustomTr key={index}>
                             <CustomTd>
                               <div className='flex justify-center'>
@@ -424,7 +424,8 @@ export default function TournamentResultRef() {
                             <CustomTd>{item.crewPlayer[index]?.heartRateAvg}</CustomTd>
                             <CustomTd>{item.crewPlayer[index]?.attendance}</CustomTd>
                           </CustomTr>
-                        ),
+                        )
+                      ),
                     )}
                   </CustomTbody>
                 </CustomTable>
