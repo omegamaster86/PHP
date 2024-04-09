@@ -860,7 +860,7 @@ export default function Tournaments() {
           checked: false,
           race_id: '',
           entrysystem_race_id: '',
-          tourn_id: mode == 'update' ? Number(tournId) : 0, //大会更新の場合は既に存在する大会IDに紐づける 20240409
+          tourn_id: Number(tournId) ?? 0, //大会更新の場合は既に存在する大会IDに紐づける 20240409
           race_number: '',
           event_id: '',
           event_name: '',
