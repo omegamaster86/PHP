@@ -423,7 +423,7 @@ class T_races extends Model
                                 end as race_class_name
                             ,race.by_group
                             ,race.range
-                            ,race.start_date_time
+                            ,race.start_date_time as `startDateTime`
                             ,race.tourn_id
                             from `t_races` race
                             left join `m_events` me
