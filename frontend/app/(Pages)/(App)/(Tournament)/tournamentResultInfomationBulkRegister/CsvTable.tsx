@@ -189,11 +189,17 @@ const CsvTable = ({
                 textType={checkLoadingResult(row) ? 'error' : ''}
                 className={checkError(row.tournIdError)}
               >
-                {row.orgId}
+                {row.tournId}
               </CustomTd>
               <CustomTd
                 textType={checkLoadingResult(row) ? 'error' : ''}
                 className={checkError(row.orgIdError)}
+              >
+                {row.orgId}
+              </CustomTd>
+              <CustomTd
+                textType={checkLoadingResult(row) ? 'error' : ''}
+                className={checkError(row.entrysystemOrgIdError)}
               >
                 {row.entrysystemOrgId}
               </CustomTd>
