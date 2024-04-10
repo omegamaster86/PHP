@@ -959,64 +959,64 @@ class T_raceResultRecord extends Model
     //レース結果登録画面で入力し、レース結果入力確認画面で登録を実行するときに使用
     public function insertRaceResultRecordForInputConfirm($values)
     {
+        Log::debug("insertRaceResultRecordForInputConfirm start.");
         DB::insert("insert into jara_new_pf.t_race_result_record
                     ( 
-                        player_id
-                        , jara_player_id
-                        , player_name
-                        , entrysystem_tourn_id
-                        , tourn_id
-                        , tourn_name
-                        , race_id
-                        , entrysystem_race_id
-                        , race_number
-                        , race_name
-                        , race_class_id
-                        , race_class_name
-                        , org_id
-                        , entrysystem_org_id
-                        , org_name
-                        , crew_name
-                        , lane_number
-                        , by_group
-                        , event_id
-                        , event_name
+                        `player_id`
+                        , `jara_player_id`
+                        , `player_name`
+                        , `entrysystem_tourn_id`
+                        , `tourn_id`
+                        , `tourn_name`
+                        , `race_id`
+                        , `entrysystem_race_id`
+                        , `race_number`
+                        , `race_name`
+                        , `race_class_id`
+                        , `race_class_name`
+                        , `org_id`
+                        , `entrysystem_org_id`
+                        , `org_name`
+                        , `crew_name`
+                        , `lane_number`
+                        , `by_group`
+                        , `event_id`
+                        , `event_name`
                         , `range`
-                        , rank
-                        , laptime_500m
-                        , laptime_1000m
-                        , laptime_1500m
-                        , laptime_2000m
-                        , final_time
-                        , stroke_rate_avg
-                        , stroke_rat_500m
-                        , stroke_rat_1000m
-                        , stroke_rat_1500m
-                        , stroke_rat_2000m
-                        , heart_rate_avg
-                        , heart_rate_500m
-                        , heart_rate_1000m
-                        , heart_rate_1500m
-                        , heart_rate_2000m
-                        , official
-                        , attendance
-                        , ergo_weight
-                        , player_height
-                        , player_weight
-                        , seat_number
-                        , seat_name
-                        , start_datetime
-                        , weather
-                        , wind_speed_2000m_point
-                        , wind_direction_2000m_point
-                        , wind_speed_1000m_point
-                        , wind_direction_1000m_point
-                        , race_result_notes
-                        , registered_time
-                        , registered_user_id
-                        , updated_time
-                        , updated_user_id
-                        , delete_flag
+                        , `rank`
+                        , `laptime_500m`
+                        , `laptime_1000m`
+                        , `laptime_1500m`
+                        , `laptime_2000m`
+                        , `final_time`
+                        , `stroke_rate_avg`
+                        , `stroke_rat_500m`
+                        , `stroke_rat_1000m`
+                        , `stroke_rat_1500m`
+                        , `stroke_rat_2000m`
+                        , `heart_rate_avg`
+                        , `heart_rate_500m`
+                        , `heart_rate_1000m`
+                        , `heart_rate_1500m`
+                        , `heart_rate_2000m`
+                        , `official`
+                        , `attendance`
+                        , `player_height`
+                        , `player_weight`
+                        , `seat_number`
+                        , `seat_name`
+                        , `start_datetime`
+                        , `weather`
+                        , `wind_speed_2000m_point`
+                        , `wind_direction_2000m_point`
+                        , `wind_speed_1000m_point`
+                        , `wind_direction_1000m_point`
+                        , `race_result_notes`
+                        , `registered_time`
+                        , `registered_user_id`
+                        , `updated_time`
+                        , `updated_user_id`
+                        , `delete_flag`
                     ) 
                     VALUES
                     ( 
@@ -1059,7 +1059,6 @@ class T_raceResultRecord extends Model
                         , :heart_rate_2000m
                         , :official
                         , :attendance
-                        , :ergo_weight
                         , :player_height
                         , :player_weight
                         , :seat_number
@@ -1077,6 +1076,7 @@ class T_raceResultRecord extends Model
                         , :updated_user_id
                         , :delete_flag
                     )",$values);
+        Log::debug("insertRaceResultRecordForInputConfirm end.");
     }
 
     //出走結果記録テーブルを更新する
