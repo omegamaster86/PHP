@@ -81,9 +81,15 @@ const CsvTable = ({
           )}
           <CustomTr>
             <CustomTh key={0}>選択</CustomTh>
-            {header.map((header: any, index: any) => (
-              <CustomTh key={index}>{header}</CustomTh>
-            ))}
+            {header.map((header: any, index: any) =>
+              header === '選手名' || header === 'メールアドレス' ? (
+                <CustomTh key={index} className='w-[160px]'>
+                  {header}
+                </CustomTh>
+              ) : (
+                <CustomTh key={index}>{header}</CustomTh>
+              ),
+            )}
           </CustomTr>
         </CustomThead>
         <CustomTbody>
@@ -111,10 +117,10 @@ const CsvTable = ({
               <CustomTd textType={row.link === '連携不可' ? 'error' : 'secondary'}>
                 {row.oldPlayerId}
               </CustomTd>
-              <CustomTd textType={row.link === '連携不可' ? 'error' : 'secondary'}>
+              <CustomTd textType={row.link === '連携不可' ? 'error' : 'secondary'} newLine={true}>
                 {row.playerName}
               </CustomTd>
-              <CustomTd textType={row.link === '連携不可' ? 'error' : 'secondary'}>
+              <CustomTd textType={row.link === '連携不可' ? 'error' : 'secondary'} newLine={true}>
                 {row.mailaddress}
               </CustomTd>
               <CustomTd textType={row.link === '連携不可' ? 'error' : 'secondary'}>
