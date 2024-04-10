@@ -995,6 +995,15 @@ class OrganizationController extends Controller
         return response()->json(['result' => $tOrg]); //DBの結果を返す
     }
 
+    //団体情報を取得
+    public function getOrganizationListData(T_organizations $tOrganization)
+    {
+        Log::debug(sprintf("getOrganizationListData start"));
+        $tOrg = $tOrganization->getAllOrganizations(); //すべての団体リストを取得 20240410
+        Log::debug(sprintf("getOrganizationListData end"));
+        return response()->json(['result' => $tOrg]); //DBの結果を返す
+    }
+
     //userIDに紐づいたデータを送信 20240131
     public function getOrgStaffData(Request $request, T_organization_staff $tOrganizationStaff)
     {

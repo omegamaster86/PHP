@@ -311,7 +311,10 @@ const Header: FC = () => {
             >
               団体登録
             </MenuItem>
-            {userIdType.is_administrator == 1 ? (
+            {userIdType.is_administrator == 1 ||
+            userIdType.is_jara == 1 ||
+            userIdType.is_pref_boat_officer == 1 ||
+            userIdType.is_organization_manager == 1 ? (
               <MenuItem
                 onClick={(e) => {
                   handleClose();

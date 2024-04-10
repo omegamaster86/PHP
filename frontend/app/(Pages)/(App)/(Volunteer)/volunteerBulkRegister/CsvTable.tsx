@@ -156,19 +156,17 @@ const CsvTable = ({
   handleInputChange, // チェックボックスの変更時の処理
   displayLinkButton, // 連携ボタンの表示を切り替える関数
   activationFlg, // 各種ボタンの表示を切り替える関数
-  visibilityFlg, //CSVテーブルの表示切替フラグ 20240406
 }: {
   content: CsvTableRow[];
   handleInputChange: (rowId: number, name: string, value: string | boolean) => void;
   displayLinkButton: (flg: boolean) => void;
   activationFlg: boolean;
-  visibilityFlg: boolean; //データが0件の場合でもヘッダーは表示させるためのフラグ 20240406
 }) => {
   const isResultError = (result: string) => {
     return result === '無効データ' || result === '重複データ' || result === '登録不可データ';
   };
 
-  return visibilityFlg == false ? (
+  return content.length === 0 ? (
     <div></div>
   ) : (
     <div className='relative overflow-auto h-[331px] w-[800px]'>
@@ -202,7 +200,7 @@ const CsvTable = ({
           </CustomButton>
         </div>
       </div>
-      <div className='relative overflow-auto h-[331px] w-[800px]'>
+      <div className='relative overflow-auto'>
         <CustomTable>
           <CustomThead>
             <CustomTr>
