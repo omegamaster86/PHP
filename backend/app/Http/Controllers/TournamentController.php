@@ -847,6 +847,8 @@ class TournamentController extends Controller
         Log::debug(sprintf("registerRaceResultRecord start."));
         $reqData = $request->all();
         Log::debug($reqData);
+        //挿入時の値を格納する配列
+        $insert_values = array();
         //日時 登録用
         $current_datetime = now()->format('Y-m-d H:i:s.u');
         //ユーザーID　登録用
@@ -855,29 +857,121 @@ class TournamentController extends Controller
         $raceInfo = &$reqData['raceInfo'];
         $raceResultRecordResponse = &$reqData['raceResultRecordResponse'];
         $raceResultRecords = &$reqData['raceResultRecords'];
+        $crew_player = &$raceResultRecords["crewPlayer"];
+
+        //全crewPlayer共通の値を配列に格納
+        $entrysystem_tourn_id = isset($raceResultRecords[0]->{"entrysystem_tourn_id"}) ? $raceResultRecords[0]->{"entrysystem_tourn_id"} : null;
+        $insert_values["entrysystem_tourn_id"] = $entrysystem_tourn_id;
+        $tourn_id = isset($raceResultRecords[0]->{"tourn_id"}) ? $raceResultRecords[0]->{"tourn_id"} : null;
+        $insert_values["tourn_id"] = $tourn_id;
+        $tourn_name = isset($raceResultRecords[0]->{"tourn_name"}) ? $raceResultRecords[0]->{"tourn_name"} : null;
+        // $insert_values["tourn_name"] = 
+        // $insert_values["race_id"] =
+        // $insert_values["entrysystem_race_id"] =
+        // $insert_values["race_number"] =
+        // $insert_values["race_name"] =
+        // $insert_values["race_class_id"] =
+        // $insert_values["race_class_name"] =
+        // $insert_values["org_id"] =
+        // $insert_values["entrysystem_org_id"] =
+        // $insert_values["org_name"] =
+        // $insert_values["crew_name"] =
+        // $insert_values["lane_number"] =
+        // $insert_values["by_group"] =
+        // $insert_values["event_id"] =
+        // $insert_values["event_name"] =
+        // $insert_values["range"] =
+        // $insert_values["rank"] =
+        // $insert_values["laptime_500m"] =
+        // $insert_values["laptime_1000m"] =
+        // $insert_values["laptime_1500m"] =
+        // $insert_values["laptime_2000m"] =
+        // $insert_values["final_time"] =
+        // $insert_values["stroke_rate_avg"] =
+        // $insert_values["stroke_rat_500m"] =
+        // $insert_values["stroke_rat_1000m"] =
+        // $insert_values["stroke_rat_1500m"] =
+        // $insert_values["stroke_rat_2000m"] =
+        // $insert_values["official"] =
+        // $insert_values["start_datetime"] =
+        // $insert_values["weather"] =
+        // $insert_values["wind_speed_2000m_point"] =
+        // $insert_values["wind_direction_2000m_point"] =
+        // $insert_values["wind_speed_1000m_point"] =
+        // $insert_values["wind_direction_1000m_point"] =
+        // $insert_values["race_result_notes"] =
+        // $insert_values["registered_time"] =
+        // $insert_values["registered_user_id"] =
+        // $insert_values["updated_time"] =
+        // $insert_values["updated_user_id"] =
+        // $insert_values["delete_flag"] =
+
         try
         {
-            //jara_player_idが空のとき
-            //選手テーブルからjara_player_idを取得
-
-            
-            
-            //エントリーレースIDが空のとき
-            //レーステーブルからエントリーレースIDを取得
-
             //エントリー大会IDが空のとき
             //レーステーブルから大会IDを取得して大会情報を取得
             //取得した大会情報からエントリー大会IDを取得
-            
-            //登録処理
+            if(empty($entrysystem_tourn_id) && isset($tourn_id))
+            {
+                $target_tourn_info = $t_tournaments->getTournament($tourn_id);
+                //getTournamentは取得した0番目だけを返す
+                if(isset($target_tourn_info))
+                {
+                    $insert_values["entrysystem_tourn_id"] = $target_tourn_info->entrysystem_tourn_id;
+                }
+            }
 
+            foreach($crew_player as $player)
+            {
+                //選手の情報を配列に格納
+                // $insert_values["player_id"] =
+                // $insert_values["jara_player_id"] = 
+                // $insert_values["player_name"] =
+                // $insert_values["player_height"] =
+                // $insert_values["player_weight"] =
+                // $insert_values["seat_number"] =
+                // $insert_values["seat_name"] =
+                // $insert_values["heart_rate_avg"] =
+                // $insert_values["heart_rate_500m"] =
+                // $insert_values["heart_rate_1000m"] =
+                // $insert_values["heart_rate_1500m"] =
+                // $insert_values["heart_rate_2000m"] =
+                // $insert_values["attendance"] =
+                // $insert_values["ergo_weight"] =
+
+                //jara_player_idが空のとき
+                //選手テーブルからjara_player_idを取得
+                if(empty($player->jaraPlayerId))
+                {
+                    $target_player_info = $t_players->getPlayer($player->playerId);
+                    if(isset($target_player_info))
+                    {
+                        $insert_values["jara_player_id"] = $target_player_info[0]->{"jara_player_id"};
+                    }
+                }
+                //エントリーレースIDが空のとき
+                //レーステーブルからエントリーレースIDを取得
+                if(empty($player->entrysystemRaceId))
+                {
+                    $target_race_info = $t_races->getRaceFromRaceId($raceInfo->race_id);
+                    if(isset($target_race_info))
+                    {
+                        $insert_values["entrysystem_race_id"] = $target_race_info[0]->{"entrysystem_race_id"};
+                    }
+                }
+                
+                
+                
+                //登録処理
+            }
+            //DB::commit();
             Log::debug(sprintf("registerRaceResultRecord end."));
             return response()->json(['result' => true]); //DBの結果を返す
         }
         catch (\Throwable $e) {
-            DB::rollBack();
+            //DB::rollBack();
             Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+            //return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }
 
@@ -1029,7 +1123,7 @@ class TournamentController extends Controller
             $race_result = $tRace->getRaceFromRaceId($target_race_id); //レース情報を取得
             //出漕時点情報を取得
             $record_result = $t_raceResultRecord->getRaceResultRecordOnRowingPoint($target_race_id);
-
+            
             //レース結果情報の選手情報を取得して、レース結果情報に配列のプロパティを作成する
             for($index = 0; $index < count($record_result); $index++)
             {   
@@ -1095,5 +1189,31 @@ class TournamentController extends Controller
         $crew_number = $events[0]->{"crew_number"};
         //Log::debug(sprintf("getCrewNumberForEventId end."));
         return response()->json(['result' => $crew_number]); //DBの結果を返す
+    }
+
+    //レース結果登録画面
+    //クルー人数を取得する
+    public function getCrewPlayerInfo(Request $request,T_players $t_players)
+    {
+        Log::debug(sprintf("getCrewPlayerInfo start."));
+        $reqData = $request->all();
+        $race_result_records = &$reqData["raceResultRecords"];
+        $crew_player = &$race_result_records[0]->{"crewPlayer"};
+        foreach($crew_player as $player)
+        {
+            if(empty($player->playerName))
+            {
+                $player_info = $t_players->getPlayer($player->playerId);
+                if(isset($player_info))
+                {
+                    $player["sexId"] = $player_info[0]->{"sex_id"};
+                    $player["sex"] = $player_info[0]->{"sexName"};
+                    $player["height"] = $player_info[0]->{"height"};
+                    $player["weight"] = $player_info[0]->{"weight"};
+                }
+            }
+        }
+        Log::debug(sprintf("getCrewPlayerInfo end."));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
     }
 }
