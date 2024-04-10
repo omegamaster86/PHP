@@ -145,6 +145,7 @@ export default function TournamentResult() {
       // 多次元配列のシャローコピーは2件レコードができるため、ディープコピー
       const newFormData = JSON.parse(JSON.stringify(prevFormData));
       newFormData[index].crewPlayer?.push({
+        deleteFlg: false, // 削除フラグ
         addonLineFlg: true,
       } as CrewPlayer);
       return newFormData;
@@ -1363,13 +1364,14 @@ export default function TournamentResult() {
     const playerNum = raceResultRecords.some((record, i) => {
       var count = 0;
       record.crewPlayer?.map((player, j) => {
-        if (!player.deleteFlg && !player.errorText) {
+        if (!player.deleteFlg && player.errorText == '') {
           count++;
         }
       });
       if (count !== playerCount) {
         indexList25.push(i);
       }
+      console.log(indexList25.length > 0);
       return indexList25.length > 0;
     });
 
@@ -1558,6 +1560,11 @@ export default function TournamentResult() {
           // 設定するのは10件まで
           setRaceResultRecords(data.record_result.slice(0, 10));
           scrollTo(0, 0);
+        } else if (data.record_result.length > 0 && data.record_result.length < 10) {
+          //データが10件未満の場合の処理がなかったため追加 20240408
+          console.log(data.record_result);
+          setRaceResultRecords(data.record_result);
+          scrollTo(0, 0);
         }
         console.log('eeeeeeeeeee');
       } catch (error: any) {
@@ -1575,71 +1582,88 @@ export default function TournamentResult() {
   useEffect(() => {
     const fetchRaceInfo = async () => {
       try {
+        var data = null;
         // レース情報の取得
         // const response = await axios.get('http://localhost:3100/raceInfo?id=' + raceInfo?.race_id);
-        const sendData = {
-          race_id: raceId,
-        };
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
-        const response = await axios.post('/getRaceDataRaceId', sendData);
-        console.log(response.data.result);
+        if (raceId != '' && raceId != null && raceId != undefined) {
+          const sendData = {
+            race_id: raceId,
+          };
+          const csrf = () => axios.get('/sanctum/csrf-cookie');
+          await csrf();
+          const response = await axios.post('/getRaceDataRaceId', sendData);
+          console.log(response.data.result);
 
-        const data = response.data.result;
-        // 遷移元からイベントIDが取得できる時だけ、遷移元からのイベントIDをセットする。セットされていない時は、レース情報からイベントIDをセットする。
+          data = response.data.result;
+          // 遷移元からイベントIDが取得できる時だけ、遷移元からのイベントIDをセットする。セットされていない時は、レース情報からイベントIDをセットする。
 
-        setRaceInfo({
-          ...data[0],
-          eventId: eventId || data[0].eventId,
-        });
+          setRaceInfo({
+            ...data[0],
+            eventId: eventId || data[0].eventId,
+          });
+        }
 
-        // 種目マスタに紐づく選手の人数 (バックエンドからの取得方法不明のためDummy)
-        // TODO: 種目マスタに紐づく選手の人数を取得する
-        const response2 = Math.floor(Math.random() * 5) + 1;
-        setPlayerCount(response2);
-        if (mode === 'create') {
-          // レース結果情報の取得
-          // 選手情報の件数が種目マスタに紐づく選手の人数より少ない場合、足りない件数分追加行を追加する
+        if (
+          (eventId != '' && eventId != null && eventId != undefined) ||
+          (data[0].event_id != '' && data[0].event_id != null && data[0].event_id != undefined)
+        ) {
+          // 種目マスタに紐づく選手の人数 (バックエンドからの取得方法不明のためDummy)
+          // TODO: 種目マスタに紐づく選手の人数を取得する
+          // const response2 = Math.floor(Math.random() * 5) + 1;
+          const sendEventId = {
+            event_id: eventId || data[0].event_id,
+          };
+          console.log('kkkkkkkkkkkkk');
+          console.log(sendEventId);
+          const res2 = await axios.post('/getCrewNumberForEventId', sendEventId);
+          const response2 = res2.data.result;
+          console.log(response2);
 
-          raceResultRecords.map((record) => {
-            if (record.crewPlayer?.length < response2) {
-              record.crewPlayer = record.crewPlayer.concat(
-                Array.from({ length: response2 - record.crewPlayer.length }, () => ({
-                  //id: undefined,
-                  playerPhoto: '',
-                  playerName: '',
-                  jaraPlayerId: '',
-                  playerId: '',
-                  sexId: '',
-                  sex: '',
-                  height: undefined,
-                  weight: undefined,
-                  sheetName: '',
-                  sheetNameId: undefined,
-                  entrysystemRaceId: '',
-                  orgId1: '',
-                  orgName1: '',
-                  orgId2: '',
-                  orgName2: '',
-                  orgId3: '',
-                  orgName3: '',
-                  fiveHundredmHeartRate: undefined,
-                  tenHundredmHeartRate: undefined,
-                  fifteenHundredmHeartRate: undefined,
-                  twentyHundredmHeartRate: undefined,
-                  heartRateAvg: undefined,
-                  attendance: '',
-                  deleteFlg: false,
-                  addonLineFlg: false,
-                  errorText: '',
-                })),
-              );
-            }
-            // 種目マスタに紐づく選手の人数より多い場合、余分な行を削除する
-            if (record.crewPlayer?.length > response2) {
-              record.crewPlayer = record.crewPlayer.slice(0, response2);
-            }
-          }, []);
+          setPlayerCount(response2);
+          if (mode === 'create') {
+            // レース結果情報の取得
+            // 選手情報の件数が種目マスタに紐づく選手の人数より少ない場合、足りない件数分追加行を追加する
+
+            raceResultRecords.map((record) => {
+              if (record.crewPlayer?.length < response2) {
+                record.crewPlayer = record.crewPlayer.concat(
+                  Array.from({ length: response2 - record.crewPlayer.length }, () => ({
+                    //id: undefined,
+                    playerPhoto: '',
+                    playerName: '',
+                    jaraPlayerId: '',
+                    playerId: '',
+                    sexId: '',
+                    sex: '',
+                    height: undefined,
+                    weight: undefined,
+                    sheetName: '',
+                    sheetNameId: undefined,
+                    entrysystemRaceId: '',
+                    orgId1: '',
+                    orgName1: '',
+                    orgId2: '',
+                    orgName2: '',
+                    orgId3: '',
+                    orgName3: '',
+                    fiveHundredmHeartRate: undefined,
+                    tenHundredmHeartRate: undefined,
+                    fifteenHundredmHeartRate: undefined,
+                    twentyHundredmHeartRate: undefined,
+                    heartRateAvg: undefined,
+                    attendance: '',
+                    deleteFlg: false,
+                    addonLineFlg: false,
+                    errorText: '',
+                  })),
+                );
+              }
+              // 種目マスタに紐づく選手の人数より多い場合、余分な行を削除する
+              if (record.crewPlayer?.length > response2) {
+                record.crewPlayer = record.crewPlayer.slice(0, response2);
+              }
+            }, []);
+          }
         }
       } catch (error: any) {}
     };
@@ -1966,6 +1990,7 @@ export default function TournamentResult() {
                       { length: playerCount },
                       () =>
                         ({
+                          deleteFlg: false, // 削除フラグ
                           addonLineFlg: true,
                         }) as CrewPlayer,
                     ),
@@ -2652,7 +2677,7 @@ export default function TournamentResult() {
         </CustomButton>
         <CustomButton
           buttonType='primary'
-          onClick={() => {
+          onClick={async () => {
             /**
              * 各「レース結果情報入力」.「選手情報一覧」.「削除」にて、全ての選手がチェック状態の「レース結果情報」が存在する場合、
              * 以下のメッセージをポップアップ表示する。
@@ -2687,6 +2712,38 @@ export default function TournamentResult() {
               } else if (mode === 'update') {
                 // 更新処理
                 router.push('/tournamentResult?mode=confirm&prevMode=update');
+              } else if (mode === 'confirm') {
+                if (prevMode == 'create') {
+                  //登録・更新確認画面からバックエンド側にデータを送る 20240405
+                  const sendData = {
+                    raceInfo: raceInfo,
+                    raceResultRecordResponse: raceResultRecordResponse,
+                    raceResultRecords: raceResultRecords,
+                  };
+                  const csrf = () => axios.get('/sanctum/csrf-cookie');
+                  await csrf();
+                  const raceResponse = await axios.post(
+                    '/registerRaceResultRecordForRegisterConfirm',
+                    sendData,
+                  );
+                  console.log(raceResponse);
+                  // router.push('/tournamentResult?mode=confirm&prevMode=update');
+                } else if (prevMode == 'update') {
+                  //登録・更新確認画面からバックエンド側にデータを送る 20240405
+                  const sendData = {
+                    raceInfo: raceInfo,
+                    raceResultRecordResponse: raceResultRecordResponse,
+                    raceResultRecords: raceResultRecords,
+                  };
+                  const csrf = () => axios.get('/sanctum/csrf-cookie');
+                  await csrf();
+                  const raceResponse = await axios.post(
+                    '/updateRaceResultRecordForUpdateConfirm',
+                    sendData,
+                  );
+                  console.log(raceResponse);
+                  // router.push('/tournamentResult?mode=confirm&prevMode=update');
+                }
               }
             }
           }}
