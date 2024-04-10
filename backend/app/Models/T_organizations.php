@@ -464,6 +464,24 @@ class T_organizations extends Model
         return $organizations;
     }
 
+    //interfaceのTeamResponseを取得する 20240410
+    public function getAllOrganizations()
+    {
+        $organizations = DB::select("select distinct
+                                    case
+                                        when org.jara_org_type = 0 and org.pref_org_type = 0 then '任意'
+                                        else '正式'
+                                        end as `teamTyp`
+                                    ,org.entrysystem_org_id
+                                    ,org.org_id
+                                    ,org.org_name
+                                    from `t_organizations` org
+                                    where 1=1
+                                    and org.delete_flag = 0
+                                    order by org.org_id");
+        return $organizations;
+    }
+
     //csvの団体ID、団体名に一致する団体情報が登録済みかを確認するため、
     //条件に合う団体の数を返す
     //大会結果情報一括登録画面用
