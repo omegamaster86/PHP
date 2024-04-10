@@ -1563,6 +1563,7 @@ export default function TournamentResult() {
           setRaceInfo({} as RaceTable);
           scrollTo(0, 0);
         } else {
+          data.race_result[0].startDateTime = data.race_result[0].start_date_time; //バックエンド側のキーをフロント側のキーに入れ直す 20240410
           setRaceInfo(data.race_result[0]);
         }
 
