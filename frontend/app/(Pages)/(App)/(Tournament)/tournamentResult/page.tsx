@@ -1,7 +1,7 @@
 // // 大会レース結果管理画面
 'use client';
 // ライブラリのインポート
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect,ChangeEvent, use } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AddIcon from '@mui/icons-material/Add';
 import TextField from '@mui/material/TextField';
@@ -1856,10 +1856,11 @@ export default function TournamentResult() {
               {mode === 'create' || mode === 'update' ? (
                 <CustomDatePicker
                   selectedDate={raceResultRecordResponse?.startDateTime}
-                  onChange={(e: any) => {
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     handleRaceResultRecordInputChange(
                       'startDateTime',
-                      e.toISOString('yyyy/MM/dd HH:mm'),
+                      // e.toISOString('yyyy/MM/dd HH:mm'),
+                      (e as unknown as Date).toLocaleString().toString().replaceAll('/', '-'),
                     );
                   }}
                   className='w-[200px]'
