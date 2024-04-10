@@ -798,9 +798,9 @@ class OrganizationController extends Controller
     {
         $condition = "";
         //エントリーシステムの団体IDの条件
-        if (isset($searchInfo['entrysystemOrgId'])) {
+        if (isset($searchInfo['entrySystemId'])) {
             $condition .= " and `t_organizations`.`entrysystem_org_id`= ?\r\n";
-            array_push($searchValue, $searchInfo['entrysystemOrgId']);
+            array_push($searchValue, $searchInfo['entrySystemId']);
         }
         //団体IDの条件
         if (isset($searchInfo['org_id'])) {
