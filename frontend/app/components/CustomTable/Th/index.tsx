@@ -7,17 +7,19 @@ const CustomTh = ({
   align,
   colSpan,
   rowSpan,
+  className,
 }: {
   children: ReactNode;
   align?: AlignType;
   colSpan?: number;
   rowSpan?: number;
+  className?: string;
 }) => {
   return (
     <th
       colSpan={colSpan}
       rowSpan={rowSpan}
-      className='p-1 border border-gray-20 whitespace-nowrap text-caption1'
+      className={`p-1 border border-gray-20 whitespace-nowrap text-caption1 ${className}`}
       align={align}
     >
       {children}
