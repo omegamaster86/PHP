@@ -64,45 +64,26 @@ export default function Tournaments() {
   });
 
   // フォームデータを管理する状態
-  const [tableData, setTableData] = useState<Race[]>([
-    {
-      id: 0,
-      checked: false,
-      race_id: '',
-      entrysystem_race_id: '',
-      tourn_id: 0,
-      race_number: '',
-      event_id: '',
-      event_name: '',
-      race_name: '',
-      race_class_id: '',
-      race_class_name: '',
-      by_group: '',
-      range: '',
-      start_date_time: '',
-      hasHistory: false,
-      tournName: '',
-    },
-  ]);
+  const [tableData, setTableData] = useState<Race[]>([]);
 
-  const [raceFormData, setRaceFormData] = useState<Race>({
-    id: 0,
-    checked: false,
-    race_id: '',
-    entrysystem_race_id: '',
-    tourn_id: Number(tournId) ?? 0, //大会更新の場合は既に存在する大会IDに紐づける 20240409
-    race_number: '',
-    event_id: '',
-    event_name: '',
-    race_name: '',
-    race_class_id: '',
-    race_class_name: '',
-    by_group: '',
-    range: '',
-    start_date_time: '',
-    hasHistory: false,
-    tournName: '',
-  });
+  // const [raceFormData, setRaceFormData] = useState<Race>({
+  //   id: 0,
+  //   checked: false,
+  //   race_id: '',
+  //   entrysystem_race_id: '',
+  //   tourn_id: Number(tournId) ?? 0, //大会更新の場合は既に存在する大会IDに紐づける 20240409
+  //   race_number: '',
+  //   event_id: '',
+  //   event_name: '',
+  //   race_name: '',
+  //   race_class_id: '',
+  //   race_class_name: '',
+  //   by_group: '',
+  //   range: '',
+  //   start_date_time: '',
+  //   hasHistory: false,
+  //   tournName: '',
+  // });
 
   //大会情報 20240202
   const [tournamentFormData, setTournamentFormData] = useState<Tournament>({
@@ -588,24 +569,24 @@ export default function Tournaments() {
                       // console.log(response);
                       // TODO: 処理成功時の処理
                       setTournamentFormData({} as Tournament);
-                      setRaceFormData({
-                        id: 0,
-                        checked: false,
-                        race_id: '',
-                        entrysystem_race_id: '',
-                        tourn_id: 0,
-                        race_number: '',
-                        event_id: '',
-                        event_name: '',
-                        race_name: '',
-                        race_class_id: '',
-                        race_class_name: '',
-                        by_group: '',
-                        range: '',
-                        start_date_time: '',
-                        hasHistory: false,
-                        tournName: '',
-                      });
+                      // setRaceFormData({
+                      //   id: 0,
+                      //   checked: false,
+                      //   race_id: '',
+                      //   entrysystem_race_id: '',
+                      //   tourn_id: 0,
+                      //   race_number: '',
+                      //   event_id: '',
+                      //   event_name: '',
+                      //   race_name: '',
+                      //   race_class_id: '',
+                      //   race_class_name: '',
+                      //   by_group: '',
+                      //   range: '',
+                      //   start_date_time: '',
+                      //   hasHistory: false,
+                      //   tournName: '',
+                      // });
                       setTableData([
                         {
                           id: 0,
@@ -709,24 +690,24 @@ export default function Tournaments() {
                     .then((response) => {
                       // TODO: 処理成功時の処理
                       setTournamentFormData({} as Tournament);
-                      setRaceFormData({
-                        id: 0,
-                        checked: false,
-                        race_id: '',
-                        entrysystem_race_id: '',
-                        tourn_id: 0,
-                        race_number: '',
-                        event_id: '',
-                        event_name: '',
-                        race_name: '',
-                        race_class_id: '',
-                        race_class_name: '',
-                        by_group: '',
-                        range: '',
-                        start_date_time: '',
-                        hasHistory: false,
-                        tournName: '',
-                      });
+                      // setRaceFormData({
+                      //   id: 0,
+                      //   checked: false,
+                      //   race_id: '',
+                      //   entrysystem_race_id: '',
+                      //   tourn_id: 0,
+                      //   race_number: '',
+                      //   event_id: '',
+                      //   event_name: '',
+                      //   race_name: '',
+                      //   race_class_id: '',
+                      //   race_class_name: '',
+                      //   by_group: '',
+                      //   range: '',
+                      //   start_date_time: '',
+                      //   hasHistory: false,
+                      //   tournName: '',
+                      // });
                       setTableData([
                         {
                           id: 0,
@@ -854,26 +835,46 @@ export default function Tournaments() {
       onClick={() => {
         const newId = maxId + 1;
         setMaxId((prevMaxId) => prevMaxId + 1);
-        setTableData((prevData) => [...prevData, { ...raceFormData, id: prevData.length + 1 }]);
+        setTableData((prevData) => [
+          ...prevData,
+          {
+            id: newId,
+            checked: false,
+            race_id: '',
+            entrysystem_race_id: '',
+            tourn_id: Number(tournId) ?? 0, //大会更新の場合は既に存在する大会IDに紐づける 20240409
+            race_number: '',
+            event_id: '',
+            event_name: '',
+            race_name: '',
+            race_class_id: '',
+            race_class_name: '',
+            by_group: '',
+            range: '',
+            start_date_time: '',
+            hasHistory: false,
+            tournName: '',
+          },
+        ]);
         // フォームデータをリセット
-        setRaceFormData({
-          id: 1,
-          checked: false,
-          race_id: '',
-          entrysystem_race_id: '',
-          tourn_id: Number(tournId) ?? 0, //大会更新の場合は既に存在する大会IDに紐づける 20240409
-          race_number: '',
-          event_id: '',
-          event_name: '',
-          race_name: '',
-          race_class_id: '',
-          race_class_name: '',
-          by_group: '',
-          range: '',
-          start_date_time: '',
-          hasHistory: false,
-          tournName: '',
-        });
+        // setRaceFormData({
+        //   id: 1,
+        //   checked: false,
+        //   race_id: '',
+        //   entrysystem_race_id: '',
+        //   tourn_id: Number(tournId) ?? 0, //大会更新の場合は既に存在する大会IDに紐づける 20240409
+        //   race_number: '',
+        //   event_id: '',
+        //   event_name: '',
+        //   race_name: '',
+        //   race_class_id: '',
+        //   race_class_name: '',
+        //   by_group: '',
+        //   range: '',
+        //   start_date_time: '',
+        //   hasHistory: false,
+        //   tournName: '',
+        // });
       }}
     >
       追加
