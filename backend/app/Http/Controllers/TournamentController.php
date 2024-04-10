@@ -1235,22 +1235,30 @@ class TournamentController extends Controller
             $race_result = $tRace->getRaceFromRaceId($target_race_id); //レース情報を取得
             //出漕時点情報を取得
             $record_result = $t_raceResultRecord->getRaceResultRecordOnRowingPoint($target_race_id);
-            
+            //laptimeをSS.msからMM:SS.msに変換
+            for($result_index = 0;$result_index < count($record_result); $result_index++)
+            {
+                $record_result[$result_index]->{"laptime_500m"} = $this->convertToTimeFormat($record_result[$result_index]->{"laptime_500m"});
+                $record_result[$result_index]->{"laptime_1000m"} = $this->convertToTimeFormat($record_result[$result_index]->{"laptime_1000m"});
+                $record_result[$result_index]->{"laptime_1500m"} = $this->convertToTimeFormat($record_result[$result_index]->{"laptime_1500m"});
+                $record_result[$result_index]->{"laptime_2000m"} = $this->convertToTimeFormat($record_result[$result_index]->{"laptime_2000m"});                
+                $record_result[$result_index]->{"final_time"} = $this->convertToTimeFormat($record_result[$result_index]->{"final_time"});
+            }
+
             //レース結果情報の選手情報を取得して、レース結果情報に配列のプロパティを作成する
             for($index = 0; $index < count($record_result); $index++)
             {   
                 $target_crew_name = $record_result[$index]->{'crew_name'};
                 $target_org_id = $record_result[$index]->{'org_id'};
                 $player_result = $t_raceResultRecord->getRaceResultRecordList($target_race_id,$target_crew_name,$target_org_id);
-
                 //crewPlayerのプロパティにレース結果情報
                 // $record_result[$index]->{'crew_player'} = $player_result;
                 $record_result[$index]->{'crewPlayer'} = $player_result;
             }
-            Log::debug("********************race_result********************");
-            Log::debug($race_result);
-            Log::debug("********************record_result********************");
-            Log::debug($record_result);
+            // Log::debug("********************race_result********************");
+            // Log::debug($race_result);
+            // Log::debug("********************record_result********************");
+            // Log::debug($record_result);
             Log::debug(sprintf("getRaceDataRaceId end"));
             return response()->json(['race_result' => $race_result,'record_result' => $record_result]); //DBの結果を返す
         }
@@ -1330,8 +1338,19 @@ class TournamentController extends Controller
     }
 
     //時間フォーマット文字列を浮動小数点型に変換する
+    //example.)01:10.34 → 70.34
     private function convertTimeToFloat($timeString) {
         list($minutes, $seconds) = explode(':', $timeString);
         return $minutes * 60 + $seconds;
+    }
+
+    //浮動小数点型を時間フォーマット文字列に変換する
+    //example.)70.34 → 01:10.34
+    private function convertToTimeFormat($floatNumber) {
+        $hours = floor($floatNumber / 60);
+        $minutes = floor($floatNumber % 60);
+        $seconds = round(($floatNumber - floor($floatNumber)) * 100);
+    
+        return sprintf("%02d:%02d.%02d", $hours, $minutes, $seconds);
     }
 }
