@@ -158,7 +158,7 @@ export default function PlayerInformationRef() {
     '大会名',
     '公式／非公式',
     '開催日',
-    '団体所属',
+    '所属団体',
     'レースNo.',
     '種目',
     'レース名',
@@ -270,7 +270,7 @@ export default function PlayerInformationRef() {
                         </div>
                         <div className='flex flex-row'>
                           {/* 生年月日 */}
-                          <div className='text-gray-40 text-caption1'>誕生　</div>
+                          <div className='text-gray-40 text-caption1'>生年月日　</div>
                           <Label
                             label={playerInformation.date_of_birth}
                             textColor='white'
@@ -491,7 +491,7 @@ export default function PlayerInformationRef() {
                       <CustomTd>{row.official === 0 ? '非公式' : '公式'}</CustomTd>
                       {/* 開催日 */}
                       <CustomTd>{row.eventStartDate}</CustomTd>
-                      {/* 団体所属 */}
+                      {/* 所属団体 */}
                       <CustomTd>{row.org_name}</CustomTd>
                       {/* レースNo. */}
                       <CustomTd>{row.race_number}</CustomTd>
