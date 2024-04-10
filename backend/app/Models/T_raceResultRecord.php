@@ -867,7 +867,7 @@ class T_raceResultRecord extends Model
     public function getRaceResultRecordOnRowingPoint($race_id)
     {
         Log::debug("getRaceResultRecordOnRowingPoint start.");
-        $race_result_record = DB::select("select
+        $race_result_record = DB::select("select distinct
                                             rrr.race_id
                                             ,mwt.`weather_name` as weatherName
                                             ,rrr.`range`                        #距離
@@ -920,12 +920,13 @@ class T_raceResultRecord extends Model
                                                 ,msex.sex
                                                 ,ply.height
                                                 ,ply.weight
-                                                ,rrr.seat_number
+                                                ,rrr.seat_number as sheetNameId
                                                 ,seat.seat_name as sheetName
                                                 ,rrr.heart_rate_500m as fiveHundredmHeartRate
                                                 ,rrr.heart_rate_1000m as tenHundredmHeartRate
                                                 ,rrr.heart_rate_1500m as fifteenHundredmHeartRate
                                                 ,rrr.heart_rate_2000m as twentyHundredmHeartRate
+                                                ,rrr.heart_rate_avg as heartRateAvg
                                                 ,rrr.attendance
                                                 ,rrr.org_id
                                                 ,rrr.crew_name
