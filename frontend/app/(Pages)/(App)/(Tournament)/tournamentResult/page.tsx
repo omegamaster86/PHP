@@ -263,6 +263,25 @@ export default function TournamentResult() {
     });
   };
 
+  const handleRaceResultRecordsCrewPlayerChangeBooleanbyIndex = (
+    index: number,
+    crewIndex: number,
+    name: keyof CrewPlayer,
+    value: boolean,
+  ) => {
+    setRaceResultRecords((prevFormData) => {
+      const newFormData = [...prevFormData];
+      if (
+        newFormData[index].crewPlayer[crewIndex] !== null ||
+        newFormData[index].crewPlayer[crewIndex] !== undefined
+      ) {
+        newFormData[index].crewPlayer[crewIndex][name] = value as never;
+      }
+
+      return newFormData;
+    });
+  };
+
   const clearError = () => {
     // レース結果ごとのエラーメッセージをクリア
     raceResultRecords.map((record, i) => {
@@ -2443,13 +2462,13 @@ export default function TournamentResult() {
                           <OriginalCheckbox
                             id={'deleteFlg' + index + crewIndex}
                             value='deleteFlg'
-                            checked={player.deleteFlg || false}
+                            checked={player.deleteFlg}
                             onChange={(e) => {
-                              handleRaceResultRecordsCrewPlayerChangebyIndex(
+                              handleRaceResultRecordsCrewPlayerChangeBooleanbyIndex(
                                 index,
                                 crewIndex,
                                 'deleteFlg',
-                                e.target.checked ? 'true' : 'false',
+                                e.target.checked,
                               );
                             }}
                             readonly={mode === 'confirm'}
