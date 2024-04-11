@@ -64,45 +64,26 @@ export default function Tournaments() {
   });
 
   // フォームデータを管理する状態
-  const [tableData, setTableData] = useState<Race[]>([
-    {
-      id: 0,
-      checked: false,
-      race_id: '',
-      entrysystem_race_id: '',
-      tourn_id: 0,
-      race_number: '',
-      event_id: '',
-      event_name: '',
-      race_name: '',
-      race_class_id: '',
-      race_class_name: '',
-      by_group: '',
-      range: '',
-      start_date_time: '',
-      hasHistory: false,
-      tournName: '',
-    },
-  ]);
+  const [tableData, setTableData] = useState<Race[]>([]);
 
-  const [raceFormData, setRaceFormData] = useState<Race>({
-    id: 0,
-    checked: false,
-    race_id: '',
-    entrysystem_race_id: '',
-    tourn_id: 0,
-    race_number: '',
-    event_id: '',
-    event_name: '',
-    race_name: '',
-    race_class_id: '',
-    race_class_name: '',
-    by_group: '',
-    range: '',
-    start_date_time: '',
-    hasHistory: false,
-    tournName: '',
-  });
+  // const [raceFormData, setRaceFormData] = useState<Race>({
+  //   id: 0,
+  //   checked: false,
+  //   race_id: '',
+  //   entrysystem_race_id: '',
+  //   tourn_id: Number(tournId) ?? 0, //大会更新の場合は既に存在する大会IDに紐づける 20240409
+  //   race_number: '',
+  //   event_id: '',
+  //   event_name: '',
+  //   race_name: '',
+  //   race_class_id: '',
+  //   race_class_name: '',
+  //   by_group: '',
+  //   range: '',
+  //   start_date_time: '',
+  //   hasHistory: false,
+  //   tournName: '',
+  // });
 
   //大会情報 20240202
   const [tournamentFormData, setTournamentFormData] = useState<Tournament>({
@@ -145,9 +126,12 @@ export default function Tournaments() {
   const [maxId, setMaxId] = useState(0);
 
   // エラーメッセージ
-  const [entrysystemRaceIdErrorMessage, setEntrysystemRaceIdErrorMessage] = useState(
+  // const [entrysystemRaceIdErrorMessage, setEntrysystemRaceIdErrorMessage] = useState(
+  //   [] as string[],
+  // );
+  const [entrysystemTournIdErrorMessage, setEntrysystemTournIdErrorMessage] = useState(
     [] as string[],
-  );
+  ); //エントリーシステムの大会ID用エラーメッセージ 20240409
   const [tournNameErrorMessage, setTournNameErrorMessage] = useState([] as string[]);
   const [sponsorOrgIdErrorMessage, setSponsorOrgIdErrorMessage] = useState([] as string[]);
   const [eventStartDateErrorMessage, setEventStartDateErrorMessage] = useState([] as string[]);
@@ -173,10 +157,9 @@ export default function Tournaments() {
 
   // バリデーションを実行する関数
   const performValidation = () => {
-    // const entrysystemRaceIdError = Validator.getErrorMessages([
-    //   Validator.validateIntegerRange(tournamentFormData.entrysystem_tourn_id),
-    // ]);
-    const entrysystemRaceIdError = Validator.getErrorMessages([]);
+    // const entrysystemRaceIdError = Validator.getErrorMessages([]);
+
+    const entrysystemTournIdError = Validator.getErrorMessages([]); //エントリーシステムの大会ID用エラーメッセージ 20240409
 
     const tournNameError = Validator.getErrorMessages([
       Validator.validateRequired(tournamentFormData.tourn_name, '大会名'),
@@ -271,6 +254,7 @@ export default function Tournaments() {
     });
 
     // setEntrysystemRaceIdErrorMessage(entrysystemRaceIdError);
+    setEntrysystemTournIdErrorMessage(entrysystemTournIdError);
     setTournNameErrorMessage(tournNameError);
     setSponsorOrgIdErrorMessage(sponsorOrgIdError);
     setEventStartDateErrorMessage(eventStartDateError);
@@ -353,7 +337,6 @@ export default function Tournaments() {
     }
 
     if (
-      entrysystemRaceIdErrorMessage.length > 0 ||
       tournNameError.length > 0 ||
       sponsorOrgIdError.length > 0 ||
       eventStartDateError.length > 0 ||
@@ -372,7 +355,6 @@ export default function Tournaments() {
       rangeNegativeErrorFlg ||
       startDateTimeErrorFlg
     ) {
-      console.log(entrysystemRaceIdErrorMessage);
       console.log(tournNameError);
       console.log(sponsorOrgIdError);
       console.log(eventStartDateError);
@@ -587,24 +569,24 @@ export default function Tournaments() {
                       // console.log(response);
                       // TODO: 処理成功時の処理
                       setTournamentFormData({} as Tournament);
-                      setRaceFormData({
-                        id: 0,
-                        checked: false,
-                        race_id: '',
-                        entrysystem_race_id: '',
-                        tourn_id: 0,
-                        race_number: '',
-                        event_id: '',
-                        event_name: '',
-                        race_name: '',
-                        race_class_id: '',
-                        race_class_name: '',
-                        by_group: '',
-                        range: '',
-                        start_date_time: '',
-                        hasHistory: false,
-                        tournName: '',
-                      });
+                      // setRaceFormData({
+                      //   id: 0,
+                      //   checked: false,
+                      //   race_id: '',
+                      //   entrysystem_race_id: '',
+                      //   tourn_id: 0,
+                      //   race_number: '',
+                      //   event_id: '',
+                      //   event_name: '',
+                      //   race_name: '',
+                      //   race_class_id: '',
+                      //   race_class_name: '',
+                      //   by_group: '',
+                      //   range: '',
+                      //   start_date_time: '',
+                      //   hasHistory: false,
+                      //   tournName: '',
+                      // });
                       setTableData([
                         {
                           id: 0,
@@ -644,8 +626,10 @@ export default function Tournaments() {
                 storeTournamentInfo();
               })
               .catch((error) => {
-                error?.response?.data?.response_tourn_id &&
-                  setEntrysystemRaceIdErrorMessage([error?.response?.data?.response_tourn_id]);
+                error?.response?.data?.response_entrysystem_tourn_id &&
+                  setEntrysystemTournIdErrorMessage([
+                    error?.response?.data?.response_entrysystem_tourn_id,
+                  ]);
                 error?.response?.data?.response_tourn_type &&
                   setTournNameErrorMessage([error?.response?.data?.response_tourn_type]);
                 error?.response?.data?.response_org_id &&
@@ -706,24 +690,24 @@ export default function Tournaments() {
                     .then((response) => {
                       // TODO: 処理成功時の処理
                       setTournamentFormData({} as Tournament);
-                      setRaceFormData({
-                        id: 0,
-                        checked: false,
-                        race_id: '',
-                        entrysystem_race_id: '',
-                        tourn_id: 0,
-                        race_number: '',
-                        event_id: '',
-                        event_name: '',
-                        race_name: '',
-                        race_class_id: '',
-                        race_class_name: '',
-                        by_group: '',
-                        range: '',
-                        start_date_time: '',
-                        hasHistory: false,
-                        tournName: '',
-                      });
+                      // setRaceFormData({
+                      //   id: 0,
+                      //   checked: false,
+                      //   race_id: '',
+                      //   entrysystem_race_id: '',
+                      //   tourn_id: 0,
+                      //   race_number: '',
+                      //   event_id: '',
+                      //   event_name: '',
+                      //   race_name: '',
+                      //   race_class_id: '',
+                      //   race_class_name: '',
+                      //   by_group: '',
+                      //   range: '',
+                      //   start_date_time: '',
+                      //   hasHistory: false,
+                      //   tournName: '',
+                      // });
                       setTableData([
                         {
                           id: 0,
@@ -765,8 +749,10 @@ export default function Tournaments() {
                 updateTournamentInfo();
               })
               .catch((error) => {
-                error?.response?.data?.response_tourn_id &&
-                  setEntrysystemRaceIdErrorMessage([error?.response?.data?.response_tourn_id]);
+                error?.response?.data?.response_entrysystem_tourn_id &&
+                  setEntrysystemTournIdErrorMessage([
+                    error?.response?.data?.response_entrysystem_tourn_id,
+                  ]);
                 error?.response?.data?.response_tourn_type &&
                   setTournNameErrorMessage([error?.response?.data?.response_tourn_type]);
                 error?.response?.data?.response_org_id &&
@@ -804,6 +790,7 @@ export default function Tournaments() {
                 race_data: tableData,
               })
               .then((response) => {
+                console.log(tableData);
                 console.log(response);
                 console.log(tournamentFormData);
                 tournamentFormData.sponsorOrgName = response.data.success.org_name;
@@ -817,8 +804,10 @@ export default function Tournaments() {
                 router.push('/tournament?mode=confirm&prevMode=' + mode);
               })
               .catch((error) => {
-                error?.response?.data?.response_tourn_id &&
-                  setEntrysystemRaceIdErrorMessage([error?.response?.data?.response_tourn_id]);
+                error?.response?.data?.response_entrysystem_tourn_id &&
+                  setEntrysystemTournIdErrorMessage([
+                    error?.response?.data?.response_entrysystem_tourn_id,
+                  ]);
                 error?.response?.data?.response_tourn_type &&
                   setTournNameErrorMessage([error?.response?.data?.response_tourn_type]);
                 error?.response?.data?.response_org_id &&
@@ -846,26 +835,46 @@ export default function Tournaments() {
       onClick={() => {
         const newId = maxId + 1;
         setMaxId((prevMaxId) => prevMaxId + 1);
-        setTableData((prevData) => [...prevData, { ...raceFormData, id: prevData.length + 1 }]);
+        setTableData((prevData) => [
+          ...prevData,
+          {
+            id: newId,
+            checked: false,
+            race_id: '',
+            entrysystem_race_id: '',
+            tourn_id: Number(tournId) ?? 0, //大会更新の場合は既に存在する大会IDに紐づける 20240409
+            race_number: '',
+            event_id: '',
+            event_name: '',
+            race_name: '',
+            race_class_id: '',
+            race_class_name: '',
+            by_group: '',
+            range: '',
+            start_date_time: '',
+            hasHistory: false,
+            tournName: '',
+          },
+        ]);
         // フォームデータをリセット
-        setRaceFormData({
-          id: 1,
-          checked: false,
-          race_id: '',
-          entrysystem_race_id: '',
-          tourn_id: 0,
-          race_number: '',
-          event_id: '',
-          event_name: '',
-          race_name: '',
-          race_class_id: '',
-          race_class_name: '',
-          by_group: '',
-          range: '',
-          start_date_time: '',
-          hasHistory: false,
-          tournName: '',
-        });
+        // setRaceFormData({
+        //   id: 1,
+        //   checked: false,
+        //   race_id: '',
+        //   entrysystem_race_id: '',
+        //   tourn_id: Number(tournId) ?? 0, //大会更新の場合は既に存在する大会IDに紐づける 20240409
+        //   race_number: '',
+        //   event_id: '',
+        //   event_name: '',
+        //   race_name: '',
+        //   race_class_id: '',
+        //   race_class_name: '',
+        //   by_group: '',
+        //   range: '',
+        //   start_date_time: '',
+        //   hasHistory: false,
+        //   tournName: '',
+        // });
       }}
     >
       追加
@@ -1059,8 +1068,8 @@ export default function Tournaments() {
             userIdType.is_organization_manager == 1) && (
             <CustomTextField
               label='エントリーシステムの大会ID'
-              isError={entrysystemRaceIdErrorMessage.length > 0}
-              errorMessages={entrysystemRaceIdErrorMessage}
+              isError={entrysystemTournIdErrorMessage.length > 0}
+              errorMessages={entrysystemTournIdErrorMessage}
               readonly={mode === 'confirm'}
               displayHelp={mode !== 'confirm'}
               value={tournamentFormData.entrysystem_tourn_id}

@@ -219,7 +219,7 @@ export default function TournamentResultRef() {
                     <div className='flex flex-col gap-[8px]'>
                       <Label label='クルー名' textSize='small' isBold />
                       <p className='h-12 text-secondaryText py-3 disable'>
-                        {item?.player_name || ''}
+                        {item?.crew_name || ''}
                       </p>
                     </div>
                     <div className='flex flex-col gap-[8px]'>
@@ -395,36 +395,33 @@ export default function TournamentResultRef() {
                     </CustomTr>
                   </CustomThead>
                   <CustomTbody>
-                    {raceResultRecords.map(
-                      (item, index) =>
-                        item?.crewPlayer?.map((item, index) => (
-                          <CustomTr key={index}>
-                            <CustomTd>
-                              <div className='flex justify-center'>
-                                <OriginalCheckbox
-                                  id={''}
-                                  value={''}
-                                  readonly
-                                  checked={false}
-                                  onChange={() => {}}
-                                />
-                              </div>
-                            </CustomTd>
-                            <CustomTd>{item.playerId}</CustomTd>
-                            <CustomTd>{item.playerName}</CustomTd>
-                            <CustomTd>{item.sex}</CustomTd>
-                            <CustomTd>{item.height}</CustomTd>
-                            <CustomTd>{item.weight}</CustomTd>
-                            <CustomTd>{item.sheetName}</CustomTd>
-                            <CustomTd>{item.fiveHundredmHeartRate}</CustomTd>
-                            <CustomTd>{item.tenHundredmHeartRate}</CustomTd>
-                            <CustomTd>{item.fifteenHundredmHeartRate}</CustomTd>
-                            <CustomTd>{item.twentyHundredmHeartRate}</CustomTd>
-                            <CustomTd>{item.heartRateAvg}</CustomTd>
-                            <CustomTd>{item.attendance}</CustomTd>
-                          </CustomTr>
-                        )),
-                    )}
+                    {item.crewPlayer.map((item, index) => (
+                      <CustomTr key={index}>
+                        <CustomTd>
+                          <div className='flex justify-center'>
+                            <OriginalCheckbox
+                              id={''}
+                              value={''}
+                              readonly
+                              checked={false}
+                              onChange={() => {}}
+                            />
+                          </div>
+                        </CustomTd>
+                        <CustomTd>{item.playerId}</CustomTd>
+                        <CustomTd>{item.playerName}</CustomTd>
+                        <CustomTd>{item.sex}</CustomTd>
+                        <CustomTd>{item.height}</CustomTd>
+                        <CustomTd>{item.weight}</CustomTd>
+                        <CustomTd>{item.sheetName}</CustomTd>
+                        <CustomTd>{item.fiveHundredmHeartRate}</CustomTd>
+                        <CustomTd>{item.tenHundredmHeartRate}</CustomTd>
+                        <CustomTd>{item.fifteenHundredmHeartRate}</CustomTd>
+                        <CustomTd>{item.twentyHundredmHeartRate}</CustomTd>
+                        <CustomTd>{item.heartRateAvg}</CustomTd>
+                        <CustomTd>{item.attendance}</CustomTd>
+                      </CustomTr>
+                    ))}
                   </CustomTbody>
                 </CustomTable>
               </div>

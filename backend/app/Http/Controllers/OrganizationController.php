@@ -798,9 +798,9 @@ class OrganizationController extends Controller
     {
         $condition = "";
         //エントリーシステムの団体IDの条件
-        if (isset($searchInfo['entrysystemOrgId'])) {
+        if (isset($searchInfo['entrySystemId'])) {
             $condition .= " and `t_organizations`.`entrysystem_org_id`= ?\r\n";
-            array_push($searchValue, $searchInfo['entrysystemOrgId']);
+            array_push($searchValue, $searchInfo['entrySystemId']);
         }
         //団体IDの条件
         if (isset($searchInfo['org_id'])) {
@@ -992,6 +992,15 @@ class OrganizationController extends Controller
         //$tOrg = $tOrganization->getOrganizationForOrgManagement($targetOrgId); //userIDに紐づいた団体を取得するように修正する必要がある 二村さん残件対応箇所
         $tOrg = $tOrganization->getManagementOrganizations($targetOrgId);
         Log::debug(sprintf("getOrganizationForOrgManagement end"));
+        return response()->json(['result' => $tOrg]); //DBの結果を返す
+    }
+
+    //団体情報を取得
+    public function getOrganizationListData(T_organizations $tOrganization)
+    {
+        Log::debug(sprintf("getOrganizationListData start"));
+        $tOrg = $tOrganization->getAllOrganizations(); //すべての団体リストを取得 20240410
+        Log::debug(sprintf("getOrganizationListData end"));
         return response()->json(['result' => $tOrg]); //DBの結果を返す
     }
 

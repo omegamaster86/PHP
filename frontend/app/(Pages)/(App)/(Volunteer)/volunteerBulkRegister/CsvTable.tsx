@@ -202,7 +202,7 @@ const CsvTable = ({
           </CustomButton>
         </div>
       </div>
-      <div className='relative overflow-auto h-[331px] w-[800px]'>
+      <div className='relative overflow-auto'>
         <CustomTable>
           <CustomThead>
             <CustomTr>

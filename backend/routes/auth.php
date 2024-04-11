@@ -132,6 +132,7 @@ Route::middleware('auth')->group(function () {
     Route::post('orgSearch', [OrganizationController::class, 'searchOrganization']); //団体検索 20240212
     Route::post('deleteOrgData', [OrganizationController::class, 'deleteOrgData']); //団体削除 20240307
     Route::get('getOrganizationForOrgManagement', [OrganizationController::class, 'getOrganizationForOrgManagement']); //団体管理画面用に団体情報を取得 20240212
+    Route::get('getOrganizationListData', [OrganizationController::class, 'getOrganizationListData']); //団体所属選手一括登録画面用に団体情報を取得 20240410
     Route::post('getEntryTournamentsViewForTeamRef', [OrganizationController::class, 'getEntryTournamentsViewForTeamRef']); //エントリー大会 20240212
     Route::post('searchOrganizationPlayersForTeamRef', [OrganizationPlayersController::class, 'searchOrganizationPlayersForTeamRef']); //主催大会 20240215
     Route::post('updateOrgPlayerData', [OrganizationPlayersController::class, 'updateOrgPlayerData']); //団体所属選手更新 20240226
@@ -172,7 +173,7 @@ Route::middleware('auth')->group(function () {
     Route::post('getCrewNumberForEventId', [TournamentController::class, 'getCrewNumberForEventId']); //種目名毎のクルー人数を取得 20240405
     Route::post('registerRaceResultRecordForRegisterConfirm', [TournamentController::class, 'registerRaceResultRecordForRegisterConfirm']); //レース結果入力確認画面で登録を実行 20240405
     Route::post('updateRaceResultRecordForUpdateConfirm', [TournamentController::class, 'updateRaceResultRecordForUpdateConfirm']); //レース結果更新確認画面で更新を実行 20240405
-
+    Route::post('getCrewPlayerInfo', [TournamentController::class, 'getCrewPlayerInfo']); //レース結果登録画面で選手IDを入力したとき、その選手情報を取得する 20240409
 
     //ボランティア関連
     Route::post('getVolunteerData', [VolunteerController::class, 'getVolunteerData']); //ボランティア情報取得 20240213 ※ボランティア履歴情報も取得する

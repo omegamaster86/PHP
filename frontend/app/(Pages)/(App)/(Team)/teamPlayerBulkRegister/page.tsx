@@ -8,7 +8,7 @@ import CsvHandler from './CsvHandler';
 import Validator from '@/app/utils/validator';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/app/lib/axios';
-import { TeamResponse, Org } from '@/app/types';
+import { TeamResponse, Org, UserIdType } from '@/app/types';
 
 // CSVデータの型定義
 interface CsvData {
@@ -73,6 +73,7 @@ export default function TeamPlayerBulkRegister() {
   const [dialogDisplayFlg, setDialogDisplayFlg] = useState<boolean>(false);
   const [displayLinkButtonFlg, setDisplayLinkButtonFlg] = useState<boolean>(false);
   const searchParams = useSearchParams();
+  const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
 
   // 所属団体名の活性状態を制御
   let isOrgNameActive = false;
@@ -176,9 +177,22 @@ export default function TeamPlayerBulkRegister() {
           });
         } else {
           // const org = await axios.get<Org[]>('http://localhost:3100/orgSearch');
-          const responseData = await axios.get('/getOrganizationForOrgManagement'); //団体データ取得 20240201
-          // console.log(responseData.data.result);
-          setOrgs(responseData.data.result);
+          const playerInf = await axios.get('/getIDsAssociatedWithUser');
+          const userIdInfo = playerInf.data.result[0];
+          if (
+            userIdInfo.is_administrator == '0' &&
+            userIdInfo.is_jara == '0' &&
+            userIdInfo.is_pref_boat_officer == '0'
+          ) {
+            //団体管理者の権限だけが1の場合
+            const responseData = await axios.get('/getOrganizationForOrgManagement'); //ログインユーザーが管理している団体データの取得 20240201
+            console.log(responseData.data.result);
+            setOrgs(responseData.data.result);
+          } else {
+            const responseData = await axios.get('/getOrganizationListData'); //すべての団体データの取得 20240410
+            console.log(responseData.data.result);
+            setOrgs(responseData.data.result);
+          }
         }
       } catch (error) {
         console.log(error);
@@ -218,7 +232,8 @@ export default function TeamPlayerBulkRegister() {
   };
 
   const getJsonRow = async (row: string[], index: number) => {
-    const expectedColumnCount = 4; // 期待する列数
+    const expectedColumnCount = 5; // 期待する列数
+    console.log(row.length);
     if (row.length !== expectedColumnCount) {
       return {
         id: index,
@@ -374,7 +389,7 @@ export default function TeamPlayerBulkRegister() {
                         return x.length > 0 && x.some((y) => y.length > 0);
                       })
                       .slice(isHeaderMatch ? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
-                      .map((row, index) => getJsonRow(row, index)),
+                      .map((row, index) => (console.log(row), getJsonRow(row, index))),
                   ).then((results) => {
                     var resList = results as any;
                     resList.forEach((element: any) => {
