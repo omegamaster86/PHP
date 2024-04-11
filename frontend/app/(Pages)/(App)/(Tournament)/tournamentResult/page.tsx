@@ -2751,7 +2751,7 @@ export default function TournamentResult() {
               );
             }
 
-            var isValid = null;
+            var isValid = true;
             if (mode == 'create' || mode == 'update') {
               isValid = validateRaceResultRecords(); // バリデーション
             }
