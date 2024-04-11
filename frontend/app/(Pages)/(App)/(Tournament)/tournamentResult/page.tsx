@@ -2220,7 +2220,11 @@ export default function TournamentResult() {
                         <div className='flex flex-col gap-[8px]'>
                           <InputLabel label='備考' />
                           <CustomDropdown
-                            value={item?.remarkId?.toString() || ''}
+                            value={
+                              mode === 'confirm'
+                                ? item.race_result_notes
+                                : item?.remarkId?.toString() || ''
+                            }
                             options={remarkOptions.map((item) => ({
                               key: item.id,
                               value: item.name,
@@ -2231,8 +2235,8 @@ export default function TournamentResult() {
                               handleRaceResultRecordsInputChangebyIndex(index, 'remarkId', e);
                               handleRaceResultRecordsInputChangebyIndex(
                                 index,
-                                'remark',
-                                remarkOptions.find((item) => item.id === e)?.name || '',
+                                'race_result_notes',
+                                remarkOptions.find((item) => item.id == e)?.name || '',
                               );
                             }}
                             readonly={mode === 'confirm'}
