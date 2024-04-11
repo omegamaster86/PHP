@@ -1083,29 +1083,13 @@ class T_raceResultRecord extends Model
     //レース結果更新画面で入力し、レース結果入力確認画面で更新を実行するときに使用
     public function updateRaceResultRecordForUpdateConfirm($values)
     {
-        DB::update("update jara_new_pf.t_race_result_record 
+        DB::update("update `t_race_result_record`
                     SET
-                        `player_id` = :player_id
-                        , `jara_player_id = :jara_player_id
-                        , `player_name = :player_name
-                        # , `entrysystem_tourn_id = :entrysystem_tourn_id
-                        # , `tourn_id = :tourn_id
-                        # , `tourn_name = :tourn_name
-                        # , `race_id = :race_id
-                        # , `entrysystem_race_id = :entrysystem_race_id
-                        # , `race_number = :race_number
-                        # , `race_name = :race_name
-                        # , `race_class_id = :race_class_id
-                        # , `race_class_name = :race_class_name
-                        , `org_id = :org_id
-                        , `entrysystem_org_id = :entrysystem_org_id
-                        , `org_name = :org_name
-                        , `crew_name = :crew_name
-                        , `lane_number = :lane_number
-                        # , `by_group = :by_group
-                        # , `event_id = :event_id
-                        # , `event_name = :event_name
-                        # , `range` = :range
+                        `jara_player_id` = :jara_player_id
+                        , `player_name` = :player_name
+                        , `entrysystem_org_id` = :entrysystem_org_id
+                        , `org_name` = :org_name
+                        , `lane_number` = :lane_number
                         , `rank` = :rank
                         , `laptime_500m` = :laptime_500m
                         , `laptime_1000m` = :laptime_1000m
@@ -1122,14 +1106,11 @@ class T_raceResultRecord extends Model
                         , `heart_rate_1000m` = :heart_rate_1000m
                         , `heart_rate_1500m` = :heart_rate_1500m
                         , `heart_rate_2000m` = :heart_rate_2000m
-                        # , `official` = :official
                         , `attendance` = :attendance
-                        # , `ergo_weight` = :ergo_weight
                         , `player_height` = :player_height
                         , `player_weight` = :player_weight
                         , `seat_number` = :seat_number
                         , `seat_name` = :seat_name
-                        , `race_result_record_name` = :race_result_record_name
                         , `start_datetime` = :start_datetime
                         , `weather` = :weather
                         , `wind_speed_2000m_point` = :wind_speed_2000m_point
@@ -1140,7 +1121,11 @@ class T_raceResultRecord extends Model
                         , `updated_time` = :updated_time
                         , `updated_user_id` = :updated_user_id
                         WHERE 1=1
-                        and `race_result_record_id` = :race_result_record_id"
+                        and delete_flag = 0
+                        and `race_id` = :race_id
+                        and `crew_name` = :crew_name
+                        and `player_id` = :player_id
+                        and `org_id` = :org_id"
                         ,$values);
     }
 
@@ -1153,9 +1138,36 @@ class T_raceResultRecord extends Model
                     ,updated_time = :updated_datetime
                     ,updated_user_id = :updated_user_id
                     where 1=1
+                    and delete_flag = 0
                     and race_id = :race_id
                     and org_id = :org_id
                     and crew_name = :crew_name"
                     ,$values);
+    }
+
+    //レースID、クルー名、選手ID、団体IDを条件とした出漕結果記録が存在するかを取得
+    //レース結果更新で登録か更新を判断するため
+    public function getIsExistsTargetResultRecordForConditions($race_id,$crew_name,$org_id,$player_id)
+    {
+        $is_record_exists = DB::select("select race_result_record_id
+                                        from `t_race_result_record`
+                                        where 1=1
+                                        and delete_flag = 0
+                                        and race_id = :race_id
+                                        and crew_name = :crew_name
+                                        and org_id = :org_id
+                                        and player_id = :player_id"
+                                    ,[
+                                        "race_id" => $race_id
+                                        ,"crew_name" => $crew_name
+                                        ,"org_id" => $org_id
+                                        ,"player_id" => $player_id
+                                    ]);
+        //1つの結果を取得するため0番目だけを返す
+        $target_result = null;
+        if(!empty($is_record_exists)){
+            $target_result = $is_record_exists[0];
+        }
+        return $target_result;
     }
 }
