@@ -176,11 +176,9 @@ export default function TournamentResult() {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     //const playerSearch = await axios.get('http://localhost:3100/teamPlayers?id=' + value);
-    const sendIds = {
-      player_id: value,
-      race_id: raceId,
-    };
-    const playerSearch = await axios.post('/getRaceResultRecord', sendIds);
+    const sendId = { player_id: value };
+    console.log(sendId);
+    const playerSearch = await axios.post('/getCrewPlayerInfo', sendId);
     console.log('player_id', value);
     console.log('race_id', raceId);
     console.log('playerSearch', playerSearch);
