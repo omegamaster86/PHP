@@ -427,6 +427,9 @@ export default function OrgInfo() {
         console.log(tableData.length);
         if (tableData.length > 199) {
           //行数が200を超えたときに、「スタッフ追加」ボタンを非表示にする
+          setTableErrorMessages([
+            '行の追加を制限しました、200行を超える行追加は出来ません。 ※登録可能スタッフ数は100名までです。',
+          ]);
           setAddStaffDisplayFlg(false);
           return;
         }
@@ -529,6 +532,7 @@ export default function OrgInfo() {
                 setTableData(response.data.result.staffList); //ユーザIDを元にユーザ名を表示する 20240405
                 setDisableFlag(false);
                 setErrorMessage([]);
+                setTableErrorMessages([]);
                 router.push('/team?mode=confirm&prevMode=create');
               })
               .catch((error) => {
@@ -576,6 +580,7 @@ export default function OrgInfo() {
                 setTableData(response.data.result.staffList); //ユーザIDを元にユーザ名を表示する 20240405
                 setDisableFlag(false);
                 setErrorMessage([]);
+                setTableErrorMessages([]);
                 router.push('/team?mode=confirm&prevMode=update');
               })
               .catch((error) => {
@@ -1234,11 +1239,13 @@ export default function OrgInfo() {
         // スタッフ登録のエラーメッセージの表示 20240308
         (userIdErrorMessage.length > 0 ||
           userNameErrorMessage.length > 0 ||
-          userTypeErrorMessage.length > 0) && (
+          userTypeErrorMessage.length > 0 ||
+          tableErrorMessages.length > 0) && (
           <div key='tableErrorMessage' className='text-caption1 text-systemErrorText'>
             <p>{userIdErrorMessage}</p>
             <p>{userNameErrorMessage}</p>
             <p>{userTypeErrorMessage}</p>
+            <p>{tableErrorMessages}</p>
           </div>
         )
       }
