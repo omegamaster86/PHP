@@ -1,7 +1,7 @@
 // // 大会レース結果管理画面
 'use client';
 // ライブラリのインポート
-import React, { useState, useEffect,ChangeEvent, use } from 'react';
+import React, { useState, useEffect, ChangeEvent, use } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AddIcon from '@mui/icons-material/Add';
 import TextField from '@mui/material/TextField';
@@ -2121,7 +2121,7 @@ export default function TournamentResult() {
                     onChange={(e) => {
                       handleRaceResultRecordsInputChangebyIndex(
                         index,
-                        'laneNumber',
+                        'lane_number',
                         e.target.value,
                       );
                     }}
