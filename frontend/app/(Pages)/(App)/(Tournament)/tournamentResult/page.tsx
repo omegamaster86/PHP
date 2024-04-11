@@ -180,10 +180,17 @@ export default function TournamentResult() {
     console.log(sendId);
     const playerSearch = await axios.post('/getCrewPlayerInfo', sendId);
     console.log('player_id', value);
-    console.log('race_id', raceId);
     console.log('playerSearch', playerSearch);
-    const player = playerSearch.data[0];
-
+    
+    //名前の異なるバックエンド側とフロント側のキーを紐づける 20240410
+    if(playerSearch.data.result.length > 0){
+      playerSearch.data.result[0].playerId = playerSearch.data.result[0].player_id;
+      playerSearch.data.result[0].playerName = playerSearch.data.result[0].player_name;
+      playerSearch.data.result[0].sexId = playerSearch.data.result[0].sex_id;
+      playerSearch.data.result[0].sex = playerSearch.data.result[0].sexName;
+    }
+    const player = playerSearch.data.result[0];
+    console.log(player);
     if (value === '') {
       return;
     }
