@@ -847,7 +847,7 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("registerRaceResultRecord start."));
         $reqData = $request->all();
-        //Log::debug($reqData);
+        Log::debug($reqData);
         //挿入時の値を格納する配列
         $insert_values = array();
         //日時 登録用
@@ -900,13 +900,13 @@ class TournamentController extends Controller
             //天候
             $insert_values["weather"] = isset($raceResultRecordResponse["weatherId"]) ? $raceResultRecordResponse["weatherId"] : null;
             //2000m地点風速
-            $insert_values["wind_speed_2000m_point"] = isset($raceResultRecordResponse["wind_direction_2000m_point"]) ? $raceResultRecordResponse["wind_direction_2000m_point"] : null;
+            $insert_values["wind_speed_2000m_point"] = isset($raceResultRecordResponse["wind_speed_2000m_point"]) ? $raceResultRecordResponse["wind_speed_2000m_point"] : null;            
             //2000m地点風向
-            $insert_values["wind_direction_2000m_point"] = isset($raceResultRecordResponse["wind_speed_2000m_point"]) ? $raceResultRecordResponse["wind_speed_2000m_point"] : null;
+            $insert_values["wind_direction_2000m_point"] = isset($raceResultRecordResponse["wind_direction_2000m_point"]) ? $raceResultRecordResponse["wind_direction_2000m_point"] : null;
             //1000m地点風速
-            $insert_values["wind_speed_1000m_point"] = isset($raceResultRecordResponse["wind_direction_1000m_point"]) ? $raceResultRecordResponse["wind_direction_1000m_point"] : null;
+            $insert_values["wind_speed_1000m_point"] = isset($raceResultRecordResponse["wind_speed_1000m_point"]) ? $raceResultRecordResponse["wind_speed_1000m_point"] : null;
             //1000m地点風向
-            $insert_values["wind_direction_1000m_point"] = isset($raceResultRecordResponse["wind_speed_1000m_point"]) ? $raceResultRecordResponse["wind_speed_1000m_point"] : null;         
+            $insert_values["wind_direction_1000m_point"] = isset($raceResultRecordResponse["wind_direction_1000m_point"]) ? $raceResultRecordResponse["wind_direction_1000m_point"] : null;
             //公式/非公式
             if(isset($target_tourn_info))
             {
@@ -1091,15 +1091,11 @@ class TournamentController extends Controller
     public function updateRaceResultRecordForUpdateConfirm(Request $request,
                                                             T_raceResultRecord $t_raceResultRecord,
                                                             T_players $t_players,
-                                                            T_races $t_races,
-                                                            T_tournaments $t_tournaments,
                                                             T_organizations $t_organizations)
     {
         Log::debug(sprintf("updateRaceResultRecordForUpdateConfirm start."));
         $reqData = $request->all();
         Log::debug($reqData);
-        //更新時の値を格納する配列
-        $update_values_array = array();
         //日時　更新用
         $current_datetime = now()->format('Y-m-d H:i:s.u');
         //ユーザーID　更新用
@@ -1108,47 +1104,29 @@ class TournamentController extends Controller
         $raceInfo = &$reqData['raceInfo'];
         $raceResultRecordResponse = &$reqData['raceResultRecordResponse'];
         $raceResultRecords = &$reqData['raceResultRecords'];
-        // DB::beginTransaction();
+        DB::beginTransaction();
         try
         {
-            //更新できない(入力不可の)フィールド
-            // //レースID
-            // $race_id = $raceInfo["race_id"];
-            // $update_values_array["race_id"] = $race_id;
-            // entrysystem_race_id
-            // race_number
-            // race_name
-            // event_id
-            // event_name
-            // range
-            // race_class_id
-            // race_class_name
-            // by_group
-            // entrysystem_tourn_id
-            // tourn_id
-            // tourn_name
-            // official
-            // ergo_weight
-
-            //更新する（入力可能な）フィールド
+            //レース情報
+            //レースID
+            $race_id = $raceInfo["race_id"];
             //出漕時点情報
             //発艇日時
-            $update_values_array["start_datetime"] = isset($raceResultRecordResponse["startDateTime"]) ? $raceResultRecordResponse["startDateTime"] : null;
+            $start_datetime = isset($raceResultRecordResponse["startDateTime"]) ? $raceResultRecordResponse["startDateTime"] : null;
             //天候
-            $update_values_array["weather"] = isset($raceResultRecordResponse["weatherId"]) ? $raceResultRecordResponse["weatherId"] : null;
+            $weatherId = isset($raceResultRecordResponse["weatherId"]) ? $raceResultRecordResponse["weatherId"] : null;
             //2000m地点風速
-            $update_values_array["wind_speed_2000m_point"] = isset($raceResultRecordResponse["wind_direction_2000m_point"]) ? $raceResultRecordResponse["wind_direction_2000m_point"] : null;
+            $wind_direction_2000m_point = isset($raceResultRecordResponse["wind_direction_2000m_point"]) ? $raceResultRecordResponse["wind_direction_2000m_point"] : null;
             //2000m地点風向
-            $update_values_array["wind_direction_2000m_point"] = isset($raceResultRecordResponse["wind_speed_2000m_point"]) ? $raceResultRecordResponse["wind_speed_2000m_point"] : null;
+            $wind_speed_2000m_point = isset($raceResultRecordResponse["wind_speed_2000m_point"]) ? $raceResultRecordResponse["wind_speed_2000m_point"] : null;
             //1000m地点風速
-            $update_values_array["wind_speed_1000m_point"] = isset($raceResultRecordResponse["wind_direction_1000m_point"]) ? $raceResultRecordResponse["wind_direction_1000m_point"] : null;
+            $wind_direction_1000m_point = isset($raceResultRecordResponse["wind_direction_1000m_point"]) ? $raceResultRecordResponse["wind_direction_1000m_point"] : null;
             //1000m地点風向
-            $update_values_array["wind_direction_1000m_point"] = isset($raceResultRecordResponse["wind_speed_1000m_point"]) ? $raceResultRecordResponse["wind_speed_1000m_point"] : null;
-            
+            $wind_speed_1000m_point = isset($raceResultRecordResponse["wind_speed_1000m_point"]) ? $raceResultRecordResponse["wind_speed_1000m_point"] : null;           
             for($record_index = 0;$record_index < count($raceResultRecords); $record_index++)
             {
                 $target_result = $raceResultRecords[$record_index];
-                $crew_delete_flag = $target_result["deleteFlg"];
+                $crew_delete_flag = isset($target_result["deleteFlg"]) ? $target_result["deleteFlg"] : null;
                 //団体ID
                 $org_id = isset($target_result["org_id"]) ? $target_result["org_id"] : null;
                 //クルー名
@@ -1157,61 +1135,21 @@ class TournamentController extends Controller
                 if($crew_delete_flag)
                 {
                     $delete_values = array();
-                    $delete_values["race_id"] = $raceInfo["race_id"];
+                    $delete_values["race_id"] = $race_id;
                     $delete_values["org_id"] = $org_id;
                     $delete_values["crew_name"] = $crew_name;
                     $delete_values["updated_datetime"] = $current_datetime;
                     $delete_values["updated_user_id"] = $update_user_id;
+                    // Log::debug("********************delete_values********************");
+                    // Log::debug($delete_values);
                     $t_raceResultRecord->updateTargetCrewDeleteFlagToValid($delete_values);
                 }
                 else
                 {
                     //クルー情報
                     $crew_player = $target_result["crewPlayer"];
-                    //団体ID
-                    $update_values_array["org_id"] = $org_id;
                     //エントリーシステム団体ID
                     $entrysystem_org_id = isset($target_result["entrysystem_org_id"]) ? $target_result["entrysystem_org_id"] : null;
-                    $update_values_array["entrysystem_org_id"] = $entrysystem_org_id;
-                    //団体名
-                    $update_values_array["org_name"] = isset($target_result["orgName"]) ? $target_result["orgName"] : null;
-                    //クルー名
-                    $update_values_array["crew_name"] = $crew_name;
-                    //レーンNo.
-                    $update_values_array["lane_number"] = isset($target_result["lane_number"]) ? $target_result["lane_number"] : null;
-                    //順位
-                    $update_values_array["rank"] = isset($target_result["rank"]) ? $target_result["rank"] : null;
-                    //500mlapタイム
-                    $laptime_500m = isset($target_result["laptime_500m"]) ? $target_result["laptime_500m"] : null;
-                    $update_values_array["laptime_500m"] = isset($laptime_500m) ? $this->convertTimeToFloat($laptime_500m) : null;
-                    //1000mlapタイム
-                    $laptime_1000m = isset($target_result["laptime_1000m"]) ? $target_result["laptime_1000m"] : null;
-                    $update_values_array["laptime_1000m"] = isset($laptime_1000m) ? $this->convertTimeToFloat($laptime_1000m) : null;
-                    //1500mlapタイム
-                    $laptime_1500m = isset($target_result["laptime_1500m"]) ? $target_result["laptime_1500m"] : null;
-                    $update_values_array["laptime_1500m"] = isset($laptime_1500m) ? $this->convertTimeToFloat($laptime_1500m) : null;
-                    //2000mlapタイム
-                    $laptime_2000m = isset($target_result["laptime_2000m"]) ? $target_result["laptime_2000m"] : null;
-                    $update_values_array["laptime_2000m"] = isset($laptime_2000m) ? $this->convertTimeToFloat($laptime_2000m) : null;
-                    //最終タイム
-                    $final_time = isset($target_result["final_time"]) ? $target_result["final_time"] : null;
-                    $update_values_array["final_time"] = isset($final_time) ? $this->convertTimeToFloat($final_time) : null;
-                    //ストロークレート平均
-                    $update_values_array["stroke_rate_avg"] = isset($target_result["stroke_rate_avg"]) ? $target_result["stroke_rate_avg"] : null;
-                    //500mストロークレート
-                    $update_values_array["stroke_rat_500m"] = isset($target_result["stroke_rat_500m"]) ? $target_result["stroke_rat_500m"] : null;
-                    //1000mストロークレート
-                    $update_values_array["stroke_rat_1000m"] = isset($target_result["stroke_rat_1000m"]) ? $target_result["stroke_rat_1000m"] : null;
-                    //1500mストロークレート
-                    $update_values_array["stroke_rat_1500m"] = isset($target_result["stroke_rat_1500m"]) ? $target_result["stroke_rat_1500m"] : null;
-                    //2000mストロークレート
-                    $update_values_array["stroke_rat_2000m"] = isset($target_result["stroke_rat_2000m"]) ? $target_result["stroke_rat_2000m"] : null;
-                    //備考
-                    $update_values_array["race_result_notes"] = isset($target_result["remark"]) ? $target_result["remark"] : null;
-                    //更新日時
-                    $update_values_array["updated_time"] = $current_datetime;
-                    //更新ユーザーID
-                    $update_values_array["updated_user_id"] = $update_user_id;
                     //エントリー団体IDが空のとき
                     //団体テーブルから団体IDを取得して団体情報を取得
                     //取得した団体情報からエントリー団体IDを取得
@@ -1221,60 +1159,64 @@ class TournamentController extends Controller
                         //getOrganizationは取得した0番目だけを返す
                         if(isset($target_org_info))
                         {
-                            $update_values_array["entrysystem_org_id"] = $target_org_info->entrysystem_org_id;
+                            $entrysystem_org_id = $target_org_info->entrysystem_org_id;
                         }
                     }
+                    //団体名
+                    $org_name = isset($target_result["orgName"]) ? $target_result["orgName"] : null;
+                    //レーンNo.
+                    $lane_number = isset($target_result["lane_number"]) ? $target_result["lane_number"] : null;
+                    //順位
+                    $rank = isset($target_result["rank"]) ? $target_result["rank"] : null;
+                    //500mlapタイム
+                    $laptime_500m = isset($target_result["laptime_500m"]) ? $this->convertTimeToFloat($target_result["laptime_500m"]) : null;
+                    //1000mlapタイム
+                    $laptime_1000m = isset($target_result["laptime_1000m"]) ? $this->convertTimeToFloat($target_result["laptime_1000m"]) : null;
+                    //1500mlapタイム
+                    $laptime_1500m = isset($target_result["laptime_1500m"]) ? $this->convertTimeToFloat($target_result["laptime_1500m"]) : null;
+                    //2000mlapタイム
+                    $laptime_2000m = isset($target_result["laptime_2000m"]) ? $this->convertTimeToFloat($target_result["laptime_2000m"]) : null;
+                    //最終タイム
+                    $final_time = isset($target_result["final_time"]) ? $this->convertTimeToFloat($target_result["final_time"]) : null;
+                    //ストロークレート平均
+                    $stroke_rate_avg = isset($target_result["stroke_rate_avg"]) ? $target_result["stroke_rate_avg"] : null;
+                    //500mストロークレート
+                    $stroke_rat_500m = isset($target_result["stroke_rat_500m"]) ? $target_result["stroke_rat_500m"] : null;
+                    //1000mストロークレート
+                    $stroke_rat_1000m = isset($target_result["stroke_rat_1000m"]) ? $target_result["stroke_rat_1000m"] : null;
+                    //1500mストロークレート
+                    $stroke_rat_1500m = isset($target_result["stroke_rat_1500m"]) ? $target_result["stroke_rat_1500m"] : null;
+                    //2000mストロークレート
+                    $stroke_rat_2000m = isset($target_result["stroke_rat_2000m"]) ? $target_result["stroke_rat_2000m"] : null;
+                    //備考
+                    $race_result_notes = isset($target_result["remark"]) ? $target_result["remark"] : null;
                     //選手情報を取得
                     foreach($crew_player as $player)
                     {
-                        if($player["deleteFlg"])
+                        //選手ID
+                        $player_id = isset($player["playerId"]) ? $player["playerId"] : null;
+                        //
+                        $target_race_result_record = $t_raceResultRecord->getIsExistsTargetResultRecordForConditions($race_id,$crew_name,$org_id,$player_id);                        
+                        $race_result_record_id = isset($target_race_result_record) ? $target_race_result_record->race_result_record_id : null;
+                        //削除にチェック、かつ対象の出漕結果記録IDがテーブルに存在する場合
+                        if($player["deleteFlg"] && isset($race_result_record_id))
                         {
                             //出漕結果記録の削除
                             $delete_race_result_record_array = array();
-                            $delete_race_result_record_array["race_result_record_id"] = $player["race_result_record_id"];
+                            $delete_race_result_record_array["race_result_record_id"] = $race_result_record_id;
                             $delete_race_result_record_array["updated_datetime"] = $current_datetime;
                             $delete_race_result_record_array["updated_user_id"] = $update_user_id;
-                            Log::debug($delete_race_result_record_array);
+                            // Log::debug("********************delete_race_result_record_array********************");
+                            // Log::debug($delete_race_result_record_array);
                             //削除フラグ更新実行
-                            //$t_raceResultRecord->updateDeleteFlagToValid($delete_race_result_record_id);
+                            $t_raceResultRecord->updateDeleteFlagToValid($delete_race_result_record_array);
                         }
-                        else
+                        elseif(!$player["deleteFlg"])
                         {
                             //出漕結果記録の更新
-                            //選手の情報を配列に格納
-                            //選手ID
-                            $player_id = isset($player["playerId"]) ? $player["playerId"] : null;
-                            $update_values_array["player_id"] = $player_id;
+                            //選手の情報を配列に格納                            
                             //jara選手コード
                             $jara_player_id = isset($player["jaraPlayerId"]) ? $player["jaraPlayerId"] : null;
-                            $update_values_array["jara_player_id"] = $jara_player_id;
-                            //エントリーシステムレースID
-                            $entrysystem_race_id = isset($player["entrysystemRaceId"]) ? $player["entrysystemRaceId"] : null;
-                            $update_values_array["entrysystem_race_id"] = $entrysystem_race_id;
-                            //選手名
-                            $update_values_array["player_name"] = isset($player["playerName"]) ? $player["playerName"] : null;
-                            //選手身長
-                            $update_values_array["player_height"] = isset($player["height"]) ? $player["height"] : null;
-                            //選手体重
-                            $update_values_array["player_weight"] = isset($player["weight"]) ? $player["weight"] : null;
-                            //シート番号
-                            $update_values_array["seat_number"] = isset($player["sheetNameId"]) ? $player["sheetNameId"] : null;
-                            //シート名
-                            $update_values_array["seat_name"] = isset($player["sheetName"]) ? $player["sheetName"] : null;
-                            //心拍数(平均)
-                            $update_values_array["heart_rate_avg"] = isset($player["heartRateAvg"]) ? $player["heartRateAvg"] : null;
-                            //500m心拍数
-                            $update_values_array["heart_rate_500m"] = isset($player["fiveHundredmHeartRate"]) ? $player["fiveHundredmHeartRate"] : null;
-                            //1000m心拍数
-                            $update_values_array["heart_rate_1000m"] = isset($player["tenHundredmHeartRate"]) ? $player["tenHundredmHeartRate"] : null;
-                            //1500m心拍数
-                            $update_values_array["heart_rate_1500m"] = isset($player["fifteenHundredmHeartRate"]) ? $player["fifteenHundredmHeartRate"] : null;
-                            //2000m心拍数
-                            $update_values_array["heart_rate_2000m"] = isset($player["twentyHundredmHeartRate"]) ? $player["twentyHundredmHeartRate"] : null;
-                            //立ち会い有無
-                            //変数が無ければnull
-                            //入力値がtrueなら1、falseなら0とする
-                            $update_values_array["attendance"] = isset($player["attendance"]) ? ($player["attendance"] ? 1 : 0) : null;
                             //jara_player_idが空のとき
                             //選手テーブルからjara_player_idを取得
                             if(empty($jara_player_id))
@@ -1282,18 +1224,255 @@ class TournamentController extends Controller
                                 $target_player_info = $t_players->getPlayer($player_id);
                                 if(isset($target_player_info))
                                 {
-                                    $update_values_array["jara_player_id"] = $target_player_info[0]->{"jara_player_id"};
+                                    $jara_player_id = $target_player_info[0]->{"jara_player_id"};
                                 }
                             }
-                            Log::debug("********************update_values_array********************");
-                            Log::debug($update_values_array);
-                            //更新実行
-                            //$t_raceResultRecord->updateRaceResultRecordForUpdateConfirm($update_values_array);
+                            //エントリーシステムレースID
+                            $entrysystem_race_id = isset($player["entrysystemRaceId"]) ? $player["entrysystemRaceId"] : null;
+                            //選手名
+                            $player_name = isset($player["playerName"]) ? $player["playerName"] : null;
+                            //選手身長
+                            $height = isset($player["height"]) ? $player["height"] : null;
+                            //選手体重
+                            $weight = isset($player["weight"]) ? $player["weight"] : null;
+                            //シート番号
+                            $seat_name_id = isset($player["sheetNameId"]) ? $player["sheetNameId"] : null;
+                            //シート名
+                            $seat_name = isset($player["sheetName"]) ? $player["sheetName"] : null;
+                            //心拍数(平均)
+                            $heart_rate_avg = isset($player["heartRateAvg"]) ? $player["heartRateAvg"] : null;
+                            //500m心拍数
+                            $heart_rate_500m = isset($player["fiveHundredmHeartRate"]) ? $player["fiveHundredmHeartRate"] : null;
+                            //1000m心拍数
+                            $heart_rate_1000m = isset($player["tenHundredmHeartRate"]) ? $player["tenHundredmHeartRate"] : null;
+                            //1500m心拍数
+                            $heart_rate_1500m = isset($player["fifteenHundredmHeartRate"]) ? $player["fifteenHundredmHeartRate"] : null;
+                            //2000m心拍数
+                            $heart_rate_2000m = isset($player["twentyHundredmHeartRate"]) ? $player["twentyHundredmHeartRate"] : null;
+                            //立ち会い有無
+                            //変数が無ければnull
+                            //入力値がtrueなら1、falseなら0とする
+                            $attendance = isset($player["attendance"]) ? ($player["attendance"] ? 1 : 0) : null;                            
+                            //対象の出漕結果記録が存在するかを判定
+                            if(empty($target_race_result_record))
+                            {
+                                //is_record_existsが0であれば、対象のレコードが存在しないため登録する
+                                //登録時の値を格納する配列
+                                $insert_values_array = array();        
+                                //レース情報は登録時だけ必要
+                                //レースID
+                                $insert_values["race_id"] = isset($race_id) ? $race_id : null;
+                                //レース名
+                                $insert_values["race_name"] = isset($raceInfo["race_name"]) ? $raceInfo["race_name"] : null;
+                                //レースNo.
+                                $insert_values["race_number"] = isset($raceInfo["race_number"]) ? $raceInfo["race_number"] : null;
+                                //レース区分ID
+                                $insert_values["race_class_id"] = isset($raceInfo["race_class_id"]) ? $raceInfo["race_class_id"] : null;
+                                //レース区分名
+                                $insert_values["race_class_name"] = isset($raceInfo["race_class_name"]) ? $raceInfo["race_class_name"] : null;
+                                //組別
+                                $insert_values["by_group"] = isset($raceInfo["by_group"]) ? $raceInfo["by_group"] : null;
+                                //種目ID
+                                $insert_values["event_id"] = isset($raceInfo["event_id"]) ? $raceInfo["event_id"] : null;
+                                //種目名
+                                $insert_values["event_name"] = isset($raceInfo["event_name"]) ? $raceInfo["event_name"] : null;
+                                //距離
+                                $insert_values["range"] = isset($raceInfo["range"]) ? $raceInfo["range"] : null;
+                                //大会ID
+                                $tourn_id = isset($raceInfo["tourn_id"]) ? $raceInfo["tourn_id"] : null;
+                                $insert_values["tourn_id"] = $tourn_id;
+                                //対象の大会データ
+                                //getTournamentは取得した0番目だけを返す
+                                $target_tourn_info = $t_tournaments->getTournament($tourn_id);
+                                //大会名
+                                $tourn_name = isset($target_result["tourn_name"]) ? $target_result["tourn_name"] : null;
+                                if(empty($tourn_name))
+                                {
+                                    $tourn_name = $target_tourn_info->tourn_name;
+                                }
+                                $insert_values["tourn_name"] = $tourn_name;
+                                //発艇日時
+                                $insert_values_array["start_datetime"] = $start_datetime;
+                                //天候
+                                $insert_values_array["weather"] = $weatherId;
+                                //2000m地点風速
+                                $insert_values_array["wind_speed_2000m_point"] = $wind_speed_2000m_point;
+                                //2000m地点風向
+                                $insert_values_array["wind_direction_2000m_point"] = $wind_direction_2000m_point;
+                                //1000m地点風速
+                                $insert_values_array["wind_speed_1000m_point"] = $wind_speed_1000m_point;
+                                //1000m地点風向
+                                $insert_values_array["wind_direction_1000m_point"] = $wind_direction_1000m_point;
+                                //エントリーシステム団体ID
+                                $insert_values_array["entrysystem_org_id"] = $entrysystem_org_id;
+                                //団体ID
+                                $insert_values_array["org_id"] = $org_id;    
+                                //団体名
+                                $insert_values_array["org_name"] = $org_name;
+                                //クルー名
+                                $insert_values_array["crew_name"] = $crew_name;
+                                //レーンNo.                                
+                                $insert_values_array["lane_number"] = $lane_number;  
+                                //順位
+                                $insert_values_array["rank"] = $rank;
+                                //500mlapタイム                    
+                                $insert_values_array["laptime_500m"] = $laptime_500m;
+                                //1000mlapタイム                    
+                                $insert_values_array["laptime_1000m"] = $laptime_1000m;
+                                //1500mlapタイム
+                                $insert_values_array["laptime_1500m"] = $laptime_1500m;
+                                //2000mlapタイム
+                                $insert_values_array["laptime_2000m"] = $laptime_2000m;
+                                //最終タイム                    
+                                $insert_values_array["final_time"] = $final_time;
+                                //ストロークレート平均
+                                $insert_values_array["stroke_rate_avg"] = $stroke_rate_avg;
+                                //500mストロークレート
+                                $insert_values_array["stroke_rat_500m"] = $stroke_rat_500m;
+                                //1000mストロークレート
+                                $insert_values_array["stroke_rat_1000m"] = $stroke_rat_1000m;
+                                //1500mストロークレート
+                                $insert_values_array["stroke_rat_1500m"] = $stroke_rat_1500m;
+                                //2000mストロークレート
+                                $insert_values_array["stroke_rat_2000m"] = $stroke_rat_2000m;
+                                //備考
+                                $insert_values_array["race_result_notes"] = $race_result_notes;
+                                //選手ID
+                                $insert_values_array["player_id"] = $player_id;
+                                //jara選手コード                                
+                                $insert_values_array["jara_player_id"] = $jara_player_id;
+                                //エントリーシステムレースID
+                                $insert_values_array["entrysystem_race_id"] = $entrysystem_race_id;
+                                //選手名
+                                $insert_values_array["player_name"] = $player_name;
+                                //選手身長
+                                $insert_values_array["player_height"] = $height;
+                                //選手体重
+                                $insert_values_array["player_weight"] = $weight;
+                                //シート番号
+                                $insert_values_array["seat_number"] = $seat_name_id;
+                                //シート名
+                                $insert_values_array["seat_name"] = $seat_name;
+                                //心拍数(平均)
+                                $insert_values_array["heart_rate_avg"] = $heart_rate_avg;
+                                //500m心拍数
+                                $insert_values_array["heart_rate_500m"] = $heart_rate_500m;
+                                //1000m心拍数
+                                $insert_values_array["heart_rate_1000m"] = $heart_rate_1000m;
+                                //1500m心拍数
+                                $insert_values_array["heart_rate_1500m"] = $heart_rate_1500m;
+                                //2000m心拍数
+                                $insert_values_array["heart_rate_2000m"] = $heart_rate_2000m;
+                                //立ち会い有無
+                                $insert_values_array["attendance"] = $attendance;
+                                //登録日時
+                                $insert_values_array["registered_time"] = $current_datetime;
+                                //登録ユーザーID
+                                $insert_values["registered_user_id"] = $update_user_id;
+                                //更新日時
+                                $insert_values_array["updated_time"] = $current_datetime;
+                                //更新ユーザーID
+                                $insert_values_array["updated_user_id"] = $update_user_id;
+
+                                // Log::debug("********************update_values_array********************");
+                                // Log::debug($update_values_array);
+                                //登録実行
+                                $t_raceResultRecord->insertRaceResultRecordForInputConfirm($insert_values);
+                            }
+                            else
+                            {
+                                //is_record_existsが0でなければ、対象のレコードが存在するため更新する
+                                //更新時の値を格納する配列
+                                $update_values_array = array();
+                                //レースID
+                                $update_values_array["race_id"] = $race_id;
+                                //発艇日時
+                                $update_values_array["start_datetime"] = $start_datetime;
+                                //天候
+                                $update_values_array["weather"] = $weatherId;
+                                //2000m地点風速
+                                $update_values_array["wind_speed_2000m_point"] = $wind_speed_2000m_point;
+                                //2000m地点風向
+                                $update_values_array["wind_direction_2000m_point"] = $wind_direction_2000m_point;
+                                //1000m地点風速
+                                $update_values_array["wind_speed_1000m_point"] = $wind_speed_1000m_point;
+                                //1000m地点風向
+                                $update_values_array["wind_direction_1000m_point"] = $wind_direction_1000m_point;
+                                //エントリーシステム団体ID
+                                $update_values_array["entrysystem_org_id"] = $entrysystem_org_id;
+                                //団体ID
+                                $update_values_array["org_id"] = $org_id;
+                                //団体名
+                                $update_values_array["org_name"] = $org_name;
+                                //クルー名                    
+                                $update_values_array["crew_name"] = $crew_name;
+                                //レーンNo.
+                                $update_values_array["lane_number"] = $lane_number;
+                                //順位
+                                $update_values_array["rank"] = $rank;
+                                //500mlapタイム
+                                $update_values_array["laptime_500m"] = $laptime_500m;
+                                //1000mlapタイム
+                                $update_values_array["laptime_1000m"] = $laptime_1000m;
+                                //1500mlapタイム
+                                $update_values_array["laptime_1500m"] = $laptime_1500m;
+                                //2000mlapタイム
+                                $update_values_array["laptime_2000m"] = $laptime_2000m;
+                                //最終タイム
+                                $update_values_array["final_time"] = $final_time;
+                                //ストロークレート平均
+                                $update_values_array["stroke_rate_avg"] = $stroke_rate_avg;
+                                //500mストロークレート                    
+                                $update_values_array["stroke_rat_500m"] = $stroke_rat_500m;
+                                //1000mストロークレート                    
+                                $update_values_array["stroke_rat_1000m"] = $stroke_rat_1000m;
+                                //1500mストロークレート                    
+                                $update_values_array["stroke_rat_1500m"] = $stroke_rat_1500m;
+                                //2000mストロークレート                    
+                                $update_values_array["stroke_rat_2000m"] = $stroke_rat_2000m;
+                                //備考
+                                $update_values_array["race_result_notes"] = $race_result_notes;
+                                //選手ID
+                                $update_values_array["player_id"] = $player_id;
+                                //jara選手コード                                
+                                $update_values_array["jara_player_id"] = $jara_player_id;
+                                //選手名
+                                $update_values_array["player_name"] = $player_name;
+                                //選手身長
+                                $update_values_array["player_height"] = $height;
+                                //選手体重
+                                $update_values_array["player_weight"] = $weight;
+                                //シート番号
+                                $update_values_array["seat_number"] = $seat_name_id;
+                                //シート名
+                                $update_values_array["seat_name"] = $seat_name;
+                                //心拍数(平均)
+                                $update_values_array["heart_rate_avg"] = $heart_rate_avg;
+                                //500m心拍数
+                                $update_values_array["heart_rate_500m"] = $heart_rate_500m;
+                                //1000m心拍数
+                                $update_values_array["heart_rate_1000m"] = $heart_rate_1000m;
+                                //1500m心拍数
+                                $update_values_array["heart_rate_1500m"] = $heart_rate_1500m;
+                                //2000m心拍数
+                                $update_values_array["heart_rate_2000m"] = $heart_rate_2000m;
+                                //立ち会い有無
+                                $update_values_array["attendance"] = $attendance;
+                                //更新日時
+                                $update_values_array["updated_time"] = $current_datetime;
+                                //更新ユーザーID
+                                $update_values_array["updated_user_id"] = $update_user_id;
+                                
+                                // Log::debug("********************update_values_array********************");
+                                // Log::debug($update_values_array);
+                                //更新実行
+                                $t_raceResultRecord->updateRaceResultRecordForUpdateConfirm($update_values_array);
+                            }
                         }
                     }
                 }
             }
-            //DB::commit();
+            DB::commit();            
             Log::debug(sprintf("updateRaceResultRecordForUpdateConfirm end."));
             return response()->json(['result' => true]); //DBの結果を返す
         }
