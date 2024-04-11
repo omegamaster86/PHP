@@ -1,7 +1,7 @@
 // // 大会レース結果管理画面
 'use client';
 // ライブラリのインポート
-import React, { useState, useEffect,ChangeEvent, use } from 'react';
+import React, { useState, useEffect, ChangeEvent, use } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AddIcon from '@mui/icons-material/Add';
 import TextField from '@mui/material/TextField';
@@ -2121,7 +2121,7 @@ export default function TournamentResult() {
                     onChange={(e) => {
                       handleRaceResultRecordsInputChangebyIndex(
                         index,
-                        'laneNumber',
+                        'lane_number',
                         e.target.value,
                       );
                     }}
@@ -2220,7 +2220,11 @@ export default function TournamentResult() {
                         <div className='flex flex-col gap-[8px]'>
                           <InputLabel label='備考' />
                           <CustomDropdown
-                            value={item?.remarkId?.toString() || ''}
+                            value={
+                              mode === 'confirm'
+                                ? item.race_result_notes
+                                : item?.remarkId?.toString() || ''
+                            }
                             options={remarkOptions.map((item) => ({
                               key: item.id,
                               value: item.name,
@@ -2231,8 +2235,8 @@ export default function TournamentResult() {
                               handleRaceResultRecordsInputChangebyIndex(index, 'remarkId', e);
                               handleRaceResultRecordsInputChangebyIndex(
                                 index,
-                                'remark',
-                                remarkOptions.find((item) => item.id === e)?.name || '',
+                                'race_result_notes',
+                                remarkOptions.find((item) => item.id == e)?.name || '',
                               );
                             }}
                             readonly={mode === 'confirm'}
