@@ -133,6 +133,20 @@ export default function TournamentResult() {
     });
   };
 
+  const handleRaceResultRecordsInputChangeBooleanbyIndex = (
+    index: number,
+    name: string,
+    value: boolean,
+  ) => {
+    setRaceResultRecords((prevFormData) => {
+      const newFormData = [...(prevFormData as RaceResultRecordsResponse[])];
+      if (newFormData[index]) {
+        (newFormData[index] as any)[name] = value;
+      }
+      return newFormData;
+    });
+  };
+
   /**
    * クルー選手情報の入力値を管理する関数
    * @param index
@@ -162,11 +176,9 @@ export default function TournamentResult() {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     //const playerSearch = await axios.get('http://localhost:3100/teamPlayers?id=' + value);
-    const sendIds = {
-      player_id: value,
-      race_id: raceId,
-    };
-    const playerSearch = await axios.post('/getRaceResultRecord', sendIds);
+    const sendId = { player_id: value };
+    console.log(sendId);
+    const playerSearch = await axios.post('/getCrewPlayerInfo', sendId);
     console.log('player_id', value);
     console.log('race_id', raceId);
     console.log('playerSearch', playerSearch);
@@ -1187,16 +1199,21 @@ export default function TournamentResult() {
       record.crewPlayer?.map((player, j) => {
         // 追加行と更新行の場合で処理をわけない
         if (player.sheetName) {
-          const seatNoList = raceResultRecords
-            .map((record) => record.crewPlayer?.map((player) => player.sheetName))
-            .flat();
+          // const seatNoList = raceResultRecords
+          //   .map((record) => record.crewPlayer?.map((player) => player.sheetName))
+          //   .flat();
+          const seatNoList = record.crewPlayer?.map((player) => player.sheetName);
+          // console.log(seatNoList);
           if (seatNoList.filter((item) => item === player.sheetName).length > 1) {
             indexObjectList6.push({ i, j });
           }
         }
       });
+      console.log(record);
+      console.log(indexObjectList6);
       return indexObjectList6.length > 0;
     });
+    console.log(seatNo2);
     if (seatNo2) {
       indexObjectList6.map((index) => {
         handleRaceResultRecordsCrewPlayerChangebyIndex(
@@ -2039,10 +2056,10 @@ export default function TournamentResult() {
             {mode === 'update' && (
               <div
                 onClick={() => {
-                  handleRaceResultRecordsInputChangebyIndex(
+                  handleRaceResultRecordsInputChangeBooleanbyIndex(
                     index,
                     'deleteFlg',
-                    (!item.deleteFlg).toString(),
+                    !item.deleteFlg,
                   );
                 }}
                 className='leading-loose text-primary-500 flex flex-row gap-[8px] items-center cursor-pointer'
@@ -2050,7 +2067,7 @@ export default function TournamentResult() {
                 <OriginalCheckbox
                   id={'deleteFlg' + index}
                   value='deleteFlg'
-                  checked={item.deleteFlg || false}
+                  checked={item.deleteFlg}
                   onChange={() => {}}
                 />
                 <p className='text-systemErrorText'>このレース結果情報を削除する</p>
