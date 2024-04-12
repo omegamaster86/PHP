@@ -393,6 +393,36 @@ const validatePlayerIdFormat = (playerId: string) => {
 };
 
 /**
+ * JARA選手コードの形式チェック
+ * @param jara_player_id チェックするJARA選手コード
+ * @returns {string}
+ * @description
+ * 選手IDの形式チェックを行う。
+ * 選手IDの形式でない場合、エラーメッセージを返す。
+ * 選手IDの形式である場合、空文字を返す。
+ * @example
+ * validateJaraPlayerCodeFormat('1234567890') // ''
+ * validateJaraPlayerCodeFormat('1234567890a') // 'JARA選手コードに使用できる文字は以下になります。使用可能文字: 数字(0-9)'
+ * validateJaraPlayerCodeFormat('1234567890!') // 'JARA選手コードに使用できる文字は以下になります。使用可能文字: 数字(0-9)'
+ * validateJaraPlayerCodeFormat('1234567890あ') // 'JARA選手コードに使用できる文字は以下になります。使用可能文字: 数字(0-9)'
+ */
+const validateJaraPlayerCodeFormat = (jara_player_id: string) => {
+  console.log(jara_player_id);
+  if (jara_player_id === '' || jara_player_id === undefined || jara_player_id === null) {
+    return '';
+  }
+  let errorMessage = '';
+  // 12桁の数字のみ許容する。
+  const playerIdRegex = new RegExp('^[0-9]{1,12}$');
+  if (!playerIdRegex.test(jara_player_id)) {
+    errorMessage =
+      'JARA選手コードに使用できる文字は以下になります。使用可能文字: 12桁以内の半角数字 (0-9)';
+    return errorMessage;
+  }
+  return errorMessage;
+};
+
+/**
  * 選手名の形式チェック
  * @param playerName チェックする選手名
  * @returns {string}
@@ -659,6 +689,7 @@ const Validator = {
   ValidateNotEqual,
   validatePlayerNameFormat,
   validatePlayerIdFormat,
+  validateJaraPlayerCodeFormat,
   validateBirthOfDateRange,
   validateUrlFormat,
   validateAlphabetNumber,
