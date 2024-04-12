@@ -850,6 +850,7 @@ export default function PlayerInformation() {
             readonly={mode === 'confirm'}
             selectedDate={formData.date_of_birth}
             maxDate={new Date()}
+            isError={dateOfBirthErrorMessage.length > 0}
             errorMessages={dateOfBirthErrorMessage}
           />
         </div>
