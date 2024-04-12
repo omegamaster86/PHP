@@ -17,7 +17,7 @@ interface CsvData {
   checked: boolean; // 選択
   link: string; // 連携
   playerId: string; // 選手ID
-  oldPlayerId: string; // 既存選手ID
+  oldPlayerId: string; // JARA選手コード
   playerName: string; // 選手名
   mailaddress: string; // メールアドレス
   message: string; // メッセージ
@@ -61,6 +61,7 @@ export default function PlayerInformationLinking() {
   const [csvData, setCsvData] = useState<CsvData[]>([]);
   const [dialogDisplayFlg, setDialogDisplayFlg] = useState<boolean>(false);
   const [displayLinkButtonFlg, setDisplayLinkButtonFlg] = useState<boolean>(false);
+  const [visibilityFlg, setVisibilityFlg] = useState<boolean>(false); //CSVテーブルの表示切替フラグ 20240412
 
   // CSVファイルのアップロードを処理する関数
   const handleCsvUpload = (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => {
@@ -104,7 +105,7 @@ export default function PlayerInformationLinking() {
 
   //読み込むボタン押下時 20240228
   const sendCsvData = async () => {
-    const specifiedHeader = '既存選手ID,新選手ID,メールアドレス,選手名'; // 指定のヘッダー文字列
+    const specifiedHeader = 'JARA選手コード,新選手ID,メールアドレス,選手名'; // 指定のヘッダー文字列
     const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
     const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
     const expectedColumnCount = 4; // 期待する列数
@@ -174,8 +175,9 @@ export default function PlayerInformationLinking() {
                   },
                 ]);
                 setDialogDisplayFlg(true);
-              }))
-            : null;
+              }),
+              setVisibilityFlg(true)) //CSVテーブルの表示切替フラグ 20240412
+            : setVisibilityFlg(false);
         } else {
           setCsvData([]);
           contentData.map((row, rowIndex) => {
@@ -198,6 +200,7 @@ export default function PlayerInformationLinking() {
               setDisplayLinkButtonFlg(true);
             }
           });
+          setVisibilityFlg(true); //CSVテーブルの表示切替フラグ 20240412
         }
         performValidation();
       })
@@ -227,7 +230,7 @@ export default function PlayerInformationLinking() {
   // CSVダウンロードのプロパティ
   const csvDownloadProps = {
     header: [
-      { label: '既存選手ID', key: 'oldPlayerId' },
+      { label: 'JARA選手コード', key: 'oldPlayerId' },
       { label: '新選手ID', key: 'newPlayerId' },
       { label: 'メールアドレス', key: 'mailaddress' },
       { label: '選手名', key: 'playerName' },
@@ -284,10 +287,18 @@ export default function PlayerInformationLinking() {
             )}
             <CsvTable
               content={csvData}
-              header={['連携', '選手ID', '既存選手ID', '選手名', 'メールアドレス', 'エラー内容']}
+              header={[
+                '連携',
+                '選手ID',
+                'JARA選手コード',
+                '選手名',
+                'メールアドレス',
+                'エラー内容',
+              ]}
               handleInputChange={handleInputChange}
               displayLinkButton={displayLinkButton}
               activationFlg={activationFlg}
+              visibilityFlg={visibilityFlg}
             />
           </div>
         </div>
