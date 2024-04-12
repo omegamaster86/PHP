@@ -621,6 +621,7 @@ export default function UserInformationUpdate() {
               handleInputChange('sexName', sex.find((item) => item.id === Number(e))?.name || '');
             }}
             errorMessages={sexErrorMessages}
+            isError={sexErrorMessages.length > 0}
           />
         </div>
         <div className='flex flex-col justify-start gap-[10px]'>
@@ -638,6 +639,7 @@ export default function UserInformationUpdate() {
             }}
             maxDate={new Date()}
             errorMessages={dateOfBirthErrorMessages}
+            isError={dateOfBirthErrorMessages.length > 0}
           />
         </div>
         <div className='flex flex-row justify-start gap-[16px]'>
@@ -663,6 +665,7 @@ export default function UserInformationUpdate() {
                 );
               }}
               errorMessages={livingCountryErrorMessages}
+              isError={livingCountryErrorMessages.length > 0}
               className='w-[300px] '
             />
           </div>
@@ -690,6 +693,7 @@ export default function UserInformationUpdate() {
                 }}
                 className='w-[300px]'
                 errorMessages={livingPrefectureErrorMessages}
+                isError={livingPrefectureErrorMessages.length > 0}
               />
             </div>
           )}

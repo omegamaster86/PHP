@@ -866,6 +866,7 @@ export default function PlayerInformation() {
             options={sex.map((item) => ({ key: item.id, value: item.name }))}
             value={mode !== 'confirm' ? formData.sex_id?.toString() || '' : formData.sexName}
             errorMessages={sexErrorMessage}
+            isError={sexErrorMessage.length > 0}
             placeHolder='未選択'
             onChange={(e) => {
               handleInputChange('sex_id', e);
