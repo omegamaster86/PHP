@@ -2173,7 +2173,12 @@ export default function TournamentResult() {
                         />
                         <div className='flex flex-col gap-[8px]'>
                           <InputLabel label='備考' />
-                          <Autocomplete
+                          {/* <CustomDropdown
+                            value={
+                              mode === 'confirm'
+                                ? item.race_result_notes
+                                : item?.remarkId?.toString() || ''
+                            }
                             options={remarkOptions.map((item) => ({
                               id: item.id,
                               name: item.name,
@@ -2190,6 +2195,36 @@ export default function TournamentResult() {
                                 index,
                                 'race_result_notes',
                                 newValue ? (newValue as MasterResponse).name : '',                              );
+                            }}
+                            onInputChange={(e, newValue) => {
+                              handleRaceResultRecordsInputChangebyIndex(
+                                index,
+                                'race_result_notes',
+                                newValue || '',
+                              );
+                            }}
+                            readonly={mode === 'confirm'}
+                          /> */}
+                          <Autocomplete
+                            options={remarkOptions.map((item) => ({
+                              id: item.id,
+                              name: item.name,
+                            }))}
+                            getOptionLabel={(option) => option?.name || ''}
+                            value={
+                              { id: Number(item.remarkId), name: item.race_result_notes } || ''
+                            }
+                            onChange={(e: ChangeEvent<{}>, newValue) => {
+                              handleRaceResultRecordsInputChangebyIndex(
+                                index,
+                                'remarkId',
+                                newValue ? (newValue as MasterResponse).id?.toString() : '',
+                              );
+                              handleRaceResultRecordsInputChangebyIndex(
+                                index,
+                                'race_result_notes',
+                                newValue ? (newValue as MasterResponse).name : '',
+                              );
                             }}
                             onInputChange={(e, newValue) => {
                               handleRaceResultRecordsInputChangebyIndex(
