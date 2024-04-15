@@ -1388,30 +1388,33 @@ export default function TournamentResultInfomationBulkRegister() {
             >
               戻る
             </CustomButton>
-            {csvData.some((row) => !(row.loadingResult === '-')) && displayRegisterButtonFlg && (
-              <CustomButton
-                buttonType='primary'
-                onClick={() => {
-                  setActivationFlg(true);
-                  if (csvData.find((row) => row.checked)?.id === undefined) {
-                    window.confirm('1件以上選択してください。');
-                  } else {
-                    registerCsvData(); //バックエンド側にデータを渡す 20240302
-                    setCsvData([]);
-                    setCsvFileData({ content: [], isSet: false });
-                    fileUploaderRef?.current?.clearFile();
-                    window.confirm('レース結果の登録が完了しました。')
-                      ? (setActivationFlg(false),
-                        setDialogDisplayFlg(false),
-                        setDisplayRegisterButtonFlg(false))
-                      : null;
-                  }
-                  setActivationFlg(false);
-                }}
-              >
-                登録
-              </CustomButton>
-            )}
+            {csvData.some((row) => {
+              !(row.loadingResult === '登録不可データ');
+            }) &&
+              displayRegisterButtonFlg && (
+                <CustomButton
+                  buttonType='primary'
+                  onClick={() => {
+                    setActivationFlg(true);
+                    if (csvData.find((row) => row.checked)?.id === undefined) {
+                      window.confirm('1件以上選択してください。');
+                    } else {
+                      registerCsvData(); //バックエンド側にデータを渡す 20240302
+                      setCsvData([]);
+                      setCsvFileData({ content: [], isSet: false });
+                      fileUploaderRef?.current?.clearFile();
+                      window.confirm('レース結果の登録が完了しました。')
+                        ? (setActivationFlg(false),
+                          setDialogDisplayFlg(false),
+                          setDisplayRegisterButtonFlg(false))
+                        : null;
+                    }
+                    setActivationFlg(false);
+                  }}
+                >
+                  登録
+                </CustomButton>
+              )}
           </div>
         )}
       </main>
