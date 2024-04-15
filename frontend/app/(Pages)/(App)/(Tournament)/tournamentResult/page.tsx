@@ -2243,7 +2243,7 @@ export default function TournamentResult() {
                         />
                         <div className='flex flex-col gap-[8px]'>
                           <InputLabel label='備考' />
-                          <CustomDropdown
+                          {/* <CustomDropdown
                             value={
                               mode === 'confirm'
                                 ? item.race_result_notes
@@ -2264,6 +2264,52 @@ export default function TournamentResult() {
                               );
                             }}
                             readonly={mode === 'confirm'}
+                          /> */}
+                          <Autocomplete
+                            options={remarkOptions.map((item) => ({
+                              id: item.id,
+                              name: item.name,
+                            }))}
+                            getOptionLabel={(option) => option?.name || ''}
+                            value={
+                              { id: Number(item.remarkId), name: item.race_result_notes } || ''
+                            }
+                            onChange={(e: ChangeEvent<{}>, newValue) => {
+                              handleRaceResultRecordsInputChangebyIndex(
+                                index,
+                                'remarkId',
+                                newValue ? (newValue as MasterResponse).id?.toString() : '',
+                              );
+                              handleRaceResultRecordsInputChangebyIndex(
+                                index,
+                                'race_result_notes',
+                                newValue ? (newValue as MasterResponse).name : '',
+                              );
+                            }}
+                            onInputChange={(e, newValue) => {
+                              handleRaceResultRecordsInputChangebyIndex(
+                                index,
+                                'race_result_notes',
+                                newValue || '',
+                              );
+                            }}
+                            renderOption={(props: any, option: MasterResponse) => {
+                              return (
+                                <li {...props} key={option.id}>
+                                  {option.name}
+                                </li>
+                              );
+                            }}
+                            renderInput={(params) => (
+                              <TextField
+                                key={params.id}
+                                className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                                {...params}
+                                value={item.race_result_notes || ''}
+                              />
+                            )}
+                            freeSolo
+                            className={'w-[120px]'}
                           />
                         </div>
                       </div>
@@ -2433,22 +2479,22 @@ export default function TournamentResult() {
                   <CustomTh rowSpan={2}>
                     <p>削除</p>
                   </CustomTh>
-                  <CustomTh rowSpan={2}>
+                  <CustomTh rowSpan={2} className='w-[110px]'>
                     <p>選手ID</p>
                   </CustomTh>
-                  <CustomTh rowSpan={2}>
+                  <CustomTh rowSpan={2} className='w-[160px]'>
                     <p>選手名</p>
                   </CustomTh>
                   <CustomTh rowSpan={2}>
                     <p>性別</p>
                   </CustomTh>
-                  <CustomTh rowSpan={2}>
+                  <CustomTh rowSpan={2} className='w-[120px]'>
                     <p>身長</p>
                   </CustomTh>
-                  <CustomTh rowSpan={2}>
+                  <CustomTh rowSpan={2} className='w-[120px]'>
                     <p>体重</p>
                   </CustomTh>
-                  <CustomTh rowSpan={2}>
+                  <CustomTh rowSpan={2} className='w-[130px]'>
                     <p>シート番号</p>
                   </CustomTh>
                   <CustomTh rowSpan={1} colSpan={5}>
@@ -2459,19 +2505,19 @@ export default function TournamentResult() {
                   </CustomTh>
                 </CustomTr>
                 <CustomTr>
-                  <CustomTh>
+                  <CustomTh className='w-[90px]'>
                     <p>500m</p>
                   </CustomTh>
-                  <CustomTh>
+                  <CustomTh className='w-[90px]'>
                     <p>1000m</p>
                   </CustomTh>
-                  <CustomTh>
+                  <CustomTh className='w-[90px]'>
                     <p>1500m</p>
                   </CustomTh>
-                  <CustomTh>
+                  <CustomTh className='w-[90px]'>
                     <p>2000m</p>
                   </CustomTh>
-                  <CustomTh>
+                  <CustomTh className='w-[90px]'>
                     <p>平均</p>
                   </CustomTh>
                   <CustomTh>
