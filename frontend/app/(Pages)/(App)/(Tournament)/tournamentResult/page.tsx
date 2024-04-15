@@ -2178,7 +2178,7 @@ export default function TournamentResult() {
                               id: item.id,
                               name: item.name,
                             }))}
-                            getOptionLabel={(option) => option?.name || ''}
+                            getOptionLabel={(option) => (typeof option === 'string' ? option : option?.name || '')}
                             value={{ id: Number(item.remarkId), name: item.race_result_notes } || ''}
                             onChange={(e: ChangeEvent<{}>, newValue) => {
                               handleRaceResultRecordsInputChangebyIndex(
@@ -2189,7 +2189,8 @@ export default function TournamentResult() {
                               handleRaceResultRecordsInputChangebyIndex(
                                 index,
                                 'race_result_notes',
-                                newValue ? (newValue as MasterResponse).name : '',                              );
+                                newValue ? (newValue as MasterResponse).name : '',
+                              );
                             }}
                             onInputChange={(e, newValue) => {
                               handleRaceResultRecordsInputChangebyIndex(
