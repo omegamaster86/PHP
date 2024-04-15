@@ -2270,8 +2270,12 @@ export default function TournamentResult() {
                               id: item.id,
                               name: item.name,
                             }))}
-                            getOptionLabel={(option) => (typeof option === 'string' ? option : option?.name || '')}
-                            value={{ id: Number(item.remarkId), name: item.race_result_notes } || ''}
+                            getOptionLabel={(option) =>
+                              typeof option === 'string' ? option : option?.name || ''
+                            }
+                            value={
+                              { id: Number(item.remarkId), name: item.race_result_notes } || ''
+                            }
                             onChange={(e: ChangeEvent<{}>, newValue) => {
                               handleRaceResultRecordsInputChangebyIndex(
                                 index,
