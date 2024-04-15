@@ -23,6 +23,7 @@ import {
   Staff,
   UserResponse,
   UserIdType,
+  TeamResponse,
 } from '@/app/types';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -40,6 +41,7 @@ export default function TeamRef() {
   const [staffs, setStaffs] = useState([] as Staff[]);
   const [value, setValue] = useState(0);
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
+  const [teamdata, setTeamdata] = useState([] as TeamResponse[]); //該当ユーザが管理する団体情報の取得 20240415
 
   // ページ全体のエラーハンドリング用のステート
   let isError = false;
@@ -114,6 +116,17 @@ export default function TeamRef() {
     return formData.address2 ?? '';
   };
 
+  //表示中の団体がログインユーザの管理する団体か判定する 20240415
+  const checkOrgManage = () => {
+    console.log(teamdata);
+    for (let index = 0; index < teamdata.length; index++) {
+      if (teamdata[index].org_id == orgId) {
+        return true;
+      }
+    }
+    return false; //ユーザが管理する団体のいずれでもない場合、falseを返す
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -156,6 +169,10 @@ export default function TeamRef() {
 
         const playerInf = await axios.get('/getIDsAssociatedWithUser');
         setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
+
+        const responseData = await axios.get('/getOrganizationForOrgManagement'); //団体データ取得 20240415
+        // console.log(responseData.data.result);
+        setTeamdata(responseData.data.result);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
       }
@@ -264,7 +281,8 @@ export default function TeamRef() {
               <div className='w-full bg-primary-500 text-white h-[40px] flex justify-center items-center font-bold relative'>
                 <div className='absolute'>主催大会</div>
                 {mode !== 'delete' &&
-                  (userIdType.is_administrator == 1 || userIdType.is_organization_manager == 1 ? (
+                  (userIdType.is_administrator == 1 ||
+                  (userIdType.is_organization_manager == 1 && checkOrgManage()) ? (
                     <div className='absolute right-[10px]'>
                       <CustomButton
                         className='w-[100px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
@@ -396,7 +414,8 @@ export default function TeamRef() {
             <div className='w-full bg-secondary-500 text-white h-[40px] flex justify-center items-center font-bold relative'>
               <>所属選手</>
               {mode !== 'delete' &&
-                (userIdType.is_administrator == 1 || userIdType.is_organization_manager == 1 ? (
+                (userIdType.is_administrator == 1 ||
+                (userIdType.is_organization_manager == 1 && checkOrgManage()) ? (
                   <div
                     className={`absolute right-[10px] ${
                       mode === 'delete' ? 'hidden' : 'flex flex-row gap-[10px]'
