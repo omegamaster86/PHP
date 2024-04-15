@@ -1389,7 +1389,7 @@ export default function TournamentResultInfomationBulkRegister() {
               戻る
             </CustomButton>
             {csvData.some((row) => {
-              !(row.loadingResult === '登録不可データ');
+              !(row.loadingResult === '-');
             }) &&
               displayRegisterButtonFlg && (
                 <CustomButton
