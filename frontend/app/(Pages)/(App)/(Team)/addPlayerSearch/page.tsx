@@ -145,6 +145,13 @@ export default function AddPlayerSearch() {
         item.checked = false;
       });
 
+      //名前の異なるバックエンド側とフロント側のキーを紐づける 20240415
+      if (data.length > 0) {
+        for (let index = 0; index < data.length; index++) {
+          data[index].orgId = data[index].org_id;
+        }
+      }
+
       if (data.length > 100) {
         window.alert('検索結果が100件を超えました、上位100件を表示しています。');
       }
@@ -582,7 +589,7 @@ export default function AddPlayerSearch() {
                   <CustomTd>
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                      href={'/playerInformationRef'}
+                      href={'/playerInformationRef?player_id=' + data.player_id}
                       rel='noopener noreferrer'
                       target='_blank'
                     >
@@ -592,7 +599,7 @@ export default function AddPlayerSearch() {
                   <CustomTd>
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                      href={'/playerInformationRef'}
+                      href={'/playerInformationRef?player_id=' + data.player_id}
                       rel='noopener noreferrer'
                       target='_blank'
                     >
@@ -602,7 +609,7 @@ export default function AddPlayerSearch() {
                   <CustomTd>
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                      href={'/playerInformationRef'}
+                      href={'/playerInformationRef?player_id=' + data.player_id}
                       rel='noopener noreferrer'
                       target='_blank'
                     >
@@ -627,7 +634,7 @@ export default function AddPlayerSearch() {
                   <CustomTd>
                     <Link
                       className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                      href={'/teamRef'}
+                      href={'/teamRef?org_id=' + data.orgId}
                       rel='noopener noreferrer'
                       target='_blank'
                     >
