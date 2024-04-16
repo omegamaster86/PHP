@@ -122,9 +122,10 @@ export default function Passwordchange() {
                     'パスワード',
                   ),
                 ]);
-                if(newPasswordErrorMessages.includes('新パスワードを入力してください。')){
+                //新パスワードが未入力の場合、他のバリデーション結果を表示させない仕様のため下記の実装とする 20240416
+                if (newPasswordErrorMessages.includes('新パスワードを入力してください。')) {
                   setNewPasswordErrorMessages(['新パスワードを入力してください。']);
-                }else{
+                } else {
                   setNewPasswordErrorMessages(newPasswordErrorMessages);
                 }
 
@@ -134,14 +135,6 @@ export default function Passwordchange() {
                 ]);
                 setConfirmNewPasswordErrorMessages(confirmPasswordErrorMessages);
                 // エラーがある場合、後続の処理を中止
-
-                console.log(currentPasswordErrorMessages);
-                console.log(newPasswordErrorMessages);
-                console.log(confirmPasswordErrorMessages);
-                console.log(currentPassword);
-                console.log(newPassword);
-                console.log(confirmNewPassword);
-
                 if (
                   currentPasswordErrorMessages.length > 0 ||
                   newPasswordErrorMessages.length > 0 ||
