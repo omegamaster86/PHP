@@ -2313,6 +2313,7 @@ export default function TournamentResult() {
                             freeSolo
                             className={'w-[120px]'}
                             readOnly={mode === 'confirm'}
+                            disabled={mode === 'confirm'}
                           />
                         </div>
                       </div>
