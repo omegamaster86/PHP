@@ -129,7 +129,8 @@ const validateEmailFormat2 = (email: string) => {
 
 const validatePasswordFormat = (password: string) => {
   let errorMessage = '';
-  const passwordRegex = new RegExp('^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!-/:-@[-`{-~])[!-~]+$');
+  // const passwordRegex = new RegExp('^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!-/:-@[-`{-~])[!-~]+$');
+  const passwordRegex = new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!-/:-@[-`{-~])[!-~]+$');
   if (!passwordRegex.test(password)) {
     errorMessage = '半角英数文字、記号を全て含むパスワードを入力してください。';
     return errorMessage;
