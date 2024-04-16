@@ -79,7 +79,7 @@ export default function TeamPlayer() {
         await csrf();
         // SessionStorageに追加選手リストがある場合、追加選手リストを取得
         if (sessionStorage.getItem('addPlayerList') !== null) {
-          const addPlayerList = JSON.parse(sessionStorage.getItem('addPlayerList') as string);
+          var addPlayerList = JSON.parse(sessionStorage.getItem('addPlayerList') as string);
           console.log(addPlayerList);
           let data = transformData(addPlayerList, '追加');
 
@@ -108,8 +108,31 @@ export default function TeamPlayer() {
             const response = await axios.post('/searchOrganizationPlayersForTeamRef', sendId);
             console.log(response);
             const searchRes = transformData(response.data.result, '既存');
-            console.log(searchRes);
-            data = setIndex(data.concat(searchRes));
+
+            //追加選手の重複チェック処理 20240416
+            setErrorMessage([]); //エラーメッセージの初期化
+            const element = Array();
+            element.push('選手が重複しているため追加できませんでした。');
+            for (let index = 0; index < data.length; index++) {
+              searchRes.some((item) => item.player_id == data[index].player_id);
+              //要素が1つでも条件に合致するかを調べる 20240416
+              if (searchRes.some((item) => item.player_id == data[index].player_id)) {
+                // console.log(data[index].player_id);
+                element.push(
+                  ' 選手ID: ' + data[index].player_id + '選手名:' + data[index].player_name,
+                );
+                data[index].deleteFlag = true; //重複している項目は削除対象
+                addPlayerList[index].deleteFlag = true; //ストレージの重複データも削除対象
+              }
+            }
+            if (element.length > 1) {
+              setErrorMessage(element); //エラーメッセージの更新
+            }
+            data = data.filter((item) => !item.deleteFlag); //削除フラグがfalse（重複していないデータ）のみを取り出す 20240416
+            addPlayerList = addPlayerList.filter((item: any) => !item.deleteFlag); //削除フラグがfalse（重複していないデータ）のみを取り出す 20240416
+            // console.log(addPlayerList);
+            sessionStorage.setItem('addPlayerList', JSON.stringify(addPlayerList)); //セッションストレージの内容を更新
+            data = setIndex(data.concat(searchRes)); // concatで配列の結合をしてからindexをmapする
           }
           setFormData(data);
           // sessionStorage.removeItem('addPlayerList');
@@ -341,6 +364,7 @@ export default function TeamPlayer() {
               onClick={() => {
                 // 確認画面に遷移する際、現在のformDataを復元のために一時待避
                 setTmpFormData(formData);
+                setErrorMessage([]);
                 router.push('/teamPlayer?mode=confirm');
               }}
             >
