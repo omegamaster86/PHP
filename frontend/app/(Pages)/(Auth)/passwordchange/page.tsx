@@ -111,34 +111,20 @@ export default function Passwordchange() {
                 ]);
                 setCurrentPasswordErrorMessages(currentPasswordErrorMessages);
 
-                // const newPasswordErrorMessages = Validator.getErrorMessages([
-                //   Validator.validateRequired(newPassword, '新パスワード'),
-                //   Validator.validatePasswordFormat(newPassword),
-                //   Validator.validateLengthMinAndMax(newPassword, 'パスワード', 8, 32),
-                //   Validator.ValidateNotEqual(
-                //     newPassword,
-                //     currentPassword,
-                //     '旧パスワード',
-                //     'パスワード',
-                //   ),
-                // ]);
-                // setNewPasswordErrorMessages(newPasswordErrorMessages);
-                if (Validator.validateRequired(newPassword, '新パスワード')) {
-                  const newPasswordErrorMessages = Validator.getErrorMessages([
-                    Validator.validateRequired(newPassword, '新パスワード'),
-                  ]);
-                  setNewPasswordErrorMessages(newPasswordErrorMessages);
-                } else {
-                  const newPasswordErrorMessages = Validator.getErrorMessages([
-                    Validator.validatePasswordFormat(newPassword),
-                    Validator.validateLengthMinAndMax(newPassword, 'パスワード', 8, 32),
-                    Validator.ValidateNotEqual(
-                      newPassword,
-                      currentPassword,
-                      '旧パスワード',
-                      'パスワード',
-                    ),
-                  ]);
+                const newPasswordErrorMessages = Validator.getErrorMessages([
+                  Validator.validateRequired(newPassword, '新パスワード'),
+                  Validator.validatePasswordFormat(newPassword),
+                  Validator.validateLengthMinAndMax(newPassword, 'パスワード', 8, 32),
+                  Validator.ValidateNotEqual(
+                    newPassword,
+                    currentPassword,
+                    '旧パスワード',
+                    'パスワード',
+                  ),
+                ]);
+                if(newPasswordErrorMessages.includes('新パスワードを入力してください。')){
+                  setNewPasswordErrorMessages(['新パスワードを入力してください。']);
+                }else{
                   setNewPasswordErrorMessages(newPasswordErrorMessages);
                 }
 
