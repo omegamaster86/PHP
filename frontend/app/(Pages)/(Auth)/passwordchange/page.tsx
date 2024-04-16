@@ -72,9 +72,11 @@ export default function Passwordchange() {
             <div className='flex flex-col gap-[8px] bg-systemWarningBg border-systemWarningText border-solid border-[1px] p-2 justify-center break-words bg-opacity-40'>
               <WarningAmberOutlinedIcon className='text-systemWarningText text-h3' />
               <div className='flex flex-col gap-[8px] text-primaryText text-caption2 text-left'>
-                パスワードは、以下の文字種の全てを含む、8文字以上16文字以内にしてください。
+                パスワードは、以下の文字種の全てを含む、8文字以上32文字以内にしてください。
                 <br />
-                ・半角英文字
+                ・半角英大文字
+                <br />
+                ・半角英小文字
                 <br />
                 ・半角数字
                 <br />
@@ -109,18 +111,36 @@ export default function Passwordchange() {
                 ]);
                 setCurrentPasswordErrorMessages(currentPasswordErrorMessages);
 
-                const newPasswordErrorMessages = Validator.getErrorMessages([
-                  Validator.validateRequired(newPassword, '新パスワード'),
-                  Validator.validatePasswordFormat(newPassword),
-                  Validator.validateLengthMinAndMax(newPassword, 'パスワード', 8, 16),
-                  Validator.ValidateNotEqual(
-                    newPassword,
-                    currentPassword,
-                    '旧パスワード',
-                    'パスワード',
-                  ),
-                ]);
-                setNewPasswordErrorMessages(newPasswordErrorMessages);
+                // const newPasswordErrorMessages = Validator.getErrorMessages([
+                //   Validator.validateRequired(newPassword, '新パスワード'),
+                //   Validator.validatePasswordFormat(newPassword),
+                //   Validator.validateLengthMinAndMax(newPassword, 'パスワード', 8, 32),
+                //   Validator.ValidateNotEqual(
+                //     newPassword,
+                //     currentPassword,
+                //     '旧パスワード',
+                //     'パスワード',
+                //   ),
+                // ]);
+                // setNewPasswordErrorMessages(newPasswordErrorMessages);
+                if (Validator.validateRequired(newPassword, '新パスワード')) {
+                  const newPasswordErrorMessages = Validator.getErrorMessages([
+                    Validator.validateRequired(newPassword, '新パスワード'),
+                  ]);
+                  setNewPasswordErrorMessages(newPasswordErrorMessages);
+                } else {
+                  const newPasswordErrorMessages = Validator.getErrorMessages([
+                    Validator.validatePasswordFormat(newPassword),
+                    Validator.validateLengthMinAndMax(newPassword, 'パスワード', 8, 32),
+                    Validator.ValidateNotEqual(
+                      newPassword,
+                      currentPassword,
+                      '旧パスワード',
+                      'パスワード',
+                    ),
+                  ]);
+                  setNewPasswordErrorMessages(newPasswordErrorMessages);
+                }
 
                 const confirmPasswordErrorMessages = Validator.getErrorMessages([
                   Validator.validateRequired(confirmNewPassword, '確認用のパスワード'),
