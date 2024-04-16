@@ -109,18 +109,24 @@ export default function Passwordchange() {
                 ]);
                 setCurrentPasswordErrorMessages(currentPasswordErrorMessages);
 
-                const newPasswordErrorMessages = Validator.getErrorMessages([
-                  Validator.validateRequired(newPassword, '新パスワード'),
-                  Validator.validatePasswordFormat(newPassword),
-                  Validator.validateLengthMinAndMax(newPassword, 'パスワード', 8, 16),
-                  Validator.ValidateNotEqual(
-                    newPassword,
-                    currentPassword,
-                    '旧パスワード',
-                    'パスワード',
-                  ),
-                ]);
-                setNewPasswordErrorMessages(newPasswordErrorMessages);
+                if (Validator.validateRequired(newPassword, '新パスワード')) {
+                  const newPasswordErrorMessages = Validator.getErrorMessages([
+                    Validator.validateRequired(newPassword, '新パスワード'),
+                  ]);
+                  setNewPasswordErrorMessages(newPasswordErrorMessages);
+                } else {
+                  const newPasswordErrorMessages = Validator.getErrorMessages([
+                    Validator.validatePasswordFormat(newPassword),
+                    Validator.validateLengthMinAndMax(newPassword, 'パスワード', 8, 16),
+                    Validator.ValidateNotEqual(
+                      newPassword,
+                      currentPassword,
+                      '旧パスワード',
+                      'パスワード',
+                    ),
+                  ]);
+                  setNewPasswordErrorMessages(newPasswordErrorMessages);
+                }
 
                 const confirmPasswordErrorMessages = Validator.getErrorMessages([
                   Validator.validateRequired(confirmNewPassword, '確認用のパスワード'),
