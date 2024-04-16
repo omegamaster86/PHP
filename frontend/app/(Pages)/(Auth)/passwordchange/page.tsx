@@ -148,6 +148,14 @@ export default function Passwordchange() {
                 ]);
                 setConfirmNewPasswordErrorMessages(confirmPasswordErrorMessages);
                 // エラーがある場合、後続の処理を中止
+
+                console.log(currentPasswordErrorMessages);
+                console.log(newPasswordErrorMessages);
+                console.log(confirmPasswordErrorMessages);
+                console.log(currentPassword);
+                console.log(newPassword);
+                console.log(confirmNewPassword);
+
                 if (
                   currentPasswordErrorMessages.length > 0 ||
                   newPasswordErrorMessages.length > 0 ||
