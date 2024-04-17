@@ -334,6 +334,190 @@ class T_organization_players extends Model
         return $players;
     }
 
+    //団体に登録する選手検索 20240417
+    public function getOrgPlayersForAddPlayerSearch($condition,$conditionValue)
+    {
+        DB::enableQueryLog();
+        Log::debug('getOrgPlayersForAddPlayerSearch start.');
+        $sqlString = 'select
+                        player_id
+                        , jara_player_id
+                        , player_name
+                        , date_of_birth
+                        , height
+                        , weight
+                        , photo
+                        , birth_country
+                        , birthCountryName
+                        , birth_prefecture
+                        , residence_country
+                        , residenceCountryName
+                        , residence_prefecture
+                        , sexName
+                        , sex_id
+                        , birthPrefectureName
+                        , residencePrefectureName
+                        , side_S
+                        , side_B
+                        , side_X
+                        , side_C
+                        , players.org_id
+                        , org.org_name 
+                    from
+                        ( 
+                            select
+                                tp.player_id AS player_id
+                                , jara_player_id
+                                , player_name
+                                , date_of_birth
+                                , height
+                                , weight
+                                , photo
+                                , birth_country
+                                , birthCountryName
+                                , birth_prefecture
+                                , residence_country
+                                , residenceCountryName
+                                , residence_prefecture
+                                , sexName
+                                , sex_id
+                                , birthPrefectureName
+                                , residencePrefectureName
+                                , side_S
+                                , side_B
+                                , side_X
+                                , side_C
+                                , MAX(top.org_id) AS org_id 
+                            from
+                                ( 
+                                    select
+                                        p.player_id
+                                        , p.jara_player_id
+                                        , p.player_name
+                                        , p.date_of_birth
+                                        , p.height
+                                        , p.weight
+                                        , p.photo
+                                        , p.birth_country
+                                        , bir_cont.country_name AS birthCountryName
+                                        , p.birth_prefecture
+                                        , p.residence_country
+                                        , res_cont.country_name AS residenceCountryName
+                                        , p.residence_prefecture
+                                        , ms.sex AS sexName
+                                        , p.sex_id
+                                        , CASE 
+                                            when p.birth_country = 112 
+                                                then bir_pref.`pref_name` 
+                                            else null 
+                                            end as birthPrefectureName #出身地
+                                        , CASE 
+                                            when p.residence_country = 112 
+                                                then res_pref.`pref_name` 
+                                            else null 
+                                            end as residencePrefectureName #居住地
+                                        , p.side_info
+                                        , CASE 
+                                            when SUBSTRING(p.side_info, 8, 1) = 1 
+                                                then 1 
+                                            else 0 
+                                            end as side_S
+                                        , CASE 
+                                            when SUBSTRING(p.side_info, 7, 1) = 1 
+                                                then 1 
+                                            else 0 
+                                            end as side_B
+                                        , CASE 
+                                            when SUBSTRING(p.side_info, 6, 1) = 1 
+                                                then 1 
+                                            else 0 
+                                            end as side_X
+                                        , CASE 
+                                            when SUBSTRING(p.`side_info`, 5, 1) = 1 
+                                                then 1 
+                                            else 0 
+                                            end as side_C 
+                                    from
+                                        t_players p 
+                                        LEFT JOIN m_sex ms 
+                                            ON p.sex_id = ms.sex_id 
+                                        LEFT JOIN m_countries bir_cont 
+                                            ON p.birth_country = bir_cont.country_id 
+                                        LEFT JOIN m_prefectures bir_pref 
+                                            ON p.birth_prefecture = bir_pref.pref_id 
+                                        LEFT JOIN m_countries res_cont 
+                                            ON p.residence_country = res_cont.country_id 
+                                        LEFT JOIN m_prefectures res_pref 
+                                            ON p.residence_prefecture = res_pref.pref_id 
+                                    where
+                                        1 = 1 
+                                        and p.`delete_flag` = 0 
+                                        and ( 
+                                            `ms`.`delete_flag` = 0 
+                                            OR `ms`.`delete_flag` IS NULL
+                                        ) 
+                                        and ( 
+                                            bir_cont.`delete_flag` = 0 
+                                            OR bir_cont.`delete_flag` IS NULL
+                                        ) 
+                                        and ( 
+                                            bir_pref.`delete_flag` = 0 
+                                            OR bir_pref.`delete_flag` IS NULL
+                                        ) 
+                                        and ( 
+                                            res_cont.`delete_flag` = 0 
+                                            OR res_cont.`delete_flag` IS NULL
+                                        ) 
+                                        and ( 
+                                            res_pref.`delete_flag` = 0 
+                                            OR res_pref.`delete_flag` IS NULL
+                                        ) 
+                                        and p.user_id IS NOT NULL
+                                ) tp 
+                                LEFT JOIN ( 
+                                    select
+                                        player_id
+                                        , org_p.org_id
+                                        , torg.entrysystem_org_id
+                                        , torg.org_name 
+                                    from
+                                        t_organization_players org_p 
+                                        LEFT JOIN t_organizations torg 
+                                            ON org_p.org_id = torg.org_id 
+                                            AND torg.delete_flag = 0 
+                                    where
+                                        org_p.delete_flag = 0
+                                ) top 
+                                    ON tp.player_id = top.player_id 
+                                LEFT JOIN ( 
+                                    select
+                                        trrr.player_id
+                                        , tourn.tourn_name
+                                        , trrr.event_id 
+                                    from
+                                        t_race_result_record trrr 
+                                        LEFT JOIN t_tournaments tourn 
+                                            ON trrr.tourn_id = tourn.tourn_id 
+                                    where
+                                        trrr.delete_flag = 0
+                                ) tr 
+                                    ON tp.player_id = tr.player_id 
+                            where
+                                1 = 1
+                                #ReplaceConditionString# 
+                            GROUP BY
+                                player_id
+                        ) players 
+                        LEFT JOIN t_organizations org 
+                        on players.org_id = org.org_id
+                        ';
+        $sqlString = str_replace("#ReplaceConditionString#",$condition,$sqlString);        
+        $players = DB::select($sqlString,$conditionValue);
+        Log::debug(DB::getQueryLog());
+        Log::debug('getOrgPlayersForAddPlayerSearch end.');
+        return $players;
+    }
+
     //選手IDを条件に所属選手情報を取得する
     public function getOrganizationPlayersInfoFromPlayerId($player_id)
     {
