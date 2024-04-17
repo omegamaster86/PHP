@@ -1407,8 +1407,11 @@ export default function TournamentResult() {
     const playerNum = raceResultRecords.some((record, i) => {
       var count = 0;
       record.crewPlayer?.map((player, j) => {
-        console.log(playerCount, player.deleteFlg, player.errorText);
-        if (!player.deleteFlg && player.errorText == '') {
+        // console.log(playerCount,count, player.deleteFlg, player.errorText);
+        if (
+          !player.deleteFlg &&
+          (player.errorText == '' || player.errorText == null || player.errorText == undefined)
+        ) {
           count++;
         }
       });
@@ -1638,9 +1641,9 @@ export default function TournamentResult() {
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
           const response = await axios.post('/getRaceDataRaceId', sendData);
-          console.log(response.data.result);
+          console.log(response.data.race_result);
 
-          data = response.data.result;
+          data = response.data.race_result;
           // 遷移元からイベントIDが取得できる時だけ、遷移元からのイベントIDをセットする。セットされていない時は、レース情報からイベントIDをセットする。
 
           setRaceInfo({
