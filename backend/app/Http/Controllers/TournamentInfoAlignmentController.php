@@ -672,15 +672,14 @@ class TournamentInfoAlignmentController extends Controller
                     $target_row['rankError'] = true;
                 }
 
-                //ラップタイムは500m～最終までの何れかの入力が必須
-                    
+                //ラップタイムは500m～最終までの何れかの入力が必須（すべて空の場合、エラーとする） 20240417
                 if (!(isset($target_row['fiveHundredmLaptime']) || isset($target_row['tenHundredmLaptime']) || isset($target_row['fifteenHundredmLaptime']) || isset($target_row['twentyHundredmLaptime']) || isset($target_row['finalTime']))) {
                     $checkResult = false;
-                    $target_row['fiveHundredmLaptime'] = true;
-                    $target_row['tenHundredmLaptime'] = true;
-                    $target_row['fifteenHundredmLaptime'] = true;
-                    $target_row['twentyHundredmLaptime'] = true;
-                    $target_row['finalTime'] = true;
+                    $target_row['fiveHundredmLaptimeError'] = true;
+                    $target_row['tenHundredmLaptimeError'] = true;
+                    $target_row['fifteenHundredmLaptimeError'] = true;
+                    $target_row['twentyHundredmLaptimeError'] = true;
+                    $target_row['finalTimeError'] = true;
                 }
 
                 // 500mlapタイム
