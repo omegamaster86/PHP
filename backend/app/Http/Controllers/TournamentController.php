@@ -1091,6 +1091,7 @@ class TournamentController extends Controller
     public function updateRaceResultRecordForUpdateConfirm(Request $request,
                                                             T_raceResultRecord $t_raceResultRecord,
                                                             T_players $t_players,
+                                                            T_tournaments $t_tournaments,
                                                             T_organizations $t_organizations)
     {
         Log::debug(sprintf("updateRaceResultRecordForUpdateConfirm start."));
