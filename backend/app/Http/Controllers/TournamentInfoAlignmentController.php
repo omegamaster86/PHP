@@ -393,7 +393,7 @@ class TournamentInfoAlignmentController extends Controller
     ) {
         Log::debug(sprintf("sendTournamentResultCsvData start"));
         $reqData = $request->all();
-        Log::debug($reqData);
+        // Log::debug($reqData);
         try {
             //フロントエンドで入力された大会ID
             $input_tourn_id = $reqData['tournData']['tournId'];
@@ -789,7 +789,14 @@ class TournamentInfoAlignmentController extends Controller
                 }
                 // 発艇日時
                 if (isset($target_row['startDatetime'])) {
-                    if (!$target_row['startDatetime'] === date('YYYY/MM/DD H:i', strtotime($target_row['startDatetime']))) {
+                    // Log::debug($target_row['startDatetime']);
+                    // Log::debug(date('Y/m/d H:i', strtotime($target_row['startDatetime'])));
+                    //文字数が16文字(YYYY/MM/DD hh:mm)でない場合、エラーとする
+                    if (mb_strlen($target_row['startDatetime']) != 16) {
+                        $checkResult = false;
+                        $target_row['startDatetimeError'] = true;
+                    }
+                    if (!($target_row['startDatetime'] === date('Y/m/d H:i', strtotime($target_row['startDatetime'])))) {
                         $checkResult = false;
                         $target_row['startDatetimeError'] = true;
                     }
