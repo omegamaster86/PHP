@@ -1407,6 +1407,7 @@ export default function TournamentResult() {
     const playerNum = raceResultRecords.some((record, i) => {
       var count = 0;
       record.crewPlayer?.map((player, j) => {
+        console.log(playerCount, player.deleteFlg, player.errorText);
         if (!player.deleteFlg && player.errorText == '') {
           count++;
         }
@@ -1428,6 +1429,7 @@ export default function TournamentResult() {
       });
       return false;
     } else {
+      console.log('clearError call');
       clearError();
     }
 
@@ -2121,7 +2123,7 @@ export default function TournamentResult() {
                         handleRaceResultRecordsInputChangebyIndex(index, 'org_id', e);
                         handleRaceResultRecordsInputChangebyIndex(
                           index,
-                          'orgName',
+                          'org_name',
                           orgOptions.find((item) => item.id === e)?.name || '',
                         );
                       }}
@@ -2764,15 +2766,11 @@ export default function TournamentResult() {
         <CustomButton
           buttonType='secondary'
           onClick={() => {
-            if (mode == 'comfirm') {
-              router.back(); //確認画面の場合、1つ前の画面に戻る
-            } else {
-              router.push('/tournamentResultManagement');
-            }
+            router.back();
           }}
           className='w-[170px]'
         >
-          {mode == 'confirm' ? '戻る' : '管理画面に戻る'}
+          戻る
         </CustomButton>
         <CustomButton
           buttonType='primary'
