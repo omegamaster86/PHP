@@ -527,8 +527,8 @@ class TournamentInfoAlignmentController extends Controller
                     //     $target_row['tournNameError'] = true;
                     // }
                     //選手IDかJARA選手コードのいずれかが入力されていることを確認する
-                    //どちらも入力されていなかったら両項目をエラーとする
-                    if (!(isset($player_id) || isset($target_row['jaraPlayerId']))) {
+                    //どちらも入力されていない場合、両項目をエラーとする
+                    if (!isset($player_id) && !isset($target_row['jaraPlayerId'])) {
                         $checkResult = false;
                         $target_row['userIdError'] = true;
                         $target_row['jaraPlayerIdError'] = true;
@@ -540,8 +540,7 @@ class TournamentInfoAlignmentController extends Controller
                     // JARA選手コード
                     //jara_player_codeにデータがあれば判定する
                     if (isset($target_row['jaraPlayerId'])) {
-                        if (!(is_numeric($target_row['jaraPlayerId'])
-                            && mb_strlen($target_row['jaraPlayerId']) == 12)) {
+                        if (!(is_numeric($target_row['jaraPlayerId']) && mb_strlen($target_row['jaraPlayerId']) == 12)) {
                             $checkResult = false;
                             $target_row['jaraPlayerIdError'] = true;
                         }
@@ -604,7 +603,7 @@ class TournamentInfoAlignmentController extends Controller
                     }
                     //団体IDとエントリー団体コードのいずれかが入力されていることを確認
                     //どちらも入力されていなかったら両項目をエラーとする
-                    if (!(isset($target_row['orgId']) || isset($target_row['entrysystemOrgId']))) {
+                    if (!isset($target_row['orgId']) && !isset($target_row['entrysystemOrgId'])) {
                         Log::debug("団体IDとエントリー団体コードのいずれかが入力されていない");
                         $checkResult = false;
                         $target_row['orgIdError'] = true;
