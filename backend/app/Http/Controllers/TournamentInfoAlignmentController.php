@@ -771,7 +771,7 @@ class TournamentInfoAlignmentController extends Controller
                 }
                 // シート番号ID
                 if (isset($target_row['mSheetNumber'])) {
-                    $this->checkInteger($target_row['mSheetNumber'], 3, $checkResult, $target_row['mSheetNumberError']);
+                    $this->checkInteger($target_row['mSheetNumber'], 2, $checkResult, $target_row['mSheetNumberError']);
                 } else {
                     $checkResult = false;
                     $target_row['mSheetNumberError'] = true;
@@ -1030,7 +1030,7 @@ class TournamentInfoAlignmentController extends Controller
                 if ($checkResult) {
                     //新規データか更新データかのチェック
                     $tournament_condition_array = array();   //レース結果データ検索のための条件値を格納する配列
-                    $target_race_count;
+                    $target_race_count = null;
                     //非公式大会の場合
                     if ($is_target_tournament_official == 0) {
                         Log::debug("非公式大会の場合");
@@ -1138,7 +1138,7 @@ class TournamentInfoAlignmentController extends Controller
                         Log::debug("update execute.");
                         //更新登録
                         //DBから取得したレース結果情報を格納する変数
-                        $race_data;
+                        $race_data = null;
                         if ($is_official == '0') {
                             //非公式のレースデータを取得
                             $race_data = $t_raceResultRecord->getTargetUnofficialRace($tournament_condition_array);
