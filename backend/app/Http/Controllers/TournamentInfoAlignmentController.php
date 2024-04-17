@@ -473,7 +473,7 @@ class TournamentInfoAlignmentController extends Controller
                     else
                     {
                         $checkResult = false;
-                        $target_row['raceNumber'] = true;
+                        $target_row['raceNumberError'] = true;
                     }
                     //レース名
                     if (isset($target_row['raceName'])) {
@@ -592,7 +592,7 @@ class TournamentInfoAlignmentController extends Controller
                         $this->checkInteger($target_row['raceTypeId'], 3, $checkResult, $target_row['raceTypeIdError']);
                     } else {
                         $checkResult = false;
-                        $target_row['raceTypeId'] = true;
+                        $target_row['raceTypeIdError'] = true;
                     }
                     //レース区分名
                     if (isset($target_row['raceTypeName'])) {
