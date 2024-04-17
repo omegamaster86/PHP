@@ -363,7 +363,7 @@ export default function PlayerInformation() {
     // JARA選手コードの入力チェック
     const jaraPlayerCodeError = Validator.getErrorMessages([
       // Validator.validateSelectRequired(formData.jara_player_id.toString(), 'JARA選手コード'), //必須項目ではないためコメントアウト 20240412
-      Validator.validateJaraPlayerCodeFormat(formData.jara_player_id.toString()),
+      Validator.validateJaraPlayerCodeFormat(formData.jara_player_id?.toString()),
     ]);
 
     // 選手名の入力チェック
