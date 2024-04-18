@@ -2846,6 +2846,7 @@ export default function TournamentResult() {
                   );
                   console.log(raceResponse);
                   // router.push('/tournamentResult?mode=confirm&prevMode=update');
+                  router.push('/tournamentResultRef?raceId='+raceResultRecordResponse.race_id);
                 }
               }
             }
