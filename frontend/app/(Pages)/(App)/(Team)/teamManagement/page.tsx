@@ -23,6 +23,30 @@ export default function TeamManagement() {
   const [teamdata, setTeamdata] = useState([] as TeamResponse[]);
   const router = useRouter();
 
+  //ユーザIDに紐づいた情報の取得 20240418
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
+        const response = await axios.get('/getUserData');
+        console.log(response.data.result);
+        //ユーザ情報が存在し、仮パスワードフラグが0の場合ヘッダーメニューを表示 20240418
+        if (Object.keys(response.data.result).length > 0) {
+          const playerInf = await axios.get('/getIDsAssociatedWithUser');
+          if(playerInf.data.result[0].is_administrator != 1 && playerInf.data.result[0].is_organization_manager != 1){
+            console.log("ユーザ種別不正");
+            router.push('/tournamentSearch');
+          }
+        } else {
+          console.log("ユーザ情報なし");
+          router.push('/tournamentSearch');
+        }
+      } catch (error: any) {}
+    };
+    fetchData();
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
