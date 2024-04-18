@@ -63,6 +63,35 @@ export default function PlayerInformationLinking() {
   const [displayLinkButtonFlg, setDisplayLinkButtonFlg] = useState<boolean>(false);
   const [visibilityFlg, setVisibilityFlg] = useState<boolean>(false); //CSVテーブルの表示切替フラグ 20240412
 
+  const [validFlag, setValidFlag] = useState(false); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
+  //ユーザIDに紐づいた情報の取得 20240418
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
+        const response = await axios.get('/getUserData');
+        console.log(response.data.result);
+        if (Object.keys(response.data.result).length > 0) {
+          const playerInf = await axios.get('/getIDsAssociatedWithUser');
+          if (
+            playerInf.data.result[0].is_administrator == 1 ||
+            playerInf.data.result[0].is_jara == 1
+          ) {
+            setValidFlag(true); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
+          } else {
+            console.log('ユーザ種別不正');
+            router.push('/tournamentSearch');
+          }
+        } else {
+          console.log('ユーザ情報なし');
+          router.push('/tournamentSearch');
+        }
+      } catch (error: any) {}
+    };
+    fetchData();
+  }, []);
+
   // CSVファイルのアップロードを処理する関数
   const handleCsvUpload = (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => {
     setCsvFileData(newCsvData);
@@ -242,103 +271,105 @@ export default function PlayerInformationLinking() {
 
   // レンダリング
   return (
-    <div>
-      <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px] items-center'>
-        {/* タイトルの表示 */}
-        <CustomTitle isCenter={false} displayBack>
-          選手情報連携
-        </CustomTitle>
-        {/* エラーメッセージの表示 */}
-        <ErrorBox errorText={errorText} />
-        {/* 読み込みCSVファイルの表示 */}
-        <div className='flex flex-col gap-[20px]'>
-          <div className='flex flex-row justify-start'>
-            <CsvHandler
-              csvUploadProps={csvUploadProps}
-              csvDownloadProps={csvDownloadProps}
-              ref={fileUploaderRef}
-            ></CsvHandler>
+    validFlag && (
+      <div>
+        <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px] items-center'>
+          {/* タイトルの表示 */}
+          <CustomTitle isCenter={false} displayBack>
+            選手情報連携
+          </CustomTitle>
+          {/* エラーメッセージの表示 */}
+          <ErrorBox errorText={errorText} />
+          {/* 読み込みCSVファイルの表示 */}
+          <div className='flex flex-col gap-[20px]'>
+            <div className='flex flex-row justify-start'>
+              <CsvHandler
+                csvUploadProps={csvUploadProps}
+                csvDownloadProps={csvDownloadProps}
+                ref={fileUploaderRef}
+              ></CsvHandler>
+            </div>
+            {/* CSVフォーマット出力の表示 */}
+            {!activationFlg && (
+              <div className='flex flex-col gap-[20px]'>
+                {/* 読み込みボタンの表示 */}
+                <div className='flex flex-col gap-[4px] items-center'>
+                  {/* 表示する文言はDPT様にて実装予定 */}
+                  <p className='mb-1'>CSVファイルの読み込みについての説明文を記載</p>
+                  <CustomButton
+                    buttonType='primary'
+                    onClick={() => {
+                      console.log(csvFileData);
+                      sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
+                    }}
+                  >
+                    読み込む
+                  </CustomButton>
+                </div>
+              </div>
+            )}
+            {/* エラーメッセージの表示 */}
+            <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
+            {/* 読み込み結果の表示 */}
+            <div className='flex flex-col items-center'>
+              {!activationFlg && (
+                <p className='mb-1'>読み込んだデータの連携方法についての説明文を記載</p>
+              )}
+              <CsvTable
+                content={csvData}
+                header={[
+                  '連携',
+                  '選手ID',
+                  'JARA選手コード',
+                  '選手名',
+                  'メールアドレス',
+                  'エラー内容',
+                ]}
+                handleInputChange={handleInputChange}
+                displayLinkButton={displayLinkButton}
+                activationFlg={activationFlg}
+                visibilityFlg={visibilityFlg}
+              />
+            </div>
           </div>
-          {/* CSVフォーマット出力の表示 */}
+          {/* ボタンの表示 */}
           {!activationFlg && (
-            <div className='flex flex-col gap-[20px]'>
-              {/* 読み込みボタンの表示 */}
-              <div className='flex flex-col gap-[4px] items-center'>
-                {/* 表示する文言はDPT様にて実装予定 */}
-                <p className='mb-1'>CSVファイルの読み込みについての説明文を記載</p>
+            <div className='flex flex-row gap-[4px]'>
+              <CustomButton
+                buttonType='secondary'
+                onClick={() => {
+                  router.back();
+                }}
+              >
+                戻る
+              </CustomButton>
+              {csvData.some((row) => row.link !== '連携不可') && displayLinkButtonFlg && (
                 <CustomButton
                   buttonType='primary'
                   onClick={() => {
-                    console.log(csvFileData);
-                    sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
+                    console.log(csvData);
+                    setActivationFlg(true);
+                    csvData.find((row) => row.checked)?.id === undefined
+                      ? window.confirm('1件以上選択してください。')
+                      : registerCsvData(), //読み込んだCSVデータをDBに連携する
+                      setCsvData([]),
+                      setCsvFileData({ content: [], isSet: false }),
+                      fileUploaderRef?.current?.clearFile(),
+                      window.confirm('連携を完了しました。')
+                        ? (setActivationFlg(false),
+                          setDialogDisplayFlg(false),
+                          setDisplayLinkButtonFlg(false))
+                        : null;
+                    setActivationFlg(false);
                   }}
                 >
-                  読み込む
+                  連携
                 </CustomButton>
-              </div>
+              )}
             </div>
           )}
-          {/* エラーメッセージの表示 */}
-          <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
-          {/* 読み込み結果の表示 */}
-          <div className='flex flex-col items-center'>
-            {!activationFlg && (
-              <p className='mb-1'>読み込んだデータの連携方法についての説明文を記載</p>
-            )}
-            <CsvTable
-              content={csvData}
-              header={[
-                '連携',
-                '選手ID',
-                'JARA選手コード',
-                '選手名',
-                'メールアドレス',
-                'エラー内容',
-              ]}
-              handleInputChange={handleInputChange}
-              displayLinkButton={displayLinkButton}
-              activationFlg={activationFlg}
-              visibilityFlg={visibilityFlg}
-            />
-          </div>
-        </div>
-        {/* ボタンの表示 */}
-        {!activationFlg && (
-          <div className='flex flex-row gap-[4px]'>
-            <CustomButton
-              buttonType='secondary'
-              onClick={() => {
-                router.back();
-              }}
-            >
-              戻る
-            </CustomButton>
-            {csvData.some((row) => row.link !== '連携不可') && displayLinkButtonFlg && (
-              <CustomButton
-                buttonType='primary'
-                onClick={() => {
-                  console.log(csvData);
-                  setActivationFlg(true);
-                  csvData.find((row) => row.checked)?.id === undefined
-                    ? window.confirm('1件以上選択してください。')
-                    : registerCsvData(), //読み込んだCSVデータをDBに連携する
-                    setCsvData([]),
-                    setCsvFileData({ content: [], isSet: false }),
-                    fileUploaderRef?.current?.clearFile(),
-                    window.confirm('連携を完了しました。')
-                      ? (setActivationFlg(false),
-                        setDialogDisplayFlg(false),
-                        setDisplayLinkButtonFlg(false))
-                      : null;
-                  setActivationFlg(false);
-                }}
-              >
-                連携
-              </CustomButton>
-            )}
-          </div>
-        )}
-      </main>
-    </div>
+        </main>
+      </div>
+    )
   );
 }
