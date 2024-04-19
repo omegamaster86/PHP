@@ -421,6 +421,7 @@ export default function TeamPlayerBulkRegister() {
                   buttonType='primary'
                   onClick={() => {
                     setActivationFlg(true);
+                    // console.log(dialogDisplayFlg);
                     if (dialogDisplayFlg) {
                       if (
                         !window.confirm(
@@ -443,7 +444,7 @@ export default function TeamPlayerBulkRegister() {
                           return x.length > 0 && x.some((y) => y.length > 0);
                         })
                         .slice(isHeaderMatch ? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
-                        .map((row, index) => (console.log(row), getJsonRow(row, index))),
+                        .map((row, index) => getJsonRow(row, index)),
                     ).then((results) => {
                       var resList = results as any;
                       resList.forEach((element: any) => {
@@ -454,6 +455,7 @@ export default function TeamPlayerBulkRegister() {
                       });
                       console.log(resList);
                       sendCsvData(resList); //バックエンド側のバリデーションチェックを行う為にデータを送信する 20240302
+                      setDialogDisplayFlg(true); //2回目以降のcsv読み込みで確認ダイアログを表示させる 20240419
                     });
 
                     performValidation();
