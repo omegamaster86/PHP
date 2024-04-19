@@ -433,7 +433,8 @@ export default function TeamPlayerBulkRegister() {
                       }
                     }
 
-                    const specifiedHeader = 'JARA選手コード,新選手ID,ユーザーID,メールアドレス,選手名'; // 指定のヘッダー文字列
+                    const specifiedHeader =
+                      'JARA選手コード,新選手ID,ユーザーID,メールアドレス,選手名'; // 指定のヘッダー文字列
                     const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
                     const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
 
