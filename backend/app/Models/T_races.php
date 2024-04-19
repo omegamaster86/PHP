@@ -229,6 +229,7 @@ class T_races extends Model
                             ,race.`event_id`
                             ,`m_events`.`event_name`
                             ,race.`race_class_id`
+                            ,race.`race_class_name` as t_races_race_class_name
                             ,`m_race_class`.`race_class_name`
                             ,race.`by_group`
                             ,race.`range`

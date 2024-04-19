@@ -215,7 +215,7 @@ class TournamentController extends Controller
         Log::debug(sprintf("getTournamentInfoData start"));
         $reqData = $request->all();
         Log::debug($reqData['tourn_id']);
-        $result = $tourn->getTournament($reqData['tourn_id']); //DBに選手を登録 20240131
+        $result = $tourn->getTournament($reqData['tourn_id']);
         // Log::debug($result);
         Log::debug(sprintf("getTournamentInfoData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
@@ -1602,5 +1602,23 @@ class TournamentController extends Controller
         $seconds = round(($floatNumber - floor($floatNumber)) * 100);
     
         return sprintf("%02d:%02d.%02d", $hours, $minutes, $seconds);
+    }
+
+    //大会結果情報一括登録画面用 csvフォーマット出力に使用するレース情報の取得 20240418
+    public function getCsvFormatRaceData(Request $request, T_tournaments $tourn,T_races $tRace)
+    {
+        Log::debug(sprintf("getCsvFormatRaceData start"));
+        $reqData = $request->all();
+        Log::debug($reqData['tourn_id']);
+        $tournResult = $tourn->getTournament($reqData['tourn_id']); //大会情報を取得（公式,非公式の判定用）
+        $result = $tRace->getRaces($reqData); //レース情報を取得
+        if (isset($result)) {
+            for ($i = 0; $i < count($result); $i++) {
+                $result[$i]->id = $i;
+            }
+        }
+        Log::debug($result);
+        Log::debug(sprintf("getCsvFormatRaceData end"));
+        return response()->json(['result' => $result,'tournResult' => $tournResult]); //DBの結果を返す
     }
 }

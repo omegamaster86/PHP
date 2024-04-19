@@ -5,8 +5,9 @@ import Papa from 'papaparse';
 import CustomInputLabel from '@/app/components/InputLabel';
 import CustomTextField from '@mui/material/TextField';
 import { CustomButton } from '../../../../components';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import { CsvData } from './CsvDataInterface';
+import { resolve } from 'path';
 
 interface Props {
   csvUploadProps: CsvUploadProps;
@@ -148,9 +149,12 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
   const handleDownload = async () => {
     let csvContent = '';
 
+    // CSVダウンロードのロジック
     try {
       // 大会IDを取得
-      const tournId = props.csvDownloadProps.tournId;
+      const tournData = props.csvDownloadProps.formData;
+      console.log(tournData);
+      console.log(props.csvDownloadProps.filename);
       // レース情報を取得
       // 仮実装　レース情報取得処理に変更
       // const raceResponse = await axios.get<CsvData[]>('http://localhost:3100/raceResultRecords'); //残件対応項目
@@ -158,6 +162,14 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
       // const raceResponse = await axios.get<Race[]>(
       //   'http://localhost:3100/race?tournamentId=' + tournId,
       // );
+      const senddata = {
+        tourn_id: tournData.tournId,
+      };
+      const csrf = () => axios.get('/sanctum/csrf-cookie');
+      await csrf();
+      const response = await axios.post('/getCsvFormatRaceData', senddata);
+      console.log(response.data.tournResult); //公式 非公式
+      console.log(response.data.result);
 
       //仮対応　20240319
       const raceResponse = {
@@ -168,8 +180,8 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
 
       const header = props.csvDownloadProps.header.map((h) => h.label).join(',');
 
-      // CSVダウンロードのロジック
-      if (raceResponse.data.length === 0) {
+      if (response.data.result.length == 0) {
+        //レース情報が0件の場合
         if (
           window.confirm(
             '選択された大会に紐づくレースが登録されていません。入力項目のみが出力されたフォーマットを出力しますか？',
@@ -182,11 +194,79 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           csvContent = '';
         }
       } else {
+        //レース情報が存在する場合
         // props.csvDownloadProps.filename = raceResponse.data[0].tournName + '_レース結果一括登録用フォーマット.csv';
         props.csvDownloadProps.filename += '_レース結果一括登録用フォーマット.csv'; //ファイル名修正 20240412
         // Todo: レース情報を取得してCSVに変換する処理を実装
         // csvContent = header + '\n' + raceResponse.data.map((row) => Object.values(row).join(',')).join('\n');
         csvContent = header + '\n';
+        for (let index = 0; index < response.data.result.length; index++) {
+          csvContent += response.data.result[index].tourn_id + ','; //大会ID
+          if (response.data.tournResult.tournTypeName == '公式') {
+            csvContent += response.data.tournResult.entrysystem_tourn_id + ','; //エントリー大会ID
+          } else {
+            csvContent += ','; //エントリー大会ID
+          }
+          csvContent += response.data.tournResult.tourn_name + ','; //大会名
+          csvContent += ','; //選手ID
+          csvContent += ','; //選手名
+          csvContent += response.data.result[index].race_id + ','; //レースID
+          if (response.data.tournResult.tournTypeName == '公式') {
+            csvContent += response.data.tournResult.entrysystem_tourn_id + ','; //エントリー大会ID
+          } else {
+            csvContent += ','; //エントリーレースID
+          }
+          csvContent += response.data.result[index].race_number + ','; //レースNo.
+          csvContent += response.data.result[index].race_name + ','; //レース名
+          csvContent += response.data.result[index].race_class_id + ','; //レース区分ID
+          if (response.data.result[index].race_class_id == 999) {
+            csvContent += response.data.result[index].t_races_race_class_name + ','; //レース区分名
+          } else {
+            csvContent += response.data.result[index].race_class_name + ','; //レース区分名
+          }
+
+          csvContent += ','; //団体ID
+          csvContent += ','; //エントリー団体ID
+          csvContent += ','; //団体名
+          csvContent += ','; //クルー名
+          csvContent += response.data.result[index].by_group + ','; //組別
+          csvContent += response.data.result[index].event_id + ','; //種目ID
+          csvContent += response.data.result[index].event_name + ','; //種目名
+          csvContent += response.data.result[index].range + ','; //距離
+          csvContent += ','; //順位
+          csvContent += ','; //500mlapタイム
+          csvContent += ','; //1000mlapタイム
+          csvContent += ','; //1500mlapタイム
+          csvContent += ','; //2000mlapタイム
+          csvContent += ','; //最終タイム
+          csvContent += ','; //ストロークレート（平均）
+          csvContent += ','; //500mストロークレート
+          csvContent += ','; //1000mストロークレート
+          csvContent += ','; //1500mストロークレート
+          csvContent += ','; //2000mストロークレート
+          csvContent += ','; //心拍数（平均）
+          csvContent += ','; //500m心拍数
+          csvContent += ','; //1000m心拍数
+          csvContent += ','; //1500m心拍数
+          csvContent += ','; //2000m心拍数
+          csvContent += ','; //公式／非公式
+          csvContent += ','; //立ち合い有無
+          csvContent += ','; //エルゴ体重
+          csvContent += ','; //選手身長
+          csvContent += ','; //選手体重
+          csvContent += ','; //シート番号ID
+          csvContent += ','; //シート番号
+          csvContent += ','; //出漕結果記録名
+          csvContent += ','; //発艇日時
+          csvContent += ','; //天候
+          csvContent += ','; //2000m地点風速
+          csvContent += ','; //2000m地点風向
+          csvContent += ','; //1000m地点風速
+          csvContent += ','; //1000m地点風向
+          if (index != response.data.result.length - 1) {
+            csvContent += '\n'; //備考 ※最終行は改行なし
+          }
+        }
       }
     } catch (error) {
       alert('APIの呼び出しに失敗しました。:' + error);
