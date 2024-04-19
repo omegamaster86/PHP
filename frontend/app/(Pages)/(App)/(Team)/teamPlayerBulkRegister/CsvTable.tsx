@@ -156,10 +156,22 @@ const CsvTable = ({
                 {row.mailaddress}
               </CustomTd>
               <CustomTd textType={isResultError(row.result) ? 'error' : 'secondary'}>
-                {row.teamId}
+                <Link
+                  href={row.teamId ? `/teamRef?orgId=${row.teamId}` : ``}
+                  className='text-primary-500'
+                  target='_blank'
+                >
+                  {row.teamId}
+                </Link>
               </CustomTd>
               <CustomTd textType={isResultError(row.result) ? 'error' : 'secondary'}>
-                {row.teamName}
+                <Link
+                  href={row.teamId ? `/teamRef?orgId=${row.teamId}` : ``}
+                  className='text-primary-500'
+                  target='_blank'
+                >
+                  {row.teamName}
+                </Link>
               </CustomTd>
               <CustomTd textType={isResultError(row.result) ? 'error' : 'secondary'}>
                 {row.birthPlace}
