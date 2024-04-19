@@ -209,6 +209,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           }
           csvContent += response.data.tournResult.tourn_name + ','; //大会名
           csvContent += ','; //選手ID
+          csvContent += ','; //JARA選手コード
           csvContent += ','; //選手名
           csvContent += response.data.result[index].race_id + ','; //レースID
           if (response.data.tournResult.tournTypeName == '公式') {
