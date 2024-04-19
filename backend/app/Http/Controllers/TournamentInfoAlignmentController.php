@@ -1134,7 +1134,8 @@ class TournamentInfoAlignmentController extends Controller
                     }
                     //公式のとき
                     else {
-                        $replaceString = $this->generateConditionStringOfOfficialRaceRecordCount($target_row, $tournament_condition_array);
+                        // $replaceString = $this->generateConditionStringOfOfficialRaceRecordCount($target_row, $tournament_condition_array);
+                        $replaceString = $this->generateCondStrOfOfficialRaceRecCnt($target_row, $tournament_condition_array); //試作中 20240419
                         $race_count = $t_raceResultRecord->getTargetOfficialRaceCount($tournament_condition_array, $replaceString);
                     }
                     Log::debug($race_count);
@@ -1148,7 +1149,8 @@ class TournamentInfoAlignmentController extends Controller
                             //非公式のレースデータを取得
                             $race_data = $t_raceResultRecord->getTargetUnofficialRace($tournament_condition_array);
                         } else {
-                            $replace_string = $this->generateConditionStringOfOfficialRaceRecordCount($target_row, $tournament_condition_array);
+                            // $replace_string = $this->generateConditionStringOfOfficialRaceRecordCount($target_row, $tournament_condition_array);
+                            $replace_string = $this->generateCondStrOfOfficialRaceRecCnt($target_row, $tournament_condition_array); //試作中 20240419
                             //公式のレースデータを取得
                             $race_data = $t_raceResultRecord->getTargetOfficialRace($tournament_condition_array, $replace_string);
                         }
@@ -1396,6 +1398,41 @@ class TournamentInfoAlignmentController extends Controller
         } else {
             $condition .= "and rrr.`jara_player_id` = :jara_player_id\r\n";
             $value_array['jara_player_id'] = $target_row['jaraPlayerId'];
+        }
+        return $condition;
+    }
+
+    // 公式大会のレース結果数を取得するための条件文を生成する 20240419
+    // 必須入力チェックは全てOKを前提
+    private function generateCondStrOfOfficialRaceRecCnt($target_row, &$value_array)
+    {
+        $condition = "";
+        // エントリーシステムの大会IDが未入力の場合、大会IDをセット
+        if (isset($target_row['entrysystemTournId'])) {
+            $condition .= "and rrr.`entrysystem_tourn_id` = :entrysystem_tourn_id\r\n";
+            $value_array['entrysystem_tourn_id'] = $target_row['entrysystemTournId'];
+        } else {
+            $condition .= "and rrr.`tourn_id` = :tourn_id\r\n";
+            $value_array['tourn_id'] = $target_row['tournId'];
+        }
+
+        // エントリーシステムのレースIDが未入力の場合、レースIDをセット
+        if (isset($target_row['entrysystemRaceId'])) {
+            $condition .= "and rrr.`entrysystem_race_id` = :entrysystem_race_id\r\n";
+            $value_array['race_id'] = $target_row['entrysystemRaceId'];
+
+        } else {
+            $condition .= "and rrr.`race_id` = :race_id\r\n";
+            $value_array['entrysystem_race_id'] = $target_row['raceId'];
+        }
+
+        // JARA選手コードが未入力の場合、選手IDをセット
+        if (isset($target_row['jaraPlayerId'])) {
+            $condition .= "and rrr.`jara_player_id` = :jara_player_id\r\n";
+            $value_array['jara_player_id'] = $target_row['jaraPlayerId'];
+        } else {
+            $condition .= "and rrr.`player_id` = :player_id\r\n";
+            $value_array['player_id'] = $target_row['userId'];  // userId は、選手ID
         }
         return $condition;
     }

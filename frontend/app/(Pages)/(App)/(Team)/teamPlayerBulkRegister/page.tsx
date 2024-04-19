@@ -264,10 +264,10 @@ export default function TeamPlayerBulkRegister() {
     //　半角英数字：^[0-9a-zA-Z]*$
     //　記号：^[-,_]*$
     //　最大文字数：32文字（全半角区別なし）
-    const plaerNameRegex = /^[ぁ-んァ-ヶｱ-ﾝﾞﾟ一-龠0-9a-zA-Z-,_]{1,32}$/;
+    // const plaerNameRegex = /^[ぁ-んァ-ヶｱ-ﾝﾞﾟ一-龠0-9a-zA-Z-,_]{1,32}$/;
     // メールアドレスの形式
-    const maidAddressRegex =
-      /^[A-Za-z0-9]{1}[A-Za-z0-9_.-]*@{1}[A-Za-z0-9_.-]{1,}\.[A-Za-z0-9]{1,}$/;
+    // const maidAddressRegex =
+    //   /^[A-Za-z0-9]{1}[A-Za-z0-9_.-]*@{1}[A-Za-z0-9_.-]{1,}\.[A-Za-z0-9]{1,}$/;
 
     if (row[3] === '' || row[3] === undefined || row[3] === null) {
       return '無効データ（メールアドレス未設定）';
