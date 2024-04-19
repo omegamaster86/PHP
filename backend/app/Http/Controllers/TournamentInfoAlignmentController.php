@@ -89,16 +89,16 @@ class TournamentInfoAlignmentController extends Controller
         $user_type = Auth::user()->user_type;
         //ログインユーザーの種別が団体管理者のみの場合、
         //ログインユーザーの所属団体が主催した大会だけを表示する
-        if($user_type == '00001001'
+        if (
+            $user_type == '00001001'
             || $user_type == '00001011'
             || $user_type == '00001101'
-            || $user_type == '00001111')
-        {
-            $tournaments = $t_tournaments->getTournamentsFromEntryYearAndUserId($event_start_year,Auth::user()->user_id);
+            || $user_type == '00001111'
+        ) {
+            $tournaments = $t_tournaments->getTournamentsFromEntryYearAndUserId($event_start_year, Auth::user()->user_id);
         }
         //そうでなければ開催年に該当する大会を表示する
-        else
-        {
+        else {
             $tournaments = $t_tournaments->getTournamentsFromEntryYear($event_start_year);
         }
         //Log::debug(sprintf("tournamentEntryYearSearch end."));
@@ -404,7 +404,7 @@ class TournamentInfoAlignmentController extends Controller
             //団体情報
             $organizations = $t_organizations->getOrganizations();
             //選手情報
-            $players = $t_players->getPlayers();            
+            $players = $t_players->getPlayers();
             //チェック結果
             for ($rowIndex = 0; $rowIndex < count($reqData['csvDataList']); $rowIndex++) {
                 $checkResult = true;
@@ -469,9 +469,7 @@ class TournamentInfoAlignmentController extends Controller
                     //レースNo.
                     if (isset($target_row['raceNumber'])) {
                         $this->checkInteger($target_row['raceNumber'], 3, $checkResult, $target_row['raceNumberError']);
-                    }
-                    else
-                    {
+                    } else {
                         $checkResult = false;
                         $target_row['raceNumberError'] = true;
                     }
@@ -494,13 +492,13 @@ class TournamentInfoAlignmentController extends Controller
                     if (!(isset($target_row['orgId']))) {
                         $checkResult = false;
                         $target_row['orgIdError'] = true;
-                    } 
+                    }
                 }
                 //公式
                 else {
                     //大会IDかエントリー大会IDのどちらかが入力されていることを確認
                     //どちらも入力されていなかったら両項目をエラーとする
-                    
+
                     if (!(isset($target_row['tournId']) || isset($target_row['entrysystemTournId']))) {
                         $checkResult = false;
                         $target_row['tournIdError'] = true;
@@ -513,7 +511,7 @@ class TournamentInfoAlignmentController extends Controller
                     // エントリー大会ID
                     if (isset($target_row['entrysystemTournId'])) {
                         $this->checkInteger($target_row['entrysystemTournId'], 8, $checkResult, $target_row['entrysystemTournIdError']);
-                    } 
+                    }
                     // else {
                     //     $checkResult = false;
                     //     $target_row['entrysystemTournIdError'] = true;
@@ -544,7 +542,7 @@ class TournamentInfoAlignmentController extends Controller
                             $checkResult = false;
                             $target_row['jaraPlayerIdError'] = true;
                         }
-                    } 
+                    }
                     // else {
                     //     $checkResult = false;
                     //     $target_row['jaraPlayerIdError'] = true;
@@ -581,9 +579,7 @@ class TournamentInfoAlignmentController extends Controller
                     //レース名
                     if (isset($target_row['raceName'])) {
                         $this->checkWithinByte($target_row['raceName'], 255, $checkResult, $target_row['raceNameError']);
-                    }
-                    else
-                    {
+                    } else {
                         $checkResult = false;
                         $target_row['raceNameError'] = true;
                     }
@@ -613,7 +609,7 @@ class TournamentInfoAlignmentController extends Controller
                     if (!(isset($target_row['orgName']))) {
                         $checkResult = false;
                         $target_row['orgNameError'] = true;
-                    } 
+                    }
                 }
                 //公式・非公式で区別しない項目
                 // 団体ID
@@ -836,12 +832,12 @@ class TournamentInfoAlignmentController extends Controller
                                 $is_tournament_exists = true;
                                 break;
                             }
-                        } elseif(!isset($target_row['entrysystemTournId']) && isset($target_row['tournId'])) {
+                        } elseif (!isset($target_row['entrysystemTournId']) && isset($target_row['tournId'])) {
                             if ($tourn->tourn_id == $target_row['tournId']) {
                                 $is_tournament_exists = true;
                                 break;
                             }
-                        } elseif(isset($target_row['entrysystemTournId']) && !isset($target_row['tournId'])) {
+                        } elseif (isset($target_row['entrysystemTournId']) && !isset($target_row['tournId'])) {
                             if ($tourn->entrysystem_tourn_id == $target_row['entrysystemTournId']) {
                                 $is_tournament_exists = true;
                                 break;
@@ -876,12 +872,11 @@ class TournamentInfoAlignmentController extends Controller
                             ) {
                                 //レースIDとエントリーシステムのレースIDが入力されていたら両方の一致確認
                                 //いずれかが入力されていたらそれだけを一致確認
-                                if(
+                                if (
                                     (isset($target_row['raceId']) && isset($target_row['entrysystemRaceId']) && $race->race_id == $target_row['raceId'] && $race->entrysystem_race_id == $target_row['entrysystemRaceId'])
                                     || (!isset($target_row['raceId']) && isset($target_row['entrysystemRaceId']) && $race->entrysystem_race_id == $target_row['entrysystemRaceId'])
                                     || (isset($target_row['raceId']) && !isset($target_row['entrysystemRaceId']) && $race->race_id == $target_row['raceId'])
-                                )
-                                {
+                                ) {
                                     $is_race_exists = true;
                                 }
                             }
@@ -897,12 +892,11 @@ class TournamentInfoAlignmentController extends Controller
                             ) {
                                 //レースIDとエントリーシステムのレースIDが入力されていたら両方の一致確認
                                 //いずれかが入力されていたらそれだけを一致確認
-                                if(
+                                if (
                                     (isset($target_row['raceId']) && isset($target_row['entrysystemRaceId']) && $race->race_id == $target_row['raceId'] && $race->entrysystem_race_id == $target_row['entrysystemRaceId'])
                                     || (!isset($target_row['raceId']) && isset($target_row['entrysystemRaceId']) && $race->entrysystem_race_id == $target_row['entrysystemRaceId'])
                                     || (isset($target_row['raceId']) && !isset($target_row['entrysystemRaceId']) && $race->race_id == $target_row['raceId'])
-                                )
-                                {
+                                ) {
                                     $is_race_exists = true;
                                 }
                             }
@@ -918,12 +912,11 @@ class TournamentInfoAlignmentController extends Controller
                             ) {
                                 //レースIDとエントリーシステムのレースIDが入力されていたら両方の一致確認
                                 //いずれかが入力されていたらそれだけを一致確認
-                                if(
+                                if (
                                     (isset($target_row['raceId']) && isset($target_row['entrysystemRaceId']) && $race->race_id == $target_row['raceId'] && $race->entrysystem_race_id == $target_row['entrysystemRaceId'])
                                     || (!isset($target_row['raceId']) && isset($target_row['entrysystemRaceId']) && $race->entrysystem_race_id == $target_row['entrysystemRaceId'])
                                     || (isset($target_row['raceId']) && !isset($target_row['entrysystemRaceId']) && $race->race_id == $target_row['raceId'])
-                                )
-                                {
+                                ) {
                                     $is_race_exists = true;
                                 }
                             }
@@ -936,12 +929,11 @@ class TournamentInfoAlignmentController extends Controller
                             ) {
                                 //レースIDとエントリーシステムのレースIDが入力されていたら両方の一致確認
                                 //いずれかが入力されていたらそれだけを一致確認
-                                if(
+                                if (
                                     (isset($target_row['raceId']) && isset($target_row['entrysystemRaceId']) && $race->race_id == $target_row['raceId'] && $race->entrysystem_race_id == $target_row['entrysystemRaceId'])
                                     || (!isset($target_row['raceId']) && isset($target_row['entrysystemRaceId']) && $race->entrysystem_race_id == $target_row['entrysystemRaceId'])
                                     || (isset($target_row['raceId']) && !isset($target_row['entrysystemRaceId']) && $race->race_id == $target_row['raceId'])
-                                )
-                                {
+                                ) {
                                     $is_race_exists = true;
                                 }
                             }
@@ -1071,11 +1063,9 @@ class TournamentInfoAlignmentController extends Controller
             //Log::debug($reqData);
             Log::debug(sprintf("sendTournamentResultCsvData end"));
             return response()->json(['result' => $reqData]); //DBの結果を返す
-        }
-        catch (\Throwable $e)
-        {
-            Log::debug('Line:'.$e->getLine().' message:'.$e->getMessage());
-            return response()->json(['result' => $e->getMessage()],403); //DBの結果を返す
+        } catch (\Throwable $e) {
+            Log::debug('Line:' . $e->getLine() . ' message:' . $e->getMessage());
+            return response()->json(['result' => $e->getMessage()], 403); //DBの結果を返す
         }
     }
 
@@ -1420,11 +1410,10 @@ class TournamentInfoAlignmentController extends Controller
         // エントリーシステムのレースIDが未入力の場合、レースIDをセット
         if (isset($target_row['entrysystemRaceId'])) {
             $condition .= "and rrr.`entrysystem_race_id` = :entrysystem_race_id\r\n";
-            $value_array['race_id'] = $target_row['entrysystemRaceId'];
-
+            $value_array['entrysystem_race_id'] = $target_row['entrysystemRaceId'];
         } else {
             $condition .= "and rrr.`race_id` = :race_id\r\n";
-            $value_array['entrysystem_race_id'] = $target_row['raceId'];
+            $value_array['race_id'] = $target_row['raceId'];
         }
 
         // JARA選手コードが未入力の場合、選手IDをセット
