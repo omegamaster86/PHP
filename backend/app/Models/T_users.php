@@ -242,6 +242,7 @@ class T_users extends Authenticatable
     //メールアドレスを条件にユーザー情報を取得する
     public function getUserDataFromMailAddress($mailaddress)
     {
+        DB::enableQueryLog(); //SQLの実行ログを表示 20240419
         $users = DB::select('select 
                             `user_id`, 
                             `user_name`, 
