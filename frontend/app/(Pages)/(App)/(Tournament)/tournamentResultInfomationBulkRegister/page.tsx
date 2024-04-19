@@ -343,6 +343,16 @@ export default function TournamentResultInfomationBulkRegister() {
             eventYear: tournamentResponse.data.result.event_start_date,
             tournName: tournamentResponse.data.result.tourn_name,
           }));
+          // 大会IDを入力して大会情報が取得できた場合、csvフォーマット出力用に値をセットする 20240419
+          setCsvDownloadProps((prevProps) => ({
+            ...prevProps,
+            filename: tournamentResponse.data.result.tourn_name,
+            formData: {
+              tournId: tournamentResponse.data.result.tourn_id,
+              eventYear: tournamentResponse.data.result.event_start_date,
+              tournName: tournamentResponse.data.result.tourn_name,
+            },
+          }));
           // setDisplayFlg(false);
           setTournIdActivFlag(true); //true:変更できない false:変更できる
           setTournStartYearActivFlag(true); //true:変更できない false:変更できる
