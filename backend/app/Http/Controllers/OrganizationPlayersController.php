@@ -261,7 +261,7 @@ class OrganizationPlayersController extends Controller
         $rowData['residence'] = $player_data->residenceCountryName.$player_data->residencePrefectureName;
         $rowData['checked'] = $checked;
 
-        Log::debug($rowData);
+        // Log::debug($rowData);
 
         Log::debug("assignRowData End.");
     }
@@ -431,7 +431,7 @@ class OrganizationPlayersController extends Controller
         return response()->json(['result' => $players]);
     }
 
-    //団体一括 読み込むボタン押下 20240301
+    //団体一括 読み込むボタン押下 20240419
     public function sendOrgCsvData(Request $request,
                                     T_organizations $t_organizations,
                                         T_players $t_players,
@@ -453,10 +453,10 @@ class OrganizationPlayersController extends Controller
             $player_name = $reqData[$rowIndex]["playerName"];
 
             //取り込み可能かをチェックする
-            //入力組み合わせ①
+            //入力組み合わせ１
             if (isset($user_id) && isset($player_id) && isset($jara_player_code))
             {
-                Log::debug("入力組み合わせ①");
+                Log::debug("入力組み合わせ１");
                 //ユーザーID、選手ID、JARA選手コードが全て入力されているとき
                 //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
                 //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
@@ -519,10 +519,10 @@ class OrganizationPlayersController extends Controller
                     }
                 }
             }
-            //入力組み合わせ②
+            //入力組み合わせ２
             elseif (isset($user_id) && isset($player_id) && !isset($jara_player_code))
             {
-                Log::debug("入力組み合わせ②");
+                Log::debug("入力組み合わせ２");
                 //ユーザーID、選手IDが全て入力されているとき
                 //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
                 //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
@@ -576,10 +576,10 @@ class OrganizationPlayersController extends Controller
                     }
                 }
             }
-            //入力組み合わせ③
+            //入力組み合わせ３
             elseif (isset($user_id) && !isset($player_id) && isset($jara_player_code))
             {
-                Log::debug("入力組み合わせ③");
+                Log::debug("入力組み合わせ３");
                 //ユーザーID、JARA選手コードが全て入力されているとき
                 //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
                 //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
@@ -633,10 +633,10 @@ class OrganizationPlayersController extends Controller
                     }
                 }
             }
-            //入力組み合わせ④
+            //入力組み合わせ４
             elseif (isset($user_id) && !isset($player_id) && !isset($jara_player_code))
             {
-                Log::debug("入力組み合わせ④");
+                Log::debug("入力組み合わせ４");
                 //ユーザーIDだけが入力されているとき
                 //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
                 //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
@@ -707,10 +707,10 @@ class OrganizationPlayersController extends Controller
                     $rowData['checked'] = false;
                 }
             }
-            //入力組み合わせ⑤
+            //入力組み合わせ５
             elseif (!isset($user_id) && isset($player_id) && isset($jara_player_code))
             {
-                Log::debug("入力組み合わせ⑤");
+                Log::debug("入力組み合わせ５");
                 //選手ID、JARA選手コードが全て入力されているとき
                 //選手データが登録されているか確認
                 $player_data = $t_players->getPlayer($player_id);
@@ -774,10 +774,10 @@ class OrganizationPlayersController extends Controller
                     }
                 }
             }
-            //入力組み合わせ⑥
+            //入力組み合わせ６
             elseif (!isset($user_id) && isset($player_id) && !isset($jara_player_code))
             {
-                Log::debug("入力組み合わせ⑥");
+                Log::debug("入力組み合わせ６");
                 //選手IDだけが入力されているとき
                 //選手データが登録されているか確認
                 $player_data = $t_players->getPlayer($player_id);                
@@ -834,10 +834,10 @@ class OrganizationPlayersController extends Controller
                     }
                 }
             }
-            //入力組み合わせ⑦
+            //入力組み合わせ７
             elseif (!isset($user_id) && !isset($player_id) && isset($jara_player_code))
             {
-                Log::debug("入力組み合わせ⑦");
+                Log::debug("入力組み合わせ７");
                 //JARA選手コードだけが入力されているとき
                 $player_data = $t_players->getPlayerFromJaraPlayerId($jara_player_code);
                 //Log::debug($player_data);
@@ -894,10 +894,10 @@ class OrganizationPlayersController extends Controller
                     }
                 }
             }
-            //入力組み合わせ⑧
+            //入力組み合わせ８
             else
             {
-                Log::debug("入力組み合わせ⑧");
+                Log::debug("入力組み合わせ８");
                 //ユーザーID、選手ID、JARA選手コードのいずれも入力されていないとき                        
                 //ファイルに記載されている「メールアドレス」で、「ユーザーテーブル」を検索
                 $user_data = $t_users->getUserDataFromMailAddress($mail_address);
@@ -905,11 +905,13 @@ class OrganizationPlayersController extends Controller
                 if (empty($user_data))
                 {
                     //Log::debug("ユーザー情報が登録されていない場合");
-                    //ユーザー情報が登録されていない場合
-                    $reqData[$rowIndex]['result'] = "ユーザー未登録";
-                    $reqData[$rowIndex]['playerName'] = $player_name;
-                    $reqData[$rowIndex]['mailaddress'] = $mail_address;
-                    $reqData[$rowIndex]['checked'] = false;
+                    //フロント側のバリデーション結果が「登録可能」でユーザー情報が登録されていない場合、ユーザ未登録データとしてマッピング出来るようにする 20240419
+                    if($reqData[$rowIndex]['result'] == '登録可能'){
+                        $reqData[$rowIndex]['result'] = "ユーザー未登録";
+                        $reqData[$rowIndex]['playerName'] = $player_name;
+                        $reqData[$rowIndex]['mailaddress'] = $mail_address;
+                        $reqData[$rowIndex]['checked'] = false;
+                    }
                 }
                 else
                 {
