@@ -1047,7 +1047,8 @@ class TournamentInfoAlignmentController extends Controller
                     //公式大会の場合
                     elseif ($is_target_tournament_official == 1) {
                         Log::debug("公式大会の場合");
-                        $replaceString = $this->generateConditionStringOfOfficialRaceRecordCount($target_row, $tournament_condition_array);
+                        // $replaceString = $this->generateConditionStringOfOfficialRaceRecordCount($target_row, $tournament_condition_array);
+                        $replaceString = $this->generateCondStrOfOfficialRaceRecCnt($target_row, $tournament_condition_array); //試作中 20240419
                         $target_race_count = $t_raceResultRecord->getTargetOfficialRaceCount($tournament_condition_array, $replaceString);
                     }
                     //一致するレース結果データがあった場合
