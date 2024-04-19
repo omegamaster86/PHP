@@ -435,41 +435,72 @@ export default function TournamentEntryBulkRegister() {
   const sendCsvData = async () => {
     try {
       var array = csvFileData?.content.map((row, rowIndex) => {
+        //必須入力チェック 20240419
+        const tournIdError = checkMaxInt(row[0], 100000) || checkRequired(row[0]);
+        const eventIdError = checkMaxInt(row[2], 1000) || checkRequired(row[2]);
+        const raceTypeIdError = checkMaxInt(row[4], 1000) || checkRequired(row[4]);
+        const raceIdError = checkMaxInt(row[6], 100000000) || checkRequired(row[6]);
+        const byGroupError = checkStringLegnth(row[8], 255) || checkRequired(row[8]);
+        const raceNumberError = checkMaxInt(row[9], 1000) || checkRequired(row[9]);
+        const orgIdError = checkMaxInt(row[11], 10000) || checkRequired(row[11]);
+        const orgNameError = checkStringLegnth(row[12], 255) || checkRequired(row[12]);
+        const crewNameError = checkStringLegnth(row[13], 255) || checkRequired(row[13]);
+        const mSheetNumberError = checkMaxInt(row[14], 100) || checkRequired(row[14]);
+        const sheetNameError = checkStringLegnth(row[15], 255) || checkRequired(row[15]);
+        const userIdError = checkMaxInt(row[16], 10000000) || checkRequired(row[16]);
+        const playerNameError = checkStringLegnth(row[17], 100) || checkRequired(row[17]);
+
+        //必須入力項目のいずれかがエラーの場合エラーとする
+        const error =
+          tournIdError ||
+          userIdError ||
+          playerNameError ||
+          raceIdError ||
+          raceNumberError ||
+          raceTypeIdError ||
+          orgIdError ||
+          orgNameError ||
+          crewNameError ||
+          byGroupError ||
+          eventIdError ||
+          mSheetNumberError ||
+          sheetNameError;
+
         return {
           id: rowIndex,
           checked: false,
-          loadingResult: '',
+          loadingResult: error ? '未入力項目あり' : '',
           tournId: row[0],
-          tournIdError: false,
+          tournIdError: tournIdError,
           tournName: row[1],
           eventId: row[2],
-          eventIdError: false,
+          eventIdError: eventIdError,
           eventName: row[3],
           raceTypeId: row[4],
-          raceTypeIdError: false,
+          raceTypeIdError: raceTypeIdError,
           raceTypeName: row[5],
           raceId: row[6],
-          raceIdError: false,
+          raceIdError: raceIdError,
           raceName: row[7],
           byGroup: row[8],
-          byGroupError: false,
+          byGroupError: byGroupError,
           raceNumber: row[9],
-          raceNumberError: false,
+          raceNumberError: raceNumberError,
           startDatetime: row[10],
           orgId: row[11],
-          orgIdError: false,
+          orgIdError: orgIdError,
           orgName: row[12],
-          orgNameError: false,
+          orgNameError: orgNameError,
           crewName: row[13],
-          crewNameError: false,
+          crewNameError: crewNameError,
           mSheetNumber: row[14],
-          mSheetNumberError: false,
+          mSheetNumberError: mSheetNumberError,
           sheetName: row[15],
-          sheetNameError: false,
+          sheetNameError: sheetNameError,
           userId: row[16],
-          userIdError: false,
+          userIdError: userIdError,
           playerName: row[17],
-          playerNameError: false,
+          playerNameError: playerNameError,
         };
       });
       var element = array as CsvData[];

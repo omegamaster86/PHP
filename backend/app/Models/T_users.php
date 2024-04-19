@@ -252,6 +252,7 @@ class T_users extends Authenticatable
                             and `delete_flag` = 0
                             and `mailaddress` = ?'
                             ,[$mailaddress]);
+        Log::debug(DB::getQueryLog()); //SQLの実行ログを表示 20240419
         return $users;
     }
 
