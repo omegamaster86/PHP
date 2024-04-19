@@ -233,11 +233,32 @@ export default function TeamPlayerBulkRegister() {
   }, []);
 
   /**
+   * メールアドレス形式チェックの関数
+   * @param value チェックする値
+   * @returns true: エラーあり, false: エラーなし
+   **/
+  const validateEmailFormat = (value: string) => {
+    if (value === '') return false;
+    // メールアドレスの形式かどうかを判定する
+    // メールアドレスの形式の時、falseを返す
+    const emailRegex = new RegExp('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$');
+    return !emailRegex.test(value);
+  };
+
+  //選手名の形式チェック関数
+  const validatePlayerName = (value: string) => {
+    // 氏名の形式(全半角文字50文字以内であることを確認)かどうかを判定する
+    // 氏名の形式の時、falseを返す
+    return !/^[a-zA-Z0-9０-９ぁ-んァ-ヶー一-龠ａ-ｚＡ-Ｚ]+$/g.test(value) || value.length > 50;
+  };
+
+  /**
    * CSV行に対しバリデーションを実行する関数
    * @param row
    * @returns
    */
   const handleResult = async (row: string[]) => {
+    console.log(row[3], ' sss ', row[4]);
     // 選手名の形式
     //　日本語：^[ぁ-んァ-ヶｱ-ﾝﾞﾟ一-龠]*$
     //　半角英数字：^[0-9a-zA-Z]*$
@@ -248,23 +269,25 @@ export default function TeamPlayerBulkRegister() {
     const maidAddressRegex =
       /^[A-Za-z0-9]{1}[A-Za-z0-9_.-]*@{1}[A-Za-z0-9_.-]{1,}\.[A-Za-z0-9]{1,}$/;
 
-    if (row[4] === '' || row[4] === undefined) {
+    if (row[3] === '' || row[3] === undefined || row[3] === null) {
       return '無効データ（メールアドレス未設定）';
-    } else if (row[4].match(maidAddressRegex) === null) {
+      // } else if (row[4].match(maidAddressRegex) === null) {
+    } else if (validateEmailFormat(row[3])) {
       return '無効データ（メールアドレス不正）';
-    } else if (row[3] === '' || row[3] === undefined) {
+    } else if (row[4] === '' || row[4] === undefined || row[4] === null) {
       return '無効データ（選手名未設定）';
-    } else if (row[3].match(plaerNameRegex) === null) {
+      // } else if (row[3].match(plaerNameRegex) === null) {
+    } else if (validatePlayerName(row[4])) {
       return '無効データ（選手名不正）';
     } else if (row.length !== 5) return '無効データ';
 
     setDisplayLinkButtonFlg(true);
-    return '連携';
+    return '登録可能';
   };
 
   const getJsonRow = async (row: string[], index: number) => {
     const expectedColumnCount = 5; // 期待する列数
-    console.log(row.length);
+    // console.log(row.length);
     if (row.length !== expectedColumnCount) {
       return {
         id: index,
@@ -283,8 +306,7 @@ export default function TeamPlayerBulkRegister() {
     } else {
       return {
         id: index,
-        // checked: handleCheckboxValue(await handleResult(row)),
-        checked: true,
+        checked: handleCheckboxValue(await handleResult(row)),
         result: await handleResult(row),
         // userId: row[0],
         // playerId: row[1],
@@ -349,11 +371,7 @@ export default function TeamPlayerBulkRegister() {
   };
 
   const handleCheckboxValue = (result: string) => {
-    return result.startsWith('無効データ')
-      ? false
-      : result === 'ユーザー未登録' || result === '選手未登録のため選手登録後、所属選手登録を実施'
-        ? false
-        : true;
+    return result.startsWith('無効データ') ? false : result != '登録可能' ? false : true;
   };
   return (
     validFlag && (
@@ -447,6 +465,7 @@ export default function TeamPlayerBulkRegister() {
                         .slice(isHeaderMatch ? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
                         .map((row, index) => getJsonRow(row, index)),
                     ).then((results) => {
+                      console.log(results);
                       var resList = results as any;
                       resList.forEach((element: any) => {
                         element['birthCountryId'] = null;
