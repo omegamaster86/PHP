@@ -1239,7 +1239,7 @@ export default function TournamentResultInfomationBulkRegister() {
               <div className='flex flex-col gap-[20px]'>
                 {/* 読み込みボタンの表示 */}
                 <div className='flex flex-col gap-[4px] items-center'>
-                  <p className='mb-1'>
+                  <p className='mb-1 text-systemErrorText'>
                     【読み込み方法】
                     <br />
                     ［準備］
@@ -1335,7 +1335,7 @@ export default function TournamentResultInfomationBulkRegister() {
             </div>
             {/* 読み込み結果の表示 */}
             <div className='flex flex-col items-center'>
-              <p className='mb-1'>
+              <p className='mb-1 text-systemErrorText'>
                 【登録方法】
                 <br />
                 ①　「レース結果一覧」にCSVフォーマットを読み込んだ結果が表示されます。

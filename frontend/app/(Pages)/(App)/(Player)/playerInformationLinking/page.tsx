@@ -295,7 +295,7 @@ export default function PlayerInformationLinking() {
                 {/* 読み込みボタンの表示 */}
                 <div className='flex flex-col gap-[4px] items-center'>
                   {/* 表示する文言はDPT様にて実装予定 */}
-                  <p className='mb-1'>CSVファイルの読み込みについての説明文を記載</p>
+                  <p className='mb-1 text-systemErrorText'>CSVファイルの読み込みについての説明文を記載</p>
                   <CustomButton
                     buttonType='primary'
                     onClick={() => {
@@ -313,7 +313,7 @@ export default function PlayerInformationLinking() {
             {/* 読み込み結果の表示 */}
             <div className='flex flex-col items-center'>
               {!activationFlg && (
-                <p className='mb-1'>読み込んだデータの連携方法についての説明文を記載</p>
+                <p className='mb-1 text-systemErrorText'>読み込んだデータの連携方法についての説明文を記載</p>
               )}
               <CsvTable
                 content={csvData}
