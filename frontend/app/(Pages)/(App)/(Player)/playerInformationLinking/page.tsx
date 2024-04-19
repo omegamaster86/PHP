@@ -295,7 +295,27 @@ export default function PlayerInformationLinking() {
                 {/* 読み込みボタンの表示 */}
                 <div className='flex flex-col gap-[4px] items-center'>
                   {/* 表示する文言はDPT様にて実装予定 */}
-                  <p className='mb-1 text-systemErrorText'>CSVファイルの読み込みについての説明文を記載</p>
+                  <p className='mb-1 text-systemErrorText'>
+                    【読み込み方法】
+                    <br />
+                    ［準備］
+                    <br />
+                    JARAエントリーシステムから本システムに連携したい選手情報を定型フォーマットに記載してください。
+                    <br />
+                    ※定型フォーマットが必要な場合は、「CSVフォーマット出力」をクリックしてください。
+                    <br />
+                    定型フォーマットがダウンロードされます。
+                    <br />
+                    ［読み込む］
+                    <br />
+                    ①　「読み込みCSVファイル」に、読み込ませるCSVファイルをドラッグ＆ドロップしてください。
+                    <br />
+                    ※「参照」からファイルを指定することもできます。
+                    <br />
+                    ②　「読み込み」をクリックすると、CSVフォーマットの内容を読み込み、内容を画面下部のレース結果一覧に表示します。
+                    <br />
+                    ※この状態では、まだシステムに選手情報は登録されません
+                  </p>
                   <CustomButton
                     buttonType='primary'
                     onClick={() => {
@@ -313,7 +333,24 @@ export default function PlayerInformationLinking() {
             {/* 読み込み結果の表示 */}
             <div className='flex flex-col items-center'>
               {!activationFlg && (
-                <p className='mb-1 text-systemErrorText'>読み込んだデータの連携方法についての説明文を記載</p>
+                <p className='mb-1 text-systemErrorText'>
+                  【登録方法】
+                  <br />
+                  ①　「読み込み結果」にCSVフォーマットを読み込んだ結果が表示されます。
+                  <br />
+                  ※連携の意味
+                  <br />
+                  連携可能：本システムに登録されている選手と連携可能なデータです。
+                  <br />
+                  連携待ち：当該選手が本システムに登録されていないため、
+                  <br />
+                  連携不可：本システムに取り込めないデータです、エラー内容を確認してください。
+                  <br />
+                  ②　読み込むデータの「選択」にチェックを入れてください。※「全選択」で、エラー以外の全てのデータを選択状態にできます。
+                  <br />
+                  ③　「登録」をクリックすると「読み込み結果」にて「選択」にチェックが入っているデータを対象に、本システムに登録されます。
+                  <br />
+                </p>
               )}
               <CsvTable
                 content={csvData}
