@@ -171,13 +171,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
       console.log(response.data.tournResult); //公式 非公式
       console.log(response.data.result);
 
-      //仮対応　20240319
-      const raceResponse = {
-        data: {
-          length: 0,
-        },
-      };
-
       const header = props.csvDownloadProps.header.map((h) => h.label).join(',');
 
       if (response.data.result.length == 0) {

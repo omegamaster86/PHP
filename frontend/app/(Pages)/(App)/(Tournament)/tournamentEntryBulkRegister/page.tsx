@@ -614,6 +614,7 @@ export default function TournamentEntryBulkRegister() {
                       tournName: (newValue as TournamentResponse)?.name,
                     },
                   }));
+                  console.log(formData.tournName, formData.tournId);
                 }}
                 renderOption={(props: any, option: TournamentResponse) => {
                   return (
