@@ -1173,7 +1173,7 @@ export default function TournamentResultInfomationBulkRegister() {
                   { id: formData.tournId, name: formData.tournName, year: formData.eventYear } || ''
                 }
                 onChange={(e: ChangeEvent<{}>, newValue) => {
-                  console.log(formData.tournName, newValue);
+                  console.log(newValue);
                   handleInputChange('tournName', newValue ? (newValue as TournResponse).name : '');
                   handleInputChange(
                     'tournId',
@@ -1184,12 +1184,12 @@ export default function TournamentResultInfomationBulkRegister() {
                     ...prevProps,
                     filename: (newValue as TournResponse)?.name,
                     formData: {
-                      tournId: formData.tournId,
+                      tournId: newValue ? (newValue as TournResponse).id : formData.tournId,
                       eventYear: formData.eventYear,
                       tournName: (newValue as TournResponse)?.name,
                     },
                   }));
-                  console.log(formData.tournName);
+                  console.log(formData.tournName, formData.tournId);
                   if (newValue == null) {
                     setTournIdActivFlag(false); //大会名のリストが空の場合、大会IDの入力を可能にする
                     setTournStartYearActivFlag(false); //大会名のリストが空の場合、開催年の入力を可能にする
