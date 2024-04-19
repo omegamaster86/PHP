@@ -452,6 +452,11 @@ class OrganizationPlayersController extends Controller
             $mail_address = $reqData[$rowIndex]["mailaddress"];
             $player_name = $reqData[$rowIndex]["playerName"];
 
+            //フロント側のバリデーション結果が「無効データ」だった場合、判定処理は行わない 20240419
+            if($reqData[$rowIndex]['result'] != '登録可能'){
+                continue;
+            }
+
             //取り込み可能かをチェックする
             //入力組み合わせ１
             if (isset($user_id) && isset($player_id) && isset($jara_player_code))
