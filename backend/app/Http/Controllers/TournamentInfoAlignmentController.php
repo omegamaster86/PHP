@@ -393,7 +393,7 @@ class TournamentInfoAlignmentController extends Controller
     ) {
         Log::debug(sprintf("sendTournamentResultCsvData start"));
         $reqData = $request->all();
-        Log::debug($reqData);
+        // Log::debug($reqData);
         try {
             //フロントエンドで入力された大会ID
             $input_tourn_id = $reqData['tournData']['tournId'];
@@ -473,7 +473,7 @@ class TournamentInfoAlignmentController extends Controller
                     else
                     {
                         $checkResult = false;
-                        $target_row['raceNumber'] = true;
+                        $target_row['raceNumberError'] = true;
                     }
                     //レース名
                     if (isset($target_row['raceName'])) {
@@ -527,8 +527,8 @@ class TournamentInfoAlignmentController extends Controller
                     //     $target_row['tournNameError'] = true;
                     // }
                     //選手IDかJARA選手コードのいずれかが入力されていることを確認する
-                    //どちらも入力されていなかったら両項目をエラーとする
-                    if (!(isset($player_id) || isset($target_row['jaraPlayerId']))) {
+                    //どちらも入力されていない場合、両項目をエラーとする
+                    if (!isset($player_id) && !isset($target_row['jaraPlayerId'])) {
                         $checkResult = false;
                         $target_row['userIdError'] = true;
                         $target_row['jaraPlayerIdError'] = true;
@@ -540,8 +540,7 @@ class TournamentInfoAlignmentController extends Controller
                     // JARA選手コード
                     //jara_player_codeにデータがあれば判定する
                     if (isset($target_row['jaraPlayerId'])) {
-                        if (!(is_numeric($target_row['jaraPlayerId'])
-                            && mb_strlen($target_row['jaraPlayerId']) == 12)) {
+                        if (!(is_numeric($target_row['jaraPlayerId']) && mb_strlen($target_row['jaraPlayerId']) == 12)) {
                             $checkResult = false;
                             $target_row['jaraPlayerIdError'] = true;
                         }
@@ -593,7 +592,7 @@ class TournamentInfoAlignmentController extends Controller
                         $this->checkInteger($target_row['raceTypeId'], 3, $checkResult, $target_row['raceTypeIdError']);
                     } else {
                         $checkResult = false;
-                        $target_row['raceTypeId'] = true;
+                        $target_row['raceTypeIdError'] = true;
                     }
                     //レース区分名
                     if (isset($target_row['raceTypeName'])) {
@@ -604,7 +603,7 @@ class TournamentInfoAlignmentController extends Controller
                     }
                     //団体IDとエントリー団体コードのいずれかが入力されていることを確認
                     //どちらも入力されていなかったら両項目をエラーとする
-                    if (!(isset($target_row['orgId']) || isset($target_row['entrysystemOrgId']))) {
+                    if (!isset($target_row['orgId']) && !isset($target_row['entrysystemOrgId'])) {
                         Log::debug("団体IDとエントリー団体コードのいずれかが入力されていない");
                         $checkResult = false;
                         $target_row['orgIdError'] = true;
@@ -673,15 +672,14 @@ class TournamentInfoAlignmentController extends Controller
                     $target_row['rankError'] = true;
                 }
 
-                //ラップタイムは500m～最終までの何れかの入力が必須
-                    
+                //ラップタイムは500m～最終までの何れかの入力が必須（すべて空の場合、エラーとする） 20240417
                 if (!(isset($target_row['fiveHundredmLaptime']) || isset($target_row['tenHundredmLaptime']) || isset($target_row['fifteenHundredmLaptime']) || isset($target_row['twentyHundredmLaptime']) || isset($target_row['finalTime']))) {
                     $checkResult = false;
-                    $target_row['fiveHundredmLaptime'] = true;
-                    $target_row['tenHundredmLaptime'] = true;
-                    $target_row['fifteenHundredmLaptime'] = true;
-                    $target_row['twentyHundredmLaptime'] = true;
-                    $target_row['finalTime'] = true;
+                    $target_row['fiveHundredmLaptimeError'] = true;
+                    $target_row['tenHundredmLaptimeError'] = true;
+                    $target_row['fifteenHundredmLaptimeError'] = true;
+                    $target_row['twentyHundredmLaptimeError'] = true;
+                    $target_row['finalTimeError'] = true;
                 }
 
                 // 500mlapタイム
@@ -771,7 +769,7 @@ class TournamentInfoAlignmentController extends Controller
                 }
                 // シート番号ID
                 if (isset($target_row['mSheetNumber'])) {
-                    $this->checkInteger($target_row['mSheetNumber'], 3, $checkResult, $target_row['mSheetNumberError']);
+                    $this->checkInteger($target_row['mSheetNumber'], 2, $checkResult, $target_row['mSheetNumberError']);
                 } else {
                     $checkResult = false;
                     $target_row['mSheetNumberError'] = true;
@@ -789,7 +787,14 @@ class TournamentInfoAlignmentController extends Controller
                 }
                 // 発艇日時
                 if (isset($target_row['startDatetime'])) {
-                    if (!$target_row['startDatetime'] === date('YYYY/MM/DD H:i', strtotime($target_row['startDatetime']))) {
+                    // Log::debug($target_row['startDatetime']);
+                    // Log::debug(date('Y/m/d H:i', strtotime($target_row['startDatetime'])));
+                    //文字数が16文字(YYYY/MM/DD hh:mm)でない場合、エラーとする
+                    if (mb_strlen($target_row['startDatetime']) != 16) {
+                        $checkResult = false;
+                        $target_row['startDatetimeError'] = true;
+                    }
+                    if (!($target_row['startDatetime'] === date('Y/m/d H:i', strtotime($target_row['startDatetime'])))) {
                         $checkResult = false;
                         $target_row['startDatetimeError'] = true;
                     }
@@ -1030,7 +1035,7 @@ class TournamentInfoAlignmentController extends Controller
                 if ($checkResult) {
                     //新規データか更新データかのチェック
                     $tournament_condition_array = array();   //レース結果データ検索のための条件値を格納する配列
-                    $target_race_count;
+                    $target_race_count = null;
                     //非公式大会の場合
                     if ($is_target_tournament_official == 0) {
                         Log::debug("非公式大会の場合");
@@ -1138,7 +1143,7 @@ class TournamentInfoAlignmentController extends Controller
                         Log::debug("update execute.");
                         //更新登録
                         //DBから取得したレース結果情報を格納する変数
-                        $race_data;
+                        $race_data = null;
                         if ($is_official == '0') {
                             //非公式のレースデータを取得
                             $race_data = $t_raceResultRecord->getTargetUnofficialRace($tournament_condition_array);

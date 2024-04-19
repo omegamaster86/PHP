@@ -56,13 +56,9 @@ const CsvTable = ({
                   className='w-[100px]'
                   onClick={() => {
                     content?.map((data) =>
-                      !checkLoadingResult(data)
-                        ? handleInputChange(data.id, 'checked', true)
-                        : null,
+                      checkLoadingResult(data) ? null : handleInputChange(data.id, 'checked', true),
                     );
-                    content?.some((row) => checkLoadingResult(row))
-                      ? displayRegisterButton(false)
-                      : displayRegisterButton(true);
+                    content?.some((row) => !checkLoadingResult(row)) && displayRegisterButton(true);
                   }}
                 >
                   全選択
@@ -104,7 +100,13 @@ const CsvTable = ({
                   readonly={checkLoadingResult(row)}
                   onChange={(e) => {
                     handleInputChange(row.id, 'checked', e.target.checked);
-                    e.target.checked ? displayRegisterButton(true) : null;
+                    // e.target.checked ? displayRegisterButton(true) : null;
+                    var data = content.map((row) => row.checked.toString());
+                    data[rowIndex] = e.target.checked.toString();
+                    // console.log(data);
+                    data.includes('true')
+                      ? displayRegisterButton(true)
+                      : displayRegisterButton(false);
                   }}
                 ></CustomCheckbox>
               </CustomTd>
@@ -184,12 +186,6 @@ const CsvTable = ({
                 className={checkError(row.raceTypeNameError)}
               >
                 {row.raceTypeName}
-              </CustomTd>
-              <CustomTd
-                textType={checkLoadingResult(row) ? 'error' : ''}
-                className={checkError(row.tournIdError)}
-              >
-                {row.tournId}
               </CustomTd>
               <CustomTd
                 textType={checkLoadingResult(row) ? 'error' : ''}

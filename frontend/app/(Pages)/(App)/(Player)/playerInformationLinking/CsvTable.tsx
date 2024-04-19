@@ -27,14 +27,16 @@ const CsvTable = ({
   handleInputChange, // チェックボックスの変更時の処理
   displayLinkButton, // 連携ボタンの表示を切り替える関数
   activationFlg, // 各種ボタンの表示を切り替える関数
+  visibilityFlg, //CSVテーブルの表示切替フラグ 20240412
 }: {
   content: CsvTableRow[];
   header: string[];
   handleInputChange: (rowId: number, name: string, value: string | boolean) => void;
   displayLinkButton: (flg: boolean) => void;
   activationFlg: boolean;
+  visibilityFlg: boolean; //データが0件の場合でもヘッダーは表示させるためのフラグ 20240412
 }) => {
-  return content.length === 0 ? (
+  return visibilityFlg == false ? (
     <div className='text-primaryText'></div>
   ) : (
     <div className='overflow-auto h-[331px] w-[1000px]'>

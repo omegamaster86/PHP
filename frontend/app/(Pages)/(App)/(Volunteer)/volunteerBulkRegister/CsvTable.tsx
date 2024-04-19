@@ -294,7 +294,11 @@ const CsvTable = ({
                       // チェックボックスの変更時の処理
                       handleInputChange(row.id, 'checked', e.target.checked);
                       // チェックボックスの変更により連携ボタンの表示を切り替える
-                      e.target.checked ? displayLinkButton(true) : null;
+                      // e.target.checked ? displayLinkButton(true) : null;
+                      var data = content.map((row) => row.checked.toString());
+                      data[rowIndex] = e.target.checked.toString();
+                      // console.log(data);
+                      data.includes('true') ? displayLinkButton(true) : displayLinkButton(false);
                     }}
                   ></CustomCheckbox>
                 </CustomTd>
@@ -331,9 +335,11 @@ const CsvTable = ({
                 >
                   {/* 日本の場合のみ都道府県を表示 */}
                   {row.residenceCountryId.value}
-                  {row.residenceCountryId.value === '日本国 （jpn）'
+                  {/* 不具合修正の一環で都道府県も一律表示するように変更 20240412 */}
+                  {row.residencePrefectureId.value}
+                  {/* {row.residenceCountryId.value === '日本国 （jpn）'
                     ? row.residencePrefectureId.value
-                    : ''}
+                    : ''} */}
                 </CustomTd>
                 <CustomTd
                   textType={isResultError(row.result) ? 'error' : 'secondary'}

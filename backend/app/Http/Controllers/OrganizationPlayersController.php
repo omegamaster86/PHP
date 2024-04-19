@@ -114,6 +114,90 @@ class OrganizationPlayersController extends Controller
         return $condition;
     }
 
+    //団体に登録する選手検索画面用の条件を生成する 20240417
+    private function generatePlayersSearchCondition($searchInfo, &$conditionValue)
+    {
+        $condition = "";
+        //JARA選手コード
+        if (isset($searchInfo['jaraPlayerId'])) {
+            $condition .= "and tp.jara_player_id = :jara_player_id\r\n";
+            $conditionValue['jara_player_id'] = $searchInfo['jaraPlayerId'];
+        }
+        //選手ID
+        if (isset($searchInfo['playerId'])) {
+            $condition .= "and tp.player_id = :player_id\r\n";
+            $conditionValue['player_id'] = $searchInfo['playerId'];
+        }
+        //選手名
+        if (isset($searchInfo['playerName'])) {
+            $condition .= "and tp.player_name LIKE :player_name\r\n";
+            $conditionValue['player_name'] = "%" . $searchInfo['playerName'] . "%";
+        }
+        //性別
+        if (isset($searchInfo['sex'])) {
+            $condition .= "and tp.sex_id = :sex\r\n";
+            $conditionValue['sex'] = $searchInfo['sexId'];
+        }
+        //出身地（都道府県）
+        if (isset($searchInfo['birthPrefectureId'])) {
+            $condition .= "and tp.birth_prefecture =:birth_prefecture\r\n";
+            $conditionValue['birth_prefecture'] = $searchInfo['birthPrefectureId'];
+        }
+        //居住地（都道府県）
+        if (isset($searchInfo['residencePrefectureId'])) {
+            $condition .= "and tp.residence_prefecture =:residence_prefecture\r\n";
+            $conditionValue['residence_prefecture'] = $searchInfo['residencePrefectureId'];
+        }
+        if (isset($searchInfo['sideInfo'])) {
+            //S(ストロークサイド)
+            if ($searchInfo['sideInfo']['S'] == true) {
+                $condition .= "and SUBSTRING(tp.`side_info`,8,1) = 1\r\n";
+            }
+            //B(バウサイド)
+            if ($searchInfo['sideInfo']['B'] == true) {
+                $condition .= "and SUBSTRING(tp.`side_info`,7,1) = 1\r\n";
+            }
+            //X(スカルサイド)
+            if ($searchInfo['sideInfo']['X'] == true) {
+                $condition .= "and SUBSTRING(tp.`side_info`,6,1) = 1\r\n";
+            }
+            //C(コックスサイド)
+            if ($searchInfo['sideInfo']['C'] == true) {
+                $condition .= "and SUBSTRING(tp.`side_info`,5,1) = 1\r\n";
+            }
+        }
+        //団体ID
+        if (isset($searchInfo['orgId'])) {
+            $condition .= "and top.org_id = :org_id\r\n";
+            $conditionValue['org_id'] = $searchInfo['orgId'];
+        }
+        elseif (isset($searchInfo['org_id'])) {
+            $condition .= "and top.org_id = :org_id\r\n";
+            $conditionValue['org_id'] = $searchInfo['org_id'];
+        }
+        //エントリーシステムID
+        if (isset($searchInfo['entrysystemOrgId'])) {
+            $condition .= "and top.entrysystem_org_id =:entry_system_id\r\n";
+            $conditionValue['entry_system_id'] = $searchInfo['entrysystemOrgId'];
+        }
+        //団体名
+        if (isset($searchInfo['orgName'])) {
+            $condition .= "and top.org_name LIKE :org_name\r\n";
+            $conditionValue['org_name'] = "%" . $searchInfo['orgName'] . "%";
+        }
+        //出漕大会名
+        if (isset($searchInfo['raceEventName'])) {
+            $condition .= "and tr.tourn_name LIKE :tourn_name\r\n";
+            $conditionValue['tourn_name'] = "%" . $searchInfo['raceEventName'] . "%";
+        }
+        //出漕履歴情報
+        if (isset($searchInfo['eventId'])) {
+            $condition .= "and tr.event_id = :event_id\r\n";
+            $conditionValue['event_id'] = $searchInfo['eventId'];
+        }
+        return $condition;
+    }
+
     //団体所属選手一括登録画面を開く
     public function createOrganizationPlayerRegister(T_organizations $organizations)
     {
@@ -314,8 +398,10 @@ class OrganizationPlayersController extends Controller
         $searchInfo = $request->all();
         Log::debug($searchInfo);
         $searchValue = [];
-        $searchCondition = $this->generateOrganizationPlayersSearchCondition($searchInfo, $searchValue);
-        $players = $t_organization_players->getOrganizationPlayersFromCondition($searchCondition, $searchValue);
+        // $searchCondition = $this->generateOrganizationPlayersSearchCondition($searchInfo, $searchValue);
+        // $players = $t_organization_players->getOrganizationPlayersFromCondition($searchCondition, $searchValue);
+        $searchCondition = $this->generatePlayersSearchCondition($searchInfo, $searchValue);
+        $players = $t_organization_players->getOrgPlayersForAddPlayerSearch($searchCondition, $searchValue);
         for ($i = 0; $i < count($players); $i++) {
             $side_info = array();
             if ($players[$i]->side_S == 1) {

@@ -222,6 +222,35 @@ export default function VolunteerBulkRegister() {
   const [language, setLanguage] = useState<MasterData[]>([]);
   const [languageLevel, setLanguageLevel] = useState<MasterData[]>([]);
   const [visibilityFlg, setVisibilityFlg] = useState<boolean>(false); //CSVテーブルの表示切替フラグ 20240406
+  const [validFlag, setValidFlag] = useState(false); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
+
+  //ユーザIDに紐づいた情報の取得 20240418
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
+        await csrf();
+        const response = await axios.get('/getUserData');
+        console.log(response.data.result);
+        if (Object.keys(response.data.result).length > 0) {
+          const playerInf = await axios.get('/getIDsAssociatedWithUser');
+          if (
+            playerInf.data.result[0].is_administrator == 1 ||
+            playerInf.data.result[0].is_jara == 1
+          ) {
+            setValidFlag(true); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
+          } else {
+            console.log('ユーザ種別不正');
+            router.push('/tournamentSearch');
+          }
+        } else {
+          console.log('ユーザ情報なし');
+          router.push('/tournamentSearch');
+        }
+      } catch (error: any) {}
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const fetchMasterData = async () => {
@@ -416,11 +445,23 @@ export default function VolunteerBulkRegister() {
     return !/^[a-zA-Z0-9０-９ぁ-んァ-ヶー一-龠ａ-ｚＡ-Ｚ]+$/g.test(value) || value.length > 50;
   };
 
-  const validateCountryIsNotJapan = (key: string) => {
-    if (key === '' || key === undefined || key === null) return false;
-    // 居住国が日本=112の時のみ、居住都道府県の形式をチェックする
-    // 居住国が日本=112の時、falseを返す
-    return key !== '112';
+  // const validateCountryIsNotJapan = (key: string) => {
+  //   // console.log(key);
+  //   if (key === '' || key === undefined || key === null) return false;
+  //   // 居住国が日本=112の時のみ、居住都道府県の形式をチェックする
+  //   // 居住国が日本=112の時、falseを返す
+  //   return key !== '112';
+  // };
+  //居住地のバリデーションチェックで日本以外かつ都道府県ありをチェックできるように条件を修正 20240412
+  const validateCountryIsNotJapanAndPref = (cntKey: string, prefKey: string) => {
+    // console.log(cntKey,prefKey);
+    if (cntKey != '112' && prefKey != '') {
+      return true; //日本以外かつ都道府県あり
+    } else if (cntKey == '112' && (prefKey == '' || prefKey == undefined || prefKey == null)) {
+      return true; //日本かつ都道府県なし
+    } else {
+      return false;
+    }
   };
 
   /**
@@ -517,15 +558,24 @@ export default function VolunteerBulkRegister() {
               country.filter((item) => item.id === Number(row[4])).length !== 1,
         },
         // 必須項目
+        // residencePrefectureId: { //20240411
+        //   key: row[5],
+        //   value: prefecture.find((item) => item.id === Number(row[5]))?.name || row[5],
+        //   isError: validateCountryIsNotJapan(row[4])
+        //     ? false
+        //     : validateRequired(row[5])
+        //       ? true
+        //       : validateNumber(row[5], 2) ||
+        //         prefecture.filter((item) => item.id === Number(row[5])).length !== 1,
+        // },
         residencePrefectureId: {
           key: row[5],
           value: prefecture.find((item) => item.id === Number(row[5]))?.name || row[5],
-          isError: validateCountryIsNotJapan(row[4])
-            ? false
-            : validateRequired(row[5])
-              ? true
-              : validateNumber(row[5], 2) ||
-                prefecture.filter((item) => item.id === Number(row[5])).length !== 1,
+          isError: validateCountryIsNotJapanAndPref(row[4], row[5])
+            ? true
+            : validateNumber(row[5], 2) ||
+              (row[4] == '112' &&
+                prefecture.filter((item) => item.id === Number(row[5])).length !== 1),
         },
         mailaddress: {
           value: row[6],
@@ -718,12 +768,17 @@ export default function VolunteerBulkRegister() {
                 country.filter((item) => item.id === Number(row[4])).length !== 1) ||
             // 居住都道府県の形式かどうかを判定する
             // 居住国が日本=112の時のみ、居住都道府県の形式をチェックする
-            (validateCountryIsNotJapan(row[4])
-              ? false
-              : validateRequired(row[5])
-                ? true
-                : validateNumber(row[5], 2) ||
-                  prefecture.filter((item) => item.id === Number(row[5])).length !== 1) ||
+            // (validateCountryIsNotJapan(row[4])
+            //   ? false
+            //   : validateRequired(row[5])
+            //     ? true
+            //     : validateNumber(row[5], 2) ||
+            //       prefecture.filter((item) => item.id === Number(row[5])).length !== 1) ||
+            (validateCountryIsNotJapanAndPref(row[4], row[5])
+              ? true
+              : validateNumber(row[5], 2) ||
+                (row[4] == '112' &&
+                  prefecture.filter((item) => item.id === Number(row[5])).length !== 1)) ||
             // 性別の形式かどうかを判定する
             (validateRequired(row[3])
               ? true
@@ -873,6 +928,7 @@ export default function VolunteerBulkRegister() {
             return;
           }
         }
+        console.log(contentData);
         setCsvData(contentData as CsvData[]);
         setDialogDisplayFlg(true);
         setActivationFlg(false);
@@ -946,117 +1002,119 @@ export default function VolunteerBulkRegister() {
   } as CsvDownloadProps;
 
   return (
-    <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px] min-w-[900px]'>
-      <div className='relative flex flex-col justify-between w-full h-screen flex-wrap gap-[20px]'>
-        <CustomTitle displayBack>ボランティア一括登録</CustomTitle>
-        <ErrorBox errorText={errorMessage} />
-        <div className='flex flex-row justify-start'>
-          <CsvHandler
-            csvUploadProps={csvUploadProps}
-            csvDownloadProps={csvDownloadProps}
-            ref={fileUploaderRef}
-          ></CsvHandler>
-        </div>
-        {!activationFlg && (
-          <div className='flex flex-col gap-[20px]'>
-            {/* 読み込みボタンの表示 */}
-            <div className='flex flex-col gap-[4px] items-center'>
-              {/* 表示する文言はDPT様にて実装予定 */}
-              <p className='mb-1 text-systemErrorText'>
-                【読み込み方法】
-                <br />
-                [準備]
-                <br />
-                定型フォーマットにエントリー情報を入力してください。
-                <br />
-                ※定型フォーマットが必要な場合は、「CSVフォーマット出力」をクリックしてください。
-                <br />
-                定型フォーマットがダウンロードされます。
-                <br />
-                [読み込む]
-                <br />
-                ①「読み込みCSVファイル」に、読み込ませるCSVファイルをドラッグ＆ドロップしてください。
-                <br />
-                ※「参照」からファイルを指定することもできます。
-                <br />
-                ②「読み込む」をクリックすると、CSVフォーマットの内容を読み込み、内容を画面下部の読み込み結果に表示します。
-              </p>
-              <CustomButton
-                buttonType='primary'
-                onClick={() => {
-                  sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
-                }}
-              >
-                読み込む
-              </CustomButton>
-            </div>
+    validFlag && (
+      <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px] min-w-[900px]'>
+        <div className='relative flex flex-col justify-between w-full h-screen flex-wrap gap-[20px]'>
+          <CustomTitle displayBack>ボランティア一括登録</CustomTitle>
+          <ErrorBox errorText={errorMessage} />
+          <div className='flex flex-row justify-start'>
+            <CsvHandler
+              csvUploadProps={csvUploadProps}
+              csvDownloadProps={csvDownloadProps}
+              ref={fileUploaderRef}
+            ></CsvHandler>
           </div>
-        )}
-        {/* エラーメッセージの表示 */}
-        <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
-        {/* 読み込み結果の表示 */}
-        <div className='flex flex-col items-center'>
-          <p className='mb-1 text-systemErrorText'>
-            【登録方法】
-            <br />
-            ①「読み込み結果」にCSVフォーマットを読み込んだ結果が表示されます。
-            <br />
-            ②読み込むデータの「選択」にチェックを入れてください。
-            ※「全選択」で、全てのデータを選択状態にできます。
-            <br />
-            ③「登録」をクリックすると「読み込み結果」にて「選択」にチェックが入っているデータを対象に、
-            <br />
-            本システムに登録されます。
-            <br />
-            ※それまで登録されていたデータは全て削除され、読み込んだデータに置き換わります。
-          </p>
-          <CsvTable
-            content={csvData}
-            handleInputChange={handleInputChange}
-            displayLinkButton={displayLinkButton}
-            activationFlg={activationFlg}
-            visibilityFlg={visibilityFlg}
-          />
-        </div>
-        <div className='flex flex-row justify-center gap-[8px]'>
-          <CustomButton
-            buttonType='secondary'
-            disabled={activationFlg}
-            onClick={() => {
-              router.back();
-            }}
-          >
-            戻る
-          </CustomButton>
-          {displayLinkButtonFlg && (
+          {!activationFlg && (
+            <div className='flex flex-col gap-[20px]'>
+              {/* 読み込みボタンの表示 */}
+              <div className='flex flex-col gap-[4px] items-center'>
+                {/* 表示する文言はDPT様にて実装予定 */}
+                <p className='mb-1 text-systemErrorText'>
+                  【読み込み方法】
+                  <br />
+                  [準備]
+                  <br />
+                  定型フォーマットにエントリー情報を入力してください。
+                  <br />
+                  ※定型フォーマットが必要な場合は、「CSVフォーマット出力」をクリックしてください。
+                  <br />
+                  定型フォーマットがダウンロードされます。
+                  <br />
+                  [読み込む]
+                  <br />
+                  ①「読み込みCSVファイル」に、読み込ませるCSVファイルをドラッグ＆ドロップしてください。
+                  <br />
+                  ※「参照」からファイルを指定することもできます。
+                  <br />
+                  ②「読み込む」をクリックすると、CSVフォーマットの内容を読み込み、内容を画面下部の読み込み結果に表示します。
+                </p>
+                <CustomButton
+                  buttonType='primary'
+                  onClick={() => {
+                    sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
+                  }}
+                >
+                  読み込む
+                </CustomButton>
+              </div>
+            </div>
+          )}
+          {/* エラーメッセージの表示 */}
+          <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
+          {/* 読み込み結果の表示 */}
+          <div className='flex flex-col items-center'>
+            <p className='mb-1 text-systemErrorText'>
+              【登録方法】
+              <br />
+              ①「読み込み結果」にCSVフォーマットを読み込んだ結果が表示されます。
+              <br />
+              ②読み込むデータの「選択」にチェックを入れてください。
+              ※「全選択」で、全てのデータを選択状態にできます。
+              <br />
+              ③「登録」をクリックすると「読み込み結果」にて「選択」にチェックが入っているデータを対象に、
+              <br />
+              本システムに登録されます。
+              <br />
+              ※それまで登録されていたデータは全て削除され、読み込んだデータに置き換わります。
+            </p>
+            <CsvTable
+              content={csvData}
+              handleInputChange={handleInputChange}
+              displayLinkButton={displayLinkButton}
+              activationFlg={activationFlg}
+              visibilityFlg={visibilityFlg}
+            />
+          </div>
+          <div className='flex flex-row justify-center gap-[8px]'>
             <CustomButton
-              buttonType='primary'
+              buttonType='secondary'
               disabled={activationFlg}
-              onClick={async () => {
-                if (csvData.find((row) => row.checked)?.id === undefined) {
-                  window.confirm('1件以上選択してください。');
-                  return;
-                }
-                if (window.confirm('連携を実施しますか？')) {
-                  await registerCsvData(); //バックエンド側にデータを送信 20240307
-                  setActivationFlg(true);
-                  setCsvData([]),
-                    setCsvFileData({ content: [], isSet: false }),
-                    fileUploaderRef?.current?.clearFile(),
-                    window.confirm('連携を完了しました。')
-                      ? (setActivationFlg(false),
-                        setDialogDisplayFlg(false),
-                        setDisplayLinkButtonFlg(false))
-                      : null;
-                  setActivationFlg(false);
-                }
+              onClick={() => {
+                router.back();
               }}
             >
-              登録
+              戻る
             </CustomButton>
-          )}
+            {displayLinkButtonFlg && (
+              <CustomButton
+                buttonType='primary'
+                disabled={activationFlg}
+                onClick={async () => {
+                  if (csvData.find((row) => row.checked)?.id === undefined) {
+                    window.confirm('1件以上選択してください。');
+                    return;
+                  }
+                  if (window.confirm('連携を実施しますか？')) {
+                    await registerCsvData(); //バックエンド側にデータを送信 20240307
+                    setActivationFlg(true);
+                    setCsvData([]),
+                      setCsvFileData({ content: [], isSet: false }),
+                      fileUploaderRef?.current?.clearFile(),
+                      window.confirm('連携を完了しました。')
+                        ? (setActivationFlg(false),
+                          setDialogDisplayFlg(false),
+                          setDisplayLinkButtonFlg(false))
+                        : null;
+                    setActivationFlg(false);
+                  }
+                }}
+              >
+                登録
+              </CustomButton>
+            )}
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    )
   );
 }

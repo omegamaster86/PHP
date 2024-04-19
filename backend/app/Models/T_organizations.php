@@ -46,13 +46,13 @@ class T_organizations extends Model
                                     `jara_org_type`,
                                     case jmot.`org_type_id`
                                         when 0 then "任意"
-                                        when 1 then "正式"
+                                        when 1 then "正規"
                                     end as `jaraOrgTypeName`,
                                     `jara_org_reg_trail`,
                                     `pref_org_type`,
                                     case pmot.`org_type_id`
                                         when 0 then "任意"
-                                        when 1 then "正式"
+                                        when 1 then "正規"
                                     end as `prefOrgTypeName`,
                                     `pref_org_reg_trail`,
                                     case
@@ -319,13 +319,13 @@ class T_organizations extends Model
                         `jara_org_type`,
                         case jmot.org_type
                             when 0 then "任意"
-                            when 1 then "正式"
+                            when 1 then "正規"
                         end as `jaraOrgTypeName`,
                         `jara_org_reg_trail`,
                         `pref_org_type`,
                         case pmot.org_type
                             when 0 then "任意"
-                            when 1 then "正式"
+                            when 1 then "正規"
                         end as `prefOrgTypeName`,
                         `pref_org_reg_trail`,
                         case
@@ -391,13 +391,13 @@ class T_organizations extends Model
                                     `jara_org_type`,
                                     case jmot.org_type
                                         when 0 then "任意"
-                                        when 1 then "正式"
+                                        when 1 then "正規"
                                     end as `jaraOrgTypeName`,
                                     `jara_org_reg_trail`,
                                     `pref_org_type`,
                                     case pmot.org_type
                                         when 0 then "任意"
-                                        when 1 then "正式"
+                                        when 1 then "正規"
                                     end as `prefOrgTypeName`,
                                     `pref_org_reg_trail`,
                                     case
@@ -444,7 +444,7 @@ class T_organizations extends Model
         $organizations = DB::select("select distinct
                                     case
                                         when org.jara_org_type = 0 and org.pref_org_type = 0 then '任意'
-                                        else '正式'
+                                        else '正規'
                                         end as `teamTyp`
                                     ,org.entrysystem_org_id
                                     ,org.org_id
@@ -470,7 +470,7 @@ class T_organizations extends Model
         $organizations = DB::select("select distinct
                                     case
                                         when org.jara_org_type = 0 and org.pref_org_type = 0 then '任意'
-                                        else '正式'
+                                        else '正規'
                                         end as `teamTyp`
                                     ,org.entrysystem_org_id
                                     ,org.org_id
