@@ -105,7 +105,7 @@ class TournamentInfoAlignmentController extends Controller
         return response()->json(['result' => $tournaments]); //DBの結果を返す
     }
 
-    //大会エントリー一括登録 読み込むボタン押下 20240301
+    //大会エントリー一括登録 読み込むボタン押下 20240419
     public function sendTournamentEntryCsvData(
         Request $request,
         T_races $t_races,
@@ -121,6 +121,12 @@ class TournamentInfoAlignmentController extends Controller
         $input_tourn_id = $inputData['tournData']['tournId'];
         //$input_tourn_name = $inputData['tournData']['tournName'];
         for ($rowIndex = 1; $rowIndex < count($inputData['csvDataList']); $rowIndex++) {
+
+            //フロント側のバリデーション結果に未入力が存在する場合、以降の処理を実行しない 20240419
+            if($inputData['csvDataList'][$rowIndex]['loadingResult'] != ''){
+                continue;
+            }
+
             //レーステーブルからレース情報が1件見つかること
             $search_values = array();
             $search_values['tourn_id'] = $inputData['csvDataList'][$rowIndex]['tournId'];
