@@ -468,7 +468,7 @@ class OrganizationPlayersController extends Controller
                 $user_data = $t_users->getUserDataFromMailAddress($mail_address);
                 if (in_array($user_id, array_column($user_data, 'user_id')))
                 {
-                    $this->assignInvalidRowdata('無効データ（メールアドレス不正）', $reqData[$rowIndex]);
+                    $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
                     continue;
                 }
                 //選手データが登録されているか確認
@@ -534,7 +534,7 @@ class OrganizationPlayersController extends Controller
                 $user_data = $t_users->getUserDataFromMailAddress($mail_address);
                 if (in_array($user_id, array_column($user_data, 'user_id')))
                 {
-                    $this->assignInvalidRowdata('無効データ（メールアドレス不正）', $reqData[$rowIndex]);
+                    $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
                     continue;
                 }
                 //選手データが登録されているか確認
@@ -591,7 +591,7 @@ class OrganizationPlayersController extends Controller
                 $user_data = $t_users->getUserDataFromMailAddress($mail_address);
                 if (in_array($user_id, array_column($user_data, 'user_id')))
                 {
-                    $this->assignInvalidRowdata('無効データ（メールアドレス不正）', $reqData[$rowIndex]);
+                    $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
                     continue;
                 }
                 //JARA選手コードで選手データが登録されているかを確認
@@ -736,7 +736,7 @@ class OrganizationPlayersController extends Controller
                 $user_data = $t_users->getUserDataFromUserId($player_data[0]->{'user_id'});
                 if (in_array($mail_address, array_column($user_data, 'mailaddress')))
                 {
-                    $this->assignInvalidRowdata('無効データ（メールアドレス不正）', $reqData[$rowIndex]);
+                    $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
                     continue;
                 }
                 //「選手テーブル」.「JARA選手コード」とファイルに入力されている「JARA選手コード」が一致するか確認
@@ -802,7 +802,7 @@ class OrganizationPlayersController extends Controller
                 $user_data = $t_users->getUserDataFromUserId($player_data[0]->{'user_id'});
                 if (in_array($mail_address, array_column($user_data, 'mailaddress')))
                 {
-                    $this->assignInvalidRowdata('無効データ（メールアドレス不正）', $reqData[$rowIndex]);
+                    $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
                     continue;
                 }
                 //所属情報テーブルを取得
