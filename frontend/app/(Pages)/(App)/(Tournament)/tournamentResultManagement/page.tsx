@@ -284,6 +284,7 @@ export default function TournamentResultManagement() {
                       ) {
                         handleInputChange('tournName', '');
                         setMessageDisplay('visible');
+                        setTournamentList([]); //大会開催年が空欄の場合、大会名のリストを空にする 20240420
                       } else {
                         getTournamentList();
                         setMessageDisplay('hidden');
