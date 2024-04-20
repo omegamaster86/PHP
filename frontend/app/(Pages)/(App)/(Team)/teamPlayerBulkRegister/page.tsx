@@ -337,7 +337,7 @@ export default function TeamPlayerBulkRegister() {
         targetOrgData,
         csvDataList: row,
       };
-      if(targetOrgData.targetOrgId == '' || targetOrgData.targetOrgId == null){
+      if (targetOrgData.targetOrgId == '' || targetOrgData.targetOrgId == null) {
         window.alert('所属団体名を選択してください');
         setActivationFlg(false);
         return;

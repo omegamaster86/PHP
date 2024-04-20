@@ -270,7 +270,8 @@ export default function TournamentResultManagement() {
                 <InputLabel label='大会開催年（西暦）' required />
                 <div className='flex flex-row justify-start gap-[4px]'>
                   <CustomYearPicker
-                    placeHolder={new Date().toLocaleDateString('ja-JP').slice(0, 4)}
+                    // placeHolder={new Date().toLocaleDateString('ja-JP').slice(0, 4)}
+                    placeHolder={'YYYY'}
                     selectedDate={searchCond?.eventYear}
                     onChange={(date: Date) => {
                       handleInputChange('eventYear', date?.toLocaleDateString('ja-JP').slice(0, 4));
