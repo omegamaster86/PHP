@@ -976,16 +976,36 @@ class TournamentInfoAlignmentController extends Controller
                     //Log::debug("団体情報　チェック");
                     $is_organization_exists = false;
                     foreach ($organizations as $organization) {
-                        if (isset($target_row['entrysystemOrgId'])) {
+                        // if (isset($target_row['entrysystemOrgId'])) {
+                        //     if (
+                        //         $organization->org_id == $target_row['orgId']
+                        //         && $organization->entrysystem_org_id == $target_row['entrysystemOrgId']
+                        //     ) {
+                        //         $is_organization_exists = true;
+                        //         break;
+                        //     }
+                        // } else {
+                        //     if ($organization->org_id == $target_row['orgId']) {
+                        //         $is_organization_exists = true;
+                        //         break;
+                        //     }
+                        // }
+
+                        if (!isset($target_row['orgId'])) {                     // 団体IDが未入力の場合、エントリーシステムの団体IDで一致確認
+                            if ($organization->entrysystem_org_id == $target_row['entrysystemOrgId']){
+                                $is_organization_exists = true;
+                                break;
+                            }
+                        }else if (!isset($target_row['entrysystemOrgId'])) {    // エントリーシステムの団体IDが未入力の場合、団体IDで一致確認
+                            if ($organization->org_id == $target_row['orgId']) {
+                                $is_organization_exists = true;
+                                break;
+                            }
+                        }else{                                                  // 団体IDとエントリーシステムの団体IDともに入力の場合、両方で一致確認
                             if (
                                 $organization->org_id == $target_row['orgId']
                                 && $organization->entrysystem_org_id == $target_row['entrysystemOrgId']
                             ) {
-                                $is_organization_exists = true;
-                                break;
-                            }
-                        } else {
-                            if ($organization->org_id == $target_row['orgId']) {
                                 $is_organization_exists = true;
                                 break;
                             }
@@ -1005,7 +1025,32 @@ class TournamentInfoAlignmentController extends Controller
                     //Log::debug("選手情報　チェック");
                     $is_player_exists = false;
                     foreach ($players as $player) {
-                        if (isset($target_row['jaraPlayerId'])) {
+                        // if (isset($target_row['jaraPlayerId'])) {
+                        //     if (
+                        //         $player->player_id == $target_row['userId']
+                        //         && $player->jara_player_id == $target_row['jaraPlayerId']
+                        //     ) {
+                        //         $is_player_exists = true;
+                        //         break;
+                        //     }
+                        // } else {
+                        //     if ($player->player_id == $target_row['userId']) {
+                        //         $is_player_exists = true;
+                        //         break;
+                        //     }
+                        // }
+
+                        if (!isset($target_row['userId'])) {                     // 選手IDが未入力の場合、JARA選手コードで一致確認
+                            if ($player->jara_player_id == $target_row['jaraPlayerId']){
+                                $is_player_exists = true;
+                                break;
+                            }
+                        }else if (!isset($target_row['jaraPlayerId'])) {        // JARA選手コードが未入力の場合、選手IDで一致確認
+                            if ($player->player_id == $target_row['userId']) {
+                                $is_player_exists = true;
+                                break;
+                            }
+                        }else{                                                  // 選手IDとJARA選手コードともに入力の場合、両方で一致確認
                             if (
                                 $player->player_id == $target_row['userId']
                                 && $player->jara_player_id == $target_row['jaraPlayerId']
@@ -1013,12 +1058,8 @@ class TournamentInfoAlignmentController extends Controller
                                 $is_player_exists = true;
                                 break;
                             }
-                        } else {
-                            if ($player->player_id == $target_row['userId']) {
-                                $is_player_exists = true;
-                                break;
-                            }
                         }
+
                     }
                     if (!$is_player_exists) {
                         //Log::debug("選手情報不一致");
