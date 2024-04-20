@@ -431,7 +431,7 @@ class OrganizationPlayersController extends Controller
         return response()->json(['result' => $players]);
     }
 
-    //団体一括 読み込むボタン押下 20240419
+    //団体一括 読み込むボタン押下 20240420
     public function sendOrgCsvData(Request $request,
                                     T_organizations $t_organizations,
                                         T_players $t_players,
@@ -466,7 +466,7 @@ class OrganizationPlayersController extends Controller
                 //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
                 //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
                 $user_data = $t_users->getUserDataFromMailAddress($mail_address);
-                if (in_array($user_id, array_column($user_data, 'user_id')))
+                if (!in_array($user_id, array_column($user_data, 'user_id')))
                 {
                     $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
                     continue;
@@ -532,7 +532,7 @@ class OrganizationPlayersController extends Controller
                 //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
                 //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
                 $user_data = $t_users->getUserDataFromMailAddress($mail_address);
-                if (in_array($user_id, array_column($user_data, 'user_id')))
+                if (!in_array($user_id, array_column($user_data, 'user_id')))
                 {
                     $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
                     continue;
@@ -589,7 +589,7 @@ class OrganizationPlayersController extends Controller
                 //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
                 //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
                 $user_data = $t_users->getUserDataFromMailAddress($mail_address);
-                if (in_array($user_id, array_column($user_data, 'user_id')))
+                if (!in_array($user_id, array_column($user_data, 'user_id')))
                 {
                     $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
                     continue;
@@ -598,7 +598,7 @@ class OrganizationPlayersController extends Controller
                 $player_data = $t_players->getPlayerFromJaraPlayerId($jara_player_code);
                 if (empty($player_data))
                 {
-                    $this->assignInvalidRowdata('無効データ（無効選手ID）', $reqData[$rowIndex]);
+                    $this->assignInvalidRowdata('無効データ（未登録JARA選手コード）', $reqData[$rowIndex]);
                     continue;
                 }
                 //「選手テーブル」.「ユーザーID」とファイルに入力されている「ユーザーID」が一致するか確認
@@ -728,13 +728,13 @@ class OrganizationPlayersController extends Controller
                 //「選手テーブル」.「ユーザーID」に値が設定されているか確認
                 if (empty($player_data[0]->{'user_id'}))
                 {
-                    $this->assignInvalidRowdata('無効データ（無効選手ID）', $reqData[$rowIndex]);
+                    $this->assignInvalidRowdata('無効データ（無効選手）', $reqData[$rowIndex]);
                     continue;
                 }
                 //「選手テーブル」.「ユーザーID」と紐づく「ユーザーテーブル」.「メールアドレス」と
                 //ファイルに入力されている「メールアドレス」が一致するか確認
                 $user_data = $t_users->getUserDataFromUserId($player_data[0]->{'user_id'});
-                if (in_array($mail_address, array_column($user_data, 'mailaddress')))
+                if (!in_array($mail_address, array_column($user_data, 'mailaddress')))
                 {
                     $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
                     continue;
@@ -794,13 +794,13 @@ class OrganizationPlayersController extends Controller
                 //「選手テーブル」.「ユーザーID」に値が設定されているか確認
                 if (empty($player_data[0]->{'user_id'}))
                 {
-                    $this->assignInvalidRowdata('無効データ（無効選手ID）', $reqData[$rowIndex]);
+                    $this->assignInvalidRowdata('無効データ（無効選手）', $reqData[$rowIndex]);
                     continue;
                 }
                 //「選手テーブル」.「ユーザーID」と紐づく「ユーザーテーブル」.「メールアドレス」と
                 //ファイルに入力されている「メールアドレス」が一致するか確認
                 $user_data = $t_users->getUserDataFromUserId($player_data[0]->{'user_id'});
-                if (in_array($mail_address, array_column($user_data, 'mailaddress')))
+                if (!in_array($mail_address, array_column($user_data, 'mailaddress')))
                 {
                     $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
                     continue;

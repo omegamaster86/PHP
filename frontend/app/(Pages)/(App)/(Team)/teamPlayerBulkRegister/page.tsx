@@ -336,7 +336,7 @@ export default function TeamPlayerBulkRegister() {
       targetOrgData,
       csvDataList: row,
     };
-    console.log(sendData.csvDataList);
+    // console.log(sendData.csvDataList);
     try {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
@@ -473,7 +473,7 @@ export default function TeamPlayerBulkRegister() {
                         element['residenceCountryId'] = null;
                         element['residencePrefectureId'] = null;
                       });
-                      console.log(resList);
+                      // console.log(resList);
                       sendCsvData(resList); //バックエンド側のバリデーションチェックを行う為にデータを送信する 20240302
                       setDialogDisplayFlg(true); //2回目以降のcsv読み込みで確認ダイアログを表示させる 20240419
                     });
