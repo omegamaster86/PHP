@@ -491,7 +491,8 @@ class OrganizationPlayersController extends Controller
                     continue;
                 }
                 //所属情報テーブルを取得
-                $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);                
+                $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);
+                $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
                 //団体テーブルから団体名を取得
                 $target_organization = $t_organizations->getOrganization($input_org_id);
                 //選手テーブルから出身地と居住地を取得
@@ -520,7 +521,8 @@ class OrganizationPlayersController extends Controller
                     {
                         //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在しない場合");
                         $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_id, 
-                        $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        // $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        $jara_player_code, $player_name, $mail_address, $org_player_info[0]->org_id, $affiliation_org->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
                     }
                 }
             }
@@ -552,6 +554,7 @@ class OrganizationPlayersController extends Controller
                 }
                 //所属情報テーブルを取得
                 $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);
+                $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
                 //団体テーブルから団体名を取得
                 $target_organization = $t_organizations->getOrganization($input_org_id);
                 //選手テーブルから出身地と居住地を取得
@@ -577,7 +580,8 @@ class OrganizationPlayersController extends Controller
                     else
                     {
                         $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_id, 
-                        $player_data[0]->{'jara_player_id'}, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        // $player_data[0]->{'jara_player_id'}, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        $player_data[0]->{'jara_player_id'}, $player_name, $mail_address, $org_player_info[0]->org_id, $affiliation_org->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
                     }
                 }
             }
@@ -608,7 +612,8 @@ class OrganizationPlayersController extends Controller
                     continue;
                 }
                 //所属情報テーブルを取得
-                $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromJaraPlayerId($jara_player_code);                
+                $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromJaraPlayerId($jara_player_code);
+                $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420             
                 //団体テーブルから団体名を取得
                 $target_organization = $t_organizations->getOrganization($input_org_id);
                 //所属情報を取得できなかった場合
@@ -634,7 +639,8 @@ class OrganizationPlayersController extends Controller
                     {
                         //Log::debug("入力値が団体所属情報のorg_id列に存在しない");
                         $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_data[0]->{'player_id'}, 
-                        $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        // $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        $jara_player_code, $player_name, $mail_address, $org_player_info[0]->org_id, $affiliation_org->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
                     }
                 }
             }
@@ -670,6 +676,7 @@ class OrganizationPlayersController extends Controller
                         //選手登録されている場合
                         //所属情報テーブルを取得
                         $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_data->player_id);
+                        $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
                         //Log::debug($org_player_info);
                         if(empty($org_player_info))
                         {
@@ -696,7 +703,8 @@ class OrganizationPlayersController extends Controller
                                 //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在しない場合");
                                 //入力値が団体所属情報のorg_id列に存在しない
                                 $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, null, 
-                                null, $player_name, $mail_address, $org_player_org_id, $target_organization->org_name, $player_data, $reqData[$rowIndex]['checked']);
+                                // null, $player_name, $mail_address, $org_player_org_id, $target_organization->org_name, $player_data, $reqData[$rowIndex]['checked']);
+                                null, $player_name, $mail_address, $org_player_info[0]->org_id, $affiliation_org->org_name, $player_data, $reqData[$rowIndex]['checked']);
                             }
                         }
                     }
@@ -747,6 +755,7 @@ class OrganizationPlayersController extends Controller
                 }
                 //所属情報テーブルを取得
                 $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);
+                $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
                 //団体テーブルから団体名を取得
                 $target_organization = $t_organizations->getOrganization($input_org_id);
                 //選手テーブルから出身地と居住地を取得
@@ -775,7 +784,8 @@ class OrganizationPlayersController extends Controller
                     {
                         //Log::debug("入力値が団体所属情報のorg_id列に存在しない");
                         $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_id, 
-                        $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        // $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        $jara_player_code, $player_name, $mail_address, $org_player_info[0]->org_id, $affiliation_org->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
                     }
                 }
             }
@@ -807,6 +817,7 @@ class OrganizationPlayersController extends Controller
                 }
                 //所属情報テーブルを取得
                 $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);
+                $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
                 //団体テーブルから団体名を取得
                 $target_organization = $t_organizations->getOrganization($input_org_id);
                 //選手テーブルから出身地と居住地を取得
@@ -835,7 +846,8 @@ class OrganizationPlayersController extends Controller
                     {
                         //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在しない場合");
                         $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_id, 
-                        $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        // $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        $jara_player_code, $player_name, $mail_address, $org_player_info[0]->org_id, $affiliation_org->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
                     }
                 }
             }
@@ -867,6 +879,7 @@ class OrganizationPlayersController extends Controller
                 }
                 //所属情報テーブルを取得
                 $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_data[0]->{'player_id'});
+                $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
                 //団体テーブルから団体名を取得
                 $target_organization = $t_organizations->getOrganization($input_org_id);
                 //選手テーブルから出身地と居住地を取得
@@ -895,7 +908,8 @@ class OrganizationPlayersController extends Controller
                     {
                         //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在しない場合");
                         $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_data[0]->{'player_id'}, 
-                        $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        // $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        $jara_player_code, $player_name, $mail_address, $org_player_info[0]->org_id, $affiliation_org->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
                     }
                 }
             }
@@ -948,6 +962,7 @@ class OrganizationPlayersController extends Controller
                             //所属情報テーブルを取得
                             //Log::debug("player_id = ".$player_data->player_id);
                             $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_data->player_id);
+                            $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
                             //団体テーブルから団体名を取得
                             $target_organization = $t_organizations->getOrganization($input_org_id);
                             //Log::debug($org_player_info);
@@ -975,7 +990,8 @@ class OrganizationPlayersController extends Controller
                                     //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在しない場合");
                                     //一致しなかった場合
                                     $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_data[0]->{'user_id'}, $player_data->player_id, 
-                                    $player_data->jara_player_id, $player_data->player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data, $reqData[$rowIndex]['checked']);
+                                    // $player_data->jara_player_id, $player_data->player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data, $reqData[$rowIndex]['checked']);
+                                    $player_data->jara_player_id, $player_data->player_name, $mail_address, $org_player_info[0]->org_id, $affiliation_org->org_name, $player_data, $reqData[$rowIndex]['checked']);
                                 }
                             }
                         }
