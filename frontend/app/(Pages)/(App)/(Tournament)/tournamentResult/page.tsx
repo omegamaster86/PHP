@@ -2062,7 +2062,7 @@ export default function TournamentResult() {
       {/* レース結果情報 */}
       {raceResultRecords.map((item, index) => (
         <div className='flex flex-col gap-[20px] border border-solid p-[20px]' key={index}>
-          <InputLabel label={'レース結果情報' + (index + 1)} />
+          <InputLabel label={'レース結果情報' + (raceResultRecords.length - index)} />
           <ErrorBox errorText={item.errorText ? [item.errorText] : []} />
           <div className='flex flex-row justify-between'>
             {mode === 'update' && (
