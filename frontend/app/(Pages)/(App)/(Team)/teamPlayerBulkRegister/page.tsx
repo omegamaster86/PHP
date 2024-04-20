@@ -332,12 +332,16 @@ export default function TeamPlayerBulkRegister() {
 
   //読み込むボタン押下時 20240302
   const sendCsvData = async (row: any[]) => {
-    const sendData = {
-      targetOrgData,
-      csvDataList: row,
-    };
-    // console.log(sendData.csvDataList);
     try {
+      const sendData = {
+        targetOrgData,
+        csvDataList: row,
+      };
+      if(targetOrgData.targetOrgId == '' || targetOrgData.targetOrgId == null){
+        window.alert('所属団体名を選択してください');
+        setActivationFlg(false);
+        return;
+      }
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       const response = await axios.post('/sendOrgCsvData', sendData);
