@@ -2831,6 +2831,9 @@ export default function TournamentResult() {
                   );
                   console.log(raceResponse);
                   // router.push('/tournamentResult?mode=confirm&prevMode=update');
+                  if (!raceResponse.data?.errMessage) {
+                    router.push('/tournamentResultRef?raceId=' + raceResultRecordResponse.race_id);
+                  }
                 } else if (prevMode == 'update') {
                   //登録・更新確認画面からバックエンド側にデータを送る 20240405
                   const sendData = {
@@ -2846,7 +2849,9 @@ export default function TournamentResult() {
                   );
                   console.log(raceResponse);
                   // router.push('/tournamentResult?mode=confirm&prevMode=update');
-                  router.push('/tournamentResultRef?raceId=' + raceResultRecordResponse.race_id);
+                  if (!raceResponse.data?.errMessage) {
+                    router.push('/tournamentResultRef?raceId=' + raceResultRecordResponse.race_id);
+                  }
                 }
               }
             }
