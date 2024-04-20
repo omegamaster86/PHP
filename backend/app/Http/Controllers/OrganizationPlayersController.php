@@ -676,6 +676,8 @@ class OrganizationPlayersController extends Controller
                         //選手登録されている場合
                         //所属情報テーブルを取得
                         $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_data->player_id);
+                        //団体テーブルから団体名を取得
+                        $target_organization = $t_organizations->getOrganization($input_org_id); //重複する団体の検索用 20240420
                         //Log::debug($org_player_info);
                         if(empty($org_player_info))
                         {
@@ -688,15 +690,15 @@ class OrganizationPlayersController extends Controller
                             $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
                             //Log::debug("所属情報を取得できた場合");
                             //団体テーブルから団体名を取得
-                            $org_player_org_id = $org_player_info[0]->{'org_id'};
-                            $target_organization = $t_organizations->getOrganization($org_player_org_id);
+                            // $org_player_org_id = $org_player_info[0]->{'org_id'};
+                            // $target_organization = $t_organizations->getOrganization($org_player_org_id);
                             //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
                             if (in_array($input_org_id, array_column($org_player_info, 'org_id')))
                             {
                                 //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在する場合");
                                 //存在するとき
                                 $this->assignRowData($reqData[$rowIndex], "無効データ（重複選手）", $user_id, $player_id, 
-                                $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data,false);
+                                $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data,false);  
                             }
                             else
                             {
