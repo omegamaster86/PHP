@@ -1552,7 +1552,7 @@ export default function TournamentResult() {
         const data = response.data.result;
         if (data.length === 0) {
           alert(
-            '既に全てのレース結果が登録されています。新たにレース結果を登録することはできません。',
+            '選択されている種目は、開催予定のない種目になります。',
           );
           router.back();
         } else {
