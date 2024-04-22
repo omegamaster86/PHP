@@ -719,6 +719,7 @@ class OrganizationPlayersController extends Controller
                     $reqData[$rowIndex]['userId'] = $user_id;
                     $reqData[$rowIndex]['playerName'] = $player_name;
                     $reqData[$rowIndex]['mailaddress'] = $mail_address;
+                    $reqData[$rowIndex]['checked'] = false;
                     $rowData['checked'] = false;
                 }
             }
