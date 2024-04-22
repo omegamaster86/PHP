@@ -1869,7 +1869,7 @@ export default function TournamentResult() {
               />
               <CustomTextField
                 label='距離'
-                value={raceInfo?.range?.toString() || ''}
+                value={raceInfo?.range?.toString() ? raceInfo?.range?.toString() + 'm' : ''}
                 readonly
                 displayHelp={false}
               />
