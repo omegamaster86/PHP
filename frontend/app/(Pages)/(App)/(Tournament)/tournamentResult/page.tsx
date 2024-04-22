@@ -1650,8 +1650,8 @@ export default function TournamentResult() {
           console.log(response.data.race_result);
 
           data = response.data.race_result;
+          data[0].startDateTime = data[0].start_date_time; //バックエンド側のキーをフロント側のキーに入れ直す 20240422
           // 遷移元からイベントIDが取得できる時だけ、遷移元からのイベントIDをセットする。セットされていない時は、レース情報からイベントIDをセットする。
-
           setRaceInfo({
             ...data[0],
             eventId: eventId || data[0].eventId,
@@ -2829,7 +2829,7 @@ export default function TournamentResult() {
                 //登録・更新する前に選手名についている「*」を消す 20240422
                 for (let index = 0; index < raceResultRecords.length; index++) {
                   for (let j = 0; j < raceResultRecords[index].crewPlayer.length; j++) {
-                    raceResultRecords[index].crewPlayer[j].playerName.replace('*','');
+                    raceResultRecords[index].crewPlayer[j].playerName.replace('*', '');
                   }
                 }
                 if (prevMode == 'create') {
