@@ -1557,9 +1557,10 @@ class TournamentController extends Controller
         Log::debug(sprintf("getRaceDataFromTournIdAndEventId start."));
         $reqData = $request->all();
         Log::debug($reqData);
-        $tourn_id = $reqData['tourn_id'];
-        $event_id = $reqData['event_id'];
-        $result = $tRace->getBasicRaceInfoList($tourn_id,$event_id); //レース情報を取得
+        // $tourn_id = $reqData['tourn_id'];
+        // $event_id = $reqData['event_id'];
+        // $result = $tRace->getBasicRaceInfoList($tourn_id,$event_id); //レース情報を取得
+        $result = $tRace->getLinkRaces($reqData); //レース結果のないレース情報を取得 20240422
         Log::debug(sprintf("getRaceDataFromTournIdAndEventId end."));
         Log::debug($result);
         return response()->json(['result' => $result]); //DBの結果を返す

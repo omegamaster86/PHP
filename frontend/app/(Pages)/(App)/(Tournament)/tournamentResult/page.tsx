@@ -1562,7 +1562,7 @@ export default function TournamentResult() {
           alert('選択されている種目は、開催予定のない種目になります。');
           router.back();
         } else {
-          setRaceInfo(data[0]);
+          // setRaceInfo(data[0]); //レース結果登録に画面遷移時は「レース基本情報」の項目はすべて空の状態にする 20240422
         }
         console.log('====================');
       } catch (error: any) {
@@ -1761,13 +1761,15 @@ export default function TournamentResult() {
                     await csrf();
                     const response = await axios.post('/getRaceDataRaceId', sendData);
                     console.log(response.data);
-                    const data = response.data;
+                    const data = response.data.race_result;
                     if (data.length == 0) {
                       setErrorText(['レース情報が取得できませんでした。']);
                       setRaceInfo({} as RaceTable);
                       scrollTo(0, 0);
                     } else {
-                      setRaceInfo(data.race_result[0]);
+                      //名前の異なるバックエンド側とフロント側のキーを紐づける 20240420
+                      data[0].startDateTime = data[0].start_date_time;
+                      setRaceInfo(data[0]);
                     }
                   }}
                   readonly={mode === 'update' || mode === 'confirm'}
@@ -1804,13 +1806,15 @@ export default function TournamentResult() {
                         await csrf();
                         const response = await axios.post('/getRaceDataRaceId', sendData);
                         console.log(response.data);
-                        const data = response.data;
+                        const data = response.data.race_result;
                         if (data.length == 0) {
                           setErrorText(['レース情報が取得できませんでした。']);
                           setRaceInfo({} as RaceTable);
                           scrollTo(0, 0);
                         } else {
-                          setRaceInfo(data.race_result[0]);
+                          //名前の異なるバックエンド側とフロント側のキーを紐づける 20240420
+                          data[0].startDateTime = data[0].start_date_time;
+                          setRaceInfo(data[0]);
                         }
                       }}
                       renderOption={(props: any, option: MasterResponse) => {

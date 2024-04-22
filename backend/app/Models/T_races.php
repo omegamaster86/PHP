@@ -390,7 +390,7 @@ class T_races extends Model
                             ,mrc.`race_class_name`
                             ,race.`by_group`
                             ,race.`range`
-                            ,race.`start_date_time`
+                            ,race.`start_date_time` as `startDateTime`
                             FROM `t_races` race
                             left join `m_events` eve
                             on race.`event_id` = eve.`event_id`
