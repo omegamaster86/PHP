@@ -1451,6 +1451,14 @@ export default function TournamentResult() {
         await csrf();
         // レース名（マスタ）の取得
         //const response = await axios.get('http://localhost:3100/raceName');
+
+        //大会結果管理 試作中 20240422
+        const sendData = {
+          tourn_id: tournId,
+          event_id: eventId,
+        };
+        const responseDataList = await axios.post('/getTournLinkRaces',sendData);
+        console.log(responseDataList);
         const response = await axios.get('/getAllRaces');
         //console.log(response);
         const raceList = response.data.map(
