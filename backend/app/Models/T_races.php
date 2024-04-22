@@ -396,15 +396,19 @@ class T_races extends Model
                             on race.`event_id` = eve.`event_id`
                             left join `m_race_class` mrc
                             on race.`race_class_id` = mrc.`race_class_id`
-                            left join `t_race_result_record` rrr
-                            on race.race_id = rrr.race_id
                             where 1=1
                             and race.`delete_flag` = 0
                             and (eve.`delete_flag` = 0 or eve.`delete_flag` is null)
-                            and (rrr.delete_flag = 0 or rrr.delete_flag is null)
+                            and race.`race_id` NOT IN ( 
+                                SELECT
+                                    `t_race_result_record`.`race_id` 
+                                FROM
+                                    `t_race_result_record`
+                                WHERE
+                                    `t_race_result_record`.delete_flag = 0
+                            )
                             and race.`tourn_id` = ?
-                            and race.`event_id` = ?
-                            and rrr.`race_id` is null'
+                            and race.`event_id` = ?'
                         ,
                         [
                             $racesInfo['tourn_id'],
