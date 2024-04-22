@@ -392,6 +392,25 @@ export default function TeamPlayerBulkRegister() {
               value={isOrgNameActive ? orgSelected : orgData.org_name} //団体参照画面から遷移した場合は、該当の団体名を表示する
               options={orgs.map((org) => ({ value: org.org_name, key: org.org_id }))}
               onChange={(e) => {
+                //csv読み込み後に所属団体名を変更して登録できる不具合の対策 20240422
+                if (dialogDisplayFlg) {
+                  if (
+                    window.confirm(
+                      '現在選択中の団体への登録が完了していません。団体を変更しますか？',
+                    )
+                  ) {
+                    setActivationFlg(true);
+                    setCsvData([]);
+                    setCsvFileData({ content: [], isSet: false });
+                    fileUploaderRef?.current?.clearFile();
+                    setActivationFlg(false);
+                    setDialogDisplayFlg(false);
+                    setDisplayLinkButtonFlg(false);
+                    setActivationFlg(false);
+                  } else {
+                    return;
+                  }
+                }
                 setOrgSelected(e);
                 console.log(e);
                 handleFormInputChange('targetOrgId', e);
