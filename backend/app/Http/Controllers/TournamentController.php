@@ -1640,4 +1640,15 @@ class TournamentController extends Controller
         Log::debug(sprintf("getCsvFormatRaceData end"));
         return response()->json(['result' => $result,'tournResult' => $tournResult]); //DBの結果を返す
     }
+
+    //大会結果管理　レース登録画面用 レース情報の取得 20240422
+    public function getTournLinkRaces(Request $request, T_tournaments $tourn,T_races $tRace)
+    {
+        Log::debug(sprintf("getTournLinkRaces start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        
+        Log::debug(sprintf("getTournLinkRaces end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
+    }
 }
