@@ -57,6 +57,7 @@ export default function TournamentResultRef() {
 
         // 出漕結果記録情報の取得
         // const raceResultRecords = await axios.get('http://localhost:3100/raceResultRecords');
+        // console.log(raceResponse.data.record_result);
         setRaceResultRecords(raceResponse.data.record_result);
       } catch (error: any) {
         setErrorText([error.message]);
@@ -143,7 +144,7 @@ export default function TournamentResultRef() {
           <div className='flex flex-col gap-[8px]'>
             <Label label='発艇日時' textSize='small' isBold />
             <p className='h-12 text-secondaryText py-3 disable'>
-              {raceResultRecords[0]?.start_datetime || ''}
+              {raceResultRecords[0]?.startDateTime || ''}
             </p>
           </div>
           {/* 天気 */}
@@ -158,7 +159,7 @@ export default function TournamentResultRef() {
             <div className='flex flex-col gap-[8px]'>
               <Label label='1000m地点風向' textSize='small' isBold />
               <p className='h-12 text-secondaryText py-3 disable'>
-                {raceResultRecords[0]?.wind_direction_1000m_point || ''}
+                {raceResultRecords[0]?.tenHundredmWindDirectionName || ''}
               </p>
             </div>
             {/* 単位はm/秒 */}
@@ -174,7 +175,7 @@ export default function TournamentResultRef() {
             <div className='flex flex-col gap-[8px]'>
               <Label label='2000m地点風向' textSize='small' isBold />
               <p className='h-12 text-secondaryText py-3 disable'>
-                {raceResultRecords[0]?.wind_direction_2000m_point || ''}
+                {raceResultRecords[0]?.twentyHundredmWindDirectionName || ''}
               </p>
             </div>
             <div className='flex flex-col gap-[8px]'>
