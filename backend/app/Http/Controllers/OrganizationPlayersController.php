@@ -1246,6 +1246,7 @@ class OrganizationPlayersController extends Controller
                     }
                     else
                     {
+                        $frontend_url = config('env-data.frontend-url'); //url情報の追加 20240422
                         //Store player information for sending email.
                         $registered_player_mail_data = [
                             'to_mailaddress' => $target_mailaddress,  //[当該選手の「ユーザーテーブル」に登録されているメールアドレス]
