@@ -552,18 +552,18 @@ export default function TeamPlayerBulkRegister() {
                       window.confirm('1件以上選択してください。');
                       return;
                     }
-                    window.confirm('連携を実施しますか？');
-                    registerCsvData(); //バックエンド側にデータを渡す 20240302
-                    setActivationFlg(true);
-                    setCsvData([]),
-                      setCsvFileData({ content: [], isSet: false }),
-                      fileUploaderRef?.current?.clearFile(),
-                      window.confirm('連携を完了しました。')
-                        ? (setActivationFlg(false),
-                          setDialogDisplayFlg(false),
-                          setDisplayLinkButtonFlg(false))
-                        : null;
-                    setActivationFlg(false);
+                    if (window.confirm('登録を実施しますか？')) {
+                      registerCsvData(); //バックエンド側にデータを渡す 20240302
+                      setActivationFlg(true);
+                      setCsvData([]);
+                      setCsvFileData({ content: [], isSet: false });
+                      fileUploaderRef?.current?.clearFile();
+                      window.alert('登録を完了しました。');
+                      setActivationFlg(false);
+                      setDialogDisplayFlg(false);
+                      setDisplayLinkButtonFlg(false);
+                      setActivationFlg(false);
+                    }
                   }}
                 >
                   登録

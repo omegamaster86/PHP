@@ -1457,7 +1457,7 @@ export default function TournamentResult() {
           tourn_id: tournId,
           event_id: eventId,
         };
-        const responseDataList = await axios.post('/getTournLinkRaces',sendData);
+        const responseDataList = await axios.post('/getTournLinkRaces', sendData);
         console.log(responseDataList);
         const response = await axios.get('/getAllRaces');
         //console.log(response);
@@ -1559,9 +1559,7 @@ export default function TournamentResult() {
         console.log(response);
         const data = response.data.result;
         if (data.length === 0) {
-          alert(
-            '選択されている種目は、開催予定のない種目になります。',
-          );
+          alert('選択されている種目は、開催予定のない種目になります。');
           router.back();
         } else {
           setRaceInfo(data[0]);
