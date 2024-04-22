@@ -1457,11 +1457,11 @@ export default function TournamentResult() {
           tourn_id: tournId,
           event_id: eventId,
         };
-        const responseDataList = await axios.post('/getTournLinkRaces', sendData);
-        console.log(responseDataList);
-        const response = await axios.get('/getAllRaces');
+        const responseDataList = await axios.post('/getTournLinkRaces', sendData); //大会IDと種目IDに紐づいたレース結果のないレースを取得 20240422
+        console.log(responseDataList); //20240422
+        // const response = await axios.get('/getAllRaces');
         //console.log(response);
-        const raceList = response.data.map(
+        const raceList = responseDataList.data.result.map(
           ({ race_id, race_name }: { race_id: number; race_name: string }) => ({
             id: race_id,
             name: race_name,

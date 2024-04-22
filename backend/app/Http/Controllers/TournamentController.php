@@ -1647,8 +1647,8 @@ class TournamentController extends Controller
         Log::debug(sprintf("getTournLinkRaces start"));
         $reqData = $request->all();
         Log::debug($reqData);
-        
+        $result = $tRace->getLinkRaces($reqData); //レース情報を取得
         Log::debug(sprintf("getTournLinkRaces end"));
-        return response()->json(['result' => $reqData]); //DBの結果を返す
+        return response()->json(['result' => $result]); //DBの結果を返す
     }
 }
