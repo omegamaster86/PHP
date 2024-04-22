@@ -372,6 +372,48 @@ class T_races extends Model
         return $races;
     }
 
+    //大会IDと種目IDに紐づいたレース結果のないレースを取得 20240422
+    public function getLinkRaces($racesInfo)
+    {
+        $races = DB::select('select
+                            race.`race_id`
+                            ,race.`race_number`
+                            ,race.`entrysystem_race_id`
+                            ,race.`tourn_id`
+                            ,race.`race_name`
+                            ,race.`event_id`
+                            ,case
+                                when race.`event_name` is null then eve.`event_name` 
+                                else race.`event_name`
+                                end as `event_name`
+                            ,race.`race_class_id`
+                            ,mrc.`race_class_name`
+                            ,race.`by_group`
+                            ,race.`range`
+                            ,race.`start_date_time`
+                            FROM `t_races` race
+                            left join `m_events` eve
+                            on race.`event_id` = eve.`event_id`
+                            left join `m_race_class` mrc
+                            on race.`race_class_id` = mrc.`race_class_id`
+                            left join `t_race_result_record` rrr
+                            on race.race_id = rrr.race_id
+                            where 1=1
+                            and race.`delete_flag` = 0
+                            and (eve.`delete_flag` = 0 or eve.`delete_flag` is null)
+                            and (rrr.delete_flag = 0 or rrr.delete_flag is null)
+                            and race.`tourn_id` = ?
+                            and race.`event_id` = ?
+                            and rrr.`race_id` is null'
+                        ,
+                        [
+                            $racesInfo['tourn_id'],
+                            $racesInfo['event_id'],
+                        ]
+                    );
+        return $races;
+    }
+
     //大会レース結果管理画面用
     //検索条件を入力して出漕記録結果が存在するレース情報を取得する
     public function getRaceResultWithCondition($conditionString,$values)
