@@ -1879,7 +1879,7 @@ export default function TournamentResult() {
               />
               <CustomTextField
                 label='発艇予定日時'
-                value={raceInfo?.startDateTime || ''}
+                value={raceInfo?.startDateTime?.substring(0,16) || ''}
                 displayHelp={false}
                 readonly
               />
