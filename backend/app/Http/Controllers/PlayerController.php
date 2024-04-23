@@ -868,6 +868,17 @@ class PlayerController extends Controller
         Log::debug(sprintf("getPlayerInfoData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
+
+    //浮動小数点型を時間フォーマット文字列に変換する 20240423
+    //example.)70.34 → 01:10.34
+    private function convertToTimeFormat($floatNumber) {
+        $hours = floor($floatNumber / 60);
+        $minutes = floor($floatNumber % 60);
+        $seconds = round(($floatNumber - floor($floatNumber)) * 100);
+    
+        return sprintf("%02d:%02d.%02d", $hours, $minutes, $seconds);
+    }
+
     //react 選手情報参照画面に表示するplayerIDに紐づいたデータを送信 20240131
     public function getRaceResultRecordsData(Request $request, T_raceResultRecord $tRaceResultRecord)
     {
@@ -875,6 +886,16 @@ class PlayerController extends Controller
         $reqData = $request->all();
         Log::debug($reqData);
         $result = $tRaceResultRecord->getRaceResultRecord_playerId($reqData['player_id']); //選手IDを元に出漕結果記録を取得 20240212
+
+        //laptimeをSS.msからMM:SS.msに変換 20240423
+        for($result_index = 0;$result_index < count($result); $result_index++) {
+            $result[$result_index]->{"laptime_500m"} = $this->convertToTimeFormat($result[$result_index]->{"laptime_500m"});
+            $result[$result_index]->{"laptime_1000m"} = $this->convertToTimeFormat($result[$result_index]->{"laptime_1000m"});
+            $result[$result_index]->{"laptime_1500m"} = $this->convertToTimeFormat($result[$result_index]->{"laptime_1500m"});
+            $result[$result_index]->{"laptime_2000m"} = $this->convertToTimeFormat($result[$result_index]->{"laptime_2000m"});                
+            $result[$result_index]->{"final_time"} = $this->convertToTimeFormat($result[$result_index]->{"final_time"});
+        }
+
         Log::debug(sprintf("getRaceResultRecordsData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
