@@ -1458,7 +1458,7 @@ export default function Tournaments() {
                       {/* 距離 */}
                       <CustomTd textType='secondary'>{row.range}</CustomTd>
                       {/* 発艇日時 */}
-                      <CustomTd textType='secondary'>{row.start_date_time}</CustomTd>
+                      <CustomTd textType='secondary'>{row.start_date_time.substring(0, 16)}</CustomTd>
                     </>
                   ) : (
                     raceRowComp(row)

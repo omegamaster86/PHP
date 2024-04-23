@@ -562,7 +562,7 @@ export default function PlayerInformationRef() {
                       {/* 出漕結果記録名 */}
                       <CustomTd>{row.race_result_record_name}</CustomTd>
                       {/* 発艇日時 */}
-                      <CustomTd>{row.start_datetime}</CustomTd>
+                      <CustomTd>{row.start_datetime.substring(0, 16)}</CustomTd>
                       {/* 2000m地点風速 */}
                       <CustomTd>{row.wind_speed_2000m_point}</CustomTd>
                       {/* 2000m地点風向 */}
