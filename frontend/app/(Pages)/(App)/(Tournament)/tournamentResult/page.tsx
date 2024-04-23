@@ -1879,7 +1879,7 @@ export default function TournamentResult() {
               />
               <CustomTextField
                 label='発艇予定日時'
-                value={raceInfo?.startDateTime || ''}
+                value={raceInfo?.startDateTime?.substring(0,16) || ''}
                 displayHelp={false}
                 readonly
               />
@@ -1895,7 +1895,7 @@ export default function TournamentResult() {
               <InputLabel label='発艇日時' required={mode === 'create' || mode === 'update'} />
               {mode === 'create' || mode === 'update' ? (
                 <CustomDatePicker
-                  selectedDate={raceResultRecordResponse?.startDateTime}
+                  selectedDate={raceResultRecordResponse?.startDateTime?.substring(0, 16)}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     handleRaceResultRecordInputChange(
                       'startDateTime',

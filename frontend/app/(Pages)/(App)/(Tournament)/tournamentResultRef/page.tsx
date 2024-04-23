@@ -131,7 +131,7 @@ export default function TournamentResultRef() {
               <div className='flex flex-col gap-[8px]'>
                 <Label label='発艇予定日時' textSize='small' isBold />
                 <p className='h-12 text-secondaryText py-3 disable'>
-                  {raceInfo.start_date_time || ''}
+                  {raceInfo.start_date_time?.substring(0,16) || ''}
                 </p>
               </div>
             </div>
@@ -146,7 +146,7 @@ export default function TournamentResultRef() {
           <div className='flex flex-col gap-[8px]'>
             <Label label='発艇日時' textSize='small' isBold />
             <p className='h-12 text-secondaryText py-3 disable'>
-              {raceResultRecords[0]?.startDateTime || ''}
+              {raceResultRecords[0]?.startDateTime.substring(0, 16) || ''}
             </p>
           </div>
           {/* 天気 */}

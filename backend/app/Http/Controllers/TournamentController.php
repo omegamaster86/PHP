@@ -476,6 +476,16 @@ class TournamentController extends Controller
         $reqData = $request->all();
         Log::debug($reqData);
         $result = $tRaceResultRecord->getRaceResultRecord_raceId($reqData['race_id']);
+
+        //ラップタイムをsss.msからmm:ss.msに変換 20240423
+        for($result_index = 0;$result_index < count($result); $result_index++) {
+            $result[$result_index]->{"laptime_500m"} = $this->convertToTimeFormat($result[$result_index]->{"laptime_500m"});
+            $result[$result_index]->{"laptime_1000m"} = $this->convertToTimeFormat($result[$result_index]->{"laptime_1000m"});
+            $result[$result_index]->{"laptime_1500m"} = $this->convertToTimeFormat($result[$result_index]->{"laptime_1500m"});
+            $result[$result_index]->{"laptime_2000m"} = $this->convertToTimeFormat($result[$result_index]->{"laptime_2000m"});                
+            $result[$result_index]->{"final_time"} = $this->convertToTimeFormat($result[$result_index]->{"final_time"});
+        }
+
         Log::debug(sprintf("getTournRaceResultRecords end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }

@@ -492,7 +492,19 @@ export default function PlayerInformationRef() {
                       {/* 開催日 */}
                       <CustomTd>{row.eventStartDate}</CustomTd>
                       {/* 所属団体 */}
-                      <CustomTd>{row.org_name}</CustomTd>
+                      <CustomTd>
+                        <Link
+                          className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                          href={{
+                            pathname: '/teamRef',
+                            query: { orgId: row.org_id },
+                          }}
+                          rel='noopener noreferrer'
+                          target='_blank'
+                        >
+                          {row.org_name}
+                        </Link>
+                      </CustomTd>
                       {/* レースNo. */}
                       <CustomTd>{row.race_number}</CustomTd>
                       {/* 種目 */}
@@ -550,7 +562,7 @@ export default function PlayerInformationRef() {
                       {/* 出漕結果記録名 */}
                       <CustomTd>{row.race_result_record_name}</CustomTd>
                       {/* 発艇日時 */}
-                      <CustomTd>{row.start_datetime}</CustomTd>
+                      <CustomTd>{row.start_datetime.substring(0, 16)}</CustomTd>
                       {/* 2000m地点風速 */}
                       <CustomTd>{row.wind_speed_2000m_point}</CustomTd>
                       {/* 2000m地点風向 */}

@@ -244,6 +244,18 @@ export default function TournamentRaceResultRef() {
         setCurrentCrewName(searchCrewInfo[index].crew_name);
         // console.log(currentCrewName);
         // console.log(searchCrewInfo[index]);
+        for (let index = 0; index < response.data.result.length; index++) {
+          // console.log(response.data.result[index].seat_name);
+          if (response.data.result[index].seat_name == 'ストローク') {
+            response.data.result[index].seat_name = 'S（ストローク）';
+          } else if (response.data.result[index].seat_name == 'バウ') {
+            response.data.result[index].seat_name = 'B（バウ）';
+          } else if (response.data.result[index].seat_name == 'コックス') {
+            response.data.result[index].seat_name = 'C（コックス）';
+          } else if (response.data.result[index].seat_name == 'スカル') {
+            response.data.result[index].seat_name = 'X（スカル）';
+          }
+        }
         setCrewRecordsData(response.data.result);
       })
       .catch((error) => {
@@ -388,8 +400,8 @@ export default function TournamentRaceResultRef() {
                         <CustomTd>{row.race_number}</CustomTd>
                         {/* 組別 */}
                         <CustomTd>{row.by_group}</CustomTd>
-                        {/* 発艇日時 */}
-                        <CustomTd>{row.start_datetime}</CustomTd>
+                        {/* 発艇日時 「YYYY-MM-DD hh:mm」表記で表示 */}
+                        <CustomTd>{row.start_datetime.substring(0, 16)}</CustomTd>
                         {/* 順位 */}
                         <CustomTd>{row.rank}</CustomTd>
                         {/* クルー名 */}
