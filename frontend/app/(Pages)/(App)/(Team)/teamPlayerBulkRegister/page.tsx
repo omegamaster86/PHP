@@ -233,38 +233,61 @@ export default function TeamPlayerBulkRegister() {
   }, []);
 
   /**
+   * メールアドレス形式チェックの関数
+   * @param value チェックする値
+   * @returns true: エラーあり, false: エラーなし
+   **/
+  const validateEmailFormat = (value: string) => {
+    if (value === '') return false;
+    // メールアドレスの形式かどうかを判定する
+    // メールアドレスの形式の時、falseを返す
+    const emailRegex = new RegExp('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$');
+    return !emailRegex.test(value);
+  };
+
+  //選手名の形式チェック関数
+  const validatePlayerName = (value: string) => {
+    // 氏名の形式(全半角文字50文字以内であることを確認)かどうかを判定する
+    // 氏名の形式の時、falseを返す
+    return !/^[a-zA-Z0-9０-９ぁ-んァ-ヶー一-龠ａ-ｚＡ-Ｚ]+$/g.test(value) || value.length > 50;
+  };
+
+  /**
    * CSV行に対しバリデーションを実行する関数
    * @param row
    * @returns
    */
   const handleResult = async (row: string[]) => {
+    console.log(row[3], ' sss ', row[4]);
     // 選手名の形式
     //　日本語：^[ぁ-んァ-ヶｱ-ﾝﾞﾟ一-龠]*$
     //　半角英数字：^[0-9a-zA-Z]*$
     //　記号：^[-,_]*$
     //　最大文字数：32文字（全半角区別なし）
-    const plaerNameRegex = /^[ぁ-んァ-ヶｱ-ﾝﾞﾟ一-龠0-9a-zA-Z-,_]{1,32}$/;
+    // const plaerNameRegex = /^[ぁ-んァ-ヶｱ-ﾝﾞﾟ一-龠0-9a-zA-Z-,_]{1,32}$/;
     // メールアドレスの形式
-    const maidAddressRegex =
-      /^[A-Za-z0-9]{1}[A-Za-z0-9_.-]*@{1}[A-Za-z0-9_.-]{1,}\.[A-Za-z0-9]{1,}$/;
+    // const maidAddressRegex =
+    //   /^[A-Za-z0-9]{1}[A-Za-z0-9_.-]*@{1}[A-Za-z0-9_.-]{1,}\.[A-Za-z0-9]{1,}$/;
 
-    if (row[4] === '' || row[4] === undefined) {
+    if (row[3] === '' || row[3] === undefined || row[3] === null) {
       return '無効データ（メールアドレス未設定）';
-    } else if (row[4].match(maidAddressRegex) === null) {
+      // } else if (row[4].match(maidAddressRegex) === null) {
+    } else if (validateEmailFormat(row[3])) {
       return '無効データ（メールアドレス不正）';
-    } else if (row[3] === '' || row[3] === undefined) {
+    } else if (row[4] === '' || row[4] === undefined || row[4] === null) {
       return '無効データ（選手名未設定）';
-    } else if (row[3].match(plaerNameRegex) === null) {
+      // } else if (row[3].match(plaerNameRegex) === null) {
+    } else if (validatePlayerName(row[4])) {
       return '無効データ（選手名不正）';
     } else if (row.length !== 5) return '無効データ';
 
     setDisplayLinkButtonFlg(true);
-    return '連携';
+    return '登録可能';
   };
 
   const getJsonRow = async (row: string[], index: number) => {
     const expectedColumnCount = 5; // 期待する列数
-    console.log(row.length);
+    // console.log(row.length);
     if (row.length !== expectedColumnCount) {
       return {
         id: index,
@@ -283,8 +306,7 @@ export default function TeamPlayerBulkRegister() {
     } else {
       return {
         id: index,
-        // checked: handleCheckboxValue(await handleResult(row)),
-        checked: true,
+        checked: handleCheckboxValue(await handleResult(row)),
         result: await handleResult(row),
         // userId: row[0],
         // playerId: row[1],
@@ -310,12 +332,16 @@ export default function TeamPlayerBulkRegister() {
 
   //読み込むボタン押下時 20240302
   const sendCsvData = async (row: any[]) => {
-    const sendData = {
-      targetOrgData,
-      csvDataList: row,
-    };
-    console.log(sendData.csvDataList);
     try {
+      const sendData = {
+        targetOrgData,
+        csvDataList: row,
+      };
+      if (targetOrgData.targetOrgId == '' || targetOrgData.targetOrgId == null) {
+        window.alert('所属団体名を選択してください');
+        setActivationFlg(false);
+        return;
+      }
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       const response = await axios.post('/sendOrgCsvData', sendData);
@@ -349,11 +375,7 @@ export default function TeamPlayerBulkRegister() {
   };
 
   const handleCheckboxValue = (result: string) => {
-    return result.startsWith('無効データ')
-      ? false
-      : result === 'ユーザー未登録' || result === '選手未登録のため選手登録後、所属選手登録を実施'
-        ? false
-        : true;
+    return result.startsWith('無効データ') ? false : result != '登録可能' ? false : true;
   };
   return (
     validFlag && (
@@ -370,6 +392,25 @@ export default function TeamPlayerBulkRegister() {
               value={isOrgNameActive ? orgSelected : orgData.org_name} //団体参照画面から遷移した場合は、該当の団体名を表示する
               options={orgs.map((org) => ({ value: org.org_name, key: org.org_id }))}
               onChange={(e) => {
+                //csv読み込み後に所属団体名を変更して登録できる不具合の対策 20240422
+                if (dialogDisplayFlg) {
+                  if (
+                    window.confirm(
+                      '現在選択中の団体への登録が完了していません。団体を変更しますか？',
+                    )
+                  ) {
+                    setActivationFlg(true);
+                    setCsvData([]);
+                    setCsvFileData({ content: [], isSet: false });
+                    fileUploaderRef?.current?.clearFile();
+                    setActivationFlg(false);
+                    setDialogDisplayFlg(false);
+                    setDisplayLinkButtonFlg(false);
+                    setActivationFlg(false);
+                  } else {
+                    return;
+                  }
+                }
                 setOrgSelected(e);
                 console.log(e);
                 handleFormInputChange('targetOrgId', e);
@@ -421,6 +462,7 @@ export default function TeamPlayerBulkRegister() {
                   buttonType='primary'
                   onClick={() => {
                     setActivationFlg(true);
+                    // console.log(dialogDisplayFlg);
                     if (dialogDisplayFlg) {
                       if (
                         !window.confirm(
@@ -432,7 +474,8 @@ export default function TeamPlayerBulkRegister() {
                       }
                     }
 
-                    const specifiedHeader = '既存選手ID,新選手ID,ユーザーID,メールアドレス,選手名'; // 指定のヘッダー文字列
+                    const specifiedHeader =
+                      'JARA選手コード,選手ID,ユーザーID,メールアドレス,選手名'; // 指定のヘッダー文字列
                     const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
                     const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
 
@@ -443,8 +486,9 @@ export default function TeamPlayerBulkRegister() {
                           return x.length > 0 && x.some((y) => y.length > 0);
                         })
                         .slice(isHeaderMatch ? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
-                        .map((row, index) => (console.log(row), getJsonRow(row, index))),
+                        .map((row, index) => getJsonRow(row, index)),
                     ).then((results) => {
+                      console.log(results);
                       var resList = results as any;
                       resList.forEach((element: any) => {
                         element['birthCountryId'] = null;
@@ -452,8 +496,9 @@ export default function TeamPlayerBulkRegister() {
                         element['residenceCountryId'] = null;
                         element['residencePrefectureId'] = null;
                       });
-                      console.log(resList);
+                      // console.log(resList);
                       sendCsvData(resList); //バックエンド側のバリデーションチェックを行う為にデータを送信する 20240302
+                      setDialogDisplayFlg(true); //2回目以降のcsv読み込みで確認ダイアログを表示させる 20240419
                     });
 
                     performValidation();
@@ -481,7 +526,7 @@ export default function TeamPlayerBulkRegister() {
               <br />
               ※読み込み結果に「ユーザー未登録」と表示された選手には、ユーザー仮登録の通知メールが送信されます。
               <br />
-              本システムへのユーザー登録と選手登録が完了しましたら、所属選手変種から当該選手を所属選手として登録してください。
+              本システムへのユーザー登録と選手登録が完了しましたら、所属選手から当該選手を所属選手として登録してください。
               <br />
               [手順]
               <br />
@@ -526,18 +571,18 @@ export default function TeamPlayerBulkRegister() {
                       window.confirm('1件以上選択してください。');
                       return;
                     }
-                    window.confirm('連携を実施しますか？');
-                    registerCsvData(); //バックエンド側にデータを渡す 20240302
-                    setActivationFlg(true);
-                    setCsvData([]),
-                      setCsvFileData({ content: [], isSet: false }),
-                      fileUploaderRef?.current?.clearFile(),
-                      window.confirm('連携を完了しました。')
-                        ? (setActivationFlg(false),
-                          setDialogDisplayFlg(false),
-                          setDisplayLinkButtonFlg(false))
-                        : null;
-                    setActivationFlg(false);
+                    if (window.confirm('登録を実施しますか？')) {
+                      registerCsvData(); //バックエンド側にデータを渡す 20240302
+                      setActivationFlg(true);
+                      setCsvData([]);
+                      setCsvFileData({ content: [], isSet: false });
+                      fileUploaderRef?.current?.clearFile();
+                      window.alert('登録を完了しました。');
+                      setActivationFlg(false);
+                      setDialogDisplayFlg(false);
+                      setDisplayLinkButtonFlg(false);
+                      setActivationFlg(false);
+                    }
                   }}
                 >
                   登録

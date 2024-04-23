@@ -261,7 +261,7 @@ class OrganizationPlayersController extends Controller
         $rowData['residence'] = $player_data->residenceCountryName.$player_data->residencePrefectureName;
         $rowData['checked'] = $checked;
 
-        Log::debug($rowData);
+        // Log::debug($rowData);
 
         Log::debug("assignRowData End.");
     }
@@ -431,7 +431,7 @@ class OrganizationPlayersController extends Controller
         return response()->json(['result' => $players]);
     }
 
-    //団体一括 読み込むボタン押下 20240301
+    //団体一括 読み込むボタン押下 20240420
     public function sendOrgCsvData(Request $request,
                                     T_organizations $t_organizations,
                                         T_players $t_players,
@@ -452,18 +452,23 @@ class OrganizationPlayersController extends Controller
             $mail_address = $reqData[$rowIndex]["mailaddress"];
             $player_name = $reqData[$rowIndex]["playerName"];
 
+            //フロント側のバリデーション結果が「無効データ」だった場合、判定処理は行わない 20240419
+            if($reqData[$rowIndex]['result'] != '登録可能'){
+                continue;
+            }
+
             //取り込み可能かをチェックする
-            //入力組み合わせ①
+            //入力組み合わせ１
             if (isset($user_id) && isset($player_id) && isset($jara_player_code))
             {
-                Log::debug("入力組み合わせ①");
+                Log::debug("入力組み合わせ１");
                 //ユーザーID、選手ID、JARA選手コードが全て入力されているとき
                 //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
                 //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
                 $user_data = $t_users->getUserDataFromMailAddress($mail_address);
-                if (in_array($user_id, array_column($user_data, 'user_id')))
+                if (!in_array($user_id, array_column($user_data, 'user_id')))
                 {
-                    $this->assignInvalidRowdata('無効データ（メールアドレス不正）', $reqData[$rowIndex]);
+                    $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
                     continue;
                 }
                 //選手データが登録されているか確認
@@ -486,7 +491,7 @@ class OrganizationPlayersController extends Controller
                     continue;
                 }
                 //所属情報テーブルを取得
-                $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);                
+                $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);
                 //団体テーブルから団体名を取得
                 $target_organization = $t_organizations->getOrganization($input_org_id);
                 //選手テーブルから出身地と居住地を取得
@@ -495,38 +500,43 @@ class OrganizationPlayersController extends Controller
                 if (empty($org_player_info))
                 {
                     //Log::debug("所属情報を取得できなかった場合");
-                    $this->assignRowData($reqData[$rowIndex], "登録可能", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, null, null, $player_data[0], true);
+                    $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_id, 
+                    $jara_player_code, $player_name, $mail_address, null, null, $player_data[0], $reqData[$rowIndex]['checked']);
                 }
                 //取得情報が取得できた場合
                 else
                 {
+                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
                     //Log::debug("所属情報を取得できた場合");
                     //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
                     if (in_array($input_org_id, array_column($org_player_info, 'org_id')))
                     {
                         //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在する場合");
                         //存在するとき
-                        $this->assignRowData($reqData[$rowIndex], "無効データ（重複選手）", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0],false);
+                        $this->assignRowData($reqData[$rowIndex], "無効データ（重複選手）", $user_id, $player_id, 
+                        $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0],false);
                     }
                     //入力値が団体所属情報のorg_id列に存在しない
                     else
                     {
                         //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在しない場合");
-                        $this->assignRowData($reqData[$rowIndex], "登録可能", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0],true);
+                        $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_id, 
+                        // $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        $jara_player_code, $player_name, $mail_address, $org_player_info[0]->org_id, $affiliation_org->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
                     }
                 }
             }
-            //入力組み合わせ②
+            //入力組み合わせ２
             elseif (isset($user_id) && isset($player_id) && !isset($jara_player_code))
             {
-                Log::debug("入力組み合わせ②");
+                Log::debug("入力組み合わせ２");
                 //ユーザーID、選手IDが全て入力されているとき
                 //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
                 //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
                 $user_data = $t_users->getUserDataFromMailAddress($mail_address);
-                if (in_array($user_id, array_column($user_data, 'user_id')))
+                if (!in_array($user_id, array_column($user_data, 'user_id')))
                 {
-                    $this->assignInvalidRowdata('無効データ（メールアドレス不正）', $reqData[$rowIndex]);
+                    $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
                     continue;
                 }
                 //選手データが登録されているか確認
@@ -552,42 +562,47 @@ class OrganizationPlayersController extends Controller
                 //所属情報を取得できなかった場合
                 if (empty($org_player_info))
                 {
-                    $this->assignRowData($reqData[$rowIndex], "登録可能", $user_id, $player_id, $player_data[0]->{'jara_player_id'}, $player_name, $mail_address, null, null, $player_data[0],true);
+                    $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_id, 
+                    $player_data[0]->{'jara_player_id'}, $player_name, $mail_address, null, null, $player_data[0], $reqData[$rowIndex]['checked']);
                 }
                 //取得情報が取得できた場合
                 else
                 {
+                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
                     //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
                     if (in_array($input_org_id, array_column($org_player_info, 'org_id')))
                     {
                         //存在するとき
-                        $this->assignRowData($reqData[$rowIndex], "無効データ（重複選手）", $user_id, $player_id, $player_data[0]->{'jara_player_id'}, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0],false);
+                        $this->assignRowData($reqData[$rowIndex], "無効データ（重複選手）", $user_id, $player_id, 
+                        $player_data[0]->{'jara_player_id'}, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0],false);
                     }
                     //入力値が団体所属情報のorg_id列に存在しない
                     else
                     {
-                        $this->assignRowData($reqData[$rowIndex], "登録可能", $user_id, $player_id, $player_data[0]->{'jara_player_id'}, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0],true);
+                        $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_id, 
+                        // $player_data[0]->{'jara_player_id'}, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        $player_data[0]->{'jara_player_id'}, $player_name, $mail_address, $org_player_info[0]->org_id, $affiliation_org->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
                     }
                 }
             }
-            //入力組み合わせ③
+            //入力組み合わせ３
             elseif (isset($user_id) && !isset($player_id) && isset($jara_player_code))
             {
-                Log::debug("入力組み合わせ③");
+                Log::debug("入力組み合わせ３");
                 //ユーザーID、JARA選手コードが全て入力されているとき
                 //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
                 //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
                 $user_data = $t_users->getUserDataFromMailAddress($mail_address);
-                if (in_array($user_id, array_column($user_data, 'user_id')))
+                if (!in_array($user_id, array_column($user_data, 'user_id')))
                 {
-                    $this->assignInvalidRowdata('無効データ（メールアドレス不正）', $reqData[$rowIndex]);
+                    $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
                     continue;
                 }
                 //JARA選手コードで選手データが登録されているかを確認
                 $player_data = $t_players->getPlayerFromJaraPlayerId($jara_player_code);
                 if (empty($player_data))
                 {
-                    $this->assignInvalidRowdata('無効データ（無効選手ID）', $reqData[$rowIndex]);
+                    $this->assignInvalidRowdata('無効データ（未登録JARA選手コード）', $reqData[$rowIndex]);
                     continue;
                 }
                 //「選手テーブル」.「ユーザーID」とファイルに入力されている「ユーザーID」が一致するか確認
@@ -597,37 +612,42 @@ class OrganizationPlayersController extends Controller
                     continue;
                 }
                 //所属情報テーブルを取得
-                $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromJaraPlayerId($jara_player_code);                
+                $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromJaraPlayerId($jara_player_code);
                 //団体テーブルから団体名を取得
                 $target_organization = $t_organizations->getOrganization($input_org_id);
                 //所属情報を取得できなかった場合
                 if (empty($org_player_info))
                 {
                     //Log::debug("所属情報を取得できなかった場合");
-                    $this->assignRowData($reqData[$rowIndex], "登録可能", $user_id, $player_data[0]->{'player_id'}, $jara_player_code, $player_name, $mail_address, null, null, $player_data[0], true);
+                    $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_data[0]->{'player_id'}, 
+                    $jara_player_code, $player_name, $mail_address, null, null, $player_data[0], $reqData[$rowIndex]['checked']);
                 }
                 //取得情報が取得できた場合
                 else
                 {
+                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
                     //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
                     if (in_array($input_org_id, array_column($org_player_info, 'org_id')))
                     {
                         //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在する");
                         //存在するとき
-                        $this->assignRowData($reqData[$rowIndex], "無効データ（重複選手）", $user_id, $player_data[0]->{'player_id'}, $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], false);
+                        $this->assignRowData($reqData[$rowIndex], "無効データ（重複選手）", $user_id, $player_data[0]->{'player_id'}, 
+                        $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], false);
                     }
                     //入力値が団体所属情報のorg_id列に存在しない
                     else
                     {
                         //Log::debug("入力値が団体所属情報のorg_id列に存在しない");
-                        $this->assignRowData($reqData[$rowIndex], "登録可能", $user_id, $player_data[0]->{'player_id'}, $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0],true);
+                        $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_data[0]->{'player_id'}, 
+                        // $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        $jara_player_code, $player_name, $mail_address, $org_player_info[0]->org_id, $affiliation_org->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
                     }
                 }
             }
-            //入力組み合わせ④
+            //入力組み合わせ４
             elseif (isset($user_id) && !isset($player_id) && !isset($jara_player_code))
             {
-                Log::debug("入力組み合わせ④");
+                Log::debug("入力組み合わせ４");
                 //ユーザーIDだけが入力されているとき
                 //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
                 //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
@@ -656,30 +676,37 @@ class OrganizationPlayersController extends Controller
                         //選手登録されている場合
                         //所属情報テーブルを取得
                         $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_data->player_id);
+                        //団体テーブルから団体名を取得
+                        $target_organization = $t_organizations->getOrganization($input_org_id); //重複する団体の検索用 20240420
                         //Log::debug($org_player_info);
                         if(empty($org_player_info))
                         {
                             //Log::debug("所属情報を取得できなかった場合");
-                            $this->assignRowData($reqData[$rowIndex], "登録可能", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, null, null, $player_data, true);
+                            $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_id, 
+                            $jara_player_code, $player_name, $mail_address, null, null, $player_data, $reqData[$rowIndex]['checked']);
                         }
                         else
                         {
+                            $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
                             //Log::debug("所属情報を取得できた場合");
                             //団体テーブルから団体名を取得
-                            $org_player_org_id = $org_player_info[0]->{'org_id'};
-                            $target_organization = $t_organizations->getOrganization($org_player_org_id);
+                            // $org_player_org_id = $org_player_info[0]->{'org_id'};
+                            // $target_organization = $t_organizations->getOrganization($org_player_org_id);
                             //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
                             if (in_array($input_org_id, array_column($org_player_info, 'org_id')))
                             {
                                 //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在する場合");
                                 //存在するとき
-                                $this->assignRowData($reqData[$rowIndex], "無効データ（重複選手）", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data,false);
+                                $this->assignRowData($reqData[$rowIndex], "無効データ（重複選手）", $user_id, $player_id, 
+                                $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data,false);  
                             }
                             else
                             {
                                 //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在しない場合");
                                 //入力値が団体所属情報のorg_id列に存在しない
-                                $this->assignRowData($reqData[$rowIndex], "登録可能", $user_id, null, null, $player_name, $mail_address, $org_player_org_id, $target_organization->org_name, $player_data,true);
+                                $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, null, 
+                                // null, $player_name, $mail_address, $org_player_org_id, $target_organization->org_name, $player_data, $reqData[$rowIndex]['checked']);
+                                null, $player_name, $mail_address, $org_player_info[0]->org_id, $affiliation_org->org_name, $player_data, $reqData[$rowIndex]['checked']);
                             }
                         }
                     }
@@ -692,13 +719,14 @@ class OrganizationPlayersController extends Controller
                     $reqData[$rowIndex]['userId'] = $user_id;
                     $reqData[$rowIndex]['playerName'] = $player_name;
                     $reqData[$rowIndex]['mailaddress'] = $mail_address;
+                    $reqData[$rowIndex]['checked'] = false;
                     $rowData['checked'] = false;
                 }
             }
-            //入力組み合わせ⑤
+            //入力組み合わせ５
             elseif (!isset($user_id) && isset($player_id) && isset($jara_player_code))
             {
-                Log::debug("入力組み合わせ⑤");
+                Log::debug("入力組み合わせ５");
                 //選手ID、JARA選手コードが全て入力されているとき
                 //選手データが登録されているか確認
                 $player_data = $t_players->getPlayer($player_id);
@@ -711,15 +739,15 @@ class OrganizationPlayersController extends Controller
                 //「選手テーブル」.「ユーザーID」に値が設定されているか確認
                 if (empty($player_data[0]->{'user_id'}))
                 {
-                    $this->assignInvalidRowdata('無効データ（無効選手ID）', $reqData[$rowIndex]);
+                    $this->assignInvalidRowdata('無効データ（無効選手）', $reqData[$rowIndex]);
                     continue;
                 }
                 //「選手テーブル」.「ユーザーID」と紐づく「ユーザーテーブル」.「メールアドレス」と
                 //ファイルに入力されている「メールアドレス」が一致するか確認
                 $user_data = $t_users->getUserDataFromUserId($player_data[0]->{'user_id'});
-                if (in_array($mail_address, array_column($user_data, 'mailaddress')))
+                if (!in_array($mail_address, array_column($user_data, 'mailaddress')))
                 {
-                    $this->assignInvalidRowdata('無効データ（メールアドレス不正）', $reqData[$rowIndex]);
+                    $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
                     continue;
                 }
                 //「選手テーブル」.「JARA選手コード」とファイルに入力されている「JARA選手コード」が一致するか確認
@@ -738,31 +766,36 @@ class OrganizationPlayersController extends Controller
                 if (empty($org_player_info))
                 {
                     //Log::debug("所属情報を取得できなかった場合");
-                    $this->assignRowData($reqData[$rowIndex], "登録可能", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, null, null, $player_data[0], true);
+                    $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_id, 
+                    $jara_player_code, $player_name, $mail_address, null, null, $player_data[0], $reqData[$rowIndex]['checked']);
                 }
                 //取得情報が取得できた場合
                 else
                 {
+                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
                     //Log::debug("所属情報を取得できた場合");
                     //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
                     if (in_array($input_org_id, array_column($org_player_info, 'org_id')))
                     {
                         //存在するとき
                         //Log::debug("入力値が団体所属情報のorg_id列に存在する");
-                        $this->assignRowData($reqData[$rowIndex], "無効データ（重複選手）", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], false);
+                        $this->assignRowData($reqData[$rowIndex], "無効データ（重複選手）", $user_id, $player_id, 
+                        $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], false);
                     }
                     //入力値が団体所属情報のorg_id列に存在しない
                     else
                     {
                         //Log::debug("入力値が団体所属情報のorg_id列に存在しない");
-                        $this->assignRowData($reqData[$rowIndex], "登録可能", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], false);
+                        $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_id, 
+                        // $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        $jara_player_code, $player_name, $mail_address, $org_player_info[0]->org_id, $affiliation_org->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
                     }
                 }
             }
-            //入力組み合わせ⑥
+            //入力組み合わせ６
             elseif (!isset($user_id) && isset($player_id) && !isset($jara_player_code))
             {
-                Log::debug("入力組み合わせ⑥");
+                Log::debug("入力組み合わせ６");
                 //選手IDだけが入力されているとき
                 //選手データが登録されているか確認
                 $player_data = $t_players->getPlayer($player_id);                
@@ -774,15 +807,15 @@ class OrganizationPlayersController extends Controller
                 //「選手テーブル」.「ユーザーID」に値が設定されているか確認
                 if (empty($player_data[0]->{'user_id'}))
                 {
-                    $this->assignInvalidRowdata('無効データ（無効選手ID）', $reqData[$rowIndex]);
+                    $this->assignInvalidRowdata('無効データ（無効選手）', $reqData[$rowIndex]);
                     continue;
                 }
                 //「選手テーブル」.「ユーザーID」と紐づく「ユーザーテーブル」.「メールアドレス」と
                 //ファイルに入力されている「メールアドレス」が一致するか確認
                 $user_data = $t_users->getUserDataFromUserId($player_data[0]->{'user_id'});
-                if (in_array($mail_address, array_column($user_data, 'mailaddress')))
+                if (!in_array($mail_address, array_column($user_data, 'mailaddress')))
                 {
-                    $this->assignInvalidRowdata('無効データ（メールアドレス不正）', $reqData[$rowIndex]);
+                    $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
                     continue;
                 }
                 //所属情報テーブルを取得
@@ -795,31 +828,36 @@ class OrganizationPlayersController extends Controller
                 if (empty($org_player_info))
                 {
                     //Log::debug("所属情報を取得できなかった場合");
-                    $this->assignRowData($reqData[$rowIndex], "登録可能", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, null, null, $player_data[0], true);
+                    $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_id, 
+                    $jara_player_code, $player_name, $mail_address, null, null, $player_data[0], $reqData[$rowIndex]['checked']);
                 }
                 //取得情報が取得できた場合
                 else
                 {
+                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
                     //Log::debug("所属情報を取得できた場合");
                     //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
                     if (in_array($input_org_id, array_column($org_player_info, 'org_id')))
                     {
                         //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在する場合");
                         //存在するとき
-                        $this->assignRowData($reqData[$rowIndex], "無効データ（重複選手）", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0],false);
+                        $this->assignRowData($reqData[$rowIndex], "無効データ（重複選手）", $user_id, $player_id, 
+                        $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0],false);
                     }
                     //入力値が団体所属情報のorg_id列に存在しない
                     else
                     {
                         //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在しない場合");
-                        $this->assignRowData($reqData[$rowIndex], "登録可能", $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], true);
+                        $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_id, 
+                        // $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        $jara_player_code, $player_name, $mail_address, $org_player_info[0]->org_id, $affiliation_org->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
                     }
                 }
             }
-            //入力組み合わせ⑦
+            //入力組み合わせ７
             elseif (!isset($user_id) && !isset($player_id) && isset($jara_player_code))
             {
-                Log::debug("入力組み合わせ⑦");
+                Log::debug("入力組み合わせ７");
                 //JARA選手コードだけが入力されているとき
                 $player_data = $t_players->getPlayerFromJaraPlayerId($jara_player_code);
                 //Log::debug($player_data);
@@ -852,31 +890,36 @@ class OrganizationPlayersController extends Controller
                 if (empty($org_player_info))
                 {
                     //Log::debug("所属情報を取得できなかった場合");
-                    $this->assignRowData($reqData[$rowIndex], "登録可能", $user_id, $player_data[0]->{'player_id'}, $jara_player_code, $player_name, $mail_address, null, null, $player_data[0], true);
+                    $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_data[0]->{'player_id'}, 
+                    $jara_player_code, $player_name, $mail_address, null, null, $player_data[0], $reqData[$rowIndex]['checked']);
                 }
                 //取得情報が取得できた場合
                 else
                 {
+                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
                     //Log::debug("所属情報を取得できた場合");
                     //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
                     if (in_array($input_org_id, array_column($org_player_info, 'org_id')))
                     {
                         //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在する場合");
                         //存在するとき
-                        $this->assignRowData($reqData[$rowIndex], "無効データ（重複選手）", $user_id, $player_data[0]->{'player_id'}, $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0],false);
+                        $this->assignRowData($reqData[$rowIndex], "無効データ（重複選手）", $user_id, $player_data[0]->{'player_id'}, 
+                        $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0],false);
                     }
                     //入力値が団体所属情報のorg_id列に存在しない
                     else
                     {
                         //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在しない場合");
-                        $this->assignRowData($reqData[$rowIndex], "登録可能", $user_id, $player_data[0]->{'player_id'}, $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0],true);
+                        $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_id, $player_data[0]->{'player_id'}, 
+                        // $jara_player_code, $player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
+                        $jara_player_code, $player_name, $mail_address, $org_player_info[0]->org_id, $affiliation_org->org_name, $player_data[0], $reqData[$rowIndex]['checked']);
                     }
                 }
             }
-            //入力組み合わせ⑧
+            //入力組み合わせ８
             else
             {
-                Log::debug("入力組み合わせ⑧");
+                Log::debug("入力組み合わせ８");
                 //ユーザーID、選手ID、JARA選手コードのいずれも入力されていないとき                        
                 //ファイルに記載されている「メールアドレス」で、「ユーザーテーブル」を検索
                 $user_data = $t_users->getUserDataFromMailAddress($mail_address);
@@ -884,11 +927,13 @@ class OrganizationPlayersController extends Controller
                 if (empty($user_data))
                 {
                     //Log::debug("ユーザー情報が登録されていない場合");
-                    //ユーザー情報が登録されていない場合
-                    $reqData[$rowIndex]['result'] = "ユーザー未登録";
-                    $reqData[$rowIndex]['playerName'] = $player_name;
-                    $reqData[$rowIndex]['mailaddress'] = $mail_address;
-                    $reqData[$rowIndex]['checked'] = false;
+                    //フロント側のバリデーション結果が「登録可能」でユーザー情報が登録されていない場合、ユーザ未登録データとしてマッピング出来るようにする 20240419
+                    if($reqData[$rowIndex]['result'] == '登録可能'){
+                        $reqData[$rowIndex]['result'] = "ユーザー未登録";
+                        $reqData[$rowIndex]['playerName'] = $player_name;
+                        $reqData[$rowIndex]['mailaddress'] = $mail_address;
+                        $reqData[$rowIndex]['checked'] = false;
+                    }
                 }
                 else
                 {
@@ -927,10 +972,12 @@ class OrganizationPlayersController extends Controller
                             {
                                 //所属情報が取得できなかった場合                                
                                 //Log::debug("所属情報を取得できなかった場合");
-                                $this->assignRowData($reqData[$rowIndex], "登録可能", $user_data[0]->{'user_id'}, $player_data->player_id, $player_data->jara_player_id, $player_data->player_name, $user_data[0]->{'mailaddress'}, null, null, $player_data,true);                                
+                                $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_data[0]->{'user_id'}, $player_data->player_id, 
+                                $player_data->jara_player_id, $player_data->player_name, $user_data[0]->{'mailaddress'}, null, null, $player_data, $reqData[$rowIndex]['checked']);                                
                             }
                             else
                             {
+                                $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
                                 //Log::debug("所属情報を取得できた場合");
                                 //所属情報が取得できた場合
                                 //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
@@ -938,13 +985,16 @@ class OrganizationPlayersController extends Controller
                                 {
                                     //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在する場合");
                                     //存在するとき
-                                    $this->assignRowData($reqData[$rowIndex], "無効データ（重複選手）", $user_data[0]->{'user_id'}, $player_data->player_id, $player_data->jara_player_id, $player_data->player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data,false);
+                                    $this->assignRowData($reqData[$rowIndex], "無効データ（重複選手）", $user_data[0]->{'user_id'}, $player_data->player_id, 
+                                    $player_data->jara_player_id, $player_data->player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data,false);
                                 }
                                 else
                                 {
                                     //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在しない場合");
                                     //一致しなかった場合
-                                    $this->assignRowData($reqData[$rowIndex], "登録可能", $user_data[0]->{'user_id'}, $player_data->player_id, $player_data->jara_player_id, $player_data->player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data,true);
+                                    $this->assignRowData($reqData[$rowIndex], $reqData[$rowIndex]['result'], $user_data[0]->{'user_id'}, $player_data->player_id, 
+                                    // $player_data->jara_player_id, $player_data->player_name, $mail_address, $input_org_id, $target_organization->org_name, $player_data, $reqData[$rowIndex]['checked']);
+                                    $player_data->jara_player_id, $player_data->player_name, $mail_address, $org_player_info[0]->org_id, $affiliation_org->org_name, $player_data, $reqData[$rowIndex]['checked']);
                                 }
                             }
                         }
@@ -1197,6 +1247,7 @@ class OrganizationPlayersController extends Controller
                     }
                     else
                     {
+                        $frontend_url = config('env-data.frontend-url'); //url情報の追加 20240422
                         //Store player information for sending email.
                         $registered_player_mail_data = [
                             'to_mailaddress' => $target_mailaddress,  //[当該選手の「ユーザーテーブル」に登録されているメールアドレス]

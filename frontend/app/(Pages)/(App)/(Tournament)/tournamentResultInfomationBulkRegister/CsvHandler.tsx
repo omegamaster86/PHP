@@ -171,13 +171,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
       console.log(response.data.tournResult); //公式 非公式
       console.log(response.data.result);
 
-      //仮対応　20240319
-      const raceResponse = {
-        data: {
-          length: 0,
-        },
-      };
-
       const header = props.csvDownloadProps.header.map((h) => h.label).join(',');
 
       if (response.data.result.length == 0) {
@@ -189,14 +182,16 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
         ) {
           csvContent = header;
           // props.csvDownloadProps.filename = raceResponse.data[0].tournName + '_レース結果一括登録用フォーマット.csv';
-          props.csvDownloadProps.filename += '_レース結果一括登録用フォーマット.csv'; //ファイル名修正 20240412
+          props.csvDownloadProps.filename =
+            response.data.tournResult.tourn_name + '_レース結果一括登録用フォーマット.csv'; //ファイル名修正 20240412
         } else {
           csvContent = '';
         }
       } else {
         //レース情報が存在する場合
         // props.csvDownloadProps.filename = raceResponse.data[0].tournName + '_レース結果一括登録用フォーマット.csv';
-        props.csvDownloadProps.filename += '_レース結果一括登録用フォーマット.csv'; //ファイル名修正 20240412
+        props.csvDownloadProps.filename =
+          response.data.tournResult.tourn_name + '_レース結果一括登録用フォーマット.csv'; //ファイル名修正 20240412
         // Todo: レース情報を取得してCSVに変換する処理を実装
         // csvContent = header + '\n' + raceResponse.data.map((row) => Object.values(row).join(',')).join('\n');
         csvContent = header + '\n';

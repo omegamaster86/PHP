@@ -1451,9 +1451,17 @@ export default function TournamentResult() {
         await csrf();
         // レース名（マスタ）の取得
         //const response = await axios.get('http://localhost:3100/raceName');
-        const response = await axios.get('/getAllRaces');
+
+        //大会結果管理 試作中 20240422
+        const sendData = {
+          tourn_id: tournId,
+          event_id: eventId,
+        };
+        const responseDataList = await axios.post('/getTournLinkRaces', sendData); //大会IDと種目IDに紐づいたレース結果のないレースを取得 20240422
+        console.log(responseDataList); //20240422
+        // const response = await axios.get('/getAllRaces');
         //console.log(response);
-        const raceList = response.data.map(
+        const raceList = responseDataList.data.result.map(
           ({ race_id, race_name }: { race_id: number; race_name: string }) => ({
             id: race_id,
             name: race_name,
@@ -1551,12 +1559,10 @@ export default function TournamentResult() {
         console.log(response);
         const data = response.data.result;
         if (data.length === 0) {
-          alert(
-            '既に全てのレース結果が登録されています。新たにレース結果を登録することはできません。',
-          );
+          alert('選択されている種目は、開催予定のない種目になります。');
           router.back();
         } else {
-          setRaceInfo(data[0]);
+          // setRaceInfo(data[0]); //レース結果登録に画面遷移時は「レース基本情報」の項目はすべて空の状態にする 20240422
         }
         console.log('====================');
       } catch (error: any) {
@@ -1644,8 +1650,8 @@ export default function TournamentResult() {
           console.log(response.data.race_result);
 
           data = response.data.race_result;
+          data[0].startDateTime = data[0].start_date_time; //バックエンド側のキーをフロント側のキーに入れ直す 20240422
           // 遷移元からイベントIDが取得できる時だけ、遷移元からのイベントIDをセットする。セットされていない時は、レース情報からイベントIDをセットする。
-
           setRaceInfo({
             ...data[0],
             eventId: eventId || data[0].eventId,
@@ -1755,13 +1761,15 @@ export default function TournamentResult() {
                     await csrf();
                     const response = await axios.post('/getRaceDataRaceId', sendData);
                     console.log(response.data);
-                    const data = response.data;
+                    const data = response.data.race_result;
                     if (data.length == 0) {
                       setErrorText(['レース情報が取得できませんでした。']);
                       setRaceInfo({} as RaceTable);
                       scrollTo(0, 0);
                     } else {
-                      setRaceInfo(data.race_result[0]);
+                      //名前の異なるバックエンド側とフロント側のキーを紐づける 20240420
+                      data[0].startDateTime = data[0].start_date_time;
+                      setRaceInfo(data[0]);
                     }
                   }}
                   readonly={mode === 'update' || mode === 'confirm'}
@@ -1798,13 +1806,15 @@ export default function TournamentResult() {
                         await csrf();
                         const response = await axios.post('/getRaceDataRaceId', sendData);
                         console.log(response.data);
-                        const data = response.data;
+                        const data = response.data.race_result;
                         if (data.length == 0) {
                           setErrorText(['レース情報が取得できませんでした。']);
                           setRaceInfo({} as RaceTable);
                           scrollTo(0, 0);
                         } else {
-                          setRaceInfo(data.race_result[0]);
+                          //名前の異なるバックエンド側とフロント側のキーを紐づける 20240420
+                          data[0].startDateTime = data[0].start_date_time;
+                          setRaceInfo(data[0]);
                         }
                       }}
                       renderOption={(props: any, option: MasterResponse) => {
@@ -1863,7 +1873,7 @@ export default function TournamentResult() {
               />
               <CustomTextField
                 label='距離'
-                value={raceInfo?.range?.toString() || ''}
+                value={raceInfo?.range?.toString() ? raceInfo?.range?.toString() + 'm' : ''}
                 readonly
                 displayHelp={false}
               />
@@ -2062,7 +2072,7 @@ export default function TournamentResult() {
       {/* レース結果情報 */}
       {raceResultRecords.map((item, index) => (
         <div className='flex flex-col gap-[20px] border border-solid p-[20px]' key={index}>
-          <InputLabel label={'レース結果情報' + (index + 1)} />
+          <InputLabel label={'レース結果情報' + (raceResultRecords.length - index)} />
           <ErrorBox errorText={item.errorText ? [item.errorText] : []} />
           <div className='flex flex-row justify-between'>
             {mode === 'update' && (
@@ -2816,6 +2826,12 @@ export default function TournamentResult() {
                 // 更新処理
                 router.push('/tournamentResult?mode=confirm&prevMode=update');
               } else if (mode === 'confirm') {
+                //登録・更新する前に選手名についている「*」を消す 20240422
+                for (let index = 0; index < raceResultRecords.length; index++) {
+                  for (let j = 0; j < raceResultRecords[index].crewPlayer.length; j++) {
+                    raceResultRecords[index].crewPlayer[j].playerName.replace('*', '');
+                  }
+                }
                 if (prevMode == 'create') {
                   //登録・更新確認画面からバックエンド側にデータを送る 20240405
                   const sendData = {
@@ -2831,6 +2847,9 @@ export default function TournamentResult() {
                   );
                   console.log(raceResponse);
                   // router.push('/tournamentResult?mode=confirm&prevMode=update');
+                  if (!raceResponse.data?.errMessage) {
+                    router.push('/tournamentResultRef?raceId=' + raceResultRecordResponse.race_id);
+                  }
                 } else if (prevMode == 'update') {
                   //登録・更新確認画面からバックエンド側にデータを送る 20240405
                   const sendData = {
@@ -2846,7 +2865,9 @@ export default function TournamentResult() {
                   );
                   console.log(raceResponse);
                   // router.push('/tournamentResult?mode=confirm&prevMode=update');
-                  router.push('/tournamentResultRef?raceId=' + raceResultRecordResponse.race_id);
+                  if (!raceResponse.data?.errMessage) {
+                    router.push('/tournamentResultRef?raceId=' + raceResultRecordResponse.race_id);
+                  }
                 }
               }
             }
