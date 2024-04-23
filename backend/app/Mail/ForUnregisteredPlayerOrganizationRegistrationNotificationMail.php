@@ -8,6 +8,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class ForUnregisteredPlayerOrganizationRegistrationNotificationMail extends Mailable
 {
@@ -28,7 +29,7 @@ class ForUnregisteredPlayerOrganizationRegistrationNotificationMail extends Mail
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '[団体名]の所属選手として登録されました。',
+            subject: $this->unregistered_player_mail_data["organization_name"].'の所属選手として登録されました。',
         );
     }
 
