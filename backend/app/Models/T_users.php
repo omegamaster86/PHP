@@ -242,6 +242,7 @@ class T_users extends Authenticatable
     //メールアドレスを条件にユーザー情報を取得する
     public function getUserDataFromMailAddress($mailaddress)
     {
+        // DB::enableQueryLog(); //SQLの実行ログを表示 20240419
         $users = DB::select('select 
                             `user_id`, 
                             `user_name`, 
@@ -252,6 +253,7 @@ class T_users extends Authenticatable
                             and `delete_flag` = 0
                             and `mailaddress` = ?'
                             ,[$mailaddress]);
+        // Log::debug(DB::getQueryLog()); //SQLの実行ログを表示 20240419
         return $users;
     }
 

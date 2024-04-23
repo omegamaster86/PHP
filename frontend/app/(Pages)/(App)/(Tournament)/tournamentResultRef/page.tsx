@@ -57,6 +57,7 @@ export default function TournamentResultRef() {
 
         // 出漕結果記録情報の取得
         // const raceResultRecords = await axios.get('http://localhost:3100/raceResultRecords');
+        // console.log(raceResponse.data.record_result);
         setRaceResultRecords(raceResponse.data.record_result);
       } catch (error: any) {
         setErrorText([error.message]);
@@ -122,7 +123,9 @@ export default function TournamentResultRef() {
               {/* 距離 */}
               <div className='flex flex-col gap-[8px]'>
                 <Label label='距離' textSize='small' isBold />
-                <p className='h-12 text-secondaryText py-3 disable'>{raceInfo.range || ''}</p>
+                <p className='h-12 text-secondaryText py-3 disable'>
+                  {raceInfo.range ? raceInfo.range + 'm' : ''}
+                </p>
               </div>
               {/* 発艇予定日時 */}
               <div className='flex flex-col gap-[8px]'>
@@ -143,7 +146,7 @@ export default function TournamentResultRef() {
           <div className='flex flex-col gap-[8px]'>
             <Label label='発艇日時' textSize='small' isBold />
             <p className='h-12 text-secondaryText py-3 disable'>
-              {raceResultRecords[0]?.start_datetime || ''}
+              {raceResultRecords[0]?.startDateTime || ''}
             </p>
           </div>
           {/* 天気 */}
@@ -158,7 +161,7 @@ export default function TournamentResultRef() {
             <div className='flex flex-col gap-[8px]'>
               <Label label='1000m地点風向' textSize='small' isBold />
               <p className='h-12 text-secondaryText py-3 disable'>
-                {raceResultRecords[0]?.wind_direction_1000m_point || ''}
+                {raceResultRecords[0]?.tenHundredmWindDirectionName || ''}
               </p>
             </div>
             {/* 単位はm/秒 */}
@@ -166,7 +169,9 @@ export default function TournamentResultRef() {
             <div className='flex flex-col gap-[8px]'>
               <Label label='1000m地点風速' textSize='small' isBold />
               <p className='h-12 text-secondaryText py-3 disable'>
-                {raceResultRecords[0]?.wind_speed_1000m_point || ''}
+                {raceResultRecords[0]?.wind_speed_1000m_point
+                  ? raceResultRecords[0]?.wind_speed_1000m_point + 'm/秒'
+                  : ''}
               </p>
             </div>
           </div>
@@ -174,13 +179,15 @@ export default function TournamentResultRef() {
             <div className='flex flex-col gap-[8px]'>
               <Label label='2000m地点風向' textSize='small' isBold />
               <p className='h-12 text-secondaryText py-3 disable'>
-                {raceResultRecords[0]?.wind_direction_2000m_point || ''}
+                {raceResultRecords[0]?.twentyHundredmWindDirectionName || ''}
               </p>
             </div>
             <div className='flex flex-col gap-[8px]'>
               <Label label='2000m地点風速' textSize='small' isBold />
               <p className='h-12 text-secondaryText py-3 disable'>
-                {raceResultRecords[0]?.wind_speed_2000m_point || ''}
+                {raceResultRecords[0]?.wind_speed_2000m_point
+                  ? raceResultRecords[0]?.wind_speed_2000m_point + 'm/秒'
+                  : ''}
               </p>
             </div>
           </div>
@@ -300,31 +307,31 @@ export default function TournamentResultRef() {
                           <div className='flex flex-col gap-[8px]'>
                             <Label label='500m' textSize='small' isBold />
                             <p className='h-12 text-secondaryText py-3 disable'>
-                              {item?.stroke_rat_500m || ''}
+                              {item?.stroke_rat_500m ? item?.stroke_rat_500m + '回/分' : ''}
                             </p>
                           </div>
                           <div className='flex flex-col gap-[8px]'>
                             <Label label='1000m' textSize='small' isBold />
                             <p className='h-12 text-secondaryText py-3 disable'>
-                              {item?.stroke_rat_1000m || ''}
+                              {item?.stroke_rat_1000m ? item?.stroke_rat_1000m + '回/分' : ''}
                             </p>
                           </div>
                           <div className='flex flex-col gap-[8px]'>
                             <Label label='1500m' textSize='small' isBold />
                             <p className='h-12 text-secondaryText py-3 disable'>
-                              {item?.stroke_rat_1500m || ''}
+                              {item?.stroke_rat_1500m ? item?.stroke_rat_1500m + '回/分' : ''}
                             </p>
                           </div>
                           <div className='flex flex-col gap-[8px]'>
                             <Label label='2000m' textSize='small' isBold />
                             <p className='h-12 text-secondaryText py-3 disable'>
-                              {item?.stroke_rat_2000m || ''}
+                              {item?.stroke_rat_2000m ? item?.stroke_rat_2000m + '回/分' : ''}
                             </p>
                           </div>
                           <div className='flex flex-col gap-[8px]'>
                             <Label label='平均' textSize='small' isBold />
                             <p className='h-12 text-secondaryText py-3 disable'>
-                              {item?.stroke_rate_avg || ''}
+                              {item?.stroke_rate_avg ? item?.stroke_rate_avg + '回/分' : ''}
                             </p>
                           </div>
                         </div>

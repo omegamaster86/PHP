@@ -133,16 +133,18 @@ const CsvTable = ({
               </CustomTd>
               <CustomTd textType={isResultError(row.result) ? 'error' : 'secondary'}>
                 <Link
-                  href={`/app/player/playerInformationLinking/${row.playerId}`}
+                  href={row.playerId ? `/playerInformationRef?player_id=${row.playerId}` : ``}
                   className='text-primary-500'
+                  target='_blank'
                 >
                   {row.playerId}
                 </Link>
               </CustomTd>
               <CustomTd textType={isResultError(row.result) ? 'error' : 'secondary'}>
                 <Link
-                  href={`/app/player/playerInformationLinking/${row.jaraPlayerId}`}
+                  href={row.playerId ? `/playerInformationRef?player_id=${row.playerId}` : ``}
                   className='text-primary-500'
+                  target='_blank'
                 >
                   {row.jaraPlayerId}
                 </Link>
@@ -154,10 +156,22 @@ const CsvTable = ({
                 {row.mailaddress}
               </CustomTd>
               <CustomTd textType={isResultError(row.result) ? 'error' : 'secondary'}>
-                {row.teamId}
+                <Link
+                  href={row.teamId ? `/teamRef?orgId=${row.teamId}` : ``}
+                  className='text-primary-500'
+                  target='_blank'
+                >
+                  {row.teamId}
+                </Link>
               </CustomTd>
               <CustomTd textType={isResultError(row.result) ? 'error' : 'secondary'}>
-                {row.teamName}
+                <Link
+                  href={row.teamId ? `/teamRef?orgId=${row.teamId}` : ``}
+                  className='text-primary-500'
+                  target='_blank'
+                >
+                  {row.teamName}
+                </Link>
               </CustomTd>
               <CustomTd textType={isResultError(row.result) ? 'error' : 'secondary'}>
                 {row.birthPlace}

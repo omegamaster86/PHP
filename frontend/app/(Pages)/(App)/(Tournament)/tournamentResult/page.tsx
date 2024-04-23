@@ -1,7 +1,7 @@
 // // 大会レース結果管理画面
 'use client';
 // ライブラリのインポート
-import React, { useState, useEffect, ChangeEvent, use } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AddIcon from '@mui/icons-material/Add';
 import TextField from '@mui/material/TextField';
@@ -1407,7 +1407,11 @@ export default function TournamentResult() {
     const playerNum = raceResultRecords.some((record, i) => {
       var count = 0;
       record.crewPlayer?.map((player, j) => {
-        if (!player.deleteFlg && player.errorText == '') {
+        // console.log(playerCount,count, player.deleteFlg, player.errorText);
+        if (
+          !player.deleteFlg &&
+          (player.errorText == '' || player.errorText == null || player.errorText == undefined)
+        ) {
           count++;
         }
       });
@@ -1428,6 +1432,7 @@ export default function TournamentResult() {
       });
       return false;
     } else {
+      console.log('clearError call');
       clearError();
     }
 
@@ -1446,9 +1451,17 @@ export default function TournamentResult() {
         await csrf();
         // レース名（マスタ）の取得
         //const response = await axios.get('http://localhost:3100/raceName');
-        const response = await axios.get('/getAllRaces');
+
+        //大会結果管理 試作中 20240422
+        const sendData = {
+          tourn_id: tournId,
+          event_id: eventId,
+        };
+        const responseDataList = await axios.post('/getTournLinkRaces', sendData); //大会IDと種目IDに紐づいたレース結果のないレースを取得 20240422
+        console.log(responseDataList); //20240422
+        // const response = await axios.get('/getAllRaces');
         //console.log(response);
-        const raceList = response.data.map(
+        const raceList = responseDataList.data.result.map(
           ({ race_id, race_name }: { race_id: number; race_name: string }) => ({
             id: race_id,
             name: race_name,
@@ -1546,12 +1559,10 @@ export default function TournamentResult() {
         console.log(response);
         const data = response.data.result;
         if (data.length === 0) {
-          alert(
-            '既に全てのレース結果が登録されています。新たにレース結果を登録することはできません。',
-          );
+          alert('選択されている種目は、開催予定のない種目になります。');
           router.back();
         } else {
-          setRaceInfo(data[0]);
+          // setRaceInfo(data[0]); //レース結果登録に画面遷移時は「レース基本情報」の項目はすべて空の状態にする 20240422
         }
         console.log('====================');
       } catch (error: any) {
@@ -1636,11 +1647,11 @@ export default function TournamentResult() {
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
           const response = await axios.post('/getRaceDataRaceId', sendData);
-          console.log(response.data.result);
+          console.log(response.data.race_result);
 
-          data = response.data.result;
+          data = response.data.race_result;
+          data[0].startDateTime = data[0].start_date_time; //バックエンド側のキーをフロント側のキーに入れ直す 20240422
           // 遷移元からイベントIDが取得できる時だけ、遷移元からのイベントIDをセットする。セットされていない時は、レース情報からイベントIDをセットする。
-
           setRaceInfo({
             ...data[0],
             eventId: eventId || data[0].eventId,
@@ -1750,13 +1761,15 @@ export default function TournamentResult() {
                     await csrf();
                     const response = await axios.post('/getRaceDataRaceId', sendData);
                     console.log(response.data);
-                    const data = response.data;
+                    const data = response.data.race_result;
                     if (data.length == 0) {
                       setErrorText(['レース情報が取得できませんでした。']);
                       setRaceInfo({} as RaceTable);
                       scrollTo(0, 0);
                     } else {
-                      setRaceInfo(data.race_result[0]);
+                      //名前の異なるバックエンド側とフロント側のキーを紐づける 20240420
+                      data[0].startDateTime = data[0].start_date_time;
+                      setRaceInfo(data[0]);
                     }
                   }}
                   readonly={mode === 'update' || mode === 'confirm'}
@@ -1793,13 +1806,15 @@ export default function TournamentResult() {
                         await csrf();
                         const response = await axios.post('/getRaceDataRaceId', sendData);
                         console.log(response.data);
-                        const data = response.data;
+                        const data = response.data.race_result;
                         if (data.length == 0) {
                           setErrorText(['レース情報が取得できませんでした。']);
                           setRaceInfo({} as RaceTable);
                           scrollTo(0, 0);
                         } else {
-                          setRaceInfo(data.race_result[0]);
+                          //名前の異なるバックエンド側とフロント側のキーを紐づける 20240420
+                          data[0].startDateTime = data[0].start_date_time;
+                          setRaceInfo(data[0]);
                         }
                       }}
                       renderOption={(props: any, option: MasterResponse) => {
@@ -1858,7 +1873,7 @@ export default function TournamentResult() {
               />
               <CustomTextField
                 label='距離'
-                value={raceInfo?.range?.toString() || ''}
+                value={raceInfo?.range?.toString() ? raceInfo?.range?.toString() + 'm' : ''}
                 readonly
                 displayHelp={false}
               />
@@ -2057,7 +2072,7 @@ export default function TournamentResult() {
       {/* レース結果情報 */}
       {raceResultRecords.map((item, index) => (
         <div className='flex flex-col gap-[20px] border border-solid p-[20px]' key={index}>
-          <InputLabel label={'レース結果情報' + (index + 1)} />
+          <InputLabel label={'レース結果情報' + (raceResultRecords.length - index)} />
           <ErrorBox errorText={item.errorText ? [item.errorText] : []} />
           <div className='flex flex-row justify-between'>
             {mode === 'update' && (
@@ -2121,7 +2136,7 @@ export default function TournamentResult() {
                         handleRaceResultRecordsInputChangebyIndex(index, 'org_id', e);
                         handleRaceResultRecordsInputChangebyIndex(
                           index,
-                          'orgName',
+                          'org_name',
                           orgOptions.find((item) => item.id === e)?.name || '',
                         );
                       }}
@@ -2243,7 +2258,7 @@ export default function TournamentResult() {
                         />
                         <div className='flex flex-col gap-[8px]'>
                           <InputLabel label='備考' />
-                          <CustomDropdown
+                          {/* <CustomDropdown
                             value={
                               mode === 'confirm'
                                 ? item.race_result_notes
@@ -2264,6 +2279,56 @@ export default function TournamentResult() {
                               );
                             }}
                             readonly={mode === 'confirm'}
+                          /> */}
+                          <Autocomplete
+                            options={remarkOptions.map((item) => ({
+                              id: item.id,
+                              name: item.name,
+                            }))}
+                            getOptionLabel={(option) =>
+                              typeof option === 'string' ? option : option?.name || ''
+                            }
+                            value={
+                              { id: Number(item.remarkId), name: item.race_result_notes } || ''
+                            }
+                            onChange={(e: ChangeEvent<{}>, newValue) => {
+                              handleRaceResultRecordsInputChangebyIndex(
+                                index,
+                                'remarkId',
+                                newValue ? (newValue as MasterResponse).id?.toString() : '',
+                              );
+                              handleRaceResultRecordsInputChangebyIndex(
+                                index,
+                                'race_result_notes',
+                                newValue ? (newValue as MasterResponse).name : '',
+                              );
+                            }}
+                            onInputChange={(e, newValue) => {
+                              handleRaceResultRecordsInputChangebyIndex(
+                                index,
+                                'race_result_notes',
+                                newValue || '',
+                              );
+                            }}
+                            renderOption={(props: any, option: MasterResponse) => {
+                              return (
+                                <li {...props} key={option.id}>
+                                  {option.name}
+                                </li>
+                              );
+                            }}
+                            renderInput={(params) => (
+                              <TextField
+                                key={params.id}
+                                className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                                {...params}
+                                value={item.race_result_notes || ''}
+                              />
+                            )}
+                            freeSolo
+                            className={'w-[120px]'}
+                            readOnly={mode === 'confirm'}
+                            disabled={mode === 'confirm'}
                           />
                         </div>
                       </div>
@@ -2433,22 +2498,22 @@ export default function TournamentResult() {
                   <CustomTh rowSpan={2}>
                     <p>削除</p>
                   </CustomTh>
-                  <CustomTh rowSpan={2}>
+                  <CustomTh rowSpan={2} className='w-[110px]'>
                     <p>選手ID</p>
                   </CustomTh>
-                  <CustomTh rowSpan={2}>
+                  <CustomTh rowSpan={2} className='w-[160px]'>
                     <p>選手名</p>
                   </CustomTh>
                   <CustomTh rowSpan={2}>
                     <p>性別</p>
                   </CustomTh>
-                  <CustomTh rowSpan={2}>
+                  <CustomTh rowSpan={2} className='w-[120px]'>
                     <p>身長</p>
                   </CustomTh>
-                  <CustomTh rowSpan={2}>
+                  <CustomTh rowSpan={2} className='w-[120px]'>
                     <p>体重</p>
                   </CustomTh>
-                  <CustomTh rowSpan={2}>
+                  <CustomTh rowSpan={2} className='w-[130px]'>
                     <p>シート番号</p>
                   </CustomTh>
                   <CustomTh rowSpan={1} colSpan={5}>
@@ -2459,19 +2524,19 @@ export default function TournamentResult() {
                   </CustomTh>
                 </CustomTr>
                 <CustomTr>
-                  <CustomTh>
+                  <CustomTh className='w-[90px]'>
                     <p>500m</p>
                   </CustomTh>
-                  <CustomTh>
+                  <CustomTh className='w-[90px]'>
                     <p>1000m</p>
                   </CustomTh>
-                  <CustomTh>
+                  <CustomTh className='w-[90px]'>
                     <p>1500m</p>
                   </CustomTh>
-                  <CustomTh>
+                  <CustomTh className='w-[90px]'>
                     <p>2000m</p>
                   </CustomTh>
-                  <CustomTh>
+                  <CustomTh className='w-[90px]'>
                     <p>平均</p>
                   </CustomTh>
                   <CustomTh>
@@ -2714,15 +2779,11 @@ export default function TournamentResult() {
         <CustomButton
           buttonType='secondary'
           onClick={() => {
-            if (mode == 'comfirm') {
-              router.back(); //確認画面の場合、1つ前の画面に戻る
-            } else {
-              router.push('/tournamentResultManagement');
-            }
+            router.back();
           }}
           className='w-[170px]'
         >
-          {mode == 'confirm' ? '戻る' : '管理画面に戻る'}
+          戻る
         </CustomButton>
         <CustomButton
           buttonType='primary'
@@ -2765,6 +2826,12 @@ export default function TournamentResult() {
                 // 更新処理
                 router.push('/tournamentResult?mode=confirm&prevMode=update');
               } else if (mode === 'confirm') {
+                //登録・更新する前に選手名についている「*」を消す 20240422
+                for (let index = 0; index < raceResultRecords.length; index++) {
+                  for (let j = 0; j < raceResultRecords[index].crewPlayer.length; j++) {
+                    raceResultRecords[index].crewPlayer[j].playerName.replace('*', '');
+                  }
+                }
                 if (prevMode == 'create') {
                   //登録・更新確認画面からバックエンド側にデータを送る 20240405
                   const sendData = {
@@ -2780,6 +2847,9 @@ export default function TournamentResult() {
                   );
                   console.log(raceResponse);
                   // router.push('/tournamentResult?mode=confirm&prevMode=update');
+                  if (!raceResponse.data?.errMessage) {
+                    router.push('/tournamentResultRef?raceId=' + raceResultRecordResponse.race_id);
+                  }
                 } else if (prevMode == 'update') {
                   //登録・更新確認画面からバックエンド側にデータを送る 20240405
                   const sendData = {
@@ -2795,6 +2865,9 @@ export default function TournamentResult() {
                   );
                   console.log(raceResponse);
                   // router.push('/tournamentResult?mode=confirm&prevMode=update');
+                  if (!raceResponse.data?.errMessage) {
+                    router.push('/tournamentResultRef?raceId=' + raceResultRecordResponse.race_id);
+                  }
                 }
               }
             }

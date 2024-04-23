@@ -874,13 +874,15 @@ class T_raceResultRecord extends Model
                                             ,rrr.`start_datetime` as `startDateTime` #発艇日時
                                             ,rrr.`weather`  as `weatherId`      #天候
                                             ,rrr.`wind_direction_1000m_point`   #1000m地点風向
+                                            ,wd1000p.`wind_direction` as tenHundredmWindDirectionName
                                             ,rrr.`wind_speed_1000m_point`       #1000m地点風速
                                             ,rrr.`wind_direction_2000m_point`   #2000m地点風向
+                                            ,wd2000p.`wind_direction` as twentyHundredmWindDirectionName
                                             ,rrr.`wind_speed_2000m_point`       #2000m地点風速
-                                            ,case
-                                                when rrr.`org_id` is null then rrr.`org_id`
-                                                else rrr.`org_name`
-                                                end as `org_name`             #所属団体
+                                            #,case
+                                            #    when rrr.`org_id` is null then rrr.`org_id`
+                                            #    else rrr.`org_name`
+                                            #    end as `org_name`             #所属団体
                                             ,rrr.`crew_name`                  #クルー名
                                             ,rrr.`lane_number`                #出漕レーンNo.
                                             ,rrr.`rank`                       #順位
@@ -896,12 +898,22 @@ class T_raceResultRecord extends Model
                                             ,rrr.`stroke_rat_2000m`           #2000mストロークレート
                                             ,rrr.`stroke_rate_avg`            #ストロークレート(平均)
                                             ,rrr.org_id
+                                            ,org.org_name
                                             from `t_race_result_record` rrr
                                             left join `m_weather_type` mwt
                                             on rrr.`weather` = mwt.`weather_id`
+                                            left join `t_organizations` org
+                                            on rrr.org_id = org.org_id
+                                            left join `m_wind_direction` wd2000p
+                                            on rrr.`wind_direction_2000m_point` = wd2000p.`wind_direction_id`
+                                            left join `m_wind_direction` wd1000p
+                                            on rrr.`wind_direction_1000m_point` = wd1000p.`wind_direction_id`
                                             where 1=1
                                             and rrr.`delete_flag` = 0
                                             and (mwt.`delete_flag` = 0 or mwt.`delete_flag` is null)
+                                            and (org.`delete_flag` = 0 or org.`delete_flag` is null)
+                                            and (wd2000p.`delete_flag` = 0 or wd2000p.`delete_flag` is null)
+                                            and (wd1000p.`delete_flag` = 0 or wd1000p.`delete_flag` is null)
                                             and race_id = :race_id"
                                             ,["race_id" => $race_id]);
         Log::debug("getRaceResultRecordOnRowingPoint end.");

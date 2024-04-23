@@ -166,6 +166,8 @@ Route::middleware('auth')->group(function () {
     Route::post('searchRaceData', [TournamentController::class, 'searchRaceData']); //大会レース結果管理　レース結果検索 20240329
     Route::post('getRaceDataRaceId', [TournamentController::class, 'getRaceDataRaceId']); //レース結果登録 レースIDを元にレース情報を取得 20240329
     Route::post('getRaceDataFromTournIdAndEventId', [TournamentController::class, 'getRaceDataFromTournIdAndEventId']); //レース結果登録 大会IDと種目IDを元にレース情報を取得 20240329
+    Route::post('getCsvFormatRaceData', [TournamentController::class, 'getCsvFormatRaceData']); //大会結果情報一括登録画面用 csvフォーマット出力に使用するレース情報の取得 20240418
+    Route::post('getTournLinkRaces', [TournamentController::class, 'getTournLinkRaces']); //大会結果管理　レース登録画面用 レース情報の取得 20240422
 
     //レース結果(出漕結果記録)関連
     Route::post('getTournRaceResultRecords', [TournamentController::class, 'getTournRaceResultRecords']); //大会レース結果参照画面 20240216

@@ -635,6 +635,7 @@ class T_players extends Model
 
     //全選手情報を取得
     //大会結果一括登録画面用
+    //修正 マッピング用選手を除外するよう修正　2024.04.20 吉川 
     public function getPlayers()
     {
         $players = DB::select('select
@@ -676,6 +677,7 @@ class T_players extends Model
                                 on `t_players`.residence_prefecture = res_pref.pref_id
                                 where 1=1
                                 and `t_players`.delete_flag = 0
+                                and `t_players`.user_id IS NOT NULL
                                 and  (`m_sex`.`delete_flag` = 0 or `m_sex`.`delete_flag` is null)
                                 and  (bir_cont.`delete_flag` = 0 or bir_cont.`delete_flag` is null)
                                 and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
