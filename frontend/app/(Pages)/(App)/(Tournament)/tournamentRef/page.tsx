@@ -372,7 +372,7 @@ export default function TournamentRef() {
                     {/* 距離 */}
                     <CustomTd>{row.range}</CustomTd>
                     {/* 発艇日時 */}
-                    <CustomTd>{row.start_date_time}</CustomTd>
+                    <CustomTd>{row.start_date_time.substring(0, 16)}</CustomTd>
                   </CustomTr>
                 ))}
               </CustomTbody>
