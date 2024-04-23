@@ -809,8 +809,8 @@ class TournamentController extends Controller
         //組別
         if(isset($reqData["byGroup"]))
         {
-            $condition .= "and race.by_group = :by_group\r\n";
-            $valueArray["by_group"] = $reqData["byGroup"];
+            $condition .= "and race.by_group LIKE :by_group\r\n";
+            $valueArray["by_group"] = "%".$reqData["byGroup"]."%";
         }
         //レースNo.
         if(isset($reqData["raceNo"]))
