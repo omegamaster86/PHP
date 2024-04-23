@@ -370,6 +370,7 @@ class T_users extends Authenticatable
     {
         $user = DB::select('select
                             `user_id`
+                            ,mailaddress
                             ,`sex`
                             ,`date_of_birth`
                             ,`height`

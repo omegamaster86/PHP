@@ -22,16 +22,12 @@
 
 <body>
     <p>
-        件名: {{$unregistered_player_mail_data['organization_name']}}の所属選手として登録されました。<br />
-        送信元: xxxxx@jara.or.jp<br />
-        宛先: {{$unregistered_player_mail_data['to_mailaddress']}}<br /><br />
-
         ※本メールはシステムから自動送信されています。<br /><br />
 
         {{$unregistered_player_mail_data['player_name']}} 様
-        ([当該選手の「ユーザーテーブル」に登録されているメールアドレス])
+        ({{$unregistered_player_mail_data['to_mailaddress']}})
 
-        {{$unregistered_player_mail_data['organization_name']}} （{{$unregistered_player_mail_data['organization_id']}} ）の管理者により、団体の所属選手として登録されました。
+        {{$unregistered_player_mail_data['manager_type']}}の管理者により、団体の所属選手として登録されました。
         選手情報は、ユーザー情報を元に作成しています。
         システムにログインし、「選手情報更新」から選手情報の更新を行ってください。
         【確認が必要な情報】

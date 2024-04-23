@@ -1027,260 +1027,268 @@ class OrganizationPlayersController extends Controller
         $reqData = $inputData["csvDataList"];
         Log::debug($reqData);
         $input_org_id = $inputData["targetOrgData"]["targetOrgId"];
-        //$input_org_name = $inputData["targetOrgData"]["targetOrgName"];
-        DB::beginTransaction();
-        try
+
+        //登録・更新するユーザー名を取得
+        $register_user_id = Auth::user()->user_id;
+        //登録・更新日時のために現在の日時を取得
+        $current_datetime = now()->format('Y-m-d H:i:s.u');
+        for($rowIndex = 0;$rowIndex < count($reqData); $rowIndex++)
         {
-            //登録・更新するユーザー名を取得
-            $register_user_id = Auth::user()->user_id;
-            //登録・更新日時のために現在の日時を取得
-            $current_datetime = now()->format('Y-m-d H:i:s.u');
-            for($rowIndex = 0;$rowIndex < count($reqData); $rowIndex++)
+            if($reqData[$rowIndex]['checked'] == true 
+                &&
+                (
+                    $reqData[$rowIndex]['result'] == "登録可能"
+                    || $reqData[$rowIndex]['result'] == "選手未登録のため選手登録後、所属選手登録を実施"
+                    || $reqData[$rowIndex]['result'] == "ユーザー未登録"
+                )
+            )
             {
-                if($reqData[$rowIndex]['checked'] == true && $reqData[$rowIndex]['result'] == "登録可能")
+                DB::beginTransaction();
+                //対象のユーザーデータを取得
+                $target_player_name = $reqData[$rowIndex]['playerName'];
+                $target_mailaddress = $reqData[$rowIndex]['mailaddress'];
+                $target_user_data = $t_users->getUserDataFromInputCsv($target_mailaddress);
+                // Log::debug('********************target user data********************');
+                // Log::debug($target_user_data);
+                if(empty($target_user_data))
                 {
-                    //対象のユーザーデータを取得
-                    $target_mailaddress = $reqData[$rowIndex]['mailaddress'];
-                    $target_user_data = $t_users->getUserDataFromInputCsv($target_mailaddress);
-                    // Log::debug('********************target user data********************');
-                    // Log::debug($target_user_data);
-                    if(empty($target_user_data))
+                    //ユーザーが存在しない場合、ユーザーテーブルにinsertして仮登録のメール送信
+                    // For Generate random password
+                    $temp_password = Str::random(8);
+                    //For adding 1day with current time
+                    $converting_date = date_create($current_datetime);
+                    date_add($converting_date, date_interval_create_from_date_string("1 day"));
+                    $newDate = date_format($converting_date, "Y-m-d H:i:s.u");
+                    
+                    //ユーザー生成のためのデータを配列に格納
+                    $hashed_password = Hash::make($temp_password);
+                    $insert_user_value = [];
+                    $insert_user_value['user_name'] = $target_player_name;
+                    $insert_user_value['mailaddress'] = $target_mailaddress;
+                    $insert_user_value['password'] = $hashed_password;
+                    // $insert_user_value['temp_password'] = $hashed_password;
+                    $insert_user_value['expiry_time_of_temp_password'] = $newDate;
+                    $insert_user_value['temp_password_flag'] = 1;
+                    $insert_user_value['current_datetime'] = $current_datetime;
+                    $insert_user_value['user_id'] = $register_user_id;
+                    
+                    Log::debug('********************insert user value********************');
+                    Log::debug($insert_user_value);                    
+                    try
                     {
-                        //ユーザーが存在しない場合、ユーザーテーブルにinsertして仮登録のメール送信
-                        // For Generate random password
-                        $temp_password = Str::random(8);
-                        //For adding 1day with current time
-                        $converting_date = date_create($current_datetime);
-                        date_add($converting_date, date_interval_create_from_date_string("1 day"));
-                        $newDate = date_format($converting_date, "Y-m-d H:i:s.u");
-                        
-                        //ユーザー生成のためのデータを配列に格納
-                        $hashed_password = Hash::make($temp_password);
-                        $insert_user_value = [];
-                        $insert_user_value['user_name'] = $reqData[$rowIndex]['playerName'];
-                        $insert_user_value['mailaddress'] = $target_mailaddress;
-                        $insert_user_value['password'] = $hashed_password;
-                        // $insert_user_value['temp_password'] = $hashed_password;
-                        $insert_user_value['expiry_time_of_temp_password'] = $newDate;
-                        $insert_user_value['temp_password_flag'] = 1;
-                        $insert_user_value['current_datetime'] = $current_datetime;
-                        $insert_user_value['user_id'] = $register_user_id;
-                        
-                        Log::debug('********************insert user value********************');
-                        Log::debug($insert_user_value);
-                        
                         //insert実行
                         $t_users->insertTemporaryUser($insert_user_value);
-
-                        //メール送信
-                        //For getting current time
-                        $mail_date = date('Y/m/d H:i');
-                        //For adding 24hour with current time
-                        $new_mail_date = date('Y/m/d H:i', strtotime($mail_date . ' + 24 hours'));
-                        //Getting url information from env file.
-                        $frontend_url  = config ('env-data.frontend-url');                        
-                        //Store user information for sending email.
-                        $mail_data = [
-                            'user_name' => $t_users->user_name,
-                            'to_mailaddress' => $target_mailaddress,
-                            'from_mailaddress' => 'xxxxx@jara.or.jp',
-                            'temporary_password' => $temp_password,
-                            'temporary_password_expiration_date' => $new_mail_date,
-                            'login_url'=> $frontend_url.'/login'
-
-                        ];
-                        try {
-                            //Sending mail to the user
-                            Mail::to($target_mailaddress)->send(new WelcomeMail($mail_data));
-                        }
-                        catch (Exception $e) {
-                            Log::debug(sprintf("=====UserNotificationMail start====="));
-                            Log::debug($e->getMessage());
-                            Log::debug(sprintf("=====UserNotificationMail end====="));
-                            return response()->json("メール送信に失敗しました。",500);
-                        }
                     }
-                    //選手情報が存在しているかチェック
-                    //直近に挿入した選手のID
-                    $insert_player_id = 0;
-                    //選手情報を取得
-                    $target_player_data = $t_players->getPlayer($reqData[$rowIndex]['playerId']);
-                    // Log::debug('********************target player data********************');
-                    // Log::debug($target_player_data);
-                    //対象の選手が選手テーブルに存在するかをチェック
-                    if (empty($target_player_data))
+                    catch(\Throwable $e)
                     {
-                        //選手未登録の場合、選手テーブルにinsertして通知メールを送信
-                        $insert_player_data = array();
-                        $insert_player_data['user_id'] = $reqData[$rowIndex]['userId'];
-                        $insert_player_data['jara_player_id'] = isset($reqData[$rowIndex]['jaraPlayerId']) ? $reqData[$rowIndex]['jaraPlayerId'] : null;
-                        $insert_player_data['player_name'] = isset($reqData[$rowIndex]['playerName']) ? $reqData[$rowIndex]['playerName'] : null;
-                        $insert_player_data['date_of_birth'] = $target_user_data[0]->{'date_of_birth'};
-                        $insert_player_data['sex_id'] = $target_user_data[0]->{'sex'};
-                        $insert_player_data['height'] = $target_user_data[0]->{'height'};
-                        $insert_player_data['weight'] = $target_user_data[0]->{'weight'};
-                        $insert_player_data['birth_country'] = isset($reqData[$rowIndex]['birthCountryId']) ? $reqData[$rowIndex]['birthCountryId'] : null;
-                        $insert_player_data['birth_prefecture'] = isset($reqData[$rowIndex]['birthPrefectureId']) ? $reqData[$rowIndex]['birthPrefectureId'] : null;
-                        $insert_player_data['residence_country'] = isset($reqData[$rowIndex]['residenceCountryId']) ? $reqData[$rowIndex]['residenceCountryId'] : null;
-                        $insert_player_data['residence_prefecture'] = isset($reqData[$rowIndex]['residencePrefectureId']) ? $reqData[$rowIndex]['residencePrefectureId'] : null;
-                        
-                        $insert_player_data['current_datetime'] = $current_datetime;
-                        $insert_player_data['update_user_id'] = $register_user_id;
-                        
-                        Log::debug('********************insert player data********************');
-                        Log::debug($insert_player_data);
-
-                        //insertを実行して、insertしたレコードのIDを取得
-                        $insert_player_id = $t_players->insertPlayer($insert_player_data);
-
-                        // //Getting url information from env file.
-                        // $frontend_url  = config ( 'env-data.frontend-url' ) ;
-
-                        // //Store player information for sending email.
-                        // $unregistered_player_mail_data = [
-                        //     'to_mailaddress' => $target_mailaddress,  //[当該選手の「ユーザーテーブル」に登録されているメールアドレス]
-                        //     'from_mailaddress' => 'xxxxx@jara.or.jp',
-                        //     'organization_name' => $reqData[$rowIndex]['teamName'],
-                        //     'organization_id' => $reqData[$rowIndex]['teamId'],
-                        //     'player_name' => $reqData[$rowIndex]['playerName'],
-                        //     // 'birth_date' => '....',
-                        //     // 'sex' => '....',
-                        //     // 'height' => '....',
-                        //     // 'weight' => '....',
-                        //     // 'side_info' => '....',
-                        //     // 'birth_country' => '....',
-                        //     // 'residence_country' => '....',
-                        //     'inquiry_url'=> $frontend_url.'/inquiry'                            
-                        // ];
-
-                        // try {
-                        //     //Sending mail to the unregistered
-                        //     Mail::to($target_mailaddress)->send(new ForUnregisteredPlayerOrganizationRegistrationNotificationMail($unregistered_player_mail_data));
-                        // }
-                        // catch (Exception $e) {
-                        //     Log::debug(sprintf("=====ForUnregisteredPlayerOrganizationRegistrationNotificationMail start====="));
-                        //     Log::debug($e);
-                        //     Log::debug(sprintf("=====ForUnregisteredPlayerOrganizationRegistrationNotificationMail end====="));
-                        //     return response()->json("メール送信に失敗しました。",500);
-                        // }
-
+                        DB::rollback();
+                        $error_message = "以下の選手のユーザー登録に失敗しました。\r\n
+                                            選手名：".$target_player_name."\r\n
+                                            メールアドレス：".$target_mailaddress;
+                        Log::error($e->getMessage());
+                        return response()->json($error_message,401);
                     }
-                    // else{
-                    //     //Store player information for sending email.
-                    //     $registered_player_mail_data = [
-                    //         'to_mailaddress' => $target_mailaddress,  //[当該選手の「ユーザーテーブル」に登録されているメールアドレス]
-                    //         'from_mailaddress' => 'xxxxx@jara.or.jp',
-                    //         'organization_name' => $reqData[$rowIndex]['teamName'],
-                    //         'organization_id' => $reqData[$rowIndex]['teamId'],
-                    //         'player_name' => $reqData[$rowIndex]['playerName'],
-                    //         'inquiry_url'=> $frontend_url.'/inquiry'
-                            
-                    //     ];
+                    //メール送信
+                    //For getting current time
+                    $mail_date = date('Y/m/d H:i');
+                    //For adding 24hour with current time
+                    $new_mail_date = date('Y/m/d H:i', strtotime($mail_date . ' + 24 hours'));
+                    //Getting url information from env file.
+                    $frontend_url  = config ('env-data.frontend-url');                        
+                    //Store user information for sending email.
+                    $mail_data = [
+                        'user_name' => $t_users->user_name,
+                        'to_mailaddress' => $target_mailaddress,
+                        'from_mailaddress' => 'xxxxx@jara.or.jp',
+                        'temporary_password' => $temp_password,
+                        'temporary_password_expiration_date' => $new_mail_date,
+                        'login_url'=> $frontend_url.'/login'
 
-                    //     try {
-                    //         //Sending mail to the unregistered
-                    //         Mail::to($target_mailaddress)->send(new ForRegisteredPlayerOrganizationRegistrationNotificationMail($registered_player_mail_data));
-                    //     }
-                    //     catch (Exception $e) {
-                    //         Log::debug(sprintf("=====ForRegisteredPlayerOrganizationRegistrationNotificationMail start====="));
-                    //         Log::debug($e);
-                    //         Log::debug(sprintf("=====ForRegisteredPlayerOrganizationRegistrationNotificationMail end====="));
-                    //         return response()->json("メール送信に失敗しました。",500);
-                    //     }
+                    ];
+                    try {
+                        //Sending mail to the user
+                        Mail::to($target_mailaddress)->send(new WelcomeMail($mail_data));
+                    }
+                    catch (Exception $e) {
+                        DB::rollBack();
+                        // Log::debug(sprintf("=====UserNotificationMail start====="));
+                        // Log::debug($e->getMessage());
+                        // Log::debug(sprintf("=====UserNotificationMail end====="));
+                        $error_message = "以下の選手のメール送信に失敗しました。\r\n
+                                            選手名：".$target_player_name."\r\n
+                                            メールアドレス：".$target_mailaddress;
+                        Log::error($e->getMessage());
+                        return response()->json($error_message,401);
+                    }
 
-                    //     // mail address -> $reqData[$rowIndex]['mailaddress'];
-                    //     //send email to player
-                    //     //use for_registered_player_organization_registration_notification_mail.blade template
-                    // }
-                    //団体所属選手テーブルに挿入
-                    $insert_organization_player_data = [];
-                    $insert_organization_player_data['org_id'] = $input_org_id;
-                    //選手IDは入力値になければ直近にinsertした選手IDを代入
-                    $insert_organization_player_data['player_id'] = isset($reqData[$rowIndex]['playerId']) ? $reqData[$rowIndex]['playerId'] : $insert_player_id;
-                    // Log::debug('********************insert organization player data********************');
-                    // Log::debug($insert_organization_player_data);
-                    //insertを実行して、insertしたレコードのIDを取得
-                    $insert_organization_player_id = $t_organization_players->insertOrganizationPlayer($insert_organization_player_data,$input_org_id);
+                    //登録したユーザー情報を取得
+                    $target_user_data = $t_users->getUserDataFromInputCsv($target_mailaddress);
+                }
+                //選手情報が存在しているかチェック
+                //直近に挿入した選手のID
+                $insert_player_id = 0;
+                //選手情報を取得
+                $target_player_data = $t_players->getPlayer($reqData[$rowIndex]['playerId']);
+                // Log::debug('********************target player data********************');
+                // Log::debug($target_player_data);
+                //対象の選手が選手テーブルに存在するかをチェック
+                if (empty($target_player_data))
+                {
+                    //選手未登録の場合、選手テーブルにinsertして通知メールを送信
+                    $insert_player_data = array();
+                    $insert_player_data['user_id'] = $reqData[$rowIndex]['userId'];
+                    $insert_player_data['jara_player_id'] = isset($reqData[$rowIndex]['jaraPlayerId']) ? $reqData[$rowIndex]['jaraPlayerId'] : null;
+                    $insert_player_data['player_name'] = isset($target_player_name) ? $target_player_name : null;
+                    $insert_player_data['date_of_birth'] = $target_user_data[0]->{'date_of_birth'};
+                    $insert_player_data['sex_id'] = $target_user_data[0]->{'sex'};
+                    $insert_player_data['height'] = $target_user_data[0]->{'height'};
+                    $insert_player_data['weight'] = $target_user_data[0]->{'weight'};
+                    $insert_player_data['birth_country'] = isset($reqData[$rowIndex]['birthCountryId']) ? $reqData[$rowIndex]['birthCountryId'] : null;
+                    $insert_player_data['birth_prefecture'] = isset($reqData[$rowIndex]['birthPrefectureId']) ? $reqData[$rowIndex]['birthPrefectureId'] : null;
+                    $insert_player_data['residence_country'] = isset($reqData[$rowIndex]['residenceCountryId']) ? $reqData[$rowIndex]['residenceCountryId'] : null;
+                    $insert_player_data['residence_prefecture'] = isset($reqData[$rowIndex]['residencePrefectureId']) ? $reqData[$rowIndex]['residencePrefectureId'] : null;
                     
-                    //ユーザー種別の更新処理
-                    $is_player = $target_user_data[0]->{'is_player'};
-                    if($is_player == 0)
+                    $insert_player_data['current_datetime'] = $current_datetime;
+                    $insert_player_data['update_user_id'] = $register_user_id;
+                    
+                    // Log::debug('********************insert player data********************');
+                    // Log::debug($insert_player_data);
+
+                    //insertを実行して、insertしたレコードのIDを取得
+                    try
                     {
-                        $user_info = array();
-                        $user_info['user_id'] = $target_user_data[0]->{'user_id'};
-                        $user_info['input'] = '100';
-                        //$t_users->updateUserTypeRegist($user_info);
-                        $user_type = (string)Auth::user()->user_type;
-                        //右から3桁目が0のときだけユーザー種別を更新する
-                        if(substr($user_type,-3,1) == '0')
+                        $insert_player_id = $t_players->insertPlayer($insert_player_data);
+                    }
+                    catch(\Throwable $e)
+                    {
+                        DB::rollback();
+                        $error_message = "以下の選手の選手情報登録に失敗しました。\r\n
+                                            選手名：".$target_player_name."\r\n
+                                            メールアドレス：".$target_mailaddress;
+                        Log::error($e->getMessage());
+                        return response()->json($error_message,401);
+                    }
+                }
+                //団体所属選手テーブルに挿入
+                $insert_organization_player_data = [];
+                $insert_organization_player_data['org_id'] = $input_org_id;
+                //選手IDは入力値になければ直近にinsertした選手IDを代入
+                $insert_organization_player_data['player_id'] = isset($reqData[$rowIndex]['playerId']) ? $reqData[$rowIndex]['playerId'] : $insert_player_id;
+                // Log::debug('********************insert organization player data********************');
+                // Log::debug($insert_organization_player_data);
+                //insertを実行して、insertしたレコードのIDを取得
+                try
+                {
+                    $insert_organization_player_id = $t_organization_players->insertOrganizationPlayer($insert_organization_player_data,$input_org_id);
+                }
+                catch(\Throwable $e)
+                {
+                    DB::rollback();
+                    $error_message = "以下の選手の団体所属処理に失敗しました。\r\n
+                                        選手名：".$target_player_name."\r\n
+                                        メールアドレス：".$target_mailaddress;
+                    Log::error($e->getMessage());
+                    return response()->json($error_message,401);
+                }
+                
+                //ユーザー種別の更新処理
+                $is_player = $target_user_data[0]->{'is_player'};
+                if($is_player == 0)
+                {
+                    $user_info = array();
+                    $user_info['user_id'] = $target_user_data[0]->{'user_id'};
+                    $user_info['input'] = '100';
+                    //$t_users->updateUserTypeRegist($user_info);
+                    $user_type = (string)Auth::user()->user_type;
+                    //右から3桁目が0のときだけユーザー種別を更新する
+                    if(substr($user_type,-3,1) == '0')
+                    {
+                        try
                         {
                             $t_users->updateUserTypeRegist($user_info);
                         }
-                    }
-
-                    //メール送信
-                    if (empty($target_player_data))
-                    {
-                        //Getting url information from env file.
-                        $frontend_url  = config ( 'env-data.frontend-url' ) ;
-
-                        //Store player information for sending email.
-                        $unregistered_player_mail_data = [
-                            'to_mailaddress' => $target_mailaddress,  //[当該選手の「ユーザーテーブル」に登録されているメールアドレス]
-                            'from_mailaddress' => 'xxxxx@jara.or.jp',
-                            'organization_name' => $reqData[$rowIndex]['teamName'],
-                            'organization_id' => $reqData[$rowIndex]['teamId'],
-                            'player_name' => $reqData[$rowIndex]['playerName'],
-                            'inquiry_url'=> $frontend_url.'/inquiry'                            
-                        ];
-
-                        try {
-                            //Sending mail to the unregistered
-                            Mail::to($target_mailaddress)->send(new ForUnregisteredPlayerOrganizationRegistrationNotificationMail($unregistered_player_mail_data));
-                        }
-                        catch (Exception $e) {
-                            Log::debug(sprintf("=====ForUnregisteredPlayerOrganizationRegistrationNotificationMail start====="));
-                            Log::debug($e);
-                            Log::debug(sprintf("=====ForUnregisteredPlayerOrganizationRegistrationNotificationMail end====="));
-                            return response()->json("メール送信に失敗しました。",500);
-                        }
-                    }
-                    else
-                    {
-                        $frontend_url = config('env-data.frontend-url'); //url情報の追加 20240422
-                        //Store player information for sending email.
-                        $registered_player_mail_data = [
-                            'to_mailaddress' => $target_mailaddress,  //[当該選手の「ユーザーテーブル」に登録されているメールアドレス]
-                            'from_mailaddress' => 'xxxxx@jara.or.jp',
-                            'organization_name' => $reqData[$rowIndex]['teamName'],
-                            'organization_id' => $reqData[$rowIndex]['teamId'],
-                            'player_name' => $reqData[$rowIndex]['playerName'],
-                            'inquiry_url'=> $frontend_url.'/inquiry'
-                            
-                        ];
-
-                        try {
-                            //Sending mail to the unregistered
-                            Mail::to($target_mailaddress)->send(new ForRegisteredPlayerOrganizationRegistrationNotificationMail($registered_player_mail_data));
-                        }
-                        catch (Exception $e) {
-                            Log::debug(sprintf("=====ForRegisteredPlayerOrganizationRegistrationNotificationMail start====="));
-                            Log::debug($e);
-                            Log::debug(sprintf("=====ForRegisteredPlayerOrganizationRegistrationNotificationMail end====="));
-                            return response()->json("メール送信に失敗しました。",500);
+                        catch(\Throwable $e)
+                        {
+                            DB::rollback();
+                            $error_message = "以下の選手のユーザー種別の更新処理に失敗しました。\r\n
+                                                選手名：".$target_player_name."\r\n
+                                                メールアドレス：".$target_mailaddress;
+                            Log::error($e->getMessage());
+                            return response()->json($error_message,401);
                         }
                     }
                 }
+                //メール送信
+                $user_type = Auth::user()->user_type;
+                if(substr($user_type,1,1) == '1')
+                {
+                    $manager_type = "システム";
+                }
+                elseif(substr($user_type,4,1) == '1')
+                {
+                    $manager_type = $reqData[$rowIndex]['teamName']."（".$reqData[$rowIndex]['teamId']."）";
+                }
+
+                if (empty($target_player_data))
+                {
+                    //Getting url information from env file.
+                    $frontend_url  = config ( 'env-data.frontend-url' ) ;
+
+                    //Store player information for sending email.
+                    $unregistered_player_mail_data = [
+                        'to_mailaddress' => $target_user_data[0]->{'mailaddress'},  //[当該選手の「ユーザーテーブル」に登録されているメールアドレス]
+                        'from_mailaddress' => 'xxxxx@jara.or.jp',
+                        'organization_name' => $reqData[$rowIndex]['teamName'],
+                        // 'organization_id' => $reqData[$rowIndex]['teamId'],
+                        'manager_type' => $manager_type,
+                        'player_name' => $reqData[$rowIndex]['playerName'],
+                        'inquiry_url'=> $frontend_url.'/inquiry'
+                    ];
+
+                    try {
+                        //Sending mail to the unregistered
+                        Mail::to($target_user_data[0]->{'mailaddress'})->send(new ForUnregisteredPlayerOrganizationRegistrationNotificationMail($unregistered_player_mail_data));
+                    }
+                    catch (Exception $e) {
+                        DB::rollBack();
+                        $error_message = "以下の選手のメール送信に失敗しました。\r\n
+                                            選手名：".$target_player_name."\r\n
+                                            メールアドレス：".$target_mailaddress;
+                        Log::error($e->getMessage());
+                        return response()->json($error_message,401);
+                    }
+                }
+                else
+                {
+                    $frontend_url = config('env-data.frontend-url'); //url情報の追加 20240422
+                    //Store player information for sending email.
+                    $registered_player_mail_data = [
+                        'to_mailaddress' => $target_user_data[0]->{'mailaddress'},  //[当該選手の「ユーザーテーブル」に登録されているメールアドレス]
+                        'from_mailaddress' => 'xxxxx@jara.or.jp',
+                        'organization_name' => $reqData[$rowIndex]['teamName'],
+                        // 'organization_id' => $reqData[$rowIndex]['teamId'],
+                        'manager_type' => $manager_type,
+                        'player_name' => $reqData[$rowIndex]['playerName'],
+                        'inquiry_url'=> $frontend_url.'/inquiry'
+                    ];
+
+                    try {
+                        //Sending mail to the unregistered
+                        Mail::to($target_user_data[0]->{'mailaddress'})->send(new ForRegisteredPlayerOrganizationRegistrationNotificationMail($registered_player_mail_data));
+                    }
+                    catch (Exception $e) {
+                        DB::rollBack();
+                        $error_message = "以下の選手のメール送信に失敗しました。\r\n
+                                            選手名：".$target_player_name."\r\n
+                                            メールアドレス：".$target_mailaddress;
+                        Log::error($e->getMessage());
+                        return response()->json($error_message,401);
+                    }
+                }
+                DB::commit();
             }
-            DB::commit();
-            Log::debug(sprintf("registerOrgCsvData end"));
-            return response()->json(['result' => $reqData]); //DBの結果を返す
         }
-        catch(\Throwable $e)
-        {
-            DB::rollBack();
-            Log::error('Line:'.$e->getLine().' message:'.$e->getMessage());
-            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
-        }
+        Log::debug(sprintf("registerOrgCsvData end"));
+        return response()->json(['result' => $reqData]); //DBの結果を返す
     }
 }
