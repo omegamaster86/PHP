@@ -1034,7 +1034,14 @@ class OrganizationPlayersController extends Controller
         $current_datetime = now()->format('Y-m-d H:i:s.u');
         for($rowIndex = 0;$rowIndex < count($reqData); $rowIndex++)
         {
-            if($reqData[$rowIndex]['checked'] == true && $reqData[$rowIndex]['result'] == "登録可能")
+            if($reqData[$rowIndex]['checked'] == true 
+                &&
+                (
+                    $reqData[$rowIndex]['result'] == "登録可能"
+                    || $reqData[$rowIndex]['result'] == "選手未登録のため選手登録後、所属選手登録を実施"
+                    || $reqData[$rowIndex]['result'] == "ユーザー未登録"
+                )
+            )
             {
                 DB::beginTransaction();
                 //対象のユーザーデータを取得
