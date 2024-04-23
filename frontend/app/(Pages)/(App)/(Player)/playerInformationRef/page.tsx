@@ -492,7 +492,19 @@ export default function PlayerInformationRef() {
                       {/* 開催日 */}
                       <CustomTd>{row.eventStartDate}</CustomTd>
                       {/* 所属団体 */}
-                      <CustomTd>{row.org_name}</CustomTd>
+                      <CustomTd>
+                        <Link
+                          className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                          href={{
+                            pathname: '/teamRef',
+                            query: { orgId: row.org_id },
+                          }}
+                          rel='noopener noreferrer'
+                          target='_blank'
+                        >
+                          {row.org_name}
+                        </Link>
+                      </CustomTd>
                       {/* レースNo. */}
                       <CustomTd>{row.race_number}</CustomTd>
                       {/* 種目 */}
