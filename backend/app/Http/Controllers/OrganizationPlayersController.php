@@ -442,6 +442,9 @@ class OrganizationPlayersController extends Controller
         $inputData = $request->all();
         $reqData = $inputData["csvDataList"];
         //Log::debug($reqData);
+        Log::debug($inputData);
+        return 0;
+
         $input_org_id = $inputData["targetOrgData"]["targetOrgId"];
         for($rowIndex = 0;$rowIndex < count($reqData);$rowIndex++)
         {
@@ -1085,7 +1088,7 @@ class OrganizationPlayersController extends Controller
                     {
                         DB::rollback();
                         $error_message = "以下の選手のユーザー登録に失敗しました。選手名：".$target_player_name."　メールアドレス：".$target_mailaddress;
-                        Log::error($e->getMessage());
+                        Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
                         return response()->json($error_message,403);
                     }
                     //登録したユーザー情報を取得
@@ -1117,7 +1120,7 @@ class OrganizationPlayersController extends Controller
                         // Log::debug($e->getMessage());
                         // Log::debug(sprintf("=====UserNotificationMail end====="));
                         $error_message = "以下の選手のメール送信に失敗しました。選手名：".$target_player_name."　メールアドレス：".$target_mailaddress;
-                        Log::error($e->getMessage());
+                        Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
                         return response()->json($error_message,403);
                     }
                 }
@@ -1159,7 +1162,7 @@ class OrganizationPlayersController extends Controller
                     {
                         DB::rollback();
                         $error_message = "以下の選手の選手情報登録に失敗しました。選手名：".$target_player_name."　メールアドレス：".$target_mailaddress;
-                        Log::error($e->getMessage());
+                        Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
                         return response()->json($error_message,403);
                     }
                 }
@@ -1179,7 +1182,7 @@ class OrganizationPlayersController extends Controller
                 {
                     DB::rollback();
                     $error_message = "以下の選手の団体所属処理に失敗しました。選手名：".$target_player_name."　メールアドレス：".$target_mailaddress;
-                    Log::error($e->getMessage());
+                    Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
                     return response()->json($error_message,403);
                 }
                 
@@ -1202,7 +1205,7 @@ class OrganizationPlayersController extends Controller
                         {
                             DB::rollback();
                             $error_message = "以下の選手のユーザー種別の更新処理に失敗しました。選手名：".$target_player_name."　メールアドレス：".$target_mailaddress;
-                            Log::error($e->getMessage());
+                            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
                             return response()->json($error_message,403);
                         }
                     }
@@ -1240,7 +1243,7 @@ class OrganizationPlayersController extends Controller
                     catch (Exception $e) {
                         DB::rollBack();
                         $error_message = "以下の選手のメール送信に失敗しました。選手名：".$target_player_name."　メールアドレス：".$target_mailaddress;
-                        Log::error($e->getMessage());
+                        Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
                         return response()->json($error_message,403);
                     }
                 }
@@ -1264,7 +1267,7 @@ class OrganizationPlayersController extends Controller
                     catch (Exception $e) {
                         DB::rollBack();
                         $error_message = "以下の選手のメール送信に失敗しました。選手名：".$target_player_name."　メールアドレス：".$target_mailaddress;
-                        Log::error($e->getMessage());
+                        Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
                         return response()->json($error_message,403);
                     }
                 }
