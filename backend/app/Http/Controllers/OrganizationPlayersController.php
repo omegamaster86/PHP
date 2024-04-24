@@ -1086,7 +1086,7 @@ class OrganizationPlayersController extends Controller
                                             選手名：".$target_player_name."\r\n
                                             メールアドレス：".$target_mailaddress;
                         Log::error($e->getMessage());
-                        return response()->json($error_message,401);
+                        return response()->json($error_message,403);
                     }
                     //メール送信
                     //For getting current time
@@ -1118,7 +1118,7 @@ class OrganizationPlayersController extends Controller
                                             選手名：".$target_player_name."\r\n
                                             メールアドレス：".$target_mailaddress;
                         Log::error($e->getMessage());
-                        return response()->json($error_message,401);
+                        return response()->json($error_message,403);
                     }
 
                     //登録したユーザー情報を取得
@@ -1166,7 +1166,7 @@ class OrganizationPlayersController extends Controller
                                             選手名：".$target_player_name."\r\n
                                             メールアドレス：".$target_mailaddress;
                         Log::error($e->getMessage());
-                        return response()->json($error_message,401);
+                        return response()->json($error_message,403);
                     }
                 }
                 //団体所属選手テーブルに挿入
@@ -1188,7 +1188,7 @@ class OrganizationPlayersController extends Controller
                                         選手名：".$target_player_name."\r\n
                                         メールアドレス：".$target_mailaddress;
                     Log::error($e->getMessage());
-                    return response()->json($error_message,401);
+                    return response()->json($error_message,403);
                 }
                 
                 //ユーザー種別の更新処理
@@ -1214,7 +1214,7 @@ class OrganizationPlayersController extends Controller
                                                 選手名：".$target_player_name."\r\n
                                                 メールアドレス：".$target_mailaddress;
                             Log::error($e->getMessage());
-                            return response()->json($error_message,401);
+                            return response()->json($error_message,403);
                         }
                     }
                 }
@@ -1255,7 +1255,7 @@ class OrganizationPlayersController extends Controller
                                             選手名：".$target_player_name."\r\n
                                             メールアドレス：".$target_mailaddress;
                         Log::error($e->getMessage());
-                        return response()->json($error_message,401);
+                        return response()->json($error_message,403);
                     }
                 }
                 else
@@ -1282,7 +1282,7 @@ class OrganizationPlayersController extends Controller
                                             選手名：".$target_player_name."\r\n
                                             メールアドレス：".$target_mailaddress;
                         Log::error($e->getMessage());
-                        return response()->json($error_message,401);
+                        return response()->json($error_message,403);
                     }
                 }
                 DB::commit();
