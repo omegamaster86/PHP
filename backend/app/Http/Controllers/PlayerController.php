@@ -714,56 +714,71 @@ class PlayerController extends Controller
             // return response()->json(['message' => 'File uploaded successfully']);
         }
         Log::debug(sprintf("storePlayerData start"));
-        $reqData = $request->all();
 
-        $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
-        $tPlayersData::$playerInfo['player_name'] = $reqData['player_name']; //選手名
-        $tPlayersData::$playerInfo['date_of_birth'] = $reqData['date_of_birth']; //誕生日
-        $tPlayersData::$playerInfo['height'] = $reqData['height']; //身長
-        $tPlayersData::$playerInfo['weight'] = $reqData['weight']; //体重
-        $tPlayersData::$playerInfo['sex_id'] = $reqData['sex_id']; //性別ID
-        // $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
-        //サイド情報
-        $side_info = null;
-        for ($i = 0; $i < 8; $i++) {
-            if ($reqData['side_info'][$i] == "true") {
-                $side_info .= "1";
-            } else {
-                $side_info .= "0";
-            }
-        }
-        $tPlayersData::$playerInfo['side_info'] = $side_info;
-
-        $tPlayersData::$playerInfo['birth_country'] = $reqData['birth_country']; //出身地(国)
-        $tPlayersData::$playerInfo['birth_prefecture'] =  $reqData['birth_prefecture']; //出身地(都道府県名)
-        $tPlayersData::$playerInfo['residence_country'] = $reqData['residence_country']; //居住地(国)
-        $tPlayersData::$playerInfo['residence_prefecture'] =  $reqData['residence_prefecture']; //居住地(都道府県)
-        //If new picture is uploaded
-        if ($request->hasFile('uploadedPhoto')) {
-            $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
-            $tPlayersData::$playerInfo['photo'] = $file_name; //写真
-        } else {
-            //If  picture is not uploaded
-
-            $tPlayersData::$playerInfo['photo'] = ''; //写真
-        }
-        $result = $tPlayersData->insertPlayers($tPlayersData::$playerInfo); //DBに選手を登録 20240131
-
-        //ユーザ種別の更新
-        //右から3桁目が0のときだけユーザー種別を更新する
-        $user_type = (string)Auth::user()->user_type;
-        Log::debug("user_type_is_player = ".substr($user_type,-3,1));
-        if(mb_substr($user_type,-3,1) == '0')
+        //登録するユーザーIDを持つ選手情報の有無を確認
+        $target_user_id = Auth::user()->user_id;
+        $target_player_data = $tPlayersData->getPlayerFromUserId($target_user_id);
+        Log::debug("********************target_player_data********************");
+        Log::debug($target_player_data);
+        //登録するユーザーIDを持つ選手が未登録なら登録実行
+        if(empty($target_player_data))
         {
-            $hoge = array();
-            $hoge['user_id'] = Auth::user()->user_id;
-            $hoge['input'] = '00000100'; //選手のユーザ種別を変更する
-            $t_users->updateUserTypeRegist($hoge);
-        }
-        $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
+            $reqData = $request->all();
 
-        Log::debug(sprintf("storePlayerData end"));
-        return response()->json(['users' => $users, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
+            $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
+            $tPlayersData::$playerInfo['player_name'] = $reqData['player_name']; //選手名
+            $tPlayersData::$playerInfo['date_of_birth'] = $reqData['date_of_birth']; //誕生日
+            $tPlayersData::$playerInfo['height'] = $reqData['height']; //身長
+            $tPlayersData::$playerInfo['weight'] = $reqData['weight']; //体重
+            $tPlayersData::$playerInfo['sex_id'] = $reqData['sex_id']; //性別ID
+            // $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
+            //サイド情報
+            $side_info = null;
+            for ($i = 0; $i < 8; $i++) {
+                if ($reqData['side_info'][$i] == "true") {
+                    $side_info .= "1";
+                } else {
+                    $side_info .= "0";
+                }
+            }
+            $tPlayersData::$playerInfo['side_info'] = $side_info;
+
+            $tPlayersData::$playerInfo['birth_country'] = $reqData['birth_country']; //出身地(国)
+            $tPlayersData::$playerInfo['birth_prefecture'] =  $reqData['birth_prefecture']; //出身地(都道府県名)
+            $tPlayersData::$playerInfo['residence_country'] = $reqData['residence_country']; //居住地(国)
+            $tPlayersData::$playerInfo['residence_prefecture'] =  $reqData['residence_prefecture']; //居住地(都道府県)
+            //If new picture is uploaded
+            if ($request->hasFile('uploadedPhoto')) {
+                $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
+                $tPlayersData::$playerInfo['photo'] = $file_name; //写真
+            } else {
+                //If  picture is not uploaded
+
+                $tPlayersData::$playerInfo['photo'] = ''; //写真
+            }
+            $result = $tPlayersData->insertPlayers($tPlayersData::$playerInfo); //DBに選手を登録 20240131
+
+            //ユーザ種別の更新
+            //右から3桁目が0のときだけユーザー種別を更新する
+            $user_type = (string)Auth::user()->user_type;
+            Log::debug("user_type_is_player = ".substr($user_type,-3,1));
+            if(mb_substr($user_type,-3,1) == '0')
+            {
+                $hoge = array();
+                $hoge['user_id'] = Auth::user()->user_id;
+                $hoge['input'] = '00000100'; //選手のユーザ種別を変更する
+                $t_users->updateUserTypeRegist($hoge);
+            }
+            $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
+
+            Log::debug(sprintf("storePlayerData end"));
+            return response()->json(['users' => $users, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
+        }
+        else
+        {
+            Log::debug(sprintf("選手登録済み"));
+            return response()->json(['errMessage' => "選手IDはすでに登録されています。複数作成することはできません。"]); //エラーメッセージを返す
+        }
     }
 
     //react 選手情報更新画面に表示するuserIDに紐づいたデータを送信 20240131
