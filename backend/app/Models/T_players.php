@@ -379,6 +379,7 @@ class T_players extends Model
                         `sex_id`,
                         `height`,
                         `weight`,
+                        `side_info`,
                         `birth_country`,
                         `birth_prefecture`,
                         `residence_country`,
@@ -390,7 +391,7 @@ class T_players extends Model
                         `delete_flag`
                     )
                     values
-                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
                     ,[
                         $playerInfo['user_id'],
                         $playerInfo['jara_player_id'],
@@ -399,6 +400,7 @@ class T_players extends Model
                         $playerInfo['sex_id'],
                         $playerInfo['height'],
                         $playerInfo['weight'],
+                        $playerInfo['side_info'],
                         $playerInfo['birth_country'],
                         $playerInfo['birth_prefecture'],
                         $playerInfo['residence_country'],

@@ -1137,6 +1137,7 @@ class OrganizationPlayersController extends Controller
                     $insert_player_data['sex_id'] = $target_user_data[0]->{'sex'};
                     $insert_player_data['height'] = $target_user_data[0]->{'height'};
                     $insert_player_data['weight'] = $target_user_data[0]->{'weight'};
+                    $insert_player_data['side_info'] = "00000000";
                     $insert_player_data['birth_country'] = isset($reqData[$rowIndex]['birthCountryId']) ? $reqData[$rowIndex]['birthCountryId'] : null;
                     $insert_player_data['birth_prefecture'] = isset($reqData[$rowIndex]['birthPrefectureId']) ? $reqData[$rowIndex]['birthPrefectureId'] : null;
                     $insert_player_data['residence_country'] = isset($reqData[$rowIndex]['residenceCountryId']) ? $reqData[$rowIndex]['residenceCountryId'] : null;
