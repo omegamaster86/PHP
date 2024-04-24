@@ -441,10 +441,6 @@ class OrganizationPlayersController extends Controller
         Log::debug(sprintf("sendOrgCsvData start"));
         $inputData = $request->all();
         $reqData = $inputData["csvDataList"];
-        //Log::debug($reqData);
-        Log::debug($inputData);
-        return 0;
-
         $input_org_id = $inputData["targetOrgData"]["targetOrgId"];
         for($rowIndex = 0;$rowIndex < count($reqData);$rowIndex++)
         {
