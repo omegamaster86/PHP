@@ -74,6 +74,7 @@ export default function TeamPlayerBulkRegister() {
   const [displayLinkButtonFlg, setDisplayLinkButtonFlg] = useState<boolean>(false);
   const searchParams = useSearchParams();
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
+  const [visibilityFlg, setVisibilityFlg] = useState<boolean>(false); //CSVテーブルの表示切替フラグ 20240424
 
   const [validFlag, setValidFlag] = useState(false); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
   //ユーザIDに紐づいた情報の取得 20240418
@@ -500,6 +501,7 @@ export default function TeamPlayerBulkRegister() {
                       // console.log(resList);
                       sendCsvData(resList); //バックエンド側のバリデーションチェックを行う為にデータを送信する 20240302
                       setDialogDisplayFlg(true); //2回目以降のcsv読み込みで確認ダイアログを表示させる 20240419
+                      setVisibilityFlg(true); //CSVテーブルの表示切替フラグ 20240424
                     });
 
                     performValidation();
@@ -552,6 +554,7 @@ export default function TeamPlayerBulkRegister() {
               handleInputChange={handleInputChange}
               displayLinkButton={displayLinkButton}
               activationFlg={activationFlg}
+              visibilityFlg={visibilityFlg}
             />
           </div>
           {!activationFlg && (

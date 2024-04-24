@@ -32,12 +32,14 @@ const CsvTable = ({
   handleInputChange, // チェックボックスの変更時の処理
   displayLinkButton, // 連携ボタンの表示を切り替える関数
   activationFlg, // 各種ボタンの表示を切り替える関数
+  visibilityFlg, //CSVテーブルの表示切替フラグ 20240424
 }: {
   content: CsvTableRow[];
   header: string[];
   handleInputChange: (rowId: number, name: string, value: string | boolean) => void;
   displayLinkButton: (flg: boolean) => void;
   activationFlg: boolean;
+  visibilityFlg: boolean; //データが0件の場合でもヘッダーは表示させるためのフラグ 20240424
 }) => {
   const isResultError = (result: string) => {
     return result.startsWith('無効データ');
@@ -50,8 +52,8 @@ const CsvTable = ({
     );
   };
 
-  return content.length === 0 ? (
-    <div className='text-primaryText'>CSVファイルをアップロードしてください。</div>
+  return visibilityFlg == false ? (
+    <div></div>
   ) : (
     <div className='overflow-auto h-[331px] w-[800px]'>
       <CustomTable>
