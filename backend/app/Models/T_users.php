@@ -370,7 +370,8 @@ class T_users extends Authenticatable
     {
         $user = DB::select('select
                             `user_id`
-                            ,mailaddress
+                            ,`user_name`
+                            ,`mailaddress`
                             ,`sex`
                             ,`date_of_birth`
                             ,`height`
@@ -413,10 +414,10 @@ class T_users extends Authenticatable
                         :password, 
                         :expiry_time_of_temp_password, 
                         :temp_password_flag, 
-                        :current_datetime, 
-                        :user_id, 
-                        :current_datetime, 
-                        :user_id, 
+                        :registered_time, 
+                        :registered_user_id, 
+                        :updated_time, 
+                        :updated_user_id, 
                         0
                     )'
                     ,$userInfo);

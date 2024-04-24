@@ -23,10 +23,6 @@
 
 <body>
     <p>
-        件名: 【日本ローイング協会】お問い合わせ<br />
-        送信元: xxxxx@jara.or.jp<br />
-        宛先: {{$mail_data['mailaddress']}}<br /><br />
-
         ※本メールはシステムから自動送信されています。<br /><br />
 
         {{$mail_data['user_name']}} 様<br />
