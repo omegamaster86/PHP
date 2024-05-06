@@ -11,9 +11,7 @@ import {
   CustomTitle,
   ErrorBox,
   CustomTextField,
-  CustomDropdown,
   InputLabel,
-  CustomDatePicker,
   CustomButton,
   CustomTable,
   CustomThead,
@@ -30,7 +28,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import Validator from '@/app/utils/validator';
 import Divider from '@mui/material/Divider';
 import { Autocomplete, TextField } from '@mui/material';
-import { ClassNames } from '@emotion/react';
 
 // 検索条件フォームの型定義
 // 検索条件
@@ -405,7 +402,7 @@ export default function TournamentResultManagement() {
                 <div
                   className={`${
                     (prevScreen === 'tournamentResult' && searchCond?.eventId !== '0') ||
-                    searchCond?.eventId !== '0'
+                    searchCond?.eventId !== '999'
                       ? 'hidden'
                       : ''
                   }`}
