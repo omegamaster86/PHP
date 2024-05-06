@@ -672,7 +672,6 @@ export default function PlayerInformation() {
                   (formData as any)[key] = (formData as any)[key] ?? '';
                 });
                 setErrorMessage([]);
-                var urlStr = '';
                 axios
                   // .post('http://localhost:3100/', registerData)
                   .post('/storePlayerData', formData, {
@@ -681,8 +680,17 @@ export default function PlayerInformation() {
                   })
                   .then((response) => {
                     // TODO: 登録処理成功時の処理の実装
-                    urlStr =
-                      '/playerInformationRef' + '?player_id=' + response.data.users[0].player_id;
+                    if (response.data.errMessage != null || response.data.errMessage != undefined) {
+                      setErrorMessage([
+                        ...(errorMessage as string[]),
+                        '登録に失敗しました。原因：' + response.data.errMessage,
+                      ]);
+                    } else {
+                      window.alert('選手情報を登録しました。');
+                      const urlStr =
+                        '/playerInformationRef' + '?player_id=' + response.data.users[0].player_id;
+                      router.push(urlStr); //選手情報参照画面に遷移する
+                    }
                   })
                   .catch((error) => {
                     // TODO: 登録処理失敗時の処理の実装
@@ -690,15 +698,6 @@ export default function PlayerInformation() {
                       ...(errorMessage as string[]),
                       '登録に失敗しました。原因：' + (error as Error).message,
                     ]);
-                    return; //複数タブで登録処理を実行した際に、ダイアログがエラーメッセージより先に表示されないように対応 20240506
-                  })
-                  .finally(() => {
-                    // TODO: 登録処理成功時の処理の実装
-                    console.log('finally aaaaaaaaaaaaaaauuuuuuuuuuuuuuuu');
-                    console.log(urlStr);
-                    //複数タブで登録処理を実行した際に、ダイアログがエラーメッセージより先に表示されないように対応 20240506
-                    window.alert('選手情報を登録しました。');
-                    router.push(urlStr); //選手情報参照画面に遷移する
                   });
               })
               .catch((error) => {

@@ -371,10 +371,12 @@ export default function Tournaments() {
 
   // エントリーシステムレースIDの重複チェックを行う 20240506
   const entrysystemRaceIdCehck = () => {
-    const uniqueArray = tableData.filter((element, index, self) => (
-      console.log(self.findIndex(e => e.entrysystem_race_id === element.entrysystem_race_id)),
-      self.findIndex(e => e.entrysystem_race_id === element.entrysystem_race_id) === index
-    ));
+    const uniqueArray = tableData.filter(
+      (element, index, self) => (
+        console.log(self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id)),
+        self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) === index
+      ),
+    );
     console.log(uniqueArray);
   };
 
