@@ -392,10 +392,10 @@ export default function Tournaments() {
                   ].entrysystem_race_id.toString()
               : null,
           ),
-          setEntrysystemRaceIdErrorMessage([strArray != null ? strArray[0] : ''])
+          setEntrysystemRaceIdErrorMessage(strArray.length > 0 ? strArray : [])
         ),
     );
-    if (strArray != null) {
+    if (strArray.length > 0) {
       console.log('エントリーシステムエラーあり');
       return true;
     } else {
@@ -417,10 +417,10 @@ export default function Tournaments() {
                   ].race_number.toString()
               : null,
           ),
-          setRaceNumberDuplicatErrorMessage([strArray != null ? strArray[0] : ''])
+          setRaceNumberDuplicatErrorMessage(strArray.length > 0 ? strArray : [])
         ),
     );
-    if (strArray != null) {
+    if (strArray.length > 0) {
       console.log('レースNoエラーあり');
       return true;
     } else {
