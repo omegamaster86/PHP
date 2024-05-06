@@ -690,6 +690,7 @@ export default function PlayerInformation() {
                       ...(errorMessage as string[]),
                       '登録に失敗しました。原因：' + (error as Error).message,
                     ]);
+                    return; //複数タブで登録処理を実行した際に、ダイアログがエラーメッセージより先に表示されないように対応 20240506
                   })
                   .finally(() => {
                     // TODO: 登録処理成功時の処理の実装
