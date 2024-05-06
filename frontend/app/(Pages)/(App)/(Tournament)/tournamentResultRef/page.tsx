@@ -427,15 +427,15 @@ export default function TournamentResultRef() {
                         <CustomTd>{item.twentyHundredmHeartRate}</CustomTd>
                         <CustomTd>{item.heartRateAvg}</CustomTd>
                         <CustomTd>
-                        <div className='flex justify-center'>
-                          <OriginalCheckbox
-                            id={'ergo' + index}
-                            value='ergo'
-                            checked={item.attendance ? true : false}
-                            onChange={(e: any) => {}}
-                            readonly
-                          />
-                        </div>
+                          <div className='flex justify-center'>
+                            <OriginalCheckbox
+                              id={'ergo' + index}
+                              value='ergo'
+                              checked={item.attendance ? true : false}
+                              onChange={(e: any) => {}}
+                              readonly
+                            />
+                          </div>
                         </CustomTd>
                       </CustomTr>
                     ))}
