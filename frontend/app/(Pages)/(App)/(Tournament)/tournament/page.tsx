@@ -369,6 +369,15 @@ export default function Tournaments() {
     }
   };
 
+  // エントリーシステムレースIDの重複チェックを行う 20240506
+  const entrysystemRaceIdCehck = () => {
+    const uniqueArray = tableData.filter((element, index, self) => (
+      console.log(self.findIndex(e => e.entrysystem_race_id === element.entrysystem_race_id)),
+      self.findIndex(e => e.entrysystem_race_id === element.entrysystem_race_id) === index
+    ));
+    console.log(uniqueArray);
+  };
+
   //選手IDに紐づいた情報の取得 20240221
   useEffect(() => {
     const fetchData = async () => {
@@ -776,6 +785,7 @@ export default function Tournaments() {
           setDisplayFlg(false);
           const isError = performValidation();
           console.log(isError);
+          entrysystemRaceIdCehck(); //エントリーシステムのレースIDの重複チェック 20240506
           if (!isError) {
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
