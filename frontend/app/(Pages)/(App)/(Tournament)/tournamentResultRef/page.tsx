@@ -252,7 +252,7 @@ export default function TournamentResultRef() {
                   <div>
                     <div className='flex flex-row justify-between gap-[80px] w-[800px]'>
                       <div className='flex flex-col justify-between gap-[1px]'>
-                        <div className='flex flex-row justify-left item-center gap-[80px]'>
+                        <div className='flex flex-row justify-left item-center gap-[60px]'>
                           <div className='flex flex-col gap-[8px]'>
                             <Label label='500m' textSize='small' isBold />
                             <p className='h-12 text-secondaryText py-3 disable'>
@@ -426,7 +426,17 @@ export default function TournamentResultRef() {
                         <CustomTd>{item.fifteenHundredmHeartRate}</CustomTd>
                         <CustomTd>{item.twentyHundredmHeartRate}</CustomTd>
                         <CustomTd>{item.heartRateAvg}</CustomTd>
-                        <CustomTd>{item.attendance}</CustomTd>
+                        <CustomTd>
+                        <div className='flex justify-center'>
+                          <OriginalCheckbox
+                            id={'ergo' + index}
+                            value='ergo'
+                            checked={item.attendance ? true : false}
+                            onChange={(e: any) => {}}
+                            readonly
+                          />
+                        </div>
+                        </CustomTd>
                       </CustomTr>
                     ))}
                   </CustomTbody>

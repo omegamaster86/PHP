@@ -2071,11 +2071,16 @@ export default function TournamentResult() {
       </div>
       {/* レース結果情報 */}
       {raceResultRecords.map((item, index) => (
-        <div className='flex flex-col gap-[20px] border border-solid p-[20px]' key={index}>
+        <div
+          className={`flex flex-col gap-[20px] border border-solid p-[20px] ${
+            mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : ''
+          }`}
+          key={index}
+        >
           <InputLabel label={'レース結果情報' + (raceResultRecords.length - index)} />
           <ErrorBox errorText={item.errorText ? [item.errorText] : []} />
           <div className='flex flex-row justify-between'>
-            {mode === 'update' && (
+            {index === 0  && (
               <div
                 onClick={() => {
                   handleRaceResultRecordsInputChangeBooleanbyIndex(
@@ -2095,7 +2100,7 @@ export default function TournamentResult() {
                 <p className='text-systemErrorText'>このレース結果情報を削除する</p>
               </div>
             )}
-            {mode === 'create' && (
+            {index !== 0 && (
               <CustomButton
                 buttonType='primary'
                 onClick={() => {
@@ -2326,7 +2331,7 @@ export default function TournamentResult() {
                               />
                             )}
                             freeSolo
-                            className={'w-[120px]'}
+                            className={'w-[210px]'}
                             readOnly={mode === 'confirm'}
                             disabled={mode === 'confirm'}
                           />
