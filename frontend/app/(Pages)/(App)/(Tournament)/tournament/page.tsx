@@ -377,22 +377,15 @@ export default function Tournaments() {
     tableData.filter(
       (element, index, self) =>
         (
-          // console.log(
-          //   'エントリーシステムのレースIDが重複しています。' +
-          //     (self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) != index
-          //       ? self[self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id)]
-          //           .entrysystem_race_id
-          //       : ''),
-          // ),
           strArray.push(
-            self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) != index
+            self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id && e.entrysystem_race_id != '') != index
               ? 'エントリーシステムのレースIDが重複しています。' +
                   self[
-                    self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id)
+                    self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id && e.entrysystem_race_id != '')
                   ].entrysystem_race_id.toString()
               : null,
           ),
-          setEntrysystemRaceIdErrorMessage(strArray.length > 0 ? strArray : [])
+          setEntrysystemRaceIdErrorMessage(strArray.length > 0 ? strArray[0] : [])
         ),
     );
     if (strArray.length > 0) {
@@ -410,14 +403,14 @@ export default function Tournaments() {
       (element, index, self) =>
         (
           strArray.push(
-            self.findIndex((e) => e.race_number === element.race_number) != index
+            self.findIndex((e) => (e.race_number === element.race_number && e.race_number != '')) != index
               ? 'レースNo.が重複しています。' +
                   self[
-                    self.findIndex((e) => e.race_number === element.race_number)
+                    self.findIndex((e) => e.race_number === element.race_number && e.race_number != '')
                   ].race_number.toString()
               : null,
           ),
-          setRaceNumberDuplicatErrorMessage(strArray.length > 0 ? strArray : [])
+          setRaceNumberDuplicatErrorMessage(strArray.length > 0 ? strArray[0] : [])
         ),
     );
     if (strArray.length > 0) {
