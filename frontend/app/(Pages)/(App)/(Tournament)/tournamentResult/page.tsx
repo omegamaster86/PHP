@@ -2080,7 +2080,7 @@ export default function TournamentResult() {
           <InputLabel label={'レース結果情報' + (raceResultRecords.length - index)} />
           <ErrorBox errorText={item.errorText ? [item.errorText] : []} />
           <div className='flex flex-row justify-between'>
-            {index === 0  && (
+            {index === 0 && (
               <div
                 onClick={() => {
                   handleRaceResultRecordsInputChangeBooleanbyIndex(
