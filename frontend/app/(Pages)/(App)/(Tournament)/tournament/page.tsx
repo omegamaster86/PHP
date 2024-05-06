@@ -377,24 +377,28 @@ export default function Tournaments() {
     var strArray = Array();
     tableData.filter(
       (element, index, self) => (
-        console.log(
-          'エントリーシステムのレースIDが重複しています。' +
-            (self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) != index
-              ? self[self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id)]
-                  .entrysystem_race_id
-              : ''),
-        ),
+        // console.log(
+        //   'エントリーシステムのレースIDが重複しています。' +
+        //     (self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) != index
+        //       ? self[self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id)]
+        //           .entrysystem_race_id
+        //       : ''),
+        // ),
         strArray.push(
-          'エントリーシステムのレースIDが重複しています。' +
-            (self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) !=
-              index ??
-              self[
-                self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id)
-              ].entrysystem_race_id.toString()),
+          self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) != index ?
+          'エントリーシステムのレースIDが重複しています。' + self[self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id)].entrysystem_race_id.toString(): null
         ),
         setEntrysystemRaceIdErrorMessage(strArray)
-      ),
+      ),  
     );
+    console.log('asaszskkskskkkskkkkk');
+    if(entrysystemRaceIdErrorMessage.length > 0){
+      console.log('truetruetruetruetruetruetruetrue');
+      return true;
+    }else{
+      console.log('falsefalsefalsefalsefalsefalse');
+      return false;
+    }
   };
 
   //選手IDに紐づいた情報の取得 20240221
@@ -804,8 +808,8 @@ export default function Tournaments() {
           setDisplayFlg(false);
           const isError = performValidation();
           console.log(isError);
-          entrysystemRaceIdCehck(); //エントリーシステムのレースIDの重複チェック 20240506
-          if (!isError) {
+          const isEntryRaceIdError = entrysystemRaceIdCehck(); //エントリーシステムのレースIDの重複チェック 20240506
+          if (!isError && !isEntryRaceIdError) {
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
             axios
@@ -830,6 +834,7 @@ export default function Tournaments() {
                   return prevData; //全てのデータをバックエンド側に送る 20240311
                 });
                 setErrorMessages([]);
+                setEntrysystemRaceIdErrorMessage([]); //エントリーシステムのレースIDのエラーメッセージを空にする 20240506
                 router.push('/tournament?mode=confirm&prevMode=' + mode);
               })
               .catch((error) => {
