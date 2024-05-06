@@ -151,6 +151,9 @@ export default function Tournaments() {
   const [byGroupErrorMessage, setByGroupErrorMessage] = useState([] as string[]);
   const [rangeErrorMessage, setRangeErrorMessage] = useState([] as string[]);
   const [startDateTimeErrorMessage, setStartDateTimeErrorMessage] = useState([] as string[]);
+  const [entrysystemRaceIdErrorMessage, setEntrysystemRaceIdErrorMessage] = useState(
+    [] as string[],
+  );
   const [errorMessages, setErrorMessages] = useState([] as string[]);
 
   const [backKeyFlag, setBackKeyFlag] = useState<boolean>(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
@@ -371,18 +374,27 @@ export default function Tournaments() {
 
   // エントリーシステムレースIDの重複チェックを行う 20240506
   const entrysystemRaceIdCehck = () => {
-    const uniqueArray = tableData.filter(
+    var strArray = Array();
+    tableData.filter(
       (element, index, self) => (
-        console.log(self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id)),
-        console.log('エントリーシステムのレースIDが重複しています。'+ (
-          self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) == index ?
-          self[self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id)].entrysystem_race_id :
-          self[self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id)].entrysystem_race_id + ' hoge'
-        )),
-        self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) === index
+        console.log(
+          'エントリーシステムのレースIDが重複しています。' +
+            (self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) != index
+              ? self[self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id)]
+                  .entrysystem_race_id
+              : ''),
+        ),
+        strArray.push(
+          'エントリーシステムのレースIDが重複しています。' +
+            (self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) !=
+              index ??
+              self[
+                self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id)
+              ].entrysystem_race_id.toString()),
+        ),
+        setEntrysystemRaceIdErrorMessage(strArray)
       ),
     );
-    console.log(uniqueArray);
   };
 
   //選手IDに紐づいた情報の取得 20240221
@@ -1497,7 +1509,8 @@ export default function Tournaments() {
             raceTypeNameErrorMessage.length > 0 ||
             byGroupErrorMessage.length > 0 ||
             rangeErrorMessage.length > 0 ||
-            startDateTimeErrorMessage.length > 0) && (
+            startDateTimeErrorMessage.length > 0 ||
+            entrysystemRaceIdErrorMessage.length > 0) && (
             <div key='tableErrorMessage' className='text-caption1 text-systemErrorText'>
               <p>{raceIdErrorMessage}</p>
               <p>{raceNumberErrorMessage}</p>
@@ -1508,6 +1521,7 @@ export default function Tournaments() {
               <p>{byGroupErrorMessage}</p>
               <p>{rangeErrorMessage}</p>
               <p>{startDateTimeErrorMessage}</p>
+              <p>{entrysystemRaceIdErrorMessage}</p>
             </div>
           )
         }
