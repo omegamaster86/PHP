@@ -376,7 +376,8 @@ export default function Tournaments() {
         console.log(self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id)),
         console.log('エントリーシステムのレースIDが重複しています。'+ (
           self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) == index ?
-        self[self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id)] : self[self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id)] + ' hoge'
+          self[self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id)].entrysystem_race_id :
+          self[self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id)].entrysystem_race_id + ' hoge'
         )),
         self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) === index
       ),
