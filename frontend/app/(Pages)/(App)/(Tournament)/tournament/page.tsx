@@ -378,17 +378,12 @@ export default function Tournaments() {
     tableData.filter(
       (element, index, self) =>
         (
-          strArray.push(
-            self.findIndex((e) => (e.entrysystem_race_id === element.entrysystem_race_id && (e.entrysystem_race_id != '' && e.entrysystem_race_id != null && e.entrysystem_race_id != undefined))) != index
-              ? 'エントリーシステムのレースIDが重複しています。' +
-                  self[
-                    self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id && (e.entrysystem_race_id != '' && e.entrysystem_race_id != null && e.entrysystem_race_id != undefined))
-                  ].entrysystem_race_id.toString()
-              : null,
-          ),
+          self.findIndex((e) => (e.entrysystem_race_id === element.entrysystem_race_id)) != index
+              ? strArray.push('エントリーシステムのレースIDが重複しています。' + self[index].entrysystem_race_id.toString()): null,
           setEntrysystemRaceIdErrorMessage(strArray.length > 0 ? strArray[0] : [])
         ),
     );
+    console.log("dddddddddddffffff");
     console.log(strArray);
     if (strArray.length > 0) {
       console.log('エントリーシステムエラーあり');
@@ -404,17 +399,20 @@ export default function Tournaments() {
     tableData.filter(
       (element, index, self) =>
         (
-          strArray.push(
-            self.findIndex((e) => (e.race_number === element.race_number && (e.race_number != '' && e.race_number != null && e.race_number != undefined))) != index
-              ? 'レースNo.が重複しています。' +
-                  self[
-                    self.findIndex((e) => e.race_number === element.race_number && (e.race_number != '' && e.race_number != null && e.race_number != undefined))
-                  ].race_number.toString()
-              : null,
-          ),
+          // strArray.push(
+          //   self.findIndex((e) => (e.race_number === element.race_number)) != index
+          //     ? 'レースNo.が重複しています。' +
+          //         self[
+          //           self.findIndex((e) => e.race_number === element.race_number)
+          //         ].race_number.toString()
+          //     : null,
+          // ),
+          self.findIndex((e) => (e.race_number === element.race_number)) != index
+              ? strArray.push('レースNo.が重複しています。' + self[index].race_number.toString()): null,
           setRaceNumberDuplicatErrorMessage(strArray.length > 0 ? strArray[0] : [])
         ),
     );
+    console.log('gggggggggghhhhhhhhh');
     console.log(strArray);
     if (strArray.length > 0) {
       console.log('レースNoエラーあり');
