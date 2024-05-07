@@ -832,6 +832,11 @@ export default function Tournaments() {
           setDisplayFlg(false);
           console.log('jjjjjjjjjjjjjdddddddddddddd');
           console.log(tableData);
+          //nullのパラメータを空のパラメータに置き換える 20240507
+          Object.keys(tableData).forEach((key) => {
+            (tableData as any)[key] =
+              (tableData as any)[key] ?? '';
+          });
           const isError = performValidation();
           console.log(isError);
           const isEntryRaceIdError = entrysystemRaceIdCehck(); //エントリーシステムのレースIDの重複チェック 20240506
