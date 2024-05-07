@@ -354,6 +354,7 @@ export default function Tournaments() {
       eventIdErrorFlg ||
       raceNameErrorFlg ||
       // raceIdErrorFlg ||
+      raceNumberErrorFlg ||
       raceNumberNegativeErrorFlg ||
       raceTypeErrorFlg ||
       raceTypeNameErrorFlg ||
@@ -867,7 +868,6 @@ export default function Tournaments() {
         buttonType='primary'
         onClick={async () => {
           setDisplayFlg(false);
-          console.log('jjjjjjjjjjjjjdddddddddddddd');
           console.log(tableData);
           const isError = performValidation();
           console.log(isError);
@@ -935,9 +935,8 @@ export default function Tournaments() {
       onClick={() => {
         const newId = maxId + 1;
         setMaxId((prevMaxId) => prevMaxId + 1);
-        console.log('aaaaaaaaaaaaaaaaaaacccccccccccc');
-        console.log(tableData.length);
-        console.log(tableData);
+        // console.log(tableData.length);
+        // console.log(tableData);
         setTableData((prevData) => [
           ...prevData,
           {
@@ -959,7 +958,6 @@ export default function Tournaments() {
             tournName: '',
           },
         ]);
-        console.log(tableData);
         // フォームデータをリセット
         // setRaceFormData({
         //   id: 1,
@@ -1022,7 +1020,7 @@ export default function Tournaments() {
             type={'text'}
             value={row.entrysystem_race_id}
             onChange={(e) => (
-              console.log(tableData),
+              // console.log(tableData),
               handleInputChangeRace(row.id, 'entrysystem_race_id', e.target.value)
             )}
             className='my-[8px]'
@@ -1537,8 +1535,7 @@ export default function Tournaments() {
                               }
                               return newList;
                             });
-                            console.log('uuuuuuuuuuuuuurrrrrrrrr');
-                            console.log(tableData);
+                            // console.log(tableData);
                           }}
                         >
                           削除
