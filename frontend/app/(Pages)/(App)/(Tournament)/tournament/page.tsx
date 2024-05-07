@@ -898,7 +898,7 @@ export default function Tournaments() {
         setTableData((prevData) => [
           ...prevData,
           {
-            id: newId,
+            id: prevData.length + 1,
             checked: false,
             race_id: '',
             entrysystem_race_id: '',
