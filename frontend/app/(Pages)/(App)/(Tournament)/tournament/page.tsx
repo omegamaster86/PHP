@@ -380,6 +380,7 @@ export default function Tournaments() {
   const entrysystemRaceIdCehck = () => {
     var strArray = Array();
     if (mode == 'create') {
+      console.log('create check');
       tableData.filter(
         (element, index, self) => (
           self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) != index
@@ -394,6 +395,7 @@ export default function Tournaments() {
         ),
       );
     } else if (mode == 'update') {
+      console.log('update check');
       tableData.filter(
         (element, index, self) => (
           self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) != index
@@ -423,6 +425,7 @@ export default function Tournaments() {
   const raceNumberDuplicatCheck = () => {
     var strArray = Array();
     if (mode == 'create') {
+      console.log('create check');
       tableData.filter(
         (element, index, self) => (
           self.findIndex((e) => e.race_number === element.race_number) != index
@@ -434,16 +437,14 @@ export default function Tournaments() {
         ),
       );
     } else if (mode == 'update') {
+      console.log('update check');
       tableData.filter(
         (element, index, self) => (
-          self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) != index
-            ? self[index].entrysystem_race_id != '' &&
-              self[index].entrysystem_race_id != null &&
+          self.findIndex((e) => e.race_number === element.race_number) != index
+            ? self[index].race_number != '' &&
+              self[index].race_number != null &&
               self[index].checked != true
-              ? strArray.push(
-                  'エントリーシステムのレースIDが重複しています。' +
-                    self[index].entrysystem_race_id.toString(),
-                )
+              ? strArray.push('レースNo.が重複しています。' + self[index].race_number.toString())
               : null
             : null,
           setEntrysystemRaceIdErrorMessage(strArray.length > 0 ? strArray[0] : [])
