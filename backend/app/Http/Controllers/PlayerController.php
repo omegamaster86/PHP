@@ -978,6 +978,7 @@ class PlayerController extends Controller
             //選手更新の際に、JARA選手コードが空欄で渡された場合、ユーザの変更によるものかを判定する 20240507
             if($request["mode"] == "update"){
                 $jara_player_id_result = DB::select('select `jara_player_id` from `t_players` where `delete_flag` = 0 and `user_id` = ?',[Auth::user()->user_id]);
+                Log::debug($jara_player_id_result);
                 if (!empty($jara_player_id_result)) {
                     Log::debug(sprintf("checkJARAPlayerId update jara_player_id end 1"));
                     return response()->json(["エントリーシステムの選手IDが変更されています。\n過去のレース結果との紐づけが失われます。\n変更しますか？"]);
