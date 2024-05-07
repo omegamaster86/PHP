@@ -447,7 +447,7 @@ export default function Tournaments() {
               ? strArray.push('レースNo.が重複しています。' + self[index].race_number.toString())
               : null
             : null,
-          setEntrysystemRaceIdErrorMessage(strArray.length > 0 ? strArray[0] : [])
+            setRaceNumberDuplicatErrorMessage(strArray.length > 0 ? strArray[0] : [])
         ),
       );
     }
