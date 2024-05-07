@@ -935,10 +935,12 @@ export default function Tournaments() {
       onClick={() => {
         const newId = maxId + 1;
         setMaxId((prevMaxId) => prevMaxId + 1);
+        console.log('aaaaaaaaaaaaaaaaaaacccccccccccc');
+        console.log(tableData.length);
         setTableData((prevData) => [
           ...prevData,
           {
-            id: prevData.length + 1,
+            id: tableData.length + 1,
             checked: false,
             race_id: '',
             entrysystem_race_id: '',
@@ -1526,6 +1528,8 @@ export default function Tournaments() {
                             setTableData((prevData) =>
                               prevData.filter((data) => data.id !== row.id),
                             );
+                            console.log('uuuuuuuuuuuuuurrrrrrrrr');
+                            console.log(tableData.filter((data) => data.id !== row.id));
                           }}
                         >
                           削除
