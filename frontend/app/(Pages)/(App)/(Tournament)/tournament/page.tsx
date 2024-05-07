@@ -1021,7 +1021,10 @@ export default function Tournaments() {
           <TextField
             type={'text'}
             value={row.entrysystem_race_id}
-            onChange={(e) => handleInputChangeRace(row.id, 'entrysystem_race_id', e.target.value)}
+            onChange={(e) => (
+              console.log(tableData),
+              handleInputChangeRace(row.id, 'entrysystem_race_id', e.target.value)
+            )}
             className='my-[8px]'
             inputProps={{ maxLength: 8 }}
           />
