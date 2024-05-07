@@ -1526,12 +1526,18 @@ export default function Tournaments() {
                           className='secondary w-[60px]'
                           onClick={() => {
                             setTableData((prevData) =>
-                              prevData.filter((data) => data.id !== row.id),
+                              prevData.filter((data,index) => {
+                                if(data.id !== row.id ){
+                                  if(data.id != index+1){
+                                    data.id = index+1;
+                                  }
+                                }
+                              }),
                             );
                             console.log('uuuuuuuuuuuuuurrrrrrrrr');
-                            for (let index = 0; index < tableData.length; index++) {
-                              tableData[index].id = index+1;
-                            }
+                            // for (let index = 0; index < tableData.length; index++) {
+                            //   tableData[index].id = index+1;
+                            // }
                             console.log(tableData);
                           }}
                         >
