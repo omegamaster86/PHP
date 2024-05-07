@@ -384,7 +384,7 @@ export default function Tournaments() {
       console.log('create check');
       tableData.filter(
         (element, index, self) => (
-          self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) != index
+          self.findIndex((e) => e.entrysystem_race_id == element.entrysystem_race_id) != index
             ? self[index].entrysystem_race_id != '' && self[index].entrysystem_race_id != null
               ? strArray.push(
                   'エントリーシステムのレースIDが重複しています。' +
@@ -399,7 +399,7 @@ export default function Tournaments() {
       console.log('update check');
       tableData.filter(
         (element, index, self) => (
-          self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) != index
+          self.findIndex((e) => e.entrysystem_race_id == element.entrysystem_race_id) != index
             ? self[index].entrysystem_race_id != '' &&
               self[index].entrysystem_race_id != null &&
               self[index].checked != true
@@ -429,7 +429,7 @@ export default function Tournaments() {
       console.log('create check');
       tableData.filter(
         (element, index, self) => (
-          self.findIndex((e) => e.race_number === element.race_number) != index
+          self.findIndex((e) => e.race_number == element.race_number) != index
             ? self[index].race_number != '' && self[index].race_number != null
               ? strArray.push('レースNo.が重複しています。' + self[index].race_number.toString())
               : null
@@ -441,7 +441,7 @@ export default function Tournaments() {
       console.log('update check');
       tableData.filter(
         (element, index, self) => (
-          self.findIndex((e) => e.race_number === element.race_number) != index
+          self.findIndex((e) => e.race_number == element.race_number) != index
             ? self[index].race_number != '' &&
               self[index].race_number != null &&
               self[index].checked != true
