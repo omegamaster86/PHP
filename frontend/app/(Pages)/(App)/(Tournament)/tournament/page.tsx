@@ -1529,7 +1529,10 @@ export default function Tournaments() {
                               prevData.filter((data) => data.id !== row.id),
                             );
                             console.log('uuuuuuuuuuuuuurrrrrrrrr');
-                            console.log(tableData.filter((data) => data.id !== row.id));
+                            for (let index = 0; index < tableData.length; index++) {
+                              tableData[index].id = index+1;
+                            }
+                            console.log(tableData);
                           }}
                         >
                           削除
