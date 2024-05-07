@@ -382,7 +382,7 @@ export default function Tournaments() {
     tableData.filter(
       (element, index, self) => (
         self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id) != index
-          ? self[index].entrysystem_race_id != ''
+          ? self[index].entrysystem_race_id != '' && self[index].entrysystem_race_id != null
             ? strArray.push(
                 'エントリーシステムのレースIDが重複しています。' +
                   self[index].entrysystem_race_id.toString(),
@@ -408,7 +408,7 @@ export default function Tournaments() {
       (element, index, self) =>
         (
           self.findIndex((e) => e.race_number === element.race_number) != index
-            ? self[index].race_number != ''
+            ? self[index].race_number != '' && self[index].race_number != null
               ? strArray.push('レースNo.が重複しています。' + self[index].race_number.toString())
               : null
             : null,
@@ -832,11 +832,6 @@ export default function Tournaments() {
           setDisplayFlg(false);
           console.log('jjjjjjjjjjjjjdddddddddddddd');
           console.log(tableData);
-          //nullのパラメータを空のパラメータに置き換える 20240507
-          Object.keys(tableData).forEach((key) => {
-            (tableData as any)[key] =
-              (tableData as any)[key] ?? '';
-          });
           const isError = performValidation();
           console.log(isError);
           const isEntryRaceIdError = entrysystemRaceIdCehck(); //エントリーシステムのレースIDの重複チェック 20240506
