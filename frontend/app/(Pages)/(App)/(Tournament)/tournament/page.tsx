@@ -36,6 +36,7 @@ import {
 
 import Validator from '@/app/utils/validator';
 import TextField from '@mui/material/TextField';
+import { Straight } from '@mui/icons-material';
 
 // ファイル関連のアクションを扱うためのインターフェース
 interface FileHandler {
@@ -371,23 +372,24 @@ export default function Tournaments() {
     }
   };
 
-  // エントリーシステムレースIDの重複チェックを行う 20240506
+  // エントリーシステムレースIDの重複チェックを行う 20240506 
   const entrysystemRaceIdCehck = () => {
     var strArray = Array();
     tableData.filter(
       (element, index, self) =>
         (
           strArray.push(
-            self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id && e.entrysystem_race_id != '') != index
+            self.findIndex((e) => (e.entrysystem_race_id === element.entrysystem_race_id && (e.entrysystem_race_id != '' && e.entrysystem_race_id != null && e.entrysystem_race_id != undefined))) != index
               ? 'エントリーシステムのレースIDが重複しています。' +
                   self[
-                    self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id && e.entrysystem_race_id != '')
+                    self.findIndex((e) => e.entrysystem_race_id === element.entrysystem_race_id && (e.entrysystem_race_id != '' && e.entrysystem_race_id != null && e.entrysystem_race_id != undefined))
                   ].entrysystem_race_id.toString()
               : null,
           ),
           setEntrysystemRaceIdErrorMessage(strArray.length > 0 ? strArray[0] : [])
         ),
     );
+    console.log(strArray);
     if (strArray.length > 0) {
       console.log('エントリーシステムエラーあり');
       return true;
@@ -396,23 +398,24 @@ export default function Tournaments() {
       return false;
     }
   };
-  // エントリーシステムレースIDの重複チェックを行う 20240506
+  // レースNo.の重複チェックを行う 20240506 
   const raceNumberDuplicatCheck = () => {
     var strArray = Array();
     tableData.filter(
       (element, index, self) =>
         (
           strArray.push(
-            self.findIndex((e) => (e.race_number === element.race_number && e.race_number != '')) != index
+            self.findIndex((e) => (e.race_number === element.race_number && (e.race_number != '' && e.race_number != null && e.race_number != undefined))) != index
               ? 'レースNo.が重複しています。' +
                   self[
-                    self.findIndex((e) => e.race_number === element.race_number && e.race_number != '')
+                    self.findIndex((e) => e.race_number === element.race_number && (e.race_number != '' && e.race_number != null && e.race_number != undefined))
                   ].race_number.toString()
               : null,
           ),
           setRaceNumberDuplicatErrorMessage(strArray.length > 0 ? strArray[0] : [])
         ),
     );
+    console.log(strArray);
     if (strArray.length > 0) {
       console.log('レースNoエラーあり');
       return true;
