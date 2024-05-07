@@ -408,7 +408,7 @@ export default function Tournaments() {
           //     : null,
           // ),
           self.findIndex((e) => (e.race_number === element.race_number)) != index
-              ? strArray.push('レースNo.が重複しています。' + self[index].race_number.toString()): null,
+              ? (strArray.push('レースNo.が重複しています。' + self[index].race_number.toString()),console.log(self[index].race_number)): null,
           setRaceNumberDuplicatErrorMessage(strArray.length > 0 ? strArray[0] : [])
         ),
     );
