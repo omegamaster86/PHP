@@ -830,12 +830,13 @@ export default function Tournaments() {
         buttonType='primary'
         onClick={async () => {
           setDisplayFlg(false);
+          console.log('jjjjjjjjjjjjjdddddddddddddd');
+          console.log(tableData);
           const isError = performValidation();
           console.log(isError);
           const isEntryRaceIdError = entrysystemRaceIdCehck(); //エントリーシステムのレースIDの重複チェック 20240506
           const isRaceNoError = raceNumberDuplicatCheck(); //レースNo.の重複チェック 20240506
-          console.log('jjjjjjjjjjjjjdddddddddddddd');
-          console.log(tableData);
+          
           if (!isError && !isEntryRaceIdError && !isRaceNoError) {
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
