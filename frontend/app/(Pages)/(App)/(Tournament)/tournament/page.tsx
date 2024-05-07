@@ -447,7 +447,7 @@ export default function Tournaments() {
               ? strArray.push('レースNo.が重複しています。' + self[index].race_number.toString())
               : null
             : null,
-            setRaceNumberDuplicatErrorMessage(strArray.length > 0 ? strArray[0] : [])
+          setRaceNumberDuplicatErrorMessage(strArray.length > 0 ? strArray[0] : [])
         ),
       );
     }
@@ -937,6 +937,7 @@ export default function Tournaments() {
         setMaxId((prevMaxId) => prevMaxId + 1);
         console.log('aaaaaaaaaaaaaaaaaaacccccccccccc');
         console.log(tableData.length);
+        console.log(tableData);
         setTableData((prevData) => [
           ...prevData,
           {
@@ -958,6 +959,7 @@ export default function Tournaments() {
             tournName: '',
           },
         ]);
+        console.log(tableData);
         // フォームデータをリセット
         // setRaceFormData({
         //   id: 1,
@@ -1525,15 +1527,14 @@ export default function Tournaments() {
                         <CustomButton
                           className='secondary w-[60px]'
                           onClick={() => {
-                            var newList = tableData.filter((data) => data.id !== row.id);
-                            for (let index = 0; index < newList.length; index++) {
-                              newList[index].id = index+1;
-                            }
-                            setTableData(newList);
+                            setTableData((prevData) => {
+                              var newList = prevData.filter((data) => data.id !== row.id);
+                              for (let index = 0; index < newList.length; index++) {
+                                newList[index].id = index + 1;
+                              }
+                              return newList;
+                            });
                             console.log('uuuuuuuuuuuuuurrrrrrrrr');
-                            // for (let index = 0; index < tableData.length; index++) {
-                            //   tableData[index].id = index+1;
-                            // }
                             console.log(tableData);
                           }}
                         >
