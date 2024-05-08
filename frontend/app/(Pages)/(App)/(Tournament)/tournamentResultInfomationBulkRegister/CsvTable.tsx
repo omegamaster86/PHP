@@ -25,9 +25,9 @@ const CsvTable = ({
   activationFlg: boolean;
   visibilityFlg: boolean; //データが0件の場合でもヘッダーは表示させるためのフラグ 20240508
 }) => {
-  if (content.length === 0) {
-    return <div className='text-primaryText'>CSVファイルをアップロードしてください。</div>;
-  }
+  // if (content.length === 0) {
+  //   return <div className='text-primaryText'>CSVファイルをアップロードしてください。</div>;
+  // }
 
   // 読み込み結果がエラーかどうかを確認
   const checkLoadingResult = (row: CsvData) => {
