@@ -16,16 +16,18 @@ const CsvTable = ({
   handleInputChange, // チェックボックスの変更時の処理
   displayRegisterButton, // 連携ボタンの表示を切り替える関数
   activationFlg, // 各種ボタンの表示を切り替える関数
+  visibilityFlg, //CSVテーブルの表示切替フラグ 20240508
 }: {
   content: CsvData[];
   header: string[];
   handleInputChange: (rowId: number, name: string, value: string | boolean) => void;
   displayRegisterButton: (flg: boolean) => void;
   activationFlg: boolean;
+  visibilityFlg: boolean; //データが0件の場合でもヘッダーは表示させるためのフラグ 20240508
 }) => {
-  if (content.length === 0) {
-    return <div className='text-primaryText'>CSVファイルをアップロードしてください。</div>;
-  }
+  // if (content.length === 0) {
+  //   return <div className='text-primaryText'>CSVファイルをアップロードしてください。</div>;
+  // }
 
   // 読み込み結果がエラーかどうかを確認
   const checkLoadingResult = (row: CsvData) => {
@@ -52,57 +54,55 @@ const CsvTable = ({
       <CustomTable>
         <CustomThead>
           {/* contentがundefinedまたは空の配列でないことを確認 */}
-          {!content || content.length === 0 || activationFlg ? (
-            <CustomTr>
-              <CustomTh align='center' colSpan={header.length + 1}>
-                レース結果
-              </CustomTh>
-            </CustomTr>
+          {visibilityFlg == false ? (
+            <div></div>
           ) : (
             <CustomTr>
-              <CustomTh>
-                <CustomButton
-                  buttonType='primary'
-                  className='w-[100px]'
-                  onClick={() => {
-                    content?.map((data) =>
-                      !checkLoadingResult(data)
-                        ? handleInputChange(data.id, 'checked', true)
-                        : null,
-                    );
-                    content?.some((row) => checkLoadingResult(row)) && displayRegisterButton(true);
-                  }}
-                >
-                  全選択
-                </CustomButton>
-              </CustomTh>
-              <CustomTh>
-                <CustomButton
-                  buttonType='primary'
-                  className='w-[110px]'
-                  onClick={() => {
-                    content.length > 0 &&
-                      content.map((data) => handleInputChange(data.id, 'checked', false));
-                    displayRegisterButton(false);
-                  }}
-                >
-                  全選択解除
-                </CustomButton>
-              </CustomTh>
-              <CustomTh colSpan={header.length - 1}>読み込み結果</CustomTh>
+              <CustomTr>
+                <CustomTh>
+                  <CustomButton
+                    buttonType='primary'
+                    className='w-[100px]'
+                    onClick={() => {
+                      content?.map((data) =>
+                        !checkLoadingResult(data)
+                          ? handleInputChange(data.id, 'checked', true)
+                          : null,
+                      );
+                      content?.some((row) => checkLoadingResult(row)) &&
+                        displayRegisterButton(true);
+                    }}
+                  >
+                    全選択
+                  </CustomButton>
+                </CustomTh>
+                <CustomTh>
+                  <CustomButton
+                    buttonType='primary'
+                    className='w-[110px]'
+                    onClick={() => {
+                      content.length > 0 &&
+                        content.map((data) => handleInputChange(data.id, 'checked', false));
+                      displayRegisterButton(false);
+                    }}
+                  >
+                    全選択解除
+                  </CustomButton>
+                </CustomTh>
+                <CustomTh colSpan={header.length - 1}>読み込み結果</CustomTh>
+              </CustomTr>
+              <CustomTr>
+                <CustomTh key={0}>選択</CustomTh>
+                {header.map((header: any, index: any) => (
+                  <CustomTh key={index}>{header}</CustomTh>
+                ))}
+              </CustomTr>
             </CustomTr>
           )}
-          <CustomTr>
-            <CustomTh key={0}>選択</CustomTh>
-            {header.map((header: any, index: any) => (
-              <CustomTh key={index}>{header}</CustomTh>
-            ))}
-          </CustomTr>
         </CustomThead>
         <CustomTbody>
-          {content.map(
+          {content?.map(
             (row, rowIndex) => (
-              console.log('row'),
               console.log(row),
               (
                 <CustomTr index={rowIndex} key={rowIndex}>
