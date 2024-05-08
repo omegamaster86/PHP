@@ -312,8 +312,6 @@ export default function TournamentEntryBulkRegister() {
 
   // CSVデータの処理
   const handleCsvData = async (row: string[], rowIndex: number) => {
-    console.log("=============");
-    console.log(row);
     if (row.length !== csvElementNum) {
       console.log('row.length:', row.length);
       setCsvData((prevData) => [
@@ -717,7 +715,6 @@ export default function TournamentEntryBulkRegister() {
                       const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
                       const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
                       if (dialogDisplayFlg) {
-                        console.log('ffffffffff');
                         window.confirm(
                           '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
                         )
@@ -736,22 +733,13 @@ export default function TournamentEntryBulkRegister() {
                               }))
                           : null;
                       } else {
-                        console.log('gdfsfsfssfsfsfsffsfsfs');
                         if (formData.tournName === '' || formData.tournName === undefined) {
                           checkTournName(true);
-                          console.log("mmmmmmmmmmmmmmm");
                         } else {
                           await sendCsvData(); //バックエンド側にCSVデータを送信 データ判定用
                           setCsvData([]);
                           // console.log(loadingResultList);
-                          console.log(csvFileData);
-                          if(csvFileData.content.length < 2){
-                            setDialogDisplayFlg(true);
-                            setDisplayRegisterButtonFlg(true);
-                          }
                           csvFileData?.content?.slice(1).map((row, rowIndex) => {
-                            console.log("*****ddddddd*****");
-                            console.log(row);
                             handleCsvData(row, rowIndex);
                             setDialogDisplayFlg(true);
                             // 仮実装。チェック内容に応じて登録ボタンの表示を判定
@@ -759,7 +747,6 @@ export default function TournamentEntryBulkRegister() {
                               displayRegisterButton(true);
                             }
                           });
-                          console.log("mmmmmmmmmmmmkkkkkkkkkk");
                         }
                       }
                       performValidation();

@@ -23,9 +23,9 @@ const CsvTable = ({
   displayRegisterButton: (flg: boolean) => void;
   activationFlg: boolean;
 }) => {
-  if (content.length === 0) {
-    return <div className='text-primaryText'>CSVファイルをアップロードしてください。</div>;
-  }
+  // if (content.length === 0) {
+  //   return <div className='text-primaryText'>CSVファイルをアップロードしてください。</div>;
+  // }
 
   // 読み込み結果がエラーかどうかを確認
   const checkLoadingResult = (row: CsvData) => {
@@ -48,20 +48,17 @@ const CsvTable = ({
   console.log(content);
 
   return (
-    console.log('nnnnnnnnnnnnnnn'),
     <div className='overflow-auto h-[331px] w-[800px]'>
       <CustomTable>
         <CustomThead>
           {/* contentがundefinedまたは空の配列でないことを確認 */}
           {!content || content.length === 0 || activationFlg ? (
-            console.log('aaaaaaaaaaaaaaaaa'),
             <CustomTr>
               <CustomTh align='center' colSpan={header.length + 1}>
                 レース結果
               </CustomTh>
             </CustomTr>
           ) : (
-            console.log('ddddddddddddddddd'),
             <CustomTr>
               <CustomTh>
                 <CustomButton
@@ -105,7 +102,6 @@ const CsvTable = ({
         <CustomTbody>
           {content.map(
             (row, rowIndex) => (
-              console.log('row'),
               console.log(row),
               (
                 <CustomTr index={rowIndex} key={rowIndex}>
