@@ -2,7 +2,7 @@
 'use client';
 
 // Reactおよび関連モジュールのインポート
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef,MouseEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/app/lib/axios';
 // コンポーネントのインポート
@@ -82,6 +82,33 @@ export default function TournamentRef() {
     tourn_url: '',
     tourn_info_faile_path: '',
   });
+
+  // フィルター用のステート
+  const [showByGroupAutocomplete, setShowByGroupAutocomplete] = useState(false);
+  // ヘッダーの位置を取得するためのステート
+  const [selectedByGroupHeader, setSelectedByGroupHeader] = useState({
+    value: '',
+    position: { top: 0, left: 0 },
+  });
+
+  /**
+   * 組別ヘッダークリック時の処理
+   * @param value
+   * @param event
+   * ヘッダーの位置を取得し、オートコンプリートを表示する
+   */
+  const handleByGroupHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
+    const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
+    setSelectedByGroupHeader({
+      value,
+      position: {
+        top: headerPosition.bottom + window.scrollY,
+        left: headerPosition.left + window.scrollX,
+      },
+    });
+    setShowByGroupAutocomplete(!showByGroupAutocomplete);
+    // setShowRaceNameAutocomplete(false);
+  };
 
   // APIの呼び出し実績の有無を管理する状態
   const isApiFetched = useRef(false);
@@ -302,16 +329,16 @@ export default function TournamentRef() {
                     userIdType.is_organization_manager == ROLE.GROUP_MANAGER ||
                     userIdType.is_jara == ROLE.JARA ||
                     userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
-                    <div className='flex flex-row gap-[10px]'>
-                      {/* エントリーシステムの大会ID */}
-                      <div className='text-gray-40 text-caption1'>エントリーシステムの大会ID：</div>
-                      <Label
-                        label={tournamentFormData.entrysystem_tourn_id}
-                        textColor='white'
-                        textSize='caption1'
-                      ></Label>
-                    </div>
-                  )}
+                      <div className='flex flex-row gap-[10px]'>
+                        {/* エントリーシステムの大会ID */}
+                        <div className='text-gray-40 text-caption1'>エントリーシステムの大会ID：</div>
+                        <Label
+                          label={tournamentFormData.entrysystem_tourn_id}
+                          textColor='white'
+                          textSize='caption1'
+                        ></Label>
+                      </div>
+                    )}
                 </div>
               </div>
             </div>
@@ -336,14 +363,24 @@ export default function TournamentRef() {
                       組別
                       {/* 残件対応項目 */}
                       <div
-                      // onClick={(event) => handleByGroupHeaderClick(header, event as any)}
+                      onClick={(event) => handleByGroupHeaderClick('組別', event as any)}
                       >
                         <FilterListIcon />
                       </div>
                     </div>
                   </CustomTh>
                   <CustomTh align='left'>距離</CustomTh>
-                  <CustomTh align='left'>発艇日時</CustomTh>
+                  <CustomTh align='left'>
+                    <div className='flex flex-row items-center gap-[10px]'>
+                      発艇日時
+                      {/* 残件対応項目 */}
+                      <div
+                      // onClick={(event) => handleByGroupHeaderClick(header, event as any)}
+                      >
+                        <FilterListIcon />
+                      </div>
+                    </div>
+                  </CustomTh>
                 </CustomTr>
               </CustomThead>
               <CustomTbody>
