@@ -715,6 +715,7 @@ export default function TournamentEntryBulkRegister() {
                       const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
                       const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
                       if (dialogDisplayFlg) {
+                        console.log('ffffffffff');
                         window.confirm(
                           '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
                         )
@@ -733,8 +734,10 @@ export default function TournamentEntryBulkRegister() {
                               }))
                           : null;
                       } else {
+                        console.log('gdfsfsfssfsfsfsffsfsfs');
                         if (formData.tournName === '' || formData.tournName === undefined) {
                           checkTournName(true);
+                          console.log("mmmmmmmmmmmmmmm");
                         } else {
                           await sendCsvData(); //バックエンド側にCSVデータを送信 データ判定用
                           setCsvData([]);
@@ -747,6 +750,7 @@ export default function TournamentEntryBulkRegister() {
                               displayRegisterButton(true);
                             }
                           });
+                          console.log("mmmmmmmmmmmmkkkkkkkkkk");
                         }
                       }
                       performValidation();
