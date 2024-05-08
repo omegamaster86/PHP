@@ -312,6 +312,8 @@ export default function TournamentEntryBulkRegister() {
 
   // CSVデータの処理
   const handleCsvData = async (row: string[], rowIndex: number) => {
+    console.log("=============");
+    console.log(row);
     if (row.length !== csvElementNum) {
       console.log('row.length:', row.length);
       setCsvData((prevData) => [
