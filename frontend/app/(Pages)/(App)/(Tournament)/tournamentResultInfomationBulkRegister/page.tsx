@@ -85,6 +85,7 @@ export default function TournamentResultInfomationBulkRegister() {
   const [csvData, setCsvData] = useState<CsvData[]>([]);
   const [dialogDisplayFlg, setDialogDisplayFlg] = useState<boolean>(false);
   const [displayRegisterButtonFlg, setDisplayRegisterButtonFlg] = useState<boolean>(false);
+  const [visibilityFlg, setVisibilityFlg] = useState<boolean>(false); //CSVテーブルの表示切替フラグ 20240508
   const [tournamentNameIsEmpty, setTournamentNameIsEmpty] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
     tournId: prevScreen === 'tournamentRef' && tournId ? Number(tournId) : 0,
@@ -1331,6 +1332,7 @@ export default function TournamentResultInfomationBulkRegister() {
                           });
                         }
                       }
+                      setVisibilityFlg(true);
                       performValidation();
                     }}
                   >
@@ -1418,6 +1420,7 @@ export default function TournamentResultInfomationBulkRegister() {
                 handleInputChange={handleTableInputChange}
                 displayRegisterButton={displayRegisterButton}
                 activationFlg={activationFlg}
+                visibilityFlg={visibilityFlg}
               />
             </div>
           </div>
