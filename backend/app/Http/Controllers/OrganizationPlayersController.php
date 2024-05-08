@@ -1188,7 +1188,8 @@ class OrganizationPlayersController extends Controller
                     $user_info = array();
                     $user_info['user_id'] = $target_user_data[0]->{'user_id'};
                     $user_info['input'] = '100';
-                    $user_type = (string)Auth::user()->user_type;
+                    // $user_type = (string)Auth::user()->user_type;
+                    $user_type = $target_user_data[0]->{'user_type'}; //ログインしていないユーザの選手フラグを更新できるようにする 20240508
                     //右から3桁目が0のときだけユーザー種別を更新する
                     if(substr($user_type,-3,1) == '0')
                     {
