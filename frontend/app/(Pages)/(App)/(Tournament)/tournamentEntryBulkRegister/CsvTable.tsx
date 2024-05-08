@@ -48,6 +48,7 @@ const CsvTable = ({
   console.log(content);
 
   return (
+    console.log('nnnnnnnnnnnnnnn'),
     <div className='overflow-auto h-[331px] w-[800px]'>
       <CustomTable>
         <CustomThead>
