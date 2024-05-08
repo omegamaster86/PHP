@@ -26,6 +26,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { ROLE } from '@/app/utils/consts';
 import { TOURNAMENT_PDF_URL } from '@/app/utils/imageUrl';
+import FilterListIcon from '@mui/icons-material/FilterList';
 
 // 大会情報参照画面
 export default function TournamentRef() {
@@ -330,7 +331,17 @@ export default function TournamentRef() {
                   <CustomTh align='left'>レース名</CustomTh>
                   <CustomTh align='left'>レースNo.</CustomTh>
                   <CustomTh align='left'>種目</CustomTh>
-                  <CustomTh align='left'>組別</CustomTh>
+                  <CustomTh align='left'>
+                    <div className='flex flex-row items-center gap-[10px]'>
+                      組別
+                      {/* 残件対応項目 */}
+                      <div
+                      // onClick={(event) => handleByGroupHeaderClick(header, event as any)}
+                      >
+                        <FilterListIcon />
+                      </div>
+                    </div>
+                  </CustomTh>
                   <CustomTh align='left'>距離</CustomTh>
                   <CustomTh align='left'>発艇日時</CustomTh>
                 </CustomTr>
