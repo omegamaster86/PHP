@@ -98,6 +98,7 @@ export default function TournamentRef() {
    * ヘッダーの位置を取得し、オートコンプリートを表示する
    */
   const handleByGroupHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
+    console.log('aaaaaaaaaaaaaaaaaa');
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedByGroupHeader({
       value,
