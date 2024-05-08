@@ -210,6 +210,9 @@ export default function Tournaments() {
     ]);
 
     const raceNumberErrorFlg = tableData.some((row) => {
+      if (row.checked) {
+        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+      }
       return Validator.validateRequired(row.race_number, 'レースNo.').length > 0;
       // if () {
       //   console.log(Validator.getErrorMessages([Validator.validatePositiveNumber(row.race_number)]));
@@ -224,19 +227,34 @@ export default function Tournaments() {
     //   return Validator.validateIntegerRange(row.entrysystem_race_id).length > 0;
     // });
     const raceNumberNegativeErrorFlg = tableData.some((row) => {
+      if (row.checked) {
+        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+      }
       return Validator.validatePositiveNumber(row.race_number).length > 0;
     });
     const eventIdErrorFlg = tableData.some((row) => {
+      if (row.checked) {
+        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+      }
       return Validator.validateSelectRequired(row.event_id, '種目').length > 0;
     });
 
     const raceNameErrorFlg = tableData.some((row) => {
+      if (row.checked) {
+        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+      }
       return Validator.validateRequired(row.race_name, 'レース名').length > 0;
     });
     const raceTypeErrorFlg = tableData.some((row) => {
+      if (row.checked) {
+        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+      }
       return Validator.validateRequired(row.race_class_id, 'レース区分').length > 0;
     });
     const raceTypeNameErrorFlg = tableData.some((row) => {
+      if (row.checked) {
+        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+      }
       // console.log(row.race_class_name);
       // console.log(row.race_class_id);
       // console.log(row.otherRaceName);
@@ -246,17 +264,29 @@ export default function Tournaments() {
     });
 
     const byGroupErrorFlg = tableData.some((row) => {
+      if (row.checked) {
+        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+      }
       return Validator.validateRequired(row.by_group, '組別').length > 0;
     });
 
     const rangeErrorFlg = tableData.some((row) => {
+      if (row.checked) {
+        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+      }
       return Validator.validateRequired(row.range, '距離').length > 0;
     });
     const rangeNegativeErrorFlg = tableData.some((row) => {
+      if (row.checked) {
+        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+      }
       return Validator.validatePositiveNumber(row.range).length > 0;
     });
 
     const startDateTimeErrorFlg = tableData.some((row) => {
+      if (row.checked) {
+        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+      }
       return Validator.validateRequired(row.start_date_time, '発艇日時').length > 0;
     });
 
@@ -384,7 +414,12 @@ export default function Tournaments() {
       console.log('create check');
       tableData.filter(
         (element, index, self) => (
-          self.findIndex((e) => e.entrysystem_race_id == element.entrysystem_race_id) != index
+          self.findIndex(
+            (e) =>
+              e.entrysystem_race_id == element.entrysystem_race_id &&
+              e.checked != true &&
+              element.checked != true,
+          ) != index
             ? self[index].entrysystem_race_id != '' && self[index].entrysystem_race_id != null
               ? strArray.push(
                   'エントリーシステムのレースIDが重複しています。' +
@@ -399,7 +434,12 @@ export default function Tournaments() {
       console.log('update check');
       tableData.filter(
         (element, index, self) => (
-          self.findIndex((e) => e.entrysystem_race_id == element.entrysystem_race_id) != index
+          self.findIndex(
+            (e) =>
+              e.entrysystem_race_id == element.entrysystem_race_id &&
+              e.checked != true &&
+              element.checked != true,
+          ) != index
             ? self[index].entrysystem_race_id != '' &&
               self[index].entrysystem_race_id != null &&
               self[index].checked != true
@@ -429,7 +469,10 @@ export default function Tournaments() {
       console.log('create check');
       tableData.filter(
         (element, index, self) => (
-          self.findIndex((e) => e.race_number == element.race_number) != index
+          self.findIndex(
+            (e) =>
+              e.race_number == element.race_number && e.checked != true && element.checked != true,
+          ) != index
             ? self[index].race_number != '' && self[index].race_number != null
               ? strArray.push('レースNo.が重複しています。' + self[index].race_number.toString())
               : null
@@ -441,7 +484,10 @@ export default function Tournaments() {
       console.log('update check');
       tableData.filter(
         (element, index, self) => (
-          self.findIndex((e) => e.race_number == element.race_number) != index
+          self.findIndex(
+            (e) =>
+              e.race_number == element.race_number && e.checked != true && element.checked != true,
+          ) != index
             ? self[index].race_number != '' &&
               self[index].race_number != null &&
               self[index].checked != true
@@ -1019,10 +1065,10 @@ export default function Tournaments() {
           <TextField
             type={'text'}
             value={row.entrysystem_race_id}
-            onChange={(e) => (
+            onChange={(e) =>
               // console.log(tableData),
               handleInputChangeRace(row.id, 'entrysystem_race_id', e.target.value)
-            )}
+            }
             className='my-[8px]'
             inputProps={{ maxLength: 8 }}
           />
