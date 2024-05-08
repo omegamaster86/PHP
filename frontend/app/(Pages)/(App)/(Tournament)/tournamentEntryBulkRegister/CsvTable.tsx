@@ -53,12 +53,14 @@ const CsvTable = ({
         <CustomThead>
           {/* contentがundefinedまたは空の配列でないことを確認 */}
           {!content || content.length === 0 || activationFlg ? (
+            console.log('aaaaaaaaaaaaaaaaa'),
             <CustomTr>
               <CustomTh align='center' colSpan={header.length + 1}>
                 レース結果
               </CustomTh>
             </CustomTr>
           ) : (
+            console.log('ddddddddddddddddd'),
             <CustomTr>
               <CustomTh>
                 <CustomButton
