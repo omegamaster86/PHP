@@ -2,7 +2,7 @@
 'use client';
 
 // Reactおよび関連モジュールのインポート
-import { useState, useEffect, useRef,MouseEvent } from 'react';
+import { useState, useEffect, useRef, ChangeEvent, MouseEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/app/lib/axios';
 // コンポーネントのインポート
@@ -27,6 +27,20 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import { ROLE } from '@/app/utils/consts';
 import { TOURNAMENT_PDF_URL } from '@/app/utils/imageUrl';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import {
+  Autocomplete,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+} from '@mui/material';
+
+interface ByGroupList {
+  id: number;
+  name: string;
+}
 
 // 大会情報参照画面
 export default function TournamentRef() {
@@ -82,6 +96,10 @@ export default function TournamentRef() {
     tourn_url: '',
     tourn_info_faile_path: '',
   });
+
+  // レース結果情報のデータステート
+  const [byGroupList, setByGroupList] = useState([] as ByGroupList[]);
+  const [selectedByGroupList, setSelectedByGroupList] = useState([] as ByGroupList[]);
 
   // フィルター用のステート
   const [showByGroupAutocomplete, setShowByGroupAutocomplete] = useState(false);
@@ -330,16 +348,16 @@ export default function TournamentRef() {
                     userIdType.is_organization_manager == ROLE.GROUP_MANAGER ||
                     userIdType.is_jara == ROLE.JARA ||
                     userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
-                      <div className='flex flex-row gap-[10px]'>
-                        {/* エントリーシステムの大会ID */}
-                        <div className='text-gray-40 text-caption1'>エントリーシステムの大会ID：</div>
-                        <Label
-                          label={tournamentFormData.entrysystem_tourn_id}
-                          textColor='white'
-                          textSize='caption1'
-                        ></Label>
-                      </div>
-                    )}
+                    <div className='flex flex-row gap-[10px]'>
+                      {/* エントリーシステムの大会ID */}
+                      <div className='text-gray-40 text-caption1'>エントリーシステムの大会ID：</div>
+                      <Label
+                        label={tournamentFormData.entrysystem_tourn_id}
+                        textColor='white'
+                        textSize='caption1'
+                      ></Label>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -363,9 +381,7 @@ export default function TournamentRef() {
                     <div className='flex flex-row items-center gap-[10px]'>
                       組別
                       {/* 残件対応項目 */}
-                      <div
-                      onClick={(event) => handleByGroupHeaderClick('組別', event as any)}
-                      >
+                      <div onClick={(event) => handleByGroupHeaderClick('組別', event as any)}>
                         <FilterListIcon />
                       </div>
                     </div>
@@ -426,6 +442,53 @@ export default function TournamentRef() {
                 ))}
               </CustomTbody>
             </CustomTable>
+            {/* 組別フィルター用のオートコンプリート */}
+            {showByGroupAutocomplete && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: `${selectedByGroupHeader.position.top - 120}px`,
+                  left: `${selectedByGroupHeader.position.left}px`,
+                  backgroundColor: 'white',
+                  borderRadius: '4px',
+                  zIndex: 1000,
+                  padding: '8px',
+                }}
+              >
+                <Autocomplete
+                  id='byGroup'
+                  multiple
+                  options={byGroupList}
+                  filterOptions={(options, { inputValue }) =>
+                    options.filter((option) => option.name.includes(inputValue))
+                  }
+                  value={selectedByGroupList || []}
+                  onChange={(e: ChangeEvent<{}>, newValue: ByGroupList[]) => {
+                    setSelectedByGroupList(newValue);
+                  }}
+                  renderOption={(props: any, option: ByGroupList) => {
+                    return (
+                      <li {...props} key={option.id}>
+                        {option.name}
+                      </li>
+                    );
+                  }}
+                  renderTags={(value: ByGroupList[], getTagProps: any) => {
+                    return value.map((option, index) => (
+                      <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                    ));
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      key={params.id}
+                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                      {...params}
+                      label={'組別'}
+                    />
+                  )}
+                />
+              </div>
+            )}
           </div>
           <div className='flex flex-row justify-center gap-[40px] m-auto'>
             {/* 戻るボタン */}
