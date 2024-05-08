@@ -745,6 +745,10 @@ export default function TournamentEntryBulkRegister() {
                           setCsvData([]);
                           // console.log(loadingResultList);
                           console.log(csvFileData);
+                          if(csvFileData.content.length < 2){
+                            setDialogDisplayFlg(true);
+                            setDisplayRegisterButtonFlg(true);
+                          }
                           csvFileData?.content?.slice(1).map((row, rowIndex) => {
                             console.log("*****ddddddd*****");
                             console.log(row);
