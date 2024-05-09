@@ -226,8 +226,8 @@ export default function TournamentRef() {
           })),
         );
         //発艇日時をフィルターできるようにする 20240509
-        const startDateTimeArray = raceResponse.data.result.map(
-          (item: any) => item.start_date_time.substring(0, 16),
+        const startDateTimeArray = raceResponse.data.result.map((item: any) =>
+          item.start_date_time.substring(0, 16),
         );
         console.log(startDateTimeArray);
         const uniqueStartDateTimeSet = new Set(startDateTimeArray);
@@ -483,11 +483,14 @@ export default function TournamentRef() {
                       selectedByGroupList.length === 0 &&
                       selectedStartDateTimeList.length > 0
                     ) {
-                      return selectedStartDateTimeList.some((item) => item.name === row.by_group);
+                      return selectedStartDateTimeList.some(
+                        (item) => item.name == row.start_date_time.substring(0, 16),
+                      );
                     } else {
                       return (
-                        selectedStartDateTimeList.some((item) => item.name === row.race_name) &&
-                        selectedByGroupList.some((item) => item.name === row.by_group)
+                        selectedStartDateTimeList.some(
+                          (item) => item.name == row.start_date_time.substring(0, 16),
+                        ) && selectedByGroupList.some((item) => item.name === row.by_group)
                       );
                     }
                   })
