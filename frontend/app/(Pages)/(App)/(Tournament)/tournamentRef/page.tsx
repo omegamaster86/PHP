@@ -227,7 +227,7 @@ export default function TournamentRef() {
         );
         //発艇日時をフィルターできるようにする 20240509
         const startDateTimeArray = raceResponse.data.result.map(
-          (item: any) => item.start_date_time,
+          (item: any) => item.start_date_time.substring(0, 16),
         );
         console.log(startDateTimeArray);
         const uniqueStartDateTimeSet = new Set(startDateTimeArray);
