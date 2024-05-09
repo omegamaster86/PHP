@@ -127,6 +127,7 @@ export default function Inquiry() {
             .post('/contact-us', requestBody)
             .then((response) => {
               {
+                window.alert('メールの送信が完了しました');
                 isLogIn ? router.push('/tournamentSearch') : router.push('/login');
               }
             })
