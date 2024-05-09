@@ -552,6 +552,7 @@ export default function TournamentRaceResultRef() {
                     }
                     value={selectedByGroupList || []}
                     onChange={(e: ChangeEvent<{}>, newValue: ByGroupList[]) => {
+                      console.log(newValue);
                       setSelectedByGroupList(newValue);
                     }}
                     renderOption={(props: any, option: ByGroupList) => {
