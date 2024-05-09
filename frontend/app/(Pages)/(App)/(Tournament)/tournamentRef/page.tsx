@@ -37,7 +37,13 @@ import {
   TextField,
 } from '@mui/material';
 
+//組別フィルター用
 interface ByGroupList {
+  id: number;
+  name: string;
+}
+//発艇日時フィルター用
+interface StartDateTimeList {
   id: number;
   name: string;
 }
@@ -100,11 +106,22 @@ export default function TournamentRef() {
   // レース結果情報のデータステート
   const [byGroupList, setByGroupList] = useState([] as ByGroupList[]);
   const [selectedByGroupList, setSelectedByGroupList] = useState([] as ByGroupList[]);
+  const [startDateTimeList, setStartDateTimeList] = useState([] as StartDateTimeList[]);
+  const [selectedStartDateTimeList, setSelectedStartDateTimeList] = useState(
+    [] as StartDateTimeList[],
+  );
 
   // フィルター用のステート 20240508
   const [showByGroupAutocomplete, setShowByGroupAutocomplete] = useState(false);
+  const [showStartDateTimeAutocomplete, setShowStartDateTimeAutocomplete] = useState(false);
   // ヘッダーの位置を取得するためのステート
+  //組別
   const [selectedByGroupHeader, setSelectedByGroupHeader] = useState({
+    value: '',
+    position: { top: 0, left: 0 },
+  });
+  //発艇日時
+  const [selectedStartDateTimeHeader, setSelectedStartDateTimeHeader] = useState({
     value: '',
     position: { top: 0, left: 0 },
   });
@@ -126,6 +143,28 @@ export default function TournamentRef() {
       },
     });
     setShowByGroupAutocomplete(!showByGroupAutocomplete);
+    // setShowRaceNameAutocomplete(false);
+  };
+  /**
+   * 発艇日時ヘッダークリック時の処理
+   * @param value
+   * @param event
+   * ヘッダーの位置を取得し、オートコンプリートを表示する
+   */
+  const handleStartDateTimeHeaderClick = (
+    value: string,
+    event: MouseEvent<HTMLElement, MouseEvent>,
+  ) => {
+    console.log('vvvvvvvvvvvvvvvvvvv');
+    const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
+    setSelectedStartDateTimeHeader({
+      value,
+      position: {
+        top: headerPosition.bottom + window.scrollY,
+        left: headerPosition.left + window.scrollX,
+      },
+    });
+    setShowStartDateTimeAutocomplete(!showByGroupAutocomplete);
     // setShowRaceNameAutocomplete(false);
   };
 
@@ -175,13 +214,26 @@ export default function TournamentRef() {
         console.log(resData.data.result);
         setOrgManagerFlag(resData.data.result);
 
-        const byGroupsArray = raceResponse.data.result.map((item: any) => item.by_group); //組別をフィルターできるようにする 20240509
+        //組別をフィルターできるようにする 20240509
+        const byGroupsArray = raceResponse.data.result.map((item: any) => item.by_group);
         console.log(byGroupsArray);
         const uniqueByGroupsSet = new Set(byGroupsArray);
         const uniqueByGroupsArray = Array.from(uniqueByGroupsSet);
         setByGroupList(
           uniqueByGroupsArray.map((item: any, index: any) => ({
-            //残件対応項目
+            id: index,
+            name: item,
+          })),
+        );
+        //発艇日時をフィルターできるようにする 20240509
+        const startDateTimeArray = raceResponse.data.result.map(
+          (item: any) => item.start_date_time,
+        );
+        console.log(startDateTimeArray);
+        const uniqueStartDateTimeSet = new Set(startDateTimeArray);
+        const uniqueStartDateTimeArray = Array.from(uniqueStartDateTimeSet);
+        setStartDateTimeList(
+          uniqueStartDateTimeArray.map((item: any, index: any) => ({
             id: index,
             name: item,
           })),
@@ -404,7 +456,9 @@ export default function TournamentRef() {
                       発艇日時
                       {/* 残件対応項目 */}
                       <div
-                      // onClick={(event) => handleByGroupHeaderClick(header, event as any)}
+                        onClick={(event) =>
+                          handleStartDateTimeHeaderClick('発艇日時', event as any)
+                        }
                       >
                         <FilterListIcon />
                       </div>
@@ -415,12 +469,26 @@ export default function TournamentRef() {
               <CustomTbody>
                 {tableData
                   .filter((row, index) => {
-                    if (selectedByGroupList.length === 0) {
+                    if (
+                      selectedByGroupList.length === 0 &&
+                      selectedStartDateTimeList.length === 0
+                    ) {
                       return true;
-                    } else if (selectedByGroupList.length > 0) {
+                    } else if (
+                      selectedByGroupList.length > 0 &&
+                      selectedStartDateTimeList.length === 0
+                    ) {
                       return selectedByGroupList.some((item) => item.name === row.by_group);
+                    } else if (
+                      selectedByGroupList.length === 0 &&
+                      selectedStartDateTimeList.length > 0
+                    ) {
+                      return selectedStartDateTimeList.some((item) => item.name === row.by_group);
                     } else {
-                      return selectedByGroupList.some((item) => item.name === row.by_group);
+                      return (
+                        selectedStartDateTimeList.some((item) => item.name === row.race_name) &&
+                        selectedByGroupList.some((item) => item.name === row.by_group)
+                      );
                     }
                   })
                   .map((row, index) => (
@@ -507,6 +575,54 @@ export default function TournamentRef() {
                       className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
                       {...params}
                       label={'組別'}
+                    />
+                  )}
+                />
+              </div>
+            )}
+            {/* 発艇日時用のオートコンプリート 20240509 */}
+            {showStartDateTimeAutocomplete && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: `${selectedStartDateTimeHeader.position.top - 120}px`,
+                  left: `${selectedStartDateTimeHeader.position.left}px`,
+                  backgroundColor: 'white',
+                  borderRadius: '4px',
+                  zIndex: 1000,
+                  padding: '8px',
+                }}
+              >
+                <Autocomplete
+                  id='startDateTime'
+                  multiple
+                  options={startDateTimeList}
+                  filterOptions={(options, { inputValue }) =>
+                    options.filter((option) => option.name.includes(inputValue))
+                  }
+                  value={selectedStartDateTimeList || []}
+                  onChange={(e: ChangeEvent<{}>, newValue: StartDateTimeList[]) => {
+                    console.log(newValue);
+                    setSelectedStartDateTimeList(newValue);
+                  }}
+                  renderOption={(props: any, option: StartDateTimeList) => {
+                    return (
+                      <li {...props} key={option.id}>
+                        {option.name}
+                      </li>
+                    );
+                  }}
+                  renderTags={(value: StartDateTimeList[], getTagProps: any) => {
+                    return value.map((option, index) => (
+                      <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                    ));
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      key={params.id}
+                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                      {...params}
+                      label={'発艇日時'}
                     />
                   )}
                 />
