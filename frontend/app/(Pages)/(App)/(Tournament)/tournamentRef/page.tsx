@@ -143,7 +143,7 @@ export default function TournamentRef() {
       },
     });
     setShowByGroupAutocomplete(!showByGroupAutocomplete);
-    // setShowRaceNameAutocomplete(false);
+    setShowStartDateTimeAutocomplete(false);
   };
   /**
    * 発艇日時ヘッダークリック時の処理
@@ -164,8 +164,8 @@ export default function TournamentRef() {
         left: headerPosition.left + window.scrollX,
       },
     });
-    setShowStartDateTimeAutocomplete(!showByGroupAutocomplete);
-    // setShowRaceNameAutocomplete(false);
+    setShowStartDateTimeAutocomplete(!showStartDateTimeAutocomplete);
+    setShowByGroupAutocomplete(false);
   };
 
   // APIの呼び出し実績の有無を管理する状態
