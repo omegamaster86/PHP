@@ -413,45 +413,55 @@ export default function TournamentRef() {
                 </CustomTr>
               </CustomThead>
               <CustomTbody>
-                {/* レースID */}
-                {tableData.map((row, index) => (
-                  <CustomTr key={index}>
-                    {/* 「出漕結果記録テーブル」に「レーステーブル」.「レースID」と紐づくデータが存在する場合、リンクボタンを表示するかどうかを制御するためにhasHistoryを利用 */}
-                    {row.hasHistory == true && (
-                      // TODO: 遷移先のURLは仮置き。置き換えること。
-                      <CustomTd
-                        transitionDest={
-                          '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
-                        }
-                      >
-                        {row.race_id}
-                      </CustomTd>
-                    )}
-                    {!row.hasHistory && <CustomTd>{row.race_id}</CustomTd>}
-                    {row.hasHistory == true && (
-                      // TODO: 遷移先のURLは仮置き。置き換えること。
-                      <CustomTd
-                        transitionDest={
-                          '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
-                        }
-                      >
-                        {row.race_name}
-                      </CustomTd>
-                    )}
-                    {/* レース名 */}
-                    {!row.hasHistory && <CustomTd>{row.race_name}</CustomTd>}
-                    {/* レースNo. */}
-                    <CustomTd>{row.race_number}</CustomTd>
-                    {/* 種目 */}
-                    <CustomTd>{row.event_name}</CustomTd>
-                    {/* 組別 */}
-                    <CustomTd>{row.by_group}</CustomTd>
-                    {/* 距離 */}
-                    <CustomTd>{row.range}</CustomTd>
-                    {/* 発艇日時 */}
-                    <CustomTd>{row.start_date_time.substring(0, 16)}</CustomTd>
-                  </CustomTr>
-                ))}
+                {tableData
+                  .filter((row, index) => {
+                    if (selectedByGroupList.length === 0) {
+                      return true;
+                    } else if (selectedByGroupList.length > 0) {
+                      return selectedByGroupList.some((item) => item.name === row.by_group);
+                    } else {
+                      return selectedByGroupList.some((item) => item.name === row.by_group);
+                    }
+                  })
+                  .map((row, index) => (
+                    <CustomTr key={index}>
+                      {/* 「出漕結果記録テーブル」に「レーステーブル」.「レースID」と紐づくデータが存在する場合、リンクボタンを表示するかどうかを制御するためにhasHistoryを利用 */}
+                      {row.hasHistory == true && (
+                        // TODO: 遷移先のURLは仮置き。置き換えること。
+                        <CustomTd
+                          transitionDest={
+                            '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
+                          }
+                        >
+                          {row.race_id}
+                        </CustomTd>
+                      )}
+                      {/* レースID */}
+                      {!row.hasHistory && <CustomTd>{row.race_id}</CustomTd>}
+                      {row.hasHistory == true && (
+                        // TODO: 遷移先のURLは仮置き。置き換えること。
+                        <CustomTd
+                          transitionDest={
+                            '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
+                          }
+                        >
+                          {row.race_name}
+                        </CustomTd>
+                      )}
+                      {/* レース名 */}
+                      {!row.hasHistory && <CustomTd>{row.race_name}</CustomTd>}
+                      {/* レースNo. */}
+                      <CustomTd>{row.race_number}</CustomTd>
+                      {/* 種目 */}
+                      <CustomTd>{row.event_name}</CustomTd>
+                      {/* 組別 */}
+                      <CustomTd>{row.by_group}</CustomTd>
+                      {/* 距離 */}
+                      <CustomTd>{row.range}</CustomTd>
+                      {/* 発艇日時 */}
+                      <CustomTd>{row.start_date_time.substring(0, 16)}</CustomTd>
+                    </CustomTr>
+                  ))}
               </CustomTbody>
             </CustomTable>
             {/* 組別フィルター用のオートコンプリート 20240508 */}
