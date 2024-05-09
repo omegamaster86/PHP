@@ -256,9 +256,7 @@ export default function TournamentRef() {
         setOrgManagerFlag(resData.data.result);
 
         //種目をフィルターできるようにする 20240509
-        const eventNameArray = raceResponse.data.result.map((item: any) =>
-          item.start_date_time.substring(0, 10),
-        );
+        const eventNameArray = raceResponse.data.result.map((item: any) => item.event_name);
         console.log(eventNameArray);
         const uniqueEventNameSet = new Set(eventNameArray);
         const uniqueEventNameArray = Array.from(uniqueEventNameSet);
