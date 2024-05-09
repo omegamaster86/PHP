@@ -444,7 +444,6 @@ export default function TournamentRef() {
             </CustomTable>
             {/* 組別フィルター用のオートコンプリート 20240508 */}
             {showByGroupAutocomplete && (
-              console.log(showByGroupAutocomplete),
               <div
                 style={{
                   position: 'absolute',
