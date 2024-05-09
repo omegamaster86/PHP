@@ -503,6 +503,7 @@ export default function TournamentRaceResultRef() {
                     }
                     value={selectedRaceNameList || []}
                     onChange={(e: ChangeEvent<{}>, newValue: RaceNameList[]) => {
+                      console.log(newValue);
                       setSelectedRaceNameList(newValue);
                     }}
                     renderOption={(props: any, option: RaceNameList) => {
