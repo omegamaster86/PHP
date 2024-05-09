@@ -101,7 +101,7 @@ export default function TournamentRef() {
   const [byGroupList, setByGroupList] = useState([] as ByGroupList[]);
   const [selectedByGroupList, setSelectedByGroupList] = useState([] as ByGroupList[]);
 
-  // フィルター用のステート
+  // フィルター用のステート 20240508
   const [showByGroupAutocomplete, setShowByGroupAutocomplete] = useState(false);
   // ヘッダーの位置を取得するためのステート
   const [selectedByGroupHeader, setSelectedByGroupHeader] = useState({
@@ -442,8 +442,9 @@ export default function TournamentRef() {
                 ))}
               </CustomTbody>
             </CustomTable>
-            {/* 組別フィルター用のオートコンプリート */}
+            {/* 組別フィルター用のオートコンプリート 20240508 */}
             {showByGroupAutocomplete && (
+              console.log(showByGroupAutocomplete),
               <div
                 style={{
                   position: 'absolute',
