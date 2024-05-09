@@ -174,6 +174,18 @@ export default function TournamentRef() {
         const resData = await axios.post('/checkOrgManager', sendData); //大会情報参照画面 主催団体管理者の判別 20240402
         console.log(resData.data.result);
         setOrgManagerFlag(resData.data.result);
+
+        const byGroupsArray = raceResponse.data.result.map((item: any) => item.by_group); //組別をフィルターできるようにする 20240509
+        console.log(byGroupsArray);
+        const uniqueByGroupsSet = new Set(byGroupsArray);
+        const uniqueByGroupsArray = Array.from(uniqueByGroupsSet);
+        setByGroupList(
+          uniqueByGroupsArray.map((item: any, index: any) => ({
+            //残件対応項目
+            id: index,
+            name: item,
+          })),
+        );
       };
       fetchData();
       isApiFetched.current = true;
