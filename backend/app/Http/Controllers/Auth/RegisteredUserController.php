@@ -53,6 +53,7 @@ class RegisteredUserController extends Controller
 
     public function store(Request $request)
     {
+        Log::debug(sprintf("store start"));
         // Change frontend field according to the developped laravel field 
         $request->merge(['user_name'=>$request->userName,'mailaddress'=>$request->email,'confirm_email'=>$request->confirmEmail,'terms_of_service'=>$request->checked]);
         
