@@ -231,7 +231,7 @@ export default function VolunteerBulkRegister() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.get('/getUserData');
-        //console.log(response.data.result);
+        console.log(response.data.result);
         if (Object.keys(response.data.result).length > 0) {
           const playerInf = await axios.get('/getIDsAssociatedWithUser');
           if (
@@ -240,11 +240,11 @@ export default function VolunteerBulkRegister() {
           ) {
             setValidFlag(true); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
           } else {
-            //console.log('ユーザ種別不正');
+            console.log('ユーザ種別不正');
             router.push('/tournamentSearch');
           }
         } else {
-          //console.log('ユーザ情報なし');
+          console.log('ユーザ情報なし');
           router.push('/tournamentSearch');
         }
       } catch (error: any) {}
@@ -446,7 +446,7 @@ export default function VolunteerBulkRegister() {
   };
 
   // const validateCountryIsNotJapan = (key: string) => {
-  //   //console.log(key);
+  //   // console.log(key);
   //   if (key === '' || key === undefined || key === null) return false;
   //   // 居住国が日本=112の時のみ、居住都道府県の形式をチェックする
   //   // 居住国が日本=112の時、falseを返す
@@ -454,7 +454,7 @@ export default function VolunteerBulkRegister() {
   // };
   //居住地のバリデーションチェックで日本以外かつ都道府県ありをチェックできるように条件を修正 20240412
   const validateCountryIsNotJapanAndPref = (cntKey: string, prefKey: string) => {
-    //console.log(cntKey,prefKey);
+    // console.log(cntKey,prefKey);
     if (cntKey != '112' && prefKey != '') {
       return true; //日本以外かつ都道府県あり
     } else if (cntKey == '112' && (prefKey == '' || prefKey == undefined || prefKey == null)) {
@@ -928,7 +928,7 @@ export default function VolunteerBulkRegister() {
             return;
           }
         }
-        //console.log(contentData);
+        console.log(contentData);
         setCsvData(contentData as CsvData[]);
         setDialogDisplayFlg(true);
         setActivationFlg(false);
@@ -938,7 +938,7 @@ export default function VolunteerBulkRegister() {
         performValidation();
       })
       .catch((error) => {
-        //console.log(error);
+        console.log(error);
       });
   };
 
@@ -946,15 +946,16 @@ export default function VolunteerBulkRegister() {
   const registerCsvData = async () => {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
-    //console.log(csvData);
+    console.log(csvData);
     await axios
       .post('/registerVolunteerCsvData', csvData)
       .then((res) => {
-        //console.log(res.data);
+        console.log('res.data');
+        console.log(res.data);
         // router.push('/tournamentSearch'); // 20240222
       })
       .catch((error) => {
-        //console.log(error);
+        console.log(error);
       });
   };
 

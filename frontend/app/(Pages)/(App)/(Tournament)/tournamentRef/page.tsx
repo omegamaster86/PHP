@@ -152,6 +152,7 @@ export default function TournamentRef() {
     value: string,
     event: MouseEvent<HTMLElement, MouseEvent>,
   ) => {
+    console.log('rrrrrrrrrrrrr');
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedEventNameHeader({
       value,
@@ -171,6 +172,7 @@ export default function TournamentRef() {
    * ヘッダーの位置を取得し、オートコンプリートを表示する
    */
   const handleByGroupHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
+    console.log('aaaaaaaaaaaaaaaaaa');
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedByGroupHeader({
       value,
@@ -193,6 +195,7 @@ export default function TournamentRef() {
     value: string,
     event: MouseEvent<HTMLElement, MouseEvent>,
   ) => {
+    console.log('vvvvvvvvvvvvvvvvvvv');
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedStartDateTimeHeader({
       value,
@@ -230,13 +233,13 @@ export default function TournamentRef() {
         // TODO: tournIdを元に大会情報を取得する処理の置き換え
         // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
         const tournamentResponse = await axios.post('/getTournamentInfoData', tourn_id); //大会IDを元に大会情報を取得する
-        //console.log(tournamentResponse);
+        // console.log(tournamentResponse);
         tournamentResponse.data.result.tourn_url = tournamentResponse.data.result.tourn_url ?? ''; //nullのパラメータを空のパラメータに置き換える
         setTournamentFormData(tournamentResponse.data.result);
         // TODO: tournIdを元にレース情報を取得する処理の置き換え
         // const raceResponse = await axios.get<Race[]>('http://localhost:3100/race');
         const raceResponse = await axios.post('/getRaceData', tourn_id);
-        //console.log(raceResponse.data.result);
+        // console.log(raceResponse.data.result);
         raceResponse.data.result.map((data: any) => {
           setTableData((prevData) => [...prevData, { ...data }]);
         });
@@ -249,12 +252,12 @@ export default function TournamentRef() {
           tournInfo: tournamentResponse.data.result,
         };
         const resData = await axios.post('/checkOrgManager', sendData); //大会情報参照画面 主催団体管理者の判別 20240402
-        //console.log(resData.data.result);
+        console.log(resData.data.result);
         setOrgManagerFlag(resData.data.result);
 
         //種目をフィルターできるようにする 20240509
         const eventNameArray = raceResponse.data.result.map((item: any) => item.event_name);
-        //console.log(eventNameArray);
+        console.log(eventNameArray);
         const uniqueEventNameSet = new Set(eventNameArray);
         const uniqueEventNameArray = Array.from(uniqueEventNameSet);
         setEventNameList(
@@ -265,7 +268,7 @@ export default function TournamentRef() {
         );
         //組別をフィルターできるようにする 20240509
         const byGroupsArray = raceResponse.data.result.map((item: any) => item.by_group);
-        //console.log(byGroupsArray);
+        console.log(byGroupsArray);
         const uniqueByGroupsSet = new Set(byGroupsArray);
         const uniqueByGroupsArray = Array.from(uniqueByGroupsSet);
         setByGroupList(
@@ -278,7 +281,7 @@ export default function TournamentRef() {
         const startDateTimeArray = raceResponse.data.result.map((item: any) =>
           item.start_date_time.substring(0, 10),
         );
-        //console.log(startDateTimeArray);
+        console.log(startDateTimeArray);
         const uniqueStartDateTimeSet = new Set(startDateTimeArray);
         const uniqueStartDateTimeArray = Array.from(uniqueStartDateTimeSet);
         setStartDateTimeList(
@@ -656,7 +659,7 @@ export default function TournamentRef() {
                   }
                   value={selectedEventNameList || []}
                   onChange={(e: ChangeEvent<{}>, newValue: EventNameList[]) => {
-                    //console.log(newValue);
+                    console.log(newValue);
                     setSelectedEventNameList(newValue);
                   }}
                   renderOption={(props: any, option: EventNameList) => {
@@ -704,7 +707,7 @@ export default function TournamentRef() {
                   }
                   value={selectedByGroupList || []}
                   onChange={(e: ChangeEvent<{}>, newValue: ByGroupList[]) => {
-                    //console.log(newValue);
+                    console.log(newValue);
                     setSelectedByGroupList(newValue);
                   }}
                   renderOption={(props: any, option: ByGroupList) => {
@@ -752,7 +755,7 @@ export default function TournamentRef() {
                   }
                   value={selectedStartDateTimeList || []}
                   onChange={(e: ChangeEvent<{}>, newValue: StartDateTimeList[]) => {
-                    //console.log(newValue);
+                    console.log(newValue);
                     setSelectedStartDateTimeList(newValue);
                   }}
                   renderOption={(props: any, option: StartDateTimeList) => {

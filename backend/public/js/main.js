@@ -277,7 +277,7 @@ setTimeout(() => {
 
 if(residenceCountry) {
     residenceCountry.addEventListener('change', function() {
-        //console.log(residenceCountry.value);
+        console.log(residenceCountry.value);
         let country = document.getElementById("residenceCountry");
         let prefecture = document.getElementById("residencePrefectures");
         if(country.value==="112"){

@@ -71,7 +71,7 @@ export default function PlayerInformationLinking() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.get('/getUserData');
-        //console.log(response.data.result);
+        console.log(response.data.result);
         if (Object.keys(response.data.result).length > 0) {
           const playerInf = await axios.get('/getIDsAssociatedWithUser');
           if (
@@ -80,11 +80,11 @@ export default function PlayerInformationLinking() {
           ) {
             setValidFlag(true); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
           } else {
-            //console.log('ユーザ種別不正');
+            console.log('ユーザ種別不正');
             router.push('/tournamentSearch');
           }
         } else {
-          //console.log('ユーザ情報なし');
+          console.log('ユーザ情報なし');
           router.push('/tournamentSearch');
         }
       } catch (error: any) {}
@@ -180,10 +180,10 @@ export default function PlayerInformationLinking() {
     await axios
       .post('/sendCsvData', element)
       .then((res) => {
-        //console.log(res.data.result);
+        console.log(res.data.result);
         var contentData = res.data.result as CsvData[];
         // contentData.map((row, rowIndex) => {
-        //   //console.log(row, rowIndex);
+        //   console.log(row, rowIndex);
         // });
 
         if (dialogDisplayFlg) {
@@ -234,7 +234,7 @@ export default function PlayerInformationLinking() {
         performValidation();
       })
       .catch((error) => {
-        //console.log(error);
+        console.log(error);
       })
       .finally(() => {
         setActivationFlg(false);
@@ -248,11 +248,11 @@ export default function PlayerInformationLinking() {
     await axios
       .post('/registerCsvData', csvData)
       .then((res) => {
-        //console.log(res.data);
+        console.log(res.data);
         // router.push('/tournamentSearch'); // 20240222
       })
       .catch((error) => {
-        //console.log(error);
+        console.log(error);
       });
   };
 
@@ -319,7 +319,7 @@ export default function PlayerInformationLinking() {
                   <CustomButton
                     buttonType='primary'
                     onClick={() => {
-                      //console.log(csvFileData);
+                      console.log(csvFileData);
                       sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
                     }}
                   >
@@ -384,7 +384,7 @@ export default function PlayerInformationLinking() {
                 <CustomButton
                   buttonType='primary'
                   onClick={() => {
-                    //console.log(csvData);
+                    console.log(csvData);
                     setActivationFlg(true);
                     csvData.find((row) => row.checked)?.id === undefined
                       ? window.confirm('1件以上選択してください。')

@@ -215,7 +215,7 @@ export default function Tournaments() {
       }
       return Validator.validateRequired(row.race_number, 'レースNo.').length > 0;
       // if () {
-      //   //console.log(Validator.getErrorMessages([Validator.validatePositiveNumber(row.race_number)]));
+      //   console.log(Validator.getErrorMessages([Validator.validatePositiveNumber(row.race_number)]));
       //   setRaceNumberErrorMessage(Validator.getErrorMessages([Validator.validatePositiveNumber(row.race_number)]));
 
       //   return false;
@@ -255,9 +255,9 @@ export default function Tournaments() {
       if (row.checked) {
         return false; //削除チェックがされている場合、バリデーションを行わない 20240508
       }
-      //console.log(row.race_class_name);
-      //console.log(row.race_class_id);
-      //console.log(row.otherRaceName);
+      // console.log(row.race_class_name);
+      // console.log(row.race_class_id);
+      // console.log(row.otherRaceName);
       return row.race_class_id === '999'
         ? Validator.validateRequired(row.otherRaceName, 'レース区分').length > 0
         : false;
@@ -393,13 +393,13 @@ export default function Tournaments() {
       rangeNegativeErrorFlg ||
       startDateTimeErrorFlg
     ) {
-      //console.log(tournNameError);
-      //console.log(sponsorOrgIdError);
-      //console.log(eventStartDateError);
-      //console.log(eventEndDateError);
-      //console.log(venueIdError);
-      //console.log(venueNameError);
-      //console.log(raceIdErrorFlg);
+      console.log(tournNameError);
+      console.log(sponsorOrgIdError);
+      console.log(eventStartDateError);
+      console.log(eventEndDateError);
+      console.log(venueIdError);
+      console.log(venueNameError);
+      // console.log(raceIdErrorFlg);
 
       return true;
     } else {
@@ -411,7 +411,7 @@ export default function Tournaments() {
   const entrysystemRaceIdCehck = () => {
     var strArray = Array();
     if (mode == 'create') {
-      //console.log('create check');
+      console.log('create check');
       tableData.filter(
         (element, index, self) => (
           self.findIndex(
@@ -431,7 +431,7 @@ export default function Tournaments() {
         ),
       );
     } else if (mode == 'update') {
-      //console.log('update check');
+      console.log('update check');
       tableData.filter(
         (element, index, self) => (
           self.findIndex(
@@ -453,12 +453,12 @@ export default function Tournaments() {
         ),
       );
     }
-    //console.log(strArray);
+    console.log(strArray);
     if (strArray.length > 0) {
-      //console.log('エントリーシステムエラーあり');
+      console.log('エントリーシステムエラーあり');
       return true;
     } else {
-      //console.log('エントリーシステムエラーなし');
+      console.log('エントリーシステムエラーなし');
       return false;
     }
   };
@@ -466,7 +466,7 @@ export default function Tournaments() {
   const raceNumberDuplicatCheck = () => {
     var strArray = Array();
     if (mode == 'create') {
-      //console.log('create check');
+      console.log('create check');
       tableData.filter(
         (element, index, self) => (
           self.findIndex(
@@ -481,7 +481,7 @@ export default function Tournaments() {
         ),
       );
     } else if (mode == 'update') {
-      //console.log('update check');
+      console.log('update check');
       tableData.filter(
         (element, index, self) => (
           self.findIndex(
@@ -499,12 +499,12 @@ export default function Tournaments() {
       );
     }
 
-    //console.log(strArray);
+    console.log(strArray);
     if (strArray.length > 0) {
-      //console.log('レースNoエラーあり');
+      console.log('レースNoエラーあり');
       return true;
     } else {
-      //console.log('レースNoエラーなし');
+      console.log('レースNoエラーなし');
       return false;
     }
   };
@@ -615,7 +615,7 @@ export default function Tournaments() {
           // .get<Tournament>('http://localhost:3100/tournament')
           .post('/getTournamentInfoData', tourn_id) //大会IDを元に大会情報を取得する
           .then((response) => {
-            //console.log(response.data);
+            // console.log(response.data);
             setTournamentFormData(response.data.result);
           })
           .catch((error) => {
@@ -626,7 +626,7 @@ export default function Tournaments() {
           // .get<Race[]>('/race')
           .post('/getRaceData', tourn_id)
           .then((response) => {
-            //console.log(response.data.result);
+            // console.log(response.data.result);
             setTableData(response.data.result);
           })
           .catch((error) => {
@@ -655,7 +655,7 @@ export default function Tournaments() {
         setTableData([]);
       }
       setBackKeyFlag(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
-      //console.log(backKeyFlag);
+      // console.log(backKeyFlag);
     };
     fetchData();
   }, [mode]);
@@ -693,7 +693,7 @@ export default function Tournaments() {
                   });
                   // sendFormData.tournamentFormData = tournamentFormData;
                   // sendFormData.tableData = tableData;
-                  //console.log(registerData);
+                  // console.log(registerData);
                   const csrf = () => axios.get('/sanctum/csrf-cookie');
                   await csrf();
 
@@ -706,7 +706,7 @@ export default function Tournaments() {
                       },
                     })
                     .then((response) => {
-                      //console.log(response);
+                      // console.log(response);
                       // TODO: 処理成功時の処理
                       setTournamentFormData({} as Tournament);
                       // setRaceFormData({
@@ -818,7 +818,7 @@ export default function Tournaments() {
                     (registerData.tournamentFormData as any)[key] =
                       (registerData.tournamentFormData as any)[key] ?? '';
                   });
-                  //console.log(registerData);
+                  // console.log(registerData);
                   axios
                     // .post('http://localhost:3100/', registerData)
                     .post('/updateTournamentInfoData', registerData, {
@@ -914,9 +914,9 @@ export default function Tournaments() {
         buttonType='primary'
         onClick={async () => {
           setDisplayFlg(false);
-          //console.log(tableData);
+          console.log(tableData);
           const isError = performValidation();
-          //console.log(isError);
+          console.log(isError);
           const isEntryRaceIdError = entrysystemRaceIdCehck(); //エントリーシステムのレースIDの重複チェック 20240506
           const isRaceNoError = raceNumberDuplicatCheck(); //レースNo.の重複チェック 20240506
 
@@ -934,9 +934,9 @@ export default function Tournaments() {
                 race_data: tableData,
               })
               .then((response) => {
-                //console.log(tableData);
-                //console.log(response);
-                //console.log(tournamentFormData);
+                console.log(tableData);
+                console.log(response);
+                console.log(tournamentFormData);
                 tournamentFormData.sponsorOrgName = response.data.success.org_name;
                 setTableData((prevData) => {
                   // return prevData.filter((row) => {
@@ -981,8 +981,8 @@ export default function Tournaments() {
       onClick={() => {
         const newId = maxId + 1;
         setMaxId((prevMaxId) => prevMaxId + 1);
-        //console.log(tableData.length);
-        //console.log(tableData);
+        // console.log(tableData.length);
+        // console.log(tableData);
         setTableData((prevData) => [
           ...prevData,
           {
@@ -1066,7 +1066,7 @@ export default function Tournaments() {
             type={'text'}
             value={row.entrysystem_race_id}
             onChange={(e) =>
-              //console.log(tableData),
+              // console.log(tableData),
               handleInputChangeRace(row.id, 'entrysystem_race_id', e.target.value)
             }
             className='my-[8px]'
@@ -1581,7 +1581,7 @@ export default function Tournaments() {
                               }
                               return newList;
                             });
-                            //console.log(tableData);
+                            // console.log(tableData);
                           }}
                         >
                           削除
@@ -1659,9 +1659,9 @@ export default function Tournaments() {
           {displayFlg && (
             <CustomButton
               onClick={() => {
-                //console.log(backKeyFlag);
+                console.log(backKeyFlag);
                 setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
-                //console.log(backKeyFlag);
+                console.log(backKeyFlag);
                 router.back();
               }}
               buttonType='secondary'
