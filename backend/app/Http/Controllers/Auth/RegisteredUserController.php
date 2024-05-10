@@ -53,7 +53,6 @@ class RegisteredUserController extends Controller
 
     public function store(Request $request)
     {
-        Log::debug(sprintf("store start"));
         // Change frontend field according to the developped laravel field 
         $request->merge(['user_name'=>$request->userName,'mailaddress'=>$request->email,'confirm_email'=>$request->confirmEmail,'terms_of_service'=>$request->checked]);
         
@@ -131,16 +130,14 @@ class RegisteredUserController extends Controller
                 // throw ValidationException::withMessages([
                 //     'datachecked_error' => $registration_failed
                 // ]);
-                Log::debug($e);
-                return response()->json(['system_error' => $registration_failed,'errorMessage' => $e],500);
+                return response()->json(['system_error' => $registration_failed],500);
                 //Status code 500 for internal server error
             }
             else{
                 // throw ValidationException::withMessages([
                 //     'datachecked_error' => $registration_failed
                 // ]); 
-                Log::debug($e);
-                return response()->json(['system_error' => $registration_failed,'errorMessage' => $e],500);
+                return response()->json(['system_error' => $registration_failed],500);
                 //Status code 500 for internal server error
             }
         }
@@ -175,8 +172,7 @@ class RegisteredUserController extends Controller
             // throw ValidationException::withMessages([
             //     'datachecked_error' => $mail_sent_failed,
             // ]);
-            Log::debug($e);
-            return response()->json(['system_error' => $registration_failed,'errorMessage' => $e],500);
+            return response()->json(['system_error' => $registration_failed],500);
                 //Status code 500 for internal server error
         }
 
