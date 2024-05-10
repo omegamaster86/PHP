@@ -46,8 +46,11 @@ export const useAuth = ({
   };
 
   const logout = async () => {
+    console.log('uuuuuuuuuu');
+    console.log(error);
     if (!error) {
       if (pathname === '/signup' || pathname === '/forgotpassword' || pathname === '/inquiry') {
+        console.log('rrrrrrrrrrrrrrr');
       } else {
         try {
           await axios.post('/logout').then(() => {
