@@ -122,7 +122,7 @@ export default function TournamentSearch() {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       const response = await axios.post('/tournamentSearch', searchCond);
-      //console.log(response.data);
+      // console.log(response.data);
       if (response.data.result.length > 100) {
         window.alert('検索結果が100件を超えました、上位100件を表示しています。');
       }
@@ -158,7 +158,7 @@ export default function TournamentSearch() {
             appro_type_id_name: string;
           }) => ({ id: appro_type_id, name: appro_type_id_name }),
         );
-        //console.log(tourTypeList);
+        // console.log(tourTypeList);
         setTourType(tourTypeList);
 
         // const venueResponse = await axios.get<VenueResponse[]>('/venue');

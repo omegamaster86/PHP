@@ -80,7 +80,7 @@ export default function TeamPlayer() {
         // SessionStorageに追加選手リストがある場合、追加選手リストを取得
         if (sessionStorage.getItem('addPlayerList') !== null) {
           var addPlayerList = JSON.parse(sessionStorage.getItem('addPlayerList') as string);
-          //console.log(addPlayerList);
+          console.log(addPlayerList);
           let data = transformData(addPlayerList, '追加');
 
           if (mode == 'update') {
@@ -92,7 +92,7 @@ export default function TeamPlayer() {
             const response = await axios.post('/searchOrganizationPlayersForTeamRef', sendId);
             const searchRes = transformData(response.data.result, '既存');
             data = setIndex(data.concat(searchRes));
-            //console.log(response.data.result);
+            console.log(response.data.result);
 
             // setFormData(
             //   response.data.result.map((data: TeamPlayerInformationResponse) => ({
@@ -106,7 +106,7 @@ export default function TeamPlayer() {
             // const response = await axios.get('http://localhost:3100/teamPlayers');
             // const searchRes = setIndex(transformData(response.data, '既存'));
             const response = await axios.post('/searchOrganizationPlayersForTeamRef', sendId);
-            //console.log(response);
+            console.log(response);
             const searchRes = transformData(response.data.result, '既存');
 
             //追加選手の重複チェック処理 20240416
@@ -117,7 +117,7 @@ export default function TeamPlayer() {
               searchRes.some((item) => item.player_id == data[index].player_id);
               //要素が1つでも条件に合致するかを調べる 20240416
               if (searchRes.some((item) => item.player_id == data[index].player_id)) {
-                //console.log(data[index].player_id);
+                // console.log(data[index].player_id);
                 element.push(
                   ' 選手ID: ' + data[index].player_id + '選手名:' + data[index].player_name,
                 );
@@ -130,7 +130,7 @@ export default function TeamPlayer() {
             }
             data = data.filter((item) => !item.deleteFlag); //削除フラグがfalse（重複していないデータ）のみを取り出す 20240416
             addPlayerList = addPlayerList.filter((item: any) => !item.deleteFlag); //削除フラグがfalse（重複していないデータ）のみを取り出す 20240416
-            //console.log(addPlayerList);
+            // console.log(addPlayerList);
             sessionStorage.setItem('addPlayerList', JSON.stringify(addPlayerList)); //セッションストレージの内容を更新
             data = setIndex(data.concat(searchRes)); // concatで配列の結合をしてからindexをmapする
           }
@@ -141,19 +141,19 @@ export default function TeamPlayer() {
             // const response = await axios.get('http://localhost:3100/teamPlayers');
             // const searchRes = setIndex(transformData(response.data, '既存'));
             const response = await axios.post('/searchOrganizationPlayersForTeamRef', sendId);
-            //console.log(response);
+            console.log(response);
             const searchRes = transformData(response.data.result, '既存');
-            //console.log(searchRes);
+            console.log(searchRes);
             setFormData(searchRes);
           }
         }
 
         // const teamResponse = await axios.get('/team');
         const teamResponse = await axios.post('/getOrgData', sendId);
-        //console.log(teamResponse.data.result);
+        console.log(teamResponse.data.result);
         setTeamData(teamResponse.data.result);
       } catch (error) {
-        //console.log(error);
+        // console.log(error);
       }
     };
     getTeamPlayer();
@@ -385,7 +385,7 @@ export default function TeamPlayer() {
                 axios
                   .post('/updateOrgPlayerData', sendData) //20240226
                   .then((response) => {
-                    //console.log(response.data);
+                    console.log(response.data);
                     router.push('/teamRef?orgId=' + teamData.org_id); //変更後は、該当の団体参照画面に遷移する 20240401
                   })
                   .catch((error) => {});

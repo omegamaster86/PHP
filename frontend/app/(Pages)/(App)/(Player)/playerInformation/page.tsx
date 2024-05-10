@@ -216,7 +216,7 @@ export default function PlayerInformation() {
           // .get<SexResponse[]>('http://localhost:3100/sex')
           .get('/getSexList') //20240123 DBからデータ取得
           .then((response) => {
-            //console.log(response.data);
+            // console.log(response.data);
             const sexList = response.data.map(
               ({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }),
             );
@@ -260,9 +260,10 @@ export default function PlayerInformation() {
     };
     fetchPrefecture();
 
-    //console.log(backKeyFlag);
+    console.log(backKeyFlag);
     if (mode === 'update' && !backKeyFlag) {
-      //console.log(formData.residencePrefectureName);
+      console.log('aaaaaaaaaaaaa');
+      console.log(formData.residencePrefectureName);
       // TODO: 選手情報を取得する処理を実装
       // searchParams.get('id')から選手IDを取得
       const fetchPlayerData = async () => {
@@ -272,7 +273,7 @@ export default function PlayerInformation() {
           // .get<PlayerInformationResponse>('http://localhost:3100/player')
           .post('/getUpdatePlayerData', player_id)
           .then(async (response) => {
-            //console.log(response.data);
+            // console.log(response.data);
             //サイド情報のデータ変換
             var data = response.data.result.side_info.split('');
             data.splice(0, 4); //サイド情報の先頭４つ分の不要なデータを削除
@@ -323,7 +324,8 @@ export default function PlayerInformation() {
           });
       };
       fetchPlayerData(); // APIを叩いて、選手情報を取得する
-      //console.log(formData.birthPrefectureName);
+      console.log('==============');
+      console.log(formData.birthPrefectureName);
     } else if (mode === 'create' && !backKeyFlag) {
       setFormData((prevFormData) => ({
         ...prevFormData,
@@ -350,7 +352,7 @@ export default function PlayerInformation() {
       }));
     }
     setBackKeyFlag(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
-    //console.log(backKeyFlag);
+    console.log(backKeyFlag);
   }, [mode]);
 
   /**
@@ -409,7 +411,7 @@ export default function PlayerInformation() {
         ? Validator.validateSelectRequired(formData.birthPrefectureName, '出身地（都道府県）')
         : '',
     ]);
-    //console.log(birthPlacePrefectureError);
+    console.log(birthPlacePrefectureError);
 
     // 居住地（国）の入力チェック
     const residenceCountryNameError = Validator.getErrorMessages([
@@ -422,7 +424,7 @@ export default function PlayerInformation() {
         ? Validator.validateSelectRequired(formData.residencePrefectureName, '居住地（都道府県）')
         : '',
     ]);
-    //console.log(livingPrefectureError);
+    console.log(livingPrefectureError);
 
     // エラーメッセージを設定
     setJaraPlayerCodeErrorMessage(jaraPlayerCodeError);
@@ -475,7 +477,7 @@ export default function PlayerInformation() {
             .post('/checkJARAPlayerId', { jara_player_id: formData.jara_player_id, mode: 'create' })
             .then((response) => {
               // TODO: 更新処理成功時の処理
-              //console.log(response);
+              // console.log(response);
               setErrorMessage([]);
               // OK が押下された場合、確認画面に遷移する　※短絡評価
               // window.confirm('入力したJARA選手コードと紐づくデータが存在しません。\nこのJARA選手コードで登録しますか？') && router.push('/playerInformation?mode=confirm&prevMode=create');
@@ -514,7 +516,7 @@ export default function PlayerInformation() {
             .post('/checkJARAPlayerId', { jara_player_id: formData.jara_player_id, mode: 'update' })
             .then((response) => {
               // TODO: 更新処理成功時の処理
-              //console.log(response);
+              // console.log(response);
               setErrorMessage([]);
               if (response?.data != '') {
                 // OK が押下された場合、確認画面に遷移する　※短絡評価
@@ -557,7 +559,7 @@ export default function PlayerInformation() {
               }) //20240123 送信テスト
               .then((response) => {
                 // TODO: 更新処理成功時の処理
-                //console.log(response);
+                // console.log(response);
                 if (formData.birth_country != 112) {
                   //出身地が日本以外の場合、都道府県に関連したデータを削除する
                   formData.birth_prefecture = 0;
@@ -575,7 +577,7 @@ export default function PlayerInformation() {
                 }
                 formData.side_info = tmpArray;
                 formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
-                //console.log(formData);
+                console.log(formData);
 
                 //nullのパラメータを空のパラメータに置き換える
                 Object.keys(formData).forEach((key) => {
@@ -619,7 +621,7 @@ export default function PlayerInformation() {
             //    }) //20240123 送信テスト
             //   .then((response) => {
             //     // TODO: 更新処理成功時の処理
-            //     //console.log(response);
+            //     console.log(response);
             //     window.confirm('選手情報を更新しました。');
             //     router.push('/DummyMyPage');
             //   })
@@ -645,7 +647,7 @@ export default function PlayerInformation() {
               })
               .then((response) => {
                 // TODO: 更新処理成功時の処理
-                //console.log(response);
+                // console.log(response);
                 if (formData.birth_country != 112) {
                   //出身地が日本以外の場合、都道府県に関連したデータを削除する
                   formData.birth_prefecture = 0;
@@ -663,7 +665,7 @@ export default function PlayerInformation() {
                 }
                 formData.side_info = tmpArray;
                 formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
-                //console.log(formData);
+                // console.log(formData);
 
                 //nullのパラメータを空のパラメータに置き換える
                 Object.keys(formData).forEach((key) => {
@@ -777,7 +779,7 @@ export default function PlayerInformation() {
                   alt='Profile Photo'
                   // Revoke data uri after image is loaded
                   // onLoad={() => {
-                  //   //console.log(currentShowFile);
+                  //   console.log(currentShowFile);
                   // }}
                 />
               </div>
@@ -1131,10 +1133,10 @@ export default function PlayerInformation() {
           {/* 戻るボタン */}
           <CustomButton
             onClick={async () => {
-              //console.log(backKeyFlag);
+              console.log(backKeyFlag);
               await setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
               setErrorMessage([]);
-              //console.log(backKeyFlag);
+              console.log(backKeyFlag);
               router.back();
             }}
             buttonType='white-outlined'

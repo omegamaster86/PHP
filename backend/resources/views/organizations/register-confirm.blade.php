@@ -1,0 +1,214 @@
+{{--*************************************************************************
+* Project name: JARA
+* File name: registered-confirm.blade.php
+* File extension: .blade.php
+* Description: This is the ui of organization's edit and update confirmation page
+*************************************************************************
+* Author: t_futamura
+* Created At: 2023/11/30
+* Updated At: 
+*************************************************************************
+*
+* Copyright 2023 by DPT INC.
+*
+************************************************************************--}}
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Profile Edit</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{{ asset('/font-awesome/css/font-awesome.min.css') }}">
+
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/organization.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/nav.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
+
+    {{-- Date Picker --}}
+    <link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
+</head>
+
+<body>
+    {{-- background-color: #9FD9F6; --}}
+    <div class="container-fluid bootstrap snippets bootdey">
+        <!--style="background: linear-gradient(to right,#1991FC,  #45b796);padding:0;color: #000;font-weight:500">-->
+        <div id="mySidenav" class="sidenav">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <a href="#">ダッシュボード</a>
+            <a href="#">情報更新</a>
+            <a href="#">情報参照</a>
+            <a href="#">アカウント削除</a>
+        </div>
+        <!--1.引数によって表示を変える-->
+        <div style="background: linear-gradient(to right,#1991FC,  #45b796); color:#fff;padding-top:15px;">
+            <span class="col-md-3 " style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; メニュー</span>
+            @if(Session::has('fromLoginPage'))
+                <h1 class="text-right col-md-8">{{ Session::get('fromLoginPage') }}</h1>            
+            @else
+                @if($pagemode == "register")
+                    <h1 style="display: inline;margin-left:25%" class="text-right col-md-9">確認</h1>
+                @elseif($pagemode == "edit")
+                    <h1 style="display: inline;margin-left:25%" class="text-right col-md-9">確認[{{session()->get('organizationInfo')['orgName']}}]</h1>
+                @endif
+            @endif
+        </div>
+        <hr style="height:1px;border-width:0;color:#9AF8FD;background-color:#9AF8FD">
+        
+        <form class="form-horizontal" enctype="multipart/form-data" role="form" style="display: flex" method="POST">
+            @csrf
+            @if($pagemode == "edit")
+                <input id="org_id" name="org_id" type="hidden" value="{{session()->get('organizationInfo')['org_id']}}">
+            @endif
+            <input id="pagemode" name="pagemode" type="hidden" value="{{$pagemode}}">
+            <div class="row" style="padding:10px 0px;width: 100%;">
+                <!-- 複数要因によるエラーメッセージ表示エリア -->
+                @if ($errors->has('organization_commit_failed'))
+                    <p style="margin: 1rem; font-weight:bold; color:red; text-align: center">{{ $errors->first('organization_commit_failed') }}</p>
+                @endif
+                <div class="col-md-10">
+                    <div class="form-group">
+                        <label for="entrysystemOrgId" class="col-md-6" style="text-align: right"><b>エントリーシステムの団体ID：</b></label>
+                        <input id="entrysystemOrgId" name="entrysystemOrgId" value="{{session()->get('organizationInfo')['entrysystemOrgId']}}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="orgName" class="col-md-6" style="text-align: right"><b>団体名：</b></label>
+                        <input id="orgName" name="orgName" value="{{session()->get('organizationInfo')['orgName']}}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="foundingYear" class="col-md-6" style="text-align: right"><b>創立年：</b></label>
+                        <input id="foundingYear" name="foundingYear" value="{{session()->get('organizationInfo')['foundingYear']}}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="post_code" class="col-md-6" style="text-align: right"><b>郵便番号：</b></label>
+                        <input id="post_code" name="post_code" type="hidden" value="{{session()->get('organizationInfo')['post_code']}}" readonly>
+                        <label>〒</label>
+                        <input id="post_code_display" name="post_code_display" value="{{session()->get('organizationInfo')['postCodeUpper']}}-{{session()->get('organizationInfo')['postCodeLower']}}" readonly size=17>
+                    </div>
+                    <div class="form-group">
+                        <label for="prefecture" class="col-md-6" style="text-align: right"><b>所在地(都道府県)：</b></label>
+                        <input id="pref_id" name="pref_id" type="hidden" value="{{session()->get('organizationInfo')['pref_id']}}" readonly>
+                        <input id="prefecture" name="prefecture" value="{{session()->get('organizationInfo')['pref_name']}}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="address1" class="col-md-6" style="text-align: right"><b>所在地(市区町村・町字番地)：</b></label>
+                        <input id="address1" name="address1" value="{{session()->get('organizationInfo')['address1']}}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="address2" class="col-md-6" style="text-align: right"><b>所在地(建物)：</b></label>
+                        <input id="address2" name="address2" value="{{session()->get('organizationInfo')['address2']}}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="orgClass" class="col-md-6" style="text-align: right"><b>団体区分：</b></label>
+                        <input id="orgClass" name="orgClass" type="hidden" value="{{session()->get('organizationInfo')['orgClass']}}" readonly>
+                        <input id="org_class_name" name="org_class_name" value="{{session()->get('organizationInfo')['org_class_name']}}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <label for="jaraOrgRegTrail" class="col-md-6" style="text-align: right"><b>証跡：</b></label>
+                            <label class="col-md-1" style="text-align: right">JARA：</label>
+                            <input id="jaraOrgRegTrail" name="jaraOrgRegTrail" value="{{session()->get('organizationInfo')['jaraOrgRegTrail']}}" readonly>
+                        </div>
+                        <div class="row">
+                            <label for="prefOrgRegTrail" class="col-md-6" style="text-align: right"></label>
+                            <label class="col-md-1" style="text-align: right">県ボ：</label>
+                            <input id="prefOrgRegTrail" name="prefOrgRegTrail" value="{{session()->get('organizationInfo')['prefOrgRegTrail']}}" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <label for="jaraOrgType" class="col-md-6" style="text-align: right"><b>団体種別：</b></label>
+                            <label class="col-md-1" style="text-align: right">JARA：</label>
+                            <input id="jaraOrgType" name="jaraOrgType" type="hidden" value="{{session()->get('organizationInfo')['jaraOrgType']}}" readonly>
+                            <input id="jaraOrgTypeDisplay" name="jaraOrgTypeDisplay" value="{{session()->get('organizationInfo')['jaraOrgType'] == 0 ? "任意" : "正式"}}" readonly>
+                        </div>
+                        <div class="row">
+                            <label for="prefOrgType" class="col-md-6" style="text-align: right"></label>
+                            <label class="col-md-1" style="text-align: right">県ボ：</label>
+                            <input id="prefOrgType" name="prefOrgType" type="hidden" value="{{session()->get('organizationInfo')['prefOrgType']}}" readonly>
+                            <input id="prefOrgTypeDisplay" name="prefOrgTypeDisplay" value="{{session()->get('organizationInfo')['prefOrgType']  == 0 ? "任意" : "正式"}}" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <label for="staff1" class="col-md-6" style="text-align: right"><b>スタッフ1：</b></label>
+                            <input id="staff1_user_id" name="staff1_user_id" value="{{session()->get('organizationInfo')['staff1_user_id']}}" size="5" readonly>
+                            <input id="staff1_user_name" name="staff1_user_name" value="{{session()->get('organizationInfo')['staff1_user_name']}}" readonly>
+                            <input id="staff1_type" name="staff1_type" value="{{session()->get('organizationInfo')['staff1_type']}}" size="5" readonly>
+                            <input id="staff1_type_display" name="staff1_type_display" value="{{session()->get('organizationInfo')['staff1_type_display']}}" readonly>
+                        </div>
+                        <div class="row">
+                            <label for="staff2" class="col-md-6" style="text-align: right"><b>スタッフ2：</b></label>
+                            <input id="staff2_user_id" name="staff2_user_id" value="{{session()->get('organizationInfo')['staff2_user_id']}}" size="5" readonly>
+                            <input id="staff2_user_name" name="staff2_user_name" value="{{session()->get('organizationInfo')['staff2_user_name']}}" readonly>
+                            <input id="staff2_type" name="staff2_type" value="{{session()->get('organizationInfo')['staff2_type']}}" size="5" readonly>
+                            <input id="staff2_type_display" name="staff2_type_display" value="{{session()->get('organizationInfo')['staff2_type_display']}}" readonly>
+                        </div>
+                        <div class="row">
+                            <label for="staff3" class="col-md-6" style="text-align: right"><b>スタッフ3：</b></label>                            
+                            <input id="staff3_user_id" name="staff3_user_id" value="{{session()->get('organizationInfo')['staff3_user_id']}}" size="5" readonly>
+                            <input id="staff3_user_name" name="staff3_user_name" value="{{session()->get('organizationInfo')['staff3_user_name']}}" readonly>
+                            <input id="staff3_type" name="staff3_type" value="{{session()->get('organizationInfo')['staff3_type']}}" size="5" readonly>
+                            <input id="staff3_type_display" name="staff3_type_display" value="{{session()->get('organizationInfo')['staff3_type_display']}}" readonly>
+                        </div>
+                        <div class="row">
+                            <label for="staff4" class="col-md-6" style="text-align: right"><b>スタッフ4：</b></label>
+                            <input id="staff4_user_id" name="staff4_user_id" value="{{session()->get('organizationInfo')['staff4_user_id']}}" size="5" readonly>
+                            <input id="staff4_user_name" name="staff4_user_name" value="{{ old(session()->get('organizationInfo')['staff4_user_name'])}}" readonly>
+                            <input id="staff4_type" name="staff4_type" value="{{session()->get('organizationInfo')['staff4_type']}}" size="5" readonly>
+                            <input id="staff4_type_display" name="staff4_type_display" value="{{session()->get('organizationInfo')['staff4_type_display']}}" readonly>
+                        </div>
+                    </div>
+                    <!-- 確認・戻るボタン -->
+                    <div class="form-group row" style="padding: 2rem">
+                        <div class="col-sm-2 offset-sm-4">
+                            @if($pagemode == "register")
+                                <button class="btn btn-success btn-lg btn-block">登録</button>
+                            @elseif($pagemode == "edit")
+                                <button class="btn btn-success btn-lg btn-block">更新</button>
+                            @endif
+                        </div>                        
+                        <div class="col-sm-2">
+                            <a class="btn btn-danger btn-lg btn-block" href="javascript:history.back()" role="button">戻る</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <!--19.マイページ -->
+                    <input type="submit" value="マイページ" id="mypageButton">
+                </div>
+            </div>
+        </form>        
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous">
+    </script>
+    {{-- Date Picker Start --}}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://unpkg.com/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
+
+    <script>
+        // date Picker
+        $(".lib-flatpickr3").flatpickr({
+            "locale": "ja",
+            dateFormat: 'Y/m/d',
+            allowInput: true,
+            defaultDate: 'null',
+        });
+    </script>
+    {{-- Date Picker End --}}
+
+    <script src="{{ asset('js/nav.js') }}"></script>
+    <script src="{{ asset('js/main.js') }}"></script>
+    <script src="{{ asset('js/organization.js') }}"></script>
+</body>
+
+</html>

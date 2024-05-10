@@ -118,7 +118,7 @@ export default function TeamRef() {
 
   //表示中の団体がログインユーザの管理する団体か判定する 20240415
   const checkOrgManage = () => {
-    //console.log(teamdata);
+    console.log(teamdata);
     for (let index = 0; index < teamdata.length; index++) {
       if (teamdata[index].org_id == orgId) {
         return true;
@@ -136,12 +136,12 @@ export default function TeamRef() {
         await csrf();
         // const response = await axios.get<Organization>('/organization');
         const response = await axios.post('/getOrgData', org_id); //団体情報取得
-        //console.log(response.data.result);
+        console.log(response.data.result);
         setFormData(response.data.result);
         // // 主催大会大会
         // const hostTournamentsResponse = await axios.get<Tournament[]>('/tournamentSearch',);
         const hostTournamentsResponse = await axios.post('/getTournamentInfoData_org', org_id);
-        //console.log(hostTournamentsResponse.data.result);
+        // console.log(hostTournamentsResponse.data.result);
         setHostTournaments(hostTournamentsResponse.data.result);
         // // エントリー大会
         // const entTournamentsResponse = await axios.get<Tournament[]>('/tournamentSearch',);
@@ -149,12 +149,12 @@ export default function TeamRef() {
           '/getEntryTournamentsViewForTeamRef',
           org_id,
         );
-        //console.log(entTournamentsResponse.data.result);
+        // console.log(entTournamentsResponse.data.result);
         setEntTournaments(entTournamentsResponse.data.result);
         // // 所属選手
         // const playersResponse = await axios.get<PlayerInformationResponse[]>('/playerSearch',);
         const playersResponse = await axios.post('/searchOrganizationPlayersForTeamRef', org_id);
-        //console.log(playersResponse.data.result);
+        // console.log(playersResponse.data.result);
         setPlayers(playersResponse.data.result);
 
         // const userDataResponse = await axios.get<UserResponse>('/api/user');
@@ -164,14 +164,14 @@ export default function TeamRef() {
         // 所属スタッフ
         // const staffsResponse = await axios.get<Staff[]>('/staff');
         const staffsResponse = await axios.post('/getOrgStaffData', org_id); //スタッフ情報取得
-        //console.log(staffsResponse.data.result);
+        // console.log(staffsResponse.data.result);
         setStaffs(staffsResponse.data.result);
 
         const playerInf = await axios.get('/getIDsAssociatedWithUser');
         setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
 
         const responseData = await axios.get('/getOrganizationForOrgManagement'); //団体データ取得 20240415
-        //console.log(responseData.data.result);
+        // console.log(responseData.data.result);
         setTeamdata(responseData.data.result);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
@@ -658,7 +658,7 @@ export default function TeamRef() {
                   .post('/deleteOrgData', org_id)
                   .then((res) => {
                     // TODO: 削除成功時の処理
-                    //console.log(res);
+                    console.log(res);
                     router.back();
                   })
                   .catch((error) => {
