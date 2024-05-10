@@ -46,8 +46,8 @@ const CsvTable = ({
     return error ? 'bg-yellow' : '';
   };
 
-  console.log('content');
-  console.log(content);
+  //console.log('content');
+  //console.log(content);
 
   return (
     <div className='overflow-auto h-[331px] w-[800px]'>

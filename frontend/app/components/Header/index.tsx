@@ -76,7 +76,7 @@ const Header: FC = () => {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.get('/getUserData');
-        console.log(response.data.result);
+        //console.log(response.data.result);
         //ユーザ情報が存在し、仮パスワードフラグが0の場合ヘッダーメニューを表示 20240403
         if (Object.keys(response.data.result).length > 0) {
           if (response.data.result.temp_password_flag == 0) {

@@ -109,7 +109,7 @@ const CsvTable = ({
                     // e.target.checked ? displayRegisterButton(true) : null;
                     var data = content.map((row) => row.checked.toString());
                     data[rowIndex] = e.target.checked.toString();
-                    // console.log(data);
+                    //console.log(data);
                     data.includes('true')
                       ? displayRegisterButton(true)
                       : displayRegisterButton(false);

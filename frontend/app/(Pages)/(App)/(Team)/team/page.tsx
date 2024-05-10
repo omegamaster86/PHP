@@ -157,7 +157,7 @@ export default function OrgInfo() {
         await csrf();
         // const prefectures = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
         const prefectures = await axios.get('/getPrefecures'); //都道府県マスターの取得 20240208
-        // console.log(prefectures);
+        //console.log(prefectures);
         const stateList = prefectures.data.map(
           ({
             pref_id,
@@ -191,20 +191,20 @@ export default function OrgInfo() {
             name: org_type,
           }),
         );
-        console.log(orgTypeList);
+        //console.log(orgTypeList);
         setOrgTypeOptions(orgTypeList);
         // const user = await axios.get<UserResponse>('http://localhost:3100/user');
         const userData = await axios.get('/getUserData');
-        // console.log(userData);
+        //console.log(userData);
         setUser(userData.data.result);
-        // console.log(user);
+        //console.log(user);
         if (mode === 'update' && !backKeyFlag) {
           // const organization = await axios.get<Organization>('http://localhost:3100/organization');
           const sendId = { org_id: orgId };
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
           const organizationDataList = await axios.post('/getOrgData', sendId);
-          console.log(organizationDataList.data.result);
+          //console.log(organizationDataList.data.result);
           setFormData((prevFormData) => ({
             ...prevFormData,
             ...{
@@ -232,7 +232,7 @@ export default function OrgInfo() {
           }));
           // const staff = await axios.get<Staff[]>('http://localhost:3100/staff');
           const staff = await axios.post('/getOrgStaffData', sendId);
-          console.log(staff.data);
+          //console.log(staff.data);
           setTableData(staff.data.result);
         } else if (mode === 'create' && !backKeyFlag) {
           setFormData((prevFormData) => ({
@@ -281,7 +281,7 @@ export default function OrgInfo() {
         setErrorMessage(['API取得エラー:' + error.message]);
       }
       setBackKeyFlag(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
-      console.log(backKeyFlag);
+      //console.log(backKeyFlag);
     };
     fetchData();
   }, [mode]);
@@ -295,19 +295,19 @@ export default function OrgInfo() {
     // const addressNumbers = formData.post_code?.split('-');
     if (formData.post_code.includes('-')) {
       //バリデーションチェック時はハイフンが結合されるため
-      console.log(formData.post_code);
+      //console.log(formData.post_code);
       const addressNumbers = formData.post_code.split('-');
-      console.log(addressNumbers);
+      //console.log(addressNumbers);
       formData.post_code1 = addressNumbers[0];
       formData.post_code2 = addressNumbers[1];
     } else {
       //DBから受け取ったときはハイフンが無いため
-      console.log(formData.post_code);
+      //console.log(formData.post_code);
       if (formData.post_code.length == 7) {
         const addressNumbers = Array();
         addressNumbers.push(formData.post_code?.slice(0, 3)); //郵便番号の前半3文字
         addressNumbers.push(formData.post_code?.slice(-4)); //郵便番号の後半4文字
-        console.log(addressNumbers);
+        //console.log(addressNumbers);
         formData.post_code1 = addressNumbers[0];
         formData.post_code2 = addressNumbers[1];
         // setAddressNumbers(addressNumbers);
@@ -424,7 +424,7 @@ export default function OrgInfo() {
       buttonType='primary'
       disabled={disableFlag}
       onClick={() => {
-        console.log(tableData.length);
+        //console.log(tableData.length);
         if (tableData.length > 199) {
           //行数が200を超えたときに、「スタッフ追加」ボタンを非表示にする
           setTableErrorMessages([
@@ -452,18 +452,18 @@ export default function OrgInfo() {
 
   //所在地検索 20240315
   const getAddress = async (): Promise<void> => {
-    console.log('getAddress start');
+    //console.log('getAddress start');
     const res = await _axios.get('https://zipcloud.ibsnet.co.jp/api/search', {
       params: { zipcode: formData.post_code1 + formData.post_code2 },
     });
     if (res.data.status === 200) {
-      console.log(res.data);
+      //console.log(res.data);
       if (res.data.results != null) {
         //外部サイトから取得したprefCodeとDBのprefCodeを対応させる処理 20240318
         var prefcode = 0;
-        // console.log(prefectureOptions);
+        //console.log(prefectureOptions);
         for (let index = 0; index < prefectureOptions.length; index++) {
-          // console.log((prefectureOptions[index] as any).prefCodeJis);
+          //console.log((prefectureOptions[index] as any).prefCodeJis);
           if ((prefectureOptions[index] as any).prefCodeJis == res.data.results[0].prefcode) {
             prefcode = (prefectureOptions[index] as any).id;
           }
@@ -478,7 +478,7 @@ export default function OrgInfo() {
         }));
       } else {
         const addressError = Validator.getErrorMessages([Validator.validateAddressrResultFormat()]);
-        console.log(addressError.length);
+        //console.log(addressError.length);
         if (addressError.length > 0) {
           setAddressErrorMessages(addressError);
           return;
@@ -489,7 +489,7 @@ export default function OrgInfo() {
       // setAddress(res.data.results[0].address2 + res.data.results[0].address3);
       // setMsg(null);
     } else {
-      console.log(res);
+      //console.log(res);
       // setPref('');
       // setAddress('');
       // setMsg(res.data.message);
@@ -508,12 +508,12 @@ export default function OrgInfo() {
           } else {
             // バックエンド側のバリデーションチェックを行う 20240308
             setDisableFlag(true); //バックエンド側へデータ送信中に操作できないようにする
-            // console.log(tableData);
+            //console.log(tableData);
             //空行の削除
             var staffList = tableData.filter(function (x) {
               return !(x.delete_flag == true && (x.user_id == '' || x.user_name == ''));
             });
-            // console.log(staffList);
+            //console.log(staffList);
             //送信データの作成
             //nullのパラメータを空のパラメータに置き換える
             Object.keys(formData).forEach((key) => {
@@ -528,7 +528,7 @@ export default function OrgInfo() {
             axios
               .post('/validateOrgData', sendData) //20240308
               .then((response) => {
-                // console.log(response.data);
+                //console.log(response.data);
                 setTableData(response.data.result.staffList); //ユーザIDを元にユーザ名を表示する 20240405
                 setDisableFlag(false);
                 setErrorMessage([]);
@@ -555,12 +555,12 @@ export default function OrgInfo() {
           } else {
             // バックエンド側のバリデーションチェックを行う 20240308
             setDisableFlag(true); //バックエンド側へデータ送信中に操作できないようにする
-            // console.log(tableData);
+            //console.log(tableData);
             //空行の削除
             var staffList = tableData.filter(function (x) {
               return !(x.delete_flag == true && (x.user_id == '' || x.user_name == ''));
             });
-            // console.log(staffList);
+            //console.log(staffList);
             //送信データの作成
             //nullのパラメータを空のパラメータに置き換える
             Object.keys(formData).forEach((key) => {
@@ -570,13 +570,13 @@ export default function OrgInfo() {
               formData,
               staffList,
             };
-            console.log(sendData);
+            //console.log(sendData);
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
             axios
               .post('/validateOrgData', sendData) //20240308
               .then((response) => {
-                console.log(response);
+                //console.log(response);
                 setTableData(response.data.result.staffList); //ユーザIDを元にユーザ名を表示する 20240405
                 setDisableFlag(false);
                 setErrorMessage([]);
@@ -584,7 +584,7 @@ export default function OrgInfo() {
                 router.push('/team?mode=confirm&prevMode=update');
               })
               .catch((error) => {
-                // console.log(error);
+                //console.log(error);
                 setErrorMessage(['入力値エラー: ' + (error?.response?.data as string[])]);
               });
           }
@@ -604,7 +604,7 @@ export default function OrgInfo() {
           var staffList = tableData.filter(function (x) {
             return !(x.delete_flag == true && (x.user_id == '' || x.user_name == ''));
           });
-          // console.log(staffList);
+          //console.log(staffList);
           //送信データの作成
           //nullのパラメータを空のパラメータに置き換える
           Object.keys(formData).forEach((key) => {
@@ -614,24 +614,24 @@ export default function OrgInfo() {
             formData,
             staffList,
           };
-          console.log(sendData);
+          //console.log(sendData);
           //alert('TODO: APIを叩いて、登録・更新処理を行う');
           if (prevMode === 'create') {
             const storeOrgData = async () => {
-              // console.log(formData);
+              //console.log(formData);
               const csrf = () => axios.get('/sanctum/csrf-cookie');
               await csrf();
               axios
                 // .post('http://localhost:3100/', requestBody)
                 .post('/storeOrgData', sendData) //20240226
                 .then((response) => {
-                  // console.log(response);
+                  //console.log(response);
                   // TODO: 登録処理成功時の処理
                   //window.confirm('団体情報を登録しました。');
                   router.push('/teamRef?orgId=' + response.data.result);
                 })
                 .catch((error) => {
-                  // console.log(error);
+                  //console.log(error);
                   // TODO: 登録処理失敗時の処理
                   // setErrorMessage([
                   //   ...(errorMessage as string[]),
@@ -731,7 +731,7 @@ export default function OrgInfo() {
             selectedDate={formData.founding_year === 0 ? '' : formData.founding_year?.toString()}
             errorMessages={foundingYearErrorMessages}
             onChange={(date: Date) => {
-              // console.log(date);
+              //console.log(date);
               handleInputChange('founding_year', date == null ? '' : date.getFullYear().toString()); //創立年に空欄を入力できるように対応 ※nullの場合、空文字にする 20240315
             }} //創立年を4桁年で取得するように修正 200240308
             readonly={mode === 'confirm'}
@@ -795,12 +795,12 @@ export default function OrgInfo() {
                 disabled={disableFlag}
                 onClick={() => {
                   formData.post_code = formData.post_code1 + '-' + formData.post_code2;
-                  console.log(formData.post_code);
+                  //console.log(formData.post_code);
                   const addressError = Validator.getErrorMessages([
                     Validator.validateRequired(formData.post_code, '郵便番号'),
                     Validator.validateAddressNumberFormat(formData.post_code),
                   ]);
-                  console.log(addressError.length);
+                  //console.log(addressError.length);
                   if (addressError.length > 0) {
                     setAddressErrorMessages(addressError);
                     return;
@@ -929,14 +929,13 @@ export default function OrgInfo() {
                   mode !== 'confirm' ? formData.jara_org_type?.toString() : formData.jaraOrgTypeName
                 }
                 onChange={(e) => {
-                  console.log(formData.jara_org_type);
+                  //console.log(formData.jara_org_type);
                   handleInputChange('jara_org_type', e);
                   handleInputChange(
                     'jaraOrgTypeName',
                     orgTypeOptions.find((orgType) => orgType.id == Number(e))?.name || '',
                   );
                   handleInputChange('jara_org_reg_trail', ''); //団体種別を切り替えるごとに証跡をリセットする 20240308
-                  console.log('sssssss', formData.jara_org_type);
                 }}
                 readonly={mode === 'confirm'}
                 options={orgTypeOptions.map((orgType) => ({
@@ -1256,9 +1255,9 @@ export default function OrgInfo() {
           buttonType='white-outlined'
           className='w-[200px]'
           onClick={() => {
-            console.log(backKeyFlag);
+            //console.log(backKeyFlag);
             setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
-            console.log(backKeyFlag);
+            //console.log(backKeyFlag);
             router.back();
           }}
         >

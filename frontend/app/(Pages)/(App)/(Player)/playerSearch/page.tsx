@@ -143,10 +143,10 @@ export default function PlayerSearch() {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       // const response = await axios.get<Player[]>('/playerSearch/');
-      console.log(searchCond);
+      //console.log(searchCond);
       const response = await axios.post('/playerSearch', searchCond);
       const data = response.data.result;
-      console.log(data);
+      //console.log(data);
       if (data.length > 100) {
         window.alert('検索結果が100件を超えました、上位100件を表示しています。');
       }

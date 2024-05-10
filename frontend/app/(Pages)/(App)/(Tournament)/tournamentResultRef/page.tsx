@@ -51,13 +51,13 @@ export default function TournamentResultRef() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const raceResponse = await axios.post('/getRaceDataRaceId', sendData);
-        console.log(raceResponse);
+        //console.log(raceResponse);
 
         setRaceInfo(raceResponse.data.race_result[0]);
 
         // 出漕結果記録情報の取得
         // const raceResultRecords = await axios.get('http://localhost:3100/raceResultRecords');
-        // console.log(raceResponse.data.record_result);
+        //console.log(raceResponse.data.record_result);
         setRaceResultRecords(raceResponse.data.record_result);
       } catch (error: any) {
         setErrorText([error.message]);
