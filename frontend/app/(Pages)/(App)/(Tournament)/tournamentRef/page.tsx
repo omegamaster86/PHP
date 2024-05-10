@@ -37,6 +37,11 @@ import {
   TextField,
 } from '@mui/material';
 
+//種目フィルター用
+interface EventNameList {
+  id: number;
+  name: string;
+}
 //組別フィルター用
 interface ByGroupList {
   id: number;
@@ -104,17 +109,28 @@ export default function TournamentRef() {
   });
 
   // レース結果情報のデータステート
+  //種目
+  const [eventNameList, setEventNameList] = useState([] as EventNameList[]);
+  const [selectedEventNameList, setSelectedEventNameList] = useState([] as EventNameList[]);
+  //組別
   const [byGroupList, setByGroupList] = useState([] as ByGroupList[]);
   const [selectedByGroupList, setSelectedByGroupList] = useState([] as ByGroupList[]);
+  //発艇日時
   const [startDateTimeList, setStartDateTimeList] = useState([] as StartDateTimeList[]);
   const [selectedStartDateTimeList, setSelectedStartDateTimeList] = useState(
     [] as StartDateTimeList[],
   );
 
   // フィルター用のステート 20240508
+  const [showEventNameAutocomplete, setShowEventNameAutocomplete] = useState(false);
   const [showByGroupAutocomplete, setShowByGroupAutocomplete] = useState(false);
   const [showStartDateTimeAutocomplete, setShowStartDateTimeAutocomplete] = useState(false);
   // ヘッダーの位置を取得するためのステート
+  //種目
+  const [selectedEventNameHeader, setSelectedEventNameHeader] = useState({
+    value: '',
+    position: { top: 0, left: 0 },
+  });
   //組別
   const [selectedByGroupHeader, setSelectedByGroupHeader] = useState({
     value: '',
@@ -126,6 +142,29 @@ export default function TournamentRef() {
     position: { top: 0, left: 0 },
   });
 
+  /**
+   * 種目ヘッダークリック時の処理
+   * @param value
+   * @param event
+   * ヘッダーの位置を取得し、オートコンプリートを表示する
+   */
+  const handleEventNameHeaderClick = (
+    value: string,
+    event: MouseEvent<HTMLElement, MouseEvent>,
+  ) => {
+    console.log('rrrrrrrrrrrrr');
+    const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
+    setSelectedEventNameHeader({
+      value,
+      position: {
+        top: headerPosition.bottom + window.scrollY,
+        left: headerPosition.left + window.scrollX,
+      },
+    });
+    setShowEventNameAutocomplete(!showEventNameAutocomplete);
+    setShowByGroupAutocomplete(false);
+    setShowStartDateTimeAutocomplete(false);
+  };
   /**
    * 組別ヘッダークリック時の処理
    * @param value
@@ -142,6 +181,7 @@ export default function TournamentRef() {
         left: headerPosition.left + window.scrollX,
       },
     });
+    setShowEventNameAutocomplete(false);
     setShowByGroupAutocomplete(!showByGroupAutocomplete);
     setShowStartDateTimeAutocomplete(false);
   };
@@ -164,8 +204,9 @@ export default function TournamentRef() {
         left: headerPosition.left + window.scrollX,
       },
     });
-    setShowStartDateTimeAutocomplete(!showStartDateTimeAutocomplete);
+    setShowEventNameAutocomplete(false);
     setShowByGroupAutocomplete(false);
+    setShowStartDateTimeAutocomplete(!showStartDateTimeAutocomplete);
   };
 
   // APIの呼び出し実績の有無を管理する状態
@@ -214,6 +255,17 @@ export default function TournamentRef() {
         console.log(resData.data.result);
         setOrgManagerFlag(resData.data.result);
 
+        //種目をフィルターできるようにする 20240509
+        const eventNameArray = raceResponse.data.result.map((item: any) => item.event_name);
+        console.log(eventNameArray);
+        const uniqueEventNameSet = new Set(eventNameArray);
+        const uniqueEventNameArray = Array.from(uniqueEventNameSet);
+        setEventNameList(
+          uniqueEventNameArray.map((item: any, index: any) => ({
+            id: index,
+            name: item,
+          })),
+        );
         //組別をフィルターできるようにする 20240509
         const byGroupsArray = raceResponse.data.result.map((item: any) => item.by_group);
         console.log(byGroupsArray);
@@ -440,7 +492,15 @@ export default function TournamentRef() {
                   <CustomTh align='left'>レースID</CustomTh>
                   <CustomTh align='left'>レース名</CustomTh>
                   <CustomTh align='left'>レースNo.</CustomTh>
-                  <CustomTh align='left'>種目</CustomTh>
+                  <CustomTh align='left'>
+                    <div className='flex flex-row items-center gap-[10px]'>
+                      種目
+                      {/* 残件対応項目 */}
+                      <div onClick={(event) => handleEventNameHeaderClick('種目', event as any)}>
+                        <FilterListIcon />
+                      </div>
+                    </div>
+                  </CustomTh>
                   <CustomTh align='left'>
                     <div className='flex flex-row items-center gap-[10px]'>
                       組別
@@ -470,27 +530,69 @@ export default function TournamentRef() {
                 {tableData
                   .filter((row, index) => {
                     if (
+                      selectedEventNameList.length === 0 &&
                       selectedByGroupList.length === 0 &&
                       selectedStartDateTimeList.length === 0
                     ) {
                       return true;
                     } else if (
+                      selectedEventNameList.length > 0 &&
+                      selectedByGroupList.length === 0 &&
+                      selectedStartDateTimeList.length === 0
+                    ) {
+                      return selectedEventNameList.some((item) => item.name === row.event_name);
+                    } else if (
+                      selectedEventNameList.length === 0 &&
                       selectedByGroupList.length > 0 &&
                       selectedStartDateTimeList.length === 0
                     ) {
                       return selectedByGroupList.some((item) => item.name === row.by_group);
                     } else if (
+                      selectedEventNameList.length === 0 &&
                       selectedByGroupList.length === 0 &&
                       selectedStartDateTimeList.length > 0
                     ) {
-                      return selectedStartDateTimeList.some(
-                        (item) => row.start_date_time.includes(item.name),
+                      return selectedStartDateTimeList.some((item) =>
+                        row.start_date_time.includes(item.name),
+                      );
+                    } else if (
+                      selectedEventNameList.length > 0 &&
+                      selectedByGroupList.length > 0 &&
+                      selectedStartDateTimeList.length == 0
+                    ) {
+                      return (
+                        selectedEventNameList.some((item) => item.name === row.event_name) &&
+                        selectedByGroupList.some((item) => item.name === row.by_group)
+                      );
+                    } else if (
+                      selectedEventNameList.length > 0 &&
+                      selectedByGroupList.length == 0 &&
+                      selectedStartDateTimeList.length > 0
+                    ) {
+                      return (
+                        selectedEventNameList.some((item) => item.name === row.event_name) &&
+                        selectedStartDateTimeList.some((item) =>
+                          row.start_date_time.includes(item.name),
+                        )
+                      );
+                    } else if (
+                      selectedEventNameList.length == 0 &&
+                      selectedByGroupList.length > 0 &&
+                      selectedStartDateTimeList.length > 0
+                    ) {
+                      return (
+                        selectedByGroupList.some((item) => item.name === row.by_group) &&
+                        selectedStartDateTimeList.some((item) =>
+                          row.start_date_time.includes(item.name),
+                        )
                       );
                     } else {
                       return (
-                        selectedStartDateTimeList.some(
-                          (item) => row.start_date_time.includes(item.name),
-                        ) && selectedByGroupList.some((item) => item.name === row.by_group)
+                        selectedEventNameList.some((item) => item.name === row.event_name) &&
+                        selectedStartDateTimeList.some((item) =>
+                          row.start_date_time.includes(item.name),
+                        ) &&
+                        selectedByGroupList.some((item) => item.name === row.by_group)
                       );
                     }
                   })
@@ -535,6 +637,54 @@ export default function TournamentRef() {
                   ))}
               </CustomTbody>
             </CustomTable>
+            {/* 種目フィルター用のオートコンプリート 20240509 */}
+            {showEventNameAutocomplete && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: `${selectedEventNameHeader.position.top - 120}px`,
+                  left: `${selectedEventNameHeader.position.left}px`,
+                  backgroundColor: 'white',
+                  borderRadius: '4px',
+                  zIndex: 1000,
+                  padding: '8px',
+                }}
+              >
+                <Autocomplete
+                  id='eventName'
+                  multiple
+                  options={eventNameList}
+                  filterOptions={(options, { inputValue }) =>
+                    options.filter((option) => option.name.includes(inputValue))
+                  }
+                  value={selectedEventNameList || []}
+                  onChange={(e: ChangeEvent<{}>, newValue: EventNameList[]) => {
+                    console.log(newValue);
+                    setSelectedEventNameList(newValue);
+                  }}
+                  renderOption={(props: any, option: EventNameList) => {
+                    return (
+                      <li {...props} key={option.id}>
+                        {option.name}
+                      </li>
+                    );
+                  }}
+                  renderTags={(value: EventNameList[], getTagProps: any) => {
+                    return value.map((option, index) => (
+                      <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                    ));
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      key={params.id}
+                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                      {...params}
+                      label={'種目'}
+                    />
+                  )}
+                />
+              </div>
+            )}
             {/* 組別フィルター用のオートコンプリート 20240508 */}
             {showByGroupAutocomplete && (
               <div
