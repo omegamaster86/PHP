@@ -130,14 +130,14 @@ class RegisteredUserController extends Controller
                 // throw ValidationException::withMessages([
                 //     'datachecked_error' => $registration_failed
                 // ]);
-                return response()->json(['system_error' => $registration_failed],500);
+                return response()->json(['system_error' => $registration_failed,'errorMessage' => $e],500);
                 //Status code 500 for internal server error
             }
             else{
                 // throw ValidationException::withMessages([
                 //     'datachecked_error' => $registration_failed
                 // ]); 
-                return response()->json(['system_error' => $registration_failed],500);
+                return response()->json(['system_error' => $registration_failed,'errorMessage' => $e],500);
                 //Status code 500 for internal server error
             }
         }
@@ -172,7 +172,7 @@ class RegisteredUserController extends Controller
             // throw ValidationException::withMessages([
             //     'datachecked_error' => $mail_sent_failed,
             // ]);
-            return response()->json(['system_error' => $registration_failed],500);
+            return response()->json(['system_error' => $registration_failed,'errorMessage' => $e],500);
                 //Status code 500 for internal server error
         }
 

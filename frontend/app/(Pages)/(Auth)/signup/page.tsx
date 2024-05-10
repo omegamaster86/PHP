@@ -176,12 +176,13 @@ export default function Signup() {
                       checked,
                     })
                     .then((response) => {
+                      console.log(response);
                       if (window.confirm(response?.data) == true) {
                         router.push('/login');
                       }
                     })
                     .catch((error) => {
-                      //console.log(error)
+                      console.log(error);
                       // エラー時の処理を実装
                       let systemError = [] as string[];
                       if (error.response?.status === 422) {
