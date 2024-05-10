@@ -147,7 +147,7 @@ export default function UserInformationUpdate() {
   //アップロードされたファイルを保存するー完了
 
   useEffect(() => {
-    //console.log(formData.sex);
+    console.log(formData.sex);
   }, [formData?.sex]);
 
   useEffect(() => {
@@ -196,6 +196,7 @@ export default function UserInformationUpdate() {
     const fetchUser = async () => {
       try {
         // const response = await axios.get<UserResponse>('http://localhost:3100/user');
+        // console.log("User : ", user);
         // 実装　ー　クマール　ー開始
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
@@ -235,6 +236,7 @@ export default function UserInformationUpdate() {
       fetchUser();
     }
     setBackKeyFlag(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+    console.log(backKeyFlag);
     // APIを叩いて、ユーザー情報を取得する
   }, []);
 
@@ -792,7 +794,7 @@ export default function UserInformationUpdate() {
                 // axios
                 //   .delete('/user')
                 //   .then((response) => {
-                //     //console.log('認証番号を削除しました。');
+                //     console.log('認証番号を削除しました。');
                 //     setAuthNumber('');
                 //     router.push('/' + prevScreen);
                 //   })
@@ -850,9 +852,9 @@ export default function UserInformationUpdate() {
           buttonType='white-outlined'
           className='w-[200px]'
           onClick={() => {
-            //console.log(backKeyFlag);
+            console.log(backKeyFlag);
             setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
-            //console.log(backKeyFlag);
+            console.log(backKeyFlag);
             setErrorMessage([]);
             router.back();
           }}

@@ -140,7 +140,7 @@ export default function AddPlayerSearch() {
       // const response = await axios.get('http://localhost:3100/teamPlayerSearch');
       const response = await axios.post('/teamPlayerSearch', searchCond);
       const data = response.data.result;
-      //console.log(data);
+      console.log(data);
       data.forEach((item: TeamPlayerInformationResponse) => {
         item.checked = false;
       });
@@ -175,7 +175,7 @@ export default function AddPlayerSearch() {
     const newData = searchResult.slice(visibleItems, visibleItems + 10);
     setVisibleData((prevData) => [...prevData, ...newData]);
     setVisibleItems((prevCount) => prevCount + newData.length);
-    //console.log(visibleItems);
+    console.log(visibleItems);
   };
 
   /**
@@ -254,7 +254,7 @@ export default function AddPlayerSearch() {
         );
         setEvent(eventResponseList);
       } catch (error) {
-        //console.log(error);
+        console.log(error);
       }
     };
     getTeam();

@@ -181,7 +181,7 @@ export default function Signup() {
                       }
                     })
                     .catch((error) => {
-                      //console.log(error)
+                      // console.log(error)
                       // エラー時の処理を実装
                       let systemError = [] as string[];
                       if (error.response?.status === 422) {
