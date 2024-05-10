@@ -454,6 +454,7 @@ const Header: FC = () => {
             )}
             <MenuItem
               onClick={(e) => {
+                console.log('aaaaaaaaaaaaaaaa');
                 handleClose();
                 logout(); //ログアウト処理
               }}
