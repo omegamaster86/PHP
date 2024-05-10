@@ -3,7 +3,7 @@ var dropZone = document.getElementById('drop_zone');
 var fileInput = document.getElementById('input_file');
 
 function dropHandler(ev) {
-    console.log("File(s) dropped");
+    //console.log("File(s) dropped");
     ev.preventDefault();
 }
 
@@ -64,7 +64,7 @@ function allChecked() {
 
     checkList = splitData.join(); //切り出した文字列を結合する
     document.getElementById("Flag01").value = checkList;
-    console.log(checkList);
+    //console.log(checkList);
 }
 
 // 全選択解除
@@ -89,14 +89,14 @@ function allUnChecked() {
     }
     checkList = splitData.join(); //切り出した文字列を結合する
     document.getElementById("Flag01").value = checkList;
-    console.log(checkList);
+    //console.log(checkList);
 }
 
 //チェックボックス変更イベント
 function checkChange(e) {
     checkList = checkList.replace('[', '').replace(']', '');
     var splitData = checkList.split(',');
-    console.log(checkList);
+    //console.log(checkList);
     var isRenkei = document.getElementsByClassName("renkei");
     if (!isRenkei) {
         return false;
@@ -116,5 +116,5 @@ function checkChange(e) {
     // } else {
     //     document.getElementById('alignmentButton').disabled = true;
     // }
-    console.log(checkList);
+    //console.log(checkList);
 }

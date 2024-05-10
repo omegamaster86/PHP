@@ -52,7 +52,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     authCheck();
   }
 
-  // console.log("login status : ",loggedIn);
+  //console.log("login status : ",loggedIn);
 
   return (
     <>

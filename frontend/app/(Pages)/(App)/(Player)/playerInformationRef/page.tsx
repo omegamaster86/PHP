@@ -85,7 +85,7 @@ export default function PlayerInformationRef() {
     await axios
       .post('/deletePlayerData', deleteData)
       .then((res) => {
-        // console.log(res.data);
+        //console.log(res.data);
       })
       .catch((error) => {
         setError({ isError: true, errorMessage: error.response?.data });
@@ -100,18 +100,18 @@ export default function PlayerInformationRef() {
           searchParams.get('playerId')?.toString() ||
           searchParams.get('player_id')?.toString() ||
           '';
-        console.log(player_id, currentPlayerId);
+        //console.log(player_id, currentPlayerId);
         //選手情報参照画面を表示している状態で、選手情報参照のタブをクリックした場合の処理 20240321
         if (player_id.player_id != currentPlayerId) {
           player_id.player_id = currentPlayerId;
-          console.log(player_id);
+          //console.log(player_id);
         }
         // 仮のURL（繋ぎ込み時に変更すること）
         // const playerInf = await axios.get<PlayerInformationResponse>('http://localhost:3100/player',);
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const playerInf = await axios.post('/getPlayerInfoData', player_id);
-        // console.log(playerInf.data.result);
+        //console.log(playerInf.data.result);
         //サイド情報のデータ変換
         const sideList = playerInf.data.result.side_info.split('');
         sideList.splice(0, 4); //サイド情報の先頭４つ分の不要なデータを削除
@@ -145,7 +145,7 @@ export default function PlayerInformationRef() {
         });
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
         const response = await axios.post('/getRaceResultRecordsData', player_id);
-        // console.log(response.data.result);
+        //console.log(response.data.result);
         setResultRecordsData(response.data.result);
       } catch (error: any) {
         setError({ isError: true, errorMessage: 'API取得エラー:' + error.message });

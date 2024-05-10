@@ -64,7 +64,6 @@ const validateRequired = (elm: any, elmName: string) => {
  */
 const validateSelectRequired = (elm: any, elmName: string) => {
   let errorMessage = '';
-  // console.log(elm);
   if (!elm) {
     errorMessage = elmName + 'を選択してください。';
     return errorMessage;
@@ -410,7 +409,6 @@ const validatePlayerIdFormat = (playerId: string) => {
  * validateJaraPlayerCodeFormat('1234567890あ') // 'JARA選手コードに使用できる文字は以下になります。使用可能文字: 数字(0-9)'
  */
 const validateJaraPlayerCodeFormat = (jara_player_id: string) => {
-  console.log(jara_player_id);
   if (jara_player_id === '' || jara_player_id === undefined || jara_player_id === null) {
     return '';
   }

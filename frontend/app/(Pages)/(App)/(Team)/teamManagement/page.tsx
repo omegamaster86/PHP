@@ -31,7 +31,7 @@ export default function TeamManagement() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.get('/getUserData');
-        console.log(response.data.result);
+        //console.log(response.data.result);
         if (Object.keys(response.data.result).length > 0) {
           const playerInf = await axios.get('/getIDsAssociatedWithUser');
           if (
@@ -40,11 +40,11 @@ export default function TeamManagement() {
           ) {
             setValidFlag(true); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
           } else {
-            console.log('ユーザ種別不正');
+            //console.log('ユーザ種別不正');
             router.push('/tournamentSearch');
           }
         } else {
-          console.log('ユーザ情報なし');
+          //console.log('ユーザ情報なし');
           router.push('/tournamentSearch');
         }
       } catch (error: any) {}
@@ -59,7 +59,7 @@ export default function TeamManagement() {
         await csrf();
         // const response = await axios.get<TeamResponse[]>('/teams');
         const responseData = await axios.get('/getOrganizationForOrgManagement'); //団体データ取得 20240201
-        // console.log(responseData.data.result);
+        //console.log(responseData.data.result);
         setTeamdata(responseData.data.result);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
@@ -75,10 +75,10 @@ export default function TeamManagement() {
     await axios
       .post('/postSample', '送信成功')
       .then((res) => {
-        // console.log(res);
+        //console.log(res);
       })
       .catch((error) => {
-        // console.log(error);
+        //console.log(error);
       });
   };
   //React_Laravelデータ送信テスト 20240108

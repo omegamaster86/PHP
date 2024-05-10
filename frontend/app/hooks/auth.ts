@@ -46,8 +46,6 @@ export const useAuth = ({
   };
 
   const logout = async () => {
-    console.log('uuuuuuuuuu');
-    console.log(error);
     if (!error) {
       if (pathname === '/signup' || pathname === '/forgotpassword') {
       } else {

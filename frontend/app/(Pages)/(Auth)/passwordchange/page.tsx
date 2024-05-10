@@ -91,7 +91,7 @@ export default function Passwordchange() {
               buttonType='white-outlined'
               className='w-[200px]'
               onClick={() => {
-                console.log(user.temp_password_flag);
+                //console.log(user.temp_password_flag);
                 if (user.temp_password_flag == 1) {
                   logout(); // 仮パスワードフラグが1の場合、ログイン画面に遷移する 20240404
                 } else {
@@ -154,7 +154,7 @@ export default function Passwordchange() {
                   .post('/user/password-change', requestBody)
                   .then(async (response) => {
                     // 成功時の処理を実装
-                    console.log(response);
+                    //console.log(response);
                     window.alert(response?.data.result_message);
                     await csrf();
                     await axios.get('/api/user');
@@ -166,7 +166,7 @@ export default function Passwordchange() {
                   })
                   .catch((error) => {
                     // エラー時の処理を実装
-                    // console.log(error);
+                    //console.log(error);
                     let systemError = [] as string[];
                     if (error.response?.status === 422) {
                       systemError.push(error?.response?.data?.message);

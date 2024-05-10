@@ -495,7 +495,7 @@
         $(document).ready(function(){
         var rowCount = $('tbody tr').length;
         if(rowCount > 10){
-            console.log(rowCount);
+            //console.log(rowCount);
             $('#scrollableTable').addClass('do-scroll');
         }
         });
