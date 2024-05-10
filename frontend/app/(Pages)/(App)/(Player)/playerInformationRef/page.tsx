@@ -453,7 +453,7 @@ export default function PlayerInformationRef() {
                 </div>
               </div>
             </div>
-            <div className='overflow-auto h-[467px]'>
+            <div className='overflow-auto h-[auto]'>
               {/* 出漕結果情報一覧テーブル表示 */}
               <CustomTable>
                 {/* テーブルヘッダー */}
