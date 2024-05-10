@@ -555,6 +555,37 @@ export default function TournamentRef() {
                       return selectedStartDateTimeList.some((item) =>
                         row.start_date_time.includes(item.name),
                       );
+                    } else if (
+                      selectedEventNameList.length > 0 &&
+                      selectedByGroupList.length > 0 &&
+                      selectedStartDateTimeList.length == 0
+                    ) {
+                      return (
+                        selectedEventNameList.some((item) => item.name === row.event_name) &&
+                        selectedByGroupList.some((item) => item.name === row.by_group)
+                      );
+                    } else if (
+                      selectedEventNameList.length > 0 &&
+                      selectedByGroupList.length == 0 &&
+                      selectedStartDateTimeList.length > 0
+                    ) {
+                      return (
+                        selectedEventNameList.some((item) => item.name === row.event_name) &&
+                        selectedStartDateTimeList.some((item) =>
+                          row.start_date_time.includes(item.name),
+                        )
+                      );
+                    } else if (
+                      selectedEventNameList.length == 0 &&
+                      selectedByGroupList.length > 0 &&
+                      selectedStartDateTimeList.length > 0
+                    ) {
+                      return (
+                        selectedByGroupList.some((item) => item.name === row.by_group) &&
+                        selectedStartDateTimeList.some((item) =>
+                          row.start_date_time.includes(item.name),
+                        )
+                      );
                     } else {
                       return (
                         selectedEventNameList.some((item) => item.name === row.event_name) &&
