@@ -461,6 +461,9 @@ export default function TournamentEntryBulkRegister() {
           const userIdError = checkMaxInt(row[16], 10000000) || checkRequired(row[16]);
           const playerNameError = checkStringLegnth(row[17], 100) || checkRequired(row[17]);
 
+          console.log('rrrrrrrrrrrrrrr');
+          console.log(raceNumberError);
+
           //必須入力項目のいずれかがエラーの場合エラーとする
           const error =
             tournIdError ||
