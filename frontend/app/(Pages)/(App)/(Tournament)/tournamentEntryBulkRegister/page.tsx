@@ -435,75 +435,85 @@ export default function TournamentEntryBulkRegister() {
   //読み込むボタン押下時 20240302
   const sendCsvData = async () => {
     try {
-      var array = csvFileData?.content.map((row, rowIndex) => {
-        //必須入力チェック 20240419
-        const tournIdError = checkMaxInt(row[0], 100000) || checkRequired(row[0]);
-        const eventIdError = checkMaxInt(row[2], 1000) || checkRequired(row[2]);
-        const raceTypeIdError = checkMaxInt(row[4], 1000) || checkRequired(row[4]);
-        const raceIdError = checkMaxInt(row[6], 100000000) || checkRequired(row[6]);
-        const byGroupError = checkStringLegnth(row[8], 255) || checkRequired(row[8]);
-        const raceNumberError = checkMaxInt(row[9], 1000) || checkRequired(row[9]);
-        const orgIdError = checkMaxInt(row[11], 10000) || checkRequired(row[11]);
-        const orgNameError = checkStringLegnth(row[12], 255) || checkRequired(row[12]);
-        const crewNameError = checkStringLegnth(row[13], 255) || checkRequired(row[13]);
-        const mSheetNumberError = checkMaxInt(row[14], 100) || checkRequired(row[14]);
-        const sheetNameError = checkStringLegnth(row[15], 255) || checkRequired(row[15]);
-        const userIdError = checkMaxInt(row[16], 10000000) || checkRequired(row[16]);
-        const playerNameError = checkStringLegnth(row[17], 100) || checkRequired(row[17]);
+      const specifiedHeader =
+        '大会ID,大会名,種目ID,種目名,レース区分ID,レース区分,レースID,レース名,組別,レースNo,発艇日時,団体ID,団体名,クルー名,シート番号ID,シート番号,選手ID,選手名'; // 指定のヘッダー文字列
+      const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
+      const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
+      var array = csvFileData?.content
+        ?.filter(function (x) {
+          // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
+          return x.length > 0 && x.some((y) => y.length > 0);
+        })
+        .slice(isHeaderMatch ? 1 : 0)
+        .map((row, rowIndex) => {
+          //必須入力チェック 20240419
+          const tournIdError = checkMaxInt(row[0], 100000) || checkRequired(row[0]);
+          const eventIdError = checkMaxInt(row[2], 1000) || checkRequired(row[2]);
+          const raceTypeIdError = checkMaxInt(row[4], 1000) || checkRequired(row[4]);
+          const raceIdError = checkMaxInt(row[6], 100000000) || checkRequired(row[6]);
+          const byGroupError = checkStringLegnth(row[8], 255) || checkRequired(row[8]);
+          const raceNumberError = checkMaxInt(row[9], 1000) || checkRequired(row[9]);
+          const orgIdError = checkMaxInt(row[11], 10000) || checkRequired(row[11]);
+          const orgNameError = checkStringLegnth(row[12], 255) || checkRequired(row[12]);
+          const crewNameError = checkStringLegnth(row[13], 255) || checkRequired(row[13]);
+          const mSheetNumberError = checkMaxInt(row[14], 100) || checkRequired(row[14]);
+          const sheetNameError = checkStringLegnth(row[15], 255) || checkRequired(row[15]);
+          const userIdError = checkMaxInt(row[16], 10000000) || checkRequired(row[16]);
+          const playerNameError = checkStringLegnth(row[17], 100) || checkRequired(row[17]);
 
-        //必須入力項目のいずれかがエラーの場合エラーとする
-        const error =
-          tournIdError ||
-          userIdError ||
-          playerNameError ||
-          raceIdError ||
-          raceNumberError ||
-          raceTypeIdError ||
-          orgIdError ||
-          orgNameError ||
-          crewNameError ||
-          byGroupError ||
-          eventIdError ||
-          mSheetNumberError ||
-          sheetNameError;
+          //必須入力項目のいずれかがエラーの場合エラーとする
+          const error =
+            tournIdError ||
+            userIdError ||
+            playerNameError ||
+            raceIdError ||
+            raceNumberError ||
+            raceTypeIdError ||
+            orgIdError ||
+            orgNameError ||
+            crewNameError ||
+            byGroupError ||
+            eventIdError ||
+            mSheetNumberError ||
+            sheetNameError;
 
-        return {
-          id: rowIndex,
-          checked: false,
-          loadingResult: error ? '未入力項目あり' : '',
-          tournId: row[0],
-          tournIdError: tournIdError,
-          tournName: row[1],
-          eventId: row[2],
-          eventIdError: eventIdError,
-          eventName: row[3],
-          raceTypeId: row[4],
-          raceTypeIdError: raceTypeIdError,
-          raceTypeName: row[5],
-          raceId: row[6],
-          raceIdError: raceIdError,
-          raceName: row[7],
-          byGroup: row[8],
-          byGroupError: byGroupError,
-          raceNumber: row[9],
-          raceNumberError: raceNumberError,
-          startDatetime: row[10],
-          orgId: row[11],
-          orgIdError: orgIdError,
-          orgName: row[12],
-          orgNameError: orgNameError,
-          crewName: row[13],
-          crewNameError: crewNameError,
-          mSheetNumber: row[14],
-          mSheetNumberError: mSheetNumberError,
-          sheetName: row[15],
-          sheetNameError: sheetNameError,
-          userId: row[16],
-          userIdError: userIdError,
-          playerName: row[17],
-          playerNameError: playerNameError,
-        };
-      });
+          return {
+            id: rowIndex,
+            checked: false,
+            loadingResult: error ? '未入力項目あり' : '',
+            tournId: row[0],
+            tournIdError: tournIdError,
+            tournName: row[1],
+            eventId: row[2],
+            eventIdError: eventIdError,
+            eventName: row[3],
+            raceTypeId: row[4],
+            raceTypeIdError: raceTypeIdError,
+            raceTypeName: row[5],
+            raceId: row[6],
+            raceIdError: raceIdError,
+            raceName: row[7],
+            byGroup: row[8],
+            byGroupError: byGroupError,
+            raceNumber: row[9],
+            raceNumberError: raceNumberError,
+            startDatetime: row[10],
+            orgId: row[11],
+            orgIdError: orgIdError,
+            orgName: row[12],
+            orgNameError: orgNameError,
+            crewName: row[13],
+            crewNameError: crewNameError,
+            mSheetNumber: row[14],
+            mSheetNumberError: mSheetNumberError,
+            sheetName: row[15],
+            sheetNameError: sheetNameError,
+            userId: row[16],
+            userIdError: userIdError,
+            playerName: row[17],
+            playerNameError: playerNameError,
+          };
+        });
       var element = array as CsvData[];
       //console.log(element);
       const sendTournData = {
