@@ -41,7 +41,7 @@ interface CsvDownloadProps {
 }
 
 // ファイル関連のアクションを扱うためのインターフェース
-interface FileHandler {}
+interface FileHandler { }
 
 // 選手情報連携のメインコンポーネント
 export default function TournamentEntryBulkRegister() {
@@ -110,7 +110,7 @@ export default function TournamentEntryBulkRegister() {
           //console.log('ユーザ情報なし');
           router.push('/tournamentSearch');
         }
-      } catch (error: any) {}
+      } catch (error: any) { }
     };
     fetchData();
   }, []);
@@ -529,6 +529,7 @@ export default function TournamentEntryBulkRegister() {
       const response = await axios.post('/sendTournamentEntryCsvData', sendTournData);
       const data = response.data.result as CsvData[];
       console.log(response.data.result.csvDataList);
+      setCsvData([]);
       var resList = Array();
       for (let index = 0; index < response.data.result.csvDataList.length; index++) {
         const element = array[index];
@@ -538,6 +539,10 @@ export default function TournamentEntryBulkRegister() {
       // setloadingResultList(resList);
       loadingResultList = resList.filter(Boolean); //リスト内のnullを削除して渡す
       console.log(loadingResultList);
+      setCsvData(response.data.result.csvDataList);
+      setDialogDisplayFlg(true);
+      // 仮実装。チェック内容に応じて登録ボタンの表示を判定
+      displayRegisterButton(true);
     } catch (error) {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
     }
@@ -617,11 +622,11 @@ export default function TournamentEntryBulkRegister() {
             <div
               className={
                 prevScreen === 'tournamentRef' ||
-                !(
-                  formData?.eventYear === '' ||
-                  formData?.eventYear === null ||
-                  formData?.eventYear === undefined
-                )
+                  !(
+                    formData?.eventYear === '' ||
+                    formData?.eventYear === null ||
+                    formData?.eventYear === undefined
+                  )
                   ? 'hidden'
                   : ''
               }
@@ -734,43 +739,43 @@ export default function TournamentEntryBulkRegister() {
                         window.confirm(
                           '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
                         )
-                          ? (await sendCsvData(), //バックエンド側にCSVデータを送信 データ判定用
-                            setCsvData([]),
-                            //console.log(loadingResultList),
-                            csvFileData?.content
-                              ?.filter(function (x) {
-                                // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
-                                return x.length > 0 && x.some((y) => y.length > 0);
-                              })
-                              .slice(isHeaderMatch ? 1 : 0)
-                              .map((row, rowIndex) => {
-                                handleCsvData(row, rowIndex);
-                                setDialogDisplayFlg(true);
-                              }))
+                          ? (await sendCsvData()) //バックエンド側にCSVデータを送信 データ判定用
+                            // setCsvData([]),
+                            // //console.log(loadingResultList),
+                            // csvFileData?.content
+                            //   ?.filter(function (x) {
+                            //     // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
+                            //     return x.length > 0 && x.some((y) => y.length > 0);
+                            //   })
+                            //   .slice(isHeaderMatch ? 1 : 0)
+                            //   .map((row, rowIndex) => {
+                            //     handleCsvData(row, rowIndex);
+                            //     setDialogDisplayFlg(true);
+                            //   }))
                           : null;
                       } else {
                         if (formData.tournName === '' || formData.tournName === undefined) {
                           checkTournName(true);
                         } else {
                           await sendCsvData(); //バックエンド側にCSVデータを送信 データ判定用
-                          setCsvData([]);
-                          //console.log(loadingResultList);
-                          csvFileData?.content
-                            ?.filter(function (x) {
-                              // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
-                              return x.length > 0 && x.some((y) => y.length > 0);
-                            })
-                            .slice(isHeaderMatch ? 1 : 0)
-                            .map((row, rowIndex) => {
-                              console.log('DDDDDDDDDDD');
-                              console.log(row);
-                              handleCsvData(row, rowIndex);
-                              setDialogDisplayFlg(true);
-                              // 仮実装。チェック内容に応じて登録ボタンの表示を判定
-                              if (row[0] !== '') {
-                                displayRegisterButton(true);
-                              }
-                            });
+                          // setCsvData([]);
+                          // //console.log(loadingResultList);
+                          // csvFileData?.content
+                          //   ?.filter(function (x) {
+                          //     // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
+                          //     return x.length > 0 && x.some((y) => y.length > 0);
+                          //   })
+                          //   .slice(isHeaderMatch ? 1 : 0)
+                          //   .map((row, rowIndex) => {
+                          //     console.log('DDDDDDDDDDD');
+                          //     console.log(row);
+                          //     handleCsvData(row, rowIndex);
+                          //     setDialogDisplayFlg(true);
+                          //     // 仮実装。チェック内容に応じて登録ボタンの表示を判定
+                          //     if (row[0] !== '') {
+                          //       displayRegisterButton(true);
+                          //     }
+                          //   });
                         }
                       }
                       setVisibilityFlg(true);
