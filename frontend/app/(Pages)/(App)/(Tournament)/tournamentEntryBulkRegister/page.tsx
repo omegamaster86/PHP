@@ -740,14 +740,20 @@ export default function TournamentEntryBulkRegister() {
                           await sendCsvData(); //バックエンド側にCSVデータを送信 データ判定用
                           setCsvData([]);
                           //console.log(loadingResultList);
-                          csvFileData?.content?.slice(1).map((row, rowIndex) => {
-                            handleCsvData(row, rowIndex);
-                            setDialogDisplayFlg(true);
-                            // 仮実装。チェック内容に応じて登録ボタンの表示を判定
-                            if (row[0] !== '') {
-                              displayRegisterButton(true);
-                            }
-                          });
+                          csvFileData?.content
+                            ?.filter(function (x) {
+                              // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
+                              return x.length > 0 && x.some((y) => y.length > 0);
+                            })
+                            .slice(isHeaderMatch ? 1 : 0)
+                            .map((row, rowIndex) => {
+                              handleCsvData(row, rowIndex);
+                              setDialogDisplayFlg(true);
+                              // 仮実装。チェック内容に応じて登録ボタンの表示を判定
+                              if (row[0] !== '') {
+                                displayRegisterButton(true);
+                              }
+                            });
                         }
                       }
                       setVisibilityFlg(true);
