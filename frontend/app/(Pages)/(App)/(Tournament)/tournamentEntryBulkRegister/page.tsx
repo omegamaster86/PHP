@@ -290,7 +290,7 @@ export default function TournamentEntryBulkRegister() {
   };
 
   const checkMaxInt = (element: string, maxNumber: number) => {
-    return Number(element) > maxNumber;
+    return Number(element) >= maxNumber; //境界値を判定できるように修正 20240513
   };
 
   const checkMaxDouble = (element: string, maxInt: number, maxDecimal: number) => {
