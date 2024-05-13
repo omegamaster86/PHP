@@ -534,6 +534,7 @@ export default function TournamentEntryBulkRegister() {
       //console.log(resList);
       // setloadingResultList(resList);
       loadingResultList = resList.filter(Boolean); //リスト内のnullを削除して渡す
+      console.log(loadingResultList);
     } catch (error) {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
     }
