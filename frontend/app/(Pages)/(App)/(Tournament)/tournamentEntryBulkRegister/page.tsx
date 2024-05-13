@@ -525,7 +525,7 @@ export default function TournamentEntryBulkRegister() {
       await csrf();
       const response = await axios.post('/sendTournamentEntryCsvData', sendTournData);
       const data = response.data.result as CsvData[];
-      //console.log(data);
+      console.log(response.data.result.csvDataList);
       var resList = Array();
       for (let index = 0; index < response.data.result.csvDataList.length; index++) {
         const element = array[index];
