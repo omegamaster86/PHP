@@ -120,7 +120,7 @@ class TournamentInfoAlignmentController extends Controller
         //$input_event_year = $inputData['tournData']['eventYear'];
         $input_tourn_id = $inputData['tournData']['tournId'];
         //$input_tourn_name = $inputData['tournData']['tournName'];
-        for ($rowIndex = 1; $rowIndex < count($inputData['csvDataList']); $rowIndex++) {
+        for ($rowIndex = 0; $rowIndex < count($inputData['csvDataList']); $rowIndex++) {
 
             //フロント側のバリデーション結果に未入力が存在する場合、以降の処理を実行しない 20240419
             if($inputData['csvDataList'][$rowIndex]['loadingResult'] != ''){
