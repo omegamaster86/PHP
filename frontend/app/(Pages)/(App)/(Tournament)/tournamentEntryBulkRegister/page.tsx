@@ -515,7 +515,8 @@ export default function TournamentEntryBulkRegister() {
           };
         });
       var element = array as CsvData[];
-      //console.log(element);
+      console.log('===============');
+      console.log(element);
       const sendTournData = {
         tournData: formData,
         csvDataList: element,
@@ -757,6 +758,8 @@ export default function TournamentEntryBulkRegister() {
                             })
                             .slice(isHeaderMatch ? 1 : 0)
                             .map((row, rowIndex) => {
+                              console.log('DDDDDDDDDDD');
+                              console.log(row);
                               handleCsvData(row, rowIndex);
                               setDialogDisplayFlg(true);
                               // 仮実装。チェック内容に応じて登録ボタンの表示を判定
