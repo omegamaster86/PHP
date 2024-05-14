@@ -33,6 +33,7 @@ const CsvTable = ({
   const checkLoadingResult = (row: CsvData) => {
     return (
       row.loadingResult === '未入力項目あり' ||
+      row.loadingResult === '入力値不正項目あり' ||
       row.loadingResult === '無効データ' ||
       row.loadingResult === '不一致情報あり' ||
       row.loadingResult === '記録情報あり' ||
