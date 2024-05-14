@@ -1672,4 +1672,15 @@ class TournamentController extends Controller
         Log::debug(sprintf("getTournLinkRaces end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
+
+    //大会結果管理　種目IDを条件に対象の種目に対応するシート位置を取得する 20240514
+    public function getEventSheetPosForEventID(Request $request, M_events $m_events)
+    {
+        Log::debug(sprintf("getEventSheetPosForEventID start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        $result = $m_events->getEventSheetPosForEventID($reqData); //レース情報を取得
+        Log::debug(sprintf("getEventSheetPosForEventID end"));
+        return response()->json(['result' => $result]); //DBの結果を返す
+    }
 }

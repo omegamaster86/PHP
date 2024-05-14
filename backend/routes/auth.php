@@ -97,7 +97,6 @@ Route::middleware('auth')->group(function () {
     Route::get('getWindDirection', [M_wind_direction::class, 'getWindDirection']); // 風向き（マスタ）
     Route::get('getRaceResultNotes', [M_race_result_notes::class, 'getRaceResultNotes']); // 備考（マスタ）
     Route::get('getSeatNumber', [M_seat_number::class, 'getSeatNumber']); // シート番号（マスタ）
-    Route::post('getEventSheetPosForEventID', [M_events::class, 'getEventSheetPosForEventID']); //種目IDを条件に対象の種目に対応するシート位置を取得する 20240514
 
     //ユーザー関連
     Route::get('getUserData', [UserController::class, 'getUserData']); //DBからユーザ情報を取得 20240131
@@ -160,6 +159,7 @@ Route::middleware('auth')->group(function () {
     Route::post('sendTournamentResultCsvData', [TournamentInfoAlignmentController::class, 'sendTournamentResultCsvData']); //大会結果一括 読み込むボタン押下 20240301
     Route::post('registerTournamentResultCsvData', [TournamentInfoAlignmentController::class, 'registerTournamentResultCsvData']); //大会結果一括 登録ボタン押下 20240301
     Route::post('checkOrgManager', [TournamentController::class, 'checkOrgManager']); //大会情報参照画面 主催団体管理者の判別 20240402
+    Route::post('getEventSheetPosForEventID', [TournamentController::class, 'getEventSheetPosForEventID']); //種目IDを条件に対象の種目に対応するシート位置を取得する 20240514
 
     //レース関連
     Route::post('getRaceData', [TournamentController::class, 'getRaceData']); //レース情報取得 20240214 大会情報に基づくレース情報
