@@ -262,6 +262,8 @@ export default function TournamentEntryBulkRegister() {
       await csrf();
       const tournamentResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
       console.log(tournamentResponse.data);
+
+      //該当の開催年に紐づく大会が存在する場合、リストの最初の大会を表示させる 20240514
       if (tournamentResponse.data.result.length > 0) {
         const TournamentsResponseList = tournamentResponse.data?.result?.map(
           ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
@@ -275,6 +277,14 @@ export default function TournamentEntryBulkRegister() {
           eventYear: tournamentResponse.data?.result[0]?.event_start_date.slice(0, 4),
           tournName: tournamentResponse.data?.result[0]?.tourn_name,
         }));
+
+        //大会名のエラーメッセージが表示されていた場合、非表示にする 20240514
+        if (
+          tournamentResponse.data?.result[0]?.tourn_name != undefined &&
+          tournamentResponse.data?.result[0]?.tourn_name != null
+        ) {
+          checkTournName(false);
+        }
       } else {
         setTournamentList([]);
         setFormData((prevFormData) => ({
@@ -317,127 +327,6 @@ export default function TournamentEntryBulkRegister() {
 
   const checkRequired = (element: string) => {
     return element === '' || element === undefined;
-  };
-
-  // CSVデータの処理
-  const handleCsvData = async (row: string[], rowIndex: number) => {
-    if (row.length !== csvElementNum) {
-      //console.log('row.length:', row.length);
-      setCsvData((prevData) => [
-        ...(prevData as CsvData[]),
-        {
-          id: rowIndex,
-          checked: false,
-          loadingResult: '無効データ',
-          tournId: '-',
-          tournIdError: false,
-          tournName: '-',
-          tournNameError: false,
-          eventId: '-',
-          eventIdError: false,
-          eventName: '-',
-          eventNameError: false,
-          raceTypeId: '-',
-          raceTypeIdError: false,
-          raceTypeName: '-',
-          raceTypeNameError: false,
-          raceId: '-',
-          raceIdError: false,
-          raceName: '-',
-          raceNameError: false,
-          byGroup: '-',
-          byGroupError: false,
-          raceNumber: '-',
-          raceNumberError: false,
-          startDatetime: '-',
-          startDatetimeError: false,
-          orgId: '-',
-          orgIdError: false,
-          orgName: '-',
-          orgNameError: false,
-          crewName: '-',
-          crewNameError: false,
-          mSheetNumber: '-',
-          mSheetNumberError: false,
-          sheetName: '-',
-          sheetNameError: false,
-          userId: '-',
-          userIdError: false,
-          playerName: '-',
-          playerNameError: false,
-        },
-      ]);
-    } else {
-      const tournIdError = checkMaxInt(row[0], 100000) || checkRequired(row[0]);
-      const eventIdError = checkMaxInt(row[2], 1000) || checkRequired(row[2]);
-      const raceTypeIdError = checkMaxInt(row[4], 1000) || checkRequired(row[4]);
-      const raceIdError = checkMaxInt(row[6], 100000000) || checkRequired(row[6]);
-      const byGroupError = checkStringLegnth(row[8], 255) || checkRequired(row[8]);
-      const raceNumberError = checkMaxInt(row[9], 1000) || checkRequired(row[9]);
-      const orgIdError = checkMaxInt(row[11], 10000) || checkRequired(row[11]);
-      const orgNameError = checkStringLegnth(row[12], 255) || checkRequired(row[12]);
-      const crewNameError = checkStringLegnth(row[13], 255) || checkRequired(row[13]);
-      const mSheetNumberError = checkMaxInt(row[14], 100) || checkRequired(row[14]);
-      const sheetNameError = checkStringLegnth(row[15], 255) || checkRequired(row[15]);
-      const userIdError = checkMaxInt(row[16], 10000000) || checkRequired(row[16]);
-      const playerNameError = checkStringLegnth(row[17], 100) || checkRequired(row[17]);
-
-      // const error =
-      //   tournIdError ||
-      //   userIdError ||
-      //   playerNameError ||
-      //   raceIdError ||
-      //   raceNumberError ||
-      //   raceTypeIdError ||
-      //   orgIdError ||
-      //   orgNameError ||
-      //   crewNameError ||
-      //   byGroupError ||
-      //   eventIdError ||
-      //   mSheetNumberError ||
-      //   sheetNameError;
-
-      setCsvData((prevData) => [
-        ...(prevData as CsvData[]),
-        {
-          id: rowIndex,
-          checked: loadingResultList[rowIndex] != null ? false : true,
-          loadingResult: loadingResultList[rowIndex],
-          tournId: row[0],
-          tournIdError: tournIdError,
-          tournName: row[1],
-          eventId: row[2],
-          eventIdError: eventIdError,
-          eventName: row[3],
-          raceTypeId: row[4],
-          raceTypeIdError: raceTypeIdError,
-          raceTypeName: row[5],
-          raceId: row[6],
-          raceIdError: raceIdError,
-          raceName: row[7],
-          byGroup: row[8],
-          byGroupError: byGroupError,
-          raceNumber: row[9],
-          raceNumberError: raceNumberError,
-          startDatetime: row[10],
-          orgId: row[11],
-          orgIdError: orgIdError,
-          orgName: row[12],
-          orgNameError: orgNameError,
-          crewName: row[13],
-          crewNameError: crewNameError,
-          mSheetNumber: row[14],
-          mSheetNumberError: mSheetNumberError,
-          sheetName: row[15],
-          sheetNameError: sheetNameError,
-          userId: row[16],
-          userIdError: userIdError,
-          playerName: row[17],
-          playerNameError: playerNameError,
-        },
-      ]);
-      setDisplayRegisterButtonFlg(true);
-    }
   };
 
   //読み込むボタン押下時 20240302
@@ -599,7 +488,7 @@ export default function TournamentEntryBulkRegister() {
       };
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
-      const response = await axios.post('/sendTournamentEntryCsvData', sendTournData); //不具合対応中 20240513
+      const response = await axios.post('/sendTournamentEntryCsvData', sendTournData);
       const data = response.data.result as CsvData[];
       console.log(response.data.result.csvDataList);
       setCsvData([]);
