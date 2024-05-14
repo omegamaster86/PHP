@@ -325,37 +325,22 @@ export default function TournamentResult() {
    * @returns
    */
   const validateRaceResultRecords = () => {
-    /**
-     * レースID
-     * 空欄チェック
-     * 空行が選択されている場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「レースIDを選択してください。」
-     */
+
+    //レースID　必須チェック
     const raceId = Validator.validateRequired(raceInfo?.race_id, 'レースID');
     if (raceId) {
       setErrorText([raceId]);
       scrollTo(0, 0);
       return false;
     }
-    /**
-     * レース名
-     * 空欄チェック
-     * 空行が選択されている場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「レース名を選択してください。」
-     */
+    //レース名　必須チェック
     const raceName = Validator.validateRequired(raceInfo?.race_name, 'レース名');
     if (raceName) {
       setErrorText([raceName]);
       scrollTo(0, 0);
       return false;
     }
-
-    /**
-     * 発艇日時
-     * 空欄チェック
-     * 空行が選択されている場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「発艇日時を選択してください。」
-     */
+    //発艇日時 必須チェック
     const startDateTime = Validator.validateRequired(
       raceResultRecordResponse?.startDateTime,
       '発艇日時',
@@ -365,28 +350,14 @@ export default function TournamentResult() {
       scrollTo(0, 0);
       return false;
     }
-
-    /**
-     * 1000m地点風速
-     * 入力値チェック
-     * 整数3桁までの数値であることを確認
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 半角数字で、999までの数字を入力してください
-     */
+    //1000m地点風速 入力値チェック
     const windSpeed = raceResultRecordResponse.wind_speed_1000m_point;
     if (windSpeed && !/^\d{1,3}$/.test(windSpeed.toString())) {
       setErrorText(['半角数字で、999までの数字を入力してください。']);
       scrollTo(0, 0);
       return false;
     }
-
-    /**
-     * 2000m地点風速
-     * 入力値チェック
-     * 整数3桁
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 半角数字で、999までの数字を入力してください
-     */
+    //2000m地点風速 入力値チェック
     const windSpeed2 = raceResultRecordResponse.wind_speed_2000m_point;
     if (windSpeed2 && !/^\d{1,3}$/.test(windSpeed2.toString())) {
       setErrorText(['半角数字で、999までの数字を入力してください。']);
@@ -394,25 +365,20 @@ export default function TournamentResult() {
       return false;
     }
 
-    /**
-     * 所属団体
-     * 空欄チェック
-     * 空行が選択されている場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「所属団体を選択してください。」
-     */
-    var indexList7 = [] as number[];
-    const isError5 = raceResultRecords.some((record, i) => {
+    //所属団体 空欄チェック
+    var emptyOrgList = [] as number[];
+    const emptyOrgDataList = raceResultRecords.some((record, i) => {
       if (!record.org_id) {
-        indexList7.push(i);
+        emptyOrgList.push(i);
       }
       return !record.org_id;
     });
-    if (isError5) {
-      indexList7.map((index) => {
+    if (emptyOrgDataList) {
+      emptyOrgList.map((index) => {
         handleRaceResultRecordsInputChangebyIndex(
           index,
           'errorText',
-          '所属団体を選択してください。',
+          '所属団体を選択してください。' + index,
         );
       });
       return false;
