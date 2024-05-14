@@ -41,7 +41,7 @@ interface CsvDownloadProps {
 }
 
 // ファイル関連のアクションを扱うためのインターフェース
-interface FileHandler { }
+interface FileHandler {}
 
 // 選手情報連携のメインコンポーネント
 export default function TournamentEntryBulkRegister() {
@@ -110,7 +110,7 @@ export default function TournamentEntryBulkRegister() {
           //console.log('ユーザ情報なし');
           router.push('/tournamentSearch');
         }
-      } catch (error: any) { }
+      } catch (error: any) {}
     };
     fetchData();
   }, []);
@@ -446,25 +446,21 @@ export default function TournamentEntryBulkRegister() {
         })
         .slice(isHeaderMatch ? 1 : 0)
         .map((row, rowIndex) => {
-          //必須入力チェック 20240419
-          const tournIdError = checkMaxInt(row[0], 100000) || checkRequired(row[0]);
-          const eventIdError = checkMaxInt(row[2], 1000) || checkRequired(row[2]);
-          const raceTypeIdError = checkMaxInt(row[4], 1000) || checkRequired(row[4]);
-          const raceIdError = checkMaxInt(row[6], 100000000) || checkRequired(row[6]);
-          const byGroupError = checkStringLegnth(row[8], 255) || checkRequired(row[8]);
-          const raceNumberError = checkMaxInt(row[9], 1000) || checkRequired(row[9]);
-          const orgIdError = checkMaxInt(row[11], 10000) || checkRequired(row[11]);
-          const orgNameError = checkStringLegnth(row[12], 255) || checkRequired(row[12]);
-          const crewNameError = checkStringLegnth(row[13], 255) || checkRequired(row[13]);
-          const mSheetNumberError = checkMaxInt(row[14], 100) || checkRequired(row[14]);
-          const sheetNameError = checkStringLegnth(row[15], 255) || checkRequired(row[15]);
-          const userIdError = checkMaxInt(row[16], 10000000) || checkRequired(row[16]);
-          const playerNameError = checkStringLegnth(row[17], 100) || checkRequired(row[17]);
+          //必須入力チェック 必須入力項目のいずれかがエラーの場合エラーとする 20240514
+          const tournIdError = checkRequired(row[0]);
+          const eventIdError = checkRequired(row[2]);
+          const raceTypeIdError = checkRequired(row[4]);
+          const raceIdError = checkRequired(row[6]);
+          const byGroupError = checkRequired(row[8]);
+          const raceNumberError = checkRequired(row[9]);
+          const orgIdError = checkRequired(row[11]);
+          const orgNameError = checkRequired(row[12]);
+          const crewNameError = checkRequired(row[13]);
+          const mSheetNumberError = checkRequired(row[14]);
+          const sheetNameError = checkRequired(row[15]);
+          const userIdError = checkRequired(row[16]);
+          const playerNameError =  checkRequired(row[17]);
 
-          console.log('rrrrrrrrrrrrrrr');
-          console.log(raceNumberError);
-
-          //必須入力項目のいずれかがエラーの場合エラーとする
           const error =
             tournIdError ||
             userIdError ||
@@ -480,10 +476,40 @@ export default function TournamentEntryBulkRegister() {
             mSheetNumberError ||
             sheetNameError;
 
+          //データ型チェック（入力値範囲チェック）入力項目のいずれかがエラーの場合エラーとする 20240514
+          const tournIdRangeError = checkMaxInt(row[0], 100000);
+          const eventIdRangeError = checkMaxInt(row[2], 1000);
+          const raceTypeIdRangeError = checkMaxInt(row[4], 1000);
+          const raceIdRangeError = checkMaxInt(row[6], 100000000);
+          const byGroupRangeError = checkStringLegnth(row[8], 255);
+          const raceNumberRangeError = checkMaxInt(row[9], 1000);
+          const orgIdRangeError = checkMaxInt(row[11], 10000);
+          const orgNameRangeError = checkStringLegnth(row[12], 255);
+          const crewNameRangeError = checkStringLegnth(row[13], 255);
+          const mSheetNumberRangeError = checkMaxInt(row[14], 100);
+          const sheetNameRangeError = checkStringLegnth(row[15], 255);
+          const userIdRangeError = checkMaxInt(row[16], 10000000);
+          const playerNameRangeError = checkStringLegnth(row[17], 100);
+
+          const RangeError =
+            tournIdRangeError ||
+            userIdRangeError ||
+            playerNameRangeError ||
+            raceIdRangeError ||
+            raceNumberRangeError ||
+            raceTypeIdRangeError ||
+            orgIdRangeError ||
+            orgNameRangeError ||
+            crewNameRangeError ||
+            byGroupRangeError ||
+            eventIdRangeError ||
+            mSheetNumberRangeError ||
+            sheetNameRangeError;
+
           return {
             id: rowIndex,
             checked: false,
-            loadingResult: error ? '未入力項目あり' : '',
+            loadingResult: error ? '未入力項目あり' : (RangeError ? '入力値不正項目目あり' : ''),
             tournId: row[0],
             tournIdError: tournIdError,
             tournName: row[1],
@@ -526,7 +552,7 @@ export default function TournamentEntryBulkRegister() {
       };
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
-      const response = await axios.post('/sendTournamentEntryCsvData', sendTournData);
+      const response = await axios.post('/sendTournamentEntryCsvData', sendTournData); //不具合対応中 20240513
       const data = response.data.result as CsvData[];
       console.log(response.data.result.csvDataList);
       setCsvData([]);
@@ -622,11 +648,11 @@ export default function TournamentEntryBulkRegister() {
             <div
               className={
                 prevScreen === 'tournamentRef' ||
-                  !(
-                    formData?.eventYear === '' ||
-                    formData?.eventYear === null ||
-                    formData?.eventYear === undefined
-                  )
+                !(
+                  formData?.eventYear === '' ||
+                  formData?.eventYear === null ||
+                  formData?.eventYear === undefined
+                )
                   ? 'hidden'
                   : ''
               }
@@ -739,8 +765,8 @@ export default function TournamentEntryBulkRegister() {
                         window.confirm(
                           '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
                         )
-                          ? (await sendCsvData()) //バックエンド側にCSVデータを送信 データ判定用
-                            // setCsvData([]),
+                          ? await sendCsvData() //バックエンド側にCSVデータを送信 データ判定用
+                          : // setCsvData([]),
                             // //console.log(loadingResultList),
                             // csvFileData?.content
                             //   ?.filter(function (x) {
@@ -752,7 +778,7 @@ export default function TournamentEntryBulkRegister() {
                             //     handleCsvData(row, rowIndex);
                             //     setDialogDisplayFlg(true);
                             //   }))
-                          : null;
+                            null;
                       } else {
                         if (formData.tournName === '' || formData.tournName === undefined) {
                           checkTournName(true);
