@@ -97,6 +97,7 @@ Route::middleware('auth')->group(function () {
     Route::get('getWindDirection', [M_wind_direction::class, 'getWindDirection']); // 風向き（マスタ）
     Route::get('getRaceResultNotes', [M_race_result_notes::class, 'getRaceResultNotes']); // 備考（マスタ）
     Route::get('getSeatNumber', [M_seat_number::class, 'getSeatNumber']); // シート番号（マスタ）
+    Route::post('getEventSheetPosForEventID', [M_events::class, 'getEventSheetPosForEventID']); //種目IDを条件に対象の種目に対応するシート位置を取得する 20240514
 
     //ユーザー関連
     Route::get('getUserData', [UserController::class, 'getUserData']); //DBからユーザ情報を取得 20240131
