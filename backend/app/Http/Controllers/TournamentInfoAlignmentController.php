@@ -123,7 +123,8 @@ class TournamentInfoAlignmentController extends Controller
         for ($rowIndex = 0; $rowIndex < count($inputData['csvDataList']); $rowIndex++) {
 
             //フロント側のバリデーション結果に未入力が存在する場合、以降の処理を実行しない 20240419
-            if($inputData['csvDataList'][$rowIndex]['loadingResult'] != ''){
+            if($inputData['csvDataList'][$rowIndex]['loadingResult'] == '未入力項目あり' || $inputData['csvDataList'][$rowIndex]['loadingResult'] == '入力値不正項目あり'){
+                $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 continue;
             }
 
@@ -197,6 +198,7 @@ class TournamentInfoAlignmentController extends Controller
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
                 $inputData['csvDataList'][$rowIndex]['userIdError'] = true;
                 $inputData['csvDataList'][$rowIndex]['playerNameError'] = true;
+                continue; //不一致情報が存在する場合、以降の処理を実行しない 20240514
             }
             //出漕結果記録テーブルを検索して判定する
             $condition_values = array();
