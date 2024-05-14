@@ -1540,6 +1540,11 @@ export default function TournamentResult() {
             name: seat_name,
           }),
         );
+        console.log(response6.data.result[0].seat_2);
+        console.log(response6.data.result[0].seat_3);
+        console.log(response6.data.result[0].seat_4);
+        console.log(response6.data.result[0].seat_5);
+        console.log(seatNumberList);
         setSheetNameIdOptions(seatNumberList);
       } catch (error: any) {
         setErrorText([error.message]);
