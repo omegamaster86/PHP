@@ -1525,7 +1525,7 @@ export default function TournamentResult() {
         setRemarkOptions(raceResultNoteList);
 
         // 種目に対応したシート位置（マスタ）の取得
-        const response6 = await axios.post('/getEventSheetPosForEventID', eventId);
+        const response6 = await axios.post('/getEventSheetPosForEventID', sendData);
         console.log(response6);
 
         // シート番号（マスタ）の取得

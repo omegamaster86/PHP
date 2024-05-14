@@ -1679,7 +1679,7 @@ class TournamentController extends Controller
         Log::debug(sprintf("getEventSheetPosForEventID start"));
         $reqData = $request->all();
         Log::debug($reqData);
-        $result = $m_events->getEventSheetPosForEventID($reqData); //レース情報を取得
+        $result = $m_events->getEventSheetPosForEventID($reqData['event_id']); //レース情報を取得
         Log::debug(sprintf("getEventSheetPosForEventID end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
