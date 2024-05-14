@@ -65,9 +65,9 @@ class M_events extends Model
                                 ,`seat_c`
                                 from `m_events`
                                 where 1=1
-                                and `delete_flag` = ?
-                                and `event_id` = ?
-                                order by display_order',[0,$event_id]
+                                and `delete_flag` = 0
+                                and `event_id` = 81
+                                order by display_order'
                             );
         Log::debug($event);
         return $event;
