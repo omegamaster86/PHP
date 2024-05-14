@@ -1526,11 +1526,14 @@ export default function TournamentResult() {
 
         // 種目に対応したシート位置（マスタ）の取得
         const response6 = await axios.post('/getEventSheetPosForEventID', sendData);
-        console.log(response6);
+        if(response6.data.result.length > 0){
+          console.log(response6.data.result[0]);
+        }
 
         // シート番号（マスタ）の取得
         //const response6 = await axios.get('http://localhost:3100/seatNo');
         const response7 = await axios.get('/getSeatNumber');
+        console.log(response7.data);
         const seatNumberList = response7.data.map(
           ({ seat_id, seat_name }: { seat_id: number; seat_name: string }) => ({
             id: seat_id,
