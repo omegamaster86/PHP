@@ -1523,53 +1523,6 @@ export default function TournamentResult() {
           }) => ({ id: race_result_notes_id, name: race_result_notes }),
         );
         setRemarkOptions(raceResultNoteList);
-
-        // 種目に対応したシート位置（マスタ）の取得 20240514
-        const response6 = await axios.post('/getEventSheetPosForEventID', sendData);
-       
-        // シート番号（マスタ）の取得
-        //const response6 = await axios.get('http://localhost:3100/seatNo');
-        const response7 = await axios.get('/getSeatNumber');
-        console.log(response7.data);
-        const seatNumberList = response7.data.map(
-          ({ seat_id, seat_name }: { seat_id: number; seat_name: string }) => ({
-            id: seat_id,
-            name: seat_name,
-          }),
-        );
-
-        // 種目に対応したシート位置になるように要素をフィルタする 20240514 
-        const newSeatNumberArray = seatNumberList.filter((e:any) => {
-          if(e.name == "ストローク" && response6.data.result[0].seat_s == 1){
-            return e;
-          }
-          else if(e.name == "7" && response6.data.result[0].seat_7 == 1){
-            return e;
-          }
-          else if(e.name == "6" && response6.data.result[0].seat_6 == 1){
-            return e;
-          }
-          else if(e.name == "5" && response6.data.result[0].seat_5 == 1){
-            return e;
-          }
-          else if(e.name == "4" && response6.data.result[0].seat_4 == 1){
-            return e;
-          }
-          else if(e.name == "3" && response6.data.result[0].seat_3 == 1){
-            return e;
-          }
-          else if(e.name == "2" && response6.data.result[0].seat_2 == 1){
-            return e;
-          }
-          else if(e.name == "バウ" && response6.data.result[0].seat_b == 1){
-            return e;
-          }
-          else if(e.name == "コックス" && response6.data.result[0].seat_c == 1){
-            return e;
-          }
-        });
-        console.log(newSeatNumberArray);
-        setSheetNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする 20240514
       } catch (error: any) {
         setErrorText([error.message]);
       }
@@ -1605,6 +1558,46 @@ export default function TournamentResult() {
         } else {
           // setRaceInfo(data[0]); //レース結果登録に画面遷移時は「レース基本情報」の項目はすべて空の状態にする 20240422
         }
+
+        // 種目に対応したシート位置（マスタ）の取得 20240514
+        const response6 = await axios.post('/getEventSheetPosForEventID', sendData);
+
+        // シート番号（マスタ）の取得
+        //const response6 = await axios.get('http://localhost:3100/seatNo');
+        const response7 = await axios.get('/getSeatNumber');
+        console.log(response7.data);
+        const seatNumberList = response7.data.map(
+          ({ seat_id, seat_name }: { seat_id: number; seat_name: string }) => ({
+            id: seat_id,
+            name: seat_name,
+          }),
+        );
+
+        // 種目に対応したシート位置になるように要素をフィルタする 20240514
+        const newSeatNumberArray = seatNumberList.filter((e: any) => {
+          if (e.name == 'ストローク' && response6.data.result[0].seat_s == 1) {
+            return e;
+          } else if (e.name == '7' && response6.data.result[0].seat_7 == 1) {
+            return e;
+          } else if (e.name == '6' && response6.data.result[0].seat_6 == 1) {
+            return e;
+          } else if (e.name == '5' && response6.data.result[0].seat_5 == 1) {
+            return e;
+          } else if (e.name == '4' && response6.data.result[0].seat_4 == 1) {
+            return e;
+          } else if (e.name == '3' && response6.data.result[0].seat_3 == 1) {
+            return e;
+          } else if (e.name == '2' && response6.data.result[0].seat_2 == 1) {
+            return e;
+          } else if (e.name == 'バウ' && response6.data.result[0].seat_b == 1) {
+            return e;
+          } else if (e.name == 'コックス' && response6.data.result[0].seat_c == 1) {
+            return e;
+          }
+        });
+        console.log(newSeatNumberArray);
+        setSheetNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする 20240514
+
         console.log('====================');
       } catch (error: any) {
         setErrorText([error.message]);
@@ -1642,6 +1635,47 @@ export default function TournamentResult() {
           data.race_result[0].startDateTime = data.race_result[0].start_date_time; //バックエンド側のキーをフロント側のキーに入れ直す 20240410
           setRaceInfo(data.race_result[0]);
         }
+
+        const sendEventData = {
+          event_id: eventId || data.race_result[0].event_id,
+        };
+        // 種目に対応したシート位置（マスタ）の取得 20240514
+        const response6 = await axios.post('/getEventSheetPosForEventID', sendEventData);
+
+        // シート番号（マスタ）の取得
+        const response7 = await axios.get('/getSeatNumber');
+        console.log(response7.data);
+        const seatNumberList = response7.data.map(
+          ({ seat_id, seat_name }: { seat_id: number; seat_name: string }) => ({
+            id: seat_id,
+            name: seat_name,
+          }),
+        );
+
+        // 種目に対応したシート位置になるように要素をフィルタする 20240514
+        const newSeatNumberArray = seatNumberList.filter((e: any) => {
+          if (e.name == 'ストローク' && response6.data.result[0].seat_s == 1) {
+            return e;
+          } else if (e.name == '7' && response6.data.result[0].seat_7 == 1) {
+            return e;
+          } else if (e.name == '6' && response6.data.result[0].seat_6 == 1) {
+            return e;
+          } else if (e.name == '5' && response6.data.result[0].seat_5 == 1) {
+            return e;
+          } else if (e.name == '4' && response6.data.result[0].seat_4 == 1) {
+            return e;
+          } else if (e.name == '3' && response6.data.result[0].seat_3 == 1) {
+            return e;
+          } else if (e.name == '2' && response6.data.result[0].seat_2 == 1) {
+            return e;
+          } else if (e.name == 'バウ' && response6.data.result[0].seat_b == 1) {
+            return e;
+          } else if (e.name == 'コックス' && response6.data.result[0].seat_c == 1) {
+            return e;
+          }
+        });
+        console.log(newSeatNumberArray);
+        setSheetNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする 20240514
 
         // 出漕結果記録情報の取得
         // const response2 = await axios.get('http://localhost:3100/raceResultRecord');
