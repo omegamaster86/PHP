@@ -1545,12 +1545,36 @@ export default function TournamentResult() {
         console.log(response6.data.result[0].seat_4);
         console.log(response6.data.result[0].seat_5);
         console.log(seatNumberList);
-        const newArray = seatNumberList.filter((e:any,index:any) => {
-          if(e){
-
+        const newArray = seatNumberList.filter((e:any) => {
+          if(e.name == "ストローク" && response6.data.result[0].seat_s == 1){
+            return e;
           }
-          console.log(e);
+          else if(e.name == "7" && response6.data.result[0].seat_7 == 1){
+            return e;
+          }
+          else if(e.name == "6" && response6.data.result[0].seat_6 == 1){
+            return e;
+          }
+          else if(e.name == "5" && response6.data.result[0].seat_5 == 1){
+            return e;
+          }
+          else if(e.name == "4" && response6.data.result[0].seat_4 == 1){
+            return e;
+          }
+          else if(e.name == "3" && response6.data.result[0].seat_3 == 1){
+            return e;
+          }
+          else if(e.name == "2" && response6.data.result[0].seat_2 == 1){
+            return e;
+          }
+          else if(e.name == "バウ" && response6.data.result[0].seat_b == 1){
+            return e;
+          }
+          else if(e.name == "コックス" && response6.data.result[0].seat_c == 1){
+            return e;
+          }
         });
+        console.log(newArray);
         setSheetNameIdOptions(seatNumberList);
       } catch (error: any) {
         setErrorText([error.message]);
