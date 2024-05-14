@@ -33,7 +33,7 @@ interface CsvDownloadProps {
 }
 
 // Handlerの型定義
-interface Handler { }
+interface Handler {}
 
 interface Header {
   key: string;
@@ -291,7 +291,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
             onClick={() => {
               props.csvDownloadProps.checkTournName(
                 props.csvDownloadProps.formData.tournName === '' ||
-                props.csvDownloadProps.formData.tournName === undefined,
+                  props.csvDownloadProps.formData.tournName === undefined,
               );
               if (
                 !(

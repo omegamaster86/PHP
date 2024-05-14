@@ -206,9 +206,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
                   </div>
                 </div>
               </div>
-              <div>
-                {isDragAccept ? 'ファイルをアップロードします。' : isDragReject ? '' : ''}
-              </div>
+              <div>{isDragAccept ? 'ファイルをアップロードします。' : isDragReject ? '' : ''}</div>
             </div>
           )}
           {props.csvUploadProps.readonly && (
