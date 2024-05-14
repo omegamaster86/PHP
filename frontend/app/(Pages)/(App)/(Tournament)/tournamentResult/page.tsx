@@ -39,6 +39,7 @@ export default function TournamentResult() {
 
   // ステート変数
   const [errorText, setErrorText] = useState([] as string[]);
+  const [startDateTimeErrorText, setStartDateTimeErrorText] = useState('');
 
   // レース名（マスタ）の設定
   const [raceNameOptions, setRaceNameOptions] = useState<MasterResponse[]>([]);
@@ -360,7 +361,7 @@ export default function TournamentResult() {
       '発艇日時',
     );
     if (startDateTime) {
-      setErrorText([startDateTime]);
+      setStartDateTimeErrorText(startDateTime);
       scrollTo(0, 0);
       return false;
     }
@@ -1905,11 +1906,13 @@ export default function TournamentResult() {
                     handleRaceResultRecordInputChange(
                       'startDateTime',
                       // e.toISOString('yyyy/MM/dd HH:mm'),
-                      (e as unknown as Date).toLocaleString().toString().replaceAll('/', '-'),
+                      (e as unknown as Date)?.toLocaleString().toString().replaceAll('/', '-'),
                     );
                   }}
                   className='w-[200px]'
                   useTime
+                  isError={startDateTimeErrorText !== ''}
+                  errorMessages={[startDateTimeErrorText]}
                 />
               ) : (
                 // YYYY/MM/DD HH:MM
@@ -2089,6 +2092,9 @@ export default function TournamentResult() {
             {!item.isAdded && (
               <div
                 onClick={() => {
+                  if (mode === 'confirm') {
+                    return;
+                  }
                   handleRaceResultRecordsInputChangeBooleanbyIndex(
                     index,
                     'deleteFlg',
@@ -2107,7 +2113,7 @@ export default function TournamentResult() {
                 <p className='text-systemErrorText'>このレース結果情報を削除する</p>
               </div>
             )}
-            {item.isAdded && (
+            {item.isAdded && mode !== 'confirm' ? (
               <CustomButton
                 buttonType='primary'
                 onClick={() => {
@@ -2124,6 +2130,8 @@ export default function TournamentResult() {
               >
                 追加の取り消し
               </CustomButton>
+            ) : (
+              <></>
             )}
           </div>
           <div className='flex flex-col gap-[20px] border border-solid border-gray-300 p-[20px]'>
