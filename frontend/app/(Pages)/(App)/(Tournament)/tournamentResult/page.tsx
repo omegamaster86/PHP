@@ -1545,6 +1545,12 @@ export default function TournamentResult() {
         console.log(response6.data.result[0].seat_4);
         console.log(response6.data.result[0].seat_5);
         console.log(seatNumberList);
+        const newArray = seatNumberList.filter((e:any,index:any) => {
+          if(e){
+
+          }
+          console.log(e);
+        });
         setSheetNameIdOptions(seatNumberList);
       } catch (error: any) {
         setErrorText([error.message]);
