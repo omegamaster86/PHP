@@ -626,8 +626,8 @@ export default function Tournaments() {
           // .get<Race[]>('/race')
           .post('/getRaceData', tourn_id)
           .then((response) => {
-            //console.log(response.data.result);
-            setTableData(response.data.result);
+            console.log(response.data.result);
+            setTableData(response.data.result); //「その他」で入力された値を表示できるように修正 20240514
           })
           .catch((error) => {
             // TODO: エラー処理の実装置き換え
@@ -1131,7 +1131,7 @@ export default function Tournaments() {
               readonly={mode === 'confirm'}
             />
             {/* その他選択時に表示のテキストボックス */}
-            <div className={`${row.race_class_id === '999' ? '' : 'hidden'} `}>
+            <div className={`${row.race_class_id == '999' ? 'visible' : 'hidden'} `}>
               <CustomTextField
                 label=''
                 isError={raceTypeNameErrorMessage.length > 0}
@@ -1604,7 +1604,7 @@ export default function Tournaments() {
                         <div className='flex flex-row gap-[8px] items-center'>
                           {row.race_class_name}
                           {/* レース区分名 */}
-                          <div className={`${row.race_class_id === '999' ? '' : 'hidden'} `}>
+                          <div className={`${row.race_class_id == '999' ? 'visible' : 'hidden'} `}>
                             {row.otherRaceName}
                           </div>
                         </div>

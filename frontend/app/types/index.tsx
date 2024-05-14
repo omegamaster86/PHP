@@ -194,7 +194,7 @@ interface Race {
   race_name: string; // レース名
   race_class_id: string; // レース区分
   race_class_name: string; // レース区分名
-  otherRaceName?: string; // その他レース名　#置き換え作業未対応
+  otherRaceName?: string; // その他レース名
   by_group: string; // 組別
   range: string; // 距離
   start_date_time: string; // 開始日時

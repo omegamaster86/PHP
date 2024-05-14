@@ -41,4 +41,31 @@ class M_events extends Model
                             );
         return $event;
     }
+
+    //種目IDを条件に対象の種目に対応するシート位置を取得する 20240514
+    public function getEventSheetPosForEventID($event_id)
+    {
+        $event = DB::select('select 
+                                `event_id`
+                                ,`event_name`
+                                ,`abbr_name`
+                                ,`mixed_sex`
+                                ,`crew_number`
+                                ,`seat_b`
+                                ,`seat_2`
+                                ,`seat_3`
+                                ,`seat_4`
+                                ,`seat_5`
+                                ,`seat_6`
+                                ,`seat_7`
+                                ,`seat_s`
+                                ,`seat_c`
+                                from `m_events`
+                                where 1=1
+                                and `delete_flag` = ?
+                                and `event_id` = ?
+                                order by display_order',[0,$event_id]
+                            );
+        return $event;
+    }
 }

@@ -187,7 +187,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           csvContent += response.data.result[index].event_name + ','; //種目名
           csvContent += response.data.result[index].race_class_id + ','; //レース区分ID
           if (response.data.result[index].race_class_id == 999) {
-            csvContent += response.data.result[index].t_races_race_class_name + ','; //レース区分名
+            csvContent += response.data.result[index].otherRaceName + ','; //レース区分名
           } else {
             csvContent += response.data.result[index].race_class_name + ','; //レース区分名
           }
@@ -247,32 +247,34 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
         <CustomInputLabel label={props.csvUploadProps.label} required></CustomInputLabel>
         <div className='flex flex-row gap-[4px]'>
           {!props.csvUploadProps.readonly && (
-            <div {...getRootProps()} className='mb-1'>
-              <div className='mb-1'>
-                <input {...getInputProps()} />
-                <p className='text-secondaryText text-sm'>
-                  {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : ''}
-                </p>
-                <div className='flex flex-col gap-[10px] w-full'>
-                  <div className='flex flex-row gap-[4px]'>
-                    <CustomTextField
-                      placeholder={'ここにファイルをドラッグ＆ドロップしてアップロード'}
-                      value={currentShowFile?.isUploaded ? currentShowFile?.file.name : ''}
-                      className='w-[450px] h-12'
-                    ></CustomTextField>
-                    <CustomButton
-                      onClick={() => {
-                        // TODO: ファイル参照処理
-                      }}
-                      className='w-[100px] h-[57px]'
-                    >
-                      参照
-                    </CustomButton>
-                  </div>
-                  <div>
-                    {isDragAccept ? 'ファイルをアップロードします。' : isDragReject ? 'エラー' : ''}
+            <div className='flex flex-col gap-[10px] w-full'>
+              <div {...getRootProps()} className=''>
+                <div className=''>
+                  <input {...getInputProps()} />
+                  <p className='text-secondaryText text-sm'>
+                    {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : ''}
+                  </p>
+                  <div className='flex flex-col gap-[10px] w-full'>
+                    <div className='flex flex-row gap-[4px]'>
+                      <CustomTextField
+                        placeholder={'ここにファイルをドラッグ＆ドロップしてアップロード'}
+                        value={currentShowFile?.isUploaded ? currentShowFile?.file.name : ''}
+                        className='w-[450px] h-12'
+                      ></CustomTextField>
+                      <CustomButton
+                        onClick={() => {
+                          // TODO: ファイル参照処理
+                        }}
+                        className='w-[100px] h-[57px]'
+                      >
+                        参照
+                      </CustomButton>
+                    </div>
                   </div>
                 </div>
+              </div>
+              <div>
+                {isDragAccept ? 'ファイルをアップロードします。' : isDragReject ? 'エラー' : ''}
               </div>
             </div>
           )}

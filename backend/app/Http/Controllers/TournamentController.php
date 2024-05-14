@@ -294,7 +294,12 @@ class TournamentController extends Controller
                     $tRace::$racesData['event_id'] = $reqData['tableData'][$i]['event_id']; //イベントID
                     $tRace::$racesData['event_name'] = $reqData['tableData'][$i]['event_name']; //イベント名
                     $tRace::$racesData['race_class_id'] = $reqData['tableData'][$i]['race_class_id']; //レース区分ID
-                    $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['race_class_name']; //レース区分
+                    //「その他」で入力されたデータが存在する場合 20240514
+                    if ($reqData['tableData'][$i]['race_class_id'] == "999" && isset($reqData['tableData'][$i]['otherRaceName'])) {
+                        $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['otherRaceName']; //レース区分名
+                    }else{
+                        $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['race_class_name']; //レース区分名
+                    }
                     $tRace::$racesData['by_group'] = $reqData['tableData'][$i]['by_group']; //レース区分
                     $tRace::$racesData['range'] = $reqData['tableData'][$i]['range']; //距離
                     $tRace::$racesData['start_date_time'] = $reqData['tableData'][$i]['start_date_time']; //発艇日時
@@ -312,7 +317,7 @@ class TournamentController extends Controller
         }
     }
 
-    //reactからの大会登録 20240202
+    //大会更新 20240202
     public function updateTournamentInfoData(Request $request, T_tournaments $tTournament, T_races $tRace)
     {
         Log::debug(sprintf("updateTournamentInfoData start"));
@@ -367,7 +372,12 @@ class TournamentController extends Controller
                     $tRace::$racesData['event_id'] = $reqData['tableData'][$i]['event_id']; //イベントID
                     $tRace::$racesData['event_name'] = $reqData['tableData'][$i]['event_name']; //イベント名
                     $tRace::$racesData['race_class_id'] = $reqData['tableData'][$i]['race_class_id']; //レース区分ID
-                    $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['race_class_name']; //レース区分
+                    //「その他」で入力されたデータが存在する場合 20240514
+                    if ($reqData['tableData'][$i]['race_class_id'] == "999" && isset($reqData['tableData'][$i]['otherRaceName'])) {
+                        $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['otherRaceName']; //レース区分名
+                    }else{
+                        $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['race_class_name']; //レース区分名
+                    }
                     $tRace::$racesData['by_group'] = $reqData['tableData'][$i]['by_group']; //レース区分
                     $tRace::$racesData['range'] = $reqData['tableData'][$i]['range']; //距離
                     $tRace::$racesData['start_date_time'] = $reqData['tableData'][$i]['start_date_time']; //発艇日時
@@ -1660,6 +1670,17 @@ class TournamentController extends Controller
         Log::debug($reqData);
         $result = $tRace->getLinkRaces($reqData); //レース情報を取得
         Log::debug(sprintf("getTournLinkRaces end"));
+        return response()->json(['result' => $result]); //DBの結果を返す
+    }
+
+    //大会結果管理　種目IDを条件に対象の種目に対応するシート位置を取得する 20240514
+    public function getEventSheetPosForEventID(Request $request, M_events $m_events)
+    {
+        Log::debug(sprintf("getEventSheetPosForEventID start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        $result = $m_events->getEventSheetPosForEventID($reqData['event_id']); //レース情報を取得
+        Log::debug(sprintf("getEventSheetPosForEventID end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 }
