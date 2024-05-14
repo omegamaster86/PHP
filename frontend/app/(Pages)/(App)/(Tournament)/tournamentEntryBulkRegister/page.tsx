@@ -740,6 +740,9 @@ export default function TournamentEntryBulkRegister() {
                     },
                   }));
                   //console.log(formData.tournName, formData.tournId);
+                  if (newValue != undefined && newValue != null) {
+                    checkTournName(false);
+                  }
                 }}
                 renderOption={(props: any, option: TournamentResponse) => {
                   return (
