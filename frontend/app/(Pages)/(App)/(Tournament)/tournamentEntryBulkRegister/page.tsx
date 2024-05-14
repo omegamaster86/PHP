@@ -41,7 +41,7 @@ interface CsvDownloadProps {
 }
 
 // ファイル関連のアクションを扱うためのインターフェース
-interface FileHandler { }
+interface FileHandler {}
 
 // 選手情報連携のメインコンポーネント
 export default function TournamentEntryBulkRegister() {
@@ -110,7 +110,7 @@ export default function TournamentEntryBulkRegister() {
           //console.log('ユーザ情報なし');
           router.push('/tournamentSearch');
         }
-      } catch (error: any) { }
+      } catch (error: any) {}
     };
     fetchData();
   }, []);
@@ -262,7 +262,7 @@ export default function TournamentEntryBulkRegister() {
       await csrf();
       const tournamentResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
       console.log(tournamentResponse.data);
-      if(tournamentResponse.data.result.length > 0){
+      if (tournamentResponse.data.result.length > 0) {
         const TournamentsResponseList = tournamentResponse.data?.result?.map(
           ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
             id: tourn_id,
@@ -275,7 +275,7 @@ export default function TournamentEntryBulkRegister() {
           eventYear: tournamentResponse.data?.result[0]?.event_start_date.slice(0, 4),
           tournName: tournamentResponse.data?.result[0]?.tourn_name,
         }));
-      }else{
+      } else {
         setTournamentList([]);
         setFormData((prevFormData) => ({
           ...prevFormData,
@@ -695,11 +695,11 @@ export default function TournamentEntryBulkRegister() {
             <div
               className={
                 prevScreen === 'tournamentRef' ||
-                  !(
-                    formData?.eventYear === '' ||
-                    formData?.eventYear === null ||
-                    formData?.eventYear === undefined
-                  )
+                !(
+                  formData?.eventYear === '' ||
+                  formData?.eventYear === null ||
+                  formData?.eventYear === undefined
+                )
                   ? 'hidden'
                   : ''
               }
@@ -808,13 +808,27 @@ export default function TournamentEntryBulkRegister() {
                     onClick={async () => {
                       setActivationFlg(true);
                       if (dialogDisplayFlg) {
-                        window.confirm(
-                          '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
-                        )
-                          ? await sendCsvData() //バックエンド側にCSVデータを送信 データ判定用
-                          : null;
+                        if (
+                          window.confirm(
+                            '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
+                          )
+                        ) {
+                          if (
+                            formData.tournName === '' ||
+                            formData.tournName === undefined ||
+                            formData.tournName === null
+                          ) {
+                            checkTournName(true);
+                          } else {
+                            await sendCsvData(); //バックエンド側にCSVデータを送信 データ判定用
+                          }
+                        }
                       } else {
-                        if (formData.tournName === '' || formData.tournName === undefined) {
+                        if (
+                          formData.tournName === '' ||
+                          formData.tournName === undefined ||
+                          formData.tournName === null
+                        ) {
                           checkTournName(true);
                         } else {
                           await sendCsvData(); //バックエンド側にCSVデータを送信 データ判定用
