@@ -261,7 +261,7 @@ export default function TournamentEntryBulkRegister() {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       const tournamentResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
-      //console.log(tournamentResponse.data.result);
+      console.log(tournamentResponse.data.result);
       const TournamentsResponseList = tournamentResponse.data.result.map(
         ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
           id: tourn_id,
@@ -712,7 +712,7 @@ export default function TournamentEntryBulkRegister() {
                 getOptionLabel={(option) => option.name}
                 value={{ id: formData.tournId, name: formData.tournName } || ''}
                 onChange={(e: ChangeEvent<{}>, newValue) => {
-                  //console.log((newValue as TournamentResponse).id);
+                  console.log((newValue as TournamentResponse).name);
                   handleInputChange(
                     'tournId',
                     newValue ? (newValue as TournamentResponse).id.toString() : '',
