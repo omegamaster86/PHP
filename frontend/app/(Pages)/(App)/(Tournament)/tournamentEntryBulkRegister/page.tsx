@@ -270,14 +270,19 @@ export default function TournamentEntryBulkRegister() {
           }),
         );
         setTournamentList(TournamentsResponseList);
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          eventYear: tournamentResponse.data?.result[0]?.event_start_date.slice(0, 4),
+          tournName: tournamentResponse.data?.result[0]?.tourn_name,
+        }));
       }else{
         setTournamentList([]);
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          eventYear: '',
+          tournName: '',
+        }));
       }
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        eventYear: tournamentResponse.data?.result[0]?.event_start_date.slice(0, 4),
-        tournName: tournamentResponse.data?.result[0]?.tourn_name,
-      }));
       setDisplayFlg(false);
     } catch (error) {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
