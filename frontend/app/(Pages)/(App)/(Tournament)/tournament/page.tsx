@@ -1131,7 +1131,7 @@ export default function Tournaments() {
               readonly={mode === 'confirm'}
             />
             {/* その他選択時に表示のテキストボックス */}
-            <div className={`${row.race_class_id === '999' ? '' : 'hidden'} `}>
+            <div className={`${row.race_class_id == '999' ? 'visible' : 'hidden'} `}>
               <CustomTextField
                 label=''
                 isError={raceTypeNameErrorMessage.length > 0}
@@ -1604,7 +1604,7 @@ export default function Tournaments() {
                         <div className='flex flex-row gap-[8px] items-center'>
                           {row.race_class_name}
                           {/* レース区分名 */}
-                          <div className={`${row.race_class_id === '999' ? '' : 'hidden'} `}>
+                          <div className={`${row.race_class_id == '999' ? 'visible' : 'hidden'} `}>
                             {row.otherRaceName}
                           </div>
                         </div>
