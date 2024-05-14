@@ -153,7 +153,7 @@ Route::middleware('auth')->group(function () {
     Route::post('deleteTournamentData', [TournamentController::class, 'deleteTournamentData']); //DBから大会情報を削除する 20240205
     Route::post('tournamentSearch', [TournamentController::class, 'searchTournament']); //大会検索 20240212
     Route::get('getTournamentInfoData_allData', [TournamentController::class, 'getTournamentInfoData_allData']); //大会検索 20240212
-    Route::post('tournamentEntryYearSearch', [TournamentInfoAlignmentController::class, 'tournamentEntryYearSearch']); //大会エントリー一括登録 20240229 sendTournamentEntryCsvData
+    Route::post('tournamentEntryYearSearch', [TournamentInfoAlignmentController::class, 'tournamentEntryYearSearch']); //大会エントリー一括登録 20240229
     Route::post('sendTournamentEntryCsvData', [TournamentInfoAlignmentController::class, 'sendTournamentEntryCsvData']); //大会エントリー一括登録 読み込むボタン押下 20240301
     Route::post('registerTournamentEntryCsvData', [TournamentInfoAlignmentController::class, 'registerTournamentEntryCsvData']); //大会エントリー一括登録 登録ボタン押下 20240301
     Route::post('sendTournamentResultCsvData', [TournamentInfoAlignmentController::class, 'sendTournamentResultCsvData']); //大会結果一括 読み込むボタン押下 20240301

@@ -36,6 +36,7 @@ const CsvTable = ({
       row.loadingResult === '入力値不正項目あり' ||
       row.loadingResult === '無効データ' ||
       row.loadingResult === '不一致情報あり' ||
+      row.loadingResult === '登録情報と不一致あり' ||
       row.loadingResult === '記録情報あり' ||
       row.loadingResult === 'エントリー情報変更' ||
       row.loadingResult === '登録エラー（記録情報あり）'

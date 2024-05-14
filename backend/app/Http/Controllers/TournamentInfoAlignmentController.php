@@ -140,7 +140,7 @@ class TournamentInfoAlignmentController extends Controller
             if ($input_tourn_id != $inputData['csvDataList'][$rowIndex]['tournId']) {
                 Log::debug("選択されている大会の大会IDと一致していません.");
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
-                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
+                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
                 $inputData['csvDataList'][$rowIndex]['tournIdError'] = true;
                 continue;
             }
@@ -152,7 +152,7 @@ class TournamentInfoAlignmentController extends Controller
             if ($race_count != 1) {
                 Log::debug("「レーステーブル」から条件が全て一致するレース情報を検索し、1件のみ見つかることが不正.");
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
-                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
+                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
                 $inputData['csvDataList'][$rowIndex]['tournIdError'] = true;
                 $inputData['csvDataList'][$rowIndex]['eventIdError'] = true;
                 $inputData['csvDataList'][$rowIndex]['raceTypeIdError'] = true;
@@ -168,7 +168,7 @@ class TournamentInfoAlignmentController extends Controller
             //Log::debug("org_count = ".$org_count);
             if ($org_count != 1) {
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
-                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
+                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
                 $inputData['csvDataList'][$rowIndex]['orgIdError'] = true;
                 $inputData['csvDataList'][$rowIndex]['orgNameError'] = true;
                 continue;
@@ -181,7 +181,7 @@ class TournamentInfoAlignmentController extends Controller
             //Log::debug("seat_count = ".$seat_count);
             if ($seat_count != 1) {
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
-                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
+                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
                 $inputData['csvDataList'][$rowIndex]['mSheetNumberError'] = true;
                 $inputData['csvDataList'][$rowIndex]['sheetNameError'] = true;
                 continue;
@@ -194,7 +194,7 @@ class TournamentInfoAlignmentController extends Controller
             //Log::debug("player_count = ".$player_count);
             if ($player_count != 1) {
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
-                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
+                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
                 $inputData['csvDataList'][$rowIndex]['userIdError'] = true;
                 $inputData['csvDataList'][$rowIndex]['playerNameError'] = true;
                 continue; //不一致情報が存在する場合、以降の処理を実行しない 20240514
