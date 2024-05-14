@@ -261,7 +261,7 @@ export default function TournamentEntryBulkRegister() {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       const tournamentResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
-      console.log(tournamentResponse.data.result);
+      console.log(tournamentResponse.data);
       const TournamentsResponseList = tournamentResponse.data.result.map(
         ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
           id: tourn_id,
