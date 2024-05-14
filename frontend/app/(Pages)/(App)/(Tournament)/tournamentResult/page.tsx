@@ -827,7 +827,7 @@ export default function TournamentResult() {
         handleRaceResultRecordsInputChangebyIndex(
           index,
           'strokeRateErrorText',
-          '「ストロークレート」は、半角数字で入力してください。',
+          '「ストロークレート」は、半角数字で、99までの数字を入力してください。',
         );
       });
       return false;
