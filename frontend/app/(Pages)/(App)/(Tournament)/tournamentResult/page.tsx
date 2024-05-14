@@ -1524,12 +1524,9 @@ export default function TournamentResult() {
         );
         setRemarkOptions(raceResultNoteList);
 
-        // 種目に対応したシート位置（マスタ）の取得
+        // 種目に対応したシート位置（マスタ）の取得 20240514
         const response6 = await axios.post('/getEventSheetPosForEventID', sendData);
-        if(response6.data.result.length > 0){
-          console.log(response6.data.result[0]);
-        }
-
+       
         // シート番号（マスタ）の取得
         //const response6 = await axios.get('http://localhost:3100/seatNo');
         const response7 = await axios.get('/getSeatNumber');
@@ -1540,12 +1537,9 @@ export default function TournamentResult() {
             name: seat_name,
           }),
         );
-        console.log(response6.data.result[0].seat_2);
-        console.log(response6.data.result[0].seat_3);
-        console.log(response6.data.result[0].seat_4);
-        console.log(response6.data.result[0].seat_5);
-        console.log(seatNumberList);
-        const newArray = seatNumberList.filter((e:any) => {
+
+        // 種目に対応したシート位置になるように要素をフィルタする 20240514 
+        const newSeatNumberArray = seatNumberList.filter((e:any) => {
           if(e.name == "ストローク" && response6.data.result[0].seat_s == 1){
             return e;
           }
@@ -1574,8 +1568,8 @@ export default function TournamentResult() {
             return e;
           }
         });
-        console.log(newArray);
-        setSheetNameIdOptions(seatNumberList);
+        console.log(newSeatNumberArray);
+        setSheetNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする 20240514
       } catch (error: any) {
         setErrorText([error.message]);
       }
