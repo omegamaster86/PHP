@@ -321,7 +321,7 @@ export default function TournamentResult() {
   };
 
   /**
-   * レース結果情報の入力値をバリデーションする関数
+   * レース結果情報の入力値をバリデーションする関数 すべての元凶 20240514 324行目から1446行目まで
    * @returns
    */
   const validateRaceResultRecords = () => {
@@ -371,11 +371,11 @@ export default function TournamentResult() {
      * 入力値チェック
      * 整数3桁までの数値であることを確認
      * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「半角数字で入力してください。」
+     * 半角数字で、999までの数字を入力してください
      */
     const windSpeed = raceResultRecordResponse.wind_speed_1000m_point;
     if (windSpeed && !/^\d{1,3}$/.test(windSpeed.toString())) {
-      setErrorText(['半角数字で入力してください。']);
+      setErrorText(['半角数字で、999までの数字を入力してください。']);
       scrollTo(0, 0);
       return false;
     }
@@ -385,11 +385,11 @@ export default function TournamentResult() {
      * 入力値チェック
      * 整数3桁
      * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「半角数字で入力してください。」
+     * 半角数字で、999までの数字を入力してください
      */
     const windSpeed2 = raceResultRecordResponse.wind_speed_2000m_point;
     if (windSpeed2 && !/^\d{1,3}$/.test(windSpeed2.toString())) {
-      setErrorText(['半角数字で入力してください。']);
+      setErrorText(['半角数字で、999までの数字を入力してください。']);
       scrollTo(0, 0);
       return false;
     }
