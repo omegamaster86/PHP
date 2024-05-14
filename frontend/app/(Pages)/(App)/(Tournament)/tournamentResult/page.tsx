@@ -2918,10 +2918,10 @@ export default function TournamentResult() {
                 // 更新処理
                 router.push('/tournamentResult?mode=confirm&prevMode=update');
               } else if (mode === 'confirm') {
-                //登録・更新する前に選手名についている「*」を消す 20240422
+                //登録・更新する前に選手名についている「*」を消す 20240514
                 for (let index = 0; index < raceResultRecords.length; index++) {
                   for (let j = 0; j < raceResultRecords[index].crewPlayer.length; j++) {
-                    raceResultRecords[index].crewPlayer[j].playerName.replace('*', '');
+                    raceResultRecords[index].crewPlayer[j].playerName = raceResultRecords[index].crewPlayer[j].playerName.replace('*', '');
                   }
                 }
                 if (prevMode == 'create') {
