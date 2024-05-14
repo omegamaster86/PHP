@@ -262,13 +262,17 @@ export default function TournamentEntryBulkRegister() {
       await csrf();
       const tournamentResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
       console.log(tournamentResponse.data);
-      const TournamentsResponseList = tournamentResponse.data?.result?.map(
-        ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
-          id: tourn_id,
-          name: tourn_name,
-        }),
-      );
-      setTournamentList(TournamentsResponseList);
+      if(tournamentResponse.data.result.length > 0){
+        const TournamentsResponseList = tournamentResponse.data?.result?.map(
+          ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
+            id: tourn_id,
+            name: tourn_name,
+          }),
+        );
+        setTournamentList(TournamentsResponseList);
+      }else{
+        setTournamentList([]);
+      }
       setFormData((prevFormData) => ({
         ...prevFormData,
         eventYear: tournamentResponse.data?.result[0]?.event_start_date.slice(0, 4),
