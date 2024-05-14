@@ -459,7 +459,7 @@ export default function TournamentEntryBulkRegister() {
           const mSheetNumberError = checkRequired(row[14]);
           const sheetNameError = checkRequired(row[15]);
           const userIdError = checkRequired(row[16]);
-          const playerNameError =  checkRequired(row[17]);
+          const playerNameError = checkRequired(row[17]);
 
           const error =
             tournIdError ||
@@ -509,38 +509,38 @@ export default function TournamentEntryBulkRegister() {
           return {
             id: rowIndex,
             checked: false,
-            loadingResult: error ? '未入力項目あり' : (RangeError ? '入力値不正項目目あり' : ''),
+            loadingResult: error ? '未入力項目あり' : RangeError ? '入力値不正項目あり' : '',
             tournId: row[0],
-            tournIdError: tournIdError,
+            tournIdError: tournIdError || tournIdRangeError,
             tournName: row[1],
             eventId: row[2],
-            eventIdError: eventIdError,
+            eventIdError: eventIdError || eventIdRangeError,
             eventName: row[3],
             raceTypeId: row[4],
-            raceTypeIdError: raceTypeIdError,
+            raceTypeIdError: raceTypeIdError || raceTypeIdRangeError,
             raceTypeName: row[5],
             raceId: row[6],
-            raceIdError: raceIdError,
+            raceIdError: raceIdError || raceIdRangeError,
             raceName: row[7],
             byGroup: row[8],
-            byGroupError: byGroupError,
+            byGroupError: byGroupError || byGroupRangeError,
             raceNumber: row[9],
-            raceNumberError: raceNumberError,
+            raceNumberError: raceNumberError || raceNumberRangeError,
             startDatetime: row[10],
             orgId: row[11],
-            orgIdError: orgIdError,
+            orgIdError: orgIdError || orgIdRangeError,
             orgName: row[12],
-            orgNameError: orgNameError,
+            orgNameError: orgNameError || orgNameRangeError,
             crewName: row[13],
-            crewNameError: crewNameError,
+            crewNameError: crewNameError || crewNameRangeError,
             mSheetNumber: row[14],
-            mSheetNumberError: mSheetNumberError,
+            mSheetNumberError: mSheetNumberError || mSheetNumberRangeError,
             sheetName: row[15],
-            sheetNameError: sheetNameError,
+            sheetNameError: sheetNameError || sheetNameRangeError,
             userId: row[16],
-            userIdError: userIdError,
+            userIdError: userIdError || userIdRangeError,
             playerName: row[17],
-            playerNameError: playerNameError,
+            playerNameError: playerNameError || playerNameRangeError,
           };
         });
       var element = array as CsvData[];
