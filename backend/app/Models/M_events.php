@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class M_events extends Model
 {
@@ -45,6 +46,8 @@ class M_events extends Model
     //種目IDを条件に対象の種目に対応するシート位置を取得する 20240514
     public function getEventSheetPosForEventID($event_id)
     {
+        Log::debug("getEventSheetPosForEventID start");
+        Log::debug($event_id);
         $event = DB::select('select 
                                 `event_id`
                                 ,`event_name`
@@ -66,6 +69,7 @@ class M_events extends Model
                                 and `event_id` = ?
                                 order by display_order',[0,$event_id]
                             );
+        Log::debug($event);
         return $event;
     }
 }
