@@ -780,6 +780,7 @@ export default function TournamentResult() {
               (player.heartRateAvg !== undefined && player.heartRateAvg !== null) ||
               (player.attendance !== undefined && player.attendance !== null))
           ) {
+            console.log('dddddddddddddddddd');
             var errorTextData = '';
             if (!player.playerId) {
               errorTextData += '選手IDを入力してください。';
@@ -797,6 +798,7 @@ export default function TournamentResult() {
               errorTextData += 'シート番号を選択してください。';
             }
             if(errorTextData.length > 0){
+              console.log('kfgdgdgdgdgddddlllllllll');
               handleRaceResultRecordsCrewPlayerChangebyIndex(i,j,'errorText',errorTextData);
             }
           }
