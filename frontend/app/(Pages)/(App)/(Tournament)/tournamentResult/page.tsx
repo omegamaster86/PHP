@@ -506,7 +506,7 @@ export default function TournamentResult() {
       // clearError();
     }
 
-    //ラップタイム 空欄チェック
+    //ラップタイム 空欄チェック 入力値チェック
     raceResultRecords.some((record, index) => {
       // エラーに該当するレース結果情報のインデックスを取得する
       if (
@@ -521,121 +521,41 @@ export default function TournamentResult() {
           'laptimeErrorText',
           '「ラップタイム」は、500m～最終タイムまでの何れかにタイムを入力してください。',
         );
+      } else {
+        var lapTimeErrorText = '';
+        if (
+          record.laptime_500m &&
+          !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_500m.toString())
+        ) {
+          lapTimeErrorText += '「500mラップタイム」';
+        }
+        if (
+          record.laptime_1000m &&
+          !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_1000m.toString())
+        ) {
+          lapTimeErrorText += '「1000mラップタイム」';
+        }
+        if (
+          record.laptime_1500m &&
+          !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_1500m.toString())
+        ) {
+          lapTimeErrorText += '「1500mラップタイム」';
+        }
+        if (
+          record.laptime_2000m &&
+          !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_2000m.toString())
+        ) {
+          lapTimeErrorText += '「2000mラップタイム」';
+        }
+        if (record.final_time && !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.final_time.toString())) {
+          lapTimeErrorText += '「finalラップタイム」';
+        }
+        if (lapTimeErrorText.length > 0) {
+          lapTimeErrorText += 'は、半角数字で入力してください。MM:SS.99 例）3:05.89';
+          handleRaceResultRecordsInputChangebyIndex(index, 'laptimeErrorText', lapTimeErrorText);
+        }
       }
     });
-
-    //ラップタイム(500m) 入力値チェック
-    var indexList4 = [] as number[];
-    const lapTime2 = raceResultRecords.some((record, i) => {
-      if (record.laptime_500m && !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_500m.toString())) {
-        indexList4.push(i);
-      }
-      return record.laptime_500m && !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_500m.toString());
-    });
-    if (lapTime2) {
-      indexList4.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'laptimeErrorText',
-          '「500mラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89',
-        );
-      });
-      errorCount++;
-    }
-
-    //ラップタイム(1000m) 入力値チェック
-    var indexList5 = [] as number[];
-    const lapTime3 = raceResultRecords.some((record, i) => {
-      if (
-        record.laptime_1000m &&
-        !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_1000m.toString())
-      ) {
-        indexList5.push(i);
-      }
-      return (
-        record.laptime_1000m && !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_1000m.toString())
-      );
-    });
-    if (lapTime3) {
-      indexList5.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'laptimeErrorText',
-          '「1000mラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89',
-        );
-      });
-      errorCount++;
-    }
-
-    //ラップタイム(1500m) 入力値チェック
-    var indexList6 = [] as number[];
-    const lapTime4 = raceResultRecords.some((record, i) => {
-      // このページのみのバリデーションのため、ここにバリデーションロジックを記述
-      if (
-        record.laptime_1500m &&
-        !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_1500m.toString())
-      ) {
-        indexList6.push(i);
-      }
-      return (
-        record.laptime_1500m && !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_1500m.toString())
-      );
-    });
-    if (lapTime4) {
-      indexList6.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'laptimeErrorText',
-          '「1500mラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89',
-        );
-      });
-      errorCount++;
-    }
-
-    //ラップタイム(2000m) 入力値チェック
-    var indexList7 = [] as number[];
-    const lapTime5 = raceResultRecords.some((record, i) => {
-      // このページのみのバリデーションのため、ここにバリデーションロジックを記述
-      if (
-        record.laptime_2000m &&
-        !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_2000m.toString())
-      ) {
-        indexList7.push(i);
-      }
-      return (
-        record.laptime_2000m && !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_2000m.toString())
-      );
-    });
-    if (lapTime5) {
-      indexList7.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'laptimeErrorText',
-          '「2000mラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89',
-        );
-      });
-      errorCount++;
-    }
-
-    //ラップタイム(最終) 入力値チェック
-    var indexList8 = [] as number[];
-    const lapTime6 = raceResultRecords.some((record, i) => {
-      // このページのみのバリデーションのため、ここにバリデーションロジックを記述
-      if (record.final_time && !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.final_time.toString())) {
-        indexList8.push(i);
-      }
-      return record.final_time && !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.final_time.toString());
-    });
-    if (lapTime6) {
-      indexList8.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'laptimeErrorText',
-          '「finalラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89',
-        );
-      });
-      errorCount++;
-    }
 
     //ストロークレート 入力値チェック
     raceResultRecords.some((record, index) => {
@@ -718,7 +638,7 @@ export default function TournamentResult() {
             if (!player.height) {
               errorTextData += '身長を入力してください。';
             } else if (player.height && !/^\d{1,3}(\.\d{1,2})?$/.test(player?.height.toString())) {
-              errorTextData += '「身長」は、半角数字で、999.99までの数値を入力してください。'; 
+              errorTextData += '「身長」は、半角数字で、999.99までの数値を入力してください。';
             }
 
             //体重 空欄チェック 入力値チェック
@@ -731,7 +651,7 @@ export default function TournamentResult() {
             //シート番号 空欄チェック 重複チェック
             if (!player.sheetNameId) {
               errorTextData += 'シート番号を選択してください。';
-            }else if (player.sheetName) {
+            } else if (player.sheetName) {
               const seatNoList = record.crewPlayer?.map((player) => player.sheetName);
               // console.log(seatNoList);
               if (seatNoList.filter((item) => item === player.sheetName).length > 1) {
@@ -749,8 +669,7 @@ export default function TournamentResult() {
                 !/^\d{1,3}$/.test(player?.fifteenHundredmHeartRate.toString())) ||
               (player.twentyHundredmHeartRate &&
                 !/^\d{1,3}$/.test(player?.twentyHundredmHeartRate.toString())) ||
-              (player.heartRateAvg &&
-                !/^\d{1,3}$/.test(player?.heartRateAvg.toString()))
+              (player.heartRateAvg && !/^\d{1,3}$/.test(player?.heartRateAvg.toString()))
             ) {
               errorTextData += '「心拍数」は、半角数字で999までの数値を入力してください。';
             }
@@ -1164,7 +1083,7 @@ export default function TournamentResult() {
             }, []);
           }
         }
-      } catch (error: any) { }
+      } catch (error: any) {}
     };
     fetchRaceInfo();
   }, [raceInfo?.race_id]);
@@ -1525,8 +1444,9 @@ export default function TournamentResult() {
       {/* レース結果情報 */}
       {raceResultRecords.map((item, index) => (
         <div
-          className={`flex flex-col gap-[20px] border border-solid p-[20px] ${mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : ''
-            }`}
+          className={`flex flex-col gap-[20px] border border-solid p-[20px] ${
+            mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : ''
+          }`}
           key={index}
         >
           <InputLabel label={'レース結果情報' + (raceResultRecords.length - index)} />
@@ -1550,7 +1470,7 @@ export default function TournamentResult() {
                   id={'deleteFlg' + index}
                   value='deleteFlg'
                   checked={item.deleteFlg}
-                  onChange={() => { }}
+                  onChange={() => {}}
                   readonly={mode === 'confirm'}
                 />
                 <p className='text-systemErrorText'>このレース結果情報を削除する</p>
@@ -1791,8 +1711,9 @@ export default function TournamentResult() {
                             renderInput={(params) => (
                               <TextField
                                 key={params.id}
-                                className={`border-[1px] border-solid border-gray-50 rounded-md ${mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : 'bg-white'
-                                  } my-1`}
+                                className={`border-[1px] border-solid border-gray-50 rounded-md ${
+                                  mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : 'bg-white'
+                                } my-1`}
                                 {...params}
                                 value={item.race_result_notes || ''}
                               />
