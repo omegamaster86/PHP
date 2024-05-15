@@ -2692,6 +2692,7 @@ export default function TournamentResult() {
             }
             console.log(errorCount);
             if (errorCount == 0) {
+              clearError(); //エラーメッセージのクリア
               if (mode === 'create') {
                 // 登録処理
                 // 同画面にconfirmモードで遷移
