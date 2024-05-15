@@ -449,8 +449,6 @@ export default function TournamentResult() {
         );
       });
       errorCount++;
-    } else {
-      // clearError();
     }
 
     //出漕レーンNo 重複チェック
@@ -479,8 +477,6 @@ export default function TournamentResult() {
         );
       });
       errorCount++;
-    } else {
-      // clearError();
     }
 
     //順位 重複チェック
@@ -502,8 +498,6 @@ export default function TournamentResult() {
         handleRaceResultRecordsInputChangebyIndex(index, 'errorText', '順位が重複しています。');
       });
       errorCount++;
-    } else {
-      // clearError();
     }
 
     //ラップタイム 空欄チェック 入力値チェック
@@ -2185,12 +2179,7 @@ export default function TournamentResult() {
         <CustomButton
           buttonType='primary'
           onClick={async () => {
-            /**
-             * 各「レース結果情報入力」.「選手情報一覧」.「削除」にて、全ての選手がチェック状態の「レース結果情報」が存在する場合、
-             * 以下のメッセージをポップアップ表示する。
-             * 全ての選手が削除対象となっている「レース結果情報」があります。
-             * 当該「レース結果情報」は、削除されますがよろしいですか？
-             */
+            //ポップアップダイアログ
             const isAllPlayerChecked = raceResultRecords.some(
               (item) => item.crewPlayer?.every((player) => player.deleteFlg),
             );
@@ -2200,11 +2189,16 @@ export default function TournamentResult() {
                 '全ての選手が削除対象となっている「レース結果情報」があります。当該「レース結果情報」は、削除されますがよろしいですか？',
               );
               if (!isOK) {
-                return;
+                return; //キャンセルが押された場合、以降の処理を行わない 20240515
               }
+              // setRaceResultRecords(
+              //   raceResultRecords.filter(
+              //     (item) => !item.crewPlayer?.every((player) => player.deleteFlg),
+              //   ),
+              // );
               setRaceResultRecords(
                 raceResultRecords.filter(
-                  (item) => !item.crewPlayer?.every((player) => player.deleteFlg),
+                  (item) => console.log(item),
                 ),
               );
             }
