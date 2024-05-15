@@ -806,31 +806,31 @@ export default function TournamentResult() {
             var errorTextData = '';
             //選手ID
             if (!player.playerId) {
-              errorTextData += '選手IDを入力してください。';
+              errorTextData += '選手IDを入力してください。'+'\n';
             }
 
             //選手名
             if (!player.playerName) {
-              errorTextData += '選手名を入力してください。';
+              errorTextData += '選手名を入力してください。'+'\n';
             }
 
             //身長
             if (!player.height) {
-              errorTextData += '身長を入力してください。';
+              errorTextData += '身長を入力してください。'+'\n';
             } else if (player.height && !/^\d{1,3}(\.\d{1,2})?$/.test(player?.height.toString())) {
-              errorTextData += '「身長」は、半角数字で、999.99までの数値を入力してください。';
+              errorTextData += '「身長」は、半角数字で、999.99までの数値を入力してください。'+'\n';
             }
 
             //体重
             if (!player.weight) {
-              errorTextData += '体重を入力してください。';
+              errorTextData += '体重を入力してください。'+'\n';
             } else if (player.weight && !/^\d{1,3}(\.\d{1,2})?$/.test(player?.weight.toString())) {
-              errorTextData += '「体重」は、半角数字で、999.99までの数値を入力してください。';
+              errorTextData += '「体重」は、半角数字で、999.99までの数値を入力してください。'+'\n';
             }
 
             //シート番号
             if (!player.sheetNameId) {
-              errorTextData += 'シート番号を選択してください。';
+              errorTextData += 'シート番号を選択してください。'+'\n';
             }
 
             //バリデーション結果の表示
