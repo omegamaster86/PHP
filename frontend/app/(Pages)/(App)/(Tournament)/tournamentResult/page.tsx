@@ -759,6 +759,60 @@ export default function TournamentResult() {
     //=============================================================
     //選手単位の内容　ここから
 
+    //空欄チェック
+    raceResultRecords.map((record, i) => {
+      record.crewPlayer?.map((player, j) => {
+        // 追加行の場合 削除フラグが未チェックかつ、playerの何れかの項目に値が入っている場合に実施
+        if (player.addonLineFlg) {
+          if (
+            !player.deleteFlg &&
+            ((player.weight !== undefined && player.weight !== null) ||
+              (player.playerId !== undefined && player.playerId !== null) ||
+              (player.playerName !== undefined && player.playerName !== null) ||
+              (player.sheetName !== undefined && player.sheetName !== null) ||
+              (player.fiveHundredmHeartRate !== undefined &&
+                player.fiveHundredmHeartRate !== null) ||
+              (player.tenHundredmHeartRate !== undefined && player.tenHundredmHeartRate !== null) ||
+              (player.fifteenHundredmHeartRate !== undefined &&
+                player.fifteenHundredmHeartRate !== null) ||
+              (player.twentyHundredmHeartRate !== undefined &&
+                player.twentyHundredmHeartRate !== null) ||
+              (player.heartRateAvg !== undefined && player.heartRateAvg !== null) ||
+              (player.attendance !== undefined && player.attendance !== null))
+          ) {
+            var errorTextData = '';
+            if (!player.playerId) {
+              errorTextData += '選手IDを入力してください。';
+            }
+            if (!player.playerName) {
+              errorTextData += '選手名を入力してください。';
+            }
+            if (!player.height) {
+              errorTextData += '身長を入力してください。';
+            }
+            if (!player.weight) {
+              errorTextData += '体重を入力してください。';
+            }
+            if (!player.sheetNameId) {
+              errorTextData += 'シート番号を選択してください。';
+            }
+            if(errorTextData.length > 0){
+              handleRaceResultRecordsCrewPlayerChangebyIndex(i,j,'errorText',errorTextData);
+            }
+          }
+        } else {
+          // 更新行の場合 削除フラグが未チェックの場合のみ実施
+          if (!player.deleteFlg) {
+            if (!player.height) {
+            }
+            if (!player.weight) {
+            }
+          }
+        }
+      });
+    });
+
+
     /**
      * 身長
      * ・当該行が追加行の場合
