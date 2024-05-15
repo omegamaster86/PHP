@@ -573,6 +573,8 @@ export default function TournamentResult() {
     //=============================================================
     //選手単位の内容　ここから
 
+    console.log("gggggggggghhhhhhhhhhhhhh");
+
     //空欄チェック
     raceResultRecords.map((record, i) => {
       record.crewPlayer?.map((player, j) => {
@@ -2196,10 +2198,13 @@ export default function TournamentResult() {
               //     (item) => !item.crewPlayer?.every((player) => player.deleteFlg),
               //   ),
               // );
+
+              //crewPlayerが無くて異常終了する不具合の調査中 20240515
               setRaceResultRecords(
                 raceResultRecords.filter(
                   (item) => console.log(item),
                 ),
+
               );
             }
 
