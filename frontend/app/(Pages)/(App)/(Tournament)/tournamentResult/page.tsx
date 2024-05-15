@@ -1155,21 +1155,28 @@ export default function TournamentResult() {
       errorCount++;
     }
 
-    /**
-     * 「選手情報」に種目の人数分、登録可能な行が存在することを確認
-     * ※登録可能な行：「削除」が未チェック、かつエラー行ではない。
-     * ※種目の人数：当該種目の人数を「種目マスター」.「人数」から取得する
-     * エラーの場合、以下のエラーメッセージをシステムエラーとしてに赤文字で表示し、以降の処理は行わない。
-     * ※表示場所は、選手IDを入力した「選手情報一覧」と「ストロークレート」の間の余白
-     */
+    //種目の人数分、登録可能な行が存在することを確認する
     var playerCountErrorList = [] as number[];
     const playerNum = raceResultRecords.some((record, i) => {
       var count = 0;
       record.crewPlayer?.map((player, j) => {
         // console.log(playerCount,count, player.deleteFlg, player.errorText);
+        //「登録可能」行の条件判定 （削除チェックなし、選手ID、選手名、身長、体重、シート名）
         if (
           !player.deleteFlg &&
-          (player.errorText == '' || player.errorText == null || player.errorText == undefined)
+          player.playerId != ''  &&
+          player.playerId != null &&
+          player.playerId != undefined &&
+          player.playerName != ''  &&
+          player.playerName != null &&
+          player.playerName != undefined &&
+          player.height != null &&
+          player.height != undefined &&
+          player.weight != null &&
+          player.weight != undefined &&
+          player.sheetName != ''  &&
+          player.sheetName != null &&
+          player.sheetName != undefined
         ) {
           count++;
         }
