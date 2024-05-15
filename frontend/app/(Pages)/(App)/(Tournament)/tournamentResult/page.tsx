@@ -387,13 +387,24 @@ export default function TournamentResult() {
       }else{
         raceResultRecords[index].orgNameErrorText = '';
       }
+
       //クルー名バリデーション
       if (!raceResultRecords[index].crew_name) {
         raceResultRecords[index].crewNameErrorText = 'クルー名を入力してください。';
       }else{
         raceResultRecords[index].crewNameErrorText = '';
       }
-      //順位エラーメッセージ
+
+      //レーンNo.バリデーション
+      if (raceResultRecords[index].lane_number && 
+        !/^\d{1,2}$/.test(raceResultRecords[index]?.lane_number.toString())) {
+        raceResultRecords[index].laneNumberErrorText =
+          '出漕レーンNoは半角数字で、99までの数値を入力してください。';
+      }else{
+        raceResultRecords[index].laneNumberErrorText = '';
+      }
+
+      //順位バリデーション
       if (!raceResultRecords[index].rank) {
         raceResultRecords[index].rankErrorText =
           '順位は半角数字で、99までの数値を入力してください。';
