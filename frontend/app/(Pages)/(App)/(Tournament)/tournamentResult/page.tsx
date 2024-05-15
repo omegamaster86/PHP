@@ -747,6 +747,11 @@ export default function TournamentResult() {
       errorCount++;
     }
 
+    //クルー単位の内容　ここまで
+    //=============================================================
+    //=============================================================
+    //選手単位の内容　ここから
+
     /**
      * 身長
      * ・当該行が追加行の場合
@@ -1203,6 +1208,9 @@ export default function TournamentResult() {
 
     return errorCount;
   };
+
+  //バリデーションここまで
+  //================================================================
 
   useEffect(() => {
     /**
@@ -2679,6 +2687,7 @@ export default function TournamentResult() {
 
             var errorCount = 0;
             if (mode == 'create' || mode == 'update') {
+              clearError(); //エラーメッセージのクリア
               errorCount = validateRaceResultRecords(); // バリデーション
             }
             console.log(errorCount);
