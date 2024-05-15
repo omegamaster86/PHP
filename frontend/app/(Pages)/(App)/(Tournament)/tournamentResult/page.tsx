@@ -359,14 +359,16 @@ export default function TournamentResult() {
     //1000m地点風速 入力値チェック
     const windSpeed = raceResultRecordResponse.wind_speed_1000m_point;
     if (windSpeed && !/^\d{1,3}$/.test(windSpeed.toString())) {
-      setErrorText(['半角数字で、999までの数字を入力してください。']);
+      // setErrorText(['半角数字で、999までの数字を入力してください。']);
+      setWindSpeed1000mPointErrorText('半角数字で、999までの数字を入力してください。');
       scrollTo(0, 0);
       errorCount++;
     }
     //2000m地点風速 入力値チェック
     const windSpeed2 = raceResultRecordResponse.wind_speed_2000m_point;
     if (windSpeed2 && !/^\d{1,3}$/.test(windSpeed2.toString())) {
-      setErrorText(['半角数字で、999までの数字を入力してください。']);
+      // setErrorText(['半角数字で、999までの数字を入力してください。']);
+      setWindSpeed2000mPointErrorText('半角数字で、999までの数字を入力してください。');
       scrollTo(0, 0);
       errorCount++;
     }
@@ -1886,6 +1888,8 @@ export default function TournamentResult() {
                 handleRaceResultRecordInputChange('wind_speed_1000m_point', e.target.value);
               }}
               readonly={mode === 'confirm'}
+              isError={windSpeed1000mPointErrorText !== ''}
+              errorMessages={[windSpeed1000mPointErrorText]}
             />
           </div>
           <div className='flex flex-row justify-left gap-[80px] item-center'>
@@ -1923,6 +1927,8 @@ export default function TournamentResult() {
                 handleRaceResultRecordInputChange('wind_speed_2000m_point', e.target.value);
               }}
               readonly={mode === 'confirm'}
+              isError={windSpeed2000mPointErrorText !== ''}
+              errorMessages={[windSpeed2000mPointErrorText]}
             />
           </div>
         </div>
