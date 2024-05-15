@@ -323,6 +323,11 @@ export default function TournamentResult() {
     });
     // システムエラーメッセージをクリア
     setErrorText([]);
+    setRaceIdErrorText('');
+    setRaceNameErrorText('');
+    setStartDateTimeErrorText('');
+    setWindSpeed1000mPointErrorText('');
+    setWindSpeed2000mPointErrorText('');
   };
 
   /**
