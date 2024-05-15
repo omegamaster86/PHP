@@ -804,33 +804,55 @@ export default function TournamentResult() {
           // 更新行の場合 削除フラグが未チェックの場合のみ実施
           if (!player.deleteFlg) {
             var errorTextData = '';
-            //選手ID
+            //選手ID 空欄チェック
             if (!player.playerId) {
-              errorTextData += '選手IDを入力してください。'+'\n';
+              errorTextData += '選手IDを入力してください。';
             }
 
-            //選手名
+            //選手名 空欄チェック
             if (!player.playerName) {
-              errorTextData += '選手名を入力してください。'+'\n';
+              errorTextData += '選手名を入力してください。';
             }
 
-            //身長
+            //身長 空欄チェック 入力値チェック
             if (!player.height) {
-              errorTextData += '身長を入力してください。'+'\n';
+              errorTextData += '身長を入力してください。';
             } else if (player.height && !/^\d{1,3}(\.\d{1,2})?$/.test(player?.height.toString())) {
-              errorTextData += '「身長」は、半角数字で、999.99までの数値を入力してください。'+'\n';
+              errorTextData += '「身長」は、半角数字で、999.99までの数値を入力してください。'; 
             }
 
-            //体重
+            //体重 空欄チェック 入力値チェック
             if (!player.weight) {
-              errorTextData += '体重を入力してください。'+'\n';
+              errorTextData += '体重を入力してください。';
             } else if (player.weight && !/^\d{1,3}(\.\d{1,2})?$/.test(player?.weight.toString())) {
-              errorTextData += '「体重」は、半角数字で、999.99までの数値を入力してください。'+'\n';
+              errorTextData += '「体重」は、半角数字で、999.99までの数値を入力してください。';
             }
 
-            //シート番号
+            //シート番号 空欄チェック 重複チェック
             if (!player.sheetNameId) {
-              errorTextData += 'シート番号を選択してください。'+'\n';
+              errorTextData += 'シート番号を選択してください。';
+            }else if (player.sheetName) {
+              const seatNoList = record.crewPlayer?.map((player) => player.sheetName);
+              // console.log(seatNoList);
+              if (seatNoList.filter((item) => item === player.sheetName).length > 1) {
+                errorTextData += 'シート番号が重複しています。';
+              }
+            }
+
+            //心拍数 入力値チェック
+            if (
+              (player.fiveHundredmHeartRate &&
+                !/^\d{1,3}$/.test(player?.fiveHundredmHeartRate.toString())) ||
+              (player.tenHundredmHeartRate &&
+                !/^\d{1,3}$/.test(player?.tenHundredmHeartRate.toString())) ||
+              (player.fifteenHundredmHeartRate &&
+                !/^\d{1,3}$/.test(player?.fifteenHundredmHeartRate.toString())) ||
+              (player.twentyHundredmHeartRate &&
+                !/^\d{1,3}$/.test(player?.twentyHundredmHeartRate.toString())) ||
+              (player.heartRateAvg &&
+                !/^\d{1,3}$/.test(player?.heartRateAvg.toString()))
+            ) {
+              errorTextData += '「心拍数」は、半角数字で999までの数値を入力してください。';
             }
 
             //バリデーション結果の表示
@@ -841,167 +863,6 @@ export default function TournamentResult() {
         }
       });
     });
-
-    //シート番号 入力値チェック
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList6 = [] as { i: number; j: number }[];
-    const seatNo2 = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        // 追加行と更新行の場合で処理をわけない
-        if (player.sheetName) {
-          // const seatNoList = raceResultRecords
-          //   .map((record) => record.crewPlayer?.map((player) => player.sheetName))
-          //   .flat();
-          const seatNoList = record.crewPlayer?.map((player) => player.sheetName);
-          // console.log(seatNoList);
-          if (seatNoList.filter((item) => item === player.sheetName).length > 1) {
-            indexObjectList6.push({ i, j });
-          }
-        }
-      });
-      console.log(record);
-      console.log(indexObjectList6);
-      return indexObjectList6.length > 0;
-    });
-    console.log(seatNo2);
-    if (seatNo2) {
-      indexObjectList6.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          'シート番号が重複しています。',
-        );
-      });
-      errorCount++;
-    }
-
-    //心拍数（500m）入力値チェック
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList7 = [] as { i: number; j: number }[];
-    const heartRate = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        if (
-          player.fiveHundredmHeartRate &&
-          !/^\d{1,3}$/.test(player?.fiveHundredmHeartRate.toString())
-        ) {
-          indexObjectList7.push({ i, j });
-        }
-      });
-      return indexObjectList7.length > 0;
-    });
-    if (heartRate) {
-      indexObjectList7.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '「心拍数」は、半角数字で999までの数値を入力してください。',
-        );
-      });
-      errorCount++;
-    }
-
-    //心拍数（1000m）入力値チェック
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList8 = [] as { i: number; j: number }[];
-    const heartRate2 = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        if (
-          player.tenHundredmHeartRate &&
-          !/^\d{1,3}$/.test(player?.tenHundredmHeartRate.toString())
-        ) {
-          indexObjectList8.push({ i, j });
-        }
-      });
-      return indexObjectList8.length > 0;
-    });
-    if (heartRate2) {
-      indexObjectList8.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '「心拍数」は、半角数字で999までの数値を入力してください。',
-        );
-      });
-      errorCount++;
-    }
-
-    //心拍数（1500m） 入力値チェック
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList9 = [] as { i: number; j: number }[];
-    const heartRate3 = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        if (
-          player.fifteenHundredmHeartRate &&
-          !/^\d{1,3}$/.test(player?.fifteenHundredmHeartRate.toString())
-        ) {
-          indexObjectList9.push({ i, j });
-        }
-      });
-      return indexObjectList9.length > 0;
-    });
-    if (heartRate3) {
-      indexObjectList9.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '「心拍数」は、半角数字で999までの数値を入力してください。',
-        );
-      });
-      errorCount++;
-    }
-
-    //心拍数（2000m） 入力値チェック
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList10 = [] as { i: number; j: number }[];
-    const heartRate4 = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        if (
-          player.twentyHundredmHeartRate &&
-          !/^\d{1,3}$/.test(player?.twentyHundredmHeartRate.toString())
-        ) {
-          indexObjectList10.push({ i, j });
-        }
-      });
-      return indexObjectList10.length > 0;
-    });
-    if (heartRate4) {
-      indexObjectList10.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '「心拍数」は、半角数字で999までの数値を入力してください。',
-        );
-      });
-      errorCount++;
-    }
-
-    //心拍数（平均）入力値チェック
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList11 = [] as { i: number; j: number }[];
-    const heartRate5 = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        if (player.heartRateAvg && !/^\d{1,3}$/.test(player?.heartRateAvg.toString())) {
-          indexObjectList11.push({ i, j });
-        }
-      });
-      return indexObjectList11.length > 0;
-    });
-    if (heartRate5) {
-      indexObjectList11.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '「心拍数」は、半角数字で999までの数値を入力してください。',
-        );
-      });
-      errorCount++;
-    }
 
     //種目の人数分、登録可能な行が存在することを確認する
     var playerCountErrorList = [] as number[];
@@ -1403,7 +1264,7 @@ export default function TournamentResult() {
             }, []);
           }
         }
-      } catch (error: any) {}
+      } catch (error: any) { }
     };
     fetchRaceInfo();
   }, [raceInfo?.race_id]);
@@ -1764,9 +1625,8 @@ export default function TournamentResult() {
       {/* レース結果情報 */}
       {raceResultRecords.map((item, index) => (
         <div
-          className={`flex flex-col gap-[20px] border border-solid p-[20px] ${
-            mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : ''
-          }`}
+          className={`flex flex-col gap-[20px] border border-solid p-[20px] ${mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : ''
+            }`}
           key={index}
         >
           <InputLabel label={'レース結果情報' + (raceResultRecords.length - index)} />
@@ -1790,7 +1650,7 @@ export default function TournamentResult() {
                   id={'deleteFlg' + index}
                   value='deleteFlg'
                   checked={item.deleteFlg}
-                  onChange={() => {}}
+                  onChange={() => { }}
                   readonly={mode === 'confirm'}
                 />
                 <p className='text-systemErrorText'>このレース結果情報を削除する</p>
@@ -2031,9 +1891,8 @@ export default function TournamentResult() {
                             renderInput={(params) => (
                               <TextField
                                 key={params.id}
-                                className={`border-[1px] border-solid border-gray-50 rounded-md ${
-                                  mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : 'bg-white'
-                                } my-1`}
+                                className={`border-[1px] border-solid border-gray-50 rounded-md ${mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : 'bg-white'
+                                  } my-1`}
                                 {...params}
                                 value={item.race_result_notes || ''}
                               />
