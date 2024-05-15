@@ -389,36 +389,38 @@ export default function TournamentResult() {
       //所属団体 空欄チェック
       if (!raceResultRecords[index].org_id) {
         raceResultRecords[index].orgNameErrorText = '所属団体を選択してください。';
-      }else{
+      } else {
         raceResultRecords[index].orgNameErrorText = '';
       }
 
       //クルー名　空欄チェック
       if (!raceResultRecords[index].crew_name) {
         raceResultRecords[index].crewNameErrorText = 'クルー名を入力してください。';
-      }else{
+      } else {
         raceResultRecords[index].crewNameErrorText = '';
       }
 
       //出漕レーンNo 入力値チェック
-      if (raceResultRecords[index].lane_number && 
-        !/^\d{1,2}$/.test(raceResultRecords[index]?.lane_number.toString())) {
+      if (
+        raceResultRecords[index].lane_number &&
+        !/^\d{1,2}$/.test(raceResultRecords[index]?.lane_number.toString())
+      ) {
         raceResultRecords[index].laneNumberErrorText =
           '出漕レーンNoは半角数字で、99までの数値を入力してください。';
-      }else{
+      } else {
         raceResultRecords[index].laneNumberErrorText = '';
       }
 
       //順位 空欄チェック 入力値チェック
       if (!raceResultRecords[index].rank) {
         raceResultRecords[index].rankErrorText = '順位を入力してください';
-      }
-      else if(raceResultRecords[index].rank && 
-        !/^\d{1,2}$/.test(raceResultRecords[index]?.rank.toString())){
-          raceResultRecords[index].rankErrorText = 
+      } else if (
+        raceResultRecords[index].rank &&
+        !/^\d{1,2}$/.test(raceResultRecords[index]?.rank.toString())
+      ) {
+        raceResultRecords[index].rankErrorText =
           '順位は半角数字で、99までの数値を入力してください。';
-      }
-      else{
+      } else {
         raceResultRecords[index].rankErrorText = '';
       }
     }
@@ -1172,8 +1174,8 @@ export default function TournamentResult() {
           count++;
         }
       });
-      console.log("yyyyyyyyyyyyy");
-      console.log(count,playerCount);
+      console.log('yyyyyyyyyyyyy');
+      console.log(count, playerCount);
       if (count != playerCount) {
         playerCountErrorList.push(i);
       }
@@ -2442,7 +2444,9 @@ export default function TournamentResult() {
                               e.target.value,
                             );
                           }}
-                          readonly={mode === 'confirm'}
+                          readonly={
+                            (mode == 'update' && player.addonLineFlg != true) || mode === 'confirm'
+                          }
                         />
                       </CustomTd>
                       <CustomTd>
@@ -2456,7 +2460,9 @@ export default function TournamentResult() {
                               e.target.value,
                             );
                           }}
-                          readonly={mode === 'confirm'}
+                          readonly={
+                            (mode == 'update' && player.addonLineFlg != true) || mode === 'confirm'
+                          }
                         />
                       </CustomTd>
                       <CustomTd>
