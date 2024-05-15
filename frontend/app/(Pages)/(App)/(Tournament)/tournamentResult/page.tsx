@@ -507,39 +507,22 @@ export default function TournamentResult() {
     }
 
     //ラップタイム 空欄チェック
-    var laptimeErrorList = [] as number[];
-    // チェックして、エラーに該当するレース結果情報のインデックスを取得する
-    const isLaptimeError = raceResultRecords.some((record, i) => {
+    raceResultRecords.some((record, index) => {
       // エラーに該当するレース結果情報のインデックスを取得する
       if (
         !record.laptime_500m &&
         !record.laptime_1000m &&
         !record.laptime_1500m &&
         !record.laptime_2000m &&
-        //!record.twentyHundredmLaptime &&
         !record.final_time
       ) {
-        laptimeErrorList.push(i);
-      }
-      return (
-        !record.laptime_500m &&
-        !record.laptime_1000m &&
-        !record.laptime_1500m &&
-        !record.laptime_2000m &&
-        //!record.twentyHundredmLaptime &&
-        !record.final_time
-      );
-    });
-    if (isLaptimeError) {
-      laptimeErrorList.map((index) => {
         handleRaceResultRecordsInputChangebyIndex(
           index,
           'laptimeErrorText',
           '「ラップタイム」は、500m～最終タイムまでの何れかにタイムを入力してください。',
         );
-      });
-      errorCount++;
-    }
+      }
+    });
 
     //ラップタイム(500m) 入力値チェック
     var indexList4 = [] as number[];
@@ -655,104 +638,21 @@ export default function TournamentResult() {
     }
 
     //ストロークレート 入力値チェック
-    var indexList9 = [] as number[];
-    const strokeRate = raceResultRecords.some((record, i) => {
-      // このページのみのバリデーションのため、ここにバリデーションロジックを記述
-      if (record.stroke_rat_500m && !/^\d{1,2}$/.test(record?.stroke_rat_500m.toString())) {
-        indexList9.push(i);
-      }
-      return record.stroke_rat_500m && !/^\d{1,2}$/.test(record?.stroke_rat_500m.toString());
-    });
-    if (strokeRate) {
-      indexList9.map((index) => {
+    raceResultRecords.some((record, index) => {
+      if (
+        (record.stroke_rat_500m && !/^\d{1,2}$/.test(record?.stroke_rat_500m.toString())) ||
+        (record.stroke_rat_1000m && !/^\d{1,2}$/.test(record?.stroke_rat_1000m.toString())) ||
+        (record.stroke_rat_1500m && !/^\d{1,2}$/.test(record?.stroke_rat_1500m.toString())) ||
+        (record.stroke_rat_2000m && !/^\d{1,2}$/.test(record?.stroke_rat_2000m.toString())) ||
+        (record.stroke_rate_avg && !/^\d{1,2}$/.test(record?.stroke_rate_avg.toString()))
+      ) {
         handleRaceResultRecordsInputChangebyIndex(
           index,
           'strokeRateErrorText',
           '「ストロークレート」は、半角数字で、99までの数字を入力してください。',
         );
-      });
-      errorCount++;
-    }
-
-    // ストロークレート（1000m） 入力値チェック
-    var indexList10 = [] as number[];
-    const strokeRate2 = raceResultRecords.some((record, i) => {
-      // このページのみのバリデーションのため、ここにバリデーションロジックを記述
-      if (record.stroke_rat_1000m && !/^\d{1,2}$/.test(record?.stroke_rat_1000m.toString())) {
-        indexList10.push(i);
       }
-      return record.stroke_rat_1000m && !/^\d{1,2}$/.test(record?.stroke_rat_1000m.toString());
     });
-    if (strokeRate2) {
-      indexList10.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'strokeRateErrorText',
-          '「ストロークレート」は、半角数字で入力してください。',
-        );
-      });
-      errorCount++;
-    }
-
-    //ストロークレート（1500m）入力値チェック
-    var indexList11 = [] as number[];
-    const strokeRate3 = raceResultRecords.some((record, i) => {
-      // このページのみのバリデーションのため、ここにバリデーションロジックを記述
-      if (record.stroke_rat_1500m && !/^\d{1,2}$/.test(record?.stroke_rat_1500m.toString())) {
-        indexList11.push(i);
-      }
-      return record.stroke_rat_1500m && !/^\d{1,2}$/.test(record?.stroke_rat_1500m.toString());
-    });
-    if (strokeRate3) {
-      indexList11.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'strokeRateErrorText',
-          '「ストロークレート」は、半角数字で入力してください。',
-        );
-      });
-      errorCount++;
-    }
-
-    //ストロークレート（2000m）入力値チェック
-    var indexList12 = [] as number[];
-    const strokeRate4 = raceResultRecords.some((record, i) => {
-      // このページのみのバリデーションのため、ここにバリデーションロジックを記述
-      if (record.stroke_rat_2000m && !/^\d{1,2}$/.test(record?.stroke_rat_2000m.toString())) {
-        indexList12.push(i);
-      }
-      return record.stroke_rat_2000m && !/^\d{1,2}$/.test(record?.stroke_rat_2000m.toString());
-    });
-    if (strokeRate4) {
-      indexList12.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'strokeRateErrorText',
-          '「ストロークレート」は、半角数字で入力してください。',
-        );
-      });
-      errorCount++;
-    }
-
-    //ストロークレート（最終）入力値チェック
-    var indexList13 = [] as number[];
-    const strokeRate5 = raceResultRecords.some((record, i) => {
-      // このページのみのバリデーションのため、ここにバリデーションロジックを記述
-      if (record.stroke_rate_avg && !/^\d{1,2}$/.test(record?.stroke_rate_avg.toString())) {
-        indexList13.push(i);
-      }
-      return record.stroke_rate_avg && !/^\d{1,2}$/.test(record?.stroke_rate_avg.toString());
-    });
-    if (strokeRate5) {
-      indexList13.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'strokeRateErrorText',
-          '「ストロークレート」は、半角数字で入力してください。',
-        );
-      });
-      errorCount++;
-    }
 
     //クルー単位の内容　ここまで
     //=============================================================
