@@ -39,7 +39,11 @@ export default function TournamentResult() {
 
   // ステート変数
   const [errorText, setErrorText] = useState([] as string[]);
-  const [startDateTimeErrorText, setStartDateTimeErrorText] = useState('');
+  const [raceIdErrorText, setRaceIdErrorText] = useState(''); //レースID
+  const [raceNameErrorText, setRaceNameErrorText] = useState(''); //レース名
+  const [startDateTimeErrorText, setStartDateTimeErrorText] = useState(''); //発艇日時
+  const [windSpeed1000mPointErrorText, setWindSpeed1000mPointErrorText] = useState(''); //1000m地点風速
+  const [windSpeed2000mPointErrorText, setWindSpeed2000mPointErrorText] = useState(''); //2000m地点風速
 
   // レース名（マスタ）の設定
   const [raceNameOptions, setRaceNameOptions] = useState<MasterResponse[]>([]);
@@ -329,14 +333,16 @@ export default function TournamentResult() {
     //レースID　必須チェック
     const raceId = Validator.validateRequired(raceInfo?.race_id, 'レースID');
     if (raceId) {
-      setErrorText([raceId]);
+      // setErrorText([raceId]);
+      setRaceIdErrorText(raceId);
       scrollTo(0, 0);
       errorCount++;
     }
     //レース名　必須チェック
     const raceName = Validator.validateRequired(raceInfo?.race_name, 'レース名');
     if (raceName) {
-      setErrorText([raceName]);
+      // setErrorText([raceName]);
+      setRaceNameErrorText(raceName);
       scrollTo(0, 0);
       errorCount++;
     }
@@ -1659,6 +1665,8 @@ export default function TournamentResult() {
                     }
                   }}
                   readonly={mode === 'update' || mode === 'confirm'}
+                  isError={raceIdErrorText !== ''}
+                  errorMessages={[raceIdErrorText]} //レースIDのエラーメッセージを表示 20240515
                 />
               </div>
               <div className='flex flex-col gap-[8px]'>
