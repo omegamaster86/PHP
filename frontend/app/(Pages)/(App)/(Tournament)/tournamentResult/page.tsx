@@ -780,7 +780,6 @@ export default function TournamentResult() {
               (player.heartRateAvg !== undefined && player.heartRateAvg !== null) ||
               (player.attendance !== undefined && player.attendance !== null))
           ) {
-            console.log('dddddddddddddddddd');
             var errorTextData = '';
             if (!player.playerId) {
               errorTextData += '選手IDを入力してください。';
@@ -797,153 +796,51 @@ export default function TournamentResult() {
             if (!player.sheetNameId) {
               errorTextData += 'シート番号を選択してください。';
             }
-            if(errorTextData.length > 0){
-              console.log('kfgdgdgdgdgddddlllllllll');
-              handleRaceResultRecordsCrewPlayerChangebyIndex(i,j,'errorText',errorTextData);
+            if (errorTextData.length > 0) {
+              handleRaceResultRecordsCrewPlayerChangebyIndex(i, j, 'errorText', errorTextData);
             }
           }
         } else {
           // 更新行の場合 削除フラグが未チェックの場合のみ実施
           if (!player.deleteFlg) {
-            console.log('bbbbbbbbbxxxxxxxxxxxx');
             var errorTextData = '';
+            //選手ID
             if (!player.playerId) {
               errorTextData += '選手IDを入力してください。';
             }
+
+            //選手名
             if (!player.playerName) {
               errorTextData += '選手名を入力してください。';
             }
+
+            //身長
             if (!player.height) {
               errorTextData += '身長を入力してください。';
+            } else if (player.height && !/^\d{1,3}(\.\d{1,2})?$/.test(player?.height.toString())) {
+              errorTextData += '「身長」は、半角数字で、999.99までの数値を入力してください。';
             }
+
+            //体重
             if (!player.weight) {
               errorTextData += '体重を入力してください。';
+            } else if (player.weight && !/^\d{1,3}(\.\d{1,2})?$/.test(player?.weight.toString())) {
+              errorTextData += '「体重」は、半角数字で、999.99までの数値を入力してください。';
             }
+
+            //シート番号
             if (!player.sheetNameId) {
               errorTextData += 'シート番号を選択してください。';
             }
-            if(errorTextData.length > 0){
-              console.log('kfgdgdgdgdgddddlllllllll');
-              handleRaceResultRecordsCrewPlayerChangebyIndex(i,j,'errorText',errorTextData);
+
+            //バリデーション結果の表示
+            if (errorTextData.length > 0) {
+              handleRaceResultRecordsCrewPlayerChangebyIndex(i, j, 'errorText', errorTextData);
             }
           }
         }
       });
     });
-
-    //身長 入力値チェック
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList2 = [] as { i: number; j: number }[];
-    const height2 = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        // 形式は整数部は3桁まで、小数部は2桁まで. 整数のみも可
-        if (player.height && !/^\d{1,3}(\.\d{1,2})?$/.test(player?.height.toString())) {
-          indexObjectList2.push({ i, j });
-        }
-      });
-      return indexObjectList2.length > 0;
-    });
-    if (height2) {
-      indexObjectList2.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '「身長」は、半角数字で、999.99までの数値を入力してください。',
-        );
-      });
-      errorCount++;
-    }
-    
-
-    //体重 入力値チェック
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList4 = [] as { i: number; j: number }[];
-    const weight2 = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        // 形式は整数部は3桁まで、小数部は2桁まで. 整数のみも可
-        if (player.weight && !/^\d{1,3}(\.\d{1,2})?$/.test(player?.weight.toString())) {
-          indexObjectList4.push({ i, j });
-        }
-      });
-      return indexObjectList4.length > 0;
-    });
-    if (weight2) {
-      indexObjectList4.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '「体重」は、半角数字で、999.99までの数値を入力してください。',
-        );
-      });
-      errorCount++;
-    }
-
-    /**
-     * シート番号
-     * 空欄チェック
-     * ・当該行が追加行の場合
-     * 「削除」が未チェック
-     * かつ
-     * 当該行の何れかの項目に値が入っている場合に実施
-     * ・当該行が更新行の場合
-     * 「削除」が未チェックの場合のみ実施
-     * 空欄チェック
-     * 空欄の場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     * 「シート番号を選択してください。」
-     */
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList5 = [] as { i: number; j: number }[];
-    const seatNo = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        if (player.addonLineFlg) {
-          // 追加行の場合
-          // 削除フラグが未チェックかつ、playerの何れかの項目に値が入っている場合に実施
-          if (
-            !player.deleteFlg &&
-            ((player.height !== undefined && player.height !== null) ||
-              (player.weight !== undefined && player.weight !== null) ||
-              (player.playerId !== undefined && player.playerId !== null) ||
-              (player.playerName !== undefined && player.playerName !== null) ||
-              (player.fiveHundredmHeartRate !== undefined &&
-                player.fiveHundredmHeartRate !== null) ||
-              (player.tenHundredmHeartRate !== undefined && player.tenHundredmHeartRate !== null) ||
-              (player.fifteenHundredmHeartRate !== undefined &&
-                player.fifteenHundredmHeartRate !== null) ||
-              (player.twentyHundredmHeartRate !== undefined &&
-                player.twentyHundredmHeartRate !== null) ||
-              (player.heartRateAvg !== undefined && player.heartRateAvg !== null) ||
-              (player.attendance !== undefined && player.attendance !== null))
-          ) {
-            if (!player.sheetName) {
-              indexObjectList5.push({ i, j });
-            }
-          }
-        } else {
-          // 更新行の場合
-          // 削除フラグが未チェックの場合のみ実施
-          if (player.deleteFlg === false) {
-            if (player.sheetName === undefined || player.sheetName === null) {
-              indexObjectList5.push({ i, j });
-            }
-          }
-        }
-      });
-      return indexObjectList5.length > 0;
-    });
-    if (seatNo) {
-      indexObjectList5.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          'シート番号を選択してください。',
-        );
-      });
-      errorCount++;
-    }
 
     //シート番号 入力値チェック
     // {i, j}[]の形式でindexを保持する
@@ -1115,17 +1012,17 @@ export default function TournamentResult() {
         //「登録可能」行の条件判定 （削除チェックなし、選手ID、選手名、身長、体重、シート名）
         if (
           !player.deleteFlg &&
-          player.playerId != ''  &&
+          player.playerId != '' &&
           player.playerId != null &&
           player.playerId != undefined &&
-          player.playerName != ''  &&
+          player.playerName != '' &&
           player.playerName != null &&
           player.playerName != undefined &&
           player.height != null &&
           player.height != undefined &&
           player.weight != null &&
           player.weight != undefined &&
-          player.sheetName != ''  &&
+          player.sheetName != '' &&
           player.sheetName != null &&
           player.sheetName != undefined
         ) {
