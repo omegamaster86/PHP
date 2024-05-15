@@ -820,8 +820,6 @@ export default function TournamentResult() {
         );
       });
       errorCount++;
-    } else {
-      // clearError();
     }
 
     //身長 入力値チェック
@@ -846,8 +844,6 @@ export default function TournamentResult() {
         );
       });
       errorCount++;
-    } else {
-      // clearError();
     }
     /**
      * 体重
@@ -907,8 +903,6 @@ export default function TournamentResult() {
         );
       });
       errorCount++;
-    } else {
-      // clearError();
     }
 
     //体重 入力値チェック
@@ -933,8 +927,6 @@ export default function TournamentResult() {
         );
       });
       errorCount++;
-    } else {
-      // clearError();
     }
 
     /**
@@ -1000,8 +992,6 @@ export default function TournamentResult() {
         );
       });
       errorCount++;
-    } else {
-      // clearError();
     }
 
     //シート番号 入力値チェック
@@ -1036,8 +1026,6 @@ export default function TournamentResult() {
         );
       });
       errorCount++;
-    } else {
-      // clearError();
     }
 
     //心拍数（500m）入力値チェック
@@ -1116,8 +1104,6 @@ export default function TournamentResult() {
         );
       });
       errorCount++;
-    } else {
-      // clearError();
     }
 
     //心拍数（2000m） 入力値チェック
@@ -1167,8 +1153,6 @@ export default function TournamentResult() {
         );
       });
       errorCount++;
-    } else {
-      // clearError();
     }
 
     /**
@@ -1178,7 +1162,7 @@ export default function TournamentResult() {
      * エラーの場合、以下のエラーメッセージをシステムエラーとしてに赤文字で表示し、以降の処理は行わない。
      * ※表示場所は、選手IDを入力した「選手情報一覧」と「ストロークレート」の間の余白
      */
-    var indexList25 = [] as number[];
+    var playerCountErrorList = [] as number[];
     const playerNum = raceResultRecords.some((record, i) => {
       var count = 0;
       record.crewPlayer?.map((player, j) => {
@@ -1190,15 +1174,15 @@ export default function TournamentResult() {
           count++;
         }
       });
-      if (count !== playerCount) {
-        indexList25.push(i);
+      console.log("yyyyyyyyyyyyy");
+      console.log(count,playerCount);
+      if (count != playerCount) {
+        playerCountErrorList.push(i);
       }
-      console.log(indexList25.length > 0);
-      return indexList25.length > 0;
+      return playerCountErrorList.length > 0;
     });
-
     if (playerNum) {
-      indexList25.map((index) => {
+      playerCountErrorList.map((index) => {
         handleRaceResultRecordsInputChangebyIndex(
           index,
           'errorText',
@@ -1206,11 +1190,7 @@ export default function TournamentResult() {
         );
       });
       errorCount++;
-    } else {
-      console.log('clearError call');
-      // clearError();
     }
-
     return errorCount;
   };
 
