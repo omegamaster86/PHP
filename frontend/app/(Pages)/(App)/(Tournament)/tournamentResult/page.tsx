@@ -381,65 +381,25 @@ export default function TournamentResult() {
 
     //レース結果情報の要素数分ループ
     for (let index = 0; index < raceResultRecords.length; index++) {
+      //所属団体バリデーション
       if (!raceResultRecords[index].org_id) {
         raceResultRecords[index].orgNameErrorText = '所属団体を選択してください。';
       }else{
         raceResultRecords[index].orgNameErrorText = '';
       }
+      //クルー名バリデーション
       if (!raceResultRecords[index].crew_name) {
         raceResultRecords[index].crewNameErrorText = 'クルー名を入力してください。';
       }else{
         raceResultRecords[index].crewNameErrorText = '';
       }
+      //順位エラーメッセージ
       if (!raceResultRecords[index].rank) {
         raceResultRecords[index].rankErrorText =
           '順位は半角数字で、99までの数値を入力してください。';
       }else{
         raceResultRecords[index].rankErrorText = '';
       }
-    }
-
-    //所属団体 空欄チェック
-    var emptyOrgList = [] as number[];
-    const emptyOrgDataList = raceResultRecords.some((record, i) => {
-      if (!record.org_id) {
-        emptyOrgList.push(i);
-      }
-      return !record.org_id;
-    });
-    if (emptyOrgDataList) {
-      emptyOrgList.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'errorText',
-          '所属団体を選択してください。' + index,
-        );
-      });
-      errorCount++;
-    } else {
-      clearError();
-    }
-
-    //クルー名 空欄チェック
-    // レース結果情報全てにチェックを行う
-    var indexList8 = [] as number[];
-    const isError6 = raceResultRecords.some((record, i) => {
-      if (!record.crew_name) {
-        indexList8.push(i);
-      }
-      return !record.crew_name;
-    });
-    if (isError6) {
-      indexList8.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'errorText',
-          'クルー名を入力してください。',
-        );
-      });
-      errorCount++;
-    } else {
-      clearError();
     }
 
     //クルー名、所属団体組み合わせ
@@ -467,7 +427,7 @@ export default function TournamentResult() {
       });
       errorCount++;
     } else {
-      clearError();
+      // clearError();
     }
 
     //出漕レーンNo 入力値チェック
@@ -488,7 +448,7 @@ export default function TournamentResult() {
       });
       errorCount++;
     } else {
-      clearError();
+      // clearError();
     }
 
     //出漕レーンNo 重複チェック
@@ -519,24 +479,7 @@ export default function TournamentResult() {
       });
       errorCount++;
     } else {
-      clearError();
-    }
-
-    //順位 空欄チェック
-    var indexList11 = [] as number[];
-    const isError9 = raceResultRecords.some((record, i) => {
-      if (!record.rank) {
-        indexList11.push(i);
-      }
-      return !record.rank;
-    });
-    if (isError9) {
-      indexList11.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(index, 'errorText', '順位を入力してください。');
-      });
-      errorCount++;
-    } else {
-      clearError();
+      // clearError();
     }
 
     //順位 入力値チェック
@@ -557,7 +500,7 @@ export default function TournamentResult() {
       });
       errorCount++;
     } else {
-      clearError();
+      // clearError();
     }
 
     //順位 重複チェック
@@ -580,7 +523,7 @@ export default function TournamentResult() {
       });
       errorCount++;
     } else {
-      clearError();
+      // clearError();
     }
 
     //ラップタイム 空欄チェック
@@ -896,7 +839,7 @@ export default function TournamentResult() {
       });
       errorCount++;
     } else {
-      clearError();
+      // clearError();
     }
 
     //身長 入力値チェック
@@ -922,7 +865,7 @@ export default function TournamentResult() {
       });
       errorCount++;
     } else {
-      clearError();
+      // clearError();
     }
     /**
      * 体重
@@ -983,7 +926,7 @@ export default function TournamentResult() {
       });
       errorCount++;
     } else {
-      clearError();
+      // clearError();
     }
 
     //体重 入力値チェック
@@ -1009,7 +952,7 @@ export default function TournamentResult() {
       });
       errorCount++;
     } else {
-      clearError();
+      // clearError();
     }
 
     /**
@@ -1076,7 +1019,7 @@ export default function TournamentResult() {
       });
       errorCount++;
     } else {
-      clearError();
+      // clearError();
     }
 
     //シート番号 入力値チェック
@@ -1112,7 +1055,7 @@ export default function TournamentResult() {
       });
       errorCount++;
     } else {
-      clearError();
+      // clearError();
     }
 
     //心拍数（500m）入力値チェック
@@ -1192,7 +1135,7 @@ export default function TournamentResult() {
       });
       errorCount++;
     } else {
-      clearError();
+      // clearError();
     }
 
     //心拍数（2000m） 入力値チェック
@@ -1243,7 +1186,7 @@ export default function TournamentResult() {
       });
       errorCount++;
     } else {
-      clearError();
+      // clearError();
     }
 
     /**
@@ -1283,7 +1226,7 @@ export default function TournamentResult() {
       errorCount++;
     } else {
       console.log('clearError call');
-      clearError();
+      // clearError();
     }
 
     return errorCount;
