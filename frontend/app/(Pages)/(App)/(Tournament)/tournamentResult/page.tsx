@@ -805,9 +805,26 @@ export default function TournamentResult() {
         } else {
           // 更新行の場合 削除フラグが未チェックの場合のみ実施
           if (!player.deleteFlg) {
+            console.log('bbbbbbbbbxxxxxxxxxxxx');
+            var errorTextData = '';
+            if (!player.playerId) {
+              errorTextData += '選手IDを入力してください。';
+            }
+            if (!player.playerName) {
+              errorTextData += '選手名を入力してください。';
+            }
             if (!player.height) {
+              errorTextData += '身長を入力してください。';
             }
             if (!player.weight) {
+              errorTextData += '体重を入力してください。';
+            }
+            if (!player.sheetNameId) {
+              errorTextData += 'シート番号を選択してください。';
+            }
+            if(errorTextData.length > 0){
+              console.log('kfgdgdgdgdgddddlllllllll');
+              handleRaceResultRecordsCrewPlayerChangebyIndex(i,j,'errorText',errorTextData);
             }
           }
         }
