@@ -38,12 +38,17 @@ export default function TournamentResult() {
   const router = useRouter();
 
   // ステート変数
+  //エラーメッセージの設定
   const [errorText, setErrorText] = useState([] as string[]);
   const [raceIdErrorText, setRaceIdErrorText] = useState(''); //レースID
   const [raceNameErrorText, setRaceNameErrorText] = useState(''); //レース名
   const [startDateTimeErrorText, setStartDateTimeErrorText] = useState(''); //発艇日時
   const [windSpeed1000mPointErrorText, setWindSpeed1000mPointErrorText] = useState(''); //1000m地点風速
   const [windSpeed2000mPointErrorText, setWindSpeed2000mPointErrorText] = useState(''); //2000m地点風速
+
+  const [orgNameErrorText, setOrgNameErrorText] = useState([] as string[]); //所属団体
+  const [crewNameErrorText, setCrewNameErrorText] = useState([] as string[]); //クルー名
+  const [rankErrorText, setRankErrorText] = useState([] as string[]); //順位
 
   // レース名（マスタ）の設定
   const [raceNameOptions, setRaceNameOptions] = useState<MasterResponse[]>([]);
@@ -372,6 +377,36 @@ export default function TournamentResult() {
       scrollTo(0, 0);
       errorCount++;
     }
+
+    //共通部分　ここまで
+    //=============================================================
+    //=============================================================
+    //クルー単位の内容　ここから
+
+    //レース結果情報の要素数分ループ
+    var orgNameErrorTextList = Array(); //所属団体エラーメッセージリスト
+    var crewNameErrorTextList = Array(); //クルー名エラーメッセージリスト
+    var rankErrorTextList = Array(); //順位エラーメッセージリスト
+    for (let index = 0; index < raceResultRecords.length; index++) {
+      if (!raceResultRecords[index].org_id) {
+        orgNameErrorTextList.push('所属団体を選択してください。');
+      } else {
+        orgNameErrorTextList.push('');
+      }
+      if (!raceResultRecords[index].crew_name) {
+        crewNameErrorTextList.push('クルー名を入力してください。');
+      } else {
+        crewNameErrorTextList.push('');
+      }
+      if (!raceResultRecords[index].rank) {
+        rankErrorTextList.push('順位は半角数字で、99までの数値を入力してください。');
+      } else {
+        rankErrorTextList.push('');
+      }
+    }
+    setOrgNameErrorText(orgNameErrorTextList);
+    setCrewNameErrorText(crewNameErrorTextList);
+    setRankErrorText(rankErrorTextList);
 
     //所属団体 空欄チェック
     var emptyOrgList = [] as number[];
@@ -2054,6 +2089,8 @@ export default function TournamentResult() {
                           orgOptions.find((item) => item.id === e)?.name || '',
                         );
                       }}
+                      isError={orgNameErrorText[index] !== ''}
+                      errorMessages={[orgNameErrorText[index]]}
                     />
                   </div>
                   <CustomTextField
@@ -2079,6 +2116,8 @@ export default function TournamentResult() {
                       );
                     }}
                     readonly={mode === 'confirm'}
+                    isError={crewNameErrorText[index] !== ''}
+                    errorMessages={[crewNameErrorText[index]]}
                   />
                 </div>
                 <div className='flex flex-row justify-left gap-[80px] item-center'>
@@ -2092,6 +2131,8 @@ export default function TournamentResult() {
                       handleRaceResultRecordsInputChangebyIndex(index, 'rank', e.target.value);
                     }}
                     readonly={mode === 'confirm'}
+                    isError={rankErrorText[index] !== ''}
+                    errorMessages={[rankErrorText[index]]}
                   />
                 </div>
               </div>
@@ -2730,7 +2771,6 @@ export default function TournamentResult() {
 
             var errorCount = 0;
             if (mode == 'create' || mode == 'update') {
-
               errorCount = validateRaceResultRecords(); // バリデーション
             }
             console.log(errorCount);
@@ -2746,7 +2786,9 @@ export default function TournamentResult() {
                 //登録・更新する前に選手名についている「*」を消す 20240514
                 for (let index = 0; index < raceResultRecords.length; index++) {
                   for (let j = 0; j < raceResultRecords[index].crewPlayer.length; j++) {
-                    raceResultRecords[index].crewPlayer[j].playerName = raceResultRecords[index].crewPlayer[j].playerName.replace('*', '');
+                    raceResultRecords[index].crewPlayer[j].playerName = raceResultRecords[
+                      index
+                    ].crewPlayer[j].playerName.replace('*', '');
                   }
                 }
                 if (prevMode == 'create') {
