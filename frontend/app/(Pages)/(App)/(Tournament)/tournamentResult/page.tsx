@@ -831,70 +831,6 @@ export default function TournamentResult() {
       });
     });
 
-
-    /**
-     * 身長
-     * ・当該行が追加行の場合
-     * 「削除」が未チェックかつ当該行の何れかの項目に値が入っている場合に実施
-     * ・当該行が更新行の場合
-     * 「削除」が未チェックの場合のみ実施
-     * 空欄チェック
-     * 空欄の場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * ※表示場所は、当該行の直下に表示する。
-     * 「身長を入力してください。」
-     */
-
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList = [] as { i: number; j: number }[];
-    const height = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        if (player.addonLineFlg) {
-          // 追加行の場合 削除フラグが未チェックかつ、playerの何れかの項目に値が入っている場合に実施
-          if (
-            !player.deleteFlg &&
-            ((player.weight !== undefined && player.weight !== null) ||
-              (player.playerId !== undefined && player.playerId !== null) ||
-              (player.playerName !== undefined && player.playerName !== null) ||
-              (player.sheetName !== undefined && player.sheetName !== null) ||
-              (player.fiveHundredmHeartRate !== undefined &&
-                player.fiveHundredmHeartRate !== null) ||
-              (player.tenHundredmHeartRate !== undefined && player.tenHundredmHeartRate !== null) ||
-              (player.fifteenHundredmHeartRate !== undefined &&
-                player.fifteenHundredmHeartRate !== null) ||
-              (player.twentyHundredmHeartRate !== undefined &&
-                player.twentyHundredmHeartRate !== null) ||
-              (player.heartRateAvg !== undefined && player.heartRateAvg !== null) ||
-              (player.attendance !== undefined && player.attendance !== null))
-          ) {
-            // 身長が未入力の場合
-            if (!player.height) {
-              indexObjectList.push({ i, j });
-            }
-          }
-        } else {
-          // 更新行の場合 削除フラグが未チェックの場合のみ実施
-          if (!player.deleteFlg) {
-            if (!player.height) {
-              indexObjectList.push({ i, j });
-            }
-          }
-        }
-      });
-      return indexObjectList.length > 0;
-    });
-
-    if (height) {
-      indexObjectList.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '身長を入力してください。',
-        );
-      });
-      errorCount++;
-    }
-
     //身長 入力値チェック
     // {i, j}[]の形式でindexを保持する
     var indexObjectList2 = [] as { i: number; j: number }[];
@@ -918,65 +854,7 @@ export default function TournamentResult() {
       });
       errorCount++;
     }
-    /**
-     * 体重
-     * ・当該行が追加行の場合
-     * 「削除」が未チェックかつ当該行の何れかの項目に値が入っている場合に実施
-     * ・当該行が更新行の場合
-     * 「削除」が未チェックの場合のみ実施
-     * 空欄チェック
-     * 空欄の場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     */
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList3 = [] as { i: number; j: number }[];
-    const weight = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        if (player.addonLineFlg) {
-          // 追加行の場合
-          // 削除フラグが未チェックかつ、playerの何れかの項目に値が入っている場合に実施
-          if (
-            !player.deleteFlg &&
-            ((player.height !== undefined && player.height !== null) ||
-              (player.playerId !== undefined && player.playerId !== null) ||
-              (player.playerName !== undefined && player.playerName !== null) ||
-              (player.sheetName !== undefined && player.sheetName !== null) ||
-              (player.fiveHundredmHeartRate !== undefined &&
-                player.fiveHundredmHeartRate !== null) ||
-              (player.tenHundredmHeartRate !== undefined && player.tenHundredmHeartRate !== null) ||
-              (player.fifteenHundredmHeartRate !== undefined &&
-                player.fifteenHundredmHeartRate !== null) ||
-              (player.twentyHundredmHeartRate !== undefined &&
-                player.twentyHundredmHeartRate !== null) ||
-              (player.heartRateAvg !== undefined && player.heartRateAvg !== null) ||
-              (player.attendance !== undefined && player.attendance !== null))
-          ) {
-            if (!player.weight) {
-              indexObjectList3.push({ i, j });
-            }
-          }
-        } else {
-          // 更新行の場合
-          // 削除フラグが未チェックの場合のみ実施
-          if (!player.deleteFlg) {
-            if (!player.weight) {
-              indexObjectList3.push({ i, j });
-            }
-          }
-        }
-      });
-      return indexObjectList3.length > 0;
-    });
-    if (weight) {
-      indexObjectList3.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '体重を入力してください。',
-        );
-      });
-      errorCount++;
-    }
+    
 
     //体重 入力値チェック
     // {i, j}[]の形式でindexを保持する
