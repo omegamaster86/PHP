@@ -85,6 +85,11 @@ interface RaceResultRecordsResponse {
   sex: number; // 性別ID
   //種目IDを追加 20240405---------
   event_id: number; //種目ID
+  //大会結果管理用バリデーション項目を追加 20240515---------
+  orgNameErrorText: string; //所属団体エラーメッセージ
+  crewNameErrorText: string; //クルー名エラーメッセージ
+  laneNumberErrorText: string; //レーンNo.エラーメッセージ
+  rankErrorText: string; //順位エラーメッセージ
 }
 
 interface CrewPlayer {

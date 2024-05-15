@@ -46,10 +46,6 @@ export default function TournamentResult() {
   const [windSpeed1000mPointErrorText, setWindSpeed1000mPointErrorText] = useState(''); //1000m地点風速
   const [windSpeed2000mPointErrorText, setWindSpeed2000mPointErrorText] = useState(''); //2000m地点風速
 
-  const [orgNameErrorText, setOrgNameErrorText] = useState([] as string[]); //所属団体
-  const [crewNameErrorText, setCrewNameErrorText] = useState([] as string[]); //クルー名
-  const [rankErrorText, setRankErrorText] = useState([] as string[]); //順位
-
   // レース名（マスタ）の設定
   const [raceNameOptions, setRaceNameOptions] = useState<MasterResponse[]>([]);
   // 所属団体（マスタ）の取得
@@ -384,29 +380,18 @@ export default function TournamentResult() {
     //クルー単位の内容　ここから
 
     //レース結果情報の要素数分ループ
-    var orgNameErrorTextList = Array(); //所属団体エラーメッセージリスト
-    var crewNameErrorTextList = Array(); //クルー名エラーメッセージリスト
-    var rankErrorTextList = Array(); //順位エラーメッセージリスト
     for (let index = 0; index < raceResultRecords.length; index++) {
       if (!raceResultRecords[index].org_id) {
-        orgNameErrorTextList.push('所属団体を選択してください。');
-      } else {
-        orgNameErrorTextList.push('');
+        raceResultRecords[index].orgNameErrorText = '所属団体を選択してください。';
       }
       if (!raceResultRecords[index].crew_name) {
-        crewNameErrorTextList.push('クルー名を入力してください。');
-      } else {
-        crewNameErrorTextList.push('');
+        raceResultRecords[index].crewNameErrorText = 'クルー名を入力してください。';
       }
       if (!raceResultRecords[index].rank) {
-        rankErrorTextList.push('順位は半角数字で、99までの数値を入力してください。');
-      } else {
-        rankErrorTextList.push('');
+        raceResultRecords[index].rankErrorText =
+          '順位は半角数字で、99までの数値を入力してください。';
       }
     }
-    setOrgNameErrorText(orgNameErrorTextList);
-    setCrewNameErrorText(crewNameErrorTextList);
-    setRankErrorText(rankErrorTextList);
 
     //所属団体 空欄チェック
     var emptyOrgList = [] as number[];
@@ -2089,8 +2074,8 @@ export default function TournamentResult() {
                           orgOptions.find((item) => item.id === e)?.name || '',
                         );
                       }}
-                      isError={orgNameErrorText[index] !== ''}
-                      errorMessages={[orgNameErrorText[index]]}
+                      isError={item.orgNameErrorText?.length > 0}
+                      errorMessages={[item.orgNameErrorText]}
                     />
                   </div>
                   <CustomTextField
@@ -2102,6 +2087,8 @@ export default function TournamentResult() {
                       handleRaceResultRecordsInputChangebyIndex(index, 'crew_name', e.target.value);
                     }}
                     readonly={mode === 'confirm'}
+                    isError={item.crewNameErrorText?.length > 0}
+                    errorMessages={[item.crewNameErrorText]}
                   />
                   <CustomTextField
                     label='出漕レーンNo'
@@ -2116,8 +2103,8 @@ export default function TournamentResult() {
                       );
                     }}
                     readonly={mode === 'confirm'}
-                    isError={crewNameErrorText[index] !== ''}
-                    errorMessages={[crewNameErrorText[index]]}
+                    isError={item.laneNumberErrorText?.length > 0}
+                    errorMessages={[item.laneNumberErrorText]}
                   />
                 </div>
                 <div className='flex flex-row justify-left gap-[80px] item-center'>
@@ -2131,8 +2118,8 @@ export default function TournamentResult() {
                       handleRaceResultRecordsInputChangebyIndex(index, 'rank', e.target.value);
                     }}
                     readonly={mode === 'confirm'}
-                    isError={rankErrorText[index] !== ''}
-                    errorMessages={[rankErrorText[index]]}
+                    isError={item.rankErrorText?.length > 0}
+                    errorMessages={[item.rankErrorText]}
                   />
                 </div>
               </div>
