@@ -325,20 +325,20 @@ export default function TournamentResult() {
    * @returns
    */
   const validateRaceResultRecords = () => {
-
+    var errorCount = 0;
     //レースID　必須チェック
     const raceId = Validator.validateRequired(raceInfo?.race_id, 'レースID');
     if (raceId) {
       setErrorText([raceId]);
       scrollTo(0, 0);
-      return false;
+      errorCount++;
     }
     //レース名　必須チェック
     const raceName = Validator.validateRequired(raceInfo?.race_name, 'レース名');
     if (raceName) {
       setErrorText([raceName]);
       scrollTo(0, 0);
-      return false;
+      errorCount++;
     }
     //発艇日時 必須チェック
     const startDateTime = Validator.validateRequired(
@@ -348,21 +348,21 @@ export default function TournamentResult() {
     if (startDateTime) {
       setStartDateTimeErrorText(startDateTime);
       scrollTo(0, 0);
-      return false;
+      errorCount++;
     }
     //1000m地点風速 入力値チェック
     const windSpeed = raceResultRecordResponse.wind_speed_1000m_point;
     if (windSpeed && !/^\d{1,3}$/.test(windSpeed.toString())) {
       setErrorText(['半角数字で、999までの数字を入力してください。']);
       scrollTo(0, 0);
-      return false;
+      errorCount++;
     }
     //2000m地点風速 入力値チェック
     const windSpeed2 = raceResultRecordResponse.wind_speed_2000m_point;
     if (windSpeed2 && !/^\d{1,3}$/.test(windSpeed2.toString())) {
       setErrorText(['半角数字で、999までの数字を入力してください。']);
       scrollTo(0, 0);
-      return false;
+      errorCount++;
     }
 
     //所属団体 空欄チェック
@@ -381,17 +381,12 @@ export default function TournamentResult() {
           '所属団体を選択してください。' + index,
         );
       });
-      return false;
+      errorCount++;
     } else {
       clearError();
     }
 
-    /**
-     * クルー名
-     * 空欄チェック
-     * 空行が選択されている場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「クルー名を入力してください。」
-     */
+    //クルー名 空欄チェック
     // レース結果情報全てにチェックを行う
     var indexList8 = [] as number[];
     const isError6 = raceResultRecords.some((record, i) => {
@@ -408,18 +403,12 @@ export default function TournamentResult() {
           'クルー名を入力してください。',
         );
       });
-      return false;
+      errorCount++;
     } else {
       clearError();
     }
 
-    /**
-     * クルー名、所属団体組み合わせ
-     * 「所属団体」と「クルー名」の組み合わせが、同じ「レース結果情報入力欄」が無いことを確認
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     * 「所属団体」と「クルー名」が同じ「レース結果情報」を登録しようとしています。」
-     */
+    //クルー名、所属団体組み合わせ
     var indexList9 = [] as number[];
     // チェックして、エラーに該当するレース結果情報のインデックスを取得する
     const isError7 = raceResultRecords.some((record, i) => {
@@ -442,17 +431,12 @@ export default function TournamentResult() {
           '所属団体とクルー名が同じレース結果情報を登録しようとしています。',
         );
       });
-      return false;
+      errorCount++;
     } else {
       clearError();
     }
 
-    /**
-     * 出漕レーンNo
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「半角数字で、99までの数値を入力してください。」
-     */
+    //出漕レーンNo 入力値チェック
     var indexList10 = [] as number[];
     const isError8 = raceResultRecords.some((record, i) => {
       if (record.lane_number && !/^\d{1,2}$/.test(record?.lane_number.toString())) {
@@ -468,18 +452,12 @@ export default function TournamentResult() {
           '出漕レーンNoは半角数字で、99までの数値を入力してください。',
         );
       });
-      return false;
+      errorCount++;
     } else {
       clearError();
     }
 
-    /**
-     * 出漕レーンNo
-     * 出漕レーンNoが同じ「レース結果情報入力欄」が無いことを確認
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     * 「出漕レーンNoが重複しています。」
-     */
+    //出漕レーンNo 重複チェック
     var indexList = [] as number[];
     // チェックして、エラーに該当するレース結果情報のインデックスを取得する
     const isError2 = raceResultRecords.some((record, i) => {
@@ -505,17 +483,12 @@ export default function TournamentResult() {
           '出漕レーンNoが重複しています。',
         );
       });
-      return false;
+      errorCount++;
     } else {
       clearError();
     }
 
-    /**
-     * 順位
-     * 空欄チェック
-     * 空行が選択されている場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「順位を入力してください。」
-     */
+    //順位 空欄チェック
     var indexList11 = [] as number[];
     const isError9 = raceResultRecords.some((record, i) => {
       if (!record.rank) {
@@ -527,17 +500,12 @@ export default function TournamentResult() {
       indexList11.map((index) => {
         handleRaceResultRecordsInputChangebyIndex(index, 'errorText', '順位を入力してください。');
       });
-      return false;
+      errorCount++;
     } else {
       clearError();
     }
 
-    /**
-     * 順位
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「半角数字で、99までの数値を入力してください。」
-     */
+    //順位 入力値チェック
     var indexList12 = [] as number[];
     const isError10 = raceResultRecords.some((record, i) => {
       if (record.rank && !/^\d{1,2}$/.test(record?.rank.toString())) {
@@ -553,18 +521,12 @@ export default function TournamentResult() {
           '順位は半角数字で、99までの数値を入力してください。',
         );
       });
-      return false;
+      errorCount++;
     } else {
       clearError();
     }
 
-    /**
-     * 順位
-     * 順位が同じ「レース結果情報入力欄」が無いことを確認
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     * 「順位が重複しています。」
-     */
+    //順位 重複チェック
     var indexList2 = [] as number[];
     // チェックして、エラーに該当するレース結果情報のインデックスを取得する
     const isError3 = raceResultRecords.some((record, i) => {
@@ -582,19 +544,12 @@ export default function TournamentResult() {
       indexList2.map((index) => {
         handleRaceResultRecordsInputChangebyIndex(index, 'errorText', '順位が重複しています。');
       });
-      return false;
+      errorCount++;
     } else {
       clearError();
     }
 
-    /**
-     * ラップタイム
-     * 空欄チェック
-     * 500m ～ 最終までの何れかに入力されていることを確認
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「「ラップタイム」は、500m～最終タイムまでの何れかにタイムを入力してください。」
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
+    //ラップタイム 空欄チェック
     var indexList3 = [] as number[];
     // チェックして、エラーに該当するレース結果情報のインデックスを取得する
     const isError4 = raceResultRecords.some((record, i) => {
@@ -626,16 +581,10 @@ export default function TournamentResult() {
           '「ラップタイム」は、500m～最終タイムまでの何れかにタイムを入力してください。',
         );
       });
-      return false;
+      errorCount++;
     }
 
-    /**
-     * ラップタイム(500m)
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「ラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
+    //ラップタイム(500m) 入力値チェック
     var indexList4 = [] as number[];
     const lapTime2 = raceResultRecords.some((record, i) => {
       // E
@@ -652,16 +601,10 @@ export default function TournamentResult() {
           '「500mラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89',
         );
       });
-      return false;
+      errorCount++;
     }
 
-    /**
-     * ラップタイム(1000m)
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「ラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
+    //ラップタイム(1000m) 入力値チェック
     var indexList5 = [] as number[];
     const lapTime3 = raceResultRecords.some((record, i) => {
       if (
@@ -682,16 +625,10 @@ export default function TournamentResult() {
           '「1000mラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89',
         );
       });
-      return false;
+      errorCount++;
     }
 
-    /**
-     * ラップタイム(1500m)
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「ラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
+    //ラップタイム(1500m) 入力値チェック
     var indexList6 = [] as number[];
     const lapTime4 = raceResultRecords.some((record, i) => {
       // このページのみのバリデーションのため、ここにバリデーションロジックを記述
@@ -713,16 +650,10 @@ export default function TournamentResult() {
           '「1500mラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89',
         );
       });
-      return false;
+      errorCount++;
     }
 
-    /**
-     * ラップタイム(2000m)
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「ラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
+    //ラップタイム(2000m) 入力値チェック
     var indexList7 = [] as number[];
     const lapTime5 = raceResultRecords.some((record, i) => {
       // このページのみのバリデーションのため、ここにバリデーションロジックを記述
@@ -744,16 +675,10 @@ export default function TournamentResult() {
           '「2000mラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89',
         );
       });
-      return false;
+      errorCount++;
     }
 
-    /**
-     * ラップタイム(最終)
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「ラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
+    //ラップタイム(最終) 入力値チェック
     var indexList8 = [] as number[];
     const lapTime6 = raceResultRecords.some((record, i) => {
       // このページのみのバリデーションのため、ここにバリデーションロジックを記述
@@ -770,16 +695,10 @@ export default function TournamentResult() {
           '「finalラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89',
         );
       });
-      return false;
+      errorCount++;
     }
 
-    /**
-     * ストロークレート
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「「ストロークレート」は、半角数字で入力してください。」
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
+    //ストロークレート 入力値チェック
     var indexList9 = [] as number[];
     const strokeRate = raceResultRecords.some((record, i) => {
       // このページのみのバリデーションのため、ここにバリデーションロジックを記述
@@ -796,16 +715,10 @@ export default function TournamentResult() {
           '「ストロークレート」は、半角数字で、99までの数字を入力してください。',
         );
       });
-      return false;
+      errorCount++;
     }
 
-    /**
-     * ストロークレート（1000m）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「「ストロークレート」は、半角数字で入力してください。」
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
+    // ストロークレート（1000m） 入力値チェック
     var indexList10 = [] as number[];
     const strokeRate2 = raceResultRecords.some((record, i) => {
       // このページのみのバリデーションのため、ここにバリデーションロジックを記述
@@ -822,16 +735,10 @@ export default function TournamentResult() {
           '「ストロークレート」は、半角数字で入力してください。',
         );
       });
-      return false;
+      errorCount++;
     }
 
-    /**
-     * ストロークレート（1500m）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「「ストロークレート」は、半角数字で入力してください。」
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
+    //ストロークレート（1500m）入力値チェック
     var indexList11 = [] as number[];
     const strokeRate3 = raceResultRecords.some((record, i) => {
       // このページのみのバリデーションのため、ここにバリデーションロジックを記述
@@ -848,16 +755,10 @@ export default function TournamentResult() {
           '「ストロークレート」は、半角数字で入力してください。',
         );
       });
-      return false;
+      errorCount++;
     }
 
-    /**
-     * ストロークレート（2000m）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「「ストロークレート」は、半角数字で入力してください。」
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
+    //ストロークレート（2000m）入力値チェック
     var indexList12 = [] as number[];
     const strokeRate4 = raceResultRecords.some((record, i) => {
       // このページのみのバリデーションのため、ここにバリデーションロジックを記述
@@ -874,16 +775,10 @@ export default function TournamentResult() {
           '「ストロークレート」は、半角数字で入力してください。',
         );
       });
-      return false;
+      errorCount++;
     }
 
-    /**
-     * ストロークレート（最終）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「「ストロークレート」は、半角数字で入力してください。」
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
+    //ストロークレート（最終）入力値チェック
     var indexList13 = [] as number[];
     const strokeRate5 = raceResultRecords.some((record, i) => {
       // このページのみのバリデーションのため、ここにバリデーションロジックを記述
@@ -900,7 +795,7 @@ export default function TournamentResult() {
           '「ストロークレート」は、半角数字で入力してください。',
         );
       });
-      return false;
+      errorCount++;
     }
 
     /**
@@ -965,21 +860,13 @@ export default function TournamentResult() {
           '身長を入力してください。',
         );
       });
-      return false;
+      errorCount++;
     } else {
       clearError();
     }
 
-    /**
-     * 身長
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「身長」は、半角数字で、999.99までの数値を入力してください。
-     * ※表示場所は、当該行の直下に表示する。
-     */
-
+    //身長 入力値チェック
     // {i, j}[]の形式でindexを保持する
-
     var indexObjectList2 = [] as { i: number; j: number }[];
     const height2 = raceResultRecords.some((record, i) => {
       record.crewPlayer?.map((player, j) => {
@@ -999,7 +886,7 @@ export default function TournamentResult() {
           '「身長」は、半角数字で、999.99までの数値を入力してください。',
         );
       });
-      return false;
+      errorCount++;
     } else {
       clearError();
     }
@@ -1060,18 +947,12 @@ export default function TournamentResult() {
           '体重を入力してください。',
         );
       });
-      return false;
+      errorCount++;
     } else {
       clearError();
     }
 
-    /**
-     * 体重
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「体重」は、半角数字で、999.99までの数値を入力してください。
-     * ※表示場所は、当該行の直下に表示する。
-     */
+    //体重 入力値チェック
     // {i, j}[]の形式でindexを保持する
     var indexObjectList4 = [] as { i: number; j: number }[];
     const weight2 = raceResultRecords.some((record, i) => {
@@ -1092,7 +973,7 @@ export default function TournamentResult() {
           '「体重」は、半角数字で、999.99までの数値を入力してください。',
         );
       });
-      return false;
+      errorCount++;
     } else {
       clearError();
     }
@@ -1159,18 +1040,12 @@ export default function TournamentResult() {
           'シート番号を選択してください。',
         );
       });
-      return false;
+      errorCount++;
     } else {
       clearError();
     }
 
-    /**
-     * シート番号
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。
-     * 同一「選手情報一覧」内で、シート番号が重複していないことを確認
-     * 「シート番号が重複しています。」
-     */
+    //シート番号 入力値チェック
     // {i, j}[]の形式でindexを保持する
     var indexObjectList6 = [] as { i: number; j: number }[];
     const seatNo2 = raceResultRecords.some((record, i) => {
@@ -1201,18 +1076,12 @@ export default function TournamentResult() {
           'シート番号が重複しています。',
         );
       });
-      return false;
+      errorCount++;
     } else {
       clearError();
     }
 
-    /**
-     * 心拍数（500m）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。
-     * 「「心拍数」は、半角数字で999までの数値を入力してください。」
-     * ※表示場所は、当該行の直下に表示する。
-     */
+    //心拍数（500m）入力値チェック
     // {i, j}[]の形式でindexを保持する
     var indexObjectList7 = [] as { i: number; j: number }[];
     const heartRate = raceResultRecords.some((record, i) => {
@@ -1235,16 +1104,10 @@ export default function TournamentResult() {
           '「心拍数」は、半角数字で999までの数値を入力してください。',
         );
       });
-      return false;
+      errorCount++;
     }
 
-    /**
-     * 心拍数（1000m）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。
-     * 「「心拍数」は、半角数字で999までの数値を入力してください。」
-     * ※表示場所は、当該行の直下に表示する。
-     */
+    //心拍数（1000m）入力値チェック
     // {i, j}[]の形式でindexを保持する
     var indexObjectList8 = [] as { i: number; j: number }[];
     const heartRate2 = raceResultRecords.some((record, i) => {
@@ -1267,16 +1130,10 @@ export default function TournamentResult() {
           '「心拍数」は、半角数字で999までの数値を入力してください。',
         );
       });
-      return false;
+      errorCount++;
     }
 
-    /**
-     * 心拍数（1500m）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。
-     * 「「心拍数」は、半角数字で999までの数値を入力してください。」
-     * ※表示場所は、当該行の直下に表示する。
-     */
+    //心拍数（1500m） 入力値チェック
     // {i, j}[]の形式でindexを保持する
     var indexObjectList9 = [] as { i: number; j: number }[];
     const heartRate3 = raceResultRecords.some((record, i) => {
@@ -1299,18 +1156,12 @@ export default function TournamentResult() {
           '「心拍数」は、半角数字で999までの数値を入力してください。',
         );
       });
-      return false;
+      errorCount++;
     } else {
       clearError();
     }
 
-    /**
-     * 心拍数（2000m）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。
-     * 「「心拍数」は、半角数字で999までの数値を入力してください。」
-     * ※表示場所は、当該行の直下に表示する。
-     */
+    //心拍数（2000m） 入力値チェック
     // {i, j}[]の形式でindexを保持する
     var indexObjectList10 = [] as { i: number; j: number }[];
     const heartRate4 = raceResultRecords.some((record, i) => {
@@ -1333,16 +1184,10 @@ export default function TournamentResult() {
           '「心拍数」は、半角数字で999までの数値を入力してください。',
         );
       });
-      return false;
+      errorCount++;
     }
 
-    /**
-     * 心拍数（平均）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。
-     * 「「心拍数」は、半角数字で999までの数値を入力してください。」
-     * ※表示場所は、当該行の直下に表示する。
-     */
+    //心拍数（平均）入力値チェック
     // {i, j}[]の形式でindexを保持する
     var indexObjectList11 = [] as { i: number; j: number }[];
     const heartRate5 = raceResultRecords.some((record, i) => {
@@ -1362,7 +1207,7 @@ export default function TournamentResult() {
           '「心拍数」は、半角数字で999までの数値を入力してください。',
         );
       });
-      return false;
+      errorCount++;
     } else {
       clearError();
     }
@@ -1401,14 +1246,13 @@ export default function TournamentResult() {
           '「選手情報」に種目の人数分、登録してください。',
         );
       });
-      return false;
+      errorCount++;
     } else {
       console.log('clearError call');
       clearError();
     }
 
-    // エラーがない場合、trueを返す
-    return true;
+    return errorCount;
   };
 
   useEffect(() => {
@@ -2870,12 +2714,13 @@ export default function TournamentResult() {
               );
             }
 
-            var isValid = true;
+            var errorCount = 0;
             if (mode == 'create' || mode == 'update') {
-              isValid = validateRaceResultRecords(); // バリデーション
+
+              errorCount = validateRaceResultRecords(); // バリデーション
             }
-            console.log(isValid);
-            if (isValid) {
+            console.log(errorCount);
+            if (errorCount == 0) {
               if (mode === 'create') {
                 // 登録処理
                 // 同画面にconfirmモードで遷移
