@@ -383,13 +383,19 @@ export default function TournamentResult() {
     for (let index = 0; index < raceResultRecords.length; index++) {
       if (!raceResultRecords[index].org_id) {
         raceResultRecords[index].orgNameErrorText = '所属団体を選択してください。';
+      }else{
+        raceResultRecords[index].orgNameErrorText = '';
       }
       if (!raceResultRecords[index].crew_name) {
         raceResultRecords[index].crewNameErrorText = 'クルー名を入力してください。';
+      }else{
+        raceResultRecords[index].crewNameErrorText = '';
       }
       if (!raceResultRecords[index].rank) {
         raceResultRecords[index].rankErrorText =
           '順位は半角数字で、99までの数値を入力してください。';
+      }else{
+        raceResultRecords[index].rankErrorText = '';
       }
     }
 
