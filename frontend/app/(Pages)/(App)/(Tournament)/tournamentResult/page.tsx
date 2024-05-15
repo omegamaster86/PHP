@@ -774,8 +774,7 @@ export default function TournamentResult() {
     const height = raceResultRecords.some((record, i) => {
       record.crewPlayer?.map((player, j) => {
         if (player.addonLineFlg) {
-          // 追加行の場合
-          // 削除フラグが未チェックかつ、playerの何れかの項目に値が入っている場合に実施
+          // 追加行の場合 削除フラグが未チェックかつ、playerの何れかの項目に値が入っている場合に実施
           if (
             !player.deleteFlg &&
             ((player.weight !== undefined && player.weight !== null) ||
@@ -798,10 +797,9 @@ export default function TournamentResult() {
             }
           }
         } else {
-          // 更新行の場合
-          // 削除フラグが未チェックの場合のみ実施
-          if (player.deleteFlg === false) {
-            if (player.height === undefined || player.height === null) {
+          // 更新行の場合 削除フラグが未チェックの場合のみ実施
+          if (!player.deleteFlg) {
+            if (!player.height) {
               indexObjectList.push({ i, j });
             }
           }
@@ -884,8 +882,8 @@ export default function TournamentResult() {
         } else {
           // 更新行の場合
           // 削除フラグが未チェックの場合のみ実施
-          if (player.deleteFlg === false) {
-            if (player.weight === undefined || player.weight === null) {
+          if (!player.deleteFlg) {
+            if (!player.weight) {
               indexObjectList3.push({ i, j });
             }
           }
