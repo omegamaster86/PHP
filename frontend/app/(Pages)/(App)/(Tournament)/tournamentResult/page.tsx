@@ -381,21 +381,21 @@ export default function TournamentResult() {
 
     //レース結果情報の要素数分ループ
     for (let index = 0; index < raceResultRecords.length; index++) {
-      //所属団体バリデーション
+      //所属団体 空欄チェック
       if (!raceResultRecords[index].org_id) {
         raceResultRecords[index].orgNameErrorText = '所属団体を選択してください。';
       }else{
         raceResultRecords[index].orgNameErrorText = '';
       }
 
-      //クルー名バリデーション
+      //クルー名　空欄チェック
       if (!raceResultRecords[index].crew_name) {
         raceResultRecords[index].crewNameErrorText = 'クルー名を入力してください。';
       }else{
         raceResultRecords[index].crewNameErrorText = '';
       }
 
-      //レーンNo.バリデーション
+      //出漕レーンNo 入力値チェック
       if (raceResultRecords[index].lane_number && 
         !/^\d{1,2}$/.test(raceResultRecords[index]?.lane_number.toString())) {
         raceResultRecords[index].laneNumberErrorText =
@@ -404,11 +404,16 @@ export default function TournamentResult() {
         raceResultRecords[index].laneNumberErrorText = '';
       }
 
-      //順位バリデーション
+      //順位 空欄チェック 入力値チェック
       if (!raceResultRecords[index].rank) {
-        raceResultRecords[index].rankErrorText =
+        raceResultRecords[index].rankErrorText = '順位を入力してください';
+      }
+      else if(raceResultRecords[index].rank && 
+        !/^\d{1,2}$/.test(raceResultRecords[index]?.rank.toString())){
+          raceResultRecords[index].rankErrorText = 
           '順位は半角数字で、99までの数値を入力してください。';
-      }else{
+      }
+      else{
         raceResultRecords[index].rankErrorText = '';
       }
     }
@@ -441,27 +446,6 @@ export default function TournamentResult() {
       // clearError();
     }
 
-    //出漕レーンNo 入力値チェック
-    var indexList10 = [] as number[];
-    const isError8 = raceResultRecords.some((record, i) => {
-      if (record.lane_number && !/^\d{1,2}$/.test(record?.lane_number.toString())) {
-        indexList10.push(i);
-      }
-      return record.lane_number && !/^\d{1,2}$/.test(record?.lane_number.toString());
-    });
-    if (isError8) {
-      indexList10.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'errorText',
-          '出漕レーンNoは半角数字で、99までの数値を入力してください。',
-        );
-      });
-      errorCount++;
-    } else {
-      // clearError();
-    }
-
     //出漕レーンNo 重複チェック
     var indexList = [] as number[];
     // チェックして、エラーに該当するレース結果情報のインデックスを取得する
@@ -479,34 +463,12 @@ export default function TournamentResult() {
         return i !== j && record.lane_number === record2.lane_number;
       });
     });
-
     if (isError2) {
       indexList.map((index) => {
         handleRaceResultRecordsInputChangebyIndex(
           index,
           'errorText',
           '出漕レーンNoが重複しています。',
-        );
-      });
-      errorCount++;
-    } else {
-      // clearError();
-    }
-
-    //順位 入力値チェック
-    var indexList12 = [] as number[];
-    const isError10 = raceResultRecords.some((record, i) => {
-      if (record.rank && !/^\d{1,2}$/.test(record?.rank.toString())) {
-        indexList12.push(i);
-      }
-      return record.rank && !/^\d{1,2}$/.test(record?.rank.toString());
-    });
-    if (isError10) {
-      indexList12.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'errorText',
-          '順位は半角数字で、99までの数値を入力してください。',
         );
       });
       errorCount++;
@@ -538,9 +500,9 @@ export default function TournamentResult() {
     }
 
     //ラップタイム 空欄チェック
-    var indexList3 = [] as number[];
+    var laptimeErrorList = [] as number[];
     // チェックして、エラーに該当するレース結果情報のインデックスを取得する
-    const isError4 = raceResultRecords.some((record, i) => {
+    const isLaptimeError = raceResultRecords.some((record, i) => {
       // エラーに該当するレース結果情報のインデックスを取得する
       if (
         !record.laptime_500m &&
@@ -550,7 +512,7 @@ export default function TournamentResult() {
         //!record.twentyHundredmLaptime &&
         !record.final_time
       ) {
-        indexList3.push(i);
+        laptimeErrorList.push(i);
       }
       return (
         !record.laptime_500m &&
@@ -561,8 +523,8 @@ export default function TournamentResult() {
         !record.final_time
       );
     });
-    if (isError4) {
-      indexList3.map((index) => {
+    if (isLaptimeError) {
+      laptimeErrorList.map((index) => {
         handleRaceResultRecordsInputChangebyIndex(
           index,
           'laptimeErrorText',
@@ -575,7 +537,6 @@ export default function TournamentResult() {
     //ラップタイム(500m) 入力値チェック
     var indexList4 = [] as number[];
     const lapTime2 = raceResultRecords.some((record, i) => {
-      // E
       if (record.laptime_500m && !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_500m.toString())) {
         indexList4.push(i);
       }
