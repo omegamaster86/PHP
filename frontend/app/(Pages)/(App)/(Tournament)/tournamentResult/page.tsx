@@ -443,7 +443,14 @@ export default function TournamentResult() {
     //順位 重複チェック
     for (let i = 0; i < validateCheckList.length; i++) {
       for (let j = 0; j < validateCheckList.length; j++) {
-        if (i != j && validateCheckList[i].lane_number == validateCheckList[j].lane_number) {
+        if (
+          i != j &&
+          validateCheckList[i].lane_number == validateCheckList[j].lane_number &&
+          validateCheckList[i].lane_number != null &&
+          validateCheckList[i].lane_number != undefined &&
+          validateCheckList[j].lane_number != null &&
+          validateCheckList[j].lane_number != undefined
+        ) {
           handleRaceResultRecordsInputChangebyIndex(
             i,
             'errorText',
@@ -462,7 +469,14 @@ export default function TournamentResult() {
     //順位 重複チェック
     for (let i = 0; i < validateCheckList.length; i++) {
       for (let j = 0; j < validateCheckList.length; j++) {
-        if (i != j && validateCheckList[i].rank == validateCheckList[j].rank) {
+        if (
+          i != j &&
+          validateCheckList[i].rank == validateCheckList[j].rank &&
+          validateCheckList[i].rank != null &&
+          validateCheckList[i].rank != undefined &&
+          validateCheckList[j].rank != null &&
+          validateCheckList[j].rank != undefined
+        ) {
           handleRaceResultRecordsInputChangebyIndex(i, 'errorText', '順位が重複しています。');
           handleRaceResultRecordsInputChangebyIndex(j, 'errorText', '順位が重複しています。');
           errorCount++;
