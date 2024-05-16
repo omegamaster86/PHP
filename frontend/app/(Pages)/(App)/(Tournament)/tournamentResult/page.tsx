@@ -458,6 +458,16 @@ export default function TournamentResult() {
     });
 
     //順位 重複チェック
+    
+    //実装途中 20240516
+    // for (let i = 0; i < validateCheckList.length; i++) {
+    //   for (let j = 0; j < validateCheckList.length; j++) {
+    //     if(i != j && validateCheckList[i].rank == validateCheckList[j].rank){
+
+    //     }
+    //   }  
+    // }
+
     validateCheckList.some((record, i) => {
       validateCheckList.some((record2, j) => {
         if (i !== j && record.rank === record2.rank) {
@@ -2239,6 +2249,8 @@ export default function TournamentResult() {
                   console.log(raceResponse);
                   // router.push('/tournamentResult?mode=confirm&prevMode=update');
                   if (!raceResponse.data?.errMessage) {
+                    console.log('uouououououuuuuuuuuuuuoooooo');
+                    console.log(raceResultRecordResponse);
                     router.push('/tournamentResultRef?raceId=' + raceResultRecordResponse.race_id);
                   }
                 } else if (prevMode == 'update') {
