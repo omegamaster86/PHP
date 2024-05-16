@@ -998,7 +998,7 @@ export default function TournamentResult() {
               console.log(record.crewPlayer);
               if (record?.crewPlayer?.length < response2) {
                 record.crewPlayer = record?.crewPlayer.concat(
-                  Array.from({ length: response2 - record?.crewPlayer.length }, () => ({
+                  Array.from({ length: response2}, () => ({
                     //id: undefined,
                     playerPhoto: '',
                     playerName: '',
@@ -1031,7 +1031,7 @@ export default function TournamentResult() {
               }
               // 種目マスタに紐づく選手の人数より多い場合、余分な行を削除する
               if (record?.crewPlayer?.length > response2) {
-                record.crewPlayer = record?.crewPlayer.slice(0, response2);
+                record.crewPlayer = record?.crewPlayer.slice(1, response2+1);
               }
               record.isAdded = true;
               console.log(record.crewPlayer);
