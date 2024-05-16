@@ -204,12 +204,7 @@ export default function TournamentResult() {
     if (value === '') {
       return;
     }
-    /**
-     * システムに登録されていない選手IDの場合、エラーメッセージを表示する
-     * 「システムに登録されていない選手のIDです。」
-     * すでに他で同じ選手IDが２つ以上登録されている場合、エラーメッセージを表示する
-     * 「重複する選手IDです。」
-     */
+
     if (!player) {
       setRaceResultRecords((prevFormData) => {
         const newFormData = [...prevFormData];
@@ -231,12 +226,12 @@ export default function TournamentResult() {
       });
     }
 
+    //選手の重複チェック
     const isExist = raceResultRecords.some((record, i) => {
       return record?.crewPlayer?.some((player, j) => {
-        return player.playerId === value && !(index === i && crewIndex === j);
+        return player.playerId === value && !(index === i && crewIndex === j) && !player.deleteFlg;
       });
     });
-
     if (isExist) {
       setRaceResultRecords((prevFormData) => {
         const newFormData = [...prevFormData];
