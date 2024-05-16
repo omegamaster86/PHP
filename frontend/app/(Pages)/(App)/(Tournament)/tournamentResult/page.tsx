@@ -2203,6 +2203,7 @@ export default function TournamentResult() {
                 const newFormData = [...prevFormData];
                 return newFormData.filter((item) => !item?.crewPlayer?.every((player) => player.deleteFlg));
               });
+              return;
             }
 
             var errorCount = 0;
