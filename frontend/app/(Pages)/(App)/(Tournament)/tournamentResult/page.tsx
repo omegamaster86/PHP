@@ -2217,6 +2217,7 @@ export default function TournamentResult() {
                     raceResultRecordResponse: raceResultRecordResponse,
                     raceResultRecords: raceResultRecords,
                   };
+                  console.log(sendData);
                   const csrf = () => axios.get('/sanctum/csrf-cookie');
                   await csrf();
                   const raceResponse = await axios.post(
@@ -2235,6 +2236,7 @@ export default function TournamentResult() {
                     raceResultRecordResponse: raceResultRecordResponse,
                     raceResultRecords: raceResultRecords,
                   };
+                  console.log(sendData);
                   const csrf = () => axios.get('/sanctum/csrf-cookie');
                   await csrf();
                   const raceResponse = await axios.post(
