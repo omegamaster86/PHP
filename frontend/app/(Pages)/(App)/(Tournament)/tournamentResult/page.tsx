@@ -331,7 +331,7 @@ export default function TournamentResult() {
   };
 
   /**
-   * レース結果情報の入力値をバリデーションする関数 すべての元凶 20240514 324行目から1446行目まで
+   * レース結果情報の入力値をバリデーションする関数 20240516
    * @returns
    */
   const validateRaceResultRecords = () => {
@@ -440,22 +440,16 @@ export default function TournamentResult() {
     });
 
     //出漕レーンNo 重複チェック
-    validateCheckList.some((record, i) => {
-      validateCheckList.some((record2, j) => {
-        if (
-          i !== j &&
-          record.lane_number === record2.lane_number &&
-          (record.lane_number || record2.lane_number)
-        ) {
-          handleRaceResultRecordsInputChangebyIndex(
-            i,
-            'errorText',
-            '出漕レーンNoが重複しています。',
-          );
+     //順位 重複チェック
+     for (let i = 0; i < validateCheckList.length; i++) {
+      for (let j = 0; j < validateCheckList.length; j++) {
+        if (i != j && validateCheckList[i].lane_number == validateCheckList[j].lane_number) {
+          handleRaceResultRecordsInputChangebyIndex(i,'errorText','出漕レーンNoが重複しています。');
+          handleRaceResultRecordsInputChangebyIndex(j,'errorText','出漕レーンNoが重複しています。');
           errorCount++;
         }
-      });
-    });
+      }
+    }
 
     //順位 重複チェック
     for (let i = 0; i < validateCheckList.length; i++) {
@@ -463,6 +457,7 @@ export default function TournamentResult() {
         if (i != j && validateCheckList[i].rank == validateCheckList[j].rank) {
           handleRaceResultRecordsInputChangebyIndex(i, 'errorText', '順位が重複しています。');
           handleRaceResultRecordsInputChangebyIndex(j, 'errorText', '順位が重複しています。');
+          errorCount++;
         }
       }
     }
@@ -550,19 +545,17 @@ export default function TournamentResult() {
         if (player.addonLineFlg) {
           if (
             !player.deleteFlg &&
-            ((player.weight !== undefined && player.weight !== null) ||
-              (player.playerId !== undefined && player.playerId !== null) ||
-              (player.playerName !== undefined && player.playerName !== null) ||
-              (player.sheetName !== undefined && player.sheetName !== null) ||
-              (player.fiveHundredmHeartRate !== undefined &&
-                player.fiveHundredmHeartRate !== null) ||
-              (player.tenHundredmHeartRate !== undefined && player.tenHundredmHeartRate !== null) ||
-              (player.fifteenHundredmHeartRate !== undefined &&
-                player.fifteenHundredmHeartRate !== null) ||
-              (player.twentyHundredmHeartRate !== undefined &&
-                player.twentyHundredmHeartRate !== null) ||
-              (player.heartRateAvg !== undefined && player.heartRateAvg !== null) ||
-              (player.attendance !== undefined && player.attendance !== null))
+            ( (player.playerId != undefined && player.playerId != null && player.playerId != '') ||
+              (player.playerName != undefined && player.playerName != null && player.playerName != '') ||
+              (player.height != undefined && player.height != null) ||  
+              (player.weight != undefined && player.weight != null) ||
+              (player.sheetName != undefined && player.sheetName != null && player.sheetName != '') ||
+              (player.fiveHundredmHeartRate != undefined && player.fiveHundredmHeartRate != null) ||
+              (player.tenHundredmHeartRate != undefined && player.tenHundredmHeartRate != null) ||
+              (player.fifteenHundredmHeartRate != undefined && player.fifteenHundredmHeartRate != null) ||
+              (player.twentyHundredmHeartRate != undefined && player.twentyHundredmHeartRate != null) ||
+              (player.heartRateAvg != undefined && player.heartRateAvg != null ) ||
+              (player.attendance != undefined && player.attendance != null && player.attendance != ''))
           ) {
             var errorTextData = '';
             if (!player.playerId) {
@@ -642,6 +635,7 @@ export default function TournamentResult() {
             //バリデーション結果の表示
             if (errorTextData.length > 0) {
               handleRaceResultRecordsCrewPlayerChangebyIndex(i, j, 'errorText', errorTextData);
+              errorCount++;
             }
           }
         }
@@ -2232,9 +2226,7 @@ export default function TournamentResult() {
                   console.log(raceResponse);
                   // router.push('/tournamentResult?mode=confirm&prevMode=update');
                   if (!raceResponse.data?.errMessage) {
-                    console.log('uouououououuuuuuuuuuuuoooooo');
-                    console.log(raceResultRecordResponse);
-                    router.push('/tournamentResultRef?raceId=' + raceResultRecordResponse.race_id);
+                    router.push('/tournamentResultRef?raceId=' + raceInfo.race_id);
                   }
                 } else if (prevMode == 'update') {
                   //登録・更新確認画面からバックエンド側にデータを送る 20240405
@@ -2252,7 +2244,7 @@ export default function TournamentResult() {
                   console.log(raceResponse);
                   // router.push('/tournamentResult?mode=confirm&prevMode=update');
                   if (!raceResponse.data?.errMessage) {
-                    router.push('/tournamentResultRef?raceId=' + raceResultRecordResponse.race_id);
+                    router.push('/tournamentResultRef?raceId=' + raceInfo.race_id);
                   }
                 }
               }
