@@ -162,13 +162,13 @@ export default function TournamentResult() {
    * @param index
    */
   const addCrewPlayerToRaceResultRecords = (index: number) => {
-    if (!raceResultRecords[index].crewPlayer) {
+    if (!raceResultRecords[index]?.crewPlayer) {
       raceResultRecords[index].crewPlayer = [{} as CrewPlayer];
     }
     setRaceResultRecords((prevFormData) => {
       // 多次元配列のシャローコピーは2件レコードができるため、ディープコピー
       const newFormData = JSON.parse(JSON.stringify(prevFormData));
-      newFormData[index].crewPlayer?.push({
+      newFormData[index]?.crewPlayer?.push({
         deleteFlg: false, // 削除フラグ
         addonLineFlg: true,
       } as CrewPlayer);
@@ -214,7 +214,7 @@ export default function TournamentResult() {
       setRaceResultRecords((prevFormData) => {
         const newFormData = [...prevFormData];
         newFormData[index].crewPlayer[crewIndex] = {
-          ...newFormData[index].crewPlayer[crewIndex],
+          ...newFormData[index]?.crewPlayer[crewIndex],
           errorText: 'システムに登録されていない選手のIDです。',
         };
         return newFormData;
@@ -224,7 +224,7 @@ export default function TournamentResult() {
       setRaceResultRecords((prevFormData) => {
         const newFormData = [...prevFormData];
         newFormData[index].crewPlayer[crewIndex] = {
-          ...newFormData[index].crewPlayer[crewIndex],
+          ...newFormData[index]?.crewPlayer[crewIndex],
           errorText: '',
         };
         return newFormData;
@@ -241,7 +241,7 @@ export default function TournamentResult() {
       setRaceResultRecords((prevFormData) => {
         const newFormData = [...prevFormData];
         newFormData[index].crewPlayer[crewIndex] = {
-          ...newFormData[index].crewPlayer[crewIndex],
+          ...newFormData[index]?.crewPlayer[crewIndex],
           errorText: '重複する選手IDです。',
         };
         return newFormData;
@@ -254,13 +254,13 @@ export default function TournamentResult() {
     setRaceResultRecords((prevFormData) => {
       const newFormData = [...prevFormData];
       newFormData[index].crewPlayer[crewIndex] = {
-        ...newFormData[index].crewPlayer[crewIndex],
+        ...newFormData[index]?.crewPlayer[crewIndex],
         playerId: value,
         playerName: player ? '*' + player.playerName : '',
         sex: player?.sex || '',
         height: player?.height || '',
         weight: player?.weight || '',
-        deleteFlg: player ? newFormData[index].crewPlayer[crewIndex]?.deleteFlg : false,
+        deleteFlg: player ? newFormData[index]?.crewPlayer[crewIndex]?.deleteFlg : false,
       };
       return newFormData;
     });
@@ -282,8 +282,8 @@ export default function TournamentResult() {
     setRaceResultRecords((prevFormData) => {
       const newFormData = [...prevFormData];
       if (
-        newFormData[index].crewPlayer[crewIndex] !== null ||
-        newFormData[index].crewPlayer[crewIndex] !== undefined
+        newFormData[index]?.crewPlayer[crewIndex] !== null ||
+        newFormData[index]?.crewPlayer[crewIndex] !== undefined
       ) {
         newFormData[index].crewPlayer[crewIndex][name] = value as never;
       }
@@ -301,8 +301,8 @@ export default function TournamentResult() {
     setRaceResultRecords((prevFormData) => {
       const newFormData = [...prevFormData];
       if (
-        newFormData[index].crewPlayer[crewIndex] !== null ||
-        newFormData[index].crewPlayer[crewIndex] !== undefined
+        newFormData[index]?.crewPlayer[crewIndex] !== null ||
+        newFormData[index]?.crewPlayer[crewIndex] !== undefined
       ) {
         newFormData[index].crewPlayer[crewIndex][name] = value as never;
       }
@@ -577,7 +577,7 @@ export default function TournamentResult() {
 
     //空欄チェック
     raceResultRecords.map((record, i) => {
-      record.crewPlayer?.map((player, j) => {
+      record?.crewPlayer?.map((player, j) => {
         // 追加行の場合 削除フラグが未チェックかつ、playerの何れかの項目に値が入っている場合に実施
         if (player.addonLineFlg) {
           if (
@@ -648,7 +648,7 @@ export default function TournamentResult() {
             if (!player.sheetNameId) {
               errorTextData += 'シート番号を選択してください。';
             } else if (player.sheetName) {
-              const seatNoList = record.crewPlayer?.map((player) => player.sheetName);
+              const seatNoList = record?.crewPlayer?.map((player) => player.sheetName);
               // console.log(seatNoList);
               if (seatNoList.filter((item) => item === player.sheetName).length > 1) {
                 errorTextData += 'シート番号が重複しています。';
@@ -683,7 +683,7 @@ export default function TournamentResult() {
     var playerCountErrorList = [] as number[];
     const playerNum = raceResultRecords.some((record, i) => {
       var count = 0;
-      record.crewPlayer?.map((player, j) => {
+      record?.crewPlayer?.map((player, j) => {
         // console.log(playerCount,count, player.deleteFlg, player.errorText);
         //「登録可能」行の条件判定 （削除チェックなし、選手ID、選手名、身長、体重、シート名）
         if (
@@ -1038,9 +1038,9 @@ export default function TournamentResult() {
             // 選手情報の件数が種目マスタに紐づく選手の人数より少ない場合、足りない件数分追加行を追加する
 
             raceResultRecords.map((record) => {
-              if (record.crewPlayer?.length < response2) {
-                record.crewPlayer = record.crewPlayer.concat(
-                  Array.from({ length: response2 - record.crewPlayer.length }, () => ({
+              if (record?.crewPlayer?.length < response2) {
+                record.crewPlayer = record?.crewPlayer.concat(
+                  Array.from({ length: response2 - record?.crewPlayer.length }, () => ({
                     //id: undefined,
                     playerPhoto: '',
                     playerName: '',
@@ -1072,8 +1072,8 @@ export default function TournamentResult() {
                 );
               }
               // 種目マスタに紐づく選手の人数より多い場合、余分な行を削除する
-              if (record.crewPlayer?.length > response2) {
-                record.crewPlayer = record.crewPlayer.slice(0, response2);
+              if (record?.crewPlayer?.length > response2) {
+                record.crewPlayer = record?.crewPlayer.slice(0, response2);
               }
               record.isAdded = true;
             }, []);
@@ -1832,7 +1832,7 @@ export default function TournamentResult() {
                     onClick={() => {
                       setRaceResultRecords((prevFormData) => {
                         const newFormData = [...prevFormData];
-                        newFormData[index].crewPlayer = newFormData[index].crewPlayer?.map(
+                        newFormData[index].crewPlayer = newFormData[index]?.crewPlayer?.map(
                           (item) => {
                             item.deleteFlg = true;
                             return item;
@@ -1852,7 +1852,7 @@ export default function TournamentResult() {
                     onClick={() => {
                       setRaceResultRecords((prevFormData) => {
                         const newFormData = [...prevFormData];
-                        newFormData[index].crewPlayer = newFormData[index].crewPlayer?.map(
+                        newFormData[index].crewPlayer = newFormData[index]?.crewPlayer?.map(
                           (item) => {
                             item.deleteFlg = false;
                             return item;
@@ -1938,7 +1938,7 @@ export default function TournamentResult() {
                 </CustomTr>
               </CustomThead>
               <CustomTbody deleteMode={mode === 'confirm' && item.deleteFlg}>
-                {item.crewPlayer?.map((player, crewIndex) => (
+                {item?.crewPlayer?.map((player, crewIndex) => (
                   <>
                     <CustomTr key={crewIndex}>
                       <CustomTd>
@@ -2183,7 +2183,7 @@ export default function TournamentResult() {
           onClick={async () => {
             //ポップアップダイアログ
             const isAllPlayerChecked = raceResultRecords.some(
-              (item) => item.crewPlayer?.every((player) => player.deleteFlg),
+              (item) => item?.crewPlayer?.every((player) => player.deleteFlg),
             );
             console.log(isAllPlayerChecked);
             if (isAllPlayerChecked) {
@@ -2195,7 +2195,7 @@ export default function TournamentResult() {
               }
               // setRaceResultRecords(
               //   raceResultRecords.filter(
-              //     (item) => !item.crewPlayer?.every((player) => player.deleteFlg),
+              //     (item) => !item?.crewPlayer?.every((player) => player.deleteFlg),
               //   ),
               // );
 
@@ -2226,10 +2226,10 @@ export default function TournamentResult() {
               } else if (mode === 'confirm') {
                 //登録・更新する前に選手名についている「*」を消す 20240514
                 for (let index = 0; index < raceResultRecords.length; index++) {
-                  for (let j = 0; j < raceResultRecords[index].crewPlayer.length; j++) {
+                  for (let j = 0; j < raceResultRecords[index]?.crewPlayer.length; j++) {
                     raceResultRecords[index].crewPlayer[j].playerName = raceResultRecords[
                       index
-                    ].crewPlayer[j].playerName.replace('*', '');
+                    ]?.crewPlayer[j].playerName.replace('*', '');
                   }
                 }
                 if (prevMode == 'create') {
