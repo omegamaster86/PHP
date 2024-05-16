@@ -458,25 +458,14 @@ export default function TournamentResult() {
     });
 
     //順位 重複チェック
-    var indexList2 = [] as number[];
-    // チェックして、エラーに該当するレース結果情報のインデックスを取得する
-    const isError3 = validateCheckList.some((record, i) => {
-      // エラーに該当するレース結果情報のインデックスを取得する
-      return validateCheckList.some((record2, j) => {
+    validateCheckList.some((record, i) => {
+      validateCheckList.some((record2, j) => {
         if (i !== j && record.rank === record2.rank) {
-          indexList2.push(i);
-          indexList2.push(j);
+          handleRaceResultRecordsInputChangebyIndex(i, 'errorText', '順位が重複しています。');
+          errorCount++;
         }
-        return i !== j && record.rank === record2.rank;
       });
     });
-
-    if (isError3) {
-      indexList2.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(index, 'errorText', '順位が重複しています。');
-      });
-      errorCount++;
-    }
 
     //ラップタイム 空欄チェック 入力値チェック
     validateCheckList.some((record, index) => {
@@ -1059,7 +1048,7 @@ export default function TournamentResult() {
             }, []);
           }
         }
-      } catch (error: any) { }
+      } catch (error: any) {}
     };
     fetchRaceInfo();
   }, [raceInfo?.race_id]);
@@ -1424,8 +1413,9 @@ export default function TournamentResult() {
       {/* レース結果情報 */}
       {raceResultRecords.map((item, index) => (
         <div
-          className={`flex flex-col gap-[20px] border border-solid p-[20px] ${mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : ''
-            }`}
+          className={`flex flex-col gap-[20px] border border-solid p-[20px] ${
+            mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : ''
+          }`}
           key={index}
         >
           <InputLabel label={'レース結果情報' + (raceResultRecords.length - index)} />
@@ -1449,7 +1439,7 @@ export default function TournamentResult() {
                   id={'deleteFlg' + index}
                   value='deleteFlg'
                   checked={item.deleteFlg}
-                  onChange={() => { }}
+                  onChange={() => {}}
                   readonly={mode === 'confirm'}
                 />
                 <p className='text-systemErrorText'>このレース結果情報を削除する</p>
@@ -1690,8 +1680,9 @@ export default function TournamentResult() {
                             renderInput={(params) => (
                               <TextField
                                 key={params.id}
-                                className={`border-[1px] border-solid border-gray-50 rounded-md ${mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : 'bg-white'
-                                  } my-1`}
+                                className={`border-[1px] border-solid border-gray-50 rounded-md ${
+                                  mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : 'bg-white'
+                                } my-1`}
                                 {...params}
                                 value={item.race_result_notes || ''}
                               />
