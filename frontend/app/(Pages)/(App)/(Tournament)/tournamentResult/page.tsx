@@ -341,7 +341,6 @@ export default function TournamentResult() {
     if (raceId) {
       // setErrorText([raceId]);
       setRaceIdErrorText(raceId);
-      scrollTo(0, 0);
       errorCount++;
     }
     //レース名　必須チェック
@@ -349,7 +348,6 @@ export default function TournamentResult() {
     if (raceName) {
       // setErrorText([raceName]);
       setRaceNameErrorText(raceName);
-      scrollTo(0, 0);
       errorCount++;
     }
     //発艇日時 必須チェック
@@ -359,7 +357,6 @@ export default function TournamentResult() {
     );
     if (startDateTime) {
       setStartDateTimeErrorText(startDateTime);
-      scrollTo(0, 0);
       errorCount++;
     }
     //1000m地点風速 入力値チェック
@@ -367,7 +364,6 @@ export default function TournamentResult() {
     if (windSpeed && !/^\d{1,3}$/.test(windSpeed.toString())) {
       // setErrorText(['半角数字で、999までの数字を入力してください。']);
       setWindSpeed1000mPointErrorText('半角数字で、999までの数字を入力してください。');
-      scrollTo(0, 0);
       errorCount++;
     }
     //2000m地点風速 入力値チェック
@@ -375,7 +371,6 @@ export default function TournamentResult() {
     if (windSpeed2 && !/^\d{1,3}$/.test(windSpeed2.toString())) {
       // setErrorText(['半角数字で、999までの数字を入力してください。']);
       setWindSpeed2000mPointErrorText('半角数字で、999までの数字を入力してください。');
-      scrollTo(0, 0);
       errorCount++;
     }
 
@@ -1064,7 +1059,7 @@ export default function TournamentResult() {
             }, []);
           }
         }
-      } catch (error: any) {}
+      } catch (error: any) { }
     };
     fetchRaceInfo();
   }, [raceInfo?.race_id]);
@@ -1429,9 +1424,8 @@ export default function TournamentResult() {
       {/* レース結果情報 */}
       {raceResultRecords.map((item, index) => (
         <div
-          className={`flex flex-col gap-[20px] border border-solid p-[20px] ${
-            mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : ''
-          }`}
+          className={`flex flex-col gap-[20px] border border-solid p-[20px] ${mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : ''
+            }`}
           key={index}
         >
           <InputLabel label={'レース結果情報' + (raceResultRecords.length - index)} />
@@ -1455,7 +1449,7 @@ export default function TournamentResult() {
                   id={'deleteFlg' + index}
                   value='deleteFlg'
                   checked={item.deleteFlg}
-                  onChange={() => {}}
+                  onChange={() => { }}
                   readonly={mode === 'confirm'}
                 />
                 <p className='text-systemErrorText'>このレース結果情報を削除する</p>
@@ -1696,9 +1690,8 @@ export default function TournamentResult() {
                             renderInput={(params) => (
                               <TextField
                                 key={params.id}
-                                className={`border-[1px] border-solid border-gray-50 rounded-md ${
-                                  mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : 'bg-white'
-                                } my-1`}
+                                className={`border-[1px] border-solid border-gray-50 rounded-md ${mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : 'bg-white'
+                                  } my-1`}
                                 {...params}
                                 value={item.race_result_notes || ''}
                               />
@@ -2170,27 +2163,20 @@ export default function TournamentResult() {
         <CustomButton
           buttonType='primary'
           onClick={async () => {
-            //ポップアップダイアログ
-            const isAllPlayerChecked = raceResultRecords.some(
-              (item) => item?.crewPlayer?.every((player) => player.deleteFlg),
-            );
-            console.log(isAllPlayerChecked);
-            if (isAllPlayerChecked) {
-              const isOK = confirm(
-                '全ての選手が削除対象となっている「レース結果情報」があります。当該「レース結果情報」は、削除されますがよろしいですか？',
-              );
-              if (!isOK) {
-                return; //キャンセルが押された場合、以降の処理を行わない 20240515
-              }
-              // setRaceResultRecords(
-              //   raceResultRecords.filter(
-              //     (item) => !item?.crewPlayer?.every((player) => player.deleteFlg),
-              //   ),
-              // );
-            }
-
             var errorCount = 0;
             if (mode == 'create' || mode == 'update') {
+              //ポップアップダイアログ
+              const isAllPlayerChecked = raceResultRecords.some(
+                (item) => item?.crewPlayer?.every((player) => player.deleteFlg),
+              );
+              if (isAllPlayerChecked) {
+                const isOK = confirm(
+                  '全ての選手が削除対象となっている「レース結果情報」があります。当該「レース結果情報」は、削除されますがよろしいですか？',
+                );
+                if (!isOK) {
+                  return; //キャンセルが押された場合、以降の処理を行わない 20240515
+                }
+              }
               clearError(); //エラーメッセージのクリア
               errorCount = validateRaceResultRecords(); // バリデーション
             }
