@@ -2268,6 +2268,7 @@ export default function TournamentResult() {
               const newFormData = [...prevFormData];
               return newFormData.filter((item) => !item?.crewPlayer?.every((player) => player.deleteFlg));
             });
+            router.push('/tournamentResult?mode=confirm&prevMode=create');
           }}
           className='w-[170px]'
         >
