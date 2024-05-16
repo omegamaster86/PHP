@@ -398,8 +398,8 @@ export default function TournamentResultManagement() {
                     ))}
                   </div>
                 </div>
-                {/* 種目名 */}
-                <div
+                {/* 種目名 ペンディング対象のため表示されないようにコメントアウト 20240516 */}
+                {/* <div
                   className={`${
                     (prevScreen === 'tournamentResult' && searchCond?.eventId !== '0') ||
                     searchCond?.eventId !== '999'
@@ -414,7 +414,7 @@ export default function TournamentResultManagement() {
                     onChange={(e) => handleInputChange('eventName', e.target.value)}
                     className='w-[300px]'
                   />
-                </div>
+                </div> */}
               </div>
             </div>
             {/* レース区分 */}
