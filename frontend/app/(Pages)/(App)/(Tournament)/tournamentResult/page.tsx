@@ -1127,7 +1127,10 @@ export default function TournamentResult() {
                     console.log(response.data);
                     const data = response.data.race_result;
                     console.log('qqqqqqqqq', e);
-                    if (data.length == 0 && ((e as string) != '' || e != null)) {
+                    if (data.length == 0) {
+                      if ((e as string) == '' || e == null || e == undefined) {
+                        return; //未全宅の場合、エラーメッセージは表示させない 20240516
+                      }
                       setErrorText(['レース情報が取得できませんでした。']);
                       setRaceInfo({} as RaceTable);
                       scrollTo(0, 0);
@@ -1135,6 +1138,7 @@ export default function TournamentResult() {
                       //名前の異なるバックエンド側とフロント側のキーを紐づける 20240420
                       data[0].startDateTime = data[0].start_date_time;
                       setRaceInfo(data[0]);
+                      setErrorText([]);
                     }
                   }}
                   readonly={mode === 'update' || mode === 'confirm'}
