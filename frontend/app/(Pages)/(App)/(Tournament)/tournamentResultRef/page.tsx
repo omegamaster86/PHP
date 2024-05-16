@@ -451,7 +451,7 @@ export default function TournamentResultRef() {
         <CustomButton
           buttonType='secondary'
           onClick={() => {
-            router.back();
+            router.push('/tournamentResultManagement'); //大会結果管理（大会レース結果管理）画面に戻す 20240516
           }}
           className='w-[170px]'
         >
