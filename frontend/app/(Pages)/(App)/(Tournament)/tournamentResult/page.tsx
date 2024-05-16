@@ -2199,13 +2199,10 @@ export default function TournamentResult() {
               //   ),
               // );
 
-              //crewPlayerが無くて異常終了する不具合の調査中 20240515
-              setRaceResultRecords(
-                raceResultRecords.filter(
-                  (item) => console.log(item),
-                ),
-
-              );
+              setRaceResultRecords((prevFormData) => {
+                const newFormData = [...prevFormData];
+                return newFormData.filter((item) => !item?.crewPlayer?.every((player) => player.deleteFlg));
+              });
             }
 
             var errorCount = 0;
