@@ -428,7 +428,23 @@ export default function TournamentResult() {
     //クルー名、所属団体組み合わせ
     validateCheckList.some((record, i) => {
       validateCheckList.some((record2, j) => {
-        if (i !== j && record.org_id === record2.org_id && record.crew_name === record2.crew_name) {
+        if (
+          i !== j &&
+          record.org_id === record2.org_id &&
+          record.org_id != '' &&
+          record.org_id != null &&
+          record.org_id != undefined &&
+          record2.org_id != '' &&
+          record2.org_id != null &&
+          record2.org_id != undefined &&
+          record.crew_name === record2.crew_name &&
+          record.crew_name != '' &&
+          record.crew_name != null &&
+          record.crew_name != undefined &&
+          record2.crew_name != '' &&
+          record2.crew_name != null &&
+          record2.crew_name != undefined
+        ) {
           handleRaceResultRecordsInputChangebyIndex(
             i,
             'errorText',
