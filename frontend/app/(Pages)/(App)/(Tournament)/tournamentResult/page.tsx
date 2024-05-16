@@ -2198,12 +2198,6 @@ export default function TournamentResult() {
               //     (item) => !item?.crewPlayer?.every((player) => player.deleteFlg),
               //   ),
               // );
-
-              setRaceResultRecords((prevFormData) => {
-                const newFormData = [...prevFormData];
-                return newFormData.filter((item) => !item?.crewPlayer?.every((player) => player.deleteFlg));
-              });
-              return;
             }
 
             var errorCount = 0;
@@ -2269,6 +2263,11 @@ export default function TournamentResult() {
                 }
               }
             }
+
+            setRaceResultRecords((prevFormData) => {
+              const newFormData = [...prevFormData];
+              return newFormData.filter((item) => !item?.crewPlayer?.every((player) => player.deleteFlg));
+            });
           }}
           className='w-[170px]'
         >
