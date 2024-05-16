@@ -2255,6 +2255,11 @@ export default function TournamentResult() {
           onClick={async () => {
             var errorCount = 0;
             if (mode == 'create' || mode == 'update') {
+              if (raceResultRecords.length == 0) {
+                alert('1件以上、レース結果情報を登録する必要があります。');
+                return;
+              }
+
               //ポップアップダイアログ
               const isAllPlayerChecked = raceResultRecords.some(
                 (item) => item?.crewPlayer?.every((player) => player.deleteFlg),
