@@ -384,53 +384,55 @@ export default function TournamentResult() {
     //=============================================================
     //クルー単位の内容　ここから
 
+    var validateCheckList = raceResultRecords.filter((item) => !item?.crewPlayer?.every((player) => player.deleteFlg));
+
     //レース結果情報の要素数分ループ
-    for (let index = 0; index < raceResultRecords.length; index++) {
+    for (let index = 0; index < validateCheckList.length; index++) {
       //所属団体 空欄チェック
-      if (!raceResultRecords[index].org_id) {
-        raceResultRecords[index].orgNameErrorText = '所属団体を選択してください。';
+      if (!validateCheckList[index].org_id) {
+        validateCheckList[index].orgNameErrorText = '所属団体を選択してください。';
       } else {
-        raceResultRecords[index].orgNameErrorText = '';
+        validateCheckList[index].orgNameErrorText = '';
       }
 
       //クルー名　空欄チェック
-      if (!raceResultRecords[index].crew_name) {
-        raceResultRecords[index].crewNameErrorText = 'クルー名を入力してください。';
+      if (!validateCheckList[index].crew_name) {
+        validateCheckList[index].crewNameErrorText = 'クルー名を入力してください。';
       } else {
-        raceResultRecords[index].crewNameErrorText = '';
+        validateCheckList[index].crewNameErrorText = '';
       }
 
       //出漕レーンNo 入力値チェック
       if (
-        raceResultRecords[index].lane_number &&
-        !/^\d{1,2}$/.test(raceResultRecords[index]?.lane_number.toString())
+        validateCheckList[index].lane_number &&
+        !/^\d{1,2}$/.test(validateCheckList[index]?.lane_number.toString())
       ) {
-        raceResultRecords[index].laneNumberErrorText =
+        validateCheckList[index].laneNumberErrorText =
           '出漕レーンNoは半角数字で、99までの数値を入力してください。';
       } else {
-        raceResultRecords[index].laneNumberErrorText = '';
+        validateCheckList[index].laneNumberErrorText = '';
       }
 
       //順位 空欄チェック 入力値チェック
-      if (!raceResultRecords[index].rank) {
-        raceResultRecords[index].rankErrorText = '順位を入力してください';
+      if (!validateCheckList[index].rank) {
+        validateCheckList[index].rankErrorText = '順位を入力してください';
       } else if (
-        raceResultRecords[index].rank &&
-        !/^\d{1,2}$/.test(raceResultRecords[index]?.rank.toString())
+        validateCheckList[index].rank &&
+        !/^\d{1,2}$/.test(validateCheckList[index]?.rank.toString())
       ) {
-        raceResultRecords[index].rankErrorText =
+        validateCheckList[index].rankErrorText =
           '順位は半角数字で、99までの数値を入力してください。';
       } else {
-        raceResultRecords[index].rankErrorText = '';
+        validateCheckList[index].rankErrorText = '';
       }
     }
 
     //クルー名、所属団体組み合わせ
     var indexList9 = [] as number[];
     // チェックして、エラーに該当するレース結果情報のインデックスを取得する
-    const isError7 = raceResultRecords.some((record, i) => {
+    const isError7 = validateCheckList.some((record, i) => {
       // エラーに該当するレース結果情報のインデックスを取得する
-      return raceResultRecords.some((record2, j) => {
+      return validateCheckList.some((record2, j) => {
         if (i !== j && record.org_id === record2.org_id && record.crew_name === record2.crew_name) {
           indexList9.push(i);
           indexList9.push(j);
@@ -454,9 +456,9 @@ export default function TournamentResult() {
     //出漕レーンNo 重複チェック
     var indexList = [] as number[];
     // チェックして、エラーに該当するレース結果情報のインデックスを取得する
-    const isError2 = raceResultRecords.some((record, i) => {
+    const isError2 = validateCheckList.some((record, i) => {
       // エラーに該当するレース結果情報のインデックスを取得する
-      return raceResultRecords.some((record2, j) => {
+      return validateCheckList.some((record2, j) => {
         if (
           i !== j &&
           record.lane_number === record2.lane_number &&
@@ -482,9 +484,9 @@ export default function TournamentResult() {
     //順位 重複チェック
     var indexList2 = [] as number[];
     // チェックして、エラーに該当するレース結果情報のインデックスを取得する
-    const isError3 = raceResultRecords.some((record, i) => {
+    const isError3 = validateCheckList.some((record, i) => {
       // エラーに該当するレース結果情報のインデックスを取得する
-      return raceResultRecords.some((record2, j) => {
+      return validateCheckList.some((record2, j) => {
         if (i !== j && record.rank === record2.rank) {
           indexList2.push(i);
           indexList2.push(j);
@@ -501,7 +503,7 @@ export default function TournamentResult() {
     }
 
     //ラップタイム 空欄チェック 入力値チェック
-    raceResultRecords.some((record, index) => {
+    validateCheckList.some((record, index) => {
       // エラーに該当するレース結果情報のインデックスを取得する
       if (
         !record.laptime_500m &&
@@ -552,7 +554,7 @@ export default function TournamentResult() {
     });
 
     //ストロークレート 入力値チェック
-    raceResultRecords.some((record, index) => {
+    validateCheckList.some((record, index) => {
       if (
         (record.stroke_rat_500m && !/^\d{1,2}$/.test(record?.stroke_rat_500m.toString())) ||
         (record.stroke_rat_1000m && !/^\d{1,2}$/.test(record?.stroke_rat_1000m.toString())) ||
@@ -576,7 +578,7 @@ export default function TournamentResult() {
     console.log("gggggggggghhhhhhhhhhhhhh");
 
     //空欄チェック
-    raceResultRecords.map((record, i) => {
+    validateCheckList.map((record, i) => {
       record?.crewPlayer?.map((player, j) => {
         // 追加行の場合 削除フラグが未チェックかつ、playerの何れかの項目に値が入っている場合に実施
         if (player.addonLineFlg) {
@@ -681,7 +683,7 @@ export default function TournamentResult() {
 
     //種目の人数分、登録可能な行が存在することを確認する
     var playerCountErrorList = [] as number[];
-    const playerNum = raceResultRecords.some((record, i) => {
+    const playerNum = validateCheckList.some((record, i) => {
       var count = 0;
       record?.crewPlayer?.map((player, j) => {
         // console.log(playerCount,count, player.deleteFlg, player.errorText);
@@ -2209,11 +2211,16 @@ export default function TournamentResult() {
             if (errorCount == 0) {
               clearError(); //エラーメッセージのクリア
               if (mode === 'create') {
-                // 登録処理
-                // 同画面にconfirmモードで遷移
+                setRaceResultRecords((prevFormData) => {
+                  const newFormData = [...prevFormData];
+                  return newFormData.filter((item) => !item?.crewPlayer?.every((player) => player.deleteFlg));
+                });
                 router.push('/tournamentResult?mode=confirm&prevMode=create');
               } else if (mode === 'update') {
-                // 更新処理
+                setRaceResultRecords((prevFormData) => {
+                  const newFormData = [...prevFormData];
+                  return newFormData.filter((item) => !item?.crewPlayer?.every((player) => player.deleteFlg));
+                });
                 router.push('/tournamentResult?mode=confirm&prevMode=update');
               } else if (mode === 'confirm') {
                 //登録・更新する前に選手名についている「*」を消す 20240514
@@ -2263,12 +2270,6 @@ export default function TournamentResult() {
                 }
               }
             }
-
-            setRaceResultRecords((prevFormData) => {
-              const newFormData = [...prevFormData];
-              return newFormData.filter((item) => !item?.crewPlayer?.every((player) => player.deleteFlg));
-            });
-            router.push('/tournamentResult?mode=confirm&prevMode=create');
           }}
           className='w-[170px]'
         >
