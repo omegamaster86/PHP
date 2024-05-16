@@ -994,6 +994,8 @@ export default function TournamentResult() {
             // 選手情報の件数が種目マスタに紐づく選手の人数より少ない場合、足りない件数分追加行を追加する
 
             raceResultRecords.map((record) => {
+              console.log('sssssssssfffffffeeeekkkk');
+              console.log(record.crewPlayer);
               if (record?.crewPlayer?.length < response2) {
                 record.crewPlayer = record?.crewPlayer.concat(
                   Array.from({ length: response2 - record?.crewPlayer.length }, () => ({
@@ -1032,6 +1034,8 @@ export default function TournamentResult() {
                 record.crewPlayer = record?.crewPlayer.slice(0, response2);
               }
               record.isAdded = true;
+              console.log(record.crewPlayer);
+              console.log('sssssssssfffffxxxxxxxxzzzzzzz');
             }, []);
           }
         }
