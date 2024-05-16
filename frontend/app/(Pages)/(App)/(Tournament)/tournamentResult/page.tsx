@@ -440,12 +440,20 @@ export default function TournamentResult() {
     });
 
     //出漕レーンNo 重複チェック
-     //順位 重複チェック
-     for (let i = 0; i < validateCheckList.length; i++) {
+    //順位 重複チェック
+    for (let i = 0; i < validateCheckList.length; i++) {
       for (let j = 0; j < validateCheckList.length; j++) {
         if (i != j && validateCheckList[i].lane_number == validateCheckList[j].lane_number) {
-          handleRaceResultRecordsInputChangebyIndex(i,'errorText','出漕レーンNoが重複しています。');
-          handleRaceResultRecordsInputChangebyIndex(j,'errorText','出漕レーンNoが重複しています。');
+          handleRaceResultRecordsInputChangebyIndex(
+            i,
+            'errorText',
+            '出漕レーンNoが重複しています。',
+          );
+          handleRaceResultRecordsInputChangebyIndex(
+            j,
+            'errorText',
+            '出漕レーンNoが重複しています。',
+          );
           errorCount++;
         }
       }
@@ -545,17 +553,25 @@ export default function TournamentResult() {
         if (player.addonLineFlg) {
           if (
             !player.deleteFlg &&
-            ( (player.playerId != undefined && player.playerId != null && player.playerId != '') ||
-              (player.playerName != undefined && player.playerName != null && player.playerName != '') ||
-              (player.height != undefined && player.height != null) ||  
+            ((player.playerId != undefined && player.playerId != null && player.playerId != '') ||
+              (player.playerName != undefined &&
+                player.playerName != null &&
+                player.playerName != '') ||
+              (player.height != undefined && player.height != null) ||
               (player.weight != undefined && player.weight != null) ||
-              (player.sheetName != undefined && player.sheetName != null && player.sheetName != '') ||
+              (player.sheetName != undefined &&
+                player.sheetName != null &&
+                player.sheetName != '') ||
               (player.fiveHundredmHeartRate != undefined && player.fiveHundredmHeartRate != null) ||
               (player.tenHundredmHeartRate != undefined && player.tenHundredmHeartRate != null) ||
-              (player.fifteenHundredmHeartRate != undefined && player.fifteenHundredmHeartRate != null) ||
-              (player.twentyHundredmHeartRate != undefined && player.twentyHundredmHeartRate != null) ||
-              (player.heartRateAvg != undefined && player.heartRateAvg != null ) ||
-              (player.attendance != undefined && player.attendance != null && player.attendance != ''))
+              (player.fifteenHundredmHeartRate != undefined &&
+                player.fifteenHundredmHeartRate != null) ||
+              (player.twentyHundredmHeartRate != undefined &&
+                player.twentyHundredmHeartRate != null) ||
+              (player.heartRateAvg != undefined && player.heartRateAvg != null) ||
+              (player.attendance != undefined &&
+                player.attendance != null &&
+                player.attendance != ''))
           ) {
             var errorTextData = '';
             if (!player.playerId) {
@@ -611,8 +627,13 @@ export default function TournamentResult() {
               errorTextData += 'シート番号を選択してください。';
             } else if (player.sheetName) {
               for (let index = 0; index < record?.crewPlayer.length; index++) {
-                if (index != j && record?.crewPlayer[index].sheetName == player.sheetName && record?.crewPlayer[index].deleteFlg != true) {
+                if (
+                  index != j &&
+                  record?.crewPlayer[index].sheetName == player.sheetName &&
+                  record?.crewPlayer[index].deleteFlg != true
+                ) {
                   errorTextData += 'シート番号が重複しています。';
+                  break; //メッセージが２つ以上表示されないようにbreakする
                 }
               }
             }
@@ -992,13 +1013,10 @@ export default function TournamentResult() {
           if (mode === 'create') {
             // レース結果情報の取得
             // 選手情報の件数が種目マスタに紐づく選手の人数より少ない場合、足りない件数分追加行を追加する
-
             raceResultRecords.map((record) => {
-              console.log('sssssssssfffffffeeeekkkk');
-              console.log(record.crewPlayer);
               if (record?.crewPlayer?.length < response2) {
                 record.crewPlayer = record?.crewPlayer.concat(
-                  Array.from({ length: response2}, () => ({
+                  Array.from({ length: response2 }, () => ({
                     //id: undefined,
                     playerPhoto: '',
                     playerName: '',
@@ -1031,11 +1049,9 @@ export default function TournamentResult() {
               }
               // 種目マスタに紐づく選手の人数より多い場合、余分な行を削除する
               if (record?.crewPlayer?.length > response2) {
-                record.crewPlayer = record?.crewPlayer.slice(1, response2+1);
+                record.crewPlayer = record?.crewPlayer.slice(1, response2 + 1);
               }
               record.isAdded = true;
-              console.log(record.crewPlayer);
-              console.log('sssssssssfffffxxxxxxxxzzzzzzz');
             }, []);
           }
         }
