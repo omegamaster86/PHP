@@ -246,7 +246,6 @@ export default function TournamentResult() {
         };
         return newFormData;
       });
-
       return;
     }
 
@@ -604,21 +603,73 @@ export default function TournamentResult() {
                 player.attendance != ''))
           ) {
             var errorTextData = '';
+            //選手ID 空欄チェック 重複チェック
             if (!player.playerId) {
               errorTextData += '選手IDを入力してください。';
+            } else if (player.playerId) {
+              for (let index = 0; index < record?.crewPlayer.length; index++) {
+                if (
+                  index != j &&
+                  record?.crewPlayer[index].playerId == player.playerId &&
+                  record?.crewPlayer[index].deleteFlg != true
+                ) {
+                  errorTextData += '重複する選手IDです。';
+                  break; //メッセージが２つ以上表示されないようにbreakする
+                }
+              }
             }
+
+            //選手名 空欄チェック
             if (!player.playerName) {
               errorTextData += '選手名を入力してください。';
             }
+
+            //身長 空欄チェック 入力値チェック
             if (!player.height) {
               errorTextData += '身長を入力してください。';
+            } else if (player.height && !/^\d{1,3}(\.\d{1,2})?$/.test(player?.height.toString())) {
+              errorTextData += '「身長」は、半角数字で、999.99までの数値を入力してください。';
             }
+
+            //体重 空欄チェック 入力値チェック
             if (!player.weight) {
               errorTextData += '体重を入力してください。';
+            } else if (player.weight && !/^\d{1,3}(\.\d{1,2})?$/.test(player?.weight.toString())) {
+              errorTextData += '「体重」は、半角数字で、999.99までの数値を入力してください。';
             }
+
+            //シート番号 空欄チェック 重複チェック
             if (!player.sheetNameId) {
               errorTextData += 'シート番号を選択してください。';
+            } else if (player.sheetName) {
+              for (let index = 0; index < record?.crewPlayer.length; index++) {
+                if (
+                  index != j &&
+                  record?.crewPlayer[index].sheetName == player.sheetName &&
+                  record?.crewPlayer[index].deleteFlg != true
+                ) {
+                  errorTextData += 'シート番号が重複しています。';
+                  break; //メッセージが２つ以上表示されないようにbreakする
+                }
+              }
             }
+
+            //心拍数 入力値チェック
+            if (
+              (player.fiveHundredmHeartRate &&
+                !/^\d{1,3}$/.test(player?.fiveHundredmHeartRate.toString())) ||
+              (player.tenHundredmHeartRate &&
+                !/^\d{1,3}$/.test(player?.tenHundredmHeartRate.toString())) ||
+              (player.fifteenHundredmHeartRate &&
+                !/^\d{1,3}$/.test(player?.fifteenHundredmHeartRate.toString())) ||
+              (player.twentyHundredmHeartRate &&
+                !/^\d{1,3}$/.test(player?.twentyHundredmHeartRate.toString())) ||
+              (player.heartRateAvg && !/^\d{1,3}$/.test(player?.heartRateAvg.toString()))
+            ) {
+              errorTextData += '「心拍数」は、半角数字で999までの数値を入力してください。';
+            }
+
+            //バリデーション結果の表示
             if (errorTextData.length > 0) {
               handleRaceResultRecordsCrewPlayerChangebyIndex(i, j, 'errorText', errorTextData);
               errorCount++;
@@ -628,9 +679,20 @@ export default function TournamentResult() {
           // 更新行の場合 削除フラグが未チェックの場合のみ実施
           if (!player.deleteFlg) {
             var errorTextData = '';
-            //選手ID 空欄チェック
+            //選手ID 空欄チェック 重複チェック
             if (!player.playerId) {
               errorTextData += '選手IDを入力してください。';
+            } else if (player.playerId) {
+              for (let index = 0; index < record?.crewPlayer.length; index++) {
+                if (
+                  index != j &&
+                  record?.crewPlayer[index].playerId == player.playerId &&
+                  record?.crewPlayer[index].deleteFlg != true
+                ) {
+                  errorTextData += '重複する選手IDです。';
+                  break; //メッセージが２つ以上表示されないようにbreakする
+                }
+              }
             }
 
             //選手名 空欄チェック
