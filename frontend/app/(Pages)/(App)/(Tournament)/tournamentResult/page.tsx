@@ -851,7 +851,7 @@ export default function TournamentResult() {
         // シート番号（マスタ）の取得
         //const response6 = await axios.get('http://localhost:3100/seatNo');
         const response7 = await axios.get('/getSeatNumber');
-        console.log(response7.data);
+        // console.log(response7.data);
         const seatNumberList = response7.data.map(
           ({ seat_id, seat_name }: { seat_id: number; seat_name: string }) => ({
             id: seat_id,
@@ -881,7 +881,7 @@ export default function TournamentResult() {
             return e;
           }
         });
-        console.log(newSeatNumberArray);
+        // console.log(newSeatNumberArray);
         setSheetNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする 20240514
 
         console.log('====================');
@@ -930,7 +930,7 @@ export default function TournamentResult() {
 
         // シート番号（マスタ）の取得
         const response7 = await axios.get('/getSeatNumber');
-        console.log(response7.data);
+        // console.log(response7.data);
         const seatNumberList = response7.data.map(
           ({ seat_id, seat_name }: { seat_id: number; seat_name: string }) => ({
             id: seat_id,
@@ -960,7 +960,7 @@ export default function TournamentResult() {
             return e;
           }
         });
-        console.log(newSeatNumberArray);
+        // console.log(newSeatNumberArray);
         setSheetNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする 20240514
 
         // 出漕結果記録情報の取得
@@ -1124,6 +1124,7 @@ export default function TournamentResult() {
                     const response = await axios.post('/getRaceDataRaceId', sendData);
                     console.log(response.data);
                     const data = response.data.race_result;
+                    console.log('qqqqqqqqq',e);
                     if (data.length == 0) {
                       setErrorText(['レース情報が取得できませんでした。']);
                       setRaceInfo({} as RaceTable);
