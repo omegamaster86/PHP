@@ -1125,7 +1125,7 @@ export default function TournamentResult() {
                     console.log(response.data);
                     const data = response.data.race_result;
                     console.log('qqqqqqqqq',e);
-                    if (data.length == 0) {
+                    if (data.length == 0 && !e) {
                       setErrorText(['レース情報が取得できませんでした。']);
                       setRaceInfo({} as RaceTable);
                       scrollTo(0, 0);
