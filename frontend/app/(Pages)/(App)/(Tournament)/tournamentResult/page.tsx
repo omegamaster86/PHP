@@ -385,7 +385,9 @@ export default function TournamentResult() {
     //クルー単位の内容　ここから
 
     //選手情報に全ての削除チェックがされている項目以外をバリデーションチェック対象とする 20240516
-    var validateCheckList = raceResultRecords.filter((item) => !item?.crewPlayer?.every((player) => player.deleteFlg));
+    var validateCheckList = raceResultRecords.filter(
+      (item) => !item?.crewPlayer?.every((player) => player.deleteFlg),
+    );
 
     //レース結果情報の要素数分ループ
     for (let index = 0; index < validateCheckList.length; index++) {
@@ -576,7 +578,7 @@ export default function TournamentResult() {
     //=============================================================
     //選手単位の内容　ここから
 
-    console.log("gggggggggghhhhhhhhhhhhhh");
+    console.log('gggggggggghhhhhhhhhhhhhh');
 
     //空欄チェック
     validateCheckList.map((record, i) => {
@@ -1124,8 +1126,8 @@ export default function TournamentResult() {
                     const response = await axios.post('/getRaceDataRaceId', sendData);
                     console.log(response.data);
                     const data = response.data.race_result;
-                    console.log('qqqqqqqqq',e);
-                    if (data.length == 0 && !e) {
+                    console.log('qqqqqqqqq', e);
+                    if (data.length == 0 && ((e as string) != '' || e != null)) {
                       setErrorText(['レース情報が取得できませんでした。']);
                       setRaceInfo({} as RaceTable);
                       scrollTo(0, 0);
@@ -2215,28 +2217,40 @@ export default function TournamentResult() {
               if (mode === 'create') {
                 //追加行でない(更新行)かつ、選手情報すべてに削除チェックがされている場合、「このレース結果情報を削除する」にチェックを入れる 20240516
                 for (let index = 0; index < raceResultRecords.length; index++) {
-                  if(!raceResultRecords[index]?.isAdded && raceResultRecords[index]?.crewPlayer?.every((player) => player.deleteFlg)){
+                  if (
+                    !raceResultRecords[index]?.isAdded &&
+                    raceResultRecords[index]?.crewPlayer?.every((player) => player.deleteFlg)
+                  ) {
                     raceResultRecords[index].deleteFlg = true;
                   }
                 }
                 //「追加行かつ、選手情報すべてに削除チェックがされている項目」以外を表示 20240516
                 setRaceResultRecords((prevFormData) => {
                   const newFormData = [...prevFormData];
-                  return newFormData.filter((item) => !(item?.isAdded && item?.crewPlayer?.every((player) => player.deleteFlg)));
+                  return newFormData.filter(
+                    (item) =>
+                      !(item?.isAdded && item?.crewPlayer?.every((player) => player.deleteFlg)),
+                  );
                 });
 
                 router.push('/tournamentResult?mode=confirm&prevMode=create');
               } else if (mode === 'update') {
                 //追加行でない(更新行)かつ、選手情報すべてに削除チェックがされている場合、「このレース結果情報を削除する」にチェックを入れる 20240516
                 for (let index = 0; index < raceResultRecords.length; index++) {
-                  if(!raceResultRecords[index]?.isAdded && raceResultRecords[index]?.crewPlayer?.every((player) => player.deleteFlg)){
+                  if (
+                    !raceResultRecords[index]?.isAdded &&
+                    raceResultRecords[index]?.crewPlayer?.every((player) => player.deleteFlg)
+                  ) {
                     raceResultRecords[index].deleteFlg = true;
                   }
                 }
                 //「追加行かつ、選手情報すべてに削除チェックがされている項目」以外を表示 20240516
                 setRaceResultRecords((prevFormData) => {
                   const newFormData = [...prevFormData];
-                  return newFormData.filter((item) => !(item?.isAdded && item?.crewPlayer?.every((player) => player.deleteFlg)));
+                  return newFormData.filter(
+                    (item) =>
+                      !(item?.isAdded && item?.crewPlayer?.every((player) => player.deleteFlg)),
+                  );
                 });
 
                 router.push('/tournamentResult?mode=confirm&prevMode=update');
