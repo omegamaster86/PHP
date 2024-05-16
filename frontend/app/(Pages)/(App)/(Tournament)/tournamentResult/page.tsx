@@ -610,9 +610,9 @@ export default function TournamentResult() {
             if (!player.sheetNameId) {
               errorTextData += 'シート番号を選択してください。';
             } else if (player.sheetName) {
-              const seatNoList = record?.crewPlayer?.map((player) => player.sheetName);
+              const seatNoList = record?.crewPlayer?.map((player) => player.sheetName && !player.deleteFlg);
               // console.log(seatNoList);
-              if (seatNoList.filter((item) => item === player.sheetName).length > 1) {
+              if (seatNoList.filter((item) => item == player.sheetName).length > 1) {
                 errorTextData += 'シート番号が重複しています。';
               }
             }
