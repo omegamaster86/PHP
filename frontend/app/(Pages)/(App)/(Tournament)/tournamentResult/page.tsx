@@ -1084,7 +1084,7 @@ export default function TournamentResult() {
             }, []);
           }
         }
-      } catch (error: any) {}
+      } catch (error: any) { }
     };
     fetchRaceInfo();
   }, [raceInfo?.race_id]);
@@ -1128,12 +1128,12 @@ export default function TournamentResult() {
                     const data = response.data.race_result;
                     console.log('qqqqqqqqq', e);
                     if (data.length == 0) {
-                      if ((e as string) == '' || e == null || e == undefined) {
-                        return; //未全宅の場合、エラーメッセージは表示させない 20240516
-                      }
-                      setErrorText(['レース情報が取得できませんでした。']);
                       setRaceInfo({} as RaceTable);
-                      scrollTo(0, 0);
+                      if ((e as string) != '' && e != null && e != undefined) {
+                        //未選択の場合、エラーメッセージは表示させない 20240516
+                        setErrorText(['レース情報が取得できませんでした。']);
+                        scrollTo(0, 0);
+                      }
                     } else {
                       //名前の異なるバックエンド側とフロント側のキーを紐づける 20240420
                       data[0].startDateTime = data[0].start_date_time;
@@ -1450,9 +1450,8 @@ export default function TournamentResult() {
       {/* レース結果情報 */}
       {raceResultRecords.map((item, index) => (
         <div
-          className={`flex flex-col gap-[20px] border border-solid p-[20px] ${
-            mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : ''
-          }`}
+          className={`flex flex-col gap-[20px] border border-solid p-[20px] ${mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : ''
+            }`}
           key={index}
         >
           <InputLabel label={'レース結果情報' + (raceResultRecords.length - index)} />
@@ -1476,7 +1475,7 @@ export default function TournamentResult() {
                   id={'deleteFlg' + index}
                   value='deleteFlg'
                   checked={item.deleteFlg}
-                  onChange={() => {}}
+                  onChange={() => { }}
                   readonly={mode === 'confirm'}
                 />
                 <p className='text-systemErrorText'>このレース結果情報を削除する</p>
@@ -1717,9 +1716,8 @@ export default function TournamentResult() {
                             renderInput={(params) => (
                               <TextField
                                 key={params.id}
-                                className={`border-[1px] border-solid border-gray-50 rounded-md ${
-                                  mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : 'bg-white'
-                                } my-1`}
+                                className={`border-[1px] border-solid border-gray-50 rounded-md ${mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : 'bg-white'
+                                  } my-1`}
                                 {...params}
                                 value={item.race_result_notes || ''}
                               />
