@@ -460,11 +460,11 @@ export default function TournamentResult() {
     //順位 重複チェック
     for (let i = 0; i < validateCheckList.length; i++) {
       for (let j = 0; j < validateCheckList.length; j++) {
-        if(i != j && validateCheckList[i].rank == validateCheckList[j].rank){
+        if (i != j && validateCheckList[i].rank == validateCheckList[j].rank) {
           handleRaceResultRecordsInputChangebyIndex(i, 'errorText', '順位が重複しています。');
           handleRaceResultRecordsInputChangebyIndex(j, 'errorText', '順位が重複しています。');
         }
-      }  
+      }
     }
 
     //ラップタイム 空欄チェック 入力値チェック
@@ -649,10 +649,9 @@ export default function TournamentResult() {
     });
 
     //種目の人数分、登録可能な行が存在することを確認する
-    var playerCountErrorList = [] as number[];
-    const playerNum = validateCheckList.some((record, i) => {
+    validateCheckList.some((record, index) => {
       var count = 0;
-      record?.crewPlayer?.map((player, j) => {
+      record?.crewPlayer?.map((player) => {
         // console.log(playerCount,count, player.deleteFlg, player.errorText);
         //「登録可能」行の条件判定 （削除チェックなし、選手ID、選手名、身長、体重、シート名）
         if (
@@ -677,20 +676,14 @@ export default function TournamentResult() {
       console.log('yyyyyyyyyyyyy');
       console.log(count, playerCount);
       if (count != playerCount) {
-        playerCountErrorList.push(i);
-      }
-      return playerCountErrorList.length > 0;
-    });
-    if (playerNum) {
-      playerCountErrorList.map((index) => {
         handleRaceResultRecordsInputChangebyIndex(
           index,
           'errorText',
           '「選手情報」に種目の人数分、登録してください。',
         );
-      });
-      errorCount++;
-    }
+        errorCount++;
+      }
+    });
     return errorCount;
   };
 
