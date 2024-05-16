@@ -229,7 +229,12 @@ export default function TournamentResult() {
     //選手の重複チェック
     const isExist = raceResultRecords.some((record, i) => {
       return record?.crewPlayer?.some((player, j) => {
-        return player.playerId === value && !(index === i && crewIndex === j) && !player.deleteFlg;
+        return (
+          player.playerId === value &&
+          !(index === i && crewIndex === j) &&
+          !player.deleteFlg &&
+          !record?.crewPlayer[crewIndex].deleteFlg
+        );
       });
     });
     if (isExist) {
