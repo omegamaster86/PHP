@@ -384,6 +384,7 @@ export default function TournamentResult() {
     //=============================================================
     //クルー単位の内容　ここから
 
+    //選手情報に全ての削除チェックがされている項目以外をバリデーションチェック対象とする 20240516
     var validateCheckList = raceResultRecords.filter((item) => !item?.crewPlayer?.every((player) => player.deleteFlg));
 
     //レース結果情報の要素数分ループ
