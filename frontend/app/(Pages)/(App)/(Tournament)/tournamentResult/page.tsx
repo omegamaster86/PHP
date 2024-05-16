@@ -431,58 +431,36 @@ export default function TournamentResult() {
     }
 
     //クルー名、所属団体組み合わせ
-    var indexList9 = [] as number[];
-    // チェックして、エラーに該当するレース結果情報のインデックスを取得する
-    const isError7 = validateCheckList.some((record, i) => {
-      // エラーに該当するレース結果情報のインデックスを取得する
-      return validateCheckList.some((record2, j) => {
+    validateCheckList.some((record, i) => {
+      validateCheckList.some((record2, j) => {
         if (i !== j && record.org_id === record2.org_id && record.crew_name === record2.crew_name) {
-          indexList9.push(i);
-          indexList9.push(j);
+          handleRaceResultRecordsInputChangebyIndex(
+            i,
+            'errorText',
+            '所属団体とクルー名が同じレース結果情報を登録しようとしています。',
+          );
+          errorCount++;
         }
-        return (
-          i !== j && record.org_id === record2.org_id && record.crew_name === record2.crew_name
-        );
       });
     });
-    if (isError7) {
-      indexList9.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'errorText',
-          '所属団体とクルー名が同じレース結果情報を登録しようとしています。',
-        );
-      });
-      errorCount++;
-    }
 
     //出漕レーンNo 重複チェック
-    var indexList = [] as number[];
-    // チェックして、エラーに該当するレース結果情報のインデックスを取得する
-    const isError2 = validateCheckList.some((record, i) => {
-      // エラーに該当するレース結果情報のインデックスを取得する
-      return validateCheckList.some((record2, j) => {
+    validateCheckList.some((record, i) => {
+      validateCheckList.some((record2, j) => {
         if (
           i !== j &&
           record.lane_number === record2.lane_number &&
           (record.lane_number || record2.lane_number)
         ) {
-          indexList.push(i);
-          indexList.push(j);
+          handleRaceResultRecordsInputChangebyIndex(
+            i,
+            'errorText',
+            '出漕レーンNoが重複しています。',
+          );
+          errorCount++;
         }
-        return i !== j && record.lane_number === record2.lane_number;
       });
     });
-    if (isError2) {
-      indexList.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'errorText',
-          '出漕レーンNoが重複しています。',
-        );
-      });
-      errorCount++;
-    }
 
     //順位 重複チェック
     var indexList2 = [] as number[];
@@ -520,6 +498,7 @@ export default function TournamentResult() {
           'laptimeErrorText',
           '「ラップタイム」は、500m～最終タイムまでの何れかにタイムを入力してください。',
         );
+        errorCount++;
       } else {
         var lapTimeErrorText = '';
         if (
@@ -552,6 +531,7 @@ export default function TournamentResult() {
         if (lapTimeErrorText.length > 0) {
           lapTimeErrorText += 'は、半角数字で入力してください。MM:SS.99 例）3:05.89';
           handleRaceResultRecordsInputChangebyIndex(index, 'laptimeErrorText', lapTimeErrorText);
+          errorCount++;
         }
       }
     });
@@ -570,6 +550,7 @@ export default function TournamentResult() {
           'strokeRateErrorText',
           '「ストロークレート」は、半角数字で、99までの数字を入力してください。',
         );
+        errorCount++;
       }
     });
 
@@ -577,8 +558,6 @@ export default function TournamentResult() {
     //=============================================================
     //=============================================================
     //選手単位の内容　ここから
-
-    console.log('gggggggggghhhhhhhhhhhhhh');
 
     //空欄チェック
     validateCheckList.map((record, i) => {
@@ -619,6 +598,7 @@ export default function TournamentResult() {
             }
             if (errorTextData.length > 0) {
               handleRaceResultRecordsCrewPlayerChangebyIndex(i, j, 'errorText', errorTextData);
+              errorCount++;
             }
           }
         } else {
@@ -1084,7 +1064,7 @@ export default function TournamentResult() {
             }, []);
           }
         }
-      } catch (error: any) { }
+      } catch (error: any) {}
     };
     fetchRaceInfo();
   }, [raceInfo?.race_id]);
@@ -1126,7 +1106,6 @@ export default function TournamentResult() {
                     const response = await axios.post('/getRaceDataRaceId', sendData);
                     console.log(response.data);
                     const data = response.data.race_result;
-                    console.log('qqqqqqqqq', e);
                     if (data.length == 0) {
                       setRaceInfo({} as RaceTable);
                       if ((e as string) != '' && e != null && e != undefined) {
@@ -1450,8 +1429,9 @@ export default function TournamentResult() {
       {/* レース結果情報 */}
       {raceResultRecords.map((item, index) => (
         <div
-          className={`flex flex-col gap-[20px] border border-solid p-[20px] ${mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : ''
-            }`}
+          className={`flex flex-col gap-[20px] border border-solid p-[20px] ${
+            mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : ''
+          }`}
           key={index}
         >
           <InputLabel label={'レース結果情報' + (raceResultRecords.length - index)} />
@@ -1475,7 +1455,7 @@ export default function TournamentResult() {
                   id={'deleteFlg' + index}
                   value='deleteFlg'
                   checked={item.deleteFlg}
-                  onChange={() => { }}
+                  onChange={() => {}}
                   readonly={mode === 'confirm'}
                 />
                 <p className='text-systemErrorText'>このレース結果情報を削除する</p>
@@ -1716,8 +1696,9 @@ export default function TournamentResult() {
                             renderInput={(params) => (
                               <TextField
                                 key={params.id}
-                                className={`border-[1px] border-solid border-gray-50 rounded-md ${mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : 'bg-white'
-                                  } my-1`}
+                                className={`border-[1px] border-solid border-gray-50 rounded-md ${
+                                  mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : 'bg-white'
+                                } my-1`}
                                 {...params}
                                 value={item.race_result_notes || ''}
                               />
