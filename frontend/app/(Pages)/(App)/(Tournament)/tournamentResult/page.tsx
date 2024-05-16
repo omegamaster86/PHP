@@ -458,24 +458,14 @@ export default function TournamentResult() {
     });
 
     //順位 重複チェック
-    
-    //実装途中 20240516
-    // for (let i = 0; i < validateCheckList.length; i++) {
-    //   for (let j = 0; j < validateCheckList.length; j++) {
-    //     if(i != j && validateCheckList[i].rank == validateCheckList[j].rank){
-
-    //     }
-    //   }  
-    // }
-
-    validateCheckList.some((record, i) => {
-      validateCheckList.some((record2, j) => {
-        if (i !== j && record.rank === record2.rank) {
+    for (let i = 0; i < validateCheckList.length; i++) {
+      for (let j = 0; j < validateCheckList.length; j++) {
+        if(i != j && validateCheckList[i].rank == validateCheckList[j].rank){
           handleRaceResultRecordsInputChangebyIndex(i, 'errorText', '順位が重複しています。');
-          errorCount++;
+          handleRaceResultRecordsInputChangebyIndex(j, 'errorText', '順位が重複しています。');
         }
-      });
-    });
+      }  
+    }
 
     //ラップタイム 空欄チェック 入力値チェック
     validateCheckList.some((record, index) => {
