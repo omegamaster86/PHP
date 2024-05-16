@@ -2211,16 +2211,20 @@ export default function TournamentResult() {
             if (errorCount == 0) {
               clearError(); //エラーメッセージのクリア
               if (mode === 'create') {
-                setRaceResultRecords((prevFormData) => {
-                  const newFormData = [...prevFormData];
-                  return newFormData.filter((item) => !item?.crewPlayer?.every((player) => player.deleteFlg));
-                });
+                //追加行でない(更新行)かつ、選手情報すべてに削除チェックがされている場合、「このレース結果情報を削除する」にチェックを入れる 20240516
+                for (let index = 0; index < raceResultRecords.length; index++) {
+                  if(!raceResultRecords[index]?.isAdded && raceResultRecords[index]?.crewPlayer?.every((player) => player.deleteFlg)){
+                    raceResultRecords[index].deleteFlg = true;
+                  }
+                }
                 router.push('/tournamentResult?mode=confirm&prevMode=create');
               } else if (mode === 'update') {
-                setRaceResultRecords((prevFormData) => {
-                  const newFormData = [...prevFormData];
-                  return newFormData.filter((item) => !item?.crewPlayer?.every((player) => player.deleteFlg));
-                });
+                //追加行でない(更新行)かつ、選手情報すべてに削除チェックがされている場合、「このレース結果情報を削除する」にチェックを入れる 20240516
+                for (let index = 0; index < raceResultRecords.length; index++) {
+                  if(!raceResultRecords[index]?.isAdded && raceResultRecords[index]?.crewPlayer?.every((player) => player.deleteFlg)){
+                    raceResultRecords[index].deleteFlg = true;
+                  }
+                }
                 router.push('/tournamentResult?mode=confirm&prevMode=update');
               } else if (mode === 'confirm') {
                 //登録・更新する前に選手名についている「*」を消す 20240514
