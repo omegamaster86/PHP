@@ -923,7 +923,7 @@ export default function TournamentResult() {
         console.log(response);
         const data = response.data.result;
         if (data.length === 0) {
-          alert('選択されている種目は、開催予定のない種目になります。');
+          alert('本大会の全レース結果は既に登録されています。');
           router.back();
         } else {
           // setRaceInfo(data[0]); //レース結果登録に画面遷移時は「レース基本情報」の項目はすべて空の状態にする 20240422
