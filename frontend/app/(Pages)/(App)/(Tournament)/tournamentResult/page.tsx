@@ -203,6 +203,18 @@ export default function TournamentResult() {
     console.log(player);
     if (value === '') {
       //選手IDが空になった場合、当該行のすべての項目を空欄にする 20240517
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'playerName',''); //選手名
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'sex',''); //性別
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'height',''); //身長
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'weight',''); //体重
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'sheetName',''); //シート番号
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'fiveHundredmHeartRate',''); //500m
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'tenHundredmHeartRate',''); //1000m
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'fifteenHundredmHeartRate',''); //1500m
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'twentyHundredmHeartRate',''); //2000m
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'heartRateAvg',''); //平均
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'attendance',''); //立ち合い
+
       var emptyTarget = raceResultRecords[index].crewPlayer[crewIndex];
       Object.keys(emptyTarget).forEach((key) => {
         (emptyTarget as any)[key] = null;
