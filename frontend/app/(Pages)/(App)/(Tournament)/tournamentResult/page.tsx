@@ -203,18 +203,28 @@ export default function TournamentResult() {
     console.log(player);
     if (value === '') {
       //選手IDが空になった場合、当該行のすべての項目を空欄にする 20240517
-      handleRaceResultRecordsCrewPlayerChangeBooleanbyIndex(index,crewIndex,'deleteFlg',false); //削除フラグ
-      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'playerName',''); //選手名
-      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'sex',''); //性別
-      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'height',''); //身長
-      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'weight',''); //体重
-      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'sheetName',''); //シート番号
-      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'fiveHundredmHeartRate',''); //500m
-      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'tenHundredmHeartRate',''); //1000m
-      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'fifteenHundredmHeartRate',''); //1500m
-      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'twentyHundredmHeartRate',''); //2000m
-      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'heartRateAvg',''); //平均
-      handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'attendance',''); //立ち合い
+      handleRaceResultRecordsCrewPlayerChangeBooleanbyIndex(index, crewIndex, 'deleteFlg', false); //削除フラグ
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'playerName', ''); //選手名
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'sex', ''); //性別
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'height', ''); //身長
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'weight', ''); //体重
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'sheetName', ''); //シート番号
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'fiveHundredmHeartRate', ''); //500m
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'tenHundredmHeartRate', ''); //1000m
+      handleRaceResultRecordsCrewPlayerChangebyIndex(
+        index,
+        crewIndex,
+        'fifteenHundredmHeartRate',
+        '',
+      ); //1500m
+      handleRaceResultRecordsCrewPlayerChangebyIndex(
+        index,
+        crewIndex,
+        'twentyHundredmHeartRate',
+        '',
+      ); //2000m
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'heartRateAvg', ''); //平均
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'attendance', ''); //立ち合い
 
       var emptyTarget = raceResultRecords[index].crewPlayer[crewIndex];
       Object.keys(emptyTarget).forEach((key) => {
@@ -396,9 +406,9 @@ export default function TournamentResult() {
     //=============================================================
     //クルー単位の内容　ここから
 
-    //選手情報に全ての削除チェックがされている項目以外をバリデーションチェック対象とする 20240516
+    //選手情報に全削除チェックされていないかつ、レース結果情報に削除チェックがされていない項目をバリデーションチェック対象とする 20240517
     var validateCheckList = raceResultRecords.filter(
-      (item) => !item?.crewPlayer?.every((player) => player.deleteFlg),
+      (item) => !item?.crewPlayer?.every((player) => player.deleteFlg && !item.deleteFlg),
     );
 
     //レース結果情報の要素数分ループ
@@ -2273,11 +2283,12 @@ export default function TournamentResult() {
           onClick={async () => {
             var errorCount = 0;
             if (mode == 'create' || mode == 'update') {
-              //レース結果情報のリストが0件、または、選手情報に全削除チェックされていないリストが0件の場合
+              //レース結果情報のリストが0件、または、(選手情報に全削除チェックされていないかつ、レース結果情報に削除チェックがされていない)リストが0件の場合
               if (
                 raceResultRecords.length == 0 ||
                 raceResultRecords.filter(
-                  (item) => !item?.crewPlayer?.every((player) => player.deleteFlg),
+                  (item) =>
+                    !item?.crewPlayer?.every((player) => player.deleteFlg) && !item.deleteFlg,
                 ).length == 0
               ) {
                 alert('1件以上、レース結果情報を登録する必要があります。');
