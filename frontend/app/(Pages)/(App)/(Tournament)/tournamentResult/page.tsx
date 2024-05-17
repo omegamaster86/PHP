@@ -1138,6 +1138,7 @@ export default function TournamentResult() {
                 record.crewPlayer = record?.crewPlayer.concat(
                   Array.from({ length: response2 }, () => ({
                     //id: undefined,
+                    race_result_record_id: undefined,
                     playerPhoto: '',
                     playerName: '',
                     jaraPlayerId: '',

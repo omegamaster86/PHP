@@ -93,7 +93,8 @@ interface RaceResultRecordsResponse {
 }
 
 interface CrewPlayer {
-  id?: number; // 選手ID
+  id?: number; //ID
+  race_result_record_id?: number; //出漕結果記録ID 20240517
   playerPhoto: string; // 選手画像
   playerName: string; // 選手名
   jaraPlayerId: string; // JARA選手コード
