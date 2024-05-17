@@ -408,7 +408,7 @@ export default function TournamentResult() {
 
     //選手情報に全削除チェックされていないかつ、レース結果情報に削除チェックがされていない項目をバリデーションチェック対象とする 20240517
     var validateCheckList = raceResultRecords.filter(
-      (item) => !item?.crewPlayer?.every((player) => player.deleteFlg && !item.deleteFlg),
+      (item) => !item?.crewPlayer?.every((player) => player.deleteFlg) && !item.deleteFlg,
     );
 
     //レース結果情報の要素数分ループ
