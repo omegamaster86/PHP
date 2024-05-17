@@ -922,7 +922,7 @@ class T_raceResultRecord extends Model
 
     //レース結果情報を取得
     //レース結果編集画面 更新モード用
-    //レース結果参照・削除画面用
+    //レース結果参照・削除画面用 ※出漕結果記録IDも取得する 
     public function getRaceResultRecordList($race_id, $crew_name, $org_id)
     {
         $race_result_record_list = DB::select("select 
@@ -932,6 +932,7 @@ class T_raceResultRecord extends Model
                                                 ,msex.sex
                                                 ,ply.height
                                                 ,ply.weight
+                                                ,rrr.race_result_record_id
                                                 ,rrr.seat_number as sheetNameId
                                                 ,seat.seat_name as sheetName
                                                 ,rrr.heart_rate_500m as fiveHundredmHeartRate

@@ -2282,6 +2282,8 @@ export default function TournamentResult() {
         <CustomButton
           buttonType='primary'
           onClick={async () => {
+            console.log('wwwwqqqqqyyyyyuuuuuuu');
+            console.log(raceResultRecords);
             var errorCount = 0;
             if (mode == 'create' || mode == 'update') {
               //レース結果情報のリストが0件、または、(選手情報に全削除チェックされていないかつ、レース結果情報に削除チェックがされていない)リストが0件の場合
