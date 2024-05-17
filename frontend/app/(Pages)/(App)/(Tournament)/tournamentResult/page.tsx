@@ -203,6 +203,7 @@ export default function TournamentResult() {
     console.log(player);
     if (value === '') {
       //選手IDが空になった場合、当該行のすべての項目を空欄にする 20240517
+      handleRaceResultRecordsCrewPlayerChangeBooleanbyIndex(index,crewIndex,'deleteFlg',false); //削除フラグ
       handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'playerName',''); //選手名
       handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'sex',''); //性別
       handleRaceResultRecordsCrewPlayerChangebyIndex(index,crewIndex,'height',''); //身長
