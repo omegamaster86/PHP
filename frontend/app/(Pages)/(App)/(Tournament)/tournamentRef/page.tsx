@@ -212,7 +212,6 @@ export default function TournamentRef() {
   const startDateTimeSort = () => {
     if (startDateTimeSortFlag) {
       setStartDateTimeSortFlag(false);
-      console.log('発艇日時aaaaaaaaa');
       tableData.sort(
         (a, b) =>
           //ハイフン、スペース、コロンを空文字に変換してnumber型にキャストして大小比較する 20240518
@@ -221,7 +220,6 @@ export default function TournamentRef() {
       );
     } else {
       setStartDateTimeSortFlag(true);
-      console.log('発艇日時gggggsss');
       tableData.sort(
         (a, b) =>
           //ハイフン、スペース、コロンを空文字に変換してnumber型にキャストして大小比較する 20240518
@@ -535,7 +533,7 @@ export default function TournamentRef() {
                   <CustomTh align='left'>距離</CustomTh>
                   <CustomTh align='left'>
                     <div className='flex flex-row items-center gap-[10px]'>
-                      <div onClick={(event) => startDateTimeSort()}>発艇日時</div>
+                      <div onClick={() => startDateTimeSort()}><a href=''>発艇日時</a></div>
                       <div
                         onClick={(event) =>
                           handleStartDateTimeHeaderClick('発艇日時', event as any)
