@@ -213,19 +213,20 @@ export default function TournamentRef() {
     if (startDateTimeSortFlag) {
       setStartDateTimeSortFlag(false);
       console.log('発艇日時aaaaaaaaa');
-      tableData.sort(
-        (a, b) =>
-          (a.start_date_time as any as Date).getTime() -
-          (b.start_date_time as any as Date).getTime(),
-      );
+      // tableData.sort(
+      //   (a, b) =>
+      //     (a.start_date_time as any as Date).getTime() -
+      //     (b.start_date_time as any as Date).getTime(),
+      // );
     } else {
       setStartDateTimeSortFlag(true);
-      console.log('発艇日時ggggg');
-      tableData.sort(
-        (a, b) =>
-          (b.start_date_time as any as Date).getTime() -
-          (a.start_date_time as any as Date).getTime(),
-      );
+      console.log('発艇日時gggggsss');
+      console.log(tableData[0].start_date_time as any as Date);
+      // tableData.sort(
+      //   (a, b) =>
+      //     (b.start_date_time as any as Date).getTime() -
+      //     (a.start_date_time as any as Date).getTime(),
+      // );
     }
   };
 
