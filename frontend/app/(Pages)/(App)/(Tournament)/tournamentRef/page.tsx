@@ -164,10 +164,10 @@ export default function TournamentRef() {
         left: headerPosition.left + window.scrollX,
       },
     });
-    if(showEventNameAutocomplete){
+    if(!showEventNameAutocomplete){
       console.log('ffffggggddddddrrr');
       console.log(eventNamefocusTarget.current);
-      console.log((eventNamefocusTarget.current as any as HTMLElement)?.focus());
+      (eventNamefocusTarget.current as any as HTMLElement)?.focus();
     }
     setShowEventNameAutocomplete(!showEventNameAutocomplete);
     setShowByGroupAutocomplete(false);
