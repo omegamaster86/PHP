@@ -515,7 +515,6 @@ export default function TournamentRef() {
                   <CustomTh align='left'>
                     <div className='flex flex-row items-center gap-[10px]'>
                       種目
-                      {/* 残件対応項目 */}
                       <div onClick={(event) => handleEventNameHeaderClick('種目', event as any)}>
                         <FilterListIcon />
                       </div>
@@ -524,7 +523,6 @@ export default function TournamentRef() {
                   <CustomTh align='left'>
                     <div className='flex flex-row items-center gap-[10px]'>
                       組別
-                      {/* 残件対応項目 */}
                       <div onClick={(event) => handleByGroupHeaderClick('組別', event as any)}>
                         <FilterListIcon />
                       </div>
@@ -670,6 +668,7 @@ export default function TournamentRef() {
                   zIndex: 1000,
                   padding: '8px',
                 }}
+                onBlur={() => setShowEventNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
               >
                 <Autocomplete
                   id='eventName'
