@@ -164,11 +164,9 @@ export default function TournamentRef() {
         left: headerPosition.left + window.scrollX,
       },
     });
-    (eventNamefocusTarget.current as any as HTMLElement)?.focus();
     setShowEventNameAutocomplete(!showEventNameAutocomplete);
     setShowByGroupAutocomplete(false);
     setShowStartDateTimeAutocomplete(false);
-    (eventNamefocusTarget.current as any as HTMLElement)?.focus();
   };
   /**
    * 組別ヘッダークリック時の処理
@@ -664,6 +662,7 @@ export default function TournamentRef() {
             </CustomTable>
             {/* 種目フィルター用のオートコンプリート 20240509 */}
             {showEventNameAutocomplete && (
+              console.log(eventNamefocusTarget.current),
               <div
                 style={{
                   position: 'absolute',
