@@ -125,7 +125,7 @@ export default function TournamentRef() {
   const [showEventNameAutocomplete, setShowEventNameAutocomplete] = useState(false);
   const [showByGroupAutocomplete, setShowByGroupAutocomplete] = useState(false);
   const [showStartDateTimeAutocomplete, setShowStartDateTimeAutocomplete] = useState(false);
-  const eventNameForcusTarget = useRef<HTMLInputElement>(null); //フィルターにフォーカスを当てる際に使用 20240518
+  const eventNameForcusTarget = useRef<HTMLDivElement>(null); //フィルターにフォーカスを当てる際に使用 20240518
   // const textRef = useRef<HTMLInputElement>(null);//
   // const textRef = useRef<HTMLInputElement>(null);//
 
