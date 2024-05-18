@@ -222,6 +222,7 @@ export default function TournamentRef() {
       setStartDateTimeSortFlag(true);
       console.log('発艇日時gggggsss');
       console.log(tableData[0].start_date_time as any as Date);
+      console.log((tableData[0].start_date_time as any as Date).getTime());
       // tableData.sort(
       //   (a, b) =>
       //     (b.start_date_time as any as Date).getTime() -
