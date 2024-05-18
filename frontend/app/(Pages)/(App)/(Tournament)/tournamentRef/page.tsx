@@ -125,7 +125,7 @@ export default function TournamentRef() {
   const [showEventNameAutocomplete, setShowEventNameAutocomplete] = useState(false);
   const [showByGroupAutocomplete, setShowByGroupAutocomplete] = useState(false);
   const [showStartDateTimeAutocomplete, setShowStartDateTimeAutocomplete] = useState(false);
-  const eventNameForcusTarget = useRef<HTMLDivElement>(null); //フィルターにフォーカスを当てる際に使用 20240518
+  const eventNameForcusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240518
   // const textRef = useRef<HTMLInputElement>(null);//
   // const textRef = useRef<HTMLInputElement>(null);//
 
@@ -167,12 +167,12 @@ export default function TournamentRef() {
     setShowEventNameAutocomplete(!showEventNameAutocomplete);
     setShowByGroupAutocomplete(false);
     setShowStartDateTimeAutocomplete(false);
-    if(showEventNameAutocomplete){
+    if(!showEventNameAutocomplete){
       console.log('dddvvvvxxxxxxsssss');
       console.log(eventNameForcusTarget.current);
     }else{
       console.log('dddddddddddddddd');
-      console.log(eventNameForcusTarget.current);
+      console.log((eventNameForcusTarget.current as any)?.forcus());
     }
   };
   /**
