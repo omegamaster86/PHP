@@ -213,21 +213,21 @@ export default function TournamentRef() {
     if (startDateTimeSortFlag) {
       setStartDateTimeSortFlag(false);
       console.log('発艇日時aaaaaaaaa');
-      // tableData.sort(
-      //   (a, b) =>
-      //     (a.start_date_time as any as Date).getTime() -
-      //     (b.start_date_time as any as Date).getTime(),
-      // );
+      tableData.sort(
+        (a, b) =>
+          //ハイフン、スペース、コロンを空文字に変換してnumber型にキャストして大小比較する 20240518
+          Number(a.start_date_time.replace(/[- :]/g, '')) -
+          Number(b.start_date_time.replace(/[- :]/g, '')),
+      );
     } else {
       setStartDateTimeSortFlag(true);
       console.log('発艇日時gggggsss');
-      console.log(tableData[0].start_date_time as any as Date);
-      console.log((tableData[0].start_date_time as any as Date).getFullYear());
-      // tableData.sort(
-      //   (a, b) =>
-      //     (b.start_date_time as any as Date).getTime() -
-      //     (a.start_date_time as any as Date).getTime(),
-      // );
+      tableData.sort(
+        (a, b) =>
+          //ハイフン、スペース、コロンを空文字に変換してnumber型にキャストして大小比較する 20240518
+          Number(b.start_date_time.replace(/[- :]/g, '')) -
+          Number(a.start_date_time.replace(/[- :]/g, '')),
+      );
     }
   };
 
