@@ -126,8 +126,8 @@ export default function TournamentRef() {
   const [showByGroupAutocomplete, setShowByGroupAutocomplete] = useState(false);
   const [showStartDateTimeAutocomplete, setShowStartDateTimeAutocomplete] = useState(false);
   const eventNamefocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240518
-  // const textRef = useRef<HTMLInputElement>(null);//
-  // const textRef = useRef<HTMLInputElement>(null);//
+  const byGroupfocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240518
+  const startDateTimefocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240518
 
   // ヘッダーの位置を取得するためのステート
   //種目
@@ -322,19 +322,25 @@ export default function TournamentRef() {
 
   useEffect(() => {
     if (showEventNameAutocomplete) {
-      console.log('trueeeeeeee');
-      console.log(eventNamefocusTarget.current);
+      // console.log(eventNamefocusTarget.current);
       if (eventNamefocusTarget.current != null) {
-        console.log('focus');
-        var hoge = (eventNamefocusTarget.current as HTMLDivElement)
-        console.log(hoge);
-        console.log(hoge.childNodes[0].childNodes[0].childNodes[1].childNodes[0]);
-        (hoge.childNodes[0].childNodes[0].childNodes[1].childNodes[0] as HTMLElement).focus();
+        var target = (eventNamefocusTarget.current as HTMLDivElement);
+        (target.childNodes[0].childNodes[0].childNodes[1].childNodes[0] as HTMLElement).focus();
       }
-    } else {
-      console.log('falsesss');
     }
-  }, [showEventNameAutocomplete]);
+    if (showByGroupAutocomplete) {
+      if (byGroupfocusTarget.current != null) {
+        var target = (byGroupfocusTarget.current as HTMLDivElement);
+        (target.childNodes[0].childNodes[0].childNodes[1].childNodes[0] as HTMLElement).focus();
+      }
+    }
+    if (showStartDateTimeAutocomplete) {
+      if (startDateTimefocusTarget.current != null) {
+        var target = (startDateTimefocusTarget.current as HTMLDivElement);
+        (target.childNodes[0].childNodes[0].childNodes[1].childNodes[0] as HTMLElement).focus();
+      }
+    }
+  }, [showEventNameAutocomplete,showByGroupAutocomplete,showStartDateTimeAutocomplete]);
 
   // エラーがある場合はエラーメッセージを表示
   if (isError) {
@@ -729,6 +735,7 @@ export default function TournamentRef() {
             {/* 組別フィルター用のオートコンプリート 20240508 */}
             {showByGroupAutocomplete && (
               <div
+              ref={byGroupfocusTarget}
                 style={{
                   position: 'absolute',
                   top: `${selectedByGroupHeader.position.top - 120}px`,
@@ -778,6 +785,7 @@ export default function TournamentRef() {
             {/* 発艇日時用のオートコンプリート 20240509 */}
             {showStartDateTimeAutocomplete && (
               <div
+              ref={startDateTimefocusTarget}
                 style={{
                   position: 'absolute',
                   top: `${selectedStartDateTimeHeader.position.top - 120}px`,
