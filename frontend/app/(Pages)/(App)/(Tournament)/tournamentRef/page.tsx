@@ -321,10 +321,13 @@ export default function TournamentRef() {
   }, []);
 
   useEffect(() => {
-    if(showEventNameAutocomplete){
+    if (showEventNameAutocomplete) {
       console.log('trueeeeeeee');
-      (eventNamefocusTarget.current! as HTMLElement).focus();
-    }else{
+      console.log(eventNamefocusTarget.current);
+      if(eventNamefocusTarget.current != null){
+        (eventNamefocusTarget.current as any).focus();
+      }
+    } else {
       console.log('falsesss');
     }
   }, [showEventNameAutocomplete]);
