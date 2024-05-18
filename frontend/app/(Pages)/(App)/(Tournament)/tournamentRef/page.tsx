@@ -164,14 +164,11 @@ export default function TournamentRef() {
         left: headerPosition.left + window.scrollX,
       },
     });
-    if(!showEventNameAutocomplete){
-      console.log('ffffggggddddddrrr');
-      console.log(eventNamefocusTarget.current);
-      (eventNamefocusTarget.current as any as HTMLElement)?.focus();
-    }
+    (eventNamefocusTarget.current as any as HTMLElement)?.focus();
     setShowEventNameAutocomplete(!showEventNameAutocomplete);
     setShowByGroupAutocomplete(false);
     setShowStartDateTimeAutocomplete(false);
+    (eventNamefocusTarget.current as any as HTMLElement)?.focus();
   };
   /**
    * 組別ヘッダークリック時の処理
