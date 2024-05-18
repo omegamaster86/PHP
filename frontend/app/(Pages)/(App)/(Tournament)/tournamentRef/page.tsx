@@ -167,6 +167,13 @@ export default function TournamentRef() {
     setShowEventNameAutocomplete(!showEventNameAutocomplete);
     setShowByGroupAutocomplete(false);
     setShowStartDateTimeAutocomplete(false);
+    if(showEventNameAutocomplete){
+      console.log('dddvvvvxxxxxxsssss');
+      console.log(eventNameForcusTarget.current);
+    }else{
+      console.log('dddddddddddddddd');
+      console.log(eventNameForcusTarget.current);
+    }
   };
   /**
    * 組別ヘッダークリック時の処理
@@ -208,13 +215,6 @@ export default function TournamentRef() {
     setShowEventNameAutocomplete(false);
     setShowByGroupAutocomplete(false);
     setShowStartDateTimeAutocomplete(!showStartDateTimeAutocomplete);
-    if(showStartDateTimeAutocomplete){
-      console.log('dddvvvvxxxxxxsssss');
-      console.log(eventNameForcusTarget.current);
-    }else{
-      console.log('dddddddddddddddd');
-      console.log(eventNameForcusTarget.current);
-    }
   };
 
   // 発艇日時のソート用
