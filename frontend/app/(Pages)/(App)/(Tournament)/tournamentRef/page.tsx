@@ -461,16 +461,16 @@ export default function TournamentRef() {
                     userIdType.is_organization_manager == ROLE.GROUP_MANAGER ||
                     userIdType.is_jara == ROLE.JARA ||
                     userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
-                      <div className='flex flex-row gap-[10px]'>
-                        {/* エントリーシステムの大会ID */}
-                        <div className='text-gray-40 text-caption1'>エントリーシステムの大会ID：</div>
-                        <Label
-                          label={tournamentFormData.entrysystem_tourn_id}
-                          textColor='white'
-                          textSize='caption1'
-                        ></Label>
-                      </div>
-                    )}
+                    <div className='flex flex-row gap-[10px]'>
+                      {/* エントリーシステムの大会ID */}
+                      <div className='text-gray-40 text-caption1'>エントリーシステムの大会ID：</div>
+                      <Label
+                        label={tournamentFormData.entrysystem_tourn_id}
+                        textColor='white'
+                        textSize='caption1'
+                      ></Label>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -509,13 +509,8 @@ export default function TournamentRef() {
                   </CustomTh>
                   <CustomTh align='left'>距離</CustomTh>
                   <CustomTh align='left'>
-                    <div className='flex flex-row items-center gap-[10px]'
-                      onClick={(event) =>
-                        console.log('発艇日時aaaaaaaaa')
-                      }
-                    >
-                      発艇日時
-                      {/* 残件対応項目 */}
+                    <div className='flex flex-row items-center gap-[10px]'>
+                      <div onClick={(event) => console.log('発艇日時aaaaaaaaa')}>発艇日時</div>
                       <div
                         onClick={(event) =>
                           handleStartDateTimeHeaderClick('発艇日時', event as any)
