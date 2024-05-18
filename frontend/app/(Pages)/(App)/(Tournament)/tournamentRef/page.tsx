@@ -328,6 +328,9 @@ export default function TournamentRef() {
         console.log('focus');
         var hoge = (eventNamefocusTarget.current as HTMLDivElement)
         console.log(hoge);
+        hoge.childNodes.forEach(element => {
+          console.log(element);
+        });
       }
     } else {
       console.log('falsesss');
