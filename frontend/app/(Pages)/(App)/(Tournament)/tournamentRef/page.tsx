@@ -204,6 +204,9 @@ export default function TournamentRef() {
     setShowEventNameAutocomplete(false);
     setShowByGroupAutocomplete(false);
     setShowStartDateTimeAutocomplete(!showStartDateTimeAutocomplete);
+    if(showStartDateTimeAutocomplete){
+      console.log((event.target as HTMLElement));
+    }
   };
 
   // 発艇日時のソート用
@@ -717,6 +720,7 @@ export default function TournamentRef() {
                   zIndex: 1000,
                   padding: '8px',
                 }}
+                onBlur={() => setShowByGroupAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
               >
                 <Autocomplete
                   id='byGroup'
@@ -765,6 +769,7 @@ export default function TournamentRef() {
                   zIndex: 1000,
                   padding: '8px',
                 }}
+                onBlur={() => setShowStartDateTimeAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
               >
                 <Autocomplete
                   id='startDateTime'
