@@ -533,7 +533,9 @@ export default function TournamentRef() {
                   <CustomTh align='left'>距離</CustomTh>
                   <CustomTh align='left'>
                     <div className='flex flex-row items-center gap-[10px]'>
-                      <div onClick={() => startDateTimeSort()}><a href=''>発艇日時</a></div>
+                      <div className='underline' onClick={() => startDateTimeSort()}>
+                        発艇日時
+                      </div>
                       <div
                         onClick={(event) =>
                           handleStartDateTimeHeaderClick('発艇日時', event as any)
