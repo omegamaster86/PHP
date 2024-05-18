@@ -325,7 +325,8 @@ export default function TournamentRef() {
       console.log('trueeeeeeee');
       console.log(eventNamefocusTarget.current);
       if (eventNamefocusTarget.current != null) {
-        (eventNamefocusTarget.current as HTMLElement).focus();
+        console.log('focus');
+        (eventNamefocusTarget.current as HTMLDivElement).focus();
       }
     } else {
       console.log('falsesss');
@@ -675,6 +676,7 @@ export default function TournamentRef() {
             {/* 種目フィルター用のオートコンプリート 20240509 */}
             {showEventNameAutocomplete && (
               <div
+                ref={eventNamefocusTarget}
                 style={{
                   position: 'absolute',
                   top: `${selectedEventNameHeader.position.top - 120}px`,
@@ -712,7 +714,6 @@ export default function TournamentRef() {
                   }}
                   renderInput={(params) => (
                     <TextField
-                      ref={eventNamefocusTarget}
                       key={params.id}
                       className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
                       {...params}
