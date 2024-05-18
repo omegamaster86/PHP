@@ -685,9 +685,9 @@ export default function TournamentRef() {
                   padding: '8px',
                 }}
                 onBlur={() => setShowEventNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
-                ref={eventNamefocusTarget}
               >
                 <Autocomplete
+                  ref={eventNamefocusTarget}
                   id='eventName'
                   multiple
                   options={eventNameList}
