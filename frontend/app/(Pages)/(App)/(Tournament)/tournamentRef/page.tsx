@@ -206,6 +206,29 @@ export default function TournamentRef() {
     setShowStartDateTimeAutocomplete(!showStartDateTimeAutocomplete);
   };
 
+  // 発艇日時のソート用
+  // ソート用のステート 20240518
+  const [startDateTimeSortFlag, setStartDateTimeSortFlag] = useState(false);
+  const startDateTimeSort = () => {
+    if (startDateTimeSortFlag) {
+      setStartDateTimeSortFlag(false);
+      console.log('発艇日時aaaaaaaaa');
+      tableData.sort(
+        (a, b) =>
+          (a.start_date_time as any as Date).getTime() -
+          (b.start_date_time as any as Date).getTime(),
+      );
+    } else {
+      setStartDateTimeSortFlag(true);
+      console.log('発艇日時ggggg');
+      tableData.sort(
+        (a, b) =>
+          (b.start_date_time as any as Date).getTime() -
+          (a.start_date_time as any as Date).getTime(),
+      );
+    }
+  };
+
   // APIの呼び出し実績の有無を管理する状態
   const isApiFetched = useRef(false);
 
@@ -510,7 +533,7 @@ export default function TournamentRef() {
                   <CustomTh align='left'>距離</CustomTh>
                   <CustomTh align='left'>
                     <div className='flex flex-row items-center gap-[10px]'>
-                      <div onClick={(event) => console.log('発艇日時aaaaaaaaa')}>発艇日時</div>
+                      <div onClick={(event) => startDateTimeSort()}>発艇日時</div>
                       <div
                         onClick={(event) =>
                           handleStartDateTimeHeaderClick('発艇日時', event as any)
