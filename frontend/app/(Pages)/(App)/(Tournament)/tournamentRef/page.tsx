@@ -331,6 +331,7 @@ export default function TournamentRef() {
         hoge.childNodes.forEach(element => {
           console.log(element);
         });
+        console.log(hoge.childNodes[0].childNodes[0].childNodes[1]);
       }
     } else {
       console.log('falsesss');
