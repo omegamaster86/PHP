@@ -209,6 +209,10 @@ export default function TournamentRef() {
     setShowByGroupAutocomplete(false);
     setShowStartDateTimeAutocomplete(!showStartDateTimeAutocomplete);
     if(showStartDateTimeAutocomplete){
+      console.log('dddvvvvxxxxxxsssss');
+      console.log(eventNameForcusTarget.current);
+    }else{
+      console.log('dddddddddddddddd');
       console.log(eventNameForcusTarget.current);
     }
   };
