@@ -325,7 +325,7 @@ export default function TournamentRef() {
       console.log('trueeeeeeee');
       console.log(eventNamefocusTarget.current);
       if (eventNamefocusTarget.current != null) {
-        (eventNamefocusTarget.current as any).focus();
+        (eventNamefocusTarget.current as HTMLElement).focus();
       }
     } else {
       console.log('falsesss');
