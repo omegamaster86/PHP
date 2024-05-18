@@ -324,7 +324,7 @@ export default function TournamentRef() {
     if (showEventNameAutocomplete) {
       console.log('trueeeeeeee');
       console.log(eventNamefocusTarget.current);
-      if(eventNamefocusTarget.current != null){
+      if (eventNamefocusTarget.current != null) {
         (eventNamefocusTarget.current as any).focus();
       }
     } else {
@@ -687,7 +687,6 @@ export default function TournamentRef() {
                 onBlur={() => setShowEventNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
               >
                 <Autocomplete
-                  ref={eventNamefocusTarget}
                   id='eventName'
                   multiple
                   options={eventNameList}
@@ -713,6 +712,7 @@ export default function TournamentRef() {
                   }}
                   renderInput={(params) => (
                     <TextField
+                      ref={eventNamefocusTarget}
                       key={params.id}
                       className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
                       {...params}
