@@ -320,6 +320,15 @@ export default function TournamentRef() {
     }
   }, []);
 
+  useEffect(() => {
+    if(showEventNameAutocomplete){
+      console.log('trueeeeeeee');
+      (eventNamefocusTarget.current! as HTMLElement).focus();
+    }else{
+      console.log('falsesss');
+    }
+  }, [showEventNameAutocomplete]);
+
   // エラーがある場合はエラーメッセージを表示
   if (isError) {
     return <div>404エラー</div>;
@@ -662,7 +671,6 @@ export default function TournamentRef() {
             </CustomTable>
             {/* 種目フィルター用のオートコンプリート 20240509 */}
             {showEventNameAutocomplete && (
-              console.log(eventNamefocusTarget.current),
               <div
                 style={{
                   position: 'absolute',
