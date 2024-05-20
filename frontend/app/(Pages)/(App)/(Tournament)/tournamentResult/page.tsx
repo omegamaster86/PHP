@@ -1983,6 +1983,7 @@ export default function TournamentResult() {
                 <CustomButton
                   buttonType='secondary'
                   onClick={() => {
+                    console.log(index);
                     addCrewPlayerToRaceResultRecords(index);
                   }}
                   className='w-[120px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300 absolute right-[20px]'
