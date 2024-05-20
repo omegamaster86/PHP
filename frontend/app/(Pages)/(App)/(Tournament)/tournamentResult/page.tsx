@@ -262,6 +262,7 @@ export default function TournamentResult() {
       return record?.crewPlayer?.some((player, j) => {
         console.log('kkkkkjjjjhhhgggfffffddd');
         console.log(player.deleteFlg);
+        console.log(record?.crewPlayer[crewIndex].playerId);
         console.log(record?.crewPlayer[crewIndex].deleteFlg);
         return (
           player.playerId === value &&
@@ -2070,6 +2071,8 @@ export default function TournamentResult() {
                         <CustomTextField
                           value={player.playerId || ''}
                           onBlur={async (e) => {
+                            console.log('vvvvvvvmmmmlllllll,,,,,');
+                            console.log(player);
                             // 検索して選手情報を取得する
                             handleCrewPlayerIdChange(index, crewIndex, e.target.value);
                           }}
