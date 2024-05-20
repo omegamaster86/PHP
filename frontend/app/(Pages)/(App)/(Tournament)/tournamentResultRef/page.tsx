@@ -470,6 +470,7 @@ export default function TournamentResultRef() {
                   raceInfo: raceInfo,
                   raceResultRecords: raceResultRecords,
                 };
+                console.log(deleteSendData);
                 const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
                 const response = await axios.post('/deleteRaceResultRecordData', deleteSendData); //削除処理 20240520
