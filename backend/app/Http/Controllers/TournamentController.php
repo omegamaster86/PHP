@@ -646,6 +646,12 @@ class TournamentController extends Controller
                     $delete_race_result_record_id = $reqData['raceResultRecords'][$i]['crewPlayer'][$j]['race_result_record_id'];
                     $result_count = $t_raceResultRecord->getIsExistsTargetRaceResultRecord($delete_race_result_record_id);
 
+                    if(!isset($result_count)){
+                        Log::debug(sprintf("data is 0000000000000 "));
+                    }else{
+                        Log::debug($result_count);
+                    }
+
                     if ($result_count['result'] == 0) {
                         //$t_raceResultRecord->updateDeleteFlagToValid($reqData);
                         DB::commit();
