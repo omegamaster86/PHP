@@ -267,8 +267,8 @@ export default function TournamentResult() {
         console.log(record?.crewPlayer[crewIndex].playerId);
         console.log(record?.crewPlayer[crewIndex].deleteFlg);
         return (
-          player.playerId === value &&
-          !(index === i && crewIndex === j) &&
+          player.playerId == value &&
+          !(index == i && crewIndex == j) &&
           !player.deleteFlg &&
           !record?.crewPlayer[crewIndex].deleteFlg
         );
