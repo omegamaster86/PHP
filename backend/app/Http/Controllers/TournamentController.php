@@ -639,19 +639,27 @@ class TournamentController extends Controller
             DB::transaction();
             //出漕結果記録テーブルを検索
             $reqData = $request->all();
-            $reqData['updated_datetime'] = now()->format('Y-m-d H:i:s.u');
-            $reqData['updated_user_id'] = Auth::user()->user_id;
-            $result_count = $t_raceResultRecord->getIsExistsTargetRaceResultRecord($reqData);
-            //結果が0件なら、insertを実行
-            if ($result_count['result'] == 0) {
-                $t_raceResultRecord->updateDeleteFlagToValid($reqData);
-                DB::commit();
-            } else {
-                DB::commit();
-                //結果が存在しないとき
-                Log::debug(sprintf("updateDeleteFlagOfRaceResultRecord end"));
-                return response()->json(['errMessage' => $race_result_record_have_been_deleted]); //エラーメッセージを返す
+            // $reqData['updated_datetime'] = now()->format('Y-m-d H:i:s.u');
+            // $reqData['updated_user_id'] = Auth::user()->user_id;
+            for ($i=0; $i < count($reqData['raceResultRecords']); $i++) { 
+                for ($j=0; $j < count($reqData['raceResultRecords'][$i]['crewPlayer']); $j++) { 
+                    $delete_race_result_record_id = $reqData['raceResultRecords'][$i]['crewPlayer'][$j]['race_result_record_id'];
+                    $result_count = $t_raceResultRecord->getIsExistsTargetRaceResultRecord($delete_race_result_record_id);
+
+                    if ($result_count['result'] == 0) {
+                        //$t_raceResultRecord->updateDeleteFlagToValid($reqData);
+                        DB::commit();
+                    } else {
+                        DB::commit();
+                        //結果が存在しないとき
+                        Log::debug(sprintf("updateDeleteFlagOfRaceResultRecord end"));
+                        return response()->json(['errMessage' => $race_result_record_have_been_deleted]); //エラーメッセージを返す
+                    }
+                }
             }
+            //結果が存在しないとき
+            Log::debug(sprintf("updateDeleteFlagOfRaceResultRecord end"));
+            return response()->json(['result' => $delete_race_result_record_id]); //エラーメッセージを返す
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
