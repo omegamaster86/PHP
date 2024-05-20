@@ -636,7 +636,7 @@ class TournamentController extends Controller
         Log::debug(sprintf("updateDeleteFlagOfRaceResultRecord start"));
         include('Auth/ErrorMessages/ErrorMessages.php');
         try {
-            DB::transaction();
+            DB::beginTransaction();
             //出漕結果記録テーブルを検索
             $reqData = $request->all();
             Log::debug($reqData);
