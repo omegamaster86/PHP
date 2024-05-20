@@ -639,6 +639,7 @@ class TournamentController extends Controller
             DB::transaction();
             //出漕結果記録テーブルを検索
             $reqData = $request->all();
+            Log::debug($reqData);
             // $reqData['updated_datetime'] = now()->format('Y-m-d H:i:s.u');
             // $reqData['updated_user_id'] = Auth::user()->user_id;
             for ($i=0; $i < count($reqData['raceResultRecords']); $i++) { 
