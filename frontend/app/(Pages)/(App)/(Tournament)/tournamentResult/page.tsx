@@ -228,7 +228,10 @@ export default function TournamentResult() {
 
       var emptyTarget = raceResultRecords[index].crewPlayer[crewIndex];
       Object.keys(emptyTarget).forEach((key) => {
-        (emptyTarget as any)[key] = null;
+        //更新モードで追加行が入力できる状態を維持するために、「addonLineFlg」以外をnullにする
+        if(key != 'addonLineFlg'){
+          (emptyTarget as any)[key] = null;
+        }
       });
       return;
     }
