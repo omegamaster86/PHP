@@ -843,9 +843,9 @@ class T_raceResultRecord extends Model
         $is_exists = DB::select("select count(*) as `result`
                                 from t_race_result_record
                                 where 1=1
-                                and race_result_record_id = :race_result_record_id
+                                and race_result_record_id = ?
                                 and delete_flag = 0"
-                                ,$race_result_record_id);
+                                ,[$race_result_record_id]);
         return $is_exists;
     }
 
