@@ -228,7 +228,7 @@ export default function TournamentResult() {
 
       var emptyTarget = raceResultRecords[index].crewPlayer[crewIndex];
       Object.keys(emptyTarget).forEach((key) => {
-        //更新モードで追加行が入力できる状態を維持するために、「addonLineFlg」以外をnullにする
+        //更新モードで追加行が入力できる状態を維持するために、「addonLineFlg」以外をnullにする 20240520
         if(key != 'addonLineFlg'){
           (emptyTarget as any)[key] = null;
         }
@@ -260,6 +260,9 @@ export default function TournamentResult() {
     //選手の重複チェック
     const isExist = raceResultRecords.some((record, i) => {
       return record?.crewPlayer?.some((player, j) => {
+        console.log('kkkkkjjjjhhhgggfffffddd');
+        console.log(player.deleteFlg);
+        console.log(record?.crewPlayer[crewIndex].deleteFlg);
         return (
           player.playerId === value &&
           !(index === i && crewIndex === j) &&
