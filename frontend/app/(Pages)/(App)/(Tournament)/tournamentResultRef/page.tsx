@@ -462,8 +462,9 @@ export default function TournamentResultRef() {
             buttonType='primary'
             onClick={async () => {
               try {
-                // 削除済かどうかのチェック
-                // const response = await axios.get('http://localhost:3100/checkRaceResultRecordDeleted',); //残件項目
+                if(!window.confirm('削除しますか？')){
+                  return; //キャンセルを押下された場合、何もしない 20240520
+                }
 
                 const deleteSendData = {
                   raceInfo: raceInfo,
@@ -477,6 +478,8 @@ export default function TournamentResultRef() {
                   setErrorText(['当該レースの結果は、他のユーザーによって削除されています。']);
                   window.scrollTo(0, 0);
                 } else {
+                  window.alert('削除が完了しました。'); //完了メッセージ 20240520
+
                   // TODO 削除モードのチェック処理を実装
                   // TODO 選手レース結果管理画面が実装されたら、遷移先を変更する
                   router.push('/tournamentResultManagement');
