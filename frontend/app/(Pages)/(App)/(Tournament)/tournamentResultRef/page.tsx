@@ -465,19 +465,21 @@ export default function TournamentResultRef() {
                 // 削除済かどうかのチェック
                 // const response = await axios.get('http://localhost:3100/checkRaceResultRecordDeleted',); //残件項目
 
+                const deleteSendData = {
+                  raceInfo: raceInfo,
+                  raceResultRecords: raceResultRecords,
+                };
                 const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
-                const response = await axios.post(
-                  'http://localhost:3100/checkRaceResultRecordDeleted',
-                ); //残件項目
-
+                const response = await axios.post('/deleteRaceResultRecordData', deleteSendData); //削除処理 20240520
+                console.log(response);
                 if (response.data.isDeleted) {
                   setErrorText(['当該レースの結果は、他のユーザーによって削除されています。']);
                   window.scrollTo(0, 0);
                 } else {
                   // TODO 削除モードのチェック処理を実装
                   // TODO 選手レース結果管理画面が実装されたら、遷移先を変更する
-                  router.push('/tournament/playerRaceResult');
+                  router.push('/tournamentResultManagement');
                 }
               } catch (error: any) {
                 setErrorText([error.message]);

@@ -324,23 +324,23 @@ export default function TournamentRef() {
     if (showEventNameAutocomplete) {
       // console.log(eventNamefocusTarget.current);
       if (eventNamefocusTarget.current != null) {
-        var target = (eventNamefocusTarget.current as HTMLDivElement);
+        var target = eventNamefocusTarget.current as HTMLDivElement;
         (target.childNodes[0].childNodes[0].childNodes[1].childNodes[0] as HTMLElement).focus();
       }
     }
     if (showByGroupAutocomplete) {
       if (byGroupfocusTarget.current != null) {
-        var target = (byGroupfocusTarget.current as HTMLDivElement);
+        var target = byGroupfocusTarget.current as HTMLDivElement;
         (target.childNodes[0].childNodes[0].childNodes[1].childNodes[0] as HTMLElement).focus();
       }
     }
     if (showStartDateTimeAutocomplete) {
       if (startDateTimefocusTarget.current != null) {
-        var target = (startDateTimefocusTarget.current as HTMLDivElement);
+        var target = startDateTimefocusTarget.current as HTMLDivElement;
         (target.childNodes[0].childNodes[0].childNodes[1].childNodes[0] as HTMLElement).focus();
       }
     }
-  }, [showEventNameAutocomplete,showByGroupAutocomplete,showStartDateTimeAutocomplete]);
+  }, [showEventNameAutocomplete, showByGroupAutocomplete, showStartDateTimeAutocomplete]);
 
   // エラーがある場合はエラーメッセージを表示
   if (isError) {
@@ -735,7 +735,7 @@ export default function TournamentRef() {
             {/* 組別フィルター用のオートコンプリート 20240508 */}
             {showByGroupAutocomplete && (
               <div
-              ref={byGroupfocusTarget}
+                ref={byGroupfocusTarget}
                 style={{
                   position: 'absolute',
                   top: `${selectedByGroupHeader.position.top - 120}px`,
@@ -785,7 +785,7 @@ export default function TournamentRef() {
             {/* 発艇日時用のオートコンプリート 20240509 */}
             {showStartDateTimeAutocomplete && (
               <div
-              ref={startDateTimefocusTarget}
+                ref={startDateTimefocusTarget}
                 style={{
                   position: 'absolute',
                   top: `${selectedStartDateTimeHeader.position.top - 120}px`,

@@ -630,9 +630,10 @@ class TournamentController extends Controller
         }
     }
 
-    //レース結果情報を削除（update delete_flag)する
+    //レース結果情報を削除（update delete_flag)する 20240520
     public function updateDeleteFlagOfRaceResultRecord(Request $request, T_raceResultRecord $t_raceResultRecord)
     {
+        Log::debug(sprintf("updateDeleteFlagOfRaceResultRecord start"));
         include('Auth/ErrorMessages/ErrorMessages.php');
         try {
             DB::transaction();
@@ -648,11 +649,13 @@ class TournamentController extends Controller
             } else {
                 DB::commit();
                 //結果が存在しないとき
+                Log::debug(sprintf("updateDeleteFlagOfRaceResultRecord end"));
                 return response()->json(['errMessage' => $race_result_record_have_been_deleted]); //エラーメッセージを返す
             }
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
+            Log::debug(sprintf("updateDeleteFlagOfRaceResultRecord end"));
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }
