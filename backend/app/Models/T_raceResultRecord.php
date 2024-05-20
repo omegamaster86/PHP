@@ -854,11 +854,11 @@ class T_raceResultRecord extends Model
     {
         DB::update("update t_race_result_record
                     set delete_flag = 1
-                    ,updated_time = :updated_datetime
-                    ,updated_user_id = :updated_user_id
+                    ,updated_time = ?
+                    ,updated_user_id = ?
                     where 1=1
-                    and race_result_record_id = :race_result_record_id"
-                    ,$values);
+                    and race_result_record_id = ?"
+                    ,[$values['updated_datetime'],$values['updated_user_id'],$values['race_result_record_id']]);
     }
 
     //出漕時点情報を取得

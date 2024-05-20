@@ -653,6 +653,12 @@ class TournamentController extends Controller
                         Log::debug(sprintf("data is 0000000000000 "));
                     }else{
                         Log::debug($result_count);
+                        $deleteDataInfo['updated_datetime'] = now()->format('Y-m-d H:i:s.u');
+                        $deleteDataInfo['updated_user_id'] = Auth::user()->user_id;
+                        $deleteDataInfo['race_result_record_id'] = $delete_race_result_record_id;
+                        Log::debug($deleteDataInfo);
+                        // $t_raceResultRecord->updateDeleteFlagToValid($reqData);
+                        // DB::commit();
                     }
 
                     // if ($result_count['result'] == 0) {
