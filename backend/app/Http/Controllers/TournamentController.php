@@ -644,6 +644,8 @@ class TournamentController extends Controller
             for ($i=0; $i < count($reqData['raceResultRecords']); $i++) { 
                 for ($j=0; $j < count($reqData['raceResultRecords'][$i]['crewPlayer']); $j++) { 
                     $delete_race_result_record_id = $reqData['raceResultRecords'][$i]['crewPlayer'][$j]['race_result_record_id'];
+                    Log::debug(sprintf("5555555555555555"));
+                    Log::debug($delete_race_result_record_id);
                     $result_count = $t_raceResultRecord->getIsExistsTargetRaceResultRecord($delete_race_result_record_id);
 
                     if(!isset($result_count)){
@@ -652,15 +654,15 @@ class TournamentController extends Controller
                         Log::debug($result_count);
                     }
 
-                    if ($result_count['result'] == 0) {
-                        //$t_raceResultRecord->updateDeleteFlagToValid($reqData);
-                        DB::commit();
-                    } else {
-                        DB::commit();
-                        //結果が存在しないとき
-                        Log::debug(sprintf("updateDeleteFlagOfRaceResultRecord end"));
-                        return response()->json(['errMessage' => $race_result_record_have_been_deleted]); //エラーメッセージを返す
-                    }
+                    // if ($result_count['result'] == 0) {
+                    //     //$t_raceResultRecord->updateDeleteFlagToValid($reqData);
+                    //     DB::commit();
+                    // } else {
+                    //     DB::commit();
+                    //     //結果が存在しないとき
+                    //     Log::debug(sprintf("updateDeleteFlagOfRaceResultRecord end"));
+                    //     return response()->json(['errMessage' => $race_result_record_have_been_deleted]); //エラーメッセージを返す
+                    // }
                 }
             }
             //結果が存在しないとき
