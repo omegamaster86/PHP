@@ -259,6 +259,8 @@ export default function TournamentResult() {
 
     //選手の重複チェック
     const isExist = raceResultRecords.some((record, i) => {
+      console.log('((((((((((');
+      console.log(record?.crewPlayer);
       return record?.crewPlayer?.some((player, j) => {
         console.log('kkkkkjjjjhhhgggfffffddd');
         console.log(player.deleteFlg);
