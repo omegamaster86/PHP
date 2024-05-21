@@ -261,7 +261,7 @@ export default function TournamentEntryBulkRegister() {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       const tournamentResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
-      console.log(tournamentResponse.data);
+      //console.log(tournamentResponse.data);
 
       //該当の開催年に紐づく大会が存在する場合、リストの最初の大会を表示させる 20240514
       if (tournamentResponse.data.result.length > 0) {
@@ -480,8 +480,7 @@ export default function TournamentEntryBulkRegister() {
           }
         });
       var element = array as CsvData[];
-      console.log('===============');
-      console.log(element);
+      //console.log(element);
       const sendTournData = {
         tournData: formData,
         csvDataList: element,
@@ -490,7 +489,7 @@ export default function TournamentEntryBulkRegister() {
       await csrf();
       const response = await axios.post('/sendTournamentEntryCsvData', sendTournData);
       const data = response.data.result as CsvData[];
-      console.log(response.data.result.csvDataList);
+      //console.log(response.data.result.csvDataList);
       setCsvData([]);
       var resList = Array();
       for (let index = 0; index < response.data.result.csvDataList.length; index++) {
@@ -500,7 +499,7 @@ export default function TournamentEntryBulkRegister() {
       //console.log(resList);
       // setloadingResultList(resList);
       loadingResultList = resList.filter(Boolean); //リスト内のnullを削除して渡す
-      console.log(loadingResultList);
+      //console.log(loadingResultList);
       setCsvData(response.data.result.csvDataList);
       setDialogDisplayFlg(true);
       // 仮実装。チェック内容に応じて登録ボタンの表示を判定
@@ -609,7 +608,7 @@ export default function TournamentEntryBulkRegister() {
                 getOptionLabel={(option) => option.name}
                 value={{ id: formData.tournId, name: formData.tournName } || ''}
                 onChange={(e: ChangeEvent<{}>, newValue) => {
-                  console.log(newValue);
+                  //console.log(newValue);
                   handleInputChange(
                     'tournId',
                     newValue ? (newValue as TournamentResponse).id.toString() : '',

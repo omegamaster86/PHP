@@ -138,7 +138,6 @@ export default function AddPlayerSearch() {
     try {
       // TODO: APIを叩いて検索結果を取得する
       // const response = await axios.get('http://localhost:3100/teamPlayerSearch');
-      console.log(searchCond);
       const response = await axios.post('/teamPlayerSearch', searchCond);
       const data = response.data.result;
       //console.log(data);

@@ -470,11 +470,11 @@ export default function TournamentResultRef() {
                   raceInfo: raceInfo,
                   raceResultRecords: raceResultRecords,
                 };
-                console.log(deleteSendData);
+                //console.log(deleteSendData);
                 const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
                 const response = await axios.post('/deleteRaceResultRecordData', deleteSendData); //削除処理 20240520
-                console.log(response);
+                //console.log(response);
                 if (response.data.isDeleted) {
                   setErrorText(['当該レースの結果は、他のユーザーによって削除されています。']);
                   window.scrollTo(0, 0);

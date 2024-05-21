@@ -322,7 +322,7 @@ export default function TournamentRef() {
 
   useEffect(() => {
     if (showEventNameAutocomplete) {
-      // console.log(eventNamefocusTarget.current);
+      // //console.log(eventNamefocusTarget.current);
       if (eventNamefocusTarget.current != null) {
         var target = eventNamefocusTarget.current as HTMLDivElement;
         (target.childNodes[0].childNodes[0].childNodes[1].childNodes[0] as HTMLElement).focus();
