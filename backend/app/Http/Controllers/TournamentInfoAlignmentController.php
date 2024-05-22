@@ -294,7 +294,7 @@ class TournamentInfoAlignmentController extends Controller
                     $search_values["player_id"] = $player_id;
                     $race_result_record_array = $t_raceResultRecord->getRaceResultRecordsWithSearchCondition($search_values);
                     //検索結果を確認
-                    if (count($race_result_record_array) == 1) {
+                    if (count($race_result_record_array) > 0) {
                         //レース結果データが1件以上ある存在する場合
                         //レース結果が登録されているかを確認
                         $race_result_record_id = $race_result_record_array[0]->{"race_result_record_id"};
