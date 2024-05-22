@@ -1433,17 +1433,16 @@ export default function TournamentResultInfomationBulkRegister() {
                   onClick={() => {
                     setActivationFlg(true);
                     if (csvData.find((row) => row.checked)?.id === undefined) {
-                      window.confirm('1件以上選択してください。');
+                      window.alert('1件以上選択してください。');
                     } else {
                       registerCsvData(); //バックエンド側にデータを渡す 20240302
                       setCsvData([]);
                       setCsvFileData({ content: [], isSet: false });
                       fileUploaderRef?.current?.clearFile();
-                      window.confirm('レース結果の登録が完了しました。')
-                        ? (setActivationFlg(false),
-                          setDialogDisplayFlg(false),
-                          setDisplayRegisterButtonFlg(false))
-                        : null;
+                      window.alert('レース結果の登録が完了しました。');
+                      setActivationFlg(false);
+                      setDialogDisplayFlg(false);
+                      setDisplayRegisterButtonFlg(false);
                     }
                     setActivationFlg(false);
                   }}

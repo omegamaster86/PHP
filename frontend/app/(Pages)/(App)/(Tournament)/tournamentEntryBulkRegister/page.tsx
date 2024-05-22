@@ -800,15 +800,14 @@ export default function TournamentEntryBulkRegister() {
                     onClick={async () => {
                       setActivationFlg(true);
                       if (csvData.find((row) => row.checked)?.id === undefined) {
-                        window.confirm('1件以上選択してください。');
+                        window.alert('1件以上選択してください。');
                       } else {
                         const errorFlg = await checkRaceResultRecords(); //バックエンド側にCSVデータを送信 データ登録用
                         if (!errorFlg) {
-                          window.confirm('レース結果の登録が完了しました。')
-                            ? (setActivationFlg(false),
-                              setDialogDisplayFlg(false),
-                              setDisplayRegisterButtonFlg(false))
-                            : null;
+                          window.alert('レース結果の登録が完了しました。');
+                          setActivationFlg(false);
+                          setDialogDisplayFlg(false);
+                          setDisplayRegisterButtonFlg(false);
                         }
                       }
                       setActivationFlg(false);
