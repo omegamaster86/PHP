@@ -312,7 +312,8 @@ class TournamentInfoAlignmentController extends Controller
                         ) {
                             //登録されている場合
                             $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録エラー（記録情報あり）";
-                            throw new Exception("他のユーザーによりレース結果が登録されたレースが有ります。\r\n当該レースのエントリー情報は更新することは出来ません。");
+                            // throw new Exception("他のユーザーによりレース結果が登録されたレースが有ります。\r\n当該レースのエントリー情報は更新することは出来ません。");
+                            return response()->json("他のユーザーによりレース結果が登録されたレースが有ります。\r\n当該レースのエントリー情報は更新することは出来ません。",403);
                         } else {
                             //登録されていない場合
                             $update_values = array();
