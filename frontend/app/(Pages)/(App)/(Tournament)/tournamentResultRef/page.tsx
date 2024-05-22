@@ -201,7 +201,7 @@ export default function TournamentResultRef() {
           }`}
         >
           {/* レース結果情報 */}
-          <Label label={`レース結果情報${index + 1}`} />
+          <Label label={`レース結果情報${raceResultRecords.length - index}`} />
           <div className='flex flex-col justify-between gap-[16px]'>
             <div className='flex flex-col gap-[8px]'>
               <div className='leading-loose text-primary-500 flex flex-row gap-[8px] items-center cursor-pointer'>
