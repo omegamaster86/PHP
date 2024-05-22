@@ -982,7 +982,6 @@ export default function TournamentResult() {
         });
         // //console.log(newSeatNumberArray);
         setSheetNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする 20240514
-
       } catch (error: any) {
         setErrorText([error.message]);
       }

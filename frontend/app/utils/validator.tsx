@@ -153,7 +153,8 @@ const validateUserNameFormat = (userName: string) => {
     return '';
   }
   let errorMessage = '';
-  const userNameRegex = new RegExp('^[a-zA-Z0-9-_ぁ-んァ-ンー一-龠]+$');
+  // const userNameRegex = new RegExp('^[a-zA-Z0-9-_ぁ-んァ-ンー一-龠]+$');
+  const userNameRegex = new RegExp('^[a-zA-Z0-9-_ぁ-んァ-ンー一-龠Ａ-Ｚａ-ｚ－＿]+$'); //全角アルファベット,全角ハイフン,全角アンダーバーも入力可能にする 20240522
   if (!userNameRegex.test(userName)) {
     errorMessage =
       'ユーザー名に使用できる文字は以下になります。使用可能文字: 日本語、英字大文字(A-Z)、英字小文字(a-z)、数字(0-9)、ハイフン(-)、アンダースコア(_)';

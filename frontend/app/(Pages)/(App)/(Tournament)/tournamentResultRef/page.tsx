@@ -462,7 +462,7 @@ export default function TournamentResultRef() {
             buttonType='primary'
             onClick={async () => {
               try {
-                if(!window.confirm('削除しますか？')){
+                if (!window.confirm('削除しますか？')) {
                   return; //キャンセルを押下された場合、何もしない 20240520
                 }
 
