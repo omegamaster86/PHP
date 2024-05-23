@@ -294,7 +294,7 @@ class TournamentInfoAlignmentController extends Controller
                     $search_values["player_id"] = $player_id;
                     $race_result_record_array = $t_raceResultRecord->getRaceResultRecordsWithSearchCondition($search_values);
                     //検索結果を確認
-                    if (count($race_result_record_array) > 0) {
+                    if (count($race_result_record_array) == 0) {
                         //レース結果データが1件以上ある存在する場合
                         //レース結果が登録されているかを確認
                         $race_result_record_id = $race_result_record_array[0]->{"race_result_record_id"};
@@ -305,10 +305,10 @@ class TournamentInfoAlignmentController extends Controller
                         $final_time = $race_result_record_array[0]->{"final_time"};
                         if (
                             isset($laptime_500m)
-                            && isset($laptime_1000m)
-                            && isset($laptime_1500m)
-                            && isset($laptime_2000m)
-                            && isset($final_time)
+                            || isset($laptime_1000m)
+                            || isset($laptime_1500m)
+                            || isset($laptime_2000m)
+                            || isset($final_time)
                         ) {
                             //登録されている場合
                             $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録エラー（記録情報あり）";
