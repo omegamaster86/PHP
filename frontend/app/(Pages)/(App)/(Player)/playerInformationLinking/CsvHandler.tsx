@@ -5,7 +5,6 @@ import Papa from 'papaparse';
 import CustomInputLabel from '@/app/components/InputLabel';
 import CustomTextField from '@mui/material/TextField';
 import { CustomButton } from '../../../../components';
-import { useRouter } from 'next/navigation';
 
 interface Props {
   csvUploadProps: CsvUploadProps;
@@ -31,7 +30,7 @@ interface CsvDownloadProps {
 interface Handler {
   clearFile(): void;
 }
-const router = useRouter();
+
 // FileUploaderコンポーネント
 const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) {
   const [currentShowFile, setcurrentShowFile] = useState<{ file: File; isUploaded: boolean }>();
@@ -115,7 +114,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
             break;
         }
         alert(message);
-        router.push('/playerInformationLinking');
       });
     });
   }, []);
