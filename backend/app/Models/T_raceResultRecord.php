@@ -1160,21 +1160,15 @@ class T_raceResultRecord extends Model
 
     //レースID、クルー名、選手ID、団体IDを条件とした出漕結果記録が存在するかを取得
     //レース結果更新で登録か更新を判断するため
-    public function getIsExistsTargetResultRecordForConditions($race_id,$crew_name,$org_id,$player_id)
+    public function getIsExistsTargetResultRecordForConditions($race_result_record_id)
     {
         $is_record_exists = DB::select("select race_result_record_id
                                         from `t_race_result_record`
                                         where 1=1
                                         and delete_flag = 0
-                                        and race_id = :race_id
-                                        and crew_name = :crew_name
-                                        and org_id = :org_id
-                                        and player_id = :player_id"
+                                        and race_result_record_id = :race_result_record_id"
                                     ,[
-                                        "race_id" => $race_id
-                                        ,"crew_name" => $crew_name
-                                        ,"org_id" => $org_id
-                                        ,"player_id" => $player_id
+                                        "race_result_record_id" => $race_result_record_id
                                     ]);
         //1つの結果を取得するため0番目だけを返す
         $target_result = null;
