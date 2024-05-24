@@ -238,6 +238,7 @@ export default function PlayerInformationLinking() {
       })
       .finally(() => {
         setActivationFlg(false);
+        setDialogDisplayFlg(true);
       });
   };
 
