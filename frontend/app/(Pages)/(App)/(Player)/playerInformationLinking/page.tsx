@@ -87,7 +87,7 @@ export default function PlayerInformationLinking() {
           //console.log('ユーザ情報なし');
           router.push('/tournamentSearch');
         }
-      } catch (error: any) {}
+      } catch (error: any) { }
     };
     fetchData();
   }, []);
@@ -386,17 +386,18 @@ export default function PlayerInformationLinking() {
                   onClick={() => {
                     //console.log(csvData);
                     setActivationFlg(true);
-                    csvData.find((row) => row.checked)?.id === undefined
-                      ? window.confirm('1件以上選択してください。')
-                      : registerCsvData(), //読み込んだCSVデータをDBに連携する
-                      setCsvData([]),
-                      setCsvFileData({ content: [], isSet: false }),
-                      fileUploaderRef?.current?.clearFile(),
-                      window.confirm('連携を完了しました。')
-                        ? (setActivationFlg(false),
-                          setDialogDisplayFlg(false),
-                          setDisplayLinkButtonFlg(false))
-                        : null;
+                    if (csvData.find((row) => row.checked)?.id === undefined) {
+                      window.alert('1件以上選択してください。');
+                      return;
+                    }
+                    registerCsvData(), //読み込んだCSVデータをDBに連携する
+                    setCsvData([]),
+                    setCsvFileData({ content: [], isSet: false }),
+                    fileUploaderRef?.current?.clearFile(),
+                    window.confirm('連携を完了しました。');
+                    setActivationFlg(false);
+                    setDialogDisplayFlg(false);
+                    setDisplayLinkButtonFlg(false);
                     setActivationFlg(false);
                   }}
                 >
