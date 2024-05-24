@@ -1232,7 +1232,8 @@ class TournamentController extends Controller
                         //選手ID
                         $player_id = isset($player["playerId"]) ? $player["playerId"] : null;
                         //スプレッドシート不具合項目462 は下記関数に団体ID、クルー名を渡しているから発生する仕様バグ 20240522
-                        $target_race_result_record = $t_raceResultRecord->getIsExistsTargetResultRecordForConditions($race_id,$crew_name,$org_id,$player_id);                        
+                        // $target_race_result_record = $t_raceResultRecord->getIsExistsTargetResultRecordForConditions($race_id,$crew_name,$org_id,$player_id);
+                        $target_race_result_record = $t_raceResultRecord->getIsExistsTargetResultRecordForConditions($race_id,$crew_name,$org_id,$player_id);
                         $race_result_record_id = isset($target_race_result_record) ? $target_race_result_record->race_result_record_id : null;
                         //削除にチェック、かつ対象の出漕結果記録IDがテーブルに存在する場合
                         if($player["deleteFlg"] && isset($race_result_record_id))
