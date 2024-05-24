@@ -388,12 +388,16 @@ export default function PlayerInformationLinking() {
                     setActivationFlg(true);
                     if (csvData.find((row) => row.checked)?.id === undefined) {
                       window.alert('1件以上選択してください。');
+                      setActivationFlg(false);
+                      setDialogDisplayFlg(false);
+                      setDisplayLinkButtonFlg(false);
+                      setActivationFlg(false);
                       return;
                     }
-                    registerCsvData(), //読み込んだCSVデータをDBに連携する
-                    setCsvData([]),
-                    setCsvFileData({ content: [], isSet: false }),
-                    fileUploaderRef?.current?.clearFile(),
+                    registerCsvData(); //読み込んだCSVデータをDBに連携する
+                    setCsvData([]);
+                    setCsvFileData({ content: [], isSet: false });
+                    fileUploaderRef?.current?.clearFile();
                     window.confirm('連携を完了しました。');
                     setActivationFlg(false);
                     setDialogDisplayFlg(false);
