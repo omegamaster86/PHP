@@ -160,17 +160,31 @@ export default function PlayerInformationLinking() {
             message: '',
           };
         } else {
-          // 列数が期待する列数と一致する場合
-          return {
-            id: index, // ID
-            checked: false, // 選択
-            link: '', // 連携
-            oldPlayerId: value[0],
-            playerId: value[1],
-            mailaddress: value[2],
-            playerName: value[3],
-            message: '',
-          };
+          //選手名が空の場合
+          if (value[3] === '' || value[3] === undefined || value[3] === null) {
+            return {
+              id: index, // ID
+              checked: false, // 選択
+              link: '連携不可', // 連携不可
+              oldPlayerId: value[0],
+              playerId: value[1],
+              mailaddress: value[2],
+              playerName: '-',
+              message: '',
+            };
+          } else {
+            // 列数が期待する列数と一致する場合
+            return {
+              id: index, // ID
+              checked: false, // 選択
+              link: '', // 連携
+              oldPlayerId: value[0],
+              playerId: value[1],
+              mailaddress: value[2],
+              playerName: value[3],
+              message: '',
+            };
+          }
         }
       });
     var element = array as CsvData[];
