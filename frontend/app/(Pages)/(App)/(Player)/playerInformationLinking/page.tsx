@@ -395,7 +395,7 @@ export default function PlayerInformationLinking() {
                     setCsvData([]);
                     setCsvFileData({ content: [], isSet: false });
                     fileUploaderRef?.current?.clearFile();
-                    window.confirm('連携を完了しました。');
+                    window.alert('連携を完了しました。');
                     setActivationFlg(false);
                     setDialogDisplayFlg(false);
                     setDisplayLinkButtonFlg(false);
