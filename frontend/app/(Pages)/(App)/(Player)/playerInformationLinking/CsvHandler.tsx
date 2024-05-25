@@ -202,15 +202,13 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
               {isDragAccept ? 'ファイルをアップロードします。' : isDragReject ? 'エラー' : ''}
             </div>
           </div>
-          {!props.csvUploadProps.readonly && (
-            <CustomButton
-              buttonType='primary'
-              onClick={handleDownload}
-              className='w-[200px] h-[57px]'
-            >
-              {props.csvDownloadProps.label}
-            </CustomButton>
-          )}
+          <CustomButton
+            buttonType='primary'
+            onClick={handleDownload}
+            className='w-[200px] h-[57px]'
+          >
+            {props.csvDownloadProps.label}
+          </CustomButton>
         </div>
       </div>
       {/* ファイルアップロード中の表示 */}
