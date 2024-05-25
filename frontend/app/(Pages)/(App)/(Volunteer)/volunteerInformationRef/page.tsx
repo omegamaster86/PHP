@@ -203,7 +203,8 @@ export default function VolunteerInformationRef() {
             ボランティア情報{mode === 'delete' && '削除'}
             {mode !== 'delete' && '参照'}
           </CustomTitle>
-          {mode !== 'delete' && (
+          {/* 遷移先の画面未実装のため、コメントアウト 20240525 */}
+          {/* {mode !== 'delete' && (
             // TODO: ボランティア情報変更画面に遷移
             // ボランティア情報を変更ボタン
             <Link
@@ -212,12 +213,11 @@ export default function VolunteerInformationRef() {
                 query: { id: volunteerdata.volunteer_id, mode: 'update' },
               }}
               className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
-              aria-readonly={true}
             >
               <EditIcon className='cursor-pointer m-1 text-small md:text-h3' />
               ボランティア情報を変更
             </Link>
-          )}
+          )} */}
         </div>
         <ErrorBox errorText={errorMessage} />
         <div className='flex flex-row gap-[20px] justify-between'>
@@ -534,7 +534,8 @@ export default function VolunteerInformationRef() {
                 非公式
               </Tab>
             </div>
-            {mode !== 'delete' && (
+            {/* 遷移先の画面未実装のため、コメントアウト 20240525 */}
+            {/* {mode !== 'delete' && (
               <Link
                 className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
                 href={{
@@ -542,11 +543,10 @@ export default function VolunteerInformationRef() {
                   pathname: '/volunteerHistoriesInformationDelete',
                   query: { id: volunteerdata.volunteer_id },
                 }}
-                aria-readonly={true}
               >
                 履歴の削除
               </Link>
-            )}
+            )} */}
           </div>
           <div className='w-screen flex justify-between items-center'>
             <CustomTable>
