@@ -108,7 +108,12 @@ const CsvTable = ({
                   readonly={checkLoadingResult(row)}
                   onChange={(e) => {
                     handleInputChange(row.id, 'checked', e.target.checked);
-                    e.target.checked ? displayRegisterButton(true) : null;
+                    // チェックボックスの変更により連携ボタンの表示を切り替える 20240525
+                    var data = content.map((row) => row.checked.toString());
+                    data[rowIndex] = e.target.checked.toString();
+                    data.includes('true')
+                      ? displayRegisterButton(true)
+                      : displayRegisterButton(false);
                   }}
                 ></CustomCheckbox>
               </CustomTd>
