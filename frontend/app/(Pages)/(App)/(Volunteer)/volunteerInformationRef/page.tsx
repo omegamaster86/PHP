@@ -212,6 +212,7 @@ export default function VolunteerInformationRef() {
                 query: { id: volunteerdata.volunteer_id, mode: 'update' },
               }}
               className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
+              aria-readonly={true}
             >
               <EditIcon className='cursor-pointer m-1 text-small md:text-h3' />
               ボランティア情報を変更
@@ -541,6 +542,7 @@ export default function VolunteerInformationRef() {
                   pathname: '/volunteerHistoriesInformationDelete',
                   query: { id: volunteerdata.volunteer_id },
                 }}
+                aria-readonly={true}
               >
                 履歴の削除
               </Link>
