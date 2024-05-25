@@ -1091,7 +1091,7 @@ export default function VolunteerBulkRegister() {
                 disabled={activationFlg}
                 onClick={async () => {
                   if (csvData.find((row) => row.checked)?.id === undefined) {
-                    window.confirm('1件以上選択してください。');
+                    window.alert('1件以上選択してください。');
                     return;
                   }
                   if (window.confirm('連携を実施しますか？')) {
