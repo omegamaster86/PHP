@@ -45,11 +45,7 @@ const CsvTable = ({
         <CustomThead>
           {/* contentがundefinedまたは空の配列でないことを確認 */}
           {visibilityFlg == false ? (
-            <CustomTr>
-              <CustomTh align='center' colSpan={header.length + 1}>
-                レース結果
-              </CustomTh>
-            </CustomTr>
+            <div></div>
           ) : (
             <CustomTr>
               <CustomTh>
