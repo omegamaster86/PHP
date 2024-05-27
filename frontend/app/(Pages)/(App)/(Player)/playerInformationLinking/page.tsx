@@ -147,7 +147,11 @@ export default function PlayerInformationLinking() {
       })
       .slice(isHeaderMatch ? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
       .map((value, index) => {
+        console.log(index);
+        console.log(value[3]);
         if (value.length !== expectedColumnCount) {
+          console.log(value[3]);
+          console.log('uuuuuuuuuuu');
           // 列数が期待する列数と異なる場合
           return {
             id: index, // ID
@@ -161,7 +165,9 @@ export default function PlayerInformationLinking() {
           };
         } else {
           //選手名が空の場合
-          if (value[3] === '' || value[3] === undefined || value[3] === null) {
+          console.log(value[3]);
+          if (value[3] == '' || value[3] == undefined || value[3] == null) {
+            console.log('gggggggggggg');
             return {
               id: index, // ID
               checked: false, // 選択
@@ -173,6 +179,7 @@ export default function PlayerInformationLinking() {
               message: '',
             };
           } else {
+            console.log('ggggggggvvvvvvvvv');
             // 列数が期待する列数と一致する場合
             return {
               id: index, // ID
