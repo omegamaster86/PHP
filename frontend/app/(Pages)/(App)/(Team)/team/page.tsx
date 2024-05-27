@@ -627,7 +627,11 @@ export default function OrgInfo() {
                 .then((response) => {
                   //console.log(response);
                   // TODO: 登録処理成功時の処理
-                  //window.confirm('団体情報を登録しました。');
+                  if(response.data?.duplicationError != ''){
+                    setErrorMessage([...(response.data?.duplicationError as string[])]);
+                    return; //確認画面で重複エラーが発生した場合、以降の処理を行わない 20240527
+                  }
+                  window.alert('団体情報を登録しました。');
                   router.push('/teamRef?orgId=' + response.data.result);
                 })
                 .catch((error) => {
@@ -648,6 +652,10 @@ export default function OrgInfo() {
                 // .post('http://localhost:3100/', requestBody)
                 .post('/updateOrgData', sendData) //20240226
                 .then((response) => {
+                  if(response.data?.duplicationError != ''){
+                    setErrorMessage([...(response.data?.duplicationError as string[])]);
+                    return; //確認画面で重複エラーが発生した場合、以降の処理を行わない 20240527
+                  }
                   // TODO: 更新処理成功時の処理
                   window.alert('団体情報を更新しました。');
                   router.push('/teamRef?orgId=' + formData.org_id);

@@ -897,7 +897,7 @@ class OrganizationController extends Controller
         }
         if ($duplicationCount > 0) {
             // Log::debug(sprintf("validateOrgData duplication"));
-            return response()->json(["エントリーシステムの団体IDが重複しています。"], 401);
+            return response()->json(['duplicationError' => "エントリーシステムの団体IDが重複しています。"]);
         }
 
         DB::beginTransaction();
@@ -952,9 +952,9 @@ class OrganizationController extends Controller
         }
         if ($duplicationCount > 0) {
             // Log::debug(sprintf("validateOrgData duplication"));
-            return response()->json(["エントリーシステムの団体IDが重複しています。"], 401);
+            return response()->json(['duplicationError' => "エントリーシステムの団体IDが重複しています。"]);
         }
-        
+
         DB::beginTransaction();
         try {
             $tOrganizations::$tournamentUpdateInfo['org_id'] = $target_org_id; //団体ID
