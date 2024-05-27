@@ -886,6 +886,20 @@ class OrganizationController extends Controller
             $japan_code = 112;
             $organizationInfo['formData']['location_country'] = $japan_code;
         }
+
+        //登録前にバリデーションチェックを行う 20240527
+        $formData = $organizationInfo['formData'];
+        $duplicationCount = 0;
+        //団体IDがnullでエントリーシステムの団体IDが入力されている場合、登録時の重複チェックを行う
+        if (!isset($formData['org_id']) && isset($formData['entrysystem_org_id'])) {
+            // Log::debug("call getEntrysystemOrgIdCount");
+            $duplicationCount = $tOrganizations->getEntrysystemOrgIdCount($formData['entrysystem_org_id']);
+        }
+        if ($duplicationCount > 0) {
+            // Log::debug(sprintf("validateOrgData duplication"));
+            return response()->json(["エントリーシステムの団体IDが重複しています。"], 401);
+        }
+
         DB::beginTransaction();
         try {
             //Log::debug("=========================");
@@ -927,6 +941,20 @@ class OrganizationController extends Controller
             $japan_code = 112;
             $organizationInfo['formData']['location_country'] = $japan_code;
         }
+
+        //更新前にバリデーションチェックを行う 20240527
+        $formData = $organizationInfo['formData'];
+        $duplicationCount = 0;
+        //団体IDとエントリーシステムの団体IDが入力されている場合、更新時の重複チェックを行う
+        if (isset($formData['org_id']) && isset($formData['entrysystem_org_id'])) {
+            // Log::debug("call getEntrysystemOrgIdCountWithOrgId");
+            $duplicationCount = $tOrganizations->getEntrysystemOrgIdCountWithOrgId($formData['entrysystem_org_id'], $formData['org_id']);
+        }
+        if ($duplicationCount > 0) {
+            // Log::debug(sprintf("validateOrgData duplication"));
+            return response()->json(["エントリーシステムの団体IDが重複しています。"], 401);
+        }
+        
         DB::beginTransaction();
         try {
             $tOrganizations::$tournamentUpdateInfo['org_id'] = $target_org_id; //団体ID
