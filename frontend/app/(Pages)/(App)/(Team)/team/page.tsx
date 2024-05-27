@@ -652,11 +652,11 @@ export default function OrgInfo() {
                 // .post('http://localhost:3100/', requestBody)
                 .post('/updateOrgData', sendData) //20240226
                 .then((response) => {
-                  if (response.data.duplicationError == undefined || response.data.duplicationError == null || response.data.duplicationError == '') {
+                  if (response.data.errorMessage == undefined || response.data.errorMessage == null || response.data.errorMessage == '') {
                     window.alert('団体情報を更新しました。');
                     router.push('/teamRef?orgId=' + formData.org_id);
                   } else {
-                    setErrorMessage([...(response.data?.duplicationError as string[])]);
+                    setErrorMessage([...(response.data?.errorMessage as string[])]);
                   }
                 })
                 .catch((error) => {

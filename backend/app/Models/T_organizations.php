@@ -239,6 +239,19 @@ class T_organizations extends Model
         Log::debug('updateOrganization end.');
     }
 
+    //団体更新する際に、既に団体が削除されていないかを判定する 20240527
+    public function orgDataDeleteCheck($org_id)
+    {
+        $counts = DB::select('select count(*) as "count"
+                                    from `t_organizations`
+                                    where `delete_flag`= 1
+                                    and `org_id` = ?'
+                                ,[$org_id]
+                            );
+        $count = $counts[0]->count;
+        return $count;
+    }
+
     //エントリーシステムの団体IDの数を取得する
     //重複有無を確認するため
     //org_idが一致するレコードを除く（更新画面用）
