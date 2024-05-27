@@ -1438,6 +1438,9 @@ class TournamentController extends Controller
                                 //is_record_existsが0でなければ、対象のレコードが存在するため更新する
                                 //更新時の値を格納する配列
                                 $update_values_array = array();
+                                
+                                //出漕結果記録ID
+                                $update_values_array["race_result_record_id"] = $race_result_record_id;
                                 //レースID
                                 $update_values_array["race_id"] = $race_id;
                                 //発艇日時

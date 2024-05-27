@@ -1099,9 +1099,13 @@ class T_raceResultRecord extends Model
         DB::update("update `t_race_result_record`
                     SET
                         `jara_player_id` = :jara_player_id
+                        , `race_id` = :race_id
                         , `player_name` = :player_name
+                        , `player_id` = :player_id
                         , `entrysystem_org_id` = :entrysystem_org_id
                         , `org_name` = :org_name
+                        , `org_id` = :org_id
+                        , `crew_name` = :crew_name
                         , `lane_number` = :lane_number
                         , `rank` = :rank
                         , `laptime_500m` = :laptime_500m
@@ -1135,10 +1139,7 @@ class T_raceResultRecord extends Model
                         , `updated_user_id` = :updated_user_id
                         WHERE 1=1
                         and delete_flag = 0
-                        and `race_id` = :race_id
-                        and `crew_name` = :crew_name
-                        and `player_id` = :player_id
-                        and `org_id` = :org_id"
+                        and `race_result_record_id` = :race_result_record_id"
                         ,$values);
     }
 
