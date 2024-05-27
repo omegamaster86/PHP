@@ -625,14 +625,17 @@ export default function OrgInfo() {
                 // .post('http://localhost:3100/', requestBody)
                 .post('/storeOrgData', sendData) //20240226
                 .then((response) => {
-                  //console.log(response);
+                  console.log(response);
                   // TODO: 登録処理成功時の処理
                   if (response.data?.duplicationError.length > 0) {
+                    console.log('aaaaaaaaaaaaaaa');
                     setErrorMessage([...(response.data?.duplicationError as string[])]);
                   } else {
+                    console.log('yyyyyyyyyyy');
                     window.alert('団体情報を登録しました。');
                     router.push('/teamRef?orgId=' + response.data.result);
                   }
+                  console.log('qqqqqqqqqqq');
                 })
                 .catch((error) => {
                   //console.log(error);
@@ -653,11 +656,14 @@ export default function OrgInfo() {
                 .post('/updateOrgData', sendData) //20240226
                 .then((response) => {
                   if (response.data?.duplicationError.length > 0) {
+                    console.log('cccccccccccc');
                     setErrorMessage([...(response.data?.duplicationError as string[])]);
                   } else {
+                    console.log('xxxxxxxxxx');
                     window.alert('団体情報を更新しました。');
                     router.push('/teamRef?orgId=' + formData.org_id);
                   }
+                  console.log('bbbbbbbbbbb');
                 })
                 .catch((error) => {
                   // TODO: 更新処理失敗時の処理
