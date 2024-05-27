@@ -627,7 +627,7 @@ export default function OrgInfo() {
                 .then((response) => {
                   //console.log(response);
                   // TODO: 登録処理成功時の処理
-                  if(response.data?.duplicationError != ''){
+                  if(response.data?.duplicationError.length > 0){
                     setErrorMessage([...(response.data?.duplicationError as string[])]);
                     return; //確認画面で重複エラーが発生した場合、以降の処理を行わない 20240527
                   }
@@ -652,7 +652,7 @@ export default function OrgInfo() {
                 // .post('http://localhost:3100/', requestBody)
                 .post('/updateOrgData', sendData) //20240226
                 .then((response) => {
-                  if(response.data?.duplicationError != ''){
+                  if(response.data?.duplicationError.length > 0){
                     setErrorMessage([...(response.data?.duplicationError as string[])]);
                     return; //確認画面で重複エラーが発生した場合、以降の処理を行わない 20240527
                   }
