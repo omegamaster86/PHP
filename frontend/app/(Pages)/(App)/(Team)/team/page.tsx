@@ -626,14 +626,15 @@ export default function OrgInfo() {
                 .post('/storeOrgData', sendData) //20240226
                 .then((response) => {
                   console.log(response);
+                  console.log('ewrwerwerwrwrwrwr');
                   // TODO: 登録処理成功時の処理
-                  if (response.data?.duplicationError.length > 0) {
-                    console.log('aaaaaaaaaaaaaaa');
-                    setErrorMessage([...(response.data?.duplicationError as string[])]);
-                  } else {
+                  if (response.data.duplicationError == undefined || response.data.duplicationError == null || response.data.duplicationError == '') {
                     console.log('yyyyyyyyyyy');
                     window.alert('団体情報を登録しました。');
                     router.push('/teamRef?orgId=' + response.data.result);
+                  } else {
+                    console.log('aaaaaaaaaaaaaaa');
+                    setErrorMessage([...(response.data?.duplicationError as string[])]);
                   }
                   console.log('qqqqqqqqqqq');
                 })
