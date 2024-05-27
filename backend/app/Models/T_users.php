@@ -264,6 +264,7 @@ class T_users extends Authenticatable
                                 `user_id`, 
                                 `user_name`, 
                                 `mailaddress`, 
+                                `user_type`,
                                 `temp_password_flag`
                                 FROM `t_users`
                                 WHERE 1=1
