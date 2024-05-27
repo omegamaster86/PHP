@@ -169,8 +169,8 @@ export default function PlayerInformationLinking() {
               oldPlayerId: value[0],
               playerId: value[1],
               mailaddress: value[2],
-              playerName: '-',
-              message: '',
+              playerName: '',
+              message: '無効なデータ',
             };
           } else {
             // 列数が期待する列数と一致する場合
