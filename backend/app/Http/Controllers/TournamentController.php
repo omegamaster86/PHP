@@ -894,6 +894,7 @@ class TournamentController extends Controller
         try
         {
             //大会結果の重複チェックを行う 20240529
+            Log::debug($reqData['raceInfo']);
             $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData['raceInfo']);
             //結果が0件なら、insertを実行
             if ($result_count['result'] > 0) {

@@ -828,11 +828,11 @@ class T_raceResultRecord extends Model
     //対象のレースに出漕結果の件数を取得する
     public function getIsExistsTargetRaceResult($race_id)
     {
-        $is_exists = DB::select("select count(*) as `result`
+        $is_exists = DB::select('select count(*) as `result`
                                 from t_race_result_record
                                 where 1=1
-                                and race_id = ?
-                                and delete_flag = 0"
+                                and delete_flag = 0
+                                and race_id = ?'
                                 ,[$race_id]);
         return $is_exists;
     }
