@@ -640,6 +640,13 @@ class TournamentController extends Controller
             //出漕結果記録テーブルを検索
             $reqData = $request->all();
             Log::debug($reqData);
+
+            //大会結果の削除チェックを行う 20240529
+            $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData['raceInfo']['race_id']);
+            if ($result_count == 0) {
+                return response()->json(['errMessage' => "当該レースの結果は、ほかのユーザーによって削除されています。"]); //エラーメッセージを返す
+            }
+
             // $reqData['updated_datetime'] = now()->format('Y-m-d H:i:s.u');
             // $reqData['updated_user_id'] = Auth::user()->user_id;
             for ($i=0; $i < count($reqData['raceResultRecords']); $i++) { 

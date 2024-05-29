@@ -475,8 +475,8 @@ export default function TournamentResultRef() {
                 await csrf();
                 const response = await axios.post('/deleteRaceResultRecordData', deleteSendData); //削除処理 20240520
                 //console.log(response);
-                if (response.data.isDeleted) {
-                  setErrorText(['当該レースの結果は、他のユーザーによって削除されています。']);
+                if (response.data?.errMessage) {
+                  setErrorText([response.data?.errMessage]);
                   window.scrollTo(0, 0);
                 } else {
                   window.alert('削除が完了しました。'); //完了メッセージ 20240520
