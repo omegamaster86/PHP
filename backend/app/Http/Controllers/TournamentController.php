@@ -898,6 +898,7 @@ class TournamentController extends Controller
             $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData['raceInfo']['race_id']);
             //結果が0件なら、insertを実行
             Log::debug($result_count);
+            Log::debug($result_count[0]['result']);
             if (isset($result_count)) {
                 return response()->json(['errMessage' => "当該レースの結果は、既にほかのユーザーによって登録されています。"]); //エラーメッセージを返す
             }
