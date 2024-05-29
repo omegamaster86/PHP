@@ -834,11 +834,7 @@ class T_raceResultRecord extends Model
                                 and delete_flag = 0
                                 and race_id = ?'
                                 ,[$race_id]);
-        $resultCount = null;
-        if (!empty($is_exists)) {
-            $resultCount = $is_exists[0];
-        }
-        return $resultCount;
+        return $is_exists;
     }
 
     //対象の出漕結果の件数を取得する
