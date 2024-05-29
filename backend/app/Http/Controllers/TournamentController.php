@@ -894,11 +894,10 @@ class TournamentController extends Controller
         try
         {
             //大会結果の重複チェックを行う 20240529
-            Log::debug($reqData['raceInfo']);
+            // Log::debug($reqData['raceInfo']);
             $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData['raceInfo']['race_id']);
-            //結果が0件なら、insertを実行
             Log::debug($result_count);
-            if (isset($result_count)) {
+            if ($result_count > 0) {
                 return response()->json(['errMessage' => "当該レースの結果は、既にほかのユーザーによって登録されています。"]); //エラーメッセージを返す
             }
 
@@ -1151,7 +1150,7 @@ class TournamentController extends Controller
         {
             //大会結果の削除チェックを行う 20240529
             $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData['raceInfo']['race_id']);
-            if (!isset($result_count)) {
+            if ($result_count == 0) {
                 return response()->json(['errMessage' => "当該レースの結果は、ほかのユーザーによって削除されています。"]); //エラーメッセージを返す
             }
 
