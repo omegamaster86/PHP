@@ -893,6 +893,13 @@ class TournamentController extends Controller
         DB::beginTransaction();
         try
         {
+            //大会結果の重複チェックを行う 20240529
+            $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($raceInfo);
+            //結果が0件なら、insertを実行
+            if ($result_count['result'] > 0) {
+                return response()->json(['errMessage' => "当該レースの結果は、既にほかのユーザーによって登録されています。"]); //エラーメッセージを返す
+            }
+
             //raceInfoからレース情報を取得
             //レースID
             $race_id = $raceInfo["race_id"];
