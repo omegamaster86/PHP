@@ -2405,6 +2405,8 @@ export default function TournamentResult() {
                   // router.push('/tournamentResult?mode=confirm&prevMode=update');
                   if (!raceResponse.data?.errMessage) {
                     router.push('/tournamentResultRef?raceId=' + raceInfo.race_id);
+                  } else {
+                    setErrorText([raceResponse.data?.errMessage]);
                   }
                 }
               }
