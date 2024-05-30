@@ -295,7 +295,7 @@ class TournamentInfoAlignmentController extends Controller
                     $race_result_record_array = $t_raceResultRecord->getRaceResultRecordsWithSearchCondition($search_values);
                     //検索結果を確認
                     if (count($race_result_record_array) == 1) {
-                        //レース結果データが1件以上ある存在する場合
+                        //レース結果データが1件だけ存在する場合
                         //レース結果が登録されているかを確認
                         $race_result_record_id = $race_result_record_array[0]->{"race_result_record_id"};
                         $laptime_500m = $race_result_record_array[0]->{"laptime_500m"};
@@ -305,14 +305,15 @@ class TournamentInfoAlignmentController extends Controller
                         $final_time = $race_result_record_array[0]->{"final_time"};
                         if (
                             isset($laptime_500m)
-                            && isset($laptime_1000m)
-                            && isset($laptime_1500m)
-                            && isset($laptime_2000m)
-                            && isset($final_time)
+                            || isset($laptime_1000m)
+                            || isset($laptime_1500m)
+                            || isset($laptime_2000m)
+                            || isset($final_time)
                         ) {
                             //登録されている場合
                             $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録エラー（記録情報あり）";
-                            throw new Exception("他のユーザーによりレース結果が登録されたレースが有ります。\r\n当該レースのエントリー情報は更新することは出来ません。");
+                            // throw new Exception("他のユーザーによりレース結果が登録されたレースが有ります。\r\n当該レースのエントリー情報は更新することは出来ません。");
+                            return response()->json(['hasError' => "他のユーザーによりレース結果が登録されたレースが有ります。\r\n当該レースのエントリー情報は更新することは出来ません。"]);
                         } else {
                             //登録されていない場合
                             $update_values = array();

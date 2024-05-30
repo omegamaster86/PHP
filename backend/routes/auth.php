@@ -177,6 +177,7 @@ Route::middleware('auth')->group(function () {
     Route::post('registerRaceResultRecordForRegisterConfirm', [TournamentController::class, 'registerRaceResultRecordForRegisterConfirm']); //レース結果入力確認画面で登録を実行 20240405
     Route::post('updateRaceResultRecordForUpdateConfirm', [TournamentController::class, 'updateRaceResultRecordForUpdateConfirm']); //レース結果更新確認画面で更新を実行 20240405
     Route::post('getCrewPlayerInfo', [TournamentController::class, 'getCrewPlayerInfo']); //レース結果登録画面で選手IDを入力したとき、その選手情報を取得する 20240409
+    Route::post('deleteRaceResultRecordData', [TournamentController::class, 'updateDeleteFlagOfRaceResultRecord']); //大会結果管理画面（レース結果削除） で「削除ボタン」押下時に実行される 20240520
 
     //ボランティア関連
     Route::post('getVolunteerData', [VolunteerController::class, 'getVolunteerData']); //ボランティア情報取得 20240213 ※ボランティア履歴情報も取得する

@@ -38,7 +38,7 @@ const CsvTable = ({
       row.loadingResult === '登録情報と不一致あり' ||
       // row.loadingResult === '不一致情報あり' ||
       row.loadingResult === '記録情報あり' ||
-      row.loadingResult === 'エントリー情報変更' ||
+      // row.loadingResult === 'エントリー情報変更' ||
       row.loadingResult === '登録エラー（記録情報あり）'
     );
   };
@@ -51,61 +51,49 @@ const CsvTable = ({
   //console.log('content');
   //console.log(content);
 
-  return (
+  return visibilityFlg == false ? (
+    <div></div>
+  ) : (
     <div className='overflow-auto h-[331px] w-[800px]'>
       <CustomTable>
         <CustomThead>
           {/* contentがundefinedまたは空の配列でないことを確認 */}
-          {visibilityFlg == false ? (
-            <CustomTr>
-              <CustomTh align='center' colSpan={header.length + 1}>
-                レース結果
-              </CustomTh>
-            </CustomTr>
-          ) : (
-            <CustomTr>
-              <CustomTh>
-                <CustomButton
-                  buttonType='primary'
-                  className='w-[100px]'
-                  onClick={() => {
-                    content?.map((data) =>
-                      !checkLoadingResult(data)
-                        ? handleInputChange(data.id, 'checked', true)
-                        : null,
-                    );
-                    content?.some((row) => checkLoadingResult(row)) && displayRegisterButton(true);
-                  }}
-                >
-                  全選択
-                </CustomButton>
-              </CustomTh>
-              <CustomTh>
-                <CustomButton
-                  buttonType='primary'
-                  className='w-[110px]'
-                  onClick={() => {
-                    content.length > 0 &&
-                      content.map((data) => handleInputChange(data.id, 'checked', false));
-                    displayRegisterButton(false);
-                  }}
-                >
-                  全選択解除
-                </CustomButton>
-              </CustomTh>
-              <CustomTh colSpan={header.length - 1}>読み込み結果</CustomTh>
-            </CustomTr>
-          )}
-          {visibilityFlg == false ? (
-            <div></div>
-          ) : (
-            <CustomTr>
-              <CustomTh key={0}>選択</CustomTh>
-              {header.map((header: any, index: any) => (
-                <CustomTh key={index}>{header}</CustomTh>
-              ))}
-            </CustomTr>
-          )}
+          <CustomTr>
+            <CustomTh>
+              <CustomButton
+                buttonType='primary'
+                className='w-[100px]'
+                onClick={() => {
+                  content?.map((data) =>
+                    !checkLoadingResult(data) ? handleInputChange(data.id, 'checked', true) : null,
+                  );
+                  content?.some((row) => checkLoadingResult(row)) && displayRegisterButton(true);
+                }}
+              >
+                全選択
+              </CustomButton>
+            </CustomTh>
+            <CustomTh>
+              <CustomButton
+                buttonType='primary'
+                className='w-[110px]'
+                onClick={() => {
+                  content.length > 0 &&
+                    content.map((data) => handleInputChange(data.id, 'checked', false));
+                  displayRegisterButton(false);
+                }}
+              >
+                全選択解除
+              </CustomButton>
+            </CustomTh>
+            <CustomTh colSpan={header.length - 1}>読み込み結果</CustomTh>
+          </CustomTr>
+          <CustomTr>
+            <CustomTh key={0}>選択</CustomTh>
+            {header.map((header: any, index: any) => (
+              <CustomTh key={index}>{header}</CustomTh>
+            ))}
+          </CustomTr>
         </CustomThead>
         <CustomTbody>
           {content?.map((row, rowIndex) => (
@@ -120,7 +108,12 @@ const CsvTable = ({
                   readonly={checkLoadingResult(row)}
                   onChange={(e) => {
                     handleInputChange(row.id, 'checked', e.target.checked);
-                    e.target.checked ? displayRegisterButton(true) : null;
+                    // チェックボックスの変更により連携ボタンの表示を切り替える 20240525
+                    var data = content.map((row) => row.checked.toString());
+                    data[rowIndex] = e.target.checked.toString();
+                    data.includes('true')
+                      ? displayRegisterButton(true)
+                      : displayRegisterButton(false);
                   }}
                 ></CustomCheckbox>
               </CustomTd>

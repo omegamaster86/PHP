@@ -85,10 +85,16 @@ interface RaceResultRecordsResponse {
   sex: number; // 性別ID
   //種目IDを追加 20240405---------
   event_id: number; //種目ID
+  //大会結果管理用バリデーション項目を追加 20240515---------
+  orgNameErrorText: string; //所属団体エラーメッセージ
+  crewNameErrorText: string; //クルー名エラーメッセージ
+  laneNumberErrorText: string; //レーンNo.エラーメッセージ
+  rankErrorText: string; //順位エラーメッセージ
 }
 
 interface CrewPlayer {
-  id?: number; // 選手ID
+  id?: number; //ID
+  race_result_record_id?: number; //出漕結果記録ID 20240517
   playerPhoto: string; // 選手画像
   playerName: string; // 選手名
   jaraPlayerId: string; // JARA選手コード

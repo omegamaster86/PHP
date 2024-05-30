@@ -626,7 +626,7 @@ export default function Tournaments() {
           // .get<Race[]>('/race')
           .post('/getRaceData', tourn_id)
           .then((response) => {
-            console.log(response.data.result);
+            //console.log(response.data.result);
             setTableData(response.data.result); //「その他」で入力された値を表示できるように修正 20240514
           })
           .catch((error) => {

@@ -404,6 +404,19 @@ class VolunteerInfoAlignmentController extends Controller
                             $t_volunteer_language_proficiency->insertVolunteerLanguageProficiency($volunteer_language_proficiency_data);
                         }
                     }
+
+                    //ユーザー種別の更新 20240525
+                    $addAuthority = array();
+                    $addAuthority['user_id'] = $volunteer_data['user_id']; //ボランティア情報を連携させたいユーザーのユーザーID
+                    $addAuthority['input'] = '10'; //ボランティアのユーザ種別を変更する
+                    Log::debug($addAuthority);
+                    $user_type = (string)$user_list[0]->{'user_type'};
+                    //右から2桁目が0のときだけユーザー種別を更新する (該当ユーザーのボランティアフラグが0だった場合)
+                    if(substr($user_type,-2,1) == '0')
+                    {
+                        $t_users->updateUserTypeRegist($addAuthority);
+                    }
+
                     DB::commit();
                 }
             }

@@ -630,29 +630,48 @@ class TournamentController extends Controller
         }
     }
 
-    //レース結果情報を削除（update delete_flag)する
+    //レース結果情報を削除（update delete_flag)する 20240520
     public function updateDeleteFlagOfRaceResultRecord(Request $request, T_raceResultRecord $t_raceResultRecord)
     {
+        Log::debug(sprintf("updateDeleteFlagOfRaceResultRecord start"));
         include('Auth/ErrorMessages/ErrorMessages.php');
         try {
-            DB::transaction();
+            DB::beginTransaction();
             //出漕結果記録テーブルを検索
             $reqData = $request->all();
-            $reqData['updated_datetime'] = now()->format('Y-m-d H:i:s.u');
-            $reqData['updated_user_id'] = Auth::user()->user_id;
-            $result_count = $t_raceResultRecord->getIsExistsTargetRaceResultRecord($reqData);
-            //結果が0件なら、insertを実行
-            if ($result_count['result'] == 0) {
-                $t_raceResultRecord->updateDeleteFlagToValid($reqData);
-                DB::commit();
-            } else {
-                DB::commit();
-                //結果が存在しないとき
-                return response()->json(['errMessage' => $race_result_record_have_been_deleted]); //エラーメッセージを返す
+            Log::debug($reqData);
+
+            //大会結果の削除チェックを行う 20240529
+            $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData['raceInfo']['race_id']);
+            if ($result_count == 0) {
+                return response()->json(['errMessage' => "当該レースの結果は、ほかのユーザーによって削除されています。"]); //エラーメッセージを返す
             }
+
+            // $reqData['updated_datetime'] = now()->format('Y-m-d H:i:s.u');
+            // $reqData['updated_user_id'] = Auth::user()->user_id;
+            for ($i=0; $i < count($reqData['raceResultRecords']); $i++) { 
+                for ($j=0; $j < count($reqData['raceResultRecords'][$i]['crewPlayer']); $j++) { 
+                    $delete_race_result_record_id = $reqData['raceResultRecords'][$i]['crewPlayer'][$j]['race_result_record_id'];
+                    Log::debug($delete_race_result_record_id);
+                    $result_count = $t_raceResultRecord->getIsExistsTargetRaceResultRecord($delete_race_result_record_id);
+
+                    if(isset($result_count)){
+                        Log::debug($result_count);
+                        $deleteDataInfo['updated_datetime'] = now()->format('Y-m-d H:i:s.u');
+                        $deleteDataInfo['updated_user_id'] = Auth::user()->user_id;
+                        $deleteDataInfo['race_result_record_id'] = $delete_race_result_record_id;
+                        Log::debug($deleteDataInfo);
+                        $t_raceResultRecord->updateDeleteFlagToValid($deleteDataInfo);
+                    }
+                }
+            }
+            DB::commit();
+            Log::debug(sprintf("updateDeleteFlagOfRaceResultRecord end"));
+            return response()->json(['result' => 'success']);
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
+            Log::debug(sprintf("updateDeleteFlagOfRaceResultRecord end"));
             return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
         }
     }
@@ -881,6 +900,14 @@ class TournamentController extends Controller
         DB::beginTransaction();
         try
         {
+            //大会結果の重複チェックを行う 20240529
+            // Log::debug($reqData['raceInfo']);
+            $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData['raceInfo']['race_id']);
+            Log::debug($result_count);
+            if ($result_count > 0) {
+                return response()->json(['errMessage' => "当該レースの結果は、既にほかのユーザーによって登録されています。"]); //エラーメッセージを返す
+            }
+
             //raceInfoからレース情報を取得
             //レースID
             $race_id = $raceInfo["race_id"];
@@ -1128,6 +1155,12 @@ class TournamentController extends Controller
         DB::beginTransaction();
         try
         {
+            //大会結果の削除チェックを行う 20240529
+            $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData['raceInfo']['race_id']);
+            if ($result_count == 0) {
+                return response()->json(['errMessage' => "当該レースの結果は、ほかのユーザーによって削除されています。"]); //エラーメッセージを返す
+            }
+
             //レース情報
             //レースID
             $race_id = $raceInfo["race_id"];
@@ -1219,8 +1252,10 @@ class TournamentController extends Controller
                     {
                         //選手ID
                         $player_id = isset($player["playerId"]) ? $player["playerId"] : null;
-                        //
-                        $target_race_result_record = $t_raceResultRecord->getIsExistsTargetResultRecordForConditions($race_id,$crew_name,$org_id,$player_id);                        
+                        //スプレッドシート不具合項目462 は下記関数に団体ID、クルー名を渡しているから発生する仕様バグ 20240522
+                        // $target_race_result_record = $t_raceResultRecord->getIsExistsTargetResultRecordForConditions($race_id,$crew_name,$org_id,$player_id);
+                        $target_race_result_record_id = isset($player["race_result_record_id"]) ? $player["race_result_record_id"] : null;
+                        $target_race_result_record = $t_raceResultRecord->getIsExistsTargetResultRecordForConditions($target_race_result_record_id);
                         $race_result_record_id = isset($target_race_result_record) ? $target_race_result_record->race_result_record_id : null;
                         //削除にチェック、かつ対象の出漕結果記録IDがテーブルに存在する場合
                         if($player["deleteFlg"] && isset($race_result_record_id))
@@ -1424,6 +1459,9 @@ class TournamentController extends Controller
                                 //is_record_existsが0でなければ、対象のレコードが存在するため更新する
                                 //更新時の値を格納する配列
                                 $update_values_array = array();
+                                
+                                //出漕結果記録ID
+                                $update_values_array["race_result_record_id"] = $race_result_record_id;
                                 //レースID
                                 $update_values_array["race_id"] = $race_id;
                                 //発艇日時

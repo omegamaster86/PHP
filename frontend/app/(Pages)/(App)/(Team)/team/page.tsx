@@ -625,10 +625,18 @@ export default function OrgInfo() {
                 // .post('http://localhost:3100/', requestBody)
                 .post('/storeOrgData', sendData) //20240226
                 .then((response) => {
-                  //console.log(response);
+                  // console.log(response);
                   // TODO: 登録処理成功時の処理
-                  //window.confirm('団体情報を登録しました。');
-                  router.push('/teamRef?orgId=' + response.data.result);
+                  if (
+                    response.data.duplicationError == undefined ||
+                    response.data.duplicationError == null ||
+                    response.data.duplicationError == ''
+                  ) {
+                    window.alert('団体情報を登録しました。');
+                    router.push('/teamRef?orgId=' + response.data.result);
+                  } else {
+                    setErrorMessage([...(response.data?.duplicationError as string[])]);
+                  }
                 })
                 .catch((error) => {
                   //console.log(error);
@@ -648,9 +656,16 @@ export default function OrgInfo() {
                 // .post('http://localhost:3100/', requestBody)
                 .post('/updateOrgData', sendData) //20240226
                 .then((response) => {
-                  // TODO: 更新処理成功時の処理
-                  window.alert('団体情報を更新しました。');
-                  router.push('/teamRef?orgId=' + formData.org_id);
+                  if (
+                    response.data.errorMessage == undefined ||
+                    response.data.errorMessage == null ||
+                    response.data.errorMessage == ''
+                  ) {
+                    window.alert('団体情報を更新しました。');
+                    router.push('/teamRef?orgId=' + formData.org_id);
+                  } else {
+                    setErrorMessage([...(response.data?.errorMessage as string[])]);
+                  }
                 })
                 .catch((error) => {
                   // TODO: 更新処理失敗時の処理

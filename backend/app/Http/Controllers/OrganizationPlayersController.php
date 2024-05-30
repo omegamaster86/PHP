@@ -149,21 +149,38 @@ class OrganizationPlayersController extends Controller
             $conditionValue['residence_prefecture'] = $searchInfo['residencePrefectureId'];
         }
         if (isset($searchInfo['sideInfo'])) {
+            $side_info_list = array();
             //S(ストロークサイド)
             if ($searchInfo['sideInfo']['S'] == true) {
-                $condition .= "and SUBSTRING(tp.`side_info`,8,1) = 1\r\n";
+                // $condition .= "and SUBSTRING(tp.`side_info`,8,1) = 1\r\n";
+                array_push($side_info_list, "SUBSTRING(tp.`side_info`,8,1) = 1\r\n");
             }
             //B(バウサイド)
             if ($searchInfo['sideInfo']['B'] == true) {
-                $condition .= "and SUBSTRING(tp.`side_info`,7,1) = 1\r\n";
+                // $condition .= "and SUBSTRING(tp.`side_info`,7,1) = 1\r\n";
+                array_push($side_info_list, "SUBSTRING(tp.`side_info`,7,1) = 1\r\n");
             }
             //X(スカルサイド)
             if ($searchInfo['sideInfo']['X'] == true) {
-                $condition .= "and SUBSTRING(tp.`side_info`,6,1) = 1\r\n";
+                // $condition .= "and SUBSTRING(tp.`side_info`,6,1) = 1\r\n";
+                array_push($side_info_list, "SUBSTRING(tp.`side_info`,6,1) = 1\r\n");
             }
             //C(コックスサイド)
             if ($searchInfo['sideInfo']['C'] == true) {
-                $condition .= "and SUBSTRING(tp.`side_info`,5,1) = 1\r\n";
+                // $condition .= "and SUBSTRING(tp.`side_info`,5,1) = 1\r\n";
+                array_push($side_info_list, "SUBSTRING(tp.`side_info`,5,1) = 1\r\n");
+            }
+
+            //サイド情報のいずれかにチェックがされている場合or条件で条件式を生成する 20240521
+            if(count($side_info_list) > 0){
+                $condition .= "and (\r\n";
+                for ($i=0; $i < count($side_info_list); $i++) { 
+                    $condition .= $side_info_list[$i] . "\r\n";
+                    if($i != count($side_info_list) -1){
+                        $condition .= "or "; //末尾のデータ以外はorを追加
+                    }
+                }
+                $condition .= ")\r\n";
             }
         }
         //団体ID

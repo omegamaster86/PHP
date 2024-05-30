@@ -39,59 +39,49 @@ const CsvTable = ({
     return error ? 'bg-yellow' : '';
   };
 
-  return (
+  return visibilityFlg == false ? (
+    <div></div>
+  ) : (
     <div className='overflow-auto h-[331px] w-[800px]'>
       <CustomTable>
         <CustomThead>
           {/* contentがundefinedまたは空の配列でないことを確認 */}
-          {visibilityFlg == false ? (
-            <CustomTr>
-              <CustomTh align='center' colSpan={header.length + 1}>
-                レース結果
-              </CustomTh>
-            </CustomTr>
-          ) : (
-            <CustomTr>
-              <CustomTh>
-                <CustomButton
-                  buttonType='primary'
-                  className='w-[100px]'
-                  onClick={() => {
-                    content?.map((data) =>
-                      checkLoadingResult(data) ? null : handleInputChange(data.id, 'checked', true),
-                    );
-                    content?.some((row) => !checkLoadingResult(row)) && displayRegisterButton(true);
-                  }}
-                >
-                  全選択
-                </CustomButton>
-              </CustomTh>
-              <CustomTh>
-                <CustomButton
-                  buttonType='primary'
-                  className='w-[110px]'
-                  onClick={() => {
-                    content.length > 0 &&
-                      content.map((data) => handleInputChange(data.id, 'checked', false));
-                    displayRegisterButton(false);
-                  }}
-                >
-                  全選択解除
-                </CustomButton>
-              </CustomTh>
-              <CustomTh colSpan={header.length - 1}>読み込み結果</CustomTh>
-            </CustomTr>
-          )}
-          {visibilityFlg == false ? (
-            <div></div>
-          ) : (
-            <CustomTr>
-              <CustomTh key={0}>選択</CustomTh>
-              {header.map((header: any, index: any) => (
-                <CustomTh key={index}>{header}</CustomTh>
-              ))}
-            </CustomTr>
-          )}
+          <CustomTr>
+            <CustomTh>
+              <CustomButton
+                buttonType='primary'
+                className='w-[100px]'
+                onClick={() => {
+                  content?.map((data) =>
+                    checkLoadingResult(data) ? null : handleInputChange(data.id, 'checked', true),
+                  );
+                  content?.some((row) => !checkLoadingResult(row)) && displayRegisterButton(true);
+                }}
+              >
+                全選択
+              </CustomButton>
+            </CustomTh>
+            <CustomTh>
+              <CustomButton
+                buttonType='primary'
+                className='w-[110px]'
+                onClick={() => {
+                  content.length > 0 &&
+                    content.map((data) => handleInputChange(data.id, 'checked', false));
+                  displayRegisterButton(false);
+                }}
+              >
+                全選択解除
+              </CustomButton>
+            </CustomTh>
+            <CustomTh colSpan={header.length - 1}>読み込み結果</CustomTh>
+          </CustomTr>
+          <CustomTr>
+            <CustomTh key={0}>選択</CustomTh>
+            {header.map((header: any, index: any) => (
+              <CustomTh key={index}>{header}</CustomTh>
+            ))}
+          </CustomTr>
         </CustomThead>
         <CustomTbody>
           {content?.map((row, rowIndex) => (

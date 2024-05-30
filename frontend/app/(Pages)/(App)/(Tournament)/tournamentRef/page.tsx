@@ -125,6 +125,10 @@ export default function TournamentRef() {
   const [showEventNameAutocomplete, setShowEventNameAutocomplete] = useState(false);
   const [showByGroupAutocomplete, setShowByGroupAutocomplete] = useState(false);
   const [showStartDateTimeAutocomplete, setShowStartDateTimeAutocomplete] = useState(false);
+  const eventNamefocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240518
+  const byGroupfocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240518
+  const startDateTimefocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240518
+
   // ヘッダーの位置を取得するためのステート
   //種目
   const [selectedEventNameHeader, setSelectedEventNameHeader] = useState({
@@ -204,6 +208,29 @@ export default function TournamentRef() {
     setShowEventNameAutocomplete(false);
     setShowByGroupAutocomplete(false);
     setShowStartDateTimeAutocomplete(!showStartDateTimeAutocomplete);
+  };
+
+  // 発艇日時のソート用
+  // ソート用のステート 20240518
+  const [startDateTimeSortFlag, setStartDateTimeSortFlag] = useState(false);
+  const startDateTimeSort = () => {
+    if (startDateTimeSortFlag) {
+      setStartDateTimeSortFlag(false);
+      tableData.sort(
+        (a, b) =>
+          //ハイフン、スペース、コロンを空文字に変換してnumber型にキャストして大小比較する 20240518
+          Number(a.start_date_time.replace(/[- :]/g, '')) -
+          Number(b.start_date_time.replace(/[- :]/g, '')),
+      );
+    } else {
+      setStartDateTimeSortFlag(true);
+      tableData.sort(
+        (a, b) =>
+          //ハイフン、スペース、コロンを空文字に変換してnumber型にキャストして大小比較する 20240518
+          Number(b.start_date_time.replace(/[- :]/g, '')) -
+          Number(a.start_date_time.replace(/[- :]/g, '')),
+      );
+    }
   };
 
   // APIの呼び出し実績の有無を管理する状態
@@ -292,6 +319,28 @@ export default function TournamentRef() {
       isApiFetched.current = true;
     }
   }, []);
+
+  useEffect(() => {
+    if (showEventNameAutocomplete) {
+      // //console.log(eventNamefocusTarget.current);
+      if (eventNamefocusTarget.current != null) {
+        var target = eventNamefocusTarget.current as HTMLDivElement;
+        (target.childNodes[0].childNodes[0].childNodes[1].childNodes[0] as HTMLElement).focus();
+      }
+    }
+    if (showByGroupAutocomplete) {
+      if (byGroupfocusTarget.current != null) {
+        var target = byGroupfocusTarget.current as HTMLDivElement;
+        (target.childNodes[0].childNodes[0].childNodes[1].childNodes[0] as HTMLElement).focus();
+      }
+    }
+    if (showStartDateTimeAutocomplete) {
+      if (startDateTimefocusTarget.current != null) {
+        var target = startDateTimefocusTarget.current as HTMLDivElement;
+        (target.childNodes[0].childNodes[0].childNodes[1].childNodes[0] as HTMLElement).focus();
+      }
+    }
+  }, [showEventNameAutocomplete, showByGroupAutocomplete, showStartDateTimeAutocomplete]);
 
   // エラーがある場合はエラーメッセージを表示
   if (isError) {
@@ -492,7 +541,6 @@ export default function TournamentRef() {
                   <CustomTh align='left'>
                     <div className='flex flex-row items-center gap-[10px]'>
                       種目
-                      {/* 残件対応項目 */}
                       <div onClick={(event) => handleEventNameHeaderClick('種目', event as any)}>
                         <FilterListIcon />
                       </div>
@@ -501,7 +549,6 @@ export default function TournamentRef() {
                   <CustomTh align='left'>
                     <div className='flex flex-row items-center gap-[10px]'>
                       組別
-                      {/* 残件対応項目 */}
                       <div onClick={(event) => handleByGroupHeaderClick('組別', event as any)}>
                         <FilterListIcon />
                       </div>
@@ -510,8 +557,9 @@ export default function TournamentRef() {
                   <CustomTh align='left'>距離</CustomTh>
                   <CustomTh align='left'>
                     <div className='flex flex-row items-center gap-[10px]'>
-                      発艇日時
-                      {/* 残件対応項目 */}
+                      <div className='underline' onClick={() => startDateTimeSort()}>
+                        発艇日時
+                      </div>
                       <div
                         onClick={(event) =>
                           handleStartDateTimeHeaderClick('発艇日時', event as any)
@@ -637,6 +685,7 @@ export default function TournamentRef() {
             {/* 種目フィルター用のオートコンプリート 20240509 */}
             {showEventNameAutocomplete && (
               <div
+                ref={eventNamefocusTarget}
                 style={{
                   position: 'absolute',
                   top: `${selectedEventNameHeader.position.top - 120}px`,
@@ -646,6 +695,7 @@ export default function TournamentRef() {
                   zIndex: 1000,
                   padding: '8px',
                 }}
+                onBlur={() => setShowEventNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
               >
                 <Autocomplete
                   id='eventName'
@@ -685,6 +735,7 @@ export default function TournamentRef() {
             {/* 組別フィルター用のオートコンプリート 20240508 */}
             {showByGroupAutocomplete && (
               <div
+                ref={byGroupfocusTarget}
                 style={{
                   position: 'absolute',
                   top: `${selectedByGroupHeader.position.top - 120}px`,
@@ -694,6 +745,7 @@ export default function TournamentRef() {
                   zIndex: 1000,
                   padding: '8px',
                 }}
+                onBlur={() => setShowByGroupAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
               >
                 <Autocomplete
                   id='byGroup'
@@ -733,6 +785,7 @@ export default function TournamentRef() {
             {/* 発艇日時用のオートコンプリート 20240509 */}
             {showStartDateTimeAutocomplete && (
               <div
+                ref={startDateTimefocusTarget}
                 style={{
                   position: 'absolute',
                   top: `${selectedStartDateTimeHeader.position.top - 120}px`,
@@ -742,6 +795,7 @@ export default function TournamentRef() {
                   zIndex: 1000,
                   padding: '8px',
                 }}
+                onBlur={() => setShowStartDateTimeAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
               >
                 <Autocomplete
                   id='startDateTime'

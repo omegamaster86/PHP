@@ -1091,20 +1091,19 @@ export default function VolunteerBulkRegister() {
                 disabled={activationFlg}
                 onClick={async () => {
                   if (csvData.find((row) => row.checked)?.id === undefined) {
-                    window.confirm('1件以上選択してください。');
+                    window.alert('1件以上選択してください。');
                     return;
                   }
                   if (window.confirm('連携を実施しますか？')) {
                     await registerCsvData(); //バックエンド側にデータを送信 20240307
                     setActivationFlg(true);
-                    setCsvData([]),
-                      setCsvFileData({ content: [], isSet: false }),
-                      fileUploaderRef?.current?.clearFile(),
-                      window.confirm('連携を完了しました。')
-                        ? (setActivationFlg(false),
-                          setDialogDisplayFlg(false),
-                          setDisplayLinkButtonFlg(false))
-                        : null;
+                    setCsvData([]);
+                    setCsvFileData({ content: [], isSet: false });
+                    fileUploaderRef?.current?.clearFile();
+                    window.alert('連携を完了しました。');
+                    setActivationFlg(false);
+                    setDialogDisplayFlg(false);
+                    setDisplayLinkButtonFlg(false);
                     setActivationFlg(false);
                   }
                 }}

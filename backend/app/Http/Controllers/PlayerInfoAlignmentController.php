@@ -40,6 +40,10 @@ class PlayerInfoAlignmentController extends Controller
         //ヘッダーが含まれているから0行目は処理対象としない
         for($rowIndex = 0; $rowIndex < count($reqData); $rowIndex++)
         {
+            if($reqData[$rowIndex]["link"] == "連携不可") {
+                continue; //フロント側のバリデーション結果が「連携不可」の場合、以降の処理を行わない 20240527
+            }
+
             $old_player_id = $reqData[$rowIndex]["oldPlayerId"];    //既存選手ID
             //既存選手IDが記載されているかをチェック
             if(empty($old_player_id))

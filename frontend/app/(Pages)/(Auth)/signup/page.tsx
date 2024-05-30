@@ -165,6 +165,10 @@ export default function Signup() {
                   ) {
                     return;
                   }
+                  if (window.confirm('入力した内容でユーザーの仮登録を行います。') == false) {
+                    return; //キャンセルボタンが押された場合、以降の処理を行わない 20240522
+                  }
+
                   const csrf = () => axios.get('/sanctum/csrf-cookie');
                   await csrf();
                   // 仮登録処理
@@ -177,9 +181,8 @@ export default function Signup() {
                     })
                     .then((response) => {
                       //console.log(response);
-                      if (window.confirm(response?.data) == true) {
-                        router.push('/login');
-                      }
+                      window.alert(response?.data); //仮パスワード通知メール送信メッセージの表示 20240522
+                      router.push('/login');
                     })
                     .catch((error) => {
                       // エラー時の処理を実装
