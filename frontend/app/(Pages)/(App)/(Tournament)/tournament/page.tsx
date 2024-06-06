@@ -212,6 +212,16 @@ export default function Tournaments() {
       Validator.validateUrlFormat(tournamentFormData.tourn_url),
     ]);
 
+
+    //エントリーシステムのレースIDのバリデーションチェック 20240606
+    const entryRaceIdErrorFlg = tableData.some((row) => {
+      if (row.checked) {
+        return false; //削除チェックがされている場合、バリデーションを行わない 20240606
+      }
+      // return row.entrysystem_race_id.length > 0;
+      return Validator.validateAlphabetNumber(row.entrysystem_race_id, 'エントリーシステムの大会ID').length > 0;
+    });
+
     const raceNumberErrorFlg = tableData.some((row) => {
       if (row.checked) {
         return false; //削除チェックがされている場合、バリデーションを行わない 20240508
@@ -302,6 +312,16 @@ export default function Tournaments() {
     setVenueIdErrorMessage(venueIdError);
     setVenueNameErrorMessage(venueNameError);
     setTournUrlErrorMessage(tournUrlError);
+
+    //エントリーシステムのレースID 20240606
+    if (entryRaceIdErrorFlg) {
+      setEntrysystemRaceIdErrorMessage(
+        Validator.getErrorMessages([Validator.validateAlphabetNumber('-', 'エントリーシステムの大会ID')]),
+      );
+    } else {
+      setEntrysystemRaceIdErrorMessage([]);
+    }
+
     if (raceNumberErrorFlg) {
       setRaceNumberErrorMessage(
         Validator.getErrorMessages([Validator.validateRequired(null, 'レースNo.')]),
@@ -388,6 +408,7 @@ export default function Tournaments() {
       eventIdErrorFlg ||
       raceNameErrorFlg ||
       // raceIdErrorFlg ||
+      entryRaceIdErrorFlg ||
       raceNumberErrorFlg ||
       raceNumberNegativeErrorFlg ||
       raceTypeErrorFlg ||
