@@ -216,7 +216,7 @@ export default function Tournaments() {
         return false; //削除チェックがされている場合、バリデーションを行わない 20240606
       }
       // return row.entrysystem_race_id.length > 0;
-      return Validator.validateAlphabetNumber(row.entrysystem_race_id, 'エントリーシステムの大会ID').length > 0;
+      return row.entrysystem_race_id?.length > 0 ? Validator.validateAlphabetNumber(row.entrysystem_race_id, 'エントリーシステムの大会ID').length > 0 : false;
     });
 
     const raceNumberErrorFlg = tableData.some((row) => {
