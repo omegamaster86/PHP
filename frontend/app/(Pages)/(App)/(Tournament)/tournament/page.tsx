@@ -377,6 +377,7 @@ export default function Tournaments() {
     }
 
     if (
+      entrysystemTournIdError.length > 0 ||
       tournNameError.length > 0 ||
       sponsorOrgIdError.length > 0 ||
       eventStartDateError.length > 0 ||
