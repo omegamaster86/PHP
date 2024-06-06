@@ -168,7 +168,7 @@ export default function Tournaments() {
 
     //エントリーシステムの大会ID用エラーメッセージ 20240606
     const entrysystemTournIdError = Validator.getErrorMessages([
-      Validator.validateAlphabetNumber(tournamentFormData.entrysystem_tourn_id, 'エントリーシステムの大会ID'),
+      tournamentFormData.entrysystem_tourn_id.length > 0 ? Validator.validateAlphabetNumber(tournamentFormData.entrysystem_tourn_id, 'エントリーシステムの大会ID') : '',
     ]);
 
     const tournNameError = Validator.getErrorMessages([
