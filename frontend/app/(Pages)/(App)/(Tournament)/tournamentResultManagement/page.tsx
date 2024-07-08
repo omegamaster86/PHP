@@ -11,9 +11,7 @@ import {
   CustomTitle,
   ErrorBox,
   CustomTextField,
-  CustomDropdown,
   InputLabel,
-  CustomDatePicker,
   CustomButton,
   CustomTable,
   CustomThead,
@@ -30,7 +28,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import Validator from '@/app/utils/validator';
 import Divider from '@mui/material/Divider';
 import { Autocomplete, TextField } from '@mui/material';
-import { ClassNames } from '@emotion/react';
 
 // 検索条件フォームの型定義
 // 検索条件
@@ -127,7 +124,7 @@ export default function TournamentResultManagement() {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       const response = await axios.post('searchRaceData', searchCond);
-      console.log(response.data.result);
+      //console.log(response.data.result);
       setSearchResponse(response.data.result);
 
       const height = response.data.length * 73 + 100 < 830 ? response.data.length * 73 + 100 : 830;
@@ -150,7 +147,7 @@ export default function TournamentResultManagement() {
         const sendVal = { event_start_year: searchCond?.eventYear };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        console.log(sendVal);
+        //console.log(sendVal);
         const tournamentResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
         const TournamentsResponseList = tournamentResponse.data.result.map(
           ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
@@ -158,7 +155,7 @@ export default function TournamentResultManagement() {
             name: tourn_name,
           }),
         );
-        // console.log(TournamentsResponseList);
+        //console.log(TournamentsResponseList);
         setTournamentList(TournamentsResponseList);
       }
     } catch (error) {
@@ -169,7 +166,7 @@ export default function TournamentResultManagement() {
   // データ取得
   useEffect(() => {
     const fetchData = async () => {
-      console.log(searchCond?.eventYear);
+      //console.log(searchCond?.eventYear);
       // 大会名
       getTournamentList();
 
@@ -401,11 +398,11 @@ export default function TournamentResultManagement() {
                     ))}
                   </div>
                 </div>
-                {/* 種目名 */}
-                <div
+                {/* 種目名 ペンディング対象のため表示されないようにコメントアウト 20240516 */}
+                {/* <div
                   className={`${
                     (prevScreen === 'tournamentResult' && searchCond?.eventId !== '0') ||
-                    searchCond?.eventId !== '0'
+                    searchCond?.eventId !== '999'
                       ? 'hidden'
                       : ''
                   }`}
@@ -417,7 +414,7 @@ export default function TournamentResultManagement() {
                     onChange={(e) => handleInputChange('eventName', e.target.value)}
                     className='w-[300px]'
                   />
-                </div>
+                </div> */}
               </div>
             </div>
             {/* レース区分 */}

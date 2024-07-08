@@ -47,7 +47,7 @@ export const useAuth = ({
 
   const logout = async () => {
     if (!error) {
-      if (pathname === '/signup' || pathname === '/forgotpassword' || pathname === '/inquiry') {
+      if (pathname === '/signup' || pathname === '/forgotpassword') {
       } else {
         try {
           await axios.post('/logout').then(() => {
@@ -59,7 +59,7 @@ export const useAuth = ({
         }
       }
     }
-    if (pathname === '/signup' || pathname === '/forgotpassword' || pathname === '/inquiry') {
+    if (pathname === '/signup' || pathname === '/forgotpassword') {
     } else {
       window.history.replaceState(null, '', '/login');
       window.location.pathname = '/login';

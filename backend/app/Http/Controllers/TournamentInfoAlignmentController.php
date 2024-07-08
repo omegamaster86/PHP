@@ -120,7 +120,7 @@ class TournamentInfoAlignmentController extends Controller
         //$input_event_year = $inputData['tournData']['eventYear'];
         $input_tourn_id = $inputData['tournData']['tournId'];
         //$input_tourn_name = $inputData['tournData']['tournName'];
-        for ($rowIndex = 1; $rowIndex < count($inputData['csvDataList']); $rowIndex++) {
+        for ($rowIndex = 0; $rowIndex < count($inputData['csvDataList']); $rowIndex++) {
 
             //フロント側のバリデーション結果に未入力が存在する場合、以降の処理を実行しない 20240419
             if($inputData['csvDataList'][$rowIndex]['loadingResult'] != ''){
@@ -140,7 +140,7 @@ class TournamentInfoAlignmentController extends Controller
             if ($input_tourn_id != $inputData['csvDataList'][$rowIndex]['tournId']) {
                 Log::debug("選択されている大会の大会IDと一致していません.");
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
-                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
+                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
                 $inputData['csvDataList'][$rowIndex]['tournIdError'] = true;
                 continue;
             }
@@ -152,7 +152,7 @@ class TournamentInfoAlignmentController extends Controller
             if ($race_count != 1) {
                 Log::debug("「レーステーブル」から条件が全て一致するレース情報を検索し、1件のみ見つかることが不正.");
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
-                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
+                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
                 $inputData['csvDataList'][$rowIndex]['tournIdError'] = true;
                 $inputData['csvDataList'][$rowIndex]['eventIdError'] = true;
                 $inputData['csvDataList'][$rowIndex]['raceTypeIdError'] = true;
@@ -168,7 +168,7 @@ class TournamentInfoAlignmentController extends Controller
             //Log::debug("org_count = ".$org_count);
             if ($org_count != 1) {
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
-                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
+                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
                 $inputData['csvDataList'][$rowIndex]['orgIdError'] = true;
                 $inputData['csvDataList'][$rowIndex]['orgNameError'] = true;
                 continue;
@@ -181,7 +181,7 @@ class TournamentInfoAlignmentController extends Controller
             //Log::debug("seat_count = ".$seat_count);
             if ($seat_count != 1) {
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
-                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
+                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
                 $inputData['csvDataList'][$rowIndex]['mSheetNumberError'] = true;
                 $inputData['csvDataList'][$rowIndex]['sheetNameError'] = true;
                 continue;
@@ -194,9 +194,10 @@ class TournamentInfoAlignmentController extends Controller
             //Log::debug("player_count = ".$player_count);
             if ($player_count != 1) {
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
-                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "不一致情報あり";
+                $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
                 $inputData['csvDataList'][$rowIndex]['userIdError'] = true;
                 $inputData['csvDataList'][$rowIndex]['playerNameError'] = true;
+                continue; //不一致情報が存在する場合、以降の処理を実行しない 20240514
             }
             //出漕結果記録テーブルを検索して判定する
             $condition_values = array();
@@ -294,7 +295,7 @@ class TournamentInfoAlignmentController extends Controller
                     $race_result_record_array = $t_raceResultRecord->getRaceResultRecordsWithSearchCondition($search_values);
                     //検索結果を確認
                     if (count($race_result_record_array) == 1) {
-                        //レース結果データが1件以上ある存在する場合
+                        //レース結果データが1件だけ存在する場合
                         //レース結果が登録されているかを確認
                         $race_result_record_id = $race_result_record_array[0]->{"race_result_record_id"};
                         $laptime_500m = $race_result_record_array[0]->{"laptime_500m"};
@@ -304,14 +305,15 @@ class TournamentInfoAlignmentController extends Controller
                         $final_time = $race_result_record_array[0]->{"final_time"};
                         if (
                             isset($laptime_500m)
-                            && isset($laptime_1000m)
-                            && isset($laptime_1500m)
-                            && isset($laptime_2000m)
-                            && isset($final_time)
+                            || isset($laptime_1000m)
+                            || isset($laptime_1500m)
+                            || isset($laptime_2000m)
+                            || isset($final_time)
                         ) {
                             //登録されている場合
                             $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録エラー（記録情報あり）";
-                            throw new Exception("他のユーザーによりレース結果が登録されたレースが有ります。\r\n当該レースのエントリー情報は更新することは出来ません。");
+                            // throw new Exception("他のユーザーによりレース結果が登録されたレースが有ります。\r\n当該レースのエントリー情報は更新することは出来ません。");
+                            return response()->json(['hasError' => "他のユーザーによりレース結果が登録されたレースが有ります。\r\n当該レースのエントリー情報は更新することは出来ません。"]);
                         } else {
                             //登録されていない場合
                             $update_values = array();

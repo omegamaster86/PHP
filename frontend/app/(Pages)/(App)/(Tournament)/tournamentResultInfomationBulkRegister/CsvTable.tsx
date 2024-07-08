@@ -16,16 +16,18 @@ const CsvTable = ({
   handleInputChange, // チェックボックスの変更時の処理
   displayRegisterButton, // 連携ボタンの表示を切り替える関数
   activationFlg, // 各種ボタンの表示を切り替える関数
+  visibilityFlg, //CSVテーブルの表示切替フラグ 20240508
 }: {
   content: CsvData[];
   header: string[];
   handleInputChange: (rowId: number, name: string, value: string | boolean) => void;
   displayRegisterButton: (flg: boolean) => void;
   activationFlg: boolean;
+  visibilityFlg: boolean; //データが0件の場合でもヘッダーは表示させるためのフラグ 20240508
 }) => {
-  if (content.length === 0) {
-    return <div className='text-primaryText'>CSVファイルをアップロードしてください。</div>;
-  }
+  // if (content.length === 0) {
+  //   return <div className='text-primaryText'>CSVファイルをアップロードしてください。</div>;
+  // }
 
   // 読み込み結果がエラーかどうかを確認
   const checkLoadingResult = (row: CsvData) => {
@@ -37,49 +39,43 @@ const CsvTable = ({
     return error ? 'bg-yellow' : '';
   };
 
-  return (
+  return visibilityFlg == false ? (
+    <div></div>
+  ) : (
     <div className='overflow-auto h-[331px] w-[800px]'>
       <CustomTable>
         <CustomThead>
           {/* contentがundefinedまたは空の配列でないことを確認 */}
-          {!content || content.length === 0 || activationFlg ? (
-            <CustomTr>
-              <CustomTh align='center' colSpan={header.length + 1}>
-                レース結果
-              </CustomTh>
-            </CustomTr>
-          ) : (
-            <CustomTr>
-              <CustomTh>
-                <CustomButton
-                  buttonType='primary'
-                  className='w-[100px]'
-                  onClick={() => {
-                    content?.map((data) =>
-                      checkLoadingResult(data) ? null : handleInputChange(data.id, 'checked', true),
-                    );
-                    content?.some((row) => !checkLoadingResult(row)) && displayRegisterButton(true);
-                  }}
-                >
-                  全選択
-                </CustomButton>
-              </CustomTh>
-              <CustomTh>
-                <CustomButton
-                  buttonType='primary'
-                  className='w-[110px]'
-                  onClick={() => {
-                    content.length > 0 &&
-                      content.map((data) => handleInputChange(data.id, 'checked', false));
-                    displayRegisterButton(false);
-                  }}
-                >
-                  全選択解除
-                </CustomButton>
-              </CustomTh>
-              <CustomTh colSpan={header.length - 1}>読み込み結果</CustomTh>
-            </CustomTr>
-          )}
+          <CustomTr>
+            <CustomTh>
+              <CustomButton
+                buttonType='primary'
+                className='w-[100px]'
+                onClick={() => {
+                  content?.map((data) =>
+                    checkLoadingResult(data) ? null : handleInputChange(data.id, 'checked', true),
+                  );
+                  content?.some((row) => !checkLoadingResult(row)) && displayRegisterButton(true);
+                }}
+              >
+                全選択
+              </CustomButton>
+            </CustomTh>
+            <CustomTh>
+              <CustomButton
+                buttonType='primary'
+                className='w-[110px]'
+                onClick={() => {
+                  content.length > 0 &&
+                    content.map((data) => handleInputChange(data.id, 'checked', false));
+                  displayRegisterButton(false);
+                }}
+              >
+                全選択解除
+              </CustomButton>
+            </CustomTh>
+            <CustomTh colSpan={header.length - 1}>読み込み結果</CustomTh>
+          </CustomTr>
           <CustomTr>
             <CustomTh key={0}>選択</CustomTh>
             {header.map((header: any, index: any) => (
@@ -88,7 +84,7 @@ const CsvTable = ({
           </CustomTr>
         </CustomThead>
         <CustomTbody>
-          {content.map((row, rowIndex) => (
+          {content?.map((row, rowIndex) => (
             <CustomTr index={rowIndex} key={rowIndex}>
               {/* 選択 */}
               <CustomTd align='center'>
@@ -103,7 +99,7 @@ const CsvTable = ({
                     // e.target.checked ? displayRegisterButton(true) : null;
                     var data = content.map((row) => row.checked.toString());
                     data[rowIndex] = e.target.checked.toString();
-                    // console.log(data);
+                    //console.log(data);
                     data.includes('true')
                       ? displayRegisterButton(true)
                       : displayRegisterButton(false);

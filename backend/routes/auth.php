@@ -153,12 +153,13 @@ Route::middleware('auth')->group(function () {
     Route::post('deleteTournamentData', [TournamentController::class, 'deleteTournamentData']); //DBから大会情報を削除する 20240205
     Route::post('tournamentSearch', [TournamentController::class, 'searchTournament']); //大会検索 20240212
     Route::get('getTournamentInfoData_allData', [TournamentController::class, 'getTournamentInfoData_allData']); //大会検索 20240212
-    Route::post('tournamentEntryYearSearch', [TournamentInfoAlignmentController::class, 'tournamentEntryYearSearch']); //大会エントリー一括登録 20240229 sendTournamentEntryCsvData
+    Route::post('tournamentEntryYearSearch', [TournamentInfoAlignmentController::class, 'tournamentEntryYearSearch']); //大会エントリー一括登録 20240229
     Route::post('sendTournamentEntryCsvData', [TournamentInfoAlignmentController::class, 'sendTournamentEntryCsvData']); //大会エントリー一括登録 読み込むボタン押下 20240301
     Route::post('registerTournamentEntryCsvData', [TournamentInfoAlignmentController::class, 'registerTournamentEntryCsvData']); //大会エントリー一括登録 登録ボタン押下 20240301
     Route::post('sendTournamentResultCsvData', [TournamentInfoAlignmentController::class, 'sendTournamentResultCsvData']); //大会結果一括 読み込むボタン押下 20240301
     Route::post('registerTournamentResultCsvData', [TournamentInfoAlignmentController::class, 'registerTournamentResultCsvData']); //大会結果一括 登録ボタン押下 20240301
     Route::post('checkOrgManager', [TournamentController::class, 'checkOrgManager']); //大会情報参照画面 主催団体管理者の判別 20240402
+    Route::post('getEventSheetPosForEventID', [TournamentController::class, 'getEventSheetPosForEventID']); //種目IDを条件に対象の種目に対応するシート位置を取得する 20240514
 
     //レース関連
     Route::post('getRaceData', [TournamentController::class, 'getRaceData']); //レース情報取得 20240214 大会情報に基づくレース情報
@@ -176,6 +177,7 @@ Route::middleware('auth')->group(function () {
     Route::post('registerRaceResultRecordForRegisterConfirm', [TournamentController::class, 'registerRaceResultRecordForRegisterConfirm']); //レース結果入力確認画面で登録を実行 20240405
     Route::post('updateRaceResultRecordForUpdateConfirm', [TournamentController::class, 'updateRaceResultRecordForUpdateConfirm']); //レース結果更新確認画面で更新を実行 20240405
     Route::post('getCrewPlayerInfo', [TournamentController::class, 'getCrewPlayerInfo']); //レース結果登録画面で選手IDを入力したとき、その選手情報を取得する 20240409
+    Route::post('deleteRaceResultRecordData', [TournamentController::class, 'updateDeleteFlagOfRaceResultRecord']); //大会結果管理画面（レース結果削除） で「削除ボタン」押下時に実行される 20240520
 
     //ボランティア関連
     Route::post('getVolunteerData', [VolunteerController::class, 'getVolunteerData']); //ボランティア情報取得 20240213 ※ボランティア履歴情報も取得する

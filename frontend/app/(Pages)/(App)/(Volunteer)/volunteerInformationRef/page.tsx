@@ -101,10 +101,10 @@ export default function VolunteerInformationRef() {
     await axios
       .post('/deleteVolunteer', volunteer_id)
       .then((res) => {
-        console.log(res.data);
+        //console.log(res.data);
       })
       .catch((error) => {
-        console.log(error);
+        //console.log(error);
       });
   };
 
@@ -116,14 +116,14 @@ export default function VolunteerInformationRef() {
         await csrf();
         // const volunteerResponse = await axios.get<VolunteerResponse>('/volunteer',);
         const volunteerResponse = await axios.post('/getVolunteerData', volunteer_id); //ボランティア情報の取得 20240213
-        console.log(volunteerResponse.data);
+        //console.log(volunteerResponse.data);
         const volLangProDataList = volunteerResponse.data.volLangProData.map(
           ({ lang_pro_name, lang_name }: { lang_pro_name: number; lang_name: string }) => ({
             level: lang_pro_name,
             languageName: lang_name,
           }),
         );
-        console.log(volLangProDataList);
+        //console.log(volLangProDataList);
 
         var day_of_week_List = volunteerResponse.data.volAvaData.day_of_week.split('');
 
@@ -162,20 +162,20 @@ export default function VolunteerInformationRef() {
         // const volunteerHistoriesResponse = await axios.get<VolunteerHistoriesResponse[]>(
         //   '/volunteerHistories',
         // );
-        console.log(volunteerResponse.data.volHistData);
+        //console.log(volunteerResponse.data.volHistData);
         for (let index = 0; index < volunteerResponse.data.volHistData.length; index++) {
           var hist_day_of_week_List =
             volunteerResponse.data.volHistData[index].day_of_week.split('');
           var strData = '';
-          console.log(volunteerResponse.data.volHistData[index].day_of_week);
+          //console.log(volunteerResponse.data.volHistData[index].day_of_week);
           for (let j = hist_day_of_week_List.length - 1; j >= 0; j--) {
             strData += hist_day_of_week_List[j];
           }
-          console.log(strData);
+          //console.log(strData);
           volunteerResponse.data.volHistData[index].day_of_week = strData;
-          console.log(volunteerResponse.data.volHistData[index].day_of_week);
+          //console.log(volunteerResponse.data.volHistData[index].day_of_week);
         }
-        console.log(volunteerResponse.data.volHistData);
+        //console.log(volunteerResponse.data.volHistData);
         setVolunteerHistoriesdata(volunteerResponse.data.volHistData);
       } catch (error) {
         // TODO: エラーハンドリングを実装
@@ -203,7 +203,8 @@ export default function VolunteerInformationRef() {
             ボランティア情報{mode === 'delete' && '削除'}
             {mode !== 'delete' && '参照'}
           </CustomTitle>
-          {mode !== 'delete' && (
+          {/* 遷移先の画面未実装のため、コメントアウト 20240525 */}
+          {/* {mode !== 'delete' && (
             // TODO: ボランティア情報変更画面に遷移
             // ボランティア情報を変更ボタン
             <Link
@@ -216,7 +217,7 @@ export default function VolunteerInformationRef() {
               <EditIcon className='cursor-pointer m-1 text-small md:text-h3' />
               ボランティア情報を変更
             </Link>
-          )}
+          )} */}
         </div>
         <ErrorBox errorText={errorMessage} />
         <div className='flex flex-row gap-[20px] justify-between'>
@@ -533,7 +534,8 @@ export default function VolunteerInformationRef() {
                 非公式
               </Tab>
             </div>
-            {mode !== 'delete' && (
+            {/* 遷移先の画面未実装のため、コメントアウト 20240525 */}
+            {/* {mode !== 'delete' && (
               <Link
                 className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
                 href={{
@@ -544,7 +546,7 @@ export default function VolunteerInformationRef() {
               >
                 履歴の削除
               </Link>
-            )}
+            )} */}
           </div>
           <div className='w-screen flex justify-between items-center'>
             <CustomTable>
@@ -707,7 +709,7 @@ export default function VolunteerInformationRef() {
                     // setDisplayFlg(true),
                     window.alert('ボランティア情報の削除が完了しました。'),
                     router.push('/tournamentSearch')) //大会検索画面に遷移する 20240222
-                  : console.log('何もしない');
+                  : '';
               }}
             >
               削除

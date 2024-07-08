@@ -85,6 +85,7 @@ export default function TournamentResultInfomationBulkRegister() {
   const [csvData, setCsvData] = useState<CsvData[]>([]);
   const [dialogDisplayFlg, setDialogDisplayFlg] = useState<boolean>(false);
   const [displayRegisterButtonFlg, setDisplayRegisterButtonFlg] = useState<boolean>(false);
+  const [visibilityFlg, setVisibilityFlg] = useState<boolean>(false); //CSVテーブルの表示切替フラグ 20240508
   const [tournamentNameIsEmpty, setTournamentNameIsEmpty] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
     tournId: prevScreen === 'tournamentRef' && tournId ? Number(tournId) : 0,
@@ -115,7 +116,7 @@ export default function TournamentResultInfomationBulkRegister() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.get('/getUserData');
-        console.log(response.data.result);
+        //console.log(response.data.result);
         if (Object.keys(response.data.result).length > 0) {
           const playerInf = await axios.get('/getIDsAssociatedWithUser');
           if (
@@ -126,11 +127,11 @@ export default function TournamentResultInfomationBulkRegister() {
           ) {
             setValidFlag(true); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
           } else {
-            console.log('ユーザ種別不正');
+            //console.log('ユーザ種別不正');
             router.push('/tournamentSearch');
           }
         } else {
-          console.log('ユーザ情報なし');
+          //console.log('ユーザ情報なし');
           router.push('/tournamentSearch');
         }
       } catch (error: any) {}
@@ -282,12 +283,12 @@ export default function TournamentResultInfomationBulkRegister() {
         // 大会名
         // const tournamentResponse = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments',);
         // const TournamentsResponse = await axios.get('/getTournamentInfoData_allData');
-        console.log(formData?.eventYear);
+        //console.log(formData?.eventYear);
         const sendVal = { event_start_year: formData?.eventYear };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const TournamentsResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
-        console.log(TournamentsResponse);
+        //console.log(TournamentsResponse);
         const TournamentsResponseList = TournamentsResponse.data.result.map(
           ({
             tourn_id,
@@ -303,7 +304,7 @@ export default function TournamentResultInfomationBulkRegister() {
             year: event_start_date.substring(0, 4),
           }),
         );
-        // console.log(TournamentsResponseList);
+        //console.log(TournamentsResponseList);
         setTournamentList(TournamentsResponseList);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
@@ -313,7 +314,7 @@ export default function TournamentResultInfomationBulkRegister() {
   }, []);
 
   const handleSearchTournament = async (name: string, e: FocusEvent<HTMLInputElement>) => {
-    console.log(formData.tournId);
+    //console.log(formData.tournId);
     // 大会IDが入力されている場合
     if (formData.tournId != 0 && formData.tournId != null && formData.tournId != undefined) {
       try {
@@ -324,9 +325,9 @@ export default function TournamentResultInfomationBulkRegister() {
         // 大会情報を取得
         // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
         const tornSearchVal = { tourn_id: formData.tournId };
-        console.log(tornSearchVal);
+        //console.log(tornSearchVal);
         const tournamentResponse = await axios.post('/getTournamentInfoData', tornSearchVal);
-        console.log(tournamentResponse.data.result);
+        //console.log(tournamentResponse.data.result);
         // 大会情報が取得できなかった場合
         if (
           tournamentResponse.data.result === undefined ||
@@ -364,16 +365,16 @@ export default function TournamentResultInfomationBulkRegister() {
       }
     } else {
       try {
-        console.log(e);
+        //console.log(e);
         // var eventYearVal = { event_start_year: e.target.value };
         var eventYearVal = { event_start_year: formData.eventYear };
-        console.log(eventYearVal);
+        //console.log(eventYearVal);
         // 大会情報を取得
         // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const tournamentResponse = await axios.post('/tournamentEntryYearSearch', eventYearVal);
-        console.log(tournamentResponse.data.result);
+        //console.log(tournamentResponse.data.result);
         // 大会情報が取得できなかった場合
         if (tournamentResponse.data === undefined || tournamentResponse.data === null) {
           setTournIdErrorMessage(['大会IDを入力してください。']);
@@ -1034,10 +1035,10 @@ export default function TournamentResultInfomationBulkRegister() {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       const response = await axios.post('/sendTournamentResultCsvData', sendTournData);
-      console.log(response.data);
+      //console.log(response.data);
       setCsvData(response.data.result.csvDataList);
     } catch (error) {
-      console.log(error);
+      //console.log(error);
       setErrorMessage(['エラー:  ' + (error as any).response?.data.result]);
     } finally {
       setActivationFlg(false);
@@ -1055,11 +1056,11 @@ export default function TournamentResultInfomationBulkRegister() {
     await axios
       .post('/registerTournamentResultCsvData', sendTournData)
       .then((res) => {
-        console.log(res.data.result);
+        //console.log(res.data.result);
         // router.push('/tournamentSearch'); // 20240222
       })
       .catch((error) => {
-        console.log(error);
+        //console.log(error);
       });
   };
 
@@ -1085,9 +1086,9 @@ export default function TournamentResultInfomationBulkRegister() {
                 if (e.target.value.length <= maxLength) {
                   handleInputChange('tournId', e.target.value);
                 }
-                console.log(tournNameActivFlag, e.target.value.length);
+                //console.log(tournNameActivFlag, e.target.value.length);
                 // if (tournNameActivFlag == false) {
-                //   console.log("setFormActiveFlag call");
+                //   //console.log("setFormActiveFlag call");
                 //   setTournNameActivFlag(true); //大会名の入力欄を変更できないようにする true:変更できない false:変更できる
                 // }
                 // if (tournNameActivFlag == true && e.target.value.length == 0) {
@@ -1095,7 +1096,6 @@ export default function TournamentResultInfomationBulkRegister() {
                 // }
               }}
               onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                console.log('==== CustomTextField');
                 handleSearchTournament('tournId', e);
               }}
               // readonly={displayFlg}
@@ -1122,7 +1122,7 @@ export default function TournamentResultInfomationBulkRegister() {
                 readonly={tournStartYearActivFlag}
                 selectedDate={formData?.eventYear}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  console.log(e);
+                  //console.log(e);
                   var eventYearVal = e as any as Date;
                   if (eventYearVal != null) {
                     if (eventYearVal.getFullYear().toString().length <= 4) {
@@ -1140,7 +1140,6 @@ export default function TournamentResultInfomationBulkRegister() {
                   ) {
                     handleInputChange('tournName', '');
                   } else {
-                    console.log('==== CustomYearPicker');
                     handleSearchTournament('eventYear', e);
                   }
                 }}
@@ -1183,7 +1182,7 @@ export default function TournamentResultInfomationBulkRegister() {
                   { id: formData.tournId, name: formData.tournName, year: formData.eventYear } || ''
                 }
                 onChange={(e: ChangeEvent<{}>, newValue) => {
-                  console.log(newValue);
+                  //console.log(newValue);
                   handleInputChange('tournName', newValue ? (newValue as TournResponse).name : '');
                   handleInputChange(
                     'tournId',
@@ -1199,7 +1198,7 @@ export default function TournamentResultInfomationBulkRegister() {
                       tournName: (newValue as TournResponse)?.name,
                     },
                   }));
-                  console.log(formData.tournName, formData.tournId);
+                  //console.log(formData.tournName, formData.tournId);
                   if (newValue == null) {
                     setTournIdActivFlag(false); //大会名のリストが空の場合、大会IDの入力を可能にする
                     setTournStartYearActivFlag(false); //大会名のリストが空の場合、開催年の入力を可能にする
@@ -1309,20 +1308,14 @@ export default function TournamentResultInfomationBulkRegister() {
                         if (formData.tournName === '' || formData.tournName === undefined) {
                           checkTournName(true);
                         } else {
-                          // setCsvData([]);
-                          // csvFileData?.content?.slice(1).map((row, rowIndex) => {
-                          //   handleCsvData(row, rowIndex);
-                          //   setDialogDisplayFlg(true);
-                          //   // 仮実装。チェック内容に応じて登録ボタンの表示を判定
-                          //   if (row[0] !== '') {
-                          //     displayRegisterButton(true);
-                          //   }
-                          // });
-                          console.log('=====================');
                           setCsvData([]);
                           Promise.all(
                             csvFileData.content
-                              ?.slice(1)
+                              ?.filter(function (x) {
+                                // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
+                                return x.length > 0 && x.some((y) => y.length > 0);
+                              })
+                              .slice(isHeaderMatch ? 1 : 0)
                               .map((row, index) => getJsonRow(row, index)),
                           ).then((results) => {
                             sendCsvData(results); //バックエンド側のバリデーションチェックを行う為にデータを送信する 20240302
@@ -1331,6 +1324,7 @@ export default function TournamentResultInfomationBulkRegister() {
                           });
                         }
                       }
+                      setVisibilityFlg(true);
                       performValidation();
                     }}
                   >
@@ -1418,6 +1412,7 @@ export default function TournamentResultInfomationBulkRegister() {
                 handleInputChange={handleTableInputChange}
                 displayRegisterButton={displayRegisterButton}
                 activationFlg={activationFlg}
+                visibilityFlg={visibilityFlg}
               />
             </div>
           </div>
@@ -1438,17 +1433,16 @@ export default function TournamentResultInfomationBulkRegister() {
                   onClick={() => {
                     setActivationFlg(true);
                     if (csvData.find((row) => row.checked)?.id === undefined) {
-                      window.confirm('1件以上選択してください。');
+                      window.alert('1件以上選択してください。');
                     } else {
                       registerCsvData(); //バックエンド側にデータを渡す 20240302
                       setCsvData([]);
                       setCsvFileData({ content: [], isSet: false });
                       fileUploaderRef?.current?.clearFile();
-                      window.confirm('レース結果の登録が完了しました。')
-                        ? (setActivationFlg(false),
-                          setDialogDisplayFlg(false),
-                          setDisplayRegisterButtonFlg(false))
-                        : null;
+                      window.alert('レース結果の登録が完了しました。');
+                      setActivationFlg(false);
+                      setDialogDisplayFlg(false);
+                      setDisplayRegisterButtonFlg(false);
                     }
                     setActivationFlg(false);
                   }}

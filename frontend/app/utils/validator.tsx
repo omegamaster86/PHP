@@ -64,7 +64,6 @@ const validateRequired = (elm: any, elmName: string) => {
  */
 const validateSelectRequired = (elm: any, elmName: string) => {
   let errorMessage = '';
-  // console.log(elm);
   if (!elm) {
     errorMessage = elmName + 'を選択してください。';
     return errorMessage;
@@ -154,7 +153,9 @@ const validateUserNameFormat = (userName: string) => {
     return '';
   }
   let errorMessage = '';
-  const userNameRegex = new RegExp('^[a-zA-Z0-9-_ぁ-んァ-ンー一-龠]+$');
+  // const userNameRegex = new RegExp('^[a-zA-Z0-9-_ぁ-んァ-ンー一-龠]+$');
+  const userNameRegex = new RegExp('^[a-zA-Z0-9-_ぁ-んァ-ンー一-龠Ａ-Ｚａ-ｚ０-９－＿]+$'); //全角アルファベット,全角ハイフン,全角アンダーバー,全角数字も入力可能にする 20240528
+
   if (!userNameRegex.test(userName)) {
     errorMessage =
       'ユーザー名に使用できる文字は以下になります。使用可能文字: 日本語、英字大文字(A-Z)、英字小文字(a-z)、数字(0-9)、ハイフン(-)、アンダースコア(_)';
@@ -410,7 +411,6 @@ const validatePlayerIdFormat = (playerId: string) => {
  * validateJaraPlayerCodeFormat('1234567890あ') // 'JARA選手コードに使用できる文字は以下になります。使用可能文字: 数字(0-9)'
  */
 const validateJaraPlayerCodeFormat = (jara_player_id: string) => {
-  console.log(jara_player_id);
   if (jara_player_id === '' || jara_player_id === undefined || jara_player_id === null) {
     return '';
   }
@@ -444,7 +444,7 @@ const validatePlayerNameFormat = (playerName: string) => {
   }
   let errorMessage = '';
   // const playerNameRegex = new RegExp('^[a-zA-Z0-9-_ぁ-んァ-ヶー一-龠!-/:-@[-`{-~ ]+$');
-  const playerNameRegex = new RegExp('^[a-zA-Z0-9-_ぁ-んァ-ヶー一-龠]+$');
+  const playerNameRegex = new RegExp('^[a-zA-Z0-9-_ぁ-んァ-ンー一-龠Ａ-Ｚａ-ｚ０-９－＿]+$'); //全角アルファベット,全角ハイフン,全角アンダーバー,全角数字も入力可能にする 20240528
   if (!playerNameRegex.test(playerName)) {
     // return '選手名に使用できる文字は以下になります。使用可能文字: 全角半角文字記号';
     return '選手名に使用できる文字は以下になります。使用可能文字: 日本語 英大文字 英小文字 数字 記号：- _';

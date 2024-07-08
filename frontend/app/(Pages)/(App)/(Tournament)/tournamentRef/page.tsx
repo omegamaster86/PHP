@@ -2,7 +2,7 @@
 'use client';
 
 // Reactおよび関連モジュールのインポート
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, ChangeEvent, MouseEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/app/lib/axios';
 // コンポーネントのインポート
@@ -26,6 +26,32 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { ROLE } from '@/app/utils/consts';
 import { TOURNAMENT_PDF_URL } from '@/app/utils/imageUrl';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import {
+  Autocomplete,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+} from '@mui/material';
+
+//種目フィルター用
+interface EventNameList {
+  id: number;
+  name: string;
+}
+//組別フィルター用
+interface ByGroupList {
+  id: number;
+  name: string;
+}
+//発艇日時フィルター用
+interface StartDateTimeList {
+  id: number;
+  name: string;
+}
 
 // 大会情報参照画面
 export default function TournamentRef() {
@@ -82,6 +108,131 @@ export default function TournamentRef() {
     tourn_info_faile_path: '',
   });
 
+  // レース結果情報のデータステート
+  //種目
+  const [eventNameList, setEventNameList] = useState([] as EventNameList[]);
+  const [selectedEventNameList, setSelectedEventNameList] = useState([] as EventNameList[]);
+  //組別
+  const [byGroupList, setByGroupList] = useState([] as ByGroupList[]);
+  const [selectedByGroupList, setSelectedByGroupList] = useState([] as ByGroupList[]);
+  //発艇日時
+  const [startDateTimeList, setStartDateTimeList] = useState([] as StartDateTimeList[]);
+  const [selectedStartDateTimeList, setSelectedStartDateTimeList] = useState(
+    [] as StartDateTimeList[],
+  );
+
+  // フィルター用のステート 20240508
+  const [showEventNameAutocomplete, setShowEventNameAutocomplete] = useState(false);
+  const [showByGroupAutocomplete, setShowByGroupAutocomplete] = useState(false);
+  const [showStartDateTimeAutocomplete, setShowStartDateTimeAutocomplete] = useState(false);
+  const eventNamefocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240518
+  const byGroupfocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240518
+  const startDateTimefocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240518
+
+  // ヘッダーの位置を取得するためのステート
+  //種目
+  const [selectedEventNameHeader, setSelectedEventNameHeader] = useState({
+    value: '',
+    position: { top: 0, left: 0 },
+  });
+  //組別
+  const [selectedByGroupHeader, setSelectedByGroupHeader] = useState({
+    value: '',
+    position: { top: 0, left: 0 },
+  });
+  //発艇日時
+  const [selectedStartDateTimeHeader, setSelectedStartDateTimeHeader] = useState({
+    value: '',
+    position: { top: 0, left: 0 },
+  });
+
+  /**
+   * 種目ヘッダークリック時の処理
+   * @param value
+   * @param event
+   * ヘッダーの位置を取得し、オートコンプリートを表示する
+   */
+  const handleEventNameHeaderClick = (
+    value: string,
+    event: MouseEvent<HTMLElement, MouseEvent>,
+  ) => {
+    const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
+    setSelectedEventNameHeader({
+      value,
+      position: {
+        top: headerPosition.bottom + window.scrollY,
+        left: headerPosition.left + window.scrollX,
+      },
+    });
+    setShowEventNameAutocomplete(!showEventNameAutocomplete);
+    setShowByGroupAutocomplete(false);
+    setShowStartDateTimeAutocomplete(false);
+  };
+  /**
+   * 組別ヘッダークリック時の処理
+   * @param value
+   * @param event
+   * ヘッダーの位置を取得し、オートコンプリートを表示する
+   */
+  const handleByGroupHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
+    const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
+    setSelectedByGroupHeader({
+      value,
+      position: {
+        top: headerPosition.bottom + window.scrollY,
+        left: headerPosition.left + window.scrollX,
+      },
+    });
+    setShowEventNameAutocomplete(false);
+    setShowByGroupAutocomplete(!showByGroupAutocomplete);
+    setShowStartDateTimeAutocomplete(false);
+  };
+  /**
+   * 発艇日時ヘッダークリック時の処理
+   * @param value
+   * @param event
+   * ヘッダーの位置を取得し、オートコンプリートを表示する
+   */
+  const handleStartDateTimeHeaderClick = (
+    value: string,
+    event: MouseEvent<HTMLElement, MouseEvent>,
+  ) => {
+    const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
+    setSelectedStartDateTimeHeader({
+      value,
+      position: {
+        top: headerPosition.bottom + window.scrollY,
+        left: headerPosition.left + window.scrollX,
+      },
+    });
+    setShowEventNameAutocomplete(false);
+    setShowByGroupAutocomplete(false);
+    setShowStartDateTimeAutocomplete(!showStartDateTimeAutocomplete);
+  };
+
+  // 発艇日時のソート用
+  // ソート用のステート 20240518
+  const [startDateTimeSortFlag, setStartDateTimeSortFlag] = useState(false);
+  const startDateTimeSort = () => {
+    if (startDateTimeSortFlag) {
+      setStartDateTimeSortFlag(false);
+      tableData.sort(
+        (a, b) =>
+          //ハイフン、スペース、コロンを空文字に変換してnumber型にキャストして大小比較する 20240518
+          Number(a.start_date_time.replace(/[- :]/g, '')) -
+          Number(b.start_date_time.replace(/[- :]/g, '')),
+      );
+    } else {
+      setStartDateTimeSortFlag(true);
+      tableData.sort(
+        (a, b) =>
+          //ハイフン、スペース、コロンを空文字に変換してnumber型にキャストして大小比較する 20240518
+          Number(b.start_date_time.replace(/[- :]/g, '')) -
+          Number(a.start_date_time.replace(/[- :]/g, '')),
+      );
+    }
+  };
+
   // APIの呼び出し実績の有無を管理する状態
   const isApiFetched = useRef(false);
 
@@ -106,13 +257,13 @@ export default function TournamentRef() {
         // TODO: tournIdを元に大会情報を取得する処理の置き換え
         // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
         const tournamentResponse = await axios.post('/getTournamentInfoData', tourn_id); //大会IDを元に大会情報を取得する
-        // console.log(tournamentResponse);
+        //console.log(tournamentResponse);
         tournamentResponse.data.result.tourn_url = tournamentResponse.data.result.tourn_url ?? ''; //nullのパラメータを空のパラメータに置き換える
         setTournamentFormData(tournamentResponse.data.result);
         // TODO: tournIdを元にレース情報を取得する処理の置き換え
         // const raceResponse = await axios.get<Race[]>('http://localhost:3100/race');
         const raceResponse = await axios.post('/getRaceData', tourn_id);
-        // console.log(raceResponse.data.result);
+        //console.log(raceResponse.data.result);
         raceResponse.data.result.map((data: any) => {
           setTableData((prevData) => [...prevData, { ...data }]);
         });
@@ -125,13 +276,71 @@ export default function TournamentRef() {
           tournInfo: tournamentResponse.data.result,
         };
         const resData = await axios.post('/checkOrgManager', sendData); //大会情報参照画面 主催団体管理者の判別 20240402
-        console.log(resData.data.result);
+        //console.log(resData.data.result);
         setOrgManagerFlag(resData.data.result);
+
+        //種目をフィルターできるようにする 20240509
+        const eventNameArray = raceResponse.data.result.map((item: any) => item.event_name);
+        //console.log(eventNameArray);
+        const uniqueEventNameSet = new Set(eventNameArray);
+        const uniqueEventNameArray = Array.from(uniqueEventNameSet);
+        setEventNameList(
+          uniqueEventNameArray.map((item: any, index: any) => ({
+            id: index,
+            name: item,
+          })),
+        );
+        //組別をフィルターできるようにする 20240509
+        const byGroupsArray = raceResponse.data.result.map((item: any) => item.by_group);
+        //console.log(byGroupsArray);
+        const uniqueByGroupsSet = new Set(byGroupsArray);
+        const uniqueByGroupsArray = Array.from(uniqueByGroupsSet);
+        setByGroupList(
+          uniqueByGroupsArray.map((item: any, index: any) => ({
+            id: index,
+            name: item,
+          })),
+        );
+        //発艇日時をフィルターできるようにする 20240509
+        const startDateTimeArray = raceResponse.data.result.map((item: any) =>
+          item.start_date_time.substring(0, 10),
+        );
+        //console.log(startDateTimeArray);
+        const uniqueStartDateTimeSet = new Set(startDateTimeArray);
+        const uniqueStartDateTimeArray = Array.from(uniqueStartDateTimeSet);
+        setStartDateTimeList(
+          uniqueStartDateTimeArray.map((item: any, index: any) => ({
+            id: index,
+            name: item,
+          })),
+        );
       };
       fetchData();
       isApiFetched.current = true;
     }
   }, []);
+
+  useEffect(() => {
+    if (showEventNameAutocomplete) {
+      // //console.log(eventNamefocusTarget.current);
+      if (eventNamefocusTarget.current != null) {
+        var target = eventNamefocusTarget.current as HTMLDivElement;
+        (target.childNodes[0].childNodes[0].childNodes[1].childNodes[0] as HTMLElement).focus();
+      }
+    }
+    if (showByGroupAutocomplete) {
+      if (byGroupfocusTarget.current != null) {
+        var target = byGroupfocusTarget.current as HTMLDivElement;
+        (target.childNodes[0].childNodes[0].childNodes[1].childNodes[0] as HTMLElement).focus();
+      }
+    }
+    if (showStartDateTimeAutocomplete) {
+      if (startDateTimefocusTarget.current != null) {
+        var target = startDateTimefocusTarget.current as HTMLDivElement;
+        (target.childNodes[0].childNodes[0].childNodes[1].childNodes[0] as HTMLElement).focus();
+      }
+    }
+  }, [showEventNameAutocomplete, showByGroupAutocomplete, showStartDateTimeAutocomplete]);
 
   // エラーがある場合はエラーメッセージを表示
   if (isError) {
@@ -329,54 +538,300 @@ export default function TournamentRef() {
                   <CustomTh align='left'>レースID</CustomTh>
                   <CustomTh align='left'>レース名</CustomTh>
                   <CustomTh align='left'>レースNo.</CustomTh>
-                  <CustomTh align='left'>種目</CustomTh>
-                  <CustomTh align='left'>組別</CustomTh>
+                  <CustomTh align='left'>
+                    <div className='flex flex-row items-center gap-[10px]'>
+                      種目
+                      <div onClick={(event) => handleEventNameHeaderClick('種目', event as any)}>
+                        <FilterListIcon />
+                      </div>
+                    </div>
+                  </CustomTh>
+                  <CustomTh align='left'>
+                    <div className='flex flex-row items-center gap-[10px]'>
+                      組別
+                      <div onClick={(event) => handleByGroupHeaderClick('組別', event as any)}>
+                        <FilterListIcon />
+                      </div>
+                    </div>
+                  </CustomTh>
                   <CustomTh align='left'>距離</CustomTh>
-                  <CustomTh align='left'>発艇日時</CustomTh>
+                  <CustomTh align='left'>
+                    <div className='flex flex-row items-center gap-[10px]'>
+                      <div className='underline' onClick={() => startDateTimeSort()}>
+                        発艇日時
+                      </div>
+                      <div
+                        onClick={(event) =>
+                          handleStartDateTimeHeaderClick('発艇日時', event as any)
+                        }
+                      >
+                        <FilterListIcon />
+                      </div>
+                    </div>
+                  </CustomTh>
                 </CustomTr>
               </CustomThead>
               <CustomTbody>
-                {/* レースID */}
-                {tableData.map((row, index) => (
-                  <CustomTr key={index}>
-                    {/* 「出漕結果記録テーブル」に「レーステーブル」.「レースID」と紐づくデータが存在する場合、リンクボタンを表示するかどうかを制御するためにhasHistoryを利用 */}
-                    {row.hasHistory == true && (
-                      // TODO: 遷移先のURLは仮置き。置き換えること。
-                      <CustomTd
-                        transitionDest={
-                          '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
-                        }
-                      >
-                        {row.race_id}
-                      </CustomTd>
-                    )}
-                    {!row.hasHistory && <CustomTd>{row.race_id}</CustomTd>}
-                    {row.hasHistory == true && (
-                      // TODO: 遷移先のURLは仮置き。置き換えること。
-                      <CustomTd
-                        transitionDest={
-                          '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
-                        }
-                      >
-                        {row.race_name}
-                      </CustomTd>
-                    )}
-                    {/* レース名 */}
-                    {!row.hasHistory && <CustomTd>{row.race_name}</CustomTd>}
-                    {/* レースNo. */}
-                    <CustomTd>{row.race_number}</CustomTd>
-                    {/* 種目 */}
-                    <CustomTd>{row.event_name}</CustomTd>
-                    {/* 組別 */}
-                    <CustomTd>{row.by_group}</CustomTd>
-                    {/* 距離 */}
-                    <CustomTd>{row.range}</CustomTd>
-                    {/* 発艇日時 */}
-                    <CustomTd>{row.start_date_time}</CustomTd>
-                  </CustomTr>
-                ))}
+                {tableData
+                  .filter((row, index) => {
+                    if (
+                      selectedEventNameList.length === 0 &&
+                      selectedByGroupList.length === 0 &&
+                      selectedStartDateTimeList.length === 0
+                    ) {
+                      return true;
+                    } else if (
+                      selectedEventNameList.length > 0 &&
+                      selectedByGroupList.length === 0 &&
+                      selectedStartDateTimeList.length === 0
+                    ) {
+                      return selectedEventNameList.some((item) => item.name === row.event_name);
+                    } else if (
+                      selectedEventNameList.length === 0 &&
+                      selectedByGroupList.length > 0 &&
+                      selectedStartDateTimeList.length === 0
+                    ) {
+                      return selectedByGroupList.some((item) => item.name === row.by_group);
+                    } else if (
+                      selectedEventNameList.length === 0 &&
+                      selectedByGroupList.length === 0 &&
+                      selectedStartDateTimeList.length > 0
+                    ) {
+                      return selectedStartDateTimeList.some((item) =>
+                        row.start_date_time.includes(item.name),
+                      );
+                    } else if (
+                      selectedEventNameList.length > 0 &&
+                      selectedByGroupList.length > 0 &&
+                      selectedStartDateTimeList.length == 0
+                    ) {
+                      return (
+                        selectedEventNameList.some((item) => item.name === row.event_name) &&
+                        selectedByGroupList.some((item) => item.name === row.by_group)
+                      );
+                    } else if (
+                      selectedEventNameList.length > 0 &&
+                      selectedByGroupList.length == 0 &&
+                      selectedStartDateTimeList.length > 0
+                    ) {
+                      return (
+                        selectedEventNameList.some((item) => item.name === row.event_name) &&
+                        selectedStartDateTimeList.some((item) =>
+                          row.start_date_time.includes(item.name),
+                        )
+                      );
+                    } else if (
+                      selectedEventNameList.length == 0 &&
+                      selectedByGroupList.length > 0 &&
+                      selectedStartDateTimeList.length > 0
+                    ) {
+                      return (
+                        selectedByGroupList.some((item) => item.name === row.by_group) &&
+                        selectedStartDateTimeList.some((item) =>
+                          row.start_date_time.includes(item.name),
+                        )
+                      );
+                    } else {
+                      return (
+                        selectedEventNameList.some((item) => item.name === row.event_name) &&
+                        selectedStartDateTimeList.some((item) =>
+                          row.start_date_time.includes(item.name),
+                        ) &&
+                        selectedByGroupList.some((item) => item.name === row.by_group)
+                      );
+                    }
+                  })
+                  .map((row, index) => (
+                    <CustomTr key={index}>
+                      {/* 「出漕結果記録テーブル」に「レーステーブル」.「レースID」と紐づくデータが存在する場合、リンクボタンを表示するかどうかを制御するためにhasHistoryを利用 */}
+                      {row.hasHistory == true && (
+                        // TODO: 遷移先のURLは仮置き。置き換えること。
+                        <CustomTd
+                          transitionDest={
+                            '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
+                          }
+                        >
+                          {row.race_id}
+                        </CustomTd>
+                      )}
+                      {/* レースID */}
+                      {!row.hasHistory && <CustomTd>{row.race_id}</CustomTd>}
+                      {row.hasHistory == true && (
+                        // TODO: 遷移先のURLは仮置き。置き換えること。
+                        <CustomTd
+                          transitionDest={
+                            '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
+                          }
+                        >
+                          {row.race_name}
+                        </CustomTd>
+                      )}
+                      {/* レース名 */}
+                      {!row.hasHistory && <CustomTd>{row.race_name}</CustomTd>}
+                      {/* レースNo. */}
+                      <CustomTd>{row.race_number}</CustomTd>
+                      {/* 種目 */}
+                      <CustomTd>{row.event_name}</CustomTd>
+                      {/* 組別 */}
+                      <CustomTd>{row.by_group}</CustomTd>
+                      {/* 距離 */}
+                      <CustomTd>{row.range}</CustomTd>
+                      {/* 発艇日時 */}
+                      <CustomTd>{row.start_date_time.substring(0, 16)}</CustomTd>
+                    </CustomTr>
+                  ))}
               </CustomTbody>
             </CustomTable>
+            {/* 種目フィルター用のオートコンプリート 20240509 */}
+            {showEventNameAutocomplete && (
+              <div
+                ref={eventNamefocusTarget}
+                style={{
+                  position: 'absolute',
+                  top: `${selectedEventNameHeader.position.top - 120}px`,
+                  left: `${selectedEventNameHeader.position.left}px`,
+                  backgroundColor: 'white',
+                  borderRadius: '4px',
+                  zIndex: 1000,
+                  padding: '8px',
+                }}
+                onBlur={() => setShowEventNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
+              >
+                <Autocomplete
+                  id='eventName'
+                  multiple
+                  options={eventNameList}
+                  filterOptions={(options, { inputValue }) =>
+                    options.filter((option) => option.name.includes(inputValue))
+                  }
+                  value={selectedEventNameList || []}
+                  onChange={(e: ChangeEvent<{}>, newValue: EventNameList[]) => {
+                    //console.log(newValue);
+                    setSelectedEventNameList(newValue);
+                  }}
+                  renderOption={(props: any, option: EventNameList) => {
+                    return (
+                      <li {...props} key={option.id}>
+                        {option.name}
+                      </li>
+                    );
+                  }}
+                  renderTags={(value: EventNameList[], getTagProps: any) => {
+                    return value.map((option, index) => (
+                      <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                    ));
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      key={params.id}
+                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                      {...params}
+                      label={'種目'}
+                    />
+                  )}
+                />
+              </div>
+            )}
+            {/* 組別フィルター用のオートコンプリート 20240508 */}
+            {showByGroupAutocomplete && (
+              <div
+                ref={byGroupfocusTarget}
+                style={{
+                  position: 'absolute',
+                  top: `${selectedByGroupHeader.position.top - 120}px`,
+                  left: `${selectedByGroupHeader.position.left}px`,
+                  backgroundColor: 'white',
+                  borderRadius: '4px',
+                  zIndex: 1000,
+                  padding: '8px',
+                }}
+                onBlur={() => setShowByGroupAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
+              >
+                <Autocomplete
+                  id='byGroup'
+                  multiple
+                  options={byGroupList}
+                  filterOptions={(options, { inputValue }) =>
+                    options.filter((option) => option.name.includes(inputValue))
+                  }
+                  value={selectedByGroupList || []}
+                  onChange={(e: ChangeEvent<{}>, newValue: ByGroupList[]) => {
+                    //console.log(newValue);
+                    setSelectedByGroupList(newValue);
+                  }}
+                  renderOption={(props: any, option: ByGroupList) => {
+                    return (
+                      <li {...props} key={option.id}>
+                        {option.name}
+                      </li>
+                    );
+                  }}
+                  renderTags={(value: ByGroupList[], getTagProps: any) => {
+                    return value.map((option, index) => (
+                      <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                    ));
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      key={params.id}
+                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                      {...params}
+                      label={'組別'}
+                    />
+                  )}
+                />
+              </div>
+            )}
+            {/* 発艇日時用のオートコンプリート 20240509 */}
+            {showStartDateTimeAutocomplete && (
+              <div
+                ref={startDateTimefocusTarget}
+                style={{
+                  position: 'absolute',
+                  top: `${selectedStartDateTimeHeader.position.top - 120}px`,
+                  left: `${selectedStartDateTimeHeader.position.left}px`,
+                  backgroundColor: 'white',
+                  borderRadius: '4px',
+                  zIndex: 1000,
+                  padding: '8px',
+                }}
+                onBlur={() => setShowStartDateTimeAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
+              >
+                <Autocomplete
+                  id='startDateTime'
+                  multiple
+                  options={startDateTimeList}
+                  filterOptions={(options, { inputValue }) =>
+                    options.filter((option) => option.name.includes(inputValue))
+                  }
+                  value={selectedStartDateTimeList || []}
+                  onChange={(e: ChangeEvent<{}>, newValue: StartDateTimeList[]) => {
+                    //console.log(newValue);
+                    setSelectedStartDateTimeList(newValue);
+                  }}
+                  renderOption={(props: any, option: StartDateTimeList) => {
+                    return (
+                      <li {...props} key={option.id}>
+                        {option.name}
+                      </li>
+                    );
+                  }}
+                  renderTags={(value: StartDateTimeList[], getTagProps: any) => {
+                    return value.map((option, index) => (
+                      <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                    ));
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      key={params.id}
+                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                      {...params}
+                      label={'発艇日時'}
+                    />
+                  )}
+                />
+              </div>
+            )}
           </div>
           <div className='flex flex-row justify-center gap-[40px] m-auto'>
             {/* 戻るボタン */}

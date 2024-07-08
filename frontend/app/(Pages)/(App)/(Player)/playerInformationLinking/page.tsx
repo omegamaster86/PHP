@@ -71,7 +71,7 @@ export default function PlayerInformationLinking() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.get('/getUserData');
-        console.log(response.data.result);
+        //console.log(response.data.result);
         if (Object.keys(response.data.result).length > 0) {
           const playerInf = await axios.get('/getIDsAssociatedWithUser');
           if (
@@ -80,11 +80,11 @@ export default function PlayerInformationLinking() {
           ) {
             setValidFlag(true); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
           } else {
-            console.log('ユーザ種別不正');
+            //console.log('ユーザ種別不正');
             router.push('/tournamentSearch');
           }
         } else {
-          console.log('ユーザ情報なし');
+          //console.log('ユーザ情報なし');
           router.push('/tournamentSearch');
         }
       } catch (error: any) {}
@@ -160,17 +160,31 @@ export default function PlayerInformationLinking() {
             message: '',
           };
         } else {
-          // 列数が期待する列数と一致する場合
-          return {
-            id: index, // ID
-            checked: false, // 選択
-            link: '', // 連携
-            oldPlayerId: value[0],
-            playerId: value[1],
-            mailaddress: value[2],
-            playerName: value[3],
-            message: '',
-          };
+          //選手名が空の場合
+          if (value[3] == '' || value[3] == undefined || value[3] == null) {
+            return {
+              id: index, // ID
+              checked: false, // 選択
+              link: '連携不可', // 連携不可
+              oldPlayerId: value[0],
+              playerId: value[1],
+              mailaddress: value[2],
+              playerName: '',
+              message: '無効なデータ',
+            };
+          } else {
+            // 列数が期待する列数と一致する場合
+            return {
+              id: index, // ID
+              checked: false, // 選択
+              link: '', // 連携
+              oldPlayerId: value[0],
+              playerId: value[1],
+              mailaddress: value[2],
+              playerName: value[3],
+              message: '',
+            };
+          }
         }
       });
     var element = array as CsvData[];
@@ -180,10 +194,10 @@ export default function PlayerInformationLinking() {
     await axios
       .post('/sendCsvData', element)
       .then((res) => {
-        console.log(res.data.result);
+        //console.log(res.data.result);
         var contentData = res.data.result as CsvData[];
         // contentData.map((row, rowIndex) => {
-        //   console.log(row, rowIndex);
+        //   //console.log(row, rowIndex);
         // });
 
         if (dialogDisplayFlg) {
@@ -234,10 +248,11 @@ export default function PlayerInformationLinking() {
         performValidation();
       })
       .catch((error) => {
-        console.log(error);
+        //console.log(error);
       })
       .finally(() => {
         setActivationFlg(false);
+        setDialogDisplayFlg(true);
       });
   };
 
@@ -248,11 +263,11 @@ export default function PlayerInformationLinking() {
     await axios
       .post('/registerCsvData', csvData)
       .then((res) => {
-        console.log(res.data);
+        //console.log(res.data);
         // router.push('/tournamentSearch'); // 20240222
       })
       .catch((error) => {
-        console.log(error);
+        //console.log(error);
       });
   };
 
@@ -290,68 +305,64 @@ export default function PlayerInformationLinking() {
               ></CsvHandler>
             </div>
             {/* CSVフォーマット出力の表示 */}
-            {!activationFlg && (
-              <div className='flex flex-col gap-[20px]'>
-                {/* 読み込みボタンの表示 */}
-                <div className='flex flex-col gap-[4px] items-center'>
-                  {/* 表示する文言はDPT様にて実装予定 */}
-                  <p className='mb-1 text-systemErrorText'>
-                    【読み込み方法】
-                    <br />
-                    ［準備］
-                    <br />
-                    JARAエントリーシステムから本システムに連携したい選手情報を定型フォーマットに記載してください。
-                    <br />
-                    ※定型フォーマットが必要な場合は、「CSVフォーマット出力」をクリックしてください。
-                    <br />
-                    定型フォーマットがダウンロードされます。
-                    <br />
-                    ［読み込む］
-                    <br />
-                    ①　「読み込みCSVファイル」に、読み込ませるCSVファイルをドラッグ＆ドロップしてください。
-                    <br />
-                    ※「参照」からファイルを指定することもできます。
-                    <br />
-                    ②　「読み込み」をクリックすると、CSVフォーマットの内容を読み込み、内容を画面下部のレース結果一覧に表示します。
-                    <br />
-                    ※この状態では、まだシステムに選手情報は登録されません
-                  </p>
-                  <CustomButton
-                    buttonType='primary'
-                    onClick={() => {
-                      console.log(csvFileData);
-                      sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
-                    }}
-                  >
-                    読み込む
-                  </CustomButton>
-                </div>
+            <div className='flex flex-col gap-[20px]'>
+              {/* 読み込みボタンの表示 */}
+              <div className='flex flex-col gap-[4px] items-center'>
+                {/* 表示する文言はDPT様にて実装予定 */}
+                <p className='mb-1 text-systemErrorText'>
+                  【読み込み方法】
+                  <br />
+                  ［準備］
+                  <br />
+                  JARAエントリーシステムから本システムに連携したい選手情報を定型フォーマットに記載してください。
+                  <br />
+                  ※定型フォーマットが必要な場合は、「CSVフォーマット出力」をクリックしてください。
+                  <br />
+                  定型フォーマットがダウンロードされます。
+                  <br />
+                  ［読み込む］
+                  <br />
+                  ①　「読み込みCSVファイル」に、読み込ませるCSVファイルをドラッグ＆ドロップしてください。
+                  <br />
+                  ※「参照」からファイルを指定することもできます。
+                  <br />
+                  ②　「読み込み」をクリックすると、CSVフォーマットの内容を読み込み、内容を画面下部のレース結果一覧に表示します。
+                  <br />
+                  ※この状態では、まだシステムに選手情報は登録されません
+                </p>
+                <CustomButton
+                  buttonType='primary'
+                  onClick={() => {
+                    //console.log(csvFileData);
+                    sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
+                  }}
+                >
+                  読み込む
+                </CustomButton>
               </div>
-            )}
+            </div>
             {/* エラーメッセージの表示 */}
             <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
             {/* 読み込み結果の表示 */}
             <div className='flex flex-col items-center'>
-              {!activationFlg && (
-                <p className='mb-1 text-systemErrorText'>
-                  【登録方法】
-                  <br />
-                  ①　「読み込み結果」にCSVフォーマットを読み込んだ結果が表示されます。
-                  <br />
-                  ※連携の意味
-                  <br />
-                  連携可能：本システムに登録されている選手と連携可能なデータです。
-                  <br />
-                  連携待ち：当該選手が本システムに登録されていないため、
-                  <br />
-                  連携不可：本システムに取り込めないデータです、エラー内容を確認してください。
-                  <br />
-                  ②　読み込むデータの「選択」にチェックを入れてください。※「全選択」で、エラー以外の全てのデータを選択状態にできます。
-                  <br />
-                  ③　「登録」をクリックすると「読み込み結果」にて「選択」にチェックが入っているデータを対象に、本システムに登録されます。
-                  <br />
-                </p>
-              )}
+              <p className='mb-1 text-systemErrorText'>
+                【登録方法】
+                <br />
+                ①　「読み込み結果」にCSVフォーマットを読み込んだ結果が表示されます。
+                <br />
+                ※連携の意味
+                <br />
+                連携可能：本システムに登録されている選手と連携可能なデータです。
+                <br />
+                連携待ち：当該選手が本システムに登録されていないため、
+                <br />
+                連携不可：本システムに取り込めないデータです、エラー内容を確認してください。
+                <br />
+                ②　読み込むデータの「選択」にチェックを入れてください。※「全選択」で、エラー以外の全てのデータを選択状態にできます。
+                <br />
+                ③　「登録」をクリックすると「読み込み結果」にて「選択」にチェックが入っているデータを対象に、本システムに登録されます。
+                <br />
+              </p>
               <CsvTable
                 content={csvData}
                 header={[
@@ -384,19 +395,24 @@ export default function PlayerInformationLinking() {
                 <CustomButton
                   buttonType='primary'
                   onClick={() => {
-                    console.log(csvData);
+                    //console.log(csvData);
                     setActivationFlg(true);
-                    csvData.find((row) => row.checked)?.id === undefined
-                      ? window.confirm('1件以上選択してください。')
-                      : registerCsvData(), //読み込んだCSVデータをDBに連携する
-                      setCsvData([]),
-                      setCsvFileData({ content: [], isSet: false }),
-                      fileUploaderRef?.current?.clearFile(),
-                      window.confirm('連携を完了しました。')
-                        ? (setActivationFlg(false),
-                          setDialogDisplayFlg(false),
-                          setDisplayLinkButtonFlg(false))
-                        : null;
+                    if (csvData.find((row) => row.checked)?.id === undefined) {
+                      window.alert('1件以上選択してください。');
+                      setActivationFlg(false);
+                      setDialogDisplayFlg(false);
+                      setDisplayLinkButtonFlg(false);
+                      setActivationFlg(false);
+                      return;
+                    }
+                    registerCsvData(); //読み込んだCSVデータをDBに連携する
+                    setCsvData([]);
+                    setCsvFileData({ content: [], isSet: false });
+                    fileUploaderRef?.current?.clearFile();
+                    window.alert('連携を完了しました。');
+                    setActivationFlg(false);
+                    setDialogDisplayFlg(false);
+                    setDisplayLinkButtonFlg(false);
                     setActivationFlg(false);
                   }}
                 >

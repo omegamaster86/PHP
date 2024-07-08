@@ -297,7 +297,7 @@ const CsvTable = ({
                       // e.target.checked ? displayLinkButton(true) : null;
                       var data = content.map((row) => row.checked.toString());
                       data[rowIndex] = e.target.checked.toString();
-                      // console.log(data);
+                      //console.log(data);
                       data.includes('true') ? displayLinkButton(true) : displayLinkButton(false);
                     }}
                   ></CustomCheckbox>

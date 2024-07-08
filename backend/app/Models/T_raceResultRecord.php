@@ -828,13 +828,14 @@ class T_raceResultRecord extends Model
     //対象のレースに出漕結果の件数を取得する
     public function getIsExistsTargetRaceResult($race_id)
     {
-        $is_exists = DB::select("select count(*) as `result`
+        $counts = DB::select('select count(*) as "count"
                                 from t_race_result_record
                                 where 1=1
-                                and race_id = :race_id
-                                and delete_flag = 0"
-                                ,$race_id);
-        return $is_exists;
+                                and delete_flag = 0
+                                and race_id = ?'
+                                ,[$race_id]);
+        $count = $counts[0]->count;
+        return $count;
     }
 
     //対象の出漕結果の件数を取得する
@@ -843,9 +844,9 @@ class T_raceResultRecord extends Model
         $is_exists = DB::select("select count(*) as `result`
                                 from t_race_result_record
                                 where 1=1
-                                and race_result_record_id = :race_result_record_id
+                                and race_result_record_id = ?
                                 and delete_flag = 0"
-                                ,$race_result_record_id);
+                                ,[$race_result_record_id]);
         return $is_exists;
     }
 
@@ -854,11 +855,11 @@ class T_raceResultRecord extends Model
     {
         DB::update("update t_race_result_record
                     set delete_flag = 1
-                    ,updated_time = :updated_datetime
-                    ,updated_user_id = :updated_user_id
+                    ,updated_time = ?
+                    ,updated_user_id = ?
                     where 1=1
-                    and race_result_record_id = :race_result_record_id"
-                    ,$values);
+                    and race_result_record_id = ?"
+                    ,[$values['updated_datetime'],$values['updated_user_id'],$values['race_result_record_id']]);
     }
 
     //出漕時点情報を取得
@@ -922,7 +923,7 @@ class T_raceResultRecord extends Model
 
     //レース結果情報を取得
     //レース結果編集画面 更新モード用
-    //レース結果参照・削除画面用
+    //レース結果参照・削除画面用 ※出漕結果記録IDも取得する 
     public function getRaceResultRecordList($race_id, $crew_name, $org_id)
     {
         $race_result_record_list = DB::select("select 
@@ -932,6 +933,7 @@ class T_raceResultRecord extends Model
                                                 ,msex.sex
                                                 ,ply.height
                                                 ,ply.weight
+                                                ,rrr.race_result_record_id
                                                 ,rrr.seat_number as sheetNameId
                                                 ,seat.seat_name as sheetName
                                                 ,rrr.heart_rate_500m as fiveHundredmHeartRate
@@ -1098,9 +1100,13 @@ class T_raceResultRecord extends Model
         DB::update("update `t_race_result_record`
                     SET
                         `jara_player_id` = :jara_player_id
+                        , `race_id` = :race_id
                         , `player_name` = :player_name
+                        , `player_id` = :player_id
                         , `entrysystem_org_id` = :entrysystem_org_id
                         , `org_name` = :org_name
+                        , `org_id` = :org_id
+                        , `crew_name` = :crew_name
                         , `lane_number` = :lane_number
                         , `rank` = :rank
                         , `laptime_500m` = :laptime_500m
@@ -1134,10 +1140,7 @@ class T_raceResultRecord extends Model
                         , `updated_user_id` = :updated_user_id
                         WHERE 1=1
                         and delete_flag = 0
-                        and `race_id` = :race_id
-                        and `crew_name` = :crew_name
-                        and `player_id` = :player_id
-                        and `org_id` = :org_id"
+                        and `race_result_record_id` = :race_result_record_id"
                         ,$values);
     }
 
@@ -1159,21 +1162,15 @@ class T_raceResultRecord extends Model
 
     //レースID、クルー名、選手ID、団体IDを条件とした出漕結果記録が存在するかを取得
     //レース結果更新で登録か更新を判断するため
-    public function getIsExistsTargetResultRecordForConditions($race_id,$crew_name,$org_id,$player_id)
+    public function getIsExistsTargetResultRecordForConditions($race_result_record_id)
     {
         $is_record_exists = DB::select("select race_result_record_id
                                         from `t_race_result_record`
                                         where 1=1
                                         and delete_flag = 0
-                                        and race_id = :race_id
-                                        and crew_name = :crew_name
-                                        and org_id = :org_id
-                                        and player_id = :player_id"
+                                        and race_result_record_id = :race_result_record_id"
                                     ,[
-                                        "race_id" => $race_id
-                                        ,"crew_name" => $crew_name
-                                        ,"org_id" => $org_id
-                                        ,"player_id" => $player_id
+                                        "race_result_record_id" => $race_result_record_id
                                     ]);
         //1つの結果を取得するため0番目だけを返す
         $target_result = null;

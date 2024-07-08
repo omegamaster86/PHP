@@ -51,13 +51,13 @@ export default function TournamentResultRef() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const raceResponse = await axios.post('/getRaceDataRaceId', sendData);
-        console.log(raceResponse);
+        //console.log(raceResponse);
 
         setRaceInfo(raceResponse.data.race_result[0]);
 
         // 出漕結果記録情報の取得
         // const raceResultRecords = await axios.get('http://localhost:3100/raceResultRecords');
-        // console.log(raceResponse.data.record_result);
+        //console.log(raceResponse.data.record_result);
         setRaceResultRecords(raceResponse.data.record_result);
       } catch (error: any) {
         setErrorText([error.message]);
@@ -131,7 +131,7 @@ export default function TournamentResultRef() {
               <div className='flex flex-col gap-[8px]'>
                 <Label label='発艇予定日時' textSize='small' isBold />
                 <p className='h-12 text-secondaryText py-3 disable'>
-                  {raceInfo.start_date_time || ''}
+                  {raceInfo.start_date_time?.substring(0, 16) || ''}
                 </p>
               </div>
             </div>
@@ -146,7 +146,7 @@ export default function TournamentResultRef() {
           <div className='flex flex-col gap-[8px]'>
             <Label label='発艇日時' textSize='small' isBold />
             <p className='h-12 text-secondaryText py-3 disable'>
-              {raceResultRecords[0]?.startDateTime || ''}
+              {raceResultRecords[0]?.startDateTime.substring(0, 16) || ''}
             </p>
           </div>
           {/* 天気 */}
@@ -201,7 +201,7 @@ export default function TournamentResultRef() {
           }`}
         >
           {/* レース結果情報 */}
-          <Label label={`レース結果情報${index + 1}`} />
+          <Label label={`レース結果情報${raceResultRecords.length - index}`} />
           <div className='flex flex-col justify-between gap-[16px]'>
             <div className='flex flex-col gap-[8px]'>
               <div className='leading-loose text-primary-500 flex flex-row gap-[8px] items-center cursor-pointer'>
@@ -252,7 +252,7 @@ export default function TournamentResultRef() {
                   <div>
                     <div className='flex flex-row justify-between gap-[80px] w-[800px]'>
                       <div className='flex flex-col justify-between gap-[1px]'>
-                        <div className='flex flex-row justify-left item-center gap-[80px]'>
+                        <div className='flex flex-row justify-left item-center gap-[60px]'>
                           <div className='flex flex-col gap-[8px]'>
                             <Label label='500m' textSize='small' isBold />
                             <p className='h-12 text-secondaryText py-3 disable'>
@@ -426,7 +426,17 @@ export default function TournamentResultRef() {
                         <CustomTd>{item.fifteenHundredmHeartRate}</CustomTd>
                         <CustomTd>{item.twentyHundredmHeartRate}</CustomTd>
                         <CustomTd>{item.heartRateAvg}</CustomTd>
-                        <CustomTd>{item.attendance}</CustomTd>
+                        <CustomTd>
+                          <div className='flex justify-center'>
+                            <OriginalCheckbox
+                              id={'ergo' + index}
+                              value='ergo'
+                              checked={item.attendance ? true : false}
+                              onChange={(e: any) => {}}
+                              readonly
+                            />
+                          </div>
+                        </CustomTd>
                       </CustomTr>
                     ))}
                   </CustomTbody>
@@ -441,7 +451,7 @@ export default function TournamentResultRef() {
         <CustomButton
           buttonType='secondary'
           onClick={() => {
-            router.back();
+            router.push('/tournamentResultManagement'); //大会結果管理（大会レース結果管理）画面に戻す 20240516
           }}
           className='w-[170px]'
         >
@@ -452,22 +462,28 @@ export default function TournamentResultRef() {
             buttonType='primary'
             onClick={async () => {
               try {
-                // 削除済かどうかのチェック
-                // const response = await axios.get('http://localhost:3100/checkRaceResultRecordDeleted',); //残件項目
+                if (!window.confirm('削除しますか？')) {
+                  return; //キャンセルを押下された場合、何もしない 20240520
+                }
 
+                const deleteSendData = {
+                  raceInfo: raceInfo,
+                  raceResultRecords: raceResultRecords,
+                };
+                //console.log(deleteSendData);
                 const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
-                const response = await axios.post(
-                  'http://localhost:3100/checkRaceResultRecordDeleted',
-                ); //残件項目
-
-                if (response.data.isDeleted) {
-                  setErrorText(['当該レースの結果は、他のユーザーによって削除されています。']);
+                const response = await axios.post('/deleteRaceResultRecordData', deleteSendData); //削除処理 20240520
+                //console.log(response);
+                if (response.data?.errMessage) {
+                  setErrorText([response.data?.errMessage]);
                   window.scrollTo(0, 0);
                 } else {
+                  window.alert('削除が完了しました。'); //完了メッセージ 20240520
+
                   // TODO 削除モードのチェック処理を実装
                   // TODO 選手レース結果管理画面が実装されたら、遷移先を変更する
-                  router.push('/tournament/playerRaceResult');
+                  router.push('/tournamentResultManagement');
                 }
               } catch (error: any) {
                 setErrorText([error.message]);

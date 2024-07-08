@@ -22,16 +22,12 @@
 
 <body>
     <p>
-        件名: {{$registered_player_mail_data['organization_name']}}の所属選手として登録されました。<br />
-        送信元: xxxxx@jara.or.jp<br />
-        宛先: {{$registered_player_mail_data['to_mailaddress']}}<br /><br />
-
         ※本メールはシステムから自動送信されています。<br /><br />
 
         {{$registered_player_mail_data['player_name']}} 様
         {{$registered_player_mail_data['to_mailaddress']}} 
 
-        {{$registered_player_mail_data['organization_name']}}（{{$registered_player_mail_data['organization_id']}}）の管理者により、団体の所属選手として登録されました。
+        {{$registered_player_mail_data['manager_type']}}の管理者により、団体の所属選手として登録されました。
 
         ※ このメールは送信専用です。返信できませんのでご注意ください。
         ※ このメールに心当たりがない場合、お手数ですが管理者までお問い合わせください。

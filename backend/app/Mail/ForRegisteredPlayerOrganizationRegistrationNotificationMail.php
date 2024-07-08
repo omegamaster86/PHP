@@ -28,7 +28,8 @@ class ForRegisteredPlayerOrganizationRegistrationNotificationMail extends Mailab
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '[団体名]の所属選手として登録されました。',
+            // subject: '[団体名]の所属選手として登録されました。',
+            subject: $this->registered_player_mail_data["organization_name"].'の所属選手として登録されました。',
         );
     }
 

@@ -23,10 +23,6 @@
 
 <body>
     <p>
-        件名: 【日本ローイング協会】仮パスワードが発行されました<br />
-        送信元: {{$mail_data['from_mailaddress']}} <br />
-        宛先: {{$mail_data['to_mailaddress']}}<br /><br />
-
         ※本メールはシステムから自動送信されています。<br /><br />
 
         {{$mail_data['user_name']}} 様<br />

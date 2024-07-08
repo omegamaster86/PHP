@@ -90,7 +90,7 @@ export default function TournamentRaceResultRef() {
         await csrf();
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
         const response = await axios.post('/getTournRaceResultRecords', race_id); //残件対象項目
-        console.log(response.data.result);
+        //console.log(response.data.result);
         //クルー情報を取得するためのパラメータをセット
         setSearchCrewInfo(response.data.result);
         setResultRecordsData(response.data.result);
@@ -221,7 +221,7 @@ export default function TournamentRaceResultRef() {
   const getCrew = async (rowData: RaceResultRecordsResponse) => {
     // var apiUri = 'http://localhost:3100/crew?';
     // クルー名、団体ID、レースIDのすべてが一致するクルー情報を取得
-    console.log(searchCrewInfo);
+    //console.log(searchCrewInfo);
     var index = 0;
     for (; index < searchCrewInfo.length; index++) {
       if (
@@ -232,20 +232,20 @@ export default function TournamentRaceResultRef() {
         break;
       }
     }
-    console.log(index);
+    //console.log(index);
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     await axios
       // .get<CrewResponse[]>('/crew/') //残件対象項目
       .post('/getCrewData', searchCrewInfo[index])
       .then((response) => {
-        // console.log(response.data.result);
+        //console.log(response.data.result);
         // レスポンスからデータを取り出してstateにセット
         setCurrentCrewName(searchCrewInfo[index].crew_name);
-        // console.log(currentCrewName);
-        // console.log(searchCrewInfo[index]);
+        //console.log(currentCrewName);
+        //console.log(searchCrewInfo[index]);
         for (let index = 0; index < response.data.result.length; index++) {
-          // console.log(response.data.result[index].seat_name);
+          //console.log(response.data.result[index].seat_name);
           if (response.data.result[index].seat_name == 'ストローク') {
             response.data.result[index].seat_name = 'S（ストローク）';
           } else if (response.data.result[index].seat_name == 'バウ') {
@@ -408,9 +408,9 @@ export default function TournamentRaceResultRef() {
                         <CustomTd>
                           <div
                             onClick={(event) => {
-                              // console.log(index);
-                              // console.log(row);
-                              // console.log(event.currentTarget.innerText);
+                              //console.log(index);
+                              //console.log(row);
+                              //console.log(event.currentTarget.innerText);
                               setOpen(true);
                               getCrew(row);
                             }}
@@ -503,6 +503,7 @@ export default function TournamentRaceResultRef() {
                     }
                     value={selectedRaceNameList || []}
                     onChange={(e: ChangeEvent<{}>, newValue: RaceNameList[]) => {
+                      //console.log(newValue);
                       setSelectedRaceNameList(newValue);
                     }}
                     renderOption={(props: any, option: RaceNameList) => {
@@ -551,6 +552,7 @@ export default function TournamentRaceResultRef() {
                     }
                     value={selectedByGroupList || []}
                     onChange={(e: ChangeEvent<{}>, newValue: ByGroupList[]) => {
+                      //console.log(newValue);
                       setSelectedByGroupList(newValue);
                     }}
                     renderOption={(props: any, option: ByGroupList) => {

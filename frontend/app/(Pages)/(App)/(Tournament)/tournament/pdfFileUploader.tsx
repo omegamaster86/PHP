@@ -40,7 +40,7 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
   //アップロードされたファイルを保存するー開始
   useEffect(() => {
     if (currentShowFile?.file) {
-      console.log(currentShowFile?.file);
+      //console.log(currentShowFile?.file);
       props.setTournamentFormData((prevFormData: any) => ({
         ...prevFormData,
         uploadedPDFFilePath: currentShowFile.file.name,
@@ -64,7 +64,7 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
       setcurrentShowFile({ file, isUploaded: true });
     } catch (error) {
       // エラーが発生した場合の処理
-      // console.log(`アップロード中にエラーが発生しました: ${error}`);
+      //console.log(`アップロード中にエラーが発生しました: ${error}`);
       alert(`アップロード中にエラーが発生しました。`);
     }
   };
@@ -91,10 +91,10 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
           }))[0],
         );
 
-        // console.log(acceptedFiles[0] + 'is Uploaded');
+        //console.log(acceptedFiles[0] + 'is Uploaded');
       } catch (error) {
         // エラーが発生した場合の処理
-        // console.log(`アップロード中にエラーが発生しました: ${error}`);
+        //console.log(`アップロード中にエラーが発生しました: ${error}`);
       }
     },
     [currentShowFile],

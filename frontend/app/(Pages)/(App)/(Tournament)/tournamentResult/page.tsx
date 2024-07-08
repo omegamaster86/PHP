@@ -28,13 +28,23 @@ import { RaceTable, RaceResultRecordsResponse, MasterResponse, CrewPlayer } from
 import axios from '@/app/lib/axios';
 import Validator from '@/app/utils/validator';
 
+interface UpdatedRaceResultRecordsResponse extends RaceResultRecordsResponse {
+  isAdded: boolean;
+}
+
 // // 大会レース結果管理画面のメインコンポーネント
 export default function TournamentResult() {
   // フック
   const router = useRouter();
 
   // ステート変数
+  //エラーメッセージの設定
   const [errorText, setErrorText] = useState([] as string[]);
+  const [raceIdErrorText, setRaceIdErrorText] = useState(''); //レースID
+  const [raceNameErrorText, setRaceNameErrorText] = useState(''); //レース名
+  const [startDateTimeErrorText, setStartDateTimeErrorText] = useState(''); //発艇日時
+  const [windSpeed1000mPointErrorText, setWindSpeed1000mPointErrorText] = useState(''); //1000m地点風速
+  const [windSpeed2000mPointErrorText, setWindSpeed2000mPointErrorText] = useState(''); //2000m地点風速
 
   // レース名（マスタ）の設定
   const [raceNameOptions, setRaceNameOptions] = useState<MasterResponse[]>([]);
@@ -54,13 +64,13 @@ export default function TournamentResult() {
 
   // 出漕結果記録情報のモデル（出漕時点情報）
   const [raceResultRecordResponse, setRaceResultRecordResponse] =
-    useState<RaceResultRecordsResponse>({} as RaceResultRecordsResponse);
+    useState<UpdatedRaceResultRecordsResponse>({} as UpdatedRaceResultRecordsResponse);
 
   // 出漕結果記録情報（レース結果情報）のモデル
-  const [raceResultRecords, setRaceResultRecords] = useState<RaceResultRecordsResponse[]>([
+  const [raceResultRecords, setRaceResultRecords] = useState<UpdatedRaceResultRecordsResponse[]>([
     {
       crewPlayer: [{} as CrewPlayer],
-    } as RaceResultRecordsResponse,
+    } as UpdatedRaceResultRecordsResponse,
   ]);
 
   // 種目マスタに紐づく選手の人数
@@ -73,11 +83,11 @@ export default function TournamentResult() {
   const tournId = param.get('tournId'); // 大会ID
   const eventId = param.get('eventId'); // 種目ID
   const prevMode = param.get('prevMode'); // 遷移元画面のモード
-  // console.log(mode);
-  // console.log(raceId);
-  // console.log(tournId);
-  // console.log(eventId);
-  // console.log(prevMode);
+  // //console.log(mode);
+  // //console.log(raceId);
+  // //console.log(tournId);
+  // //console.log(eventId);
+  // //console.log(prevMode);
   switch (mode) {
     case 'create':
       break;
@@ -125,7 +135,7 @@ export default function TournamentResult() {
     value: string,
   ) => {
     setRaceResultRecords((prevFormData) => {
-      const newFormData = [...(prevFormData as RaceResultRecordsResponse[])];
+      const newFormData = [...(prevFormData as UpdatedRaceResultRecordsResponse[])];
       if (newFormData[index]) {
         (newFormData[index] as any)[name] = value;
       }
@@ -139,7 +149,7 @@ export default function TournamentResult() {
     value: boolean,
   ) => {
     setRaceResultRecords((prevFormData) => {
-      const newFormData = [...(prevFormData as RaceResultRecordsResponse[])];
+      const newFormData = [...(prevFormData as UpdatedRaceResultRecordsResponse[])];
       if (newFormData[index]) {
         (newFormData[index] as any)[name] = value;
       }
@@ -152,13 +162,13 @@ export default function TournamentResult() {
    * @param index
    */
   const addCrewPlayerToRaceResultRecords = (index: number) => {
-    if (!raceResultRecords[index].crewPlayer) {
+    if (!raceResultRecords[index]?.crewPlayer) {
       raceResultRecords[index].crewPlayer = [{} as CrewPlayer];
     }
     setRaceResultRecords((prevFormData) => {
       // 多次元配列のシャローコピーは2件レコードができるため、ディープコピー
       const newFormData = JSON.parse(JSON.stringify(prevFormData));
-      newFormData[index].crewPlayer?.push({
+      newFormData[index]?.crewPlayer?.push({
         deleteFlg: false, // 削除フラグ
         addonLineFlg: true,
       } as CrewPlayer);
@@ -177,10 +187,10 @@ export default function TournamentResult() {
     await csrf();
     //const playerSearch = await axios.get('http://localhost:3100/teamPlayers?id=' + value);
     const sendId = { player_id: value };
-    console.log(sendId);
+    //console.log(sendId);
     const playerSearch = await axios.post('/getCrewPlayerInfo', sendId);
-    console.log('player_id', value);
-    console.log('playerSearch', playerSearch);
+    //console.log('player_id', value);
+    //console.log('playerSearch', playerSearch);
 
     //名前の異なるバックエンド側とフロント側のキーを紐づける 20240410
     if (playerSearch.data.result.length > 0) {
@@ -190,21 +200,47 @@ export default function TournamentResult() {
       playerSearch.data.result[0].sex = playerSearch.data.result[0].sexName;
     }
     const player = playerSearch.data.result[0];
-    console.log(player);
+    //console.log(player);
     if (value === '') {
+      //選手IDが空になった場合、当該行のすべての項目を空欄にする 20240517
+      handleRaceResultRecordsCrewPlayerChangeBooleanbyIndex(index, crewIndex, 'deleteFlg', false); //削除フラグ
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'playerName', ''); //選手名
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'sex', ''); //性別
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'height', ''); //身長
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'weight', ''); //体重
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'sheetName', ''); //シート番号
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'fiveHundredmHeartRate', ''); //500m
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'tenHundredmHeartRate', ''); //1000m
+      handleRaceResultRecordsCrewPlayerChangebyIndex(
+        index,
+        crewIndex,
+        'fifteenHundredmHeartRate',
+        '',
+      ); //1500m
+      handleRaceResultRecordsCrewPlayerChangebyIndex(
+        index,
+        crewIndex,
+        'twentyHundredmHeartRate',
+        '',
+      ); //2000m
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'heartRateAvg', ''); //平均
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'attendance', ''); //立ち合い
+
+      var emptyTarget = raceResultRecords[index].crewPlayer[crewIndex];
+      Object.keys(emptyTarget).forEach((key) => {
+        //更新モードで追加行が入力できる状態を維持するために、「addonLineFlg」以外をnullにする 20240520
+        if (key != 'addonLineFlg') {
+          (emptyTarget as any)[key] = null;
+        }
+      });
       return;
     }
-    /**
-     * システムに登録されていない選手IDの場合、エラーメッセージを表示する
-     * 「システムに登録されていない選手のIDです。」
-     * すでに他で同じ選手IDが２つ以上登録されている場合、エラーメッセージを表示する
-     * 「重複する選手IDです。」
-     */
+
     if (!player) {
       setRaceResultRecords((prevFormData) => {
         const newFormData = [...prevFormData];
         newFormData[index].crewPlayer[crewIndex] = {
-          ...newFormData[index].crewPlayer[crewIndex],
+          ...newFormData[index]?.crewPlayer[crewIndex],
           errorText: 'システムに登録されていない選手のIDです。',
         };
         return newFormData;
@@ -214,29 +250,37 @@ export default function TournamentResult() {
       setRaceResultRecords((prevFormData) => {
         const newFormData = [...prevFormData];
         newFormData[index].crewPlayer[crewIndex] = {
-          ...newFormData[index].crewPlayer[crewIndex],
+          ...newFormData[index]?.crewPlayer[crewIndex],
           errorText: '',
         };
         return newFormData;
       });
     }
 
+    //選手の重複チェック
     const isExist = raceResultRecords.some((record, i) => {
+      //console.log(record?.crewPlayer);
       return record?.crewPlayer?.some((player, j) => {
-        return player.playerId === value && !(index === i && crewIndex === j);
+        //console.log(player.deleteFlg);
+        //console.log(record?.crewPlayer[crewIndex].playerId);
+        //console.log(record?.crewPlayer[crewIndex].deleteFlg);
+        return (
+          player.playerId == value &&
+          !(index == i && crewIndex == j) &&
+          !player.deleteFlg &&
+          !record?.crewPlayer[crewIndex].deleteFlg
+        );
       });
     });
-
     if (isExist) {
       setRaceResultRecords((prevFormData) => {
         const newFormData = [...prevFormData];
         newFormData[index].crewPlayer[crewIndex] = {
-          ...newFormData[index].crewPlayer[crewIndex],
+          ...newFormData[index]?.crewPlayer[crewIndex],
           errorText: '重複する選手IDです。',
         };
         return newFormData;
       });
-
       return;
     }
 
@@ -244,13 +288,13 @@ export default function TournamentResult() {
     setRaceResultRecords((prevFormData) => {
       const newFormData = [...prevFormData];
       newFormData[index].crewPlayer[crewIndex] = {
-        ...newFormData[index].crewPlayer[crewIndex],
+        ...newFormData[index]?.crewPlayer[crewIndex],
         playerId: value,
         playerName: player ? '*' + player.playerName : '',
         sex: player?.sex || '',
         height: player?.height || '',
         weight: player?.weight || '',
-        deleteFlg: player ? newFormData[index].crewPlayer[crewIndex]?.deleteFlg : false,
+        deleteFlg: player ? newFormData[index]?.crewPlayer[crewIndex]?.deleteFlg : false,
       };
       return newFormData;
     });
@@ -272,8 +316,8 @@ export default function TournamentResult() {
     setRaceResultRecords((prevFormData) => {
       const newFormData = [...prevFormData];
       if (
-        newFormData[index].crewPlayer[crewIndex] !== null ||
-        newFormData[index].crewPlayer[crewIndex] !== undefined
+        newFormData[index]?.crewPlayer[crewIndex] !== null ||
+        newFormData[index]?.crewPlayer[crewIndex] !== undefined
       ) {
         newFormData[index].crewPlayer[crewIndex][name] = value as never;
       }
@@ -291,8 +335,8 @@ export default function TournamentResult() {
     setRaceResultRecords((prevFormData) => {
       const newFormData = [...prevFormData];
       if (
-        newFormData[index].crewPlayer[crewIndex] !== null ||
-        newFormData[index].crewPlayer[crewIndex] !== undefined
+        newFormData[index]?.crewPlayer[crewIndex] !== null ||
+        newFormData[index]?.crewPlayer[crewIndex] !== undefined
       ) {
         newFormData[index].crewPlayer[crewIndex][name] = value as never;
       }
@@ -313,1132 +357,479 @@ export default function TournamentResult() {
     });
     // システムエラーメッセージをクリア
     setErrorText([]);
+    setRaceIdErrorText('');
+    setRaceNameErrorText('');
+    setStartDateTimeErrorText('');
+    setWindSpeed1000mPointErrorText('');
+    setWindSpeed2000mPointErrorText('');
   };
 
   /**
-   * レース結果情報の入力値をバリデーションする関数
+   * レース結果情報の入力値をバリデーションする関数 20240516
    * @returns
    */
   const validateRaceResultRecords = () => {
-    /**
-     * レースID
-     * 空欄チェック
-     * 空行が選択されている場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「レースIDを選択してください。」
-     */
+    var errorCount = 0;
+    //レースID　必須チェック
     const raceId = Validator.validateRequired(raceInfo?.race_id, 'レースID');
     if (raceId) {
-      setErrorText([raceId]);
-      scrollTo(0, 0);
-      return false;
+      // setErrorText([raceId]);
+      setRaceIdErrorText(raceId);
+      errorCount++;
     }
-    /**
-     * レース名
-     * 空欄チェック
-     * 空行が選択されている場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「レース名を選択してください。」
-     */
+    //レース名　必須チェック
     const raceName = Validator.validateRequired(raceInfo?.race_name, 'レース名');
     if (raceName) {
-      setErrorText([raceName]);
-      scrollTo(0, 0);
-      return false;
+      // setErrorText([raceName]);
+      setRaceNameErrorText(raceName);
+      errorCount++;
     }
-
-    /**
-     * 発艇日時
-     * 空欄チェック
-     * 空行が選択されている場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「発艇日時を選択してください。」
-     */
+    //発艇日時 必須チェック
     const startDateTime = Validator.validateRequired(
       raceResultRecordResponse?.startDateTime,
       '発艇日時',
     );
     if (startDateTime) {
-      setErrorText([startDateTime]);
-      scrollTo(0, 0);
-      return false;
+      setStartDateTimeErrorText(startDateTime);
+      errorCount++;
     }
-
-    /**
-     * 1000m地点風速
-     * 入力値チェック
-     * 整数3桁までの数値であることを確認
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「半角数字で入力してください。」
-     */
+    //1000m地点風速 入力値チェック
     const windSpeed = raceResultRecordResponse.wind_speed_1000m_point;
     if (windSpeed && !/^\d{1,3}$/.test(windSpeed.toString())) {
-      setErrorText(['半角数字で入力してください。']);
-      scrollTo(0, 0);
-      return false;
+      // setErrorText(['半角数字で、999までの数字を入力してください。']);
+      setWindSpeed1000mPointErrorText('半角数字で、999までの数字を入力してください。');
+      errorCount++;
     }
-
-    /**
-     * 2000m地点風速
-     * 入力値チェック
-     * 整数3桁
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「半角数字で入力してください。」
-     */
+    //2000m地点風速 入力値チェック
     const windSpeed2 = raceResultRecordResponse.wind_speed_2000m_point;
     if (windSpeed2 && !/^\d{1,3}$/.test(windSpeed2.toString())) {
-      setErrorText(['半角数字で入力してください。']);
-      scrollTo(0, 0);
-      return false;
+      // setErrorText(['半角数字で、999までの数字を入力してください。']);
+      setWindSpeed2000mPointErrorText('半角数字で、999までの数字を入力してください。');
+      errorCount++;
     }
 
-    /**
-     * 所属団体
-     * 空欄チェック
-     * 空行が選択されている場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「所属団体を選択してください。」
-     */
-    var indexList7 = [] as number[];
-    const isError5 = raceResultRecords.some((record, i) => {
-      if (!record.org_id) {
-        indexList7.push(i);
+    //共通部分　ここまで
+    //=============================================================
+    //=============================================================
+    //クルー単位の内容　ここから
+
+    //選手情報に全削除チェックされていないかつ、レース結果情報に削除チェックがされていない項目をバリデーションチェック対象とする 20240517
+    var validateCheckList = raceResultRecords.filter(
+      (item) => !item?.crewPlayer?.every((player) => player.deleteFlg) && !item.deleteFlg,
+    );
+
+    //レース結果情報の要素数分ループ
+    for (let index = 0; index < validateCheckList.length; index++) {
+      //所属団体 空欄チェック
+      if (!validateCheckList[index].org_id) {
+        validateCheckList[index].orgNameErrorText = '所属団体を選択してください。';
+      } else {
+        validateCheckList[index].orgNameErrorText = '';
       }
-      return !record.org_id;
-    });
-    if (isError5) {
-      indexList7.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'errorText',
-          '所属団体を選択してください。',
-        );
-      });
-      return false;
-    } else {
-      clearError();
-    }
 
-    /**
-     * クルー名
-     * 空欄チェック
-     * 空行が選択されている場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「クルー名を入力してください。」
-     */
-    // レース結果情報全てにチェックを行う
-    var indexList8 = [] as number[];
-    const isError6 = raceResultRecords.some((record, i) => {
-      if (!record.crew_name) {
-        indexList8.push(i);
+      //クルー名　空欄チェック
+      if (!validateCheckList[index].crew_name) {
+        validateCheckList[index].crewNameErrorText = 'クルー名を入力してください。';
+      } else {
+        validateCheckList[index].crewNameErrorText = '';
       }
-      return !record.crew_name;
-    });
-    if (isError6) {
-      indexList8.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'errorText',
-          'クルー名を入力してください。',
-        );
-      });
-      return false;
-    } else {
-      clearError();
-    }
 
-    /**
-     * クルー名、所属団体組み合わせ
-     * 「所属団体」と「クルー名」の組み合わせが、同じ「レース結果情報入力欄」が無いことを確認
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     * 「所属団体」と「クルー名」が同じ「レース結果情報」を登録しようとしています。」
-     */
-    var indexList9 = [] as number[];
-    // チェックして、エラーに該当するレース結果情報のインデックスを取得する
-    const isError7 = raceResultRecords.some((record, i) => {
-      // エラーに該当するレース結果情報のインデックスを取得する
-      return raceResultRecords.some((record2, j) => {
-        if (i !== j && record.org_id === record2.org_id && record.crew_name === record2.crew_name) {
-          indexList9.push(i);
-          indexList9.push(j);
-        }
-        return (
-          i !== j && record.org_id === record2.org_id && record.crew_name === record2.crew_name
-        );
-      });
-    });
-    if (isError7) {
-      indexList9.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'errorText',
-          '所属団体とクルー名が同じレース結果情報を登録しようとしています。',
-        );
-      });
-      return false;
-    } else {
-      clearError();
-    }
-
-    /**
-     * 出漕レーンNo
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「半角数字で、99までの数値を入力してください。」
-     */
-    var indexList10 = [] as number[];
-    const isError8 = raceResultRecords.some((record, i) => {
-      if (record.lane_number && !/^\d{1,2}$/.test(record?.lane_number.toString())) {
-        indexList10.push(i);
+      //出漕レーンNo 入力値チェック
+      if (
+        validateCheckList[index].lane_number &&
+        !/^\d{1,2}$/.test(validateCheckList[index]?.lane_number.toString())
+      ) {
+        validateCheckList[index].laneNumberErrorText =
+          '出漕レーンNoは半角数字で、99までの数値を入力してください。';
+      } else {
+        validateCheckList[index].laneNumberErrorText = '';
       }
-      return record.lane_number && !/^\d{1,2}$/.test(record?.lane_number.toString());
-    });
-    if (isError8) {
-      indexList10.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'errorText',
-          '出漕レーンNoは半角数字で、99までの数値を入力してください。',
-        );
-      });
-      return false;
-    } else {
-      clearError();
+
+      //順位 空欄チェック 入力値チェック
+      if (!validateCheckList[index].rank) {
+        validateCheckList[index].rankErrorText = '順位を入力してください';
+      } else if (
+        validateCheckList[index].rank &&
+        !/^\d{1,2}$/.test(validateCheckList[index]?.rank.toString())
+      ) {
+        validateCheckList[index].rankErrorText =
+          '順位は半角数字で、99までの数値を入力してください。';
+      } else {
+        validateCheckList[index].rankErrorText = '';
+      }
     }
 
-    /**
-     * 出漕レーンNo
-     * 出漕レーンNoが同じ「レース結果情報入力欄」が無いことを確認
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     * 「出漕レーンNoが重複しています。」
-     */
-    var indexList = [] as number[];
-    // チェックして、エラーに該当するレース結果情報のインデックスを取得する
-    const isError2 = raceResultRecords.some((record, i) => {
-      // エラーに該当するレース結果情報のインデックスを取得する
-      return raceResultRecords.some((record2, j) => {
+    //クルー名、所属団体組み合わせ
+    validateCheckList.some((record, i) => {
+      validateCheckList.some((record2, j) => {
         if (
           i !== j &&
-          record.lane_number === record2.lane_number &&
-          (record.lane_number || record2.lane_number)
+          record.org_id === record2.org_id &&
+          record.org_id != '' &&
+          record.org_id != null &&
+          record.org_id != undefined &&
+          record2.org_id != '' &&
+          record2.org_id != null &&
+          record2.org_id != undefined &&
+          record.crew_name === record2.crew_name &&
+          record.crew_name != '' &&
+          record.crew_name != null &&
+          record.crew_name != undefined &&
+          record2.crew_name != '' &&
+          record2.crew_name != null &&
+          record2.crew_name != undefined
         ) {
-          indexList.push(i);
-          indexList.push(j);
+          handleRaceResultRecordsInputChangebyIndex(
+            i,
+            'errorText',
+            '所属団体とクルー名が同じレース結果情報を登録しようとしています。',
+          );
+          errorCount++;
         }
-        return i !== j && record.lane_number === record2.lane_number;
       });
     });
 
-    if (isError2) {
-      indexList.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'errorText',
-          '出漕レーンNoが重複しています。',
-        );
-      });
-      return false;
-    } else {
-      clearError();
-    }
-
-    /**
-     * 順位
-     * 空欄チェック
-     * 空行が選択されている場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「順位を入力してください。」
-     */
-    var indexList11 = [] as number[];
-    const isError9 = raceResultRecords.some((record, i) => {
-      if (!record.rank) {
-        indexList11.push(i);
-      }
-      return !record.rank;
-    });
-    if (isError9) {
-      indexList11.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(index, 'errorText', '順位を入力してください。');
-      });
-      return false;
-    } else {
-      clearError();
-    }
-
-    /**
-     * 順位
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「半角数字で、99までの数値を入力してください。」
-     */
-    var indexList12 = [] as number[];
-    const isError10 = raceResultRecords.some((record, i) => {
-      if (record.rank && !/^\d{1,2}$/.test(record?.rank.toString())) {
-        indexList12.push(i);
-      }
-      return record.rank && !/^\d{1,2}$/.test(record?.rank.toString());
-    });
-    if (isError10) {
-      indexList12.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'errorText',
-          '順位は半角数字で、99までの数値を入力してください。',
-        );
-      });
-      return false;
-    } else {
-      clearError();
-    }
-
-    /**
-     * 順位
-     * 順位が同じ「レース結果情報入力欄」が無いことを確認
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     * 「順位が重複しています。」
-     */
-    var indexList2 = [] as number[];
-    // チェックして、エラーに該当するレース結果情報のインデックスを取得する
-    const isError3 = raceResultRecords.some((record, i) => {
-      // エラーに該当するレース結果情報のインデックスを取得する
-      return raceResultRecords.some((record2, j) => {
-        if (i !== j && record.rank === record2.rank) {
-          indexList2.push(i);
-          indexList2.push(j);
+    //出漕レーンNo 重複チェック
+    //順位 重複チェック
+    for (let i = 0; i < validateCheckList.length; i++) {
+      for (let j = 0; j < validateCheckList.length; j++) {
+        if (
+          i != j &&
+          validateCheckList[i].lane_number == validateCheckList[j].lane_number &&
+          validateCheckList[i].lane_number != null &&
+          validateCheckList[i].lane_number != undefined &&
+          validateCheckList[j].lane_number != null &&
+          validateCheckList[j].lane_number != undefined
+        ) {
+          handleRaceResultRecordsInputChangebyIndex(
+            i,
+            'errorText',
+            '出漕レーンNoが重複しています。',
+          );
+          handleRaceResultRecordsInputChangebyIndex(
+            j,
+            'errorText',
+            '出漕レーンNoが重複しています。',
+          );
+          errorCount++;
         }
-        return i !== j && record.rank === record2.rank;
-      });
-    });
-
-    if (isError3) {
-      indexList2.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(index, 'errorText', '順位が重複しています。');
-      });
-      return false;
-    } else {
-      clearError();
+      }
     }
 
-    /**
-     * ラップタイム
-     * 空欄チェック
-     * 500m ～ 最終までの何れかに入力されていることを確認
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「「ラップタイム」は、500m～最終タイムまでの何れかにタイムを入力してください。」
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
-    var indexList3 = [] as number[];
-    // チェックして、エラーに該当するレース結果情報のインデックスを取得する
-    const isError4 = raceResultRecords.some((record, i) => {
+    //順位 重複チェック
+    for (let i = 0; i < validateCheckList.length; i++) {
+      for (let j = 0; j < validateCheckList.length; j++) {
+        if (
+          i != j &&
+          validateCheckList[i].rank == validateCheckList[j].rank &&
+          validateCheckList[i].rank != null &&
+          validateCheckList[i].rank != undefined &&
+          validateCheckList[j].rank != null &&
+          validateCheckList[j].rank != undefined
+        ) {
+          handleRaceResultRecordsInputChangebyIndex(i, 'errorText', '順位が重複しています。');
+          handleRaceResultRecordsInputChangebyIndex(j, 'errorText', '順位が重複しています。');
+          errorCount++;
+        }
+      }
+    }
+
+    //ラップタイム 空欄チェック 入力値チェック
+    validateCheckList.some((record, index) => {
       // エラーに該当するレース結果情報のインデックスを取得する
       if (
         !record.laptime_500m &&
         !record.laptime_1000m &&
         !record.laptime_1500m &&
         !record.laptime_2000m &&
-        //!record.twentyHundredmLaptime &&
         !record.final_time
       ) {
-        indexList3.push(i);
-      }
-      return (
-        !record.laptime_500m &&
-        !record.laptime_1000m &&
-        !record.laptime_1500m &&
-        !record.laptime_2000m &&
-        //!record.twentyHundredmLaptime &&
-        !record.final_time
-      );
-    });
-    if (isError4) {
-      indexList3.map((index) => {
         handleRaceResultRecordsInputChangebyIndex(
           index,
           'laptimeErrorText',
           '「ラップタイム」は、500m～最終タイムまでの何れかにタイムを入力してください。',
         );
-      });
-      return false;
-    }
-
-    /**
-     * ラップタイム(500m)
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「ラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
-    var indexList4 = [] as number[];
-    const lapTime2 = raceResultRecords.some((record, i) => {
-      // E
-      if (record.laptime_500m && !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_500m.toString())) {
-        indexList4.push(i);
+        errorCount++;
+      } else {
+        var lapTimeErrorText = '';
+        if (
+          record.laptime_500m &&
+          !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_500m.toString())
+        ) {
+          lapTimeErrorText += '「500mラップタイム」';
+        }
+        if (
+          record.laptime_1000m &&
+          !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_1000m.toString())
+        ) {
+          lapTimeErrorText += '「1000mラップタイム」';
+        }
+        if (
+          record.laptime_1500m &&
+          !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_1500m.toString())
+        ) {
+          lapTimeErrorText += '「1500mラップタイム」';
+        }
+        if (
+          record.laptime_2000m &&
+          !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_2000m.toString())
+        ) {
+          lapTimeErrorText += '「2000mラップタイム」';
+        }
+        if (record.final_time && !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.final_time.toString())) {
+          lapTimeErrorText += '「finalラップタイム」';
+        }
+        if (lapTimeErrorText.length > 0) {
+          lapTimeErrorText += 'は、半角数字で入力してください。MM:SS.99 例）3:05.89';
+          handleRaceResultRecordsInputChangebyIndex(index, 'laptimeErrorText', lapTimeErrorText);
+          errorCount++;
+        }
       }
-      return record.laptime_500m && !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_500m.toString());
     });
-    if (lapTime2) {
-      indexList4.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'laptimeErrorText',
-          '「500mラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89',
-        );
-      });
-      return false;
-    }
 
-    /**
-     * ラップタイム(1000m)
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「ラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
-    var indexList5 = [] as number[];
-    const lapTime3 = raceResultRecords.some((record, i) => {
+    //ストロークレート 入力値チェック
+    validateCheckList.some((record, index) => {
       if (
-        record.laptime_1000m &&
-        !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_1000m.toString())
+        (record.stroke_rat_500m && !/^\d{1,2}$/.test(record?.stroke_rat_500m.toString())) ||
+        (record.stroke_rat_1000m && !/^\d{1,2}$/.test(record?.stroke_rat_1000m.toString())) ||
+        (record.stroke_rat_1500m && !/^\d{1,2}$/.test(record?.stroke_rat_1500m.toString())) ||
+        (record.stroke_rat_2000m && !/^\d{1,2}$/.test(record?.stroke_rat_2000m.toString())) ||
+        (record.stroke_rate_avg && !/^\d{1,2}$/.test(record?.stroke_rate_avg.toString()))
       ) {
-        indexList5.push(i);
-      }
-      return (
-        record.laptime_1000m && !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_1000m.toString())
-      );
-    });
-    if (lapTime3) {
-      indexList5.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'laptimeErrorText',
-          '「1000mラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89',
-        );
-      });
-      return false;
-    }
-
-    /**
-     * ラップタイム(1500m)
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「ラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
-    var indexList6 = [] as number[];
-    const lapTime4 = raceResultRecords.some((record, i) => {
-      // このページのみのバリデーションのため、ここにバリデーションロジックを記述
-      if (
-        record.laptime_1500m &&
-        !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_1500m.toString())
-      ) {
-        indexList6.push(i);
-      }
-      return (
-        record.laptime_1500m && !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_1500m.toString())
-      );
-    });
-    if (lapTime4) {
-      indexList6.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'laptimeErrorText',
-          '「1500mラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89',
-        );
-      });
-      return false;
-    }
-
-    /**
-     * ラップタイム(2000m)
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「ラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
-    var indexList7 = [] as number[];
-    const lapTime5 = raceResultRecords.some((record, i) => {
-      // このページのみのバリデーションのため、ここにバリデーションロジックを記述
-      if (
-        record.laptime_2000m &&
-        !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_2000m.toString())
-      ) {
-        indexList7.push(i);
-      }
-      return (
-        record.laptime_2000m && !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.laptime_2000m.toString())
-      );
-    });
-    if (lapTime5) {
-      indexList7.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'laptimeErrorText',
-          '「2000mラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89',
-        );
-      });
-      return false;
-    }
-
-    /**
-     * ラップタイム(最終)
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「ラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
-    var indexList8 = [] as number[];
-    const lapTime6 = raceResultRecords.some((record, i) => {
-      // このページのみのバリデーションのため、ここにバリデーションロジックを記述
-      if (record.final_time && !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.final_time.toString())) {
-        indexList8.push(i);
-      }
-      return record.final_time && !/^\d{1,2}:\d{2}\.\d{2}$/.test(record?.final_time.toString());
-    });
-    if (lapTime6) {
-      indexList8.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'laptimeErrorText',
-          '「finalラップタイム」は、半角数字で入力してください。MM:SS.99 例）3:05.89',
-        );
-      });
-      return false;
-    }
-
-    /**
-     * ストロークレート
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「「ストロークレート」は、半角数字で入力してください。」
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
-    var indexList9 = [] as number[];
-    const strokeRate = raceResultRecords.some((record, i) => {
-      // このページのみのバリデーションのため、ここにバリデーションロジックを記述
-      if (record.stroke_rat_500m && !/^\d{1,2}$/.test(record?.stroke_rat_500m.toString())) {
-        indexList9.push(i);
-      }
-      return record.stroke_rat_500m && !/^\d{1,2}$/.test(record?.stroke_rat_500m.toString());
-    });
-    if (strokeRate) {
-      indexList9.map((index) => {
         handleRaceResultRecordsInputChangebyIndex(
           index,
           'strokeRateErrorText',
-          '「ストロークレート」は、半角数字で入力してください。',
+          '「ストロークレート」は、半角数字で、99までの数字を入力してください。',
         );
-      });
-      return false;
-    }
-
-    /**
-     * ストロークレート（1000m）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「「ストロークレート」は、半角数字で入力してください。」
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
-    var indexList10 = [] as number[];
-    const strokeRate2 = raceResultRecords.some((record, i) => {
-      // このページのみのバリデーションのため、ここにバリデーションロジックを記述
-      if (record.stroke_rat_1000m && !/^\d{1,2}$/.test(record?.stroke_rat_1000m.toString())) {
-        indexList10.push(i);
+        errorCount++;
       }
-      return record.stroke_rat_1000m && !/^\d{1,2}$/.test(record?.stroke_rat_1000m.toString());
     });
-    if (strokeRate2) {
-      indexList10.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'strokeRateErrorText',
-          '「ストロークレート」は、半角数字で入力してください。',
-        );
-      });
-      return false;
-    }
 
-    /**
-     * ストロークレート（1500m）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「「ストロークレート」は、半角数字で入力してください。」
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
-    var indexList11 = [] as number[];
-    const strokeRate3 = raceResultRecords.some((record, i) => {
-      // このページのみのバリデーションのため、ここにバリデーションロジックを記述
-      if (record.stroke_rat_1500m && !/^\d{1,2}$/.test(record?.stroke_rat_1500m.toString())) {
-        indexList11.push(i);
-      }
-      return record.stroke_rat_1500m && !/^\d{1,2}$/.test(record?.stroke_rat_1500m.toString());
-    });
-    if (strokeRate3) {
-      indexList11.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'strokeRateErrorText',
-          '「ストロークレート」は、半角数字で入力してください。',
-        );
-      });
-      return false;
-    }
+    //クルー単位の内容　ここまで
+    //=============================================================
+    //=============================================================
+    //選手単位の内容　ここから
 
-    /**
-     * ストロークレート（2000m）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「「ストロークレート」は、半角数字で入力してください。」
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
-    var indexList12 = [] as number[];
-    const strokeRate4 = raceResultRecords.some((record, i) => {
-      // このページのみのバリデーションのため、ここにバリデーションロジックを記述
-      if (record.stroke_rat_2000m && !/^\d{1,2}$/.test(record?.stroke_rat_2000m.toString())) {
-        indexList12.push(i);
-      }
-      return record.stroke_rat_2000m && !/^\d{1,2}$/.test(record?.stroke_rat_2000m.toString());
-    });
-    if (strokeRate4) {
-      indexList12.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'strokeRateErrorText',
-          '「ストロークレート」は、半角数字で入力してください。',
-        );
-      });
-      return false;
-    }
-
-    /**
-     * ストロークレート（最終）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「「ストロークレート」は、半角数字で入力してください。」
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     */
-    var indexList13 = [] as number[];
-    const strokeRate5 = raceResultRecords.some((record, i) => {
-      // このページのみのバリデーションのため、ここにバリデーションロジックを記述
-      if (record.stroke_rate_avg && !/^\d{1,2}$/.test(record?.stroke_rate_avg.toString())) {
-        indexList13.push(i);
-      }
-      return record.stroke_rate_avg && !/^\d{1,2}$/.test(record?.stroke_rate_avg.toString());
-    });
-    if (strokeRate5) {
-      indexList13.map((index) => {
-        handleRaceResultRecordsInputChangebyIndex(
-          index,
-          'strokeRateErrorText',
-          '「ストロークレート」は、半角数字で入力してください。',
-        );
-      });
-      return false;
-    }
-
-    /**
-     * 身長
-     * ・当該行が追加行の場合
-     * 「削除」が未チェックかつ当該行の何れかの項目に値が入っている場合に実施
-     * ・当該行が更新行の場合
-     * 「削除」が未チェックの場合のみ実施
-     * 空欄チェック
-     * 空欄の場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * ※表示場所は、当該行の直下に表示する。
-     * 「身長を入力してください。」
-     */
-
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList = [] as { i: number; j: number }[];
-    const height = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
+    //空欄チェック
+    validateCheckList.map((record, i) => {
+      record?.crewPlayer?.map((player, j) => {
+        // 追加行の場合 削除フラグが未チェックかつ、playerの何れかの項目に値が入っている場合に実施
         if (player.addonLineFlg) {
-          // 追加行の場合
-          // 削除フラグが未チェックかつ、playerの何れかの項目に値が入っている場合に実施
           if (
             !player.deleteFlg &&
-            ((player.weight !== undefined && player.weight !== null) ||
-              (player.playerId !== undefined && player.playerId !== null) ||
-              (player.playerName !== undefined && player.playerName !== null) ||
-              (player.sheetName !== undefined && player.sheetName !== null) ||
-              (player.fiveHundredmHeartRate !== undefined &&
-                player.fiveHundredmHeartRate !== null) ||
-              (player.tenHundredmHeartRate !== undefined && player.tenHundredmHeartRate !== null) ||
-              (player.fifteenHundredmHeartRate !== undefined &&
-                player.fifteenHundredmHeartRate !== null) ||
-              (player.twentyHundredmHeartRate !== undefined &&
-                player.twentyHundredmHeartRate !== null) ||
-              (player.heartRateAvg !== undefined && player.heartRateAvg !== null) ||
-              (player.attendance !== undefined && player.attendance !== null))
+            ((player.playerId != undefined && player.playerId != null && player.playerId != '') ||
+              (player.playerName != undefined &&
+                player.playerName != null &&
+                player.playerName != '') ||
+              (player.height != undefined && player.height != null) ||
+              (player.weight != undefined && player.weight != null) ||
+              (player.sheetName != undefined &&
+                player.sheetName != null &&
+                player.sheetName != '') ||
+              (player.fiveHundredmHeartRate != undefined && player.fiveHundredmHeartRate != null) ||
+              (player.tenHundredmHeartRate != undefined && player.tenHundredmHeartRate != null) ||
+              (player.fifteenHundredmHeartRate != undefined &&
+                player.fifteenHundredmHeartRate != null) ||
+              (player.twentyHundredmHeartRate != undefined &&
+                player.twentyHundredmHeartRate != null) ||
+              (player.heartRateAvg != undefined && player.heartRateAvg != null) ||
+              (player.attendance != undefined &&
+                player.attendance != null &&
+                player.attendance != ''))
           ) {
-            // 身長が未入力の場合
+            var errorTextData = '';
+            //選手ID 空欄チェック 重複チェック
+            if (!player.playerId) {
+              errorTextData += '選手IDを入力してください。';
+            } else if (player.playerId) {
+              for (let index = 0; index < record?.crewPlayer.length; index++) {
+                if (
+                  index != j &&
+                  record?.crewPlayer[index].playerId == player.playerId &&
+                  record?.crewPlayer[index].deleteFlg != true
+                ) {
+                  errorTextData += '重複する選手IDです。';
+                  break; //メッセージが２つ以上表示されないようにbreakする
+                }
+              }
+            }
+
+            //選手名 空欄チェック
+            if (!player.playerName) {
+              errorTextData += '選手名を入力してください。';
+            }
+
+            //身長 空欄チェック 入力値チェック
             if (!player.height) {
-              indexObjectList.push({ i, j });
+              errorTextData += '身長を入力してください。';
+            } else if (player.height && !/^\d{1,3}(\.\d{1,2})?$/.test(player?.height.toString())) {
+              errorTextData += '「身長」は、半角数字で、999.99までの数値を入力してください。';
             }
-          }
-        } else {
-          // 更新行の場合
-          // 削除フラグが未チェックの場合のみ実施
-          if (player.deleteFlg === false) {
-            if (player.height === undefined || player.height === null) {
-              indexObjectList.push({ i, j });
-            }
-          }
-        }
-      });
-      return indexObjectList.length > 0;
-    });
 
-    if (height) {
-      indexObjectList.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '身長を入力してください。',
-        );
-      });
-      return false;
-    } else {
-      clearError();
-    }
-
-    /**
-     * 身長
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「身長」は、半角数字で、999.99までの数値を入力してください。
-     * ※表示場所は、当該行の直下に表示する。
-     */
-
-    // {i, j}[]の形式でindexを保持する
-
-    var indexObjectList2 = [] as { i: number; j: number }[];
-    const height2 = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        // 形式は整数部は3桁まで、小数部は2桁まで. 整数のみも可
-        if (player.height && !/^\d{1,3}(\.\d{1,2})?$/.test(player?.height.toString())) {
-          indexObjectList2.push({ i, j });
-        }
-      });
-      return indexObjectList2.length > 0;
-    });
-    if (height2) {
-      indexObjectList2.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '「身長」は、半角数字で、999.99までの数値を入力してください。',
-        );
-      });
-      return false;
-    } else {
-      clearError();
-    }
-    /**
-     * 体重
-     * ・当該行が追加行の場合
-     * 「削除」が未チェックかつ当該行の何れかの項目に値が入っている場合に実施
-     * ・当該行が更新行の場合
-     * 「削除」が未チェックの場合のみ実施
-     * 空欄チェック
-     * 空欄の場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     */
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList3 = [] as { i: number; j: number }[];
-    const weight = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        if (player.addonLineFlg) {
-          // 追加行の場合
-          // 削除フラグが未チェックかつ、playerの何れかの項目に値が入っている場合に実施
-          if (
-            !player.deleteFlg &&
-            ((player.height !== undefined && player.height !== null) ||
-              (player.playerId !== undefined && player.playerId !== null) ||
-              (player.playerName !== undefined && player.playerName !== null) ||
-              (player.sheetName !== undefined && player.sheetName !== null) ||
-              (player.fiveHundredmHeartRate !== undefined &&
-                player.fiveHundredmHeartRate !== null) ||
-              (player.tenHundredmHeartRate !== undefined && player.tenHundredmHeartRate !== null) ||
-              (player.fifteenHundredmHeartRate !== undefined &&
-                player.fifteenHundredmHeartRate !== null) ||
-              (player.twentyHundredmHeartRate !== undefined &&
-                player.twentyHundredmHeartRate !== null) ||
-              (player.heartRateAvg !== undefined && player.heartRateAvg !== null) ||
-              (player.attendance !== undefined && player.attendance !== null))
-          ) {
+            //体重 空欄チェック 入力値チェック
             if (!player.weight) {
-              indexObjectList3.push({ i, j });
+              errorTextData += '体重を入力してください。';
+            } else if (player.weight && !/^\d{1,3}(\.\d{1,2})?$/.test(player?.weight.toString())) {
+              errorTextData += '「体重」は、半角数字で、999.99までの数値を入力してください。';
+            }
+
+            //シート番号 空欄チェック 重複チェック
+            if (!player.sheetNameId) {
+              errorTextData += 'シート番号を選択してください。';
+            } else if (player.sheetName) {
+              for (let index = 0; index < record?.crewPlayer.length; index++) {
+                if (
+                  index != j &&
+                  record?.crewPlayer[index].sheetName == player.sheetName &&
+                  record?.crewPlayer[index].deleteFlg != true
+                ) {
+                  errorTextData += 'シート番号が重複しています。';
+                  break; //メッセージが２つ以上表示されないようにbreakする
+                }
+              }
+            }
+
+            //心拍数 入力値チェック
+            if (
+              (player.fiveHundredmHeartRate &&
+                !/^\d{1,3}$/.test(player?.fiveHundredmHeartRate.toString())) ||
+              (player.tenHundredmHeartRate &&
+                !/^\d{1,3}$/.test(player?.tenHundredmHeartRate.toString())) ||
+              (player.fifteenHundredmHeartRate &&
+                !/^\d{1,3}$/.test(player?.fifteenHundredmHeartRate.toString())) ||
+              (player.twentyHundredmHeartRate &&
+                !/^\d{1,3}$/.test(player?.twentyHundredmHeartRate.toString())) ||
+              (player.heartRateAvg && !/^\d{1,3}$/.test(player?.heartRateAvg.toString()))
+            ) {
+              errorTextData += '「心拍数」は、半角数字で999までの数値を入力してください。';
+            }
+
+            //バリデーション結果の表示
+            if (errorTextData.length > 0) {
+              handleRaceResultRecordsCrewPlayerChangebyIndex(i, j, 'errorText', errorTextData);
+              errorCount++;
             }
           }
         } else {
-          // 更新行の場合
-          // 削除フラグが未チェックの場合のみ実施
-          if (player.deleteFlg === false) {
-            if (player.weight === undefined || player.weight === null) {
-              indexObjectList3.push({ i, j });
+          // 更新行の場合 削除フラグが未チェックの場合のみ実施
+          if (!player.deleteFlg) {
+            var errorTextData = '';
+            //選手ID 空欄チェック 重複チェック
+            if (!player.playerId) {
+              errorTextData += '選手IDを入力してください。';
+            } else if (player.playerId) {
+              for (let index = 0; index < record?.crewPlayer.length; index++) {
+                if (
+                  index != j &&
+                  record?.crewPlayer[index].playerId == player.playerId &&
+                  record?.crewPlayer[index].deleteFlg != true
+                ) {
+                  errorTextData += '重複する選手IDです。';
+                  break; //メッセージが２つ以上表示されないようにbreakする
+                }
+              }
+            }
+
+            //選手名 空欄チェック
+            if (!player.playerName) {
+              errorTextData += '選手名を入力してください。';
+            }
+
+            //身長 空欄チェック 入力値チェック
+            if (!player.height) {
+              errorTextData += '身長を入力してください。';
+            } else if (player.height && !/^\d{1,3}(\.\d{1,2})?$/.test(player?.height.toString())) {
+              errorTextData += '「身長」は、半角数字で、999.99までの数値を入力してください。';
+            }
+
+            //体重 空欄チェック 入力値チェック
+            if (!player.weight) {
+              errorTextData += '体重を入力してください。';
+            } else if (player.weight && !/^\d{1,3}(\.\d{1,2})?$/.test(player?.weight.toString())) {
+              errorTextData += '「体重」は、半角数字で、999.99までの数値を入力してください。';
+            }
+
+            //シート番号 空欄チェック 重複チェック
+            if (!player.sheetNameId) {
+              errorTextData += 'シート番号を選択してください。';
+            } else if (player.sheetName) {
+              for (let index = 0; index < record?.crewPlayer.length; index++) {
+                if (
+                  index != j &&
+                  record?.crewPlayer[index].sheetName == player.sheetName &&
+                  record?.crewPlayer[index].deleteFlg != true
+                ) {
+                  errorTextData += 'シート番号が重複しています。';
+                  break; //メッセージが２つ以上表示されないようにbreakする
+                }
+              }
+            }
+
+            //心拍数 入力値チェック
+            if (
+              (player.fiveHundredmHeartRate &&
+                !/^\d{1,3}$/.test(player?.fiveHundredmHeartRate.toString())) ||
+              (player.tenHundredmHeartRate &&
+                !/^\d{1,3}$/.test(player?.tenHundredmHeartRate.toString())) ||
+              (player.fifteenHundredmHeartRate &&
+                !/^\d{1,3}$/.test(player?.fifteenHundredmHeartRate.toString())) ||
+              (player.twentyHundredmHeartRate &&
+                !/^\d{1,3}$/.test(player?.twentyHundredmHeartRate.toString())) ||
+              (player.heartRateAvg && !/^\d{1,3}$/.test(player?.heartRateAvg.toString()))
+            ) {
+              errorTextData += '「心拍数」は、半角数字で999までの数値を入力してください。';
+            }
+
+            //バリデーション結果の表示
+            if (errorTextData.length > 0) {
+              handleRaceResultRecordsCrewPlayerChangebyIndex(i, j, 'errorText', errorTextData);
+              errorCount++;
             }
           }
         }
       });
-      return indexObjectList3.length > 0;
     });
-    if (weight) {
-      indexObjectList3.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '体重を入力してください。',
-        );
-      });
-      return false;
-    } else {
-      clearError();
-    }
 
-    /**
-     * 体重
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。※以降のチェックを行う
-     * 「体重」は、半角数字で、999.99までの数値を入力してください。
-     * ※表示場所は、当該行の直下に表示する。
-     */
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList4 = [] as { i: number; j: number }[];
-    const weight2 = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        // 形式は整数部は3桁まで、小数部は2桁まで. 整数のみも可
-        if (player.weight && !/^\d{1,3}(\.\d{1,2})?$/.test(player?.weight.toString())) {
-          indexObjectList4.push({ i, j });
-        }
-      });
-      return indexObjectList4.length > 0;
-    });
-    if (weight2) {
-      indexObjectList4.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '「体重」は、半角数字で、999.99までの数値を入力してください。',
-        );
-      });
-      return false;
-    } else {
-      clearError();
-    }
-
-    /**
-     * シート番号
-     * 空欄チェック
-     * ・当該行が追加行の場合
-     * 「削除」が未チェック
-     * かつ
-     * 当該行の何れかの項目に値が入っている場合に実施
-     * ・当該行が更新行の場合
-     * 「削除」が未チェックの場合のみ実施
-     * 空欄チェック
-     * 空欄の場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。
-     * ※表示場所は、当該「レース結果情報」の名称の下に表示
-     * 「シート番号を選択してください。」
-     */
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList5 = [] as { i: number; j: number }[];
-    const seatNo = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        if (player.addonLineFlg) {
-          // 追加行の場合
-          // 削除フラグが未チェックかつ、playerの何れかの項目に値が入っている場合に実施
-          if (
-            !player.deleteFlg &&
-            ((player.height !== undefined && player.height !== null) ||
-              (player.weight !== undefined && player.weight !== null) ||
-              (player.playerId !== undefined && player.playerId !== null) ||
-              (player.playerName !== undefined && player.playerName !== null) ||
-              (player.fiveHundredmHeartRate !== undefined &&
-                player.fiveHundredmHeartRate !== null) ||
-              (player.tenHundredmHeartRate !== undefined && player.tenHundredmHeartRate !== null) ||
-              (player.fifteenHundredmHeartRate !== undefined &&
-                player.fifteenHundredmHeartRate !== null) ||
-              (player.twentyHundredmHeartRate !== undefined &&
-                player.twentyHundredmHeartRate !== null) ||
-              (player.heartRateAvg !== undefined && player.heartRateAvg !== null) ||
-              (player.attendance !== undefined && player.attendance !== null))
-          ) {
-            if (!player.sheetName) {
-              indexObjectList5.push({ i, j });
-            }
-          }
-        } else {
-          // 更新行の場合
-          // 削除フラグが未チェックの場合のみ実施
-          if (player.deleteFlg === false) {
-            if (player.sheetName === undefined || player.sheetName === null) {
-              indexObjectList5.push({ i, j });
-            }
-          }
-        }
-      });
-      return indexObjectList5.length > 0;
-    });
-    if (seatNo) {
-      indexObjectList5.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          'シート番号を選択してください。',
-        );
-      });
-      return false;
-    } else {
-      clearError();
-    }
-
-    /**
-     * シート番号
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。
-     * 同一「選手情報一覧」内で、シート番号が重複していないことを確認
-     * 「シート番号が重複しています。」
-     */
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList6 = [] as { i: number; j: number }[];
-    const seatNo2 = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        // 追加行と更新行の場合で処理をわけない
-        if (player.sheetName) {
-          // const seatNoList = raceResultRecords
-          //   .map((record) => record.crewPlayer?.map((player) => player.sheetName))
-          //   .flat();
-          const seatNoList = record.crewPlayer?.map((player) => player.sheetName);
-          // console.log(seatNoList);
-          if (seatNoList.filter((item) => item === player.sheetName).length > 1) {
-            indexObjectList6.push({ i, j });
-          }
-        }
-      });
-      console.log(record);
-      console.log(indexObjectList6);
-      return indexObjectList6.length > 0;
-    });
-    console.log(seatNo2);
-    if (seatNo2) {
-      indexObjectList6.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          'シート番号が重複しています。',
-        );
-      });
-      return false;
-    } else {
-      clearError();
-    }
-
-    /**
-     * 心拍数（500m）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。
-     * 「「心拍数」は、半角数字で999までの数値を入力してください。」
-     * ※表示場所は、当該行の直下に表示する。
-     */
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList7 = [] as { i: number; j: number }[];
-    const heartRate = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        if (
-          player.fiveHundredmHeartRate &&
-          !/^\d{1,3}$/.test(player?.fiveHundredmHeartRate.toString())
-        ) {
-          indexObjectList7.push({ i, j });
-        }
-      });
-      return indexObjectList7.length > 0;
-    });
-    if (heartRate) {
-      indexObjectList7.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '「心拍数」は、半角数字で999までの数値を入力してください。',
-        );
-      });
-      return false;
-    }
-
-    /**
-     * 心拍数（1000m）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。
-     * 「「心拍数」は、半角数字で999までの数値を入力してください。」
-     * ※表示場所は、当該行の直下に表示する。
-     */
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList8 = [] as { i: number; j: number }[];
-    const heartRate2 = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        if (
-          player.tenHundredmHeartRate &&
-          !/^\d{1,3}$/.test(player?.tenHundredmHeartRate.toString())
-        ) {
-          indexObjectList8.push({ i, j });
-        }
-      });
-      return indexObjectList8.length > 0;
-    });
-    if (heartRate2) {
-      indexObjectList8.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '「心拍数」は、半角数字で999までの数値を入力してください。',
-        );
-      });
-      return false;
-    }
-
-    /**
-     * 心拍数（1500m）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。
-     * 「「心拍数」は、半角数字で999までの数値を入力してください。」
-     * ※表示場所は、当該行の直下に表示する。
-     */
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList9 = [] as { i: number; j: number }[];
-    const heartRate3 = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        if (
-          player.fifteenHundredmHeartRate &&
-          !/^\d{1,3}$/.test(player?.fifteenHundredmHeartRate.toString())
-        ) {
-          indexObjectList9.push({ i, j });
-        }
-      });
-      return indexObjectList9.length > 0;
-    });
-    if (heartRate3) {
-      indexObjectList9.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '「心拍数」は、半角数字で999までの数値を入力してください。',
-        );
-      });
-      return false;
-    } else {
-      clearError();
-    }
-
-    /**
-     * 心拍数（2000m）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。
-     * 「「心拍数」は、半角数字で999までの数値を入力してください。」
-     * ※表示場所は、当該行の直下に表示する。
-     */
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList10 = [] as { i: number; j: number }[];
-    const heartRate4 = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        if (
-          player.twentyHundredmHeartRate &&
-          !/^\d{1,3}$/.test(player?.twentyHundredmHeartRate.toString())
-        ) {
-          indexObjectList10.push({ i, j });
-        }
-      });
-      return indexObjectList10.length > 0;
-    });
-    if (heartRate4) {
-      indexObjectList10.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '「心拍数」は、半角数字で999までの数値を入力してください。',
-        );
-      });
-      return false;
-    }
-
-    /**
-     * 心拍数（平均）
-     * 入力値チェック
-     * NGの場合、以下のエラーメッセージを入力値評価エラーとしてに赤文字で表示する。
-     * 「「心拍数」は、半角数字で999までの数値を入力してください。」
-     * ※表示場所は、当該行の直下に表示する。
-     */
-    // {i, j}[]の形式でindexを保持する
-    var indexObjectList11 = [] as { i: number; j: number }[];
-    const heartRate5 = raceResultRecords.some((record, i) => {
-      record.crewPlayer?.map((player, j) => {
-        if (player.heartRateAvg && !/^\d{1,3}$/.test(player?.heartRateAvg.toString())) {
-          indexObjectList11.push({ i, j });
-        }
-      });
-      return indexObjectList11.length > 0;
-    });
-    if (heartRate5) {
-      indexObjectList11.map((index) => {
-        handleRaceResultRecordsCrewPlayerChangebyIndex(
-          index.i,
-          index.j,
-          'errorText',
-          '「心拍数」は、半角数字で999までの数値を入力してください。',
-        );
-      });
-      return false;
-    } else {
-      clearError();
-    }
-
-    /**
-     * 「選手情報」に種目の人数分、登録可能な行が存在することを確認
-     * ※登録可能な行：「削除」が未チェック、かつエラー行ではない。
-     * ※種目の人数：当該種目の人数を「種目マスター」.「人数」から取得する
-     * エラーの場合、以下のエラーメッセージをシステムエラーとしてに赤文字で表示し、以降の処理は行わない。
-     * ※表示場所は、選手IDを入力した「選手情報一覧」と「ストロークレート」の間の余白
-     */
-    var indexList25 = [] as number[];
-    const playerNum = raceResultRecords.some((record, i) => {
+    //種目の人数分、登録可能な行が存在することを確認する
+    validateCheckList.some((record, index) => {
       var count = 0;
-      record.crewPlayer?.map((player, j) => {
-        // console.log(playerCount,count, player.deleteFlg, player.errorText);
+      record?.crewPlayer?.map((player) => {
+        // //console.log(playerCount,count, player.deleteFlg, player.errorText);
+        //「登録可能」行の条件判定 （削除チェックなし、選手ID、選手名、身長、体重、シート名）
         if (
           !player.deleteFlg &&
-          (player.errorText == '' || player.errorText == null || player.errorText == undefined)
+          player.playerId != '' &&
+          player.playerId != null &&
+          player.playerId != undefined &&
+          player.playerName != '' &&
+          player.playerName != null &&
+          player.playerName != undefined &&
+          player.height != null &&
+          player.height != undefined &&
+          player.weight != null &&
+          player.weight != undefined &&
+          player.sheetName != '' &&
+          player.sheetName != null &&
+          player.sheetName != undefined
         ) {
           count++;
         }
       });
-      if (count !== playerCount) {
-        indexList25.push(i);
-      }
-      console.log(indexList25.length > 0);
-      return indexList25.length > 0;
-    });
-
-    if (playerNum) {
-      indexList25.map((index) => {
+      //console.log(count, playerCount);
+      if (count != playerCount) {
         handleRaceResultRecordsInputChangebyIndex(
           index,
           'errorText',
           '「選手情報」に種目の人数分、登録してください。',
         );
-      });
-      return false;
-    } else {
-      console.log('clearError call');
-      clearError();
-    }
-
-    // エラーがない場合、trueを返す
-    return true;
+        errorCount++;
+      }
+    });
+    return errorCount;
   };
+
+  //バリデーションここまで
+  //================================================================
 
   useEffect(() => {
     /**
@@ -1458,7 +849,7 @@ export default function TournamentResult() {
           event_id: eventId,
         };
         const responseDataList = await axios.post('/getTournLinkRaces', sendData); //大会IDと種目IDに紐づいたレース結果のないレースを取得 20240422
-        console.log(responseDataList); //20240422
+        //console.log(responseDataList); //20240422
         // const response = await axios.get('/getAllRaces');
         //console.log(response);
         const raceList = responseDataList.data.result.map(
@@ -1518,17 +909,6 @@ export default function TournamentResult() {
           }) => ({ id: race_result_notes_id, name: race_result_notes }),
         );
         setRemarkOptions(raceResultNoteList);
-
-        // シート番号（マスタ）の取得
-        //const response6 = await axios.get('http://localhost:3100/seatNo');
-        const response6 = await axios.get('/getSeatNumber');
-        const seatNumberList = response6.data.map(
-          ({ seat_id, seat_name }: { seat_id: number; seat_name: string }) => ({
-            id: seat_id,
-            name: seat_name,
-          }),
-        );
-        setSheetNameIdOptions(seatNumberList);
       } catch (error: any) {
         setErrorText([error.message]);
       }
@@ -1544,7 +924,6 @@ export default function TournamentResult() {
      */
     const fetchRaceInfo = async () => {
       try {
-        console.log('====================');
         // レース情報の取得
         // TODO: 検索処理に置き換え
         // const response = await axios.get('http://localhost:3100/raceInfo?id=1');
@@ -1552,19 +931,57 @@ export default function TournamentResult() {
           tourn_id: tournId,
           event_id: eventId,
         };
-        console.log(sendData);
+        //console.log(sendData);
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.post('/getRaceDataFromTournIdAndEventId', sendData);
-        console.log(response);
+        //console.log(response);
         const data = response.data.result;
         if (data.length === 0) {
-          alert('選択されている種目は、開催予定のない種目になります。');
+          alert('本大会の全レース結果は既に登録されています。');
           router.back();
         } else {
           // setRaceInfo(data[0]); //レース結果登録に画面遷移時は「レース基本情報」の項目はすべて空の状態にする 20240422
         }
-        console.log('====================');
+
+        // 種目に対応したシート位置（マスタ）の取得 20240514
+        const response6 = await axios.post('/getEventSheetPosForEventID', sendData);
+
+        // シート番号（マスタ）の取得
+        //const response6 = await axios.get('http://localhost:3100/seatNo');
+        const response7 = await axios.get('/getSeatNumber');
+        // //console.log(response7.data);
+        const seatNumberList = response7.data.map(
+          ({ seat_id, seat_name }: { seat_id: number; seat_name: string }) => ({
+            id: seat_id,
+            name: seat_name,
+          }),
+        );
+
+        // 種目に対応したシート位置になるように要素をフィルタする 20240514
+        const newSeatNumberArray = seatNumberList.filter((e: any) => {
+          if (e.name == 'ストローク' && response6.data.result[0].seat_s == 1) {
+            return e;
+          } else if (e.name == '7' && response6.data.result[0].seat_7 == 1) {
+            return e;
+          } else if (e.name == '6' && response6.data.result[0].seat_6 == 1) {
+            return e;
+          } else if (e.name == '5' && response6.data.result[0].seat_5 == 1) {
+            return e;
+          } else if (e.name == '4' && response6.data.result[0].seat_4 == 1) {
+            return e;
+          } else if (e.name == '3' && response6.data.result[0].seat_3 == 1) {
+            return e;
+          } else if (e.name == '2' && response6.data.result[0].seat_2 == 1) {
+            return e;
+          } else if (e.name == 'バウ' && response6.data.result[0].seat_b == 1) {
+            return e;
+          } else if (e.name == 'コックス' && response6.data.result[0].seat_c == 1) {
+            return e;
+          }
+        });
+        // //console.log(newSeatNumberArray);
+        setSheetNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする 20240514
       } catch (error: any) {
         setErrorText([error.message]);
       }
@@ -1580,17 +997,16 @@ export default function TournamentResult() {
      */
     const fetchRaceInfoForUpdate = async () => {
       try {
-        console.log('aaaaaaaaaaaaa');
         // レース情報の取得
         // const response = await axios.get('http://localhost:3100/raceInfo?id=' + raceId);
         const sendData = {
           race_id: raceId,
         };
-        console.log(sendData);
+        //console.log(sendData);
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.post('/getRaceDataRaceId', sendData);
-        console.log(response.data);
+        //console.log(response.data);
         // window.alert("hoge");
         const data = response.data;
         if (data.length == 0) {
@@ -1601,6 +1017,47 @@ export default function TournamentResult() {
           data.race_result[0].startDateTime = data.race_result[0].start_date_time; //バックエンド側のキーをフロント側のキーに入れ直す 20240410
           setRaceInfo(data.race_result[0]);
         }
+
+        const sendEventData = {
+          event_id: eventId || data.race_result[0].event_id,
+        };
+        // 種目に対応したシート位置（マスタ）の取得 20240514
+        const response6 = await axios.post('/getEventSheetPosForEventID', sendEventData);
+
+        // シート番号（マスタ）の取得
+        const response7 = await axios.get('/getSeatNumber');
+        // //console.log(response7.data);
+        const seatNumberList = response7.data.map(
+          ({ seat_id, seat_name }: { seat_id: number; seat_name: string }) => ({
+            id: seat_id,
+            name: seat_name,
+          }),
+        );
+
+        // 種目に対応したシート位置になるように要素をフィルタする 20240514
+        const newSeatNumberArray = seatNumberList.filter((e: any) => {
+          if (e.name == 'ストローク' && response6.data.result[0].seat_s == 1) {
+            return e;
+          } else if (e.name == '7' && response6.data.result[0].seat_7 == 1) {
+            return e;
+          } else if (e.name == '6' && response6.data.result[0].seat_6 == 1) {
+            return e;
+          } else if (e.name == '5' && response6.data.result[0].seat_5 == 1) {
+            return e;
+          } else if (e.name == '4' && response6.data.result[0].seat_4 == 1) {
+            return e;
+          } else if (e.name == '3' && response6.data.result[0].seat_3 == 1) {
+            return e;
+          } else if (e.name == '2' && response6.data.result[0].seat_2 == 1) {
+            return e;
+          } else if (e.name == 'バウ' && response6.data.result[0].seat_b == 1) {
+            return e;
+          } else if (e.name == 'コックス' && response6.data.result[0].seat_c == 1) {
+            return e;
+          }
+        });
+        // //console.log(newSeatNumberArray);
+        setSheetNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする 20240514
 
         // 出漕結果記録情報の取得
         // const response2 = await axios.get('http://localhost:3100/raceResultRecord');
@@ -1617,13 +1074,12 @@ export default function TournamentResult() {
           scrollTo(0, 0);
         } else if (data.record_result.length > 0 && data.record_result.length < 10) {
           //データが10件未満の場合の処理がなかったため追加 20240408
-          console.log(data.record_result);
+          //console.log(data.record_result);
           setRaceResultRecords(data.record_result);
           scrollTo(0, 0);
         }
-        console.log('eeeeeeeeeee');
       } catch (error: any) {
-        console.log(error);
+        //console.log(error);
         // setErrorText([error.message]);
         scrollTo(0, 0);
       }
@@ -1647,7 +1103,7 @@ export default function TournamentResult() {
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
           const response = await axios.post('/getRaceDataRaceId', sendData);
-          console.log(response.data.race_result);
+          //console.log(response.data.race_result);
 
           data = response.data.race_result;
           data[0].startDateTime = data[0].start_date_time; //バックエンド側のキーをフロント側のキーに入れ直す 20240422
@@ -1668,22 +1124,21 @@ export default function TournamentResult() {
           const sendEventId = {
             event_id: eventId || data[0].event_id,
           };
-          console.log('kkkkkkkkkkkkk');
-          console.log(sendEventId);
+          //console.log(sendEventId);
           const res2 = await axios.post('/getCrewNumberForEventId', sendEventId);
           const response2 = res2.data.result;
-          console.log(response2);
+          //console.log(response2);
 
           setPlayerCount(response2);
           if (mode === 'create') {
             // レース結果情報の取得
             // 選手情報の件数が種目マスタに紐づく選手の人数より少ない場合、足りない件数分追加行を追加する
-
             raceResultRecords.map((record) => {
-              if (record.crewPlayer?.length < response2) {
-                record.crewPlayer = record.crewPlayer.concat(
-                  Array.from({ length: response2 - record.crewPlayer.length }, () => ({
+              if (record?.crewPlayer?.length < response2) {
+                record.crewPlayer = record?.crewPlayer.concat(
+                  Array.from({ length: response2 }, () => ({
                     //id: undefined,
+                    race_result_record_id: undefined,
                     playerPhoto: '',
                     playerName: '',
                     jaraPlayerId: '',
@@ -1714,9 +1169,10 @@ export default function TournamentResult() {
                 );
               }
               // 種目マスタに紐づく選手の人数より多い場合、余分な行を削除する
-              if (record.crewPlayer?.length > response2) {
-                record.crewPlayer = record.crewPlayer.slice(0, response2);
+              if (record?.crewPlayer?.length > response2) {
+                record.crewPlayer = record?.crewPlayer.slice(1, response2 + 1);
               }
+              record.isAdded = true;
             }, []);
           }
         }
@@ -1760,19 +1216,25 @@ export default function TournamentResult() {
                     const csrf = () => axios.get('/sanctum/csrf-cookie');
                     await csrf();
                     const response = await axios.post('/getRaceDataRaceId', sendData);
-                    console.log(response.data);
+                    //console.log(response.data);
                     const data = response.data.race_result;
                     if (data.length == 0) {
-                      setErrorText(['レース情報が取得できませんでした。']);
                       setRaceInfo({} as RaceTable);
-                      scrollTo(0, 0);
+                      if ((e as string) != '' && e != null && e != undefined) {
+                        //未選択の場合、エラーメッセージは表示させない 20240516
+                        setErrorText(['レース情報が取得できませんでした。']);
+                        scrollTo(0, 0);
+                      }
                     } else {
                       //名前の異なるバックエンド側とフロント側のキーを紐づける 20240420
                       data[0].startDateTime = data[0].start_date_time;
                       setRaceInfo(data[0]);
+                      setErrorText([]);
                     }
                   }}
                   readonly={mode === 'update' || mode === 'confirm'}
+                  isError={raceIdErrorText !== ''}
+                  errorMessages={[raceIdErrorText]} //レースIDのエラーメッセージを表示 20240515
                 />
               </div>
               <div className='flex flex-col gap-[8px]'>
@@ -1805,7 +1267,7 @@ export default function TournamentResult() {
                         const csrf = () => axios.get('/sanctum/csrf-cookie');
                         await csrf();
                         const response = await axios.post('/getRaceDataRaceId', sendData);
-                        console.log(response.data);
+                        //console.log(response.data);
                         const data = response.data.race_result;
                         if (data.length == 0) {
                           setErrorText(['レース情報が取得できませんでした。']);
@@ -1879,7 +1341,7 @@ export default function TournamentResult() {
               />
               <CustomTextField
                 label='発艇予定日時'
-                value={raceInfo?.startDateTime || ''}
+                value={raceInfo?.startDateTime?.substring(0, 16) || ''}
                 displayHelp={false}
                 readonly
               />
@@ -1895,16 +1357,18 @@ export default function TournamentResult() {
               <InputLabel label='発艇日時' required={mode === 'create' || mode === 'update'} />
               {mode === 'create' || mode === 'update' ? (
                 <CustomDatePicker
-                  selectedDate={raceResultRecordResponse?.startDateTime}
+                  selectedDate={raceResultRecordResponse?.startDateTime?.substring(0, 16)}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     handleRaceResultRecordInputChange(
                       'startDateTime',
                       // e.toISOString('yyyy/MM/dd HH:mm'),
-                      (e as unknown as Date).toLocaleString().toString().replaceAll('/', '-'),
+                      (e as unknown as Date)?.toLocaleString().toString().replaceAll('/', '-'),
                     );
                   }}
                   className='w-[200px]'
                   useTime
+                  isError={startDateTimeErrorText !== ''}
+                  errorMessages={[startDateTimeErrorText]}
                 />
               ) : (
                 // YYYY/MM/DD HH:MM
@@ -1990,6 +1454,8 @@ export default function TournamentResult() {
                 handleRaceResultRecordInputChange('wind_speed_1000m_point', e.target.value);
               }}
               readonly={mode === 'confirm'}
+              isError={windSpeed1000mPointErrorText !== ''}
+              errorMessages={[windSpeed1000mPointErrorText]}
             />
           </div>
           <div className='flex flex-row justify-left gap-[80px] item-center'>
@@ -2027,6 +1493,8 @@ export default function TournamentResult() {
                 handleRaceResultRecordInputChange('wind_speed_2000m_point', e.target.value);
               }}
               readonly={mode === 'confirm'}
+              isError={windSpeed2000mPointErrorText !== ''}
+              errorMessages={[windSpeed2000mPointErrorText]}
             />
           </div>
         </div>
@@ -2054,6 +1522,7 @@ export default function TournamentResult() {
                           addonLineFlg: true,
                         }) as CrewPlayer,
                     ),
+                    isAdded: true,
                   },
                   ...prevFormData,
                 ]);
@@ -2071,13 +1540,21 @@ export default function TournamentResult() {
       </div>
       {/* レース結果情報 */}
       {raceResultRecords.map((item, index) => (
-        <div className='flex flex-col gap-[20px] border border-solid p-[20px]' key={index}>
+        <div
+          className={`flex flex-col gap-[20px] border border-solid p-[20px] ${
+            mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : ''
+          }`}
+          key={index}
+        >
           <InputLabel label={'レース結果情報' + (raceResultRecords.length - index)} />
           <ErrorBox errorText={item.errorText ? [item.errorText] : []} />
           <div className='flex flex-row justify-between'>
-            {mode === 'update' && (
+            {!item.isAdded && (
               <div
                 onClick={() => {
+                  if (mode === 'confirm') {
+                    return;
+                  }
                   handleRaceResultRecordsInputChangeBooleanbyIndex(
                     index,
                     'deleteFlg',
@@ -2091,11 +1568,12 @@ export default function TournamentResult() {
                   value='deleteFlg'
                   checked={item.deleteFlg}
                   onChange={() => {}}
+                  readonly={mode === 'confirm'}
                 />
                 <p className='text-systemErrorText'>このレース結果情報を削除する</p>
               </div>
             )}
-            {mode === 'create' && (
+            {item.isAdded && mode !== 'confirm' ? (
               <CustomButton
                 buttonType='primary'
                 onClick={() => {
@@ -2112,6 +1590,8 @@ export default function TournamentResult() {
               >
                 追加の取り消し
               </CustomButton>
+            ) : (
+              <></>
             )}
           </div>
           <div className='flex flex-col gap-[20px] border border-solid border-gray-300 p-[20px]'>
@@ -2140,6 +1620,8 @@ export default function TournamentResult() {
                           orgOptions.find((item) => item.id === e)?.name || '',
                         );
                       }}
+                      isError={item.orgNameErrorText?.length > 0}
+                      errorMessages={[item.orgNameErrorText]}
                     />
                   </div>
                   <CustomTextField
@@ -2151,6 +1633,8 @@ export default function TournamentResult() {
                       handleRaceResultRecordsInputChangebyIndex(index, 'crew_name', e.target.value);
                     }}
                     readonly={mode === 'confirm'}
+                    isError={item.crewNameErrorText?.length > 0}
+                    errorMessages={[item.crewNameErrorText]}
                   />
                   <CustomTextField
                     label='出漕レーンNo'
@@ -2165,6 +1649,8 @@ export default function TournamentResult() {
                       );
                     }}
                     readonly={mode === 'confirm'}
+                    isError={item.laneNumberErrorText?.length > 0}
+                    errorMessages={[item.laneNumberErrorText]}
                   />
                 </div>
                 <div className='flex flex-row justify-left gap-[80px] item-center'>
@@ -2178,6 +1664,8 @@ export default function TournamentResult() {
                       handleRaceResultRecordsInputChangebyIndex(index, 'rank', e.target.value);
                     }}
                     readonly={mode === 'confirm'}
+                    isError={item.rankErrorText?.length > 0}
+                    errorMessages={[item.rankErrorText]}
                   />
                 </div>
               </div>
@@ -2320,13 +1808,15 @@ export default function TournamentResult() {
                             renderInput={(params) => (
                               <TextField
                                 key={params.id}
-                                className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                                className={`border-[1px] border-solid border-gray-50 rounded-md ${
+                                  mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : 'bg-white'
+                                } my-1`}
                                 {...params}
                                 value={item.race_result_notes || ''}
                               />
                             )}
                             freeSolo
-                            className={'w-[120px]'}
+                            className='w-[210px]'
                             readOnly={mode === 'confirm'}
                             disabled={mode === 'confirm'}
                           />
@@ -2443,7 +1933,7 @@ export default function TournamentResult() {
                     onClick={() => {
                       setRaceResultRecords((prevFormData) => {
                         const newFormData = [...prevFormData];
-                        newFormData[index].crewPlayer = newFormData[index].crewPlayer?.map(
+                        newFormData[index].crewPlayer = newFormData[index]?.crewPlayer?.map(
                           (item) => {
                             item.deleteFlg = true;
                             return item;
@@ -2463,7 +1953,7 @@ export default function TournamentResult() {
                     onClick={() => {
                       setRaceResultRecords((prevFormData) => {
                         const newFormData = [...prevFormData];
-                        newFormData[index].crewPlayer = newFormData[index].crewPlayer?.map(
+                        newFormData[index].crewPlayer = newFormData[index]?.crewPlayer?.map(
                           (item) => {
                             item.deleteFlg = false;
                             return item;
@@ -2484,6 +1974,7 @@ export default function TournamentResult() {
                 <CustomButton
                   buttonType='secondary'
                   onClick={() => {
+                    //console.log(index);
                     addCrewPlayerToRaceResultRecords(index);
                   }}
                   className='w-[120px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300 absolute right-[20px]'
@@ -2548,8 +2039,8 @@ export default function TournamentResult() {
                   </CustomTh>
                 </CustomTr>
               </CustomThead>
-              <CustomTbody>
-                {item.crewPlayer?.map((player, crewIndex) => (
+              <CustomTbody deleteMode={mode === 'confirm' && item.deleteFlg}>
+                {item?.crewPlayer?.map((player, crewIndex) => (
                   <>
                     <CustomTr key={crewIndex}>
                       <CustomTd>
@@ -2574,6 +2065,7 @@ export default function TournamentResult() {
                         <CustomTextField
                           value={player.playerId || ''}
                           onBlur={async (e) => {
+                            //console.log(player);
                             // 検索して選手情報を取得する
                             handleCrewPlayerIdChange(index, crewIndex, e.target.value);
                           }}
@@ -2586,7 +2078,9 @@ export default function TournamentResult() {
                               e.target.value,
                             );
                           }}
-                          readonly={mode === 'confirm'}
+                          readonly={
+                            (mode == 'update' && player.addonLineFlg != true) || mode === 'confirm'
+                          }
                         />
                       </CustomTd>
                       <CustomTd>
@@ -2600,7 +2094,9 @@ export default function TournamentResult() {
                               e.target.value,
                             );
                           }}
-                          readonly={mode === 'confirm'}
+                          readonly={
+                            (mode == 'update' && player.addonLineFlg != true) || mode === 'confirm'
+                          }
                         />
                       </CustomTd>
                       <CustomTd>
@@ -2788,85 +2284,129 @@ export default function TournamentResult() {
         <CustomButton
           buttonType='primary'
           onClick={async () => {
-            /**
-             * 各「レース結果情報入力」.「選手情報一覧」.「削除」にて、全ての選手がチェック状態の「レース結果情報」が存在する場合、
-             * 以下のメッセージをポップアップ表示する。
-             * 全ての選手が削除対象となっている「レース結果情報」があります。
-             * 当該「レース結果情報」は、削除されますがよろしいですか？
-             */
-            const isAllPlayerChecked = raceResultRecords.some(
-              (item) => item.crewPlayer?.every((player) => player.deleteFlg),
-            );
-            console.log(isAllPlayerChecked);
-            if (isAllPlayerChecked) {
-              const isOK = confirm(
-                '全ての選手が削除対象となっている「レース結果情報」があります。当該「レース結果情報」は、削除されますがよろしいですか？',
-              );
-              if (!isOK) {
+            //console.log(raceResultRecords);
+            var errorCount = 0;
+            if (mode == 'create' || mode == 'update') {
+              //レース結果情報のリストが0件、または、(選手情報に全削除チェックされていないかつ、レース結果情報に削除チェックがされていない)リストが0件の場合
+              if (
+                raceResultRecords.length == 0 ||
+                raceResultRecords.filter(
+                  (item) =>
+                    !item?.crewPlayer?.every((player) => player.deleteFlg) && !item.deleteFlg,
+                ).length == 0
+              ) {
+                alert('1件以上、レース結果情報を登録する必要があります。');
                 return;
               }
-              setRaceResultRecords(
-                raceResultRecords.filter(
-                  (item) => !item.crewPlayer?.every((player) => player.deleteFlg),
-                ),
-              );
-            }
 
-            var isValid = true;
-            if (mode == 'create' || mode == 'update') {
-              isValid = validateRaceResultRecords(); // バリデーション
+              //ポップアップダイアログ
+              const isAllPlayerChecked = raceResultRecords.some(
+                (item) => item?.crewPlayer?.every((player) => player.deleteFlg),
+              );
+              if (isAllPlayerChecked) {
+                const isOK = confirm(
+                  '全ての選手が削除対象となっている「レース結果情報」があります。当該「レース結果情報」は、削除されますがよろしいですか？',
+                );
+                if (!isOK) {
+                  return; //キャンセルが押された場合、以降の処理を行わない 20240515
+                }
+              }
+              clearError(); //エラーメッセージのクリア
+              errorCount = validateRaceResultRecords(); // バリデーション
             }
-            console.log(isValid);
-            if (isValid) {
+            //console.log(errorCount);
+            if (errorCount == 0) {
+              clearError(); //エラーメッセージのクリア
               if (mode === 'create') {
-                // 登録処理
-                // 同画面にconfirmモードで遷移
+                //追加行でない(更新行)かつ、選手情報すべてに削除チェックがされている場合、「このレース結果情報を削除する」にチェックを入れる 20240516
+                for (let index = 0; index < raceResultRecords.length; index++) {
+                  if (
+                    !raceResultRecords[index]?.isAdded &&
+                    raceResultRecords[index]?.crewPlayer?.every((player) => player.deleteFlg)
+                  ) {
+                    raceResultRecords[index].deleteFlg = true;
+                  }
+                }
+                //「追加行かつ、選手情報すべてに削除チェックがされている項目」以外を表示 20240516
+                setRaceResultRecords((prevFormData) => {
+                  const newFormData = [...prevFormData];
+                  return newFormData.filter(
+                    (item) =>
+                      !(item?.isAdded && item?.crewPlayer?.every((player) => player.deleteFlg)),
+                  );
+                });
+
                 router.push('/tournamentResult?mode=confirm&prevMode=create');
               } else if (mode === 'update') {
-                // 更新処理
+                //追加行でない(更新行)かつ、選手情報すべてに削除チェックがされている場合、「このレース結果情報を削除する」にチェックを入れる 20240516
+                for (let index = 0; index < raceResultRecords.length; index++) {
+                  if (
+                    !raceResultRecords[index]?.isAdded &&
+                    raceResultRecords[index]?.crewPlayer?.every((player) => player.deleteFlg)
+                  ) {
+                    raceResultRecords[index].deleteFlg = true;
+                  }
+                }
+                //「追加行かつ、選手情報すべてに削除チェックがされている項目」以外を表示 20240516
+                setRaceResultRecords((prevFormData) => {
+                  const newFormData = [...prevFormData];
+                  return newFormData.filter(
+                    (item) =>
+                      !(item?.isAdded && item?.crewPlayer?.every((player) => player.deleteFlg)),
+                  );
+                });
+
                 router.push('/tournamentResult?mode=confirm&prevMode=update');
               } else if (mode === 'confirm') {
-                //登録・更新する前に選手名についている「*」を消す 20240422
+                //登録・更新する前に選手名についている「*」を消す 20240514
                 for (let index = 0; index < raceResultRecords.length; index++) {
-                  for (let j = 0; j < raceResultRecords[index].crewPlayer.length; j++) {
-                    raceResultRecords[index].crewPlayer[j].playerName.replace('*', '');
+                  for (let j = 0; j < raceResultRecords[index]?.crewPlayer.length; j++) {
+                    raceResultRecords[index].crewPlayer[j].playerName = raceResultRecords[
+                      index
+                    ]?.crewPlayer[j].playerName.replace('*', '');
                   }
                 }
                 if (prevMode == 'create') {
-                  //登録・更新確認画面からバックエンド側にデータを送る 20240405
+                  //登録確認画面からバックエンド側にデータを送る 20240405
                   const sendData = {
                     raceInfo: raceInfo,
                     raceResultRecordResponse: raceResultRecordResponse,
                     raceResultRecords: raceResultRecords,
                   };
+                  //console.log(sendData);
                   const csrf = () => axios.get('/sanctum/csrf-cookie');
                   await csrf();
                   const raceResponse = await axios.post(
                     '/registerRaceResultRecordForRegisterConfirm',
                     sendData,
                   );
-                  console.log(raceResponse);
+                  //console.log(raceResponse);
                   // router.push('/tournamentResult?mode=confirm&prevMode=update');
                   if (!raceResponse.data?.errMessage) {
-                    router.push('/tournamentResultRef?raceId=' + raceResultRecordResponse.race_id);
+                    router.push('/tournamentResultRef?raceId=' + raceInfo.race_id);
+                  } else {
+                    setErrorText([raceResponse.data?.errMessage]);
                   }
                 } else if (prevMode == 'update') {
-                  //登録・更新確認画面からバックエンド側にデータを送る 20240405
+                  //更新確認画面からバックエンド側にデータを送る 20240405
                   const sendData = {
                     raceInfo: raceInfo,
                     raceResultRecordResponse: raceResultRecordResponse,
                     raceResultRecords: raceResultRecords,
                   };
+                  //console.log(sendData);
                   const csrf = () => axios.get('/sanctum/csrf-cookie');
                   await csrf();
                   const raceResponse = await axios.post(
                     '/updateRaceResultRecordForUpdateConfirm',
                     sendData,
                   );
-                  console.log(raceResponse);
+                  //console.log(raceResponse);
                   // router.push('/tournamentResult?mode=confirm&prevMode=update');
                   if (!raceResponse.data?.errMessage) {
-                    router.push('/tournamentResultRef?raceId=' + raceResultRecordResponse.race_id);
+                    router.push('/tournamentResultRef?raceId=' + raceInfo.race_id);
+                  } else {
+                    setErrorText([raceResponse.data?.errMessage]);
                   }
                 }
               }

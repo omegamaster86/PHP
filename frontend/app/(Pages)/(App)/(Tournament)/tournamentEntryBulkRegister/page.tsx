@@ -68,6 +68,7 @@ export default function TournamentEntryBulkRegister() {
   const [csvData, setCsvData] = useState<CsvData[]>([]);
   const [dialogDisplayFlg, setDialogDisplayFlg] = useState<boolean>(false);
   const [displayRegisterButtonFlg, setDisplayRegisterButtonFlg] = useState<boolean>(false);
+  const [visibilityFlg, setVisibilityFlg] = useState<boolean>(false); //CSVテーブルの表示切替フラグ 20240508
   const [tournamentNameIsEmpty, setTournamentNameIsEmpty] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
     eventYear: new Date().toLocaleDateString('ja-JP').slice(0, 4),
@@ -91,7 +92,7 @@ export default function TournamentEntryBulkRegister() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.get('/getUserData');
-        console.log(response.data.result);
+        //console.log(response.data.result);
         if (Object.keys(response.data.result).length > 0) {
           const playerInf = await axios.get('/getIDsAssociatedWithUser');
           if (
@@ -102,11 +103,11 @@ export default function TournamentEntryBulkRegister() {
           ) {
             setValidFlag(true); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
           } else {
-            console.log('ユーザ種別不正');
+            //console.log('ユーザ種別不正');
             router.push('/tournamentSearch');
           }
         } else {
-          console.log('ユーザ情報なし');
+          //console.log('ユーザ情報なし');
           router.push('/tournamentSearch');
         }
       } catch (error: any) {}
@@ -151,7 +152,7 @@ export default function TournamentEntryBulkRegister() {
    * nameとvalueを受け取り、stateを更新する
    */
   const handleInputChange = (name: string, value: string) => {
-    console.log(value);
+    //console.log(value);
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -228,7 +229,7 @@ export default function TournamentEntryBulkRegister() {
         // 大会名
         // const tournamentResponse = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments',);
         // const TournamentsResponse = await axios.get('/getTournamentInfoData_allData');
-        console.log(formData?.eventYear);
+        //console.log(formData?.eventYear);
         const sendVal = { event_start_year: formData?.eventYear };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
@@ -239,7 +240,7 @@ export default function TournamentEntryBulkRegister() {
             name: tourn_name,
           }),
         );
-        console.log(TournamentsResponseList);
+        //console.log(TournamentsResponseList);
         setTournamentList(TournamentsResponseList);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
@@ -250,7 +251,7 @@ export default function TournamentEntryBulkRegister() {
 
   const handleSearchTournament = async (name: string, eventYearVal: string) => {
     try {
-      // console.log(eventYearVal);
+      //console.log(eventYearVal);
       // var eventYearVal = { event_start_year: e.target.value };
       // 仮のURL（繋ぎ込み時に変更すること）
       // const apiURL = `http://localhost:3100/tournament?${name}=${e.target.value}`;
@@ -260,20 +261,38 @@ export default function TournamentEntryBulkRegister() {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       const tournamentResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
-      // console.log(tournamentResponse.data.result);
-      const TournamentsResponseList = tournamentResponse.data.result.map(
-        ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
-          id: tourn_id,
-          name: tourn_name,
-        }),
-      );
-      // console.log(TournamentsResponseList);
-      setTournamentList(TournamentsResponseList);
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        eventYear: tournamentResponse.data?.result[0]?.event_start_date.slice(0, 4),
-        tournName: tournamentResponse.data?.result[0]?.tourn_name,
-      }));
+      //console.log(tournamentResponse.data);
+
+      //該当の開催年に紐づく大会が存在する場合、リストの最初の大会を表示させる 20240514
+      if (tournamentResponse.data.result.length > 0) {
+        const TournamentsResponseList = tournamentResponse.data?.result?.map(
+          ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
+            id: tourn_id,
+            name: tourn_name,
+          }),
+        );
+        setTournamentList(TournamentsResponseList);
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          eventYear: tournamentResponse.data?.result[0]?.event_start_date.slice(0, 4),
+          tournName: tournamentResponse.data?.result[0]?.tourn_name,
+        }));
+
+        //大会名のエラーメッセージが表示されていた場合、非表示にする 20240514
+        if (
+          tournamentResponse.data?.result[0]?.tourn_name != undefined &&
+          tournamentResponse.data?.result[0]?.tourn_name != null
+        ) {
+          checkTournName(false);
+        }
+      } else {
+        setTournamentList([]);
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          eventYear: '',
+          tournName: '',
+        }));
+      }
       setDisplayFlg(false);
     } catch (error) {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
@@ -289,7 +308,7 @@ export default function TournamentEntryBulkRegister() {
   };
 
   const checkMaxInt = (element: string, maxNumber: number) => {
-    return Number(element) > maxNumber;
+    return Number(element) >= maxNumber; //境界値を判定できるように修正 20240513
   };
 
   const checkMaxDouble = (element: string, maxInt: number, maxDecimal: number) => {
@@ -310,201 +329,158 @@ export default function TournamentEntryBulkRegister() {
     return element === '' || element === undefined;
   };
 
-  // CSVデータの処理
-  const handleCsvData = async (row: string[], rowIndex: number) => {
-    if (row.length !== csvElementNum) {
-      console.log('row.length:', row.length);
-      setCsvData((prevData) => [
-        ...(prevData as CsvData[]),
-        {
-          id: rowIndex,
-          checked: false,
-          loadingResult: '無効データ',
-          tournId: '-',
-          tournIdError: false,
-          tournName: '-',
-          tournNameError: false,
-          eventId: '-',
-          eventIdError: false,
-          eventName: '-',
-          eventNameError: false,
-          raceTypeId: '-',
-          raceTypeIdError: false,
-          raceTypeName: '-',
-          raceTypeNameError: false,
-          raceId: '-',
-          raceIdError: false,
-          raceName: '-',
-          raceNameError: false,
-          byGroup: '-',
-          byGroupError: false,
-          raceNumber: '-',
-          raceNumberError: false,
-          startDatetime: '-',
-          startDatetimeError: false,
-          orgId: '-',
-          orgIdError: false,
-          orgName: '-',
-          orgNameError: false,
-          crewName: '-',
-          crewNameError: false,
-          mSheetNumber: '-',
-          mSheetNumberError: false,
-          sheetName: '-',
-          sheetNameError: false,
-          userId: '-',
-          userIdError: false,
-          playerName: '-',
-          playerNameError: false,
-        },
-      ]);
-    } else {
-      const tournIdError = checkMaxInt(row[0], 100000) || checkRequired(row[0]);
-      const eventIdError = checkMaxInt(row[2], 1000) || checkRequired(row[2]);
-      const raceTypeIdError = checkMaxInt(row[4], 1000) || checkRequired(row[4]);
-      const raceIdError = checkMaxInt(row[6], 100000000) || checkRequired(row[6]);
-      const byGroupError = checkStringLegnth(row[8], 255) || checkRequired(row[8]);
-      const raceNumberError = checkMaxInt(row[9], 1000) || checkRequired(row[9]);
-      const orgIdError = checkMaxInt(row[11], 10000) || checkRequired(row[11]);
-      const orgNameError = checkStringLegnth(row[12], 255) || checkRequired(row[12]);
-      const crewNameError = checkStringLegnth(row[13], 255) || checkRequired(row[13]);
-      const mSheetNumberError = checkMaxInt(row[14], 100) || checkRequired(row[14]);
-      const sheetNameError = checkStringLegnth(row[15], 255) || checkRequired(row[15]);
-      const userIdError = checkMaxInt(row[16], 10000000) || checkRequired(row[16]);
-      const playerNameError = checkStringLegnth(row[17], 100) || checkRequired(row[17]);
-
-      // const error =
-      //   tournIdError ||
-      //   userIdError ||
-      //   playerNameError ||
-      //   raceIdError ||
-      //   raceNumberError ||
-      //   raceTypeIdError ||
-      //   orgIdError ||
-      //   orgNameError ||
-      //   crewNameError ||
-      //   byGroupError ||
-      //   eventIdError ||
-      //   mSheetNumberError ||
-      //   sheetNameError;
-
-      setCsvData((prevData) => [
-        ...(prevData as CsvData[]),
-        {
-          id: rowIndex,
-          checked: loadingResultList[rowIndex] != null ? false : true,
-          loadingResult: loadingResultList[rowIndex],
-          tournId: row[0],
-          tournIdError: tournIdError,
-          tournName: row[1],
-          eventId: row[2],
-          eventIdError: eventIdError,
-          eventName: row[3],
-          raceTypeId: row[4],
-          raceTypeIdError: raceTypeIdError,
-          raceTypeName: row[5],
-          raceId: row[6],
-          raceIdError: raceIdError,
-          raceName: row[7],
-          byGroup: row[8],
-          byGroupError: byGroupError,
-          raceNumber: row[9],
-          raceNumberError: raceNumberError,
-          startDatetime: row[10],
-          orgId: row[11],
-          orgIdError: orgIdError,
-          orgName: row[12],
-          orgNameError: orgNameError,
-          crewName: row[13],
-          crewNameError: crewNameError,
-          mSheetNumber: row[14],
-          mSheetNumberError: mSheetNumberError,
-          sheetName: row[15],
-          sheetNameError: sheetNameError,
-          userId: row[16],
-          userIdError: userIdError,
-          playerName: row[17],
-          playerNameError: playerNameError,
-        },
-      ]);
-      setDisplayRegisterButtonFlg(true);
-    }
-  };
-
   //読み込むボタン押下時 20240302
   const sendCsvData = async () => {
     try {
-      var array = csvFileData?.content.map((row, rowIndex) => {
-        //必須入力チェック 20240419
-        const tournIdError = checkMaxInt(row[0], 100000) || checkRequired(row[0]);
-        const eventIdError = checkMaxInt(row[2], 1000) || checkRequired(row[2]);
-        const raceTypeIdError = checkMaxInt(row[4], 1000) || checkRequired(row[4]);
-        const raceIdError = checkMaxInt(row[6], 100000000) || checkRequired(row[6]);
-        const byGroupError = checkStringLegnth(row[8], 255) || checkRequired(row[8]);
-        const raceNumberError = checkMaxInt(row[9], 1000) || checkRequired(row[9]);
-        const orgIdError = checkMaxInt(row[11], 10000) || checkRequired(row[11]);
-        const orgNameError = checkStringLegnth(row[12], 255) || checkRequired(row[12]);
-        const crewNameError = checkStringLegnth(row[13], 255) || checkRequired(row[13]);
-        const mSheetNumberError = checkMaxInt(row[14], 100) || checkRequired(row[14]);
-        const sheetNameError = checkStringLegnth(row[15], 255) || checkRequired(row[15]);
-        const userIdError = checkMaxInt(row[16], 10000000) || checkRequired(row[16]);
-        const playerNameError = checkStringLegnth(row[17], 100) || checkRequired(row[17]);
+      const specifiedHeader =
+        '大会ID,大会名,種目ID,種目名,レース区分ID,レース区分,レースID,レース名,組別,レースNo,発艇日時,団体ID,団体名,クルー名,シート番号ID,シート番号,選手ID,選手名'; // 指定のヘッダー文字列
+      const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
+      const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
+      var array = csvFileData?.content
+        ?.filter(function (x) {
+          // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
+          return x.length > 0 && x.some((y) => y.length > 0);
+        })
+        .slice(isHeaderMatch ? 1 : 0)
+        .map((row, rowIndex) => {
+          if (row.length !== csvElementNum) {
+            return {
+              id: rowIndex,
+              checked: false,
+              loadingResult: '無効データ',
+              tournId: '-',
+              tournIdError: false,
+              tournName: '-',
+              eventId: '-',
+              eventIdError: false,
+              eventName: '-',
+              raceTypeId: '-',
+              raceTypeIdError: false,
+              raceTypeName: '-',
+              raceId: '-',
+              raceIdError: false,
+              raceName: '-',
+              byGroup: '-',
+              byGroupError: false,
+              raceNumber: '-',
+              raceNumberError: false,
+              startDatetime: '-',
+              orgId: '-',
+              orgIdError: false,
+              orgName: '-',
+              orgNameError: false,
+              crewName: '-',
+              crewNameError: false,
+              mSheetNumber: '-',
+              mSheetNumberError: false,
+              sheetName: '-',
+              sheetNameError: false,
+              userId: '-',
+              userIdError: false,
+              playerName: '-',
+              playerNameError: false,
+            };
+          } else {
+            //必須入力チェック 必須入力項目のいずれかがエラーの場合エラーとする 20240514
+            const tournIdError = checkRequired(row[0]);
+            const eventIdError = checkRequired(row[2]);
+            const raceTypeIdError = checkRequired(row[4]);
+            const raceIdError = checkRequired(row[6]);
+            const byGroupError = checkRequired(row[8]);
+            const raceNumberError = checkRequired(row[9]);
+            const orgIdError = checkRequired(row[11]);
+            const orgNameError = checkRequired(row[12]);
+            const crewNameError = checkRequired(row[13]);
+            const mSheetNumberError = checkRequired(row[14]);
+            const sheetNameError = checkRequired(row[15]);
+            const userIdError = checkRequired(row[16]);
+            const playerNameError = checkRequired(row[17]);
 
-        //必須入力項目のいずれかがエラーの場合エラーとする
-        const error =
-          tournIdError ||
-          userIdError ||
-          playerNameError ||
-          raceIdError ||
-          raceNumberError ||
-          raceTypeIdError ||
-          orgIdError ||
-          orgNameError ||
-          crewNameError ||
-          byGroupError ||
-          eventIdError ||
-          mSheetNumberError ||
-          sheetNameError;
+            const error =
+              tournIdError ||
+              userIdError ||
+              playerNameError ||
+              raceIdError ||
+              raceNumberError ||
+              raceTypeIdError ||
+              orgIdError ||
+              orgNameError ||
+              crewNameError ||
+              byGroupError ||
+              eventIdError ||
+              mSheetNumberError ||
+              sheetNameError;
 
-        return {
-          id: rowIndex,
-          checked: false,
-          loadingResult: error ? '未入力項目あり' : '',
-          tournId: row[0],
-          tournIdError: tournIdError,
-          tournName: row[1],
-          eventId: row[2],
-          eventIdError: eventIdError,
-          eventName: row[3],
-          raceTypeId: row[4],
-          raceTypeIdError: raceTypeIdError,
-          raceTypeName: row[5],
-          raceId: row[6],
-          raceIdError: raceIdError,
-          raceName: row[7],
-          byGroup: row[8],
-          byGroupError: byGroupError,
-          raceNumber: row[9],
-          raceNumberError: raceNumberError,
-          startDatetime: row[10],
-          orgId: row[11],
-          orgIdError: orgIdError,
-          orgName: row[12],
-          orgNameError: orgNameError,
-          crewName: row[13],
-          crewNameError: crewNameError,
-          mSheetNumber: row[14],
-          mSheetNumberError: mSheetNumberError,
-          sheetName: row[15],
-          sheetNameError: sheetNameError,
-          userId: row[16],
-          userIdError: userIdError,
-          playerName: row[17],
-          playerNameError: playerNameError,
-        };
-      });
+            //データ型チェック（入力値範囲チェック）入力項目のいずれかがエラーの場合エラーとする 20240514
+            const tournIdRangeError = checkMaxInt(row[0], 100000);
+            const eventIdRangeError = checkMaxInt(row[2], 1000);
+            const raceTypeIdRangeError = checkMaxInt(row[4], 1000);
+            const raceIdRangeError = checkMaxInt(row[6], 100000000);
+            const byGroupRangeError = checkStringLegnth(row[8], 255);
+            const raceNumberRangeError = checkMaxInt(row[9], 1000);
+            const orgIdRangeError = checkMaxInt(row[11], 10000);
+            const orgNameRangeError = checkStringLegnth(row[12], 255);
+            const crewNameRangeError = checkStringLegnth(row[13], 255);
+            const mSheetNumberRangeError = checkMaxInt(row[14], 100);
+            const sheetNameRangeError = checkStringLegnth(row[15], 255);
+            const userIdRangeError = checkMaxInt(row[16], 10000000);
+            const playerNameRangeError = checkStringLegnth(row[17], 100);
+
+            const RangeError =
+              tournIdRangeError ||
+              userIdRangeError ||
+              playerNameRangeError ||
+              raceIdRangeError ||
+              raceNumberRangeError ||
+              raceTypeIdRangeError ||
+              orgIdRangeError ||
+              orgNameRangeError ||
+              crewNameRangeError ||
+              byGroupRangeError ||
+              eventIdRangeError ||
+              mSheetNumberRangeError ||
+              sheetNameRangeError;
+
+            return {
+              id: rowIndex,
+              checked: false,
+              loadingResult: error ? '未入力項目あり' : RangeError ? '入力値不正項目あり' : '',
+              tournId: row[0],
+              tournIdError: tournIdError || tournIdRangeError,
+              tournName: row[1],
+              eventId: row[2],
+              eventIdError: eventIdError || eventIdRangeError,
+              eventName: row[3],
+              raceTypeId: row[4],
+              raceTypeIdError: raceTypeIdError || raceTypeIdRangeError,
+              raceTypeName: row[5],
+              raceId: row[6],
+              raceIdError: raceIdError || raceIdRangeError,
+              raceName: row[7],
+              byGroup: row[8],
+              byGroupError: byGroupError || byGroupRangeError,
+              raceNumber: row[9],
+              raceNumberError: raceNumberError || raceNumberRangeError,
+              startDatetime: row[10],
+              orgId: row[11],
+              orgIdError: orgIdError || orgIdRangeError,
+              orgName: row[12],
+              orgNameError: orgNameError || orgNameRangeError,
+              crewName: row[13],
+              crewNameError: crewNameError || crewNameRangeError,
+              mSheetNumber: row[14],
+              mSheetNumberError: mSheetNumberError || mSheetNumberRangeError,
+              sheetName: row[15],
+              sheetNameError: sheetNameError || sheetNameRangeError,
+              userId: row[16],
+              userIdError: userIdError || userIdRangeError,
+              playerName: row[17],
+              playerNameError: playerNameError || playerNameRangeError,
+            };
+          }
+        });
       var element = array as CsvData[];
-      console.log(element);
+      //console.log(element);
       const sendTournData = {
         tournData: formData,
         csvDataList: element,
@@ -513,15 +489,21 @@ export default function TournamentEntryBulkRegister() {
       await csrf();
       const response = await axios.post('/sendTournamentEntryCsvData', sendTournData);
       const data = response.data.result as CsvData[];
-      console.log(data);
+      //console.log(response.data.result.csvDataList);
+      setCsvData([]);
       var resList = Array();
       for (let index = 0; index < response.data.result.csvDataList.length; index++) {
         const element = array[index];
         resList.push(response.data.result.csvDataList[index].loadingResult);
       }
-      console.log(resList);
+      //console.log(resList);
       // setloadingResultList(resList);
       loadingResultList = resList.filter(Boolean); //リスト内のnullを削除して渡す
+      //console.log(loadingResultList);
+      setCsvData(response.data.result.csvDataList);
+      setDialogDisplayFlg(true);
+      // 仮実装。チェック内容に応じて登録ボタンの表示を判定
+      displayRegisterButton(true);
     } catch (error) {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
     }
@@ -576,7 +558,7 @@ export default function TournamentEntryBulkRegister() {
                 placeHolder={new Date().toLocaleDateString('ja-JP').slice(0, 4)}
                 selectedDate={formData?.eventYear}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  // console.log(e);
+                  //console.log(e);
                   var eventYearVal = e as any as Date;
                   if (eventYearVal.getFullYear().toString().length === 4) {
                     // handleInputChange('eventYear', e as unknown as string);//eventYearVal.getFullYear().toString()
@@ -626,7 +608,7 @@ export default function TournamentEntryBulkRegister() {
                 getOptionLabel={(option) => option.name}
                 value={{ id: formData.tournId, name: formData.tournName } || ''}
                 onChange={(e: ChangeEvent<{}>, newValue) => {
-                  // console.log((newValue as TournamentResponse).id);
+                  //console.log(newValue);
                   handleInputChange(
                     'tournId',
                     newValue ? (newValue as TournamentResponse).id.toString() : '',
@@ -645,7 +627,10 @@ export default function TournamentEntryBulkRegister() {
                       tournName: (newValue as TournamentResponse)?.name,
                     },
                   }));
-                  console.log(formData.tournName, formData.tournId);
+                  //console.log(formData.tournName, formData.tournId);
+                  if (newValue != undefined && newValue != null) {
+                    checkTournName(false);
+                  }
                 }}
                 renderOption={(props: any, option: TournamentResponse) => {
                   return (
@@ -710,45 +695,34 @@ export default function TournamentEntryBulkRegister() {
                     buttonType='primary'
                     onClick={async () => {
                       setActivationFlg(true);
-                      const specifiedHeader =
-                        '大会ID,大会名,種目ID,種目名,レース区分ID,レース区分,レースID,レース名,組別,レースNo,発艇日時,団体ID,団体名,クルー名,シート番号ID,シート番号,選手ID,選手名'; // 指定のヘッダー文字列
-                      const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
-                      const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
                       if (dialogDisplayFlg) {
-                        window.confirm(
-                          '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
-                        )
-                          ? (await sendCsvData(), //バックエンド側にCSVデータを送信 データ判定用
-                            setCsvData([]),
-                            // console.log(loadingResultList),
-                            csvFileData?.content
-                              ?.filter(function (x) {
-                                // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
-                                return x.length > 0 && x.some((y) => y.length > 0);
-                              })
-                              .slice(isHeaderMatch ? 1 : 0)
-                              .map((row, rowIndex) => {
-                                handleCsvData(row, rowIndex);
-                                setDialogDisplayFlg(true);
-                              }))
-                          : null;
+                        if (
+                          window.confirm(
+                            '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
+                          )
+                        ) {
+                          if (
+                            formData.tournName === '' ||
+                            formData.tournName === undefined ||
+                            formData.tournName === null
+                          ) {
+                            checkTournName(true);
+                          } else {
+                            await sendCsvData(); //バックエンド側にCSVデータを送信 データ判定用
+                          }
+                        }
                       } else {
-                        if (formData.tournName === '' || formData.tournName === undefined) {
+                        if (
+                          formData.tournName === '' ||
+                          formData.tournName === undefined ||
+                          formData.tournName === null
+                        ) {
                           checkTournName(true);
                         } else {
                           await sendCsvData(); //バックエンド側にCSVデータを送信 データ判定用
-                          setCsvData([]);
-                          // console.log(loadingResultList);
-                          csvFileData?.content?.slice(1).map((row, rowIndex) => {
-                            handleCsvData(row, rowIndex);
-                            setDialogDisplayFlg(true);
-                            // 仮実装。チェック内容に応じて登録ボタンの表示を判定
-                            if (row[0] !== '') {
-                              displayRegisterButton(true);
-                            }
-                          });
                         }
                       }
+                      setVisibilityFlg(true);
                       performValidation();
                       setActivationFlg(false);
                     }}
@@ -802,6 +776,7 @@ export default function TournamentEntryBulkRegister() {
                 handleInputChange={handleTableInputChange}
                 displayRegisterButton={displayRegisterButton}
                 activationFlg={activationFlg}
+                visibilityFlg={visibilityFlg}
               />
             </div>
           </div>
@@ -825,15 +800,14 @@ export default function TournamentEntryBulkRegister() {
                     onClick={async () => {
                       setActivationFlg(true);
                       if (csvData.find((row) => row.checked)?.id === undefined) {
-                        window.confirm('1件以上選択してください。');
+                        window.alert('1件以上選択してください。');
                       } else {
                         const errorFlg = await checkRaceResultRecords(); //バックエンド側にCSVデータを送信 データ登録用
                         if (!errorFlg) {
-                          window.confirm('レース結果の登録が完了しました。')
-                            ? (setActivationFlg(false),
-                              setDialogDisplayFlg(false),
-                              setDisplayRegisterButtonFlg(false))
-                            : null;
+                          window.alert('レース結果の登録が完了しました。');
+                          setActivationFlg(false);
+                          setDialogDisplayFlg(false);
+                          setDisplayRegisterButtonFlg(false);
                         }
                       }
                       setActivationFlg(false);

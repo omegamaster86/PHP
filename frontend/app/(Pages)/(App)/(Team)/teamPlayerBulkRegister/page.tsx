@@ -74,6 +74,7 @@ export default function TeamPlayerBulkRegister() {
   const [displayLinkButtonFlg, setDisplayLinkButtonFlg] = useState<boolean>(false);
   const searchParams = useSearchParams();
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
+  const [visibilityFlg, setVisibilityFlg] = useState<boolean>(false); //CSVテーブルの表示切替フラグ 20240424
 
   const [validFlag, setValidFlag] = useState(false); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
   //ユーザIDに紐づいた情報の取得 20240418
@@ -83,7 +84,7 @@ export default function TeamPlayerBulkRegister() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         const response = await axios.get('/getUserData');
-        console.log(response.data.result);
+        //console.log(response.data.result);
         if (Object.keys(response.data.result).length > 0) {
           const playerInf = await axios.get('/getIDsAssociatedWithUser');
           if (
@@ -94,11 +95,11 @@ export default function TeamPlayerBulkRegister() {
           ) {
             setValidFlag(true); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
           } else {
-            console.log('ユーザ種別不正');
+            //console.log('ユーザ種別不正');
             router.push('/tournamentSearch');
           }
         } else {
-          console.log('ユーザ情報なし');
+          //console.log('ユーザ情報なし');
           router.push('/tournamentSearch');
         }
       } catch (error: any) {}
@@ -200,7 +201,7 @@ export default function TeamPlayerBulkRegister() {
           // const org = await axios.get<Org[]>('http://localhost:3100/orgSearch');
           const orgSearchId = { org_id };
           const org = await axios.post('/getOrgData', orgSearchId);
-          console.log(org.data.result);
+          //console.log(org.data.result);
           setOrg(org.data.result);
           setTargetOrgData({
             targetOrgId: org.data.result.org_id,
@@ -217,16 +218,16 @@ export default function TeamPlayerBulkRegister() {
           ) {
             //団体管理者の権限だけが1の場合
             const responseData = await axios.get('/getOrganizationForOrgManagement'); //ログインユーザーが管理している団体データの取得 20240201
-            console.log(responseData.data.result);
+            //console.log(responseData.data.result);
             setOrgs(responseData.data.result);
           } else {
             const responseData = await axios.get('/getOrganizationListData'); //すべての団体データの取得 20240410
-            console.log(responseData.data.result);
+            //console.log(responseData.data.result);
             setOrgs(responseData.data.result);
           }
         }
       } catch (error) {
-        console.log(error);
+        //console.log(error);
       }
     };
     fetchData();
@@ -258,7 +259,7 @@ export default function TeamPlayerBulkRegister() {
    * @returns
    */
   const handleResult = async (row: string[]) => {
-    console.log(row[3], ' sss ', row[4]);
+    //console.log(row[3], ' sss ', row[4]);
     // 選手名の形式
     //　日本語：^[ぁ-んァ-ヶｱ-ﾝﾞﾟ一-龠]*$
     //　半角英数字：^[0-9a-zA-Z]*$
@@ -287,7 +288,7 @@ export default function TeamPlayerBulkRegister() {
 
   const getJsonRow = async (row: string[], index: number) => {
     const expectedColumnCount = 5; // 期待する列数
-    // console.log(row.length);
+    //console.log(row.length);
     if (row.length !== expectedColumnCount) {
       return {
         id: index,
@@ -345,7 +346,7 @@ export default function TeamPlayerBulkRegister() {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       const response = await axios.post('/sendOrgCsvData', sendData);
-      console.log(response.data.result);
+      //console.log(response.data.result);
       setCsvData(response.data.result);
       setActivationFlg(false);
     } catch (error) {
@@ -360,17 +361,18 @@ export default function TeamPlayerBulkRegister() {
       targetOrgData,
       csvDataList: csvData,
     };
-    console.log(sendData.csvDataList);
+    //console.log(sendData.csvDataList);
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     await axios
       .post('/registerOrgCsvData', sendData)
       .then((res) => {
-        console.log(res.data.result);
+        //console.log(res.data.result);
         // router.push('/tournamentSearch'); // 20240222
       })
       .catch((error) => {
-        console.log(error);
+        //console.log(error);
+        setErrorMessage([...error?.response?.data]); //メール送信に失敗した場合、エラーメッセージを表示 20240423
       });
   };
 
@@ -412,7 +414,7 @@ export default function TeamPlayerBulkRegister() {
                   }
                 }
                 setOrgSelected(e);
-                console.log(e);
+                //console.log(e);
                 handleFormInputChange('targetOrgId', e);
                 handleFormInputChange(
                   'targetOrgName',
@@ -462,7 +464,7 @@ export default function TeamPlayerBulkRegister() {
                   buttonType='primary'
                   onClick={() => {
                     setActivationFlg(true);
-                    // console.log(dialogDisplayFlg);
+                    //console.log(dialogDisplayFlg);
                     if (dialogDisplayFlg) {
                       if (
                         !window.confirm(
@@ -488,7 +490,7 @@ export default function TeamPlayerBulkRegister() {
                         .slice(isHeaderMatch ? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
                         .map((row, index) => getJsonRow(row, index)),
                     ).then((results) => {
-                      console.log(results);
+                      //console.log(results);
                       var resList = results as any;
                       resList.forEach((element: any) => {
                         element['birthCountryId'] = null;
@@ -496,9 +498,10 @@ export default function TeamPlayerBulkRegister() {
                         element['residenceCountryId'] = null;
                         element['residencePrefectureId'] = null;
                       });
-                      // console.log(resList);
+                      //console.log(resList);
                       sendCsvData(resList); //バックエンド側のバリデーションチェックを行う為にデータを送信する 20240302
                       setDialogDisplayFlg(true); //2回目以降のcsv読み込みで確認ダイアログを表示させる 20240419
+                      setVisibilityFlg(true); //CSVテーブルの表示切替フラグ 20240424
                     });
 
                     performValidation();
@@ -551,6 +554,7 @@ export default function TeamPlayerBulkRegister() {
               handleInputChange={handleInputChange}
               displayLinkButton={displayLinkButton}
               activationFlg={activationFlg}
+              visibilityFlg={visibilityFlg}
             />
           </div>
           {!activationFlg && (
