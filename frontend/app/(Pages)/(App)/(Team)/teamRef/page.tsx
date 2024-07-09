@@ -636,14 +636,16 @@ export default function TeamRef() {
           </div>
         )}
         <div className='flex flex-row justify-center gap-[20px] py-[20px]'>
-          <CustomButton
-            className='w-[300px] h-[50px]'
-            onClick={() => {
-              router.back();
-            }}
-          >
-            戻る
-          </CustomButton>
+          {window.history.length > 1 && (
+            <CustomButton
+              className='w-[300px] h-[50px]'
+              onClick={() => {
+                router.back();
+              }}
+            >
+              戻る
+            </CustomButton>
+          )}
           {mode === 'delete' && (
             <CustomButton
               className='w-[300px] h-[50px]'
