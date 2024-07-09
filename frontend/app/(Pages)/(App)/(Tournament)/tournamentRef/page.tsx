@@ -835,15 +835,17 @@ export default function TournamentRef() {
           </div>
           <div className='flex flex-row justify-center gap-[40px] m-auto'>
             {/* 戻るボタン */}
-            <CustomButton
-              buttonType='primary-outlined'
-              className='w-[280px]'
-              onClick={() => {
-                router.back();
-              }}
-            >
-              戻る
-            </CustomButton>
+            {window.history.length > 1 && (
+              <CustomButton
+                buttonType='primary-outlined'
+                className='w-[280px]'
+                onClick={() => {
+                  router.back();
+                }}
+              >
+                戻る
+              </CustomButton>
+            )}
             {/* 参照モードかつ、権限がシステム管理者、大会団体管理者の時は表示 */}
             {mode === 'delete' &&
               (userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||

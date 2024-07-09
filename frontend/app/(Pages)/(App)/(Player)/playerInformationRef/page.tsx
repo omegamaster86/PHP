@@ -579,15 +579,17 @@ export default function PlayerInformationRef() {
           </div>
           <div className='flex flex-row justify-center gap-[16px] my-[30px]'>
             {/* 戻るボタン */}
-            <CustomButton
-              buttonType='primary-outlined'
-              className='w-[280px] m-auto'
-              onClick={() => {
-                router.back();
-              }}
-            >
-              戻る
-            </CustomButton>
+            {window.history.length > 1 && (
+              <CustomButton
+                buttonType='primary-outlined'
+                className='w-[280px] m-auto'
+                onClick={() => {
+                  router.back();
+                }}
+              >
+                戻る
+              </CustomButton>
+            )}
             {/* 削除ボタン */}
             {mode === 'delete' && (
               <CustomButton

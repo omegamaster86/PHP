@@ -671,16 +671,18 @@ export default function VolunteerInformationRef() {
         </div>
         <div className='flex flex-row mb-1 gap-[16px] justify-center'>
           {/* 戻るボタン */}
-          <CustomButton
-            buttonType='white-outlined'
-            className='text-normal h-12 w-72 mb-6'
-            onClick={() => {
-              router.back();
-              // ボランティア情報参照画面に遷移
-            }}
-          >
-            戻る
-          </CustomButton>
+          {window.history.length > 1 && (
+            <CustomButton
+              buttonType='white-outlined'
+              className='text-normal h-12 w-72 mb-6'
+              onClick={() => {
+                router.back();
+                // ボランティア情報参照画面に遷移
+              }}
+            >
+              戻る
+            </CustomButton>
+          )}
           {/* 削除ボタン */}
           {mode === 'delete' && (
             <CustomButton
