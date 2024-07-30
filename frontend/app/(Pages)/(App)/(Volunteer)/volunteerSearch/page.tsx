@@ -156,6 +156,104 @@ export default function VolunteerSearch() {
 
   const [startDateExistsErrorMessages, setStartDateExistsErrorMessages] = useState([] as string[]);
   const [endDateExistsErrorMessages, setEndDateExistsErrorMessages] = useState([] as string[]);
+
+  // ボランティアIDのソート用　20240725
+  const [volunteerIdSortFlag, setVolunteerIdSortFlag] = useState(false);
+  const volunteerIdSort = () => {
+    if (volunteerIdSortFlag) {
+      setVolunteerIdSortFlag(false);
+      searchResponse.sort((a, b) => Number(a.volunteer_id) - Number(b.volunteer_id));
+    } else {
+      setVolunteerIdSortFlag(true);
+      searchResponse.sort((a, b) => Number(b.volunteer_id) - Number(a.volunteer_id));
+    }
+  };
+  //氏名のソート用　20240725
+  const [volunteerNameSortFlag, setVolunteerNameSortFlag] = useState(false);
+  const volunteerNameSort = () => {
+    if (volunteerNameSortFlag) {
+      setVolunteerNameSortFlag(false);
+      searchResponse.sort((a, b) => ('' + a.volunteer_name).localeCompare(b.volunteer_name));
+    } else {
+      setVolunteerNameSortFlag(true);
+      searchResponse.sort((a, b) => ('' + b.volunteer_name).localeCompare(a.volunteer_name));
+    }
+  };
+  //居住地のソート用　20240725
+  const [volunteerCountrySortFlag, setVolunteerCountrySortFlag] = useState(false);
+  const volunteerCountrySort = () => {
+    if (volunteerCountrySortFlag) {
+      setVolunteerCountrySortFlag(false);
+      searchResponse.sort((a, b) => ('' + a.residence_country).localeCompare(b.residence_country));
+    } else {
+      setVolunteerCountrySortFlag(true);
+      searchResponse.sort((a, b) => ('' + b.residence_country).localeCompare(a.residence_country));
+    }
+  };
+  //性別のソート用　20240725
+  const [sexSortFlag, setSexSortFlag] = useState(false);
+  const sexSort = () => {
+    if (sexSortFlag) {
+      setSexSortFlag(false);
+      searchResponse.sort((a, b) => ('' + a.sex).localeCompare(b.sex));
+    } else {
+      setSexSortFlag(true);
+      searchResponse.sort((a, b) => ('' + b.sex).localeCompare(a.sex));
+    }
+  };
+  //年齢のソート用　20240725
+  const [ageSortFlag, setAgeSortFlag] = useState(false);
+  const ageSort = () => {
+    if (ageSortFlag) {
+      setAgeSortFlag(false);
+      searchResponse.sort(
+        (a, b) =>
+          Number(calculateAgeFromBirthday(a.date_of_birth)) -
+          Number(calculateAgeFromBirthday(b.date_of_birth)),
+      );
+    } else {
+      setAgeSortFlag(true);
+      searchResponse.sort(
+        (a, b) =>
+          Number(calculateAgeFromBirthday(b.date_of_birth)) -
+          Number(calculateAgeFromBirthday(a.date_of_birth)),
+      );
+    }
+  };
+  //補助が可能な障碍タイプ （PR1）のソート用　20240725
+  const [PR1SortFlag, setPR1SortFlag] = useState(false);
+  const PR1Sort = () => {
+    if (PR1SortFlag) {
+      setPR1SortFlag(false);
+      searchResponse.sort((a, b) => Number(a.dis_type_id?.[0]) - Number(b.dis_type_id?.[0]));
+    } else {
+      setPR1SortFlag(true);
+      searchResponse.sort((a, b) => Number(b.dis_type_id?.[0]) - Number(a.dis_type_id?.[0]));
+    }
+  };
+  //補助が可能な障碍タイプ （PR2）のソート用　20240725
+  const [PR2SortFlag, setPR2SortFlag] = useState(false);
+  const PR2Sort = () => {
+    if (PR2SortFlag) {
+      setPR2SortFlag(false);
+      searchResponse.sort((a, b) => Number(a.dis_type_id?.[1]) - Number(b.dis_type_id?.[1]));
+    } else {
+      setPR2SortFlag(true);
+      searchResponse.sort((a, b) => Number(b.dis_type_id?.[1]) - Number(a.dis_type_id?.[1]));
+    }
+  };
+  //補助が可能な障碍タイプ （PR3）のソート用　20240725
+  const [PR3SortFlag, setPR3SortFlag] = useState(false);
+  const PR3Sort = () => {
+    if (PR3SortFlag) {
+      setPR3SortFlag(false);
+      searchResponse.sort((a, b) => Number(a.dis_type_id?.[2]) - Number(b.dis_type_id?.[2]));
+    } else {
+      setPR3SortFlag(true);
+      searchResponse.sort((a, b) => Number(b.dis_type_id?.[2]) - Number(a.dis_type_id?.[2]));
+    }
+  };
+
   /** 関数 **/
 
   /**
@@ -1287,11 +1385,43 @@ export default function VolunteerSearch() {
       <CustomTable>
         <CustomThead>
           <CustomTr>
-            <CustomTh rowSpan={2}>ボランティアID</CustomTh>
-            <CustomTh rowSpan={2}>氏名</CustomTh>
-            <CustomTh rowSpan={2}>居住地</CustomTh>
-            <CustomTh rowSpan={2}>性別</CustomTh>
-            <CustomTh rowSpan={2}>年齢</CustomTh>
+            <CustomTh rowSpan={2}>
+              <div
+                className='underline'
+                style={{ cursor: 'pointer' }}
+                onClick={() => volunteerIdSort()}
+              >
+                ボランティアID
+              </div>
+            </CustomTh>
+            <CustomTh rowSpan={2}>
+              <div
+                className='underline'
+                style={{ cursor: 'pointer' }}
+                onClick={() => volunteerNameSort()}
+              >
+                氏名
+              </div>
+            </CustomTh>
+            <CustomTh rowSpan={2}>
+              <div
+                className='underline'
+                style={{ cursor: 'pointer' }}
+                onClick={() => volunteerCountrySort()}
+              >
+                居住地
+              </div>
+            </CustomTh>
+            <CustomTh rowSpan={2}>
+              <div className='underline' style={{ cursor: 'pointer' }} onClick={() => sexSort()}>
+                性別
+              </div>
+            </CustomTh>
+            <CustomTh rowSpan={2}>
+              <div className='underline' style={{ cursor: 'pointer' }} onClick={() => ageSort()}>
+                年齢
+              </div>
+            </CustomTh>
             <CustomTh rowSpan={1} colSpan={3}>
               補助が可能な障碍タイプ
             </CustomTh>
@@ -1302,9 +1432,21 @@ export default function VolunteerSearch() {
             <CustomTh rowSpan={2}>メールアドレス</CustomTh>
           </CustomTr>
           <CustomTr>
-            <CustomTh>PR1</CustomTh>
-            <CustomTh>PR2</CustomTh>
-            <CustomTh>PR3</CustomTh>
+            <CustomTh>
+              <div className='underline' style={{ cursor: 'pointer' }} onClick={() => PR1Sort()}>
+                PR1
+              </div>
+            </CustomTh>
+            <CustomTh>
+              <div className='underline' style={{ cursor: 'pointer' }} onClick={() => PR2Sort()}>
+                PR2
+              </div>
+            </CustomTh>
+            <CustomTh>
+              <div className='underline' style={{ cursor: 'pointer' }} onClick={() => PR3Sort()}>
+                PR3
+              </div>
+            </CustomTh>
           </CustomTr>
         </CustomThead>
         <CustomTbody>
