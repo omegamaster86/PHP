@@ -2,7 +2,7 @@
 'use client';
 
 // Reactおよび関連モジュールのインポート
-import { useState, useEffect, ChangeEvent, FocusEvent } from 'react';
+import { useState, useEffect, ChangeEvent, FocusEvent, useRef, MouseEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 // import axios from 'axios';
 import axios from '@/app/lib/axios';
@@ -27,7 +27,9 @@ import { EventResponse, Race, RaceTypeResponse, Tournament, TournamentResponse }
 import SearchIcon from '@mui/icons-material/Search';
 import Validator from '@/app/utils/validator';
 import Divider from '@mui/material/Divider';
-import { Autocomplete, TextField } from '@mui/material';
+import { Autocomplete, Chip, TextField } from '@mui/material';
+
+import FilterListIcon from '@mui/icons-material/FilterList';
 
 // 検索条件フォームの型定義
 // 検索条件
@@ -42,6 +44,12 @@ interface SearchCond {
   raceTypeName: string;
   byGroup: string;
   raceNo: string;
+}
+
+//組別フィルター用
+interface ByGroupList {
+  id: number;
+  name: string;
 }
 
 export default function TournamentResultManagement() {
@@ -81,6 +89,78 @@ export default function TournamentResultManagement() {
   const [eventIdErrorMessage, setEventIdErrorMessage] = useState([] as string[]);
   const [eventNameErrorMessage, setEventNameErrorMessage] = useState([] as string[]);
   const [tableHeight, setTableHeight] = useState(''); // デフォルトの行の高さを設定
+
+  // 組別のソート用　20240718
+  const [groupSortFlag, setGroupSortFlag] = useState(false);
+  const groupSort = () => {
+    if (groupSortFlag) {
+      setGroupSortFlag(false);
+      searchResponse.sort((a, b) => ('' + a.by_group).localeCompare(b.by_group));
+    } else {
+      setGroupSortFlag(true);
+      searchResponse.sort((a, b) => ('' + b.by_group).localeCompare(a.by_group));
+    }
+  };
+  // レースIDのソート用　20240718
+  const [raceIdSortFlag, setRaceIdSortFlag] = useState(false);
+  const raceIdSort = () => {
+    if (raceIdSortFlag) {
+      setRaceIdSortFlag(false);
+      searchResponse.sort((a, b) => ('' + a.race_id).localeCompare(b.race_id));
+    } else {
+      setRaceIdSortFlag(true);
+      searchResponse.sort((a, b) => ('' + b.race_id).localeCompare(a.race_id));
+    }
+  };
+  // レース名のソート用　20240718
+  const [raceNameSortFlag, setRaceNameSortFlag] = useState(false);
+  const raceNameSort = () => {
+    if (raceNameSortFlag) {
+      setRaceNameSortFlag(false);
+      searchResponse.sort((a, b) => ('' + a.race_name).localeCompare(b.race_name));
+    } else {
+      setRaceNameSortFlag(true);
+      searchResponse.sort((a, b) => ('' + b.race_name).localeCompare(a.race_name));
+    }
+  };
+  // レースNoのソート用　20240718
+  const [raceNoSortFlag, setRaceNoSortFlag] = useState(false);
+  const raceNoSort = () => {
+    if (raceNoSortFlag) {
+      setRaceNoSortFlag(false);
+      searchResponse.sort((a, b) => ('' + a.race_number).localeCompare(b.race_number));
+    } else {
+      setRaceNoSortFlag(true);
+      searchResponse.sort((a, b) => ('' + b.race_number).localeCompare(a.race_number));
+    }
+  };
+
+  const [showByGroupAutocomplete, setShowByGroupAutocomplete] = useState(false); //組別のフィルター実装　20240719
+
+  const byGroupfocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240719
+
+  //組別のフィルター実装　20240719
+  const [byGroupList, setByGroupList] = useState([] as ByGroupList[]);
+  const [selectedByGroupList, setSelectedByGroupList] = useState([] as ByGroupList[]);
+
+  //組別のフィルター実装　20240719
+  const [selectedByGroupHeader, setSelectedByGroupHeader] = useState({
+    value: '',
+    position: { top: 0, left: 0 },
+  });
+
+  //組別のフィルター実装　20240719
+  const handleByGroupHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
+    const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
+    setSelectedByGroupHeader({
+      value,
+      position: {
+        top: headerPosition.bottom + window.scrollY,
+        left: headerPosition.left + window.scrollX,
+      },
+    });
+    setShowByGroupAutocomplete(!showByGroupAutocomplete);
+  };
 
   const [messageDisplay, setMessageDisplay] = useState(
     prevScreen !== 'tournamentResult' ||
@@ -126,6 +206,7 @@ export default function TournamentResultManagement() {
       const response = await axios.post('searchRaceData', searchCond);
       //console.log(response.data.result);
       setSearchResponse(response.data.result);
+      setSelectedByGroupList([]);
 
       const height = response.data.length * 73 + 100 < 830 ? response.data.length * 73 + 100 : 830;
       setTableHeight('h-[' + height + 'px]');
@@ -240,6 +321,32 @@ export default function TournamentResultManagement() {
       return false;
     }
   };
+
+  useEffect(() => {
+    if (showByGroupAutocomplete) {
+      if (byGroupfocusTarget.current != null) {
+        var target = byGroupfocusTarget.current as HTMLDivElement;
+        (
+          target.childNodes[0].childNodes[0].childNodes[1].childNodes[
+            selectedByGroupList.length
+          ] as HTMLElement
+        ).focus();
+      }
+    }
+  }, [showByGroupAutocomplete]);
+
+  useEffect(() => {
+    //組別をフィルターできるようにする 20240718
+    const byGroupsArray = searchResponse.map((item: any) => item.by_group);
+    const uniqueByGroupsSet = new Set(byGroupsArray);
+    const uniqueByGroupsArray = Array.from(uniqueByGroupsSet);
+    setByGroupList(
+      uniqueByGroupsArray.map((item: any, index: any) => ({
+        id: index,
+        name: item,
+      })),
+    );
+  }, [searchResponse]);
 
   // レンダリング
   return (
@@ -551,76 +658,178 @@ export default function TournamentResultManagement() {
                 <CustomTh colSpan={5}>レース結果一覧</CustomTh>
               </CustomTr>
               <CustomTr>
-                <CustomTh>操作▼</CustomTh>
-                <CustomTh>レースID</CustomTh>
-                <CustomTh>レース名</CustomTh>
-                <CustomTh>レースNo▼</CustomTh>
+                <CustomTh>操作</CustomTh>
+                <CustomTh>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => raceIdSort()}
+                  >
+                    レースID
+                  </div>
+                </CustomTh>
+                <CustomTh>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => raceNameSort()}
+                  >
+                    レース名
+                  </div>
+                </CustomTh>
+                <CustomTh>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => raceNoSort()}
+                  >
+                    レースNo
+                  </div>
+                </CustomTh>
                 <CustomTh>レース区分</CustomTh>
-                <CustomTh>組別</CustomTh>
+                <CustomTh>
+                  <div className='flex flex-row items-center gap-[10px]'>
+                    <div
+                      className='underline'
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => groupSort()}
+                    >
+                      組別
+                    </div>
+                    <div
+                      style={{
+                        cursor: 'pointer',
+                        color: selectedByGroupList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
+                      }}
+                      onClick={(event) => handleByGroupHeaderClick('組別', event as any)}
+                    >
+                      <FilterListIcon />
+                    </div>
+                  </div>
+                </CustomTh>
               </CustomTr>
             </CustomThead>
             {/* 大会一覧テーブル明細表示 */}
             <CustomTbody>
-              {searchResponse.map((row, index) => (
-                <CustomTr index={index} key={index}>
-                  {/* 操作 */}
-                  <CustomTd>
-                    <div className='flex justify-center items-center gap-[10px]'>
-                      <CustomButton
-                        buttonType='primary'
-                        className='w-[80px]'
-                        onClick={function (): void {
-                          sessionStorage.setItem(
-                            'tournamentResultManagement',
-                            JSON.stringify(searchCond),
-                          );
-                          router.push('/tournamentResult?mode=update&raceId=' + row.race_id);
-                        }}
-                      >
-                        更新
-                      </CustomButton>
-                      <CustomButton
-                        buttonType='primary'
-                        className='w-[80px]'
-                        onClick={function (): void {
-                          sessionStorage.setItem(
-                            'tournamentResultManagement',
-                            JSON.stringify(searchCond),
-                          );
-                          router.push('/tournamentResultRef?mode=delete&raceId=' + row.race_id);
-                        }}
-                      >
-                        削除
-                      </CustomButton>
-                      <CustomButton
-                        buttonType='primary'
-                        className='w-[80px]'
-                        onClick={function (): void {
-                          sessionStorage.setItem(
-                            'tournamentResultManagement',
-                            JSON.stringify(searchCond),
-                          );
-                          router.push('/tournamentResultRef?raceId=' + row.race_id);
-                        }}
-                      >
-                        参照
-                      </CustomButton>
-                    </div>
-                  </CustomTd>
-                  {/* レースID */}
-                  <CustomTd>{row.race_id}</CustomTd>
-                  {/* レース名 */}
-                  <CustomTd>{row.race_name}</CustomTd>
-                  {/* レースNo */}
-                  <CustomTd>{row.race_number}</CustomTd>
-                  {/* レース区分 */}
-                  <CustomTd>{row.race_class_name}</CustomTd>
-                  {/* 組別 */}
-                  <CustomTd>{row.by_group}</CustomTd>
-                </CustomTr>
-              ))}
+              {searchResponse
+                .filter((row, index) => {
+                  //組別のフィルター実装　20240719
+                  if (selectedByGroupList.length > 0) {
+                    return selectedByGroupList.some((item) => item.name === row.by_group);
+                  } else {
+                    return true;
+                  }
+                })
+                .map((row, index) => (
+                  <CustomTr index={index} key={index}>
+                    {/* 操作 */}
+                    <CustomTd>
+                      <div className='flex justify-center items-center gap-[10px]'>
+                        <CustomButton
+                          buttonType='primary'
+                          className='w-[80px]'
+                          onClick={function (): void {
+                            sessionStorage.setItem(
+                              'tournamentResultManagement',
+                              JSON.stringify(searchCond),
+                            );
+                            router.push('/tournamentResult?mode=update&raceId=' + row.race_id);
+                          }}
+                        >
+                          更新
+                        </CustomButton>
+                        <CustomButton
+                          buttonType='primary'
+                          className='w-[80px]'
+                          onClick={function (): void {
+                            sessionStorage.setItem(
+                              'tournamentResultManagement',
+                              JSON.stringify(searchCond),
+                            );
+                            router.push('/tournamentResultRef?mode=delete&raceId=' + row.race_id);
+                          }}
+                        >
+                          削除
+                        </CustomButton>
+                        <CustomButton
+                          buttonType='primary'
+                          className='w-[80px]'
+                          onClick={function (): void {
+                            sessionStorage.setItem(
+                              'tournamentResultManagement',
+                              JSON.stringify(searchCond),
+                            );
+                            router.push('/tournamentResultRef?raceId=' + row.race_id);
+                          }}
+                        >
+                          参照
+                        </CustomButton>
+                      </div>
+                    </CustomTd>
+                    {/* レースID */}
+                    <CustomTd>{row.race_id}</CustomTd>
+                    {/* レース名 */}
+                    <CustomTd>{row.race_name}</CustomTd>
+                    {/* レースNo */}
+                    <CustomTd>{row.race_number}</CustomTd>
+                    {/* レース区分 */}
+                    <CustomTd>{row.race_class_name}</CustomTd>
+                    {/* 組別 */}
+                    <CustomTd>{row.by_group}</CustomTd>
+                  </CustomTr>
+                ))}
             </CustomTbody>
           </CustomTable>
+          {/* 組別フィルター用のオートコンプリート 20240719 */}
+          {showByGroupAutocomplete && (
+            <div
+              ref={byGroupfocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedByGroupHeader.position.top - 120}px`,
+                left: `${selectedByGroupHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowByGroupAutocomplete(false)} //フォーカスが外れたら非表示にする 20240719
+            >
+              <Autocomplete
+                id='byGroup'
+                multiple
+                options={byGroupList}
+                filterOptions={(options, { inputValue }) =>
+                  options.filter((option) => option.name.includes(inputValue))
+                }
+                value={selectedByGroupList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: ByGroupList[]) => {
+                  //console.log(newValue);
+                  setSelectedByGroupList(newValue);
+                }}
+                renderOption={(props: any, option: ByGroupList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name}
+                    </li>
+                  );
+                }}
+                renderTags={(value: ByGroupList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'組別'}
+                  />
+                )}
+              />
+            </div>
+          )}
           {/* <CustomTable>
           </CustomTable> */}
         </div>
