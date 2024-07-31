@@ -132,22 +132,14 @@ export default function PlayerInformationRef() {
     }
   };
   // 開催日 のソート用　20240722
-  const [eventStartDateTimeSortFlag, setEventStartDateTimeSortFlag] = useState(false);
-  const eventStartDateTimeSort = () => {
-    if (eventStartDateTimeSortFlag) {
-      setEventStartDateTimeSortFlag(false);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(a.eventStartDate.replace(/[- :]/g, '')) -
-          Number(b.start_datetime.replace(/[- :]/g, '')),
-      );
+  const [eventStartDateSortFlag, seteventStartDateSortFlag] = useState(false);
+  const eventStartDateSort = () => {
+    if (eventStartDateSortFlag) {
+      seteventStartDateSortFlag(false);
+      raceResultRecordsData.sort((a, b) => ('' + a.eventStartDate).localeCompare(b.eventStartDate));
     } else {
-      setEventStartDateTimeSortFlag(true);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(b.eventStartDate.replace(/[- :]/g, '')) -
-          Number(a.start_datetime.replace(/[- :]/g, '')),
-      );
+      seteventStartDateSortFlag(true);
+      raceResultRecordsData.sort((a, b) => ('' + b.eventStartDate).localeCompare(a.eventStartDate));
     }
   };
   // 団体名 のソート用　20240722
@@ -1330,7 +1322,7 @@ export default function PlayerInformationRef() {
                         {header === '大会名' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => tournNameSort()}
                           >
                             {header}
@@ -1340,8 +1332,8 @@ export default function PlayerInformationRef() {
                         {header === '開催日' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
-                            onClick={() => eventStartDateTimeSort()}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                            onClick={() => eventStartDateSort()}
                           >
                             {header}
                           </div>
@@ -1349,7 +1341,7 @@ export default function PlayerInformationRef() {
                         {header === '所属団体' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => orgNameSort()}
                           >
                             {header}
@@ -1358,7 +1350,7 @@ export default function PlayerInformationRef() {
                         {header === 'レースNo.' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => raceNumberSort()}
                           >
                             {header}
@@ -1368,7 +1360,7 @@ export default function PlayerInformationRef() {
                           <div className='flex flex-row items-center gap-[10px]'>
                             <div
                               className='underline'
-                              style={{ cursor: 'pointer' }}
+                              style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                               onClick={() => eventNameSort()}
                             >
                               {header}
@@ -1388,7 +1380,7 @@ export default function PlayerInformationRef() {
                           <div className='flex flex-row items-center gap-[10px]'>
                             <div
                               className='underline'
-                              style={{ cursor: 'pointer' }}
+                              style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                               onClick={() => raceNameSort()}
                             >
                               {header}
@@ -1410,7 +1402,7 @@ export default function PlayerInformationRef() {
                           <div className='flex flex-row items-center gap-[10px]'>
                             <div
                               className='underline'
-                              style={{ cursor: 'pointer' }}
+                              style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                               onClick={() => bygroupSort()}
                             >
                               {header}
@@ -1430,7 +1422,7 @@ export default function PlayerInformationRef() {
                           <div className='flex flex-row items-center gap-[10px]'>
                             <div
                               className='underline'
-                              style={{ cursor: 'pointer' }}
+                              style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                               onClick={() => crewNameSort()}
                             >
                               {header}
@@ -1452,7 +1444,7 @@ export default function PlayerInformationRef() {
                           <div className='flex flex-row items-center gap-[10px]'>
                             <div
                               className='underline'
-                              style={{ cursor: 'pointer' }}
+                              style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                               onClick={() => rankSort()}
                             >
                               {header}
@@ -1471,7 +1463,7 @@ export default function PlayerInformationRef() {
                         {header === '500mlapタイム' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => lapTime500mSort()}
                           >
                             {header}
@@ -1480,7 +1472,7 @@ export default function PlayerInformationRef() {
                         {header === '1000mlapタイム' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => lapTime1000mSort()}
                           >
                             {header}
@@ -1489,7 +1481,7 @@ export default function PlayerInformationRef() {
                         {header === '1500mlapタイム' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => lapTime1500mSort()}
                           >
                             {header}
@@ -1498,7 +1490,7 @@ export default function PlayerInformationRef() {
                         {header === '2000mlapタイム' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => lapTime2000mSort()}
                           >
                             {header}
@@ -1507,7 +1499,7 @@ export default function PlayerInformationRef() {
                         {header === '最終lapタイム' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => lapTimeFinalSort()}
                           >
                             {header}
@@ -1516,7 +1508,7 @@ export default function PlayerInformationRef() {
                         {header === 'ストロークレート（平均）' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => averageHeartRateSort()}
                           >
                             {header}
@@ -1525,7 +1517,7 @@ export default function PlayerInformationRef() {
                         {header === '500mlapストロークレート' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => strokeRate500mSort()}
                           >
                             {header}
@@ -1534,7 +1526,7 @@ export default function PlayerInformationRef() {
                         {header === '1000mlapストロークレート' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => strokeRate1000mSort()}
                           >
                             {header}
@@ -1543,7 +1535,7 @@ export default function PlayerInformationRef() {
                         {header === '1500mlapストロークレート' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => strokeRate1500mSort()}
                           >
                             {header}
@@ -1552,7 +1544,7 @@ export default function PlayerInformationRef() {
                         {header === '2000mlapストロークレート' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => strokeRate2000mSort()}
                           >
                             {header}
@@ -1561,7 +1553,7 @@ export default function PlayerInformationRef() {
                         {header === '心拍数/分（平均）' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => heartRateAvgSort()}
                           >
                             {header}
@@ -1570,7 +1562,7 @@ export default function PlayerInformationRef() {
                         {header === '500mlap心拍数/分' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => heartRate500mSort()}
                           >
                             {header}
@@ -1579,7 +1571,7 @@ export default function PlayerInformationRef() {
                         {header === '1000mlap心拍数/分' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => heartRate1000mSort()}
                           >
                             {header}
@@ -1588,7 +1580,7 @@ export default function PlayerInformationRef() {
                         {header === '1500mlap心拍数/分' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => heartRate1500mSort()}
                           >
                             {header}
@@ -1597,7 +1589,7 @@ export default function PlayerInformationRef() {
                         {header === '2000mlap心拍数/分' && (
                           <div
                             className='underline'
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                             onClick={() => heartRate2000mSort()}
                           >
                             {header}
@@ -1626,7 +1618,7 @@ export default function PlayerInformationRef() {
                           <div className='flex flex-row items-center gap-[10px]'>
                             <div
                               className='underline'
-                              style={{ cursor: 'pointer' }}
+                              style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                               onClick={() => seatNameSort()}
                             >
                               {header}

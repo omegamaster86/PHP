@@ -662,7 +662,7 @@ export default function TournamentResultManagement() {
                 <CustomTh>
                   <div
                     className='underline'
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                     onClick={() => raceIdSort()}
                   >
                     レースID
@@ -671,7 +671,7 @@ export default function TournamentResultManagement() {
                 <CustomTh>
                   <div
                     className='underline'
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                     onClick={() => raceNameSort()}
                   >
                     レース名
@@ -680,7 +680,7 @@ export default function TournamentResultManagement() {
                 <CustomTh>
                   <div
                     className='underline'
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                     onClick={() => raceNoSort()}
                   >
                     レースNo
@@ -691,7 +691,7 @@ export default function TournamentResultManagement() {
                   <div className='flex flex-row items-center gap-[10px]'>
                     <div
                       className='underline'
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                       onClick={() => groupSort()}
                     >
                       組別

@@ -586,7 +586,7 @@ export default function PlayerSearch() {
                 <CustomTh>
                   <div
                     className='underline'
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                     onClick={() => playerNameSort()}
                   >
                     選手名
@@ -595,7 +595,7 @@ export default function PlayerSearch() {
                 <CustomTh>
                   <div
                     className='underline'
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                     onClick={() => jaraPlayerIdSort()}
                   >
                     JARA選手コード
@@ -604,7 +604,7 @@ export default function PlayerSearch() {
                 <CustomTh>
                   <div
                     className='underline'
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                     onClick={() => playerIdSort()}
                   >
                     選手ID
@@ -613,7 +613,7 @@ export default function PlayerSearch() {
                 <CustomTh>
                   <div
                     className='underline'
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                     onClick={() => sexSort()}
                   >
                     性別

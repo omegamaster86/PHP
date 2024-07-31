@@ -47,8 +47,8 @@ interface ByGroupList {
   id: number;
   name: string;
 }
-//発艇日時フィルター用
-interface StartDateTimeList {
+//距離フィルター用
+interface RangeList {
   id: number;
   name: string;
 }
@@ -115,19 +115,17 @@ export default function TournamentRef() {
   //組別
   const [byGroupList, setByGroupList] = useState([] as ByGroupList[]);
   const [selectedByGroupList, setSelectedByGroupList] = useState([] as ByGroupList[]);
-  //発艇日時
-  const [startDateTimeList, setStartDateTimeList] = useState([] as StartDateTimeList[]);
-  const [selectedStartDateTimeList, setSelectedStartDateTimeList] = useState(
-    [] as StartDateTimeList[],
-  );
+  //距離
+  const [rangeList, setRangeList] = useState([] as RangeList[]);
+  const [selectedRangeList, setSelectedRangeList] = useState([] as RangeList[]);
 
   // フィルター用のステート 20240508
   const [showEventNameAutocomplete, setShowEventNameAutocomplete] = useState(false);
   const [showByGroupAutocomplete, setShowByGroupAutocomplete] = useState(false);
-  const [showStartDateTimeAutocomplete, setShowStartDateTimeAutocomplete] = useState(false);
+  const [showRangeAutocomplete, setShowRangeAutocomplete] = useState(false);
   const eventNamefocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240518
   const byGroupfocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240518
-  const startDateTimefocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240518
+  const rangefocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240518
 
   // ヘッダーの位置を取得するためのステート
   //種目
@@ -141,7 +139,7 @@ export default function TournamentRef() {
     position: { top: 0, left: 0 },
   });
   //発艇日時
-  const [selectedStartDateTimeHeader, setSelectedStartDateTimeHeader] = useState({
+  const [selectedRangeHeader, setSelectedRangeHeader] = useState({
     value: '',
     position: { top: 0, left: 0 },
   });
@@ -166,7 +164,7 @@ export default function TournamentRef() {
     });
     setShowEventNameAutocomplete(!showEventNameAutocomplete);
     setShowByGroupAutocomplete(false);
-    setShowStartDateTimeAutocomplete(false);
+    setShowRangeAutocomplete(false);
   };
   /**
    * 組別ヘッダークリック時の処理
@@ -185,7 +183,7 @@ export default function TournamentRef() {
     });
     setShowEventNameAutocomplete(false);
     setShowByGroupAutocomplete(!showByGroupAutocomplete);
-    setShowStartDateTimeAutocomplete(false);
+    setShowRangeAutocomplete(false);
   };
   /**
    * 発艇日時ヘッダークリック時の処理
@@ -193,12 +191,9 @@ export default function TournamentRef() {
    * @param event
    * ヘッダーの位置を取得し、オートコンプリートを表示する
    */
-  const handleStartDateTimeHeaderClick = (
-    value: string,
-    event: MouseEvent<HTMLElement, MouseEvent>,
-  ) => {
+  const handleRangeHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
-    setSelectedStartDateTimeHeader({
+    setSelectedRangeHeader({
       value,
       position: {
         top: headerPosition.bottom + window.scrollY,
@@ -207,7 +202,76 @@ export default function TournamentRef() {
     });
     setShowEventNameAutocomplete(false);
     setShowByGroupAutocomplete(false);
-    setShowStartDateTimeAutocomplete(!showStartDateTimeAutocomplete);
+    setShowRangeAutocomplete(!showRangeAutocomplete);
+  };
+
+  // レースIDのソート用　20240731
+  const [raceIdSortFlag, setRaceIdSortFlag] = useState(false);
+  const raceIdSort = () => {
+    if (raceIdSortFlag) {
+      setRaceIdSortFlag(false);
+      tableData.sort((a, b) => Number(a.race_id) - Number(b.race_id));
+    } else {
+      setRaceIdSortFlag(true);
+      tableData.sort((a, b) => Number(b.race_id) - Number(a.race_id));
+    }
+  };
+  // レース名のソート用　20240731
+  const [raceNameSortFlag, setRaceNameSortFlag] = useState(false);
+  const raceNameSort = () => {
+    if (raceNameSortFlag) {
+      setRaceNameSortFlag(false);
+      tableData.sort((a, b) => ('' + a.race_name).localeCompare(b.race_name));
+    } else {
+      setRaceNameSortFlag(true);
+      tableData.sort((a, b) => ('' + b.race_name).localeCompare(a.race_name));
+    }
+  };
+
+  // レースNoのソート用　20240731
+  const [raceNumberSortFlag, setRaceNumberSortFlag] = useState(false);
+  const raceNumberSort = () => {
+    if (raceNumberSortFlag) {
+      setRaceNumberSortFlag(false);
+      tableData.sort((a, b) => Number(a.race_number) - Number(b.race_number));
+    } else {
+      setRaceNumberSortFlag(true);
+      tableData.sort((a, b) => Number(b.race_number) - Number(a.race_number));
+    }
+  };
+  // 種目のソート用　20240731
+  const [eventNameSortFlag, setEventNameSortFlag] = useState(false);
+  const eventNameSort = () => {
+    if (eventNameSortFlag) {
+      setEventNameSortFlag(false);
+      tableData.sort((a, b) => ('' + a.event_name).localeCompare(b.event_name));
+    } else {
+      setEventNameSortFlag(true);
+      tableData.sort((a, b) => ('' + b.event_name).localeCompare(a.event_name));
+    }
+  };
+  // 組別のソート用　20240731
+  const [byGroupSortFlag, setByGroupSortFlag] = useState(false);
+  const byGroupSort = () => {
+    if (byGroupSortFlag) {
+      setByGroupSortFlag(false);
+      tableData.sort((a, b) => ('' + a.by_group).localeCompare(b.by_group));
+    } else {
+      setByGroupSortFlag(true);
+      tableData.sort((a, b) => ('' + b.by_group).localeCompare(a.by_group));
+    }
+  };
+
+  // 距離のソート用　20240731
+  const [rangeSortFlag, setRangeSortFlag] = useState(false);
+  const rangeSort = () => {
+    if (rangeSortFlag) {
+      setRangeSortFlag(false);
+      tableData.sort((a, b) => Number(a.range) - Number(b.range));
+    } else {
+      setRangeSortFlag(true);
+      tableData.sort((a, b) => Number(b.range) - Number(a.range));
+    }
   };
 
   // 発艇日時のソート用
@@ -301,15 +365,12 @@ export default function TournamentRef() {
             name: item,
           })),
         );
-        //発艇日時をフィルターできるようにする 20240509
-        const startDateTimeArray = raceResponse.data.result.map((item: any) =>
-          item.start_date_time.substring(0, 10),
-        );
-        //console.log(startDateTimeArray);
-        const uniqueStartDateTimeSet = new Set(startDateTimeArray);
-        const uniqueStartDateTimeArray = Array.from(uniqueStartDateTimeSet);
-        setStartDateTimeList(
-          uniqueStartDateTimeArray.map((item: any, index: any) => ({
+        //距離をフィルターできるようにする 20240509
+        const rangeArray = raceResponse.data.result.map((item: any) => item.range);
+        const uniqueRangeSet = new Set(rangeArray);
+        const uniqueRangeArray = Array.from(uniqueRangeSet);
+        setRangeList(
+          uniqueRangeArray.map((item: any, index: any) => ({
             id: index,
             name: item,
           })),
@@ -325,22 +386,34 @@ export default function TournamentRef() {
       // //console.log(eventNamefocusTarget.current);
       if (eventNamefocusTarget.current != null) {
         var target = eventNamefocusTarget.current as HTMLDivElement;
-        (target.childNodes[0].childNodes[0].childNodes[1].childNodes[0] as HTMLElement).focus();
+        (
+          target.childNodes[0].childNodes[0].childNodes[1].childNodes[
+            selectedEventNameList.length
+          ] as HTMLElement
+        ).focus();
       }
     }
     if (showByGroupAutocomplete) {
       if (byGroupfocusTarget.current != null) {
         var target = byGroupfocusTarget.current as HTMLDivElement;
-        (target.childNodes[0].childNodes[0].childNodes[1].childNodes[0] as HTMLElement).focus();
+        (
+          target.childNodes[0].childNodes[0].childNodes[1].childNodes[
+            selectedByGroupList.length
+          ] as HTMLElement
+        ).focus();
       }
     }
-    if (showStartDateTimeAutocomplete) {
-      if (startDateTimefocusTarget.current != null) {
-        var target = startDateTimefocusTarget.current as HTMLDivElement;
-        (target.childNodes[0].childNodes[0].childNodes[1].childNodes[0] as HTMLElement).focus();
+    if (showRangeAutocomplete) {
+      if (rangefocusTarget.current != null) {
+        var target = rangefocusTarget.current as HTMLDivElement;
+        (
+          target.childNodes[0].childNodes[0].childNodes[1].childNodes[
+            selectedRangeList.length
+          ] as HTMLElement
+        ).focus();
       }
     }
-  }, [showEventNameAutocomplete, showByGroupAutocomplete, showStartDateTimeAutocomplete]);
+  }, [showEventNameAutocomplete, showByGroupAutocomplete, showRangeAutocomplete]);
 
   // エラーがある場合はエラーメッセージを表示
   if (isError) {
@@ -535,38 +608,100 @@ export default function TournamentRef() {
             <CustomTable>
               <CustomThead>
                 <CustomTr>
-                  <CustomTh align='left'>レースID</CustomTh>
-                  <CustomTh align='left'>レース名</CustomTh>
-                  <CustomTh align='left'>レースNo.</CustomTh>
                   <CustomTh align='left'>
-                    <div className='flex flex-row items-center gap-[10px]'>
-                      種目
-                      <div onClick={(event) => handleEventNameHeaderClick('種目', event as any)}>
-                        <FilterListIcon />
-                      </div>
+                    <div
+                      className='underline'
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                      onClick={() => raceIdSort()}
+                    >
+                      レースID
+                    </div>
+                  </CustomTh>
+                  <CustomTh align='left'>
+                    <div
+                      className='underline'
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                      onClick={() => raceNameSort()}
+                    >
+                      レース名
+                    </div>
+                  </CustomTh>
+                  <CustomTh align='left'>
+                    <div
+                      className='underline'
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                      onClick={() => raceNumberSort()}
+                    >
+                      レースNo.
                     </div>
                   </CustomTh>
                   <CustomTh align='left'>
                     <div className='flex flex-row items-center gap-[10px]'>
-                      組別
-                      <div onClick={(event) => handleByGroupHeaderClick('組別', event as any)}>
-                        <FilterListIcon />
-                      </div>
-                    </div>
-                  </CustomTh>
-                  <CustomTh align='left'>距離</CustomTh>
-                  <CustomTh align='left'>
-                    <div className='flex flex-row items-center gap-[10px]'>
-                      <div className='underline' onClick={() => startDateTimeSort()}>
-                        発艇日時
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => eventNameSort()}
+                      >
+                        種目
                       </div>
                       <div
-                        onClick={(event) =>
-                          handleStartDateTimeHeaderClick('発艇日時', event as any)
-                        }
+                        style={{
+                          cursor: 'pointer',
+                          color: selectedEventNameList.length > 0 ? '#F44336' : '#001D74',
+                        }}
+                        onClick={(event) => handleEventNameHeaderClick('種目', event as any)}
                       >
                         <FilterListIcon />
                       </div>
+                    </div>
+                  </CustomTh>
+                  <CustomTh align='left'>
+                    <div className='flex flex-row items-center gap-[10px]'>
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => byGroupSort()}
+                      >
+                        組別
+                      </div>
+                      <div
+                        style={{
+                          cursor: 'pointer',
+                          color: selectedByGroupList.length > 0 ? '#F44336' : '#001D74',
+                        }}
+                        onClick={(event) => handleByGroupHeaderClick('組別', event as any)}
+                      >
+                        <FilterListIcon />
+                      </div>
+                    </div>
+                  </CustomTh>
+                  <CustomTh align='left'>
+                    <div className='flex flex-row items-center gap-[10px]'>
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => rangeSort()}
+                      >
+                        距離
+                      </div>
+                      <div
+                        style={{
+                          cursor: 'pointer',
+                          color: selectedRangeList.length > 0 ? '#F44336' : '#001D74',
+                        }}
+                        onClick={(event) => handleRangeHeaderClick('距離', event as any)}
+                      >
+                        <FilterListIcon />
+                      </div>
+                    </div>
+                  </CustomTh>
+                  <CustomTh align='left'>
+                    <div
+                      className='underline'
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                      onClick={() => startDateTimeSort()}
+                    >
+                      発艇日時
                     </div>
                   </CustomTh>
                 </CustomTr>
@@ -574,71 +709,24 @@ export default function TournamentRef() {
               <CustomTbody>
                 {tableData
                   .filter((row, index) => {
-                    if (
-                      selectedEventNameList.length === 0 &&
-                      selectedByGroupList.length === 0 &&
-                      selectedStartDateTimeList.length === 0
-                    ) {
-                      return true;
-                    } else if (
-                      selectedEventNameList.length > 0 &&
-                      selectedByGroupList.length === 0 &&
-                      selectedStartDateTimeList.length === 0
-                    ) {
+                    if (selectedEventNameList.length > 0) {
                       return selectedEventNameList.some((item) => item.name === row.event_name);
-                    } else if (
-                      selectedEventNameList.length === 0 &&
-                      selectedByGroupList.length > 0 &&
-                      selectedStartDateTimeList.length === 0
-                    ) {
-                      return selectedByGroupList.some((item) => item.name === row.by_group);
-                    } else if (
-                      selectedEventNameList.length === 0 &&
-                      selectedByGroupList.length === 0 &&
-                      selectedStartDateTimeList.length > 0
-                    ) {
-                      return selectedStartDateTimeList.some((item) =>
-                        row.start_date_time.includes(item.name),
-                      );
-                    } else if (
-                      selectedEventNameList.length > 0 &&
-                      selectedByGroupList.length > 0 &&
-                      selectedStartDateTimeList.length == 0
-                    ) {
-                      return (
-                        selectedEventNameList.some((item) => item.name === row.event_name) &&
-                        selectedByGroupList.some((item) => item.name === row.by_group)
-                      );
-                    } else if (
-                      selectedEventNameList.length > 0 &&
-                      selectedByGroupList.length == 0 &&
-                      selectedStartDateTimeList.length > 0
-                    ) {
-                      return (
-                        selectedEventNameList.some((item) => item.name === row.event_name) &&
-                        selectedStartDateTimeList.some((item) =>
-                          row.start_date_time.includes(item.name),
-                        )
-                      );
-                    } else if (
-                      selectedEventNameList.length == 0 &&
-                      selectedByGroupList.length > 0 &&
-                      selectedStartDateTimeList.length > 0
-                    ) {
-                      return (
-                        selectedByGroupList.some((item) => item.name === row.by_group) &&
-                        selectedStartDateTimeList.some((item) =>
-                          row.start_date_time.includes(item.name),
-                        )
-                      );
                     } else {
-                      return (
-                        selectedEventNameList.some((item) => item.name === row.event_name) &&
-                        selectedStartDateTimeList.some((item) =>
-                          row.start_date_time.includes(item.name),
-                        ) &&
-                        selectedByGroupList.some((item) => item.name === row.by_group)
-                      );
+                      return true;
+                    }
+                  })
+                  .filter((row, index) => {
+                    if (selectedByGroupList.length > 0) {
+                      return selectedByGroupList.some((item) => item.name === row.by_group);
+                    } else {
+                      return true;
+                    }
+                  })
+                  .filter((row, index) => {
+                    if (selectedRangeList.length > 0) {
+                      return selectedRangeList.some((item) => item.name === row.range);
+                    } else {
+                      return true;
                     }
                   })
                   .map((row, index) => (
@@ -782,41 +870,43 @@ export default function TournamentRef() {
                 />
               </div>
             )}
-            {/* 発艇日時用のオートコンプリート 20240509 */}
-            {showStartDateTimeAutocomplete && (
+            {/* 距離用のオートコンプリート 20240509 */}
+            {showRangeAutocomplete && (
               <div
-                ref={startDateTimefocusTarget}
+                ref={rangefocusTarget}
                 style={{
                   position: 'absolute',
-                  top: `${selectedStartDateTimeHeader.position.top - 120}px`,
-                  left: `${selectedStartDateTimeHeader.position.left}px`,
+                  top: `${selectedRangeHeader.position.top - 120}px`,
+                  left: `${selectedRangeHeader.position.left}px`,
                   backgroundColor: 'white',
                   borderRadius: '4px',
                   zIndex: 1000,
                   padding: '8px',
                 }}
-                onBlur={() => setShowStartDateTimeAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
+                onBlur={() => setShowRangeAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
               >
                 <Autocomplete
-                  id='startDateTime'
+                  id='range'
                   multiple
-                  options={startDateTimeList}
+                  options={rangeList}
                   filterOptions={(options, { inputValue }) =>
-                    options.filter((option) => option.name.includes(inputValue))
+                    options.filter(
+                      (option) => option.name?.toString().includes(inputValue?.toString()),
+                    )
                   }
-                  value={selectedStartDateTimeList || []}
-                  onChange={(e: ChangeEvent<{}>, newValue: StartDateTimeList[]) => {
+                  value={selectedRangeList || []}
+                  onChange={(e: ChangeEvent<{}>, newValue: RangeList[]) => {
                     //console.log(newValue);
-                    setSelectedStartDateTimeList(newValue);
+                    setSelectedRangeList(newValue);
                   }}
-                  renderOption={(props: any, option: StartDateTimeList) => {
+                  renderOption={(props: any, option: RangeList) => {
                     return (
                       <li {...props} key={option.id}>
                         {option.name}
                       </li>
                     );
                   }}
-                  renderTags={(value: StartDateTimeList[], getTagProps: any) => {
+                  renderTags={(value: RangeList[], getTagProps: any) => {
                     return value.map((option, index) => (
                       <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
                     ));
@@ -826,7 +916,7 @@ export default function TournamentRef() {
                       key={params.id}
                       className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
                       {...params}
-                      label={'発艇日時'}
+                      label={'距離'}
                     />
                   )}
                 />
