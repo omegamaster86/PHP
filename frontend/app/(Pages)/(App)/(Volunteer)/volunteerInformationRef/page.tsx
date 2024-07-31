@@ -1367,7 +1367,7 @@ export default function VolunteerInformationRef() {
                   <CustomTh colSpan={1} rowSpan={2}>
                     <div
                       className='underline'
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                       onClick={() => tournNameSort()}
                     >
                       大会名/イベント名
@@ -1377,7 +1377,7 @@ export default function VolunteerInformationRef() {
                   <CustomTh colSpan={1} rowSpan={2}>
                     <div
                       className='underline'
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                       onClick={() => roleSort()}
                     >
                       役割
@@ -1387,7 +1387,7 @@ export default function VolunteerInformationRef() {
                     <div className='flex flex-row items-center gap-[10px]'>
                       <div
                         className='underline'
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                         onClick={() => ADSort()}
                       >
                         AD
@@ -1411,7 +1411,7 @@ export default function VolunteerInformationRef() {
                   <CustomTh>
                     <div
                       className='underline'
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                       onClick={() => eventStartDateSort()}
                     >
                       開始日
@@ -1420,7 +1420,7 @@ export default function VolunteerInformationRef() {
                   <CustomTh>
                     <div
                       className='underline'
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                       onClick={() => eventEndDateSort()}
                     >
                       終了日
@@ -1430,7 +1430,7 @@ export default function VolunteerInformationRef() {
                     <div className='flex flex-row items-center gap-[10px]'>
                       <div
                         className='underline'
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                         onClick={() => holidaySort()}
                       >
                         祝日
@@ -1450,7 +1450,7 @@ export default function VolunteerInformationRef() {
                     <div className='flex flex-row items-center gap-[10px]'>
                       <div
                         className='underline'
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                         onClick={() => sundaySort()}
                       >
                         日曜
@@ -1470,7 +1470,7 @@ export default function VolunteerInformationRef() {
                     <div className='flex flex-row items-center gap-[10px]'>
                       <div
                         className='underline'
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                         onClick={() => mondaySort()}
                       >
                         月曜
@@ -1490,7 +1490,7 @@ export default function VolunteerInformationRef() {
                     <div className='flex flex-row items-center gap-[10px]'>
                       <div
                         className='underline'
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                         onClick={() => tuesdaySort()}
                       >
                         火曜
@@ -1510,7 +1510,7 @@ export default function VolunteerInformationRef() {
                     <div className='flex flex-row items-center gap-[10px]'>
                       <div
                         className='underline'
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                         onClick={() => wednesdaySort()}
                       >
                         水曜
@@ -1530,7 +1530,7 @@ export default function VolunteerInformationRef() {
                     <div className='flex flex-row items-center gap-[10px]'>
                       <div
                         className='underline'
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                         onClick={() => thursdaySort()}
                       >
                         木曜
@@ -1550,7 +1550,7 @@ export default function VolunteerInformationRef() {
                     <div className='flex flex-row items-center gap-[10px]'>
                       <div
                         className='underline'
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                         onClick={() => fridaySort()}
                       >
                         金曜
@@ -1570,7 +1570,7 @@ export default function VolunteerInformationRef() {
                     <div className='flex flex-row items-center gap-[10px]'>
                       <div
                         className='underline'
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                         onClick={() => saturdaySort()}
                       >
                         土曜

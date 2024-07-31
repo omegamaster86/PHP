@@ -1388,7 +1388,7 @@ export default function VolunteerSearch() {
             <CustomTh rowSpan={2}>
               <div
                 className='underline'
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                 onClick={() => volunteerIdSort()}
               >
                 ボランティアID
@@ -1397,7 +1397,7 @@ export default function VolunteerSearch() {
             <CustomTh rowSpan={2}>
               <div
                 className='underline'
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                 onClick={() => volunteerNameSort()}
               >
                 氏名
@@ -1406,19 +1406,27 @@ export default function VolunteerSearch() {
             <CustomTh rowSpan={2}>
               <div
                 className='underline'
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                 onClick={() => volunteerCountrySort()}
               >
                 居住地
               </div>
             </CustomTh>
             <CustomTh rowSpan={2}>
-              <div className='underline' style={{ cursor: 'pointer' }} onClick={() => sexSort()}>
+              <div
+                className='underline'
+                style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                onClick={() => sexSort()}
+              >
                 性別
               </div>
             </CustomTh>
             <CustomTh rowSpan={2}>
-              <div className='underline' style={{ cursor: 'pointer' }} onClick={() => ageSort()}>
+              <div
+                className='underline'
+                style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                onClick={() => ageSort()}
+              >
                 年齢
               </div>
             </CustomTh>
@@ -1433,17 +1441,29 @@ export default function VolunteerSearch() {
           </CustomTr>
           <CustomTr>
             <CustomTh>
-              <div className='underline' style={{ cursor: 'pointer' }} onClick={() => PR1Sort()}>
+              <div
+                className='underline'
+                style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                onClick={() => PR1Sort()}
+              >
                 PR1
               </div>
             </CustomTh>
             <CustomTh>
-              <div className='underline' style={{ cursor: 'pointer' }} onClick={() => PR2Sort()}>
+              <div
+                className='underline'
+                style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                onClick={() => PR2Sort()}
+              >
                 PR2
               </div>
             </CustomTh>
             <CustomTh>
-              <div className='underline' style={{ cursor: 'pointer' }} onClick={() => PR3Sort()}>
+              <div
+                className='underline'
+                style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                onClick={() => PR3Sort()}
+              >
                 PR3
               </div>
             </CustomTh>

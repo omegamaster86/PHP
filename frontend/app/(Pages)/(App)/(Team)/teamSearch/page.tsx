@@ -478,7 +478,7 @@ export default function TeamSearch() {
               <CustomTh>
                 <div
                   className='underline'
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                   onClick={() => entrySystemIdSort()}
                 >
                   エントリーシステムID
@@ -487,7 +487,7 @@ export default function TeamSearch() {
               <CustomTh>
                 <div
                   className='underline'
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                   onClick={() => orgIdSort()}
                 >
                   団体ID
@@ -496,7 +496,7 @@ export default function TeamSearch() {
               <CustomTh>
                 <div
                   className='underline'
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                   onClick={() => orgNameSort()}
                 >
                   団体名
@@ -505,7 +505,7 @@ export default function TeamSearch() {
               <CustomTh>
                 <div
                   className='underline'
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                   onClick={() => foundingYearSort()}
                 >
                   創立年
@@ -514,7 +514,7 @@ export default function TeamSearch() {
               <CustomTh>
                 <div
                   className='underline'
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                   onClick={() => orgTypeSort()}
                 >
                   団体種別
@@ -523,7 +523,7 @@ export default function TeamSearch() {
               <CustomTh>
                 <div
                   className='underline'
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                   onClick={() => orgClassNameSort()}
                 >
                   団体区分

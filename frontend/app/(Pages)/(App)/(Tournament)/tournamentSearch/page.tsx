@@ -500,7 +500,7 @@ export default function TournamentSearch() {
                 <CustomTh align='left'>
                   <div
                     className='underline'
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                     onClick={() => tournamentNameSort()}
                   >
                     大会名
@@ -509,7 +509,7 @@ export default function TournamentSearch() {
                 <CustomTh align='left'>
                   <div
                     className='underline'
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                     onClick={() => startDateSort()}
                   >
                     開催開始日
@@ -518,7 +518,7 @@ export default function TournamentSearch() {
                 <CustomTh align='left'>
                   <div
                     className='underline'
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                     onClick={() => endtDateSort()}
                   >
                     開催終了日
@@ -528,7 +528,7 @@ export default function TournamentSearch() {
                 <CustomTh align='left'>
                   <div
                     className='underline'
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                     onClick={() => sponsorOrgIdSort()}
                   >
                     主催団体ID
@@ -537,7 +537,7 @@ export default function TournamentSearch() {
                 <CustomTh align='left'>
                   <div
                     className='underline'
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                     onClick={() => sponsorOrgNameSort()}
                   >
                     主催団体名

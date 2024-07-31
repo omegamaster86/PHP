@@ -277,7 +277,7 @@ export default function TeamManagement() {
                     <div className='flex flex-row items-center gap-[10px]'>
                       <div
                         className='underline'
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                         onClick={() => orgTypeSort()}
                       >
                         団体種別
@@ -296,7 +296,7 @@ export default function TeamManagement() {
                   <CustomTh align='left'>
                     <div
                       className='underline'
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                       onClick={() => entrySystemIdSort()}
                     >
                       エントリーシステムの団体ID
@@ -305,7 +305,7 @@ export default function TeamManagement() {
                   <CustomTh align='left'>
                     <div
                       className='underline'
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                       onClick={() => orgIdSort()}
                     >
                       団体ID
@@ -315,7 +315,7 @@ export default function TeamManagement() {
                     <div className='flex flex-row items-center gap-[10px]'>
                       <div
                         className='underline'
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                         onClick={() => orgNameSort()}
                       >
                         団体名
