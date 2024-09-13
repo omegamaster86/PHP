@@ -74,6 +74,73 @@ export default function TeamSearch() {
   const [visibleData, setVisibleData] = useState<Org[]>([]); // 表示するデータ
   const [visibleItems, setVisibleItems] = useState(10); // 表示するデータの数
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
+
+  // エントリーシステムIDのソート用　20240724
+  const [entrySystemIdSortFlag, setEntrySystemIdSortFlag] = useState(false);
+  const entrySystemIdSort = () => {
+    if (entrySystemIdSortFlag) {
+      setEntrySystemIdSortFlag(false);
+      visibleData.sort((a, b) => Number(a.entrysystem_org_id) - Number(b.entrysystem_org_id));
+    } else {
+      setEntrySystemIdSortFlag(true);
+      visibleData.sort((a, b) => Number(b.entrysystem_org_id) - Number(a.entrysystem_org_id));
+    }
+  };
+  // 団体IDのソート用　20240724
+  const [orgIdSortFlag, setOrgIdSortFlag] = useState(false);
+  const orgIdSort = () => {
+    if (orgIdSortFlag) {
+      setOrgIdSortFlag(false);
+      visibleData.sort((a, b) => Number(a.org_id) - Number(b.org_id));
+    } else {
+      setOrgIdSortFlag(true);
+      visibleData.sort((a, b) => Number(b.org_id) - Number(a.org_id));
+    }
+  };
+  // 団体名のソート用　20240724
+  const [orgNameSortFlag, setOrgNameSortFlag] = useState(false);
+  const orgNameSort = () => {
+    if (orgNameSortFlag) {
+      setOrgNameSortFlag(false);
+      visibleData.sort((a, b) => ('' + a.org_name).localeCompare(b.org_name));
+    } else {
+      setOrgNameSortFlag(true);
+      visibleData.sort((a, b) => ('' + b.org_name).localeCompare(a.org_name));
+    }
+  };
+  // 創立年のソート用　20240724
+  const [foundingYearSortFlag, setFoundingYearSortFlag] = useState(false);
+  const foundingYearSort = () => {
+    if (foundingYearSortFlag) {
+      setFoundingYearSortFlag(false);
+      visibleData.sort((a, b) => Number(a.founding_year) - Number(b.founding_year));
+    } else {
+      setFoundingYearSortFlag(true);
+      visibleData.sort((a, b) => Number(b.founding_year) - Number(a.founding_year));
+    }
+  };
+  // 団体種別のソート用　20240724
+  const [orgTypeSortFlag, setOrgTypeSortFlag] = useState(false);
+  const orgTypeSort = () => {
+    if (orgTypeSortFlag) {
+      setOrgTypeSortFlag(false);
+      visibleData.sort((a, b) => ('' + a.orgTypeName).localeCompare(b.orgTypeName));
+    } else {
+      setOrgTypeSortFlag(true);
+      visibleData.sort((a, b) => ('' + b.orgTypeName).localeCompare(a.orgTypeName));
+    }
+  };
+  // 団体区分のソート用　20240724
+  const [orgClassNameSortFlag, setOrgClassNameSortFlag] = useState(false);
+  const orgClassNameSort = () => {
+    if (orgClassNameSortFlag) {
+      setOrgClassNameSortFlag(false);
+      visibleData.sort((a, b) => ('' + a.orgClassName).localeCompare(b.orgClassName));
+    } else {
+      setOrgClassNameSortFlag(true);
+      visibleData.sort((a, b) => ('' + b.orgClassName).localeCompare(a.orgClassName));
+    }
+  };
   /**
    * 検索ボタン押下時の処理
    * @returns
@@ -408,12 +475,60 @@ export default function TeamSearch() {
         <CustomTable>
           <CustomThead>
             <CustomTr>
-              <CustomTh>エントリーシステムID</CustomTh>
-              <CustomTh>団体ID</CustomTh>
-              <CustomTh>団体名</CustomTh>
-              <CustomTh>創立年</CustomTh>
-              <CustomTh>団体種別</CustomTh>
-              <CustomTh>団体区分</CustomTh>
+              <CustomTh>
+                <div
+                  className='underline'
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                  onClick={() => entrySystemIdSort()}
+                >
+                  エントリーシステムID
+                </div>
+              </CustomTh>
+              <CustomTh>
+                <div
+                  className='underline'
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                  onClick={() => orgIdSort()}
+                >
+                  団体ID
+                </div>
+              </CustomTh>
+              <CustomTh>
+                <div
+                  className='underline'
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                  onClick={() => orgNameSort()}
+                >
+                  団体名
+                </div>
+              </CustomTh>
+              <CustomTh>
+                <div
+                  className='underline'
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                  onClick={() => foundingYearSort()}
+                >
+                  創立年
+                </div>
+              </CustomTh>
+              <CustomTh>
+                <div
+                  className='underline'
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                  onClick={() => orgTypeSort()}
+                >
+                  団体種別
+                </div>
+              </CustomTh>
+              <CustomTh>
+                <div
+                  className='underline'
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                  onClick={() => orgClassNameSort()}
+                >
+                  団体区分
+                </div>
+              </CustomTh>
             </CustomTr>
           </CustomThead>
           <tbody>

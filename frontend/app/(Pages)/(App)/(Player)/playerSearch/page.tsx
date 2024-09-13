@@ -170,6 +170,52 @@ export default function PlayerSearch() {
   const [event, setEvent] = useState<EventResponse[]>([]);
   const [errorMessage, setErrorMessage] = useState([] as string[]);
 
+  // 選手名のソート用　20240719
+  const [playerNameSortFlag, setPlayerNameSortFlag] = useState(false);
+  const playerNameSort = () => {
+    if (playerNameSortFlag) {
+      setPlayerNameSortFlag(false);
+      visibleData.sort((a, b) => ('' + a.player_name).localeCompare(b.player_name));
+    } else {
+      setPlayerNameSortFlag(true);
+      visibleData.sort((a, b) => ('' + b.player_name).localeCompare(a.player_name));
+    }
+  };
+  // JARA選手コードのソート用　20240719
+  const [jaraPlayerIdSortFlag, setJaraPlayerIdSortFlag] = useState(false);
+
+  const jaraPlayerIdSort = () => {
+    if (jaraPlayerIdSortFlag) {
+      setJaraPlayerIdSortFlag(false);
+      visibleData.sort((a, b) => Number(a.jara_player_id) - Number(b.jara_player_id));
+    } else {
+      setJaraPlayerIdSortFlag(true);
+      visibleData.sort((a, b) => Number(b.jara_player_id) - Number(a.jara_player_id));
+    }
+  };
+  // 選手IDのソート用　20240719
+  const [playerIdSortFlag, setPlayerIdSortFlag] = useState(false);
+  const playerIdSort = () => {
+    if (playerIdSortFlag) {
+      setPlayerIdSortFlag(false);
+      visibleData.sort((a, b) => Number(a.player_id) - Number(b.player_id));
+    } else {
+      setPlayerIdSortFlag(true);
+      visibleData.sort((a, b) => Number(b.player_id) - Number(a.player_id));
+    }
+  };
+  // 性別のソート用　20240719
+  const [sexSortFlag, setSexSortFlag] = useState(false);
+  const sexSort = () => {
+    if (playerIdSortFlag) {
+      setPlayerIdSortFlag(false);
+      visibleData.sort((a, b) => ('' + a.sex).localeCompare(b.sex));
+    } else {
+      setPlayerIdSortFlag(true);
+      visibleData.sort((a, b) => ('' + b.sex).localeCompare(a.sex));
+    }
+  };
+
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
 
   // データ取得
@@ -537,10 +583,42 @@ export default function PlayerSearch() {
             <CustomThead>
               <CustomTr>
                 <CustomTh>選手画像</CustomTh>
-                <CustomTh>選手名</CustomTh>
-                <CustomTh>JARA選手コード</CustomTh>
-                <CustomTh>選手ID</CustomTh>
-                <CustomTh>性別</CustomTh>
+                <CustomTh>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => playerNameSort()}
+                  >
+                    選手名
+                  </div>
+                </CustomTh>
+                <CustomTh>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => jaraPlayerIdSort()}
+                  >
+                    JARA選手コード
+                  </div>
+                </CustomTh>
+                <CustomTh>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => playerIdSort()}
+                  >
+                    選手ID
+                  </div>
+                </CustomTh>
+                <CustomTh>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => sexSort()}
+                  >
+                    性別
+                  </div>
+                </CustomTh>
                 <CustomTh>エントリーシステムの団体ID1</CustomTh>
                 <CustomTh>団体ID1</CustomTh>
                 <CustomTh>所属団体名1</CustomTh>

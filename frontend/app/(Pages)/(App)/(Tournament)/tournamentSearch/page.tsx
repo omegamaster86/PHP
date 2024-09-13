@@ -90,6 +90,90 @@ export default function TournamentSearch() {
   const [visibleData, setVisibleData] = useState<Tournament[]>([]); // 表示するデータ
   const [visibleItems, setVisibleItems] = useState(10); // 表示するデータの数
 
+  // 大会名のソート用 20240707
+  const [tournamentNameSortFlag, setTournamentNameSortFlag] = useState(false);
+  const tournamentNameSort = () => {
+    if (tournamentNameSortFlag) {
+      setTournamentNameSortFlag(false);
+      visibleData.sort((a: any | number | bigint, b: any | number | bigint) =>
+        ('' + a.tourn_name).localeCompare(b.tourn_name),
+      );
+    } else {
+      setTournamentNameSortFlag(true);
+      visibleData.sort((a: any | number | bigint, b: any | number | bigint) =>
+        ('' + b.tourn_name).localeCompare(a.tourn_name),
+      );
+    }
+  };
+  // 開催開始日のソート用 20240707
+  const [startDateSortFlag, setStartDateSortFlag] = useState(false);
+  const startDateSort = () => {
+    if (startDateSortFlag) {
+      setStartDateSortFlag(false);
+      visibleData.sort(
+        (a: any | number | bigint, b: any | number | bigint) =>
+          Number(a.event_start_date.replace(/[- :]/g, '')) -
+          Number(b.event_start_date.replace(/[- :]/g, '')),
+      );
+    } else {
+      setStartDateSortFlag(true);
+      visibleData.sort(
+        (a: any | number | bigint, b: any | number | bigint) =>
+          Number(b.event_start_date.replace(/[- :]/g, '')) -
+          Number(a.event_start_date.replace(/[- :]/g, '')),
+      );
+    }
+  };
+  // 開催終了日のソート用 20240707
+  const [endDateSortFlag, setEndDateSortFlag] = useState(false);
+  const endtDateSort = () => {
+    if (endDateSortFlag) {
+      setEndDateSortFlag(false);
+      visibleData.sort(
+        (a: any | number | bigint, b: any | number | bigint) =>
+          Number(a.event_end_date.replace(/[- :]/g, '')) -
+          Number(b.event_end_date.replace(/[- :]/g, '')),
+      );
+    } else {
+      setEndDateSortFlag(true);
+      visibleData.sort(
+        (a: any | number | bigint, b: any | number | bigint) =>
+          Number(b.event_end_date.replace(/[- :]/g, '')) -
+          Number(a.event_end_date.replace(/[- :]/g, '')),
+      );
+    }
+  };
+  // 主催団体IDのソート用 20240707
+  const [sponsorOrgIdFlag, setsponsorOrgIdFlag] = useState(false);
+  const sponsorOrgIdSort = () => {
+    if (sponsorOrgIdFlag) {
+      setsponsorOrgIdFlag(false);
+      visibleData.sort(
+        (a: any | number | bigint, b: any | number | bigint) => a.sponsor_org_id - b.sponsor_org_id,
+      );
+    } else {
+      setsponsorOrgIdFlag(true);
+      visibleData.sort(
+        (a: any | number | bigint, b: any | number | bigint) => b.sponsor_org_id - a.sponsor_org_id,
+      );
+    }
+  };
+  // 主催団体名のソート用 20240707
+  const [sponsorOrgNameFlag, setSponsorOrgNameFlag] = useState(false);
+  const sponsorOrgNameSort = () => {
+    if (sponsorOrgNameFlag) {
+      setSponsorOrgNameFlag(false);
+      visibleData.sort((a: any | number | bigint, b: any | number | bigint) =>
+        ('' + a.sponsorOrgName).localeCompare(b.sponsorOrgName),
+      );
+    } else {
+      setSponsorOrgNameFlag(true);
+      visibleData.sort((a: any | number | bigint, b: any | number | bigint) =>
+        ('' + b.sponsorOrgName).localeCompare(a.sponsorOrgName),
+      );
+    }
+  };
+
   // フォームの入力値を管理する関数
   const handleInputChange = (name: string, value: string) => {
     setSearchCond((prevFormData) => ({
@@ -126,6 +210,7 @@ export default function TournamentSearch() {
       if (response.data.result.length > 100) {
         window.alert('検索結果が100件を超えました、上位100件を表示しています。');
       }
+
       // レスポンスからデータを取り出してstateにセット
       setSearchResponse(response.data.result);
       // 最初は10件だけ表示
@@ -411,13 +496,53 @@ export default function TournamentSearch() {
             {/* 大会一覧テーブルヘッダー表示 */}
             <CustomThead>
               <CustomTr>
-                <CustomTh>大会種別</CustomTh>
-                <CustomTh>大会名</CustomTh>
-                <CustomTh>開催開始日</CustomTh>
-                <CustomTh>開催終了日</CustomTh>
-                <CustomTh>開催場所</CustomTh>
-                <CustomTh>主催団体ID</CustomTh>
-                <CustomTh>主催団体名</CustomTh>
+                <CustomTh align='left'>大会種別</CustomTh>
+                <CustomTh align='left'>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => tournamentNameSort()}
+                  >
+                    大会名
+                  </div>
+                </CustomTh>
+                <CustomTh align='left'>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => startDateSort()}
+                  >
+                    開催開始日
+                  </div>
+                </CustomTh>
+                <CustomTh align='left'>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => endtDateSort()}
+                  >
+                    開催終了日
+                  </div>
+                </CustomTh>
+                <CustomTh align='left'>開催場所</CustomTh>
+                <CustomTh align='left'>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => sponsorOrgIdSort()}
+                  >
+                    主催団体ID
+                  </div>
+                </CustomTh>
+                <CustomTh align='left'>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => sponsorOrgNameSort()}
+                  >
+                    主催団体名
+                  </div>
+                </CustomTh>
               </CustomTr>
             </CustomThead>
             {/* 大会一覧テーブル明細表示 */}
