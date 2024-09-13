@@ -152,12 +152,9 @@ export default function Tournaments() {
   const [byGroupErrorMessage, setByGroupErrorMessage] = useState([] as string[]);
   const [rangeErrorMessage, setRangeErrorMessage] = useState([] as string[]);
   const [startDateTimeErrorMessage, setStartDateTimeErrorMessage] = useState([] as string[]);
-  const [entrysystemRaceIdErrorMessage, setEntrysystemRaceIdErrorMessage] = useState(
-    [] as string[],
-  ); //エントリーシステムレースIDの重複メッセージ用 20240506
-  const [raceNumberDuplicatErrorMessage, setRaceNumberDuplicatErrorMessage] = useState(
-    [] as string[],
-  ); //レースNo.の重複メッセージ用 20240506
+  const [entrysystemRaceIdErrorMessage, setEntrysystemRaceIdErrorMessage] = useState([] as string[]); //エントリーシステムレースIDの重複メッセージ用 20240506
+  const [entryRaceIdErrorMessage, setEntryRaceIdErrorMessage] = useState([] as string[]); //エントリーシステムレースIDのバリデーション用 20240606
+  const [raceNumberDuplicatErrorMessage, setRaceNumberDuplicatErrorMessage] = useState([] as string[]); //レースNo.の重複メッセージ用 20240506
   const [errorMessages, setErrorMessages] = useState([] as string[]);
 
   const [backKeyFlag, setBackKeyFlag] = useState<boolean>(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
@@ -166,7 +163,10 @@ export default function Tournaments() {
   const performValidation = () => {
     // const entrysystemRaceIdError = Validator.getErrorMessages([]);
 
-    const entrysystemTournIdError = Validator.getErrorMessages([]); //エントリーシステムの大会ID用エラーメッセージ 20240409
+    //エントリーシステムの大会ID用エラーメッセージ 20240606
+    const entrysystemTournIdError = Validator.getErrorMessages([
+      tournamentFormData.entrysystem_tourn_id?.length > 0 ? Validator.validateAlphabetNumber(tournamentFormData.entrysystem_tourn_id, 'エントリーシステムの大会ID') : '',
+    ]);
 
     const tournNameError = Validator.getErrorMessages([
       Validator.validateRequired(tournamentFormData.tourn_name, '大会名'),
@@ -208,6 +208,16 @@ export default function Tournaments() {
     const tournUrlError = Validator.getErrorMessages([
       Validator.validateUrlFormat(tournamentFormData.tourn_url),
     ]);
+
+
+    //エントリーシステムのレースIDのバリデーションチェック 20240606
+    const entryRaceIdErrorFlg = tableData.some((row) => {
+      if (row.checked) {
+        return false; //削除チェックがされている場合、バリデーションを行わない 20240606
+      }
+      // return row.entrysystem_race_id.length > 0;
+      return row.entrysystem_race_id?.length > 0 ? Validator.validateAlphabetNumber(row.entrysystem_race_id, 'エントリーシステムの大会ID').length > 0 : false;
+    });
 
     const raceNumberErrorFlg = tableData.some((row) => {
       if (row.checked) {
@@ -299,6 +309,14 @@ export default function Tournaments() {
     setVenueIdErrorMessage(venueIdError);
     setVenueNameErrorMessage(venueNameError);
     setTournUrlErrorMessage(tournUrlError);
+
+    //エントリーシステムのレースID 20240606
+    if (entryRaceIdErrorFlg) {
+      setEntryRaceIdErrorMessage(['エントリーシステムの大会IDに使用できる文字は以下になります。使用可能文字: 半角英数字']);
+    } else {
+      setEntryRaceIdErrorMessage([]);
+    }
+
     if (raceNumberErrorFlg) {
       setRaceNumberErrorMessage(
         Validator.getErrorMessages([Validator.validateRequired(null, 'レースNo.')]),
@@ -374,6 +392,7 @@ export default function Tournaments() {
     }
 
     if (
+      entrysystemTournIdError.length > 0 ||
       tournNameError.length > 0 ||
       sponsorOrgIdError.length > 0 ||
       eventStartDateError.length > 0 ||
@@ -384,6 +403,7 @@ export default function Tournaments() {
       eventIdErrorFlg ||
       raceNameErrorFlg ||
       // raceIdErrorFlg ||
+      entryRaceIdErrorFlg ||
       raceNumberErrorFlg ||
       raceNumberNegativeErrorFlg ||
       raceTypeErrorFlg ||
@@ -1628,7 +1648,8 @@ export default function Tournaments() {
         </div>
         {
           // エラーメッセージの表示
-          (raceNumberErrorMessage.length > 0 ||
+          (entryRaceIdErrorMessage.length > 0 ||
+            raceNumberErrorMessage.length > 0 ||
             raceIdErrorMessage.length > 0 ||
             eventIdErrorMessage.length > 0 ||
             raceNameErrorMessage.length > 0 ||
@@ -1640,6 +1661,7 @@ export default function Tournaments() {
             entrysystemRaceIdErrorMessage.length > 0 ||
             raceNumberDuplicatErrorMessage.length > 0) && (
             <div key='tableErrorMessage' className='text-caption1 text-systemErrorText'>
+              <p>{entryRaceIdErrorMessage}</p>
               <p>{raceIdErrorMessage}</p>
               <p>{raceNumberErrorMessage}</p>
               <p>{eventIdErrorMessage}</p>
