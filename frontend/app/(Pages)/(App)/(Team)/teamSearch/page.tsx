@@ -405,7 +405,7 @@ export default function TeamSearch() {
                 <InputLabel
                   label='創立年'
                   displayHelp
-                  toolTipText='団体の創立念を西暦で入力してください。' //はてなボタン用
+                  toolTipText='団体の創立年を西暦で入力してください。' //はてなボタン用
                 />
                 <div className='w-full flex flex-row justify-start gap-[8px]'>
                   {/* 創立年（開始年） */}
