@@ -740,7 +740,7 @@ export default function OrgInfo() {
           <InputLabel
             label='創立年'
             displayHelp={mode !== 'confirm'}
-            toolTipText='団体の創立念を西暦で入力してください。' //はてなボタン用
+            toolTipText='団体の創立年を西暦で入力してください。' //はてなボタン用
           />
           <CustomYearPicker
             selectedDate={formData.founding_year === 0 ? '' : formData.founding_year?.toString()}

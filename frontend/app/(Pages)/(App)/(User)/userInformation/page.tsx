@@ -498,13 +498,13 @@ export default function UserInformationUpdate() {
           label='ユーザー名'
           placeHolder='山田 太郎'
           readonly={mode === 'confirm'}
-          toolTipText='文字制限
-          　最大文字数：32文字（全半角区別なし）
-          　利用可能文字：
-          　　　日本語
-          　　　英大文字：[A-Z]（26 文字）
-          　　　英小文字：[a-z]（26 文字）
-          　　　数字：[0-9]（10 文字）
+          toolTipText='文字制限<br>
+          　最大文字数：32文字（全半角区別なし）<br>
+          　利用可能文字：<br>
+          　　　日本語<br>
+          　　　英大文字：[A-Z]（26 文字）<br>
+          　　　英小文字：[a-z]（26 文字）<br>
+          　　　数字：[0-9]（10 文字）<br>
           　　　記号：-,_'
           onChange={(e) => {
             handleInputChange('user_name', e.target.value);
