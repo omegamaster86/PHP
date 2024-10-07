@@ -86,21 +86,6 @@ const config: Config = {
       systemWarningBg: '#FFF7CA',
       systemLinkText: '#FF4D4F',
     },
-    height: {
-      '12': '3rem',
-      '432': '27rem',
-    },
-    width: {
-      '72': '18rem',
-    },
-    spacing: {
-      '1': '8px',
-      '2': '12px',
-      '3': '16px',
-      '4': '24px',
-      '5': '32px',
-      '6': '48px',
-    },
   },
   plugins: [],
 };

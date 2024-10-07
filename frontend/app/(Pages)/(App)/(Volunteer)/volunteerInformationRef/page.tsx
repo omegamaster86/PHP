@@ -2252,7 +2252,7 @@ export default function VolunteerInformationRef() {
           {window.history.length > 1 && (
             <CustomButton
               buttonType='white-outlined'
-              className='text-normal h-12 w-72 mb-6'
+              className='text-normal h-12 mb-6'
               onClick={() => {
                 router.back();
                 // ボランティア情報参照画面に遷移
@@ -2265,7 +2265,7 @@ export default function VolunteerInformationRef() {
           {mode === 'delete' && (
             <CustomButton
               buttonType='primary'
-              className='text-secondaryText text-normal h-12 w-72 mr-1 mb-6'
+              className='text-secondaryText text-normal h-12 mr-1 mb-6'
               onClick={() => {
                 // TODO: 削除処理
                 /**

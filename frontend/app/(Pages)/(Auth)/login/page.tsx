@@ -60,33 +60,29 @@ export default function Login() {
   return (
     <>
       <div>
-        <main className='flex flex-col items-center justify-between gap-[40px] my-[100px] m-auto'>
+        <main className='flex flex-col items-center justify-between gap-[40px] my-[100px] m-auto max-w-md px-2'>
           <CustomTitle isCenter={true}>ログイン</CustomTitle>
-          <div className='flex flex-col gap-[20px] justify-center rounded min-w-[90%] lg:min-w-[900px]'>
+          <div className='flex flex-col gap-[20px] justify-center rounded w-full'>
             <ErrorBox errorText={errorText} />
-              <div className='flex flex-col gap-[8px]'>
-                <CustomTextField
-                  label='メールアドレス'
-                  isError={emailErrorMessages.length > 0}
-                  errorMessages={emailErrorMessages}
-                  required
-                  value={email}
-                  placeHolder='メールアドレスを入力してください。'
-                  displayHelp={false}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-            <div className='flex flex-col gap-[8px] '>
-              <CustomPasswordField
-                label='パスワード'
-                isError={passwordErrorMessages.length > 0}
-                errorMessages={passwordErrorMessages}
-                required
-                placeholder='パスワードを入力してください。'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+            <CustomTextField
+              label='メールアドレス'
+              isError={emailErrorMessages.length > 0}
+              errorMessages={emailErrorMessages}
+              required
+              value={email}
+              placeHolder='メールアドレスを入力してください。'
+              displayHelp={false}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <CustomPasswordField
+              label='パスワード'
+              isError={passwordErrorMessages.length > 0}
+              errorMessages={passwordErrorMessages}
+              required
+              placeholder='パスワードを入力してください。'
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
             <p className='flex justify-center text-small font-bold pt-[32px]'>
               <Link className='text-primary-500' href='/forgotpassword'>
                 パスワードを忘れましたか？
