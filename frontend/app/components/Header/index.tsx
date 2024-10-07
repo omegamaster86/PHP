@@ -1,11 +1,11 @@
-import React, { useState, useEffect, FC, MouseEvent } from 'react';
+import React, { useState, useEffect, type FC, type MouseEvent } from 'react';
 import './Header.css';
 import Logo from '../Logo';
 import { useRouter, usePathname } from 'next/navigation';
 import { Menu, MenuItem, Button } from '@mui/material';
 import { useAuth } from '@/app/hooks/auth';
 import axios from '@/app/lib/axios';
-import { UserIdType } from '@/app/types';
+import type { UserIdType } from '@/app/types';
 
 const Header: FC = () => {
   const [index, setIndex] = useState(0);
