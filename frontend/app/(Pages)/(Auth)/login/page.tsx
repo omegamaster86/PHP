@@ -9,13 +9,12 @@ import {
   CustomPasswordField,
   ErrorBox,
   CustomTitle,
-  Header,
   Loading,
 } from '@/app/components';
 import { useAuth } from '@/app/hooks/auth';
 import Validator from '@/app/utils/validator';
 
-import axios, { AxiosError } from 'axios';
+import axios, { type AxiosError } from 'axios';
 import Link from 'next/link';
 
 interface Values {
@@ -47,6 +46,7 @@ export default function Login() {
     } catch (error: Error | AxiosError | any) {
       if (!error?.response) {
         setErrorText(['サーバーへの接続に失敗しました。', 'ネットワークを確認してください。']);
+        console.log(Error);
       }
       if (axios.isAxiosError(error) && error.response?.status === 422) {
         setErrorText(error.response?.data?.errors?.system_error);
@@ -62,9 +62,8 @@ export default function Login() {
       <div>
         <main className='flex flex-col items-center justify-between gap-[40px] my-[100px] m-auto'>
           <CustomTitle isCenter={true}>ログイン</CustomTitle>
-          <div className='flex flex-col gap-[20px] justify-center rounded md:w-[900px]'>
+          <div className='flex flex-col gap-[20px] justify-center rounded min-w-[90%] lg:min-w-[900px]'>
             <ErrorBox errorText={errorText} />
-            <div className='flex flex-col gap-[8px]'>
               <div className='flex flex-col gap-[8px]'>
                 <CustomTextField
                   label='メールアドレス'
@@ -77,7 +76,6 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-            </div>
             <div className='flex flex-col gap-[8px] '>
               <CustomPasswordField
                 label='パスワード'
@@ -111,7 +109,6 @@ export default function Login() {
                 setPasswordErrorMessages(passwordErrorMessages);
                 if (emailErrorMessages.length > 0 || passwordErrorMessages.length > 0) {
                   // TODO: バリデーションエラー時の処理を実装
-                  //console.log('error');
                 } else {
                   // TODO: ログイン処理
                   // let isPasswordTemporary = true;
@@ -176,8 +173,9 @@ export default function Login() {
           >
             <p>お問い合わせはこちらへ</p>
           </CustomButton>
-          <p className='text-black text-small p-4'>
-            営業時間：土・日・祝日　休業日を除く月曜〜金曜　9:00〜12:00 13:00〜17:00
+          <p className='text-black text-small text-center font-light [&_span]:inline-block'>
+            <span>営業時間：土・日・祝日&nbsp;&nbsp;</span>
+            <span>休業日を除く月曜〜金曜&nbsp;&nbsp;9:00〜12:00&nbsp;&nbsp;13:00〜17:00</span>
           </p>
         </div>
       </div>

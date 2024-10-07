@@ -1,6 +1,6 @@
 import { HelpOutlineSharp } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
-import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
+import Tooltip, { type TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
 const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
@@ -50,7 +50,11 @@ export default function InputLabel({
               >
                 {toolTipTitle}
               </Typography>
-              <p className='text-caption2 text-secondaryText text-[12px]' dangerouslySetInnerHTML={{ __html: toolTipText == undefined ? "" : toolTipText }}></p>
+              <Typography
+                className='text-caption2 text-secondaryText'
+              >
+                {toolTipText || ""}
+              </Typography>
             </div>
           }
           placement='top'

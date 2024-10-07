@@ -2,7 +2,7 @@ import TextField from '@mui/material/TextField';
 import React from 'react';
 import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '../InputLabel';
-import { ChangeEvent, FocusEvent } from 'react';
+import type { ChangeEvent, FocusEvent } from 'react';
 
 const CustomTextField = ({
   label,
