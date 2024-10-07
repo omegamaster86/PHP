@@ -57,41 +57,39 @@ const CustomTextField = ({
           toolTipText={toolTipText}
         />
       )}
-      <div className='flex flex-col gap-[8px]'>
-        {readonly && (
-          <p className={className + ' h-12 text-secondaryText py-3 disable'}>
-            {value} {inputAdorment}
-          </p>
-        )}
-        {!readonly && (
-          <TextField
-            type={type || 'text'}
-            error={isError}
-            name={label}
-            id={label}
-            {...(disabled && { disabled: true })}
-            {...(disabled && { className: 'bg-disableBg' })}
-            value={value}
-            onChange={onChange}
-            onBlur={(e) => {
-              if (onBlur) {
-                onBlur(e as any);
-              }
-            }}
-            placeholder={placeHolder}
-            inputProps={
-              (isDecimal && { step: '0.01' }) || (maxLength && { maxLength: maxLength }) || {}
+      {readonly ? (
+        <p className={className + ' h-12 text-secondaryText py-3 disable'}>
+          {value} {inputAdorment}
+        </p>
+      ) : (
+        <TextField
+          type={type || 'text'}
+          error={isError}
+          name={label}
+          id={label}
+          {...(disabled && { disabled: true })}
+          {...(disabled && { className: 'bg-disableBg' })}
+          value={value}
+          onChange={onChange}
+          onBlur={(e) => {
+            if (onBlur) {
+              onBlur(e as any);
             }
-            InputProps={
-              inputAdorment &&
-              ({
-                endAdornment: <InputAdornment position='end'>{inputAdorment}</InputAdornment>,
-              } as any)
-            }
-            className={`bg-white ${className ? className : ''}`}
-          />
-        )}
-      </div>
+          }}
+          placeholder={placeHolder}
+          inputProps={
+            (isDecimal && { step: '0.01' }) || (maxLength && { maxLength: maxLength }) || {}
+          }
+          InputProps={
+            inputAdorment &&
+            ({
+              endAdornment: <InputAdornment position='end'>{inputAdorment}</InputAdornment>,
+            } as any)
+          }
+          className={`bg-white ${className ? className : ''}`}
+          fullWidth
+        />
+      )}
       {isError &&
         errorMessages?.map((message) => {
           return (
