@@ -16,7 +16,7 @@ import {
 import Validator from '@/app/utils/validator';
 import axios from '@/app/lib/axios';
 import { TextareaAutosize } from '@mui/material';
-import { UserResponse } from '@/app/types';
+import type { UserResponse } from '@/app/types';
 import { useAuth } from '@/app/hooks/auth';
 
 export default function Inquiry() {
@@ -67,7 +67,7 @@ export default function Inquiry() {
   const modeCustomButtons = {
     default: (
       <CustomButton
-        className='w-[120px] md:w-[240px]'
+        className='flex-1'
         buttonType='primary'
         onClick={() => {
           // エラーがあればエラーメッセージを表示
@@ -114,6 +114,7 @@ export default function Inquiry() {
     ),
     confirm: (
       <CustomButton
+        className='flex-1'
         buttonType='primary'
         onClick={async () => {
           // 送信処理
@@ -132,7 +133,7 @@ export default function Inquiry() {
               }
             })
             .catch((error) => {
-              setErrorMessage(['メール送信に失敗しました。もう一度送信してください。']);
+              setErrorMessage(['メール送信に失敗しました。','もう一度送信してください。']);
             });
         }}
       >
@@ -144,10 +145,10 @@ export default function Inquiry() {
   return (
     <>
       <div>
-        <main className='flex flex-col items-center justify-start gap-[40px] my-[100px] m-auto p-4 md:max-w-[900px]'>
+        <main className='flex flex-col items-center justify-start gap-[40px] my-[50px] m-auto py-4 px-2 max-w-md'>
           {/* 画面名 */}
           <CustomTitle isCenter={true}>お問い合わせ</CustomTitle>
-          <div className='flex flex-col gap-[20px] rounded'>
+          <div className='flex flex-col gap-[20px] rounded w-full'>
             {/* エラー表示１ */}
             <ErrorBox errorText={errorMessage.length > 0 ? errorMessage : []} />
             <div className='flex flex-col gap-[8px]'>
@@ -220,6 +221,7 @@ export default function Inquiry() {
                     {/* 個人情報取り扱い */}
                     <Label label='個人情報取り扱い' textSize='h3' isBold />
                     {/* 個人情報保護方針の本文 */}
+                    {/* FIXME 利用規約の文言を確認する*/}
                     <p className='text-small'>
                       (sample)
                       <br />
@@ -248,13 +250,13 @@ export default function Inquiry() {
                 </div>
               )}
             </div>
-            <div className='flex justify-center flex-row items-center gap-[16px]'>
+            <div className='justify-center items-center gap-[16px] flex flex-col sm:flex-row'>
               <CustomButton
                 onClick={() => {
                   router.back();
                 }}
                 buttonType='white-outlined'
-                className='w-[120px] md:w-[240px]'
+                className='flex-1'
               >
                 キャンセル
               </CustomButton>

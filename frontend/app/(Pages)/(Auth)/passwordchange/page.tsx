@@ -1,18 +1,16 @@
 // パスワード変更画面
 
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/app/hooks/auth';
 import CustomPasswordField from '@/app/components/CustomPasswordField';
 import CustomButton from '@/app/components/CustomButton';
-import Loading from '@/app/components/Loading';
 import { useRouter } from 'next/navigation';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import Validator from '@/app/utils/validator';
 import CustomTitle from '@/app/components/CustomTitle';
 import ErrorBox from '@/app/components/ErrorBox';
 import axios from '@/app/lib/axios';
-import { Header } from '@/app/components';
 
 export default function Passwordchange() {
   const [errorText, setErrorText] = useState([] as string[]);
@@ -38,9 +36,9 @@ export default function Passwordchange() {
           </CustomButton>
         </div> */}
         {/* This is a extra feature for logout - end*/}
-        <main className='flex flex-col items-center justify-start gap-[80px] my-[100px] m-auto p-4'>
+        <main className='flex flex-col items-center justify-start gap-[20px] my-[100px] m-auto py-4 max-w-md px-2'>
           <CustomTitle isCenter={true}>パスワード変更</CustomTitle>
-          <div className='flex flex-col gap-4 rounded'>
+          <div className='flex flex-col gap-4 rounded w-full'>
             <ErrorBox errorText={errorText} />
             <CustomPasswordField
               label='旧パスワード'
@@ -56,7 +54,7 @@ export default function Passwordchange() {
               isError={newPasswordErrorMessages.length > 0}
               errorMessages={newPasswordErrorMessages}
               required
-              placeholder='パスワードを入力してください。'
+              placeholder='新しいパスワードを入力してください。'
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
             />
@@ -65,7 +63,7 @@ export default function Passwordchange() {
               isError={confirmNewPasswordErrorMessages.length > 0}
               errorMessages={confirmNewPasswordErrorMessages}
               required
-              placeholder='確認のためにもう一度パスワードを入力してください。'
+              placeholder='新しいパスワードを入力してください。'
               value={confirmNewPassword}
               onChange={(e) => setConfirmNewPassword(e.target.value)}
             />
@@ -86,10 +84,10 @@ export default function Passwordchange() {
               </div>
             </div>
           </div>
-          <div className='flex justify-center gap-[16px]'>
+          <div className='gap-4 flex flex-col sm:flex-row'>
             <CustomButton
               buttonType='white-outlined'
-              className='w-[200px]'
+              className='flex-1'
               onClick={() => {
                 //console.log(user.temp_password_flag);
                 if (user.temp_password_flag == 1) {
@@ -103,7 +101,7 @@ export default function Passwordchange() {
             </CustomButton>
             <CustomButton
               buttonType='primary'
-              className='w-[200px]'
+              className='flex-1'
               onClick={async () => {
                 // バリデーション
                 const currentPasswordErrorMessages = Validator.getErrorMessages([
@@ -166,7 +164,6 @@ export default function Passwordchange() {
                   })
                   .catch((error) => {
                     // エラー時の処理を実装
-                    //console.log(error);
                     let systemError = [] as string[];
                     if (error.response?.status === 422) {
                       systemError.push(error?.response?.data?.message);

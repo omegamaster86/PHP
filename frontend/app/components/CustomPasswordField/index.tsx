@@ -1,5 +1,5 @@
 import TextField from '@mui/material/TextField';
-import { useState, ChangeEvent } from 'react';
+import { useState, type ChangeEvent } from 'react';
 import InputAdornment from '@mui/material/InputAdornment';
 import VisibilityIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOffOutlined';
