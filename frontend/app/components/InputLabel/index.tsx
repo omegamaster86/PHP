@@ -50,11 +50,7 @@ export default function InputLabel({
               >
                 {toolTipTitle}
               </Typography>
-              <Typography
-                className='text-caption2 text-secondaryText'
-              >
-                {toolTipText || ""}
-              </Typography>
+              <p className='text-secondaryText text-[12px]' dangerouslySetInnerHTML={{ __html: toolTipText == undefined ? "" : toolTipText }}></p>
             </div>
           }
           placement='top'
