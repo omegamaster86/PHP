@@ -1,12 +1,12 @@
 'use client';
 import { useIdleTimer } from 'react-idle-timer'; // For logout a user after one hour of inactivity
 import { Header, Footer, Loading } from '@/app/components';
-import { ReactNode, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { useAuth } from '@/app/hooks/auth';
 import { usePathname, useRouter } from 'next/navigation';
 
 export default function Layout({ children }: { children: ReactNode }) {
-  const { user, logout, isLoading } = useAuth({ middleware: 'auth' });
+  const { user, logout } = useAuth({ middleware: 'auth' });
   const [loggedIn, setLoggedIn] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
@@ -38,10 +38,6 @@ export default function Layout({ children }: { children: ReactNode }) {
     syncTimers: 1000 * 60 * 60,
   }); //Set 1 hour inactivity time for logout .
 
-  // if (isLoading) {
-  //   return <Loading />;
-  // }
-
   function authCheck() {
     if (user) {
       setLoggedIn(true);
@@ -54,7 +50,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className='flex h-screen flex-col'>
       <Header />
-      <div className='flex-grow md:overflow-y-auto md:p-12'>{children}</div>
+      <div className='flex-grow md:overflow-y-auto'>{children}</div>
     </div>
   );
 }
