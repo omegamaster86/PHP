@@ -133,7 +133,7 @@ export default function Inquiry() {
               }
             })
             .catch((error) => {
-              setErrorMessage(['メール送信に失敗しました。','もう一度送信してください。']);
+              setErrorMessage(['メール送信に失敗しました。', 'もう一度送信してください。']);
             });
         }}
       >
@@ -143,128 +143,124 @@ export default function Inquiry() {
   };
 
   return (
-    <>
-      <div>
-        <main className='flex flex-col items-center justify-start gap-[40px] my-[50px] m-auto py-4 px-2 max-w-md'>
-          {/* 画面名 */}
-          <CustomTitle isCenter={true}>お問い合わせ</CustomTitle>
-          <div className='flex flex-col gap-[20px] rounded w-full'>
-            {/* エラー表示１ */}
-            <ErrorBox errorText={errorMessage.length > 0 ? errorMessage : []} />
-            <div className='flex flex-col gap-[8px]'>
-              {/* 氏名 */}
-              <div className='flex flex-col gap-[8px]'>
-                <CustomTextField
-                  label='お名前'
-                  // エラー表示2
-                  isError={userNameErrorMessages.length > 0}
-                  errorMessages={userNameErrorMessages}
-                  required={!isConfirm}
-                  displayHelp={false}
-                  value={user.user_name}
-                  placeHolder='山田 太郎'
-                  onChange={(e) => setUser({ ...user, user_name: e.target.value })}
-                  readonly={isConfirm}
-                />
-              </div>
-            </div>
-            {/* メールアドレス */}
-            <div className='flex flex-col gap-[10px]'>
-              <CustomTextField
-                label='メールアドレス'
-                // エラー表示3
-                isError={emailErrorMessages.length > 0}
-                errorMessages={emailErrorMessages}
-                required={!isConfirm}
-                displayHelp={false}
-                placeHolder='メールアドレスを入力してください。'
-                value={user.mailaddress}
-                onChange={(e) => setUser({ ...user, mailaddress: e.target.value })}
-                readonly={isConfirm}
-              />
-            </div>
-            {/* お問い合わせ内容 */}
-            <div className='flex flex-col gap-[20px]'>
-              <div className='flex flex-col gap-[8px]'>
-                <InputLabel label={'お問い合わせの内容'} required={!isConfirm} />
-                {isConfirm ? (
-                  <div className='h-auto text-secondaryText py-3 disable'>
-                    {inquiryLines?.map((line, index) => (
-                      <Fragment key={index}>
-                        {line}
-                        {index < inquiryLines.length - 1 && <br />}
-                      </Fragment>
-                    ))}
-                  </div>
-                ) : (
-                  <TextareaAutosize
-                    className={`bg-white border-[1px] border-solid rounded-md p-4 ${
-                      inquiryErrorMessages.length > 0 ? 'border-red' : 'border-gray-100'
-                    }`}
-                    value={inquiry}
-                    onChange={(e) => setInquiry(e.target.value)}
-                  />
-                )}
-                {/* エラー表示4 */}
-                {inquiryErrorMessages.length > 0 &&
-                  inquiryErrorMessages?.map((message) => {
-                    return (
-                      <p key={message} className='text-caption1 text-systemErrorText'>
-                        {message}
-                      </p>
-                    );
-                  })}
-              </div>
-              {!isLogIn && !isConfirm && (
-                <div className='flex flex-col gap-[20px]'>
-                  <div className='bg-thinContainerBg border-[1px] border-solid border-[#E0E0E0] rounded-md p-4 flex flex-col gap-2'>
-                    {/* 個人情報取り扱い */}
-                    <Label label='個人情報取り扱い' textSize='h3' isBold />
-                    {/* 個人情報保護方針の本文 */}
-                    {/* FIXME 利用規約の文言を確認する*/}
-                    <p className='text-small'>
-                      (sample)
-                      <br />
-                      XXXXX
-                      <br />
-                      XXXXX
-                    </p>
-                  </div>
-                  <div className='flex justify-center items-center gap-[10px]'>
-                    <div className='flex flex-col gap-[8px]'>
-                      <OriginalCheckbox
-                        id='terms'
-                        label='上記個人情報に関する内容について同意する'
-                        value='個人情報取り扱い'
-                        checked={checked}
-                        readonly={false}
-                        onChange={() => {
-                          setChecked(!checked);
-                        }}
-                        // エラー表示5
-                        isError={consentErrorMessages.length > 0}
-                        errorMessages={consentErrorMessages}
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className='justify-center items-center gap-[16px] flex flex-col sm:flex-row'>
-              <CustomButton
-                onClick={() => {
-                  router.back();
-                }}
-                buttonType='white-outlined'
-                className='flex-1'
-              >
-                キャンセル
-              </CustomButton>
-              {modeCustomButtons[mode as keyof typeof modeCustomButtons]}
-            </div>
+    <main className='flex flex-col items-center justify-start gap-[40px] my-[50px] m-auto px-2 max-w-md'>
+      {/* 画面名 */}
+      <CustomTitle isCenter={true}>お問い合わせ</CustomTitle>
+      <div className='flex flex-col gap-[20px] rounded w-full'>
+        {/* エラー表示１ */}
+        <ErrorBox errorText={errorMessage.length > 0 ? errorMessage : []} />
+        <div className='flex flex-col gap-[8px]'>
+          {/* 氏名 */}
+          <div className='flex flex-col gap-[8px]'>
+            <CustomTextField
+              label='お名前'
+              // エラー表示2
+              isError={userNameErrorMessages.length > 0}
+              errorMessages={userNameErrorMessages}
+              required={!isConfirm}
+              displayHelp={false}
+              value={user.user_name}
+              placeHolder='山田 太郎'
+              onChange={(e) => setUser({ ...user, user_name: e.target.value })}
+              readonly={isConfirm}
+            />
           </div>
-        </main>
+        </div>
+        {/* メールアドレス */}
+        <div className='flex flex-col gap-[10px]'>
+          <CustomTextField
+            label='メールアドレス'
+            // エラー表示3
+            isError={emailErrorMessages.length > 0}
+            errorMessages={emailErrorMessages}
+            required={!isConfirm}
+            displayHelp={false}
+            placeHolder='メールアドレスを入力してください。'
+            value={user.mailaddress}
+            onChange={(e) => setUser({ ...user, mailaddress: e.target.value })}
+            readonly={isConfirm}
+          />
+        </div>
+        {/* お問い合わせ内容 */}
+        <div className='flex flex-col gap-[20px]'>
+          <div className='flex flex-col gap-[8px]'>
+            <InputLabel label={'お問い合わせの内容'} required={!isConfirm} />
+            {isConfirm ? (
+              <div className='h-auto text-secondaryText py-3 disable'>
+                {inquiryLines?.map((line, index) => (
+                  <Fragment key={index}>
+                    {line}
+                    {index < inquiryLines.length - 1 && <br />}
+                  </Fragment>
+                ))}
+              </div>
+            ) : (
+              <TextareaAutosize
+                className={`bg-white border-[1px] border-solid rounded-md p-4 ${
+                  inquiryErrorMessages.length > 0 ? 'border-red' : 'border-gray-100'
+                }`}
+                value={inquiry}
+                onChange={(e) => setInquiry(e.target.value)}
+              />
+            )}
+            {/* エラー表示4 */}
+            {inquiryErrorMessages.length > 0 &&
+              inquiryErrorMessages?.map((message) => {
+                return (
+                  <p key={message} className='text-caption1 text-systemErrorText'>
+                    {message}
+                  </p>
+                );
+              })}
+          </div>
+          {!isLogIn && !isConfirm && (
+            <div className='flex flex-col gap-[20px]'>
+              <div className='bg-thinContainerBg border-[1px] border-solid border-[#E0E0E0] rounded-md p-4 flex flex-col gap-2'>
+                {/* 個人情報取り扱い */}
+                <Label label='個人情報取り扱い' textSize='h3' isBold />
+                {/* 個人情報保護方針の本文 */}
+                {/* FIXME 利用規約の文言を確認する*/}
+                <p className='text-small'>
+                  (sample)
+                  <br />
+                  XXXXX
+                  <br />
+                  XXXXX
+                </p>
+              </div>
+              <div className='flex justify-center items-center gap-[10px]'>
+                <div className='flex flex-col gap-[8px]'>
+                  <OriginalCheckbox
+                    id='terms'
+                    label='上記個人情報に関する内容について同意する'
+                    value='個人情報取り扱い'
+                    checked={checked}
+                    readonly={false}
+                    onChange={() => {
+                      setChecked(!checked);
+                    }}
+                    // エラー表示5
+                    isError={consentErrorMessages.length > 0}
+                    errorMessages={consentErrorMessages}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className='justify-center items-center gap-[16px] flex flex-col sm:flex-row'>
+          <CustomButton
+            onClick={() => {
+              router.back();
+            }}
+            buttonType='white-outlined'
+            className='flex-1'
+          >
+            キャンセル
+          </CustomButton>
+          {modeCustomButtons[mode as keyof typeof modeCustomButtons]}
+        </div>
       </div>
-    </>
+    </main>
   );
 }
