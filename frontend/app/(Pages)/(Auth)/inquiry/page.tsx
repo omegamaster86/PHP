@@ -151,7 +151,6 @@ export default function Inquiry() {
         <ErrorBox errorText={errorMessage.length > 0 ? errorMessage : []} />
         <div className='flex flex-col gap-[8px]'>
           {/* 氏名 */}
-          <div className='flex flex-col gap-[8px]'>
             <CustomTextField
               label='お名前'
               // エラー表示2
@@ -163,8 +162,7 @@ export default function Inquiry() {
               placeHolder='山田 太郎'
               onChange={(e) => setUser({ ...user, user_name: e.target.value })}
               readonly={isConfirm}
-            />
-          </div>
+            />          
         </div>
         {/* メールアドレス */}
         <div className='flex flex-col gap-[10px]'>

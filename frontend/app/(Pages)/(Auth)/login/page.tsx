@@ -16,6 +16,7 @@ import Validator from '@/app/utils/validator';
 
 import axios, { type AxiosError } from 'axios';
 import Link from 'next/link';
+import { BeforeLoginFooter } from '@/app/(Pages)/(Auth)/_components/BeforeLoginFooter';
 
 interface Values {
   email: string;
@@ -158,21 +159,7 @@ export default function Login() {
           </CustomButton>
         </div>
       </main>
-      <div className='bg-disableBg flex justify-center flex-col items-center text-secondaryText gap-[20px] py-[87px] '>
-        <div className='text-h3 text-black font-bold'>日本ローイング協会 サポートデスク</div>
-        <CustomButton
-          onClick={() => {
-            router.push('/inquiry');
-          }}
-          buttonType='primary-outlined'
-        >
-          <p>お問い合わせはこちらへ</p>
-        </CustomButton>
-        <p className='text-black text-small text-center font-light [&_span]:inline-block'>
-          <span>営業時間：土・日・祝日&nbsp;&nbsp;</span>
-          <span>休業日を除く月曜〜金曜&nbsp;&nbsp;9:00〜12:00&nbsp;&nbsp;13:00〜17:00</span>
-        </p>
-      </div>
+      <BeforeLoginFooter />
     </>
   );
 }

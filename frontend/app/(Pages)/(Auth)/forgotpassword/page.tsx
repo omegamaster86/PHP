@@ -13,6 +13,7 @@ import {
 import Validator from '@/app/utils/validator';
 import axios from '@/app/lib/axios';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
+import { BeforeLoginFooter } from '@/app/(Pages)/(Auth)/_components/BeforeLoginFooter';
 
 export default function ForgotPassword() {
   const [errorText, setErrorText] = useState([] as string[]);
@@ -25,26 +26,24 @@ export default function ForgotPassword() {
   const router = useRouter();
 
   return (
-    <div>
-      <main className='flex flex-col items-center justify-between gap-[40px] my-[100px] m-auto'>
+    <>
+      <main className='flex flex-col items-center justify-between gap-[40px] my-[100px] m-auto max-w-md px-2'>
         {/* 画面名 */}
         <CustomTitle isCenter={true}>パスワード再発行</CustomTitle>
-        <div className='flex flex-col gap-[20px] justify-center rounded md:w-[900px]'>
+        <div className='flex flex-col gap-5 rounded w-full'>
           {/* メッセージ表示エリア */}
           <ErrorBox errorText={errorText} />
-          <div>
-            {messageText.length > 0 && (
-              <div className='relative w-full my-3 p-2  border-solid border-[1px] border-secondary-700 flex justify-center items-center'>
-                {messageText.map((message) => {
-                  return (
-                    <p key={message} className='text-secondary-700 text-small'>
-                      {message}
-                    </p>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+          {messageText.length > 0 && (
+            <div className='relative w-full my-3 p-2  border-solid border-[1px] border-secondary-700 flex justify-center items-center'>
+              {messageText.map((message) => {
+                return (
+                  <p key={message} className='text-secondary-700 text-small'>
+                    {message}
+                  </p>
+                );
+              })}
+            </div>
+          )}
           {/* 登録済みメールアドレス */}
           <div className='flex flex-col gap-[8px]'>
             <div className='flex flex-col gap-[8px]'>
@@ -75,10 +74,20 @@ export default function ForgotPassword() {
               onChange={(e) => setEmailConfirm(e.target.value)}
             />
           </div>
-          <div className='flex justify-center flex-row items-center gap-[16px]'>
+          {/* 説明文 */}
+          <div className='flex flex-col gap-[8px] bg-systemWarningBg border-systemWarningText border-solid border-[1px] p-2 justify-center break-words bg-opacity-40'>
+            <WarningAmberOutlinedIcon className='text-systemWarningText text-h3' />
+            <div className='flex flex-col gap-[8px] text-primaryText text-caption2 text-center'>
+              {/* FIXME:文言決まり次第修正 */}
+              登録済みメールアドレスに仮パスワードを記載したメールが送付されます。
+              <br />
+              @xxxxからのメールが受信できるように受信設定をしてください。
+            </div>
+          </div>
+          <div className='flex flex-col sm:flex-row items-center gap-4'>
             <CustomButton
               // buttonType='white-outlined'
-              // className='w-[200px]'
+              className='flex-1'
               onClick={() => {
                 router.push('/login');
               }}
@@ -88,7 +97,7 @@ export default function ForgotPassword() {
             {/* 送信 */}
             <CustomButton
               buttonType='primary'
-              // className='self-center'
+              className='flex-1'
               onClick={() => {
                 const emailErrorMessages = Validator.getErrorMessages([
                   Validator.validateRequired(email, 'メールアドレス'),
@@ -135,32 +144,9 @@ export default function ForgotPassword() {
               送信
             </CustomButton>
           </div>
-
-          {/* 説明文 */}
-          <div className='flex flex-col gap-[8px] bg-systemWarningBg border-systemWarningText border-solid border-[1px] p-2 justify-center break-words bg-opacity-40'>
-            <WarningAmberOutlinedIcon className='text-systemWarningText text-h3' />
-            <div className='flex flex-col gap-[8px] text-primaryText text-caption2 text-left'>
-              登録済みメールアドレスに仮パスワードを記載したメールが送付されます。
-              <br />
-              @xxxxからのメールが受信できるように受信設定をしてください。
-            </div>
-          </div>
         </div>
       </main>
-      <div className='bg-disableBg flex justify-center flex-col items-center text-secondaryText gap-[20px] py-[87px] '>
-        <div className='text-h3 text-black font-bold'>日本ローイング協会 サポートデスク</div>
-        <CustomButton
-          onClick={() => {
-            router.push('/inquiry');
-          }}
-          buttonType='primary-outlined'
-        >
-          <p>お問い合わせはこちらへ</p>
-        </CustomButton>
-        <p className='text-black text-small p-4'>
-          営業時間：土・日・祝日　休業日を除く月曜〜金曜　9:00〜12:00 13:00〜17:00
-        </p>
-      </div>
-    </div>
+      <BeforeLoginFooter/>
+    </>
   );
 }
