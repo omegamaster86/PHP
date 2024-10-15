@@ -14,6 +14,7 @@ use App\Http\Controllers\VolunteerController;
 use App\Http\Controllers\TournamentRaceRefeController;
 use App\Http\Controllers\VolunteerInfoAlignmentController;
 use App\Http\Controllers\TournamentInfoAlignmentController;
+use App\Http\Controllers\MyPageController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Models\M_prefectures;
@@ -186,6 +187,9 @@ Route::middleware('auth')->group(function () {
     Route::post('registerVolunteerCsvData', [VolunteerInfoAlignmentController::class, 'registerVolunteerCsvData']); //ボランティア一括 登録ボタン押下
     Route::post('deleteVolunteer', [VolunteerController::class, 'deleteVolunteer']); //ボランティア削除 20240315
 
+    //マイページ関連
+    Route::post('getMyPageTournamentInfoList', [MyPageController::class, 'getMyPageTournamentInfoList']); // 大会情報を取得する 20241008
+    Route::post('getMyPageRaceResultRecordInfoList', [MyPageController::class, 'getMyPageRaceResultRecordInfoList']); // 出漕履歴を取得する 20241010
 
     //React連携後APIここまで===========================================================
     //================================================================================

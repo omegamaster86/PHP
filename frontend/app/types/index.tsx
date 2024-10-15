@@ -528,6 +528,25 @@ interface CheckRaceResultRecordDeleted {
   isDeleted: boolean; // 削除済かどうか
 }
 
+//マイページの大会情報表示用インターフェース 20241008
+interface MyPageTournamentInfoData {
+  tournName: string; // 大会名
+  tournType: number; // 公式／非公式
+  eventStartDate: string; // 開催日
+  venueName: string; //開催場所
+  sponsorOrgName: string; // 主催団体名
+}
+
+//マイページの出漕履歴表示用インターフェース 20241015
+interface MyPageRaceResultRecordInfoData {
+  tournName: string; // 大会名
+  official: number; // 公式／非公式
+  startDateTime: string; // 開始時刻
+  raceNumber: number; //レースNo.
+  raceName: string;//レース名
+  byGroup: string; // 組別
+}
+
 export type { SexResponse };
 export type { PrefectureResponse };
 export type { CountryResponse };
@@ -563,3 +582,5 @@ export type { CheckRaceResultRecord };
 export type { MasterResponse };
 export type { CrewPlayer };
 export type { CheckRaceResultRecordDeleted };
+export type { MyPageTournamentInfoData };
+export type { MyPageRaceResultRecordInfoData };
