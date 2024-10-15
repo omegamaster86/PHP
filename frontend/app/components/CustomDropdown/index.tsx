@@ -48,7 +48,7 @@ const CustomDropdown: FC<SelectProps> = ({
         />
       )}
       <div className={className}>
-        {readonly && <p className='h-12 w-[300px] text-secondaryText py-3 disable'>{value}</p>}
+        {readonly && <p className='h-12  text-secondaryText py-3 disable'>{value}</p>}
         {!readonly && (
           <Select
             id={id}

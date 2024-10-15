@@ -52,7 +52,7 @@ export default function CustomDialog({
           {title}
         </DialogTitle>
         <DialogContent dividers>{children}</DialogContent>
-        <DialogActions className='mt-[16px]'>
+        <DialogActions className='mt-[16px] flex flex-col sm:flex-row gap-4'>
           {displayCancel && (
             <CustomButton
               onClick={() => {
@@ -68,12 +68,13 @@ export default function CustomDialog({
             </CustomButton>
           )}
           <CustomButton
+            className='!m-0'
+            buttonType='primary'
             onClick={() => {
               if (handleConfirm()) {
                 handleClose();
               }
             }}
-            buttonType='primary'
           >
             {confirmButtonLabel || '確認'}
           </CustomButton>
