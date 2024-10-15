@@ -715,7 +715,7 @@ export default function PlayerInformation() {
 
   return (
     <div>
-      <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px]'>
+      <main className='flex min-h-screen flex-col justify-start px-2 m-auto gap-[20px] my-[80px]'>
         <div className='relative flex flex-row justify-between w-full h-screen flex-wrap'>
           {/* 画面名*/}
           <CustomTitle isCenter={false} displayBack>
@@ -731,10 +731,10 @@ export default function PlayerInformation() {
             label='写真'
             displayHelp={mode !== 'confirm'}
             // toolTipTitle='写真' //はてなボタン用
-            toolTipText='登録可能な画像ファイルの種類は以下になります。
-            　jpg
-            　jpeg
-            　png' //はてなボタン用
+            toolTipText={`<span style="display: block;">登録可能な画像ファイルの種類は以下になります。</span>
+            <span style="display: block;">jpg</span>
+            <span style="display: block;">jpeg</span>
+            <span style="display: block;">png</span>`}
           />
           <div className='flex flex-row justify-start gap-[4px]'>
             {mode !== 'confirm' && (
@@ -802,7 +802,6 @@ export default function PlayerInformation() {
           {/* JARA選手コード */}
           <CustomTextField
             label='JARA選手コード'
-            // type='number'
             // required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
             isError={jaraPlayerCodeErrorMessage.length > 0}
@@ -811,7 +810,6 @@ export default function PlayerInformation() {
             errorMessages={jaraPlayerCodeErrorMessage}
             value={formData.jara_player_id?.toString()}
             onChange={(e) => handleInputChange('jara_player_id', e.target.value)}
-            // toolTipTitle='Title JARA選手コード' //はてなボタン用
             toolTipText='日本ローイング協会より発行された、12桁の選手コードを入力してください。' //はてなボタン用
             maxLength={12}
           />
@@ -828,15 +826,14 @@ export default function PlayerInformation() {
             readonly={mode === 'confirm'}
             value={formData.player_name}
             onChange={(e) => handleInputChange('player_name', e.target.value)}
-            // toolTipTitle='Title 選手名' //はてなボタン用
-            toolTipText='文字制限<br>
-            　最大文字数：32文字（全半角区別なし）<br>
-            　利用可能文字：<br>
-            　　　日本語<br>
-            　　　英大文字：[A-Z]（26 文字）<br>
-            　　　英小文字：[a-z]（26 文字）<br>
-            　　　数字：[0-9]（10 文字）<br>
-            　　　記号：-,_' //はてなボタン用
+            toolTipText={`<span style="display: block;">文字制限</span>
+            <span style="display: block;">最大文字数：32文字（全半角区別なし）</span>
+            <span style="display: block;">利用可能文字：</span>
+            <span style="display: block;">日本語</span>
+            <span style="display: block;">英大文字：[A-Z]（26 文字）</span>
+            <span style="display: block;">英小文字：[a-z]（26 文字）</span>
+            <span style="display: block;">数字：[0-9]（10 文字）</span>
+            <span style="display: block;">記号：-,_</span>`}
           />
         </div>
         <div className='flex flex-col justify-start'>
@@ -845,7 +842,6 @@ export default function PlayerInformation() {
             label='生年月日'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
-            // toolTipTitle='Title 生年月日' //はてなボタン用
             toolTipText='西暦で入力してください。' //はてなボタン用
           />
           <CustomDatePicker
@@ -895,7 +891,6 @@ export default function PlayerInformation() {
             inputAdorment='cm'
             value={formData.height?.toString()}
             onChange={(e) => handleInputChange('height', e.target.value)}
-            // toolTipTitle='Title 身長' //はてなボタン用
             toolTipText='現在の身長を半角数字で入力してください。' //はてなボタン用
           />
         </div>
@@ -914,7 +909,6 @@ export default function PlayerInformation() {
             inputAdorment='kg'
             value={formData.weight?.toString()}
             onChange={(e) => handleInputChange('weight', e.target.value)}
-            // toolTipTitle='Title 体重' //はてなボタン用
             toolTipText='現在の体重を半角数字で入力してください。' //はてなボタン用
           />
         </div>
@@ -924,7 +918,6 @@ export default function PlayerInformation() {
             label='サイド情報'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
-            // toolTipTitle='Title サイド情報' //はてなボタン用
             toolTipText='経験のあるサイドを選択してください。' //はてなボタン用
           />
           <div className='flex justify-start flex-col gap-[4px] my-1'>
@@ -1012,7 +1005,6 @@ export default function PlayerInformation() {
               label='出身地'
               required={mode !== 'confirm'}
               displayHelp={mode !== 'confirm'}
-              // toolTipTitle='Title 出身地' //はてなボタン用
               toolTipText='生まれた国を選択してください。
               日本を選択した場合、都道府県も選択してください。' //はてなボタン用
               readonly={mode === 'confirm'}
@@ -1043,7 +1035,6 @@ export default function PlayerInformation() {
                 label='都道府県'
                 required={mode !== 'confirm'}
                 displayHelp={mode !== 'confirm'}
-                // toolTipTitle='Title 都道府県' //はてなボタン用
                 toolTipText='生まれた都道府県を選択してください。' //はてなボタン用
                 options={prefectures.map((item) => ({ key: item.id, value: item.name }))}
                 readonly={mode === 'confirm'}
@@ -1075,7 +1066,6 @@ export default function PlayerInformation() {
               label='居住地'
               required={mode !== 'confirm'}
               displayHelp={mode !== 'confirm'}
-              // toolTipTitle='Title 居住地' //はてなボタン用
               toolTipText='現在住んでいる国を選択してください。
               日本を選択した場合、都道府県も選択してください。' //はてなボタン用
               options={countries.map((item) => ({ key: item.id, value: item.name }))}
@@ -1105,7 +1095,6 @@ export default function PlayerInformation() {
                 label='都道府県'
                 required={mode !== 'confirm'}
                 displayHelp={mode !== 'confirm'}
-                // toolTipTitle='Title 都道府県' //はてなボタン用
                 toolTipText='現在住んでいる都道府県を選択してください。' //はてなボタン用
                 readonly={mode === 'confirm'}
                 options={prefectures.map((item) => ({ key: item.id, value: item.name }))}
@@ -1131,10 +1120,8 @@ export default function PlayerInformation() {
           {/* 戻るボタン */}
           <CustomButton
             onClick={async () => {
-              //console.log(backKeyFlag);
               await setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
               setErrorMessage([]);
-              //console.log(backKeyFlag);
               router.back();
             }}
             buttonType='white-outlined'

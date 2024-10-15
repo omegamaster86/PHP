@@ -52,6 +52,7 @@ const CustomDatePicker = ({
           timeIntervals={15}
           readOnly={readonly}
           placeholderText={placeHolder}
+          wrapperClassName='w-full'
         />
       )}
       {errorMessages?.map((message: string) => (

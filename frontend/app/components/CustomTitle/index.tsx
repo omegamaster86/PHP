@@ -23,7 +23,7 @@ const CustomTitle = ({
   return (
     <div className='flex justify-start items-center w-max gap-3 mr-auto'>
       {displayBack && <ChevronLeftIcon onClick={() => router.back()} className='cursor-pointer' />}
-      <h1 className='text-2xl lg:text-[3.5rem] font-bold'>{children}</h1>
+      <h1 className='text-2xl lg:text-5xl font-bold'>{children}</h1>
     </div>
   );
 };

@@ -289,7 +289,7 @@ export default function UserInformationUpdate() {
           />
         </div>
       </div>
-      <Divider className='w-[900px] h-[1px] bg-border' />
+      <Divider className='h-[1px] bg-border' />
 
       <div className='flex flex-row justify-center gap-[16px]'>
         {/* 戻る・キャンセルボタン */}

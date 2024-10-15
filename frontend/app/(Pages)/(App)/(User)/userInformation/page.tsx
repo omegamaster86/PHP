@@ -244,7 +244,6 @@ export default function UserInformationUpdate() {
     update: (
       <CustomButton
         buttonType='primary'
-        className='w-[200px]'
         onClick={() => {
           const userNameError = Validator.getErrorMessages([
             Validator.validateRequired(formData?.user_name, 'ユーザー名'),
@@ -313,10 +312,8 @@ export default function UserInformationUpdate() {
     confirm: (
       <CustomButton
         buttonType='primary'
-        className='w-[200px]'
         onClick={async () => {
           // TODO: 更新処理
-
           if (isMailChanged === 'true') {
             if (isNumberVerified) {
               const updateUser = async () => {
@@ -435,7 +432,7 @@ export default function UserInformationUpdate() {
     return <div>ページが見つかりません</div>;
   }
   return (
-    <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[46px] my-[80px]'>
+    <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[46px] my-[80px] max-w-md'>
       <div className='flex flex-col justify-start gap-[20px]'>
         <ErrorBox errorText={errorMessage} />
         <div className='flex flex-row justify-start gap-[20px]'>
@@ -451,10 +448,10 @@ export default function UserInformationUpdate() {
           <InputLabel
             displayHelp={mode !== 'confirm'}
             label='写真'
-            toolTipText='登録可能な画像ファイルの種類は以下になります。
-          　jpg
-          　jpeg
-          　png'
+            toolTipText={`<span style="display: block;">登録可能な画像ファイルの種類は以下になります。</span>
+          <span style="display: block;">jpg</span>
+          <span style="display: block;">jpeg</span>
+          <span style="display: block;">png</span>`}
           />
           {mode === 'update' && (
             <ImageUploader
@@ -498,14 +495,14 @@ export default function UserInformationUpdate() {
           label='ユーザー名'
           placeHolder='山田 太郎'
           readonly={mode === 'confirm'}
-          toolTipText='文字制限<br>
-          　最大文字数：32文字（全半角区別なし）<br>
-          　利用可能文字：<br>
-          　　　日本語<br>
-          　　　英大文字：[A-Z]（26 文字）<br>
-          　　　英小文字：[a-z]（26 文字）<br>
-          　　　数字：[0-9]（10 文字）<br>
-          　　　記号：-,_'
+          toolTipText={`<span style="display: block;">文字制限</span>
+          <span style="display: block;">最大文字数：32文字（全半角区別なし）</span>
+          <span style="display: block;">利用可能文字：</span>
+          <span style="display: block;">日本語</span>
+          <span style="display: block;">英大文字：[A-Z]（26 文字）</span>
+          <span style="display: block;">英小文字：[a-z]（26 文字）</span>
+          <span style="display: block;">数字：[0-9]（10 文字）</span>
+          <span style="display: block;">記号：-,_`}
           onChange={(e) => {
             handleInputChange('user_name', e.target.value);
           }}
@@ -534,7 +531,7 @@ export default function UserInformationUpdate() {
           {!formData?.temp_password_flag && mode == 'update' && (
             <div className='mt-auto'>
               <CustomDialog
-                className='w-[120px] '
+                className='w-[120px]'
                 title='メールアドレスの変更'
                 buttonLabel='変更する'
                 displayCancel={true}
@@ -594,7 +591,7 @@ export default function UserInformationUpdate() {
                     isError={emailConfirmErrorMessages.length > 0}
                     displayHelp={false}
                     value={confirmEmail}
-                    placeHolder='確認のためにもう一度メールアドレスを入力してください。'
+                    placeHolder='メールアドレスを入力してください。'
                     type='email'
                     onChange={(e) => {
                       setConfirmEmail(e.target.value);
@@ -614,7 +611,7 @@ export default function UserInformationUpdate() {
             value={mode !== 'confirm' ? formData?.sex?.toString() || '' : formData?.sexName}
             options={sex.map((item) => ({ key: item.id, value: item.name }))}
             placeHolder='男性'
-            className='w-[200px]'
+            className='w-full'
             readonly={mode === 'confirm'}
             onChange={(e) => {
               handleInputChange('sex', e);
@@ -642,12 +639,13 @@ export default function UserInformationUpdate() {
             isError={dateOfBirthErrorMessages.length > 0}
           />
         </div>
-        <div className='flex flex-row justify-start gap-[16px]'>
-          <div className='flex flex-col justify-start'>
+        <div className='flex flex-col items-start sm:flex-row sm:justify-start gap-[16px]'>
+          <div className='flex flex-col justify-start w-full'>
             {/* 居住地（国） */}
             <CustomDropdown
               id='residenceCountry'
               label='居住地'
+              className='w-full'
               required={mode === 'update'}
               readonly={mode === 'confirm'}
               options={countries.map((item) => ({ key: item.id, value: item.name })) || []}
@@ -666,15 +664,15 @@ export default function UserInformationUpdate() {
               }}
               errorMessages={livingCountryErrorMessages}
               isError={livingCountryErrorMessages.length > 0}
-              className='w-[300px] '
             />
           </div>
           {/* 居住地（都道府県） */}
           {formData?.residenceCountryName === '日本国 （jpn）' && (
-            <div className='flex flex-col justify-start'>
+            <div className='flex flex-col justify-start w-full'>
               <CustomDropdown
                 id='residencePrefecture'
                 label='都道府県'
+                className='w-full'
                 required={mode === 'update'}
                 readonly={mode === 'confirm'}
                 options={prefectures.map((item) => ({ key: item.id, value: item.name })) || []}
@@ -691,7 +689,6 @@ export default function UserInformationUpdate() {
                     prefectures.find((item) => item.id === Number(e))?.name || '',
                   );
                 }}
-                className='w-[300px]'
                 errorMessages={livingPrefectureErrorMessages}
                 isError={livingPrefectureErrorMessages.length > 0}
               />
@@ -724,7 +721,7 @@ export default function UserInformationUpdate() {
           <DialogActions>
             <CustomButton
               buttonType='white-outlined'
-              className='w-[200px]'
+              className='w-full'
               onClick={() => {
                 setIsAuthDialogOpen(false);
                 setAuthNumber('');
@@ -810,7 +807,7 @@ export default function UserInformationUpdate() {
             </CustomButton>
           </DialogActions>
         </Dialog>
-        <div className='flex flex-row justify-start gap-[16px]'>
+        <div className='flex flex-col sm:flex-row sm:justify-start gap-[16px] w-full'>
           {/* 身長 */}
           <CustomTextField
             label='身長'
@@ -845,16 +842,13 @@ export default function UserInformationUpdate() {
           />
         </div>
       </div>
-      <Divider className='w-[900px] h-[1px] bg-border' />
-      <div className='flex flex-row justify-center gap-[16px]'>
+      <Divider className='h-[1px] bg-border' />
+      <div className='flex flex-col items-center sm:flex-row sm:justify-center gap-[16px]'>
         {/* 戻るボタン */}
         <CustomButton
           buttonType='white-outlined'
-          className='w-[200px]'
           onClick={() => {
-            //console.log(backKeyFlag);
             setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
-            //console.log(backKeyFlag);
             setErrorMessage([]);
             router.back();
           }}

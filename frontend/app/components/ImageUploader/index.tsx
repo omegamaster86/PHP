@@ -116,7 +116,7 @@ const ImageUploader: FC<ImageUploaderProps> = ({
   return (
     <div>
       <div>
-        <div {...getRootProps()} className='w-[320px] h-[320px] justify-center flex dropzone'>
+        <div {...getRootProps()} className='w-full h-[320px] justify-center flex dropzone'>
           {currentShowFile?.isUploaded ? (
             <div className='relative'>
               <button
@@ -167,13 +167,13 @@ const ImageUploader: FC<ImageUploaderProps> = ({
               ) : (
                 <div className='w-[320px] h-[320px] bg-containerBg m-auto mt-auto justify-center flex items-center flex-col gap-[10px]'>
                   <input {...getInputProps()} />
-                  <UploadFileIcon className='w-full h-5 w-[32px] h-[32px] text-primaryText' />
+                  <UploadFileIcon className='text-primaryText' />
                   <p className='text-secondaryText border-secondaryText text-sm'>ファイルを選択</p>
                   <p className='text-secondaryText text-sm'>
                     {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : 'or'}
                   </p>
                   <button
-                    className='text-secondaryText py-2.5 px-5 me-2 mb-2 text-small font-medium text-gray-900 focus:outline-none border border-dashed border-secondaryText hover:bg-containerBg focus:z-10 focus:ring-4 focus:ring-primary-50'
+                    className='py-2.5 px-5 text-small font-medium text-gray-900 focus:outline-none border border-dashed border-secondaryText hover:bg-containerBg focus:z-10 focus:ring-4 focus:ring-primary-50'
                     disabled={isDragReject}
                     type='button'
                   >
@@ -187,15 +187,15 @@ const ImageUploader: FC<ImageUploaderProps> = ({
               )}
             </div>
           ) : (
-            <div className='w-[320px] h-[320px] bg-containerBg m-auto mt-auto justify-center flex items-center flex-col gap-[10px]'>
+            <div className='w-full h-[320px] bg-containerBg m-auto mt-auto justify-center flex items-center flex-col gap-[10px]'>
               <input {...getInputProps()} />
-              <UploadFileIcon className='w-full h-5 w-[32px] h-[32px] text-primaryText' />
+              <UploadFileIcon className='text-primaryText' />
               <p className='text-secondaryText border-secondaryText text-sm'>ファイルを選択</p>
               <p className='text-secondaryText text-sm'>
                 {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : 'or'}
               </p>
               <button
-                className='text-secondaryText py-2.5 px-5 me-2 mb-2 text-small font-medium text-gray-900 focus:outline-none border border-dashed border-secondaryText hover:bg-containerBg focus:z-10 focus:ring-4 focus:ring-primary-50'
+                className='py-2.5 px-5 text-small font-medium text-gray-900 focus:outline-none border border-dashed border-secondaryText hover:bg-containerBg focus:z-10 focus:ring-4 focus:ring-primary-50'
                 disabled={isDragReject}
                 type='button'
               >
