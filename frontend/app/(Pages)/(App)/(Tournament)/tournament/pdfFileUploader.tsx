@@ -139,7 +139,7 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
     /* ファイルアップロードのテキストボックスとボタンの表示 */
   }
   return (
-    <div>
+    <>
       <div>
         <div className='flex flex-col gap-[8px] w-full'>
           {!props.readonly && (
@@ -193,20 +193,12 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
         </div>
       </div>
       {/* ファイルアップロード中の表示 */}
-      {currentShowFile && (
+      {currentShowFile && !currentShowFile.isUploaded && (
         <aside>
-          {currentShowFile.isUploaded ? (
-            <div></div>
-          ) : (
-            <div>
-              <div>
-                <p>{currentShowFile.file.name}をアップロードしています…</p>
-              </div>
-            </div>
-          )}
+          <p>{currentShowFile.file.name}をアップロードしています…</p>
         </aside>
       )}
-    </div>
+    </>
   );
 });
 

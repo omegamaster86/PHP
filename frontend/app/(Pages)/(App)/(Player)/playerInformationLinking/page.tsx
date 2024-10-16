@@ -287,142 +287,138 @@ export default function PlayerInformationLinking() {
   // レンダリング
   return (
     validFlag && (
-      <div>
-        <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px] items-center'>
-          {/* タイトルの表示 */}
-          <CustomTitle displayBack>
-            選手情報連携
-          </CustomTitle>
-          {/* エラーメッセージの表示 */}
-          <ErrorBox errorText={errorText} />
-          {/* 読み込みCSVファイルの表示 */}
-          <div className='flex flex-col gap-[20px]'>
-            <div className='flex flex-row justify-start'>
-              <CsvHandler
-                csvUploadProps={csvUploadProps}
-                csvDownloadProps={csvDownloadProps}
-                ref={fileUploaderRef}
-              ></CsvHandler>
-            </div>
-            {/* CSVフォーマット出力の表示 */}
-            <div className='flex flex-col gap-[20px]'>
-              {/* 読み込みボタンの表示 */}
-              <div className='flex flex-col gap-[4px] items-center'>
-                {/* 表示する文言はDPT様にて実装予定 */}
-                <p className='mb-1 text-systemErrorText'>
-                  【読み込み方法】
-                  <br />
-                  ［準備］
-                  <br />
-                  JARAエントリーシステムから本システムに連携したい選手情報を定型フォーマットに記載してください。
-                  <br />
-                  ※定型フォーマットが必要な場合は、「CSVフォーマット出力」をクリックしてください。
-                  <br />
-                  定型フォーマットがダウンロードされます。
-                  <br />
-                  ［読み込む］
-                  <br />
-                  ①　「読み込みCSVファイル」に、読み込ませるCSVファイルをドラッグ＆ドロップしてください。
-                  <br />
-                  ※「参照」からファイルを指定することもできます。
-                  <br />
-                  ②　「読み込み」をクリックすると、CSVフォーマットの内容を読み込み、内容を画面下部のレース結果一覧に表示します。
-                  <br />
-                  ※この状態では、まだシステムに選手情報は登録されません
-                </p>
-                <CustomButton
-                  buttonType='primary'
-                  onClick={() => {
-                    //console.log(csvFileData);
-                    sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
-                  }}
-                >
-                  読み込む
-                </CustomButton>
-              </div>
-            </div>
-            {/* エラーメッセージの表示 */}
-            <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
-            {/* 読み込み結果の表示 */}
-            <div className='flex flex-col items-center'>
-              <p className='mb-1 text-systemErrorText'>
-                【登録方法】
-                <br />
-                ①　「読み込み結果」にCSVフォーマットを読み込んだ結果が表示されます。
-                <br />
-                ※連携の意味
-                <br />
-                連携可能：本システムに登録されている選手と連携可能なデータです。
-                <br />
-                連携待ち：当該選手が本システムに登録されていないため、
-                <br />
-                連携不可：本システムに取り込めないデータです、エラー内容を確認してください。
-                <br />
-                ②　読み込むデータの「選択」にチェックを入れてください。※「全選択」で、エラー以外の全てのデータを選択状態にできます。
-                <br />
-                ③　「登録」をクリックすると「読み込み結果」にて「選択」にチェックが入っているデータを対象に、本システムに登録されます。
-                <br />
-              </p>
-              <CsvTable
-                content={csvData}
-                header={[
-                  '連携',
-                  '選手ID',
-                  'JARA選手コード',
-                  '選手名',
-                  'メールアドレス',
-                  'エラー内容',
-                ]}
-                handleInputChange={handleInputChange}
-                displayLinkButton={displayLinkButton}
-                activationFlg={activationFlg}
-                visibilityFlg={visibilityFlg}
-              />
-            </div>
+      <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px] items-center'>
+        {/* タイトルの表示 */}
+        <CustomTitle displayBack>選手情報連携</CustomTitle>
+        {/* エラーメッセージの表示 */}
+        <ErrorBox errorText={errorText} />
+        {/* 読み込みCSVファイルの表示 */}
+        <div className='flex flex-col gap-[20px]'>
+          <div className='flex flex-row justify-start'>
+            <CsvHandler
+              csvUploadProps={csvUploadProps}
+              csvDownloadProps={csvDownloadProps}
+              ref={fileUploaderRef}
+            ></CsvHandler>
           </div>
-          {/* ボタンの表示 */}
-          {!activationFlg && (
-            <div className='flex flex-row gap-[4px]'>
+          {/* CSVフォーマット出力の表示 */}
+          <div className='flex flex-col gap-[20px]'>
+            {/* 読み込みボタンの表示 */}
+            <div className='flex flex-col gap-[4px] items-center'>
+              {/* 表示する文言はDPT様にて実装予定 */}
+              <p className='mb-1 text-systemErrorText'>
+                【読み込み方法】
+                <br />
+                ［準備］
+                <br />
+                JARAエントリーシステムから本システムに連携したい選手情報を定型フォーマットに記載してください。
+                <br />
+                ※定型フォーマットが必要な場合は、「CSVフォーマット出力」をクリックしてください。
+                <br />
+                定型フォーマットがダウンロードされます。
+                <br />
+                ［読み込む］
+                <br />
+                ①　「読み込みCSVファイル」に、読み込ませるCSVファイルをドラッグ＆ドロップしてください。
+                <br />
+                ※「参照」からファイルを指定することもできます。
+                <br />
+                ②　「読み込み」をクリックすると、CSVフォーマットの内容を読み込み、内容を画面下部のレース結果一覧に表示します。
+                <br />
+                ※この状態では、まだシステムに選手情報は登録されません
+              </p>
               <CustomButton
-                buttonType='secondary'
+                buttonType='primary'
                 onClick={() => {
-                  router.back();
+                  //console.log(csvFileData);
+                  sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
                 }}
               >
-                戻る
+                読み込む
               </CustomButton>
-              {csvData.some((row) => row.link !== '連携不可') && displayLinkButtonFlg && (
-                <CustomButton
-                  buttonType='primary'
-                  onClick={() => {
-                    //console.log(csvData);
-                    setActivationFlg(true);
-                    if (csvData.find((row) => row.checked)?.id === undefined) {
-                      window.alert('1件以上選択してください。');
-                      setActivationFlg(false);
-                      setDialogDisplayFlg(false);
-                      setDisplayLinkButtonFlg(false);
-                      setActivationFlg(false);
-                      return;
-                    }
-                    registerCsvData(); //読み込んだCSVデータをDBに連携する
-                    setCsvData([]);
-                    setCsvFileData({ content: [], isSet: false });
-                    fileUploaderRef?.current?.clearFile();
-                    window.alert('連携を完了しました。');
+            </div>
+          </div>
+          {/* エラーメッセージの表示 */}
+          <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
+          {/* 読み込み結果の表示 */}
+          <div className='flex flex-col items-center'>
+            <p className='mb-1 text-systemErrorText'>
+              【登録方法】
+              <br />
+              ①　「読み込み結果」にCSVフォーマットを読み込んだ結果が表示されます。
+              <br />
+              ※連携の意味
+              <br />
+              連携可能：本システムに登録されている選手と連携可能なデータです。
+              <br />
+              連携待ち：当該選手が本システムに登録されていないため、
+              <br />
+              連携不可：本システムに取り込めないデータです、エラー内容を確認してください。
+              <br />
+              ②　読み込むデータの「選択」にチェックを入れてください。※「全選択」で、エラー以外の全てのデータを選択状態にできます。
+              <br />
+              ③　「登録」をクリックすると「読み込み結果」にて「選択」にチェックが入っているデータを対象に、本システムに登録されます。
+              <br />
+            </p>
+            <CsvTable
+              content={csvData}
+              header={[
+                '連携',
+                '選手ID',
+                'JARA選手コード',
+                '選手名',
+                'メールアドレス',
+                'エラー内容',
+              ]}
+              handleInputChange={handleInputChange}
+              displayLinkButton={displayLinkButton}
+              activationFlg={activationFlg}
+              visibilityFlg={visibilityFlg}
+            />
+          </div>
+        </div>
+        {/* ボタンの表示 */}
+        {!activationFlg && (
+          <div className='flex flex-row gap-[4px]'>
+            <CustomButton
+              buttonType='secondary'
+              onClick={() => {
+                router.back();
+              }}
+            >
+              戻る
+            </CustomButton>
+            {csvData.some((row) => row.link !== '連携不可') && displayLinkButtonFlg && (
+              <CustomButton
+                buttonType='primary'
+                onClick={() => {
+                  //console.log(csvData);
+                  setActivationFlg(true);
+                  if (csvData.find((row) => row.checked)?.id === undefined) {
+                    window.alert('1件以上選択してください。');
                     setActivationFlg(false);
                     setDialogDisplayFlg(false);
                     setDisplayLinkButtonFlg(false);
                     setActivationFlg(false);
-                  }}
-                >
-                  連携
-                </CustomButton>
-              )}
-            </div>
-          )}
-        </main>
-      </div>
+                    return;
+                  }
+                  registerCsvData(); //読み込んだCSVデータをDBに連携する
+                  setCsvData([]);
+                  setCsvFileData({ content: [], isSet: false });
+                  fileUploaderRef?.current?.clearFile();
+                  window.alert('連携を完了しました。');
+                  setActivationFlg(false);
+                  setDialogDisplayFlg(false);
+                  setDisplayLinkButtonFlg(false);
+                  setActivationFlg(false);
+                }}
+              >
+                連携
+              </CustomButton>
+            )}
+          </div>
+        )}
+      </main>
     )
   );
 }

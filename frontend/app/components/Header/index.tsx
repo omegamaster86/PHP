@@ -409,7 +409,7 @@ const Header: FC = () => {
   const childMenuItems = menuItems[clickIndex].items ?? [];
 
   return (
-    <div>
+    <>
       <div className='flex flex-row'>
         {!!childMenuItems.length && (
           <Menu
@@ -549,7 +549,7 @@ const Header: FC = () => {
       ) : (
         ''
       )}
-    </div>
+    </>
   );
 };
 export default Header;

@@ -17,7 +17,7 @@ export default function CustomAutocomplete({
   errorMessages?: string[];
 }) {
   return (
-    <div>
+    <>
       <Autocomplete
         id={id}
         multiple
@@ -52,6 +52,6 @@ export default function CustomAutocomplete({
           {message}
         </p>
       ))}
-    </div>
+    </>
   );
 }

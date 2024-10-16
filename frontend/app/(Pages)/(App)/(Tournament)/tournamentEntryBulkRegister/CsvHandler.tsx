@@ -242,7 +242,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
 
   /* ファイルアップロードのテキストボックスとボタンの表示 */
   return (
-    <div>
+    <>
       <div className='flex flex-col gap-[10px] w-full'>
         <CustomInputLabel label={props.csvUploadProps.label} required></CustomInputLabel>
         <div className='flex flex-row gap-[4px]'>
@@ -309,20 +309,12 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
         </div>
       </div>
       {/* ファイルアップロード中の表示 */}
-      {currentShowFile && (
+      {currentShowFile && !currentShowFile.isUploaded && (
         <aside>
-          {currentShowFile.isUploaded ? (
-            <div></div>
-          ) : (
-            <div>
-              <div>
-                <p>{currentShowFile.file.name}をアップロードしています…</p>
-              </div>
-            </div>
-          )}
+          <p>{currentShowFile.file.name}をアップロードしています…</p>
         </aside>
       )}
-    </div>
+    </>
   );
 });
 

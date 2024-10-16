@@ -1003,15 +1003,14 @@ export default function VolunteerInformationRef() {
   ]);
 
   return (
-    <div>
-      <main className='flex flex-col justify-start gap-[20px] my-[80px] flex-nowrap'>
-        <div className='w-9/12 m-3 flex flex-row items-center justify-between gap-[20px]'>
-          <CustomTitle displayBack={true}>
-            ボランティア情報{mode === 'delete' && '削除'}
-            {mode !== 'delete' && '参照'}
-          </CustomTitle>
-          {/* 遷移先の画面未実装のため、コメントアウト 20240525 */}
-          {/* {mode !== 'delete' && (
+    <main className='flex flex-col justify-start gap-[20px] my-[80px] flex-nowrap'>
+      <div className='w-9/12 m-3 flex flex-row items-center justify-between gap-[20px]'>
+        <CustomTitle displayBack={true}>
+          ボランティア情報{mode === 'delete' && '削除'}
+          {mode !== 'delete' && '参照'}
+        </CustomTitle>
+        {/* 遷移先の画面未実装のため、コメントアウト 20240525 */}
+        {/* {mode !== 'delete' && (
             // TODO: ボランティア情報変更画面に遷移
             // ボランティア情報を変更ボタン
             <Link
@@ -1025,141 +1024,141 @@ export default function VolunteerInformationRef() {
               ボランティア情報を変更
             </Link>
           )} */}
+      </div>
+      <ErrorBox errorText={errorMessage} />
+      <div className='flex flex-row gap-[20px] justify-between'>
+        <div className='flex flex-col gap-[20px]'>
+          {/* 写真 */}
+          <InputLabel label='写真' required={false} />
+          <img
+            src={volunteerdata.photo}
+            className='w-[200px] h-[200px] rounded-[10px] object-cover'
+          />
         </div>
-        <ErrorBox errorText={errorMessage} />
-        <div className='flex flex-row gap-[20px] justify-between'>
-          <div className='flex flex-col gap-[20px]'>
-            {/* 写真 */}
-            <InputLabel label='写真' required={false} />
-            <img
-              src={volunteerdata.photo}
-              className='w-[200px] h-[200px] rounded-[10px] object-cover'
-            />
-          </div>
-        </div>
+      </div>
 
-        <div className='flex flex-wrap justify-between gap-[20px]'>
-          <div className='flex flex-col gap-[20px] max-w-[400px]'>
-            {/* ボランティアID */}
+      <div className='flex flex-wrap justify-between gap-[20px]'>
+        <div className='flex flex-col gap-[20px] max-w-[400px]'>
+          {/* ボランティアID */}
+          <CustomTextField
+            label='ボランティアID'
+            value={'v' + volunteerdata.volunteer_id}
+            readonly
+            displayHelp={false}
+            onChange={(e) => {}}
+          />
+          {/* 氏名 */}
+          <CustomTextField
+            label='氏名'
+            value={volunteerdata.volunteer_name}
+            readonly
+            displayHelp={false}
+            onChange={(e) => {}}
+          />
+          {/* 生年月日 */}
+          <CustomTextField
+            label='生年月日'
+            value={volunteerdata.date_of_birth}
+            readonly
+            displayHelp={false}
+            onChange={(e) => {}}
+          />
+          {/* 性別 */}
+          <CustomTextField
+            label='性別'
+            value={volunteerdata.sex}
+            readonly
+            displayHelp={false}
+            onChange={(e) => {}}
+          />
+          {/* 居住地（国） */}
+          <div className='flex flex-row gap-[16px]'>
             <CustomTextField
-              label='ボランティアID'
-              value={'v' + volunteerdata.volunteer_id}
+              label='居住地'
+              value={volunteerdata.residence_country}
               readonly
               displayHelp={false}
               onChange={(e) => {}}
             />
-            {/* 氏名 */}
+            {/* 居住地（都道府県） */}
             <CustomTextField
-              label='氏名'
-              value={volunteerdata.volunteer_name}
-              readonly
-              displayHelp={false}
-              onChange={(e) => {}}
-            />
-            {/* 生年月日 */}
-            <CustomTextField
-              label='生年月日'
-              value={volunteerdata.date_of_birth}
-              readonly
-              displayHelp={false}
-              onChange={(e) => {}}
-            />
-            {/* 性別 */}
-            <CustomTextField
-              label='性別'
-              value={volunteerdata.sex}
-              readonly
-              displayHelp={false}
-              onChange={(e) => {}}
-            />
-            {/* 居住地（国） */}
-            <div className='flex flex-row gap-[16px]'>
-              <CustomTextField
-                label='居住地'
-                value={volunteerdata.residence_country}
-                readonly
-                displayHelp={false}
-                onChange={(e) => {}}
-              />
-              {/* 居住地（都道府県） */}
-              <CustomTextField
-                label='都道府県'
-                value={volunteerdata.residence_prefecture}
-                readonly
-                displayHelp={false}
-                onChange={(e) => {}}
-              />
-            </div>
-            {/* 電話番号 */}
-            <CustomTextField
-              label='電話番号'
-              value={volunteerdata.telephone_number}
-              readonly
-              displayHelp={false}
-              onChange={(e) => {}}
-            />
-            {/* メールアドレス */}
-            <CustomTextField
-              label='メールアドレス'
-              value={volunteerdata.mailaddress}
+              label='都道府県'
+              value={volunteerdata.residence_prefecture}
               readonly
               displayHelp={false}
               onChange={(e) => {}}
             />
           </div>
-          <div className='flex flex-col gap-[20px] max-w-[400px]'>
-            {/* 服のサイズ */}
-            <CustomTextField
-              label='服のサイズ'
-              value={volunteerdata.clothes_size}
-              readonly
-              displayHelp={false}
-              onChange={(e) => {}}
-            />
-            {/* 障碍タイプ */}
-            {/* <label htmlFor='disType'>補助が可能な障碍タイプ</label> */}
-            <InputLabel
-              label='補助が可能な障碍タイプ'
-              displayHelp={true}
-              toolTipText='PR1：<br>
+          {/* 電話番号 */}
+          <CustomTextField
+            label='電話番号'
+            value={volunteerdata.telephone_number}
+            readonly
+            displayHelp={false}
+            onChange={(e) => {}}
+          />
+          {/* メールアドレス */}
+          <CustomTextField
+            label='メールアドレス'
+            value={volunteerdata.mailaddress}
+            readonly
+            displayHelp={false}
+            onChange={(e) => {}}
+          />
+        </div>
+        <div className='flex flex-col gap-[20px] max-w-[400px]'>
+          {/* 服のサイズ */}
+          <CustomTextField
+            label='服のサイズ'
+            value={volunteerdata.clothes_size}
+            readonly
+            displayHelp={false}
+            onChange={(e) => {}}
+          />
+          {/* 障碍タイプ */}
+          {/* <label htmlFor='disType'>補助が可能な障碍タイプ</label> */}
+          <InputLabel
+            label='補助が可能な障碍タイプ'
+            displayHelp={true}
+            toolTipText='PR1：<br>
               腕と肩は完全に動くが、脚の機能が失われている選手。脊椎損傷などが原因として考えられる。平衡機能が弱いため、体をボートに固定させる<br>
               PR2：<br>
               胴体と腕は十分に動くが、脚の機能が減少している選手。漕ぐ時はスライドするシートを使えない<br>
               PR3：<br>
               四肢と胴体に障害があるが、動かすことができる選手。視覚障害者もこのクラスに分類される'
-            />
-            <div className='flex flex-row gap-[16px] justify-start'>
-              {volunteerdata.dis_type_id?.map((volSupDisData: any) => (
-                <OriginalCheckbox
-                  id='disType'
-                  key={volSupDisData.dis_type_name as string}
-                  label={volSupDisData.dis_type_name}
-                  value={volSupDisData.dis_type_name}
-                  checked={volSupDisData.dis_type_name.length > 0}
-                  readonly
-                  onChange={(e) => {}}
-                />
-              ))}
-            </div>
-            {/* 資格情報 */}
-            {/* <label htmlFor='qualHold'>資格情報</label> */}
-            <InputLabel label='資格情報' />
-            <div className='flex flex-row gap-[16px] justify-start'>
-              {volunteerdata.qualHold?.map((qualHold: any) => (
-                <div id='qualHold' key={qualHold.qual_name as string}>
-                  <p className='text-secondaryText'>
-                    {qualHold.qual_id == 99
-                      ? (qualHold.others_qual as string)
-                      : (qualHold.qual_name as string)}
-                  </p>
-                </div>
-              ))}
-            </div>
-            {/* <label htmlFor='language'>言語</label> */}
-            <InputLabel
-              label='言語'
-              displayHelp={true}
-              toolTipText='A1（初心者）：<br>
+          />
+          <div className='flex flex-row gap-[16px] justify-start'>
+            {volunteerdata.dis_type_id?.map((volSupDisData: any) => (
+              <OriginalCheckbox
+                id='disType'
+                key={volSupDisData.dis_type_name as string}
+                label={volSupDisData.dis_type_name}
+                value={volSupDisData.dis_type_name}
+                checked={volSupDisData.dis_type_name.length > 0}
+                readonly
+                onChange={(e) => {}}
+              />
+            ))}
+          </div>
+          {/* 資格情報 */}
+          {/* <label htmlFor='qualHold'>資格情報</label> */}
+          <InputLabel label='資格情報' />
+          <div className='flex flex-row gap-[16px] justify-start'>
+            {volunteerdata.qualHold?.map((qualHold: any) => (
+              <div id='qualHold' key={qualHold.qual_name as string}>
+                <p className='text-secondaryText'>
+                  {qualHold.qual_id == 99
+                    ? (qualHold.others_qual as string)
+                    : (qualHold.qual_name as string)}
+                </p>
+              </div>
+            ))}
+          </div>
+          {/* <label htmlFor='language'>言語</label> */}
+          <InputLabel
+            label='言語'
+            displayHelp={true}
+            toolTipText='A1（初心者）：<br>
               自己紹介ができ、どこに住んでいるか、誰を知っているか、何を持っているかと言った個人的なことを聞き、こたえることができる。<br>
               A2（初級）：<br>
                慣れ親しんだ内容であれば単純で直接的な会話ができる。<br>
@@ -1171,178 +1170,178 @@ export default function VolunteerInformationRef() {
               言葉や表現に悩まずに自身の考えを流暢によどみなく伝えることができる。<br>
               C2（ネイティブ）：<br>
               どんな複雑な状況下でも一貫して言葉のニュアンスの違いなどに気を配りながら流暢に正確に自己表現ができる。'
-            />
-            {volunteerdata.language?.map((language: any) => (
-              <div
-                id='language'
-                key={language.languageName}
-                className='flex flex-row gap-[6px] justify-start'
-              >
-                {/* 言語（種類） */}
-                <p className='text-secondaryText'>{language.languageName}：</p>
-                {/* 言語（レベル） */}
-                <p className='text-secondaryText'>{language.level}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className='flex flex-col gap-[20px] '>
-          {/* 参加可能曜日 */}
-          <div className='text-h3 font-bold my-2'>参加しやすい曜日</div>
-          <div className='flex flex-row gap-[16px] flex-wrap'>
-            曜日指定
-            <OriginalCheckbox
-              id='anyday'
-              label='祝日は可'
-              value=''
-              checked={getDayOfWeekBool(volunteerdata.day_of_week, 7) || false}
-              readonly
-              onChange={(e) => {}}
-            />
-            <OriginalCheckbox
-              id='sunday'
-              label='日曜日'
-              value=''
-              checked={getDayOfWeekBool(volunteerdata.day_of_week, 0) || false}
-              readonly
-              onChange={(e) => {}}
-            />
-            <OriginalCheckbox
-              id='monday'
-              label='月曜日'
-              value=''
-              checked={getDayOfWeekBool(volunteerdata.day_of_week, 1) || false}
-              readonly
-              onChange={(e) => {}}
-            />
-            <OriginalCheckbox
-              id='tuesday'
-              label='火曜日'
-              value=''
-              checked={getDayOfWeekBool(volunteerdata.day_of_week, 2) || false}
-              readonly
-              onChange={(e) => {}}
-            />
-            <OriginalCheckbox
-              id='wednesday'
-              label='水曜日'
-              value=''
-              checked={getDayOfWeekBool(volunteerdata.day_of_week, 3) || false}
-              readonly
-              onChange={(e) => {}}
-            />
-            <OriginalCheckbox
-              id='thursday'
-              label='木曜日'
-              value=''
-              checked={getDayOfWeekBool(volunteerdata.day_of_week, 4) || false}
-              readonly
-              onChange={(e) => {}}
-            />
-            <OriginalCheckbox
-              id='friday'
-              label='金曜日'
-              value=''
-              checked={getDayOfWeekBool(volunteerdata.day_of_week, 5) || false}
-              readonly
-              onChange={(e) => {}}
-            />
-            <OriginalCheckbox
-              id='saturday'
-              label='土曜日'
-              value=''
-              checked={getDayOfWeekBool(volunteerdata.day_of_week, 6) || false}
-              readonly
-              onChange={(e) => {}}
-            />
-            <OriginalCheckbox
-              id='any'
-              label='相談可能'
-              value=''
-              checked={getDayOfWeekBool(volunteerdata.day_of_week, 8) || false}
-              readonly
-              onChange={(e) => {}}
-            />
-          </div>
-          {/* 参加可能時間帯 */}
-          <div className='text-h3 font-bold my-2'>参加しやすい時間帯</div>
-          <div className='flex flex-col gap-[16px]'>
-            時間帯指定
-            <OriginalCheckbox
-              id='anytime'
-              label='相談可能'
-              value=''
-              checked={getTimeZoneBool(volunteerdata.time_zone, 7) || false}
-              readonly
-              onChange={(e) => {}}
-            />
-            <OriginalCheckbox
-              id='earlymorning'
-              label='早朝　 06:00〜08:00'
-              value=''
-              checked={getTimeZoneBool(volunteerdata.time_zone, 0) || false}
-              readonly
-              onChange={(e) => {}}
-            />
-            <OriginalCheckbox
-              id='morning'
-              label='午前　 08:00〜12:00'
-              value=''
-              checked={getTimeZoneBool(volunteerdata.time_zone, 1) || false}
-              readonly
-              onChange={(e) => {}}
-            />
-            <OriginalCheckbox
-              id='afternoon'
-              label='午後　 12:00〜16:00'
-              value=''
-              checked={getTimeZoneBool(volunteerdata.time_zone, 2) || false}
-              readonly
-              onChange={(e) => {}}
-            />
-            <OriginalCheckbox
-              id='night'
-              label='夜　　 16:00〜20:00'
-              value=''
-              checked={getTimeZoneBool(volunteerdata.time_zone, 3) || false}
-              readonly
-              onChange={(e) => {}}
-            />
-          </div>
-        </div>
-        <div className='mx-auto mt-[40px] flex flex-col gap-[8px]'>
-          <div className='flex flex-row justify-between items-center'>
-            <div className='flex'>
-              {/* すべてトグルボタン */}
-              <Tab
-                number={0}
-                isActive={activeTab === 0}
-                onClick={handleTabChange}
-                rounded='rounded-l'
-              >
-                全て
-              </Tab>
-              {/* 公式大会トグルボタン */}
-              <Tab
-                number={2}
-                isActive={activeTab === 2}
-                onClick={handleTabChange}
-                rounded='rounded-none'
-              >
-                公式
-              </Tab>
-              {/* 非公式大会トグルボタン */}
-              <Tab
-                number={1}
-                isActive={activeTab === 1}
-                onClick={handleTabChange}
-                rounded='rounded-r'
-              >
-                非公式
-              </Tab>
+          />
+          {volunteerdata.language?.map((language: any) => (
+            <div
+              id='language'
+              key={language.languageName}
+              className='flex flex-row gap-[6px] justify-start'
+            >
+              {/* 言語（種類） */}
+              <p className='text-secondaryText'>{language.languageName}：</p>
+              {/* 言語（レベル） */}
+              <p className='text-secondaryText'>{language.level}</p>
             </div>
-            {/* 遷移先の画面未実装のため、コメントアウト 20240525 */}
-            {/* {mode !== 'delete' && (
+          ))}
+        </div>
+      </div>
+      <div className='flex flex-col gap-[20px] '>
+        {/* 参加可能曜日 */}
+        <div className='text-h3 font-bold my-2'>参加しやすい曜日</div>
+        <div className='flex flex-row gap-[16px] flex-wrap'>
+          曜日指定
+          <OriginalCheckbox
+            id='anyday'
+            label='祝日は可'
+            value=''
+            checked={getDayOfWeekBool(volunteerdata.day_of_week, 7) || false}
+            readonly
+            onChange={(e) => {}}
+          />
+          <OriginalCheckbox
+            id='sunday'
+            label='日曜日'
+            value=''
+            checked={getDayOfWeekBool(volunteerdata.day_of_week, 0) || false}
+            readonly
+            onChange={(e) => {}}
+          />
+          <OriginalCheckbox
+            id='monday'
+            label='月曜日'
+            value=''
+            checked={getDayOfWeekBool(volunteerdata.day_of_week, 1) || false}
+            readonly
+            onChange={(e) => {}}
+          />
+          <OriginalCheckbox
+            id='tuesday'
+            label='火曜日'
+            value=''
+            checked={getDayOfWeekBool(volunteerdata.day_of_week, 2) || false}
+            readonly
+            onChange={(e) => {}}
+          />
+          <OriginalCheckbox
+            id='wednesday'
+            label='水曜日'
+            value=''
+            checked={getDayOfWeekBool(volunteerdata.day_of_week, 3) || false}
+            readonly
+            onChange={(e) => {}}
+          />
+          <OriginalCheckbox
+            id='thursday'
+            label='木曜日'
+            value=''
+            checked={getDayOfWeekBool(volunteerdata.day_of_week, 4) || false}
+            readonly
+            onChange={(e) => {}}
+          />
+          <OriginalCheckbox
+            id='friday'
+            label='金曜日'
+            value=''
+            checked={getDayOfWeekBool(volunteerdata.day_of_week, 5) || false}
+            readonly
+            onChange={(e) => {}}
+          />
+          <OriginalCheckbox
+            id='saturday'
+            label='土曜日'
+            value=''
+            checked={getDayOfWeekBool(volunteerdata.day_of_week, 6) || false}
+            readonly
+            onChange={(e) => {}}
+          />
+          <OriginalCheckbox
+            id='any'
+            label='相談可能'
+            value=''
+            checked={getDayOfWeekBool(volunteerdata.day_of_week, 8) || false}
+            readonly
+            onChange={(e) => {}}
+          />
+        </div>
+        {/* 参加可能時間帯 */}
+        <div className='text-h3 font-bold my-2'>参加しやすい時間帯</div>
+        <div className='flex flex-col gap-[16px]'>
+          時間帯指定
+          <OriginalCheckbox
+            id='anytime'
+            label='相談可能'
+            value=''
+            checked={getTimeZoneBool(volunteerdata.time_zone, 7) || false}
+            readonly
+            onChange={(e) => {}}
+          />
+          <OriginalCheckbox
+            id='earlymorning'
+            label='早朝　 06:00〜08:00'
+            value=''
+            checked={getTimeZoneBool(volunteerdata.time_zone, 0) || false}
+            readonly
+            onChange={(e) => {}}
+          />
+          <OriginalCheckbox
+            id='morning'
+            label='午前　 08:00〜12:00'
+            value=''
+            checked={getTimeZoneBool(volunteerdata.time_zone, 1) || false}
+            readonly
+            onChange={(e) => {}}
+          />
+          <OriginalCheckbox
+            id='afternoon'
+            label='午後　 12:00〜16:00'
+            value=''
+            checked={getTimeZoneBool(volunteerdata.time_zone, 2) || false}
+            readonly
+            onChange={(e) => {}}
+          />
+          <OriginalCheckbox
+            id='night'
+            label='夜　　 16:00〜20:00'
+            value=''
+            checked={getTimeZoneBool(volunteerdata.time_zone, 3) || false}
+            readonly
+            onChange={(e) => {}}
+          />
+        </div>
+      </div>
+      <div className='mx-auto mt-[40px] flex flex-col gap-[8px]'>
+        <div className='flex flex-row justify-between items-center'>
+          <div className='flex'>
+            {/* すべてトグルボタン */}
+            <Tab
+              number={0}
+              isActive={activeTab === 0}
+              onClick={handleTabChange}
+              rounded='rounded-l'
+            >
+              全て
+            </Tab>
+            {/* 公式大会トグルボタン */}
+            <Tab
+              number={2}
+              isActive={activeTab === 2}
+              onClick={handleTabChange}
+              rounded='rounded-none'
+            >
+              公式
+            </Tab>
+            {/* 非公式大会トグルボタン */}
+            <Tab
+              number={1}
+              isActive={activeTab === 1}
+              onClick={handleTabChange}
+              rounded='rounded-r'
+            >
+              非公式
+            </Tab>
+          </div>
+          {/* 遷移先の画面未実装のため、コメントアウト 20240525 */}
+          {/* {mode !== 'delete' && (
               <Link
                 className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
                 href={{
@@ -1354,949 +1353,946 @@ export default function VolunteerInformationRef() {
                 履歴の削除
               </Link>
             )} */}
-          </div>
-          <div className='w-screen flex justify-between items-center'>
-            <CustomTable>
-              <CustomThead>
-                <CustomTr>
-                  <CustomTh colSpan={17} rowSpan={1}>
-                    ボランティア参加履歴
-                  </CustomTh>
-                </CustomTr>
-                <CustomTr>
-                  <CustomTh colSpan={1} rowSpan={2}>
+        </div>
+        <div className='w-screen flex justify-between items-center'>
+          <CustomTable>
+            <CustomThead>
+              <CustomTr>
+                <CustomTh colSpan={17} rowSpan={1}>
+                  ボランティア参加履歴
+                </CustomTh>
+              </CustomTr>
+              <CustomTr>
+                <CustomTh colSpan={1} rowSpan={2}>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => tournNameSort()}
+                  >
+                    大会名/イベント名
+                  </div>
+                </CustomTh>
+                <CustomTh colSpan={2}>開催期間</CustomTh>
+                <CustomTh colSpan={1} rowSpan={2}>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => roleSort()}
+                  >
+                    役割
+                  </div>
+                </CustomTh>
+                <CustomTh colSpan={1} rowSpan={2}>
+                  <div className='flex flex-row items-center gap-[10px]'>
                     <div
                       className='underline'
                       style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                      onClick={() => tournNameSort()}
+                      onClick={() => ADSort()}
                     >
-                      大会名/イベント名
+                      AD
                     </div>
-                  </CustomTh>
-                  <CustomTh colSpan={2}>開催期間</CustomTh>
-                  <CustomTh colSpan={1} rowSpan={2}>
+                    <div
+                      style={{
+                        cursor: 'pointer',
+                        color: selectedADList.length > 0 ? '#F44336' : '#001D74',
+                      }}
+                      onClick={(event) => handleADHeaderClick('AD', event as any)}
+                    >
+                      <FilterListIcon />
+                    </div>
+                  </div>
+                </CustomTh>
+                <CustomTh colSpan={8} rowSpan={1}>
+                  参加日
+                </CustomTh>
+              </CustomTr>
+              <CustomTr>
+                <CustomTh>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => eventStartDateSort()}
+                  >
+                    開始日
+                  </div>
+                </CustomTh>
+                <CustomTh>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => eventEndDateSort()}
+                  >
+                    終了日
+                  </div>
+                </CustomTh>
+                <CustomTh>
+                  <div className='flex flex-row items-center gap-[10px]'>
                     <div
                       className='underline'
                       style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                      onClick={() => roleSort()}
+                      onClick={() => holidaySort()}
                     >
-                      役割
+                      祝日
                     </div>
-                  </CustomTh>
-                  <CustomTh colSpan={1} rowSpan={2}>
-                    <div className='flex flex-row items-center gap-[10px]'>
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => ADSort()}
-                      >
-                        AD
-                      </div>
-                      <div
-                        style={{
-                          cursor: 'pointer',
-                          color: selectedADList.length > 0 ? '#F44336' : '#001D74',
-                        }}
-                        onClick={(event) => handleADHeaderClick('AD', event as any)}
-                      >
-                        <FilterListIcon />
-                      </div>
+                    <div
+                      style={{
+                        cursor: 'pointer',
+                        color: selectedHolidayList.length > 0 ? '#F44336' : '#001D74',
+                      }}
+                      onClick={(event) => handleHolidayHeaderClick('祝日', event as any)}
+                    >
+                      <FilterListIcon />
                     </div>
-                  </CustomTh>
-                  <CustomTh colSpan={8} rowSpan={1}>
-                    参加日
-                  </CustomTh>
-                </CustomTr>
-                <CustomTr>
-                  <CustomTh>
+                  </div>
+                </CustomTh>
+                <CustomTh>
+                  <div className='flex flex-row items-center gap-[10px]'>
                     <div
                       className='underline'
                       style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                      onClick={() => eventStartDateSort()}
+                      onClick={() => sundaySort()}
                     >
-                      開始日
+                      日曜
                     </div>
-                  </CustomTh>
-                  <CustomTh>
+                    <div
+                      style={{
+                        cursor: 'pointer',
+                        color: selectedSundayList.length > 0 ? '#F44336' : '#001D74',
+                      }}
+                      onClick={(event) => handleSundayHeaderClick('日曜', event as any)}
+                    >
+                      <FilterListIcon />
+                    </div>
+                  </div>
+                </CustomTh>
+                <CustomTh>
+                  <div className='flex flex-row items-center gap-[10px]'>
                     <div
                       className='underline'
                       style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                      onClick={() => eventEndDateSort()}
+                      onClick={() => mondaySort()}
                     >
-                      終了日
+                      月曜
                     </div>
-                  </CustomTh>
-                  <CustomTh>
-                    <div className='flex flex-row items-center gap-[10px]'>
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => holidaySort()}
-                      >
-                        祝日
-                      </div>
-                      <div
-                        style={{
-                          cursor: 'pointer',
-                          color: selectedHolidayList.length > 0 ? '#F44336' : '#001D74',
-                        }}
-                        onClick={(event) => handleHolidayHeaderClick('祝日', event as any)}
-                      >
-                        <FilterListIcon />
-                      </div>
+                    <div
+                      style={{
+                        cursor: 'pointer',
+                        color: selectedMondayList.length > 0 ? '#F44336' : '#001D74',
+                      }}
+                      onClick={(event) => handleMondayHeaderClick('月曜', event as any)}
+                    >
+                      <FilterListIcon />
                     </div>
-                  </CustomTh>
-                  <CustomTh>
-                    <div className='flex flex-row items-center gap-[10px]'>
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => sundaySort()}
-                      >
-                        日曜
-                      </div>
-                      <div
-                        style={{
-                          cursor: 'pointer',
-                          color: selectedSundayList.length > 0 ? '#F44336' : '#001D74',
-                        }}
-                        onClick={(event) => handleSundayHeaderClick('日曜', event as any)}
-                      >
-                        <FilterListIcon />
-                      </div>
+                  </div>
+                </CustomTh>
+                <CustomTh>
+                  <div className='flex flex-row items-center gap-[10px]'>
+                    <div
+                      className='underline'
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                      onClick={() => tuesdaySort()}
+                    >
+                      火曜
                     </div>
-                  </CustomTh>
-                  <CustomTh>
-                    <div className='flex flex-row items-center gap-[10px]'>
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => mondaySort()}
-                      >
-                        月曜
-                      </div>
-                      <div
-                        style={{
-                          cursor: 'pointer',
-                          color: selectedMondayList.length > 0 ? '#F44336' : '#001D74',
-                        }}
-                        onClick={(event) => handleMondayHeaderClick('月曜', event as any)}
-                      >
-                        <FilterListIcon />
-                      </div>
+                    <div
+                      style={{
+                        cursor: 'pointer',
+                        color: selectedTuesdayList.length > 0 ? '#F44336' : '#001D74',
+                      }}
+                      onClick={(event) => handleTuesdayHeaderClick('火曜', event as any)}
+                    >
+                      <FilterListIcon />
                     </div>
-                  </CustomTh>
-                  <CustomTh>
-                    <div className='flex flex-row items-center gap-[10px]'>
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => tuesdaySort()}
-                      >
-                        火曜
-                      </div>
-                      <div
-                        style={{
-                          cursor: 'pointer',
-                          color: selectedTuesdayList.length > 0 ? '#F44336' : '#001D74',
-                        }}
-                        onClick={(event) => handleTuesdayHeaderClick('火曜', event as any)}
-                      >
-                        <FilterListIcon />
-                      </div>
+                  </div>
+                </CustomTh>
+                <CustomTh>
+                  <div className='flex flex-row items-center gap-[10px]'>
+                    <div
+                      className='underline'
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                      onClick={() => wednesdaySort()}
+                    >
+                      水曜
                     </div>
-                  </CustomTh>
-                  <CustomTh>
-                    <div className='flex flex-row items-center gap-[10px]'>
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => wednesdaySort()}
-                      >
-                        水曜
-                      </div>
-                      <div
-                        style={{
-                          cursor: 'pointer',
-                          color: selectedWednesdayList.length > 0 ? '#F44336' : '#001D74',
-                        }}
-                        onClick={(event) => handleWednesdayHeaderClick('水曜', event as any)}
-                      >
-                        <FilterListIcon />
-                      </div>
+                    <div
+                      style={{
+                        cursor: 'pointer',
+                        color: selectedWednesdayList.length > 0 ? '#F44336' : '#001D74',
+                      }}
+                      onClick={(event) => handleWednesdayHeaderClick('水曜', event as any)}
+                    >
+                      <FilterListIcon />
                     </div>
-                  </CustomTh>
-                  <CustomTh>
-                    <div className='flex flex-row items-center gap-[10px]'>
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => thursdaySort()}
-                      >
-                        木曜
-                      </div>
-                      <div
-                        style={{
-                          cursor: 'pointer',
-                          color: selectedThursdayList.length > 0 ? '#F44336' : '#001D74',
-                        }}
-                        onClick={(event) => handleThursdayHeaderClick('木曜', event as any)}
-                      >
-                        <FilterListIcon />
-                      </div>
+                  </div>
+                </CustomTh>
+                <CustomTh>
+                  <div className='flex flex-row items-center gap-[10px]'>
+                    <div
+                      className='underline'
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                      onClick={() => thursdaySort()}
+                    >
+                      木曜
                     </div>
-                  </CustomTh>
-                  <CustomTh>
-                    <div className='flex flex-row items-center gap-[10px]'>
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => fridaySort()}
-                      >
-                        金曜
-                      </div>
-                      <div
-                        style={{
-                          cursor: 'pointer',
-                          color: selectedFridayList.length > 0 ? '#F44336' : '#001D74',
-                        }}
-                        onClick={(event) => handleFridayHeaderClick('金曜', event as any)}
-                      >
-                        <FilterListIcon />
-                      </div>
+                    <div
+                      style={{
+                        cursor: 'pointer',
+                        color: selectedThursdayList.length > 0 ? '#F44336' : '#001D74',
+                      }}
+                      onClick={(event) => handleThursdayHeaderClick('木曜', event as any)}
+                    >
+                      <FilterListIcon />
                     </div>
-                  </CustomTh>
-                  <CustomTh>
-                    <div className='flex flex-row items-center gap-[10px]'>
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => saturdaySort()}
-                      >
-                        土曜
-                      </div>
-                      <div
-                        style={{
-                          cursor: 'pointer',
-                          color: selectedSaturdayList.length > 0 ? '#F44336' : '#001D74',
-                        }}
-                        onClick={(event) => handleSaturdayHeaderClick('土曜', event as any)}
-                      >
-                        <FilterListIcon />
-                      </div>
+                  </div>
+                </CustomTh>
+                <CustomTh>
+                  <div className='flex flex-row items-center gap-[10px]'>
+                    <div
+                      className='underline'
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                      onClick={() => fridaySort()}
+                    >
+                      金曜
                     </div>
-                  </CustomTh>
-                </CustomTr>
-              </CustomThead>
-              {/* ボランティア参加履歴一覧テーブル明細表示 */}
-              {volunteerHistoriesdata
-                .filter((row, index) => {
-                  if (selectedADList.length > 0) {
-                    return selectedADList.some((item) => item.name === row.ad);
-                  } else {
-                    return true;
-                  }
-                })
-                .filter((row, index) => {
-                  if (selectedHolidayList.length > 0) {
-                    return selectedHolidayList.some(
-                      (item) => item.name === getDayOfWeekBool(row.day_of_week, 7),
-                    );
-                  } else {
-                    return true;
-                  }
-                })
-                .filter((row, index) => {
-                  if (selectedSundayList.length > 0) {
-                    return selectedSundayList.some(
-                      (item) => item.name === getDayOfWeekBool(row.day_of_week, 0),
-                    );
-                  } else {
-                    return true;
-                  }
-                })
-                .filter((row, index) => {
-                  if (selectedMondayList.length > 0) {
-                    return selectedMondayList.some(
-                      (item) => item.name === getDayOfWeekBool(row.day_of_week, 1),
-                    );
-                  } else {
-                    return true;
-                  }
-                })
-                .filter((row, index) => {
-                  if (selectedTuesdayList.length > 0) {
-                    return selectedTuesdayList.some(
-                      (item) => item.name === getDayOfWeekBool(row.day_of_week, 2),
-                    );
-                  } else {
-                    return true;
-                  }
-                })
-                .filter((row, index) => {
-                  if (selectedWednesdayList.length > 0) {
-                    return selectedWednesdayList.some(
-                      (item) => item.name === getDayOfWeekBool(row.day_of_week, 3),
-                    );
-                  } else {
-                    return true;
-                  }
-                })
-                .filter((row, index) => {
-                  if (selectedThursdayList.length > 0) {
-                    return selectedThursdayList.some(
-                      (item) => item.name === getDayOfWeekBool(row.day_of_week, 4),
-                    );
-                  } else {
-                    return true;
-                  }
-                })
-                .filter((row, index) => {
-                  if (selectedFridayList.length > 0) {
-                    return selectedFridayList.some(
-                      (item) => item.name === getDayOfWeekBool(row.day_of_week, 5),
-                    );
-                  } else {
-                    return true;
-                  }
-                })
-                .filter((row, index) => {
-                  if (selectedSaturdayList.length > 0) {
-                    return selectedSaturdayList.some(
-                      (item) => item.name === getDayOfWeekBool(row.day_of_week, 6),
-                    );
-                  } else {
-                    return true;
-                  }
-                })
-                .map(
-                  (volunteerHistoriesdata) =>
-                    (volunteerHistoriesdata.tourn_type + 1 == activeTab || activeTab == 0) && (
-                      <CustomTbody key={volunteerHistoriesdata.tourn_name}>
-                        <CustomTr>
-                          {/* 大会名/イベント名 */}
-                          <CustomTd align='center'>
-                            <Link
-                              className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                              href={{
-                                pathname: '/tournamentRef',
-                                query: { tournId: volunteerHistoriesdata.tourn_id },
-                              }}
-                              rel='noopener noreferrer'
-                              target='_blank'
-                            >
-                              {volunteerHistoriesdata.tourn_name}
-                            </Link>
-                          </CustomTd>
-                          {/* 開催開始日 */}
-                          <CustomTd align='center'>
-                            {volunteerHistoriesdata.event_start_date}
-                          </CustomTd>
-                          {/* 開催終了日 */}
-                          <CustomTd align='center'>
-                            {volunteerHistoriesdata.event_end_date}
-                          </CustomTd>
-                          {/* 役割 */}
-                          <CustomTd align='center'>{volunteerHistoriesdata.role}</CustomTd>
-                          {/* AD */}
-                          <CustomTd align='center'>{volunteerHistoriesdata.ad}</CustomTd>
-                          {/* 祝日 */}
-                          <CustomTd align='center'>
-                            {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 7) && (
-                              <p className='text-small'>可</p>
-                            )}
-                          </CustomTd>
-                          {/* 日曜 */}
-                          <CustomTd align='center'>
-                            {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 0) && (
-                              <p className='text-small'>◯</p>
-                            )}
-                          </CustomTd>
-                          {/* 月曜 */}
-                          <CustomTd align='center'>
-                            {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 1) && (
-                              <p className='text-small'>◯</p>
-                            )}
-                          </CustomTd>
-                          {/* 火曜 */}
-                          <CustomTd align='center'>
-                            {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 2) && (
-                              <p className='text-small'>◯</p>
-                            )}
-                          </CustomTd>
-                          {/* 水曜 */}
-                          <CustomTd align='center'>
-                            {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 3) && (
-                              <p className='text-small'>◯</p>
-                            )}
-                          </CustomTd>
-                          {/* 木曜 */}
-                          <CustomTd align='center'>
-                            {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 4) && (
-                              <p className='text-small'>◯</p>
-                            )}
-                          </CustomTd>
-                          {/* 金曜 */}
-                          <CustomTd align='center'>
-                            {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 5) && (
-                              <p className='text-small'>◯</p>
-                            )}
-                          </CustomTd>
-                          {/* 土曜 */}
-                          <CustomTd align='center'>
-                            {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 6) && (
-                              <p className='text-small'>◯</p>
-                            )}
-                          </CustomTd>
-                        </CustomTr>
-                      </CustomTbody>
-                    ),
+                    <div
+                      style={{
+                        cursor: 'pointer',
+                        color: selectedFridayList.length > 0 ? '#F44336' : '#001D74',
+                      }}
+                      onClick={(event) => handleFridayHeaderClick('金曜', event as any)}
+                    >
+                      <FilterListIcon />
+                    </div>
+                  </div>
+                </CustomTh>
+                <CustomTh>
+                  <div className='flex flex-row items-center gap-[10px]'>
+                    <div
+                      className='underline'
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                      onClick={() => saturdaySort()}
+                    >
+                      土曜
+                    </div>
+                    <div
+                      style={{
+                        cursor: 'pointer',
+                        color: selectedSaturdayList.length > 0 ? '#F44336' : '#001D74',
+                      }}
+                      onClick={(event) => handleSaturdayHeaderClick('土曜', event as any)}
+                    >
+                      <FilterListIcon />
+                    </div>
+                  </div>
+                </CustomTh>
+              </CustomTr>
+            </CustomThead>
+            {/* ボランティア参加履歴一覧テーブル明細表示 */}
+            {volunteerHistoriesdata
+              .filter((row, index) => {
+                if (selectedADList.length > 0) {
+                  return selectedADList.some((item) => item.name === row.ad);
+                } else {
+                  return true;
+                }
+              })
+              .filter((row, index) => {
+                if (selectedHolidayList.length > 0) {
+                  return selectedHolidayList.some(
+                    (item) => item.name === getDayOfWeekBool(row.day_of_week, 7),
+                  );
+                } else {
+                  return true;
+                }
+              })
+              .filter((row, index) => {
+                if (selectedSundayList.length > 0) {
+                  return selectedSundayList.some(
+                    (item) => item.name === getDayOfWeekBool(row.day_of_week, 0),
+                  );
+                } else {
+                  return true;
+                }
+              })
+              .filter((row, index) => {
+                if (selectedMondayList.length > 0) {
+                  return selectedMondayList.some(
+                    (item) => item.name === getDayOfWeekBool(row.day_of_week, 1),
+                  );
+                } else {
+                  return true;
+                }
+              })
+              .filter((row, index) => {
+                if (selectedTuesdayList.length > 0) {
+                  return selectedTuesdayList.some(
+                    (item) => item.name === getDayOfWeekBool(row.day_of_week, 2),
+                  );
+                } else {
+                  return true;
+                }
+              })
+              .filter((row, index) => {
+                if (selectedWednesdayList.length > 0) {
+                  return selectedWednesdayList.some(
+                    (item) => item.name === getDayOfWeekBool(row.day_of_week, 3),
+                  );
+                } else {
+                  return true;
+                }
+              })
+              .filter((row, index) => {
+                if (selectedThursdayList.length > 0) {
+                  return selectedThursdayList.some(
+                    (item) => item.name === getDayOfWeekBool(row.day_of_week, 4),
+                  );
+                } else {
+                  return true;
+                }
+              })
+              .filter((row, index) => {
+                if (selectedFridayList.length > 0) {
+                  return selectedFridayList.some(
+                    (item) => item.name === getDayOfWeekBool(row.day_of_week, 5),
+                  );
+                } else {
+                  return true;
+                }
+              })
+              .filter((row, index) => {
+                if (selectedSaturdayList.length > 0) {
+                  return selectedSaturdayList.some(
+                    (item) => item.name === getDayOfWeekBool(row.day_of_week, 6),
+                  );
+                } else {
+                  return true;
+                }
+              })
+              .map(
+                (volunteerHistoriesdata) =>
+                  (volunteerHistoriesdata.tourn_type + 1 == activeTab || activeTab == 0) && (
+                    <CustomTbody key={volunteerHistoriesdata.tourn_name}>
+                      <CustomTr>
+                        {/* 大会名/イベント名 */}
+                        <CustomTd align='center'>
+                          <Link
+                            className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                            href={{
+                              pathname: '/tournamentRef',
+                              query: { tournId: volunteerHistoriesdata.tourn_id },
+                            }}
+                            rel='noopener noreferrer'
+                            target='_blank'
+                          >
+                            {volunteerHistoriesdata.tourn_name}
+                          </Link>
+                        </CustomTd>
+                        {/* 開催開始日 */}
+                        <CustomTd align='center'>
+                          {volunteerHistoriesdata.event_start_date}
+                        </CustomTd>
+                        {/* 開催終了日 */}
+                        <CustomTd align='center'>{volunteerHistoriesdata.event_end_date}</CustomTd>
+                        {/* 役割 */}
+                        <CustomTd align='center'>{volunteerHistoriesdata.role}</CustomTd>
+                        {/* AD */}
+                        <CustomTd align='center'>{volunteerHistoriesdata.ad}</CustomTd>
+                        {/* 祝日 */}
+                        <CustomTd align='center'>
+                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 7) && (
+                            <p className='text-small'>可</p>
+                          )}
+                        </CustomTd>
+                        {/* 日曜 */}
+                        <CustomTd align='center'>
+                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 0) && (
+                            <p className='text-small'>◯</p>
+                          )}
+                        </CustomTd>
+                        {/* 月曜 */}
+                        <CustomTd align='center'>
+                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 1) && (
+                            <p className='text-small'>◯</p>
+                          )}
+                        </CustomTd>
+                        {/* 火曜 */}
+                        <CustomTd align='center'>
+                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 2) && (
+                            <p className='text-small'>◯</p>
+                          )}
+                        </CustomTd>
+                        {/* 水曜 */}
+                        <CustomTd align='center'>
+                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 3) && (
+                            <p className='text-small'>◯</p>
+                          )}
+                        </CustomTd>
+                        {/* 木曜 */}
+                        <CustomTd align='center'>
+                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 4) && (
+                            <p className='text-small'>◯</p>
+                          )}
+                        </CustomTd>
+                        {/* 金曜 */}
+                        <CustomTd align='center'>
+                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 5) && (
+                            <p className='text-small'>◯</p>
+                          )}
+                        </CustomTd>
+                        {/* 土曜 */}
+                        <CustomTd align='center'>
+                          {getDayOfWeekBool(volunteerHistoriesdata.day_of_week, 6) && (
+                            <p className='text-small'>◯</p>
+                          )}
+                        </CustomTd>
+                      </CustomTr>
+                    </CustomTbody>
+                  ),
+              )}
+          </CustomTable>
+          {/* ADフィルター用のオートコンプリート 20240725 */}
+          {showADAutocomplete && (
+            <div
+              ref={ADfocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedADHeader.position.top - 120}px`,
+                left: `${selectedADHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowADAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
+            >
+              <Autocomplete
+                id='AD'
+                multiple
+                options={aDList}
+                filterOptions={(options, { inputValue }) =>
+                  options.filter((option) => option.name?.includes(inputValue))
+                }
+                value={selectedADList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: ADList[]) => {
+                  //console.log(newValue);
+                  setSelectedADList(newValue);
+                }}
+                renderOption={(props: any, option: ADList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name}
+                    </li>
+                  );
+                }}
+                renderTags={(value: ADList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'AD'}
+                  />
                 )}
-            </CustomTable>
-            {/* ADフィルター用のオートコンプリート 20240725 */}
-            {showADAutocomplete && (
-              <div
-                ref={ADfocusTarget}
-                style={{
-                  position: 'absolute',
-                  top: `${selectedADHeader.position.top - 120}px`,
-                  left: `${selectedADHeader.position.left}px`,
-                  backgroundColor: 'white',
-                  borderRadius: '4px',
-                  zIndex: 1000,
-                  padding: '8px',
-                }}
-                onBlur={() => setShowADAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
-              >
-                <Autocomplete
-                  id='AD'
-                  multiple
-                  options={aDList}
-                  filterOptions={(options, { inputValue }) =>
-                    options.filter((option) => option.name?.includes(inputValue))
-                  }
-                  value={selectedADList || []}
-                  onChange={(e: ChangeEvent<{}>, newValue: ADList[]) => {
-                    //console.log(newValue);
-                    setSelectedADList(newValue);
-                  }}
-                  renderOption={(props: any, option: ADList) => {
-                    return (
-                      <li {...props} key={option.id}>
-                        {option.name}
-                      </li>
-                    );
-                  }}
-                  renderTags={(value: ADList[], getTagProps: any) => {
-                    return value.map((option, index) => (
-                      <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
-                    ));
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      key={params.id}
-                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                      {...params}
-                      label={'AD'}
-                    />
-                  )}
-                />
-              </div>
-            )}
-            {/* 祝日フィルター用のオートコンプリート 20240725 */}
-            {showHolidayAutocomplete && (
-              <div
-                ref={holidayfocusTarget}
-                style={{
-                  position: 'absolute',
-                  top: `${selectedHolidayHeader.position.top - 120}px`,
-                  left: `${selectedHolidayHeader.position.left}px`,
-                  backgroundColor: 'white',
-                  borderRadius: '4px',
-                  zIndex: 1000,
-                  padding: '8px',
-                }}
-                onBlur={() => setShowHolidayAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
-              >
-                <Autocomplete
-                  id='祝日'
-                  multiple
-                  options={holidayList}
-                  filterOptions={(options, { inputValue }) => {
-                    return options.filter(
-                      (option) => Boolean(option.name)?.toString().includes(inputValue.toString()),
-                    );
-                  }}
-                  value={selectedHolidayList || []}
-                  onChange={(e: ChangeEvent<{}>, newValue: HolidayList[]) => {
-                    //console.log(newValue);
-                    setSelectedHolidayList(newValue);
-                  }}
-                  renderOption={(props: any, option: HolidayList) => {
-                    return (
-                      <li {...props} key={option.id}>
-                        {/* {option.name} */}
-                        {option.name === true ? '可' : ''}
-                      </li>
-                    );
-                  }}
-                  renderTags={(value: HolidayList[], getTagProps: any) => {
-                    return value.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={option.id}
-                        label={option.name === true ? '可' : ''}
-                      />
-                    ));
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      key={params.id}
-                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                      {...params}
-                      label={'祝日'}
-                    />
-                  )}
-                />
-              </div>
-            )}
-            {/* 日曜フィルター用のオートコンプリート 20240725 */}
-            {showSundayAutocomplete && (
-              <div
-                ref={sundayfocusTarget}
-                style={{
-                  position: 'absolute',
-                  top: `${selectedSundayHeader.position.top - 120}px`,
-                  left: `${selectedSundayHeader.position.left}px`,
-                  backgroundColor: 'white',
-                  borderRadius: '4px',
-                  zIndex: 1000,
-                  padding: '8px',
-                }}
-                onBlur={() => setShowSundayAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
-              >
-                <Autocomplete
-                  id='日曜'
-                  multiple
-                  options={sundayList}
-                  filterOptions={(options, { inputValue }) => {
-                    return options.filter(
-                      (option) => Boolean(option.name)?.toString().includes(inputValue.toString()),
-                    );
-                  }}
-                  value={selectedSundayList || []}
-                  onChange={(e: ChangeEvent<{}>, newValue: SundayList[]) => {
-                    setSelectedSundayList(newValue);
-                  }}
-                  renderOption={(props: any, option: SundayList) => {
-                    return (
-                      <li {...props} key={option.id}>
-                        {option.name === true ? '〇' : ''}
-                      </li>
-                    );
-                  }}
-                  renderTags={(value: SundayList[], getTagProps: any) => {
-                    return value.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={option.id}
-                        label={option.name === true ? '〇' : ''}
-                      />
-                    ));
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      key={params.id}
-                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                      {...params}
-                      label={'日曜'}
-                    />
-                  )}
-                />
-              </div>
-            )}
-            {/* 月曜フィルター用のオートコンプリート 20240725 */}
-            {showMondayAutocomplete && (
-              <div
-                ref={mondayfocusTarget}
-                style={{
-                  position: 'absolute',
-                  top: `${selectedMondayHeader.position.top - 120}px`,
-                  left: `${selectedMondayHeader.position.left}px`,
-                  backgroundColor: 'white',
-                  borderRadius: '4px',
-                  zIndex: 1000,
-                  padding: '8px',
-                }}
-                onBlur={() => setShowMondayAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
-              >
-                <Autocomplete
-                  id='月曜'
-                  multiple
-                  options={mondayList}
-                  filterOptions={(options, { inputValue }) => {
-                    return options.filter(
-                      (option) => Boolean(option.name)?.toString().includes(inputValue.toString()),
-                    );
-                  }}
-                  value={selectedMondayList || []}
-                  onChange={(e: ChangeEvent<{}>, newValue: MondayList[]) => {
-                    setSelectedMondayList(newValue);
-                  }}
-                  renderOption={(props: any, option: MondayList) => {
-                    return (
-                      <li {...props} key={option.id}>
-                        {option.name === true ? '〇' : ''}
-                      </li>
-                    );
-                  }}
-                  renderTags={(value: MondayList[], getTagProps: any) => {
-                    return value.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={option.id}
-                        label={option.name === true ? '〇' : ''}
-                      />
-                    ));
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      key={params.id}
-                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                      {...params}
-                      label={'月曜'}
-                    />
-                  )}
-                />
-              </div>
-            )}
-            {/* 火曜フィルター用のオートコンプリート 20240725 */}
-            {showTuesdayAutocomplete && (
-              <div
-                ref={tuesdayfocusTarget}
-                style={{
-                  position: 'absolute',
-                  top: `${selectedTuesdayHeader.position.top - 120}px`,
-                  left: `${selectedTuesdayHeader.position.left}px`,
-                  backgroundColor: 'white',
-                  borderRadius: '4px',
-                  zIndex: 1000,
-                  padding: '8px',
-                }}
-                onBlur={() => setShowTuesdayAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
-              >
-                <Autocomplete
-                  id='火曜'
-                  multiple
-                  options={tuesdayList}
-                  filterOptions={(options, { inputValue }) => {
-                    return options.filter(
-                      (option) => Boolean(option.name)?.toString().includes(inputValue.toString()),
-                    );
-                  }}
-                  value={selectedTuesdayList || []}
-                  onChange={(e: ChangeEvent<{}>, newValue: TuesdayList[]) => {
-                    setSelectedTuesdayList(newValue);
-                  }}
-                  renderOption={(props: any, option: TuesdayList) => {
-                    return (
-                      <li {...props} key={option.id}>
-                        {option.name === true ? '〇' : ''}
-                      </li>
-                    );
-                  }}
-                  renderTags={(value: TuesdayList[], getTagProps: any) => {
-                    return value.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={option.id}
-                        label={option.name === true ? '〇' : ''}
-                      />
-                    ));
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      key={params.id}
-                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                      {...params}
-                      label={'火曜'}
-                    />
-                  )}
-                />
-              </div>
-            )}
-            {/* 水曜フィルター用のオートコンプリート 20240725 */}
-            {showWednesdayAutocomplete && (
-              <div
-                ref={wednesdayfocusTarget}
-                style={{
-                  position: 'absolute',
-                  top: `${selectedWednesdayHeader.position.top - 120}px`,
-                  left: `${selectedWednesdayHeader.position.left}px`,
-                  backgroundColor: 'white',
-                  borderRadius: '4px',
-                  zIndex: 1000,
-                  padding: '8px',
-                }}
-                onBlur={() => setShowWednesdayAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
-              >
-                <Autocomplete
-                  id='水曜'
-                  multiple
-                  options={wednesdayList}
-                  filterOptions={(options, { inputValue }) => {
-                    return options.filter(
-                      (option) => Boolean(option.name)?.toString().includes(inputValue.toString()),
-                    );
-                  }}
-                  value={selectedWednesdayList || []}
-                  onChange={(e: ChangeEvent<{}>, newValue: WednesdayList[]) => {
-                    setSelectedWednesdayList(newValue);
-                  }}
-                  renderOption={(props: any, option: WednesdayList) => {
-                    return (
-                      <li {...props} key={option.id}>
-                        {option.name === true ? '〇' : ''}
-                      </li>
-                    );
-                  }}
-                  renderTags={(value: WednesdayList[], getTagProps: any) => {
-                    return value.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={option.id}
-                        label={option.name === true ? '〇' : ''}
-                      />
-                    ));
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      key={params.id}
-                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                      {...params}
-                      label={'水曜'}
-                    />
-                  )}
-                />
-              </div>
-            )}
-            {/* 木曜フィルター用のオートコンプリート 20240725 */}
-            {showThursdayAutocomplete && (
-              <div
-                ref={thursdayfocusTarget}
-                style={{
-                  position: 'absolute',
-                  top: `${selectedThursdayHeader.position.top - 120}px`,
-                  left: `${selectedThursdayHeader.position.left}px`,
-                  backgroundColor: 'white',
-                  borderRadius: '4px',
-                  zIndex: 1000,
-                  padding: '8px',
-                }}
-                onBlur={() => setShowThursdayAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
-              >
-                <Autocomplete
-                  id='木曜'
-                  multiple
-                  options={thursdayList}
-                  filterOptions={(options, { inputValue }) => {
-                    return options.filter(
-                      (option) => Boolean(option.name)?.toString().includes(inputValue.toString()),
-                    );
-                  }}
-                  value={selectedThursdayList || []}
-                  onChange={(e: ChangeEvent<{}>, newValue: ThursdayList[]) => {
-                    setSelectedThursdayList(newValue);
-                  }}
-                  renderOption={(props: any, option: ThursdayList) => {
-                    return (
-                      <li {...props} key={option.id}>
-                        {option.name === true ? '〇' : ''}
-                      </li>
-                    );
-                  }}
-                  renderTags={(value: ThursdayList[], getTagProps: any) => {
-                    return value.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={option.id}
-                        label={option.name === true ? '〇' : ''}
-                      />
-                    ));
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      key={params.id}
-                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                      {...params}
-                      label={'木曜'}
-                    />
-                  )}
-                />
-              </div>
-            )}
-            {/* 金曜フィルター用のオートコンプリート 20240725 */}
-            {showFridayAutocomplete && (
-              <div
-                ref={fridayfocusTarget}
-                style={{
-                  position: 'absolute',
-                  top: `${selectedFridayHeader.position.top - 120}px`,
-                  left: `${selectedFridayHeader.position.left}px`,
-                  backgroundColor: 'white',
-                  borderRadius: '4px',
-                  zIndex: 1000,
-                  padding: '8px',
-                }}
-                onBlur={() => setShowFridayAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
-              >
-                <Autocomplete
-                  id='金曜'
-                  multiple
-                  options={fridayList}
-                  filterOptions={(options, { inputValue }) => {
-                    return options.filter(
-                      (option) => Boolean(option.name)?.toString().includes(inputValue.toString()),
-                    );
-                  }}
-                  value={selectedFridayList || []}
-                  onChange={(e: ChangeEvent<{}>, newValue: FridayList[]) => {
-                    setSelectedFridayList(newValue);
-                  }}
-                  renderOption={(props: any, option: FridayList) => {
-                    return (
-                      <li {...props} key={option.id}>
-                        {option.name === true ? '〇' : ''}
-                      </li>
-                    );
-                  }}
-                  renderTags={(value: FridayList[], getTagProps: any) => {
-                    return value.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={option.id}
-                        label={option.name === true ? '〇' : ''}
-                      />
-                    ));
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      key={params.id}
-                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                      {...params}
-                      label={'金曜'}
-                    />
-                  )}
-                />
-              </div>
-            )}
-            {/* 土曜フィルター用のオートコンプリート 20240725 */}
-            {showSaturdayAutocomplete && (
-              <div
-                ref={saturdayfocusTarget}
-                style={{
-                  position: 'absolute',
-                  top: `${selectedSaturdayHeader.position.top - 120}px`,
-                  left: `${selectedSaturdayHeader.position.left}px`,
-                  backgroundColor: 'white',
-                  borderRadius: '4px',
-                  zIndex: 1000,
-                  padding: '8px',
-                }}
-                onBlur={() => setShowSaturdayAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
-              >
-                <Autocomplete
-                  id='曜'
-                  multiple
-                  options={saturdayList}
-                  filterOptions={(options, { inputValue }) => {
-                    return options.filter(
-                      (option) => Boolean(option.name)?.toString().includes(inputValue.toString()),
-                    );
-                  }}
-                  value={selectedSaturdayList || []}
-                  onChange={(e: ChangeEvent<{}>, newValue: SaturdayList[]) => {
-                    setSelectedSaturdayList(newValue);
-                  }}
-                  renderOption={(props: any, option: SaturdayList) => {
-                    return (
-                      <li {...props} key={option.id}>
-                        {option.name === true ? '〇' : ''}
-                      </li>
-                    );
-                  }}
-                  renderTags={(value: SaturdayList[], getTagProps: any) => {
-                    return value.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={option.id}
-                        label={option.name === true ? '〇' : ''}
-                      />
-                    ));
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      key={params.id}
-                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                      {...params}
-                      label={'土曜'}
-                    />
-                  )}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-        <div className='flex flex-row mb-1 gap-[16px] justify-center'>
-          {/* 戻るボタン */}
-          {window.history.length > 1 && (
-            <CustomButton
-              buttonType='white-outlined'
-              className='text-normal h-12 mb-6'
-              onClick={() => {
-                router.back();
-                // ボランティア情報参照画面に遷移
-              }}
-            >
-              戻る
-            </CustomButton>
+              />
+            </div>
           )}
-          {/* 削除ボタン */}
-          {mode === 'delete' && (
-            <CustomButton
-              buttonType='primary'
-              className='text-secondaryText text-normal h-12 mr-1 mb-6'
-              onClick={() => {
-                // TODO: 削除処理
-                /**
-                 * 以下のテーブルに登録されている当該ボランティアのデータの「削除フラグ」に"1"を設定する。
-                 * 「ボランティアテーブル」
-                 * 「ボランティア履歴テーブル」
-                 * 「ボランティアアベイラブルテーブル」
-                 * 「ボランティア保有資格情報テーブル」
-                 * 「ボランティア言語レベルテーブル」
-                 * 「ボランティア支援可能障碍タイプテーブル」
-                 */
-                // TODO: エラーハンドリングを実装
-                // 削除に失敗した場合、
-                // 以下のメッセージをシステムエラーとして赤文字で表示し、以降の処理は行わない。
-                // setErrorMessage(['ユーザー情報の登録に失敗しました。ユーザーサポートにお問い合わせください。']);
+          {/* 祝日フィルター用のオートコンプリート 20240725 */}
+          {showHolidayAutocomplete && (
+            <div
+              ref={holidayfocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedHolidayHeader.position.top - 120}px`,
+                left: `${selectedHolidayHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowHolidayAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
+            >
+              <Autocomplete
+                id='祝日'
+                multiple
+                options={holidayList}
+                filterOptions={(options, { inputValue }) => {
+                  return options.filter(
+                    (option) => Boolean(option.name)?.toString().includes(inputValue.toString()),
+                  );
+                }}
+                value={selectedHolidayList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: HolidayList[]) => {
+                  //console.log(newValue);
+                  setSelectedHolidayList(newValue);
+                }}
+                renderOption={(props: any, option: HolidayList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {/* {option.name} */}
+                      {option.name === true ? '可' : ''}
+                    </li>
+                  );
+                }}
+                renderTags={(value: HolidayList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={option.id}
+                      label={option.name === true ? '可' : ''}
+                    />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'祝日'}
+                  />
+                )}
+              />
+            </div>
+          )}
+          {/* 日曜フィルター用のオートコンプリート 20240725 */}
+          {showSundayAutocomplete && (
+            <div
+              ref={sundayfocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedSundayHeader.position.top - 120}px`,
+                left: `${selectedSundayHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowSundayAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
+            >
+              <Autocomplete
+                id='日曜'
+                multiple
+                options={sundayList}
+                filterOptions={(options, { inputValue }) => {
+                  return options.filter(
+                    (option) => Boolean(option.name)?.toString().includes(inputValue.toString()),
+                  );
+                }}
+                value={selectedSundayList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: SundayList[]) => {
+                  setSelectedSundayList(newValue);
+                }}
+                renderOption={(props: any, option: SundayList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name === true ? '〇' : ''}
+                    </li>
+                  );
+                }}
+                renderTags={(value: SundayList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={option.id}
+                      label={option.name === true ? '〇' : ''}
+                    />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'日曜'}
+                  />
+                )}
+              />
+            </div>
+          )}
+          {/* 月曜フィルター用のオートコンプリート 20240725 */}
+          {showMondayAutocomplete && (
+            <div
+              ref={mondayfocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedMondayHeader.position.top - 120}px`,
+                left: `${selectedMondayHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowMondayAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
+            >
+              <Autocomplete
+                id='月曜'
+                multiple
+                options={mondayList}
+                filterOptions={(options, { inputValue }) => {
+                  return options.filter(
+                    (option) => Boolean(option.name)?.toString().includes(inputValue.toString()),
+                  );
+                }}
+                value={selectedMondayList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: MondayList[]) => {
+                  setSelectedMondayList(newValue);
+                }}
+                renderOption={(props: any, option: MondayList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name === true ? '〇' : ''}
+                    </li>
+                  );
+                }}
+                renderTags={(value: MondayList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={option.id}
+                      label={option.name === true ? '〇' : ''}
+                    />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'月曜'}
+                  />
+                )}
+              />
+            </div>
+          )}
+          {/* 火曜フィルター用のオートコンプリート 20240725 */}
+          {showTuesdayAutocomplete && (
+            <div
+              ref={tuesdayfocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedTuesdayHeader.position.top - 120}px`,
+                left: `${selectedTuesdayHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowTuesdayAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
+            >
+              <Autocomplete
+                id='火曜'
+                multiple
+                options={tuesdayList}
+                filterOptions={(options, { inputValue }) => {
+                  return options.filter(
+                    (option) => Boolean(option.name)?.toString().includes(inputValue.toString()),
+                  );
+                }}
+                value={selectedTuesdayList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: TuesdayList[]) => {
+                  setSelectedTuesdayList(newValue);
+                }}
+                renderOption={(props: any, option: TuesdayList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name === true ? '〇' : ''}
+                    </li>
+                  );
+                }}
+                renderTags={(value: TuesdayList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={option.id}
+                      label={option.name === true ? '〇' : ''}
+                    />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'火曜'}
+                  />
+                )}
+              />
+            </div>
+          )}
+          {/* 水曜フィルター用のオートコンプリート 20240725 */}
+          {showWednesdayAutocomplete && (
+            <div
+              ref={wednesdayfocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedWednesdayHeader.position.top - 120}px`,
+                left: `${selectedWednesdayHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowWednesdayAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
+            >
+              <Autocomplete
+                id='水曜'
+                multiple
+                options={wednesdayList}
+                filterOptions={(options, { inputValue }) => {
+                  return options.filter(
+                    (option) => Boolean(option.name)?.toString().includes(inputValue.toString()),
+                  );
+                }}
+                value={selectedWednesdayList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: WednesdayList[]) => {
+                  setSelectedWednesdayList(newValue);
+                }}
+                renderOption={(props: any, option: WednesdayList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name === true ? '〇' : ''}
+                    </li>
+                  );
+                }}
+                renderTags={(value: WednesdayList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={option.id}
+                      label={option.name === true ? '〇' : ''}
+                    />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'水曜'}
+                  />
+                )}
+              />
+            </div>
+          )}
+          {/* 木曜フィルター用のオートコンプリート 20240725 */}
+          {showThursdayAutocomplete && (
+            <div
+              ref={thursdayfocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedThursdayHeader.position.top - 120}px`,
+                left: `${selectedThursdayHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowThursdayAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
+            >
+              <Autocomplete
+                id='木曜'
+                multiple
+                options={thursdayList}
+                filterOptions={(options, { inputValue }) => {
+                  return options.filter(
+                    (option) => Boolean(option.name)?.toString().includes(inputValue.toString()),
+                  );
+                }}
+                value={selectedThursdayList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: ThursdayList[]) => {
+                  setSelectedThursdayList(newValue);
+                }}
+                renderOption={(props: any, option: ThursdayList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name === true ? '〇' : ''}
+                    </li>
+                  );
+                }}
+                renderTags={(value: ThursdayList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={option.id}
+                      label={option.name === true ? '〇' : ''}
+                    />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'木曜'}
+                  />
+                )}
+              />
+            </div>
+          )}
+          {/* 金曜フィルター用のオートコンプリート 20240725 */}
+          {showFridayAutocomplete && (
+            <div
+              ref={fridayfocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedFridayHeader.position.top - 120}px`,
+                left: `${selectedFridayHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowFridayAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
+            >
+              <Autocomplete
+                id='金曜'
+                multiple
+                options={fridayList}
+                filterOptions={(options, { inputValue }) => {
+                  return options.filter(
+                    (option) => Boolean(option.name)?.toString().includes(inputValue.toString()),
+                  );
+                }}
+                value={selectedFridayList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: FridayList[]) => {
+                  setSelectedFridayList(newValue);
+                }}
+                renderOption={(props: any, option: FridayList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name === true ? '〇' : ''}
+                    </li>
+                  );
+                }}
+                renderTags={(value: FridayList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={option.id}
+                      label={option.name === true ? '〇' : ''}
+                    />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'金曜'}
+                  />
+                )}
+              />
+            </div>
+          )}
+          {/* 土曜フィルター用のオートコンプリート 20240725 */}
+          {showSaturdayAutocomplete && (
+            <div
+              ref={saturdayfocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedSaturdayHeader.position.top - 120}px`,
+                left: `${selectedSaturdayHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowSaturdayAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
+            >
+              <Autocomplete
+                id='曜'
+                multiple
+                options={saturdayList}
+                filterOptions={(options, { inputValue }) => {
+                  return options.filter(
+                    (option) => Boolean(option.name)?.toString().includes(inputValue.toString()),
+                  );
+                }}
+                value={selectedSaturdayList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: SaturdayList[]) => {
+                  setSelectedSaturdayList(newValue);
+                }}
+                renderOption={(props: any, option: SaturdayList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name === true ? '〇' : ''}
+                    </li>
+                  );
+                }}
+                renderTags={(value: SaturdayList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={option.id}
+                      label={option.name === true ? '〇' : ''}
+                    />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'土曜'}
+                  />
+                )}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+      <div className='flex flex-row mb-1 gap-[16px] justify-center'>
+        {/* 戻るボタン */}
+        {window.history.length > 1 && (
+          <CustomButton
+            buttonType='white-outlined'
+            className='text-normal h-12 mb-6'
+            onClick={() => {
+              router.back();
+              // ボランティア情報参照画面に遷移
+            }}
+          >
+            戻る
+          </CustomButton>
+        )}
+        {/* 削除ボタン */}
+        {mode === 'delete' && (
+          <CustomButton
+            buttonType='primary'
+            className='text-secondaryText text-normal h-12 mr-1 mb-6'
+            onClick={() => {
+              // TODO: 削除処理
+              /**
+               * 以下のテーブルに登録されている当該ボランティアのデータの「削除フラグ」に"1"を設定する。
+               * 「ボランティアテーブル」
+               * 「ボランティア履歴テーブル」
+               * 「ボランティアアベイラブルテーブル」
+               * 「ボランティア保有資格情報テーブル」
+               * 「ボランティア言語レベルテーブル」
+               * 「ボランティア支援可能障碍タイプテーブル」
+               */
+              // TODO: エラーハンドリングを実装
+              // 削除に失敗した場合、
+              // 以下のメッセージをシステムエラーとして赤文字で表示し、以降の処理は行わない。
+              // setErrorMessage(['ユーザー情報の登録に失敗しました。ユーザーサポートにお問い合わせください。']);
 
-                // setDisplayFlg(false);
-                window.confirm('ボランティア情報を削除します。よろしいですか？')
-                  ? //okを押したら下の処理を実行 キャンセルを押したらflagをtrueにしてそのまま
-                    (dataDelete(),
-                    // setDisplayFlg(true),
-                    window.alert('ボランティア情報の削除が完了しました。'),
-                    router.push('/tournamentSearch')) //大会検索画面に遷移する 20240222
-                  : '';
-              }}
-            >
-              削除
-            </CustomButton>
-          )}
-        </div>
-      </main>
-    </div>
+              // setDisplayFlg(false);
+              window.confirm('ボランティア情報を削除します。よろしいですか？')
+                ? //okを押したら下の処理を実行 キャンセルを押したらflagをtrueにしてそのまま
+                  (dataDelete(),
+                  // setDisplayFlg(true),
+                  window.alert('ボランティア情報の削除が完了しました。'),
+                  router.push('/tournamentSearch')) //大会検索画面に遷移する 20240222
+                : '';
+            }}
+          >
+            削除
+          </CustomButton>
+        )}
+      </div>
+    </main>
   );
 }

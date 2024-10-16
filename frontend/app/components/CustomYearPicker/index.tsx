@@ -29,7 +29,7 @@ const CustomYearPicker = ({
 }) => {
   const dispYear = new Date(selectedDate).getFullYear();
   return (
-    <div>
+    <>
       {readonly && (
         <p className='h-12 w-[300px] text-secondaryText py-3 disable'>
           {selectedDate ? dispYear : ''}
@@ -62,7 +62,7 @@ const CustomYearPicker = ({
           {message}
         </p>
       ))}
-    </div>
+    </>
   );
 };
 

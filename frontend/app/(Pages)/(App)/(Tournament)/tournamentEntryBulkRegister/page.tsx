@@ -542,7 +542,7 @@ export default function TournamentEntryBulkRegister() {
   // レンダリング
   return (
     validFlag && (
-      <div>
+      <>
         <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px]'>
           {/* 画面名*/}
           <CustomTitle displayBack>
@@ -819,7 +819,7 @@ export default function TournamentEntryBulkRegister() {
             </div>
           )}
         </main>
-      </div>
+      </>
     )
   );
 }

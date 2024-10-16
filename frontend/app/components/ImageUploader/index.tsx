@@ -114,7 +114,7 @@ const ImageUploader: FC<ImageUploaderProps> = ({
   }, [initialPhotoUrl]);
 
   return (
-    <div>
+    <>
       <div>
         <div {...getRootProps()} className='w-full h-[320px] justify-center flex dropzone'>
           {currentShowFile?.isUploaded ? (
@@ -216,24 +216,13 @@ const ImageUploader: FC<ImageUploaderProps> = ({
       {currentShowFile && (
         <aside>
           {currentShowFile.isUploaded ? (
-            <div>
-              <div>
-                <span></span>
-              </div>
-              <div>
-                <p>{currentShowFile.file.name}</p>
-              </div>
-            </div>
+            <p>{currentShowFile.file.name}</p>
           ) : (
-            <div>
-              <div>
-                <p>{currentShowFile.file.name}をアップロードしています…</p>
-              </div>
-            </div>
+            <p>{currentShowFile.file.name}をアップロードしています…</p>
           )}
         </aside>
       )}
-    </div>
+    </>
   );
 };
 
