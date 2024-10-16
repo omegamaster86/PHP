@@ -19,6 +19,7 @@ import {
   CustomTitle,
   ErrorBox,
 } from '@/app/components';
+import { RoundedBadge } from '@/app/components/Badge';
 import Link from 'next/link';
 import AddIcon from '@mui/icons-material/Add';
 import { RaceResultRecordsResponse, PlayerInformationResponse } from '@/app/types';
@@ -1052,1148 +1053,1085 @@ export default function PlayerInformationRef() {
   ];
 
   return (
-    <div>
-      <main>
-        <div className='flex flex-col pt-[40px] pb-[60px] gap-[50px] md:w-[1000px] sm: w-[600px]'>
-          <div className='relative flex flex-row justify-between w-full h-screen flex-wrap'>
-            {/* 画面名*/}
-            <CustomTitle isCenter={false} displayBack>
-              {mode === 'delete' ? '選手情報削除' : '選手情報参照'}
-            </CustomTitle>
+    <div className='flex flex-col gap-[30px] max-w-5xl m-auto'>
+      <div className='relative flex flex-row justify-between w-full flex-wrap'>
+        {/* 画面名*/}
+        <CustomTitle isCenter={false} displayBack>
+          {mode === 'delete' ? '選手情報削除' : '選手情報参照'}
+        </CustomTitle>
+      </div>
+      <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
+      <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4 '>
+        <div className='flex flex-col sm:flex-row gap-[40px]'>
+          <div>
+            {/* 写真 */}
+            <img
+              src={
+                playerInformation.photo
+                  ? `${PLAYER_IMAGE_URL}${playerInformation.photo}`
+                  : `${NO_IMAGE_URL}`
+              }
+              width={200}
+              height={200}
+              alt='Random'
+              className='rounded-full'
+            />
           </div>
-          <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
-          <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4 '>
-            <div className='flex flex-row gap-[40px]'>
-              <div>
-                {/* 写真 */}
-                <img
-                  src={
-                    playerInformation.photo
-                      ? `${PLAYER_IMAGE_URL}${playerInformation.photo}`
-                      : `${NO_IMAGE_URL}`
-                  }
-                  width={200}
-                  height={200}
-                  alt='Random'
-                  className='rounded-full'
-                />
-              </div>
-              <div className='flex flex-col gap-[10px]'>
-                <div className='flex flex-col gap-[10px]'>
-                  {/* 選手名 */}
+          <div className='flex flex-col gap-[10px]'>
+            <div className='flex flex-col gap-[10px]'>
+              {/* 選手名 */}
+              <Label label={playerInformation.player_name} textColor='white' textSize='h3'></Label>
+              <div className='flex flex-row gap-[10px]'>
+                <div className='flex flex-row gap-[10px]'>
+                  {/* 選手ID */}
+                  <div className='text-gray-40 text-caption1'>選手ID</div>
                   <Label
-                    label={playerInformation.player_name}
+                    label={playerInformation.player_id?.toString()}
                     textColor='white'
-                    textSize='h3'
+                    textSize='caption1'
                   ></Label>
-                  <div className='flex flex-row gap-[10px]'>
-                    <div className='flex flex-row gap-[10px]'>
-                      {/* 選手ID */}
-                      <div className='text-gray-40 text-caption1'>選手ID</div>
-                      <Label
-                        label={playerInformation.player_id?.toString()}
-                        textColor='white'
-                        textSize='caption1'
-                      ></Label>
-                    </div>
-                    <div className='flex flex-row gap-[10px]'>
-                      {/* 既存選手ID */}
-                      <div className='text-gray-40 text-caption1'>JARA選手コード</div>
-                      <Label
-                        label={playerInformation.jara_player_id ?? ''}
-                        textColor='white'
-                        textSize='caption1'
-                      ></Label>
-                    </div>
-                  </div>
                 </div>
-                <div className='flex flex-col gap-[10px]'>
+                <div className='flex flex-row gap-[10px]'>
+                  {/* 既存選手ID */}
+                  <div className='text-gray-40 text-caption1'>JARA選手コード</div>
                   <Label
-                    label='プロフィール'
+                    label={playerInformation.jara_player_id ?? ''}
                     textColor='white'
-                    textSize='small'
-                    isBold={true}
+                    textSize='caption1'
                   ></Label>
+                </div>
+              </div>
+            </div>
+            <div className='flex flex-col gap-[10px]'>
+              <Label label='プロフィール' textColor='white' textSize='small' isBold={true}></Label>
+              <div className='flex flex-col gap-[5px]'>
+                <div className='flex flex-row gap-[20px]'>
                   <div className='flex flex-col gap-[5px]'>
-                    <div className='flex flex-row gap-[20px]'>
-                      <div className='flex flex-col gap-[5px]'>
-                        <div className='flex flex-row'>
-                          {/* 性別 */}
-                          <div className='text-gray-40 text-caption1'>性別　</div>
-                          <Label
-                            label={playerInformation.sexName}
-                            textColor='white'
-                            textSize='caption1'
-                          ></Label>
-                        </div>
-                        <div className='flex flex-row'>
-                          {/* 生年月日 */}
-                          <div className='text-gray-40 text-caption1'>生年月日　</div>
-                          <Label
-                            label={playerInformation.date_of_birth}
-                            textColor='white'
-                            textSize='caption1'
-                          ></Label>
-                        </div>
-                      </div>
-                      <div className='flex flex-col gap-[5px]'>
-                        <div className='flex flex-row'>
-                          {/* 身長 */}
-                          <div className='text-gray-40 text-caption1'>身長　</div>
-                          <Label
-                            label={playerInformation.height?.toString()} // 身長は数値なのでtoString()で文字列に変換
-                            textColor='white'
-                            textSize='caption1'
-                          ></Label>
-                          <div className='text-gray-40 text-caption1'>　cm</div>
-                        </div>
-                        <div className='flex flex-row'>
-                          {/* 体重 */}
-                          <div className='text-gray-40 text-caption1'>体重　</div>
-                          <Label
-                            label={playerInformation.weight?.toString() + ' '} // 体重は数値なのでtoString()で文字列に変換
-                            textColor='white'
-                            textSize='caption1'
-                          ></Label>
-                          <div className='text-gray-40 text-caption1'>　kg</div>
-                        </div>
-                      </div>
-                    </div>
                     <div className='flex flex-row'>
-                      {/* 出身地（国） */}
-                      <div className='text-gray-40 text-caption1'>出身　</div>
+                      {/* 性別 */}
+                      <div className='text-gray-40 text-caption1'>性別&nbsp;&nbsp;</div>
                       <Label
-                        label={playerInformation.birthCountryName}
+                        label={playerInformation.sexName}
                         textColor='white'
                         textSize='caption1'
                       ></Label>
-                      {/* 出身地（都道府県） */}
-                      <div
-                        className={
-                          !playerInformation.birthPrefectureName ||
-                          playerInformation.birthPrefectureName === ''
-                            ? 'hidden'
-                            : ''
-                        }
-                      >
-                        <Label
-                          label={'　/　' + playerInformation.birthPrefectureName}
-                          textColor='white'
-                          textSize='caption1'
-                        ></Label>
-                      </div>
                     </div>
                     <div className='flex flex-row'>
-                      <div className='text-gray-40 text-caption1'>居住　</div>
-                      {/* 居住地（国） */}
+                      {/* 生年月日 */}
+                      <div className='text-gray-40 text-caption1'>生年月日&nbsp;&nbsp;</div>
                       <Label
-                        label={playerInformation.residenceCountryName}
+                        label={playerInformation.date_of_birth}
                         textColor='white'
                         textSize='caption1'
                       ></Label>
-                      {/* 居住地（都道府県） */}
-                      <div
-                        className={
-                          !playerInformation.residencePrefectureName ||
-                          playerInformation.residencePrefectureName === ''
-                            ? 'hidden'
-                            : ''
-                        }
-                      >
-                        <Label
-                          label={'　/　' + playerInformation.residencePrefectureName}
-                          textColor='white'
-                          textSize='caption1'
-                        ></Label>
-                      </div>
+                    </div>
+                  </div>
+                  <div className='flex flex-col gap-[5px]'>
+                    <div className='flex flex-row'>
+                      {/* 身長 */}
+                      <div className='text-gray-40 text-caption1'>身長&nbsp;&nbsp;</div>
+                      <Label
+                        label={playerInformation.height?.toString()} // 身長は数値なのでtoString()で文字列に変換
+                        textColor='white'
+                        textSize='caption1'
+                      ></Label>
+                      <div className='text-gray-40 text-caption1'>&nbsp;&nbsp;cm</div>
+                    </div>
+                    <div className='flex flex-row'>
+                      {/* 体重 */}
+                      <div className='text-gray-40 text-caption1'>体重&nbsp;&nbsp;</div>
+                      <Label
+                        label={playerInformation.weight?.toString() + ' '} // 体重は数値なのでtoString()で文字列に変換
+                        textColor='white'
+                        textSize='caption1'
+                      ></Label>
+                      <div className='text-gray-40 text-caption1'>&nbsp;&nbsp;kg</div>
                     </div>
                   </div>
                 </div>
-                <div className='flex flex-col gap-[10px]'>
-                  {/* サイド情報 */}
+                <div className='flex flex-row'>
+                  {/* 出身地（国） */}
+                  <div className='text-gray-40 text-caption1'>出身&nbsp;&nbsp;</div>
                   <Label
-                    label='サイド情報'
+                    label={playerInformation.birthCountryName}
                     textColor='white'
-                    textSize='small'
-                    isBold={true}
+                    textSize='caption1'
                   ></Label>
-                  <div className='flex flex-row justify-start gap-[10px]'>
-                    <div
-                      className={`text-center px-[12px] py-[8px] rounded-full ${
-                        playerInformation.side_info?.at(3)
-                          ? 'border border-secondary-500 text-secondary-500'
-                          : 'border border-gray-30 text-white'
-                      }`}
-                    >
-                      S（ストロークサイド）
-                    </div>
-                    <div
-                      className={`text-center px-[12px] py-[8px] rounded-full ${
-                        playerInformation.side_info?.at(2)
-                          ? 'border border-secondary-500 text-secondary-500'
-                          : 'border border-gray-30 text-white'
-                      }`}
-                    >
-                      B（バウサイド）
-                    </div>
-                  </div>
-                  <div className='flex flex-row justify-start gap-[10px]'>
-                    <div
-                      className={`text-center px-[12px] py-[8px] rounded-full ${
-                        playerInformation.side_info?.at(1)
-                          ? 'border border-secondary-500 text-secondary-500'
-                          : 'border border-gray-30 text-white'
-                      }`}
-                    >
-                      X（スカル）
-                    </div>
-                    <div
-                      className={`text-center px-[12px] py-[8px] rounded-full ${
-                        playerInformation.side_info?.at(0)
-                          ? 'border border-secondary-500 text-secondary-500'
-                          : 'border border-gray-30 text-white'
-                      }`}
-                    >
-                      C（コックス）
-                    </div>
+                  {/* 出身地（都道府県） */}
+                  <div
+                    className={
+                      !playerInformation.birthPrefectureName ||
+                      playerInformation.birthPrefectureName === ''
+                        ? 'hidden'
+                        : ''
+                    }
+                  >
+                    <Label
+                      label={'　/　' + playerInformation.birthPrefectureName}
+                      textColor='white'
+                      textSize='caption1'
+                    ></Label>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-          {/* 選手情報表示 */}
-          <div className='text-lg mb-4'>
-            {/* 出漕結果情報一覧表示 */}
-            <div className='mb-4'>
-              <div className='flex justify-between items-center'>
-                <div className='mb-1 font-bold'>出漕結果情報一覧</div>
-                {/* 個人記録の追加・編集<ボタン */}
-                {mode === 'edit' && (
-                  <CustomButton
-                    buttonType='primary-outlined'
-                    onClick={() => {
-                      router.push('/playerRaceResultRegister');
-                    }}
-                    className='flex flex-row justify-center gap-[4px] w-full'
+                <div className='flex flex-row'>
+                  <div className='text-gray-40 text-caption1'>居住&nbsp;&nbsp;</div>
+                  {/* 居住地（国） */}
+                  <Label
+                    label={playerInformation.residenceCountryName}
+                    textColor='white'
+                    textSize='caption1'
+                  ></Label>
+                  {/* 居住地（都道府県） */}
+                  <div
+                    className={
+                      !playerInformation.residencePrefectureName ||
+                      playerInformation.residencePrefectureName === ''
+                        ? 'hidden'
+                        : ''
+                    }
                   >
-                    <AddIcon />
-                    <div> 個人記録の追加・編集</div>
-                  </CustomButton>
-                )}
-              </div>
-              {/* タブ切り替え */}
-              <div className='container mx-auto mt-8'>
-                <div className='flex'>
-                  <Tab
-                    number={0}
-                    isActive={activeTab === 0}
-                    onClick={handleTabChange}
-                    rounded='rounded-l'
-                  >
-                    全て
-                  </Tab>
-                  <Tab
-                    number={2}
-                    isActive={activeTab === 2}
-                    onClick={handleTabChange}
-                    rounded='rounded-none'
-                  >
-                    公式
-                  </Tab>
-                  <Tab
-                    number={1}
-                    isActive={activeTab === 1}
-                    onClick={handleTabChange}
-                    rounded='rounded-r'
-                  >
-                    非公式
-                  </Tab>
+                    <Label
+                      label={'　/　' + playerInformation.residencePrefectureName}
+                      textColor='white'
+                      textSize='caption1'
+                    ></Label>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className='overflow-auto h-[auto]'>
-              {/* 出漕結果情報一覧テーブル表示 */}
-              <CustomTable>
-                {/* テーブルヘッダー */}
-                <CustomThead>
-                  <CustomTr>
-                    {headerArray.map((header, index) => (
-                      <CustomTh align='left' key={index}>
-                        {header === '大会名' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => tournNameSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === '公式／非公式' && header}
-                        {header === '開催日' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => eventStartDateSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === '所属団体' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => orgNameSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === 'レースNo.' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => raceNumberSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === '種目' && (
-                          <div className='flex flex-row items-center gap-[10px]'>
-                            <div
-                              className='underline'
-                              style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                              onClick={() => eventNameSort()}
-                            >
-                              {header}
-                            </div>
-                            <div
-                              style={{
-                                cursor: 'pointer',
-                                color: selectedEventNameList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
-                              }}
-                              onClick={(event) => handleEventNameHeaderClick('種目', event as any)}
-                            >
-                              <FilterListIcon />
-                            </div>
-                          </div>
-                        )}
-                        {header === 'レース名' && (
-                          <div className='flex flex-row items-center gap-[10px]'>
-                            <div
-                              className='underline'
-                              style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                              onClick={() => raceNameSort()}
-                            >
-                              {header}
-                            </div>
-                            <div
-                              style={{
-                                cursor: 'pointer',
-                                color: selectedRaceNameList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
-                              }}
-                              onClick={(event) =>
-                                handleRaceNameHeaderClick('レース名', event as any)
-                              }
-                            >
-                              <FilterListIcon />
-                            </div>
-                          </div>
-                        )}
-                        {header === '組別' && (
-                          <div className='flex flex-row items-center gap-[10px]'>
-                            <div
-                              className='underline'
-                              style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                              onClick={() => bygroupSort()}
-                            >
-                              {header}
-                            </div>
-                            <div
-                              style={{
-                                cursor: 'pointer',
-                                color: selectedByGroupList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
-                              }}
-                              onClick={(event) => handleByGroupHeaderClick('組別', event as any)}
-                            >
-                              <FilterListIcon />
-                            </div>
-                          </div>
-                        )}
-                        {header === 'クルー名' && (
-                          <div className='flex flex-row items-center gap-[10px]'>
-                            <div
-                              className='underline'
-                              style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                              onClick={() => crewNameSort()}
-                            >
-                              {header}
-                            </div>
-                            <div
-                              style={{
-                                cursor: 'pointer',
-                                color: selectedCrewNameList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
-                              }}
-                              onClick={(event) =>
-                                handleCrewNameHeaderClick('クルー名', event as any)
-                              }
-                            >
-                              <FilterListIcon />
-                            </div>
-                          </div>
-                        )}
-                        {header === '順位' && (
-                          <div className='flex flex-row items-center gap-[10px]'>
-                            <div
-                              className='underline'
-                              style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                              onClick={() => rankSort()}
-                            >
-                              {header}
-                            </div>
-                            <div
-                              style={{
-                                cursor: 'pointer',
-                                color: selectedRankList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
-                              }}
-                              onClick={(event) => handleRankHeaderClick('順位', event as any)}
-                            >
-                              <FilterListIcon />
-                            </div>
-                          </div>
-                        )}
-                        {header === '500mlapタイム' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => lapTime500mSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === '1000mlapタイム' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => lapTime1000mSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === '1500mlapタイム' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => lapTime1500mSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === '2000mlapタイム' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => lapTime2000mSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === '最終lapタイム' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => lapTimeFinalSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === 'ストロークレート（平均）' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => averageHeartRateSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === '500mlapストロークレート' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => strokeRate500mSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === '1000mlapストロークレート' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => strokeRate1000mSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === '1500mlapストロークレート' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => strokeRate1500mSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === '2000mlapストロークレート' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => strokeRate2000mSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === '心拍数/分（平均）' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => heartRateAvgSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === '500mlap心拍数/分' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => heartRate500mSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === '1000mlap心拍数/分' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => heartRate1000mSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === '1500mlap心拍数/分' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => heartRate1500mSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === '2000mlap心拍数/分' && (
-                          <div
-                            className='underline'
-                            style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                            onClick={() => heartRate2000mSort()}
-                          >
-                            {header}
-                          </div>
-                        )}
-                        {header === '立ち合い有無' && (
-                          <div className='flex flex-row items-center gap-[10px]'>
-                            <div>{header}</div>
-                            <div
-                              style={{
-                                cursor: 'pointer',
-                                color: selectedAttendanceList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
-                              }}
-                              onClick={(event) =>
-                                handleAttendanceHeaderClick('立ち会い', event as any)
-                              }
-                            >
-                              <FilterListIcon />
-                            </div>
-                          </div>
-                        )}
-                        {header === 'エルゴ体重' && header}
-                        {header === '選手身長（出漕時点）' && header}
-                        {header === '選手体重（出漕時点）' && header}
-                        {header === 'シート番号（出漕時点）' && (
-                          <div className='flex flex-row items-center gap-[10px]'>
-                            <div
-                              className='underline'
-                              style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                              onClick={() => seatNameSort()}
-                            >
-                              {header}
-                            </div>
-                            <div
-                              style={{
-                                cursor: 'pointer',
-                                color: selectedSeatNameList.length > 0 ? '#F44336' : '#001D74',
-                              }}
-                              onClick={(event) =>
-                                handleSeatNameHeaderClick('シート番号（出漕時点）', event as any)
-                              }
-                            >
-                              <FilterListIcon />
-                            </div>
-                          </div>
-                        )}
-                        {header === '出漕結果記録名' && header}
-                        {header === '発艇日時' && header}
-                        {header === '2000m地点風速' && header}
-                        {header === '2000m地点風向' && header}
-                        {header === '1000m地点風速' && header}
-                        {header === '1000m地点風向' && header}
-                      </CustomTh>
-                    ))}
-                  </CustomTr>
-                </CustomThead>
-                {/* テーブルボディー */}
-                <CustomTbody>
-                  {raceResultRecordsData
-                    .filter((row, index) => {
-                      if (selectedEventNameList.length > 0) {
-                        return selectedEventNameList.some((item) => item.name === row.event_name);
-                      } else {
-                        return true;
-                      }
-                    })
-                    .filter((row, index) => {
-                      if (selectedRaceNameList.length > 0) {
-                        return selectedRaceNameList.some((item) => item.name === row.race_name);
-                      } else {
-                        return true;
-                      }
-                    })
-                    .filter((row, index) => {
-                      if (selectedByGroupList.length > 0) {
-                        return selectedByGroupList.some((item) => item.name === row.by_group);
-                      } else {
-                        return true;
-                      }
-                    })
-                    .filter((row, index) => {
-                      if (selectedCrewNameList.length > 0) {
-                        return selectedCrewNameList.some((item) => item.name === row.crew_name);
-                      } else {
-                        return true;
-                      }
-                    })
-                    .filter((row, index) => {
-                      if (selectedRankList.length > 0) {
-                        return selectedRankList.some((item) => item.name === row.rank);
-                      } else {
-                        return true;
-                      }
-                    })
-                    .filter((row, index) => {
-                      if (selectedAttendanceList.length > 0) {
-                        return selectedAttendanceList.some((item) => item.name === row.attendance);
-                      } else {
-                        return true;
-                      }
-                    })
-                    .filter((row, index) => {
-                      if (selectedSeatNameList.length > 0) {
-                        return selectedSeatNameList.some((item) => item.name === row.seat_name);
-                      } else {
-                        return true;
-                      }
-                    })
-                    .map((row, index) => (
-                      <CustomTr
-                        key={index}
-                        isHidden={!(row.official + 1 === activeTab || activeTab === 0)}
-                      >
-                        {/* 大会名 */}
-                        <CustomTd>
-                          <Link
-                            className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                            href={{
-                              pathname: '/tournamentRef',
-                              query: { tournId: row.tourn_id },
-                            }}
-                            rel='noopener noreferrer'
-                            target='_blank'
-                          >
-                            {row.tourn_name}
-                          </Link>
-                        </CustomTd>
-                        {/* 公式／非公式 */}
-                        <CustomTd>{row.official === 0 ? '非公式' : '公式'}</CustomTd>
-                        {/* 開催日 */}
-                        <CustomTd>{row.eventStartDate}</CustomTd>
-                        {/* 所属団体 */}
-                        <CustomTd>
-                          <Link
-                            className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                            href={{
-                              pathname: '/teamRef',
-                              query: { orgId: row.org_id },
-                            }}
-                            rel='noopener noreferrer'
-                            target='_blank'
-                          >
-                            {row.org_name}
-                          </Link>
-                        </CustomTd>
-                        {/* レースNo. */}
-                        <CustomTd>{row.race_number}</CustomTd>
-                        {/* 種目 */}
-                        <CustomTd>{row.event_name}</CustomTd>
-                        {/* レース名 */}
-                        <CustomTd>{row.race_name}</CustomTd>
-                        {/* 組別 */}
-                        <CustomTd>{row.by_group}</CustomTd>
-                        {/* クルー名 */}
-                        <CustomTd>{row.crew_name}</CustomTd>
-                        {/* 順位 */}
-                        <CustomTd>{row.rank}</CustomTd>
-                        {/* 500mラップタイム */}
-                        <CustomTd>{row.laptime_500m}</CustomTd>
-                        {/* 1000mラップタイム */}
-                        <CustomTd>{row.laptime_1000m}</CustomTd>
-                        {/* 1500mラップタイム */}
-                        <CustomTd>{row.laptime_1500m}</CustomTd>
-                        {/* 2000mラップタイム */}
-                        <CustomTd>{row.laptime_2000m}</CustomTd>
-                        {/* 最終タイム */}
-                        <CustomTd>{row.final_time}</CustomTd>
-                        {/* ストロークレート（平均） */}
-                        <CustomTd>{row.stroke_rate_avg}</CustomTd>
-                        {/* 500mlapストロークレート */}
-                        <CustomTd>{row.stroke_rat_500m}</CustomTd>
-                        {/* 1000mlapストロークレート */}
-                        <CustomTd>{row.stroke_rat_1000m}</CustomTd>
-                        {/* 1500mlapストロークレート */}
-                        <CustomTd>{row.stroke_rat_1500m}</CustomTd>
-                        {/* 2000mlapストロークレート */}
-                        <CustomTd>{row.stroke_rat_2000m}</CustomTd>
-                        {/* 心拍数/分（平均） */}
-                        <CustomTd>{row.heart_rate_avg}</CustomTd>
-                        {/* 500mlap心拍数/分 */}
-                        <CustomTd>{row.heart_rate_500m}</CustomTd>
-                        {/* 1000mlap心拍数/分 */}
-                        <CustomTd>{row.heart_rate_1000m}</CustomTd>
-                        {/* 1500mlap心拍数/分 */}
-                        <CustomTd>{row.heart_rate_1500m}</CustomTd>
-                        {/* 2000mlap心拍数/分 */}
-                        <CustomTd>{row.heart_rate_2000m}</CustomTd>
-                        {/* 立ち合い有無 */}
-                        <CustomTd>
-                          {row.attendance === 0 ? '無' : row.attendance === 1 ? '有' : ''}
-                        </CustomTd>
-                        {/* エルゴ体重 */}
-                        <CustomTd>{row.ergo_weight}</CustomTd>
-                        {/* 選手身長（出漕時点） */}
-                        <CustomTd>{row.player_height}</CustomTd>
-                        {/* 選手体重（出漕時点） */}
-                        <CustomTd>{row.player_weight}</CustomTd>
-                        {/* シート番号（出漕時点） */}
-                        <CustomTd>{row.seat_name}</CustomTd>
-                        {/* 出漕結果記録名 */}
-                        <CustomTd>{row.race_result_record_name}</CustomTd>
-                        {/* 発艇日時 */}
-                        <CustomTd>{row.start_datetime.substring(0, 16)}</CustomTd>
-                        {/* 2000m地点風速 */}
-                        <CustomTd>{row.wind_speed_2000m_point}</CustomTd>
-                        {/* 2000m地点風向 */}
-                        <CustomTd>{row.wind_direction_2000m_point}</CustomTd>
-                        {/* 1000m地点風速 */}
-                        <CustomTd>{row.wind_speed_1000m_point}</CustomTd>
-                        {/* 1000m地点風向 */}
-                        <CustomTd>{row.wind_direction_1000m_point}</CustomTd>
-                      </CustomTr>
-                    ))}
-                </CustomTbody>
-              </CustomTable>
-              {/* 種目フィルター用のオートコンプリート 20240723 */}
-              {showEventNameAutocomplete && (
-                <div
-                  ref={eventNamefocusTarget}
-                  style={{
-                    position: 'absolute',
-                    top: `${selectedEventNameHeader.position.top - 120}px`,
-                    left: `${selectedEventNameHeader.position.left}px`,
-                    backgroundColor: 'white',
-                    borderRadius: '4px',
-                    zIndex: 1000,
-                    padding: '8px',
-                  }}
-                  onBlur={() => setShowEventNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
-                >
-                  <Autocomplete
-                    id='eventName'
-                    multiple
-                    options={eventNameList}
-                    filterOptions={(options, { inputValue }) =>
-                      options.filter((option) => option.name?.includes(inputValue))
-                    }
-                    value={selectedEventNameList || []}
-                    onChange={(e: ChangeEvent<{}>, newValue: EventNameList[]) => {
-                      setSelectedEventNameList(newValue);
-                    }}
-                    renderOption={(props: any, option: EventNameList) => {
-                      return (
-                        <li {...props} key={option.id}>
-                          {option.name}
-                        </li>
-                      );
-                    }}
-                    renderTags={(value: EventNameList[], getTagProps: any) => {
-                      return value.map((option, index) => (
-                        <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
-                      ));
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        key={params.id}
-                        className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                        {...params}
-                        label={'種目'}
-                      />
-                    )}
-                  />
-                </div>
-              )}
-              {/* レース名フィルター用のオートコンプリート 20240719 */}
-              {showRaceNameAutocomplete && (
-                <div
-                  ref={raceNamefocusTarget}
-                  style={{
-                    position: 'absolute',
-                    top: `${selectedRaceNameHeader.position.top - 120}px`,
-                    left: `${selectedRaceNameHeader.position.left}px`,
-                    backgroundColor: 'white',
-                    borderRadius: '4px',
-                    zIndex: 1000,
-                    padding: '8px',
-                  }}
-                  onBlur={() => setShowRaceNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240719
-                >
-                  <Autocomplete
-                    id='raceName'
-                    multiple
-                    options={raceNameList}
-                    filterOptions={(options, { inputValue }) =>
-                      options.filter((option) => option.name?.includes(inputValue))
-                    }
-                    value={selectedRaceNameList || []}
-                    onChange={(e: ChangeEvent<{}>, newValue: RaceNameList[]) => {
-                      setSelectedRaceNameList(newValue);
-                    }}
-                    renderOption={(props: any, option: RaceNameList) => {
-                      return (
-                        <li {...props} key={option.id}>
-                          {option.name}
-                        </li>
-                      );
-                    }}
-                    renderTags={(value: RaceNameList[], getTagProps: any) => {
-                      return value.map((option, index) => (
-                        <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
-                      ));
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        key={params.id}
-                        className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                        {...params}
-                        label={'レース名'}
-                      />
-                    )}
-                  />
-                </div>
-              )}
-              {/* 組別フィルター用のオートコンプリート 20240724 */}
-              {showByGroupAutocomplete && (
-                <div
-                  ref={byGroupfocusTarget}
-                  style={{
-                    position: 'absolute',
-                    top: `${selectedByGroupHeader.position.top - 120}px`,
-                    left: `${selectedByGroupHeader.position.left}px`,
-                    backgroundColor: 'white',
-                    borderRadius: '4px',
-                    zIndex: 1000,
-                    padding: '8px',
-                  }}
-                  onBlur={() => setShowByGroupAutocomplete(false)} //フォーカスが外れたら非表示にする 20240724
-                >
-                  <Autocomplete
-                    id='byGroup'
-                    multiple
-                    options={byGroupList}
-                    filterOptions={(options, { inputValue }) =>
-                      options.filter((option) => option.name?.includes(inputValue))
-                    }
-                    value={selectedByGroupList || []}
-                    onChange={(e: ChangeEvent<{}>, newValue: ByGroupList[]) => {
-                      setSelectedByGroupList(newValue);
-                    }}
-                    renderOption={(props: any, option: ByGroupList) => {
-                      return (
-                        <li {...props} key={option.id}>
-                          {option.name}
-                        </li>
-                      );
-                    }}
-                    renderTags={(value: ByGroupList[], getTagProps: any) => {
-                      return value.map((option, index) => (
-                        <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
-                      ));
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        key={params.id}
-                        className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                        {...params}
-                        label={'組別'}
-                      />
-                    )}
-                  />
-                </div>
-              )}
-              {/* クルー名フィルター用のオートコンプリート 20240724 */}
-              {showCrewNameAutocomplete && (
-                <div
-                  ref={crewNamefocusTarget}
-                  style={{
-                    position: 'absolute',
-                    top: `${selectedCrewNameHeader.position.top - 120}px`,
-                    left: `${selectedCrewNameHeader.position.left}px`,
-                    backgroundColor: 'white',
-                    borderRadius: '4px',
-                    zIndex: 1000,
-                    padding: '8px',
-                  }}
-                  onBlur={() => setShowCrewNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240724
-                >
-                  <Autocomplete
-                    id='crewName'
-                    multiple
-                    options={crewNameList}
-                    filterOptions={(options, { inputValue }) =>
-                      options.filter((option) => option.name?.includes(inputValue))
-                    }
-                    value={selectedCrewNameList || []}
-                    onChange={(e: ChangeEvent<{}>, newValue: CrewNameList[]) => {
-                      setSelectedCrewNameList(newValue);
-                    }}
-                    renderOption={(props: any, option: CrewNameList) => {
-                      return (
-                        <li {...props} key={option.id}>
-                          {option.name}
-                        </li>
-                      );
-                    }}
-                    renderTags={(value: CrewNameList[], getTagProps: any) => {
-                      return value.map((option, index) => (
-                        <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
-                      ));
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        key={params.id}
-                        className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                        {...params}
-                        label={'クルー名'}
-                      />
-                    )}
-                  />
-                </div>
-              )}
-              {/* 順位フィルター用のオートコンプリート 20240724 */}
-              {showRankAutocomplete && (
-                <div
-                  ref={rankfocusTarget}
-                  style={{
-                    position: 'absolute',
-                    top: `${selectedRankHeader.position.top - 120}px`,
-                    left: `${selectedRankHeader.position.left}px`,
-                    backgroundColor: 'white',
-                    borderRadius: '4px',
-                    zIndex: 1000,
-                    padding: '8px',
-                  }}
-                  onBlur={() => setShowRankAutocomplete(false)} //フォーカスが外れたら非表示にする 20240724
-                >
-                  <Autocomplete
-                    id='rank'
-                    multiple
-                    options={rankList}
-                    filterOptions={(options, { inputValue }) =>
-                      options.filter((option) =>
-                        option.name.toString().includes(inputValue.toString()),
-                      )
-                    }
-                    value={selectedRankList || []}
-                    onChange={(e: ChangeEvent<{}>, newValue: RankList[]) => {
-                      setSelectedRankList(newValue);
-                    }}
-                    renderOption={(props: any, option: RankList) => {
-                      return (
-                        <li {...props} key={option.id}>
-                          {option.name}
-                        </li>
-                      );
-                    }}
-                    renderTags={(value: RankList[], getTagProps: any) => {
-                      return value.map((option, index) => (
-                        <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
-                      ));
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        key={params.id}
-                        className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                        {...params}
-                        label={'順位'}
-                      />
-                    )}
-                  />
-                </div>
-              )}
-              {/* 立ち会いフィルター用のオートコンプリート 20240724 */}
-              {showAttendanceAutocomplete && (
-                <div
-                  ref={attendancefocusTarget}
-                  style={{
-                    position: 'absolute',
-                    top: `${selectedAttendanceHeader.position.top - 120}px`,
-                    left: `${selectedAttendanceHeader.position.left}px`,
-                    backgroundColor: 'white',
-                    borderRadius: '4px',
-                    zIndex: 1000,
-                    padding: '8px',
-                  }}
-                  onBlur={() => setShowAttendanceAutocomplete(false)} //フォーカスが外れたら非表示にする 20240724
-                >
-                  <Autocomplete
-                    id='attendance'
-                    multiple
-                    options={attendanceList}
-                    filterOptions={(options, { inputValue }) =>
-                      options.filter((option) =>
-                        option.name.toString().includes(inputValue.toString()),
-                      )
-                    }
-                    value={selectedAttendanceList || []}
-                    onChange={(e: ChangeEvent<{}>, newValue: AttendanceList[]) => {
-                      setSelectedAttendanceList(newValue);
-                    }}
-                    renderOption={(props: any, option: AttendanceList) => {
-                      return (
-                        <li {...props} key={option.id}>
-                          {option.name === 0 ? '無' : option.name === 1 ? '有' : ''}
-                        </li>
-                      );
-                    }}
-                    renderTags={(value: AttendanceList[], getTagProps: any) => {
-                      return value.map((option, index) => (
-                        <Chip
-                          {...getTagProps({ index })}
-                          key={option.id}
-                          label={option.name === 0 ? '無' : option.name === 1 ? '有' : ''}
-                        />
-                      ));
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        key={params.id}
-                        className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                        {...params}
-                        label={'立ち会い'}
-                      />
-                    )}
-                  />
-                </div>
-              )}
-              {/*シート番号フィルター用のオートコンプリート 20240724 */}
-              {showSeatNameAutocomplete && (
-                <div
-                  ref={seatNamefocusTarget}
-                  style={{
-                    position: 'absolute',
-                    top: `${selectedSeatNameHeader.position.top - 120}px`,
-                    left: `${selectedSeatNameHeader.position.left}px`,
-                    backgroundColor: 'white',
-                    borderRadius: '4px',
-                    zIndex: 1000,
-                    padding: '8px',
-                  }}
-                  onBlur={() => setShowSeatNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240724
-                >
-                  <Autocomplete
-                    id='seatName'
-                    multiple
-                    options={seatNameList}
-                    filterOptions={(options, { inputValue }) =>
-                      options.filter((option) => option.name?.includes(inputValue))
-                    }
-                    value={selectedSeatNameList || []}
-                    onChange={(e: ChangeEvent<{}>, newValue: SeatNameList[]) => {
-                      setSelectedSeatNameList(newValue);
-                    }}
-                    renderOption={(props: any, option: SeatNameList) => {
-                      return (
-                        <li {...props} key={option.id}>
-                          {option.name}
-                        </li>
-                      );
-                    }}
-                    renderTags={(value: SeatNameList[], getTagProps: any) => {
-                      return value.map((option, index) => (
-                        <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
-                      ));
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        key={params.id}
-                        className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                        {...params}
-                        label={'シート番号（出漕時点）'}
-                      />
-                    )}
-                  />
-                </div>
-              )}
+            <div className='flex flex-col gap-[10px]'>
+              {/* サイド情報 */}
+              <Label label='サイド情報' textColor='white' textSize='small' isBold={false}></Label>
+              <div className='flex flex-row flex-wrap justify-start gap-[10px]'>
+                <RoundedBadge label='S（ストロークサイド）' isValid={true} />
+                <RoundedBadge label='B（バウサイド）' />
+                <RoundedBadge label='X（スカル）' />
+                <RoundedBadge label='C（コックス）' />
+              </div>
             </div>
-          </div>
-          <div className='flex flex-row justify-center gap-[16px] my-[30px]'>
-            {/* 戻るボタン */}
-            {window.history.length > 1 && (
-              <CustomButton
-                buttonType='primary-outlined'
-                className='w-[280px] m-auto'
-                onClick={() => {
-                  router.back();
-                }}
-              >
-                戻る
-              </CustomButton>
-            )}
-            {/* 削除ボタン */}
-            {mode === 'delete' && (
-              <CustomButton
-                buttonType='primary'
-                className={`w-[280px] m-auto ${displayFlg ? '' : 'hidden'}`}
-                onClick={() => {
-                  setDisplayFlg(false);
-                  window.confirm('選手情報を削除します。よろしいですか？')
-                    ? //okを押したら下の処理を実行 キャンセルを押したらflagをtrueにしてそのまま
-                      (dataDelete(),
-                      setDisplayFlg(true),
-                      window.alert('選手情報の削除が完了しました。'),
-                      router.push('/tournamentSearch')) //大会検索画面に遷移する 20240222
-                    : //router.push('/myPage') : setDisplayFlg(true)
-                      setDisplayFlg(true);
-                }}
-              >
-                削除
-              </CustomButton>
-            )}
           </div>
         </div>
-      </main>
+      </div>
+      {/* 選手情報表示 */}
+      <div className='text-lg mb-4'>
+        {/* 出漕結果情報一覧表示 */}
+        <div className='mb-4'>
+          <div className='flex justify-between items-center'>
+            <div className='mb-1 text-2xl lg:text-4xl font-normal'>出漕結果情報一覧</div>
+            {/* 個人記録の追加・編集<ボタン */}
+            {mode === 'edit' && (
+              <CustomButton
+                buttonType='primary-outlined'
+                onClick={() => {
+                  router.push('/playerRaceResultRegister');
+                }}
+                className='flex flex-row justify-center gap-[4px] w-full'
+              >
+                <AddIcon />
+                <div> 個人記録の追加・編集</div>
+              </CustomButton>
+            )}
+          </div>
+          {/* タブ切り替え */}
+          <div className='container mx-auto mt-8'>
+            <div className='flex'>
+              <Tab
+                number={0}
+                isActive={activeTab === 0}
+                onClick={handleTabChange}
+                rounded='rounded-l'
+              >
+                全て
+              </Tab>
+              <Tab
+                number={2}
+                isActive={activeTab === 2}
+                onClick={handleTabChange}
+                rounded='rounded-none'
+              >
+                公式
+              </Tab>
+              <Tab
+                number={1}
+                isActive={activeTab === 1}
+                onClick={handleTabChange}
+                rounded='rounded-r'
+              >
+                非公式
+              </Tab>
+            </div>
+          </div>
+        </div>
+        <div className='overflow-auto h-[auto]'>
+          {/* 出漕結果情報一覧テーブル表示 */}
+          <CustomTable>
+            {/* テーブルヘッダー */}
+            <CustomThead>
+              <CustomTr>
+                {headerArray.map((header, index) => (
+                  <CustomTh align='left' key={index}>
+                    {header === '大会名' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => tournNameSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === '公式／非公式' && header}
+                    {header === '開催日' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => eventStartDateSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === '所属団体' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => orgNameSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === 'レースNo.' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => raceNumberSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === '種目' && (
+                      <div className='flex flex-row items-center gap-[10px]'>
+                        <div
+                          className='underline'
+                          style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                          onClick={() => eventNameSort()}
+                        >
+                          {header}
+                        </div>
+                        <div
+                          style={{
+                            cursor: 'pointer',
+                            color: selectedEventNameList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
+                          }}
+                          onClick={(event) => handleEventNameHeaderClick('種目', event as any)}
+                        >
+                          <FilterListIcon />
+                        </div>
+                      </div>
+                    )}
+                    {header === 'レース名' && (
+                      <div className='flex flex-row items-center gap-[10px]'>
+                        <div
+                          className='underline'
+                          style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                          onClick={() => raceNameSort()}
+                        >
+                          {header}
+                        </div>
+                        <div
+                          style={{
+                            cursor: 'pointer',
+                            color: selectedRaceNameList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
+                          }}
+                          onClick={(event) => handleRaceNameHeaderClick('レース名', event as any)}
+                        >
+                          <FilterListIcon />
+                        </div>
+                      </div>
+                    )}
+                    {header === '組別' && (
+                      <div className='flex flex-row items-center gap-[10px]'>
+                        <div
+                          className='underline'
+                          style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                          onClick={() => bygroupSort()}
+                        >
+                          {header}
+                        </div>
+                        <div
+                          style={{
+                            cursor: 'pointer',
+                            color: selectedByGroupList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
+                          }}
+                          onClick={(event) => handleByGroupHeaderClick('組別', event as any)}
+                        >
+                          <FilterListIcon />
+                        </div>
+                      </div>
+                    )}
+                    {header === 'クルー名' && (
+                      <div className='flex flex-row items-center gap-[10px]'>
+                        <div
+                          className='underline'
+                          style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                          onClick={() => crewNameSort()}
+                        >
+                          {header}
+                        </div>
+                        <div
+                          style={{
+                            cursor: 'pointer',
+                            color: selectedCrewNameList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
+                          }}
+                          onClick={(event) => handleCrewNameHeaderClick('クルー名', event as any)}
+                        >
+                          <FilterListIcon />
+                        </div>
+                      </div>
+                    )}
+                    {header === '順位' && (
+                      <div className='flex flex-row items-center gap-[10px]'>
+                        <div
+                          className='underline'
+                          style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                          onClick={() => rankSort()}
+                        >
+                          {header}
+                        </div>
+                        <div
+                          style={{
+                            cursor: 'pointer',
+                            color: selectedRankList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
+                          }}
+                          onClick={(event) => handleRankHeaderClick('順位', event as any)}
+                        >
+                          <FilterListIcon />
+                        </div>
+                      </div>
+                    )}
+                    {header === '500mlapタイム' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => lapTime500mSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === '1000mlapタイム' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => lapTime1000mSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === '1500mlapタイム' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => lapTime1500mSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === '2000mlapタイム' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => lapTime2000mSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === '最終lapタイム' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => lapTimeFinalSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === 'ストロークレート（平均）' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => averageHeartRateSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === '500mlapストロークレート' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => strokeRate500mSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === '1000mlapストロークレート' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => strokeRate1000mSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === '1500mlapストロークレート' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => strokeRate1500mSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === '2000mlapストロークレート' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => strokeRate2000mSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === '心拍数/分（平均）' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => heartRateAvgSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === '500mlap心拍数/分' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => heartRate500mSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === '1000mlap心拍数/分' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => heartRate1000mSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === '1500mlap心拍数/分' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => heartRate1500mSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === '2000mlap心拍数/分' && (
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => heartRate2000mSort()}
+                      >
+                        {header}
+                      </div>
+                    )}
+                    {header === '立ち合い有無' && (
+                      <div className='flex flex-row items-center gap-[10px]'>
+                        <div>{header}</div>
+                        <div
+                          style={{
+                            cursor: 'pointer',
+                            color: selectedAttendanceList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
+                          }}
+                          onClick={(event) => handleAttendanceHeaderClick('立ち会い', event as any)}
+                        >
+                          <FilterListIcon />
+                        </div>
+                      </div>
+                    )}
+                    {header === 'エルゴ体重' && header}
+                    {header === '選手身長（出漕時点）' && header}
+                    {header === '選手体重（出漕時点）' && header}
+                    {header === 'シート番号（出漕時点）' && (
+                      <div className='flex flex-row items-center gap-[10px]'>
+                        <div
+                          className='underline'
+                          style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                          onClick={() => seatNameSort()}
+                        >
+                          {header}
+                        </div>
+                        <div
+                          style={{
+                            cursor: 'pointer',
+                            color: selectedSeatNameList.length > 0 ? '#F44336' : '#001D74',
+                          }}
+                          onClick={(event) =>
+                            handleSeatNameHeaderClick('シート番号（出漕時点）', event as any)
+                          }
+                        >
+                          <FilterListIcon />
+                        </div>
+                      </div>
+                    )}
+                    {header === '出漕結果記録名' && header}
+                    {header === '発艇日時' && header}
+                    {header === '2000m地点風速' && header}
+                    {header === '2000m地点風向' && header}
+                    {header === '1000m地点風速' && header}
+                    {header === '1000m地点風向' && header}
+                  </CustomTh>
+                ))}
+              </CustomTr>
+            </CustomThead>
+            {/* テーブルボディー */}
+            <CustomTbody>
+              {raceResultRecordsData
+                .filter((row, index) => {
+                  if (selectedEventNameList.length > 0) {
+                    return selectedEventNameList.some((item) => item.name === row.event_name);
+                  } else {
+                    return true;
+                  }
+                })
+                .filter((row, index) => {
+                  if (selectedRaceNameList.length > 0) {
+                    return selectedRaceNameList.some((item) => item.name === row.race_name);
+                  } else {
+                    return true;
+                  }
+                })
+                .filter((row, index) => {
+                  if (selectedByGroupList.length > 0) {
+                    return selectedByGroupList.some((item) => item.name === row.by_group);
+                  } else {
+                    return true;
+                  }
+                })
+                .filter((row, index) => {
+                  if (selectedCrewNameList.length > 0) {
+                    return selectedCrewNameList.some((item) => item.name === row.crew_name);
+                  } else {
+                    return true;
+                  }
+                })
+                .filter((row, index) => {
+                  if (selectedRankList.length > 0) {
+                    return selectedRankList.some((item) => item.name === row.rank);
+                  } else {
+                    return true;
+                  }
+                })
+                .filter((row, index) => {
+                  if (selectedAttendanceList.length > 0) {
+                    return selectedAttendanceList.some((item) => item.name === row.attendance);
+                  } else {
+                    return true;
+                  }
+                })
+                .filter((row, index) => {
+                  if (selectedSeatNameList.length > 0) {
+                    return selectedSeatNameList.some((item) => item.name === row.seat_name);
+                  } else {
+                    return true;
+                  }
+                })
+                .map((row, index) => (
+                  <CustomTr
+                    key={index}
+                    isHidden={!(row.official + 1 === activeTab || activeTab === 0)}
+                  >
+                    {/* 大会名 */}
+                    <CustomTd>
+                      <Link
+                        className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                        href={{
+                          pathname: '/tournamentRef',
+                          query: { tournId: row.tourn_id },
+                        }}
+                        rel='noopener noreferrer'
+                        target='_blank'
+                      >
+                        {row.tourn_name}
+                      </Link>
+                    </CustomTd>
+                    {/* 公式／非公式 */}
+                    <CustomTd>{row.official === 0 ? '非公式' : '公式'}</CustomTd>
+                    {/* 開催日 */}
+                    <CustomTd>{row.eventStartDate}</CustomTd>
+                    {/* 所属団体 */}
+                    <CustomTd>
+                      <Link
+                        className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                        href={{
+                          pathname: '/teamRef',
+                          query: { orgId: row.org_id },
+                        }}
+                        rel='noopener noreferrer'
+                        target='_blank'
+                      >
+                        {row.org_name}
+                      </Link>
+                    </CustomTd>
+                    {/* レースNo. */}
+                    <CustomTd>{row.race_number}</CustomTd>
+                    {/* 種目 */}
+                    <CustomTd>{row.event_name}</CustomTd>
+                    {/* レース名 */}
+                    <CustomTd>{row.race_name}</CustomTd>
+                    {/* 組別 */}
+                    <CustomTd>{row.by_group}</CustomTd>
+                    {/* クルー名 */}
+                    <CustomTd>{row.crew_name}</CustomTd>
+                    {/* 順位 */}
+                    <CustomTd>{row.rank}</CustomTd>
+                    {/* 500mラップタイム */}
+                    <CustomTd>{row.laptime_500m}</CustomTd>
+                    {/* 1000mラップタイム */}
+                    <CustomTd>{row.laptime_1000m}</CustomTd>
+                    {/* 1500mラップタイム */}
+                    <CustomTd>{row.laptime_1500m}</CustomTd>
+                    {/* 2000mラップタイム */}
+                    <CustomTd>{row.laptime_2000m}</CustomTd>
+                    {/* 最終タイム */}
+                    <CustomTd>{row.final_time}</CustomTd>
+                    {/* ストロークレート（平均） */}
+                    <CustomTd>{row.stroke_rate_avg}</CustomTd>
+                    {/* 500mlapストロークレート */}
+                    <CustomTd>{row.stroke_rat_500m}</CustomTd>
+                    {/* 1000mlapストロークレート */}
+                    <CustomTd>{row.stroke_rat_1000m}</CustomTd>
+                    {/* 1500mlapストロークレート */}
+                    <CustomTd>{row.stroke_rat_1500m}</CustomTd>
+                    {/* 2000mlapストロークレート */}
+                    <CustomTd>{row.stroke_rat_2000m}</CustomTd>
+                    {/* 心拍数/分（平均） */}
+                    <CustomTd>{row.heart_rate_avg}</CustomTd>
+                    {/* 500mlap心拍数/分 */}
+                    <CustomTd>{row.heart_rate_500m}</CustomTd>
+                    {/* 1000mlap心拍数/分 */}
+                    <CustomTd>{row.heart_rate_1000m}</CustomTd>
+                    {/* 1500mlap心拍数/分 */}
+                    <CustomTd>{row.heart_rate_1500m}</CustomTd>
+                    {/* 2000mlap心拍数/分 */}
+                    <CustomTd>{row.heart_rate_2000m}</CustomTd>
+                    {/* 立ち合い有無 */}
+                    <CustomTd>
+                      {row.attendance === 0 ? '無' : row.attendance === 1 ? '有' : ''}
+                    </CustomTd>
+                    {/* エルゴ体重 */}
+                    <CustomTd>{row.ergo_weight}</CustomTd>
+                    {/* 選手身長（出漕時点） */}
+                    <CustomTd>{row.player_height}</CustomTd>
+                    {/* 選手体重（出漕時点） */}
+                    <CustomTd>{row.player_weight}</CustomTd>
+                    {/* シート番号（出漕時点） */}
+                    <CustomTd>{row.seat_name}</CustomTd>
+                    {/* 出漕結果記録名 */}
+                    <CustomTd>{row.race_result_record_name}</CustomTd>
+                    {/* 発艇日時 */}
+                    <CustomTd>{row.start_datetime.substring(0, 16)}</CustomTd>
+                    {/* 2000m地点風速 */}
+                    <CustomTd>{row.wind_speed_2000m_point}</CustomTd>
+                    {/* 2000m地点風向 */}
+                    <CustomTd>{row.wind_direction_2000m_point}</CustomTd>
+                    {/* 1000m地点風速 */}
+                    <CustomTd>{row.wind_speed_1000m_point}</CustomTd>
+                    {/* 1000m地点風向 */}
+                    <CustomTd>{row.wind_direction_1000m_point}</CustomTd>
+                  </CustomTr>
+                ))}
+            </CustomTbody>
+          </CustomTable>
+          {/* 種目フィルター用のオートコンプリート 20240723 */}
+          {showEventNameAutocomplete && (
+            <div
+              ref={eventNamefocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedEventNameHeader.position.top - 120}px`,
+                left: `${selectedEventNameHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowEventNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
+            >
+              <Autocomplete
+                id='eventName'
+                multiple
+                options={eventNameList}
+                filterOptions={(options, { inputValue }) =>
+                  options.filter((option) => option.name?.includes(inputValue))
+                }
+                value={selectedEventNameList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: EventNameList[]) => {
+                  setSelectedEventNameList(newValue);
+                }}
+                renderOption={(props: any, option: EventNameList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name}
+                    </li>
+                  );
+                }}
+                renderTags={(value: EventNameList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'種目'}
+                  />
+                )}
+              />
+            </div>
+          )}
+          {/* レース名フィルター用のオートコンプリート 20240719 */}
+          {showRaceNameAutocomplete && (
+            <div
+              ref={raceNamefocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedRaceNameHeader.position.top - 120}px`,
+                left: `${selectedRaceNameHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowRaceNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240719
+            >
+              <Autocomplete
+                id='raceName'
+                multiple
+                options={raceNameList}
+                filterOptions={(options, { inputValue }) =>
+                  options.filter((option) => option.name?.includes(inputValue))
+                }
+                value={selectedRaceNameList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: RaceNameList[]) => {
+                  setSelectedRaceNameList(newValue);
+                }}
+                renderOption={(props: any, option: RaceNameList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name}
+                    </li>
+                  );
+                }}
+                renderTags={(value: RaceNameList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'レース名'}
+                  />
+                )}
+              />
+            </div>
+          )}
+          {/* 組別フィルター用のオートコンプリート 20240724 */}
+          {showByGroupAutocomplete && (
+            <div
+              ref={byGroupfocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedByGroupHeader.position.top - 120}px`,
+                left: `${selectedByGroupHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowByGroupAutocomplete(false)} //フォーカスが外れたら非表示にする 20240724
+            >
+              <Autocomplete
+                id='byGroup'
+                multiple
+                options={byGroupList}
+                filterOptions={(options, { inputValue }) =>
+                  options.filter((option) => option.name?.includes(inputValue))
+                }
+                value={selectedByGroupList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: ByGroupList[]) => {
+                  setSelectedByGroupList(newValue);
+                }}
+                renderOption={(props: any, option: ByGroupList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name}
+                    </li>
+                  );
+                }}
+                renderTags={(value: ByGroupList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'組別'}
+                  />
+                )}
+              />
+            </div>
+          )}
+          {/* クルー名フィルター用のオートコンプリート 20240724 */}
+          {showCrewNameAutocomplete && (
+            <div
+              ref={crewNamefocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedCrewNameHeader.position.top - 120}px`,
+                left: `${selectedCrewNameHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowCrewNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240724
+            >
+              <Autocomplete
+                id='crewName'
+                multiple
+                options={crewNameList}
+                filterOptions={(options, { inputValue }) =>
+                  options.filter((option) => option.name?.includes(inputValue))
+                }
+                value={selectedCrewNameList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: CrewNameList[]) => {
+                  setSelectedCrewNameList(newValue);
+                }}
+                renderOption={(props: any, option: CrewNameList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name}
+                    </li>
+                  );
+                }}
+                renderTags={(value: CrewNameList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'クルー名'}
+                  />
+                )}
+              />
+            </div>
+          )}
+          {/* 順位フィルター用のオートコンプリート 20240724 */}
+          {showRankAutocomplete && (
+            <div
+              ref={rankfocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedRankHeader.position.top - 120}px`,
+                left: `${selectedRankHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowRankAutocomplete(false)} //フォーカスが外れたら非表示にする 20240724
+            >
+              <Autocomplete
+                id='rank'
+                multiple
+                options={rankList}
+                filterOptions={(options, { inputValue }) =>
+                  options.filter((option) => option.name.toString().includes(inputValue.toString()))
+                }
+                value={selectedRankList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: RankList[]) => {
+                  setSelectedRankList(newValue);
+                }}
+                renderOption={(props: any, option: RankList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name}
+                    </li>
+                  );
+                }}
+                renderTags={(value: RankList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'順位'}
+                  />
+                )}
+              />
+            </div>
+          )}
+          {/* 立ち会いフィルター用のオートコンプリート 20240724 */}
+          {showAttendanceAutocomplete && (
+            <div
+              ref={attendancefocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedAttendanceHeader.position.top - 120}px`,
+                left: `${selectedAttendanceHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowAttendanceAutocomplete(false)} //フォーカスが外れたら非表示にする 20240724
+            >
+              <Autocomplete
+                id='attendance'
+                multiple
+                options={attendanceList}
+                filterOptions={(options, { inputValue }) =>
+                  options.filter((option) => option.name.toString().includes(inputValue.toString()))
+                }
+                value={selectedAttendanceList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: AttendanceList[]) => {
+                  setSelectedAttendanceList(newValue);
+                }}
+                renderOption={(props: any, option: AttendanceList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name === 0 ? '無' : option.name === 1 ? '有' : ''}
+                    </li>
+                  );
+                }}
+                renderTags={(value: AttendanceList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={option.id}
+                      label={option.name === 0 ? '無' : option.name === 1 ? '有' : ''}
+                    />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'立ち会い'}
+                  />
+                )}
+              />
+            </div>
+          )}
+          {/*シート番号フィルター用のオートコンプリート 20240724 */}
+          {showSeatNameAutocomplete && (
+            <div
+              ref={seatNamefocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedSeatNameHeader.position.top - 120}px`,
+                left: `${selectedSeatNameHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowSeatNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240724
+            >
+              <Autocomplete
+                id='seatName'
+                multiple
+                options={seatNameList}
+                filterOptions={(options, { inputValue }) =>
+                  options.filter((option) => option.name?.includes(inputValue))
+                }
+                value={selectedSeatNameList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: SeatNameList[]) => {
+                  setSelectedSeatNameList(newValue);
+                }}
+                renderOption={(props: any, option: SeatNameList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name}
+                    </li>
+                  );
+                }}
+                renderTags={(value: SeatNameList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'シート番号（出漕時点）'}
+                  />
+                )}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+      <div className='flex flex-row justify-center gap-[16px] my-[30px]'>
+        {/* 戻るボタン */}
+        {window.history.length > 1 && (
+          <CustomButton
+            buttonType='primary-outlined'
+            onClick={() => {
+              router.back();
+            }}
+          >
+            戻る
+          </CustomButton>
+        )}
+        {/* 削除ボタン */}
+        {mode === 'delete' && (
+          <CustomButton
+            buttonType='primary'
+            className={`w-[280px] m-auto ${displayFlg ? '' : 'hidden'}`}
+            onClick={() => {
+              setDisplayFlg(false);
+              window.confirm('選手情報を削除します。よろしいですか？')
+                ? //okを押したら下の処理を実行 キャンセルを押したらflagをtrueにしてそのまま
+                  (dataDelete(),
+                  setDisplayFlg(true),
+                  window.alert('選手情報の削除が完了しました。'),
+                  router.push('/tournamentSearch')) //大会検索画面に遷移する 20240222
+                : //router.push('/myPage') : setDisplayFlg(true)
+                  setDisplayFlg(true);
+            }}
+          >
+            削除
+          </CustomButton>
+        )}
+      </div>
     </div>
   );
 }
