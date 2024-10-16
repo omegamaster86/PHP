@@ -39,9 +39,7 @@ const CsvTable = ({
     return error ? 'bg-yellow' : '';
   };
 
-  return visibilityFlg == false ? (
-    <div></div>
-  ) : (
+  return visibilityFlg && (
     <div className='overflow-auto h-[331px] w-[800px]'>
       <CustomTable>
         <CustomThead>

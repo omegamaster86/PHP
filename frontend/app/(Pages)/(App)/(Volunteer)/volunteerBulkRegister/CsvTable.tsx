@@ -168,12 +168,10 @@ const CsvTable = ({
     return result === '無効データ' || result === '重複データ' || result === '登録不可データ';
   };
 
-  return visibilityFlg == false ? (
-    <div></div>
-  ) : (
+  return visibilityFlg && (
     <div className='relative overflow-auto h-[331px] w-[800px]'>
-      <div className='absolute bg-primary-40 bg-opacity-30 text-primary-500 py-2 px-4 h-[60px] flex justify-center items-center font-bold relative'>
-        <>読み込み結果</>
+      <div className='bg-primary-40 bg-opacity-30 text-primary-500 py-2 px-4 h-[60px] flex justify-center items-center font-bold relative'>
+        読み込み結果
         <div className={`absolute left-[10px]`}>
           <CustomButton
             buttonType='primary'

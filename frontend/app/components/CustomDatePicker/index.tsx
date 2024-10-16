@@ -30,7 +30,7 @@ const CustomDatePicker = ({
   id?: string;
 }) => {
   return (
-    <div>
+    <>
       {readonly && <p className='h-12 w-[300px] text-secondaryText py-3 disable'>{selectedDate}</p>}
       {!readonly && (
         <DatePicker
@@ -60,7 +60,7 @@ const CustomDatePicker = ({
           {message}
         </p>
       ))}
-    </div>
+    </>
   );
 };
 

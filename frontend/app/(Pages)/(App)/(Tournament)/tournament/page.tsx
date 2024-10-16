@@ -152,9 +152,13 @@ export default function Tournaments() {
   const [byGroupErrorMessage, setByGroupErrorMessage] = useState([] as string[]);
   const [rangeErrorMessage, setRangeErrorMessage] = useState([] as string[]);
   const [startDateTimeErrorMessage, setStartDateTimeErrorMessage] = useState([] as string[]);
-  const [entrysystemRaceIdErrorMessage, setEntrysystemRaceIdErrorMessage] = useState([] as string[]); //エントリーシステムレースIDの重複メッセージ用 20240506
+  const [entrysystemRaceIdErrorMessage, setEntrysystemRaceIdErrorMessage] = useState(
+    [] as string[],
+  ); //エントリーシステムレースIDの重複メッセージ用 20240506
   const [entryRaceIdErrorMessage, setEntryRaceIdErrorMessage] = useState([] as string[]); //エントリーシステムレースIDのバリデーション用 20240606
-  const [raceNumberDuplicatErrorMessage, setRaceNumberDuplicatErrorMessage] = useState([] as string[]); //レースNo.の重複メッセージ用 20240506
+  const [raceNumberDuplicatErrorMessage, setRaceNumberDuplicatErrorMessage] = useState(
+    [] as string[],
+  ); //レースNo.の重複メッセージ用 20240506
   const [errorMessages, setErrorMessages] = useState([] as string[]);
 
   const [backKeyFlag, setBackKeyFlag] = useState<boolean>(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
@@ -165,7 +169,12 @@ export default function Tournaments() {
 
     //エントリーシステムの大会ID用エラーメッセージ 20240606
     const entrysystemTournIdError = Validator.getErrorMessages([
-      tournamentFormData.entrysystem_tourn_id?.length > 0 ? Validator.validateAlphabetNumber(tournamentFormData.entrysystem_tourn_id, 'エントリーシステムの大会ID') : '',
+      tournamentFormData.entrysystem_tourn_id?.length > 0
+        ? Validator.validateAlphabetNumber(
+            tournamentFormData.entrysystem_tourn_id,
+            'エントリーシステムの大会ID',
+          )
+        : '',
     ]);
 
     const tournNameError = Validator.getErrorMessages([
@@ -209,14 +218,16 @@ export default function Tournaments() {
       Validator.validateUrlFormat(tournamentFormData.tourn_url),
     ]);
 
-
     //エントリーシステムのレースIDのバリデーションチェック 20240606
     const entryRaceIdErrorFlg = tableData.some((row) => {
       if (row.checked) {
         return false; //削除チェックがされている場合、バリデーションを行わない 20240606
       }
       // return row.entrysystem_race_id.length > 0;
-      return row.entrysystem_race_id?.length > 0 ? Validator.validateAlphabetNumber(row.entrysystem_race_id, 'エントリーシステムの大会ID').length > 0 : false;
+      return row.entrysystem_race_id?.length > 0
+        ? Validator.validateAlphabetNumber(row.entrysystem_race_id, 'エントリーシステムの大会ID')
+            .length > 0
+        : false;
     });
 
     const raceNumberErrorFlg = tableData.some((row) => {
@@ -312,7 +323,9 @@ export default function Tournaments() {
 
     //エントリーシステムのレースID 20240606
     if (entryRaceIdErrorFlg) {
-      setEntryRaceIdErrorMessage(['エントリーシステムの大会IDに使用できる文字は以下になります。使用可能文字: 半角英数字']);
+      setEntryRaceIdErrorMessage([
+        'エントリーシステムの大会IDに使用できる文字は以下になります。使用可能文字: 半角英数字',
+      ]);
     } else {
       setEntryRaceIdErrorMessage([]);
     }
@@ -1201,499 +1214,489 @@ export default function Tournaments() {
     );
   };
   return (
-    <div>
-      <main className='flex min-h-screen flex-col justify-start p-[10px] gap-[20px] my-[80px] md:w-[1200px] sm: w-[600px]'>
-        <div className='relative flex flex-row justify-between w-full h-screen flex-wrap'>
-          {/* 画面名 */}
-          <CustomTitle displayBack>
-            {mode === 'create'
-              ? '大会登録'
-              : mode === 'update'
-                ? '大会情報変更'
-                : '大会情報入力確認'}
-          </CustomTitle>
-        </div>
-        {/* エラー表示１ */}
-        <ErrorBox errorText={errorMessages} />
-        {/* 大会ID */}
-        <div
-          className={`${
-            mode === 'update' || prevMode === 'update' ? '' : 'hidden'
-          } 'flex flex-col justify-start'`}
-        >
+    <main className='flex min-h-screen flex-col justify-start p-[10px] gap-[20px] my-[80px] md:w-[1200px] sm: w-[600px]'>
+      <div className='relative flex flex-row justify-between w-full h-screen flex-wrap'>
+        {/* 画面名 */}
+        <CustomTitle displayBack>
+          {mode === 'create' ? '大会登録' : mode === 'update' ? '大会情報変更' : '大会情報入力確認'}
+        </CustomTitle>
+      </div>
+      {/* エラー表示１ */}
+      <ErrorBox errorText={errorMessages} />
+      {/* 大会ID */}
+      <div
+        className={`${
+          mode === 'update' || prevMode === 'update' ? '' : 'hidden'
+        } 'flex flex-col justify-start'`}
+      >
+        <CustomTextField
+          label='大会ID'
+          isError={false}
+          displayHelp={false}
+          readonly
+          onChange={(e) => {}}
+          value={tournamentFormData.tourn_id}
+        />
+      </div>
+      {/* エントリーシステムの大会ID */}
+      <div className='flex flex-col justify-start'>
+        {/* システム管理者 JARA職員 団体管理者 の場合、入力欄を表示する */}
+        {(userIdType.is_administrator == 1 ||
+          userIdType.is_jara == 1 ||
+          userIdType.is_pref_boat_officer == 1 ||
+          userIdType.is_organization_manager == 1) && (
           <CustomTextField
-            label='大会ID'
-            isError={false}
-            displayHelp={false}
-            readonly
-            onChange={(e) => {}}
-            value={tournamentFormData.tourn_id}
-          />
-        </div>
-        {/* エントリーシステムの大会ID */}
-        <div className='flex flex-col justify-start'>
-          {/* システム管理者 JARA職員 団体管理者 の場合、入力欄を表示する */}
-          {(userIdType.is_administrator == 1 ||
-            userIdType.is_jara == 1 ||
-            userIdType.is_pref_boat_officer == 1 ||
-            userIdType.is_organization_manager == 1) && (
-            <CustomTextField
-              label='エントリーシステムの大会ID'
-              isError={entrysystemTournIdErrorMessage.length > 0}
-              errorMessages={entrysystemTournIdErrorMessage}
-              readonly={mode === 'confirm'}
-              displayHelp={mode !== 'confirm'}
-              value={tournamentFormData.entrysystem_tourn_id}
-              onChange={(e) => handleInputChangeTournament('entrysystem_tourn_id', e.target.value)}
-              // toolTipTitle='Title エントリーシステムの大会ID' //はてなボタン用
-              toolTipText='大会エントリーシステムに発番される大会ID
+            label='エントリーシステムの大会ID'
+            isError={entrysystemTournIdErrorMessage.length > 0}
+            errorMessages={entrysystemTournIdErrorMessage}
+            readonly={mode === 'confirm'}
+            displayHelp={mode !== 'confirm'}
+            value={tournamentFormData.entrysystem_tourn_id}
+            onChange={(e) => handleInputChangeTournament('entrysystem_tourn_id', e.target.value)}
+            // toolTipTitle='Title エントリーシステムの大会ID' //はてなボタン用
+            toolTipText='大会エントリーシステムに発番される大会ID
               この大会IDについては、日本ローイング協会にお問い合わせください。' //はてなボタン用
-              maxLength={8}
-            />
-          )}
-        </div>
-        <div className='flex flex-col justify-start gap-[8px]'>
-          {/* 大会名 */}
-          <div className='flex flex-row justify-start gap-[4px]'>
-            <CustomTextField
-              label='大会名'
-              isError={tournNameErrorMessage.length > 0}
-              errorMessages={[]}
-              required={mode !== 'confirm'}
-              displayHelp={mode !== 'confirm'}
-              readonly={mode === 'confirm'}
-              value={tournamentFormData.tourn_name}
-              onChange={(e) => handleInputChangeTournament('tourn_name', e.target.value)}
-              // toolTipTitle='Title 大会名' //はてなボタン用
-              toolTipText='開催する大会名と大会種別（公式/非公式）を選択してください。' //はてなボタン用
-            />
-            {/* 大会種別（公式・非公式） */}
-            <CustomDropdown
-              id='tournType'
-              options={tournType.map((item) => ({ key: item.id, value: item.name }))}
-              value={
-                mode !== 'confirm'
-                  ? tournamentFormData.tourn_type
-                  : tournamentFormData.tournTypeName
-              }
-              required={mode !== 'confirm'}
-              onChange={(e) => {
-                handleInputChangeTournament('tourn_type', e?.toString());
-                handleInputChangeTournament(
-                  'tournTypeName',
-                  tournType.find((item) => item.id === Number(e))?.name || '',
-                );
-              }}
-              className='rounded self-end w-[100px] mt-auto'
-              readonly={mode === 'confirm'}
-            />
-          </div>
-          <p className='text-caption1 text-systemErrorText'>
-            {tournNameErrorMessage?.map((message) => {
-              return message;
-            })}
-          </p>
-        </div>
-        {/* 主催団体ID */}
-        <div className='flex flex-col justify-start'>
-          <CustomTextField
-            label='主催団体ID'
-            isError={sponsorOrgIdErrorMessage.length > 0}
-            errorMessages={sponsorOrgIdErrorMessage}
-            required={mode !== 'confirm'}
-            displayHelp={mode !== 'confirm'}
-            readonly={mode === 'confirm'}
-            value={tournamentFormData.sponsor_org_id}
-            onChange={(e) => handleInputChangeTournament('sponsor_org_id', e.target.value)}
-            // toolTipTitle='Title 主催団体ID' //はてなボタン用
-            toolTipText='団体IDは団体情報参照画面で確認できます。' //はてなボタン用
+            maxLength={8}
           />
-        </div>
-        {/* 主催団体名 */}
-        {mode === 'confirm' && (prevMode === 'create' || prevMode === 'update') && (
-          <div className='flex flex-col justify-start'>
-            <CustomTextField
-              label='主催団体名'
-              required={mode !== 'confirm'}
-              displayHelp={mode !== 'confirm'}
-              readonly={mode === 'confirm'}
-              value={tournamentFormData.sponsorOrgName}
-              onChange={(e) => {}}
-            />
-          </div>
         )}
+      </div>
+      <div className='flex flex-col justify-start gap-[8px]'>
+        {/* 大会名 */}
         <div className='flex flex-row justify-start gap-[4px]'>
-          {/* 開催開始年月日 */}
-          <div className='flex flex-col justify-start '>
-            <InputLabel
-              label='開催開始年月日'
-              required={mode !== 'confirm'}
-              displayHelp={mode !== 'confirm'}
-              // toolTipTitle='Title 開催開始年月日' //はてなボタン用
-              toolTipText='YYYY/MM/DDの形式で入力してください。' //はてなボタン用
-            ></InputLabel>
-            <CustomDatePicker
-              selectedDate={tournamentFormData.event_start_date}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                handleInputChangeTournament('event_start_date', formatDate(e as unknown as Date));
-              }}
-              readonly={mode === 'confirm'}
-              isError={eventStartDateErrorMessage.length > 0}
-              errorMessages={eventStartDateErrorMessage}
-            />
-          </div>
-          {/* 開催終了年月日 */}
-          <div className='flex flex-col justify-start'>
-            <InputLabel
-              label='開催終了年月日'
-              required={mode !== 'confirm'}
-              displayHelp={mode !== 'confirm'}
-              // toolTipTitle='Title 開催終了年月日' //はてなボタン用
-              toolTipText='YYYY/MM/DDの形式で入力してください。' //はてなボタン用
-            ></InputLabel>
-            <CustomDatePicker
-              selectedDate={tournamentFormData.event_end_date}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                handleInputChangeTournament('event_end_date', formatDate(e as unknown as Date));
-              }}
-              readonly={mode === 'confirm'}
-              isError={eventEndDateErrorMessage.length > 0}
-              errorMessages={eventEndDateErrorMessage}
-            />
-          </div>
-        </div>
-        <div className='flex flex-col justify-start gap-[8px]'>
-          {/* 開催場所 */}
-          <InputLabel
-            label={'開催場所'}
+          <CustomTextField
+            label='大会名'
+            isError={tournNameErrorMessage.length > 0}
+            errorMessages={[]}
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
-            // toolTipTitle='Title 開催場所' //はてなボタン用
-            toolTipText='大会を開催する水域を選択してください。' //はてなボタン用
-          ></InputLabel>
-          <div className='flex flex-row justify-start gap-[4px]'>
-            <CustomDropdown
-              id='venue'
-              required={mode !== 'confirm'}
-              options={venue.map((item) => ({ key: item.id, value: item.name }))}
-              value={
-                mode !== 'confirm' ? tournamentFormData.venue_id : tournamentFormData.venue_name
-              }
-              onChange={(e) => {
-                handleInputChangeTournament('venue_id', e?.toString());
-                handleInputChangeTournament(
-                  'venue_name',
-                  venue.find((item) => item.id === Number(e))?.name || '',
-                );
-              }}
-              className='rounded self-end w-[300px]'
-              readonly={mode === 'confirm'}
-            />
-            {/* 開催場所入力欄 */}
-            <div className={`${tournamentFormData.venue_id == '9999' ? '' : 'hidden'} `}>
-              <CustomTextField
-                label=''
-                isError={venueNameErrorMessage.length > 0}
-                readonly={mode === 'confirm'}
-                displayHelp={false}
-                value={tournamentFormData.venue_name}
-                onChange={(e) => handleInputChangeTournament('venue_name', e.target.value)}
-              />
-            </div>
-          </div>
-          <p className='text-caption1 text-systemErrorText'>
-            {venueIdErrorMessage.length > 0 &&
-              venueIdErrorMessage?.map((message) => {
-                return message;
-              })}
-          </p>
-          <p className='text-caption1 text-systemErrorText'>
-            {venueNameErrorMessage.length > 0 &&
-              venueNameErrorMessage?.map((message) => {
-                return message;
-              })}
-          </p>
-        </div>
-        {/* 大会個別URL */}
-        <div className='flex flex-col justify-start'>
-          <CustomTextField
-            label='大会個別URL'
-            isError={tournUrlErrorMessage.length > 0}
-            errorMessages={tournUrlErrorMessage}
             readonly={mode === 'confirm'}
-            displayHelp={mode !== 'confirm'}
-            value={tournamentFormData.tourn_url}
-            onChange={(e) => handleInputChangeTournament('tourn_url', e.target.value)}
-            // toolTipTitle='Title 大会個別URL' //はてなボタン用
-            toolTipText='大会用のホームページを公開している場合、URLを入力してください。' //はてなボタン用
+            value={tournamentFormData.tourn_name}
+            onChange={(e) => handleInputChangeTournament('tourn_name', e.target.value)}
+            // toolTipTitle='Title 大会名' //はてなボタン用
+            toolTipText='開催する大会名と大会種別（公式/非公式）を選択してください。' //はてなボタン用
+          />
+          {/* 大会種別（公式・非公式） */}
+          <CustomDropdown
+            id='tournType'
+            options={tournType.map((item) => ({ key: item.id, value: item.name }))}
+            value={
+              mode !== 'confirm' ? tournamentFormData.tourn_type : tournamentFormData.tournTypeName
+            }
+            required={mode !== 'confirm'}
+            onChange={(e) => {
+              handleInputChangeTournament('tourn_type', e?.toString());
+              handleInputChangeTournament(
+                'tournTypeName',
+                tournType.find((item) => item.id === Number(e))?.name || '',
+              );
+            }}
+            className='rounded self-end w-[100px] mt-auto'
+            readonly={mode === 'confirm'}
           />
         </div>
-        {/* 大会要項PDFファイル */}
+        <p className='text-caption1 text-systemErrorText'>
+          {tournNameErrorMessage?.map((message) => {
+            return message;
+          })}
+        </p>
+      </div>
+      {/* 主催団体ID */}
+      <div className='flex flex-col justify-start'>
+        <CustomTextField
+          label='主催団体ID'
+          isError={sponsorOrgIdErrorMessage.length > 0}
+          errorMessages={sponsorOrgIdErrorMessage}
+          required={mode !== 'confirm'}
+          displayHelp={mode !== 'confirm'}
+          readonly={mode === 'confirm'}
+          value={tournamentFormData.sponsor_org_id}
+          onChange={(e) => handleInputChangeTournament('sponsor_org_id', e.target.value)}
+          // toolTipTitle='Title 主催団体ID' //はてなボタン用
+          toolTipText='団体IDは団体情報参照画面で確認できます。' //はてなボタン用
+        />
+      </div>
+      {/* 主催団体名 */}
+      {mode === 'confirm' && (prevMode === 'create' || prevMode === 'update') && (
         <div className='flex flex-col justify-start'>
-          <PdfFileUploader
-            label='大会要項PDFファイル'
-            readonly={!displayFlg || mode === 'confirm'}
-            ref={fileUploaderRef}
-            setTournamentFormData={setTournamentFormData}
-          ></PdfFileUploader>
-          <p className='text-caption1 text-systemErrorText'>
-            {tournInfoFailePathErrorMessage?.map((message) => {
+          <CustomTextField
+            label='主催団体名'
+            required={mode !== 'confirm'}
+            displayHelp={mode !== 'confirm'}
+            readonly={mode === 'confirm'}
+            value={tournamentFormData.sponsorOrgName}
+            onChange={(e) => {}}
+          />
+        </div>
+      )}
+      <div className='flex flex-row justify-start gap-[4px]'>
+        {/* 開催開始年月日 */}
+        <div className='flex flex-col justify-start '>
+          <InputLabel
+            label='開催開始年月日'
+            required={mode !== 'confirm'}
+            displayHelp={mode !== 'confirm'}
+            // toolTipTitle='Title 開催開始年月日' //はてなボタン用
+            toolTipText='YYYY/MM/DDの形式で入力してください。' //はてなボタン用
+          ></InputLabel>
+          <CustomDatePicker
+            selectedDate={tournamentFormData.event_start_date}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              handleInputChangeTournament('event_start_date', formatDate(e as unknown as Date));
+            }}
+            readonly={mode === 'confirm'}
+            isError={eventStartDateErrorMessage.length > 0}
+            errorMessages={eventStartDateErrorMessage}
+          />
+        </div>
+        {/* 開催終了年月日 */}
+        <div className='flex flex-col justify-start'>
+          <InputLabel
+            label='開催終了年月日'
+            required={mode !== 'confirm'}
+            displayHelp={mode !== 'confirm'}
+            // toolTipTitle='Title 開催終了年月日' //はてなボタン用
+            toolTipText='YYYY/MM/DDの形式で入力してください。' //はてなボタン用
+          ></InputLabel>
+          <CustomDatePicker
+            selectedDate={tournamentFormData.event_end_date}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              handleInputChangeTournament('event_end_date', formatDate(e as unknown as Date));
+            }}
+            readonly={mode === 'confirm'}
+            isError={eventEndDateErrorMessage.length > 0}
+            errorMessages={eventEndDateErrorMessage}
+          />
+        </div>
+      </div>
+      <div className='flex flex-col justify-start gap-[8px]'>
+        {/* 開催場所 */}
+        <InputLabel
+          label={'開催場所'}
+          required={mode !== 'confirm'}
+          displayHelp={mode !== 'confirm'}
+          // toolTipTitle='Title 開催場所' //はてなボタン用
+          toolTipText='大会を開催する水域を選択してください。' //はてなボタン用
+        ></InputLabel>
+        <div className='flex flex-row justify-start gap-[4px]'>
+          <CustomDropdown
+            id='venue'
+            required={mode !== 'confirm'}
+            options={venue.map((item) => ({ key: item.id, value: item.name }))}
+            value={mode !== 'confirm' ? tournamentFormData.venue_id : tournamentFormData.venue_name}
+            onChange={(e) => {
+              handleInputChangeTournament('venue_id', e?.toString());
+              handleInputChangeTournament(
+                'venue_name',
+                venue.find((item) => item.id === Number(e))?.name || '',
+              );
+            }}
+            className='rounded self-end w-[300px]'
+            readonly={mode === 'confirm'}
+          />
+          {/* 開催場所入力欄 */}
+          <div className={`${tournamentFormData.venue_id == '9999' ? '' : 'hidden'} `}>
+            <CustomTextField
+              label=''
+              isError={venueNameErrorMessage.length > 0}
+              readonly={mode === 'confirm'}
+              displayHelp={false}
+              value={tournamentFormData.venue_name}
+              onChange={(e) => handleInputChangeTournament('venue_name', e.target.value)}
+            />
+          </div>
+        </div>
+        <p className='text-caption1 text-systemErrorText'>
+          {venueIdErrorMessage.length > 0 &&
+            venueIdErrorMessage?.map((message) => {
               return message;
             })}
-          </p>
-        </div>
-        {/* レース登録テーブル表示 */}
-        <div className='overflow-auto'>
-          <CustomTable>
-            {/* レース登録テーブルヘッダー表示 */}
-            <CustomThead>
-              <CustomTr>
-                {mode === 'update' ? (
-                  <>
-                    <CustomTh align='center'>{addCustomButton}</CustomTh>
-                    {/* 全選択ボタン */}
-                    <CustomTh>
-                      {displayFlg && (
-                        <CustomButton
-                          className='w-[100px]'
-                          buttonType='primary'
-                          onClick={() => {
-                            tableData.length > 0 &&
-                              setTableData((prevData) =>
-                                prevData.map((data) => ({ ...data, checked: true })),
-                              );
-                          }}
-                        >
-                          全選択
-                        </CustomButton>
-                      )}
-                    </CustomTh>
-                    {/* 全選択解除ボタン */}
-                    <CustomTh>
-                      {displayFlg && (
-                        <CustomButton
-                          className='w-[110px]'
-                          buttonType='primary'
-                          onClick={() => {
-                            tableData.length > 0 &&
-                              setTableData((prevData) =>
-                                prevData.map((data) => ({ ...data, checked: false })),
-                              );
-                          }}
-                        >
-                          全選択解除
-                        </CustomButton>
-                      )}
-                    </CustomTh>
-                    <CustomTh align='center' colSpan={7}>
-                      レース登録
-                    </CustomTh>
-                  </>
-                ) : mode === 'create' ? (
-                  <>
-                    <CustomTh align='center'>{addCustomButton}</CustomTh>
-                    <CustomTh align='center' colSpan={8}>
-                      レース登録
-                    </CustomTh>
-                  </>
-                ) : prevMode === 'update' ? (
-                  <CustomTh align='center' colSpan={10}>
+        </p>
+        <p className='text-caption1 text-systemErrorText'>
+          {venueNameErrorMessage.length > 0 &&
+            venueNameErrorMessage?.map((message) => {
+              return message;
+            })}
+        </p>
+      </div>
+      {/* 大会個別URL */}
+      <div className='flex flex-col justify-start'>
+        <CustomTextField
+          label='大会個別URL'
+          isError={tournUrlErrorMessage.length > 0}
+          errorMessages={tournUrlErrorMessage}
+          readonly={mode === 'confirm'}
+          displayHelp={mode !== 'confirm'}
+          value={tournamentFormData.tourn_url}
+          onChange={(e) => handleInputChangeTournament('tourn_url', e.target.value)}
+          // toolTipTitle='Title 大会個別URL' //はてなボタン用
+          toolTipText='大会用のホームページを公開している場合、URLを入力してください。' //はてなボタン用
+        />
+      </div>
+      {/* 大会要項PDFファイル */}
+      <div className='flex flex-col justify-start'>
+        <PdfFileUploader
+          label='大会要項PDFファイル'
+          readonly={!displayFlg || mode === 'confirm'}
+          ref={fileUploaderRef}
+          setTournamentFormData={setTournamentFormData}
+        ></PdfFileUploader>
+        <p className='text-caption1 text-systemErrorText'>
+          {tournInfoFailePathErrorMessage?.map((message) => {
+            return message;
+          })}
+        </p>
+      </div>
+      {/* レース登録テーブル表示 */}
+      <div className='overflow-auto'>
+        <CustomTable>
+          {/* レース登録テーブルヘッダー表示 */}
+          <CustomThead>
+            <CustomTr>
+              {mode === 'update' ? (
+                <>
+                  <CustomTh align='center'>{addCustomButton}</CustomTh>
+                  {/* 全選択ボタン */}
+                  <CustomTh>
+                    {displayFlg && (
+                      <CustomButton
+                        className='w-[100px]'
+                        buttonType='primary'
+                        onClick={() => {
+                          tableData.length > 0 &&
+                            setTableData((prevData) =>
+                              prevData.map((data) => ({ ...data, checked: true })),
+                            );
+                        }}
+                      >
+                        全選択
+                      </CustomButton>
+                    )}
+                  </CustomTh>
+                  {/* 全選択解除ボタン */}
+                  <CustomTh>
+                    {displayFlg && (
+                      <CustomButton
+                        className='w-[110px]'
+                        buttonType='primary'
+                        onClick={() => {
+                          tableData.length > 0 &&
+                            setTableData((prevData) =>
+                              prevData.map((data) => ({ ...data, checked: false })),
+                            );
+                        }}
+                      >
+                        全選択解除
+                      </CustomButton>
+                    )}
+                  </CustomTh>
+                  <CustomTh align='center' colSpan={7}>
                     レース登録
                   </CustomTh>
-                ) : (
+                </>
+              ) : mode === 'create' ? (
+                <>
+                  <CustomTh align='center'>{addCustomButton}</CustomTh>
                   <CustomTh align='center' colSpan={8}>
                     レース登録
                   </CustomTh>
+                </>
+              ) : prevMode === 'update' ? (
+                <CustomTh align='center' colSpan={10}>
+                  レース登録
+                </CustomTh>
+              ) : (
+                <CustomTh align='center' colSpan={8}>
+                  レース登録
+                </CustomTh>
+              )}
+            </CustomTr>
+            <CustomTr>
+              {mode !== 'confirm' ? <CustomTh align='center'>削除</CustomTh> : <></>}
+              {mode === 'confirm' && prevMode === 'update' && (
+                <CustomTh align='center'>削除</CustomTh>
+              )}
+              {(mode === 'update' || prevMode === 'update') && (
+                <CustomTh align='center'>レースID</CustomTh>
+              )}
+              <CustomTh align='center'>エントリーシステムのレースID</CustomTh>
+              <CustomTh align='center'>
+                {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
+                レースNo.
+              </CustomTh>
+              <CustomTh align='center'>
+                {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
+                種目
+              </CustomTh>
+              <CustomTh align='center'>
+                {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
+                レース名
+              </CustomTh>
+              <CustomTh align='center'>
+                {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
+                レース区分
+              </CustomTh>
+              <CustomTh align='center'>
+                {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
+                組別
+              </CustomTh>
+              <CustomTh align='center'>
+                {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
+                距離
+              </CustomTh>
+              <CustomTh align='center'>
+                {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
+                発艇日時
+              </CustomTh>
+            </CustomTr>
+          </CustomThead>
+          {/* レース登録テーブル明細表示 */}
+          <CustomTbody>
+            {tableData.map((row) => (
+              <CustomTr key={row.id}>
+                {mode === 'update' && (
+                  <CustomTd align='center'>
+                    <OriginalCheckbox
+                      id={'delete-' + row.id}
+                      label={''}
+                      value={'delete-' + row.id}
+                      checked={row.checked}
+                      onChange={(e) => handleInputChangeRace(row.id, 'checked', e.target.checked)}
+                    />
+                  </CustomTd>
                 )}
-              </CustomTr>
-              <CustomTr>
-                {mode !== 'confirm' ? <CustomTh align='center'>削除</CustomTh> : <></>}
                 {mode === 'confirm' && prevMode === 'update' && (
-                  <CustomTh align='center'>削除</CustomTh>
+                  <CustomTd align='center'>
+                    <OriginalCheckbox
+                      id={'delete-' + row.id}
+                      label={''}
+                      value={'delete-' + row.id}
+                      checked={row.checked}
+                      onChange={(e) => handleInputChangeRace(row.id, 'checked', e.target.checked)}
+                      readonly
+                    />
+                  </CustomTd>
                 )}
                 {(mode === 'update' || prevMode === 'update') && (
-                  <CustomTh align='center'>レースID</CustomTh>
+                  <CustomTd>
+                    {mode === 'confirm' ? (
+                      <p className='h-12 text-secondaryText py-3 disable'>{row.race_id}</p>
+                    ) : (
+                      // <TextField
+                      //   type={'text'}
+                      //   value={row.race_id}
+                      //   onChange={(e) => handleInputChangeRace(row.id, 'race_id', e.target.value)}
+                      //   className='my-[8px]'
+                      // />
+                      <p className='h-12 text-secondaryText py-3 disable'>{row.race_id}</p>
+                    )}
+                  </CustomTd>
                 )}
-                <CustomTh align='center'>エントリーシステムのレースID</CustomTh>
-                <CustomTh align='center'>
-                  {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
-                  レースNo.
-                </CustomTh>
-                <CustomTh align='center'>
-                  {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
-                  種目
-                </CustomTh>
-                <CustomTh align='center'>
-                  {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
-                  レース名
-                </CustomTh>
-                <CustomTh align='center'>
-                  {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
-                  レース区分
-                </CustomTh>
-                <CustomTh align='center'>
-                  {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
-                  組別
-                </CustomTh>
-                <CustomTh align='center'>
-                  {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
-                  距離
-                </CustomTh>
-                <CustomTh align='center'>
-                  {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
-                  発艇日時
-                </CustomTh>
-              </CustomTr>
-            </CustomThead>
-            {/* レース登録テーブル明細表示 */}
-            <CustomTbody>
-              {tableData.map((row) => (
-                <CustomTr key={row.id}>
-                  {mode === 'update' && (
-                    <CustomTd align='center'>
-                      <OriginalCheckbox
-                        id={'delete-' + row.id}
-                        label={''}
-                        value={'delete-' + row.id}
-                        checked={row.checked}
-                        onChange={(e) => handleInputChangeRace(row.id, 'checked', e.target.checked)}
-                      />
-                    </CustomTd>
-                  )}
-                  {mode === 'confirm' && prevMode === 'update' && (
-                    <CustomTd align='center'>
-                      <OriginalCheckbox
-                        id={'delete-' + row.id}
-                        label={''}
-                        value={'delete-' + row.id}
-                        checked={row.checked}
-                        onChange={(e) => handleInputChangeRace(row.id, 'checked', e.target.checked)}
-                        readonly
-                      />
-                    </CustomTd>
-                  )}
-                  {(mode === 'update' || prevMode === 'update') && (
-                    <CustomTd>
-                      {mode === 'confirm' ? (
-                        <p className='h-12 text-secondaryText py-3 disable'>{row.race_id}</p>
-                      ) : (
-                        // <TextField
-                        //   type={'text'}
-                        //   value={row.race_id}
-                        //   onChange={(e) => handleInputChangeRace(row.id, 'race_id', e.target.value)}
-                        //   className='my-[8px]'
-                        // />
-                        <p className='h-12 text-secondaryText py-3 disable'>{row.race_id}</p>
-                      )}
-                    </CustomTd>
-                  )}
-                  {/* 削除ボタン */}
-                  {mode === 'create' && (
-                    <CustomTd>
-                      {displayFlg && (
-                        <CustomButton
-                          className='secondary w-[60px]'
-                          onClick={() => {
-                            setTableData((prevData) => {
-                              var newList = prevData.filter((data) => data.id !== row.id);
-                              for (let index = 0; index < newList.length; index++) {
-                                newList[index].id = index + 1;
-                              }
-                              return newList;
-                            });
-                            //console.log(tableData);
-                          }}
-                        >
-                          削除
-                        </CustomButton>
-                      )}
-                    </CustomTd>
-                  )}
-                  {mode === 'confirm' ? (
-                    <>
-                      {/* エントリーシステムのレースID */}
-                      <CustomTd textType='secondary'>{row.entrysystem_race_id}</CustomTd>
-                      {/* レースNo. */}
-                      <CustomTd textType='secondary'>{row.race_number}</CustomTd>
-                      {/* 種目 */}
-                      <CustomTd textType='secondary'>{row.event_name}</CustomTd>
-                      {/* レース名 */}
-                      <CustomTd textType='secondary'>{row.race_name}</CustomTd>
-                      <CustomTd textType='secondary'>
-                        {/* レース区分 */}
-                        <div className='flex flex-row gap-[8px] items-center'>
-                          {row.race_class_name}
-                          {/* レース区分名 */}
-                          <div className={`${row.race_class_id == '999' ? 'visible' : 'hidden'} `}>
-                            {row.otherRaceName}
-                          </div>
+                {/* 削除ボタン */}
+                {mode === 'create' && (
+                  <CustomTd>
+                    {displayFlg && (
+                      <CustomButton
+                        className='secondary w-[60px]'
+                        onClick={() => {
+                          setTableData((prevData) => {
+                            var newList = prevData.filter((data) => data.id !== row.id);
+                            for (let index = 0; index < newList.length; index++) {
+                              newList[index].id = index + 1;
+                            }
+                            return newList;
+                          });
+                          //console.log(tableData);
+                        }}
+                      >
+                        削除
+                      </CustomButton>
+                    )}
+                  </CustomTd>
+                )}
+                {mode === 'confirm' ? (
+                  <>
+                    {/* エントリーシステムのレースID */}
+                    <CustomTd textType='secondary'>{row.entrysystem_race_id}</CustomTd>
+                    {/* レースNo. */}
+                    <CustomTd textType='secondary'>{row.race_number}</CustomTd>
+                    {/* 種目 */}
+                    <CustomTd textType='secondary'>{row.event_name}</CustomTd>
+                    {/* レース名 */}
+                    <CustomTd textType='secondary'>{row.race_name}</CustomTd>
+                    <CustomTd textType='secondary'>
+                      {/* レース区分 */}
+                      <div className='flex flex-row gap-[8px] items-center'>
+                        {row.race_class_name}
+                        {/* レース区分名 */}
+                        <div className={`${row.race_class_id == '999' ? 'visible' : 'hidden'} `}>
+                          {row.otherRaceName}
                         </div>
-                      </CustomTd>
-                      {/* 組別 */}
-                      <CustomTd textType='secondary'>{row.by_group}</CustomTd>
-                      {/* 距離 */}
-                      <CustomTd textType='secondary'>{row.range}</CustomTd>
-                      {/* 発艇日時 */}
-                      <CustomTd textType='secondary'>
-                        {row.start_date_time?.substring(0, 16)}
-                      </CustomTd>
-                    </>
-                  ) : (
-                    raceRowComp(row)
-                  )}
-                </CustomTr>
-              ))}
-            </CustomTbody>
-          </CustomTable>
-        </div>
-        {
-          // エラーメッセージの表示
-          (entryRaceIdErrorMessage.length > 0 ||
-            raceNumberErrorMessage.length > 0 ||
-            raceIdErrorMessage.length > 0 ||
-            eventIdErrorMessage.length > 0 ||
-            raceNameErrorMessage.length > 0 ||
-            raceTypeErrorMessage.length > 0 ||
-            raceTypeNameErrorMessage.length > 0 ||
-            byGroupErrorMessage.length > 0 ||
-            rangeErrorMessage.length > 0 ||
-            startDateTimeErrorMessage.length > 0 ||
-            entrysystemRaceIdErrorMessage.length > 0 ||
-            raceNumberDuplicatErrorMessage.length > 0) && (
-            <div key='tableErrorMessage' className='text-caption1 text-systemErrorText'>
-              <p>{entryRaceIdErrorMessage}</p>
-              <p>{raceIdErrorMessage}</p>
-              <p>{raceNumberErrorMessage}</p>
-              <p>{eventIdErrorMessage}</p>
-              <p>{raceNameErrorMessage}</p>
-              <p>{raceTypeErrorMessage}</p>
-              <p>{raceTypeNameErrorMessage}</p>
-              <p>{byGroupErrorMessage}</p>
-              <p>{rangeErrorMessage}</p>
-              <p>{startDateTimeErrorMessage}</p>
-              <p>{raceNumberDuplicatErrorMessage}</p>
-              <p>{entrysystemRaceIdErrorMessage}</p>
-            </div>
-          )
-        }
-        <div className='flex flex-row justify-center gap-[16px] my-[30px]'>
-          {/* 戻るボタン */}
-          {displayFlg && (
-            <CustomButton
-              onClick={() => {
-                //console.log(backKeyFlag);
-                setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
-                //console.log(backKeyFlag);
-                router.back();
-              }}
-              buttonType='secondary'
-            >
-              戻る
-            </CustomButton>
-          )}
-          {displayFlg && modeCustomButtons[prevMode as keyof typeof modeCustomButtons]}
-        </div>
-      </main>
-    </div>
+                      </div>
+                    </CustomTd>
+                    {/* 組別 */}
+                    <CustomTd textType='secondary'>{row.by_group}</CustomTd>
+                    {/* 距離 */}
+                    <CustomTd textType='secondary'>{row.range}</CustomTd>
+                    {/* 発艇日時 */}
+                    <CustomTd textType='secondary'>
+                      {row.start_date_time?.substring(0, 16)}
+                    </CustomTd>
+                  </>
+                ) : (
+                  raceRowComp(row)
+                )}
+              </CustomTr>
+            ))}
+          </CustomTbody>
+        </CustomTable>
+      </div>
+      {
+        // エラーメッセージの表示
+        (entryRaceIdErrorMessage.length > 0 ||
+          raceNumberErrorMessage.length > 0 ||
+          raceIdErrorMessage.length > 0 ||
+          eventIdErrorMessage.length > 0 ||
+          raceNameErrorMessage.length > 0 ||
+          raceTypeErrorMessage.length > 0 ||
+          raceTypeNameErrorMessage.length > 0 ||
+          byGroupErrorMessage.length > 0 ||
+          rangeErrorMessage.length > 0 ||
+          startDateTimeErrorMessage.length > 0 ||
+          entrysystemRaceIdErrorMessage.length > 0 ||
+          raceNumberDuplicatErrorMessage.length > 0) && (
+          <div key='tableErrorMessage' className='text-caption1 text-systemErrorText'>
+            <p>{entryRaceIdErrorMessage}</p>
+            <p>{raceIdErrorMessage}</p>
+            <p>{raceNumberErrorMessage}</p>
+            <p>{eventIdErrorMessage}</p>
+            <p>{raceNameErrorMessage}</p>
+            <p>{raceTypeErrorMessage}</p>
+            <p>{raceTypeNameErrorMessage}</p>
+            <p>{byGroupErrorMessage}</p>
+            <p>{rangeErrorMessage}</p>
+            <p>{startDateTimeErrorMessage}</p>
+            <p>{raceNumberDuplicatErrorMessage}</p>
+            <p>{entrysystemRaceIdErrorMessage}</p>
+          </div>
+        )
+      }
+      <div className='flex flex-row justify-center gap-[16px] my-[30px]'>
+        {/* 戻るボタン */}
+        {displayFlg && (
+          <CustomButton
+            onClick={() => {
+              //console.log(backKeyFlag);
+              setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+              //console.log(backKeyFlag);
+              router.back();
+            }}
+            buttonType='secondary'
+          >
+            戻る
+          </CustomButton>
+        )}
+        {displayFlg && modeCustomButtons[prevMode as keyof typeof modeCustomButtons]}
+      </div>
+    </main>
   );
 }

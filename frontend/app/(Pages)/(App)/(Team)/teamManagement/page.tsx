@@ -254,292 +254,288 @@ export default function TeamManagement() {
 
   return (
     validFlag && (
-      <div>
-        <main className='flex flex-col justify-start p-24 m-auto gap-[80px] my-[100px]'>
-          <div className='w-full h-screen'>
-            <div className='flex flex-row items-center justify-between flex-wrap'>
-              {/* 画面名 */}
-              <CustomTitle displayBack={true}>
-                団体管理
-              </CustomTitle>
-            </div>
+      <main className='flex flex-col justify-start p-24 m-auto gap-[80px] my-[100px]'>
+        <div className='w-full h-screen'>
+          <div className='flex flex-row items-center justify-between flex-wrap'>
+            {/* 画面名 */}
+            <CustomTitle displayBack={true}>団体管理</CustomTitle>
           </div>
-          {/* エラー表示１ */}
-          <ErrorBox errorText={errorMessage} />
-          <div className=''>
-            <div className='w-full bg-primary-500 text-white h-[40px] flex justify-center items-center'>
-              <div className='font-bold'>管理団体一覧</div>
-            </div>
-            <CustomTable>
-              <CustomThead>
-                <CustomTr>
-                  <CustomTh align='left'>
-                    <div className='flex flex-row items-center gap-[10px]'>
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => orgTypeSort()}
-                      >
-                        団体種別
-                      </div>
-                      <div
-                        style={{
-                          cursor: 'pointer',
-                          color: selectedOrgTypeList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
-                        }}
-                        onClick={(event) => handleOrgTypeHeaderClick('団体種別', event as any)}
-                      >
-                        <FilterListIcon />
-                      </div>
-                    </div>
-                  </CustomTh>
-                  <CustomTh align='left'>
+        </div>
+        {/* エラー表示１ */}
+        <ErrorBox errorText={errorMessage} />
+        <div className=''>
+          <div className='w-full bg-primary-500 text-white h-[40px] flex justify-center items-center'>
+            <div className='font-bold'>管理団体一覧</div>
+          </div>
+          <CustomTable>
+            <CustomThead>
+              <CustomTr>
+                <CustomTh align='left'>
+                  <div className='flex flex-row items-center gap-[10px]'>
                     <div
                       className='underline'
                       style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                      onClick={() => entrySystemIdSort()}
+                      onClick={() => orgTypeSort()}
                     >
-                      エントリーシステムの団体ID
+                      団体種別
                     </div>
-                  </CustomTh>
-                  <CustomTh align='left'>
+                    <div
+                      style={{
+                        cursor: 'pointer',
+                        color: selectedOrgTypeList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
+                      }}
+                      onClick={(event) => handleOrgTypeHeaderClick('団体種別', event as any)}
+                    >
+                      <FilterListIcon />
+                    </div>
+                  </div>
+                </CustomTh>
+                <CustomTh align='left'>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => entrySystemIdSort()}
+                  >
+                    エントリーシステムの団体ID
+                  </div>
+                </CustomTh>
+                <CustomTh align='left'>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => orgIdSort()}
+                  >
+                    団体ID
+                  </div>
+                </CustomTh>
+                <CustomTh align='left'>
+                  <div className='flex flex-row items-center gap-[10px]'>
                     <div
                       className='underline'
                       style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                      onClick={() => orgIdSort()}
+                      onClick={() => orgNameSort()}
                     >
-                      団体ID
+                      団体名
                     </div>
-                  </CustomTh>
-                  <CustomTh align='left'>
-                    <div className='flex flex-row items-center gap-[10px]'>
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => orgNameSort()}
-                      >
-                        団体名
-                      </div>
-                      <div
-                        style={{
-                          cursor: 'pointer',
-                          color: selectedOrgNameList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
+                    <div
+                      style={{
+                        cursor: 'pointer',
+                        color: selectedOrgNameList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
+                      }}
+                      onClick={(event) => handleOrgNameHeaderClick('団体名', event as any)}
+                    >
+                      <FilterListIcon />
+                    </div>
+                  </div>
+                </CustomTh>
+                <CustomTh align='left'>操作</CustomTh>
+              </CustomTr>
+            </CustomThead>
+            <CustomTbody>
+              {teamdata
+                .filter((row, index) => {
+                  if (selectedOrgTypeList.length > 0) {
+                    return selectedOrgTypeList.some((item) => item.name === row.teamTyp);
+                  } else {
+                    return true;
+                  }
+                })
+                .filter((row, index) => {
+                  if (selectedOrgNameList.length > 0) {
+                    return selectedOrgNameList.some((item) => item.name === row.org_name);
+                  } else {
+                    return true;
+                  }
+                })
+                .map((row, index) => (
+                  <CustomTr key={index}>
+                    {/* 団体種別 */}
+                    <CustomTd>{row.teamTyp}</CustomTd>
+                    {/* エントリーシステムの団体ID */}
+                    <CustomTd>
+                      <Link
+                        className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                        href={{
+                          pathname: '/teamRef',
+                          query: { org_id: row.org_id.toString() },
                         }}
-                        onClick={(event) => handleOrgNameHeaderClick('団体名', event as any)}
+                        rel='noopener noreferrer'
+                        target='_blank'
                       >
-                        <FilterListIcon />
-                      </div>
-                    </div>
-                  </CustomTh>
-                  <CustomTh align='left'>操作</CustomTh>
-                </CustomTr>
-              </CustomThead>
-              <CustomTbody>
-                {teamdata
-                  .filter((row, index) => {
-                    if (selectedOrgTypeList.length > 0) {
-                      return selectedOrgTypeList.some((item) => item.name === row.teamTyp);
-                    } else {
-                      return true;
-                    }
-                  })
-                  .filter((row, index) => {
-                    if (selectedOrgNameList.length > 0) {
-                      return selectedOrgNameList.some((item) => item.name === row.org_name);
-                    } else {
-                      return true;
-                    }
-                  })
-                  .map((row, index) => (
-                    <CustomTr key={index}>
-                      {/* 団体種別 */}
-                      <CustomTd>{row.teamTyp}</CustomTd>
-                      {/* エントリーシステムの団体ID */}
-                      <CustomTd>
-                        <Link
-                          className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                          href={{
-                            pathname: '/teamRef',
-                            query: { org_id: row.org_id.toString() },
-                          }}
-                          rel='noopener noreferrer'
-                          target='_blank'
-                        >
-                          {row.entrysystem_org_id}
-                        </Link>
-                      </CustomTd>
-                      {/* 団体ID */}
-                      <CustomTd>
-                        <Link
-                          className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                          href={{
-                            pathname: '/teamRef',
-                            query: { org_id: row.org_id.toString() },
-                          }}
-                          rel='noopener noreferrer'
-                          target='_blank'
-                        >
-                          {row.org_id}
-                        </Link>
-                      </CustomTd>
-                      {/* 団体名 */}
-                      <CustomTd>
-                        <Link
-                          className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                          href={{
-                            pathname: '/teamRef',
-                            query: { org_id: row.org_id.toString() },
-                          }}
-                          rel='noopener noreferrer'
-                          target='_blank'
-                        >
-                          {row.org_name}
-                        </Link>
-                      </CustomTd>
-                      <CustomTd>
-                        <div>
-                          <div className='flex justify-center items-center gap-[10px]'>
-                            {/* 更新ボタン */}
-                            <CustomButton
-                              onClick={() => {
-                                router.push('/team?mode=update&org_id=' + row.org_id.toString());
-                              }}
-                              buttonType='white-outlined'
-                              className='w-[60px] text-small h-[40px] p-[0px] border-transparent'
-                            >
-                              <EditOutlined className='text-secondaryText text-normal mr-[2px]'></EditOutlined>
-                              更新
-                            </CustomButton>
-                            {/* 削除ボタン */}
-                            <CustomButton
-                              onClick={() => {
-                                router.push('/teamRef?mode=delete&org_id=' + row.org_id.toString());
-                              }}
-                              buttonType='white-outlined'
-                              className='w-[60px] text-small h-[40px] p-[0px] border-transparent'
-                            >
-                              <DeleteOutline className='text-secondaryText text-normal mr-[2px]' />
-                              削除
-                            </CustomButton>
-                          </div>
+                        {row.entrysystem_org_id}
+                      </Link>
+                    </CustomTd>
+                    {/* 団体ID */}
+                    <CustomTd>
+                      <Link
+                        className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                        href={{
+                          pathname: '/teamRef',
+                          query: { org_id: row.org_id.toString() },
+                        }}
+                        rel='noopener noreferrer'
+                        target='_blank'
+                      >
+                        {row.org_id}
+                      </Link>
+                    </CustomTd>
+                    {/* 団体名 */}
+                    <CustomTd>
+                      <Link
+                        className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                        href={{
+                          pathname: '/teamRef',
+                          query: { org_id: row.org_id.toString() },
+                        }}
+                        rel='noopener noreferrer'
+                        target='_blank'
+                      >
+                        {row.org_name}
+                      </Link>
+                    </CustomTd>
+                    <CustomTd>
+                      <div>
+                        <div className='flex justify-center items-center gap-[10px]'>
+                          {/* 更新ボタン */}
+                          <CustomButton
+                            onClick={() => {
+                              router.push('/team?mode=update&org_id=' + row.org_id.toString());
+                            }}
+                            buttonType='white-outlined'
+                            className='w-[60px] text-small h-[40px] p-[0px] border-transparent'
+                          >
+                            <EditOutlined className='text-secondaryText text-normal mr-[2px]'></EditOutlined>
+                            更新
+                          </CustomButton>
+                          {/* 削除ボタン */}
+                          <CustomButton
+                            onClick={() => {
+                              router.push('/teamRef?mode=delete&org_id=' + row.org_id.toString());
+                            }}
+                            buttonType='white-outlined'
+                            className='w-[60px] text-small h-[40px] p-[0px] border-transparent'
+                          >
+                            <DeleteOutline className='text-secondaryText text-normal mr-[2px]' />
+                            削除
+                          </CustomButton>
                         </div>
-                      </CustomTd>
-                    </CustomTr>
-                  ))}
-              </CustomTbody>
-            </CustomTable>
-            {/* 団体種別フィルター用のオートコンプリート 20240723 */}
-            {showOrgTypeAutocomplete && (
-              <div
-                ref={orgTypefocusTarget}
-                style={{
-                  position: 'absolute',
-                  top: `${selectedOrgTypeHeader.position.top - 120}px`,
-                  left: `${selectedOrgTypeHeader.position.left}px`,
-                  backgroundColor: 'white',
-                  borderRadius: '4px',
-                  zIndex: 1000,
-                  padding: '8px',
-                }}
-                onBlur={() => setShowOrgTypeAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
-              >
-                <Autocomplete
-                  id='orgType'
-                  multiple
-                  options={orgTypeList}
-                  filterOptions={(options, { inputValue }) =>
-                    options.filter((option) => option.name?.includes(inputValue))
-                  }
-                  value={selectedOrgTypeList || []}
-                  onChange={(e: ChangeEvent<{}>, newValue: OrgTypeList[]) => {
-                    setSelectedOrgTypeList(newValue);
-                  }}
-                  renderOption={(props: any, option: OrgTypeList) => {
-                    return (
-                      <li {...props} key={option.id}>
-                        {option.name}
-                      </li>
-                    );
-                  }}
-                  renderTags={(value: OrgTypeList[], getTagProps: any) => {
-                    return value.map((option, index) => (
-                      <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
-                    ));
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      key={params.id}
-                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                      {...params}
-                      label={'団体種別'}
-                    />
-                  )}
-                />
-              </div>
-            )}
-            {showOrgNameAutocomplete && (
-              <div
-                ref={orgNamefocusTarget}
-                style={{
-                  position: 'absolute',
-                  top: `${selectedOrgNameHeader.position.top - 120}px`,
-                  left: `${selectedOrgNameHeader.position.left}px`,
-                  backgroundColor: 'white',
-                  borderRadius: '4px',
-                  zIndex: 1000,
-                  padding: '8px',
-                }}
-                onBlur={() => setShowOrgNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
-              >
-                <Autocomplete
-                  id='orgName'
-                  multiple
-                  options={orgNameList}
-                  filterOptions={(options, { inputValue }) =>
-                    options.filter((option) => option.name?.includes(inputValue))
-                  }
-                  value={selectedOrgNameList || []}
-                  onChange={(e: ChangeEvent<{}>, newValue: OrgNameList[]) => {
-                    setSelectedOrgNameList(newValue);
-                  }}
-                  renderOption={(props: any, option: OrgNameList) => {
-                    return (
-                      <li {...props} key={option.id}>
-                        {option.name}
-                      </li>
-                    );
-                  }}
-                  renderTags={(value: OrgNameList[], getTagProps: any) => {
-                    return value.map((option, index) => (
-                      <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
-                    ));
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      key={params.id}
-                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                      {...params}
-                      label={'団体名'}
-                    />
-                  )}
-                />
-              </div>
-            )}
-          </div>
-          <div className='flex justify-center items-center gap-[20px] mt-[20px]'>
-            {/* 戻るボタン */}
-            <CustomButton
-              buttonType='white-outlined'
-              className='w-[120px] text-small'
-              onClick={() => {
-                router.back();
+                      </div>
+                    </CustomTd>
+                  </CustomTr>
+                ))}
+            </CustomTbody>
+          </CustomTable>
+          {/* 団体種別フィルター用のオートコンプリート 20240723 */}
+          {showOrgTypeAutocomplete && (
+            <div
+              ref={orgTypefocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedOrgTypeHeader.position.top - 120}px`,
+                left: `${selectedOrgTypeHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
               }}
+              onBlur={() => setShowOrgTypeAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
             >
-              戻る
-            </CustomButton>
-          </div>
-        </main>
-      </div>
+              <Autocomplete
+                id='orgType'
+                multiple
+                options={orgTypeList}
+                filterOptions={(options, { inputValue }) =>
+                  options.filter((option) => option.name?.includes(inputValue))
+                }
+                value={selectedOrgTypeList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: OrgTypeList[]) => {
+                  setSelectedOrgTypeList(newValue);
+                }}
+                renderOption={(props: any, option: OrgTypeList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name}
+                    </li>
+                  );
+                }}
+                renderTags={(value: OrgTypeList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'団体種別'}
+                  />
+                )}
+              />
+            </div>
+          )}
+          {showOrgNameAutocomplete && (
+            <div
+              ref={orgNamefocusTarget}
+              style={{
+                position: 'absolute',
+                top: `${selectedOrgNameHeader.position.top - 120}px`,
+                left: `${selectedOrgNameHeader.position.left}px`,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                zIndex: 1000,
+                padding: '8px',
+              }}
+              onBlur={() => setShowOrgNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
+            >
+              <Autocomplete
+                id='orgName'
+                multiple
+                options={orgNameList}
+                filterOptions={(options, { inputValue }) =>
+                  options.filter((option) => option.name?.includes(inputValue))
+                }
+                value={selectedOrgNameList || []}
+                onChange={(e: ChangeEvent<{}>, newValue: OrgNameList[]) => {
+                  setSelectedOrgNameList(newValue);
+                }}
+                renderOption={(props: any, option: OrgNameList) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name}
+                    </li>
+                  );
+                }}
+                renderTags={(value: OrgNameList[], getTagProps: any) => {
+                  return value.map((option, index) => (
+                    <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    label={'団体名'}
+                  />
+                )}
+              />
+            </div>
+          )}
+        </div>
+        <div className='flex justify-center items-center gap-[20px] mt-[20px]'>
+          {/* 戻るボタン */}
+          <CustomButton
+            buttonType='white-outlined'
+            className='w-[120px] text-small'
+            onClick={() => {
+              router.back();
+            }}
+          >
+            戻る
+          </CustomButton>
+        </div>
+      </main>
     )
   );
 }

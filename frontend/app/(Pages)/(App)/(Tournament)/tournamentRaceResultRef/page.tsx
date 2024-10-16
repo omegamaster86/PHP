@@ -274,381 +274,375 @@ export default function TournamentRaceResultRef() {
   };
 
   return (
-    <div>
-      <main>
-        <div className='flex flex-col pt-[40px] pb-[60px] gap-[50px] md:w-[1000px] sm: w-[600px]'>
-          <CustomTitle displayBack>大会レース結果参照</CustomTitle>
-          <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
-          <div className='bg-primary-900 p-4'>
-            <div className='flex flex-col justify-start gap-[20px]'>
-              {/* 種目名 */}
-              <div className='flex flex-col justify-start'>
-                <Label
-                  label={raceResultRecordsData.at(0)?.event_name ?? ''}
-                  textColor='white'
-                  textSize='h3'
+    <main>
+      <div className='flex flex-col pt-[40px] pb-[60px] gap-[50px] md:w-[1000px] sm: w-[600px]'>
+        <CustomTitle displayBack>大会レース結果参照</CustomTitle>
+        <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
+        <div className='bg-primary-900 p-4'>
+          <div className='flex flex-col justify-start gap-[20px]'>
+            {/* 種目名 */}
+            <div className='flex flex-col justify-start'>
+              <Label
+                label={raceResultRecordsData.at(0)?.event_name ?? ''}
+                textColor='white'
+                textSize='h3'
+              />
+            </div>
+            <div className='flex flex-row gap-[10px]'>
+              <div className='flex flex-col justify-start gap-[10px]'>
+                <Label label='大会名' textColor='gray' textSize='caption1' />
+                <div className='flex flex-col justify-start'>
+                  <Label label='開催場所' textColor='gray' textSize='caption1' />
+                  <Label label='距離' textColor='gray' textSize='caption1' />
+                </div>
+              </div>
+              {raceResultRecordsData.length > 0 && (
+                <div className='flex flex-col justify-start gap-[10px]'>
+                  {/* 大会名 */}
+                  <Link
+                    href={`/tournamentRef?tournId=${raceResultRecordsData.at(0)?.tourn_id}`}
+                    rel='noopener noreferrer'
+                    target='_blank'
+                    className='text-primary-300 underline hover:text-primary-50 cursor-pointer text-caption1'
+                  >
+                    {raceResultRecordsData.at(0)?.tourn_name as string}
+                  </Link>
+                  <div className='flex flex-col justify-start'>
+                    {/* 開催場所 */}
+                    <Label
+                      label={raceResultRecordsData.at(0)?.venue_name as string}
+                      textColor='white'
+                      textSize='caption1'
+                    />
+                    {/* 距離 */}
+                    <Label
+                      label={(raceResultRecordsData.at(0)?.range?.toString() + 'm') as string}
+                      textColor='white'
+                      textSize='caption1'
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        {/* 選手情報表示 */}
+        <div className='text-lg mb-4'>
+          {/* 出漕結果情報一覧テーブル表示 */}
+          <div className='overflow-y-auto'>
+            <CustomTable>
+              {/* テーブルヘッダー */}
+              <CustomThead>
+                <CustomTr>
+                  {headerArray.map((header, index) =>
+                    header === 'レース名' ? (
+                      <CustomTh align='center' key={index}>
+                        <div className='flex flex-row items-center gap-[10px]'>
+                          {header}
+                          {/* 残件対応項目 */}
+                          <div onClick={(event) => handleRaceNameHeaderClick(header, event as any)}>
+                            <FilterListIcon />
+                          </div>
+                        </div>
+                      </CustomTh>
+                    ) : header === '組別' ? (
+                      <CustomTh align='center' key={index}>
+                        <div className='flex flex-row items-center gap-[10px]'>
+                          {header}
+                          {/* 残件対応項目 */}
+                          <div onClick={(event) => handleByGroupHeaderClick(header, event as any)}>
+                            <FilterListIcon />
+                          </div>
+                        </div>
+                      </CustomTh>
+                    ) : (
+                      <CustomTh align='center' key={index}>
+                        {header}
+                      </CustomTh>
+                    ),
+                  )}
+                </CustomTr>
+              </CustomThead>
+              {/* テーブルボディー */}
+              <CustomTbody>
+                {raceResultRecordsData
+                  .filter((row, index) => {
+                    if (selectedRaceNameList.length === 0 && selectedByGroupList.length === 0) {
+                      return true;
+                    } else if (
+                      selectedRaceNameList.length > 0 &&
+                      selectedByGroupList.length === 0
+                    ) {
+                      return selectedRaceNameList.some((item) => item.name === row.race_name);
+                    } else if (
+                      selectedRaceNameList.length === 0 &&
+                      selectedByGroupList.length > 0
+                    ) {
+                      return selectedByGroupList.some((item) => item.name === row.by_group);
+                    } else {
+                      return (
+                        selectedRaceNameList.some((item) => item.name === row.race_name) &&
+                        selectedByGroupList.some((item) => item.name === row.by_group)
+                      );
+                    }
+                  })
+                  .sort((a, b) => a.order - b.order)
+                  .map((row, index) => (
+                    <CustomTr key={index}>
+                      {/* レース名 */}
+                      <CustomTd>{row.race_name}</CustomTd>
+                      {/* レースNo. */}
+                      <CustomTd>{row.race_number}</CustomTd>
+                      {/* 組別 */}
+                      <CustomTd>{row.by_group}</CustomTd>
+                      {/* 発艇日時 「YYYY-MM-DD hh:mm」表記で表示 */}
+                      <CustomTd>{row.start_datetime.substring(0, 16)}</CustomTd>
+                      {/* 順位 */}
+                      <CustomTd>{row.rank}</CustomTd>
+                      {/* クルー名 */}
+                      <CustomTd>
+                        <div
+                          onClick={(event) => {
+                            //console.log(index);
+                            //console.log(row);
+                            //console.log(event.currentTarget.innerText);
+                            setOpen(true);
+                            getCrew(row);
+                          }}
+                          className='text-primary-300 underline hover:text-primary-50 cursor-pointer text-caption1'
+                        >
+                          {row.crew_name}
+                        </div>
+                      </CustomTd>
+                      {/* 500mlapタイム */}
+                      <CustomTd>{row.laptime_500m}</CustomTd>
+                      {/* 1000mlapタイム */}
+                      <CustomTd>{row.laptime_1000m}</CustomTd>
+                      {/* 1500mlapタイム */}
+                      <CustomTd>{row.laptime_1500m}</CustomTd>
+                      {/* 2000mlapタイム */}
+                      <CustomTd>{row.laptime_2000m}</CustomTd>
+                      {/* 最終タイム */}
+                      <CustomTd>{row.final_time}</CustomTd>
+                      {/* B.No */}
+                      {/* <CustomTd>{row.bNo}</CustomTd> */}
+                      {/* 備考 */}
+                      <CustomTd>{row.race_result_notes}</CustomTd>
+                      {/* ストローク（平均） */}
+                      <CustomTd>{row.stroke_rate_avg}</CustomTd>
+                      {/* 500mlapストローク */}
+                      <CustomTd>{row.stroke_rat_500m}</CustomTd>
+                      {/* 1000mlapストローク */}
+                      <CustomTd>{row.stroke_rat_1000m}</CustomTd>
+                      {/* 1500mlapストローク */}
+                      <CustomTd>{row.stroke_rat_1500m}</CustomTd>
+                      {/* 2000mlapストローク */}
+                      <CustomTd>{row.stroke_rat_2000m}</CustomTd>
+                      {/* 心拍数/分（平均） */}
+                      {/* <CustomTd>{row.heart_rate_avg}</CustomTd> */}
+                      {/* 500m心拍数/分 */}
+                      {/* <CustomTd>{row.heart_rate_500m}</CustomTd> */}
+                      {/* 1000m心拍数/分 */}
+                      {/* <CustomTd>{row.heart_rate_1000m}</CustomTd> */}
+                      {/* 1500m心拍数/分 */}
+                      {/* <CustomTd>{row.heart_rate_1500m}</CustomTd> */}
+                      {/* 2000m心拍数/分 */}
+                      {/* <CustomTd>{row.heart_rate_2000m}</CustomTd> */}
+                      {/* 非公式／公式 */}
+                      <CustomTd>{row.official === 0 ? '非公式' : '公式'}</CustomTd>
+                      {/* 立ち合い有無 */}
+                      {/* <CustomTd>{row.attendance}</CustomTd> */}
+                      {/* エルゴ体重 */}
+                      {/* <CustomTd>{row.ergo_weight}</CustomTd> */}
+                      {/* 選手身長 */}
+                      {/* <CustomTd>{row.player_height}</CustomTd> */}
+                      {/* 選手体重 */}
+                      {/* <CustomTd>{row.player_weight}</CustomTd> */}
+                      {/* シート番号ID */}
+                      {/* <CustomTd>{row.seat_number}</CustomTd> */}
+                      {/* シート番号 */}
+                      {/* <CustomTd>{row.seat_name}</CustomTd> */}
+                      {/* 出漕結果記録名 */}
+                      {/* <CustomTd>{row.race_result_record_name}</CustomTd> */}
+                      {/* 2000m地点風速 */}
+                      <CustomTd>{row.wind_speed_2000m_point}</CustomTd>
+                      {/* 2000m地点風向 */}
+                      <CustomTd>{row.wind_direction_2000m_point}</CustomTd>
+                      {/* 1000m地点風速 */}
+                      <CustomTd>{row.wind_speed_1000m_point}</CustomTd>
+                      {/* 1000m地点風向 */}
+                      <CustomTd>{row.wind_direction_1000m_point}</CustomTd>
+                    </CustomTr>
+                  ))}
+              </CustomTbody>
+            </CustomTable>
+            {/* レース名フィルター用のオートコンプリート */}
+            {showRaceNameAutocomplete && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: `${selectedRaceNameHeader.position.top - 120}px`,
+                  left: `${selectedRaceNameHeader.position.left}px`,
+                  backgroundColor: 'white',
+                  borderRadius: '4px',
+                  zIndex: 1000,
+                  padding: '8px',
+                }}
+              >
+                <Autocomplete
+                  id='raceName'
+                  multiple
+                  options={raceNameList}
+                  filterOptions={(options, { inputValue }) =>
+                    options.filter((option) => option.name.includes(inputValue))
+                  }
+                  value={selectedRaceNameList || []}
+                  onChange={(e: ChangeEvent<{}>, newValue: RaceNameList[]) => {
+                    //console.log(newValue);
+                    setSelectedRaceNameList(newValue);
+                  }}
+                  renderOption={(props: any, option: RaceNameList) => {
+                    return (
+                      <li {...props} key={option.id}>
+                        {option.name}
+                      </li>
+                    );
+                  }}
+                  renderTags={(value: RaceNameList[], getTagProps: any) => {
+                    return value.map((option, index) => (
+                      <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                    ));
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      key={params.id}
+                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                      {...params}
+                      label={'レース名'}
+                    />
+                  )}
+                  className='w-[280px] m-auto'
                 />
               </div>
-              <div className='flex flex-row gap-[10px]'>
-                <div className='flex flex-col justify-start gap-[10px]'>
-                  <Label label='大会名' textColor='gray' textSize='caption1' />
-                  <div className='flex flex-col justify-start'>
-                    <Label label='開催場所' textColor='gray' textSize='caption1' />
-                    <Label label='距離' textColor='gray' textSize='caption1' />
-                  </div>
-                </div>
-                {raceResultRecordsData.length > 0 && (
-                  <div className='flex flex-col justify-start gap-[10px]'>
-                    {/* 大会名 */}
-                    <Link
-                      href={`/tournamentRef?tournId=${raceResultRecordsData.at(0)?.tourn_id}`}
-                      rel='noopener noreferrer'
-                      target='_blank'
-                      className='text-primary-300 underline hover:text-primary-50 cursor-pointer text-caption1'
-                    >
-                      {raceResultRecordsData.at(0)?.tourn_name as string}
-                    </Link>
-                    <div className='flex flex-col justify-start'>
-                      {/* 開催場所 */}
-                      <Label
-                        label={raceResultRecordsData.at(0)?.venue_name as string}
-                        textColor='white'
-                        textSize='caption1'
-                      />
-                      {/* 距離 */}
-                      <Label
-                        label={(raceResultRecordsData.at(0)?.range?.toString() + 'm') as string}
-                        textColor='white'
-                        textSize='caption1'
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-          {/* 選手情報表示 */}
-          <div className='text-lg mb-4'>
-            {/* 出漕結果情報一覧テーブル表示 */}
-            <div className='overflow-y-auto'>
-              <CustomTable>
-                {/* テーブルヘッダー */}
-                <CustomThead>
-                  <CustomTr>
-                    {headerArray.map((header, index) =>
-                      header === 'レース名' ? (
-                        <CustomTh align='center' key={index}>
-                          <div className='flex flex-row items-center gap-[10px]'>
-                            {header}
-                            {/* 残件対応項目 */}
-                            <div
-                              onClick={(event) => handleRaceNameHeaderClick(header, event as any)}
-                            >
-                              <FilterListIcon />
-                            </div>
-                          </div>
-                        </CustomTh>
-                      ) : header === '組別' ? (
-                        <CustomTh align='center' key={index}>
-                          <div className='flex flex-row items-center gap-[10px]'>
-                            {header}
-                            {/* 残件対応項目 */}
-                            <div
-                              onClick={(event) => handleByGroupHeaderClick(header, event as any)}
-                            >
-                              <FilterListIcon />
-                            </div>
-                          </div>
-                        </CustomTh>
-                      ) : (
-                        <CustomTh align='center' key={index}>
-                          {header}
-                        </CustomTh>
-                      ),
-                    )}
-                  </CustomTr>
-                </CustomThead>
-                {/* テーブルボディー */}
-                <CustomTbody>
-                  {raceResultRecordsData
-                    .filter((row, index) => {
-                      if (selectedRaceNameList.length === 0 && selectedByGroupList.length === 0) {
-                        return true;
-                      } else if (
-                        selectedRaceNameList.length > 0 &&
-                        selectedByGroupList.length === 0
-                      ) {
-                        return selectedRaceNameList.some((item) => item.name === row.race_name);
-                      } else if (
-                        selectedRaceNameList.length === 0 &&
-                        selectedByGroupList.length > 0
-                      ) {
-                        return selectedByGroupList.some((item) => item.name === row.by_group);
-                      } else {
-                        return (
-                          selectedRaceNameList.some((item) => item.name === row.race_name) &&
-                          selectedByGroupList.some((item) => item.name === row.by_group)
-                        );
-                      }
-                    })
-                    .sort((a, b) => a.order - b.order)
-                    .map((row, index) => (
-                      <CustomTr key={index}>
-                        {/* レース名 */}
-                        <CustomTd>{row.race_name}</CustomTd>
-                        {/* レースNo. */}
-                        <CustomTd>{row.race_number}</CustomTd>
-                        {/* 組別 */}
-                        <CustomTd>{row.by_group}</CustomTd>
-                        {/* 発艇日時 「YYYY-MM-DD hh:mm」表記で表示 */}
-                        <CustomTd>{row.start_datetime.substring(0, 16)}</CustomTd>
-                        {/* 順位 */}
-                        <CustomTd>{row.rank}</CustomTd>
-                        {/* クルー名 */}
-                        <CustomTd>
-                          <div
-                            onClick={(event) => {
-                              //console.log(index);
-                              //console.log(row);
-                              //console.log(event.currentTarget.innerText);
-                              setOpen(true);
-                              getCrew(row);
-                            }}
-                            className='text-primary-300 underline hover:text-primary-50 cursor-pointer text-caption1'
-                          >
-                            {row.crew_name}
-                          </div>
-                        </CustomTd>
-                        {/* 500mlapタイム */}
-                        <CustomTd>{row.laptime_500m}</CustomTd>
-                        {/* 1000mlapタイム */}
-                        <CustomTd>{row.laptime_1000m}</CustomTd>
-                        {/* 1500mlapタイム */}
-                        <CustomTd>{row.laptime_1500m}</CustomTd>
-                        {/* 2000mlapタイム */}
-                        <CustomTd>{row.laptime_2000m}</CustomTd>
-                        {/* 最終タイム */}
-                        <CustomTd>{row.final_time}</CustomTd>
-                        {/* B.No */}
-                        {/* <CustomTd>{row.bNo}</CustomTd> */}
-                        {/* 備考 */}
-                        <CustomTd>{row.race_result_notes}</CustomTd>
-                        {/* ストローク（平均） */}
-                        <CustomTd>{row.stroke_rate_avg}</CustomTd>
-                        {/* 500mlapストローク */}
-                        <CustomTd>{row.stroke_rat_500m}</CustomTd>
-                        {/* 1000mlapストローク */}
-                        <CustomTd>{row.stroke_rat_1000m}</CustomTd>
-                        {/* 1500mlapストローク */}
-                        <CustomTd>{row.stroke_rat_1500m}</CustomTd>
-                        {/* 2000mlapストローク */}
-                        <CustomTd>{row.stroke_rat_2000m}</CustomTd>
-                        {/* 心拍数/分（平均） */}
-                        {/* <CustomTd>{row.heart_rate_avg}</CustomTd> */}
-                        {/* 500m心拍数/分 */}
-                        {/* <CustomTd>{row.heart_rate_500m}</CustomTd> */}
-                        {/* 1000m心拍数/分 */}
-                        {/* <CustomTd>{row.heart_rate_1000m}</CustomTd> */}
-                        {/* 1500m心拍数/分 */}
-                        {/* <CustomTd>{row.heart_rate_1500m}</CustomTd> */}
-                        {/* 2000m心拍数/分 */}
-                        {/* <CustomTd>{row.heart_rate_2000m}</CustomTd> */}
-                        {/* 非公式／公式 */}
-                        <CustomTd>{row.official === 0 ? '非公式' : '公式'}</CustomTd>
-                        {/* 立ち合い有無 */}
-                        {/* <CustomTd>{row.attendance}</CustomTd> */}
-                        {/* エルゴ体重 */}
-                        {/* <CustomTd>{row.ergo_weight}</CustomTd> */}
-                        {/* 選手身長 */}
-                        {/* <CustomTd>{row.player_height}</CustomTd> */}
-                        {/* 選手体重 */}
-                        {/* <CustomTd>{row.player_weight}</CustomTd> */}
-                        {/* シート番号ID */}
-                        {/* <CustomTd>{row.seat_number}</CustomTd> */}
-                        {/* シート番号 */}
-                        {/* <CustomTd>{row.seat_name}</CustomTd> */}
-                        {/* 出漕結果記録名 */}
-                        {/* <CustomTd>{row.race_result_record_name}</CustomTd> */}
-                        {/* 2000m地点風速 */}
-                        <CustomTd>{row.wind_speed_2000m_point}</CustomTd>
-                        {/* 2000m地点風向 */}
-                        <CustomTd>{row.wind_direction_2000m_point}</CustomTd>
-                        {/* 1000m地点風速 */}
-                        <CustomTd>{row.wind_speed_1000m_point}</CustomTd>
-                        {/* 1000m地点風向 */}
-                        <CustomTd>{row.wind_direction_1000m_point}</CustomTd>
-                      </CustomTr>
-                    ))}
-                </CustomTbody>
-              </CustomTable>
-              {/* レース名フィルター用のオートコンプリート */}
-              {showRaceNameAutocomplete && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: `${selectedRaceNameHeader.position.top - 120}px`,
-                    left: `${selectedRaceNameHeader.position.left}px`,
-                    backgroundColor: 'white',
-                    borderRadius: '4px',
-                    zIndex: 1000,
-                    padding: '8px',
-                  }}
-                >
-                  <Autocomplete
-                    id='raceName'
-                    multiple
-                    options={raceNameList}
-                    filterOptions={(options, { inputValue }) =>
-                      options.filter((option) => option.name.includes(inputValue))
-                    }
-                    value={selectedRaceNameList || []}
-                    onChange={(e: ChangeEvent<{}>, newValue: RaceNameList[]) => {
-                      //console.log(newValue);
-                      setSelectedRaceNameList(newValue);
-                    }}
-                    renderOption={(props: any, option: RaceNameList) => {
-                      return (
-                        <li {...props} key={option.id}>
-                          {option.name}
-                        </li>
-                      );
-                    }}
-                    renderTags={(value: RaceNameList[], getTagProps: any) => {
-                      return value.map((option, index) => (
-                        <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
-                      ));
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        key={params.id}
-                        className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                        {...params}
-                        label={'レース名'}
-                      />
-                    )}
-                    className='w-[280px] m-auto'
-                  />
-                </div>
-              )}
-              {/* 組別フィルター用のオートコンプリート */}
-              {showByGroupAutocomplete && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: `${selectedByGroupHeader.position.top - 120}px`,
-                    left: `${selectedByGroupHeader.position.left}px`,
-                    backgroundColor: 'white',
-                    borderRadius: '4px',
-                    zIndex: 1000,
-                    padding: '8px',
-                  }}
-                >
-                  <Autocomplete
-                    id='byGroup'
-                    multiple
-                    options={byGroupList}
-                    filterOptions={(options, { inputValue }) =>
-                      options.filter((option) => option.name.includes(inputValue))
-                    }
-                    value={selectedByGroupList || []}
-                    onChange={(e: ChangeEvent<{}>, newValue: ByGroupList[]) => {
-                      //console.log(newValue);
-                      setSelectedByGroupList(newValue);
-                    }}
-                    renderOption={(props: any, option: ByGroupList) => {
-                      return (
-                        <li {...props} key={option.id}>
-                          {option.name}
-                        </li>
-                      );
-                    }}
-                    renderTags={(value: ByGroupList[], getTagProps: any) => {
-                      return value.map((option, index) => (
-                        <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
-                      ));
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        key={params.id}
-                        className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                        {...params}
-                        label={'組別'}
-                      />
-                    )}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-          {/* 戻るボタン */}
-          <CustomButton
-            buttonType='primary-outlined'
-            className='w-[280px] m-auto'
-            onClick={() => {
-              router.back();
-            }}
-          >
-            戻る
-          </CustomButton>
-        </div>
-        <Fragment>
-          <Dialog
-            fullWidth={true}
-            maxWidth={'lg'}
-            open={open}
-            onClose={handleClose}
-            aria-labelledby='alert-dialog-title'
-            aria-describedby='alert-dialog-description'
-            className='flex flex-col justify-center w-full gap-[20px]'
-          >
-            <DialogTitle id='alert-dialog-title' className='font-bold'>
-              クルー名： {currentCrewName}
-            </DialogTitle>
-            <DialogContent dividers>
-              <CustomTable>
-                <CustomThead>
-                  <CustomTr>
-                    <CustomTh>シート</CustomTh>
-                    <CustomTh>氏名</CustomTh>
-                    <CustomTh>身長（cm）</CustomTh>
-                    <CustomTh>体重（kg）</CustomTh>
-                  </CustomTr>
-                </CustomThead>
-                <CustomTbody>
-                  {crewRecordsData
-                    .sort((a, b) => a.order - b.order)
-                    .map((row, index) => (
-                      <CustomTr key={index}>
-                        <CustomTd>{row.seat_name}</CustomTd>
-                        <CustomTd>
-                          <Link
-                            href={`/playerInformationRef?playerId=${row.player_id}`}
-                            rel='noopener noreferrer'
-                            target='_blank'
-                            className='text-primary-300 underline hover:text-primary-50 cursor-pointer text-caption1'
-                          >
-                            {row.player_name}
-                          </Link>
-                        </CustomTd>
-                        <CustomTd>{row.player_height}</CustomTd>
-                        <CustomTd>{row.player_weight}</CustomTd>
-                      </CustomTr>
-                    ))}
-                </CustomTbody>
-              </CustomTable>
-            </DialogContent>
-            <DialogActions className='mt-[20px]'>
-              <CustomButton
-                onClick={handleClose}
-                buttonType='primary-outlined'
-                className='w-[280px] m-auto'
+            )}
+            {/* 組別フィルター用のオートコンプリート */}
+            {showByGroupAutocomplete && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: `${selectedByGroupHeader.position.top - 120}px`,
+                  left: `${selectedByGroupHeader.position.left}px`,
+                  backgroundColor: 'white',
+                  borderRadius: '4px',
+                  zIndex: 1000,
+                  padding: '8px',
+                }}
               >
-                閉じる
-              </CustomButton>
-            </DialogActions>
-          </Dialog>
-        </Fragment>
-      </main>
-    </div>
+                <Autocomplete
+                  id='byGroup'
+                  multiple
+                  options={byGroupList}
+                  filterOptions={(options, { inputValue }) =>
+                    options.filter((option) => option.name.includes(inputValue))
+                  }
+                  value={selectedByGroupList || []}
+                  onChange={(e: ChangeEvent<{}>, newValue: ByGroupList[]) => {
+                    //console.log(newValue);
+                    setSelectedByGroupList(newValue);
+                  }}
+                  renderOption={(props: any, option: ByGroupList) => {
+                    return (
+                      <li {...props} key={option.id}>
+                        {option.name}
+                      </li>
+                    );
+                  }}
+                  renderTags={(value: ByGroupList[], getTagProps: any) => {
+                    return value.map((option, index) => (
+                      <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                    ));
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      key={params.id}
+                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                      {...params}
+                      label={'組別'}
+                    />
+                  )}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+        {/* 戻るボタン */}
+        <CustomButton
+          buttonType='primary-outlined'
+          className='w-[280px] m-auto'
+          onClick={() => {
+            router.back();
+          }}
+        >
+          戻る
+        </CustomButton>
+      </div>
+      <Fragment>
+        <Dialog
+          fullWidth={true}
+          maxWidth={'lg'}
+          open={open}
+          onClose={handleClose}
+          aria-labelledby='alert-dialog-title'
+          aria-describedby='alert-dialog-description'
+          className='flex flex-col justify-center w-full gap-[20px]'
+        >
+          <DialogTitle id='alert-dialog-title' className='font-bold'>
+            クルー名： {currentCrewName}
+          </DialogTitle>
+          <DialogContent dividers>
+            <CustomTable>
+              <CustomThead>
+                <CustomTr>
+                  <CustomTh>シート</CustomTh>
+                  <CustomTh>氏名</CustomTh>
+                  <CustomTh>身長（cm）</CustomTh>
+                  <CustomTh>体重（kg）</CustomTh>
+                </CustomTr>
+              </CustomThead>
+              <CustomTbody>
+                {crewRecordsData
+                  .sort((a, b) => a.order - b.order)
+                  .map((row, index) => (
+                    <CustomTr key={index}>
+                      <CustomTd>{row.seat_name}</CustomTd>
+                      <CustomTd>
+                        <Link
+                          href={`/playerInformationRef?playerId=${row.player_id}`}
+                          rel='noopener noreferrer'
+                          target='_blank'
+                          className='text-primary-300 underline hover:text-primary-50 cursor-pointer text-caption1'
+                        >
+                          {row.player_name}
+                        </Link>
+                      </CustomTd>
+                      <CustomTd>{row.player_height}</CustomTd>
+                      <CustomTd>{row.player_weight}</CustomTd>
+                    </CustomTr>
+                  ))}
+              </CustomTbody>
+            </CustomTable>
+          </DialogContent>
+          <DialogActions className='mt-[20px]'>
+            <CustomButton
+              onClick={handleClose}
+              buttonType='primary-outlined'
+              className='w-[280px] m-auto'
+            >
+              閉じる
+            </CustomButton>
+          </DialogActions>
+        </Dialog>
+      </Fragment>
+    </main>
   );
 }

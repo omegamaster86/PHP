@@ -714,119 +714,118 @@ export default function PlayerInformation() {
   };
 
   return (
-    <div>
-      <main className='flex min-h-screen flex-col justify-start px-2 m-auto gap-[20px] my-[80px]'>
-        <div className='relative flex flex-row justify-between w-full h-screen flex-wrap'>
-          {/* 画面名*/}
-          <CustomTitle displayBack>
-            選手情報{mode === 'create' ? '登録' : mode === 'update' ? '更新' : '入力確認'}
-          </CustomTitle>
-        </div>
-        {/* エラーメッセージの表示 */}
-        <ErrorBox errorText={errorMessage} />
-        <div className='flex flex-col justify-start'>
-          {/* TODO: tooltipの表示内容は仕様が決まり次第置き換える */}
-          {/* 写真 */}
-          <InputLabel
-            label='写真'
-            displayHelp={mode !== 'confirm'}
-            // toolTipTitle='写真' //はてなボタン用
-            toolTipText={`<span style="display: block;">登録可能な画像ファイルの種類は以下になります。</span>
+    <main className='flex min-h-screen flex-col justify-start px-2 m-auto gap-[20px] my-[80px]'>
+      <div className='relative flex flex-row justify-between w-full h-screen flex-wrap'>
+        {/* 画面名*/}
+        <CustomTitle displayBack>
+          選手情報{mode === 'create' ? '登録' : mode === 'update' ? '更新' : '入力確認'}
+        </CustomTitle>
+      </div>
+      {/* エラーメッセージの表示 */}
+      <ErrorBox errorText={errorMessage} />
+      <div className='flex flex-col justify-start'>
+        {/* TODO: tooltipの表示内容は仕様が決まり次第置き換える */}
+        {/* 写真 */}
+        <InputLabel
+          label='写真'
+          displayHelp={mode !== 'confirm'}
+          // toolTipTitle='写真' //はてなボタン用
+          toolTipText={`<span style="display: block;">登録可能な画像ファイルの種類は以下になります。</span>
             <span style="display: block;">jpg</span>
             <span style="display: block;">jpeg</span>
             <span style="display: block;">png</span>`}
-          />
-          <div className='flex flex-row justify-start gap-[4px]'>
-            {mode !== 'confirm' && (
-              <div>
-                <ImageUploader
-                  currentShowFile={currentShowFile}
-                  setCurrentShowFile={setCurrentShowFile}
-                  setFormData={setFormData}
-                  initialPhotoUrl={formData?.photo ? `${PLAYER_IMAGE_URL}${formData.photo}` : ''}
-                />
-                {/* 写真削除ボタン */}
-                <CustomButton
-                  buttonType='white-outlined'
-                  className='secondary mt-[20px] rounded border-[1px] border-solid border-borde text-primaryText h-12 w-[150px]'
-                  onClick={() => {
-                    // TODO: アップロードされた写真を削除する処理に置き換える
-                    setFormData((prevFormData) => ({
-                      ...prevFormData,
-                      uploadedPhotoName: '',
-                      uploadedPhoto: undefined,
-                      photo: '',
-                    }));
-                    setCurrentShowFile(undefined);
-                  }}
-                >
-                  <DeleteOutlinedIcon className='mr-[5px] text-[20px]' />
-                  写真削除
-                </CustomButton>
-              </div>
-            )}
-            {mode === 'confirm' && (
-              <div className='relative'>
-                {/* 写真 */}
-                <img
-                  className='object-cover w-[320px] h-[320px] rounded-[2px]'
-                  src={
-                    currentShowFile?.preview ??
-                    (formData.photo ? `${PLAYER_IMAGE_URL}${formData.photo}` : `${NO_IMAGE_URL}`)
-                  }
-                  alt='Profile Photo'
-                  // Revoke data uri after image is loaded
-                  // onLoad={() => {
-                  //   //console.log(currentShowFile);
-                  // }}
-                />
-              </div>
-            )}
-          </div>
+        />
+        <div className='flex flex-row justify-start gap-[4px]'>
+          {mode !== 'confirm' && (
+            <div>
+              <ImageUploader
+                currentShowFile={currentShowFile}
+                setCurrentShowFile={setCurrentShowFile}
+                setFormData={setFormData}
+                initialPhotoUrl={formData?.photo ? `${PLAYER_IMAGE_URL}${formData.photo}` : ''}
+              />
+              {/* 写真削除ボタン */}
+              <CustomButton
+                buttonType='white-outlined'
+                className='secondary mt-[20px] rounded border-[1px] border-solid border-borde text-primaryText h-12 w-[150px]'
+                onClick={() => {
+                  // TODO: アップロードされた写真を削除する処理に置き換える
+                  setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    uploadedPhotoName: '',
+                    uploadedPhoto: undefined,
+                    photo: '',
+                  }));
+                  setCurrentShowFile(undefined);
+                }}
+              >
+                <DeleteOutlinedIcon className='mr-[5px] text-[20px]' />
+                写真削除
+              </CustomButton>
+            </div>
+          )}
+          {mode === 'confirm' && (
+            <div className='relative'>
+              {/* 写真 */}
+              <img
+                className='object-cover w-[320px] h-[320px] rounded-[2px]'
+                src={
+                  currentShowFile?.preview ??
+                  (formData.photo ? `${PLAYER_IMAGE_URL}${formData.photo}` : `${NO_IMAGE_URL}`)
+                }
+                alt='Profile Photo'
+                // Revoke data uri after image is loaded
+                // onLoad={() => {
+                //   //console.log(currentShowFile);
+                // }}
+              />
+            </div>
+          )}
         </div>
-        {/* 選手ID */}
+      </div>
+      {/* 選手ID */}
 
-        {(mode === 'update' || prevMode === 'update') && (
-          <CustomTextField
-            label='選手ID'
-            isError={false}
-            // errorMessages={[]}
-            // required={mode !== 'confirm'}
-            displayHelp={false}
-            readonly
-            value={formData.player_id?.toString()}
-            onChange={(e) => handleInputChange('player_id', e.target.value)}
-          />
-        )}
-        <div className='flex flex-col justify-start'>
-          {/* JARA選手コード */}
-          <CustomTextField
-            label='JARA選手コード'
-            // required={mode !== 'confirm'}
-            displayHelp={mode !== 'confirm'}
-            isError={jaraPlayerCodeErrorMessage.length > 0}
-            placeHolder='123456789012'
-            readonly={mode === 'confirm'}
-            errorMessages={jaraPlayerCodeErrorMessage}
-            value={formData.jara_player_id?.toString()}
-            onChange={(e) => handleInputChange('jara_player_id', e.target.value)}
-            toolTipText='日本ローイング協会より発行された、12桁の選手コードを入力してください。' //はてなボタン用
-            maxLength={12}
-          />
-        </div>
-        <div className='flex flex-col justify-start'>
-          {/* 選手名 */}
-          <CustomTextField
-            label='選手名'
-            isError={playerNameErrorMessage.length > 0}
-            required={mode !== 'confirm'}
-            displayHelp={mode !== 'confirm'}
-            errorMessages={playerNameErrorMessage}
-            placeHolder='山田 太郎'
-            readonly={mode === 'confirm'}
-            value={formData.player_name}
-            onChange={(e) => handleInputChange('player_name', e.target.value)}
-            toolTipText={`<span style="display: block;">文字制限</span>
+      {(mode === 'update' || prevMode === 'update') && (
+        <CustomTextField
+          label='選手ID'
+          isError={false}
+          // errorMessages={[]}
+          // required={mode !== 'confirm'}
+          displayHelp={false}
+          readonly
+          value={formData.player_id?.toString()}
+          onChange={(e) => handleInputChange('player_id', e.target.value)}
+        />
+      )}
+      <div className='flex flex-col justify-start'>
+        {/* JARA選手コード */}
+        <CustomTextField
+          label='JARA選手コード'
+          // required={mode !== 'confirm'}
+          displayHelp={mode !== 'confirm'}
+          isError={jaraPlayerCodeErrorMessage.length > 0}
+          placeHolder='123456789012'
+          readonly={mode === 'confirm'}
+          errorMessages={jaraPlayerCodeErrorMessage}
+          value={formData.jara_player_id?.toString()}
+          onChange={(e) => handleInputChange('jara_player_id', e.target.value)}
+          toolTipText='日本ローイング協会より発行された、12桁の選手コードを入力してください。' //はてなボタン用
+          maxLength={12}
+        />
+      </div>
+      <div className='flex flex-col justify-start'>
+        {/* 選手名 */}
+        <CustomTextField
+          label='選手名'
+          isError={playerNameErrorMessage.length > 0}
+          required={mode !== 'confirm'}
+          displayHelp={mode !== 'confirm'}
+          errorMessages={playerNameErrorMessage}
+          placeHolder='山田 太郎'
+          readonly={mode === 'confirm'}
+          value={formData.player_name}
+          onChange={(e) => handleInputChange('player_name', e.target.value)}
+          toolTipText={`<span style="display: block;">文字制限</span>
             <span style="display: block;">最大文字数：32文字（全半角区別なし）</span>
             <span style="display: block;">利用可能文字：</span>
             <span style="display: block;">日本語</span>
@@ -834,304 +833,303 @@ export default function PlayerInformation() {
             <span style="display: block;">英小文字：[a-z]（26 文字）</span>
             <span style="display: block;">数字：[0-9]（10 文字）</span>
             <span style="display: block;">記号：-,_</span>`}
-          />
-        </div>
-        <div className='flex flex-col justify-start'>
-          {/* 生年月日 */}
-          <InputLabel
-            label='生年月日'
-            required={mode !== 'confirm'}
-            displayHelp={mode !== 'confirm'}
-            toolTipText='西暦で入力してください。' //はてなボタン用
-          />
-          <CustomDatePicker
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              handleInputChange('date_of_birth', formatDate(e as unknown as Date));
-            }}
+        />
+      </div>
+      <div className='flex flex-col justify-start'>
+        {/* 生年月日 */}
+        <InputLabel
+          label='生年月日'
+          required={mode !== 'confirm'}
+          displayHelp={mode !== 'confirm'}
+          toolTipText='西暦で入力してください。' //はてなボタン用
+        />
+        <CustomDatePicker
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            handleInputChange('date_of_birth', formatDate(e as unknown as Date));
+          }}
+          readonly={mode === 'confirm'}
+          selectedDate={formData.date_of_birth}
+          maxDate={new Date()}
+          isError={dateOfBirthErrorMessage.length > 0}
+          errorMessages={dateOfBirthErrorMessage}
+        />
+      </div>
+      <div className='flex flex-col justify-start'>
+        {/* 性別 */}
+        <CustomDropdown
+          id='sex'
+          label='性別'
+          required={mode !== 'confirm'}
+          displayHelp={mode !== 'confirm'}
+          toolTipText='大会に登録する性別を選んでください。'
+          readonly={mode === 'confirm'}
+          options={sex.map((item) => ({ key: item.id, value: item.name }))}
+          value={mode !== 'confirm' ? formData.sex_id?.toString() || '' : formData.sexName}
+          errorMessages={sexErrorMessage}
+          isError={sexErrorMessage.length > 0}
+          placeHolder='未選択'
+          onChange={(e) => {
+            handleInputChange('sex_id', e);
+            handleInputChange('sexName', sex.find((item) => item.id === Number(e))?.name || '');
+          }}
+          className='rounded w-[300px] '
+        />
+      </div>
+      <div className='flex flex-col justify-start'>
+        {/* 身長 */}
+        <CustomTextField
+          label='身長'
+          readonly={mode === 'confirm'}
+          required={mode !== 'confirm'}
+          displayHelp={mode !== 'confirm'}
+          isError={heightErrorMessage.length > 0}
+          errorMessages={heightErrorMessage}
+          type='number'
+          isDecimal={true}
+          placeHolder='180.00'
+          inputAdorment='cm'
+          value={formData.height?.toString()}
+          onChange={(e) => handleInputChange('height', e.target.value)}
+          toolTipText='現在の身長を半角数字で入力してください。' //はてなボタン用
+        />
+      </div>
+      <div className='flex flex-col justify-start'>
+        {/* 体重 */}
+        <CustomTextField
+          label='体重'
+          readonly={mode === 'confirm'}
+          isError={weightErrorMessage.length > 0}
+          required={mode !== 'confirm'}
+          displayHelp={mode !== 'confirm'}
+          placeHolder='80.00'
+          errorMessages={weightErrorMessage}
+          type='number'
+          isDecimal={true}
+          inputAdorment='kg'
+          value={formData.weight?.toString()}
+          onChange={(e) => handleInputChange('weight', e.target.value)}
+          toolTipText='現在の体重を半角数字で入力してください。' //はてなボタン用
+        />
+      </div>
+      <div className='flex flex-col justify-start'>
+        {/* サイド情報 */}
+        <InputLabel
+          label='サイド情報'
+          required={mode !== 'confirm'}
+          displayHelp={mode !== 'confirm'}
+          toolTipText='経験のあるサイドを選択してください。' //はてなボタン用
+        />
+        <div className='flex justify-start flex-col gap-[4px] my-1'>
+          <OriginalCheckbox
+            id='checkbox-S'
             readonly={mode === 'confirm'}
-            selectedDate={formData.date_of_birth}
-            maxDate={new Date()}
-            isError={dateOfBirthErrorMessage.length > 0}
-            errorMessages={dateOfBirthErrorMessage}
+            label=': S (ストロークサイド)'
+            value='S'
+            checked={formData.side_info?.at(0) ?? false}
+            onChange={() =>
+              setFormData((prevFormData) => ({
+                ...prevFormData,
+                side_info: [
+                  !prevFormData.side_info[0],
+                  prevFormData.side_info[1],
+                  prevFormData.side_info[2],
+                  prevFormData.side_info[3],
+                ],
+              })) as void
+            }
+          />
+          <OriginalCheckbox
+            id='checkbox-B'
+            readonly={mode === 'confirm'}
+            label=': B (バウサイド)'
+            value='B'
+            checked={formData.side_info?.at(1) as boolean}
+            onChange={() =>
+              setFormData((prevFormData) => ({
+                ...prevFormData,
+                side_info: [
+                  prevFormData.side_info[0],
+                  !prevFormData.side_info[1],
+                  prevFormData.side_info[2],
+                  prevFormData.side_info[3],
+                ],
+              })) as void
+            }
+          />
+          <OriginalCheckbox
+            id='checkbox-X'
+            label=': X (スカル)'
+            value='X'
+            readonly={mode === 'confirm'}
+            checked={formData.side_info?.at(2) as boolean}
+            onChange={() =>
+              setFormData((prevFormData) => ({
+                ...prevFormData,
+                side_info: [
+                  prevFormData.side_info[0],
+                  prevFormData.side_info[1],
+                  !prevFormData.side_info[2],
+                  prevFormData.side_info[3],
+                ],
+              })) as void
+            }
+          />
+          <OriginalCheckbox
+            id='checkbox-C'
+            label=': C (コックス)'
+            readonly={mode === 'confirm'}
+            value='C'
+            checked={formData.side_info?.at(3) as boolean}
+            onChange={() =>
+              setFormData((prevFormData) => ({
+                ...prevFormData,
+                side_info: [
+                  prevFormData.side_info[0],
+                  prevFormData.side_info[1],
+                  prevFormData.side_info[2],
+                  !prevFormData.side_info[3],
+                ],
+              })) as void
+            }
           />
         </div>
+        {/* エラーメッセージ */}
+        <p className='text-caption1 text-systemErrorText'>{sideInfoErrorMessage}</p>
+      </div>
+      <div className='flex flex-row justify-start gap-[100px]'>
         <div className='flex flex-col justify-start'>
-          {/* 性別 */}
+          {/* 出身地（国） */}
           <CustomDropdown
-            id='sex'
-            label='性別'
+            id='birthCountry'
+            label='出身地'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
-            toolTipText='大会に登録する性別を選んでください。'
+            toolTipText='生まれた国を選択してください。
+              日本を選択した場合、都道府県も選択してください。' //はてなボタン用
             readonly={mode === 'confirm'}
-            options={sex.map((item) => ({ key: item.id, value: item.name }))}
-            value={mode !== 'confirm' ? formData.sex_id?.toString() || '' : formData.sexName}
-            errorMessages={sexErrorMessage}
-            isError={sexErrorMessage.length > 0}
+            options={countries.map((item) => ({ key: item.id, value: item.name }))}
+            value={
+              mode !== 'confirm'
+                ? formData.birth_country?.toString() || ''
+                : formData.birthCountryName
+            }
+            errorMessages={birthCountryNameErrorMessage}
             placeHolder='未選択'
             onChange={(e) => {
-              handleInputChange('sex_id', e);
-              handleInputChange('sexName', sex.find((item) => item.id === Number(e))?.name || '');
+              handleInputChange('birth_country', e);
+              handleInputChange(
+                'birthCountryName',
+                countries.find((item) => item.id === Number(e))?.name || '',
+              );
             }}
             className='rounded w-[300px] '
           />
         </div>
-        <div className='flex flex-col justify-start'>
-          {/* 身長 */}
-          <CustomTextField
-            label='身長'
-            readonly={mode === 'confirm'}
-            required={mode !== 'confirm'}
-            displayHelp={mode !== 'confirm'}
-            isError={heightErrorMessage.length > 0}
-            errorMessages={heightErrorMessage}
-            type='number'
-            isDecimal={true}
-            placeHolder='180.00'
-            inputAdorment='cm'
-            value={formData.height?.toString()}
-            onChange={(e) => handleInputChange('height', e.target.value)}
-            toolTipText='現在の身長を半角数字で入力してください。' //はてなボタン用
-          />
-        </div>
-        <div className='flex flex-col justify-start'>
-          {/* 体重 */}
-          <CustomTextField
-            label='体重'
-            readonly={mode === 'confirm'}
-            isError={weightErrorMessage.length > 0}
-            required={mode !== 'confirm'}
-            displayHelp={mode !== 'confirm'}
-            placeHolder='80.00'
-            errorMessages={weightErrorMessage}
-            type='number'
-            isDecimal={true}
-            inputAdorment='kg'
-            value={formData.weight?.toString()}
-            onChange={(e) => handleInputChange('weight', e.target.value)}
-            toolTipText='現在の体重を半角数字で入力してください。' //はてなボタン用
-          />
-        </div>
-        <div className='flex flex-col justify-start'>
-          {/* サイド情報 */}
-          <InputLabel
-            label='サイド情報'
-            required={mode !== 'confirm'}
-            displayHelp={mode !== 'confirm'}
-            toolTipText='経験のあるサイドを選択してください。' //はてなボタン用
-          />
-          <div className='flex justify-start flex-col gap-[4px] my-1'>
-            <OriginalCheckbox
-              id='checkbox-S'
-              readonly={mode === 'confirm'}
-              label=': S (ストロークサイド)'
-              value='S'
-              checked={formData.side_info?.at(0) ?? false}
-              onChange={() =>
-                setFormData((prevFormData) => ({
-                  ...prevFormData,
-                  side_info: [
-                    !prevFormData.side_info[0],
-                    prevFormData.side_info[1],
-                    prevFormData.side_info[2],
-                    prevFormData.side_info[3],
-                  ],
-                })) as void
-              }
-            />
-            <OriginalCheckbox
-              id='checkbox-B'
-              readonly={mode === 'confirm'}
-              label=': B (バウサイド)'
-              value='B'
-              checked={formData.side_info?.at(1) as boolean}
-              onChange={() =>
-                setFormData((prevFormData) => ({
-                  ...prevFormData,
-                  side_info: [
-                    prevFormData.side_info[0],
-                    !prevFormData.side_info[1],
-                    prevFormData.side_info[2],
-                    prevFormData.side_info[3],
-                  ],
-                })) as void
-              }
-            />
-            <OriginalCheckbox
-              id='checkbox-X'
-              label=': X (スカル)'
-              value='X'
-              readonly={mode === 'confirm'}
-              checked={formData.side_info?.at(2) as boolean}
-              onChange={() =>
-                setFormData((prevFormData) => ({
-                  ...prevFormData,
-                  side_info: [
-                    prevFormData.side_info[0],
-                    prevFormData.side_info[1],
-                    !prevFormData.side_info[2],
-                    prevFormData.side_info[3],
-                  ],
-                })) as void
-              }
-            />
-            <OriginalCheckbox
-              id='checkbox-C'
-              label=': C (コックス)'
-              readonly={mode === 'confirm'}
-              value='C'
-              checked={formData.side_info?.at(3) as boolean}
-              onChange={() =>
-                setFormData((prevFormData) => ({
-                  ...prevFormData,
-                  side_info: [
-                    prevFormData.side_info[0],
-                    prevFormData.side_info[1],
-                    prevFormData.side_info[2],
-                    !prevFormData.side_info[3],
-                  ],
-                })) as void
-              }
-            />
-          </div>
-          {/* エラーメッセージ */}
-          <p className='text-caption1 text-systemErrorText'>{sideInfoErrorMessage}</p>
-        </div>
-        <div className='flex flex-row justify-start gap-[100px]'>
+        {/* 国コードが日本の場合のみ、都道府県の入力欄を表示する */}
+        {formData.birth_country == 112 && (
           <div className='flex flex-col justify-start'>
-            {/* 出身地（国） */}
+            {/* 出身地（都道府県） */}
             <CustomDropdown
-              id='birthCountry'
-              label='出身地'
+              id='birthPrefecture'
+              label='都道府県'
               required={mode !== 'confirm'}
               displayHelp={mode !== 'confirm'}
-              toolTipText='生まれた国を選択してください。
-              日本を選択した場合、都道府県も選択してください。' //はてなボタン用
+              toolTipText='生まれた都道府県を選択してください。' //はてなボタン用
+              options={prefectures.map((item) => ({ key: item.id, value: item.name }))}
               readonly={mode === 'confirm'}
-              options={countries.map((item) => ({ key: item.id, value: item.name }))}
               value={
                 mode !== 'confirm'
-                  ? formData.birth_country?.toString() || ''
-                  : formData.birthCountryName
+                  ? formData.birth_prefecture?.toString() || ''
+                  : formData.birthPrefectureName
               }
-              errorMessages={birthCountryNameErrorMessage}
+              errorMessages={birthPlacePrefectureErrorMessage}
               placeHolder='未選択'
               onChange={(e) => {
-                handleInputChange('birth_country', e);
+                handleInputChange('birth_prefecture', e);
                 handleInputChange(
-                  'birthCountryName',
-                  countries.find((item) => item.id === Number(e))?.name || '',
+                  'birthPrefectureName',
+                  prefectures.find((item) => item.id === Number(e))?.name || '',
                 );
               }}
+              //errorMessages={birthPlacePrefectureErrorMessage}
               className='rounded w-[300px] '
             />
           </div>
-          {/* 国コードが日本の場合のみ、都道府県の入力欄を表示する */}
-          {formData.birth_country == 112 && (
-            <div className='flex flex-col justify-start'>
-              {/* 出身地（都道府県） */}
-              <CustomDropdown
-                id='birthPrefecture'
-                label='都道府県'
-                required={mode !== 'confirm'}
-                displayHelp={mode !== 'confirm'}
-                toolTipText='生まれた都道府県を選択してください。' //はてなボタン用
-                options={prefectures.map((item) => ({ key: item.id, value: item.name }))}
-                readonly={mode === 'confirm'}
-                value={
-                  mode !== 'confirm'
-                    ? formData.birth_prefecture?.toString() || ''
-                    : formData.birthPrefectureName
-                }
-                errorMessages={birthPlacePrefectureErrorMessage}
-                placeHolder='未選択'
-                onChange={(e) => {
-                  handleInputChange('birth_prefecture', e);
-                  handleInputChange(
-                    'birthPrefectureName',
-                    prefectures.find((item) => item.id === Number(e))?.name || '',
-                  );
-                }}
-                //errorMessages={birthPlacePrefectureErrorMessage}
-                className='rounded w-[300px] '
-              />
-            </div>
-          )}
+        )}
+      </div>
+      <div className='flex flex-row justify-start gap-[100px]'>
+        <div className='flex flex-col justify-start'>
+          {/* 居住地（国） */}
+          <CustomDropdown
+            id='residenceCountry'
+            label='居住地'
+            required={mode !== 'confirm'}
+            displayHelp={mode !== 'confirm'}
+            toolTipText='現在住んでいる国を選択してください。
+              日本を選択した場合、都道府県も選択してください。' //はてなボタン用
+            options={countries.map((item) => ({ key: item.id, value: item.name }))}
+            value={
+              mode !== 'confirm'
+                ? formData.residence_country?.toString() || ''
+                : formData.residenceCountryName
+            }
+            readonly={mode === 'confirm'}
+            onChange={(e) => {
+              handleInputChange('residence_country', e);
+              handleInputChange(
+                'residenceCountryName',
+                countries.find((item) => item.id === Number(e))?.name || '',
+              );
+            }}
+            errorMessages={residenceCountryNameErrorMessage}
+            className='rounded w-[300px] '
+          />
         </div>
-        <div className='flex flex-row justify-start gap-[100px]'>
+        {/* 国コードが日本の場合のみ、都道府県の入力欄を表示する */}
+        {formData.residence_country == 112 && (
           <div className='flex flex-col justify-start'>
-            {/* 居住地（国） */}
+            {/* 居住地（都道府県） */}
             <CustomDropdown
-              id='residenceCountry'
-              label='居住地'
+              id='residencePrefecture'
+              label='都道府県'
               required={mode !== 'confirm'}
               displayHelp={mode !== 'confirm'}
-              toolTipText='現在住んでいる国を選択してください。
-              日本を選択した場合、都道府県も選択してください。' //はてなボタン用
-              options={countries.map((item) => ({ key: item.id, value: item.name }))}
+              toolTipText='現在住んでいる都道府県を選択してください。' //はてなボタン用
+              readonly={mode === 'confirm'}
+              options={prefectures.map((item) => ({ key: item.id, value: item.name }))}
               value={
                 mode !== 'confirm'
-                  ? formData.residence_country?.toString() || ''
-                  : formData.residenceCountryName
+                  ? formData.residence_prefecture?.toString() || ''
+                  : formData.residencePrefectureName
               }
-              readonly={mode === 'confirm'}
               onChange={(e) => {
-                handleInputChange('residence_country', e);
+                handleInputChange('residence_prefecture', e);
                 handleInputChange(
-                  'residenceCountryName',
-                  countries.find((item) => item.id === Number(e))?.name || '',
+                  'residencePrefectureName',
+                  prefectures.find((item) => item.id === Number(e))?.name || '',
                 );
               }}
-              errorMessages={residenceCountryNameErrorMessage}
+              errorMessages={residencePrefectureErrorMessage}
               className='rounded w-[300px] '
             />
           </div>
-          {/* 国コードが日本の場合のみ、都道府県の入力欄を表示する */}
-          {formData.residence_country == 112 && (
-            <div className='flex flex-col justify-start'>
-              {/* 居住地（都道府県） */}
-              <CustomDropdown
-                id='residencePrefecture'
-                label='都道府県'
-                required={mode !== 'confirm'}
-                displayHelp={mode !== 'confirm'}
-                toolTipText='現在住んでいる都道府県を選択してください。' //はてなボタン用
-                readonly={mode === 'confirm'}
-                options={prefectures.map((item) => ({ key: item.id, value: item.name }))}
-                value={
-                  mode !== 'confirm'
-                    ? formData.residence_prefecture?.toString() || ''
-                    : formData.residencePrefectureName
-                }
-                onChange={(e) => {
-                  handleInputChange('residence_prefecture', e);
-                  handleInputChange(
-                    'residencePrefectureName',
-                    prefectures.find((item) => item.id === Number(e))?.name || '',
-                  );
-                }}
-                errorMessages={residencePrefectureErrorMessage}
-                className='rounded w-[300px] '
-              />
-            </div>
-          )}
-        </div>
-        <div className='flex flex-row justify-center gap-[16px] my-[30px]'>
-          {/* 戻るボタン */}
-          <CustomButton
-            onClick={async () => {
-              await setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
-              setErrorMessage([]);
-              router.back();
-            }}
-            buttonType='white-outlined'
-          >
-            戻る
-          </CustomButton>
-          {/* モードに応じたボタンの表示 */}
-          {modeCustomButtons[mode as keyof typeof modeCustomButtons]}
-        </div>
-      </main>
-    </div>
+        )}
+      </div>
+      <div className='flex flex-row justify-center gap-[16px] my-[30px]'>
+        {/* 戻るボタン */}
+        <CustomButton
+          onClick={async () => {
+            await setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+            setErrorMessage([]);
+            router.back();
+          }}
+          buttonType='white-outlined'
+        >
+          戻る
+        </CustomButton>
+        {/* モードに応じたボタンの表示 */}
+        {modeCustomButtons[mode as keyof typeof modeCustomButtons]}
+      </div>
+    </main>
   );
 }
