@@ -718,7 +718,7 @@ export default function PlayerInformation() {
       <main className='flex min-h-screen flex-col justify-start px-2 m-auto gap-[20px] my-[80px]'>
         <div className='relative flex flex-row justify-between w-full h-screen flex-wrap'>
           {/* 画面名*/}
-          <CustomTitle isCenter={false} displayBack>
+          <CustomTitle displayBack>
             選手情報{mode === 'create' ? '登録' : mode === 'update' ? '更新' : '入力確認'}
           </CustomTitle>
         </div>

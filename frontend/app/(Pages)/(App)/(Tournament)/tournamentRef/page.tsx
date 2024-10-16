@@ -426,7 +426,7 @@ export default function TournamentRef() {
           <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
           <div className='flex flex-row justify-between items-center '>
             {/* 画面名 */}
-            <CustomTitle isCenter={false} displayBack>
+            <CustomTitle displayBack>
               {mode === 'delete' && '大会情報削除'}
               {mode !== 'delete' && '大会情報'}
             </CustomTitle>

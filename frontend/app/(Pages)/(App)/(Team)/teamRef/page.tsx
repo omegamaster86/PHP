@@ -185,7 +185,7 @@ export default function TeamRef() {
       <div className='flex flex-col justify-start gap-[20px]'>
         <div className='relative flex flex-row justify-between w-full flex-wrap'>
           {/* 画面名*/}
-          <CustomTitle isCenter={false} displayBack>
+          <CustomTitle displayBack>
             {mode === 'delete' ? '団体情報削除' : '団体情報参照'}
           </CustomTitle>
         </div>

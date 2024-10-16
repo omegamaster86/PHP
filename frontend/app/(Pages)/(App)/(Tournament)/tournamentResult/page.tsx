@@ -1184,7 +1184,7 @@ export default function TournamentResult() {
   // レンダリング
   return (
     <div className='flex flex-col gap-[20px] w-full h-full p-[20px]'>
-      <CustomTitle isCenter={true}>
+      <CustomTitle>
         レース結果{mode === 'create' ? '登録' : mode === 'update' ? '更新' : '入力確認'}
       </CustomTitle>
       <ErrorBox errorText={errorText?.length > 0 ? errorText : []} />

@@ -168,7 +168,7 @@ export default function UserInformationUpdate() {
         <ErrorBox errorText={errorMessage} />
         <div className='flex flex-row justify-start gap-[20px]'>
           {/* 画面名 */}
-          <CustomTitle isCenter={false} displayBack>
+          <CustomTitle displayBack>
             {mode !== 'delete' && 'ユーザー情報参照'}
             {mode === 'delete' && '退会'}
           </CustomTitle>

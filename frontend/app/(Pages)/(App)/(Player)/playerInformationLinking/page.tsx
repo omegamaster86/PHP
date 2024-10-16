@@ -290,7 +290,7 @@ export default function PlayerInformationLinking() {
       <div>
         <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px] items-center'>
           {/* タイトルの表示 */}
-          <CustomTitle isCenter={false} displayBack>
+          <CustomTitle displayBack>
             選手情報連携
           </CustomTitle>
           {/* エラーメッセージの表示 */}

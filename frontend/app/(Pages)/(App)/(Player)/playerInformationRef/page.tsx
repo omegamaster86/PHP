@@ -19,7 +19,7 @@ import {
   CustomTitle,
   ErrorBox,
 } from '@/app/components';
-import { RoundedBadge } from '@/app/components/Badge';
+import { RoundedBadge } from '@/app/components/RoundedBadge';
 import Link from 'next/link';
 import AddIcon from '@mui/icons-material/Add';
 import { RaceResultRecordsResponse, PlayerInformationResponse } from '@/app/types';
@@ -1056,7 +1056,7 @@ export default function PlayerInformationRef() {
     <div className='flex flex-col gap-[30px] max-w-5xl m-auto'>
       <div className='relative flex flex-row justify-between w-full flex-wrap'>
         {/* 画面名*/}
-        <CustomTitle isCenter={false} displayBack>
+        <CustomTitle displayBack>
           {mode === 'delete' ? '選手情報削除' : '選手情報参照'}
         </CustomTitle>
       </div>

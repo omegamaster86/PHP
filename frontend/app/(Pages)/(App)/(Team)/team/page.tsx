@@ -695,7 +695,7 @@ export default function OrgInfo() {
         <ErrorBox errorText={errorMessage} />
         <div className='flex flex-row justify-start gap-[20px]'>
           {/* 画面名 */}
-          <CustomTitle isCenter={false} displayBack>
+          <CustomTitle displayBack>
             {mode === 'create' && '団体情報登録'}
             {mode === 'update' && '団体情報更新'}
             {mode === 'confirm' && '団体情報入力確認'}

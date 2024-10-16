@@ -62,7 +62,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className='flex h-screen flex-col justify-between'>
           <div className='flex flex-col justify-start'>
             <Header />
-
             {/* TODO: layoutファイルを分けるようにする */}
             {isMyPageRoute ? (
               <MyPageLayout>{children}</MyPageLayout>

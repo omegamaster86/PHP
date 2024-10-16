@@ -259,7 +259,7 @@ export default function TeamManagement() {
           <div className='w-full h-screen'>
             <div className='flex flex-row items-center justify-between flex-wrap'>
               {/* 画面名 */}
-              <CustomTitle isCenter={false} displayBack={true}>
+              <CustomTitle displayBack={true}>
                 団体管理
               </CustomTitle>
             </div>

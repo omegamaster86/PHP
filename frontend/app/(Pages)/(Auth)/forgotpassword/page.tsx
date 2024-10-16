@@ -29,7 +29,7 @@ export default function ForgotPassword() {
     <>
       <main className='flex flex-col items-center justify-between gap-[40px] my-[100px] m-auto max-w-md px-2'>
         {/* 画面名 */}
-        <CustomTitle isCenter={true}>パスワード再発行</CustomTitle>
+        <CustomTitle>パスワード再発行</CustomTitle>
         <div className='flex flex-col gap-5 rounded w-full'>
           {/* メッセージ表示エリア */}
           <ErrorBox errorText={errorText} />

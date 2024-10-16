@@ -262,7 +262,7 @@ export default function AddPlayerSearch() {
   return (
     <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px]'>
       <div className='relative flex flex-col justify-between w-full h-screen flex-wrap gap-[20px]'>
-        <CustomTitle isCenter={false} displayBack>
+        <CustomTitle displayBack>
           <div>
             {teamData?.org_name}
             <br />
