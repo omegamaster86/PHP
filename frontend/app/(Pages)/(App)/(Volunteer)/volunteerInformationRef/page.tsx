@@ -1006,7 +1006,7 @@ export default function VolunteerInformationRef() {
     <div>
       <main className='flex flex-col justify-start gap-[20px] my-[80px] flex-nowrap'>
         <div className='w-9/12 m-3 flex flex-row items-center justify-between gap-[20px]'>
-          <CustomTitle isCenter={false} displayBack={true}>
+          <CustomTitle displayBack={true}>
             ボランティア情報{mode === 'delete' && '削除'}
             {mode !== 'delete' && '参照'}
           </CustomTitle>

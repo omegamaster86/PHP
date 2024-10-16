@@ -28,7 +28,7 @@ export default function Passwordchange() {
 
   return (
     <main className='flex flex-col items-center justify-start gap-[20px] my-[100px] m-auto max-w-md px-2'>
-      <CustomTitle isCenter={true}>パスワード変更</CustomTitle>
+      <CustomTitle>パスワード変更</CustomTitle>
       <div className='flex flex-col gap-4 rounded w-full'>
         <ErrorBox errorText={errorText} />
         <CustomPasswordField

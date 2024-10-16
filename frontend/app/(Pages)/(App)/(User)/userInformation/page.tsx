@@ -437,7 +437,7 @@ export default function UserInformationUpdate() {
         <ErrorBox errorText={errorMessage} />
         <div className='flex flex-row justify-start gap-[20px]'>
           {/* 画面名 */}
-          <CustomTitle isCenter={false} displayBack>
+          <CustomTitle displayBack>
             {mode === 'update' && 'ユーザー情報更新'}
             {mode === 'confirm' && 'ユーザー情報確認'}
           </CustomTitle>

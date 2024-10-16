@@ -1205,7 +1205,7 @@ export default function Tournaments() {
       <main className='flex min-h-screen flex-col justify-start p-[10px] gap-[20px] my-[80px] md:w-[1200px] sm: w-[600px]'>
         <div className='relative flex flex-row justify-between w-full h-screen flex-wrap'>
           {/* 画面名 */}
-          <CustomTitle isCenter={false} displayBack>
+          <CustomTitle displayBack>
             {mode === 'create'
               ? '大会登録'
               : mode === 'update'

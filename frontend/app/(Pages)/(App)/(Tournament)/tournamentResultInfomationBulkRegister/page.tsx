@@ -1070,7 +1070,7 @@ export default function TournamentResultInfomationBulkRegister() {
       <div>
         <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px]'>
           {/* 画面名*/}
-          <CustomTitle isCenter={false} displayBack>
+          <CustomTitle displayBack>
             レース結果情報一括登録
           </CustomTitle>
           {/* エラーメッセージの表示 */}

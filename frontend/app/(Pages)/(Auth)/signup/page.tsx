@@ -28,7 +28,7 @@ export default function Signup() {
   return (
     <main className='flex flex-col items-center justify-start gap-[40px] my-[100px] m-auto px-2 max-w-md'>
       {/* 画面名 */}
-      <CustomTitle isCenter={true}>仮登録</CustomTitle>
+      <CustomTitle>仮登録</CustomTitle>
       <div className='flex flex-col gap-[20px] rounded w-full'>
         {/* エラー表示1 */}
         <ErrorBox errorText={errorText} />

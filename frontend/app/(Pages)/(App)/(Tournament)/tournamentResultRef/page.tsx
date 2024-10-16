@@ -70,7 +70,7 @@ export default function TournamentResultRef() {
   return (
     <div className='flex flex-col gap-[20px] w-full h-full p-[20px]'>
       {/* 画面名 */}
-      <CustomTitle isCenter={true}>レース結果{mode === 'delete' ? '削除' : '参照'}</CustomTitle>
+      <CustomTitle>レース結果{mode === 'delete' ? '削除' : '参照'}</CustomTitle>
       <ErrorBox errorText={errorText} />
       {/* レース基本情報 */}
       <div className='flex flex-col gap-[20px] border p-[20px]'>

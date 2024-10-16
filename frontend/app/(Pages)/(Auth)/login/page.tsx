@@ -61,7 +61,7 @@ export default function Login() {
   return (
     <>
       <main className='flex flex-col items-center justify-between gap-[40px] my-[100px] m-auto max-w-md px-2'>
-        <CustomTitle isCenter={true}>ログイン</CustomTitle>
+        <CustomTitle>ログイン</CustomTitle>
         <div className='flex flex-col gap-[20px] justify-center rounded w-full'>
           <ErrorBox errorText={errorText} />
           <CustomTextField

@@ -545,7 +545,7 @@ export default function TournamentEntryBulkRegister() {
       <div>
         <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px]'>
           {/* 画面名*/}
-          <CustomTitle isCenter displayBack>
+          <CustomTitle displayBack>
             大会エントリー一括登録
           </CustomTitle>
           {/* エラーメッセージの表示 */}
