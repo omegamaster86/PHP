@@ -9,7 +9,7 @@ const CustomButton = ({
   disabled,
 }: {
   children: ReactNode;
-  onClick: () => void;
+  onClick?: () => void;
   className?: string;
   buttonType?: string;
   icon?: ReactNode;

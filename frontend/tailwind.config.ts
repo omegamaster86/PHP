@@ -12,6 +12,10 @@ const config: Config = {
       body: ['Inter', 'system-ui', 'sans-serif'],
     },
     fontSize: {
+      '2xs': '0.625rem', // 10px
+      xs: '0.75rem', // 12px
+      sm: '0.875rem', // 14px
+
       lg: '1.125rem',
       '2xl': '1.5rem',
       '3xl': '1.875rem',
