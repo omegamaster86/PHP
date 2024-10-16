@@ -181,9 +181,9 @@ export default function TeamRef() {
   }, []);
 
   return (
-    <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px]'>
+    <main className='flex flex-col gap-[30px] max-w-5xl m-auto'>
       <div className='flex flex-col justify-start gap-[20px]'>
-        <div className='relative flex flex-row justify-between w-full h-screen flex-wrap'>
+        <div className='relative flex flex-row justify-between w-full flex-wrap'>
           {/* 画面名*/}
           <CustomTitle isCenter={false} displayBack>
             {mode === 'delete' ? '団体情報削除' : '団体情報参照'}
