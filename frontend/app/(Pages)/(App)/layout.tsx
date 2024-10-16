@@ -1,9 +1,11 @@
 'use client';
+
+import MyPageLayout from '@/app/(Pages)/(App)/(MyPage)/_components/MyPageLayout';
+import { Footer, Header, Loading } from '@/app/components';
 import { useAuth } from '@/app/hooks/auth';
-import { Header, Footer, Loading } from '@/app/components';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useIdleTimer } from 'react-idle-timer'; // For logout a user after one hour of inactivity
-import { usePathname, useRouter } from 'next/navigation';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -52,7 +54,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     authCheck();
   }
 
-  //console.log("login status : ",loggedIn);
+  const isMyPageRoute = pathname.includes('/mypage');
 
   return (
     <>
@@ -60,15 +62,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className='flex h-screen flex-col justify-between'>
           <div className='flex flex-col justify-start'>
             <Header />
-            <div className='flex-grow p-4 md:overflow-y-auto md:p-12 w-full max-w-8xl m-auto '>
-              {/* This is a extra feature for logout - start */}
-              {/* <div className=' text-right mt-4 mr-2'>
-              { <CustomButton buttonType='primary' className='w-[200px]'  onClick={logout} >
-                    ログアウト
-              </CustomButton> }
-            </div> */}
-              {children}
-            </div>
+
+            {/* TODO: layoutファイルを分けるようにする */}
+            {isMyPageRoute ? (
+              <MyPageLayout>{children}</MyPageLayout>
+            ) : (
+              <div className='flex-grow p-4 md:overflow-y-auto md:p-12 w-full max-w-8xl m-auto'>
+                {children}
+              </div>
+            )}
           </div>
           <Footer />
         </div>
