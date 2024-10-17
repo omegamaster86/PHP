@@ -46,4 +46,17 @@ class MyPageController extends Controller
         Log::debug(sprintf("getMyPageRaceResultRecordInfoList end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
+
+    //選手プロフィールを取得 20241015
+    public function getMyPagePlayerProfileList(Request $request, T_players $tPlayers)
+    {
+        Log::debug(sprintf("getMyPagePlayerProfileList start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        $userId = $reqData["userId"];
+        $result = $tPlayers->getPlayerProfileInfo($userId); //ユーザIDを元に選手プロフィール情報を取得 202401015
+ 
+        Log::debug(sprintf("getMyPagePlayerProfileList end"));
+        return response()->json(['result' => $result]); //DBの結果を返す
+    }
 }

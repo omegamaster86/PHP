@@ -156,6 +156,53 @@ class T_players extends Model
         return $targetTrn;
     }
 
+    //マイページ 選手プロフィール user_idに紐づいた選手情報を取得 20241016
+    public function getPlayerProfileInfo($user_id)
+    {
+        $result = DB::select('select
+                                `player_name` as `playerName`
+                                ,`player_id` as `playerId`
+                                ,`jara_player_id` as `jaraPlayerId`
+                                ,`date_of_birth` as `dateOfBirth`
+                                ,`height`
+                                ,`weight`
+                                ,`side_info` as `sideInfo`
+                                ,bir_cont.`country_name` as `birthCountryName`
+                                ,bir_pref.`pref_name` as `birthPrefectureName`
+                                ,res_cont.`country_name` as `residenceCountryName`
+                                ,res_pref.`pref_name` as `residencePrefectureName`
+                                ,`photo`
+                                ,`m_sex`.`sex`
+                                FROM `t_players`
+                                left join `m_sex`
+                                on `t_players`.`sex_id`=`m_sex`.`sex_id`
+                                left join m_countries bir_cont
+                                on `t_players`.birth_country = bir_cont.country_id
+                                left join m_prefectures bir_pref
+                                on `t_players`.birth_prefecture = bir_pref.pref_id
+                                left join m_countries res_cont
+                                on `t_players`.residence_country = res_cont.country_id
+                                left join m_prefectures res_pref
+                                on `t_players`.residence_prefecture = res_pref.pref_id
+                                where 1=1
+                                and `t_players`.delete_flag = 0
+                                and `m_sex`.`delete_flag` = 0
+                                and  bir_cont.`delete_flag` = 0
+                                and  bir_pref.`delete_flag` = 0
+                                and  res_cont.`delete_flag` = 0
+                                and  res_pref.`delete_flag` = 0
+                                and `t_players`.user_id = ?',[$user_id]
+                            );
+ 
+        //1つのデータを取得するため0番目だけを返す
+        // Log::debug($result);
+        $targetTrn = null;
+        if (!empty($result)) {
+            $targetTrn = $result[0];
+        }
+        return $targetTrn;
+    }
+
     //react 選手情報更新画面用 選手情報の更新を行う 20240131
     public function updatePlayerData($playersInfo)
     {
