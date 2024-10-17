@@ -12,7 +12,7 @@ const CustomTitle = ({
   const router = useRouter();
 
   return (
-    <div className='flex items-center w-max gap-3 mr-auto'>
+    <div className='flex items-center gap-3'>
       {displayBack && <ChevronLeftIcon onClick={() => router.back()} className='cursor-pointer' />}
       <h1 className='text-2xl lg:text-4xl font-bold'>{children}</h1>
     </div>
