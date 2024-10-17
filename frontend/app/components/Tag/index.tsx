@@ -1,12 +1,16 @@
 type Props = {
   tag: string;
-};
+} & React.HTMLAttributes<HTMLSpanElement>;
 
 const Tag: React.FC<Props> = (props) => {
-  const { tag } = props;
+  const { tag, ...rest } = props;
+
+  const className = `flex justify-center items-center py-1 px-2 h-6 rounded-lg text-2xs ${
+    props.className ?? ''
+  }`;
 
   return (
-    <span className='flex justify-center items-center py-1 px-2 h-6 bg-gray-50 rounded-lg text-2xs'>
+    <span {...rest} className={className}>
       {tag}
     </span>
   );

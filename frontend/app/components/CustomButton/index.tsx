@@ -11,13 +11,19 @@ const CustomButton = ({
   children: ReactNode;
   onClick?: () => void;
   className?: string;
-  buttonType?: string;
+  buttonType?:
+    | 'primary'
+    | 'secondary'
+    | 'white-outlined'
+    | 'primary-outlined'
+    | 'red-outlined'
+    | 'white';
   icon?: ReactNode;
   disabled?: boolean;
 }) => (
   <button
     type='button'
-    className={`${className} text-normal h-12 w-72 border-solid border-[1px] rounded-[2px] p-2
+    className={`${className ?? ''} text-normal h-12 w-72 border-solid border-[1px] rounded-[2px] p-2
     ${
       buttonType === 'primary'
         ? 'bg-primary-500 text-white hover:bg-primary-700'
