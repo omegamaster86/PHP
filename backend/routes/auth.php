@@ -190,6 +190,7 @@ Route::middleware('auth')->group(function () {
     //マイページ関連
     Route::post('getMyPageTournamentInfoList', [MyPageController::class, 'getMyPageTournamentInfoList']); // 大会情報を取得する 20241008
     Route::post('getMyPageRaceResultRecordInfoList', [MyPageController::class, 'getMyPageRaceResultRecordInfoList']); // 出漕履歴を取得する 20241010
+    Route::post('getMyPagePlayerProfileList', [MyPageController::class, 'getMyPagePlayerProfileList']); // 選手プロフィールを取得する 20241016
 
     //React連携後APIここまで===========================================================
     //================================================================================

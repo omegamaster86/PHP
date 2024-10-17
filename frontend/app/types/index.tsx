@@ -547,6 +547,23 @@ interface MyPageRaceResultRecordInfoData {
   byGroup: string; // 組別
 }
 
+//マイページの選手プロフィール表示用インターフェース 20241016
+interface MyPagePlayerProfileInfoData {
+  playerName: string; //選手名
+  playerId: number; //選手ID
+  jaraPlayerId: number; //既存選手ID
+  sex: string; //性別
+  dateOfBirth: string; //誕生日
+  height: number; //身長
+  weight: number; //体重
+  birthCountryName: string; //出身 国
+  birthPrefectureName: string; //出身 都道府県
+  residenceCountryName: string; //居住 国
+  residencePrefectureName: string; //居住 都道府県
+  photo: string; //写真
+  sideInfo: string; //サイド情報
+}
+
 export type { SexResponse };
 export type { PrefectureResponse };
 export type { CountryResponse };
@@ -584,3 +601,4 @@ export type { CrewPlayer };
 export type { CheckRaceResultRecordDeleted };
 export type { MyPageTournamentInfoData };
 export type { MyPageRaceResultRecordInfoData };
+export type { MyPagePlayerProfileInfoData };
