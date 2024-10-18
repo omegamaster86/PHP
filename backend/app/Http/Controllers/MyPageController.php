@@ -6,21 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Session;
-use App\Models\T_tournaments;
-use App\Models\T_races;
 use App\Models\T_raceResultRecord;
-use App\Models\T_organizations;
 use App\Models\T_players;
 use App\Models\T_volunteers;
-use App\Models\T_volunteer_availables;
-use App\Models\T_volunteer_histories;
 use App\Models\T_volunteer_language_proficiency;
 use App\Models\T_volunteer_qualifications_hold;
 use App\Models\T_volunteer_supportable_disability;
-use App\Models\T_users;
-use DateTime;
+
 
 class MyPageController extends Controller
 {
@@ -73,7 +65,7 @@ class MyPageController extends Controller
     ) {
         Log::debug(sprintf("getMyPageVolunteerInfoList start"));
 
-        $volData = $tVolunteers->getVolunteerInfoFromUserId(Auth::user()->user_id); //ユーザIDを元に選手プロフィール情報を取得 202401015
+        $volData = $tVolunteers->getVolunteerInfoFromUserId(Auth::user()->user_id); //ユーザIDを元にボランティア情報を取得 202401015
         $volSupDisData = $tVolunteerSupportableDisability->getMyPageVolunteerSupportableDisability($volData[0]->volunteer_id); //ボランティア支援可能障害タイプ情報を取得
         $volLangProData = $tVolunteerLanguageProficiency->getMyPageVolunteerLanguageProficiency($volData[0]->volunteer_id); //ボランティア言語レベル情報を取得
         $volQualData = $tVolunteerQualificationsHold->getMyPageVolunteerQualificationsHold($volData[0]->volunteer_id); //ボランティア保有資格情報を取得
@@ -84,8 +76,6 @@ class MyPageController extends Controller
                 'volunteerName' => $volData[0]->volunteerName,
                 'sex' => $volData[0]->sex,
                 'dateOfBirth' => $volData[0]->dateOfBirth,
-                'height' => Auth::user()->height, //身長
-                'weight' => Auth::user()->weight, //体重
                 'countryName' => $volData[0]->countryName,
                 'prefName' => $volData[0]->prefName,
                 'mailaddress' => $volData[0]->mailaddress,

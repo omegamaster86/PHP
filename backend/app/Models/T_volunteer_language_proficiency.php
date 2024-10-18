@@ -117,6 +117,7 @@ class T_volunteer_language_proficiency extends Model
     public function getMyPageVolunteerLanguageProficiency($vlntrId)
     {
         $volunteers = DB::select('select 
+        `m_languages`.`lang_id` as `langId`, 
         `m_languages`.`lang_name` as `langName`, 
         `m_language_proficiency`.`lang_pro_name` as `langProName`
         FROM `t_volunteer_language_proficiency` 

@@ -119,7 +119,8 @@ class T_volunteer_qualifications_hold extends Model
     public function getMyPageVolunteerQualificationsHold($vlntrId)
     {
         $volunteers = DB::select('select 
-        `m_volunteer_qualifications`.`qual_name`
+        `m_volunteer_qualifications`.`qual_id` as `qualId`,
+        `m_volunteer_qualifications`.`qual_name` as `qualName`
         FROM `t_volunteer_qualifications_hold` 
         left join `m_volunteer_qualifications`
         on `t_volunteer_qualifications_hold`.`qual_id` = `m_volunteer_qualifications`.`qual_id`

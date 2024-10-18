@@ -458,12 +458,13 @@ class T_volunteers extends Model
         on `t_volunteers`.`clothes_size` = `m_clothes_size`.`clothes_size_id`
         where 1=1
         and `t_volunteers`.delete_flag = 0 
+        and `t_volunteer_availables`.delete_flag = 0 
+        and `m_countries`.delete_flag = 0 
+        and (`m_countries`.`country_id` != 112 or `m_prefectures`.delete_flag = 0)
+        and `m_sex`.delete_flag = 0 
+        and `m_clothes_size`.delete_flag = 0 
         and `t_volunteers`.user_id = ?', [$user_id]);
-        //1つの団体IDを取得するため0番目だけを返す
-        $targetTrn = null;
-        if (!empty($volunteers)) {
-            $targetTrn = $volunteers;
-        }
-        return $targetTrn;
+        
+        return $volunteers;
     }
 }

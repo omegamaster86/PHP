@@ -568,17 +568,15 @@ interface MyPagePlayerProfileInfoData {
 interface MyPageVolunteerInfoData {
   volunteerName: string; // 氏名
   sex: string; // 性別
-  height: number; //身長
-  weight: number; //体重
   dateOfBirth: string; // 生年月日
   countryName: string; // 居住地（国）
   prefName: string; // 居住地（都道府県）
   telephoneNumber: string; // 電話番号
   mailaddress: string; // メールアドレス
   clothesSize: string; // 服のサイズ
-  disType: any; // 障碍タイプ
-  qualHold: any; // 保有資格
-  languageProficiency: any; //言語
+  disType: any; // 障碍タイプ FIXME
+  qualHold: any; // 保有資格 FIXME
+  languageProficiency: any; //言語 FIXME
   dayOfWeek: string; // 曜日
   timeZone: string; // 時間帯
 }

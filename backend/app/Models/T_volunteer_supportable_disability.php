@@ -108,7 +108,8 @@ class T_volunteer_supportable_disability extends Model
     public function getMyPageVolunteerSupportableDisability($vlntrId)
     {
         $volunteers = DB::select('select 
-        `m_disability_type`.`dis_type_name`
+        `m_disability_type`.`dis_type_id` as `disTypeId`,
+        `m_disability_type`.`dis_type_name` as `disTypeName`
         FROM `t_volunteer_supportable_disability` 
         left join `m_disability_type`
         on `t_volunteer_supportable_disability`.`dis_type_id` = `m_disability_type`.`dis_type_id`
