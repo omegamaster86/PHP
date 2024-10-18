@@ -429,4 +429,41 @@ class T_volunteers extends Model
                     ]
                 );
     }
+
+    //マイページ ボランティア情報用 ユーザIDに紐づいたボランティア情報を取得 20241017
+    public function getVolunteerInfoFromUserId($user_id)
+    {
+        $volunteers = DB::select('select
+        `t_volunteers`.`volunteer_id`, 
+        `t_volunteers`.`volunteer_name` as `volunteerName`,
+        `t_volunteers`.`date_of_birth` as `dateOfBirth`,
+        `t_volunteers`.`telephone_number` as `telephoneNumber`, 
+        `t_volunteers`.`mailaddress`,  
+        `m_countries`.`country_name` as `countryName`, 
+        `m_prefectures`.`pref_name` as `prefName`, 
+        `m_sex`.`sex`, 
+        `m_clothes_size`.`clothes_size` as `clothesSize`,
+        `t_volunteer_availables`.`day_of_week` as `dayOfWeek`,
+        `t_volunteer_availables`.`time_zone` as `timeZone`
+        FROM `t_volunteers` 
+        left join `t_volunteer_availables`
+        on `t_volunteers`.`volunteer_id` = `t_volunteer_availables`.`volunteer_id`
+        left join `m_countries`
+        on `t_volunteers`.`residence_country` = `m_countries`.`country_id`
+        left join `m_prefectures`
+        on `t_volunteers`.`residence_prefecture` = `m_prefectures`.`pref_id`
+        left join `m_sex`
+        on `t_volunteers`.`sex` = `m_sex`.`sex_id`
+        left join `m_clothes_size`
+        on `t_volunteers`.`clothes_size` = `m_clothes_size`.`clothes_size_id`
+        where 1=1
+        and `t_volunteers`.delete_flag = 0 
+        and `t_volunteers`.user_id = ?', [$user_id]);
+        //1つの団体IDを取得するため0番目だけを返す
+        $targetTrn = null;
+        if (!empty($volunteers)) {
+            $targetTrn = $volunteers;
+        }
+        return $targetTrn;
+    }
 }

@@ -115,4 +115,19 @@ class T_volunteer_qualifications_hold extends Model
                 );
     }
 
+    //マイページ ボランティア情報 20241017
+    public function getMyPageVolunteerQualificationsHold($vlntrId)
+    {
+        $volunteers = DB::select('select 
+        `m_volunteer_qualifications`.`qual_name`
+        FROM `t_volunteer_qualifications_hold` 
+        left join `m_volunteer_qualifications`
+        on `t_volunteer_qualifications_hold`.`qual_id` = `m_volunteer_qualifications`.`qual_id`
+        where 1=1
+        and `t_volunteer_qualifications_hold`.delete_flag = 0 
+        and `t_volunteer_qualifications_hold`.volunteer_id = ?', [$vlntrId]);
+
+        return $volunteers;
+    }
+
 }

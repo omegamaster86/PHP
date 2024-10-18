@@ -112,4 +112,22 @@ class T_volunteer_language_proficiency extends Model
                     ]
                 );
     }
+
+    //マイページ ボランティア情報 20241017
+    public function getMyPageVolunteerLanguageProficiency($vlntrId)
+    {
+        $volunteers = DB::select('select 
+        `m_languages`.`lang_name` as `langName`, 
+        `m_language_proficiency`.`lang_pro_name` as `langProName`
+        FROM `t_volunteer_language_proficiency` 
+        left join `m_languages`
+        on `t_volunteer_language_proficiency`.`lang_id` = `m_languages`.`lang_id`
+        left join `m_language_proficiency`
+        on `t_volunteer_language_proficiency`.`lang_pro` = `m_language_proficiency`.`lang_pro_id`
+        where 1=1
+        and `t_volunteer_language_proficiency`.delete_flag = 0 
+        and `t_volunteer_language_proficiency`.volunteer_id = ?', [$vlntrId]);
+       
+        return $volunteers;
+    }
 }
