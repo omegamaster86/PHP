@@ -264,40 +264,6 @@ class T_raceResultRecord extends Model
         return $racesResultRecord;
     }
 
-    //マイページ 大会情報用 選手IDに紐づいたレース結果情報を取得 20241010
-    public function getMyPageTournamentInfo($playerId, $tournType)
-    {
-        $racesResultRecord = DB::select('select 
-                                        `t_tournaments`.`tourn_name` as `tournName`,
-                                        `t_tournaments`.`tourn_type` as `tournType`, 
-                                        `t_tournaments`.`event_start_date` as `eventStartDate`,
-                                        `m_venue`.`venue_name` as `venueName`,
-                                        `t_organizations`.`org_name` as `sponsorOrgName`
-                                        FROM `t_tournaments` 
-                                        left join `m_venue`
-                                        on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
-                                        left join `t_organizations`
-                                        on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
-                                        where 1=1
-                                        and exists (
-                                            select 1
-                                                FROM `t_race_result_record` 
-                                                WHERE 1=1
-                                                and `t_tournaments`.`tourn_id` = `t_race_result_record`.`tourn_id`
-                                                and `t_race_result_record`.delete_flag = 0
-                                                and `t_race_result_record`.player_id = ?
-                                        )
-                                        and `t_tournaments`.`delete_flag` = 0
-                                        and `m_venue`.`delete_flag` = 0
-                                        and `t_organizations`.`delete_flag` = 0
-                                        and `t_tournaments`.tourn_type = ?
-                                        and `t_tournaments`.event_start_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 9 MONTH) AND DATE_ADD(CURDATE(), INTERVAL 3 MONTH)
-                                        ORDER BY `t_tournaments`.`event_start_date` DESC', 
-                                        [$playerId, $tournType]);
-        // Log::debug($racesResultRecord);
-        return $racesResultRecord;
-    }
-
     //マイページ 出漕履歴用 選手IDに紐づいたレース結果情報を取得 20241015
     public function getMyPageRaceResultRecordInfo($playerId, $official)
     {
