@@ -103,7 +103,7 @@ const MyPageLayout: NextPage<Props> = (props) => {
       </div>
 
       {/* メインコンテンツ */}
-      <div className='flex-1 bg-white p-6 md:ml-64'>{children}</div>
+      <div className='flex-1 bg-white p-6'>{children}</div>
     </div>
   );
 };

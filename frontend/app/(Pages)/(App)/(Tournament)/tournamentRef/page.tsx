@@ -18,24 +18,16 @@ import {
   CustomTitle,
   CustomTbody,
 } from '@/app/components';
-import { Tournament, Race, UserResponse, UserIdType } from '@/app/types';
+import { TitleSideButton } from '@/app/(Pages)/(App)/_componrnts/TitleSideButton';
+import { Tournament, Race, UserIdType } from '@/app/types';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/EditOutlined';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { ROLE } from '@/app/utils/consts';
 import { TOURNAMENT_PDF_URL } from '@/app/utils/imageUrl';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import {
-  Autocomplete,
-  Chip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-} from '@mui/material';
+import { Autocomplete, Chip, TextField } from '@mui/material';
 
 //種目フィルター用
 interface EventNameList {
@@ -421,51 +413,38 @@ export default function TournamentRef() {
   }
   return (
     <main>
-      <div className='flex flex-col pt-[40px] pb-[60px] gap-[50px] md:w-[1000px] sm: w-[600px]'>
+      <div className='flex flex-col gap-[30px] max-w-5xl m-auto'>
         <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
         <div className='flex flex-row justify-between items-center '>
           {/* 画面名 */}
-          <CustomTitle displayBack>
-            {mode === 'delete' && '大会情報削除'}
-            {mode !== 'delete' && '大会情報'}
-          </CustomTitle>
-          <div>
-            <div>
-              {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag == 1) && (
-                <Link
-                  href={{
-                    pathname: '/tournament',
-                    query: { mode: 'update', tourn_id: tournId },
-                  }}
-                  target='_blank'
-                  className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
-                >
-                  <EditIcon className='cursor-pointer m-1 text-small md:text-h3' />
-                  大会情報を更新
-                </Link>
-              )}
-            </div>
-            <div>
-              {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag == 1) && (
-                <Link
-                  href={{
-                    pathname: '/tournamentRef',
-                    query: { mode: 'delete', tournId: tournId },
-                  }}
-                  target='_blank'
-                  className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
-                >
-                  <EditIcon className='cursor-pointer m-1 text-small md:text-h3' />
-                  大会情報を削除
-                </Link>
-              )}
-            </div>
+          <CustomTitle displayBack>{mode === 'delete' ? '大会情報削除' : '大会情報'}</CustomTitle>
+          <div className='flex items-center gap-2'>
+            {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag == 1) && (
+              <TitleSideButton
+                href={{
+                  pathname: '/tournament',
+                  query: { mode: 'update', tourn_id: tournId },
+                }}
+                icon={EditIcon} 
+                text='大会情報更新'
+              />
+            )}
+            {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag == 1) && (
+              <TitleSideButton
+                href={{
+                  pathname: '/tournamentRef',
+                  query: { mode: 'delete', tournId: tournId },
+                }}
+                icon={DeleteOutlineIcon}
+                text='大会情報削除'
+              />
+            )}
           </div>
         </div>
         <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4 '>
           <div className='flex flex-col gap-[10px]'>
             <div className='flex flex-col gap-[30px]'>
-              <div className='flex flex-row justify-between'>
+              <div className='flex flex-col lg:flex-row justify-between gap-6'>
                 <Label
                   label={tournamentFormData.tourn_name}
                   textColor='white'
@@ -473,17 +452,17 @@ export default function TournamentRef() {
                 ></Label>
                 {/* 大会要項ダウンロードボタン */}
                 {/* <CustomButton
-                    buttonType='white-outlined'
-                    className='w-[220px] text-normal text-white hover:text-primary-100 hover:bg-transparent hover:border-primary-100'
-                    onClick={() => {
-                      // TODO: 大会要項のPDFをダウンロードする処理
-                      return `${TOURNAMENT_PDF_URL}${tournamentFormData.tourn_info_faile_path}`;
-                    }}
-                  >
-                    <FileDownloadOutlinedIcon className='text-[16px] mr-1 hover:text-primary-100 '></FileDownloadOutlinedIcon>
-                    大会要項ダウンロード
-                  </CustomButton> */}
-                {/* ダウンロードコード追加 開始*/}
+                  buttonType='white-outlined'
+                  className='w-[220px] text-normal text-white hover:text-primary-100 hover:bg-transparent hover:border-primary-100'
+                  onClick={() => {
+                    // TODO: 大会要項のPDFをダウンロードする処理
+                    return `${TOURNAMENT_PDF_URL}${tournamentFormData.tourn_info_faile_path}`;
+                  }}
+                >
+                  <FileDownloadOutlinedIcon className='text-[16px] mr-1 hover:text-primary-100 '></FileDownloadOutlinedIcon>
+                  大会要項ダウンロード
+                </CustomButton> */}
+                {/* ダウンロードコード追加 開始 */}
                 {tournamentFormData.tourn_info_faile_path && (
                   <Link
                     href={`${TOURNAMENT_PDF_URL}${tournamentFormData.tourn_info_faile_path}`}
@@ -497,14 +476,14 @@ export default function TournamentRef() {
                 )}
                 {/* ダウンロードコード追加 終了*/}
               </div>
-              <div className='flex flex-row'>
+              <div className='flex flex-col sm:flex-row'>
                 {/* 大会個別URL */}
-                <div className='text-gray-40 text-caption1 w-[100px]'>大会URL</div>
+                <div className='text-gray-40 w-[100px]'>大会URL</div>
                 <Link
                   href={tournamentFormData.tourn_url}
                   rel='noopener noreferrer'
                   target='_blank'
-                  className='text-white text-caption1 underline hover:text-primary-100'
+                  className='text-white underline hover:text-primary-100'
                 >
                   {tournamentFormData.tourn_url}
                 </Link>
@@ -514,33 +493,33 @@ export default function TournamentRef() {
                 <div className='flex flex-col gap-[5px]'>
                   <div className='flex flex-row gap-[20px]'>
                     <div className='flex flex-col gap-[5px]'>
-                      <div className='flex flex-row'>
+                      <div className='flex flex-row gap-2'>
                         {/* 開催開始年月日 */}
-                        <div className='text-gray-40 text-caption1 w-[100px]'>開催開始年月日</div>
+                        <div className='text-gray-40 text-sm w-[100px]'>開催開始年月日</div>
                         <Label
                           label={tournamentFormData.event_start_date}
                           textColor='white'
-                          textSize='caption1'
+                          textSize='small'
                         ></Label>
                       </div>
-                      <div className='flex flex-row'>
+                      <div className='flex flex-row gap-2'>
                         {/* 開催終了年月日 */}
-                        <div className='text-gray-40 text-caption1 w-[100px]'>開催終了年月日</div>
+                        <div className='text-gray-40 text-sm w-[100px]'>開催終了年月日</div>
                         <Label
                           label={tournamentFormData.event_end_date}
                           textColor='white'
-                          textSize='caption1'
+                          textSize='small'
                         ></Label>
                       </div>
                     </div>
                   </div>
-                  <div className='flex flex-row'>
+                  <div className='flex flex-row gap-2'>
                     {/* 開催場所 */}
-                    <div className='text-gray-40 text-caption1 w-[100px]'>開催場所</div>
+                    <div className='text-gray-40 text-sm w-[100px]'>開催場所</div>
                     <Label
                       label={tournamentFormData.venue_name}
                       textColor='white'
-                      textSize='caption1'
+                      textSize='small'
                     ></Label>
                   </div>
                 </div>
@@ -548,34 +527,34 @@ export default function TournamentRef() {
               <div className='flex flex-col gap-[10px]'>
                 <Label label='主催団体' textColor='white' textSize='small' isBold={true}></Label>
                 <div className='flex flex-col gap-[5px]'>
-                  <div className='flex flex-row'>
+                  <div className='flex flex-row gap-2'>
                     {/* 主催団体名 */}
-                    <div className='text-gray-40 text-caption1 w-[100px]'>名前</div>
+                    <div className='text-gray-40 text-sm w-[100px]'>名前</div>
                     <Label
                       label={tournamentFormData.sponsorOrgName}
                       textColor='white'
-                      textSize='caption1'
+                      textSize='small'
                     ></Label>
                   </div>
                 </div>
-                <div className='flex flex-row'>
+                <div className='flex flex-row gap-2'>
                   {/* 主催団体ID */}
-                  <div className='text-gray-40 text-caption1 w-[100px]'>ID</div>
+                  <div className='text-gray-40 text-sm w-[100px]'>ID</div>
                   <Label
                     label={tournamentFormData.sponsor_org_id}
                     textColor='white'
-                    textSize='caption1'
+                    textSize='small'
                   ></Label>
                 </div>
               </div>
-              <div className='flex flex-row gap-[20px]'>
+              <div className='flex flex-col sm:flex-row gap-2 sm:gap-5'>
                 <div className='flex flex-row gap-[10px]'>
                   {/* 大会ID */}
-                  <div className='text-gray-40 text-caption1'>大会ID：</div>
+                  <div className='text-gray-40 text-sm'>大会ID：</div>
                   <Label
                     label={tournamentFormData.tourn_id?.toString() as string}
                     textColor='white'
-                    textSize='caption1'
+                    textSize='small'
                   ></Label>
                 </div>
                 {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
@@ -584,11 +563,11 @@ export default function TournamentRef() {
                   userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
                   <div className='flex flex-row gap-[10px]'>
                     {/* エントリーシステムの大会ID */}
-                    <div className='text-gray-40 text-caption1'>エントリーシステムの大会ID：</div>
+                    <div className='text-gray-40 text-sm'>エントリーシステムの大会ID：</div>
                     <Label
                       label={tournamentFormData.entrysystem_tourn_id}
                       textColor='white'
-                      textSize='caption1'
+                      textSize='small'
                     ></Label>
                   </div>
                 )}
@@ -600,175 +579,177 @@ export default function TournamentRef() {
         <div className='text-lg mb-4'>
           <div className='mb-4'>
             <div className='flex justify-between items-center'>
-              <div className='font-bold'>開催レース</div>
+              <div className='text-2xl lg:text-4xl font-bold'>開催レース</div>
             </div>
           </div>
           {/* レース一覧テーブル表示 */}
-          <CustomTable>
-            <CustomThead>
-              <CustomTr>
-                <CustomTh align='left'>
-                  <div
-                    className='underline'
-                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                    onClick={() => raceIdSort()}
-                  >
-                    レースID
-                  </div>
-                </CustomTh>
-                <CustomTh align='left'>
-                  <div
-                    className='underline'
-                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                    onClick={() => raceNameSort()}
-                  >
-                    レース名
-                  </div>
-                </CustomTh>
-                <CustomTh align='left'>
-                  <div
-                    className='underline'
-                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                    onClick={() => raceNumberSort()}
-                  >
-                    レースNo.
-                  </div>
-                </CustomTh>
-                <CustomTh align='left'>
-                  <div className='flex flex-row items-center gap-[10px]'>
+          <div className='overflow-auto'>
+            <CustomTable>
+              <CustomThead>
+                <CustomTr>
+                  <CustomTh align='left'>
                     <div
                       className='underline'
                       style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                      onClick={() => eventNameSort()}
+                      onClick={() => raceIdSort()}
                     >
-                      種目
+                      レースID
                     </div>
-                    <div
-                      style={{
-                        cursor: 'pointer',
-                        color: selectedEventNameList.length > 0 ? '#F44336' : '#001D74',
-                      }}
-                      onClick={(event) => handleEventNameHeaderClick('種目', event as any)}
-                    >
-                      <FilterListIcon />
-                    </div>
-                  </div>
-                </CustomTh>
-                <CustomTh align='left'>
-                  <div className='flex flex-row items-center gap-[10px]'>
+                  </CustomTh>
+                  <CustomTh align='left'>
                     <div
                       className='underline'
                       style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                      onClick={() => byGroupSort()}
+                      onClick={() => raceNameSort()}
                     >
-                      組別
+                      レース名
                     </div>
-                    <div
-                      style={{
-                        cursor: 'pointer',
-                        color: selectedByGroupList.length > 0 ? '#F44336' : '#001D74',
-                      }}
-                      onClick={(event) => handleByGroupHeaderClick('組別', event as any)}
-                    >
-                      <FilterListIcon />
-                    </div>
-                  </div>
-                </CustomTh>
-                <CustomTh align='left'>
-                  <div className='flex flex-row items-center gap-[10px]'>
+                  </CustomTh>
+                  <CustomTh align='left'>
                     <div
                       className='underline'
                       style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                      onClick={() => rangeSort()}
+                      onClick={() => raceNumberSort()}
                     >
-                      距離
+                      レースNo.
                     </div>
-                    <div
-                      style={{
-                        cursor: 'pointer',
-                        color: selectedRangeList.length > 0 ? '#F44336' : '#001D74',
-                      }}
-                      onClick={(event) => handleRangeHeaderClick('距離', event as any)}
-                    >
-                      <FilterListIcon />
-                    </div>
-                  </div>
-                </CustomTh>
-                <CustomTh align='left'>
-                  <div
-                    className='underline'
-                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                    onClick={() => startDateTimeSort()}
-                  >
-                    発艇日時
-                  </div>
-                </CustomTh>
-              </CustomTr>
-            </CustomThead>
-            <CustomTbody>
-              {tableData
-                .filter((row, index) => {
-                  if (selectedEventNameList.length > 0) {
-                    return selectedEventNameList.some((item) => item.name === row.event_name);
-                  } else {
-                    return true;
-                  }
-                })
-                .filter((row, index) => {
-                  if (selectedByGroupList.length > 0) {
-                    return selectedByGroupList.some((item) => item.name === row.by_group);
-                  } else {
-                    return true;
-                  }
-                })
-                .filter((row, index) => {
-                  if (selectedRangeList.length > 0) {
-                    return selectedRangeList.some((item) => item.name === row.range);
-                  } else {
-                    return true;
-                  }
-                })
-                .map((row, index) => (
-                  <CustomTr key={index}>
-                    {/* 「出漕結果記録テーブル」に「レーステーブル」.「レースID」と紐づくデータが存在する場合、リンクボタンを表示するかどうかを制御するためにhasHistoryを利用 */}
-                    {row.hasHistory == true && (
-                      // TODO: 遷移先のURLは仮置き。置き換えること。
-                      <CustomTd
-                        transitionDest={
-                          '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
-                        }
+                  </CustomTh>
+                  <CustomTh align='left'>
+                    <div className='flex flex-row items-center gap-[10px]'>
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => eventNameSort()}
                       >
-                        {row.race_id}
-                      </CustomTd>
-                    )}
-                    {/* レースID */}
-                    {!row.hasHistory && <CustomTd>{row.race_id}</CustomTd>}
-                    {row.hasHistory == true && (
-                      // TODO: 遷移先のURLは仮置き。置き換えること。
-                      <CustomTd
-                        transitionDest={
-                          '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
-                        }
+                        種目
+                      </div>
+                      <div
+                        style={{
+                          cursor: 'pointer',
+                          color: selectedEventNameList.length > 0 ? '#F44336' : '#001D74',
+                        }}
+                        onClick={(event) => handleEventNameHeaderClick('種目', event as any)}
                       >
-                        {row.race_name}
-                      </CustomTd>
-                    )}
-                    {/* レース名 */}
-                    {!row.hasHistory && <CustomTd>{row.race_name}</CustomTd>}
-                    {/* レースNo. */}
-                    <CustomTd>{row.race_number}</CustomTd>
-                    {/* 種目 */}
-                    <CustomTd>{row.event_name}</CustomTd>
-                    {/* 組別 */}
-                    <CustomTd>{row.by_group}</CustomTd>
-                    {/* 距離 */}
-                    <CustomTd>{row.range}</CustomTd>
-                    {/* 発艇日時 */}
-                    <CustomTd>{row.start_date_time.substring(0, 16)}</CustomTd>
-                  </CustomTr>
-                ))}
-            </CustomTbody>
-          </CustomTable>
+                        <FilterListIcon />
+                      </div>
+                    </div>
+                  </CustomTh>
+                  <CustomTh align='left'>
+                    <div className='flex flex-row items-center gap-[10px]'>
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => byGroupSort()}
+                      >
+                        組別
+                      </div>
+                      <div
+                        style={{
+                          cursor: 'pointer',
+                          color: selectedByGroupList.length > 0 ? '#F44336' : '#001D74',
+                        }}
+                        onClick={(event) => handleByGroupHeaderClick('組別', event as any)}
+                      >
+                        <FilterListIcon />
+                      </div>
+                    </div>
+                  </CustomTh>
+                  <CustomTh align='left'>
+                    <div className='flex flex-row items-center gap-[10px]'>
+                      <div
+                        className='underline'
+                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                        onClick={() => rangeSort()}
+                      >
+                        距離
+                      </div>
+                      <div
+                        style={{
+                          cursor: 'pointer',
+                          color: selectedRangeList.length > 0 ? '#F44336' : '#001D74',
+                        }}
+                        onClick={(event) => handleRangeHeaderClick('距離', event as any)}
+                      >
+                        <FilterListIcon />
+                      </div>
+                    </div>
+                  </CustomTh>
+                  <CustomTh align='left'>
+                    <div
+                      className='underline'
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                      onClick={() => startDateTimeSort()}
+                    >
+                      発艇日時
+                    </div>
+                  </CustomTh>
+                </CustomTr>
+              </CustomThead>
+              <CustomTbody>
+                {tableData
+                  .filter((row, index) => {
+                    if (selectedEventNameList.length > 0) {
+                      return selectedEventNameList.some((item) => item.name === row.event_name);
+                    } else {
+                      return true;
+                    }
+                  })
+                  .filter((row, index) => {
+                    if (selectedByGroupList.length > 0) {
+                      return selectedByGroupList.some((item) => item.name === row.by_group);
+                    } else {
+                      return true;
+                    }
+                  })
+                  .filter((row, index) => {
+                    if (selectedRangeList.length > 0) {
+                      return selectedRangeList.some((item) => item.name === row.range);
+                    } else {
+                      return true;
+                    }
+                  })
+                  .map((row, index) => (
+                    <CustomTr key={index}>
+                      {/* 「出漕結果記録テーブル」に「レーステーブル」.「レースID」と紐づくデータが存在する場合、リンクボタンを表示するかどうかを制御するためにhasHistoryを利用 */}
+                      {row.hasHistory == true && (
+                        // TODO: 遷移先のURLは仮置き。置き換えること。
+                        <CustomTd
+                          transitionDest={
+                            '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
+                          }
+                        >
+                          {row.race_id}
+                        </CustomTd>
+                      )}
+                      {/* レースID */}
+                      {!row.hasHistory && <CustomTd>{row.race_id}</CustomTd>}
+                      {row.hasHistory == true && (
+                        // TODO: 遷移先のURLは仮置き。置き換えること。
+                        <CustomTd
+                          transitionDest={
+                            '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
+                          }
+                        >
+                          {row.race_name}
+                        </CustomTd>
+                      )}
+                      {/* レース名 */}
+                      {!row.hasHistory && <CustomTd>{row.race_name}</CustomTd>}
+                      {/* レースNo. */}
+                      <CustomTd>{row.race_number}</CustomTd>
+                      {/* 種目 */}
+                      <CustomTd>{row.event_name}</CustomTd>
+                      {/* 組別 */}
+                      <CustomTd>{row.by_group}</CustomTd>
+                      {/* 距離 */}
+                      <CustomTd>{row.range}</CustomTd>
+                      {/* 発艇日時 */}
+                      <CustomTd>{row.start_date_time.substring(0, 16)}</CustomTd>
+                    </CustomTr>
+                  ))}
+              </CustomTbody>
+            </CustomTable>
+          </div>
           {/* 種目フィルター用のオートコンプリート 20240509 */}
           {showEventNameAutocomplete && (
             <div
@@ -927,7 +908,6 @@ export default function TournamentRef() {
           {window.history.length > 1 && (
             <CustomButton
               buttonType='primary-outlined'
-              className='w-[280px]'
               onClick={() => {
                 router.back();
               }}
@@ -944,7 +924,6 @@ export default function TournamentRef() {
               // 削除ボタン
               <CustomButton
                 buttonType='primary'
-                className='w-[280px]'
                 onClick={async () => {
                   // TODO: 削除ボタン押下イベントの実装
                   //追加対象のデータをまとめて送信する 20240202

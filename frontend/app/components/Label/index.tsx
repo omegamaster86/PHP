@@ -11,7 +11,7 @@ export default function Label({
 }) {
   return (
     <div
-      className={`flex justify-start items-center gap-[10px]
+      className={`
     ${
       textColor === 'secondary'
         ? 'text-secondaryText'
@@ -43,7 +43,7 @@ export default function Label({
     ${isBold ? 'font-bold' : 'font-normal'}
     `}
     >
-      <div>{label}</div>
+      {label}
     </div>
   );
 }

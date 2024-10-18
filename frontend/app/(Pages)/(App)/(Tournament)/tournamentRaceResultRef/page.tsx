@@ -90,7 +90,6 @@ export default function TournamentRaceResultRef() {
         await csrf();
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
         const response = await axios.post('/getTournRaceResultRecords', race_id); //残件対象項目
-        //console.log(response.data.result);
         //クルー情報を取得するためのパラメータをセット
         setSearchCrewInfo(response.data.result);
         setResultRecordsData(response.data.result);
@@ -221,7 +220,6 @@ export default function TournamentRaceResultRef() {
   const getCrew = async (rowData: RaceResultRecordsResponse) => {
     // var apiUri = 'http://localhost:3100/crew?';
     // クルー名、団体ID、レースIDのすべてが一致するクルー情報を取得
-    //console.log(searchCrewInfo);
     var index = 0;
     for (; index < searchCrewInfo.length; index++) {
       if (
@@ -232,20 +230,15 @@ export default function TournamentRaceResultRef() {
         break;
       }
     }
-    //console.log(index);
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     await axios
       // .get<CrewResponse[]>('/crew/') //残件対象項目
       .post('/getCrewData', searchCrewInfo[index])
       .then((response) => {
-        //console.log(response.data.result);
         // レスポンスからデータを取り出してstateにセット
         setCurrentCrewName(searchCrewInfo[index].crew_name);
-        //console.log(currentCrewName);
-        //console.log(searchCrewInfo[index]);
         for (let index = 0; index < response.data.result.length; index++) {
-          //console.log(response.data.result[index].seat_name);
           if (response.data.result[index].seat_name == 'ストローク') {
             response.data.result[index].seat_name = 'S（ストローク）';
           } else if (response.data.result[index].seat_name == 'バウ') {
@@ -275,55 +268,48 @@ export default function TournamentRaceResultRef() {
 
   return (
     <main>
-      <div className='flex flex-col pt-[40px] pb-[60px] gap-[50px] md:w-[1000px] sm: w-[600px]'>
+      <div className='flex flex-col gap-[30px] max-w-5xl m-auto'>
         <CustomTitle displayBack>大会レース結果参照</CustomTitle>
         <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
-        <div className='bg-primary-900 p-4'>
-          <div className='flex flex-col justify-start gap-[20px]'>
-            {/* 種目名 */}
-            <div className='flex flex-col justify-start'>
+        <div className='flex flex-col gap-[20px] bg-primary-900 p-4'>
+          {/* 種目名 */}
+          <Label
+            label={raceResultRecordsData.at(0)?.event_name ?? ''}
+            textColor='white'
+            textSize='h3'
+          />
+          <div className='flex flex-col sm:flex-row sm:gap-3 items-center'>
+            <Label label='大会名' textColor='gray' textSize='caption1' />
+            {raceResultRecordsData.length > 0 && (
+              <Link
+                href={`/tournamentRef?tournId=${raceResultRecordsData.at(0)?.tourn_id}`}
+                rel='noopener noreferrer'
+                target='_blank'
+                color='#ffffff'
+              >
+                {raceResultRecordsData.at(0)?.tourn_name as string}
+              </Link>
+            )}
+          </div>
+          <div className='flex gap-3'>
+            <Label label='開催場所' textColor='gray' textSize='caption1' />
+            {raceResultRecordsData.length > 0 && (
               <Label
-                label={raceResultRecordsData.at(0)?.event_name ?? ''}
+                label={raceResultRecordsData.at(0)?.venue_name as string}
                 textColor='white'
-                textSize='h3'
+                textSize='caption1'
               />
-            </div>
-            <div className='flex flex-row gap-[10px]'>
-              <div className='flex flex-col justify-start gap-[10px]'>
-                <Label label='大会名' textColor='gray' textSize='caption1' />
-                <div className='flex flex-col justify-start'>
-                  <Label label='開催場所' textColor='gray' textSize='caption1' />
-                  <Label label='距離' textColor='gray' textSize='caption1' />
-                </div>
-              </div>
-              {raceResultRecordsData.length > 0 && (
-                <div className='flex flex-col justify-start gap-[10px]'>
-                  {/* 大会名 */}
-                  <Link
-                    href={`/tournamentRef?tournId=${raceResultRecordsData.at(0)?.tourn_id}`}
-                    rel='noopener noreferrer'
-                    target='_blank'
-                    className='text-primary-300 underline hover:text-primary-50 cursor-pointer text-caption1'
-                  >
-                    {raceResultRecordsData.at(0)?.tourn_name as string}
-                  </Link>
-                  <div className='flex flex-col justify-start'>
-                    {/* 開催場所 */}
-                    <Label
-                      label={raceResultRecordsData.at(0)?.venue_name as string}
-                      textColor='white'
-                      textSize='caption1'
-                    />
-                    {/* 距離 */}
-                    <Label
-                      label={(raceResultRecordsData.at(0)?.range?.toString() + 'm') as string}
-                      textColor='white'
-                      textSize='caption1'
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
+            )}
+          </div>
+          <div className='flex gap-3'>
+            <Label label='距離' textColor='gray' textSize='caption1' />
+            {raceResultRecordsData.length > 0 && (
+              <Label
+                label={(raceResultRecordsData.at(0)?.range?.toString() + 'm') as string}
+                textColor='white'
+                textSize='caption1'
+              />
+            )}
           </div>
         </div>
         {/* 選手情報表示 */}
@@ -403,9 +389,6 @@ export default function TournamentRaceResultRef() {
                       <CustomTd>
                         <div
                           onClick={(event) => {
-                            //console.log(index);
-                            //console.log(row);
-                            //console.log(event.currentTarget.innerText);
                             setOpen(true);
                             getCrew(row);
                           }}
@@ -498,7 +481,6 @@ export default function TournamentRaceResultRef() {
                   }
                   value={selectedRaceNameList || []}
                   onChange={(e: ChangeEvent<{}>, newValue: RaceNameList[]) => {
-                    //console.log(newValue);
                     setSelectedRaceNameList(newValue);
                   }}
                   renderOption={(props: any, option: RaceNameList) => {
@@ -521,7 +503,6 @@ export default function TournamentRaceResultRef() {
                       label={'レース名'}
                     />
                   )}
-                  className='w-[280px] m-auto'
                 />
               </div>
             )}
@@ -547,7 +528,6 @@ export default function TournamentRaceResultRef() {
                   }
                   value={selectedByGroupList || []}
                   onChange={(e: ChangeEvent<{}>, newValue: ByGroupList[]) => {
-                    //console.log(newValue);
                     setSelectedByGroupList(newValue);
                   }}
                   renderOption={(props: any, option: ByGroupList) => {
@@ -578,7 +558,7 @@ export default function TournamentRaceResultRef() {
         {/* 戻るボタン */}
         <CustomButton
           buttonType='primary-outlined'
-          className='w-[280px] m-auto'
+          className='m-auto'
           onClick={() => {
             router.back();
           }}
@@ -588,13 +568,12 @@ export default function TournamentRaceResultRef() {
       </div>
       <Fragment>
         <Dialog
-          fullWidth={true}
           maxWidth={'lg'}
           open={open}
           onClose={handleClose}
           aria-labelledby='alert-dialog-title'
           aria-describedby='alert-dialog-description'
-          className='flex flex-col justify-center w-full gap-[20px]'
+          className='flex flex-col justify-center gap-[20px]'
         >
           <DialogTitle id='alert-dialog-title' className='font-bold'>
             クルー名： {currentCrewName}
@@ -620,7 +599,6 @@ export default function TournamentRaceResultRef() {
                           href={`/playerInformationRef?playerId=${row.player_id}`}
                           rel='noopener noreferrer'
                           target='_blank'
-                          className='text-primary-300 underline hover:text-primary-50 cursor-pointer text-caption1'
                         >
                           {row.player_name}
                         </Link>
@@ -633,11 +611,7 @@ export default function TournamentRaceResultRef() {
             </CustomTable>
           </DialogContent>
           <DialogActions className='mt-[20px]'>
-            <CustomButton
-              onClick={handleClose}
-              buttonType='primary-outlined'
-              className='w-[280px] m-auto'
-            >
+            <CustomButton onClick={handleClose} buttonType='primary-outlined' className='m-auto'>
               閉じる
             </CustomButton>
           </DialogActions>
