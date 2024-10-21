@@ -571,6 +571,23 @@ interface MyPagePlayerProfileInfoData {
   sideInfo: string; //サイド情報
 }
 
+//マイページのボランティア情報表示用インターフェース 20241017
+interface MyPageVolunteerInfoData {
+  volunteerName: string; // 氏名
+  sex: string; // 性別
+  dateOfBirth: string; // 生年月日
+  countryName: string; // 居住地（国）
+  prefName: string; // 居住地（都道府県）
+  telephoneNumber: string; // 電話番号
+  mailaddress: string; // メールアドレス
+  clothesSize: string; // 服のサイズ
+  disType: any; // 障碍タイプ FIXME
+  qualHold: any; // 保有資格 FIXME
+  languageProficiency: any; //言語 FIXME
+  dayOfWeek: string; // 曜日
+  timeZone: string; // 時間帯
+}
+
 export type {
   CheckRace,
   CheckRaceResultRecord,
@@ -586,6 +603,7 @@ export type {
   MyPageRaceResultRecordInfoData,
   MyPageTournamentInfoData,
   MyPageTournamentParams,
+  MyPageVolunteerInfoData,
   Org,
   Organization,
   OrganizationPlayer,
