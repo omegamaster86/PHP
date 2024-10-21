@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Models\M_side_info;
 use App\Models\T_raceResultRecord;
 use App\Models\T_players;
 use App\Models\T_tournaments;
@@ -52,10 +53,12 @@ class MyPageController extends Controller
     }
 
     //選手プロフィールを取得 20241015
-    public function getMyPagePlayerProfileList(T_players $tPlayers)
+    public function getMyPagePlayerProfileList(T_players $tPlayers, M_side_info $mSideInfo)
     {
         Log::debug(sprintf("getMyPagePlayerProfileList start"));
         $result = $tPlayers->getPlayerProfileInfo(Auth::user()->user_id); //ユーザIDを元に選手プロフィール情報を取得 202401015
+        $sideInfoMasterResult = $mSideInfo->getMyPageSideInfo($result->sideInfo); //サイド情報(8桁の数字列)を元にサイド名を取得 202401021
+        $result->sideInfo = $sideInfoMasterResult; //サイド情報マスターから取得した結果をsideInfoに渡す 20241021
 
         Log::debug(sprintf("getMyPagePlayerProfileList end"));
         return response()->json(['result' => $result]); //DBの結果を返す
