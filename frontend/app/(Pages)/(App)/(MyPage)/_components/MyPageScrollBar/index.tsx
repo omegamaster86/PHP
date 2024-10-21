@@ -25,7 +25,7 @@ const MyPageScrollBar: React.FC<Props> = (props) => {
   const childItems = listItems[currentIndex].items ?? [];
 
   return (
-    <div className='flex flex-row justify-center overflow-x-scroll gap-4 px-2 text-sm text-secondaryText border-solid border-b-[1px]'>
+    <div className='flex flex-row overflow-x-scroll gap-4 px-2 text-sm text-secondaryText border-solid border-b-[1px]'>
       {listItems.map((x, index) => (
         <MenuButton
           key={x.title}

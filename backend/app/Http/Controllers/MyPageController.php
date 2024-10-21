@@ -17,15 +17,20 @@ use App\Models\T_volunteer_supportable_disability;
 class MyPageController extends Controller
 {
     //大会情報を取得 20241008
-    public function getMyPageTournamentInfoList(Request $request, T_raceResultRecord $tRaceResultRecord, T_players $tPlayers)
+    public function getMyPageTournamentInfoList(Request $request, T_tournaments $tTournaments, T_players $tPlayers)
     {
         Log::debug(sprintf("getMyPageTournamentInfoList start"));
         $reqData = $request->all();
         Log::debug($reqData);
-        $userId = $reqData["userId"];
         $tournType = $reqData["tournType"];
-        $playerData = $tPlayers->getPlayerDataFromUserId($userId); //ユーザIDを元に選手IDを取得 202401008
-        $result = $tRaceResultRecord->getMyPageTournamentInfo($playerData->player_id, $tournType); //選手IDを元に大会情報を取得 20241008
+        $playerData = $tPlayers->getPlayerDataFromUserId(Auth::user()->user_id); //ユーザIDを元に選手IDを取得 202401008
+
+        // FIXME: 大会フォロー機能実装時に不要になる予定
+        if (empty($playerData)) {
+            return response()->json(['result' => []]);
+        }
+
+        $result = $tTournaments->getMyPageTournamentInfo($playerData->player_id, $tournType); //選手IDを元に大会情報を取得 20241008
 
         Log::debug(sprintf("getMyPageTournamentInfoList end"));
         return response()->json(['result' => $result]); //DBの結果を返す
@@ -37,9 +42,8 @@ class MyPageController extends Controller
         Log::debug(sprintf("getMyPageRaceResultRecordInfoList start"));
         $reqData = $request->all();
         Log::debug($reqData);
-        $userId = $reqData["userId"];
         $official = $reqData["official"];
-        $playerData = $tPlayers->getPlayerDataFromUserId($userId); //ユーザIDを元に選手IDを取得 202401008
+        $playerData = $tPlayers->getPlayerDataFromUserId(Auth::user()->user_id); //ユーザIDを元に選手IDを取得 202401008
         $result = $tRaceResultRecord->getMyPageRaceResultRecordInfo($playerData->player_id, $official); //選手IDを元に出漕履歴情報を取得 20241015
 
         Log::debug(sprintf("getMyPageRaceResultRecordInfoList end"));

@@ -1,3 +1,5 @@
+import { TournType } from '@/app/constants';
+
 // Jsonの型定義
 interface CountryResponse {
   id: number;
@@ -530,8 +532,9 @@ interface CheckRaceResultRecordDeleted {
 
 //マイページの大会情報表示用インターフェース 20241008
 interface MyPageTournamentInfoData {
+  tournId: number; // 大会ID
   tournName: string; // 大会名
-  tournType: number; // 公式／非公式
+  tournType: TournType; // 公式／非公式
   eventStartDate: string; // 開催日
   venueName: string; //開催場所
   sponsorOrgName: string; // 主催団体名
@@ -543,8 +546,12 @@ interface MyPageRaceResultRecordInfoData {
   official: number; // 公式／非公式
   startDateTime: string; // 開始時刻
   raceNumber: number; //レースNo.
-  raceName: string;//レース名
+  raceName: string; //レース名
   byGroup: string; // 組別
+}
+
+interface MyPageTournamentParams {
+  tournType: TournType;
 }
 
 //マイページの選手プロフィール表示用インターフェース 20241016
@@ -564,59 +571,44 @@ interface MyPagePlayerProfileInfoData {
   sideInfo: string; //サイド情報
 }
 
-//マイページのボランティア情報表示用インターフェース 20241017
-interface MyPageVolunteerInfoData {
-  volunteerName: string; // 氏名
-  sex: string; // 性別
-  dateOfBirth: string; // 生年月日
-  countryName: string; // 居住地（国）
-  prefName: string; // 居住地（都道府県）
-  telephoneNumber: string; // 電話番号
-  mailaddress: string; // メールアドレス
-  clothesSize: string; // 服のサイズ
-  disType: any; // 障碍タイプ FIXME
-  qualHold: any; // 保有資格 FIXME
-  languageProficiency: any; //言語 FIXME
-  dayOfWeek: string; // 曜日
-  timeZone: string; // 時間帯
-}
-
-export type { SexResponse };
-export type { PrefectureResponse };
-export type { CountryResponse };
-export type { RaceResultRecordsResponse };
-export type { PlayerInformationResponse };
-export type { TeamPlayerInformationResponse };
-export type { TeamResponse };
-export type { Tournament };
-export type { Race };
-export type { RaceTable };
-export type { TourTypeResponse };
-export type { VenueResponse };
-export type { EventResponse };
-export type { RaceTypeResponse };
-export type { UserResponse };
-export type { DisTypeResponse };
-export type { QualHoldResponse };
-export type { LangResponse };
-export type { VolunteerResponse };
-export type { VolunteerHistoriesResponse };
-export type { Player };
-export type { Organization };
-export type { Staff };
-export type { OrgType };
-export type { OrgClass };
-export type { TournamentResponse };
-export type { CrewResponse };
-export type { OrganizationPlayer };
-export type { Org };
-export type { CheckRace };
-export type { UserIdType };
-export type { CheckRaceResultRecord };
-export type { MasterResponse };
-export type { CrewPlayer };
-export type { CheckRaceResultRecordDeleted };
-export type { MyPageTournamentInfoData };
-export type { MyPageRaceResultRecordInfoData };
-export type { MyPagePlayerProfileInfoData };
-export type { MyPageVolunteerInfoData };
+export type {
+  CheckRace,
+  CheckRaceResultRecord,
+  CheckRaceResultRecordDeleted,
+  CountryResponse,
+  CrewPlayer,
+  CrewResponse,
+  DisTypeResponse,
+  EventResponse,
+  LangResponse,
+  MasterResponse,
+  MyPagePlayerProfileInfoData,
+  MyPageRaceResultRecordInfoData,
+  MyPageTournamentInfoData,
+  MyPageTournamentParams,
+  Org,
+  Organization,
+  OrganizationPlayer,
+  OrgClass,
+  OrgType,
+  Player,
+  PlayerInformationResponse,
+  PrefectureResponse,
+  QualHoldResponse,
+  Race,
+  RaceResultRecordsResponse,
+  RaceTable,
+  RaceTypeResponse,
+  SexResponse,
+  Staff,
+  TeamPlayerInformationResponse,
+  TeamResponse,
+  Tournament,
+  TournamentResponse,
+  TourTypeResponse,
+  UserIdType,
+  UserResponse,
+  VenueResponse,
+  VolunteerHistoriesResponse,
+  VolunteerResponse,
+};

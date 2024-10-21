@@ -116,7 +116,7 @@ Route::middleware('auth')->group(function () {
     Route::post('getUpdatePlayerData', [PlayerController::class, 'getUpdatePlayerData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('updatePlayerData', [PlayerController::class, 'updatePlayerData']); //選手更新確認画面から更新 20240131
     Route::post('checkJARAPlayerId', [PlayerController::class, 'checkJARAPlayerId']); //選手登録画面から登録 20240220
-    
+
     Route::post('getPlayerInfoData', [PlayerController::class, 'getPlayerInfoData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('getRaceResultRecordsData', [PlayerController::class, 'getRaceResultRecordsData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('deletePlayerData', [PlayerController::class, 'deletePlayerData']); //該当データをDBから削除する 20240201
@@ -140,14 +140,14 @@ Route::middleware('auth')->group(function () {
     Route::post('teamPlayerSearch', [OrganizationPlayersController::class, 'teamPlayerSearch']); //団体所属選手更新 20240226
     Route::post('sendOrgCsvData', [OrganizationPlayersController::class, 'sendOrgCsvData']); //団体一括 読み込むボタン押下 20240301
     Route::post('registerOrgCsvData', [OrganizationPlayersController::class, 'registerOrgCsvData']); //団体一括 登録ボタン押下 20240301
-    
+
     //スタッフ関連
     Route::post('getOrgStaffData', [OrganizationController::class, 'getOrgStaffData']); //スタッフ情報取得 20240214
 
     //大会関連
     Route::post('getTournamentInfoData', [TournamentController::class, 'getTournamentInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
     Route::post('getTournamentInfoData_org', [TournamentController::class, 'getTournamentInfoData_org']); //主催大会 20240215
-    Route::post('tournamentRegistOrUpdateValidationCheck', [TournamentController::class, 'tournamentRegistOrUpdateValidationCheck']); 
+    Route::post('tournamentRegistOrUpdateValidationCheck', [TournamentController::class, 'tournamentRegistOrUpdateValidationCheck']);
     Route::post('storeTournamentInfoData', [TournamentController::class, 'storeTournamentInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
     Route::post('updateTournamentInfoData', [TournamentController::class, 'updateTournamentInfoData']); //大会情報更新 20240202
     Route::get('getRaceInfoData', [TournamentController::class, 'getRaceInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
@@ -188,15 +188,13 @@ Route::middleware('auth')->group(function () {
     Route::post('deleteVolunteer', [VolunteerController::class, 'deleteVolunteer']); //ボランティア削除 20240315
 
     //マイページ関連
-    Route::post('getMyPageTournamentInfoList', [MyPageController::class, 'getMyPageTournamentInfoList']); // 大会情報を取得する 20241008
-    Route::post('getMyPageRaceResultRecordInfoList', [MyPageController::class, 'getMyPageRaceResultRecordInfoList']); // 出漕履歴を取得する 20241010
-    Route::get('getMyPagePlayerProfileList', [MyPageController::class, 'getMyPagePlayerProfileList']); // 選手プロフィールを取得する 20241016
-    Route::get('getMyPageVolunteerInfoList', [MyPageController::class, 'getMyPageVolunteerInfoList']); // ボランティア情報を取得する 20241017
+    Route::get('getMyPageTournamentInfoList', [MyPageController::class, 'getMyPageTournamentInfoList']); // 大会情報を取得する 20241008
+    Route::get('getMyPageRaceResultRecordInfoList', [MyPageController::class, 'getMyPageRaceResultRecordInfoList']); // 出漕履歴を取得する 20241010
+    Route::post('getMyPagePlayerProfileList', [MyPageController::class, 'getMyPagePlayerProfileList']); // 選手プロフィールを取得する 20241016
 
     //React連携後APIここまで===========================================================
     //================================================================================
 
     Route::post('user/delete',  [UserController::class, 'storeDelete']);
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
-
 });
