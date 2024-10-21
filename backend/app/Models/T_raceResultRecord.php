@@ -268,6 +268,7 @@ class T_raceResultRecord extends Model
     public function getMyPageRaceResultRecordInfo($playerId, $official)
     {
         $racesResultRecord = DB::select('select 
+                                        `t_race_result_record`.`race_result_record_id` as `raceId`,
                                         `t_race_result_record`.`tourn_name` as `tournName`,
                                         `t_race_result_record`.`official`,
                                         `t_race_result_record`.`start_datetime` as `startDateTime`, 

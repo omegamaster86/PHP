@@ -1,7 +1,8 @@
 'use client';
 
-import TournamentCardContent from '@/app/(Pages)/(App)/(MyPage)/_components/TournamentCardContent';
+import TournamentCardContent from '@/app/(Pages)/(App)/(MyPage)/mypage/tournament/_components/TournamentCardContent';
 import { CustomButton } from '@/app/components';
+import EmptyScreen from '@/app/components/EmptyScreen';
 import LinkCard from '@/app/components/LinkCard';
 import { tournType } from '@/app/constants';
 import { useInfiniteList } from '@/app/hooks/useInfiniteList';
@@ -14,7 +15,7 @@ export default function TournamentUnofficial() {
     tournType: tournType.unofficial,
   };
 
-  const { data } = useSWR(
+  const { data, isLoading } = useSWR(
     {
       url: '/getMyPageTournamentInfoList',
       params: myPageTournamentParams,
@@ -25,6 +26,12 @@ export default function TournamentUnofficial() {
 
   const tournamentItems = data?.result ?? [];
   const { infiniteList, isLastPage, fetchMore } = useInfiniteList(tournamentItems);
+
+  if (!isLoading && !infiniteList.length) {
+    return (
+      <EmptyScreen message='出漕履歴・予定のある大会、もしくはフォローした大会が表示されます。' />
+    );
+  }
 
   return (
     <main>

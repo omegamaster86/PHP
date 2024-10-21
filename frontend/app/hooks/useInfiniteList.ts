@@ -11,6 +11,10 @@ export const useInfiniteList = <T>(data: T[], perPage = 10) => {
   };
 
   useEffect(() => {
+    if (data.length === 0) {
+      return;
+    }
+
     const start = 0;
     const end = perPage * page;
     setInfiniteList(data.slice(start, end));
