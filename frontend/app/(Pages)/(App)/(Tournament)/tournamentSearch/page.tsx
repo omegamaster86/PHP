@@ -27,6 +27,7 @@ import { Tournament } from '@/app/types';
 import SearchIcon from '@mui/icons-material/Search';
 import Link from 'next/link';
 import Validator from '@/app/utils/validator';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import Divider from '@mui/material/Divider';
 // モデルのインポート
 import AddIcon from '@mui/icons-material/Add';
@@ -243,7 +244,6 @@ export default function TournamentSearch() {
             appro_type_id_name: string;
           }) => ({ id: appro_type_id, name: appro_type_id_name }),
         );
-        //console.log(tourTypeList);
         setTourType(tourTypeList);
 
         // const venueResponse = await axios.get<VenueResponse[]>('/venue');
@@ -284,16 +284,14 @@ export default function TournamentSearch() {
 
   // レンダリング
   return (
-    <main className='flex min-h-screen flex-col justify-start p-[10px] gap-[20px] my-[80px] md:w-[1200px] sm: w-[600px]'>
-      <div className='relative flex flex-row justify-between w-full h-screen flex-wrap'>
-        {/* 画面名 */}
-        <CustomTitle displayBack>大会検索</CustomTitle>
-      </div>
+    <main className='max-w-5xl m-auto'>
+      {/* 画面名 */}
+      <CustomTitle displayBack>大会検索</CustomTitle>
       {/* エラーメッセージの表示 */}
       <ErrorBox errorText={[]} />
-      <div className='bg-thinContainerBg p-[20px] flex flex-col gap-[12px]'>
-        <div className='flex flex-col justify-start gap-[16px]'>
-          <div className='flex flex-row justify-start gap-[16px]'>
+      <div className='bg-thinContainerBg p-[20px]'>
+        <div className='flex flex-col gap-[16px]'>
+          <div className='flex flex-col sm:flex-row gap-[16px]'>
             {/* 大会名 */}
             <CustomTextField
               label='大会名'
@@ -302,91 +300,81 @@ export default function TournamentSearch() {
               isError={false}
               errorMessages={[]}
               value={searchCond.tourn_name}
-              className='w-[400px] border-[0.5px] border-solid border-gray-50 rounded'
+              className='border-[0.5px] border-solid border-gray-50 rounded'
               onChange={(e) => handleInputChange('tourn_name', e.target.value)}
             />
             {/* 大会種別 */}
-            <div className='flex flex-col justify-start gap-[8px] w-[200px] h-[50px] border-[0.5px] border-solid border-gray-50 rounded'>
-              <CustomDropdown
-                id='tournType'
-                label='大会種別'
-                options={tournType.map((item) => ({ key: item.id, value: item.name }))}
-                value={searchCond.tourn_type}
-                onChange={(e) => {
-                  handleInputChange('tourn_type', e);
-                  handleInputChange(
-                    'tournTypeName',
-                    tournType.find((item) => item.id.toString() === e)?.name || '',
-                  );
-                }}
-                className='border-[0.5px] border-solid border-gray-50 rounded w-[200px]'
-              />
-            </div>
+            <CustomDropdown
+              id='tournType'
+              label='大会種別'
+              options={tournType.map((item) => ({ key: item.id, value: item.name }))}
+              value={searchCond.tourn_type}
+              onChange={(e) => {
+                handleInputChange('tourn_type', e);
+                handleInputChange(
+                  'tournTypeName',
+                  tournType.find((item) => item.id.toString() === e)?.name || '',
+                );
+              }}
+              className='border-[0.5px] border-solid border-gray-50 rounded'
+              width='sm:w-[200px]'
+            />
             {/* 開催場所 */}
-            <div className='flex flex-col justify-start gap-[8px]'>
-              <InputLabel label='開催場所' />
-              <div>
-                <CustomDropdown
-                  id='venueId'
-                  placeHolder='開催場所'
-                  options={venue.map((item) => ({ key: item.id, value: item.name }))}
-                  value={searchCond.venue_id}
-                  onChange={(e) => {
-                    handleInputChange('venue_id', e);
-                    handleInputChange(
-                      'venue_name',
-                      venue.find((item) => item.id.toString() === e)?.name || '',
-                    );
+            <CustomDropdown
+              id='venueId'
+              label='開催場所'
+              placeHolder='開催場所'
+              options={venue.map((item) => ({ key: item.id, value: item.name }))}
+              value={searchCond.venue_id}
+              onChange={(e) => {
+                handleInputChange('venue_id', e);
+                handleInputChange(
+                  'venue_name',
+                  venue.find((item) => item.id.toString() === e)?.name || '',
+                );
+              }}
+              className='border-[0.5px] border-solid border-gray-50 rounded'
+              width='sm:w-[200px]'
+            />
+          </div>
+          <div className='flex flex-row justify-center sm:justify-start gap-[16px]'>
+            {/* 開催開始年月日 */}
+            <div className='flex flex-col gap-[6px]'>
+              <InputLabel label='開催年月日' /> {/* 外側のラベル */}
+              <div className='flex flex-row gap-[16px]'>
+                <CustomDatePicker
+                  placeHolder={'YYYY/MM/DD'}
+                  selectedDate={searchCond.event_start_date}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    handleInputChange('event_start_date', formatDate(e as unknown as Date));
                   }}
-                  className='border-[0.5px] border-solid border-gray-50 rounded w-[200px]'
+                />
+
+                <p className='flex flex-col justify-center text-center '>～</p>
+                <CustomDatePicker
+                  placeHolder={'YYYY/MM/DD'}
+                  selectedDate={searchCond.event_end_date}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    handleInputChange('event_end_date', formatDate(e as unknown as Date));
+                  }}
                 />
               </div>
             </div>
           </div>
-          <div className='flex flex-row justify-start gap-[16px]'>
-            {/* 開催開始年月日 */}
-            <div className='flex flex-col justify-start '>
-              <InputLabel label='開催年月日' />
-              <CustomDatePicker
-                // placeHolder={new Date().toLocaleDateString('ja-JP')}
-                placeHolder={'YYYY/MM/DD'}
-                selectedDate={searchCond.event_start_date}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  handleInputChange('event_start_date', formatDate(e as unknown as Date));
-                }}
-              />
-            </div>
-            <p className='flex flex-col justify-center items-center h-[50px] w-[20px] text-center self-end'>
-              ～
-            </p>
-            {/* 開催終了年月日 */}
-            <div className='flex flex-col justify-start self-end'>
-              <CustomDatePicker
-                // placeHolder={new Date().toLocaleDateString('ja-JP')}
-                placeHolder={'YYYY/MM/DD'}
-                selectedDate={searchCond.event_end_date}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  handleInputChange('event_end_date', formatDate(e as unknown as Date));
-                }}
-              />
-            </div>
-          </div>
           <Divider className='h-[1px] bg-border' />
-          <div className='flex flex-col justify-start items-center'>
-            <CustomButton
-              buttonType='secondary'
-              onClick={toggleAccordion}
-              className='flex flex-row justify-center gap-[4px] w-[940px]'
-            >
-              <div className='font-bold'>もっと詳しく検索</div>
-              {isOpen ? <RemoveIcon /> : <AddIcon />}
-            </CustomButton>
-          </div>
+          <CustomButton
+            buttonType='secondary'
+            onClick={toggleAccordion}
+            className='flex flex-row justify-center items-center gap-[4px] w-full'
+          >
+            <div className='font-bold'>もっと詳しく検索</div>
+            {isOpen ? <RemoveIcon /> : <AddIcon />}
+          </CustomButton>
 
           {isOpen && (
-            <div className='flex flex-col justify-start gap-[16px]'>
+            <div className='flex flex-col gap-[16px]'>
               <Label label='選手情報' isBold />
-              <div className='flex flex-row justify-start gap-[16px]'>
+              <div className='flex flex-col sm:flex-row gap-[16px]'>
                 {/* JARA選手コード */}
                 <CustomTextField
                   // type='number'
@@ -422,42 +410,38 @@ export default function TournamentSearch() {
             </div>
           )}
           {isOpen && (
-            <div className='flex flex-col justify-start gap-[16px]'>
+            <div className='flex flex-col gap-[16px]'>
               <Label label='主催団体' isBold />
-              <div className='flex flex-row justify-start gap-[16px]'>
+              <div className='flex flex-col sm:flex-row gap-[16px]'>
                 {/* 主催団体ID */}
-                <div className='flex flex-col justify-start'>
-                  <CustomTextField
-                    label='主催団体ID'
-                    placeHolder='主催団体ID'
-                    displayHelp={false}
-                    value={searchCond.sponsor_org_id}
-                    onChange={(e) => handleInputChange('sponsor_org_id', e.target.value)}
-                  />
-                </div>
+                <CustomTextField
+                  label='主催団体ID'
+                  placeHolder='主催団体ID'
+                  displayHelp={false}
+                  value={searchCond.sponsor_org_id}
+                  onChange={(e) => handleInputChange('sponsor_org_id', e.target.value)}
+                />
                 {/* 主催団体名 */}
-                <div className='flex flex-col justify-start'>
-                  <CustomTextField
-                    label='主催団体名'
-                    placeHolder='主催団体名'
-                    displayHelp={false}
-                    isError={false}
-                    errorMessages={[]}
-                    value={searchCond.sponsorOrgName}
-                    onChange={(e) => handleInputChange('sponsorOrgName', e.target.value)}
-                  />
-                </div>
+                <CustomTextField
+                  label='主催団体名'
+                  placeHolder='主催団体名'
+                  displayHelp={false}
+                  isError={false}
+                  errorMessages={[]}
+                  value={searchCond.sponsorOrgName}
+                  onChange={(e) => handleInputChange('sponsorOrgName', e.target.value)}
+                />
               </div>
             </div>
           )}
           <Divider></Divider>
-          <div className='flex flex-row justify-center gap-[4px]'>
+          <div className='flex flex-col items-center sm:flex-row justify-center gap-[10px]'>
             <CustomButton
               buttonType='primary'
               onClick={() => {
                 handleSearch();
               }}
-              className='flex flex-row justify-center gap-[4px] w-[200px]'
+              className='flex flex-row items-center justify-center gap-[4px]'
             >
               <SearchIcon />
               <div>検索</div>
@@ -482,7 +466,6 @@ export default function TournamentSearch() {
                   sponsorOrgName: '',
                 } as SearchCond);
               }}
-              className='w-[200px]'
             >
               クリア
             </CustomButton>

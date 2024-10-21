@@ -2,6 +2,7 @@ import { FC } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '../InputLabel';
+import { clsx } from 'clsx';
 
 // Propsの型定義
 interface SelectProps {
@@ -19,6 +20,7 @@ interface SelectProps {
   displayHelp?: boolean;
   toolTipTitle?: string;
   toolTipText?: string;
+  width?: string;
 }
 const CustomDropdown: FC<SelectProps> = ({
   id,
@@ -35,9 +37,10 @@ const CustomDropdown: FC<SelectProps> = ({
   displayHelp,
   toolTipTitle,
   toolTipText,
+  width,
 }) => {
   return (
-    <div className='flex flex-col w-full gap-[6px]'>
+    <div className={clsx('flex flex-col gap-[6px]', width ? width : 'w-full')}>
       {label && (
         <InputLabel
           label={label || ''}
@@ -54,7 +57,7 @@ const CustomDropdown: FC<SelectProps> = ({
             id={id}
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className={className + ' bg-white'}
+            className={clsx(className, 'w-full bg-white')}
             readOnly={readonly}
             placeholder={placeHolder}
             error={isError}
