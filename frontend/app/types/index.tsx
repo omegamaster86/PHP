@@ -1,4 +1,5 @@
 import { TournType } from '@/app/constants';
+import { OfficialType } from '@/app/constants/official';
 
 // Jsonの型定義
 interface CountryResponse {
@@ -540,18 +541,23 @@ interface MyPageTournamentInfoData {
   sponsorOrgName: string; // 主催団体名
 }
 
+interface MyPageTournamentParams {
+  tournType: TournType;
+}
+
 //マイページの出漕履歴表示用インターフェース 20241015
 interface MyPageRaceResultRecordInfoData {
+  raceId: number; // レースID
   tournName: string; // 大会名
-  official: number; // 公式／非公式
+  official: OfficialType; // 公式／非公式
   startDateTime: string; // 開始時刻
   raceNumber: number; //レースNo.
   raceName: string; //レース名
   byGroup: string; // 組別
 }
 
-interface MyPageTournamentParams {
-  tournType: TournType;
+interface MyPageRaceResultParams {
+  official: OfficialType; // 公式／非公式
 }
 
 //マイページの選手プロフィール表示用インターフェース 20241016
@@ -600,6 +606,7 @@ export type {
   LangResponse,
   MasterResponse,
   MyPagePlayerProfileInfoData,
+  MyPageRaceResultParams,
   MyPageRaceResultRecordInfoData,
   MyPageTournamentInfoData,
   MyPageTournamentParams,

@@ -46,6 +46,11 @@ class MyPageController extends Controller
         Log::debug($reqData);
         $official = $reqData["official"];
         $playerData = $tPlayers->getPlayerDataFromUserId(Auth::user()->user_id); //ユーザIDを元に選手IDを取得 202401008
+
+        if (empty($playerData)) {
+            return response()->json(['result' => []]);
+        }
+
         $result = $tRaceResultRecord->getMyPageRaceResultRecordInfo($playerData->player_id, $official); //選手IDを元に出漕履歴情報を取得 20241015
 
         Log::debug(sprintf("getMyPageRaceResultRecordInfoList end"));
