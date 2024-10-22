@@ -317,7 +317,7 @@ export default function TournamentSearch() {
                 );
               }}
               className='border-[0.5px] border-solid border-gray-50 rounded'
-              width='sm:w-[200px]'
+              widthClassName='sm:w-[200px]'
             />
             {/* 開催場所 */}
             <CustomDropdown
@@ -334,7 +334,7 @@ export default function TournamentSearch() {
                 );
               }}
               className='border-[0.5px] border-solid border-gray-50 rounded'
-              width='sm:w-[200px]'
+              widthClassName='sm:w-[200px]'
             />
           </div>
           <div className='flex flex-row justify-center sm:justify-start gap-[16px]'>
@@ -349,7 +349,6 @@ export default function TournamentSearch() {
                     handleInputChange('event_start_date', formatDate(e as unknown as Date));
                   }}
                 />
-
                 <p className='flex flex-col justify-center text-center '>～</p>
                 <CustomDatePicker
                   placeHolder={'YYYY/MM/DD'}

@@ -1,4 +1,5 @@
 import React, { ChangeEvent } from 'react';
+import clsx from 'clsx';
 
 const OriginalCheckbox = ({
   id,
@@ -21,7 +22,7 @@ const OriginalCheckbox = ({
 }) => {
   return (
     <div className='flex flex-col gap-[8px]'>
-      <div>
+      <div className='flex items-center'>
         <input
           id={id}
           type='checkbox'
@@ -31,16 +32,12 @@ const OriginalCheckbox = ({
           disabled={readonly}
           className='w-4 h-4 border border-gray-300 bg-gray-100 text-blue-600 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'
         />
-        {!readonly && label && (
-          <label htmlFor={id} className='ms-2 text-small text-primaryText'>
-            {label}
-          </label>
-        )}
-        {readonly && label && (
-          <label htmlFor={id} className='ms-2 text-small text-secondaryText'>
-            {label}
-          </label>
-        )}
+        <label
+          htmlFor={id}
+          className={clsx('ms-2 text-small', readonly ? 'text-secondaryText' : 'text-primaryText')}
+        >
+          {label}
+        </label>
       </div>
       {isError &&
         errorMessages?.map((message) => {
