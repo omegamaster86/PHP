@@ -437,6 +437,7 @@ export default function PlayerSearch() {
                   value={searchCond.entrysystem_org_id}
                   onChange={(e) => handleInputChange('entrysystem_org_id', e.target.value)}
                   toolTipText='日本ローイング協会より発行された、6桁の団体コードになります。選手が所属している団体のコードを入力してください。' //はてなボタン用
+                  widthClassName='sm:w-[200px]'
                 />
               )}
               {/* 団体ID */}
@@ -448,6 +449,7 @@ export default function PlayerSearch() {
                 errorMessages={sponsorOrgIdErrorMessage}
                 value={searchCond.org_id}
                 onChange={(e) => handleInputChange('org_id', e.target.value)}
+                widthClassName='sm:w-[150px]'
                 toolTipText='本システムでの団体情報管理用のIDとなります。
                       選手が所属している団体のIDを入力してください。
                       団体情報参照画面にて確認できます。' //はてなボタン用
@@ -458,6 +460,7 @@ export default function PlayerSearch() {
                 displayHelp={false}
                 value={searchCond.org_name}
                 onChange={(e) => handleInputChange('org_name', e.target.value)}
+                widthClassName='sm:w-[250px]'
               />
             </div>
             <Label label={'大会'} isBold />
@@ -477,7 +480,7 @@ export default function PlayerSearch() {
                     event.find((item) => item.id === Number(e))?.name || '',
                   );
                 }}
-                widthClassName='sm:w-[200px]'
+                widthClassName='sm:w-[150px]'
                 className='rounded'
               />
               {/* 出漕大会名 */}
@@ -488,6 +491,7 @@ export default function PlayerSearch() {
                 errorMessages={sponsorOrgIdErrorMessage}
                 value={searchCond.race_class_name}
                 onChange={(e) => handleInputChange('race_class_name', e.target.value)}
+                widthClassName='sm:w-[250px]'
               />
             </div>
           </div>
