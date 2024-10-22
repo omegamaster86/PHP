@@ -62,7 +62,7 @@ class MyPageController extends Controller
     {
         Log::debug(sprintf("getMyPagePlayerProfileList start"));
         $result = $tPlayers->getPlayerProfileInfo(Auth::user()->user_id); //ユーザIDを元に選手プロフィール情報を取得 202401015
-        $sideInfoMasterResult = $mSideInfo->getMyPageSideInfo($result->sideInfo); //サイド情報(8桁の数字列)を元にサイド名を取得 202401021
+        $sideInfoMasterResult = $mSideInfo->getMyPageSideInfo($result->sideInfoString); //サイド情報(8桁の数字列)を元にサイド名を取得 202401021
         $result->sideInfo = $sideInfoMasterResult; //サイド情報マスターから取得した結果をsideInfoに渡す 20241021
 
         Log::debug(sprintf("getMyPagePlayerProfileList end"));

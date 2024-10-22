@@ -41,16 +41,24 @@ class M_side_info extends Model
     public function getMyPageSideInfo($side)
     {
         $result = DB::select(
-            'select side_name as sideName
+            'select 
+            CONCAT(abbr_name, "(", side_name, ")") as sideName,
+            case 
+                when side_code = 8 then ?
+                when side_code = 4 then ?
+                when side_code = 2 then ?
+                when side_code = 1 then ?
+                else null
+            end as isEnable
             from m_side_info 
             where 1=1
             and delete_flag = 0
-            and side_code IN (?, ?, ?, ?)',
+            and side_code IN (8, 4, 2, 1)',
             [
-                (substr($side, 4, 1) * 8) == 0 ? null : (substr($side, 4, 1) * 8),
-                (substr($side, 5, 1) * 4) == 0 ? null : (substr($side, 5, 1) * 4),
-                (substr($side, 6, 1) * 2) == 0 ? null : (substr($side, 6, 1) * 2),
-                substr($side, 7, 1) == 0 ? null : substr($side, 7, 1)
+                substr($side, 4, 1),
+                substr($side, 5, 1),
+                substr($side, 6, 1),
+                substr($side, 7, 1)
             ]
         );
         return $result;

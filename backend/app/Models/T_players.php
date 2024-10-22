@@ -166,7 +166,7 @@ class T_players extends Model
                                 ,`date_of_birth` as `dateOfBirth`
                                 ,`height`
                                 ,`weight`
-                                ,`side_info` as `sideInfo`
+                                ,`side_info` as `sideInfoString`
                                 ,bir_cont.`country_name` as `birthCountryName`
                                 ,bir_pref.`pref_name` as `birthPrefectureName`
                                 ,res_cont.`country_name` as `residenceCountryName`
