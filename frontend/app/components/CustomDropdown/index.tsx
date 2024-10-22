@@ -20,7 +20,7 @@ interface SelectProps {
   displayHelp?: boolean;
   toolTipTitle?: string;
   toolTipText?: string;
-  width?: string;
+  widthClassName?: string;
 }
 const CustomDropdown: FC<SelectProps> = ({
   id,
@@ -37,10 +37,10 @@ const CustomDropdown: FC<SelectProps> = ({
   displayHelp,
   toolTipTitle,
   toolTipText,
-  width,
+  widthClassName,
 }) => {
   return (
-    <div className={clsx('flex flex-col gap-[6px]', width ? width : 'w-full')}>
+    <div className={clsx('flex flex-col gap-[6px]', widthClassName ? widthClassName : 'w-full')}>
       {label && (
         <InputLabel
           label={label || ''}
