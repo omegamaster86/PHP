@@ -36,4 +36,23 @@ class M_side_info extends Model
         );
         return $result;
     }
+
+    //マイページ サイド情報 20241021
+    public function getMyPageSideInfo($side)
+    {
+        $result = DB::select(
+            'select side_name as sideName
+            from m_side_info 
+            where 1=1
+            and delete_flag = 0
+            and side_code IN (?, ?, ?, ?)',
+            [
+                (substr($side, 4, 1) * 8) == 0 ? null : (substr($side, 4, 1) * 8),
+                (substr($side, 5, 1) * 4) == 0 ? null : (substr($side, 5, 1) * 4),
+                (substr($side, 6, 1) * 2) == 0 ? null : (substr($side, 6, 1) * 2),
+                substr($side, 7, 1) == 0 ? null : substr($side, 7, 1)
+            ]
+        );
+        return $result;
+    }
 }
