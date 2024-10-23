@@ -171,166 +171,164 @@ export default function TeamRef() {
   }, []);
 
   return (
-    <main className='flex flex-col gap-[30px] max-w-5xl m-auto'>
-      <div className='flex flex-col justify-start gap-[20px]'>
-        {/* 画面名*/}
-        <CustomTitle displayBack>{mode === 'delete' ? '団体情報削除' : '団体情報参照'}</CustomTitle>
+    <div className='flex flex-col justify-start gap-[20px]'>
+      {/* 画面名*/}
+      <CustomTitle displayBack>{mode === 'delete' ? '団体情報削除' : '団体情報参照'}</CustomTitle>
 
-        <ErrorBox errorText={errorMessage} />
-        {/* フォーム */}
-        <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4'>
-          <div className='flex flex-col gap-[30px] m-auto rounded-[10px]'>
-            {/* 団体名 */}
-            <Label label={formData.org_name} textColor='white' textSize='h2'></Label>
-            {/* 開催情報 */}
-            <Label label='開催情報' textColor='white' textSize='small' isBold={true}></Label>
-            <div className='flex flex-col gap-[5px]'>
-              {/* 創立年 */}
-              <div className='flex flex-row'>
-                <div className='text-gray-40 text-sm w-[100px]'>創立年</div>
-                <Label
-                  label={formData.founding_year?.toString()}
-                  textColor='white'
-                  textSize='small'
-                />
-              </div>
-              {/* 所在地 */}
-              <div className='flex flex-row'>
-                <div className='text-gray-40 text-sm min-w-[100px]'>所在地</div>
-                {/* 市区町村・町字番地, 都道府県, マンション・アパート, 郵便番号1, 郵便番号 */}
-                <div className='text-white text-sm'>
-                  {[
-                    formData.post_code,
-                    formData.locationPrefectureName + prefVal(),
-                    formData.address1,
-                    addressVal(),
-                  ].map((line, index) => (
-                    <div key={index}> {index === 0 ? `〒${line}` : line}</div>
-                  ))}
-                </div>
-              </div>
-              {/* 団体区分 */}
-              <div className='flex flex-row'>
-                <div className='text-gray-40 text-sm w-[100px]'>団体区分</div>
-                <Label label={formData.orgClassName} textColor='white' textSize='small' />
-              </div>
-              {/* 団体種別 */}
-              <div className='flex flex-row'>
-                <div className='text-gray-40 text-sm min-w-[100px]'>団体種別</div>
-                <div className='w-[100px]'>
-                  <Label label={formData.jaraOrgTypeName} textColor='white' textSize='small' />
-                  <Label label={formData.prefOrgTypeName} textColor='white' textSize='small' />
-                </div>
-                {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
-                  userIdType.is_jara == ROLE.JARA ||
-                  userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
-                  <div className='w-[100px]'>
-                    <Label
-                      label={formData.jara_org_type == 1 ? formData.jara_org_reg_trail : '　'}
-                      textColor='white'
-                      textSize='small'
-                    />
-                    <Label
-                      label={formData.pref_org_type == 1 ? formData.pref_org_reg_trail : '　'}
-                      textColor='white'
-                      textSize='small'
-                    />
-                  </div>
-                )}
+      <ErrorBox errorText={errorMessage} />
+      {/* フォーム */}
+      <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4'>
+        <div className='flex flex-col gap-[30px] m-auto rounded-[10px]'>
+          {/* 団体名 */}
+          <Label label={formData.org_name} textColor='white' textSize='h2'></Label>
+          {/* 開催情報 */}
+          <Label label='開催情報' textColor='white' textSize='small' isBold={true}></Label>
+          <div className='flex flex-col gap-[5px]'>
+            {/* 創立年 */}
+            <div className='flex flex-row'>
+              <div className='text-gray-40 text-sm w-[100px]'>創立年</div>
+              <Label
+                label={formData.founding_year?.toString()}
+                textColor='white'
+                textSize='small'
+              />
+            </div>
+            {/* 所在地 */}
+            <div className='flex flex-row'>
+              <div className='text-gray-40 text-sm min-w-[100px]'>所在地</div>
+              {/* 市区町村・町字番地, 都道府県, マンション・アパート, 郵便番号1, 郵便番号 */}
+              <div className='text-white text-sm'>
+                {[
+                  formData.post_code,
+                  formData.locationPrefectureName + prefVal(),
+                  formData.address1,
+                  addressVal(),
+                ].map((line, index) => (
+                  <div key={index}> {index === 0 ? `〒${line}` : line}</div>
+                ))}
               </div>
             </div>
-            <div className='flex flex-col gap-[10px]'>
-              {/* 団体ID */}
-              <div className='flex flex-row '>
-                <div className='text-gray-40 text-sm w-[100px]'>団体ID</div>
-                <Label label={formData.org_id} textColor='white' textSize='small' />
+            {/* 団体区分 */}
+            <div className='flex flex-row'>
+              <div className='text-gray-40 text-sm w-[100px]'>団体区分</div>
+              <Label label={formData.orgClassName} textColor='white' textSize='small' />
+            </div>
+            {/* 団体種別 */}
+            <div className='flex flex-row'>
+              <div className='text-gray-40 text-sm min-w-[100px]'>団体種別</div>
+              <div className='w-[100px]'>
+                <Label label={formData.jaraOrgTypeName} textColor='white' textSize='small' />
+                <Label label={formData.prefOrgTypeName} textColor='white' textSize='small' />
               </div>
-              {/* エントリーシステムの団体ID */}
-              <div className='flex flex-row gap-[15px]'>
-                <div className='text-gray-40 text-sm'>エントリーシステムの団体ID</div>
-                <Label label={formData.entrysystem_org_id} textColor='white' />
-              </div>
+              {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+                userIdType.is_jara == ROLE.JARA ||
+                userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
+                <div className='w-[100px]'>
+                  <Label
+                    label={formData.jara_org_type == 1 ? formData.jara_org_reg_trail : '　'}
+                    textColor='white'
+                    textSize='small'
+                  />
+                  <Label
+                    label={formData.pref_org_type == 1 ? formData.pref_org_reg_trail : '　'}
+                    textColor='white'
+                    textSize='small'
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+          <div className='flex flex-col gap-[10px]'>
+            {/* 団体ID */}
+            <div className='flex flex-row '>
+              <div className='text-gray-40 text-sm w-[100px]'>団体ID</div>
+              <Label label={formData.org_id} textColor='white' textSize='small' />
+            </div>
+            {/* エントリーシステムの団体ID */}
+            <div className='flex flex-row gap-[15px]'>
+              <div className='text-gray-40 text-sm'>エントリーシステムの団体ID</div>
+              <Label label={formData.entrysystem_org_id} textColor='white' />
             </div>
           </div>
         </div>
-        {/* タブ */}
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label='simple tabs example'
-          className='m-auto'
-          variant='scrollable'
-          scrollButtons='auto'
-        >
-          <Tab label='主催大会' {...a11yProps(0)} />
-          <Tab label='エントリー大会' {...a11yProps(1)} />
-          <Tab label='所属選手' {...a11yProps(2)} />
-          <Tab label='所属スタッフ' {...a11yProps(3)} />
-        </Tabs>
-
-        {/* 主催大会テーブル表示 */}
-        {value === 0 && (
-          <SponsoredTournament
-            hostTournaments={hostTournaments}
-            mode={mode}
-            userIdType={userIdType}
-            checkOrgManage={checkOrgManage}
-          />
-        )}
-        {/* エントリー大会テーブル表示 */}
-        {value === 1 && <EntryTournament entTournaments={entTournaments} />}
-
-        {/* 所属選手テーブル表示 */}
-        {value === 2 && (
-          <BelongPlayer
-            players={players}
-            mode={mode}
-            userIdType={userIdType}
-            checkOrgManage={checkOrgManage}
-            orgId={orgId}
-          />
-        )}
-        {/* 所属スタッフテーブル表示 */}
-        {value === 3 && <BelongStaff staffs={staffs} />}
-        <div className='flex flex-col items-center sm:flex-row justify-center gap-[20px] py-[20px]'>
-          {window.history.length > 1 && (
-            <CustomButton
-              onClick={() => {
-                router.back();
-              }}
-            >
-              戻る
-            </CustomButton>
-          )}
-          {mode === 'delete' && (
-            <CustomButton
-              buttonType='primary'
-              onClick={async () => {
-                const isOk = window.confirm('団体情報を削除します。よろしいですか？');
-                const csrf = () => axios.get('/sanctum/csrf-cookie');
-                await csrf();
-                if (!isOk) return;
-                axios
-                  // .delete('/organization')
-                  .post('/deleteOrgData', org_id)
-                  .then((res) => {
-                    // TODO: 削除成功時の処理S
-                    router.back();
-                  })
-                  .catch((error) => {
-                    console.group(error);
-                    setErrorMessage([
-                      '団体情報の削除に失敗しました。ユーザーサポートにお問い合わせください。',
-                    ]);
-                    // TODO: 削除失敗時の処理
-                  });
-              }}
-            >
-              削除
-            </CustomButton>
-          )}
-        </div>
       </div>
-    </main>
+      {/* タブ */}
+      <Tabs
+        value={value}
+        onChange={handleChange}
+        aria-label='simple tabs example'
+        className='m-auto'
+        variant='scrollable'
+        scrollButtons='auto'
+      >
+        <Tab label='主催大会' {...a11yProps(0)} />
+        <Tab label='エントリー大会' {...a11yProps(1)} />
+        <Tab label='所属選手' {...a11yProps(2)} />
+        <Tab label='所属スタッフ' {...a11yProps(3)} />
+      </Tabs>
+
+      {/* 主催大会テーブル表示 */}
+      {value === 0 && (
+        <SponsoredTournament
+          hostTournaments={hostTournaments}
+          mode={mode}
+          userIdType={userIdType}
+          checkOrgManage={checkOrgManage}
+        />
+      )}
+      {/* エントリー大会テーブル表示 */}
+      {value === 1 && <EntryTournament entTournaments={entTournaments} />}
+
+      {/* 所属選手テーブル表示 */}
+      {value === 2 && (
+        <BelongPlayer
+          players={players}
+          mode={mode}
+          userIdType={userIdType}
+          checkOrgManage={checkOrgManage}
+          orgId={orgId}
+        />
+      )}
+      {/* 所属スタッフテーブル表示 */}
+      {value === 3 && <BelongStaff staffs={staffs} />}
+      <div className='flex flex-col items-center sm:flex-row justify-center gap-[20px] py-[20px]'>
+        {window.history.length > 1 && (
+          <CustomButton
+            onClick={() => {
+              router.back();
+            }}
+          >
+            戻る
+          </CustomButton>
+        )}
+        {mode === 'delete' && (
+          <CustomButton
+            buttonType='primary'
+            onClick={async () => {
+              const isOk = window.confirm('団体情報を削除します。よろしいですか？');
+              const csrf = () => axios.get('/sanctum/csrf-cookie');
+              await csrf();
+              if (!isOk) return;
+              axios
+                // .delete('/organization')
+                .post('/deleteOrgData', org_id)
+                .then((res) => {
+                  // TODO: 削除成功時の処理S
+                  router.back();
+                })
+                .catch((error) => {
+                  console.group(error);
+                  setErrorMessage([
+                    '団体情報の削除に失敗しました。ユーザーサポートにお問い合わせください。',
+                  ]);
+                  // TODO: 削除失敗時の処理
+                });
+            }}
+          >
+            削除
+          </CustomButton>
+        )}
+      </div>
+    </div>
   );
 }

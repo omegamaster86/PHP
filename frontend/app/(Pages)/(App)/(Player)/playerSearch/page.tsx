@@ -296,7 +296,7 @@ export default function PlayerSearch() {
   };
   // レンダリング
   return (
-    <main className='flex flex-col gap-[30px] max-w-5xl m-auto'>
+    <>
       {/* 画面名 */}
       <CustomTitle displayBack>選手検索</CustomTitle>
       {/* エラーメッセージの表示 */}
@@ -311,21 +311,21 @@ export default function PlayerSearch() {
             onChange={(e) => handleInputChange('player_name', e.target.value)}
           />
           {/* 性別 */}
-          
-            <CustomDropdown
-              id='sex'
-              label='性別'
-              displayHelp={false}
-              options={sex.map((item) => ({ key: item.id, value: item.name }))}
-              value={searchCond.sexId}
-              errorMessages={[]}
-              onChange={(e) => {
-                handleInputChange('sexId', e);
-                handleInputChange('sex', sex.find((item) => item.id === Number(e))?.name || '');
-              }}
-              widthClassName='sm:w-[200px]'
-              className='rounded'
-            />
+
+          <CustomDropdown
+            id='sex'
+            label='性別'
+            displayHelp={false}
+            options={sex.map((item) => ({ key: item.id, value: item.name }))}
+            value={searchCond.sexId}
+            errorMessages={[]}
+            onChange={(e) => {
+              handleInputChange('sexId', e);
+              handleInputChange('sex', sex.find((item) => item.id === Number(e))?.name || '');
+            }}
+            widthClassName='sm:w-[200px]'
+            className='rounded'
+          />
           {/* サイド情報 */}
           <div>
             <InputLabel
@@ -805,6 +805,6 @@ export default function PlayerSearch() {
           戻る
         </CustomButton>
       </div>
-    </main>
+    </>
   );
 }

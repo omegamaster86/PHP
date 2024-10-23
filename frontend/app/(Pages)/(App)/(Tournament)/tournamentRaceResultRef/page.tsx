@@ -267,7 +267,7 @@ export default function TournamentRaceResultRef() {
   };
 
   return (
-    <main>
+    <>
       <div className='flex flex-col gap-[30px] max-w-5xl m-auto'>
         <CustomTitle displayBack>大会レース結果参照</CustomTitle>
         <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
@@ -617,6 +617,6 @@ export default function TournamentRaceResultRef() {
           </DialogActions>
         </Dialog>
       </Fragment>
-    </main>
+    </>
   );
 }

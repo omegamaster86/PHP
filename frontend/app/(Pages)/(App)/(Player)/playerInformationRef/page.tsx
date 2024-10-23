@@ -1053,13 +1053,8 @@ export default function PlayerInformationRef() {
   ];
 
   return (
-    <div className='flex flex-col gap-[30px] max-w-5xl m-auto'>
-      <div className='relative flex flex-row justify-between w-full flex-wrap'>
-        {/* 画面名*/}
-        <CustomTitle displayBack>
-          {mode === 'delete' ? '選手情報削除' : '選手情報参照'}
-        </CustomTitle>
-      </div>
+    <>
+      <CustomTitle displayBack>{mode === 'delete' ? '選手情報削除' : '選手情報参照'}</CustomTitle>
       <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
       <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4 '>
         <div className='flex flex-col sm:flex-row gap-[40px]'>
@@ -2132,6 +2127,6 @@ export default function PlayerInformationRef() {
           </CustomButton>
         )}
       </div>
-    </div>
+    </>
   );
 }

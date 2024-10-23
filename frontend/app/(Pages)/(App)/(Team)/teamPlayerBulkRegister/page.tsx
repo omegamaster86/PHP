@@ -379,223 +379,219 @@ export default function TeamPlayerBulkRegister() {
   const handleCheckboxValue = (result: string) => {
     return result.startsWith('無効データ') ? false : result != '登録可能' ? false : true;
   };
+
+  if (!validFlag) return null;
+
   return (
-    validFlag && (
-      <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px] min-w-[900px]'>
-        <div className='relative flex flex-col justify-between w-full h-screen flex-wrap gap-[20px]'>
-          <CustomTitle displayBack>団体所属選手一括登録</CustomTitle>
-          <ErrorBox errorText={errorMessage} />
-          <div className='flex flex-col gap-[10px] w-[300px]'>
-            <CustomDropdown
-              id='org'
-              label='所属団体名'
-              displayHelp
-              toolTipText='選手を登録したい団体を選択してください。'
-              value={isOrgNameActive ? orgSelected : orgData.org_name} //団体参照画面から遷移した場合は、該当の団体名を表示する
-              options={orgs.map((org) => ({ value: org.org_name, key: org.org_id }))}
-              onChange={(e) => {
-                //csv読み込み後に所属団体名を変更して登録できる不具合の対策 20240422
+    <>
+      <CustomTitle displayBack>団体所属選手一括登録</CustomTitle>
+      <ErrorBox errorText={errorMessage} />
+      <div className='flex flex-col gap-[10px] w-[300px]'>
+        <CustomDropdown
+          id='org'
+          label='所属団体名'
+          displayHelp
+          toolTipText='選手を登録したい団体を選択してください。'
+          value={isOrgNameActive ? orgSelected : orgData.org_name} //団体参照画面から遷移した場合は、該当の団体名を表示する
+          options={orgs.map((org) => ({ value: org.org_name, key: org.org_id }))}
+          onChange={(e) => {
+            //csv読み込み後に所属団体名を変更して登録できる不具合の対策 20240422
+            if (dialogDisplayFlg) {
+              if (
+                window.confirm('現在選択中の団体への登録が完了していません。団体を変更しますか？')
+              ) {
+                setActivationFlg(true);
+                setCsvData([]);
+                setCsvFileData({ content: [], isSet: false });
+                fileUploaderRef?.current?.clearFile();
+                setActivationFlg(false);
+                setDialogDisplayFlg(false);
+                setDisplayLinkButtonFlg(false);
+                setActivationFlg(false);
+              } else {
+                return;
+              }
+            }
+            setOrgSelected(e);
+            //console.log(e);
+            handleFormInputChange('targetOrgId', e);
+            handleFormInputChange(
+              'targetOrgName',
+              orgs.find((item) => item.org_id === Number(e))?.org_name || '',
+            );
+          }}
+          className='w-[300px]'
+          readonly={isOrgNameActive == false} //団体参照画面から遷移した場合は、読み取り専用とする
+        />
+      </div>
+      <div className='flex flex-row justify-start'>
+        <CsvHandler
+          csvUploadProps={csvUploadProps}
+          csvDownloadProps={csvDownloadProps}
+          ref={fileUploaderRef}
+        ></CsvHandler>
+      </div>
+      {!activationFlg && (
+        <div className='flex flex-col gap-[20px]'>
+          {/* 読み込みボタンの表示 */}
+          <div className='flex flex-col gap-[4px] items-center'>
+            {/* 表示する文言はDPT様にて実装予定 */}
+            <p className='mb-1 text-systemErrorText'>
+              【読み込み方法】
+              <br />
+              ［準備］
+              <br />
+              定型フォーマットに団体に所属させたい選手の情報を入力してください。
+              <br />
+              ※定型フォーマットが必要な場合は、「CSVフォーマット出力」をクリックしてください。
+              <br />
+              定型フォーマットがダウンロードされます。
+              <br />
+              ［読み込む］
+              <br />
+              ①　定型フォーマットに記載した選手を所属させたい団体を「所属団体名」より選択してください。
+              <br />
+              ②　「読み込みCSVファイル」に、読み込ませるCSVファイルをドラッグ＆ドロップしてください。
+              <br />
+              ※「参照」からファイルを指定することもできます。
+              <br />
+              ③　「読み込む」ボタンをクリックすると、CSVフォーマットの内容を読み込み、読み込んだ結果を「読み込む」ボタン下に一覧で表示します。
+              <br />
+              ※この状態では、まだ所属選手として登録されません
+            </p>
+            <CustomButton
+              buttonType='primary'
+              onClick={() => {
+                setActivationFlg(true);
+                //console.log(dialogDisplayFlg);
                 if (dialogDisplayFlg) {
                   if (
-                    window.confirm(
-                      '現在選択中の団体への登録が完了していません。団体を変更しますか？',
+                    !window.confirm(
+                      '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
                     )
                   ) {
-                    setActivationFlg(true);
-                    setCsvData([]);
-                    setCsvFileData({ content: [], isSet: false });
-                    fileUploaderRef?.current?.clearFile();
                     setActivationFlg(false);
-                    setDialogDisplayFlg(false);
-                    setDisplayLinkButtonFlg(false);
-                    setActivationFlg(false);
-                  } else {
                     return;
                   }
                 }
-                setOrgSelected(e);
-                //console.log(e);
-                handleFormInputChange('targetOrgId', e);
-                handleFormInputChange(
-                  'targetOrgName',
-                  orgs.find((item) => item.org_id === Number(e))?.org_name || '',
-                );
+
+                const specifiedHeader = 'JARA選手コード,選手ID,ユーザーID,メールアドレス,選手名'; // 指定のヘッダー文字列
+                const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
+                const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
+
+                Promise.all(
+                  csvFileData.content
+                    ?.filter(function (x) {
+                      // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
+                      return x.length > 0 && x.some((y) => y.length > 0);
+                    })
+                    .slice(isHeaderMatch ? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
+                    .map((row, index) => getJsonRow(row, index)),
+                ).then((results) => {
+                  //console.log(results);
+                  var resList = results as any;
+                  resList.forEach((element: any) => {
+                    element['birthCountryId'] = null;
+                    element['birthPrefectureId'] = null;
+                    element['residenceCountryId'] = null;
+                    element['residencePrefectureId'] = null;
+                  });
+                  //console.log(resList);
+                  sendCsvData(resList); //バックエンド側のバリデーションチェックを行う為にデータを送信する 20240302
+                  setDialogDisplayFlg(true); //2回目以降のcsv読み込みで確認ダイアログを表示させる 20240419
+                  setVisibilityFlg(true); //CSVテーブルの表示切替フラグ 20240424
+                });
+
+                performValidation();
               }}
-              className='w-[300px]'
-              readonly={isOrgNameActive == false} //団体参照画面から遷移した場合は、読み取り専用とする
-            />
+            >
+              読み込む
+            </CustomButton>
           </div>
-          <div className='flex flex-row justify-start'>
-            <CsvHandler
-              csvUploadProps={csvUploadProps}
-              csvDownloadProps={csvDownloadProps}
-              ref={fileUploaderRef}
-            ></CsvHandler>
-          </div>
-          {!activationFlg && (
-            <div className='flex flex-col gap-[20px]'>
-              {/* 読み込みボタンの表示 */}
-              <div className='flex flex-col gap-[4px] items-center'>
-                {/* 表示する文言はDPT様にて実装予定 */}
-                <p className='mb-1 text-systemErrorText'>
-                  【読み込み方法】
-                  <br />
-                  ［準備］
-                  <br />
-                  定型フォーマットに団体に所属させたい選手の情報を入力してください。
-                  <br />
-                  ※定型フォーマットが必要な場合は、「CSVフォーマット出力」をクリックしてください。
-                  <br />
-                  定型フォーマットがダウンロードされます。
-                  <br />
-                  ［読み込む］
-                  <br />
-                  ①　定型フォーマットに記載した選手を所属させたい団体を「所属団体名」より選択してください。
-                  <br />
-                  ②　「読み込みCSVファイル」に、読み込ませるCSVファイルをドラッグ＆ドロップしてください。
-                  <br />
-                  ※「参照」からファイルを指定することもできます。
-                  <br />
-                  ③　「読み込む」ボタンをクリックすると、CSVフォーマットの内容を読み込み、読み込んだ結果を「読み込む」ボタン下に一覧で表示します。
-                  <br />
-                  ※この状態では、まだ所属選手として登録されません
-                </p>
-                <CustomButton
-                  buttonType='primary'
-                  onClick={() => {
-                    setActivationFlg(true);
-                    //console.log(dialogDisplayFlg);
-                    if (dialogDisplayFlg) {
-                      if (
-                        !window.confirm(
-                          '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
-                        )
-                      ) {
-                        setActivationFlg(false);
-                        return;
-                      }
-                    }
-
-                    const specifiedHeader =
-                      'JARA選手コード,選手ID,ユーザーID,メールアドレス,選手名'; // 指定のヘッダー文字列
-                    const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
-                    const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
-
-                    Promise.all(
-                      csvFileData.content
-                        ?.filter(function (x) {
-                          // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
-                          return x.length > 0 && x.some((y) => y.length > 0);
-                        })
-                        .slice(isHeaderMatch ? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
-                        .map((row, index) => getJsonRow(row, index)),
-                    ).then((results) => {
-                      //console.log(results);
-                      var resList = results as any;
-                      resList.forEach((element: any) => {
-                        element['birthCountryId'] = null;
-                        element['birthPrefectureId'] = null;
-                        element['residenceCountryId'] = null;
-                        element['residencePrefectureId'] = null;
-                      });
-                      //console.log(resList);
-                      sendCsvData(resList); //バックエンド側のバリデーションチェックを行う為にデータを送信する 20240302
-                      setDialogDisplayFlg(true); //2回目以降のcsv読み込みで確認ダイアログを表示させる 20240419
-                      setVisibilityFlg(true); //CSVテーブルの表示切替フラグ 20240424
-                    });
-
-                    performValidation();
-                  }}
-                >
-                  読み込む
-                </CustomButton>
-              </div>
-            </div>
-          )}
-          {/* エラーメッセージの表示 */}
-          <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
-          {/* 読み込み結果の表示 */}
-          <div className='flex flex-col items-center'>
-            <p className='mb-1 text-systemErrorText'>
-              【登録方法】
-              <br />
-              ①　「読み込む」ボタンの下にCSVフォーマットを読み込んだ結果が表示されます。
-              <br />
-              ②　読み込むデータの「選択」にチェックを入れてください。※「全選択」で、エラー以外の全てのデータを選択状態にできます。
-              <br />
-              ③　「登録」をクリックすると「選択」にチェックが入っているデータを対象に、「所属団体名」にて選択した団体の所属選手として登録されます。
-              <br />
-              所属選手として登録された選手には、本システムより通知メールが送信されます。
-              <br />
-              ※読み込み結果に「ユーザー未登録」と表示された選手には、ユーザー仮登録の通知メールが送信されます。
-              <br />
-              本システムへのユーザー登録と選手登録が完了しましたら、所属選手から当該選手を所属選手として登録してください。
-              <br />
-              [手順]
-              <br />
-              メニュー「団体」-「団体管理」-当該団体のリンクをクリックし、団体情報参照画面へ遷移
-              <br />
-              所属選手-「所属選手編集」をクリック
-            </p>
-            <CsvTable
-              content={csvData}
-              header={[
-                '読み込み結果',
-                'ユーザーID',
-                '選手ID',
-                'JARA選手コード',
-                '選手名',
-                'メールアドレス',
-                '所属団体ID',
-                '所属団体名',
-                '出身地',
-                '居住地',
-              ]}
-              handleInputChange={handleInputChange}
-              displayLinkButton={displayLinkButton}
-              activationFlg={activationFlg}
-              visibilityFlg={visibilityFlg}
-            />
-          </div>
-          {!activationFlg && (
-            <div className='flex flex-row justify-center gap-[8px]'>
-              <CustomButton
-                buttonType='secondary'
-                onClick={() => {
-                  router.back();
-                }}
-              >
-                戻る
-              </CustomButton>
-              {csvData.some((row) => row.result !== '連携不可') && displayLinkButtonFlg && (
-                <CustomButton
-                  buttonType='primary'
-                  onClick={() => {
-                    if (csvData.find((row) => row.checked)?.id === undefined) {
-                      window.confirm('1件以上選択してください。');
-                      return;
-                    }
-                    if (window.confirm('登録を実施しますか？')) {
-                      registerCsvData(); //バックエンド側にデータを渡す 20240302
-                      setActivationFlg(true);
-                      setCsvData([]);
-                      setCsvFileData({ content: [], isSet: false });
-                      fileUploaderRef?.current?.clearFile();
-                      window.alert('登録を完了しました。');
-                      setActivationFlg(false);
-                      setDialogDisplayFlg(false);
-                      setDisplayLinkButtonFlg(false);
-                      setActivationFlg(false);
-                    }
-                  }}
-                >
-                  登録
-                </CustomButton>
-              )}
-            </div>
+        </div>
+      )}
+      {/* エラーメッセージの表示 */}
+      <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
+      {/* 読み込み結果の表示 */}
+      <div className='flex flex-col items-center'>
+        <p className='mb-1 text-systemErrorText'>
+          【登録方法】
+          <br />
+          ①　「読み込む」ボタンの下にCSVフォーマットを読み込んだ結果が表示されます。
+          <br />
+          ②　読み込むデータの「選択」にチェックを入れてください。※「全選択」で、エラー以外の全てのデータを選択状態にできます。
+          <br />
+          ③　「登録」をクリックすると「選択」にチェックが入っているデータを対象に、「所属団体名」にて選択した団体の所属選手として登録されます。
+          <br />
+          所属選手として登録された選手には、本システムより通知メールが送信されます。
+          <br />
+          ※読み込み結果に「ユーザー未登録」と表示された選手には、ユーザー仮登録の通知メールが送信されます。
+          <br />
+          本システムへのユーザー登録と選手登録が完了しましたら、所属選手から当該選手を所属選手として登録してください。
+          <br />
+          [手順]
+          <br />
+          メニュー「団体」-「団体管理」-当該団体のリンクをクリックし、団体情報参照画面へ遷移
+          <br />
+          所属選手-「所属選手編集」をクリック
+        </p>
+        <CsvTable
+          content={csvData}
+          header={[
+            '読み込み結果',
+            'ユーザーID',
+            '選手ID',
+            'JARA選手コード',
+            '選手名',
+            'メールアドレス',
+            '所属団体ID',
+            '所属団体名',
+            '出身地',
+            '居住地',
+          ]}
+          handleInputChange={handleInputChange}
+          displayLinkButton={displayLinkButton}
+          activationFlg={activationFlg}
+          visibilityFlg={visibilityFlg}
+        />
+      </div>
+      {!activationFlg && (
+        <div className='flex flex-row justify-center gap-[8px]'>
+          <CustomButton
+            buttonType='secondary'
+            onClick={() => {
+              router.back();
+            }}
+          >
+            戻る
+          </CustomButton>
+          {csvData.some((row) => row.result !== '連携不可') && displayLinkButtonFlg && (
+            <CustomButton
+              buttonType='primary'
+              onClick={() => {
+                if (csvData.find((row) => row.checked)?.id === undefined) {
+                  window.confirm('1件以上選択してください。');
+                  return;
+                }
+                if (window.confirm('登録を実施しますか？')) {
+                  registerCsvData(); //バックエンド側にデータを渡す 20240302
+                  setActivationFlg(true);
+                  setCsvData([]);
+                  setCsvFileData({ content: [], isSet: false });
+                  fileUploaderRef?.current?.clearFile();
+                  window.alert('登録を完了しました。');
+                  setActivationFlg(false);
+                  setDialogDisplayFlg(false);
+                  setDisplayLinkButtonFlg(false);
+                  setActivationFlg(false);
+                }
+              }}
+            >
+              登録
+            </CustomButton>
           )}
         </div>
-      </main>
-    )
+      )}
+    </>
   );
 }

@@ -714,13 +714,10 @@ export default function PlayerInformation() {
   };
 
   return (
-    <main className='flex min-h-screen flex-col justify-start px-2 m-auto gap-[20px] my-[80px]'>
-      <div className='relative flex flex-row justify-between w-full h-screen flex-wrap'>
-        {/* 画面名*/}
-        <CustomTitle displayBack>
-          選手情報{mode === 'create' ? '登録' : mode === 'update' ? '更新' : '入力確認'}
-        </CustomTitle>
-      </div>
+    <>
+      <CustomTitle displayBack>
+        選手情報{mode === 'create' ? '登録' : mode === 'update' ? '更新' : '入力確認'}
+      </CustomTitle>
       {/* エラーメッセージの表示 */}
       <ErrorBox errorText={errorMessage} />
       <div className='flex flex-col justify-start'>
@@ -1130,6 +1127,6 @@ export default function PlayerInformation() {
         {/* モードに応じたボタンの表示 */}
         {modeCustomButtons[mode as keyof typeof modeCustomButtons]}
       </div>
-    </main>
+    </>
   );
 }
