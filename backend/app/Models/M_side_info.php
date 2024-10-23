@@ -53,7 +53,8 @@ class M_side_info extends Model
             from m_side_info 
             where 1=1
             and delete_flag = 0
-            and side_code IN (8, 4, 2, 1)',
+            and side_code IN (8, 4, 2, 1)
+            order by display_order',
             [
                 substr($side, 4, 1),
                 substr($side, 5, 1),
