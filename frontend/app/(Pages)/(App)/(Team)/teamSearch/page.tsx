@@ -151,7 +151,6 @@ export default function TeamSearch() {
    */
   const handleSearch = async () => {
     formData.residenceCountryId = '112'; //仕様変更により、日本の固定値を代入 20240223
-    //console.log(formData);
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     axios
@@ -168,7 +167,6 @@ export default function TeamSearch() {
             data[index].orgTypeName = '正規';
           }
         }
-        //console.log(data);
         if (data.length > 100) {
           window.alert('検索結果が100件を超えました、上位100件を表示しています。');
         }
@@ -206,7 +204,6 @@ export default function TeamSearch() {
         //団体種別マスターの取得 20240209
         // const orgType = await axios.get<OrgType[]>('/orgType');
         const orgType = await axios.get('/getOrganizationTypeData');
-        //console.log(orgType.data);
         const orgTypeList = orgType.data.map(
           ({ org_type_id, org_type }: { org_type_id: number; org_type: string }) => ({
             id: org_type_id,
@@ -224,7 +221,6 @@ export default function TeamSearch() {
             name: org_class_name,
           }),
         );
-        //console.log(orgClassList);
         setOrgClassOptions(orgClassList);
 
         const prefectures = await axios.get('/getPrefecures'); //都道府県マスターの取得 20240208
@@ -262,13 +258,12 @@ export default function TeamSearch() {
   };
 
   return (
-    <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px]'>
+    <>
       {/* 画面名 */}
       <CustomTitle displayBack>団体検索</CustomTitle>
       <ErrorBox errorText={errorMessages} />
-
       <div className='flex flex-col gap-[20px] bg-thinContainerBg rounded p-[30px] border-containerBg border-solid border-[1px]'>
-        <div className='w-full flex flex-wrap justify-start gap-[8px]'>
+        <div className='flex flex-col sm:flex-row gap-[8px] items-center'>
           {/* 団体名 */}
           <CustomTextField
             label='団体名'
@@ -277,6 +272,7 @@ export default function TeamSearch() {
               handleInputChange('org_name', e.target.value);
             }}
             value={formData.org_name}
+            widthClassName='w-full sm:w-[300px]'
           />
           {/* 所在地（国） */}
           {/* <CustomTextField
@@ -289,93 +285,76 @@ export default function TeamSearch() {
             toolTipTitle='Title' //はてなボタン用
             toolTipText='サンプル用のツールチップ表示' //はてなボタン用
           /> */}
-          {/* 所在地（都道府県） */}
-          {/* <CustomTextField
-            label='都道府県'
-            displayHelp={false}
-            onChange={(e) => {
-              handleInputChange('residencePrefectureName', e.target.value);
-            }}
-            value={formData.residencePrefectureName}
-          /> */}
           {/* 都道府県 */}
-          <div className='w-full flex flex-col justify-between gap-[8px]'>
-            <InputLabel label='都道府県' />
-            <CustomDropdown
-              id='都道府県'
-              options={prefectureOptions.map((item) => ({
-                value: item.name,
-                key: item.id,
-              }))}
-              value={formData?.residencePrefectureId || ''}
-              onChange={(e) => {
-                //console.log(e);
-                handleInputChange('residencePrefectureId', e);
-                handleInputChange(
-                  'residencePrefectureName',
-                  prefectureOptions.find((item) => item.id === Number(e))?.name || '',
-                );
-              }}
-              className='w-[300px]'
-            />
-          </div>
+          <CustomDropdown
+            label='都道府県'
+            id='都道府県'
+            options={prefectureOptions.map((item) => ({
+              value: item.name,
+              key: item.id,
+            }))}
+            widthClassName='w-full sm:w-[100px]'
+            value={formData?.residencePrefectureId || ''}
+            onChange={(e) => {
+              handleInputChange('residencePrefectureId', e);
+              handleInputChange(
+                'residencePrefectureName',
+                prefectureOptions.find((item) => item.id === Number(e))?.name || '',
+              );
+            }}
+          />
         </div>
-        <div>
-          <Divider />
-          <div className='flex flex-col justify-start items-center py-4'>
-            <CustomButton
-              buttonType='secondary'
-              onClick={toggleAccordion}
-              className='flex flex-row justify-center gap-[4px] w-[940px]'
-            >
-              <div className='font-bold'>もっと詳しく検索</div>
-              {isOpen ? <RemoveIcon /> : <AddIcon />}
-            </CustomButton>
-          </div>
-          {isOpen && (
-            <div className='flex flex-wrap justify-start items-center gap-[8px] w-[940px]'>
-              {/* 団体種別 */}
-              <div className='w-full flex flex-col justify-between gap-[8px]'>
-                <CustomDropdown
-                  id='団体種別'
-                  label='団体種別'
-                  options={orgTypeOptions.map((orgType) => ({
-                    value: orgType.name,
-                    key: orgType.id,
-                  }))}
-                  value={formData?.org_type || ''}
-                  onChange={(e) => {
-                    //console.log(e);
-                    handleInputChange('org_type', e);
-                    handleInputChange(
-                      'orgTypeName',
-                      orgTypeOptions.find((orgType) => orgType.id === Number(e))?.name || '',
-                    );
-                  }}
-                  className='w-[300px]'
-                />
-              </div>
+        <Divider />
+        <CustomButton
+          buttonType='secondary'
+          onClick={toggleAccordion}
+          className='flex flex-row justify-center items-center gap-[4px] w-full'
+        >
+          <div className='font-bold'>もっと詳しく検索</div>
+          {isOpen ? <RemoveIcon /> : <AddIcon />}
+        </CustomButton>
+        {isOpen && (
+          <div className='flex flex-col gap-2'>
+            {/* 団体種別 */}
+            <div className='flex flex-col sm:flex-row gap-4'>
+              <CustomDropdown
+                id='団体種別'
+                label='団体種別'
+                options={orgTypeOptions.map((orgType) => ({
+                  value: orgType.name,
+                  key: orgType.id,
+                }))}
+                widthClassName='w-full sm:w-[200px]'
+                value={formData?.org_type || ''}
+                onChange={(e) => {
+                  handleInputChange('org_type', e);
+                  handleInputChange(
+                    'orgTypeName',
+                    orgTypeOptions.find((orgType) => orgType.id === Number(e))?.name || '',
+                  );
+                }}
+              />
               {/* 団体区分 */}
-              <div className='w-full flex flex-col justify-between gap-[8px]'>
-                <CustomDropdown
-                  id='団体区分'
-                  label='団体区分'
-                  options={orgClassOptions.map((orgClass) => ({
-                    value: orgClass.name,
-                    key: orgClass.id,
-                  }))}
-                  value={formData?.org_class || ''}
-                  onChange={(e) => {
-                    //console.log(e);
-                    handleInputChange('org_class', e);
-                    handleInputChange(
-                      'orgClassName',
-                      orgClassOptions.find((orgClass) => orgClass.id === Number(e))?.name || '',
-                    );
-                  }}
-                  className='w-[300px]'
-                />
-              </div>
+              <CustomDropdown
+                id='団体区分'
+                label='団体区分'
+                options={orgClassOptions.map((orgClass) => ({
+                  value: orgClass.name,
+                  key: orgClass.id,
+                }))}
+                widthClassName='w-full sm:w-[200px]'
+                value={formData?.org_class || ''}
+                onChange={(e) => {
+                  //console.log(e);
+                  handleInputChange('org_class', e);
+                  handleInputChange(
+                    'orgClassName',
+                    orgClassOptions.find((orgClass) => orgClass.id === Number(e))?.name || '',
+                  );
+                }}
+              />
+            </div>
+            <div className='flex flex-col sm:flex-row gap-4'>
               {/* 団体ID */}
               <CustomTextField
                 label='団体ID'
@@ -385,11 +364,10 @@ export default function TeamSearch() {
                 value={formData?.org_id || ''}
                 toolTipText='団体IDは団体情報参照画面で確認できます。' //はてなボタン用
               />
-              {userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
-              userIdType.is_jara == ROLE.JARA ||
-              userIdType.is_pref_boat_officer == ROLE.PREFECTURE ||
-              userIdType.is_organization_manager == ROLE.GROUP_MANAGER ? (
-                // エントリーシステムの団体ID
+              {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+                userIdType.is_jara == ROLE.JARA ||
+                userIdType.is_pref_boat_officer == ROLE.PREFECTURE ||
+                userIdType.is_organization_manager == ROLE.GROUP_MANAGER) && (
                 <CustomTextField
                   label='エントリーシステムID'
                   onChange={(e) => {
@@ -398,77 +376,72 @@ export default function TeamSearch() {
                   value={formData?.entrySystemId || ''}
                   toolTipText='日本ローイング協会より発行された、6桁の団体コードを入力してください。' //はてなボタン用
                 />
-              ) : (
-                ''
               )}
-              <div className='w-full flex flex-col justify-start gap-[8px]'>
-                <InputLabel
-                  label='創立年'
-                  displayHelp
-                  toolTipText='団体の創立年を西暦で入力してください。' //はてなボタン用
+            </div>
+            <div className='flex flex-col gap-[8px]'>
+              <InputLabel
+                label='創立年'
+                displayHelp
+                toolTipText='団体の創立年を西暦で入力してください。' //はてなボタン用
+              />
+              <div className='flex gap-[8px]'>
+                {/* 創立年（開始年） */}
+                <CustomYearPicker
+                  selectedDate={formData.foundingYear_start}
+                  onChange={(date: Date) =>
+                    handleInputChange('foundingYear_start', date.getFullYear().toString())
+                  }
+                  className='w-full'
                 />
-                <div className='w-full flex flex-row justify-start gap-[8px]'>
-                  {/* 創立年（開始年） */}
-                  <CustomYearPicker
-                    selectedDate={formData.foundingYear_start}
-                    onChange={(date: Date) =>
-                      handleInputChange('foundingYear_start', date.getFullYear().toString())
-                    }
-                  />
-                  <div className='flex justify-center items-center'>〜</div>
-                  {/* 創立年（終了年） */}
-                  <CustomYearPicker
-                    selectedDate={formData.foundingYear_end}
-                    onChange={(date: Date) =>
-                      handleInputChange('foundingYear_end', date.getFullYear().toString())
-                    }
-                  />
-                </div>
+                <div className='flex justify-center items-center'>〜</div>
+                {/* 創立年（終了年） */}
+                <CustomYearPicker
+                  selectedDate={formData.foundingYear_end}
+                  onChange={(date: Date) =>
+                    handleInputChange('foundingYear_end', date.getFullYear().toString())
+                  }
+                  className='w-full'
+                />
               </div>
             </div>
-          )}
-        </div>
-
-        <Divider />
-
-        {/* 検索ボタン */}
-        <div className='flex flex-col justify-start mt-[20px]'>
-          <div className='flex flex-row justify-center gap-[4px]'>
-            <CustomButton
-              buttonType='primary'
-              onClick={() => {
-                handleSearch();
-              }}
-              className='flex flex-row justify-center gap-[4px] w-[200px]'
-            >
-              <SearchIcon />
-              <div>検索</div>
-            </CustomButton>
-            {/* クリアボタン */}
-            <CustomButton
-              buttonType='secondary'
-              onClick={() => {
-                setFormData({
-                  entrySystemId: '',
-                  org_id: '',
-                  org_name: '',
-                  org_type: '',
-                  orgTypeName: '',
-                  org_class: '',
-                  orgClassName: '',
-                  foundingYear_start: '',
-                  foundingYear_end: '',
-                  residenceCountryId: '',
-                  residenceCountryName: '',
-                  residencePrefectureId: '',
-                  residencePrefectureName: '',
-                } as SearchCond);
-              }}
-              className='w-[200px]'
-            >
-              クリア
-            </CustomButton>
           </div>
+        )}
+        <Divider />
+        {/* 検索ボタン */}
+        <div className='flex flex-col sm:flex-row items-center justify-center gap-4'>
+          <CustomButton
+            buttonType='primary'
+            onClick={() => {
+              handleSearch();
+            }}
+            className='flex flex-row justify-center items-center gap-[4px]'
+          >
+            <SearchIcon />
+            <div>検索</div>
+          </CustomButton>
+          {/* クリアボタン */}
+          <CustomButton
+            buttonType='secondary'
+            onClick={() => {
+              setFormData({
+                entrySystemId: '',
+                org_id: '',
+                org_name: '',
+                org_type: '',
+                orgTypeName: '',
+                org_class: '',
+                orgClassName: '',
+                foundingYear_start: '',
+                foundingYear_end: '',
+                residenceCountryId: '',
+                residenceCountryName: '',
+                residencePrefectureId: '',
+                residencePrefectureName: '',
+              } as SearchCond);
+            }}
+          >
+            クリア
+          </CustomButton>
         </div>
       </div>
       <div className='overflow-auto'>
@@ -576,12 +549,12 @@ export default function TeamSearch() {
         </CustomTable>
       </div>
       <div
-        className='flex flex-row justify-center gap-[16px] my-[30px] text-primary-500 font-bold cursor-pointer'
+        className='flex justify-center gap-[16px] my-[30px] text-primary-500 font-bold cursor-pointer'
         onClick={loadMoreData}
       >
         <AddIcon /> 10件表示する
       </div>
-      <div className='flex flex-row justify-center gap-[16px] my-[30px]'>
+      <div className='flex justify-center gap-[16px] my-[30px]'>
         <CustomButton
           onClick={() => {
             router.back();
@@ -592,6 +565,6 @@ export default function TeamSearch() {
           戻る
         </CustomButton>
       </div>
-    </main>
+    </>
   );
 }

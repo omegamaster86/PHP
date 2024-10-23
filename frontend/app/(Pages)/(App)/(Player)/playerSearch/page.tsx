@@ -16,16 +16,15 @@ import {
   CustomButton,
   CustomTable,
   CustomThead,
-  CustomTh,
   CustomTr,
+  CustomTh,
   CustomTbody,
   CustomTd,
   OriginalCheckbox,
 } from '@/app/components/';
-import Link from 'next/link';
 import { EventResponse, SexResponse, Player, UserIdType } from '@/app/types';
 import Divider from '@mui/material/Divider';
-
+import Link from 'next/link';
 // モデルのインポート
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
@@ -143,10 +142,8 @@ export default function PlayerSearch() {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
       // const response = await axios.get<Player[]>('/playerSearch/');
-      //console.log(searchCond);
       const response = await axios.post('/playerSearch', searchCond);
       const data = response.data.result;
-      //console.log(data);
       if (data.length > 100) {
         window.alert('検索結果が100件を超えました、上位100件を表示しています。');
       }
@@ -299,241 +296,216 @@ export default function PlayerSearch() {
   };
   // レンダリング
   return (
-    <main className='flex min-h-screen flex-col justify-start p-[10px] gap-[20px] my-[80px] md:w-[1000px] sm: w-[600px]'>
-      <div className='relative flex flex-row justify-between w-full h-screen flex-wrap'>
-        {/* 画面名 */}
-        <CustomTitle displayBack>選手検索</CustomTitle>
-      </div>
+    <>
+      {/* 画面名 */}
+      <CustomTitle displayBack>選手検索</CustomTitle>
       {/* エラーメッセージの表示 */}
       <ErrorBox errorText={errorMessage} />
       <div className='bg-thinContainerBg p-[20px] flex flex-col gap-[12px] border border-border'>
-        <div className='flex flex-col justify-start'>
-          <div className='flex flex-row justify-start gap-[16px]'>
-            {/* 選手名 */}
-            <div className='flex flex-col justify-start'>
-              <CustomTextField
-                label='選手名'
-                displayHelp={false}
-                value={searchCond.player_name}
-                onChange={(e) => handleInputChange('player_name', e.target.value)}
+        <div className='flex flex-col sm:flex-row gap-[16px]'>
+          {/* 選手名 */}
+          <CustomTextField
+            label='選手名'
+            displayHelp={false}
+            value={searchCond.player_name}
+            onChange={(e) => handleInputChange('player_name', e.target.value)}
+          />
+          {/* 性別 */}
+
+          <CustomDropdown
+            id='sex'
+            label='性別'
+            displayHelp={false}
+            options={sex.map((item) => ({ key: item.id, value: item.name }))}
+            value={searchCond.sexId}
+            errorMessages={[]}
+            onChange={(e) => {
+              handleInputChange('sexId', e);
+              handleInputChange('sex', sex.find((item) => item.id === Number(e))?.name || '');
+            }}
+            widthClassName='sm:w-[200px]'
+            className='rounded'
+          />
+          {/* サイド情報 */}
+          <div>
+            <InputLabel
+              label='サイド情報'
+              displayHelp
+              toolTipText='選手が担当する役割になります。' //はてなボタン用
+            />
+            <div className='flex flex-wrap flex-col sm:flex-row sm:gap-[4px] '>
+              <OriginalCheckbox
+                id='checkbox-S'
+                label=': S (ストロークサイド)'
+                value='S'
+                checked={searchCond.side_info.S}
+                onChange={handleCheckboxChange}
               />
-            </div>
-            {/* 性別 */}
-            <div className='flex flex-col justify-start gap-[8px]'>
-              <CustomDropdown
-                id='sex'
-                label='性別'
-                displayHelp={false}
-                options={sex.map((item) => ({ key: item.id, value: item.name }))}
-                value={searchCond.sexId}
-                errorMessages={[]}
-                onChange={(e) => {
-                  handleInputChange('sexId', e);
-                  handleInputChange('sex', sex.find((item) => item.id === Number(e))?.name || '');
-                }}
-                className='rounded w-[120px]'
+              <OriginalCheckbox
+                id='checkbox-B'
+                label=': B (バウサイド)'
+                value='B'
+                checked={searchCond.side_info.B}
+                onChange={handleCheckboxChange}
               />
-            </div>
-            {/* サイド情報 */}
-            <div className='flex flex-col justify-start'>
-              <InputLabel
-                label='サイド情報'
-                displayHelp
-                toolTipText='選手が担当する役割になります。' //はてなボタン用
+              <OriginalCheckbox
+                id='checkbox-X'
+                label=': X (スカル)'
+                value='X'
+                checked={searchCond.side_info.X}
+                onChange={handleCheckboxChange}
               />
-              <div className='flex flex-row gap-[4px]'>
-                <div className='flex justify-start flex-col gap-[4px] my-1'>
-                  <OriginalCheckbox
-                    id='checkbox-S'
-                    label=': S (ストロークサイド)'
-                    value='S'
-                    checked={searchCond.side_info.S}
-                    onChange={handleCheckboxChange}
-                  />
-                  <OriginalCheckbox
-                    id='checkbox-B'
-                    label=': B (バウサイド)'
-                    value='B'
-                    checked={searchCond.side_info.B}
-                    onChange={handleCheckboxChange}
-                  />
-                </div>
-                <div className='flex justify-start flex-col gap-[4px] my-1'>
-                  <OriginalCheckbox
-                    id='checkbox-X'
-                    label=': X (スカル)'
-                    value='X'
-                    checked={searchCond.side_info.X}
-                    onChange={handleCheckboxChange}
-                  />
-                  <OriginalCheckbox
-                    id='checkbox-C'
-                    label=': C (コックス)'
-                    value='C'
-                    checked={searchCond.side_info.C}
-                    onChange={handleCheckboxChange}
-                  />
-                </div>
-              </div>
+              <OriginalCheckbox
+                id='checkbox-C'
+                label=': C (コックス)'
+                value='C'
+                checked={searchCond.side_info.C}
+                onChange={handleCheckboxChange}
+              />
             </div>
           </div>
         </div>
-        <Divider className='w-[900px] h-[1px] bg-border' />
-        <div className='flex flex-col justify-start items-center'>
+        <Divider className='h-[1px] bg-border' />
+        <div className='flex flex-col items-center'>
           <CustomButton
             buttonType='secondary'
             onClick={toggleAccordion}
-            className='flex flex-row justify-center gap-[4px] w-[940px]'
+            className='flex flex-row items-center justify-center w-full gap-[4px]'
           >
-            <div className='font-bold'>もっと詳しく検索</div>
+            <div className='font-bold '>もっと詳しく検索</div>
             {isOpen ? <RemoveIcon /> : <AddIcon />}
           </CustomButton>
         </div>
         {isOpen && (
-          <div className='flex flex-col justify-start gap-[8px]'>
-            <div className='flex flex-col justify-start gap-[8px]'>
-              <Label label={'選手'} isBold />
-              <div className='flex flex-row gap-[16px]'>
-                {/* JARA選手コード */}
-                <CustomTextField
-                  type='number'
-                  label='JARA選手コード'
-                  displayHelp
-                  value={searchCond.jara_player_id}
-                  onChange={(e) => handleInputChange('jara_player_id', e.target.value)}
-                  toolTipText='日本ローイング協会より発行された、12桁の選手コードになります。' //はてなボタン用
-                />
-                {/* 選手ID */}
-                <CustomTextField
-                  type='number'
-                  label='選手ID'
-                  displayHelp
-                  value={searchCond.player_id}
-                  onChange={(e) => handleInputChange('player_id', e.target.value)}
-                  toolTipText='本システムでの選手情報管理用のIDとなります。
+          <div className='flex flex-col gap-[8px]'>
+            <Label label={'選手'} isBold />
+            <div className='flex flex-col sm:flex-row gap-[16px]'>
+              {/* JARA選手コード */}
+              <CustomTextField
+                type='number'
+                label='選手コード'
+                displayHelp
+                value={searchCond.jara_player_id}
+                onChange={(e) => handleInputChange('jara_player_id', e.target.value)}
+                toolTipText='日本ローイング協会より発行された、12桁の選手コードになります。' //はてなボタン用
+              />
+              {/* 選手ID */}
+              <CustomTextField
+                type='number'
+                label='選手ID'
+                displayHelp
+                value={searchCond.player_id}
+                onChange={(e) => handleInputChange('player_id', e.target.value)}
+                toolTipText='本システムでの選手情報管理用のIDとなります。
                     選手情報参照画面にて確認できます。' //はてなボタン用
-                />
-                <div className='flex flex-col justify-start gap-[8px]'>
-                  <InputLabel label='生年月日' />
-                  <div className='flex flex-row gap-[8px]'>
-                    {/* 生年月日（開始年） */}
-                    <div className='flex flex-col justify-start'>
-                      <CustomDatePicker
-                        placeHolder={new Date().toLocaleDateString('ja-JP')}
-                        selectedDate={searchCond.startDateOfBirth}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                          handleInputChange('startDateOfBirth', formatDate(e as unknown as Date));
-                        }}
-                      />
-                    </div>
-                    <Label label='~' isBold />
-                    {/* 生年月日（終了年） */}
-                    <div className='flex flex-col justify-start gap-[8px] self-end'>
-                      <CustomDatePicker
-                        placeHolder={new Date().toLocaleDateString('ja-JP')}
-                        selectedDate={searchCond.endDateOfBirth}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                          handleInputChange('endDateOfBirth', formatDate(e as unknown as Date));
-                        }}
-                      />
-                    </div>
-                  </div>
+              />
+              <div className='flex flex-col gap-[8px]'>
+                <InputLabel label='生年月日' />
+                <div className='flex flex-row gap-[8px]'>
+                  {/* 生年月日（開始年） */}
+                  <CustomDatePicker
+                    placeHolder={new Date().toLocaleDateString('ja-JP')}
+                    selectedDate={searchCond.startDateOfBirth}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      handleInputChange('startDateOfBirth', formatDate(e as unknown as Date));
+                    }}
+                  />
+                  <p className='flex flex-col justify-center items-center text-center'>～</p>
+                  {/* 生年月日（終了年） */}
+                  <CustomDatePicker
+                    placeHolder={new Date().toLocaleDateString('ja-JP')}
+                    selectedDate={searchCond.endDateOfBirth}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      handleInputChange('endDateOfBirth', formatDate(e as unknown as Date));
+                    }}
+                  />
                 </div>
               </div>
             </div>
-            <div className='flex flex-col justify-start gap-[8px]'>
-              <Label label={'団体'} isBold />
-              <div className='flex flex-row justify-start gap-[12px]'>
-                {/* エントリーシステムの団体ID */}
-                {/* ユーザー種別による表示制御 */}
-                {(userIdType.is_administrator == 1 ||
-                  userIdType.is_jara == 1 ||
-                  userIdType.is_pref_boat_officer == 1 ||
-                  userIdType.is_organization_manager == 1) && (
-                  <div className='flex flex-col justify-start'>
-                    <CustomTextField
-                      label='エントリーシステムの団体ID'
-                      type='number'
-                      displayHelp
-                      value={searchCond.entrysystem_org_id}
-                      onChange={(e) => handleInputChange('entrysystem_org_id', e.target.value)}
-                      toolTipText='日本ローイング協会より発行された、6桁の団体コードになります。選手が所属している団体のコードを入力してください。' //はてなボタン用
-                    />
-                  </div>
-                )}
-                {/* 団体ID */}
-                <div className='flex flex-col justify-start'>
-                  <CustomTextField
-                    label='団体ID'
-                    type='number'
-                    displayHelp
-                    isError={sponsorOrgIdErrorMessage.length > 0}
-                    errorMessages={sponsorOrgIdErrorMessage}
-                    value={searchCond.org_id}
-                    onChange={(e) => handleInputChange('org_id', e.target.value)}
-                    toolTipText='本システムでの団体情報管理用のIDとなります。
+            <Label label={'団体'} isBold />
+            <div className='flex flex-col sm:flex-row gap-[12px] sm:items-center'>
+              {/* エントリーシステムの団体ID */}
+              {/* ユーザー種別による表示制御 */}
+              {(userIdType.is_administrator == 1 ||
+                userIdType.is_jara == 1 ||
+                userIdType.is_pref_boat_officer == 1 ||
+                userIdType.is_organization_manager == 1) && (
+                <CustomTextField
+                  label='エントリーシステムID'
+                  type='number'
+                  displayHelp
+                  value={searchCond.entrysystem_org_id}
+                  onChange={(e) => handleInputChange('entrysystem_org_id', e.target.value)}
+                  toolTipText='日本ローイング協会より発行された、6桁の団体コードになります。選手が所属している団体のコードを入力してください。' //はてなボタン用
+                  widthClassName='sm:w-[200px]'
+                />
+              )}
+              {/* 団体ID */}
+              <CustomTextField
+                label='団体ID'
+                type='number'
+                displayHelp
+                isError={sponsorOrgIdErrorMessage.length > 0}
+                errorMessages={sponsorOrgIdErrorMessage}
+                value={searchCond.org_id}
+                onChange={(e) => handleInputChange('org_id', e.target.value)}
+                widthClassName='sm:w-[150px]'
+                toolTipText='本システムでの団体情報管理用のIDとなります。
                       選手が所属している団体のIDを入力してください。
                       団体情報参照画面にて確認できます。' //はてなボタン用
-                  />
-                </div>
-                {/* 団体名 */}
-                <div className='flex flex-col justify-start'>
-                  <CustomTextField
-                    label='団体名'
-                    displayHelp={false}
-                    value={searchCond.org_name}
-                    onChange={(e) => handleInputChange('org_name', e.target.value)}
-                  />
-                </div>
-              </div>
+              />
+              {/* 団体名 */}
+              <CustomTextField
+                label='団体名'
+                displayHelp={false}
+                value={searchCond.org_name}
+                onChange={(e) => handleInputChange('org_name', e.target.value)}
+                widthClassName='sm:w-[250px]'
+              />
             </div>
-            <div className='flex flex-col justify-start gap-[8px]'>
-              <Label label={'大会'} isBold />
-              <div className='flex flex-row justify-start gap-[12px]'>
-                {/* 出漕種目 */}
-                <div className='flex flex-col justify-start gap-[8px]'>
-                  <CustomDropdown
-                    id='event'
-                    label='出漕種目'
-                    displayHelp={false}
-                    options={event.map((item) => ({ key: item.id, value: item.name }))}
-                    value={searchCond.event_id}
-                    placeHolder='未選択'
-                    onChange={(e) => {
-                      handleInputChange('event_id', e);
-                      handleInputChange(
-                        'eventName',
-                        event.find((item) => item.id === Number(e))?.name || '',
-                      );
-                    }}
-                    className='rounded w-[200px]'
-                  />
-                </div>
-                {/* 出漕大会名 */}
-                <div className='flex flex-col justify-start'>
-                  <CustomTextField
-                    label='出漕大会名'
-                    displayHelp={false}
-                    isError={sponsorOrgIdErrorMessage.length > 0}
-                    errorMessages={sponsorOrgIdErrorMessage}
-                    value={searchCond.race_class_name}
-                    onChange={(e) => handleInputChange('race_class_name', e.target.value)}
-                  />
-                </div>
-              </div>
+            <Label label={'大会'} isBold />
+            <div className='flex flex-col sm:flex-row gap-[12px] '>
+              {/* 出漕種目 */}
+              <CustomDropdown
+                id='event'
+                label='出漕種目'
+                displayHelp={false}
+                options={event.map((item) => ({ key: item.id, value: item.name }))}
+                value={searchCond.event_id}
+                placeHolder='未選択'
+                onChange={(e) => {
+                  handleInputChange('event_id', e);
+                  handleInputChange(
+                    'eventName',
+                    event.find((item) => item.id === Number(e))?.name || '',
+                  );
+                }}
+                widthClassName='sm:w-[150px]'
+                className='rounded'
+              />
+              {/* 出漕大会名 */}
+              <CustomTextField
+                label='出漕大会名'
+                displayHelp={false}
+                isError={sponsorOrgIdErrorMessage.length > 0}
+                errorMessages={sponsorOrgIdErrorMessage}
+                value={searchCond.race_class_name}
+                onChange={(e) => handleInputChange('race_class_name', e.target.value)}
+                widthClassName='sm:w-[250px]'
+              />
             </div>
           </div>
         )}
-        <Divider className='w-[900px] h-[1px] bg-border' />
+        <Divider className='h-[1px] bg-border' />
         <div className='flex flex-col justify-start'>
-          <div className='flex flex-row justify-center gap-[4px]'>
+          <div className='flex flex-col sm:flex-row items-center justify-center gap-4'>
             {/* 検索 */}
             <CustomButton
               buttonType='primary'
               onClick={() => {
                 handleSearch();
               }}
-              className='flex flex-row justify-center gap-[4px] w-[200px]'
+              className='flex justify-center items-center gap-[4px]'
             >
               <SearchIcon />
               <div>検索</div>
@@ -567,7 +539,6 @@ export default function PlayerSearch() {
                   },
                 } as SearchCond);
               }}
-              className='w-[200px]'
             >
               クリア
             </CustomButton>
@@ -834,6 +805,6 @@ export default function PlayerSearch() {
           戻る
         </CustomButton>
       </div>
-    </main>
+    </>
   );
 }

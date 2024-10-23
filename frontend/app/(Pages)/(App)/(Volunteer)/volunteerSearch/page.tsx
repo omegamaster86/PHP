@@ -579,11 +579,9 @@ export default function VolunteerSearch() {
 
   // レンダリング
   return (
-    <main className='flex min-h-screen flex-col justify-start p-[10px] gap-[20px] my-[80px] md:w-[1200px] sm: w-[600px]'>
-      <div className='relative flex flex-row justify-between w-full h-screen flex-wrap'>
-        {/* タイトルの表示 */}
-        <CustomTitle displayBack>ボランティア検索</CustomTitle>
-      </div>
+    <>
+      {/* タイトルの表示 */}
+      <CustomTitle displayBack>ボランティア検索</CustomTitle>
       {/* エラーメッセージの表示 */}
       <ErrorBox errorText={[]} />
       <Accordion
@@ -1527,6 +1525,6 @@ export default function VolunteerSearch() {
           戻る
         </CustomButton>
       </div>
-    </main>
+    </>
   );
 }

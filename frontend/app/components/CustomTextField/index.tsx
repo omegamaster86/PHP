@@ -3,6 +3,7 @@ import React from 'react';
 import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '../InputLabel';
 import type { ChangeEvent, FocusEvent } from 'react';
+import clsx from 'clsx';
 
 const CustomTextField = ({
   label,
@@ -23,6 +24,7 @@ const CustomTextField = ({
   isDecimal,
   onBlur,
   maxLength,
+  widthClassName,
 }: {
   label?: string;
   isError?: boolean;
@@ -40,6 +42,7 @@ const CustomTextField = ({
   toolTipText?: string;
   className?: string;
   isDecimal?: boolean;
+  widthClassName?: string;
   onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
   maxLength?: number;
 }) => {
@@ -47,7 +50,7 @@ const CustomTextField = ({
     displayHelp = true;
   }
   return (
-    <div className='flex flex-col gap-[8px]'>
+    <div className={`flex flex-col gap-[8px] ${widthClassName}`}>
       {label && (
         <InputLabel
           label={label}

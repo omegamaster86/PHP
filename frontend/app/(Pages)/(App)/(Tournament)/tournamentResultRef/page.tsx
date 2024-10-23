@@ -68,8 +68,7 @@ export default function TournamentResultRef() {
 
   // レンダリング
   return (
-    <div className='flex flex-col gap-[20px] w-full h-full p-[20px]'>
-      {/* 画面名 */}
+    <>
       <CustomTitle>レース結果{mode === 'delete' ? '削除' : '参照'}</CustomTitle>
       <ErrorBox errorText={errorText} />
       {/* レース基本情報 */}
@@ -505,6 +504,6 @@ export default function TournamentResultRef() {
           </CustomButton>
         )}
       </div>
-    </div>
+    </>
   );
 }

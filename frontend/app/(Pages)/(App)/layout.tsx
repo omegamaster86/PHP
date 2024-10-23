@@ -66,9 +66,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {isMyPageRoute ? (
               <MyPageLayout>{children}</MyPageLayout>
             ) : (
-              <div className='flex-grow p-4 md:overflow-y-auto md:p-12 w-full max-w-8xl m-auto'>
+              <main className='flex-grow flex flex-col gap-7 md:overflow-y-auto px-3 py-4 md:py-12 w-full max-w-5xl m-auto'>
                 {children}
-              </div>
+              </main>
             )}
           </div>
           <Footer />
