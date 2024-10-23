@@ -10,6 +10,7 @@ use App\Models\M_side_info;
 use App\Models\T_raceResultRecord;
 use App\Models\T_players;
 use App\Models\T_tournaments;
+use App\Models\T_users;
 use App\Models\T_volunteers;
 use App\Models\T_volunteer_language_proficiency;
 use App\Models\T_volunteer_qualifications_hold;
@@ -107,5 +108,15 @@ class MyPageController extends Controller
                 'timeZone' => $volData[0]->timeZone,
             ])
         ]); //DBの結果を返す
+    }
+
+    //プロフィールを取得 20241023
+    public function getMyPageProfileList(T_users $tUsers)
+    {
+        Log::debug(sprintf("getMyPageProfileList start"));
+        $result = $tUsers->getUserProfileInfo(Auth::user()->user_id); //ユーザIDを元にプロフィール情報を取得 202401023
+ 
+        Log::debug(sprintf("getMyPageProfileList end"));
+        return response()->json(['result' => $result]); //DBの結果を返す
     }
 }

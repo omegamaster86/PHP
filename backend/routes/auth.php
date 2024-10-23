@@ -192,6 +192,7 @@ Route::middleware('auth')->group(function () {
     Route::get('getMyPageRaceResultRecordInfoList', [MyPageController::class, 'getMyPageRaceResultRecordInfoList']); // 出漕履歴を取得する 20241010
     Route::get('getMyPagePlayerProfileList', [MyPageController::class, 'getMyPagePlayerProfileList']); // 選手プロフィールを取得する 20241016
     Route::get('getMyPageVolunteerInfoList', [MyPageController::class, 'getMyPageVolunteerInfoList']); // ボランティア情報を取得する 20241017
+    Route::get('getMyPageProfileList', [MyPageController::class, 'getMyPageProfileList']); // プロフィールを取得する 20241023
 
     //React連携後APIここまで===========================================================
     //================================================================================
