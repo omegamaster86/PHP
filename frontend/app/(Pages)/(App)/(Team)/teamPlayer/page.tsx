@@ -169,15 +169,12 @@ export default function TeamPlayer() {
   window.addEventListener('popstate', resetFilter);
 
   return (
-    <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px]'>
-      <div className='relative flex flex-col justify-between w-full h-screen flex-wrap gap-[20px]'>
-        {/* 画面名*/}
+    <>
+      <div className='flex flex-col gap-[20px]'>
         <CustomTitle displayBack>
-          <div>
-            {teamData?.org_name}
-            <br />
-            団体への選手追加・削除{mode === 'confirm' && '確認'}
-          </div>
+          {teamData?.org_name}
+          <br />
+          団体への選手追加・削除{mode === 'confirm' && '確認'}
         </CustomTitle>
         <ErrorBox errorText={errorMessage} />
         {mode !== 'confirm' && (
@@ -396,6 +393,6 @@ export default function TeamPlayer() {
           )}
         </div>
       </div>
-    </main>
+    </>
   );
 }

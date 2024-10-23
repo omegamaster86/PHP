@@ -258,7 +258,7 @@ export default function TeamSearch() {
   };
 
   return (
-    <main className='flex flex-col gap-[30px] max-w-5xl m-auto'>
+    <>
       {/* 画面名 */}
       <CustomTitle displayBack>団体検索</CustomTitle>
       <ErrorBox errorText={errorMessages} />
@@ -305,14 +305,14 @@ export default function TeamSearch() {
           />
         </div>
         <Divider />
-          <CustomButton
-            buttonType='secondary'
-            onClick={toggleAccordion}
-            className='flex flex-row justify-center items-center gap-[4px] w-full'
-          >
-            <div className='font-bold'>もっと詳しく検索</div>
-            {isOpen ? <RemoveIcon /> : <AddIcon />}
-          </CustomButton>
+        <CustomButton
+          buttonType='secondary'
+          onClick={toggleAccordion}
+          className='flex flex-row justify-center items-center gap-[4px] w-full'
+        >
+          <div className='font-bold'>もっと詳しく検索</div>
+          {isOpen ? <RemoveIcon /> : <AddIcon />}
+        </CustomButton>
         {isOpen && (
           <div className='flex flex-col gap-2'>
             {/* 団体種別 */}
@@ -565,6 +565,6 @@ export default function TeamSearch() {
           戻る
         </CustomButton>
       </div>
-    </main>
+    </>
   );
 }

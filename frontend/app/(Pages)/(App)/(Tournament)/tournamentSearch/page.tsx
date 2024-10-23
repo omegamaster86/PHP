@@ -284,8 +284,7 @@ export default function TournamentSearch() {
 
   // レンダリング
   return (
-    <main className='max-w-5xl m-auto'>
-      {/* 画面名 */}
+    <>
       <CustomTitle displayBack>大会検索</CustomTitle>
       {/* エラーメッセージの表示 */}
       <ErrorBox errorText={[]} />
@@ -601,6 +600,6 @@ export default function TournamentSearch() {
           戻る
         </CustomButton>
       </div>
-    </main>
+    </>
   );
 }

@@ -412,46 +412,41 @@ export default function TournamentRef() {
     return <div>404エラー</div>;
   }
   return (
-    <main>
-      <div className='flex flex-col gap-[30px] max-w-5xl m-auto'>
-        <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
-        <div className='flex flex-row justify-between items-center '>
-          {/* 画面名 */}
-          <CustomTitle displayBack>{mode === 'delete' ? '大会情報削除' : '大会情報'}</CustomTitle>
-          <div className='flex items-center gap-2'>
-            {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag == 1) && (
-              <TitleSideButton
-                href={{
-                  pathname: '/tournament',
-                  query: { mode: 'update', tourn_id: tournId },
-                }}
-                icon={EditIcon} 
-                text='大会情報更新'
-              />
-            )}
-            {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag == 1) && (
-              <TitleSideButton
-                href={{
-                  pathname: '/tournamentRef',
-                  query: { mode: 'delete', tournId: tournId },
-                }}
-                icon={DeleteOutlineIcon}
-                text='大会情報削除'
-              />
-            )}
-          </div>
+    <>
+      <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
+      <div className='flex flex-row justify-between items-center '>
+        {/* 画面名 */}
+        <CustomTitle displayBack>{mode === 'delete' ? '大会情報削除' : '大会情報'}</CustomTitle>
+        <div className='flex items-center gap-2'>
+          {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag == 1) && (
+            <TitleSideButton
+              href={{
+                pathname: '/tournament',
+                query: { mode: 'update', tourn_id: tournId },
+              }}
+              icon={EditIcon}
+              text='大会情報更新'
+            />
+          )}
+          {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag == 1) && (
+            <TitleSideButton
+              href={{
+                pathname: '/tournamentRef',
+                query: { mode: 'delete', tournId: tournId },
+              }}
+              icon={DeleteOutlineIcon}
+              text='大会情報削除'
+            />
+          )}
         </div>
-        <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4 '>
-          <div className='flex flex-col gap-[10px]'>
-            <div className='flex flex-col gap-[30px]'>
-              <div className='flex flex-col lg:flex-row justify-between gap-6'>
-                <Label
-                  label={tournamentFormData.tourn_name}
-                  textColor='white'
-                  textSize='h2'
-                ></Label>
-                {/* 大会要項ダウンロードボタン */}
-                {/* <CustomButton
+      </div>
+      <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4 '>
+        <div className='flex flex-col gap-[10px]'>
+          <div className='flex flex-col gap-[30px]'>
+            <div className='flex flex-col lg:flex-row justify-between gap-6'>
+              <Label label={tournamentFormData.tourn_name} textColor='white' textSize='h2'></Label>
+              {/* 大会要項ダウンロードボタン */}
+              {/* <CustomButton
                   buttonType='white-outlined'
                   className='w-[220px] text-normal text-white hover:text-primary-100 hover:bg-transparent hover:border-primary-100'
                   onClick={() => {
@@ -462,506 +457,503 @@ export default function TournamentRef() {
                   <FileDownloadOutlinedIcon className='text-[16px] mr-1 hover:text-primary-100 '></FileDownloadOutlinedIcon>
                   大会要項ダウンロード
                 </CustomButton> */}
-                {/* ダウンロードコード追加 開始 */}
-                {tournamentFormData.tourn_info_faile_path && (
-                  <Link
-                    href={`${TOURNAMENT_PDF_URL}${tournamentFormData.tourn_info_faile_path}`}
-                    download
-                    className='w-[220px] text-normal text-white hover:text-primary-100 hover:bg-transparent hover:border-primary-100 '
-                    target='_blank'
-                  >
-                    <FileDownloadOutlinedIcon className='text-[16px] mr-1 hover:text-primary-100 '></FileDownloadOutlinedIcon>
-                    大会要項ダウンロード
-                  </Link>
-                )}
-                {/* ダウンロードコード追加 終了*/}
-              </div>
-              <div className='flex flex-col sm:flex-row'>
-                {/* 大会個別URL */}
-                <div className='text-gray-40 w-[100px]'>大会URL</div>
+              {/* ダウンロードコード追加 開始 */}
+              {tournamentFormData.tourn_info_faile_path && (
                 <Link
-                  href={tournamentFormData.tourn_url}
-                  rel='noopener noreferrer'
+                  href={`${TOURNAMENT_PDF_URL}${tournamentFormData.tourn_info_faile_path}`}
+                  download
+                  className='w-[220px] text-normal text-white hover:text-primary-100 hover:bg-transparent hover:border-primary-100 '
                   target='_blank'
-                  className='text-white underline hover:text-primary-100'
                 >
-                  {tournamentFormData.tourn_url}
+                  <FileDownloadOutlinedIcon className='text-[16px] mr-1 hover:text-primary-100 '></FileDownloadOutlinedIcon>
+                  大会要項ダウンロード
                 </Link>
-              </div>
-              <div className='flex flex-col gap-[12px]'>
-                <Label label='開催情報' textColor='white' textSize='small' isBold={true}></Label>
-                <div className='flex flex-col gap-[5px]'>
-                  <div className='flex flex-row gap-[20px]'>
-                    <div className='flex flex-col gap-[5px]'>
-                      <div className='flex flex-row gap-2'>
-                        {/* 開催開始年月日 */}
-                        <div className='text-gray-40 text-sm w-[100px]'>開催開始年月日</div>
-                        <Label
-                          label={tournamentFormData.event_start_date}
-                          textColor='white'
-                          textSize='small'
-                        ></Label>
-                      </div>
-                      <div className='flex flex-row gap-2'>
-                        {/* 開催終了年月日 */}
-                        <div className='text-gray-40 text-sm w-[100px]'>開催終了年月日</div>
-                        <Label
-                          label={tournamentFormData.event_end_date}
-                          textColor='white'
-                          textSize='small'
-                        ></Label>
-                      </div>
+              )}
+              {/* ダウンロードコード追加 終了*/}
+            </div>
+            <div className='flex flex-col sm:flex-row'>
+              {/* 大会個別URL */}
+              <div className='text-gray-40 w-[100px]'>大会URL</div>
+              <Link
+                href={tournamentFormData.tourn_url}
+                rel='noopener noreferrer'
+                target='_blank'
+                className='text-white underline hover:text-primary-100'
+              >
+                {tournamentFormData.tourn_url}
+              </Link>
+            </div>
+            <div className='flex flex-col gap-[12px]'>
+              <Label label='開催情報' textColor='white' textSize='small' isBold={true}></Label>
+              <div className='flex flex-col gap-[5px]'>
+                <div className='flex flex-row gap-[20px]'>
+                  <div className='flex flex-col gap-[5px]'>
+                    <div className='flex flex-row gap-2'>
+                      {/* 開催開始年月日 */}
+                      <div className='text-gray-40 text-sm w-[100px]'>開催開始年月日</div>
+                      <Label
+                        label={tournamentFormData.event_start_date}
+                        textColor='white'
+                        textSize='small'
+                      ></Label>
                     </div>
-                  </div>
-                  <div className='flex flex-row gap-2'>
-                    {/* 開催場所 */}
-                    <div className='text-gray-40 text-sm w-[100px]'>開催場所</div>
-                    <Label
-                      label={tournamentFormData.venue_name}
-                      textColor='white'
-                      textSize='small'
-                    ></Label>
-                  </div>
-                </div>
-              </div>
-              <div className='flex flex-col gap-[10px]'>
-                <Label label='主催団体' textColor='white' textSize='small' isBold={true}></Label>
-                <div className='flex flex-col gap-[5px]'>
-                  <div className='flex flex-row gap-2'>
-                    {/* 主催団体名 */}
-                    <div className='text-gray-40 text-sm w-[100px]'>名前</div>
-                    <Label
-                      label={tournamentFormData.sponsorOrgName}
-                      textColor='white'
-                      textSize='small'
-                    ></Label>
+                    <div className='flex flex-row gap-2'>
+                      {/* 開催終了年月日 */}
+                      <div className='text-gray-40 text-sm w-[100px]'>開催終了年月日</div>
+                      <Label
+                        label={tournamentFormData.event_end_date}
+                        textColor='white'
+                        textSize='small'
+                      ></Label>
+                    </div>
                   </div>
                 </div>
                 <div className='flex flex-row gap-2'>
-                  {/* 主催団体ID */}
-                  <div className='text-gray-40 text-sm w-[100px]'>ID</div>
+                  {/* 開催場所 */}
+                  <div className='text-gray-40 text-sm w-[100px]'>開催場所</div>
                   <Label
-                    label={tournamentFormData.sponsor_org_id}
+                    label={tournamentFormData.venue_name}
                     textColor='white'
                     textSize='small'
                   ></Label>
                 </div>
               </div>
-              <div className='flex flex-col sm:flex-row gap-2 sm:gap-5'>
+            </div>
+            <div className='flex flex-col gap-[10px]'>
+              <Label label='主催団体' textColor='white' textSize='small' isBold={true}></Label>
+              <div className='flex flex-col gap-[5px]'>
+                <div className='flex flex-row gap-2'>
+                  {/* 主催団体名 */}
+                  <div className='text-gray-40 text-sm w-[100px]'>名前</div>
+                  <Label
+                    label={tournamentFormData.sponsorOrgName}
+                    textColor='white'
+                    textSize='small'
+                  ></Label>
+                </div>
+              </div>
+              <div className='flex flex-row gap-2'>
+                {/* 主催団体ID */}
+                <div className='text-gray-40 text-sm w-[100px]'>ID</div>
+                <Label
+                  label={tournamentFormData.sponsor_org_id}
+                  textColor='white'
+                  textSize='small'
+                ></Label>
+              </div>
+            </div>
+            <div className='flex flex-col sm:flex-row gap-2 sm:gap-5'>
+              <div className='flex flex-row gap-[10px]'>
+                {/* 大会ID */}
+                <div className='text-gray-40 text-sm'>大会ID：</div>
+                <Label
+                  label={tournamentFormData.tourn_id?.toString() as string}
+                  textColor='white'
+                  textSize='small'
+                ></Label>
+              </div>
+              {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+                userIdType.is_organization_manager == ROLE.GROUP_MANAGER ||
+                userIdType.is_jara == ROLE.JARA ||
+                userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
                 <div className='flex flex-row gap-[10px]'>
-                  {/* 大会ID */}
-                  <div className='text-gray-40 text-sm'>大会ID：</div>
+                  {/* エントリーシステムの大会ID */}
+                  <div className='text-gray-40 text-sm'>エントリーシステムの大会ID：</div>
                   <Label
-                    label={tournamentFormData.tourn_id?.toString() as string}
+                    label={tournamentFormData.entrysystem_tourn_id}
                     textColor='white'
                     textSize='small'
                   ></Label>
                 </div>
-                {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
-                  userIdType.is_organization_manager == ROLE.GROUP_MANAGER ||
-                  userIdType.is_jara == ROLE.JARA ||
-                  userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
-                  <div className='flex flex-row gap-[10px]'>
-                    {/* エントリーシステムの大会ID */}
-                    <div className='text-gray-40 text-sm'>エントリーシステムの大会ID：</div>
-                    <Label
-                      label={tournamentFormData.entrysystem_tourn_id}
-                      textColor='white'
-                      textSize='small'
-                    ></Label>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           </div>
-        </div>
-        {/* TODO: DPTに仕様を確認すること。 */}
-        <div className='text-lg mb-4'>
-          <div className='mb-4'>
-            <div className='flex justify-between items-center'>
-              <div className='text-2xl lg:text-4xl font-bold'>開催レース</div>
-            </div>
-          </div>
-          {/* レース一覧テーブル表示 */}
-          <div className='overflow-auto'>
-            <CustomTable>
-              <CustomThead>
-                <CustomTr>
-                  <CustomTh align='left'>
-                    <div
-                      className='underline'
-                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                      onClick={() => raceIdSort()}
-                    >
-                      レースID
-                    </div>
-                  </CustomTh>
-                  <CustomTh align='left'>
-                    <div
-                      className='underline'
-                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                      onClick={() => raceNameSort()}
-                    >
-                      レース名
-                    </div>
-                  </CustomTh>
-                  <CustomTh align='left'>
-                    <div
-                      className='underline'
-                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                      onClick={() => raceNumberSort()}
-                    >
-                      レースNo.
-                    </div>
-                  </CustomTh>
-                  <CustomTh align='left'>
-                    <div className='flex flex-row items-center gap-[10px]'>
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => eventNameSort()}
-                      >
-                        種目
-                      </div>
-                      <div
-                        style={{
-                          cursor: 'pointer',
-                          color: selectedEventNameList.length > 0 ? '#F44336' : '#001D74',
-                        }}
-                        onClick={(event) => handleEventNameHeaderClick('種目', event as any)}
-                      >
-                        <FilterListIcon />
-                      </div>
-                    </div>
-                  </CustomTh>
-                  <CustomTh align='left'>
-                    <div className='flex flex-row items-center gap-[10px]'>
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => byGroupSort()}
-                      >
-                        組別
-                      </div>
-                      <div
-                        style={{
-                          cursor: 'pointer',
-                          color: selectedByGroupList.length > 0 ? '#F44336' : '#001D74',
-                        }}
-                        onClick={(event) => handleByGroupHeaderClick('組別', event as any)}
-                      >
-                        <FilterListIcon />
-                      </div>
-                    </div>
-                  </CustomTh>
-                  <CustomTh align='left'>
-                    <div className='flex flex-row items-center gap-[10px]'>
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => rangeSort()}
-                      >
-                        距離
-                      </div>
-                      <div
-                        style={{
-                          cursor: 'pointer',
-                          color: selectedRangeList.length > 0 ? '#F44336' : '#001D74',
-                        }}
-                        onClick={(event) => handleRangeHeaderClick('距離', event as any)}
-                      >
-                        <FilterListIcon />
-                      </div>
-                    </div>
-                  </CustomTh>
-                  <CustomTh align='left'>
-                    <div
-                      className='underline'
-                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                      onClick={() => startDateTimeSort()}
-                    >
-                      発艇日時
-                    </div>
-                  </CustomTh>
-                </CustomTr>
-              </CustomThead>
-              <CustomTbody>
-                {tableData
-                  .filter((row, index) => {
-                    if (selectedEventNameList.length > 0) {
-                      return selectedEventNameList.some((item) => item.name === row.event_name);
-                    } else {
-                      return true;
-                    }
-                  })
-                  .filter((row, index) => {
-                    if (selectedByGroupList.length > 0) {
-                      return selectedByGroupList.some((item) => item.name === row.by_group);
-                    } else {
-                      return true;
-                    }
-                  })
-                  .filter((row, index) => {
-                    if (selectedRangeList.length > 0) {
-                      return selectedRangeList.some((item) => item.name === row.range);
-                    } else {
-                      return true;
-                    }
-                  })
-                  .map((row, index) => (
-                    <CustomTr key={index}>
-                      {/* 「出漕結果記録テーブル」に「レーステーブル」.「レースID」と紐づくデータが存在する場合、リンクボタンを表示するかどうかを制御するためにhasHistoryを利用 */}
-                      {row.hasHistory == true && (
-                        // TODO: 遷移先のURLは仮置き。置き換えること。
-                        <CustomTd
-                          transitionDest={
-                            '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
-                          }
-                        >
-                          {row.race_id}
-                        </CustomTd>
-                      )}
-                      {/* レースID */}
-                      {!row.hasHistory && <CustomTd>{row.race_id}</CustomTd>}
-                      {row.hasHistory == true && (
-                        // TODO: 遷移先のURLは仮置き。置き換えること。
-                        <CustomTd
-                          transitionDest={
-                            '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
-                          }
-                        >
-                          {row.race_name}
-                        </CustomTd>
-                      )}
-                      {/* レース名 */}
-                      {!row.hasHistory && <CustomTd>{row.race_name}</CustomTd>}
-                      {/* レースNo. */}
-                      <CustomTd>{row.race_number}</CustomTd>
-                      {/* 種目 */}
-                      <CustomTd>{row.event_name}</CustomTd>
-                      {/* 組別 */}
-                      <CustomTd>{row.by_group}</CustomTd>
-                      {/* 距離 */}
-                      <CustomTd>{row.range}</CustomTd>
-                      {/* 発艇日時 */}
-                      <CustomTd>{row.start_date_time.substring(0, 16)}</CustomTd>
-                    </CustomTr>
-                  ))}
-              </CustomTbody>
-            </CustomTable>
-          </div>
-          {/* 種目フィルター用のオートコンプリート 20240509 */}
-          {showEventNameAutocomplete && (
-            <div
-              ref={eventNamefocusTarget}
-              style={{
-                position: 'absolute',
-                top: `${selectedEventNameHeader.position.top - 120}px`,
-                left: `${selectedEventNameHeader.position.left}px`,
-                backgroundColor: 'white',
-                borderRadius: '4px',
-                zIndex: 1000,
-                padding: '8px',
-              }}
-              onBlur={() => setShowEventNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
-            >
-              <Autocomplete
-                id='eventName'
-                multiple
-                options={eventNameList}
-                filterOptions={(options, { inputValue }) =>
-                  options.filter((option) => option.name.includes(inputValue))
-                }
-                value={selectedEventNameList || []}
-                onChange={(e: ChangeEvent<{}>, newValue: EventNameList[]) => {
-                  //console.log(newValue);
-                  setSelectedEventNameList(newValue);
-                }}
-                renderOption={(props: any, option: EventNameList) => {
-                  return (
-                    <li {...props} key={option.id}>
-                      {option.name}
-                    </li>
-                  );
-                }}
-                renderTags={(value: EventNameList[], getTagProps: any) => {
-                  return value.map((option, index) => (
-                    <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
-                  ));
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    key={params.id}
-                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                    {...params}
-                    label={'種目'}
-                  />
-                )}
-              />
-            </div>
-          )}
-          {/* 組別フィルター用のオートコンプリート 20240508 */}
-          {showByGroupAutocomplete && (
-            <div
-              ref={byGroupfocusTarget}
-              style={{
-                position: 'absolute',
-                top: `${selectedByGroupHeader.position.top - 120}px`,
-                left: `${selectedByGroupHeader.position.left}px`,
-                backgroundColor: 'white',
-                borderRadius: '4px',
-                zIndex: 1000,
-                padding: '8px',
-              }}
-              onBlur={() => setShowByGroupAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
-            >
-              <Autocomplete
-                id='byGroup'
-                multiple
-                options={byGroupList}
-                filterOptions={(options, { inputValue }) =>
-                  options.filter((option) => option.name.includes(inputValue))
-                }
-                value={selectedByGroupList || []}
-                onChange={(e: ChangeEvent<{}>, newValue: ByGroupList[]) => {
-                  //console.log(newValue);
-                  setSelectedByGroupList(newValue);
-                }}
-                renderOption={(props: any, option: ByGroupList) => {
-                  return (
-                    <li {...props} key={option.id}>
-                      {option.name}
-                    </li>
-                  );
-                }}
-                renderTags={(value: ByGroupList[], getTagProps: any) => {
-                  return value.map((option, index) => (
-                    <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
-                  ));
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    key={params.id}
-                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                    {...params}
-                    label={'組別'}
-                  />
-                )}
-              />
-            </div>
-          )}
-          {/* 距離用のオートコンプリート 20240509 */}
-          {showRangeAutocomplete && (
-            <div
-              ref={rangefocusTarget}
-              style={{
-                position: 'absolute',
-                top: `${selectedRangeHeader.position.top - 120}px`,
-                left: `${selectedRangeHeader.position.left}px`,
-                backgroundColor: 'white',
-                borderRadius: '4px',
-                zIndex: 1000,
-                padding: '8px',
-              }}
-              onBlur={() => setShowRangeAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
-            >
-              <Autocomplete
-                id='range'
-                multiple
-                options={rangeList}
-                filterOptions={(options, { inputValue }) =>
-                  options.filter(
-                    (option) => option.name?.toString().includes(inputValue?.toString()),
-                  )
-                }
-                value={selectedRangeList || []}
-                onChange={(e: ChangeEvent<{}>, newValue: RangeList[]) => {
-                  //console.log(newValue);
-                  setSelectedRangeList(newValue);
-                }}
-                renderOption={(props: any, option: RangeList) => {
-                  return (
-                    <li {...props} key={option.id}>
-                      {option.name}
-                    </li>
-                  );
-                }}
-                renderTags={(value: RangeList[], getTagProps: any) => {
-                  return value.map((option, index) => (
-                    <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
-                  ));
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    key={params.id}
-                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                    {...params}
-                    label={'距離'}
-                  />
-                )}
-              />
-            </div>
-          )}
-        </div>
-        <div className='flex flex-row justify-center gap-[40px] m-auto'>
-          {/* 戻るボタン */}
-          {window.history.length > 1 && (
-            <CustomButton
-              buttonType='primary-outlined'
-              onClick={() => {
-                router.back();
-              }}
-            >
-              戻る
-            </CustomButton>
-          )}
-          {/* 参照モードかつ、権限がシステム管理者、大会団体管理者の時は表示 */}
-          {mode === 'delete' &&
-            (userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
-              userIdType.is_organization_manager == ROLE.GROUP_MANAGER ||
-              userIdType.is_jara == ROLE.JARA ||
-              userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
-              // 削除ボタン
-              <CustomButton
-                buttonType='primary'
-                onClick={async () => {
-                  // TODO: 削除ボタン押下イベントの実装
-                  //追加対象のデータをまとめて送信する 20240202
-                  const sendFormData = {
-                    tournamentFormData: tournamentFormData, //選手情報
-                    tableData: tableData, //選手の出漕結果情報
-                  };
-                  const isOk = window.confirm('大会情報を削除します。よろしいですか？');
-                  const csrf = () => axios.get('/sanctum/csrf-cookie');
-                  await csrf();
-                  if (isOk) {
-                    // TODO: 削除確認画面でOKボタンが押された場合、テーブルの当該項目に削除フラグを立てる処理の置き換え
-                    axios
-                      // .delete('http://localhost:3100/tournament')
-                      .post('/deleteTournamentData', sendFormData) //大会情報の削除 20240202
-                      .then((response) => {
-                        // TODO: 削除完了時の処理の置き換え
-                        window.alert('大会情報の削除が完了しました');
-                        router.push('/tournamentSearch'); //大会検索に遷移 20240311
-                      })
-                      .catch((error) => {
-                        // TODO: エラーハンドリングの実装の置き換え
-                        setError({
-                          isError: true,
-                          errorMessage:
-                            '大会情報の削除に失敗しました。ユーザーサポートにお問い合わせください。',
-                        });
-                        window.scrollTo(0, 0);
-                        return;
-                      });
-                  }
-                }}
-              >
-                削除
-              </CustomButton>
-            )}
         </div>
       </div>
-    </main>
+      {/* TODO: DPTに仕様を確認すること。 */}
+      <div className='text-lg mb-4'>
+        <div className='mb-4'>
+          <div className='flex justify-between items-center'>
+            <div className='text-2xl lg:text-4xl font-bold'>開催レース</div>
+          </div>
+        </div>
+        {/* レース一覧テーブル表示 */}
+        <div className='overflow-auto'>
+          <CustomTable>
+            <CustomThead>
+              <CustomTr>
+                <CustomTh align='left'>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => raceIdSort()}
+                  >
+                    レースID
+                  </div>
+                </CustomTh>
+                <CustomTh align='left'>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => raceNameSort()}
+                  >
+                    レース名
+                  </div>
+                </CustomTh>
+                <CustomTh align='left'>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => raceNumberSort()}
+                  >
+                    レースNo.
+                  </div>
+                </CustomTh>
+                <CustomTh align='left'>
+                  <div className='flex flex-row items-center gap-[10px]'>
+                    <div
+                      className='underline'
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                      onClick={() => eventNameSort()}
+                    >
+                      種目
+                    </div>
+                    <div
+                      style={{
+                        cursor: 'pointer',
+                        color: selectedEventNameList.length > 0 ? '#F44336' : '#001D74',
+                      }}
+                      onClick={(event) => handleEventNameHeaderClick('種目', event as any)}
+                    >
+                      <FilterListIcon />
+                    </div>
+                  </div>
+                </CustomTh>
+                <CustomTh align='left'>
+                  <div className='flex flex-row items-center gap-[10px]'>
+                    <div
+                      className='underline'
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                      onClick={() => byGroupSort()}
+                    >
+                      組別
+                    </div>
+                    <div
+                      style={{
+                        cursor: 'pointer',
+                        color: selectedByGroupList.length > 0 ? '#F44336' : '#001D74',
+                      }}
+                      onClick={(event) => handleByGroupHeaderClick('組別', event as any)}
+                    >
+                      <FilterListIcon />
+                    </div>
+                  </div>
+                </CustomTh>
+                <CustomTh align='left'>
+                  <div className='flex flex-row items-center gap-[10px]'>
+                    <div
+                      className='underline'
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                      onClick={() => rangeSort()}
+                    >
+                      距離
+                    </div>
+                    <div
+                      style={{
+                        cursor: 'pointer',
+                        color: selectedRangeList.length > 0 ? '#F44336' : '#001D74',
+                      }}
+                      onClick={(event) => handleRangeHeaderClick('距離', event as any)}
+                    >
+                      <FilterListIcon />
+                    </div>
+                  </div>
+                </CustomTh>
+                <CustomTh align='left'>
+                  <div
+                    className='underline'
+                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                    onClick={() => startDateTimeSort()}
+                  >
+                    発艇日時
+                  </div>
+                </CustomTh>
+              </CustomTr>
+            </CustomThead>
+            <CustomTbody>
+              {tableData
+                .filter((row, index) => {
+                  if (selectedEventNameList.length > 0) {
+                    return selectedEventNameList.some((item) => item.name === row.event_name);
+                  } else {
+                    return true;
+                  }
+                })
+                .filter((row, index) => {
+                  if (selectedByGroupList.length > 0) {
+                    return selectedByGroupList.some((item) => item.name === row.by_group);
+                  } else {
+                    return true;
+                  }
+                })
+                .filter((row, index) => {
+                  if (selectedRangeList.length > 0) {
+                    return selectedRangeList.some((item) => item.name === row.range);
+                  } else {
+                    return true;
+                  }
+                })
+                .map((row, index) => (
+                  <CustomTr key={index}>
+                    {/* 「出漕結果記録テーブル」に「レーステーブル」.「レースID」と紐づくデータが存在する場合、リンクボタンを表示するかどうかを制御するためにhasHistoryを利用 */}
+                    {row.hasHistory == true && (
+                      // TODO: 遷移先のURLは仮置き。置き換えること。
+                      <CustomTd
+                        transitionDest={
+                          '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
+                        }
+                      >
+                        {row.race_id}
+                      </CustomTd>
+                    )}
+                    {/* レースID */}
+                    {!row.hasHistory && <CustomTd>{row.race_id}</CustomTd>}
+                    {row.hasHistory == true && (
+                      // TODO: 遷移先のURLは仮置き。置き換えること。
+                      <CustomTd
+                        transitionDest={
+                          '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
+                        }
+                      >
+                        {row.race_name}
+                      </CustomTd>
+                    )}
+                    {/* レース名 */}
+                    {!row.hasHistory && <CustomTd>{row.race_name}</CustomTd>}
+                    {/* レースNo. */}
+                    <CustomTd>{row.race_number}</CustomTd>
+                    {/* 種目 */}
+                    <CustomTd>{row.event_name}</CustomTd>
+                    {/* 組別 */}
+                    <CustomTd>{row.by_group}</CustomTd>
+                    {/* 距離 */}
+                    <CustomTd>{row.range}</CustomTd>
+                    {/* 発艇日時 */}
+                    <CustomTd>{row.start_date_time.substring(0, 16)}</CustomTd>
+                  </CustomTr>
+                ))}
+            </CustomTbody>
+          </CustomTable>
+        </div>
+        {/* 種目フィルター用のオートコンプリート 20240509 */}
+        {showEventNameAutocomplete && (
+          <div
+            ref={eventNamefocusTarget}
+            style={{
+              position: 'absolute',
+              top: `${selectedEventNameHeader.position.top - 120}px`,
+              left: `${selectedEventNameHeader.position.left}px`,
+              backgroundColor: 'white',
+              borderRadius: '4px',
+              zIndex: 1000,
+              padding: '8px',
+            }}
+            onBlur={() => setShowEventNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
+          >
+            <Autocomplete
+              id='eventName'
+              multiple
+              options={eventNameList}
+              filterOptions={(options, { inputValue }) =>
+                options.filter((option) => option.name.includes(inputValue))
+              }
+              value={selectedEventNameList || []}
+              onChange={(e: ChangeEvent<{}>, newValue: EventNameList[]) => {
+                //console.log(newValue);
+                setSelectedEventNameList(newValue);
+              }}
+              renderOption={(props: any, option: EventNameList) => {
+                return (
+                  <li {...props} key={option.id}>
+                    {option.name}
+                  </li>
+                );
+              }}
+              renderTags={(value: EventNameList[], getTagProps: any) => {
+                return value.map((option, index) => (
+                  <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                ));
+              }}
+              renderInput={(params) => (
+                <TextField
+                  key={params.id}
+                  className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                  {...params}
+                  label={'種目'}
+                />
+              )}
+            />
+          </div>
+        )}
+        {/* 組別フィルター用のオートコンプリート 20240508 */}
+        {showByGroupAutocomplete && (
+          <div
+            ref={byGroupfocusTarget}
+            style={{
+              position: 'absolute',
+              top: `${selectedByGroupHeader.position.top - 120}px`,
+              left: `${selectedByGroupHeader.position.left}px`,
+              backgroundColor: 'white',
+              borderRadius: '4px',
+              zIndex: 1000,
+              padding: '8px',
+            }}
+            onBlur={() => setShowByGroupAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
+          >
+            <Autocomplete
+              id='byGroup'
+              multiple
+              options={byGroupList}
+              filterOptions={(options, { inputValue }) =>
+                options.filter((option) => option.name.includes(inputValue))
+              }
+              value={selectedByGroupList || []}
+              onChange={(e: ChangeEvent<{}>, newValue: ByGroupList[]) => {
+                //console.log(newValue);
+                setSelectedByGroupList(newValue);
+              }}
+              renderOption={(props: any, option: ByGroupList) => {
+                return (
+                  <li {...props} key={option.id}>
+                    {option.name}
+                  </li>
+                );
+              }}
+              renderTags={(value: ByGroupList[], getTagProps: any) => {
+                return value.map((option, index) => (
+                  <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                ));
+              }}
+              renderInput={(params) => (
+                <TextField
+                  key={params.id}
+                  className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                  {...params}
+                  label={'組別'}
+                />
+              )}
+            />
+          </div>
+        )}
+        {/* 距離用のオートコンプリート 20240509 */}
+        {showRangeAutocomplete && (
+          <div
+            ref={rangefocusTarget}
+            style={{
+              position: 'absolute',
+              top: `${selectedRangeHeader.position.top - 120}px`,
+              left: `${selectedRangeHeader.position.left}px`,
+              backgroundColor: 'white',
+              borderRadius: '4px',
+              zIndex: 1000,
+              padding: '8px',
+            }}
+            onBlur={() => setShowRangeAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
+          >
+            <Autocomplete
+              id='range'
+              multiple
+              options={rangeList}
+              filterOptions={(options, { inputValue }) =>
+                options.filter((option) => option.name?.toString().includes(inputValue?.toString()))
+              }
+              value={selectedRangeList || []}
+              onChange={(e: ChangeEvent<{}>, newValue: RangeList[]) => {
+                //console.log(newValue);
+                setSelectedRangeList(newValue);
+              }}
+              renderOption={(props: any, option: RangeList) => {
+                return (
+                  <li {...props} key={option.id}>
+                    {option.name}
+                  </li>
+                );
+              }}
+              renderTags={(value: RangeList[], getTagProps: any) => {
+                return value.map((option, index) => (
+                  <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                ));
+              }}
+              renderInput={(params) => (
+                <TextField
+                  key={params.id}
+                  className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                  {...params}
+                  label={'距離'}
+                />
+              )}
+            />
+          </div>
+        )}
+      </div>
+      <div className='flex flex-row justify-center gap-[40px] m-auto'>
+        {/* 戻るボタン */}
+        {window.history.length > 1 && (
+          <CustomButton
+            buttonType='primary-outlined'
+            onClick={() => {
+              router.back();
+            }}
+          >
+            戻る
+          </CustomButton>
+        )}
+        {/* 参照モードかつ、権限がシステム管理者、大会団体管理者の時は表示 */}
+        {mode === 'delete' &&
+          (userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+            userIdType.is_organization_manager == ROLE.GROUP_MANAGER ||
+            userIdType.is_jara == ROLE.JARA ||
+            userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
+            // 削除ボタン
+            <CustomButton
+              buttonType='primary'
+              onClick={async () => {
+                // TODO: 削除ボタン押下イベントの実装
+                //追加対象のデータをまとめて送信する 20240202
+                const sendFormData = {
+                  tournamentFormData: tournamentFormData, //選手情報
+                  tableData: tableData, //選手の出漕結果情報
+                };
+                const isOk = window.confirm('大会情報を削除します。よろしいですか？');
+                const csrf = () => axios.get('/sanctum/csrf-cookie');
+                await csrf();
+                if (isOk) {
+                  // TODO: 削除確認画面でOKボタンが押された場合、テーブルの当該項目に削除フラグを立てる処理の置き換え
+                  axios
+                    // .delete('http://localhost:3100/tournament')
+                    .post('/deleteTournamentData', sendFormData) //大会情報の削除 20240202
+                    .then((response) => {
+                      // TODO: 削除完了時の処理の置き換え
+                      window.alert('大会情報の削除が完了しました');
+                      router.push('/tournamentSearch'); //大会検索に遷移 20240311
+                    })
+                    .catch((error) => {
+                      // TODO: エラーハンドリングの実装の置き換え
+                      setError({
+                        isError: true,
+                        errorMessage:
+                          '大会情報の削除に失敗しました。ユーザーサポートにお問い合わせください。',
+                      });
+                      window.scrollTo(0, 0);
+                      return;
+                    });
+                }
+              }}
+            >
+              削除
+            </CustomButton>
+          )}
+      </div>
+    </>
   );
 }
