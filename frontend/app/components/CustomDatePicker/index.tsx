@@ -31,7 +31,7 @@ const CustomDatePicker = ({
 }) => {
   return (
     <>
-      {readonly && <p className='h-12 w-[300px] text-secondaryText py-3 disable'>{selectedDate}</p>}
+      {readonly && <p className='text-secondaryText disable'>{selectedDate}</p>}
       {!readonly && (
         <DatePicker
           id={id}
