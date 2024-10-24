@@ -1,7 +1,142 @@
-import { NextPage } from 'next';
+'use client';
 
-const AthleteProfile: NextPage = () => {
-  return <div>AthleteProfile</div>;
-};
+import { TitleSideButton } from '@/app/(Pages)/(App)/_componrnts/TitleSideButton';
+import Info from '@/app/components/Info';
+import Tag from '@/app/components/Tag';
+import { fetcher } from '@/app/lib/swr';
+import { MyPagePlayerProfileInfoData } from '@/app/types';
+import { formatDate } from '@/app/utils/dateUtil';
+import { EditOutlined } from '@mui/icons-material';
+import { Avatar } from '@mui/material';
+import clsx from 'clsx';
+import { useRouter } from 'next/navigation';
+import useSWR from 'swr';
 
-export default AthleteProfile;
+export default function PlayerProfile() {
+  const router = useRouter();
+  const { data } = useSWR(
+    {
+      url: '/getMyPagePlayerProfileList',
+    },
+    fetcher<MyPagePlayerProfileInfoData>,
+    {
+      onSuccess: (data) => {
+        if (!data.result) {
+          router.push('/mypage/profile');
+        }
+      },
+      onError: (error) => {
+        console.error(error);
+        router.push('/mypage/profile');
+      },
+    },
+  );
+
+  const user = data?.result;
+
+  if (!user) {
+    return null;
+  }
+
+  const EditButton = (
+    <TitleSideButton href='/playerInformation?mode=update' icon={EditOutlined} text='編集' />
+  );
+
+  const left = [
+    {
+      label: '性別',
+      value: user.sex,
+    },
+    {
+      label: '身長',
+      value: `${user.height}cm`,
+    },
+
+    {
+      label: '出身',
+      value: user.birthCountryName,
+    },
+    {
+      label: '居住地',
+      value:
+        user.residenceCountryName && user.residencePrefectureName
+          ? `${user.residenceCountryName} ${user.residencePrefectureName}`
+          : '',
+    },
+  ];
+
+  const right = [
+    {
+      label: '生年月日',
+      value: formatDate(user.dateOfBirth, 'yyyy/MM/dd'),
+    },
+    {
+      label: '体重',
+      value: `${user.weight}kg`,
+    },
+  ];
+
+  return (
+    <main>
+      <div className='flex flex-col min-[1008px]:flex-row gap-8 m-4 md:m-8'>
+        {/* スマホの場合は表示 */}
+        <div className='flex justify-between md:hidden'>
+          <h2>選手プロフィール</h2>
+          {EditButton}
+        </div>
+
+        <div className='flex items-center justify-center flex-row gap-2 md:items-start'>
+          <Avatar src={user.photo ?? undefined} sx={{ width: 260, height: 260 }} />
+        </div>
+
+        <div className='md:max-w-sm'>
+          <div className='flex gap-8'>
+            <h2 className='text-3xl'>{user.playerName}</h2>
+            {/* スマホの場合は非表示 */}
+            <div className='hidden md:block'>{EditButton}</div>
+          </div>
+          <div className='flex gap-4 my-2'>
+            <div className='flex gap-2'>
+              <span>選手ID:</span>
+              <span className='text-gray-300'>{user.playerId}</span>
+            </div>
+            <div className='flex gap-2'>
+              <span>既存選手ID:</span>
+              <span className='text-gray-300'>{user.jaraPlayerId}</span>
+            </div>
+          </div>
+
+          <h3 className='my-4'>プロフィール</h3>
+          <div className='flex gap-8'>
+            <div className='flex flex-col gap-2'>
+              {left.map((item) => (
+                <Info key={item.label} label={item.label} value={item.value} />
+              ))}
+            </div>
+            <div className='flex flex-col gap-2'>
+              {right.map((item) => (
+                <Info key={item.label} label={item.label} value={item.value} />
+              ))}
+            </div>
+          </div>
+
+          <h3 className='my-4'>サイド情報</h3>
+          <div className='flex flex-wrap justify-start gap-2'>
+            {user.sideInfo.map((side) => (
+              <Tag
+                key={side.sideName}
+                tag={side.sideName}
+                className={clsx(
+                  'border rounded-xl bg-white',
+                  side.isEnable
+                    ? 'border-secondary-500 text-secondary-500'
+                    : 'border-gray-200 text-gray-200',
+                )}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}

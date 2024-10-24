@@ -1,12 +1,8 @@
-import React from 'react';
-import Link from 'next/link';
-import { ComponentType } from 'react';
+import Link, { LinkProps } from 'next/link';
+import React, { ComponentType } from 'react';
 
 interface Props {
-  href: {
-    pathname: string;
-    query?: Record<string, string | number>;
-  };
+  href: LinkProps['href'];
   icon: ComponentType<{
     sx: {
       fontSize: number;

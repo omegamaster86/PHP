@@ -15,7 +15,7 @@ const AvatarSection: React.FC<Props> = (props) => {
       <div className='flex flex-col gap-2'>
         <div className='flex flex-wrap justify-start gap-[2px]'>
           {user.tags.map((tag) => (
-            <Tag key={tag} tag={tag} />
+            <Tag key={tag} tag={tag} className='bg-gray-50' />
           ))}
         </div>
         <h2 className='text-base font-semibold'>{user.name}</h2>

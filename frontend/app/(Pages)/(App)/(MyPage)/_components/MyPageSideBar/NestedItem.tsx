@@ -1,5 +1,5 @@
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import { Collapse, List, ListItem, ListItemIcon, ListItemText, styled } from '@mui/material';
+import { Collapse, List, ListItem, ListItemText, styled } from '@mui/material';
 import Link from 'next/link';
 import { useState } from 'react';
 import { MyPageSideBarListItem } from '.';
@@ -66,7 +66,7 @@ type Props = {
 
 const NestedItem: React.FC<Props> = (props) => {
   const { item, withTreeLine } = props;
-  const { link, title, icon, items, active } = item;
+  const { link, title, items, active } = item;
 
   const [open, setOpen] = useState(false);
 
@@ -106,7 +106,6 @@ const NestedItem: React.FC<Props> = (props) => {
             borderRadius: '8px',
           }}
         >
-          {icon && <ListItemIcon sx={{ minWidth: 40 }}>{icon}</ListItemIcon>}
           <ListItemText primary={title} />
           {hasItems && (open ? <ExpandLess /> : <ExpandMore />)}
         </ListItem>

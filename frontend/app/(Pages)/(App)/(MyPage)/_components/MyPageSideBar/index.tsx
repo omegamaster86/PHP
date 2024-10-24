@@ -4,11 +4,11 @@ import NestedItem from './NestedItem';
 
 export type MyPageSideBarListItem = {
   title: string;
-  icon?: React.ReactNode;
   link?: string;
   action?: () => void;
-  items?: MyPageSideBarListItem[];
+  items?: Omit<MyPageSideBarListItem, 'show'>[];
   active: boolean;
+  show?: boolean;
 };
 
 export type MyPageSideBarUser = {
