@@ -570,7 +570,7 @@ class T_users extends Authenticatable
                     `t_users`.`user_id` as `userId`, 
                     `t_users`.`user_name` as `userName`, 
                     `t_users`.`mailaddress`, 
-                    `t_users`.`user_type` as `userType`,
+                    `t_users`.`user_type` as `userTypeString`,
                     `t_users`.`date_of_birth` as `dateOfBirth`,
                     `t_users`.`height`, 
                     `t_users`.`weight`, 
@@ -589,7 +589,7 @@ class T_users extends Authenticatable
                     and `t_users`.`delete_flag` = 0
                     and `m_sex`.`delete_flag` = 0
                     and `m_countries`.delete_flag = 0 
-                    and (`m_countries`.`country_id` != 112 or `m_prefectures`.delete_flag = 0)
+                    and (`m_countries`.`country_code` != 392 or `m_prefectures`.delete_flag = 0)
                     and `user_id` = ?',[$userId]);
         $targetTrn = null;
         if (!empty($users)) {
