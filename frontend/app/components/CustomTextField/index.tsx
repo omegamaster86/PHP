@@ -3,7 +3,6 @@ import React from 'react';
 import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '../InputLabel';
 import type { ChangeEvent, FocusEvent } from 'react';
-import clsx from 'clsx';
 
 const CustomTextField = ({
   label,
@@ -61,7 +60,7 @@ const CustomTextField = ({
         />
       )}
       {readonly ? (
-        <p className={className + ' h-12 text-secondaryText py-3 disable'}>
+        <p className={className + '  text-secondaryText disable'}>
           {value} {inputAdorment}
         </p>
       ) : (
