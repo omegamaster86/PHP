@@ -7,7 +7,19 @@ import axios from '@/app/lib/axios';
 import { Divider } from '@mui/material';
 import { UserResponse } from '@/app/types';
 
-import { CustomButton, ErrorBox, CustomTitle } from '@/app/components';
+import {
+  CustomButton,
+  ErrorBox,
+  CustomTitle,
+  CustomTable,
+  CustomThead,
+  CustomTr,
+  CustomTh,
+  CustomTbody,
+  CustomTd,
+  CustomTextField,
+  RoundedBadge,
+} from '@/app/components';
 import { useAuth } from '@/app/hooks/auth';
 import { NO_IMAGE_URL, USER_IMAGE_URL } from '@/app/utils/imageUrl';
 
@@ -78,15 +90,10 @@ export default function UserInformationReference() {
             userTypeName: response.data.result.userTypeName,
             date_of_birth: response.data.result.date_of_birth,
             sexName: response.data.result.sex_name,
-            // sexName: response.data.result.sexName ? response.data.sexName : '男性',
             sex: response.data.result.sex,
             height: response.data.result.height,
             weight: response.data.result.weight,
-            residence_country: response.data.result.residence_country,
-            residenceCountryName: response.data.result.residenceCountryName,
-            // residenceCountryName: response.data.result.residenceCountryName
-            //   ? response.data.result.residenceCountryName
-            //   : '日本国 （jpn）',
+            residenceCountryName: response.data.result.residenceCountryName,    
             residence_prefecture: response.data.result.residence_prefecture,
             residencePrefectureName: response.data.result.residencePrefectureName,
             mailaddress: response.data.result.mailaddress,
@@ -152,18 +159,16 @@ export default function UserInformationReference() {
   if (paramError) {
     return <div>ページが見つかりません</div>;
   }
+
   return (
     <>
       <ErrorBox errorText={errorMessage} />
       {/* 画面名 */}
-      <CustomTitle displayBack>
-        {mode !== 'delete' && 'ユーザー情報参照'}
-        {mode === 'delete' && '退会'}
-      </CustomTitle>
+      <CustomTitle displayBack>{mode === 'delete' ? '退会' : 'ユーザー情報参照'}</CustomTitle>
       <div className='flex flex-col md:flex-row gap-10'>
         <img
           src={formData.photo ? `${USER_IMAGE_URL}${formData.photo}` : `${NO_IMAGE_URL}`}
-          className='w-[260px] h-[260px] rounded-full object-cover self-center'
+          className='w-[260px] h-[260px] rounded-full object-cover self-center sm:self-start'
         />
         <div className='text-xs sm:text-sm'>
           <span className='font-bold text-3xl text-secondaryText'>
@@ -186,8 +191,8 @@ export default function UserInformationReference() {
               </span>
             </div>
           </div>
-          <p className='mb-3'>プロフィール</p>
-          <div className='flex flex-col gap-1'>
+          <span className='inline-block mb-3'>プロフィール</span>
+          <div className='flex flex-col gap-1 mb-7'>
             <div className='flex gap-9'>
               <div className='flex gap-3'>
                 <span>性別</span>
@@ -228,22 +233,58 @@ export default function UserInformationReference() {
               </div>
             </div>
           </div>
+          <span className='inline-block mb-3'>指導履歴</span>
+          <div className='overflow-auto mb-7'>
+            <CustomTable>
+              <CustomThead>
+                <CustomTr>
+                  <CustomTh align='left'>指導期間</CustomTh>
+                  <CustomTh align='left'>団体名</CustomTh>
+                  <CustomTh align='left'>スタッフ種別</CustomTh>
+                </CustomTr>
+              </CustomThead>
+              <CustomTbody>
+                <CustomTr>
+                  <CustomTd>
+                    <span>指導期間テスト</span>
+                  </CustomTd>
+                  <CustomTd>
+                    <span>団体名テスト</span>
+                  </CustomTd>
+                  <CustomTd>
+                    <span>スタッフテスト</span>
+                  </CustomTd>
+                </CustomTr>
+              </CustomTbody>
+            </CustomTable>
+          </div>
+          <span className='inline-block mb-3'>指導者資格</span>
+          <div className='flex gap-3 mb-3'>
+            <span>JSPO ID</span>
+            <span>{formData.user_id ? formData.user_id : ''}</span>
+          </div>
+          <div className='flex gap-3 mb-7'>
+            <RoundedBadge label={formData.residenceCountryName} isValid={true} />
+            <RoundedBadge label={formData.residenceCountryName} isValid={true} />
+          </div>
+          <span className='inline-block mb-3'>審判資格</span>
+          <div className='flex gap-3'>
+            <RoundedBadge label={formData.residenceCountryName} isValid={true} />
+            <RoundedBadge label={formData.residenceCountryName} isValid={true} />
+          </div>
         </div>
       </div>
-      {/* FIXME ここから下は触らない */}
       <Divider className='h-[1px] bg-border' />
-      <div className='flex flex-row justify-center gap-[16px]'>
+      <div className='flex flex-row justify-center gap-4'>
         {/* 戻る・キャンセルボタン */}
         <CustomButton
           buttonType='white-outlined'
-          className='w-[200px]'
           onClick={() => {
             setErrorMessage([]);
             router.back();
           }}
         >
-          {mode === 'delete' && 'キャンセル'}
-          {mode !== 'delete' && '戻る'}
+          {mode === 'delete' ? 'キャンセル' : '戻る'}
         </CustomButton>
         {/* 退会ボタン */}
         {modeCustomButtons[mode as keyof typeof modeCustomButtons]}
