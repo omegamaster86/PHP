@@ -4,7 +4,7 @@ import MyPageSideBar, {
   MyPageSideBarUser,
   type MyPageSideBarListItem,
 } from '@/app/(Pages)/(App)/(MyPage)/_components/MyPageSideBar';
-import { PersonOutlineOutlined, TextSnippetOutlined } from '@mui/icons-material';
+import { useUserType } from '@/app/hooks/useUserType';
 import { NextPage } from 'next';
 import { usePathname } from 'next/navigation';
 import MyPageScrollBar from '../MyPageScrollBar';
@@ -17,6 +17,8 @@ const MyPageLayout: NextPage<Props> = (props) => {
   const { children } = props;
   const pathname = usePathname();
 
+  const userType = useUserType();
+
   // TODO: 後で差し替える
   const user: MyPageSideBarUser = {
     name: '山田太郎',
@@ -27,9 +29,9 @@ const MyPageLayout: NextPage<Props> = (props) => {
   const routerStatuses = {
     officialTournament: pathname === '/mypage/tournament/official',
     unofficialTournament: pathname === '/mypage/tournament/unofficial',
-    officialRowingHistory: pathname === '/mypage/raceResult/official',
-    unofficialRowingHistory: pathname === '/mypage/raceResult/unofficial',
-    athleteProfile: pathname === '/mypage/playerProfile',
+    officialRaceResult: pathname === '/mypage/raceResult/official',
+    unofficialRaceResult: pathname === '/mypage/raceResult/unofficial',
+    playerProfile: pathname === '/mypage/playerProfile',
     volunteer: pathname === '/mypage/volunteer',
     profile: pathname === '/mypage/profile',
   };
@@ -37,7 +39,6 @@ const MyPageLayout: NextPage<Props> = (props) => {
   const listItems: MyPageSideBarListItem[] = [
     {
       title: '大会情報',
-      icon: <TextSnippetOutlined />,
       active: routerStatuses.officialTournament || routerStatuses.unofficialTournament,
       items: [
         {
@@ -54,40 +55,37 @@ const MyPageLayout: NextPage<Props> = (props) => {
     },
     {
       title: '出漕履歴',
-      icon: <TextSnippetOutlined />,
-      active: routerStatuses.officialRowingHistory || routerStatuses.unofficialRowingHistory,
+      active: routerStatuses.officialRaceResult || routerStatuses.unofficialRaceResult,
       items: [
         {
           title: '公式大会',
           link: '/mypage/raceResult/official',
-          active: routerStatuses.officialRowingHistory,
+          active: routerStatuses.officialRaceResult,
         },
         {
           title: '非公式大会',
           link: '/mypage/raceResult/unofficial',
-          active: routerStatuses.unofficialRowingHistory,
+          active: routerStatuses.unofficialRaceResult,
         },
       ],
     },
     {
       title: '選手プロフィール',
-      icon: <TextSnippetOutlined />,
       link: '/mypage/playerProfile',
-      active: routerStatuses.athleteProfile,
+      active: routerStatuses.playerProfile,
+      show: userType?.isPlayer ?? false,
     },
     {
       title: 'ボランティア',
-      icon: <TextSnippetOutlined />,
       link: '/mypage/volunteer',
       active: routerStatuses.volunteer,
     },
     {
       title: 'プロフィール',
-      icon: <PersonOutlineOutlined />,
       link: '/mypage/profile',
       active: routerStatuses.profile,
     },
-  ];
+  ].filter((x) => x.show !== false);
 
   return (
     <div className='flex flex-col md:flex-row'>

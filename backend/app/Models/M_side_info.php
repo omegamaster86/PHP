@@ -56,10 +56,10 @@ class M_side_info extends Model
             and side_code IN (8, 4, 2, 1)
             order by display_order',
             [
-                substr($side, 4, 1),
-                substr($side, 5, 1),
-                substr($side, 6, 1),
-                substr($side, 7, 1)
+                intval(substr($side, 4, 1)),
+                intval(substr($side, 5, 1)),
+                intval(substr($side, 6, 1)),
+                intval(substr($side, 7, 1))
             ]
         );
         return $result;
