@@ -163,7 +163,7 @@ export default function UserInformationUpdate() {
     return <div>ページが見つかりません</div>;
   }
   return (
-    <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[46px] my-[80px]'>
+    <>
       <div className='flex flex-col justify-start gap-[20px]'>
         <ErrorBox errorText={errorMessage} />
         <div className='flex flex-row justify-start gap-[20px]'>
@@ -307,6 +307,6 @@ export default function UserInformationUpdate() {
         {/* 退会ボタン */}
         {modeCustomButtons[mode as keyof typeof modeCustomButtons]}
       </div>
-    </main>
+    </>
   );
 }

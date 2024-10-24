@@ -350,10 +350,7 @@ export default function TournamentResultManagement() {
 
   // レンダリング
   return (
-    <main className='flex min-h-screen flex-col justify-start p-[10px] gap-[20px] my-[80px] md:w-[1200px] sm: w-[600px]'>
-      <div className='relative flex flex-row justify-between w-full h-screen flex-wrap'>
-        {/* 画面名 */}
-      </div>
+    <>
       <CustomTitle displayBack>大会レース結果管理</CustomTitle>
       <div className='flex flex-col justify-center items-center'>
         {/* 説明 */}
@@ -838,6 +835,6 @@ export default function TournamentResultManagement() {
           戻る
         </CustomButton>
       </div>
-    </main>
+    </>
   );
 }

@@ -1003,14 +1003,13 @@ export default function VolunteerInformationRef() {
   ]);
 
   return (
-    <main className='flex flex-col justify-start gap-[20px] my-[80px] flex-nowrap'>
-      <div className='w-9/12 m-3 flex flex-row items-center justify-between gap-[20px]'>
-        <CustomTitle displayBack={true}>
-          ボランティア情報{mode === 'delete' && '削除'}
-          {mode !== 'delete' && '参照'}
-        </CustomTitle>
-        {/* 遷移先の画面未実装のため、コメントアウト 20240525 */}
-        {/* {mode !== 'delete' && (
+    <>
+      <CustomTitle displayBack={true}>
+        ボランティア情報{mode === 'delete' && '削除'}
+        {mode !== 'delete' && '参照'}
+      </CustomTitle>
+      {/* 遷移先の画面未実装のため、コメントアウト 20240525 */}
+      {/* {mode !== 'delete' && (
             // TODO: ボランティア情報変更画面に遷移
             // ボランティア情報を変更ボタン
             <Link
@@ -1024,7 +1023,6 @@ export default function VolunteerInformationRef() {
               ボランティア情報を変更
             </Link>
           )} */}
-      </div>
       <ErrorBox errorText={errorMessage} />
       <div className='flex flex-row gap-[20px] justify-between'>
         <div className='flex flex-col gap-[20px]'>
@@ -2293,6 +2291,6 @@ export default function VolunteerInformationRef() {
           </CustomButton>
         )}
       </div>
-    </main>
+    </>
   );
 }

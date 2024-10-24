@@ -539,287 +539,275 @@ export default function TournamentEntryBulkRegister() {
     }
   };
 
+  if (!validFlag) return null;
+
   // レンダリング
   return (
-    validFlag && (
-      <>
-        <main className='flex min-h-screen flex-col justify-start p-[10px] m-auto gap-[20px] my-[80px]'>
-          {/* 画面名*/}
-          <CustomTitle displayBack>
-            大会エントリー一括登録
-          </CustomTitle>
-          {/* エラーメッセージの表示 */}
-          <ErrorBox errorText={errorMessage} />
-          {/* 大会開催年 */}
-          <div className='flex flex-col justify-start gap-[8px]'>
-            <InputLabel label='大会開催年（西暦）' required />
-            <div className='flex flex-row justify-start'>
-              <CustomYearPicker
-                placeHolder={new Date().toLocaleDateString('ja-JP').slice(0, 4)}
-                selectedDate={formData?.eventYear}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  //console.log(e);
-                  var eventYearVal = e as any as Date;
-                  if (eventYearVal.getFullYear().toString().length === 4) {
-                    // handleInputChange('eventYear', e as unknown as string);//eventYearVal.getFullYear().toString()
-                    handleInputChange('eventYear', eventYearVal.getFullYear().toString());
-                  }
-                }}
-                onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                  if (
-                    formData?.eventYear === '' ||
-                    formData?.eventYear === null ||
-                    formData?.eventYear === undefined
-                  ) {
-                    handleInputChange('tournName', '');
-                  } else {
-                    handleSearchTournament('eventYear', formData?.eventYear);
-                  }
-                }}
-                readonly={displayFlg}
-              />
-              <Label label='年' />
-            </div>
-            <div
-              className={
-                prevScreen === 'tournamentRef' ||
-                !(
-                  formData?.eventYear === '' ||
-                  formData?.eventYear === null ||
-                  formData?.eventYear === undefined
-                )
-                  ? 'hidden'
-                  : ''
+    <>
+      <CustomTitle displayBack>大会エントリー一括登録</CustomTitle>
+      {/* エラーメッセージの表示 */}
+      <ErrorBox errorText={errorMessage} />
+      {/* 大会開催年 */}
+      <div className='flex flex-col justify-start gap-[8px]'>
+        <InputLabel label='大会開催年（西暦）' required />
+        <div className='flex flex-row justify-start'>
+          <CustomYearPicker
+            placeHolder={new Date().toLocaleDateString('ja-JP').slice(0, 4)}
+            selectedDate={formData?.eventYear}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              //console.log(e);
+              var eventYearVal = e as any as Date;
+              if (eventYearVal.getFullYear().toString().length === 4) {
+                // handleInputChange('eventYear', e as unknown as string);//eventYearVal.getFullYear().toString()
+                handleInputChange('eventYear', eventYearVal.getFullYear().toString());
               }
-            >
-              <Label
-                label='※「大会開催年」を入力してください。'
-                textColor='red'
-                textSize='caption1'
-              />
-            </div>
-          </div>
-          {/* 大会名 */}
-          <div className='flex flex-col justify-start'>
-            <InputLabel label='大会名' required />
-            <div>
-              <Autocomplete
-                options={tournamentList.map((item) => ({ id: item.id, name: item.name }))}
-                getOptionLabel={(option) => option.name}
-                value={{ id: formData.tournId, name: formData.tournName } || ''}
-                onChange={(e: ChangeEvent<{}>, newValue) => {
-                  //console.log(newValue);
-                  handleInputChange(
-                    'tournId',
-                    newValue ? (newValue as TournamentResponse).id.toString() : '',
-                  );
-                  handleInputChange(
-                    'tournName',
-                    newValue ? (newValue as TournamentResponse).name : '',
-                  );
+            }}
+            onBlur={(e: FocusEvent<HTMLInputElement>) => {
+              if (
+                formData?.eventYear === '' ||
+                formData?.eventYear === null ||
+                formData?.eventYear === undefined
+              ) {
+                handleInputChange('tournName', '');
+              } else {
+                handleSearchTournament('eventYear', formData?.eventYear);
+              }
+            }}
+            readonly={displayFlg}
+          />
+          <Label label='年' />
+        </div>
+        <div
+          className={
+            prevScreen === 'tournamentRef' ||
+            !(
+              formData?.eventYear === '' ||
+              formData?.eventYear === null ||
+              formData?.eventYear === undefined
+            )
+              ? 'hidden'
+              : ''
+          }
+        >
+          <Label label='※「大会開催年」を入力してください。' textColor='red' textSize='caption1' />
+        </div>
+      </div>
+      {/* 大会名 */}
+      <div className='flex flex-col justify-start'>
+        <InputLabel label='大会名' required />
+        <div>
+          <Autocomplete
+            options={tournamentList.map((item) => ({ id: item.id, name: item.name }))}
+            getOptionLabel={(option) => option.name}
+            value={{ id: formData.tournId, name: formData.tournName } || ''}
+            onChange={(e: ChangeEvent<{}>, newValue) => {
+              //console.log(newValue);
+              handleInputChange(
+                'tournId',
+                newValue ? (newValue as TournamentResponse).id.toString() : '',
+              );
+              handleInputChange('tournName', newValue ? (newValue as TournamentResponse).name : '');
 
-                  setCsvDownloadProps((prevProps) => ({
-                    ...prevProps,
-                    filename: (newValue as TournamentResponse)?.name,
-                    formData: {
-                      eventYear: formData.eventYear,
-                      tournId: (newValue as TournamentResponse)?.id,
-                      tournName: (newValue as TournamentResponse)?.name,
-                    },
-                  }));
-                  //console.log(formData.tournName, formData.tournId);
-                  if (newValue != undefined && newValue != null) {
-                    checkTournName(false);
-                  }
-                }}
-                renderOption={(props: any, option: TournamentResponse) => {
-                  return (
-                    <li {...props} key={option.id}>
-                      {option.name}
-                    </li>
-                  );
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    key={params.id}
-                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                    {...params}
-                    value={formData.tournName || ''}
-                  />
-                )}
-                disabled={activationFlg}
+              setCsvDownloadProps((prevProps) => ({
+                ...prevProps,
+                filename: (newValue as TournamentResponse)?.name,
+                formData: {
+                  eventYear: formData.eventYear,
+                  tournId: (newValue as TournamentResponse)?.id,
+                  tournName: (newValue as TournamentResponse)?.name,
+                },
+              }));
+              //console.log(formData.tournName, formData.tournId);
+              if (newValue != undefined && newValue != null) {
+                checkTournName(false);
+              }
+            }}
+            renderOption={(props: any, option: TournamentResponse) => {
+              return (
+                <li {...props} key={option.id}>
+                  {option.name}
+                </li>
+              );
+            }}
+            renderInput={(params) => (
+              <TextField
+                key={params.id}
+                className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                {...params}
+                value={formData.tournName || ''}
               />
-              {tournNameErrorMessage?.map((message: string) => (
-                <p key={message} className='pt-1 text-caption1 text-systemErrorText'>
-                  {message}
-                </p>
-              ))}
-            </div>
-          </div>
-          {/* 読み込みCSVファイルの表示 */}
-          <div className='flex flex-col gap-[20px]'>
-            <div className='flex flex-row justify-start'>
-              <CsvHandler
-                csvUploadProps={csvUploadProps}
-                csvDownloadProps={csvDownloadProps}
-                ref={fileUploaderRef}
-              ></CsvHandler>
-            </div>
-            {/* CSVフォーマット出力の表示 */}
-            {!activationFlg && (
-              <div className='flex flex-col gap-[20px]'>
-                {/* 読み込みボタンの表示 */}
-                <div className='flex flex-col gap-[4px] items-center'>
-                  <p className='mb-1 text-red'>
-                    【読み込み方法】
-                    <br />
-                    ［準備］
-                    <br />
-                    定型フォーマットにエントリー情報を入力してください。
-                    <br />
-                    ※定型フォーマットが必要な場合は、「CSVフォーマット出力」をクリックしてください。
-                    <br />
-                    ※定型フォーマットがダウンロードされます。
-                    <br />
-                    ［読み込む］
-                    <br />
-                    ①　「大会名」からエントリー情報を登録する大会を選択してください。
-                    <br />
-                    ②　「読み込みCSVファイル」に、読み込ませるCSVファイルをドラッグ＆ドロップしてください。
-                    <br />
-                    ※「参照」からファイルを指定することもできます。
-                    <br />
-                    ③　「読み込み」をクリックすると、CSVフォーマットの内容を読み込み、内容を画面下部のエントリー一覧に表示します。
-                  </p>
-                  <CustomButton
-                    buttonType='primary'
-                    onClick={async () => {
-                      setActivationFlg(true);
-                      if (dialogDisplayFlg) {
-                        if (
-                          window.confirm(
-                            '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
-                          )
-                        ) {
-                          if (
-                            formData.tournName === '' ||
-                            formData.tournName === undefined ||
-                            formData.tournName === null
-                          ) {
-                            checkTournName(true);
-                          } else {
-                            await sendCsvData(); //バックエンド側にCSVデータを送信 データ判定用
-                          }
-                        }
-                      } else {
-                        if (
-                          formData.tournName === '' ||
-                          formData.tournName === undefined ||
-                          formData.tournName === null
-                        ) {
-                          checkTournName(true);
-                        } else {
-                          await sendCsvData(); //バックエンド側にCSVデータを送信 データ判定用
-                        }
-                      }
-                      setVisibilityFlg(true);
-                      performValidation();
-                      setActivationFlg(false);
-                    }}
-                  >
-                    読み込む
-                  </CustomButton>
-                </div>
-              </div>
             )}
-            {/* エラーメッセージの表示 */}
-            <div className='flex flex-col items-center'>
-              <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
-            </div>
-            {/* 読み込み結果の表示 */}
-            <div className='flex flex-col items-center'>
+            disabled={activationFlg}
+          />
+          {tournNameErrorMessage?.map((message: string) => (
+            <p key={message} className='pt-1 text-caption1 text-systemErrorText'>
+              {message}
+            </p>
+          ))}
+        </div>
+      </div>
+      {/* 読み込みCSVファイルの表示 */}
+      <div className='flex flex-col gap-[20px]'>
+        <div className='flex flex-row justify-start'>
+          <CsvHandler
+            csvUploadProps={csvUploadProps}
+            csvDownloadProps={csvDownloadProps}
+            ref={fileUploaderRef}
+          ></CsvHandler>
+        </div>
+        {/* CSVフォーマット出力の表示 */}
+        {!activationFlg && (
+          <div className='flex flex-col gap-[20px]'>
+            {/* 読み込みボタンの表示 */}
+            <div className='flex flex-col gap-[4px] items-center'>
               <p className='mb-1 text-red'>
-                【登録方法】
+                【読み込み方法】
                 <br />
-                ①　「エントリー一覧」にCSVフォーマットを読み込んだ結果が表示されます。
+                ［準備］
                 <br />
-                ②　読み込むデータの「選択」にチェックを入れてください。※「全選択」で、全てのデータを選択状態にできます。
+                定型フォーマットにエントリー情報を入力してください。
                 <br />
-                ③　「登録」をクリックすると「エントリー一覧」にて「選択」にチェックが入っているデータを対象に、本システムに登録されます。
+                ※定型フォーマットが必要な場合は、「CSVフォーマット出力」をクリックしてください。
                 <br />
-                ※それまでに登録されていたデータは全て削除され、読み込んだデータに置き換わります。
+                ※定型フォーマットがダウンロードされます。
                 <br />
+                ［読み込む］
+                <br />
+                ①　「大会名」からエントリー情報を登録する大会を選択してください。
+                <br />
+                ②　「読み込みCSVファイル」に、読み込ませるCSVファイルをドラッグ＆ドロップしてください。
+                <br />
+                ※「参照」からファイルを指定することもできます。
+                <br />
+                ③　「読み込み」をクリックすると、CSVフォーマットの内容を読み込み、内容を画面下部のエントリー一覧に表示します。
               </p>
-              <CsvTable
-                content={csvData.sort((a, b) => a.id - b.id)}
-                header={[
-                  '読み込み結果',
-                  '大会ID',
-                  '大会名',
-                  '種目ID',
-                  '種目名',
-                  'レース区分ID',
-                  'レース区分名',
-                  'レースID',
-                  'レース名',
-                  '組別',
-                  'レースNo',
-                  '発艇日時',
-                  '団体ID',
-                  '団体名',
-                  'クルー名',
-                  'シート番号ID',
-                  'シート番号',
-                  '選手ID',
-                  '選手名',
-                ]}
-                handleInputChange={handleTableInputChange}
-                displayRegisterButton={displayRegisterButton}
-                activationFlg={activationFlg}
-                visibilityFlg={visibilityFlg}
-              />
-            </div>
-          </div>
-          {/* ボタンの表示 */}
-          {!activationFlg && (
-            <div className='flex flex-row gap-[4px] justify-center'>
               <CustomButton
-                buttonType='secondary'
-                onClick={() => {
-                  router.back();
+                buttonType='primary'
+                onClick={async () => {
+                  setActivationFlg(true);
+                  if (dialogDisplayFlg) {
+                    if (
+                      window.confirm(
+                        '読み込み結果に表示されているデータはクリアされます。よろしいですか？',
+                      )
+                    ) {
+                      if (
+                        formData.tournName === '' ||
+                        formData.tournName === undefined ||
+                        formData.tournName === null
+                      ) {
+                        checkTournName(true);
+                      } else {
+                        await sendCsvData(); //バックエンド側にCSVデータを送信 データ判定用
+                      }
+                    }
+                  } else {
+                    if (
+                      formData.tournName === '' ||
+                      formData.tournName === undefined ||
+                      formData.tournName === null
+                    ) {
+                      checkTournName(true);
+                    } else {
+                      await sendCsvData(); //バックエンド側にCSVデータを送信 データ判定用
+                    }
+                  }
+                  setVisibilityFlg(true);
+                  performValidation();
+                  setActivationFlg(false);
                 }}
               >
-                戻る
+                読み込む
               </CustomButton>
-              {csvData.some(
-                (row) => !(row.loadingResult === '未入力項目あり' || row.loadingResult === '-'),
-              ) &&
-                displayRegisterButtonFlg && (
-                  <CustomButton
-                    buttonType='primary'
-                    onClick={async () => {
-                      setActivationFlg(true);
-                      if (csvData.find((row) => row.checked)?.id === undefined) {
-                        window.alert('1件以上選択してください。');
-                      } else {
-                        const errorFlg = await checkRaceResultRecords(); //バックエンド側にCSVデータを送信 データ登録用
-                        if (!errorFlg) {
-                          window.alert('レース結果の登録が完了しました。');
-                          setActivationFlg(false);
-                          setDialogDisplayFlg(false);
-                          setDisplayRegisterButtonFlg(false);
-                        }
-                      }
-                      setActivationFlg(false);
-                    }}
-                  >
-                    登録
-                  </CustomButton>
-                )}
             </div>
-          )}
-        </main>
-      </>
-    )
+          </div>
+        )}
+        {/* エラーメッセージの表示 */}
+        <div className='flex flex-col items-center'>
+          <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
+        </div>
+        {/* 読み込み結果の表示 */}
+        <div className='flex flex-col items-center'>
+          <p className='mb-1 text-red'>
+            【登録方法】
+            <br />
+            ①　「エントリー一覧」にCSVフォーマットを読み込んだ結果が表示されます。
+            <br />
+            ②　読み込むデータの「選択」にチェックを入れてください。※「全選択」で、全てのデータを選択状態にできます。
+            <br />
+            ③　「登録」をクリックすると「エントリー一覧」にて「選択」にチェックが入っているデータを対象に、本システムに登録されます。
+            <br />
+            ※それまでに登録されていたデータは全て削除され、読み込んだデータに置き換わります。
+            <br />
+          </p>
+          <CsvTable
+            content={csvData.sort((a, b) => a.id - b.id)}
+            header={[
+              '読み込み結果',
+              '大会ID',
+              '大会名',
+              '種目ID',
+              '種目名',
+              'レース区分ID',
+              'レース区分名',
+              'レースID',
+              'レース名',
+              '組別',
+              'レースNo',
+              '発艇日時',
+              '団体ID',
+              '団体名',
+              'クルー名',
+              'シート番号ID',
+              'シート番号',
+              '選手ID',
+              '選手名',
+            ]}
+            handleInputChange={handleTableInputChange}
+            displayRegisterButton={displayRegisterButton}
+            activationFlg={activationFlg}
+            visibilityFlg={visibilityFlg}
+          />
+        </div>
+      </div>
+      {/* ボタンの表示 */}
+      {!activationFlg && (
+        <div className='flex flex-row gap-[4px] justify-center'>
+          <CustomButton
+            buttonType='secondary'
+            onClick={() => {
+              router.back();
+            }}
+          >
+            戻る
+          </CustomButton>
+          {csvData.some(
+            (row) => !(row.loadingResult === '未入力項目あり' || row.loadingResult === '-'),
+          ) &&
+            displayRegisterButtonFlg && (
+              <CustomButton
+                buttonType='primary'
+                onClick={async () => {
+                  setActivationFlg(true);
+                  if (csvData.find((row) => row.checked)?.id === undefined) {
+                    window.alert('1件以上選択してください。');
+                  } else {
+                    const errorFlg = await checkRaceResultRecords(); //バックエンド側にCSVデータを送信 データ登録用
+                    if (!errorFlg) {
+                      window.alert('レース結果の登録が完了しました。');
+                      setActivationFlg(false);
+                      setDialogDisplayFlg(false);
+                      setDisplayRegisterButtonFlg(false);
+                    }
+                  }
+                  setActivationFlg(false);
+                }}
+              >
+                登録
+              </CustomButton>
+            )}
+        </div>
+      )}
+    </>
   );
 }
