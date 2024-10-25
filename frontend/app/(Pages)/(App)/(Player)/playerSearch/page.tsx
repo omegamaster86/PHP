@@ -617,7 +617,7 @@ export default function PlayerSearch() {
                 {/* 選手名 */}
                 <CustomTd>
                   <Link
-                    className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                    className='text-primary-300 underline hover:text-primary-50'
                     href={{
                       pathname: '/playerInformationRef',
                       query: { playerId: row.player_id },
@@ -645,7 +645,7 @@ export default function PlayerSearch() {
                 {/* 選手ID */}
                 <CustomTd>
                   <Link
-                    className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                    className='text-primary-300 underline hover:text-primary-50'
                     href={{
                       pathname: '/playerInformationRef',
                       query: { playerId: row.player_id },
@@ -675,7 +675,7 @@ export default function PlayerSearch() {
                 {/* 団体ID1 */}
                 <CustomTd>
                   <Link
-                    className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                    className='text-primary-300 underline hover:text-primary-50'
                     href={{
                       pathname: '/teamRef',
                       query: { orgId: row.orgId1 },
@@ -689,7 +689,7 @@ export default function PlayerSearch() {
                 {/* 所属団体名1 */}
                 <CustomTd>
                   <Link
-                    className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                    className='text-primary-300 underline hover:text-primary-50'
                     href={{
                       pathname: '/teamRef',
                       query: { orgId: row.orgId1 },
