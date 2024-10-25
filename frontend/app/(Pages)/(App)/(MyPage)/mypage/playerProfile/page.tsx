@@ -1,14 +1,13 @@
 'use client';
 
-import { TitleSideButton } from '@/app/(Pages)/(App)/_componrnts/TitleSideButton';
-import Info from '@/app/components/Info';
-import Tag from '@/app/components/Tag';
+import Info from '@/app/(Pages)/(App)/(MyPage)/_components/Info';
+import { TitleSideButton } from '@/app/(Pages)/(App)/_components/TitleSideButton';
+import { RoundedBadge } from '@/app/components';
 import { fetcher } from '@/app/lib/swr';
 import { MyPagePlayerProfileInfoData } from '@/app/types';
 import { formatDate } from '@/app/utils/dateUtil';
 import { EditOutlined } from '@mui/icons-material';
 import { Avatar } from '@mui/material';
-import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 
@@ -123,15 +122,10 @@ export default function PlayerProfile() {
           <h3 className='my-4'>サイド情報</h3>
           <div className='flex flex-wrap justify-start gap-2'>
             {user.sideInfo.map((side) => (
-              <Tag
+              <RoundedBadge
                 key={side.sideName}
-                tag={side.sideName}
-                className={clsx(
-                  'border rounded-xl bg-white',
-                  side.isEnable
-                    ? 'border-secondary-500 text-secondary-500'
-                    : 'border-gray-200 text-gray-200',
-                )}
+                label={side.sideName}
+                isValid={Boolean(side.isEnable)}
               />
             ))}
           </div>

@@ -590,11 +590,28 @@ interface MyPageVolunteerInfoData {
   telephoneNumber: string; // 電話番号
   mailaddress: string; // メールアドレス
   clothesSize: string; // 服のサイズ
-  disType: any; // 障碍タイプ FIXME
-  qualHold: any; // 保有資格 FIXME
-  languageProficiency: any; //言語 FIXME
-  dayOfWeek: string; // 曜日
-  timeZone: string; // 時間帯
+  disType: {
+    disTypeId: number; // 障碍タイプID
+    disTypeName: string; // 障碍タイプ名
+    isEnable: number; // 有効フラグ
+  }[]; // 障碍タイプ
+  qualHold: {
+    qualId: number; // 保有資格ID
+    qualName: string; // 保有資格名
+  }[]; // 保有資格
+  languageProficiency: {
+    langId: number; // 言語ID
+    langName: string; // 言語名
+    langProName: string; // 言語レベル
+  }[]; //言語
+  dayOfWeek: {
+    dayOfWeekName: string; // 曜日名
+    isEnable: number; // 有効フラグ
+  }[]; // 曜日
+  timeZone: {
+    timeZoneName: string; // 時間帯名
+    isEnable: number; // 有効フラグ
+  }[]; // 時間帯
 }
 
 //マイページのプロフィール表示用インターフェース 20241023
