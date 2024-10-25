@@ -597,6 +597,21 @@ interface MyPageVolunteerInfoData {
   timeZone: string; // 時間帯
 }
 
+//マイページのプロフィール表示用インターフェース 20241023
+interface MyPageProfileInfoData {
+  userId: number; //ユーザID
+  userName: string; //ユーザ名
+  mailaddress: string; //メールアドレス
+  userType: string; //ユーザ種別
+  sex: string; //性別
+  dateOfBirth: string; //誕生日
+  height: number; //身長
+  weight: number; //体重
+  residenceCountryName: string; //居住 国
+  residencePrefectureName: string; //居住 都道府県
+  photo: string; //写真
+}
+
 export type {
   CheckRace,
   CheckRaceResultRecord,
@@ -609,6 +624,7 @@ export type {
   LangResponse,
   MasterResponse,
   MyPagePlayerProfileInfoData,
+  MyPageProfileInfoData,
   MyPageRaceResultParams,
   MyPageRaceResultRecordInfoData,
   MyPageTournamentInfoData,

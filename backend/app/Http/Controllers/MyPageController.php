@@ -124,4 +124,29 @@ class MyPageController extends Controller
             ])
         ]); //DBの結果を返す
     }
+
+    //プロフィールを取得 20241023
+    public function getMyPageProfileList(T_users $tUsers)
+    {
+        Log::debug(sprintf("getMyPageProfileList start"));
+        $result = $tUsers->getUserProfileInfo(Auth::user()->user_id); //ユーザIDを元にプロフィール情報を取得 202401023
+
+        if (empty($result)) {
+            abort(403, 'プロフィール情報が存在しません。');
+        }
+
+        $result->userType = array(
+            array("userTypeName" => "管理者", "isEnable" => intval(substr($result->userTypeString, 1, 1))),
+            array("userTypeName" => "JARA", "isEnable" => intval(substr($result->userTypeString, 2, 1))),
+            array("userTypeName" => "県ボ職員", "isEnable" => intval(substr($result->userTypeString, 3, 1))),
+            array("userTypeName" => "団体管理者", "isEnable" => intval(substr($result->userTypeString, 4, 1))),
+            array("userTypeName" => "選手", "isEnable" => intval(substr($result->userTypeString, 5, 1))),
+            array("userTypeName" => "ボランティア", "isEnable" => intval(substr($result->userTypeString, 6, 1))),
+            array("userTypeName" => "一般ユーザー（観客）", "isEnable" => intval(substr($result->userTypeString, 7, 1))),
+        );
+        unset($result->userTypeString);
+
+        Log::debug(sprintf("getMyPageProfileList end"));
+        return response()->json(['result' => $result]); //DBの結果を返す
+    }
 }
