@@ -87,6 +87,7 @@ class MyPageController extends Controller
 
     //ボランティア情報を取得 20241017
     public function getMyPageVolunteerInfoList(
+        T_users $tUsers,
         T_volunteers $tVolunteers,
         T_volunteer_language_proficiency $tVolunteerLanguageProficiency,
         T_volunteer_qualifications_hold $tVolunteerQualificationsHold,
@@ -94,16 +95,48 @@ class MyPageController extends Controller
     ) {
         Log::debug(sprintf("getMyPageVolunteerInfoList start"));
 
-        $volData = $tVolunteers->getVolunteerInfoFromUserId(Auth::user()->user_id); //ユーザIDを元にボランティア情報を取得 202401015
+        $userId = Auth::user()->user_id;
 
-        //volDataが0件だった場合は空配列を返す 20241021
-        if (empty($volData)) {
-            return response()->json(['result' => []]);
+        $userType = $tUsers->getIDsAssociatedWithUser($userId);
+        $firstOfUserType = reset($userType);
+        if (!$firstOfUserType || $firstOfUserType->is_volunteer == 0) {
+            abort(403, '閲覧権限がありません。');
         }
 
-        $volSupDisData = $tVolunteerSupportableDisability->getMyPageVolunteerSupportableDisability($volData[0]->volunteer_id); //ボランティア支援可能障害タイプ情報を取得
-        $volLangProData = $tVolunteerLanguageProficiency->getMyPageVolunteerLanguageProficiency($volData[0]->volunteer_id); //ボランティア言語レベル情報を取得
-        $volQualData = $tVolunteerQualificationsHold->getMyPageVolunteerQualificationsHold($volData[0]->volunteer_id); //ボランティア保有資格情報を取得
+        $volData = $tVolunteers->getVolunteerInfoFromUserId(Auth::user()->user_id); //ユーザIDを元にボランティア情報を取得 202401015
+        if (empty($volData)) {
+            abort(404, 'ボランティア情報が存在しません。');
+        }
+
+        $volId = $volData[0]->volunteer_id;
+        $volSupDisData = $tVolunteerSupportableDisability->getMyPageVolunteerSupportableDisability($volId); //ボランティア支援可能障害タイプ情報を取得
+        $volLangProData = $tVolunteerLanguageProficiency->getMyPageVolunteerLanguageProficiency($volId); //ボランティア言語レベル情報を取得
+        $volQualData = $tVolunteerQualificationsHold->getMyPageVolunteerQualificationsHold($volId); //ボランティア保有資格情報を取得
+
+        $dowBinaryString = $volData[0]->dayOfWeekStr ?? "0000000";
+        $tzBinaryString = $volData[0]->timeZoneStr ?? "0000";
+
+        $dayOfWeekNames = ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"];
+        $volDayOfWeek = array_map(
+            fn($name, $index) =>
+            [
+                'dayOfWeekName' => $name,
+                'isEnable' => intval($dowBinaryString[strlen($dowBinaryString) - $index - 1]) // dowBinaryStringを逆から読む
+            ],
+            $dayOfWeekNames,
+            array_keys($dayOfWeekNames)
+        );
+
+        $timeZoneNames = ["早朝", "午前", "午後", "夜"];
+        $volTimeZone = array_map(
+            fn($name, $index) =>
+            [
+                'timeZoneName' => $name,
+                'isEnable' => intval($tzBinaryString[strlen($tzBinaryString) - $index - 1]) // tzBinaryStringを逆から読む
+            ],
+            $timeZoneNames,
+            array_keys($timeZoneNames)
+        );
 
         Log::debug(sprintf("getMyPageVolunteerInfoList end"));
         return response()->json([
@@ -119,8 +152,8 @@ class MyPageController extends Controller
                 'disType' => $volSupDisData,
                 'qualHold' => $volQualData,
                 'languageProficiency' => $volLangProData,
-                'dayOfWeek' => $volData[0]->dayOfWeek,
-                'timeZone' => $volData[0]->timeZone,
+                'dayOfWeek' => $volDayOfWeek,
+                'timeZone' => $volTimeZone
             ])
         ]); //DBの結果を返す
     }

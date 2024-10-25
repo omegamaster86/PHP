@@ -1,4 +1,4 @@
-import Tag from '@/app/components/Tag';
+import { RoundedBadge } from '@/app/components';
 import { getTournTypeLabel } from '@/app/constants';
 import { MyPageTournamentInfoData } from '@/app/types';
 import { formatDate } from '@/app/utils/dateUtil';
@@ -12,14 +12,10 @@ const TournamentCardContent: React.FC<Props> = (props) => {
   const { cardItem } = props;
 
   const tagEls = [
-    <Tag
-      key='tournType'
-      tag={getTournTypeLabel(cardItem.tournType)}
-      className='text-secondary-500 bg-secondary-100'
-    />,
+    <RoundedBadge key='tournType' label={getTournTypeLabel(cardItem.tournType)} isValid />,
     // TODO: チケット購入済みフラグの実装時にコメントアウトを外す
     // true && (
-    //   <Tag key='ticket' tag='チケット購入済み' className='text-primary-500 bg-primary-100' />
+    //   <RoundedBadge key='ticket' label='チケット購入済み' className='text-primary-500 bg-primary-100' />
     // ),
   ];
 

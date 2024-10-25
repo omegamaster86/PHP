@@ -79,6 +79,7 @@ const MyPageLayout: NextPage<Props> = (props) => {
       title: 'ボランティア',
       link: '/mypage/volunteer',
       active: routerStatuses.volunteer,
+      show: userType?.isVolunteer ?? false,
     },
     {
       title: 'プロフィール',
