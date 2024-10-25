@@ -562,4 +562,39 @@ class T_users extends Authenticatable
                                 ,['user_id' => $user_id]);
         return $is_valid;
     }
+
+    //マイページ プロフィール情報を取得する 20241023
+    public function getUserProfileInfo($userId)
+    {
+        $users = DB::select('select 
+                    `t_users`.`user_id` as `userId`, 
+                    `t_users`.`user_name` as `userName`, 
+                    `t_users`.`mailaddress`, 
+                    `t_users`.`user_type` as `userTypeString`,
+                    `t_users`.`date_of_birth` as `dateOfBirth`,
+                    `t_users`.`height`, 
+                    `t_users`.`weight`, 
+                    `t_users`.`photo`, 
+                    `m_countries`.`country_name` as `countryName`, 
+                    `m_prefectures`.`pref_name` as `prefName`, 
+                    `m_sex`.`sex`
+                    from `t_users`
+                    left join `m_sex`
+                    on `t_users`.`sex` = `m_sex`.`sex_id`
+                    left join `m_countries`
+                    on `t_users`.`residence_country` = `m_countries`.`country_id`
+                    left join `m_prefectures`
+                    on `t_users`.`residence_prefecture` = `m_prefectures`.`pref_id`
+                    where 1=1
+                    and `t_users`.`delete_flag` = 0
+                    and `m_sex`.`delete_flag` = 0
+                    and `m_countries`.delete_flag = 0 
+                    and (`m_countries`.`country_code` != 392 or `m_prefectures`.delete_flag = 0)
+                    and `user_id` = ?',[$userId]);
+        $targetTrn = null;
+        if (!empty($users)) {
+            $targetTrn = $users[0];
+        }
+        return $targetTrn;
+    }
 }
