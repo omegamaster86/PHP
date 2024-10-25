@@ -85,11 +85,11 @@ class T_organizations extends Model
                                     on `t_organizations`.`pref_org_type` = pmot.`org_type_id`
                                     where 1=1
                                     and `t_organizations`.`delete_flag`=0
-                                    and (`m_countries`.`delete_flag` = 0 or `m_countries`.`delete_flag` is null)
-                                    and (`m_prefectures`.`delete_flag` = 0 or `m_prefectures`.`delete_flag` is null)
-                                    and (`m_organization_class`.`delete_flag` = 0 or `m_organization_class`.`delete_flag` is null)
-                                    and (jmot.`delete_flag` = 0 or jmot.`delete_flag` is null)
-                                    and (pmot.`delete_flag` = 0 or pmot.`delete_flag` is null)
+                                    and `m_countries`.`delete_flag` = 0
+                                    and `m_prefectures`.`delete_flag` = 0
+                                    and `m_organization_class`.`delete_flag` = 0
+                                    and jmot.`delete_flag` = 0
+                                    and pmot.`delete_flag` = 0
                                     and `org_id`=?'
                                     ,[$orgId]);
         //1つの団体IDを取得するため0番目だけを返す
@@ -149,11 +149,11 @@ class T_organizations extends Model
     //                                 on `t_organizations`.`pref_org_type` = pmot.`org_type_id`
     //                                 where 1=1
     //                                 and `t_organizations`.`delete_flag`=0
-    //                                 and (`m_countries`.`delete_flag` = 0 or `m_countries`.`delete_flag` is null)
-    //                                 and (`m_prefectures`.`delete_flag` = 0 or `m_prefectures`.`delete_flag` is null)
-    //                                 and (`m_organization_class`.`delete_flag` = 0 or `m_organization_class`.`delete_flag` is null)
-    //                                 and (jmot.`delete_flag` = 0 or jmot.`delete_flag` is null)
-    //                                 and (pmot.`delete_flag` = 0 or pmot.`delete_flag` is null)
+    //                                 and `m_countries`.`delete_flag` = 0
+    //                                 and `m_prefectures`.`delete_flag` = 0
+    //                                 and `m_organization_class`.`delete_flag` = 0
+    //                                 and jmot.`delete_flag` = 0
+    //                                 and pmot.`delete_flag` = 0
     //                                 and `org_id`=?'
     //                                 ,[$orgId]);
     //     return $organization;
@@ -371,11 +371,11 @@ class T_organizations extends Model
                         on `t_organizations`.`pref_org_type` = pmot.`org_type_id`
                         where 1=1
                         and `t_organizations`.`delete_flag`=0
-                        and (`m_countries`.`delete_flag` = 0 or `m_countries`.`delete_flag` is null)
-                        and (`m_prefectures`.`delete_flag` = 0 or `m_prefectures`.`delete_flag` is null)
-                        and (`m_organization_class`.`delete_flag` = 0 or `m_organization_class`.`delete_flag` is null)
-                        and (jmot.`delete_flag` = 0 or jmot.`delete_flag` is null)
-                        and (pmot.`delete_flag` = 0 or pmot.`delete_flag` is null)
+                        and `m_countries`.`delete_flag` = 0
+                        and `m_prefectures`.`delete_flag` = 0
+                        and `m_organization_class`.`delete_flag` = 0
+                        and jmot.`delete_flag` = 0
+                        and pmot.`delete_flag` = 0
                         #SearchCondition#
                         order by `org_id`';
         $sqlString = str_replace('#SearchCondition#',$searchCondition,$sqlString);
@@ -442,11 +442,11 @@ class T_organizations extends Model
                                     on `t_organizations`.`pref_org_type` = pmot.`org_type_id`
                                     where 1=1
                                     and `t_organizations`.`delete_flag`=0
-                                    and (`m_countries`.`delete_flag` = 0 or `m_countries`.`delete_flag` is null)
-                                    and (`m_prefectures`.`delete_flag` = 0 or `m_prefectures`.`delete_flag` is null)
-                                    and (`m_organization_class`.`delete_flag` = 0 or `m_organization_class`.`delete_flag` is null)
-                                    and (jmot.`delete_flag` = 0 or jmot.`delete_flag` is null)
-                                    and (pmot.`delete_flag` = 0 or pmot.`delete_flag` is null)'
+                                    and (`m_countries`.`delete_flag` = 0
+                                    and (`m_prefectures`.`delete_flag` = 0
+                                    and (`m_organization_class`.`delete_flag` = 0
+                                    and (jmot.`delete_flag` = 0
+                                    and (pmot.`delete_flag` = 0'
                                 );
         return $organizations;
     }
@@ -469,8 +469,8 @@ class T_organizations extends Model
                                     on staff.`user_id` = users.`user_id`
                                     where 1=1
                                     and org.delete_flag = 0
-                                    and (staff.delete_flag = 0 or staff.delete_flag is null)
-                                    and (users.delete_flag = 0 or users.delete_flag is null)
+                                    and staff.delete_flag = 0
+                                    and users.delete_flag = 0
                                     and users.user_id = ?
                                     order by org.org_id"
                                     ,[$user_id]);

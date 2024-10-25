@@ -63,7 +63,7 @@ class T_organization_staff extends Model
                                     left join `t_users` `user`
                                     on `staff`.`user_id` = `user`.`user_id`
                                     where `staff`.`delete_flag` = 0
-                                    and (`user`.`delete_flag` = 0 or `user`.`delete_flag` is null) 
+                                    and `user`.`delete_flag` = 0
                                     and `staff`.`org_id` = ?
                                     group by `staff`.`org_id`, `staff`.`user_id`,`user`.`user_name`
                                 ) as `staff`'
@@ -179,7 +179,7 @@ class T_organization_staff extends Model
                                             on staff.`user_id` = users.`user_id`
                                             WHERE 1=1
                                             and staff.delete_flag = 0
-                                            and (users.delete_flag = 0 or users.delete_flag is null)
+                                            and users.delete_flag = 0
                                             and staff.org_id = :org_id'
                                         ,$org_id);
         return $organizationStaffs;

@@ -109,9 +109,9 @@ class T_raceResultRecord extends Model
                                         on `t_tournaments`.venue_id = `m_venue`.venue_id
                                         where 1=1
                                         and `t_race_result_record`.delete_flag = 0                                        
-                                        and  (`t_tournaments`.`delete_flag` = 0 or `t_tournaments`.`delete_flag` is null)
-                                        and  (wd2000p.`delete_flag` = 0 or wd2000p.`delete_flag` is null)
-                                        and  (wd1000p.`delete_flag` = 0 or wd1000p.`delete_flag` is null)
+                                        and  `t_tournaments`.`delete_flag` = 0
+                                        and  wd2000p.`delete_flag` = 0
+                                        and  wd1000p.`delete_flag` = 0
                                         and `t_race_result_record`.race_id = ?', [$raceId]);
         return $racesResultRecord;
     }
@@ -181,9 +181,9 @@ class T_raceResultRecord extends Model
                                         on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
                                         where 1=1
                                         and `t_race_result_record`.delete_flag = 0                                        
-                                        and  (`t_tournaments`.`delete_flag` = 0 or `t_tournaments`.`delete_flag` is null)
-                                        and  (`m_seat_number`.`delete_flag` = 0 or `m_seat_number`.`delete_flag` is null)
-                                        and  (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
+                                        and  `t_tournaments`.`delete_flag` = 0
+                                        and  `m_seat_number`.`delete_flag` = 0
+                                        and  `m_venue`.`delete_flag` = 0
                                         and `t_race_result_record`.tourn_id = ?', [$tournId]);
         return $racesResultRecord;
     }
@@ -256,9 +256,9 @@ class T_raceResultRecord extends Model
                                         on `t_race_result_record`.`event_id` = `m_events`.`event_id`
                                         where 1=1
                                         and `t_race_result_record`.delete_flag = 0                                        
-                                        and  (`t_tournaments`.`delete_flag` = 0 or `t_tournaments`.`delete_flag` is null)
-                                        and  (`m_seat_number`.`delete_flag` = 0 or `m_seat_number`.`delete_flag` is null)
-                                        and  (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
+                                        and  `t_tournaments`.`delete_flag` = 0
+                                        and  `m_seat_number`.`delete_flag` = 0
+                                        and  `m_venue`.`delete_flag` = 0
                                         and `t_race_result_record`.player_id = ?', [$playerId]);
         // Log::debug($racesResultRecord);
         return $racesResultRecord;
@@ -468,10 +468,10 @@ class T_raceResultRecord extends Model
                         on rrr.`player_id` = ply.`player_id`
                         where 1=1
                         and rrr.`delete_flag` = 0
-                        and  (tour.`delete_flag` = 0 or tour.`delete_flag` is null)
-                        and  (race.`delete_flag` = 0 or race.`delete_flag` is null)
-                        and  (org.`delete_flag` = 0 or org.`delete_flag` is null)
-                        and  (ply.`delete_flag` = 0 or ply.`delete_flag` is null)
+                        and  tour.`delete_flag` = 0
+                        and  race.`delete_flag` = 0
+                        and  org.`delete_flag` = 0
+                        and  ply.`delete_flag` = 0
                         and rrr.`official` = 1	#公式大会
                         #ReplaceConditionString#';
         $sqlString = str_replace('#ReplaceConditionString#', $searchCondition, $sqlString);
@@ -527,10 +527,10 @@ class T_raceResultRecord extends Model
                                             on rrr.`player_id` = ply.`player_id`
                                             where 1=1
                                             and rrr.`delete_flag` = 0
-                                            and  (tour.`delete_flag` = 0 or tour.`delete_flag` is null)
-                                            and  (race.`delete_flag` = 0 or race.`delete_flag` is null)
-                                            and  (org.`delete_flag` = 0 or org.`delete_flag` is null)
-                                            and  (ply.`delete_flag` = 0 or ply.`delete_flag` is null)
+                                            and  tour.`delete_flag` = 0
+                                            and  race.`delete_flag` = 0
+                                            and  org.`delete_flag` = 0
+                                            and  ply.`delete_flag` = 0
                                             and rrr.`official` = 0	#非公式大会
                                             and rrr.tourn_id = :tourn_id    #大会ID
                                             and rrr.race_id = :race_id      #レースID
@@ -748,7 +748,7 @@ class T_raceResultRecord extends Model
                             on rrr.seat_number = msn.seat_id
                             where 1=1
                             and rrr.`delete_flag` = 0
-                            and (msn.`delete_flag` = 0 or msn.`delete_flag` is null)
+                            and msn.`delete_flag` = 0
                             and rrr.race_id = :race_id
                             and rrr.crew_name = :crew_name
                             and rrr.org_id = :org_id
@@ -840,8 +840,8 @@ class T_raceResultRecord extends Model
                                             on ply.`sex_id` = sex.`sex_id`
                                             where 1=1
                                             and rrr.`delete_flag` = 0
-                                            and (ply.`delete_flag` = 0 or ply.`delete_flag` is null)
-                                            and (sex.`delete_flag` = 0 or sex.`delete_flag` is null)
+                                            and ply.`delete_flag` = 0
+                                            and sex.`delete_flag` = 0
                                             and rrr.race_id = :race_id"
                                             ,$race_id);
         return $race_result_records;
@@ -933,10 +933,10 @@ class T_raceResultRecord extends Model
                                             on rrr.`wind_direction_1000m_point` = wd1000p.`wind_direction_id`
                                             where 1=1
                                             and rrr.`delete_flag` = 0
-                                            and (mwt.`delete_flag` = 0 or mwt.`delete_flag` is null)
-                                            and (org.`delete_flag` = 0 or org.`delete_flag` is null)
-                                            and (wd2000p.`delete_flag` = 0 or wd2000p.`delete_flag` is null)
-                                            and (wd1000p.`delete_flag` = 0 or wd1000p.`delete_flag` is null)
+                                            and mwt.`delete_flag` = 0
+                                            and org.`delete_flag` = 0
+                                            and wd2000p.`delete_flag` = 0
+                                            and wd1000p.`delete_flag` = 0
                                             and race_id = :race_id"
                                             ,["race_id" => $race_id]);
         Log::debug("getRaceResultRecordOnRowingPoint end.");
@@ -976,9 +976,9 @@ class T_raceResultRecord extends Model
                                                 on rrr.seat_number = seat.seat_id
                                                 where 1=1
                                                 and rrr.delete_flag = 0
-                                                and (ply.delete_flag = 0 or ply.delete_flag is null)
-                                                and (msex.delete_flag = 0 or msex.delete_flag is null)
-                                                and (seat.delete_flag = 0 or seat.delete_flag is null)
+                                                and ply.delete_flag = 0
+                                                and msex.delete_flag = 0
+                                                and seat.delete_flag = 0
                                                 and race_id = :race_id
                                                 and org_id = :org_id
                                                 and crew_name = :crew_name
