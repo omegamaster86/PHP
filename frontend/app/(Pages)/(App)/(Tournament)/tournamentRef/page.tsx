@@ -28,6 +28,7 @@ import { ROLE } from '@/app/utils/consts';
 import { TOURNAMENT_PDF_URL } from '@/app/utils/imageUrl';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { Autocomplete, Chip, TextField } from '@mui/material';
+import FollowButton from '@/app/components/FollowButton';
 
 //種目フィルター用
 interface EventNameList {
@@ -443,33 +444,24 @@ export default function TournamentRef() {
       <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4 '>
         <div className='flex flex-col gap-[10px]'>
           <div className='flex flex-col gap-[30px]'>
-            <div className='flex flex-col lg:flex-row justify-between gap-6'>
+            <div className='flex flex-col lg:flex-row justify-between sm:items-center gap-6'>
               <Label label={tournamentFormData.tourn_name} textColor='white' textSize='h2'></Label>
-              {/* 大会要項ダウンロードボタン */}
-              {/* <CustomButton
-                  buttonType='white-outlined'
-                  className='w-[220px] text-normal text-white hover:text-primary-100 hover:bg-transparent hover:border-primary-100'
-                  onClick={() => {
-                    // TODO: 大会要項のPDFをダウンロードする処理
-                    return `${TOURNAMENT_PDF_URL}${tournamentFormData.tourn_info_faile_path}`;
-                  }}
-                >
-                  <FileDownloadOutlinedIcon className='text-[16px] mr-1 hover:text-primary-100 '></FileDownloadOutlinedIcon>
-                  大会要項ダウンロード
-                </CustomButton> */}
-              {/* ダウンロードコード追加 開始 */}
-              {tournamentFormData.tourn_info_faile_path && (
-                <Link
-                  href={`${TOURNAMENT_PDF_URL}${tournamentFormData.tourn_info_faile_path}`}
-                  download
-                  className='w-[220px] text-normal text-white hover:text-primary-100 hover:bg-transparent hover:border-primary-100 '
-                  target='_blank'
-                >
-                  <FileDownloadOutlinedIcon className='text-[16px] mr-1 hover:text-primary-100 '></FileDownloadOutlinedIcon>
-                  大会要項ダウンロード
-                </Link>
-              )}
-              {/* ダウンロードコード追加 終了*/}
+              <div className='flex flex-col sm:flex-row justify-between items-center gap-5'>
+                {/* ダウンロードコード追加 開始 */}
+                {tournamentFormData.tourn_info_faile_path && (
+                  <Link
+                    href={`${TOURNAMENT_PDF_URL}${tournamentFormData.tourn_info_faile_path}`}
+                    download
+                    className='text-normal text-white hover:text-primary-100 hover:bg-transparent hover:border-none border border-white p-2 flex'
+                    target='_blank'
+                  >
+                    <FileDownloadOutlinedIcon className='text-[16px] mr-2 hover:text-primary-100 '></FileDownloadOutlinedIcon>
+                    大会要項ダウンロード
+                  </Link>
+                )}
+                {/* ダウンロードコード追加 終了*/}
+                <FollowButton />
+              </div>
             </div>
             <div className='flex flex-col sm:flex-row'>
               {/* 大会個別URL */}
