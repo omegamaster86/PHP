@@ -443,11 +443,12 @@ class T_volunteers extends Model
         `m_prefectures`.`pref_name` as `prefName`, 
         `m_sex`.`sex`, 
         `m_clothes_size`.`clothes_size` as `clothesSize`,
-        `t_volunteer_availables`.`day_of_week` as `dayOfWeek`,
-        `t_volunteer_availables`.`time_zone` as `timeZone`
+        `t_volunteer_availables`.`day_of_week` as `dayOfWeekStr`,
+        `t_volunteer_availables`.`time_zone` as `timeZoneStr`
         FROM `t_volunteers` 
         left join `t_volunteer_availables`
         on `t_volunteers`.`volunteer_id` = `t_volunteer_availables`.`volunteer_id`
+        and `t_volunteer_availables`.delete_flag = 0
         left join `m_countries`
         on `t_volunteers`.`residence_country` = `m_countries`.`country_id`
         left join `m_prefectures`
@@ -458,7 +459,6 @@ class T_volunteers extends Model
         on `t_volunteers`.`clothes_size` = `m_clothes_size`.`clothes_size_id`
         where 1=1
         and `t_volunteers`.delete_flag = 0 
-        and `t_volunteer_availables`.delete_flag = 0 
         and `m_countries`.delete_flag = 0 
         and (`m_countries`.`country_code` != 392 or `m_prefectures`.delete_flag = 0)
         and `m_sex`.delete_flag = 0 

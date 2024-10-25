@@ -18,7 +18,7 @@ import {
   CustomTitle,
   CustomTbody,
 } from '@/app/components';
-import { TitleSideButton } from '@/app/(Pages)/(App)/_componrnts/TitleSideButton';
+import { TitleSideButton } from '@/app/(Pages)/(App)/_components/TitleSideButton';
 import { Tournament, Race, UserIdType } from '@/app/types';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/EditOutlined';
