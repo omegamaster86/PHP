@@ -515,8 +515,8 @@ interface CheckRaceResultRecord {
 
 // ユーザIDに紐づいた情報 20240222
 interface UserIdType {
-  player_id: number; // 選手ID
-  volunteer_id: number; // ボランティアID
+  player_id: number | null; // 選手ID
+  volunteer_id: number | null; // ボランティアID
   is_administrator: number; // 管理者
   is_jara: number; // JARA
   is_pref_boat_officer: number; // 県ボ
@@ -564,7 +564,7 @@ interface MyPageRaceResultParams {
 interface MyPagePlayerProfileInfoData {
   playerName: string; //選手名
   playerId: number; //選手ID
-  jaraPlayerId: number; //既存選手ID
+  jaraPlayerId: number | null; //既存選手ID
   sex: string; //性別
   dateOfBirth: string; //誕生日
   height: number; //身長
@@ -573,8 +573,11 @@ interface MyPagePlayerProfileInfoData {
   birthPrefectureName: string; //出身 都道府県
   residenceCountryName: string; //居住 国
   residencePrefectureName: string; //居住 都道府県
-  photo: string; //写真
-  sideInfo: string; //サイド情報
+  photo: string | null; //写真
+  sideInfo: {
+    sideName: string;
+    isEnable: number;
+  }[]; //サイド情報
 }
 
 //マイページのボランティア情報表示用インターフェース 20241017

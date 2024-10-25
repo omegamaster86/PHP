@@ -2,7 +2,7 @@ import axios from '@/app/lib/axios';
 
 interface FetcherParams {
   url: string;
-  params: object;
+  params?: object;
   key?: string; // SWR内部で使うためのキーなのでfetcherでは不要
 }
 

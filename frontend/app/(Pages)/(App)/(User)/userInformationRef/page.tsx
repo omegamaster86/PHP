@@ -5,23 +5,25 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/app/lib/axios';
 import { Divider } from '@mui/material';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import { UserResponse } from '@/app/types';
 
 import {
-  CustomTextField,
-  CustomDatePicker,
   CustomButton,
-  InputLabel,
-  OriginalCheckbox,
   ErrorBox,
   CustomTitle,
+  CustomTable,
+  CustomThead,
+  CustomTr,
+  CustomTh,
+  CustomTbody,
+  CustomTd,
+  CustomTextField,
+  RoundedBadge,
 } from '@/app/components';
 import { useAuth } from '@/app/hooks/auth';
 import { NO_IMAGE_URL, USER_IMAGE_URL } from '@/app/utils/imageUrl';
 
-export default function UserInformationUpdate() {
+export default function UserInformationReference() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode');
@@ -88,15 +90,10 @@ export default function UserInformationUpdate() {
             userTypeName: response.data.result.userTypeName,
             date_of_birth: response.data.result.date_of_birth,
             sexName: response.data.result.sex_name,
-            // sexName: response.data.result.sexName ? response.data.sexName : '男性',
             sex: response.data.result.sex,
             height: response.data.result.height,
             weight: response.data.result.weight,
-            residence_country: response.data.result.residence_country,
-            residenceCountryName: response.data.result.residenceCountryName,
-            // residenceCountryName: response.data.result.residenceCountryName
-            //   ? response.data.result.residenceCountryName
-            //   : '日本国 （jpn）',
+            residenceCountryName: response.data.result.residenceCountryName,    
             residence_prefecture: response.data.result.residence_prefecture,
             residencePrefectureName: response.data.result.residencePrefectureName,
             mailaddress: response.data.result.mailaddress,
@@ -162,147 +159,132 @@ export default function UserInformationUpdate() {
   if (paramError) {
     return <div>ページが見つかりません</div>;
   }
+
   return (
     <>
-      <div className='flex flex-col justify-start gap-[20px]'>
-        <ErrorBox errorText={errorMessage} />
-        <div className='flex flex-row justify-start gap-[20px]'>
-          {/* 画面名 */}
-          <CustomTitle displayBack>
-            {mode !== 'delete' && 'ユーザー情報参照'}
-            {mode === 'delete' && '退会'}
-          </CustomTitle>
-        </div>
-        <div className='flex flex-col justify-start gap-[10px]'>
-          {/* 写真 */}
-          <InputLabel displayHelp={false} label='写真' />
-          <img
-            src={formData.photo ? `${USER_IMAGE_URL}${formData.photo}` : `${NO_IMAGE_URL}`}
-            className='w-[300px] h-[300px] rounded-[2px] object-cover'
-          />
-        </div>
-        {/* ユーザーID */}
-        <CustomTextField
-          label='ユーザーID'
-          readonly={true}
-          value={formData.user_id}
-          displayHelp={false}
+      <ErrorBox errorText={errorMessage} />
+      {/* 画面名 */}
+      <CustomTitle displayBack>{mode === 'delete' ? '退会' : 'ユーザー情報参照'}</CustomTitle>
+      <div className='flex flex-col md:flex-row gap-10'>
+        <img
+          src={formData.photo ? `${USER_IMAGE_URL}${formData.photo}` : `${NO_IMAGE_URL}`}
+          className='w-[260px] h-[260px] rounded-full object-cover self-center sm:self-start'
         />
-        {/* ユーザー種別 */}
-        <CustomTextField
-          label='ユーザー種別'
-          readonly={true}
-          value={formData.userTypeName}
-          displayHelp={false}
-        />
-        {/* ユーザー名 */}
-        <CustomTextField
-          label='ユーザー名'
-          placeHolder='山田 太郎'
-          readonly
-          displayHelp={false}
-          required={false}
-          value={formData.user_name}
-        />
-        {/* メールアドレス */}
-        <div className='flex flex-row gap-[10px] '>
-          <CustomTextField
-            label='メールアドレス'
-            displayHelp={false}
-            errorMessages={[]}
-            readonly
-            type='email'
-            value={formData.mailaddress}
-          />
-        </div>
-        <div className='flex flex-col justify-start gap-[10px]'>
-          {/* 性別 */}
-          <CustomTextField
-            label='性別'
-            value={formData.sexName}
-            placeHolder='男性'
-            displayHelp={false}
-            readonly
-          />
-        </div>
-        <div className='flex flex-col justify-start gap-[10px]'>
-          {/* 生年月日 */}
-          <InputLabel label='生年月日' displayHelp={false} />
-          <CustomDatePicker
-            readonly
-            selectedDate={formData.date_of_birth}
-            onChange={(e: string) => {
-              handleInputChange('date_of_birth', e);
-            }}
-            maxDate={new Date()}
-          />
-        </div>
-        <div className='flex flex-row justify-start gap-[16px]'>
-          <div className='flex flex-col justify-start'>
-            {/* 居住地（国） */}
-            <CustomTextField
-              label='居住地'
-              readonly
-              displayHelp={false}
-              placeHolder='日本国 （jpn）'
-              value={formData.residenceCountryName}
-            />
-          </div>
-          {formData?.residenceCountryName === '日本国 （jpn）' && (
-            <div className='flex flex-col justify-start'>
-              {/* 居住地（都道府県） */}
-              <CustomTextField
-                label='都道府県'
-                displayHelp={false}
-                readonly
-                value={formData.residencePrefectureName}
-              />
+        <div className='text-xs sm:text-sm'>
+          <span className='font-bold text-3xl text-secondaryText'>
+            {formData.user_name ? formData.user_name : '山田 太郎'}
+          </span>
+          <div className='flex flex-col gap-1 mb-7'>
+            <span className=' text-secondaryText'>
+              {formData.mailaddress ? formData.mailaddress : ''}
+            </span>
+            <div className='flex gap-3'>
+              <span>ユーザーID</span>
+              <span className=' text-secondaryText'>
+                {formData.user_id ? formData.user_id : ''}
+              </span>
             </div>
-          )}
-        </div>
-        <div className='flex flex-row justify-start gap-[16px]'>
-          {/* 身長 */}
-          <CustomTextField
-            label='身長'
-            type='number'
-            readonly
-            required={false}
-            isDecimal={true}
-            value={formData.height}
-            placeHolder='180'
-            onChange={(e) => {
-              handleInputChange('height', e.target.value);
-            }}
-            displayHelp={false}
-            inputAdorment='cm'
-          />
-          {/* 体重 */}
-          <CustomTextField
-            label='体重'
-            type='number'
-            readonly
-            isDecimal={true}
-            required={false}
-            value={formData.weight}
-            displayHelp={false}
-            inputAdorment='kg'
-          />
+            <div className='flex flex-col sm:flex-row sm:gap-3'>
+              <span className='flex-shrink-0'>ユーザー種別</span>
+              <span className=' text-secondaryText'>
+                {formData.userTypeName ? formData.userTypeName : ''}
+              </span>
+            </div>
+          </div>
+          <span className='inline-block mb-3'>プロフィール</span>
+          <div className='flex flex-col gap-1 mb-7'>
+            <div className='flex gap-9'>
+              <div className='flex gap-3'>
+                <span>性別</span>
+                <span className=' text-secondaryText w-16 '>
+                  {formData.sexName ? formData.sexName : ''}
+                </span>
+              </div>
+              <div className='flex gap-3'>
+                <span>生年月日</span>
+                <span className='text-secondaryText'>
+                  {formData.date_of_birth ? formData.date_of_birth : ''}
+                </span>
+              </div>
+            </div>
+            <div className='flex gap-9'>
+              <div className='flex gap-3'>
+                <span>身長</span>
+                <span className=' text-secondaryText inline-block w-16 whitespace-nowrap'>
+                  {formData.height ? `${formData.height} cm` : ''}
+                </span>
+              </div>
+              <div className='flex gap-3'>
+                <span>体重</span>
+                <span className=' text-secondaryText'>
+                  {formData.weight ? `${formData.weight} kg` : ''}
+                </span>
+              </div>
+            </div>
+            <div className='flex gap-3'>
+              <span>居住地</span>
+              <div>
+                <span className=' text-secondaryText'>
+                  {formData.residenceCountryName ? formData.residenceCountryName : ''}
+                </span>
+                <span className='text-secondaryText'>
+                  {formData.residencePrefectureName ? formData.residencePrefectureName : ''}
+                </span>
+              </div>
+            </div>
+          </div>
+          <span className='inline-block mb-3'>指導履歴</span>
+          <div className='overflow-auto mb-7'>
+            <CustomTable>
+              <CustomThead>
+                <CustomTr>
+                  <CustomTh align='left'>指導期間</CustomTh>
+                  <CustomTh align='left'>団体名</CustomTh>
+                  <CustomTh align='left'>スタッフ種別</CustomTh>
+                </CustomTr>
+              </CustomThead>
+              <CustomTbody>
+                <CustomTr>
+                  <CustomTd>
+                    <span>指導期間テスト</span>
+                  </CustomTd>
+                  <CustomTd>
+                    <span>団体名テスト</span>
+                  </CustomTd>
+                  <CustomTd>
+                    <span>スタッフテスト</span>
+                  </CustomTd>
+                </CustomTr>
+              </CustomTbody>
+            </CustomTable>
+          </div>
+          <span className='inline-block mb-3'>指導者資格</span>
+          <div className='flex gap-3 mb-3'>
+            <span>JSPO ID</span>
+            <span>{formData.user_id ? formData.user_id : ''}</span>
+          </div>
+          <div className='flex gap-3 mb-7'>
+            <RoundedBadge label={formData.residenceCountryName} isValid={true} />
+            <RoundedBadge label={formData.residenceCountryName} isValid={true} />
+          </div>
+          <span className='inline-block mb-3'>審判資格</span>
+          <div className='flex gap-3'>
+            <RoundedBadge label={formData.residenceCountryName} isValid={true} />
+            <RoundedBadge label={formData.residenceCountryName} isValid={true} />
+          </div>
         </div>
       </div>
       <Divider className='h-[1px] bg-border' />
-
-      <div className='flex flex-row justify-center gap-[16px]'>
+      <div className='flex flex-row justify-center gap-4'>
         {/* 戻る・キャンセルボタン */}
         <CustomButton
           buttonType='white-outlined'
-          className='w-[200px]'
           onClick={() => {
             setErrorMessage([]);
             router.back();
           }}
         >
-          {mode === 'delete' && 'キャンセル'}
-          {mode !== 'delete' && '戻る'}
+          {mode === 'delete' ? 'キャンセル' : '戻る'}
         </CustomButton>
         {/* 退会ボタン */}
         {modeCustomButtons[mode as keyof typeof modeCustomButtons]}

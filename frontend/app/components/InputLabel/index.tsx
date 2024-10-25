@@ -37,7 +37,7 @@ export default function InputLabel({
 }) {
   return (
     <div className='flex justify-start items-center gap-[10px]'>
-      <div className='text-small font-bold text-primaryText'>{label}</div>
+      <div className='text-small text-primaryText font-bold'>{label}</div>
       {required && <p className='text-caption2 text-systemErrorText'>必須</p>}
       {displayHelp && (
         <HtmlTooltip

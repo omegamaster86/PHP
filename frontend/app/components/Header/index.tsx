@@ -389,7 +389,6 @@ const Header: FC = () => {
                 title: item.title,
                 link: item.link,
                 action: toggleDrawer(false),
-                icon: item.icon,
                 active: item.active,
                 items: filteredChildren.map((x) => ({
                   title: x.title,

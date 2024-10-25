@@ -59,12 +59,27 @@ class MyPageController extends Controller
     }
 
     //選手プロフィールを取得 20241015
-    public function getMyPagePlayerProfileList(T_players $tPlayers, M_side_info $mSideInfo)
+    public function getMyPagePlayerProfileList(T_players $tPlayers, T_users $tUsers, M_side_info $mSideInfo)
     {
         Log::debug(sprintf("getMyPagePlayerProfileList start"));
-        $result = $tPlayers->getPlayerProfileInfo(Auth::user()->user_id); //ユーザIDを元に選手プロフィール情報を取得 202401015
+
+        $userId = Auth::user()->user_id;
+
+        $userType = $tUsers->getIDsAssociatedWithUser($userId);
+        $firstOfUserType = reset($userType);
+        if (!$firstOfUserType || $firstOfUserType->is_player == 0) {
+            abort(403, '閲覧権限がありません。');
+        }
+
+        $result = $tPlayers->getPlayerProfileInfo($userId); //ユーザIDを元に選手プロフィール情報を取得 202401015
+
+        if (empty($result)) {
+            abort(404, '選手情報が存在しません。');
+        }
+
         $sideInfoMasterResult = $mSideInfo->getMyPageSideInfo($result->sideInfoString); //サイド情報(8桁の数字列)を元にサイド名を取得 202401021
         $result->sideInfo = $sideInfoMasterResult; //サイド情報マスターから取得した結果をsideInfoに渡す 20241021
+        unset($result->sideInfoString);
 
         Log::debug(sprintf("getMyPagePlayerProfileList end"));
         return response()->json(['result' => $result]); //DBの結果を返す
