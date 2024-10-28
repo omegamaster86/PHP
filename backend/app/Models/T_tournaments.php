@@ -580,7 +580,7 @@ class T_tournaments extends Model
         return $tournaments;
     }
 
-        //マイページ 大会情報用 選手IDに紐づいたレース結果情報を取得 20241010
+        //マイページ 大会情報用 選手IDに紐づいたレース結果情報及び、フォロー大会情報を取得 20241028
         public function getMyPageTournamentInfo($playerId, $tournType)
         {
             $tournaments = DB::select('select 
@@ -596,13 +596,23 @@ class T_tournaments extends Model
                                             left join `t_organizations`
                                             on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
                                             where 1=1
-                                            and exists (
-                                                select 1
-                                                    FROM `t_race_result_record` 
-                                                    WHERE 1=1
-                                                    and `t_tournaments`.`tourn_id` = `t_race_result_record`.`tourn_id`
-                                                    and `t_race_result_record`.delete_flag = 0
-                                                    and `t_race_result_record`.player_id = ?
+                                            and (
+                                                exists (
+                                                    select 1
+                                                        FROM `t_followed_tournaments`
+                                                        WHERE 1=1
+                                                        and `t_tournaments`.`tourn_id` = `t_followed_tournaments`.`tourn_id`
+                                                        and `t_followed_tournaments`.delete_flag = 0
+                                                        and `t_followed_tournaments`.user_id = ?
+                                                )
+                                                or exists (
+                                                    select 1
+                                                        FROM `t_race_result_record` 
+                                                        WHERE 1=1
+                                                        and `t_tournaments`.`tourn_id` = `t_race_result_record`.`tourn_id`
+                                                        and `t_race_result_record`.delete_flag = 0
+                                                        and `t_race_result_record`.player_id = ?
+                                                )
                                             )
                                             and `t_tournaments`.`delete_flag` = 0
                                             and `m_venue`.`delete_flag` = 0
@@ -610,7 +620,7 @@ class T_tournaments extends Model
                                             and `t_tournaments`.tourn_type = ?
                                             and `t_tournaments`.event_start_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 9 MONTH) AND DATE_ADD(CURDATE(), INTERVAL 3 MONTH)
                                             ORDER BY `t_tournaments`.`event_start_date` DESC', 
-                                            [$playerId, $tournType]);
+                                            [Auth::user()->user_id, $playerId, $tournType]);
             return $tournaments;
         }
 }
