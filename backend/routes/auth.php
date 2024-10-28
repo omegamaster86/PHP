@@ -162,6 +162,8 @@ Route::middleware('auth')->group(function () {
     Route::post('checkOrgManager', [TournamentController::class, 'checkOrgManager']); //大会情報参照画面 主催団体管理者の判別 20240402
     Route::post('getEventSheetPosForEventID', [TournamentController::class, 'getEventSheetPosForEventID']); //種目IDを条件に対象の種目に対応するシート位置を取得する 20240514
 
+    Route::get('tournamentFollowed', [TournamentRaceRefeController::class, 'tournamentFollowed']); //大会フォロー (大会参照画面) 20241028
+
     //レース関連
     Route::post('getRaceData', [TournamentController::class, 'getRaceData']); //レース情報取得 20240214 大会情報に基づくレース情報
     Route::post('getRaceResultRecord', [TournamentController::class, 'getRaceResultRecord']);   //20240329 選手情報とレース結果情報

@@ -12,8 +12,8 @@ class T_followed_tournaments extends Model
 {
     use HasFactory;
 
-    //取得
-    public function getFollowedTournamentsId($tournId)
+    //フォロー情報の取得 20241028
+    public function getFollowedTournamentsData($tournId)
     {
         $result = DB::select(
             'select
@@ -36,7 +36,7 @@ class T_followed_tournaments extends Model
         return $targetTrn;
     }
 
-    //追加
+    //大会のフォロー追加 202401028
     public function insertFollowedTournaments($tournId)
     {
         DB::insert(
@@ -58,11 +58,9 @@ class T_followed_tournaments extends Model
                 Auth::user()->user_id
             ]
         );
-        $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
-        return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 
-    //更新
+    //大会のフォロー更新 202401028
     public function updateFollowedTournaments($deleteFlag,$tournId)
     {
         DB::update(
