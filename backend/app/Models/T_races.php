@@ -278,7 +278,7 @@ class T_races extends Model
                                 on race.race_id = rrr.race_id
                                 where 1=1
                                 and race.delete_flag = 0
-                                and (rrr.delete_flag = 0 or rrr.delete_flag is null)
+                                and rrr.delete_flag = 0
                                 and race.`tourn_id` = :tourn_id
                                 and race.`race_class_id` = :race_class_id
                                 group by race.`race_id`
@@ -314,7 +314,7 @@ class T_races extends Model
                             on race.`race_class_id` = mrc.`race_class_id`
                             where 1=1
                             and race.`delete_flag` = 0
-                            and (eve.`delete_flag` = 0 or eve.`delete_flag` is null) 
+                            and eve.`delete_flag` = 0
                             and race.race_id = ?"
                             ,[$race_id]);
         //Log::debug($race);
@@ -368,7 +368,7 @@ class T_races extends Model
                             on race.`race_class_id` = mrc.`race_class_id`
                             where 1=1
                             and race.`delete_flag` = 0
-                            and (eve.`delete_flag` = 0 or eve.`delete_flag` is null)');
+                            and eve.`delete_flag` = 0');
         return $races;
     }
 
@@ -398,7 +398,7 @@ class T_races extends Model
                             on race.`race_class_id` = mrc.`race_class_id`
                             where 1=1
                             and race.`delete_flag` = 0
-                            and (eve.`delete_flag` = 0 or eve.`delete_flag` is null)
+                            and eve.`delete_flag` = 0
                             and race.`race_id` NOT IN ( 
                                 SELECT
                                     `t_race_result_record`.`race_id` 

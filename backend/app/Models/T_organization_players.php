@@ -55,12 +55,12 @@ class T_organization_players extends Model
                                 on tp.residence_prefecture = res_pref.pref_id
                                 where 1=1
                                 and op.`delete_flag` = 0
-                                and  (tp.`delete_flag` = 0 or tp.`delete_flag` is null)
-                                and  (sex.`delete_flag` = 0 or sex.`delete_flag` is null)
-                                and  (bir_cont.`delete_flag` = 0 or bir_cont.`delete_flag` is null)
-                                and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
-                                and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
-                                and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
+                                and  tp.`delete_flag` = 0
+                                and  sex.`delete_flag` = 0
+                                and  bir_cont.`delete_flag` = 0
+                                and  bir_pref.`delete_flag` = 0
+                                and  res_cont.`delete_flag` = 0
+                                and  res_pref.`delete_flag` = 0
                                 and `org_id` = ?
                                 order by org_player_id'
                                 ,[$target_org_id]
@@ -313,14 +313,14 @@ class T_organization_players extends Model
                             where 1=1
                             and top.`delete_flag` = 0
                             and tp.`delete_flag` = 0
-                            and (`m_sex`.`delete_flag` = 0 or `m_sex`.`delete_flag` is null)
-                            and (bir_cont.`delete_flag` = 0 or bir_cont.`delete_flag` is null)
-                            and (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
-                            and (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
-                            and (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
+                            and `m_sex`.`delete_flag` = 0
+                            and bir_cont.`delete_flag` = 0
+                            and bir_pref.`delete_flag` = 0
+                            and res_cont.`delete_flag` = 0
+                            and res_pref.`delete_flag` = 0
                             and org.`delete_flag` = 0
-                            and (trrr.`delete_flag` = 0 or trrr.`delete_flag` is null)
-                            and (tour.`delete_flag` = 0 or tour.`delete_flag` is null)
+                            and trrr.`delete_flag` = 0
+                            and tour.`delete_flag` = 0
                             #ReplaceConditionString#
                             group by top.player_id
                         )players
@@ -452,26 +452,11 @@ class T_organization_players extends Model
                                     where
                                         1 = 1 
                                         and p.`delete_flag` = 0 
-                                        and ( 
-                                            `ms`.`delete_flag` = 0 
-                                            OR `ms`.`delete_flag` IS NULL
-                                        ) 
-                                        and ( 
-                                            bir_cont.`delete_flag` = 0 
-                                            OR bir_cont.`delete_flag` IS NULL
-                                        ) 
-                                        and ( 
-                                            bir_pref.`delete_flag` = 0 
-                                            OR bir_pref.`delete_flag` IS NULL
-                                        ) 
-                                        and ( 
-                                            res_cont.`delete_flag` = 0 
-                                            OR res_cont.`delete_flag` IS NULL
-                                        ) 
-                                        and ( 
-                                            res_pref.`delete_flag` = 0 
-                                            OR res_pref.`delete_flag` IS NULL
-                                        ) 
+                                        and `ms`.`delete_flag` = 0
+                                        and bir_cont.`delete_flag` = 0
+                                        and bir_pref.`delete_flag` = 0
+                                        and res_cont.`delete_flag` = 0
+                                        and res_pref.`delete_flag` = 0
                                         and p.user_id IS NOT NULL
                                 ) tp 
                                 LEFT JOIN ( 
@@ -558,12 +543,12 @@ class T_organization_players extends Model
                                         on tp.residence_prefecture = res_pref.pref_id
                                         where 1=1
                                         and op.`delete_flag` = 0
-                                        and  (tp.`delete_flag` = 0 or tp.`delete_flag` is null)
-                                        and  (sex.`delete_flag` = 0 or sex.`delete_flag` is null)
-                                        and  (bir_cont.`delete_flag` = 0 or bir_cont.`delete_flag` is null)
-                                        and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
-                                        and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
-                                        and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
+                                        and  tp.`delete_flag` = 0
+                                        and  sex.`delete_flag` = 0
+                                        and  bir_cont.`delete_flag` = 0
+                                        and  bir_pref.`delete_flag` = 0
+                                        and  res_cont.`delete_flag` = 0
+                                        and  res_pref.`delete_flag` = 0
                                         and op.`player_id` = ?'
                                         ,[$player_id]);
         return $org_players_info;
@@ -609,12 +594,12 @@ class T_organization_players extends Model
                                         on tp.residence_prefecture = res_pref.pref_id
                                         where 1=1
                                         and op.`delete_flag` = 0
-                                        and  (tp.`delete_flag` = 0 or tp.`delete_flag` is null)
-                                        and  (sex.`delete_flag` = 0 or sex.`delete_flag` is null)
-                                        and  (bir_cont.`delete_flag` = 0 or bir_cont.`delete_flag` is null)
-                                        and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
-                                        and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
-                                        and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
+                                        and  tp.`delete_flag` = 0
+                                        and  sex.`delete_flag` = 0
+                                        and  bir_cont.`delete_flag` = 0
+                                        and  bir_pref.`delete_flag` = 0
+                                        and  res_cont.`delete_flag` = 0
+                                        and  res_pref.`delete_flag` = 0
                                         and tp.`jara_player_id` = ?'
                                         ,[$jara_player_id]);
         return $org_players_info;
