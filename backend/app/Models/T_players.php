@@ -77,11 +77,11 @@ class T_players extends Model
                                 on `t_players`.residence_prefecture = res_pref.pref_id
                                 where 1=1
                                 and `t_players`.delete_flag = 0
-                                and  (`m_sex`.`delete_flag` = 0 or `m_sex`.`delete_flag` is null)
-                                and  (bir_cont.`delete_flag` = 0 or bir_cont.`delete_flag` is null)
-                                and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
-                                and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
-                                and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
+                                and  `m_sex`.`delete_flag` = 0
+                                and  bir_cont.`delete_flag` = 0
+                                and  bir_pref.`delete_flag` = 0
+                                and  res_cont.`delete_flag` = 0
+                                and  res_pref.`delete_flag` = 0
                                 and `t_players`.player_id = ?',
             [$player_id]
         );
@@ -138,11 +138,11 @@ class T_players extends Model
                                 on `t_players`.residence_prefecture = res_pref.pref_id
                                 where 1=1
                                 and `t_players`.delete_flag = 0
-                                and  (`m_sex`.`delete_flag` = 0 or `m_sex`.`delete_flag` is null)
-                                and  (bir_cont.`delete_flag` = 0 or bir_cont.`delete_flag` is null)
-                                and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
-                                and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
-                                and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
+                                and  `m_sex`.`delete_flag` = 0
+                                and  bir_cont.`delete_flag` = 0
+                                and  bir_pref.`delete_flag` = 0
+                                and  res_cont.`delete_flag` = 0
+                                and  res_pref.`delete_flag` = 0
                                 and `t_players`.user_id = ?',
             [$user_id]
         );
@@ -545,11 +545,11 @@ class T_players extends Model
                         on `t_players`.residence_prefecture = res_pref.pref_id
                         where 1=1
                         and `t_players`.delete_flag = 0
-                        and  (`m_sex`.`delete_flag` = 0 or `m_sex`.`delete_flag` is null)
-                        and  (bir_cont.`delete_flag` = 0 or bir_cont.`delete_flag` is null)
-                        and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
-                        and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
-                        and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
+                        and  `m_sex`.`delete_flag` = 0
+                        and  bir_cont.`delete_flag` = 0
+                        and  bir_pref.`delete_flag` = 0
+                        and  res_cont.`delete_flag` = 0
+                        and  res_pref.`delete_flag` = 0
                         and `player_id` in (#PlayerIdCondition#)';
         $sqlString = str_replace('#PlayerIdCondition#', $PlayerIdCondition, $sqlString);
         $players = DB::select($sqlString);
@@ -727,11 +727,11 @@ class T_players extends Model
                                 where 1=1
                                 and `t_players`.delete_flag = 0
                                 and `t_players`.user_id IS NOT NULL
-                                and  (`m_sex`.`delete_flag` = 0 or `m_sex`.`delete_flag` is null)
-                                and  (bir_cont.`delete_flag` = 0 or bir_cont.`delete_flag` is null)
-                                and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
-                                and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
-                                and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)');
+                                and  `m_sex`.`delete_flag` = 0
+                                and  bir_cont.`delete_flag` = 0
+                                and  bir_pref.`delete_flag` = 0
+                                and  res_cont.`delete_flag` = 0
+                                and  res_pref.`delete_flag` = 0');
         return $players;
     }
 
@@ -778,11 +778,11 @@ class T_players extends Model
                                 on `t_players`.residence_prefecture = res_pref.pref_id
                                 where 1=1
                                 and `t_players`.delete_flag = 0
-                                and  (`m_sex`.`delete_flag` = 0 or `m_sex`.`delete_flag` is null)
-                                and  (bir_cont.`delete_flag` = 0 or bir_cont.`delete_flag` is null)
-                                and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
-                                and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
-                                and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
+                                and  `m_sex`.`delete_flag` = 0
+                                and  bir_cont.`delete_flag` = 0
+                                and  bir_pref.`delete_flag` = 0
+                                and  res_cont.`delete_flag` = 0
+                                and  res_pref.`delete_flag` = 0
                                 and player_id = ?'
                                 ,[$player_id]
                             );
@@ -832,11 +832,11 @@ class T_players extends Model
                                 on `t_players`.residence_prefecture = res_pref.pref_id
                                 where 1=1
                                 and `t_players`.delete_flag = 0
-                                and  (`m_sex`.`delete_flag` = 0 or `m_sex`.`delete_flag` is null)
-                                and  (bir_cont.`delete_flag` = 0 or bir_cont.`delete_flag` is null)
-                                and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
-                                and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
-                                and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
+                                and  `m_sex`.`delete_flag` = 0
+                                and  bir_cont.`delete_flag` = 0
+                                and  bir_pref.`delete_flag` = 0
+                                and  res_cont.`delete_flag` = 0
+                                and  res_pref.`delete_flag` = 0
                                 and `jara_player_id` = ?',
             [$jara_player_id]
         );
@@ -886,11 +886,11 @@ class T_players extends Model
                                 on `t_players`.residence_prefecture = res_pref.pref_id
                                 where 1=1
                                 and `t_players`.delete_flag = 0
-                                and  (`m_sex`.`delete_flag` = 0 or `m_sex`.`delete_flag` is null)
-                                and  (bir_cont.`delete_flag` = 0 or bir_cont.`delete_flag` is null)
-                                and  (bir_pref.`delete_flag` = 0 or bir_pref.`delete_flag` is null)
-                                and  (res_cont.`delete_flag` = 0 or res_cont.`delete_flag` is null)
-                                and  (res_pref.`delete_flag` = 0 or res_pref.`delete_flag` is null)
+                                and  `m_sex`.`delete_flag` = 0
+                                and  bir_cont.`delete_flag` = 0
+                                and  bir_pref.`delete_flag` = 0
+                                and  res_cont.`delete_flag` = 0
+                                and  res_pref.`delete_flag` = 0
                                 and `user_id` = ?',
             [$user_id]
         );
@@ -916,8 +916,8 @@ class T_players extends Model
                             on tp.player_id = rrr.player_id
                             where 1=1
                             and tp.`delete_flag` = 0
-                            and (top.`delete_flag` = 0 or top.`delete_flag` is null)
-                            and (org.`delete_flag` = 0 or org.`delete_flag` is null)
+                            and top.`delete_flag` = 0
+                            and org.`delete_flag` = 0
                             #ここにエントリーシステムの団体ID、団体ID、団体名以外の条件を入力#
                             #SearchCondition#
                         )
@@ -1009,8 +1009,8 @@ class T_players extends Model
                         left join `m_sex` sex
                         on tp.`sex_id` = sex.`sex_id`
                         where 1=1
-                        and (sex.`delete_flag` = 0 or sex.`delete_flag` is null)
-                        and (tp.`delete_flag` = 0 or tp.`delete_flag` is null)
+                        and sex.`delete_flag` = 0
+                        and tp.`delete_flag` = 0
                         and orgId1 is not null';  //入力した団体IDに所属していない選手を除外する条件
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
         $players = DB::select($sqlString, $conditionValues);
@@ -1036,8 +1036,8 @@ class T_players extends Model
                             on tp.player_id = rrr.player_id
                             where 1=1
                             and tp.`delete_flag` = 0
-                            and (top.`delete_flag` = 0 or top.`delete_flag` is null)
-                            and (org.`delete_flag` = 0 or org.`delete_flag` is null)
+                            and top.`delete_flag` = 0
+                            and org.`delete_flag` = 0
                             #ここにエントリーシステムの団体ID、団体ID、団体名以外の条件を入力#
                             #SearchCondition#
                         )
@@ -1129,8 +1129,8 @@ class T_players extends Model
                         left join `m_sex` sex
                         on tp.`sex_id` = sex.`sex_id`
                         where 1=1
-                        and (sex.`delete_flag` = 0 or sex.`delete_flag` is null)
-                        and (tp.`delete_flag` = 0 or tp.`delete_flag` is null)
+                        and sex.`delete_flag` = 0
+                        and tp.`delete_flag` = 0
                         and orgId1 is not null';  //入力した団体IDに所属していない選手を除外する条件
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
         $players = DB::select($sqlString, $conditionValues);
@@ -1156,8 +1156,8 @@ class T_players extends Model
                         on tp.player_id = rrr.player_id
                         where 1=1
                         and tp.`delete_flag` = 0
-                        and (top.`delete_flag` = 0 or top.`delete_flag` is null)
-                        and (org.`delete_flag` = 0 or org.`delete_flag` is null)
+                        and top.`delete_flag` = 0
+                        and org.`delete_flag` = 0
                         #ここにエントリーシステムの団体ID、団体ID、団体名以外の条件を入力#
                         #SearchCondition#
                     )
@@ -1275,8 +1275,8 @@ class T_players extends Model
                     left join `m_sex` sex
                     on tp.`sex_id` = sex.`sex_id`
                     where 1=1
-                    and (sex.`delete_flag` = 0 or sex.`delete_flag` is null)
-                    and (tp.`delete_flag` = 0 or tp.`delete_flag` is null)';
+                    and sex.`delete_flag` = 0
+                    and tp.`delete_flag` = 0';
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
         $players = DB::select($sqlString, $conditionValues);
         return $players;
@@ -1302,8 +1302,8 @@ class T_players extends Model
                             on tp.player_id = rrr.player_id
                             where 1=1
                             and tp.`delete_flag` = 0
-                            and (top.`delete_flag` = 0 or top.`delete_flag` is null)
-                            and (org.`delete_flag` = 0 or org.`delete_flag` is null)
+                            and top.`delete_flag` = 0
+                            and org.`delete_flag` = 0
                             #ここにエントリーシステムの団体ID、団体ID、団体名以外の条件を入力#
                             #SearchCondition#
                         )
@@ -1392,8 +1392,8 @@ class T_players extends Model
                         left join `m_sex` sex
                         on tp.`sex_id` = sex.`sex_id`
                         where 1=1
-                        and (sex.`delete_flag` = 0 or sex.`delete_flag` is null)
-                        and (tp.`delete_flag` = 0 or tp.`delete_flag` is null)';
+                        and sex.`delete_flag` = 0
+                        and tp.`delete_flag` = 0';
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
         $players = DB::select($sqlString, $conditionValues);
         // Log::debug(DB::getQueryLog());
@@ -1443,9 +1443,9 @@ class T_players extends Model
                                     on rrr.seat_number = seat.seat_id
                                     where 1=1
                                     and ply.delete_flag = 0
-                                    and (rrr.delete_flag = 0 or rrr.delete_flag is null)
-                                    and (msex.delete_flag = 0 or msex.delete_flag is null)
-                                    and (seat.delete_flag = 0 or seat.delete_flag is null)
+                                    and rrr.delete_flag = 0
+                                    and msex.delete_flag = 0
+                                    and seat.delete_flag = 0
                                     and ply.player_id = :player_id
                                     and rrr.race_id = :race_id'
                                 ,["player_id" => $player_id, "race_id" => $race_id]);
@@ -1479,9 +1479,9 @@ class T_players extends Model
                                     on rrr.seat_number = seat.seat_id
                                     where 1=1
                                     and ply.delete_flag = 0
-                                    and (rrr.delete_flag = 0 or rrr.delete_flag is null)
-                                    and (msex.delete_flag = 0 or msex.delete_flag is null)
-                                    and (seat.delete_flag = 0 or seat.delete_flag is null)
+                                    and rrr.delete_flag = 0
+                                    and msex.delete_flag = 0
+                                    and seat.delete_flag = 0
                                     and race_id = :race_id
                                     order by seat_number'
                                     ,["race_id" => $race_id]);

@@ -196,13 +196,13 @@ class T_volunteers extends Model
                     on t_volunteer_histories.`tourn_id` = t_tournaments.`tourn_id`
                     where 1=1
                     and t_volunteers.delete_flag = 0
-                    and (m_countries.delete_flag = 0 or m_countries.delete_flag is null)
-                    and (m_prefectures.delete_flag = 0 or m_prefectures.delete_flag is null)
-                    and (m_sex.delete_flag = 0 or m_sex.delete_flag is null)
+                    and m_countries.delete_flag = 0
+                    and m_prefectures.delete_flag = 0
+                    and m_sex.delete_flag = 0
                     and t_users.delete_flag = 0                    
-                    and (t_volunteer_availables.delete_flag = 0 or t_volunteer_availables.delete_flag is null)
-                    and (t_volunteer_histories.delete_flag = 0 or t_volunteer_histories.delete_flag is null)
-                    and (t_tournaments.delete_flag = 0 or t_tournaments.delete_flag is null)
+                    and t_volunteer_availables.delete_flag = 0
+                    and t_volunteer_histories.delete_flag = 0
+                    and t_tournaments.delete_flag = 0
                     #Condition#
                     ';
         $sqlString = str_replace("#SupportableDisabilityCondition#",$supportableDisabilityCondition,$sqlString);
@@ -338,8 +338,8 @@ class T_volunteers extends Model
                                         on v_sup.dis_type_id = dist.dis_type_id
                                         where 1=1
                                         and vol.delete_flag = 0
-                                        and (v_sup.delete_flag = 0 or v_sup.delete_flag is null)
-                                        and (dist.delete_flag = 0 or dist.delete_flag is null)
+                                        and v_sup.delete_flag = 0
+                                        and dist.delete_flag = 0
                                     )t
                                     group by volunteer_id
                                 )v_sup
@@ -364,7 +364,7 @@ class T_volunteers extends Model
                                         on tq.qual_id = qual.qual_id
                                         where 1=1
                                         and tq.delete_flag = 0
-                                        and (qual.delete_flag = 0 or qual.delete_flag is null)
+                                        and qual.delete_flag = 0
                                     )t
                                     group by volunteer_id
                                 )qual
@@ -391,8 +391,8 @@ class T_volunteers extends Model
                                         on vlp.lang_pro = mlp.lang_pro_id
                                         where 1=1
                                         and vlp.delete_flag = 0
-                                        and (lang.delete_flag = 0 or lang.delete_flag is null)
-                                        and (mlp.delete_flag = 0 or mlp.delete_flag is null)
+                                        and lang.delete_flag = 0
+                                        and mlp.delete_flag = 0
                                     )t
                                     group by volunteer_id
                                 )lang
@@ -400,11 +400,11 @@ class T_volunteers extends Model
                                 where 1=1
                                 and vol.delete_flag = 0
                                 and users.delete_flag = 0
-                                and (sex.delete_flag = 0 or sex.delete_flag is null)
-                                and (con.delete_flag = 0 or con.delete_flag is null)
-                                and (pref.delete_flag = 0 or pref.delete_flag is null)
-                                and (clt.delete_flag = 0 or clt.delete_flag is null)
-                                and (vav.delete_flag = 0 or vav.delete_flag is null)
+                                and sex.delete_flag = 0
+                                and con.delete_flag = 0
+                                and pref.delete_flag = 0
+                                and clt.delete_flag = 0
+                                and vav.delete_flag = 0
                                 and vol.volunteer_id = :volunteer_id"
                             ,$volunteer_id);
         return $volunteer;

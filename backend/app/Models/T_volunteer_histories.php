@@ -100,7 +100,7 @@ class T_volunteer_histories extends Model
                                 on tvh.tourn_id = tourn.tourn_id
                                 where 1=1
                                 and tvh.delete_flag = 0
-                                and (tourn.delete_flag = 0 or tourn.delete_flag is null)
+                                and tourn.delete_flag = 0
                                 and `volunteer_id` = :volunteer_id"
                             ,$volunteer_id);
         return $histories;

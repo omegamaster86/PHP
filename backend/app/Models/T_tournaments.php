@@ -61,8 +61,8 @@ class T_tournaments extends Model
                                     on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
                                     where 1=1
                                     and `t_tournaments`.`delete_flag` = 0
-                                    and (`t_organizations`.`delete_flag` = 0 or `t_organizations`.`delete_flag` is null)
-                                    and (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
+                                    and `t_organizations`.`delete_flag` = 0
+                                    and `m_venue`.`delete_flag` = 0
                                     and tourn_id = ?'
                                     ,[$trnId]);
         //1つの団体IDを取得するため0番目だけを返す
@@ -236,8 +236,8 @@ class T_tournaments extends Model
                                     on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
                                     where 1=1
                                     and `t_tournaments`.`delete_flag` = 0
-                                    and (`t_organizations`.`delete_flag` = 0 or `t_organizations`.`delete_flag` is null)
-                                    and (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
+                                    and `t_organizations`.`delete_flag` = 0
+                                    and `m_venue`.`delete_flag` = 0
                                     and `sponsor_org_id` = ?
                                     order by `event_start_date`'
                                     ,[$target_org_id]);
@@ -276,8 +276,8 @@ class T_tournaments extends Model
                         on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
                         where 1=1
                         and `t_tournaments`.`delete_flag` = 0
-                        and (`t_organizations`.`delete_flag` = 0 or `t_organizations`.`delete_flag` is null)
-                        and (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
+                        and `t_organizations`.`delete_flag` = 0
+                        and `m_venue`.`delete_flag` = 0
                         and `tourn_id` in (#TournamentIdCondition#)
                         order by event_start_date';
         $sqlString = str_replace('#TournamentIdCondition#', $tournamentIdCondition, $sqlString);
@@ -317,9 +317,9 @@ class T_tournaments extends Model
                         left join `t_race_result_record`
                         on `t_tournaments`.`tourn_id` = `t_race_result_record`.`tourn_id`
                         where `t_tournaments`.`delete_flag` = 0
-                        and (`t_organizations`.`delete_flag` = 0 or `t_organizations`.`delete_flag` is null)
-                        and (`t_race_result_record`.`delete_flag` = 0 or `t_race_result_record`.`delete_flag` is null)
-                        and (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
+                        and `t_organizations`.`delete_flag` = 0
+                        and `t_race_result_record`.`delete_flag` = 0
+                        and `m_venue`.`delete_flag` = 0
                         #SearchCondition#';
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
         $tournaments = DB::select($sqlString);
@@ -365,8 +365,8 @@ class T_tournaments extends Model
                                 left join `m_venue`
                                 on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
                                 where `t_tournaments`.`delete_flag` = 0
-                                and (`t_organizations`.`delete_flag` = 0 or `t_organizations`.`delete_flag` is null)
-                                and (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
+                                and `t_organizations`.`delete_flag` = 0
+                                and `m_venue`.`delete_flag` = 0
                                 and tourn_id = :tourn_id'
                                 ,[$tourn_id]);
         return $tournament;
@@ -402,8 +402,8 @@ class T_tournaments extends Model
                                         left join `m_venue`
                                         on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
                                         where `t_tournaments`.`delete_flag` = 0
-                                        and (`t_organizations`.`delete_flag` = 0 or `t_organizations`.`delete_flag` is null)
-                                        and (`m_venue`.`delete_flag` = 0 or `m_venue`.`delete_flag` is null)
+                                        and `t_organizations`.`delete_flag` = 0
+                                        and `m_venue`.`delete_flag` = 0
                                         and `t_tournaments`.`tourn_id` = :tourn_id'
                                         ,['tourn_id' => $tourn_id]);
         return $target_tournament;
@@ -438,7 +438,7 @@ class T_tournaments extends Model
                                     on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
                                     where 1=1
                                     and `t_tournaments`.`delete_flag` = 0
-                                    and (`t_organizations`.`delete_flag` = 0 or `t_organizations`.`delete_flag` is null)
+                                    and `t_organizations`.`delete_flag` = 0
                                     ');
                                             
         return $tournaments; //大会テーブルの項目すべて渡す
