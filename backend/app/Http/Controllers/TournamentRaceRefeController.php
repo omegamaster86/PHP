@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\T_tournaments;
 use App\Models\T_races;
 use App\Models\T_raceResultRecord;
+use App\Models\T_followed_tournaments;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 // use App\Models\T_organizations;
 // use App\Models\M_venue;
 
@@ -38,4 +41,20 @@ class TournamentRaceRefeController extends Controller
         //$tRaceResultData = $tRaceresult->getRaceResultRecord_crewData(1,"www","afa"); //出漕結果記録テーブルからレース結果情報を取得 //$raceId,$crewName,$orgId
         return redirect('tournament/racereference')->with(["pagemode" => "crew", "RaceResultData" => $tRaceResultData]);
     }
+
+    //大会フォロー機能 20241028
+    public function tournamentFollowed(Request $request, T_followed_tournaments $tFollowedTournaments)
+    {
+        
+        Log::debug(sprintf("tournamentFollowed start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+        $tournId = $reqData["tournId"];
+        $followTournId = $tFollowedTournaments->getFollowedTournamentsId($tournId); //ユーザIDを元に選手IDを取得 202401008
+
+        Log::debug(sprintf("tournamentFollowed end"));
+        return response()->json(['result' => $followTournId]); //DBの結果を返す
+
+    }
+
 }
