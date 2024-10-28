@@ -9,6 +9,7 @@ use App\Models\T_raceResultRecord;
 use App\Models\T_followed_tournaments;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 // use App\Models\T_organizations;
 // use App\Models\M_venue;
 
@@ -45,16 +46,31 @@ class TournamentRaceRefeController extends Controller
     //大会フォロー機能 20241028
     public function tournamentFollowed(Request $request, T_followed_tournaments $tFollowedTournaments)
     {
-        
         Log::debug(sprintf("tournamentFollowed start"));
         $reqData = $request->all();
         Log::debug($reqData);
         $tournId = $reqData["tournId"];
-        $followTournId = $tFollowedTournaments->getFollowedTournamentsId($tournId); //ユーザIDを元に選手IDを取得 202401008
+        $followTournId = $tFollowedTournaments->getFollowedTournamentsId($tournId); // 202401008
+
+        //フォロー大会テーブルにデータが存在しない場合、新規追加する 20241028
+        DB::beginTransaction();
+        try {
+            if (empty($followTournId)) {
+                $tFollowedTournaments->insertFollowedTournaments($tournId); // 202401008
+            } else {
+                if ($followTournId->delete_flag == 0) {
+                    $tFollowedTournaments->updateFollowedTournaments(1, $tournId); // 202401008
+                } else {
+                    $tFollowedTournaments->updateFollowedTournaments(0, $tournId); // 202401008
+                }
+            }
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            abort(403, '大会フォローに失敗しました。');
+        }
 
         Log::debug(sprintf("tournamentFollowed end"));
-        return response()->json(['result' => $followTournId]); //DBの結果を返す
-
     }
 
 }

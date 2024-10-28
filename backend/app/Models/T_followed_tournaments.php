@@ -13,18 +13,19 @@ class T_followed_tournaments extends Model
     use HasFactory;
 
     //取得
-    public function getFollowedTournamentsId($tourn_id)
+    public function getFollowedTournamentsId($tournId)
     {
         $result = DB::select(
             'select
                     `followed_tourn_id`
+                    ,`delete_flag`
                     FROM `t_followed_tournaments`
                     where 1=1
                     and `user_id` = ?
                     and `tourn_id` = ?',
             [
                 Auth::user()->user_id, 
-                $tourn_id
+                $tournId
             ]
         );
 
@@ -36,55 +37,48 @@ class T_followed_tournaments extends Model
     }
 
     //追加
-    public function insertPlayerForPlayerInfoAlignment($playerInfo)
+    public function insertFollowedTournaments($tournId)
     {
-        Log::debug("insertPlayerForPlayerInfoAlignment start.");
-        $current_datetime = now()->format('Y-m-d H:i:s.u');
-        $user_id = Auth::user()->user_id;
         DB::insert(
-            'insert into t_players
-                    (
-                        `jara_player_id`,
-                        `registered_time`,
-                        `registered_user_id`,
-                        `updated_time`,
-                        `updated_user_id`,
-                        `delete_flag`
-                    )
-                    values
-                    (?,?,?,?,?,?)',
+            'insert into `t_followed_tournaments`
+                    set
+                    user_id = ?
+                    ,tourn_id = ?
+                    ,`registered_time` = ?
+                    ,`registered_user_id` = ?
+                    ,`updated_time` = ?
+                    ,`updated_user_id` = ?
+                    ,`delete_flag` = 0',
             [
-                $playerInfo["oldPlayerId"],
-                $current_datetime,
-                $user_id,
-                $current_datetime,
-                $user_id,
-                0
+                Auth::user()->user_id,
+                $tournId,
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id
             ]
         );
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
-        Log::debug("insertPlayerForPlayerInfoAlignment end.");
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 
     //更新
-    public function updateFollowedTournaments($tourn_id)
+    public function updateFollowedTournaments($deleteFlag,$tournId)
     {
         DB::update(
             'update `t_followed_tournaments`
-                    set `delete_flag` = 1
+                    set `delete_flag` = ?
                     ,updated_time = ?
                     ,updated_user_id = ?
                     where 1=1
-                    and `delete_flag` = 0
-                    and `user_id` = ?
                     and `user_id` = ?
                     and `tourn_id` = ?',
             [
+                $deleteFlag,
                 now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 Auth::user()->user_id,
-                $tourn_id
+                $tournId
             ]
         );
     }
