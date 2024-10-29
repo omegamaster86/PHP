@@ -124,6 +124,8 @@ Route::middleware('auth')->group(function () {
     Route::post('sendCsvData', [PlayerInfoAlignmentController::class, 'sendCsvData']); //読み込みボタン押下時 20240228
     Route::post('registerCsvData', [PlayerInfoAlignmentController::class, 'registerCsvData']); //連携ボタン押下時 20240228
 
+    Route::patch('playerFollowed', [PlayerController::class, 'playerFollowed']); //選手フォロー (選手情報参照画面) 20241029
+
     //団体関連
     Route::post('getOrgData', [OrganizationController::class, 'getOrgData']); //DBから団体管理画面にデータを渡す 20240201
     Route::post('storeOrgData', [OrganizationController::class, 'storeOrgData']); //団体情報をDBに送る 20240201
