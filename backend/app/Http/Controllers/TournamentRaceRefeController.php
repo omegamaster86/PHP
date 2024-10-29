@@ -47,14 +47,16 @@ class TournamentRaceRefeController extends Controller
     public function tournamentFollowed(Request $request, T_followed_tournaments $tFollowedTournaments)
     {
         Log::debug(sprintf("tournamentFollowed start"));
-        $reqData = $request->all();
-        Log::debug($reqData);
-        $tournId = $reqData["tournId"];
-        $followTourn = $tFollowedTournaments->getFollowedTournamentsData($tournId); //大会IDとユーザIDを元にフォロー情報が存在するかを確認 202401028
-
-        //フォロー大会テーブルにデータが存在しない場合、新規追加する 20241028
-        DB::beginTransaction();
+        
         try {
+            DB::beginTransaction();
+
+            $reqData = $request->all();
+            Log::debug($reqData);
+            $tournId = $reqData["tournId"];
+            $followTourn = $tFollowedTournaments->getFollowedTournamentsData($tournId); //大会IDとユーザIDを元にフォロー情報が存在するかを確認 202401028
+
+            //フォロー大会テーブルにデータが存在しない場合、新規追加する 20241028
             if (empty($followTourn)) {
                 $tFollowedTournaments->insertFollowedTournaments($tournId); //大会のフォロー追加 202401028
             } else {
@@ -67,7 +69,7 @@ class TournamentRaceRefeController extends Controller
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
-            abort(403, '大会フォローに失敗しました。');
+            abort(500, '大会フォローに失敗しました。');
         }
 
         Log::debug(sprintf("tournamentFollowed end"));
