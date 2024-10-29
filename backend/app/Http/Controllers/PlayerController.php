@@ -1085,17 +1085,17 @@ class PlayerController extends Controller
 
             $reqData = $request->all();
             Log::debug($reqData);
-            $tournId = $reqData["tournId"];
-            $followTourn = $tFollowedPlayers->getFollowedPlayersData($tournId); //大会IDとユーザIDを元にフォロー情報が存在するかを確認 202401029
+            $playerId = $reqData["playerId"];
+            $followPlayer = $tFollowedPlayers->getFollowedPlayersData($playerId); //選手IDとユーザIDを元にフォロー情報が存在するかを確認 202401029
             
             //フォロー選手テーブルにデータが存在しない場合、新規追加する 20241029
-            if (empty($followTourn)) {
-                $tFollowedPlayers->insertFollowedPlayers($tournId); //選手のフォロー追加 202401029
+            if (empty($followPlayer)) {
+                $tFollowedPlayers->insertFollowedPlayers($playerId); //選手のフォロー追加 202401029
             } else {
-                if ($followTourn->delete_flag == 0) {
-                    $tFollowedPlayers->updateFollowedPlayers(1, $tournId); //選手のフォロー解除 202401029
+                if ($followPlayer->delete_flag == 0) {
+                    $tFollowedPlayers->updateFollowedPlayers(1, $playerId); //選手のフォロー解除 202401029
                 } else {
-                    $tFollowedPlayers->updateFollowedPlayers(0, $tournId); //選手のフォロー 202401029
+                    $tFollowedPlayers->updateFollowedPlayers(0, $playerId); //選手のフォロー 202401029
                 }
             }
             DB::commit();
