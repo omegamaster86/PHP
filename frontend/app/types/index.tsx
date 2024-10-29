@@ -619,13 +619,16 @@ interface MyPageProfileInfoData {
   userId: number; //ユーザID
   userName: string; //ユーザ名
   mailaddress: string; //メールアドレス
-  userType: string; //ユーザ種別
+  userType: {
+    userTypeName: string;
+    isEnable: number;
+  }[]; //ユーザ種別
   sex: string; //性別
   dateOfBirth: string; //誕生日
   height: number; //身長
   weight: number; //体重
-  residenceCountryName: string; //居住 国
-  residencePrefectureName: string; //居住 都道府県
+  countryName: string; //居住 国
+  prefName: string; //居住 都道府県
   photo: string; //写真
 }
 

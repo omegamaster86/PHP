@@ -1,7 +1,8 @@
-import useSWR from 'swr';
 import axios from '@/app/lib/axios';
+import { UserResponse } from '@/app/types';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import useSWR from 'swr';
 
 export const useAuth = ({
   middleware,
@@ -20,7 +21,7 @@ export const useAuth = ({
     mutate,
   } = useSWR('/api/user', () =>
     axios
-      .get('/api/user')
+      .get<UserResponse>('/api/user')
       .then((res) => res.data)
       .catch((error) => {
         // if (error.response.status !== 409) {
@@ -29,6 +30,7 @@ export const useAuth = ({
         if (pathname === '/signup' || pathname === '/forgotpassword' || pathname === '/inquiry') {
         } else {
           router.push('/login');
+          return undefined;
         }
       }),
   );
