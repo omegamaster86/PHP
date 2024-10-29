@@ -1,4 +1,4 @@
-import { RoundedBadge } from '@/app/components';
+import Tag from '@/app/components/Tag';
 import { Avatar } from '@mui/material';
 import { MyPageSideBarUser } from '.';
 
@@ -15,11 +15,7 @@ const AvatarSection: React.FC<Props> = (props) => {
       <div className='flex flex-col gap-2'>
         <div className='flex flex-wrap justify-start gap-[2px]'>
           {user.tags.map((tag) => (
-            <RoundedBadge
-              key={tag}
-              label={tag}
-              className='bg-gray-50 border-none text-black text-xs'
-            />
+            <Tag key={tag} tag={tag} className='bg-gray-50' />
           ))}
         </div>
         <h2 className='text-base font-semibold'>{user.name}</h2>

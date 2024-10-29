@@ -5,8 +5,11 @@ import MyPageSideBar, {
   type MyPageSideBarListItem,
 } from '@/app/(Pages)/(App)/(MyPage)/_components/MyPageSideBar';
 import { useUserType } from '@/app/hooks/useUserType';
+import { fetcher } from '@/app/lib/swr';
+import { MyPageProfileInfoData } from '@/app/types';
 import { NextPage } from 'next';
 import { usePathname } from 'next/navigation';
+import useSWR from 'swr';
 import MyPageScrollBar from '../MyPageScrollBar';
 
 type Props = {
@@ -16,14 +19,18 @@ type Props = {
 const MyPageLayout: NextPage<Props> = (props) => {
   const { children } = props;
   const pathname = usePathname();
-
+  const { data: profile } = useSWR(
+    {
+      url: '/getMyPageProfileList',
+    },
+    fetcher<MyPageProfileInfoData>,
+  );
   const userType = useUserType();
 
-  // TODO: 後で差し替える
   const user: MyPageSideBarUser = {
-    name: '山田太郎',
-    tags: ['管理者', 'JARA', '県ボ職員', '団体管理者', '選手', 'ボランティア', '観客'],
-    avatarUrl: undefined,
+    name: profile?.result.userName ?? '',
+    tags: profile?.result.userType.filter((x) => !!x.isEnable).map((x) => x.userTypeName) ?? [],
+    avatarUrl: profile?.result.photo,
   };
 
   const routerStatuses = {
@@ -102,7 +109,7 @@ const MyPageLayout: NextPage<Props> = (props) => {
       </div>
 
       {/* メインコンテンツ */}
-      <div className='flex-1 bg-white p-6'>{children}</div>
+      <div className='flex-1 bg-white p-4 sm:p-6'>{children}</div>
     </div>
   );
 };

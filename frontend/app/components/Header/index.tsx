@@ -53,8 +53,7 @@ const Header: FC = () => {
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
   const { user, logout } = useAuth({ middleware: 'auth' });
 
-  // FIXME 仮のユーザ名
-  const username = '山田太郎';
+  const username = user?.user_name;
 
   // メニューを開く
   const handleClick = (event: MouseEvent<HTMLButtonElement>, clickIndex: number) => {
