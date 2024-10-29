@@ -19,6 +19,7 @@ use Illuminate\View\View;
 // use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\T_followed_players;
 use App\Models\T_players;
 use App\Models\T_raceResultRecord;
 use App\Models\T_users;
@@ -1073,4 +1074,37 @@ class PlayerController extends Controller
             }
         }
     }
+
+    //選手フォロー機能 20241029
+    public function playerFollowed(Request $request, T_followed_players $tFollowedPlayers)
+    {
+        Log::debug(sprintf("playerFollowed start"));
+
+        try {
+            DB::beginTransaction();
+
+            $reqData = $request->all();
+            Log::debug($reqData);
+            $playerId = $reqData["playerId"];
+            $followPlayer = $tFollowedPlayers->getFollowedPlayersData($playerId); //選手IDとユーザIDを元にフォロー情報が存在するかを確認 202401029
+            
+            //フォロー選手テーブルにデータが存在しない場合、新規追加する 20241029
+            if (empty($followPlayer)) {
+                $tFollowedPlayers->insertFollowedPlayers($playerId); //選手のフォロー追加 202401029
+            } else {
+                if ($followPlayer->delete_flag == 0) {
+                    $tFollowedPlayers->updateFollowedPlayers(1, $playerId); //選手のフォロー解除 202401029
+                } else {
+                    $tFollowedPlayers->updateFollowedPlayers(0, $playerId); //選手のフォロー 202401029
+                }
+            }
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            abort(500, '選手フォローに失敗しました。');
+        }
+
+        Log::debug(sprintf("playerFollowed end"));
+    }
+
 }
