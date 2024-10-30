@@ -560,11 +560,12 @@ interface MyPageRaceResultParams {
   official: OfficialType; // 公式／非公式
 }
 
-//マイページの選手プロフィール表示用インターフェース 20241016
+//マイページの選手プロフィール表示用インターフェース 20241029
 interface MyPagePlayerProfileInfoData {
   playerName: string; //選手名
   playerId: number; //選手ID
   jaraPlayerId: number | null; //既存選手ID
+  follower: number; //フォロワー数
   sex: string; //性別
   dateOfBirth: string; //誕生日
   height: number; //身長

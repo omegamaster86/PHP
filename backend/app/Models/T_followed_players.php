@@ -79,4 +79,26 @@ class T_followed_players extends Model
             ]
         );
     }
+
+    //フォロー情報の取得 20241029
+    public function getFollowerCount($playerId)
+    {
+        $result = DB::select(
+            'select
+                    COUNT(`followed_player_id`) as follower
+                    FROM `t_followed_players`
+                    where 1=1
+                    and `delete_flag` = 0
+                    and `player_id` = ?',
+            [
+                $playerId
+            ]
+        );
+
+        $targetTrn = null;
+        if (!empty($result)) {
+            $targetTrn = $result[0];
+        }
+        return $targetTrn;
+    }
 }
