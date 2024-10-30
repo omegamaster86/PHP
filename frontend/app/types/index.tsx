@@ -258,6 +258,11 @@ interface UserResponse {
   uploadedPhotoName?: string; // アップロードされて写真の名前を保存する
 }
 
+interface CoachRefereeResponse {
+  user_id: string; // ユーザーID
+  user_name: string; // ユーザー名
+}
+
 // ボランティア情報
 interface VolunteerResponse {
   volunteer_id: string; // ボランティアID
@@ -673,6 +678,7 @@ export type {
   TourTypeResponse,
   UserIdType,
   UserResponse,
+  CoachRefereeResponse,
   VenueResponse,
   VolunteerHistoriesResponse,
   VolunteerResponse,

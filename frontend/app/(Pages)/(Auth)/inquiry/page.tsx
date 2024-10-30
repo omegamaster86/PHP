@@ -151,18 +151,18 @@ export default function Inquiry() {
         <ErrorBox errorText={errorMessage.length > 0 ? errorMessage : []} />
         <div className='flex flex-col gap-[8px]'>
           {/* 氏名 */}
-            <CustomTextField
-              label='お名前'
-              // エラー表示2
-              isError={userNameErrorMessages.length > 0}
-              errorMessages={userNameErrorMessages}
-              required={!isConfirm}
-              displayHelp={false}
-              value={user.user_name}
-              placeHolder='山田 太郎'
-              onChange={(e) => setUser({ ...user, user_name: e.target.value })}
-              readonly={isConfirm}
-            />          
+          <CustomTextField
+            label='お名前'
+            // エラー表示2
+            isError={userNameErrorMessages.length > 0}
+            errorMessages={userNameErrorMessages}
+            required={!isConfirm}
+            displayHelp={false}
+            value={user.user_name}
+            placeHolder='山田 太郎'
+            onChange={(e) => setUser({ ...user, user_name: e.target.value })}
+            readonly={isConfirm}
+          />
         </div>
         {/* メールアドレス */}
         <div className='flex flex-col gap-[10px]'>

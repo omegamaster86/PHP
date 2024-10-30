@@ -1,6 +1,6 @@
 'use client';
 import { useIdleTimer } from 'react-idle-timer'; // For logout a user after one hour of inactivity
-import { Header, Footer, Loading } from '@/app/components';
+import { Header } from '@/app/components';
 import { type ReactNode, useState } from 'react';
 import { useAuth } from '@/app/hooks/auth';
 import { usePathname, useRouter } from 'next/navigation';
