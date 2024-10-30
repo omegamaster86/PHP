@@ -565,7 +565,7 @@ interface MyPagePlayerProfileInfoData {
   playerName: string; //選手名
   playerId: number; //選手ID
   jaraPlayerId: number | null; //既存選手ID
-  follower: number; //フォロワー数
+  followerCount: number; //フォロワー数
   sex: string; //性別
   dateOfBirth: string; //誕生日
   height: number; //身長

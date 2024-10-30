@@ -83,7 +83,7 @@ class MyPageController extends Controller
         unset($result->sideInfoString);
 
         $followerCount = $tFollowedPlayers->getFollowerCount($result->playerId); //選手IDに紐づいたフォロワー数を取得 202401029
-        $result->follower = $followerCount; //フォロワー数を代入 20241029
+        $result->followerCount = $followerCount; //フォロワー数を代入 20241029
 
         Log::debug(sprintf("getMyPagePlayerProfileList end"));
         return response()->json(['result' => $result]); //DBの結果を返す
