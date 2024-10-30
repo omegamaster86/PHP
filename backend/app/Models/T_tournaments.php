@@ -613,6 +613,22 @@ class T_tournaments extends Model
                                                         and `t_race_result_record`.delete_flag = 0
                                                         and `t_race_result_record`.player_id = ?
                                                 )
+                                                or exists (
+                                                    select 1
+                                                        FROM `t_race_result_record` 
+                                                        WHERE 1=1
+                                                        and `t_tournaments`.`tourn_id` = `t_race_result_record`.`tourn_id`
+                                                        and `t_race_result_record`.delete_flag = 0
+                                                        and exists (
+															select 1
+																FROM `t_followed_players` 
+                                                                left join `t_race_result_record`
+																on `t_followed_players`.`player_id` = `t_race_result_record`.`player_id`
+																WHERE 1=1
+																and `t_followed_players`.delete_flag = 0
+																and `t_followed_players`.user_id = 2
+														)
+                                                )
                                             )
                                             and `t_tournaments`.`delete_flag` = 0
                                             and `m_venue`.`delete_flag` = 0
