@@ -1,4 +1,4 @@
-import { RoundedBadge } from '@/app/components';
+import Tag from '@/app/components/Tag';
 import { getOfficialTypeLabel } from '@/app/constants/official';
 import { MyPageRaceResultRecordInfoData } from '@/app/types';
 import { formatDate } from '@/app/utils/dateUtil';
@@ -12,7 +12,11 @@ const RaceResultCardContent: React.FC<Props> = (props) => {
   const { cardItem } = props;
 
   const tagEls = [
-    <RoundedBadge key='official' label={getOfficialTypeLabel(cardItem.official)} isValid />,
+    <Tag
+      key='official'
+      tag={getOfficialTypeLabel(cardItem.official)}
+      className='text-secondary-500 bg-secondary-100'
+    />,
   ];
 
   return (
