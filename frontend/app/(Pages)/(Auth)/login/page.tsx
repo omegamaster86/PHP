@@ -9,7 +9,6 @@ import {
   CustomPasswordField,
   ErrorBox,
   CustomTitle,
-  Loading,
 } from '@/app/components';
 import { useAuth } from '@/app/hooks/auth';
 import Validator from '@/app/utils/validator';
@@ -32,14 +31,10 @@ export default function Login() {
 
   const router = useRouter();
 
-  const { login, isLoading } = useAuth({
+  const { login } = useAuth({
     middleware: 'guest',
     redirectIfAuthenticated: '/tournamentSearch',
   });
-
-  if (isLoading) {
-    <Loading />;
-  }
 
   const submitForm = async (values: Values): Promise<any> => {
     try {

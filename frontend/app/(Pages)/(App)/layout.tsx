@@ -6,11 +6,10 @@ import { useAuth } from '@/app/hooks/auth';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useIdleTimer } from 'react-idle-timer'; // For logout a user after one hour of inactivity
-import Loading from './loading';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [loggedIn, setLoggedIn] = useState(false);
-  const { user, logout, isLoading } = useAuth({ middleware: 'auth' });
+  const { user, logout } = useAuth({ middleware: 'auth' });
   const pathname = usePathname();
   const router = useRouter();
 
@@ -41,10 +40,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     syncTimers: 1000 * 60 * 60,
   }); //Set 1 hour inactivity time for logout .
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
   function authCheck() {
     if (user) {
       setLoggedIn(true);
@@ -61,12 +56,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <>
       {loggedIn && (
         <div className='flex h-screen flex-col justify-between'>
-          <div className='flex flex-col justify-start'>
+          <div className='flex flex-col flex-grow justify-start'>
             <Header />
             {isMyPageRoute ? (
               <MyPageLayout>{children}</MyPageLayout>
             ) : (
-              <main className='flex-grow flex flex-col gap-7 md:overflow-y-auto px-3 py-4 md:py-12 w-full max-w-5xl m-auto'>
+              <main className='flex flex-col gap-7 md:overflow-y-auto px-3 py-4 md:py-12 w-full max-w-5xl m-auto'>
                 {children}
               </main>
             )}
