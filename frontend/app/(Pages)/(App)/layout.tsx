@@ -1,11 +1,12 @@
 'use client';
 
 import MyPageLayout from '@/app/(Pages)/(App)/(MyPage)/_components/MyPageLayout';
-import { Footer, Header, Loading } from '@/app/components';
+import { Footer, Header } from '@/app/components';
 import { useAuth } from '@/app/hooks/auth';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useIdleTimer } from 'react-idle-timer'; // For logout a user after one hour of inactivity
+import Loading from './loading';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -62,7 +63,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className='flex h-screen flex-col justify-between'>
           <div className='flex flex-col justify-start'>
             <Header />
-            {/* TODO: layoutファイルを分けるようにする */}
             {isMyPageRoute ? (
               <MyPageLayout>{children}</MyPageLayout>
             ) : (
