@@ -14,7 +14,6 @@ export const useAuth = ({
   const router = useRouter();
   const pathname = usePathname();
 
-  const [isLoading, setIsLoading] = useState(true);
   const {
     data: user,
     error,
@@ -69,10 +68,6 @@ export const useAuth = ({
   };
 
   useEffect(() => {
-    if (user || error) {
-      setIsLoading(false);
-    }
-
     if (user?.temp_password_flag) {
       router.push('/passwordchange');
     }
@@ -97,6 +92,5 @@ export const useAuth = ({
     user,
     login,
     logout,
-    isLoading,
   };
 };

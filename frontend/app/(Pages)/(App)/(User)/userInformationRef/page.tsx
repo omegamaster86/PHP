@@ -93,7 +93,7 @@ export default function UserInformationReference() {
             sex: response.data.result.sex,
             height: response.data.result.height,
             weight: response.data.result.weight,
-            residenceCountryName: response.data.result.residenceCountryName,    
+            residenceCountryName: response.data.result.residenceCountryName,
             residence_prefecture: response.data.result.residence_prefecture,
             residencePrefectureName: response.data.result.residencePrefectureName,
             mailaddress: response.data.result.mailaddress,
