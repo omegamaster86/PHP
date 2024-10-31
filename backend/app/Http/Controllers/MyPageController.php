@@ -29,13 +29,8 @@ class MyPageController extends Controller
         $tournType = $reqData["tournType"];
         $playerData = $tPlayers->getPlayerDataFromUserId(Auth::user()->user_id); //ユーザIDを元に選手IDを取得 202401008
 
-        // FIXME: 大会フォロー機能実装時に不要になる予定
-        if (empty($playerData)) {
-            return response()->json(['result' => []]);
-        }
-
-        $result = $tTournaments->getMyPageTournamentInfo($playerData->player_id, $tournType); //選手IDを元に大会情報を取得 20241008
-
+        $playerId = $playerData->player_id ?? null;
+        $result = $tTournaments->getMyPageTournamentInfo($playerId, $tournType); //選手IDを元に大会情報を取得 20241008
         Log::debug(sprintf("getMyPageTournamentInfoList end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
