@@ -101,14 +101,15 @@ const Header: FC = () => {
       case '/userInformationRef':
         setCurrentIndex(4);
         break;
-      case '/notification':
-        setCurrentIndex(5);
-        break;
       default:
         setCurrentIndex(999);
         break;
     }
 
+    if (page.startsWith('/notifications')) {
+      setCurrentIndex(5);
+      return;
+    }
     if (page.startsWith('/mypage')) {
       setCurrentIndex(6);
       return;
@@ -341,8 +342,7 @@ const Header: FC = () => {
     {
       title: 'お知らせ',
       index: 5,
-      // FIXME 仮のリンク
-      link: '/notification',
+      link: '/notifications',
       show: true,
       active: currentIndex === 5,
     },
@@ -506,8 +506,7 @@ const Header: FC = () => {
                   active={currentIndex === 5}
                   onClick={(e) => {
                     handleClick(e, 5);
-                    // FIXME 仮のリンク
-                    router.push('/notification');
+                    router.push('/notifications');
                   }}
                 >
                   <MarkEmailUnreadOutlined
