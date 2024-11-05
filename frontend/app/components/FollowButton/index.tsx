@@ -1,21 +1,15 @@
-import React from 'react';
-import { useState } from 'react';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import StarIcon from '@mui/icons-material/Star';
 
-const FollowButton = () => {
-  const [isFollowed, setIsFollowed] = useState(false);
-
-  const handleFollowToggle = () => {
-    if (isFollowed) {
-      // FIXME deleted_flagを1にする機能を追加
-      console.log('フォローを解除しました');
-    } else {
-      // FIXME
-      console.log('フォローしました');
-    }
-    setIsFollowed((prevState) => !prevState);
-  };
+const FollowButton = ({
+  isFollowed,
+  handleFollowToggle,
+  followedCount,
+}: {
+  isFollowed: boolean;
+  handleFollowToggle: () => void;
+  followedCount: string;
+}) => {
 
   return (
     <div className='flex items-center gap-2'>
@@ -30,7 +24,7 @@ const FollowButton = () => {
           <StarBorderIcon className='text-black' />
         )}
       </button>
-      <p className='text-white text-xs font-bold'>フォロー数</p>
+      <p className='text-white text-xs font-bold'>{followedCount}</p>
     </div>
   );
 };
