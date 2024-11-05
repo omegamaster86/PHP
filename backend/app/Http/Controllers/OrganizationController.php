@@ -1072,6 +1072,9 @@ class OrganizationController extends Controller
                 $tOrg[$i]->delete_flag = true;
                 $is_error = true;
             }
+            $tOrg[$i]->coachQualificationNames = explode(",", $tOrg[$i]->coachQualificationNames);
+            $tOrg[$i]->refereeQualificationNames = explode(",", $tOrg[$i]->refereeQualificationNames);
+
         }
         Log::debug(sprintf("getOrgStaffData end"));
         //Log::debug($tOrg);

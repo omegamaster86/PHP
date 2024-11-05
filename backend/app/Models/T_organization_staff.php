@@ -22,6 +22,9 @@ class T_organization_staff extends Model
                                 `org_id`
                                 ,`user_id`
                                 ,`user_name`
+                                ,`jspo_id`
+                                ,`coach_qual_name` as `coachQualificationNames`
+                                ,`referee_qual_name` as `refereeQualificationNames`
                                 ,case
                                     when instr(`staff_type_array`,"1") > 0 then 1
                                     else 0
@@ -48,10 +51,13 @@ class T_organization_staff extends Model
                                     SELECT 
                                     `staff`.`org_id`
                                     ,`user`.`user_id`
+                                    ,`user`.`jspo_id`
                                     ,case
                                         when `user`.`user_name` is null then "該当ユーザー無し"
                                         else `user`.`user_name`
                                         end as `user_name`
+									,GROUP_CONCAT(distinct(`coach_qual`.`qual_name`) order by `coach_qual`.`display_order`) AS "coach_qual_name"
+                                    ,GROUP_CONCAT(distinct(`referee_qual`.`qual_name`) order by `referee_qual`.`display_order`) AS "referee_qual_name"
                                     ,GROUP_CONCAT(`staff_type_id` order by `staff_type_id`)	AS "staff_type_array"
                                     ,case
                                         when `user`.`user_id` is null then false
@@ -62,10 +68,18 @@ class T_organization_staff extends Model
                                     from `t_organization_staff` `staff`
                                     left join `t_users` `user`
                                     on `staff`.`user_id` = `user`.`user_id`
+									left join `t_held_coach_qualifications` `held_coach_qual`
+									on `user`.`user_id` = `held_coach_qual`.`user_id` and `held_coach_qual`.`delete_flag` = 0
+                                    left join `m_coach_qualifications` `coach_qual`
+									on `held_coach_qual`.`coach_qualification_id` = `coach_qual`.`coach_qualification_id` and `coach_qual`.`delete_flag` = 0
+                                    left join `t_held_referee_qualifications` `held_referee_qual`
+									on `user`.`user_id` = `held_referee_qual`.`user_id` and `held_referee_qual`.`delete_flag` = 0
+                                    left join `m_referee_qualifications` `referee_qual`
+									on `held_referee_qual`.`referee_qualification_id` = `referee_qual`.`referee_qualification_id` and `referee_qual`.`delete_flag` = 0
                                     where `staff`.`delete_flag` = 0
                                     and `user`.`delete_flag` = 0
                                     and `staff`.`org_id` = ?
-                                    group by `staff`.`org_id`, `staff`.`user_id`,`user`.`user_name`
+                                    group by `staff`.`org_id`, `staff`.`user_id`,`user`.`user_name`,`user`.`jspo_id`
                                 ) as `staff`'
                                 ,[$orgId]);
         return $orgStaffs;
