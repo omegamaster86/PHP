@@ -77,9 +77,6 @@ export default function TournamentRef() {
     default:
       break;
   }
-  const [tourn_id, setTournId] = useState<any>({
-    tourn_id: tournId,
-  });
 
   // フォームデータを管理する状態
   const [tableData, setTableData] = useState<Race[]>([]);
@@ -100,6 +97,8 @@ export default function TournamentRef() {
     tourn_url: '',
     tourn_info_faile_path: '',
   });
+
+  const [isFollowed, setIsFollowed] = useState(false);
 
   // レース結果情報のデータステート
   //種目
@@ -313,13 +312,24 @@ export default function TournamentRef() {
         setUserType(userResponse.data.result.user_type);
         // TODO: tournIdを元に大会情報を取得する処理の置き換え
         // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
-        const tournamentResponse = await axios.post('/getTournamentInfoData', tourn_id); //大会IDを元に大会情報を取得する
-        //console.log(tournamentResponse);
+        const tournamentResponse = await axios.post('/getTournamentInfoData', {
+          tourn_id: tournId,
+        }); //大会IDを元に大会情報を取得する
+        // console.log(tournamentResponse);
         tournamentResponse.data.result.tourn_url = tournamentResponse.data.result.tourn_url ?? ''; //nullのパラメータを空のパラメータに置き換える
         setTournamentFormData(tournamentResponse.data.result);
+        const getTournamentIsFollowed = await axios.get('/getTournamentIsFollowed', {
+          params: {
+            tourn_id: tournId,
+          },
+        });
+        setIsFollowed(getTournamentIsFollowed.data.result);
+
         // TODO: tournIdを元にレース情報を取得する処理の置き換え
         // const raceResponse = await axios.get<Race[]>('http://localhost:3100/race');
-        const raceResponse = await axios.post('/getRaceData', tourn_id);
+        const raceResponse = await axios.post('/getRaceData', {
+          tourn_id: tournId,
+        });
         //console.log(raceResponse.data.result);
         raceResponse.data.result.map((data: any) => {
           setTableData((prevData) => [...prevData, { ...data }]);
@@ -408,6 +418,19 @@ export default function TournamentRef() {
     }
   }, [showEventNameAutocomplete, showByGroupAutocomplete, showRangeAutocomplete]);
 
+  const handleFollowToggle = () => {
+    axios
+      .patch('/tournamentFollowed', { tournId })
+      .then(() => {
+        setIsFollowed((prevState) => !prevState);
+      })
+      .catch(() => {
+        window.alert('フォロー状態の更新に失敗しました:');
+      });
+  };
+  // FIXME: バックエンドとの結合
+  const followedCount = '1,234';
+
   // エラーがある場合はエラーメッセージを表示
   if (isError) {
     return <div>404エラー</div>;
@@ -460,7 +483,11 @@ export default function TournamentRef() {
                   </Link>
                 )}
                 {/* ダウンロードコード追加 終了*/}
-                <FollowButton />
+                <FollowButton
+                  isFollowed={isFollowed}
+                  handleFollowToggle={handleFollowToggle}
+                  followedCount={followedCount}
+                />
               </div>
             </div>
             <div className='flex flex-col sm:flex-row'>
