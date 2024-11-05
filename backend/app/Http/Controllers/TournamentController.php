@@ -209,7 +209,7 @@ class TournamentController extends Controller
     //======================================================================================================
     //======================================================================================================
 
-    //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
+    //react 大会情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
     public function getTournamentInfoData(Request $request, T_tournaments $tourn)
     {
         Log::debug(sprintf("getTournamentInfoData start"));
