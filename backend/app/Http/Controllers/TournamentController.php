@@ -22,6 +22,7 @@ use Illuminate\Support\Str;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
+use App\Models\T_followed_tournaments;
 use App\Models\T_tournaments;
 use App\Models\T_races;
 use App\Models\T_raceResultRecord;
@@ -219,6 +220,20 @@ class TournamentController extends Controller
         // Log::debug($result);
         Log::debug(sprintf("getTournamentInfoData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
+    }
+
+    // ログインユーザーが当該大会をフォローしているかどうかを取得する。
+    public function getIsFollowed(Request $request, T_followed_tournaments $tFollowedTournaments)
+    {
+        Log::debug(sprintf("getIsFollowed start"));
+        $reqData = $request->all();
+        $followTourn = $tFollowedTournaments->getFollowedTournamentsData($reqData['tourn_id']);
+        $isFollowed = false;
+        if (isset($followTourn) && $followTourn->delete_flag == 0) {
+            $isFollowed = true;
+        }
+        Log::debug(sprintf("getIsFollowed end"));
+        return response()->json(['result' => $isFollowed]);
     }
 
     //主催大会

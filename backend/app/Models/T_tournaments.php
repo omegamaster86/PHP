@@ -32,10 +32,6 @@ class T_tournaments extends Model
         $tournaments = DB::select('select
                                     `t_tournaments`.`tourn_id`,
                                     `tourn_name`,
-                                    CASE
-                                    WHEN `t_followed_tournaments`.`followed_tourn_id` IS NOT NULL THEN 1
-                                    ELSE 0
-                                    END AS `is_followed`,
                                     `sponsor_org_id`,
                                     `t_organizations`.`org_name` as `sponsorOrgName`,
                                     `event_start_date`,
@@ -63,16 +59,12 @@ class T_tournaments extends Model
                                     on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
                                     left join `m_venue`
                                     on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
-                                    left join `t_followed_tournaments`
-                                    on `t_followed_tournaments`.`tourn_id` = `t_tournaments`.`tourn_id`
-                                    and `t_followed_tournaments`.`user_id` = ?
-                                    and `t_followed_tournaments`.`delete_flag` = 0
                                     where 1=1
                                     and `t_tournaments`.`delete_flag` = 0
                                     and `t_organizations`.`delete_flag` = 0
                                     and `m_venue`.`delete_flag` = 0
-                                    and `t_tournaments`.`tourn_id` = ?'
-                                    ,[Auth::user()->user_id, $trnId]);
+                                    and tourn_id = ?'
+                                    ,[$trnId]);
         //1つの団体IDを取得するため0番目だけを返す
         $targetTrn = null;
         if (!empty($tournaments)) {

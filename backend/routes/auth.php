@@ -148,6 +148,7 @@ Route::middleware('auth')->group(function () {
 
     //大会関連
     Route::post('getTournamentInfoData', [TournamentController::class, 'getTournamentInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
+    Route::get('getTournamentIsFollowed', [TournamentController::class, 'getIsFollowed']); // ログインユーザーが当該大会をフォローしているか
     Route::post('getTournamentInfoData_org', [TournamentController::class, 'getTournamentInfoData_org']); //主催大会 20240215
     Route::post('tournamentRegistOrUpdateValidationCheck', [TournamentController::class, 'tournamentRegistOrUpdateValidationCheck']);
     Route::post('storeTournamentInfoData', [TournamentController::class, 'storeTournamentInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
