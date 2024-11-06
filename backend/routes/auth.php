@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\NewAuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\CoachRefereeControlloer;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PlayerController;
@@ -198,6 +199,9 @@ Route::middleware('auth')->group(function () {
     Route::get('getMyPagePlayerProfileList', [MyPageController::class, 'getMyPagePlayerProfileList']); // 選手プロフィールを取得する 20241016
     Route::get('getMyPageVolunteerInfoList', [MyPageController::class, 'getMyPageVolunteerInfoList']); // ボランティア情報を取得する 20241017
     Route::get('getMyPageProfileList', [MyPageController::class, 'getMyPageProfileList']); // プロフィールを取得する 20241023
+
+    //指導者・審判情報関連　
+    Route::get('getCoachRefereeInfoList', [CoachRefereeControlloer::class, 'getCoachRefereeInfoList']); // 指導者・審判情報を取得する 20241105
 
     //React連携後APIここまで===========================================================
     //================================================================================
