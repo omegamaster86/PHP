@@ -885,6 +885,20 @@ class PlayerController extends Controller
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 
+    // ログインユーザーが当該選手をフォローしているかどうかを取得する。
+    public function getIsFollowed(Request $request, T_followed_players $tFollowedPlayers)
+    {
+        Log::debug(sprintf("getIsFollowed start"));
+        $reqData = $request->all();
+        $followedPlayer = $tFollowedPlayers->getFollowedPlayersData($reqData['player_id']);
+        $isFollowed = false;
+        if (isset($followedPlayer) && $followedPlayer->delete_flag == 0) {
+            $isFollowed = true;
+        }
+        Log::debug(sprintf("getIsFollowed end"));
+        return response()->json(['result' => $isFollowed]);
+    }
+
     //浮動小数点型を時間フォーマット文字列に変換する 20240423
     //example.)70.34 → 01:10.34
     private function convertToTimeFormat($floatNumber) {
