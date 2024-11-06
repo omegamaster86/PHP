@@ -118,6 +118,7 @@ Route::middleware('auth')->group(function () {
     Route::post('checkJARAPlayerId', [PlayerController::class, 'checkJARAPlayerId']); //選手登録画面から登録 20240220
 
     Route::post('getPlayerInfoData', [PlayerController::class, 'getPlayerInfoData']); //DBから選手情報更新画面にデータを渡す 20240131
+    Route::get('getPlayerIsFollowed', [PlayerController::class, 'getIsFollowed']); // ログインユーザーが当該選手をフォローしているか
     Route::post('getRaceResultRecordsData', [PlayerController::class, 'getRaceResultRecordsData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('deletePlayerData', [PlayerController::class, 'deletePlayerData']); //該当データをDBから削除する 20240201
     Route::post('playerSearch', [PlayerController::class, 'playerSearch']); //選手検索 20240309
