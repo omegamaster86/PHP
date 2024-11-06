@@ -597,4 +597,36 @@ class T_users extends Authenticatable
         }
         return $targetTrn;
     }
+
+    //指導者・審判情報の取得 20241106
+    public function getCoachRefereeInfoData()
+    {
+        $users = DB::select(
+            'SELECT 
+                `t_users`.user_id as `userId`,
+                `t_users`.user_name as `userName`,
+                `t_users`.jspo_id as `jspoId`,
+                GROUP_CONCAT(distinct(`coach_qual`.`qual_name`) order by `coach_qual`.`display_order`) AS "coachQualificationNames",
+                GROUP_CONCAT(distinct(`referee_qual`.`qual_name`) order by `referee_qual`.`display_order`) AS "refereeQualificationNames"
+                FROM `t_users`
+                left join `t_held_coach_qualifications` `held_coach_qual`
+                on `t_users`.`user_id` = `held_coach_qual`.`user_id` and `held_coach_qual`.delete_flag = 0
+                left join `m_coach_qualifications` `coach_qual`
+                on `held_coach_qual`.`coach_qualification_id` = `coach_qual`.`coach_qualification_id` and `coach_qual`.delete_flag = 0
+                left join `t_held_referee_qualifications` `held_referee_qual`
+                on `t_users`.`user_id` = `held_referee_qual`.`user_id` and `held_referee_qual`.delete_flag = 0
+                left join `m_referee_qualifications` `referee_qual`
+                on `held_referee_qual`.`referee_qualification_id` = `referee_qual`.`referee_qualification_id` and `referee_qual`.delete_flag = 0
+                where 1=1
+                and `t_users`.delete_flag = 0
+                and `t_users`.user_id = ?',
+            [
+                Auth::user()->user_id
+            ]);
+        $targetTrn = null;
+        if (!empty($users)) {
+            $targetTrn = $users[0];
+        }
+        return $targetTrn;
+    }
 }
