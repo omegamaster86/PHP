@@ -70,7 +70,7 @@ export default function UserInformationReference() {
         </div>
       </div>
       <div className='flex flex-col text-xs sm:text-sm'>
-        <h2 className='font-bold text-3xl text-secondaryText'>{user_name}</h2>
+        <h2 className='font-bold text-3xl text-primaryText'>{user_name}</h2>
         <div className='flex gap-3 mb-7'>
           <span>ユーザーID</span>
           <span>{userId}</span>

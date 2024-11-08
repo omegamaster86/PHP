@@ -23,6 +23,7 @@ import CustomTd from './CustomTable/Td';
 import CustomYearPicker from './CustomYearPicker';
 import CustomAutocomplete from './CustomAutocomplete';
 import { RoundedBadge } from './RoundedBadge';
+import ToolTip from './ToolTip';
 
 export { CustomTitle };
 export { CustomButton };
@@ -49,3 +50,4 @@ export { Label };
 export { Footer };
 export { CustomAutocomplete };
 export { RoundedBadge };
+export { ToolTip };
