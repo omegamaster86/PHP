@@ -41,6 +41,7 @@ const MyPageLayout: NextPage<Props> = (props) => {
     playerProfile: pathname === '/mypage/playerProfile',
     volunteer: pathname === '/mypage/volunteer',
     profile: pathname === '/mypage/profile',
+    coachRefereeProfile: pathname === '/mypage/coachRefereeProfile',
   };
 
   const listItems: MyPageSideBarListItem[] = [
@@ -92,6 +93,11 @@ const MyPageLayout: NextPage<Props> = (props) => {
       title: 'プロフィール',
       link: '/mypage/profile',
       active: routerStatuses.profile,
+    },
+    {
+      title: '指導者・審判',
+      link: '/mypage/coachRefereeProfile',
+      active: routerStatuses.coachRefereeProfile,
     },
   ].filter((x) => x.show !== false);
 
