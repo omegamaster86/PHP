@@ -98,10 +98,6 @@ class T_followed_players extends Model
             ]
         );
 
-        $targetTrn = null;
-        if (!empty($result)) {
-            $targetTrn = $result[0];
-        }
-        return $targetTrn;
+        return !empty($result) ? $result[0]->follower : 0;
     }
 }

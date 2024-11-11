@@ -50,18 +50,6 @@ export default function PlayerProfile() {
       label: '身長',
       value: `${user.height}cm`,
     },
-
-    {
-      label: '出身',
-      value: user.birthCountryName,
-    },
-    {
-      label: '居住地',
-      value:
-        user.residenceCountryName && user.residencePrefectureName
-          ? `${user.residenceCountryName} ${user.residencePrefectureName}`
-          : '',
-    },
   ];
 
   const right = [
@@ -74,6 +62,9 @@ export default function PlayerProfile() {
       value: `${user.weight}kg`,
     },
   ];
+
+  const birthPlace = [user.birthCountryName, user.birthPrefectureName].filter((x) => x).join(' ');
+  const residence = [user.residenceCountryName, user.residencePrefectureName].filter((x) => x).join(' ');
 
   return (
     <main>
@@ -104,20 +95,27 @@ export default function PlayerProfile() {
               <span className='text-gray-300'>{user.jaraPlayerId}</span>
             </div>
           </div>
+          <div className='flex gap-2 items-center'>
+            <span>フォロワー:</span>
+            <span className='text-gray-300'>{user.followerCount}</span>
+          </div>
 
           <h3 className='my-4'>プロフィール</h3>
-          <div className='flex gap-8'>
+          <div className='flex gap-4'>
             <div className='flex flex-col gap-2'>
               {left.map((item) => (
                 <Info key={item.label} label={item.label} value={item.value} />
               ))}
             </div>
-            <div className='flex flex-col gap-2'>
+
+            <div className='flex flex-col gap-2 mb-2'>
               {right.map((item) => (
                 <Info key={item.label} label={item.label} value={item.value} />
               ))}
             </div>
           </div>
+          <Info label='出身' value={birthPlace} labelClassName='whitespace-nowrap mb-2' />
+          <Info label='居住地' value={residence} labelClassName='whitespace-nowrap' />
 
           <h3 className='my-4'>サイド情報</h3>
           <div className='flex flex-wrap justify-start gap-2'>

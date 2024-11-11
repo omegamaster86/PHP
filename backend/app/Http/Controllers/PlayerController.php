@@ -895,7 +895,7 @@ class PlayerController extends Controller
         if (isset($followedPlayer) && $followedPlayer->delete_flag == 0) {
             $isFollowed = true;
         }
-        $followerCount = ($tFollowedPlayers->getFollowerCount($reqData['player_id']))->follower;
+        $followerCount = $tFollowedPlayers->getFollowerCount($reqData['player_id']);
         Log::debug(sprintf("getPlayerFollowStatus end"));
         return response()->json([
             'result' => ([
