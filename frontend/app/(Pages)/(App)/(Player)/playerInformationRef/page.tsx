@@ -1218,10 +1218,19 @@ export default function PlayerInformationRef() {
               {/* サイド情報 */}
               <Label label='サイド情報' textColor='white' textSize='small' isBold={false}></Label>
               <div className='flex flex-row flex-wrap justify-start gap-[10px]'>
-                <RoundedBadge label='S（ストロークサイド）' isValid={true} />
-                <RoundedBadge label='B（バウサイド）' />
-                <RoundedBadge label='X（スカル）' />
-                <RoundedBadge label='C（コックス）' />
+                <RoundedBadge
+                  label='S（ストロークサイド）'
+                  isValid={!!playerInformation.side_info?.at(3)}
+                />
+                <RoundedBadge
+                  label='B（バウサイド）'
+                  isValid={!!playerInformation.side_info?.at(2)}
+                />
+                <RoundedBadge label='X（スカル）' isValid={!!playerInformation.side_info?.at(1)} />
+                <RoundedBadge
+                  label='C（コックス）'
+                  isValid={!!playerInformation.side_info?.at(0)}
+                />
               </div>
             </div>
           </div>
