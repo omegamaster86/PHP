@@ -628,7 +628,7 @@ class T_tournaments extends Model
                                             and `t_tournaments`.tourn_type = ?
                                             and `t_tournaments`.event_start_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 9 MONTH) AND DATE_ADD(CURDATE(), INTERVAL 3 MONTH)
                                             ORDER BY `t_tournaments`.`event_start_date` DESC', 
-                                            [Auth::user()->user_id, $playerId, $tournType]);
+                                            [Auth::user()->user_id, $playerId, Auth::user()->user_id, $tournType]);
             return $tournaments;
         }
 }
