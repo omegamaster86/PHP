@@ -80,4 +80,29 @@ class T_followed_tournaments extends Model
             ]
         );
     }
+
+    // フォロワー数取得
+    public function getFollowerCount($tournId)
+    {
+        $result = DB::select(
+            'select
+                    COUNT(`followed_tourn_id`) as follower
+                    FROM `t_followed_tournaments`
+                    left join `t_users`
+                    on `t_followed_tournaments`.`user_id` = `t_users`.`user_id`
+                    where 1=1
+                    and `t_followed_tournaments`.`delete_flag` = 0
+                    and `t_users`.`delete_flag` = 0
+                    and `t_followed_tournaments`.`tourn_id` = ?',
+            [
+                $tournId
+            ]
+        );
+
+        $targetTrn = null;
+        if (!empty($result)) {
+            $targetTrn = $result[0];
+        }
+        return $targetTrn;
+    }
 }

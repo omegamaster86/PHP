@@ -222,18 +222,24 @@ class TournamentController extends Controller
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 
-    // ログインユーザーが当該大会をフォローしているかどうかを取得する。
-    public function getIsFollowed(Request $request, T_followed_tournaments $tFollowedTournaments)
+    // 大会のフォロー状態・フォロワー数を取得する。
+    public function getTournamentFollowStatus(Request $request, T_followed_tournaments $tFollowedTournaments)
     {
-        Log::debug(sprintf("getIsFollowed start"));
+        Log::debug(sprintf("getTournamentFollowStatus start"));
         $reqData = $request->all();
         $followTourn = $tFollowedTournaments->getFollowedTournamentsData($reqData['tourn_id']);
         $isFollowed = false;
         if (isset($followTourn) && $followTourn->delete_flag == 0) {
             $isFollowed = true;
         }
-        Log::debug(sprintf("getIsFollowed end"));
-        return response()->json(['result' => $isFollowed]);
+        $followerCount = $tFollowedTournaments->getFollowerCount($reqData['tourn_id']);
+        Log::debug(sprintf("getTournamentFollowStatus end"));
+        return response()->json([
+            'result' => ([
+                'isFollowed' => $isFollowed,
+                'followerCount' => $followerCount
+            ])
+        ]);
     }
 
     //主催大会
