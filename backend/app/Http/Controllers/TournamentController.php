@@ -232,7 +232,7 @@ class TournamentController extends Controller
         if (isset($followTourn) && $followTourn->delete_flag == 0) {
             $isFollowed = true;
         }
-        $followerCount = $tFollowedTournaments->getFollowerCount($reqData['tourn_id']);
+        $followerCount = ($tFollowedTournaments->getFollowerCount($reqData['tourn_id']))->follower;
         Log::debug(sprintf("getTournamentFollowStatus end"));
         return response()->json([
             'result' => ([
