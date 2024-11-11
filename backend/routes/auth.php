@@ -203,6 +203,9 @@ Route::middleware('auth')->group(function () {
 
     //指導者・審判情報関連　
     Route::get('getCoachRefereeInfoList', [CoachRefereeControlloer::class, 'getCoachRefereeInfoList']); // 指導者・審判情報を取得する 20241105
+    Route::get('getUpdateCoachRefereeInfoList', [CoachRefereeControlloer::class, 'getUpdateCoachRefereeInfoList']); //指導者・審判情報更新用のデータを取得 20241107
+    Route::patch('updateCoachRefereeInfo', [CoachRefereeControlloer::class, 'updateCoachRefereeInfo']); //指導者・審判情報の追加・更新を行う 20241111
+
 
     //React連携後APIここまで===========================================================
     //================================================================================

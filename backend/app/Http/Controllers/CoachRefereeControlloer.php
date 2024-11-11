@@ -7,7 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Models\T_organization_coaching_history;
+use App\Models\T_held_referee_qualifications;
+use App\Models\T_held_coach_qualifications;
 use App\Models\T_users;
+use Illuminate\Support\Facades\DB;
 
 class CoachRefereeControlloer extends Controller
 {
@@ -26,4 +29,85 @@ class CoachRefereeControlloer extends Controller
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 
+    //指導者・審判情報更新用のデータを取得 20241106
+    public function getUpdateCoachRefereeInfoList(
+        Request $request,
+        T_organization_coaching_history $tOrganizationCoachingHistory,
+        T_held_referee_qualifications $tHeldRefereeQualifications,
+        T_held_coach_qualifications $tHeldCoachQualifications
+    ) {
+        Log::debug(sprintf("getUpdateCoachRefereeInfoList start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+
+        Log::debug(sprintf("getUpdateCoachRefereeInfoList end"));
+        return response()->json([
+            'result' => ([
+                'jspoId' => Auth::user()->jspo_id,
+                'coachingHistories' => $tOrganizationCoachingHistory->getOrganizationCoachingHistoryData(),
+                'coachQualifications' => $tHeldRefereeQualifications->getHeldRefereeQualificationsData(),
+                'refereeQualifications' => $tHeldCoachQualifications->getHeldCoachQualificationsData()
+            ])
+        ]); //DBの結果を返す
+    }
+
+    //指導者・審判情報を更新 20241108
+    public function updateCoachRefereeInfo(
+        Request $request,
+        T_users $tUsers,
+        T_organization_coaching_history $tOrganizationCoachingHistory,
+        T_held_referee_qualifications $tHeldRefereeQualifications,
+        T_held_coach_qualifications $tHeldCoachQualifications
+    ) {
+        Log::debug(sprintf("updateCoachRefereeInfo start"));
+
+        try {
+            DB::beginTransaction();
+
+            $reqData = $request->all();
+            Log::debug($reqData);
+
+            $tUsers->updateJspoId($reqData['jspoId']); //JSPO IDの更新
+
+            //指導履歴の追加・更新
+            for ($i = 0; $i < count($reqData['coachingHistories']); $i++) {
+                if ($reqData['coachingHistories'][$i]['isNewRow'] == 1) {
+                    //新規追加
+                    $tOrganizationCoachingHistory->insertOrganizationCoachingHistoryData($reqData['coachingHistories'][$i]);
+                } else {
+                    //更新・削除
+                    $tOrganizationCoachingHistory->updateOrganizationCoachingHistoryData($reqData['coachingHistories'][$i]);
+                }
+            }
+
+            //指導者資格の追加・更新
+            for ($i = 0; $i < count($reqData['coachQualificationNames']); $i++) {
+                if ($reqData['coachQualificationNames'][$i]['isNewRow'] == 1) {
+                    //新規追加
+                    $tHeldCoachQualifications->insertHeldCoachQualificationsData($reqData['coachQualificationNames'][$i]);
+                } else {
+                    //更新・削除
+                    $tHeldCoachQualifications->updateHeldCoachQualificationsData($reqData['coachQualificationNames'][$i]);
+                }
+            }
+
+            //審判資格の追加・更新
+            for ($i = 0; $i < count($reqData['refereeQualificationNames']); $i++) {
+                if ($reqData['refereeQualificationNames'][$i]['isNewRow'] == 1) {
+                    //新規追加
+                    $tHeldRefereeQualifications->insertHeldRefereeQualificationsData($reqData['refereeQualificationNames'][$i]);
+                } else {
+                    //更新・削除
+                    $tHeldRefereeQualifications->updateHeldRefereeQualificationsData($reqData['refereeQualificationNames'][$i]);
+                }
+            }
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            abort(500, '指導者・審判情報の更新に失敗しました。');
+        }
+
+        Log::debug(sprintf("updateCoachRefereeInfo end"));
+    }
 }
