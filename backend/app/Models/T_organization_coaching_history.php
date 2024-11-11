@@ -16,6 +16,7 @@ class T_organization_coaching_history extends Model
     {
         $result = DB::select(
             'SELECT 
+                t_organization_coaching_history.org_coaching_history_id as `orgCoachingHistoryId`,
                 t_organization_coaching_history.start_date as `startDate`,
                 t_organization_coaching_history.end_date as `endDate`,
                 t_organizations.org_name as `orgName`,
@@ -29,11 +30,70 @@ class T_organization_coaching_history extends Model
                 and m_staff_type.delete_flag = 0
                 and t_organizations.delete_flag = 0
                 and t_organization_coaching_history.delete_flag = 0
-                and t_organization_coaching_history.user_id = ?',
+                and t_organization_coaching_history.user_id = ?
+                order by `startDate` DESC',
             [
                 Auth::user()->user_id
             ]
         );
         return $result;
+    }
+
+    //指導者・審判情報の追加 20241105
+    public function insertOrganizationCoachingHistoryData($coachingHistoriesData)
+    {
+        DB::insert(
+            'insert into `t_organization_coaching_history`
+                    set
+                    `user_id` = ?,
+                    `org_id` = ?,
+                    `staff_type_id` = ?,
+                    `start_date` = ?,
+                    `end_date` = ?,
+                    `registered_time` = ?,
+                    `registered_user_id` = ?,
+                    `updated_time` = ?,
+                    `updated_user_id` = ?,
+                    `delete_flag` = 0',
+            [
+                Auth::user()->user_id,
+                $coachingHistoriesData['orgId'],
+                $coachingHistoriesData['staffTypeId'],
+                $coachingHistoriesData['startDate'],
+                $coachingHistoriesData['endDate'],
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id
+            ]
+        );
+    }
+
+    //指導者・審判情報の更新 20241105
+    public function updateOrganizationCoachingHistoryData($coachingHistoriesData)
+    {
+        DB::update(
+            'update `t_organization_coaching_history`
+                    set 
+                    `org_id` = ?,
+                    `staff_type_id` = ?,
+                    `start_date` = ?,
+                    `end_date` = ?,
+                    `updated_time` = ?,
+                    `updated_user_id` = ?,
+                    `delete_flag` = ?
+                    where 1=1
+                    and `org_coaching_history_id` = ?',
+            [
+                $coachingHistoriesData['orgId'],
+                $coachingHistoriesData['staffTypeId'],
+                $coachingHistoriesData['startDate'],
+                $coachingHistoriesData['endDate'],
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                $coachingHistoriesData['isDeleted'],
+                $coachingHistoriesData['orgCoachingHistoryId']
+            ]
+        );
     }
 }

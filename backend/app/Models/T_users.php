@@ -629,4 +629,22 @@ class T_users extends Authenticatable
         }
         return $targetTrn;
     }
+
+    //JSPO IDの更新 20241108
+    public function updateJspoId($jspoId)
+    {
+        DB::update('update `t_users`
+                    SET 
+                    `jspo_id` = ?,
+                    `updated_time`= ?,
+                    `updated_user_id`= ?,
+                    where 1=1
+                    and `user_id` = ?',
+                [
+                    $jspoId,
+                    now()->format('Y-m-d H:i:s.u'),
+                    Auth::user()->user_id,
+                    Auth::user()->user_id
+                ]);
+    }
 }
