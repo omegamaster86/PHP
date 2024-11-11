@@ -880,7 +880,7 @@ class PlayerController extends Controller
         Log::debug(sprintf("getPlayerInfoData start"));
         $reqData = $request->all();
         Log::debug($reqData);
-        $result = $tPlayersData->getPlayerData($reqData['player_id']); //DBに選手を登録 20240131
+        $result = $tPlayersData->getPlayerData($reqData['playerId']); 
         Log::debug(sprintf("getPlayerInfoData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
@@ -895,7 +895,7 @@ class PlayerController extends Controller
         if (isset($followedPlayer) && $followedPlayer->delete_flag == 0) {
             $isFollowed = true;
         }
-        $followerCount = $tFollowedPlayers->getFollowerCount($reqData['player_id']);
+        $followerCount = ($tFollowedPlayers->getFollowerCount($reqData['player_id']))->follower;
         Log::debug(sprintf("getPlayerFollowStatus end"));
         return response()->json([
             'result' => ([
@@ -921,7 +921,7 @@ class PlayerController extends Controller
         Log::debug(sprintf("getRaceResultRecordsData start"));
         $reqData = $request->all();
         Log::debug($reqData);
-        $result = $tRaceResultRecord->getRaceResultRecord_playerId($reqData['player_id']); //選手IDを元に出漕結果記録を取得 20240212
+        $result = $tRaceResultRecord->getRaceResultRecord_playerId($reqData['playerId']); //選手IDを元に出漕結果記録を取得 20240212
 
         //laptimeをSS.msからMM:SS.msに変換 20240423
         for($result_index = 0;$result_index < count($result); $result_index++) {

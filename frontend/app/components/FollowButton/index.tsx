@@ -24,7 +24,7 @@ const FollowButton = ({
           <StarBorderIcon className='text-black' />
         )}
       </button>
-      <p className='text-white text-xs font-bold'>{followedCount}</p>
+      <p className='text-white text-xs font-bold'>フォロワー数：{followedCount}</p>
     </div>
   );
 };

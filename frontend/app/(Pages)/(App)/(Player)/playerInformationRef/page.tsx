@@ -27,6 +27,7 @@ import { NO_IMAGE_URL, PLAYER_IMAGE_URL } from '@/app/utils/imageUrl';
 
 import { Autocomplete, Chip, TextField } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import FollowButton from '@/app/components/FollowButton';
 
 //種目フィルター用
 interface EventNameList {
@@ -79,17 +80,12 @@ export default function PlayerInformationRef() {
   }
 
   // 選手IDを取得
-  const playerId =
-    searchParams.get('playerId')?.toString() || searchParams.get('player_id')?.toString() || '';
-  switch (playerId) {
-    case '':
-      break;
-    default:
-      break;
+  const playerId: number = parseInt(
+    searchParams.get('playerId') || searchParams.get('player_id') || '',);
+
+  if (!playerId) {
+    router.push('/tournamentSearch');
   }
-  const [player_id, setPlayerId] = useState<any>({
-    player_id: playerId,
-  });
 
   // タブ切り替え用のステート
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -102,6 +98,8 @@ export default function PlayerInformationRef() {
     setSelectedRankList([]);
     setSelectedSeatNameList([]);
   };
+
+  const [isFollowed, setIsFollowed] = useState(false);
 
   // エラーハンドリング用のステート
   const [error, setError] = useState({ isError: false, errorMessage: '' });
@@ -781,21 +779,13 @@ export default function PlayerInformationRef() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const currentPlayerId =
-          searchParams.get('playerId')?.toString() ||
-          searchParams.get('player_id')?.toString() ||
-          '';
-        //console.log(player_id, currentPlayerId);
-        //選手情報参照画面を表示している状態で、選手情報参照のタブをクリックした場合の処理 20240321
-        if (player_id.player_id != currentPlayerId) {
-          player_id.player_id = currentPlayerId;
-          //console.log(player_id);
-        }
         // 仮のURL（繋ぎ込み時に変更すること）
         // const playerInf = await axios.get<PlayerInformationResponse>('http://localhost:3100/player',);
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const playerInf = await axios.post('/getPlayerInfoData', player_id);
+        const playerInf = await axios.post('/getPlayerInfoData', {
+          playerId,
+        });
         //console.log(playerInf.data.result);
         //サイド情報のデータ変換
         const sideList = playerInf.data.result.side_info.split('');
@@ -829,15 +819,34 @@ export default function PlayerInformationRef() {
           photo: playerInf.data.result.photo,
         });
         // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
-        const response = await axios.post('/getRaceResultRecordsData', player_id);
-        //console.log(response.data.result);
+        const response = await axios.post('/getRaceResultRecordsData', {
+          playerId,
+        });
         setResultRecordsData(response.data.result);
+        const playerFollowed = await axios.get('/getPlayerFollowStatus', {
+          params: { player_id: playerId },
+        });
+        setIsFollowed(playerFollowed.data.result.isFollowed);
+        console.log(playerFollowed.data.result);
       } catch (error: any) {
         setError({ isError: true, errorMessage: 'API取得エラー:' + error.message });
       }
     };
     fetchData();
   }, [playerId]);
+
+  const handleFollowToggle = () => {
+    axios
+      .patch('/playerFollowed', { playerId })
+      .then(() => {
+        setIsFollowed((prevState) => !prevState);
+      })
+      .catch(() => {
+        window.alert('フォロー状態の更新に失敗しました:');
+      });
+  };
+  // FIXME: バックエンドとの結合
+  const followedCount = '1,234';
 
   // フィルターのリストを制御する
   const [filteredArray, setFilteredArray] = useState([] as RaceResultRecordsResponse[]);
@@ -1075,7 +1084,18 @@ export default function PlayerInformationRef() {
           <div className='flex flex-col gap-[10px]'>
             <div className='flex flex-col gap-[10px]'>
               {/* 選手名 */}
-              <Label label={playerInformation.player_name} textColor='white' textSize='h3'></Label>
+              <div className='flex gap-2'>
+                <Label
+                  label={playerInformation.player_name}
+                  textColor='white'
+                  textSize='h3'
+                ></Label>
+                <FollowButton
+                  isFollowed={isFollowed}
+                  handleFollowToggle={handleFollowToggle}
+                  followedCount={followedCount}
+                />
+              </div>
               <div className='flex flex-row gap-[10px]'>
                 <div className='flex flex-row gap-[10px]'>
                   {/* 選手ID */}
