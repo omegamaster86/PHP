@@ -119,7 +119,7 @@ Route::middleware('auth')->group(function () {
     Route::post('checkJARAPlayerId', [PlayerController::class, 'checkJARAPlayerId']); //選手登録画面から登録 20240220
 
     Route::post('getPlayerInfoData', [PlayerController::class, 'getPlayerInfoData']); //DBから選手情報更新画面にデータを渡す 20240131
-    Route::get('getPlayerIsFollowed', [PlayerController::class, 'getIsFollowed']); // ログインユーザーが当該選手をフォローしているか
+    Route::get('getPlayerFollowStatus', [PlayerController::class, 'getPlayerFollowStatus']); // 選手のフォロー状態・フォロワー数取得
     Route::post('getRaceResultRecordsData', [PlayerController::class, 'getRaceResultRecordsData']); //DBから選手情報更新画面にデータを渡す 20240131
     Route::post('deletePlayerData', [PlayerController::class, 'deletePlayerData']); //該当データをDBから削除する 20240201
     Route::post('playerSearch', [PlayerController::class, 'playerSearch']); //選手検索 20240309
@@ -150,7 +150,7 @@ Route::middleware('auth')->group(function () {
 
     //大会関連
     Route::post('getTournamentInfoData', [TournamentController::class, 'getTournamentInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
-    Route::get('getTournamentIsFollowed', [TournamentController::class, 'getIsFollowed']); // ログインユーザーが当該大会をフォローしているか
+    Route::get('getTournamentFollowStatus', [TournamentController::class, 'getTournamentFollowStatus']); // 大会のフォロー状態・フォロワー数取得
     Route::post('getTournamentInfoData_org', [TournamentController::class, 'getTournamentInfoData_org']); //主催大会 20240215
     Route::post('tournamentRegistOrUpdateValidationCheck', [TournamentController::class, 'tournamentRegistOrUpdateValidationCheck']);
     Route::post('storeTournamentInfoData', [TournamentController::class, 'storeTournamentInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
