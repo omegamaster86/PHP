@@ -29,6 +29,7 @@ import { TOURNAMENT_PDF_URL } from '@/app/utils/imageUrl';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { Autocomplete, Chip, TextField } from '@mui/material';
 import FollowButton from '@/app/components/FollowButton';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 //種目フィルター用
 interface EventNameList {
@@ -98,7 +99,10 @@ export default function TournamentRef() {
     tourn_info_faile_path: '',
   });
 
-  const [isFollowed, setIsFollowed] = useState(false);
+  const [followStatus, setFollowStatus] = useState({
+    isFollowed: false,
+    followerCount: 0,
+  });
 
   // レース結果情報のデータステート
   //種目
@@ -318,12 +322,6 @@ export default function TournamentRef() {
         // console.log(tournamentResponse);
         tournamentResponse.data.result.tourn_url = tournamentResponse.data.result.tourn_url ?? ''; //nullのパラメータを空のパラメータに置き換える
         setTournamentFormData(tournamentResponse.data.result);
-        const getTournamentIsFollowed = await axios.get('/getTournamentIsFollowed', {
-          params: {
-            tourn_id: tournId,
-          },
-        });
-        setIsFollowed(getTournamentIsFollowed.data.result);
 
         // TODO: tournIdを元にレース情報を取得する処理の置き換え
         // const raceResponse = await axios.get<Race[]>('http://localhost:3100/race');
@@ -378,6 +376,13 @@ export default function TournamentRef() {
             name: item,
           })),
         );
+        const followStatus = await axios.get('/getTournamentFollowStatus', {
+          params: { tourn_id: tournId },
+        });
+        setFollowStatus({
+          isFollowed: followStatus.data.result.isFollowed,
+          followerCount: followStatus.data.result.followerCount,
+        });
       };
       fetchData();
       isApiFetched.current = true;
@@ -422,14 +427,17 @@ export default function TournamentRef() {
     axios
       .patch('/tournamentFollowed', { tournId })
       .then(() => {
-        setIsFollowed((prevState) => !prevState);
+        setFollowStatus((prevStatus) => ({
+          isFollowed: !prevStatus.isFollowed,
+          followerCount: prevStatus.isFollowed
+            ? prevStatus.followerCount--
+            : prevStatus.followerCount++,
+        }));
       })
       .catch(() => {
         window.alert('フォロー状態の更新に失敗しました:');
       });
   };
-  // FIXME: バックエンドとの結合
-  const followedCount = '1,234';
 
   // エラーがある場合はエラーメッセージを表示
   if (isError) {
@@ -465,127 +473,127 @@ export default function TournamentRef() {
         </div>
       </div>
       <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4 '>
-        <div className='flex flex-col gap-[10px]'>
-          <div className='flex flex-col gap-[30px]'>
-            <div className='flex flex-col lg:flex-row justify-between sm:items-center gap-6'>
+        <div className='flex flex-col gap-6'>
+          <div className='flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6'>
+            <div className='flex flex-col items-start lg:items-center lg:flex-row gap-3'>
               <Label label={tournamentFormData.tourn_name} textColor='white' textSize='h2'></Label>
-              <div className='flex flex-col sm:flex-row justify-between items-center gap-5'>
-                {/* ダウンロードコード追加 開始 */}
-                {tournamentFormData.tourn_info_faile_path && (
-                  <Link
-                    href={`${TOURNAMENT_PDF_URL}${tournamentFormData.tourn_info_faile_path}`}
-                    download
-                    className='text-normal text-white hover:text-primary-100 hover:bg-transparent hover:border-none border border-white p-2 flex'
-                    target='_blank'
-                  >
-                    <FileDownloadOutlinedIcon className='text-[16px] mr-2 hover:text-primary-100 '></FileDownloadOutlinedIcon>
-                    大会要項ダウンロード
-                  </Link>
-                )}
-                {/* ダウンロードコード追加 終了*/}
-                <FollowButton
-                  isFollowed={isFollowed}
-                  handleFollowToggle={handleFollowToggle}
-                  followedCount={followedCount}
-                />
-              </div>
+              <FollowButton
+                isFollowed={followStatus.isFollowed}
+                handleFollowToggle={handleFollowToggle}
+                followedCount={followStatus.followerCount}
+                icon={EmojiEventsIcon}
+                text='大会'
+              />
             </div>
-            <div className='flex flex-col sm:flex-row'>
-              {/* 大会個別URL */}
-              <div className='text-gray-40 w-[100px]'>大会URL</div>
+            {/* ダウンロードコード追加 開始 */}
+            {tournamentFormData.tourn_info_faile_path && (
               <Link
-                href={tournamentFormData.tourn_url}
-                rel='noopener noreferrer'
+                href={`${TOURNAMENT_PDF_URL}${tournamentFormData.tourn_info_faile_path}`}
+                download
+                className='text-normal text-white hover:text-primary-100 hover:bg-transparent hover:border-none border border-white p-2'
                 target='_blank'
-                className='text-white underline hover:text-primary-100'
               >
-                {tournamentFormData.tourn_url}
+                <FileDownloadOutlinedIcon className='text-[16px] mr-2 hover:text-primary-100 '></FileDownloadOutlinedIcon>
+                大会要項ダウンロード
               </Link>
-            </div>
-            <div className='flex flex-col gap-[12px]'>
-              <Label label='開催情報' textColor='white' textSize='small' isBold={true}></Label>
-              <div className='flex flex-col gap-[5px]'>
-                <div className='flex flex-row gap-[20px]'>
-                  <div className='flex flex-col gap-[5px]'>
-                    <div className='flex flex-row gap-2'>
-                      {/* 開催開始年月日 */}
-                      <div className='text-gray-40 text-sm w-[100px]'>開催開始年月日</div>
-                      <Label
-                        label={tournamentFormData.event_start_date}
-                        textColor='white'
-                        textSize='small'
-                      ></Label>
-                    </div>
-                    <div className='flex flex-row gap-2'>
-                      {/* 開催終了年月日 */}
-                      <div className='text-gray-40 text-sm w-[100px]'>開催終了年月日</div>
-                      <Label
-                        label={tournamentFormData.event_end_date}
-                        textColor='white'
-                        textSize='small'
-                      ></Label>
-                    </div>
+            )}
+            {/* ダウンロードコード追加 終了*/}
+          </div>
+          <div className='flex flex-col sm:flex-row'>
+            {/* 大会個別URL */}
+            <div className='text-gray-40 w-[100px]'>大会URL</div>
+            <Link
+              href={tournamentFormData.tourn_url}
+              rel='noopener noreferrer'
+              target='_blank'
+              className='text-white underline hover:text-primary-100'
+            >
+              {tournamentFormData.tourn_url}
+            </Link>
+          </div>
+          <div className='flex flex-col gap-[12px]'>
+            <Label label='開催情報' textColor='white' textSize='small' isBold={true}></Label>
+            <div className='flex flex-col gap-[5px]'>
+              <div className='flex flex-row gap-[20px]'>
+                <div className='flex flex-col gap-[5px]'>
+                  <div className='flex flex-row gap-2'>
+                    {/* 開催開始年月日 */}
+                    <div className='text-gray-40 text-sm w-[100px]'>開催開始年月日</div>
+                    <Label
+                      label={tournamentFormData.event_start_date}
+                      textColor='white'
+                      textSize='small'
+                    ></Label>
                   </div>
-                </div>
-                <div className='flex flex-row gap-2'>
-                  {/* 開催場所 */}
-                  <div className='text-gray-40 text-sm w-[100px]'>開催場所</div>
-                  <Label
-                    label={tournamentFormData.venue_name}
-                    textColor='white'
-                    textSize='small'
-                  ></Label>
-                </div>
-              </div>
-            </div>
-            <div className='flex flex-col gap-[10px]'>
-              <Label label='主催団体' textColor='white' textSize='small' isBold={true}></Label>
-              <div className='flex flex-col gap-[5px]'>
-                <div className='flex flex-row gap-2'>
-                  {/* 主催団体名 */}
-                  <div className='text-gray-40 text-sm w-[100px]'>名前</div>
-                  <Label
-                    label={tournamentFormData.sponsorOrgName}
-                    textColor='white'
-                    textSize='small'
-                  ></Label>
+                  <div className='flex flex-row gap-2'>
+                    {/* 開催終了年月日 */}
+                    <div className='text-gray-40 text-sm w-[100px]'>開催終了年月日</div>
+                    <Label
+                      label={tournamentFormData.event_end_date}
+                      textColor='white'
+                      textSize='small'
+                    ></Label>
+                  </div>
                 </div>
               </div>
               <div className='flex flex-row gap-2'>
-                {/* 主催団体ID */}
-                <div className='text-gray-40 text-sm w-[100px]'>ID</div>
+                {/* 開催場所 */}
+                <div className='text-gray-40 text-sm w-[100px]'>開催場所</div>
                 <Label
-                  label={tournamentFormData.sponsor_org_id}
+                  label={tournamentFormData.venue_name}
                   textColor='white'
                   textSize='small'
                 ></Label>
               </div>
             </div>
-            <div className='flex flex-col sm:flex-row gap-2 sm:gap-5'>
+          </div>
+          <div className='flex flex-col gap-[10px]'>
+            <Label label='主催団体' textColor='white' textSize='small' isBold={true}></Label>
+            <div className='flex flex-col gap-[5px]'>
+              <div className='flex flex-row gap-2'>
+                {/* 主催団体名 */}
+                <div className='text-gray-40 text-sm w-[100px]'>名前</div>
+                <Label
+                  label={tournamentFormData.sponsorOrgName}
+                  textColor='white'
+                  textSize='small'
+                ></Label>
+              </div>
+            </div>
+            <div className='flex flex-row gap-2'>
+              {/* 主催団体ID */}
+              <div className='text-gray-40 text-sm w-[100px]'>ID</div>
+              <Label
+                label={tournamentFormData.sponsor_org_id}
+                textColor='white'
+                textSize='small'
+              ></Label>
+            </div>
+          </div>
+          <div className='flex flex-col sm:flex-row gap-2 sm:gap-5'>
+            <div className='flex flex-row gap-[10px]'>
+              {/* 大会ID */}
+              <div className='text-gray-40 text-sm'>大会ID：</div>
+              <Label
+                label={tournamentFormData.tourn_id?.toString() as string}
+                textColor='white'
+                textSize='small'
+              ></Label>
+            </div>
+            {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+              userIdType.is_organization_manager == ROLE.GROUP_MANAGER ||
+              userIdType.is_jara == ROLE.JARA ||
+              userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
               <div className='flex flex-row gap-[10px]'>
-                {/* 大会ID */}
-                <div className='text-gray-40 text-sm'>大会ID：</div>
+                {/* エントリーシステムの大会ID */}
+                <div className='text-gray-40 text-sm'>エントリーシステムの大会ID：</div>
                 <Label
-                  label={tournamentFormData.tourn_id?.toString() as string}
+                  label={tournamentFormData.entrysystem_tourn_id}
                   textColor='white'
                   textSize='small'
                 ></Label>
               </div>
-              {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
-                userIdType.is_organization_manager == ROLE.GROUP_MANAGER ||
-                userIdType.is_jara == ROLE.JARA ||
-                userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
-                <div className='flex flex-row gap-[10px]'>
-                  {/* エントリーシステムの大会ID */}
-                  <div className='text-gray-40 text-sm'>エントリーシステムの大会ID：</div>
-                  <Label
-                    label={tournamentFormData.entrysystem_tourn_id}
-                    textColor='white'
-                    textSize='small'
-                  ></Label>
-                </div>
-              )}
-            </div>
+            )}
           </div>
         </div>
       </div>
