@@ -98,6 +98,7 @@ class T_followed_players extends Model
             ]
         );
 
-        return !empty($result) ? $result[0]->follower : 0;
+        return !empty($result) ? (int) $result[0]->follower : 0;
+
     }
 }

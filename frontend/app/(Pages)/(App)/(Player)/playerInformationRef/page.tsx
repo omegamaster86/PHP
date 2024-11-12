@@ -28,6 +28,7 @@ import { NO_IMAGE_URL, PLAYER_IMAGE_URL } from '@/app/utils/imageUrl';
 import { Autocomplete, Chip, TextField } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import FollowButton from '@/app/components/FollowButton';
+import RowingIcon from '@mui/icons-material/Rowing';
 
 //種目フィルター用
 interface EventNameList {
@@ -81,7 +82,8 @@ export default function PlayerInformationRef() {
 
   // 選手IDを取得
   const playerId: number = parseInt(
-    searchParams.get('playerId') || searchParams.get('player_id') || '',);
+    searchParams.get('playerId') || searchParams.get('player_id') || '',
+  );
 
   if (!playerId) {
     router.push('/tournamentSearch');
@@ -99,7 +101,10 @@ export default function PlayerInformationRef() {
     setSelectedSeatNameList([]);
   };
 
-  const [isFollowed, setIsFollowed] = useState(false);
+  const [followStatus, setFollowStatus] = useState({
+    isFollowed: false,
+    followerCount: 0,
+  });
 
   // エラーハンドリング用のステート
   const [error, setError] = useState({ isError: false, errorMessage: '' });
@@ -823,11 +828,14 @@ export default function PlayerInformationRef() {
           playerId,
         });
         setResultRecordsData(response.data.result);
-        const playerFollowed = await axios.get('/getPlayerFollowStatus', {
+
+        const followStatus = await axios.get('/getPlayerFollowStatus', {
           params: { player_id: playerId },
         });
-        setIsFollowed(playerFollowed.data.result.isFollowed);
-        console.log(playerFollowed.data.result);
+        setFollowStatus({
+          isFollowed: followStatus.data.result.isFollowed,
+          followerCount: followStatus.data.result.followerCount,
+        });
       } catch (error: any) {
         setError({ isError: true, errorMessage: 'API取得エラー:' + error.message });
       }
@@ -839,14 +847,15 @@ export default function PlayerInformationRef() {
     axios
       .patch('/playerFollowed', { playerId })
       .then(() => {
-        setIsFollowed((prevState) => !prevState);
+        setFollowStatus((prevStatus) => ({
+          isFollowed: !prevStatus.isFollowed,
+          followerCount: prevStatus.isFollowed ? prevStatus.followerCount-- : prevStatus.followerCount++,
+        }));
       })
       .catch(() => {
         window.alert('フォロー状態の更新に失敗しました:');
       });
   };
-  // FIXME: バックエンドとの結合
-  const followedCount = '1,234';
 
   // フィルターのリストを制御する
   const [filteredArray, setFilteredArray] = useState([] as RaceResultRecordsResponse[]);
@@ -1084,16 +1093,18 @@ export default function PlayerInformationRef() {
           <div className='flex flex-col gap-[10px]'>
             <div className='flex flex-col gap-[10px]'>
               {/* 選手名 */}
-              <div className='flex gap-2'>
+              <div className='flex gap-2 items-center flex-wrap'>
                 <Label
                   label={playerInformation.player_name}
                   textColor='white'
                   textSize='h3'
                 ></Label>
                 <FollowButton
-                  isFollowed={isFollowed}
+                  isFollowed={followStatus.isFollowed}
                   handleFollowToggle={handleFollowToggle}
-                  followedCount={followedCount}
+                  followedCount={followStatus.followerCount}
+                  icon={RowingIcon}
+                  text='選手'
                 />
               </div>
               <div className='flex flex-row gap-[10px]'>
