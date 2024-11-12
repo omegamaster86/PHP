@@ -88,4 +88,26 @@ class T_held_coach_qualifications extends Model
             ]
         );
     }
+
+    //指導者・審判プロフィール用データ取得 20241112
+    public function getHeldCoachQualificationsDataForProfile()
+    {
+        $result = DB::select(
+            'SELECT
+                `held_coach_qualification_id` as `heldCoachQualificationId`,
+                `qual_name`as `qualName`,
+                `expiry_date` as `expiryDate`
+                FROM `t_held_coach_qualifications` `held_coach_qual`
+                left join `m_coach_qualifications` `coach_qual`
+                on `held_coach_qual`.`coach_qualification_id` = `coach_qual`.`coach_qualification_id` 
+                and `coach_qual`.delete_flag = 0
+                where 1=1
+                and `held_coach_qual`.delete_flag = 0
+                and `held_coach_qual`.user_id = ?',
+            [
+                Auth::user()->user_id
+            ]
+        );
+        return $result;
+    }
 }

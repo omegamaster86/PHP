@@ -88,4 +88,26 @@ class T_held_referee_qualifications extends Model
             ]
         );
     }
+
+    //指導者・審判プロフィール用データ取得 20241112
+    public function getHeldRefereeQualificationsDataForProfile()
+    {
+        $result = DB::select(
+            'SELECT
+                `held_referee_qualification_id` as `heldRefereeQualificationId`,
+                `qual_name`as `qualName`,
+                `expiry_date` as `expiryDate`
+                FROM `t_held_referee_qualifications` `held_referee_qual`
+                left join `m_referee_qualifications` `referee_qual`
+                on `held_referee_qual`.`referee_qualification_id` = `referee_qual`.`referee_qualification_id` 
+                and `referee_qual`.delete_flag = 0
+                where 1=1
+                and `held_referee_qual`.delete_flag = 0
+                and `held_referee_qual`.user_id = ?',
+            [
+                Auth::user()->user_id
+            ]
+        );
+        return $result;
+    }
 }

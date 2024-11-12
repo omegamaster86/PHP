@@ -40,15 +40,15 @@ class CoachRefereeControlloer extends Controller
         $reqData = $request->all();
         Log::debug($reqData);
 
+        $result = json_encode([
+            'jspoId' => Auth::user()->jspo_id,
+            'coachingHistories' => $tOrganizationCoachingHistory->getOrganizationCoachingHistoryData(),
+            'coachQualifications' => $tHeldRefereeQualifications->getHeldRefereeQualificationsData(),
+            'refereeQualifications' => $tHeldCoachQualifications->getHeldCoachQualificationsData()
+        ]);
+
         Log::debug(sprintf("getUpdateCoachRefereeInfoList end"));
-        return response()->json([
-            'result' => ([
-                'jspoId' => Auth::user()->jspo_id,
-                'coachingHistories' => $tOrganizationCoachingHistory->getOrganizationCoachingHistoryData(),
-                'coachQualifications' => $tHeldRefereeQualifications->getHeldRefereeQualificationsData(),
-                'refereeQualifications' => $tHeldCoachQualifications->getHeldCoachQualificationsData()
-            ])
-        ]); //DBの結果を返す
+        return response()->json(['result' => $result]); //DBの結果を返す
     }
 
     //指導者・審判情報を更新 20241108
@@ -109,5 +109,28 @@ class CoachRefereeControlloer extends Controller
         }
 
         Log::debug(sprintf("updateCoachRefereeInfo end"));
+    }
+
+    //指導者・審判プロフィール用のデータを取得 20241112
+    public function getCoachRefereeProfileInfoList(
+        Request $request,
+        T_organization_coaching_history $tOrganizationCoachingHistory,
+        T_held_referee_qualifications $tHeldRefereeQualifications,
+        T_held_coach_qualifications $tHeldCoachQualifications
+    ) {
+        Log::debug(sprintf("getCoachRefereeProfileInfoList start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+
+        $result = json_encode([
+            'userName' => Auth::user()->user_name,
+            'jspoId' => Auth::user()->jspo_id,
+            'coachingHistories' => $tOrganizationCoachingHistory->getOrganizationCoachingHistoryDataForProfile(),
+            'coachQualifications' => $tHeldRefereeQualifications->getHeldRefereeQualificationsDataForProfile(),
+            'refereeQualifications' => $tHeldCoachQualifications->getHeldCoachQualificationsDataForProfile()
+        ]);
+
+        Log::debug(sprintf("getCoachRefereeProfileInfoList end"));
+        return response()->json(['result' => $result]); //DBの結果を返す
     }
 }
