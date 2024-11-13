@@ -651,11 +651,17 @@ interface CoachRefereeInfoData {
   refereeQualificationNames: any; //審判資格 FIXME
 }
 
+interface Qualification {
+  qual_id: number;
+  qual_name: string;
+}
+
 export type {
   CheckRace,
   CheckRaceResultRecord,
   CheckRaceResultRecordDeleted,
   CoachRefereeInfoData,
+  CoachRefereeResponse,
   CountryResponse,
   CrewPlayer,
   CrewResponse,
@@ -679,6 +685,7 @@ export type {
   PlayerInformationResponse,
   PrefectureResponse,
   QualHoldResponse,
+  Qualification,
   Race,
   RaceResultRecordsResponse,
   RaceTable,
@@ -692,8 +699,9 @@ export type {
   TourTypeResponse,
   UserIdType,
   UserResponse,
-  CoachRefereeResponse,
   VenueResponse,
   VolunteerHistoriesResponse,
   VolunteerResponse,
 };
+
+export * from './form';

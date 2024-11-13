@@ -1,13 +1,6 @@
 import type { ReactNode } from 'react';
 
-const CustomButton = ({
-  children,
-  onClick,
-  className,
-  buttonType,
-  icon,
-  disabled,
-}: {
+export type CustomButtonProps = {
   children: ReactNode;
   onClick?: () => void;
   className?: string;
@@ -20,10 +13,23 @@ const CustomButton = ({
     | 'white';
   icon?: ReactNode;
   disabled?: boolean;
-}) => (
+  type?: HTMLButtonElement['type'];
+};
+
+const CustomButton = ({
+  children,
+  onClick,
+  className,
+  buttonType,
+  icon,
+  disabled,
+  type = 'button',
+}: CustomButtonProps) => (
   <button
-    type='button'
-    className={`${className ?? ''} text-normal h-12 w-72 border-solid border-[1px] rounded-[2px] p-2
+    type={type}
+    className={`${
+      className ?? ''
+    } text-normal h-12 w-72 border-solid border-[1px] rounded-[2px] p-2 flex justify-center items-center gap-2
     ${
       buttonType === 'primary'
         ? 'bg-primary-500 text-white hover:bg-primary-700'
@@ -39,6 +45,7 @@ const CustomButton = ({
     onClick={onClick}
     disabled={disabled}
   >
+    {icon}
     {children}
   </button>
 );

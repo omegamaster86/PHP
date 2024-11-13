@@ -1,30 +1,36 @@
-import React from 'react';
-import CustomButton from '../CustomButton';
+import { CloseOutlined } from '@mui/icons-material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { ReactNode, useState, Fragment } from 'react';
+import { Fragment, ReactNode, useState } from 'react';
+import CustomButton, { CustomButtonProps } from '../CustomButton';
 
 export default function CustomDialog({
   title,
   buttonLabel,
-  className,
   children,
   displayCancel,
   handleConfirm,
   confirmButtonLabel,
+  confirmButtonType,
   handleCancel,
+  buttonType = 'primary',
+  withDividers = true,
+  withCloseIcon = false,
+  ...customButtonProps
 }: {
   title: string;
   buttonLabel: string;
-  className?: string;
   children: ReactNode;
   displayCancel?: boolean;
   handleConfirm: () => boolean;
   confirmButtonLabel?: string;
+  confirmButtonType?: HTMLButtonElement['type'];
   handleCancel?: () => void;
-}) {
+  withDividers?: boolean;
+  withCloseIcon?: boolean;
+} & Omit<CustomButtonProps, 'children'>) {
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -37,7 +43,7 @@ export default function CustomDialog({
 
   return (
     <Fragment>
-      <CustomButton onClick={handleClickOpen} className={className} buttonType='primary'>
+      <CustomButton {...customButtonProps} buttonType={buttonType} onClick={handleClickOpen}>
         {buttonLabel}
       </CustomButton>
       <Dialog
@@ -48,11 +54,18 @@ export default function CustomDialog({
         aria-labelledby='alert-dialog-title'
         aria-describedby='alert-dialog-description'
       >
-        <DialogTitle id='alert-dialog-title' className='font-bold'>
-          {title}
-        </DialogTitle>
-        <DialogContent dividers>{children}</DialogContent>
-        <DialogActions className='mt-[16px] flex flex-col sm:flex-row gap-4'>
+        <div className='flex justify-between'>
+          <DialogTitle id='alert-dialog-title' className='!font-bold'>
+            {title}
+          </DialogTitle>
+          {withCloseIcon && (
+            <button onClick={handleClose} className='flex justify-center items-center px-6'>
+              <CloseOutlined />
+            </button>
+          )}
+        </div>
+        <DialogContent dividers={withDividers}>{children}</DialogContent>
+        <DialogActions className='mt-4 !px-6 flex flex-col sm:flex-row gap-4'>
           {displayCancel && (
             <CustomButton
               onClick={() => {
@@ -63,13 +76,15 @@ export default function CustomDialog({
                   handleClose();
                 }
               }}
+              className='!w-28'
             >
               キャンセル
             </CustomButton>
           )}
           <CustomButton
-            className='!m-0'
+            className='!m-0 !w-28'
             buttonType='primary'
+            type={confirmButtonType}
             onClick={() => {
               if (handleConfirm()) {
                 handleClose();

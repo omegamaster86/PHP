@@ -30,6 +30,7 @@ type MenuItemChild = {
   action?: () => void;
   icon?: JSX.Element;
   show: boolean;
+  active?: boolean;
 };
 
 type MenuItem = {
@@ -342,9 +343,27 @@ const Header: FC = () => {
     {
       title: 'お知らせ',
       index: 5,
-      link: '/notifications',
       show: true,
       active: currentIndex === 5,
+      items: [
+        {
+          title: '通知登録',
+          link: '/notifications?mode=create',
+          active: page === '/notifications',
+          show: true,
+        },
+        {
+          title: '受信通知一覧',
+          link: '/notifications/list',
+          show: true,
+        },
+        {
+          title: '送信通知一覧',
+          // FIXME: 仮のリンク
+          link: '/notifications/sent/list',
+          show: true,
+        },
+      ],
     },
     {
       title: 'マイページ',
@@ -393,7 +412,7 @@ const Header: FC = () => {
                   title: x.title,
                   link: x.link,
                   show: x.show,
-                  active: x.link === page,
+                  active: x.active ?? x.link === page,
                   action: toggleDrawer(false),
                 })),
               }}
@@ -506,7 +525,6 @@ const Header: FC = () => {
                   active={currentIndex === 5}
                   onClick={(e) => {
                     handleClick(e, 5);
-                    router.push('/notifications');
                   }}
                 >
                   <MarkEmailUnreadOutlined
