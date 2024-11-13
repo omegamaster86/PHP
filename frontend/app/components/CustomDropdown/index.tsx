@@ -1,16 +1,18 @@
-import { FC } from 'react';
-import Select from '@mui/material/Select';
+import { SelectOption } from '@/app/types';
 import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '../InputLabel';
+import Select, { SelectProps } from '@mui/material/Select';
 import { clsx } from 'clsx';
+import InputLabel from '../InputLabel';
+
+type MuiSelectProps = Omit<SelectProps, 'onChange' | 'color'>;
 
 // Propsの型定義
-interface SelectProps {
+interface CustomDropdownProps<T = string> extends MuiSelectProps {
   id: string;
-  options: Array<{ key: number; value: string }>;
-  value: string;
+  options: SelectOption[];
+  value?: T;
   errorMessages?: string[];
-  onChange: (value: string) => void;
+  onChange?: (value: T) => void;
   className?: string;
   placeHolder?: string;
   readonly?: boolean;
@@ -21,24 +23,32 @@ interface SelectProps {
   toolTipTitle?: string;
   toolTipText?: string;
   widthClassName?: string;
+  multiple?: boolean;
+  customRef?: MuiSelectProps['ref'];
 }
-const CustomDropdown: FC<SelectProps> = ({
-  id,
-  options,
-  value,
-  onChange,
-  className,
-  errorMessages,
-  placeHolder,
-  readonly,
-  isError,
-  required,
-  label,
-  displayHelp,
-  toolTipTitle,
-  toolTipText,
-  widthClassName,
-}) => {
+const CustomDropdown = <T = string,>(props: CustomDropdownProps<T>) => {
+  const {
+    id,
+    options,
+    value,
+    onChange,
+    className,
+    errorMessages,
+    placeHolder,
+    readonly,
+    isError,
+    required,
+    label,
+    displayHelp,
+    toolTipTitle,
+    toolTipText,
+    widthClassName,
+    multiple = false,
+    customRef,
+  } = props;
+
+  const readOnlyValue = Array.isArray(value) ? value.join(', ') : String(value);
+
   return (
     <div className={clsx('flex flex-col gap-[6px]', widthClassName ? widthClassName : 'w-full')}>
       {label && (
@@ -51,23 +61,27 @@ const CustomDropdown: FC<SelectProps> = ({
         />
       )}
       <div className={className}>
-        {readonly && <p className='h-12  text-secondaryText py-3 disable'>{value}</p>}
+        {readonly && <p className='h-12  text-secondaryText py-3 disable'>{readOnlyValue}</p>}
         {!readonly && (
-          <Select
+          <Select<T>
             id={id}
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => {
+              onChange?.(e.target.value as T);
+            }}
             className={clsx(className, 'w-full bg-white')}
             readOnly={readonly}
             placeholder={placeHolder}
             error={isError}
+            multiple={multiple}
+            ref={customRef}
           >
-            {required && (
+            {required && !multiple && (
               <MenuItem key='default' disabled value='0'>
                 未選択
               </MenuItem>
             )}
-            {!required && (
+            {!required && !multiple && (
               <MenuItem key='default' value=''>
                 未選択
               </MenuItem>

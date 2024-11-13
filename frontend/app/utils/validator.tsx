@@ -453,6 +453,23 @@ const validatePlayerNameFormat = (playerName: string) => {
 };
 
 /**
+ *
+ * @param url チェックするURL
+ * @returns {string}
+ * @description
+ * URLの形式チェックを行う。
+ * URLの形式でない場合、booleanを返す。
+ */
+const isValidUrl = (url: string): boolean => {
+  try {
+    new URL(url);
+    return true;
+  } catch (_) {
+    return false;
+  }
+};
+
+/**
  * URLの形式チェック
  * @param url チェックするURL
  * @returns {string}
@@ -679,6 +696,7 @@ const compareDatesVolunteer = (startDate: string, endDate: string) => {
 
 const Validator = {
   getErrorMessages,
+  isValidUrl,
   validateRequired,
   validateSelectRequired,
   validateEmailFormat,
