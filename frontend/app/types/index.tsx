@@ -462,11 +462,11 @@ interface Staff {
   user_id: string; // ユーザーID
   user_name: string; // ユーザー名
   staff_type_id: string[]; // スタッフ種別
-  jspoId: number; //JSPO ID
-  coachQualificationNames: any; //指導者資格 FIXME
-  refereeQualificationNames: any; //審判資格 FIXME
+  coachQualificationNames: string[]; //指導者資格 FIXME
+  refereeQualificationNames: string[]; //審判資格 FIXME
   delete_flag: boolean; // 削除フラグ
   isUserFound: boolean; // ユーザーが見つかったかどうか
+  jspo_id: number; //JSPO ID
 }
 
 //団体所属選手情報

@@ -9,12 +9,7 @@ import {
   OriginalCheckbox,
 } from '@/app/components';
 import Link from 'next/link';
-
-interface Staff {
-  user_id: string;
-  user_name: string;
-  staff_type_id: string[];
-}
+import { Staff } from '@/app/types';
 
 interface Props {
   staffs: Staff[];
@@ -57,20 +52,20 @@ export const BelongStaff: React.FC<Props> = ({ staffs }) => {
           <CustomTbody>
             {staffs.map((row, index) => (
               <CustomTr key={index}>
-                <CustomTd align='center'>
+                <CustomTd>
                   <Link
                     className='text-primary-300 underline hover:text-primary-50'
-                    href={`/userInformationRef?userId=${row.user_id}`}
+                    href={`/coachRefereeRef?userId=${row.user_id}`}
                     rel='noopener noreferrer'
                     target='_blank'
                   >
                     {row.user_id}
                   </Link>
                 </CustomTd>
-                <CustomTd align='center'>
+                <CustomTd>
                   <Link
                     className='text-primary-300 underline hover:text-primary-50'
-                    href={`/userInformationRef?userId=${row.user_id}`}
+                    href={`/coachRefereeRef?userId=${row.user_id}`}
                     rel='noopener noreferrer'
                     target='_blank'
                   >
@@ -122,9 +117,9 @@ export const BelongStaff: React.FC<Props> = ({ staffs }) => {
                     readonly={true}
                   ></OriginalCheckbox>
                 </CustomTd>
-                <CustomTd>{row.user_name}</CustomTd>
-                <CustomTd>{row.user_name}</CustomTd>
-                <CustomTd>{row.user_name}</CustomTd>
+                <CustomTd>{row.jspo_id}</CustomTd>
+                <CustomTd>{row.coachQualificationNames.join(', ')}</CustomTd>
+                <CustomTd>{row.refereeQualificationNames.join(', ')}</CustomTd>
               </CustomTr>
             ))}
           </CustomTbody>
