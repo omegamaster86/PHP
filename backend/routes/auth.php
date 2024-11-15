@@ -16,6 +16,7 @@ use App\Http\Controllers\TournamentRaceRefeController;
 use App\Http\Controllers\VolunteerInfoAlignmentController;
 use App\Http\Controllers\TournamentInfoAlignmentController;
 use App\Http\Controllers\MyPageController;
+use App\Http\Controllers\NotificationsController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Models\M_prefectures;
@@ -206,6 +207,9 @@ Route::middleware('auth')->group(function () {
     Route::get('getUpdateCoachRefereeInfoList', [CoachRefereeControlloer::class, 'getUpdateCoachRefereeInfoList']); //指導者・審判情報更新用のデータを取得 20241107
     Route::patch('updateCoachRefereeInfo', [CoachRefereeControlloer::class, 'updateCoachRefereeInfo']); //指導者・審判情報の追加・更新を行う 20241111
     Route::get('getCoachRefereeProfileInfoList', [CoachRefereeControlloer::class, 'getCoachRefereeProfileInfoList']); //指導者・審判プロフィール情報を取得する 20241112
+
+    //通知関連
+    Route::get('getNotificationsInfoList', [NotificationsController::class, 'getNotificationsInfoList']); //通知参照画面用の情報を取得 20241113
 
     //React連携後APIここまで===========================================================
     //================================================================================
