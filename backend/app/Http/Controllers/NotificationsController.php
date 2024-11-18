@@ -26,4 +26,34 @@ class NotificationsController extends Controller
         Log::debug(sprintf("getNotificationsInfoList end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
+
+    //通知一覧画面用(送信)のデータを取得 20241115
+    public function getSenderNotificationsList(
+        Request $request,
+        T_notifications $tNotifications
+    ) {
+        Log::debug(sprintf("getSenderNotificationsList start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+
+        $result = $tNotifications->getSenderNotificationsListData(); //送信通知情報を取得 20241115
+
+        Log::debug(sprintf("getSenderNotificationsList end"));
+        return response()->json(['result' => $result]); //DBの結果を返す
+    }
+
+    //通知一覧画面用(受信)のデータを取得 20241115
+    public function getRecipientsNotificationsList(
+        Request $request,
+        T_notifications $tNotifications
+    ) {
+        Log::debug(sprintf("getRecipientsNotificationsList start"));
+        $reqData = $request->all();
+        Log::debug($reqData);
+
+        $result = $tNotifications->getRecipientsNotificationsListData(); //受信通知情報を取得 20241115
+
+        Log::debug(sprintf("getRecipientsNotificationsList end"));
+        return response()->json(['result' => $result]); //DBの結果を返す
+    }
 }

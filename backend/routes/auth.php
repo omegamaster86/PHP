@@ -210,6 +210,8 @@ Route::middleware('auth')->group(function () {
 
     //通知関連
     Route::get('getNotificationsInfoList', [NotificationsController::class, 'getNotificationsInfoList']); //通知参照画面用の情報を取得 20241113
+    Route::get('getSenderNotificationsList', [NotificationsController::class, 'getSenderNotificationsList']); //通知一覧画面(送信)の情報を取得 20241118
+    Route::get('getRecipientsNotificationsList', [NotificationsController::class, 'getRecipientsNotificationsList']); //通知一覧画面(受信)の情報を取得 20241118
 
     //React連携後APIここまで===========================================================
     //================================================================================
