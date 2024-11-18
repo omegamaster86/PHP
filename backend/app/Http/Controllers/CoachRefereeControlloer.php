@@ -20,10 +20,15 @@ class CoachRefereeControlloer extends Controller
         Log::debug(sprintf("getCoachRefereeInfoList start"));
         $reqData = $request->all();
         Log::debug($reqData);
-        $result = $tUsers->getCoachRefereeInfoData(); //ユーザIDに紐づいた指導者・審判資格を取得する 20241106
-        $result->coachingHistories = $tOrganizationCoachingHistory->getOrganizationCoachingHistoryData(); //ユーザIDに紐づいた指導履歴を取得する 20241106
-        $result->coachQualificationNames = explode(",", $result->coachQualificationNames);
-        $result->refereeQualificationNames = explode(",", $result->refereeQualificationNames);
+        $result = $tUsers->getCoachRefereeInfoData($reqData['userId']); //ユーザIDに紐づいた指導者・審判資格を取得する 20241106
+        $result->coachingHistories = $tOrganizationCoachingHistory->getOrganizationCoachingHistoryData($reqData['userId']); //ユーザIDに紐づいた指導履歴を取得する 20241106
+        $result->coachQualificationNames = array_filter(
+            explode(",", $result->coachQualificationNames),
+            fn($name) => trim($name) !== '' 
+        );
+        $result->refereeQualificationNames = array_filter(
+            explode(",", $result->refereeQualificationNames),
+            fn($name) => trim($name) !== '');
 
         Log::debug(sprintf("getCoachRefereeInfoList end"));
         return response()->json(['result' => $result]); //DBの結果を返す
@@ -42,7 +47,7 @@ class CoachRefereeControlloer extends Controller
 
         $result = json_encode([
             'jspoId' => Auth::user()->jspo_id,
-            'coachingHistories' => $tOrganizationCoachingHistory->getOrganizationCoachingHistoryData(),
+            'coachingHistories' => $tOrganizationCoachingHistory->getOrganizationCoachingHistoryData(Auth::user()->user_id),
             'coachQualifications' => $tHeldRefereeQualifications->getHeldRefereeQualificationsData(),
             'refereeQualifications' => $tHeldCoachQualifications->getHeldCoachQualificationsData()
         ]);

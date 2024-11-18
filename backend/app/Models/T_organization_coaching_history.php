@@ -12,7 +12,7 @@ class T_organization_coaching_history extends Model
     use HasFactory;
 
     //指導者・審判情報取得 20241105
-    public function getOrganizationCoachingHistoryData()
+    public function getOrganizationCoachingHistoryData($user_id)
     {
         $result = DB::select(
             'SELECT 
@@ -33,7 +33,7 @@ class T_organization_coaching_history extends Model
                 and t_organization_coaching_history.user_id = ?
                 order by `startDate` DESC',
             [
-                Auth::user()->user_id
+                $user_id
             ]
         );
         return $result;

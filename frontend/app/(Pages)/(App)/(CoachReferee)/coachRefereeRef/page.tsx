@@ -2,7 +2,6 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
-import axios from '@/app/lib/axios';
 import { Divider } from '@mui/material';
 import { CoachRefereeResponse } from '@/app/types';
 
@@ -20,12 +19,7 @@ import {
 import { TitleSideButton } from '../../_components/TitleSideButton';
 import EditIcon from '@mui/icons-material/EditOutlined';
 import { useAuth } from '@/app/hooks/auth';
-
-const fetcher = async (url: string) => {
-  await axios.get('/sanctum/csrf-cookie');
-  const response = await axios.get(url);
-  return response.data.result;
-};
+import { fetcher } from '@/app/lib/swr';
 
 export default function UserInformationReference() {
   const router = useRouter();
@@ -35,21 +29,21 @@ export default function UserInformationReference() {
     middleware: 'auth',
   });
 
-  if (user === undefined) {
+  const userId = Number(searchParams.get('userId') || user?.user_id);
+  const { data } = useSWR(
+    userId
+      ? {
+          url: `/getCoachRefereeInfoList`,
+          params: { userId },
+        }
+      : null,
+    fetcher<CoachRefereeResponse>,
+  );
+
+  if (!data) {
+    return null;
+  } else if (user === undefined) {
     router.push('/login');
-    return null;
-  }
-  const userId = Number(searchParams.get('userId') || user.user_id);
-
-  if (!userId) {
-    return null;
-  }
-
-  // ユーザー情報のセットアップ
-  const { data } = useSWR<CoachRefereeResponse>(`/getUserData?userId=${userId}`, fetcher);
-  const { user_name } = data || {};
-
-  if (!user_name) {
     return null;
   }
 
@@ -70,49 +64,65 @@ export default function UserInformationReference() {
         </div>
       </div>
       <div className='flex flex-col text-xs sm:text-sm'>
-        <h2 className='font-bold text-3xl text-primaryText'>{user_name}</h2>
+        <h2 className='font-bold text-3xl text-primaryText'>{data.result.userName}</h2>
         <div className='flex gap-3 mb-7'>
           <span>ユーザーID</span>
           <span>{userId}</span>
         </div>
         <h3 className='mb-3'>指導履歴</h3>
         <div className='overflow-auto mb-7 mr-auto'>
-          <CustomTable>
-            <CustomThead>
-              <CustomTr>
-                <CustomTh align='left'>指導期間</CustomTh>
-                <CustomTh align='left'>団体名</CustomTh>
-                <CustomTh align='left'>スタッフ種別</CustomTh>
-              </CustomTr>
-            </CustomThead>
-            <CustomTbody>
-              <CustomTr>
-                <CustomTd>
-                  <span>指導期間テスト</span>
-                </CustomTd>
-                <CustomTd>
-                  <span>団体名テスト</span>
-                </CustomTd>
-                <CustomTd>
-                  <span>スタッフテスト</span>
-                </CustomTd>
-              </CustomTr>
-            </CustomTbody>
-          </CustomTable>
+          {data.result.coachingHistories.length > 0 ? (
+            <CustomTable>
+              <CustomThead>
+                <CustomTr>
+                  <CustomTh align='left'>指導期間</CustomTh>
+                  <CustomTh align='left'>団体名</CustomTh>
+                  <CustomTh align='left'>スタッフ種別</CustomTh>
+                </CustomTr>
+              </CustomThead>
+              <CustomTbody>
+                {data.result.coachingHistories.map((history) => (
+                  <CustomTr key={history.orgCoachingHistoryId}>
+                    <CustomTd>
+                      <span>{history.startDate}</span>
+                    </CustomTd>
+                    <CustomTd>
+                      <span>{history.orgName}</span>
+                    </CustomTd>
+                    <CustomTd>
+                      <span>{history.staffTypeName}</span>
+                    </CustomTd>
+                  </CustomTr>
+                ))}
+              </CustomTbody>
+            </CustomTable>
+          ) : (
+            <span>指導履歴はありません。</span>
+          )}
         </div>
         <h3 className='mb-3'>指導者資格</h3>
         <div className='flex gap-3 mb-3'>
           <span>JSPO ID</span>
-          <span>{userId}</span>
+          {data.result.jspoId ? <span>{data.result.jspoId}</span> : <span>未登録</span>}
         </div>
         <div className='flex gap-3 mb-7 flex-wrap'>
-          <RoundedBadge label={user_name} isValid={true} />
-          <RoundedBadge label={user_name} isValid={true} />
+          {data.result.coachQualificationNames.length > 0 ? (
+            data.result.coachQualificationNames.map((name) => (
+              <RoundedBadge key={name} label={name} isValid={true} />
+            ))
+          ) : (
+            <span>指導者資格がありません。</span>
+          )}
         </div>
         <h3 className='mb-3'>審判資格</h3>
         <div className='flex gap-3 flex-wrap'>
-          <RoundedBadge label={user_name} isValid={true} />
-          <RoundedBadge label={user_name} isValid={true} />
+          {data.result.refereeQualificationNames.length > 0 ? (
+            data.result.refereeQualificationNames.map((name) => (
+              <RoundedBadge key={name} label={name} isValid={true} />
+            ))
+          ) : (
+            <span>審判資格がありません。</span>
+          )}
         </div>
       </div>
       <Divider className='h-[1px] bg-border' />
