@@ -56,4 +56,28 @@ class NotificationsController extends Controller
         Log::debug(sprintf("getRecipientsNotificationsList end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
+
+    //通知情報の削除 20241108
+    public function deleteNotification(
+        Request $request,
+        T_notifications $tNotifications
+    ) {
+        Log::debug(sprintf("deleteNotification start"));
+
+        try {
+            DB::beginTransaction();
+
+            $reqData = $request->all();
+            Log::debug($reqData);
+            $notificationId = $reqData["notificationId"];
+            $tNotifications->deleteNotificationData($notificationId); //通知情報の削除 20241118
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            abort(500, '通知情報の削除に失敗しました。');
+        }
+
+        Log::debug(sprintf("deleteNotification end"));
+    }
 }
