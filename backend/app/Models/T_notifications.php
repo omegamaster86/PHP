@@ -147,4 +147,23 @@ class T_notifications extends Model
         );
         return $result;
     }
+
+    //通知情報を削除する 20241118
+    public function deleteNotificationData($notificationId)
+    {
+        DB::update(
+            'UPDATE t_notifications
+                    set
+                    updated_time = ?,
+                    updated_user_id = ?,
+                    delete_flag = 1
+                    where 1=1
+                    and notification_id = ?',
+            [
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                $notificationId
+            ]
+        );
+    }
 }
