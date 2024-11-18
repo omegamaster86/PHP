@@ -599,7 +599,7 @@ class T_users extends Authenticatable
     }
 
     //指導者・審判情報の取得 20241106
-    public function getCoachRefereeInfoData()
+    public function getCoachRefereeInfoData($user_id)
     {
         $users = DB::select(
             'SELECT 
@@ -621,13 +621,13 @@ class T_users extends Authenticatable
                 and `t_users`.delete_flag = 0
                 and `t_users`.user_id = ?',
             [
-                Auth::user()->user_id
+                $user_id
             ]);
-        $targetTrn = null;
-        if (!empty($users)) {
-            $targetTrn = $users[0];
-        }
-        return $targetTrn;
+            $targetTrn = null;
+            if (!empty($users)) {
+                $targetTrn = $users[0];
+            }
+            return $targetTrn;
     }
 
     //JSPO IDの更新 20241108

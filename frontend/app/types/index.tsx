@@ -260,7 +260,19 @@ interface UserResponse {
 
 interface CoachRefereeResponse {
   user_id: string; // ユーザーID
-  user_name: string; // ユーザー名
+  userName: string; // ユーザー名
+  coachQualificationNames: string[]; //指導者資格
+  refereeQualificationNames: string[]; //審判資格
+  jspoId: number; //JSPO ID
+  coachingHistories: CoachingHistory[]; //指導履歴
+}
+
+interface CoachingHistory {
+  startDate: string;
+  endDate: string;
+  orgCoachingHistoryId: number;
+  orgName: string;
+  staffTypeName: string;
 }
 
 // ボランティア情報
@@ -702,6 +714,7 @@ export type {
   VenueResponse,
   VolunteerHistoriesResponse,
   VolunteerResponse,
+  CoachingHistory,
 };
 
 export * from './form';
