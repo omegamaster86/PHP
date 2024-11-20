@@ -3,6 +3,7 @@ import { QualifiedUserForm } from '@/app/(Pages)/(App)/(Notification)/notificati
 import { TournFollowerForm } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/TournFollowerForm';
 import { UserFollowerForm } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/UserFollowerForm';
 import { CustomButton, CustomTextField, CustomTitle, InputLabel } from '@/app/components';
+import { NotificationToType } from '@/app/constants';
 import { useUserType } from '@/app/hooks/useUserType';
 import { SelectOption } from '@/app/types';
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
@@ -10,7 +11,7 @@ import { useForm } from 'react-hook-form';
 import useSWR from 'swr';
 
 export type UpdateFormInput = {
-  to: 'userFollower' | 'tournFollower' | 'qualifiedUser' | 'allUser';
+  to: NotificationToType;
   subject: string;
   body: string;
   tournId: number;

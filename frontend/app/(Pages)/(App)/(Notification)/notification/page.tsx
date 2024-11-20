@@ -14,9 +14,9 @@ import { Qualification, SelectOption, TeamResponse, Tournament } from '@/app/typ
 import { useRouter, useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 
-type NotificationMode = 'view' | 'create' | 'update' | 'delete' | 'confirm';
+type NotificationMode = 'create' | 'update' | 'confirm';
 
-export default function Notifications() {
+export default function Notification() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = (searchParams.get('mode') || 'create') as NotificationMode;
@@ -52,25 +52,25 @@ export default function Notifications() {
       value: x.qual_name,
     })) ?? [];
 
-  const createNotificationSettings = (formData: CreateFormInput) => {
-    router.push(`/notifications?mode=confirm&formData=${JSON.stringify(formData)}`);
+  const createNotification = (formData: CreateFormInput) => {
+    router.push(`/notification?mode=confirm&formData=${JSON.stringify(formData)}`);
   };
 
-  const updateNotificationSettings = (formData: UpdateFormInput) => {
+  const updateNotification = (formData: UpdateFormInput) => {
     console.log({
       formData,
     });
   };
 
   if (mode === 'confirm') {
-    return <Confirm qualifications={qualifications} tournaments={tournaments} />;
+    return <Confirm tournaments={tournaments} qualifications={qualifications} />;
   }
   if (mode === 'create') {
     return (
       <Create
         tournaments={tournaments}
         qualifications={qualifications}
-        onSubmit={createNotificationSettings}
+        onSubmit={createNotification}
       />
     );
   }
@@ -79,7 +79,7 @@ export default function Notifications() {
       <Update
         tournaments={tournaments}
         qualifications={qualifications}
-        onSubmit={updateNotificationSettings}
+        onSubmit={updateNotification}
       />
     );
   }
