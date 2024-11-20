@@ -166,4 +166,62 @@ class T_notifications extends Model
             ]
         );
     }
+
+    //通知情報の追加 20241119
+    public function insertNotificationData($notificationData)
+    {
+        DB::insert(
+            'INSERT into t_notifications
+                    sender_id = ?,
+                    notification_destination_type_id = ?,
+                    tourn_id = ?,
+                    sent_time = ?,
+                    title = ?,
+                    body = ?,
+                    registered_time = ?,
+                    registered_user_id = ?,
+                    updated_time = ?,
+                    updated_user_id = ?,
+                    delete_flag = 0',
+            [
+                $notificationData['senderId'],
+                $notificationData['notificationDestinationTypeId'],
+                $notificationData['tournId'],
+                $notificationData['sentTime'],
+                $notificationData['title'],
+                $notificationData['body'],
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id
+            ]
+        );
+
+        $insertId =  DB::getPdo()->lastInsertId();
+        return $insertId;
+    }
+
+    //通知情報の更新 20241119
+    public function updateNotificationData($notificationData)
+    {
+        DB::update(
+            'UPDATE t_notifications
+                    set 
+                    title = ?,
+                    body = ?,
+                    updated_time = ?,
+                    updated_user_id = ?,
+                    where 1=1
+                    and delete_flag = 0
+                    and notification_id = ?',
+            [
+                $notificationData['title'],
+                $notificationData['body'],
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                $notificationData['notificationId']
+            ]
+        );
+    }
+
 }
