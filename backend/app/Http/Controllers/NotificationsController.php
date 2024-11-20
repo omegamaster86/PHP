@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Models\T_notifications;
+use App\Models\T_notified_coach_qualifications;
+use App\Models\T_notified_referee_qualifications;
 use Illuminate\Support\Facades\DB;
 
 class NotificationsController extends Controller
@@ -79,5 +81,73 @@ class NotificationsController extends Controller
         }
 
         Log::debug(sprintf("deleteNotification end"));
+    }
+
+    //通知情報の登録 20241119
+    public function insertNotification(
+        Request $request,
+        T_notifications $tNotifications,
+        T_notified_coach_qualifications $tNotifiedCoachQualifications,
+        T_notified_referee_qualifications $tNotifiedRefereeQualifications
+    ) {
+        Log::debug(sprintf("insertNotification start"));
+
+        try {
+            DB::beginTransaction();
+
+            $req = $request->all();
+            $req["notificationData"]["senderId"] = Auth::user()->user_id;
+            $req["notificationData"]["sentTime"] = now()->format('Y-m-d H:i:s.u');
+            Log::debug($req);
+            $insertId = $tNotifications->insertNotificationData($req["notificationData"]); //通知情報の登録 20241118
+
+            //指導者資格の追加
+            if (!empty($req["coachQualificationsData"])) {
+                for ($i = 0; $i < count($req['coachQualificationsData']); $i++) {
+                    $req['coachQualificationsData'][$i]["notificationId"] = $insertId;
+                    $tNotifiedCoachQualifications->insertNotifiedCoachQualificationsData($req['coachQualificationsData'][$i]);
+                }
+            }
+
+            //審判資格の追加
+            if (!empty($req["refereeQualificationsData"])) {
+                for ($i = 0; $i < count($req['refereeQualificationsData']); $i++) {
+                    $req['refereeQualificationsData'][$i]["notificationId"] = $insertId;
+                    $tNotifiedRefereeQualifications->insertNotifiedRefereeQualificationsData($req['refereeQualificationsData'][$i]);
+                }
+            }
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            Log::debug($e);
+            DB::rollBack();
+            abort(500, '通知情報の登録に失敗しました。');
+        }
+
+        Log::debug(sprintf("insertNotification end"));
+    }
+
+    //通知情報の更新 20241119
+    public function updateNotification(
+        Request $request,
+        T_notifications $tNotifications
+    ) {
+        Log::debug(sprintf("updateNotification start"));
+
+        try {
+            DB::beginTransaction();
+
+            $req = $request->all();
+            Log::debug($req);
+            $tNotifications->updateNotificationData($req); //通知情報の更新 20241118
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            Log::debug($e);
+            DB::rollBack();
+            abort(500, '通知情報の更新に失敗しました。');
+        }
+
+        Log::debug(sprintf("updateNotification end"));
     }
 }
