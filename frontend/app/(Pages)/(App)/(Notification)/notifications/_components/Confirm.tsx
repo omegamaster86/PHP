@@ -1,5 +1,6 @@
 import { CreateFormInput } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/Create';
 import { CustomButton, CustomTitle } from '@/app/components';
+import { getNotificationToTypeLabel } from '@/app/constants';
 import { SelectOption } from '@/app/types';
 import { useSearchParams } from 'next/navigation';
 
@@ -18,19 +19,13 @@ export const Confirm: React.FC<Props> = (props) => {
     return null;
   }
 
-  const toLabels = {
-    userFollower: '自分をフォローしているユーザー',
-    tournFollower: '大会をフォローしているユーザー',
-    qualifiedUser: '有資格者',
-    allUser: '全ユーザー',
-  };
   const tourn = tournaments.find((t) => t.key === formData.tournId);
   const quals = qualifications.filter((q) => formData.qualIds?.includes(q.key));
 
   const info = [
     {
       label: 'To',
-      value: toLabels[formData.to],
+      value: getNotificationToTypeLabel(formData.to),
     },
     {
       label: '件名',

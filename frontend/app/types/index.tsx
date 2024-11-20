@@ -1,5 +1,4 @@
-import { TournType } from '@/app/constants';
-import { OfficialType } from '@/app/constants/official';
+import { OfficialType, TournType } from '@/app/constants';
 
 // Jsonの型定義
 interface CountryResponse {

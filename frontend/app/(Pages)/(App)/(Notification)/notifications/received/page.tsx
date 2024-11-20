@@ -1,7 +1,7 @@
 'use client';
 
-import ListItem from '@/app/(Pages)/(App)/(Notification)/notifications/_components/ListItem';
-import NotificationContent from '@/app/(Pages)/(App)/(Notification)/notifications/_components/NotificationContent';
+import { ListItem } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/ListItem';
+import { NotificationContent } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/NotificationContent';
 import { CustomButton } from '@/app/components';
 import { Button } from '@mui/base';
 import { useMediaQuery } from '@mui/material';
@@ -147,9 +147,9 @@ export default function NotificationsList() {
     updateIsRead(id);
 
     if (isWideScreen) {
-      router.push(`/notifications/list?id=${id}`);
+      router.push(`/notifications/received?id=${id}`);
     } else {
-      router.push(`/notifications/detail?id=${id}`);
+      router.push(`/notificationRef?id=${id}`);
     }
   };
 
@@ -182,7 +182,11 @@ export default function NotificationsList() {
       {/* スマホの場合は非表示 */}
       {notificationContent && (
         <div className='hidden md:block w-full'>
-          <NotificationContent notificationContent={notificationContent} />
+          <NotificationContent
+            type='received'
+            notificationContent={notificationContent}
+            isWideScreen={isWideScreen}
+          />
         </div>
       )}
     </div>

@@ -1,14 +1,14 @@
 import axios from '@/app/lib/axios';
 import { UserResponse } from '@/app/types';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import useSWR from 'swr';
 
 export const useAuth = ({
   middleware,
   redirectIfAuthenticated,
 }: {
-  middleware?: string;
+  middleware?: 'guest' | 'auth';
   redirectIfAuthenticated?: string;
 }) => {
   const router = useRouter();

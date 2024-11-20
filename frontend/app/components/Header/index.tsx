@@ -107,7 +107,7 @@ const Header: FC = () => {
         break;
     }
 
-    if (page.startsWith('/notifications')) {
+    if (page.startsWith('/notification')) {
       setCurrentIndex(5);
       return;
     }
@@ -348,19 +348,18 @@ const Header: FC = () => {
       items: [
         {
           title: '通知登録',
-          link: '/notifications?mode=create',
-          active: page === '/notifications',
+          link: '/notification?mode=create',
+          active: page === '/notification',
           show: true,
         },
         {
           title: '受信通知一覧',
-          link: '/notifications/list',
+          link: '/notifications/received',
           show: true,
         },
         {
           title: '送信通知一覧',
-          // FIXME: 仮のリンク
-          link: '/notifications/sent/list',
+          link: '/notifications/sent',
           show: true,
         },
       ],

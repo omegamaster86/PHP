@@ -17,7 +17,7 @@ type Props = {
   isSelected: boolean;
 };
 
-const ListItem: React.FC<Props> = (props) => {
+export const ListItem: React.FC<Props> = (props) => {
   const { notification, isSelected } = props;
   const { title, createdAt, isRead, sender } = notification;
 
@@ -30,8 +30,8 @@ const ListItem: React.FC<Props> = (props) => {
       )}
     >
       <div className='flex flex-col gap-4 w-full'>
-        <div className='flex justify-between items-center'>
-          <div className='flex items-center gap-2'>
+        <div className='flex justify-between items-center w-full gap-2'>
+          <div className='flex items-center gap-2 min-w-0'>
             <Avatar
               src={sender.photo}
               alt={sender.name}
@@ -40,17 +40,15 @@ const ListItem: React.FC<Props> = (props) => {
                 height: 24,
               }}
             />
-            <h2 className='text-xs font-bold'>{sender.name}</h2>
+            <h2 className='text-xs font-bold truncate'>{sender.name}</h2>
           </div>
-          <p className='text-xs text-gray-300'>{formatDate(createdAt, 'yyyy/MM/dd HH:mm')}</p>
+          <p className='text-xs text-gray-300 flex-shrink-0'>
+            {formatDate(createdAt, 'yyyy/MM/dd HH:mm')}
+          </p>
         </div>
 
-        <h3 className='text-base font-bold text-start whitespace-nowrap overflow-hidden text-ellipsis'>
-          {title}
-        </h3>
+        <h3 className='text-base font-bold text-start truncate'>{title}</h3>
       </div>
     </div>
   );
 };
-
-export default ListItem;

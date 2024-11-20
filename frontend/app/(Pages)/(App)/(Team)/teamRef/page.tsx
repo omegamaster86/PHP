@@ -1,25 +1,25 @@
 // 団体情報参照・削除画面
 'use client';
 
-import React, { useEffect, useState, SyntheticEvent } from 'react';
-import axios from '@/app/lib/axios';
 import { CustomButton, CustomTitle, ErrorBox, Label } from '@/app/components';
+import axios from '@/app/lib/axios';
 import {
   Organization,
   PlayerInformationResponse,
-  Tournament,
   Staff,
-  UserResponse,
-  UserIdType,
   TeamResponse,
+  Tournament,
+  UserIdType,
+  UserResponse,
 } from '@/app/types';
-import { useSearchParams, useRouter } from 'next/navigation';
 import { ROLE } from '@/app/utils/consts';
 import { Tab, Tabs } from '@mui/material';
-import { SponsoredTournament } from './_components/SponsoredTournament';
-import { EntryTournament } from './_components/EntryTournament';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import { BelongPlayer } from './_components/BelongPlayer';
 import { BelongStaff } from './_components/BelongStaff';
+import { EntryTournament } from './_components/EntryTournament';
+import { SponsoredTournament } from './_components/SponsoredTournament';
 
 export default function TeamRef() {
   const [errorMessage, setErrorMessage] = useState([] as string[]);
