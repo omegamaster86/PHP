@@ -266,6 +266,26 @@ interface CoachRefereeResponse {
   coachingHistories: CoachingHistory[]; //指導履歴
 }
 
+interface CoachQualification {
+  heldCoachQualificationId: number;
+  qualName: string;
+  expiryDate: string;
+};
+
+interface RefereeQualification {
+  heldRefereeQualificationId: number;
+  qualName: string;
+  expiryDate: string;
+}
+
+interface MyPageCoachRefereeResponse {
+  userName: string;
+  jspoId: number;
+  coachingHistories: CoachingHistory[];
+  coachQualifications: CoachQualification[];
+  refereeQualifications: RefereeQualification[];
+}
+
 interface CoachingHistory {
   startDate: string;
   endDate: string;
@@ -714,6 +734,7 @@ export type {
   VolunteerHistoriesResponse,
   VolunteerResponse,
   CoachingHistory,
+  MyPageCoachRefereeResponse,
 };
 
 export * from './form';

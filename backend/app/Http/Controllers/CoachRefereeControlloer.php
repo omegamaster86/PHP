@@ -117,17 +117,17 @@ class CoachRefereeControlloer extends Controller
     }
 
     //指導者・審判プロフィール用のデータを取得 20241112
-    public function getCoachRefereeProfileInfoList(
+    public function getCoachRefereeProfileInfo(
         Request $request,
         T_organization_coaching_history $tOrganizationCoachingHistory,
         T_held_referee_qualifications $tHeldRefereeQualifications,
         T_held_coach_qualifications $tHeldCoachQualifications
     ) {
-        Log::debug(sprintf("getCoachRefereeProfileInfoList start"));
+        Log::debug(sprintf("getCoachRefereeProfileInfo start"));
         $reqData = $request->all();
         Log::debug($reqData);
 
-        $result = json_encode([
+        $result = ([
             'userName' => Auth::user()->user_name,
             'jspoId' => Auth::user()->jspo_id,
             'coachingHistories' => $tOrganizationCoachingHistory->getOrganizationCoachingHistoryDataForProfile(),
@@ -135,7 +135,7 @@ class CoachRefereeControlloer extends Controller
             'refereeQualifications' => $tHeldCoachQualifications->getHeldCoachQualificationsDataForProfile()
         ]);
 
-        Log::debug(sprintf("getCoachRefereeProfileInfoList end"));
+        Log::debug(sprintf("getCoachRefereeProfileInfo end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 }
