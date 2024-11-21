@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\T_notifications;
 use App\Models\T_notified_coach_qualifications;
 use App\Models\T_notified_referee_qualifications;
+use App\Models\T_notification_recipients;
 use Illuminate\Support\Facades\DB;
 
 class NotificationsController extends Controller
@@ -149,5 +150,29 @@ class NotificationsController extends Controller
         }
 
         Log::debug(sprintf("updateNotification end"));
+    }
+
+    //既読フラグの更新 20241120
+    public function updateNotificationReadFlag(
+        Request $request,
+        T_notification_recipients $tNotificationRecipients
+    ) {
+        Log::debug(sprintf("updateNotificationReadFlag start"));
+
+        try {
+            DB::beginTransaction();
+
+            $req = $request->all();
+            Log::debug($req);
+            $tNotificationRecipients->updateNotificationReadFlagData($req); //通知情報の更新 20241118
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            Log::debug($e);
+            DB::rollBack();
+            abort(500, '既読フラグの更新に失敗しました。');
+        }
+
+        Log::debug(sprintf("updateNotificationReadFlag end"));
     }
 }

@@ -215,6 +215,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('deleteNotification', [NotificationsController::class, 'deleteNotification']); //通知情報の削除 20241118
     Route::post('insertNotification', [NotificationsController::class, 'insertNotification']); //通知情報の登録 20241119
     Route::patch('updateNotification', [NotificationsController::class, 'updateNotification']); //通知情報の更新 20241119
+    Route::patch('updateNotificationReadFlag', [NotificationsController::class, 'updateNotificationReadFlag']); //既読フラグの更新 20241121
 
     //React連携後APIここまで===========================================================
     //================================================================================
