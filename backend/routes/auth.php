@@ -206,7 +206,7 @@ Route::middleware('auth')->group(function () {
     Route::get('getCoachRefereeInfoList', [CoachRefereeControlloer::class, 'getCoachRefereeInfoList']); // 指導者・審判情報を取得する 20241105
     Route::get('getUpdateCoachRefereeInfoList', [CoachRefereeControlloer::class, 'getUpdateCoachRefereeInfoList']); //指導者・審判情報更新用のデータを取得 20241107
     Route::patch('updateCoachRefereeInfo', [CoachRefereeControlloer::class, 'updateCoachRefereeInfo']); //指導者・審判情報の追加・更新を行う 20241111
-    Route::get('getCoachRefereeProfileInfoList', [CoachRefereeControlloer::class, 'getCoachRefereeProfileInfoList']); //指導者・審判プロフィール情報を取得する 20241112
+    Route::get('getCoachRefereeProfileInfo', [CoachRefereeControlloer::class, 'getCoachRefereeProfileInfo']); //指導者・審判プロフィール情報を取得する 20241112
 
     //通知関連
     Route::get('getNotificationsInfoList', [NotificationsController::class, 'getNotificationsInfoList']); //通知参照画面用の情報を取得 20241113
