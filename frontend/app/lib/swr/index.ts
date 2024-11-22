@@ -4,7 +4,7 @@ import { Method } from 'axios';
 interface FetcherParams {
   url: string;
   params?: object;
-  method?: Method | string;
+  method?: Method;
   key?: string; // SWR内部で使うためのキーなのでfetcherでは不要
 }
 

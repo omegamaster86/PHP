@@ -2,65 +2,82 @@
 
 import { NotificationContent } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/NotificationContent';
 import { useAuth } from '@/app/hooks/auth';
-import { useNotification } from '@/app/hooks/useNotification';
-import { useSearchParams } from 'next/navigation';
+import { fetcher } from '@/app/lib/swr';
+import { NotificationInfoData } from '@/app/types';
+import { useRouter, useSearchParams } from 'next/navigation';
+import useSWR from 'swr';
+import useSWRMutation from 'swr/mutation';
 
 type NotificationMode = 'delete';
 
+const sendDeleteRequest = async (url: string, trigger: { arg: { notificationId: number } }) => {
+  return fetcher({
+    url,
+    method: 'DELETE',
+    params: {
+      notificationId: trigger.arg.notificationId,
+    },
+  });
+};
+
 export default function NotificationRef() {
   const { user } = useAuth({ middleware: 'auth' });
+  const router = useRouter();
   const searchParams = useSearchParams();
   const currentId = Number(searchParams.get('id'));
   const userId = Number(user?.user_id);
   const mode = searchParams.get('mode') as NotificationMode | null;
 
-  const { getToLabel } = useNotification();
+  const { trigger } = useSWRMutation('/deleteNotification', sendDeleteRequest);
+  const { data } = useSWR(
+    {
+      url: '/getNotificationInfoData',
+      params: {
+        notificationId: currentId,
+      },
+    },
+    fetcher<NotificationInfoData>,
+    {
+      onError: (err) => {
+        router.back();
+      },
+    },
+  );
 
-  if (!userId || !currentId) {
+  const result = data?.result;
+
+  if (!userId || !currentId || !result) {
     return null;
   }
 
-  const mockNotificationContent = {
-    id: 1,
-    title:
-      'XXX大会に出場予定です！あああああああああああああああああああああああああああああああああああああああああああああああああああああああ',
-    content:
-      '本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。\n本文が入ります。本文が入ります。本文が入ります。本文が入ります。\n本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。\n\nリンク\n\n本文が入ります。\n本文が入ります。',
-    createdAt: '2022-01-01 18:00',
-    isRead: false,
-    sender: {
-      id: 1,
-      name: '山田太郎',
-      photo: undefined,
-    },
-  };
-
-  const type = userId === mockNotificationContent.sender.id ? 'sent' : 'received';
+  const { senderId } = result;
+  const type = userId === senderId ? 'sent' : 'received';
 
   if (type === 'received') {
     return (
-      <NotificationContent
-        type='received'
-        notificationContent={mockNotificationContent}
-        isWideScreen={false}
-      />
+      <NotificationContent type='received' notificationContent={result} isWideScreen={false} />
     );
   }
 
   if (type === 'sent') {
-    const to = getToLabel({ type: 'tournFollower', tornName: 'xxxx大会' });
+    const isAuthor = !!senderId && !!userId && senderId === userId;
     const isDeleteMode = mode === 'delete';
 
     const handleDelete = (id: number) => {
-      console.log('handleDelete id: ', id);
+      const ok = window.confirm('この通知を削除します。よろしいですか？');
+      if (ok) {
+        trigger({
+          notificationId: id,
+        });
+      }
     };
 
     return (
       <NotificationContent
         type='sent'
-        notificationContent={mockNotificationContent}
+        notificationContent={result}
+        isAuthor={isAuthor}
         isWideScreen={false}
-        to={to}
         isDeleteMode={isDeleteMode}
         onDelete={handleDelete}
       />

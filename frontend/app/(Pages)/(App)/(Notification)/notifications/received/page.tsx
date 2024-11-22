@@ -3,9 +3,12 @@
 import { ListItem } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/ListItem';
 import { NotificationContent } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/NotificationContent';
 import { CustomButton } from '@/app/components';
+import { fetcher } from '@/app/lib/swr';
+import { NotificationInfoData } from '@/app/types';
 import { Button } from '@mui/base';
 import { useMediaQuery } from '@mui/material';
 import { useRouter, useSearchParams } from 'next/navigation';
+import useSWR from 'swr';
 
 export default function NotificationsList() {
   // tailwindのmdの幅を超えているかどうか
@@ -14,134 +17,137 @@ export default function NotificationsList() {
   const searchParams = useSearchParams();
   const currentId = Number(searchParams.get('id'));
 
-  const data = [
+  const notificationRes = useSWR(
     {
-      id: 1,
+      url: '/getNotificationInfoData',
+      params: {
+        notificationId: currentId,
+      },
+    },
+    currentId ? fetcher<NotificationInfoData> : null,
+    {
+      onError: (err) => {
+        router.back();
+      },
+    },
+  );
+
+  const data: NotificationInfoData[] = [
+    {
+      notificationId: 1,
       title:
         'XXX大会に出場予定です！あああああああああああああああああああああああああああああああああああああああああああああああああああああああ',
-      content:
-        '本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。\n本文が入ります。本文が入ります。本文が入ります。本文が入ります。\n本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。\n\nリンク\n\n本文が入ります。\n本文が入ります。',
-      createdAt: '2022-01-01 18:00',
-      isRead: false,
-      sender: {
-        id: 1,
-        name: '山田太郎',
-        photo: undefined,
-      },
+      body: '本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。\n本文が入ります。本文が入ります。本文が入ります。本文が入ります。\n本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。\n\nリンク\n\n本文が入ります。\n本文が入ります。',
+      sentTime: '2022-01-01 18:00',
+      senderId: 1,
+      senderName: '山田太郎',
+      senderIcon: null,
+      to: 'xxx大会 フォロワー',
+      notificationDestinationTypeId: 1,
     },
     {
-      id: 2,
+      notificationId: 2,
       title: 'XXX大会に出場予定です！',
-      content: '本文が入ります。',
-      createdAt: '2022-01-01 18:00',
-      isRead: true,
-      sender: {
-        id: 1,
-        name: '山田太郎',
-        photo: undefined,
-      },
+      body: '本文が入ります。',
+      sentTime: '2022-01-01 18:00',
+      senderId: 1,
+      senderName: '山田太郎',
+      senderIcon: null,
+      to: 'xxx大会 フォロワー',
+      notificationDestinationTypeId: 1,
     },
     {
-      id: 3,
+      notificationId: 3,
       title: 'XXX大会に出場予定です！',
-      content: '本文が入ります。',
-      createdAt: '2022-01-01 18:00',
-      isRead: true,
-      sender: {
-        id: 1,
-        name: '山田太郎',
-        photo: undefined,
-      },
+      body: '本文が入ります。',
+      sentTime: '2022-01-01 18:00',
+      senderId: 1,
+      senderName: '山田太郎',
+      senderIcon: null,
+      to: 'xxx大会 フォロワー',
+      notificationDestinationTypeId: 1,
     },
     {
-      id: 4,
+      notificationId: 4,
       title: 'XXX大会に出場予定です！',
-      content: '本文が入ります。',
-      createdAt: '2022-01-01 18:00',
-      isRead: true,
-      sender: {
-        id: 1,
-        name: '山田太郎',
-        photo: undefined,
-      },
+      body: '本文が入ります。',
+      sentTime: '2022-01-01 18:00',
+      senderId: 1,
+      senderName: '山田太郎',
+      senderIcon: null,
+      to: 'xxx大会 フォロワー',
+      notificationDestinationTypeId: 1,
     },
     {
-      id: 5,
+      notificationId: 5,
       title: 'XXX大会に出場予定です！',
-      content: '本文が入ります。',
-      createdAt: '2022-01-01 18:00',
-      isRead: true,
-      sender: {
-        id: 1,
-        name: '山田太郎',
-        photo: undefined,
-      },
+      body: '本文が入ります。',
+      sentTime: '2022-01-01 18:00',
+      senderId: 1,
+      senderName: '山田太郎',
+      senderIcon: null,
+      to: 'xxx大会 フォロワー',
+      notificationDestinationTypeId: 1,
     },
     {
-      id: 6,
+      notificationId: 6,
       title: 'XXX大会に出場予定です！',
-      content: '本文が入ります。',
-      createdAt: '2022-01-01 18:00',
-      isRead: true,
-      sender: {
-        id: 1,
-        name: '山田太郎',
-        photo: undefined,
-      },
+      body: '本文が入ります。',
+      sentTime: '2022-01-01 18:00',
+      senderId: 1,
+      senderName: '山田太郎',
+      senderIcon: null,
+      to: 'xxx大会 フォロワー',
+      notificationDestinationTypeId: 1,
     },
     {
-      id: 7,
+      notificationId: 7,
       title: 'XXX大会に出場予定です！',
-      content: '本文が入ります。',
-      createdAt: '2022-01-01 18:00',
-      isRead: true,
-      sender: {
-        id: 1,
-        name: '山田太郎',
-        photo: undefined,
-      },
+      body: '本文が入ります。',
+      sentTime: '2022-01-01 18:00',
+      senderId: 1,
+      senderName: '山田太郎',
+      senderIcon: null,
+      to: 'xxx大会 フォロワー',
+      notificationDestinationTypeId: 1,
     },
     {
-      id: 8,
+      notificationId: 8,
       title: 'XXX大会に出場予定です！',
-      content: '本文が入ります。',
-      createdAt: '2022-01-01 18:00',
-      isRead: true,
-      sender: {
-        id: 1,
-        name: '山田太郎',
-        photo: undefined,
-      },
+      body: '本文が入ります。',
+      sentTime: '2022-01-01 18:00',
+      senderId: 1,
+      senderName: '山田太郎',
+      senderIcon: null,
+      to: 'xxx大会 フォロワー',
+      notificationDestinationTypeId: 1,
     },
     {
-      id: 9,
+      notificationId: 9,
       title: 'XXX大会に出場予定です！',
-      content: '本文が入ります。',
-      createdAt: '2022-01-01 18:00',
-      isRead: true,
-      sender: {
-        id: 1,
-        name: '山田太郎',
-        photo: undefined,
-      },
+      body: '本文が入ります。',
+      sentTime: '2022-01-01 18:00',
+      senderId: 1,
+      senderName: '山田太郎',
+      senderIcon: null,
+      to: 'xxx大会 フォロワー',
+      notificationDestinationTypeId: 1,
     },
     {
-      id: 10,
+      notificationId: 10,
       title: 'XXX大会に出場予定です！',
-      content: '本文が入ります。',
-      createdAt: '2022-01-01 18:00',
-      isRead: true,
-      sender: {
-        id: 1,
-        name: '山田太郎',
-        photo: undefined,
-      },
+      body: '本文が入ります。',
+      sentTime: '2022-01-01 18:00',
+      senderId: 1,
+      senderName: '山田太郎',
+      senderIcon: null,
+      to: 'xxx大会 フォロワー',
+      notificationDestinationTypeId: 1,
     },
   ];
 
+  const notificationContent = notificationRes.data?.result;
   const hasMore = true;
-
-  const notificationContent = data.find((notification) => notification.id === currentId);
 
   const handleClickListItem = (id: number) => async () => {
     updateIsRead(id);
@@ -165,8 +171,14 @@ export default function NotificationsList() {
     <div className='flex'>
       <div className='flex flex-col w-full md:max-w-xs border-r border-r-gray-50'>
         {data.map((notification) => (
-          <Button key={notification.id} onClick={handleClickListItem(notification.id)}>
-            <ListItem notification={notification} isSelected={currentId === notification.id} />
+          <Button
+            key={notification.notificationId}
+            onClick={handleClickListItem(notification.notificationId)}
+          >
+            <ListItem
+              notification={notification}
+              isSelected={currentId === notification.notificationId}
+            />
           </Button>
         ))}
 
