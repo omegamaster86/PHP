@@ -270,7 +270,7 @@ interface CoachQualification {
   heldCoachQualificationId: number;
   qualName: string;
   expiryDate: string;
-};
+}
 
 interface RefereeQualification {
   heldRefereeQualificationId: number;
@@ -682,15 +682,30 @@ interface CoachRefereeInfoData {
   refereeQualificationNames: any; //審判資格 FIXME
 }
 
+// 資格
 interface Qualification {
   qual_id: number;
   qual_name: string;
+}
+
+// 通知参照情報
+interface NotificationInfoData {
+  notificationId: number;
+  title: string;
+  notificationDestinationTypeId: 1 | 2 | 3 | 4; // 1:フォロワー, 2:大会フォロワー, 3:有資格者, 4: 全ユーザー
+  to: string;
+  body: string;
+  senderId: number;
+  senderName: string;
+  senderIcon: string | null;
+  sentTime: string;
 }
 
 export type {
   CheckRace,
   CheckRaceResultRecord,
   CheckRaceResultRecordDeleted,
+  CoachingHistory,
   CoachRefereeInfoData,
   CoachRefereeResponse,
   CountryResponse,
@@ -700,6 +715,7 @@ export type {
   EventResponse,
   LangResponse,
   MasterResponse,
+  MyPageCoachRefereeResponse,
   MyPagePlayerProfileInfoData,
   MyPageProfileInfoData,
   MyPageRaceResultParams,
@@ -707,6 +723,7 @@ export type {
   MyPageTournamentInfoData,
   MyPageTournamentParams,
   MyPageVolunteerInfoData,
+  NotificationInfoData,
   Org,
   Organization,
   OrganizationPlayer,
@@ -733,8 +750,6 @@ export type {
   VenueResponse,
   VolunteerHistoriesResponse,
   VolunteerResponse,
-  CoachingHistory,
-  MyPageCoachRefereeResponse,
 };
 
 export * from './form';

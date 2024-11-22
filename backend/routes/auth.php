@@ -209,10 +209,10 @@ Route::middleware('auth')->group(function () {
     Route::get('getCoachRefereeProfileInfo', [CoachRefereeControlloer::class, 'getCoachRefereeProfileInfo']); //指導者・審判プロフィール情報を取得する 20241112
 
     //通知関連
-    Route::get('getNotificationsInfoList', [NotificationsController::class, 'getNotificationsInfoList']); //通知参照画面用の情報を取得 20241113
+    Route::get('getNotificationInfoData', [NotificationsController::class, 'getNotificationInfoData']); //通知参照画面用の情報を取得 20241113
     Route::get('getSenderNotificationsList', [NotificationsController::class, 'getSenderNotificationsList']); //通知一覧画面(送信)の情報を取得 20241118
     Route::get('getRecipientsNotificationsList', [NotificationsController::class, 'getRecipientsNotificationsList']); //通知一覧画面(受信)の情報を取得 20241118
-    Route::patch('deleteNotification', [NotificationsController::class, 'deleteNotification']); //通知情報の削除 20241118
+    Route::delete('deleteNotification', [NotificationsController::class, 'deleteNotification']); //通知情報の削除 20241118
     Route::post('insertNotification', [NotificationsController::class, 'insertNotification']); //通知情報の登録 20241119
     Route::patch('updateNotification', [NotificationsController::class, 'updateNotification']); //通知情報の更新 20241119
     Route::patch('updateNotificationReadFlag', [NotificationsController::class, 'updateNotificationReadFlag']); //既読フラグの更新 20241121

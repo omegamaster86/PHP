@@ -1,25 +1,17 @@
+import { NotificationInfoData } from '@/app/types';
 import { cn } from '@/app/utils/cn';
 import { formatDate } from '@/app/utils/dateUtil';
 import { Avatar } from '@mui/material';
 
 type Props = {
-  notification: {
-    title: string;
-    content: string;
-    createdAt: string;
-    isRead: boolean;
-    sender: {
-      id: number;
-      name: string;
-      photo: string | undefined;
-    };
-  };
+  notification: NotificationInfoData;
   isSelected: boolean;
 };
 
 export const ListItem: React.FC<Props> = (props) => {
   const { notification, isSelected } = props;
-  const { title, createdAt, isRead, sender } = notification;
+  const { title, sentTime, senderName, senderIcon } = notification;
+  const isRead = false;
 
   return (
     <div
@@ -33,17 +25,17 @@ export const ListItem: React.FC<Props> = (props) => {
         <div className='flex justify-between items-center w-full gap-2'>
           <div className='flex items-center gap-2 min-w-0'>
             <Avatar
-              src={sender.photo}
-              alt={sender.name}
+              src={senderIcon ?? undefined}
+              alt={senderName}
               sx={{
                 width: 24,
                 height: 24,
               }}
             />
-            <h2 className='text-xs font-bold truncate'>{sender.name}</h2>
+            <h2 className='text-xs font-bold truncate'>{senderName}</h2>
           </div>
           <p className='text-xs text-gray-300 flex-shrink-0'>
-            {formatDate(createdAt, 'yyyy/MM/dd HH:mm')}
+            {formatDate(sentTime, 'yyyy/MM/dd HH:mm')}
           </p>
         </div>
 

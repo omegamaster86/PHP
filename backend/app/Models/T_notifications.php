@@ -12,11 +12,13 @@ class T_notifications extends Model
     use HasFactory;
 
     //通知参照画面用データ取得 20241113
-    public function getNotificationsInfoData($notificationId)
+    public function getNotificationInfoData($notificationId)
     {
-        $result = DB::select(
-            'SELECT 
+        $result = DB::selectOne(
+            'SELECT
+                t_notifications.notification_id as notificationId,
                 MAX(t_notifications.title) as title,
+                t_notifications.notification_destination_type_id as notificationDestinationTypeId,
                 CASE 
                     WHEN t_notifications.notification_destination_type_id = 1 THEN "フォロワー"
                     WHEN t_notifications.notification_destination_type_id = 2 THEN CONCAT(MAX(t_tournaments.tourn_name), "フォロワー")
@@ -27,6 +29,7 @@ class T_notifications extends Model
                     WHEN t_notifications.notification_destination_type_id = 4 THEN "全ユーザー"
                     ELSE NULL
                 END AS "to",
+                t_users.user_id as senderId,
                 CASE 
                     WHEN t_notifications.notification_destination_type_id = 1 THEN MAX(t_players.photo)
                     WHEN t_notifications.notification_destination_type_id = 2 THEN MAX(SUBSTRING(t_organizations.org_name, 1, 1))
@@ -58,7 +61,8 @@ class T_notifications extends Model
             on t_notifications.notification_id = t_notified_referee_qualifications.notification_id and t_notified_referee_qualifications.delete_flag = 0
             left join m_referee_qualifications
             on t_notified_referee_qualifications.referee_qualification_id = m_referee_qualifications.referee_qualification_id and m_referee_qualifications.delete_flag = 0
-            where t_notifications.notification_id = ?',
+            where t_notifications.notification_id = ?
+            and t_notifications.delete_flag = 0',
             [
                 $notificationId
             ]
@@ -223,5 +227,4 @@ class T_notifications extends Model
             ]
         );
     }
-
 }

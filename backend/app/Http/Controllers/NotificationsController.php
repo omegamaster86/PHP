@@ -11,22 +11,27 @@ use App\Models\T_notified_coach_qualifications;
 use App\Models\T_notified_referee_qualifications;
 use App\Models\T_notification_recipients;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class NotificationsController extends Controller
 {
     //通知参照画面用のデータを取得 20241113
-    public function getNotificationsInfoList(
+    public function getNotificationInfoData(
         Request $request,
         T_notifications $tNotifications
     ) {
-        Log::debug(sprintf("getNotificationsInfoList start"));
+        Log::debug(sprintf("getNotificationInfoData start"));
         $reqData = $request->all();
         Log::debug($reqData);
         $notificationId = $reqData["notificationId"];
 
-        $result = $tNotifications->getNotificationsInfoData($notificationId); //通知情報を取得 20241112
+        $result = $tNotifications->getNotificationInfoData($notificationId); //通知情報を取得 20241112
 
-        Log::debug(sprintf("getNotificationsInfoList end"));
+        if (empty($result->notificationId)) {
+            abort(404, '通知情報が見つかりません。');
+        }
+
+        Log::debug(sprintf("getNotificationInfoData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 
@@ -73,15 +78,29 @@ class NotificationsController extends Controller
             $reqData = $request->all();
             Log::debug($reqData);
             $notificationId = $reqData["notificationId"];
+            $userId = Auth::user()->user_id;
+
+            $targetNotification = $tNotifications->getNotificationInfoData($notificationId);
+            $targetSenderId = $targetNotification->senderId;
+            if (empty($targetSenderId) || $targetSenderId !== $userId) {
+                abort(403, '削除権限がありません。');
+            }
+
             $tNotifications->deleteNotificationData($notificationId); //通知情報の削除 20241118
 
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
+
+            if ($e instanceof HttpException) {
+                throw $e;
+            }
+
             abort(500, '通知情報の削除に失敗しました。');
         }
 
         Log::debug(sprintf("deleteNotification end"));
+        return response()->noContent();
     }
 
     //通知情報の登録 20241119
