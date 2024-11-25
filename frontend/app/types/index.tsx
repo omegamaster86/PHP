@@ -672,16 +672,6 @@ interface MyPageProfileInfoData {
   photo: string; //写真
 }
 
-//指導者・審判情報用インターフェース 20241106
-interface CoachRefereeInfoData {
-  userName: string; //ユーザ名
-  userId: number; //ユーザID
-  coachingHistories: any; //指導履歴 FIXME
-  jspoId: number; //JSPO ID
-  coachQualificationNames: any; //指導者資格 FIXME
-  refereeQualificationNames: any; //審判資格 FIXME
-}
-
 // 資格
 interface Qualification {
   qual_id: number;
@@ -706,7 +696,6 @@ export type {
   CheckRaceResultRecord,
   CheckRaceResultRecordDeleted,
   CoachingHistory,
-  CoachRefereeInfoData,
   CoachRefereeResponse,
   CountryResponse,
   CrewPlayer,
