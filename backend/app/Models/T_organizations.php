@@ -442,11 +442,11 @@ class T_organizations extends Model
                                     on `t_organizations`.`pref_org_type` = pmot.`org_type_id`
                                     where 1=1
                                     and `t_organizations`.`delete_flag`=0
-                                    and (`m_countries`.`delete_flag` = 0
-                                    and (`m_prefectures`.`delete_flag` = 0
-                                    and (`m_organization_class`.`delete_flag` = 0
-                                    and (jmot.`delete_flag` = 0
-                                    and (pmot.`delete_flag` = 0'
+                                    and `m_countries`.`delete_flag` = 0
+                                    and `m_prefectures`.`delete_flag` = 0
+                                    and `m_organization_class`.`delete_flag` = 0
+                                    and jmot.`delete_flag` = 0
+                                    and pmot.`delete_flag` = 0'
                                 );
         return $organizations;
     }
