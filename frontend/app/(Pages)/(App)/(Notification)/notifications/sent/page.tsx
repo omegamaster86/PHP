@@ -2,7 +2,7 @@
 
 import { ListItem } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/ListItem';
 import { NotificationContent } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/NotificationContent';
-import { CustomButton } from '@/app/components';
+import { CustomButton, CustomTitle } from '@/app/components';
 import { useAuth } from '@/app/hooks/auth';
 import { fetcher } from '@/app/lib/swr';
 import { NotificationInfoData } from '@/app/types';
@@ -24,6 +24,10 @@ const sendDeleteRequest = async (url: string, trigger: { arg: { notificationId: 
   });
 };
 
+const title = '送信通知一覧';
+const notSelectedMessage = '送信トレイからメールを選択してください。';
+const noDataMessage = '送信したメールはありません。';
+
 export default function NotificationsSentList() {
   // tailwindのmdの幅を超えているかどうか
   const isWideScreen = useMediaQuery('(min-width: 768px)');
@@ -34,6 +38,12 @@ export default function NotificationsSentList() {
   const { user } = useAuth({ middleware: 'auth' });
 
   const { trigger } = useSWRMutation('/deleteNotification', sendDeleteRequest);
+  const { data } = useSWR(
+    {
+      url: '/getSenderNotificationsList',
+    },
+    fetcher<NotificationInfoData[]>,
+  );
   const notificationRes = useSWR(
     {
       url: '/getNotificationInfoData',
@@ -49,121 +59,11 @@ export default function NotificationsSentList() {
     },
   );
 
-  const data: NotificationInfoData[] = [
-    {
-      notificationId: 1,
-      title:
-        'XXX大会に出場予定です！あああああああああああああああああああああああああああああああああああああああああああああああああああああああ',
-      body: '本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。\n本文が入ります。本文が入ります。本文が入ります。本文が入ります。\n本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。本文が入ります。\n\nリンク\n\n本文が入ります。\n本文が入ります。',
-      sentTime: '2022-01-01 18:00',
-      senderId: 1,
-      senderName: '山田太郎',
-      senderIcon: null,
-      to: 'xxx大会 フォロワー',
-      notificationDestinationTypeId: 1,
-    },
-    {
-      notificationId: 2,
-      title: 'XXX大会に出場予定です！',
-      body: '本文が入ります。',
-      sentTime: '2022-01-01 18:00',
-      senderId: 1,
-      senderName: '山田太郎',
-      senderIcon: null,
-      to: 'xxx大会 フォロワー',
-      notificationDestinationTypeId: 1,
-    },
-    {
-      notificationId: 3,
-      title: 'XXX大会に出場予定です！',
-      body: '本文が入ります。',
-      sentTime: '2022-01-01 18:00',
-      senderId: 1,
-      senderName: '山田太郎',
-      senderIcon: null,
-      to: 'xxx大会 フォロワー',
-      notificationDestinationTypeId: 1,
-    },
-    {
-      notificationId: 4,
-      title: 'XXX大会に出場予定です！',
-      body: '本文が入ります。',
-      sentTime: '2022-01-01 18:00',
-      senderId: 1,
-      senderName: '山田太郎',
-      senderIcon: null,
-      to: 'xxx大会 フォロワー',
-      notificationDestinationTypeId: 1,
-    },
-    {
-      notificationId: 5,
-      title: 'XXX大会に出場予定です！',
-      body: '本文が入ります。',
-      sentTime: '2022-01-01 18:00',
-      senderId: 1,
-      senderName: '山田太郎',
-      senderIcon: null,
-      to: 'xxx大会 フォロワー',
-      notificationDestinationTypeId: 1,
-    },
-    {
-      notificationId: 6,
-      title: 'XXX大会に出場予定です！',
-      body: '本文が入ります。',
-      sentTime: '2022-01-01 18:00',
-      senderId: 1,
-      senderName: '山田太郎',
-      senderIcon: null,
-      to: 'xxx大会 フォロワー',
-      notificationDestinationTypeId: 1,
-    },
-    {
-      notificationId: 7,
-      title: 'XXX大会に出場予定です！',
-      body: '本文が入ります。',
-      sentTime: '2022-01-01 18:00',
-      senderId: 1,
-      senderName: '山田太郎',
-      senderIcon: null,
-      to: 'xxx大会 フォロワー',
-      notificationDestinationTypeId: 1,
-    },
-    {
-      notificationId: 8,
-      title: 'XXX大会に出場予定です！',
-      body: '本文が入ります。',
-      sentTime: '2022-01-01 18:00',
-      senderId: 1,
-      senderName: '山田太郎',
-      senderIcon: null,
-      to: 'xxx大会 フォロワー',
-      notificationDestinationTypeId: 1,
-    },
-    {
-      notificationId: 9,
-      title: 'XXX大会に出場予定です！',
-      body: '本文が入ります。',
-      sentTime: '2022-01-01 18:00',
-      senderId: 1,
-      senderName: '山田太郎',
-      senderIcon: null,
-      to: 'xxx大会 フォロワー',
-      notificationDestinationTypeId: 1,
-    },
-    {
-      notificationId: 10,
-      title: 'XXX大会に出場予定です！',
-      body: '本文が入ります。',
-      sentTime: '2022-01-01 18:00',
-      senderId: 1,
-      senderName: '山田太郎',
-      senderIcon: null,
-      to: 'xxx大会 フォロワー',
-      notificationDestinationTypeId: 1,
-    },
-  ];
-
+  const notifications = data?.result ?? [];
+  const hasNotifications = !!notifications.length;
   const notificationContent = notificationRes.data?.result;
+  // 通知IDを指定してる&通知内容がある&通知内容の取得が終わっている
+  const isSelected = !!currentId && !!notificationContent && !notificationRes.isLoading;
   const senderId = Number(notificationContent?.senderId);
   const userId = Number(user?.user_id);
   const isAuthor = !!senderId && !!userId && senderId === userId;
@@ -198,42 +98,51 @@ export default function NotificationsSentList() {
   };
 
   return (
-    <div className='flex'>
-      <div className='flex flex-col w-full md:max-w-xs border-r border-r-gray-50'>
-        {data.map((notification) => (
-          <Button
-            key={notification.notificationId}
-            onClick={handleClickListItem(notification.notificationId)}
-          >
-            <ListItem
-              notification={notification}
-              isSelected={currentId === notification.notificationId}
-            />
-          </Button>
-        ))}
+    <div>
+      <div className='mb-5'>
+        <CustomTitle displayBack>{title}</CustomTitle>
+      </div>
+      <div className='flex'>
+        <div className='flex flex-col w-full md:max-w-xs border-r border-r-gray-50'>
+          {hasNotifications ? (
+            notifications.map((n) => (
+              <Button key={n.notificationId} onClick={handleClickListItem(n.notificationId)}>
+                <ListItem notification={n} isSelected={currentId === n.notificationId} />
+              </Button>
+            ))
+          ) : (
+            <div className='flex justify-center items-center w-full'>
+              <p>{noDataMessage}</p>
+            </div>
+          )}
 
-        {hasMore && (
-          <div className='flex justify-center my-4'>
-            <CustomButton buttonType='primary-outlined' className='w-28' onClick={fetchMore}>
-              もっと見る
-            </CustomButton>
+          {hasMore && (
+            <div className='flex justify-center my-4'>
+              <CustomButton buttonType='primary-outlined' className='w-28' onClick={fetchMore}>
+                もっと見る
+              </CustomButton>
+            </div>
+          )}
+        </div>
+
+        {/* スマホの場合は非表示 */}
+        {isSelected ? (
+          <div className='hidden md:block w-full'>
+            <NotificationContent
+              type='sent'
+              notificationContent={notificationContent}
+              isAuthor={isAuthor}
+              isWideScreen={isWideScreen}
+              isDeleteMode={isDeleteMode}
+              onDelete={handleDelete}
+            />
+          </div>
+        ) : (
+          <div className='flex justify-center items-center w-full'>
+            <p>{notSelectedMessage}</p>
           </div>
         )}
       </div>
-
-      {/* スマホの場合は非表示 */}
-      {notificationContent && (
-        <div className='hidden md:block w-full'>
-          <NotificationContent
-            type='sent'
-            notificationContent={notificationContent}
-            isAuthor={isAuthor}
-            isWideScreen={isWideScreen}
-            isDeleteMode={isDeleteMode}
-            onDelete={handleDelete}
-          />
-        </div>
-      )}
     </div>
   );
 }
