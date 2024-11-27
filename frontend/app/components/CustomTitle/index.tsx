@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'; // Import the specific icon component
 import { useRouter } from 'next/navigation';
+import type { ReactNode } from 'react';
 
 const CustomTitle = ({
   displayBack,

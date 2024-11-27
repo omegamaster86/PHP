@@ -1,17 +1,20 @@
-import { NotificationInfoData } from '@/app/types';
+import { NotificationListData } from '@/app/types';
 import { cn } from '@/app/utils/cn';
 import { formatDate } from '@/app/utils/dateUtil';
 import { Avatar } from '@mui/material';
 
 type Props = {
-  notification: NotificationInfoData;
+  notification: NotificationListData;
   isSelected: boolean;
 };
 
 export const ListItem: React.FC<Props> = (props) => {
   const { notification, isSelected } = props;
-  const { title, sentTime, senderName, senderIcon } = notification;
+  const { title, sentTime, senderName, senderIcon, notificationDestinationTypeId } = notification;
   const isRead = false;
+
+  // 有資格者(3)、全ユーザー(4)であればjara-icon.pngを表示
+  const avatarSrc = [3, 4].includes(notificationDestinationTypeId) ? '/jara-icon.png' : senderIcon;
 
   return (
     <div
@@ -25,7 +28,7 @@ export const ListItem: React.FC<Props> = (props) => {
         <div className='flex justify-between items-center w-full gap-2'>
           <div className='flex items-center gap-2 min-w-0'>
             <Avatar
-              src={senderIcon ?? undefined}
+              src={avatarSrc ?? undefined}
               alt={senderName}
               sx={{
                 width: 24,

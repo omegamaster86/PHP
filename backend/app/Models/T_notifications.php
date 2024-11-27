@@ -75,8 +75,10 @@ class T_notifications extends Model
     {
         $result = DB::select(
             'SELECT distinct 
-                t_notifications.notification_id,
+                t_notifications.notification_id as notificationId,
                 t_notifications.title,
+                t_notifications.notification_destination_type_id as notificationDestinationTypeId,
+                t_users.user_id as senderId,
                 CASE 
                     WHEN t_notifications.notification_destination_type_id = 1 THEN t_players.photo
                     WHEN t_notifications.notification_destination_type_id = 2 THEN SUBSTRING(t_organizations.org_name, 1, 1)
@@ -115,8 +117,10 @@ class T_notifications extends Model
     {
         $result = DB::select(
             'SELECT distinct 
-                t_notifications.notification_id,
+                t_notifications.notification_id as notificationId,
                 t_notifications.title,
+                t_notifications.notification_destination_type_id as notificationDestinationTypeId,
+                t_users.user_id as senderId,
                 CASE 
                     WHEN t_notifications.notification_destination_type_id = 1 THEN t_players.photo
                     WHEN t_notifications.notification_destination_type_id = 2 THEN SUBSTRING(t_organizations.org_name, 1, 1)

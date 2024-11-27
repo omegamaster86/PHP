@@ -61,7 +61,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {isMyPageRoute ? (
               <MyPageLayout>{children}</MyPageLayout>
             ) : (
-              <main className='flex flex-col gap-7 md:overflow-y-auto px-3 py-4 md:py-12 w-full max-w-5xl m-auto'>
+              <main className='flex flex-col gap-7 md:overflow-y-auto px-3 py-4 md:py-12 w-full max-w-5xl mx-auto'>
                 {children}
               </main>
             )}

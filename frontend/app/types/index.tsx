@@ -691,6 +691,9 @@ interface NotificationInfoData {
   sentTime: string;
 }
 
+// 受信・送信一覧api用インターフェース
+interface NotificationListData extends Omit<NotificationInfoData, 'to' | 'body'> {}
+
 export type {
   CheckRace,
   CheckRaceResultRecord,
@@ -713,6 +716,7 @@ export type {
   MyPageTournamentParams,
   MyPageVolunteerInfoData,
   NotificationInfoData,
+  NotificationListData,
   Org,
   Organization,
   OrganizationPlayer,
