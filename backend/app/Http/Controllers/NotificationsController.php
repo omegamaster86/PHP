@@ -108,7 +108,8 @@ class NotificationsController extends Controller
         Request $request,
         T_notifications $tNotifications,
         T_notified_coach_qualifications $tNotifiedCoachQualifications,
-        T_notified_referee_qualifications $tNotifiedRefereeQualifications
+        T_notified_referee_qualifications $tNotifiedRefereeQualifications,
+        T_notification_recipients $tNotificationRecipients
     ) {
         Log::debug(sprintf("insertNotification start"));
 
@@ -135,6 +136,24 @@ class NotificationsController extends Controller
                     $req['refereeQualificationsData'][$i]["notificationId"] = $insertId;
                     $tNotifiedRefereeQualifications->insertNotifiedRefereeQualificationsData($req['refereeQualificationsData'][$i]);
                 }
+            }
+
+            //通知先区分IDごと条件分け
+            if ($req["notificationData"]["notificationDestinationTypeId"] == 1) {
+                //選手フォロー
+                $tNotificationRecipients->insertFollowedPlayersNotificationData($insertId);
+            } 
+            else if ($req["notificationData"]["notificationDestinationTypeId"] == 2) {
+                //大会フォロー
+                $tNotificationRecipients->insertFollowedTournamentsNotificationData($insertId);
+            } 
+            else if ($req["notificationData"]["notificationDestinationTypeId"] == 3) {
+                //有資格者
+                $tNotificationRecipients->insertHeldQualificationNotificationData($insertId);
+            } 
+            else {
+                //全ユーザー
+                $tNotificationRecipients->insertAllUserNotificationData($insertId);
             }
 
             DB::commit();
