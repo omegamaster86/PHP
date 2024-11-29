@@ -26,7 +26,7 @@ import { formatDate } from '@/app/utils/dateUtil';
 import { addMonths, isAfter, isEqual } from 'date-fns';
 
 type Qualification = {
-  expiryDate?: string;
+  expiryDate: string | null;
   label: string;
 };
 
@@ -62,7 +62,7 @@ export default function CoachRefereeProfile() {
   const router = useRouter();
   const EditButton = (
     <TitleSideButton
-      href='/coachRefereeInformation?mode=update'
+      href='/coachReferee?mode=update'
       icon={EditIcon}
       text='編集'
     />

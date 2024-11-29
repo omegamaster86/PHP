@@ -257,7 +257,7 @@ interface UserResponse {
   uploadedPhotoName?: string; // アップロードされて写真の名前を保存する
 }
 
-interface CoachRefereeResponse {
+interface CoachRefereeRefResponse {
   user_id: string; // ユーザーID
   userName: string; // ユーザー名
   coachQualificationNames: string[]; //指導者資格
@@ -269,13 +269,17 @@ interface CoachRefereeResponse {
 interface CoachQualification {
   heldCoachQualificationId: number;
   qualName: string;
-  expiryDate: string;
+  expiryDate: string | null;
+  acquisitionDate: string;
+  isNewRow?: true;
 }
 
 interface RefereeQualification {
   heldRefereeQualificationId: number;
   qualName: string;
-  expiryDate: string;
+  expiryDate: string | null;
+  acquisitionDate: string;
+  isNewRow?: true;
 }
 
 interface MyPageCoachRefereeResponse {
@@ -286,12 +290,22 @@ interface MyPageCoachRefereeResponse {
   refereeQualifications: RefereeQualification[];
 }
 
+interface CoachRefereeHistoryResponse {
+  jspoId: number;
+  coachingHistories: (CoachingHistory & {
+    isCurrentlyCoaching: boolean;
+  })[];
+  coachQualifications: CoachQualification[];
+  refereeQualifications: RefereeQualification[];
+}
+
 interface CoachingHistory {
   startDate: string;
   endDate: string;
   orgCoachingHistoryId: number;
   orgName: string;
   staffTypeName: string;
+  isNewRow?: true
 }
 
 // ボランティア情報
@@ -699,8 +713,10 @@ export type {
   CheckRaceResultRecord,
   CheckRaceResultRecordDeleted,
   CoachingHistory,
-  CoachRefereeResponse,
+  CoachRefereeRefResponse,
+  CoachQualification,
   CountryResponse,
+  CoachRefereeHistoryResponse,
   CrewPlayer,
   CrewResponse,
   DisTypeResponse,
@@ -731,6 +747,7 @@ export type {
   RaceResultRecordsResponse,
   RaceTable,
   RaceTypeResponse,
+  RefereeQualification,
   SexResponse,
   Staff,
   TeamPlayerInformationResponse,

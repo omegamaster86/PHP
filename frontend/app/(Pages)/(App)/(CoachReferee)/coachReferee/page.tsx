@@ -4,11 +4,11 @@ import React, { useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { CustomButton, ErrorBox, CustomTitle } from '@/app/components';
 import { Divider } from '@mui/material';
-import UpdateFirstDisplay from './_components/updateFirstDisplay';
+import UpdateView from './_components/UpdateView';
 
 type Mode = 'update' | 'confirm';
 
-const CoachRefereeInformation = () => {
+const CoachReferee = () => {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState([] as string[]);
   const searchParams = useSearchParams();
@@ -23,7 +23,7 @@ const CoachRefereeInformation = () => {
       <CustomButton
         buttonType='primary'
         onClick={() => {
-          router.push('/coachRefereeInformation?mode=confirm');
+          router.push('/coachReferee?mode=confirm');
         }}
       >
         確認
@@ -34,7 +34,7 @@ const CoachRefereeInformation = () => {
         buttonType='primary'
         onClick={() => {
           // 更新系の処理を記載する
-          router.push('/coachRefereeRef');
+          router.push('/coachRefereeRef?mode=update');
         }}
       >
         更新
@@ -51,11 +51,7 @@ const CoachRefereeInformation = () => {
           {mode === 'confirm' && '指導者・審判情報確認'}
         </CustomTitle>
       </div>
-      {mode === 'update' && (
-        <div className='flex flex-col gap-10'>
-          <UpdateFirstDisplay />
-        </div>
-      )}
+      {mode === 'update' && <UpdateView />}
       {mode === 'confirm' && (
         <>
           <h2>指導履歴</h2>
@@ -75,4 +71,4 @@ const CoachRefereeInformation = () => {
   );
 };
 
-export default CoachRefereeInformation;
+export default CoachReferee;

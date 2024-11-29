@@ -17,8 +17,9 @@ const CustomDatePicker = ({
   isError,
   className,
   id,
+  disabled,
 }: {
-  selectedDate: string;
+  selectedDate: string | null;
   onChange: any;
   maxDate?: Date;
   errorMessages?: string[];
@@ -28,6 +29,7 @@ const CustomDatePicker = ({
   isError?: boolean;
   className?: string;
   id?: string;
+  disabled?: boolean;
 }) => {
   return (
     <>
@@ -53,6 +55,7 @@ const CustomDatePicker = ({
           readOnly={readonly}
           placeholderText={placeHolder}
           wrapperClassName='w-full'
+          disabled={disabled}
         />
       )}
       {errorMessages?.map((message: string) => (
