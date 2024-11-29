@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 import { Divider } from '@mui/material';
-import { CoachRefereeResponse } from '@/app/types';
+import { CoachRefereeRefResponse } from '@/app/types';
 
 import {
   CustomButton,
@@ -37,7 +37,7 @@ export default function UserInformationReference() {
           params: { userId },
         }
       : null,
-    fetcher<CoachRefereeResponse>,
+    fetcher<CoachRefereeRefResponse>,
   );
 
   if (!data) {

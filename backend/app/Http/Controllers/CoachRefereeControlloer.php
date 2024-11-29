@@ -45,12 +45,12 @@ class CoachRefereeControlloer extends Controller
         $reqData = $request->all();
         Log::debug($reqData);
 
-        $result = json_encode([
+        $result = [
             'jspoId' => Auth::user()->jspo_id,
             'coachingHistories' => $tOrganizationCoachingHistory->getOrganizationCoachingHistoryData(Auth::user()->user_id),
-            'coachQualifications' => $tHeldRefereeQualifications->getHeldRefereeQualificationsData(),
-            'refereeQualifications' => $tHeldCoachQualifications->getHeldCoachQualificationsData()
-        ]);
+            'coachQualifications' => $tHeldCoachQualifications->getHeldCoachQualificationsData(),
+            'refereeQualifications' => $tHeldRefereeQualifications->getHeldRefereeQualificationsData()
+        ];
 
         Log::debug(sprintf("getUpdateCoachRefereeInfoList end"));
         return response()->json(['result' => $result]); //DBの結果を返す
