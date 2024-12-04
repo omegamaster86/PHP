@@ -19,7 +19,8 @@ class T_held_referee_qualifications extends Model
                 `held_referee_qualification_id` as `heldRefereeQualificationId`,
                 `qual_name`as `qualName`,
                 `acquisition_date`as `acquisitionDate`,
-                `expiry_date` as `expiryDate`
+                `expiry_date` as `expiryDate`,
+                `referee_qual`.`referee_qualification_id` as `refereeQualificationId`
                 FROM `t_held_referee_qualifications` `held_referee_qual`
                 left join `m_referee_qualifications` `referee_qual`
                 on `held_referee_qual`.`referee_qualification_id` = `referee_qual`.`referee_qualification_id` 

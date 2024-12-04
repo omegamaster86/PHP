@@ -20,6 +20,8 @@ class T_organization_coaching_history extends Model
                 t_organization_coaching_history.start_date as `startDate`,
                 t_organization_coaching_history.end_date as `endDate`,
                 t_organizations.org_name as `orgName`,
+                t_organizations.org_id as `orgId`,
+                m_staff_type.staff_type_id as `staffTypeId`,
                 m_staff_type.staff_type_name as `staffTypeName`
                 FROM t_organization_coaching_history
                 left join t_organizations 
