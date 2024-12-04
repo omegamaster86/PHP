@@ -266,46 +266,53 @@ interface CoachRefereeRefResponse {
   coachingHistories: CoachingHistory[]; //指導履歴
 }
 
-interface CoachQualification {
+interface ICoachQualification {
   heldCoachQualificationId: number;
   qualName: string;
   expiryDate: string | null;
   acquisitionDate: string;
   isNewRow?: true;
+  isDeleted?: boolean;
+  coachQualificationId: number;
 }
 
-interface RefereeQualification {
+interface IRefereeQualification {
   heldRefereeQualificationId: number;
   qualName: string;
   expiryDate: string | null;
   acquisitionDate: string;
   isNewRow?: true;
+  isDeleted?: boolean;
+  refereeQualificationId: number;
 }
 
 interface MyPageCoachRefereeResponse {
   userName: string;
   jspoId: number;
   coachingHistories: CoachingHistory[];
-  coachQualifications: CoachQualification[];
-  refereeQualifications: RefereeQualification[];
+  coachQualifications: ICoachQualification[];
+  refereeQualifications: IRefereeQualification[];
 }
 
-interface CoachRefereeHistoryResponse {
+interface CoachRefereeResponse {
   jspoId: number;
   coachingHistories: (CoachingHistory & {
     isCurrentlyCoaching: boolean;
   })[];
-  coachQualifications: CoachQualification[];
-  refereeQualifications: RefereeQualification[];
+  coachQualifications: ICoachQualification[];
+  refereeQualifications: IRefereeQualification[];
 }
 
 interface CoachingHistory {
   startDate: string;
   endDate: string;
   orgCoachingHistoryId: number;
+  orgId: number;
   orgName: string;
+  staffTypeId: number;
   staffTypeName: string;
-  isNewRow?: true
+  isNewRow?: true;
+  isDeleted?: boolean;
 }
 
 // ボランティア情報
@@ -714,9 +721,9 @@ export type {
   CheckRaceResultRecordDeleted,
   CoachingHistory,
   CoachRefereeRefResponse,
-  CoachQualification,
+  CoachRefereeResponse,
+  ICoachQualification,
   CountryResponse,
-  CoachRefereeHistoryResponse,
   CrewPlayer,
   CrewResponse,
   DisTypeResponse,
@@ -747,7 +754,7 @@ export type {
   RaceResultRecordsResponse,
   RaceTable,
   RaceTypeResponse,
-  RefereeQualification,
+  IRefereeQualification,
   SexResponse,
   Staff,
   TeamPlayerInformationResponse,

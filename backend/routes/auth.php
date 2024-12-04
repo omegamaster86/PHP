@@ -17,6 +17,7 @@ use App\Http\Controllers\VolunteerInfoAlignmentController;
 use App\Http\Controllers\TournamentInfoAlignmentController;
 use App\Http\Controllers\MyPageController;
 use App\Http\Controllers\NotificationsController;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Models\M_prefectures;
@@ -216,6 +217,11 @@ Route::middleware('auth')->group(function () {
     Route::post('insertNotification', [NotificationsController::class, 'insertNotification']); //通知情報の登録 20241119
     Route::patch('updateNotification', [NotificationsController::class, 'updateNotification']); //通知情報の更新 20241119
     Route::patch('updateNotificationReadFlag', [NotificationsController::class, 'updateNotificationReadFlag']); //既読フラグの更新 20241121
+
+    // 共通
+    Route::get('getStaffTypes', [CommonController::class, 'getStaffTypes']); //スタッフ種別を取得
+    Route::get('getCoachQualifications', [CommonController::class, 'getCoachQualifications']); //ドロップダウンで使用する指導者資格名を取得 
+    Route::get('getRefereeQualifications', [CommonController::class, 'getRefereeQualifications']); //ドロップダウンで使用する審判資格名を取得
 
     //React連携後APIここまで===========================================================
     //================================================================================

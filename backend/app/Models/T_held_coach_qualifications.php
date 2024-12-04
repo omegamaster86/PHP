@@ -19,7 +19,8 @@ class T_held_coach_qualifications extends Model
                 `held_coach_qualification_id` as `heldCoachQualificationId`,
                 `qual_name`as `qualName`,
                 `acquisition_date`as `acquisitionDate`,
-                `expiry_date` as `expiryDate`
+                `expiry_date`as `expiryDate`,
+                `coach_qual`.`coach_qualification_id` as `coachQualificationId`
                 FROM `t_held_coach_qualifications` `held_coach_qual`
                 left join `m_coach_qualifications` `coach_qual`
                 on `held_coach_qual`.`coach_qualification_id` = `coach_qual`.`coach_qualification_id` 

@@ -1,48 +1,86 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { CustomButton } from '@/app/components';
-import {
-  CoachingHistory,
-  CoachQualification,
-  RefereeQualification,
-  CoachRefereeHistoryResponse,
-} from '@/app/types';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { CustomButton, CustomTextField, InputLabel } from '@/app/components';
+import { ICoachQualification, IRefereeQualification, CoachRefereeResponse, SelectOption } from '@/app/types';
 import useSWR from 'swr';
 import { fetcher } from '@/app/lib/swr';
-import CoachHistory from './CoachHistory';
-import QualificationElement from './QualificationsElement';
-import RefereeQualificationsElement from './RefereeQualificationsElement';
+import CoachingHistory from './CoachingHistory';
+import useSWRMutation from 'swr/mutation';
+import CoachQualification from './CoachQualification';
+import RefereeQualification from './RefereeQualification';
 
-type Mode = 'update' | 'confirm';
+type OrganizationListData = {
+  org_id: number;
+  org_name: string;
+}[];
 
 const UpdateView = () => {
   const { data } = useSWR(
     {
       url: `getUpdateCoachRefereeInfoList`,
     },
-    fetcher<CoachRefereeHistoryResponse>,
+    fetcher<CoachRefereeResponse>,
   );
-  console.log(data?.result);
+  const { data: coachQualificationData } = useSWR(
+    {
+      url: `getCoachQualifications`,
+    },
+    fetcher<SelectOption[]>,
+  );
+  const { data: refereeQualificationData } = useSWR(
+    {
+      url: `getRefereeQualifications`,
+    },
+    fetcher<SelectOption[]>,
+  );
+
+  const { data: organizationData } = useSWR(
+    {
+      url: `getOrganizationListData`,
+    },
+    fetcher<OrganizationListData>,
+  );
+
+  const { data: staffData } = useSWR(
+    {
+      url: `getStaffTypes`,
+    },
+    fetcher<SelectOption[]>,
+  );
+
   // FIXME: エラーメッセージを考慮する
   const [errorMessage, setErrorMessage] = useState([] as string[]);
-  const searchParams = useSearchParams();
-  const mode = searchParams.get('mode') as Mode;
 
-  const [fetchData, setFetchData] = useState<CoachRefereeHistoryResponse>({
-    jspoId: 0, 
+  const [fetchData, setFetchData] = useState<CoachRefereeResponse>({
+    jspoId: 0,
     coachingHistories: [],
     coachQualifications: [],
     refereeQualifications: [],
   });
 
-  const [options, setOptions] = useState<{ value: string; key: number }[] | null>(null);
+  useEffect(() => {
+    if (data?.result) {
+      setFetchData({
+        jspoId: data.result.jspoId,
+        coachingHistories: data.result.coachingHistories.map((history) => ({
+          ...history,
+          isCurrentlyCoaching: history.endDate === null,
+        })),
+        coachQualifications: data.result.coachQualifications || [],
+        refereeQualifications: data.result.refereeQualifications || [],
+      });
+    }
+  }, [data]);
 
-  const handleInputChange = (id: number, field: string, value: string | boolean) => {
+  const handleCoachingHistoryChange = (
+    index: number,
+    field: string,
+    value: string | number | boolean,
+  ) => {
     setFetchData((prevData) => {
-      const updatedHistory = prevData.coachingHistories.map((history) =>
-        history.orgCoachingHistoryId === id ? { ...history, [field]: value } : history,
+      const updatedHistory = prevData.coachingHistories.map((history, i) =>
+        i === index ? { ...history, [field]: value } : history,
       );
       return {
         ...prevData,
@@ -50,13 +88,84 @@ const UpdateView = () => {
       };
     });
   };
+  // const deleteRequest = async (
+  //   url: string,
+  //   trigger: { arg: { jspoId: number; orgCoachingHistoryId: number; isDeleted: boolean } },
+  // ) => {
+  //   const payload = {
+  //     coachingHistories: fetchData.coachingHistories,
+  //     coachQualifications: fetchData.coachQualifications,
+  //     refereeQualifications: fetchData.refereeQualifications,
+  //     jspoId: fetchData.jspoId,
+  //   };
 
-  const handleUpdatedQualificationsChange = (id: number, field: string, value: string) => {
+  //   console.log('送信データ:', JSON.stringify(payload, null, 2));
+
+  //   return fetcher({
+  //     url,
+  //     method: 'PATCH',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify(payload),
+  //   });
+  // };
+
+  // const { trigger } = useSWRMutation('/updateCoachRefereeInfo', deleteRequest);
+
+  const handleDelete = () => {
+    console.log('削除');
+  };
+
+  // const sendUpdateRequest = async () => {
+  //   const payload = {
+  //     coachingHistories: fetchData.coachingHistories,
+  //     coachQualifications: fetchData.coachQualifications,
+  //     refereeQualifications: fetchData.refereeQualifications,
+  //     jspoId: fetchData.jspoId,
+  //   };
+
+  //   console.log('送信データ:', JSON.stringify(payload, null, 2));
+
+  //   try {
+  //     const response = await fetch('/updateCoachRefereeInfo', {
+  //       method: 'PATCH',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(payload),
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error(`HTTPエラー: ${response.status}`);
+  //     }
+
+  //     const responseData = await response.json();
+  //     console.log('サーバーからのレスポンス:', responseData);
+  //     return responseData;
+  //   } catch (error) {
+  //     console.error('リクエストエラー:', error);
+  //     throw error;
+  //   }
+  // };
+
+  // const handleDelete = async () => {
+  //   try {
+  //     const result = await sendUpdateRequest();
+  //     console.log('更新が成功しました:', result);
+  //   } catch (error) {
+  //     console.error('更新中にエラーが発生しました:', error);
+  //   }
+  // };
+
+  const handleUpdatedQualificationsChange = (
+    index: number,
+    field: string,
+    value: string | number | boolean,
+  ) => {
     setFetchData((prevData) => {
-      const updatedQualifications = prevData.coachQualifications.map((qualification) =>
-        qualification.heldCoachQualificationId === id
-          ? { ...qualification, [field]: value }
-          : qualification,
+      const updatedQualifications = prevData.coachQualifications.map((qualification, i) =>
+        i === index ? { ...qualification, [field]: value } : qualification,
       );
       return {
         ...prevData,
@@ -64,13 +173,15 @@ const UpdateView = () => {
       };
     });
   };
-
-  const handleUpdatedRefereeQualificationsChange = (id: number, field: string, value: string) => {
+  
+  const handleUpdatedRefereeQualificationsChange = (
+    index: number,
+    field: string,
+    value: string | number | boolean,
+  ) => {
     setFetchData((prevData) => {
-      const updatedRefereeQualifications = prevData.refereeQualifications.map((qualification) =>
-        qualification.heldRefereeQualificationId === id
-          ? { ...qualification, [field]: value }
-          : qualification,
+      const updatedRefereeQualifications = prevData.refereeQualifications.map((qualification, i) =>
+        i === index ? { ...qualification, [field]: value } : qualification,
       );
       return {
         ...prevData,
@@ -80,46 +191,53 @@ const UpdateView = () => {
   };
 
   const addCoachingHistory = () => {
-    const newElement: CoachRefereeHistoryResponse['coachingHistories'][number] = {
+    const newElement: CoachRefereeResponse['coachingHistories'][number] = {
       startDate: '',
       endDate: '',
+      orgId: 0,
       orgName: '',
+      staffTypeId: 0,
       staffTypeName: '',
-      isCurrentlyCoaching: false,
       orgCoachingHistoryId: 0,
       isNewRow: true,
+      isDeleted: false,
+      isCurrentlyCoaching: false,
     };
     setFetchData((prevData) => ({
       ...prevData,
-      coachingHistories: [...prevData.coachingHistories, newElement],
+      coachingHistories: [newElement, ...prevData.coachingHistories],
     }));
   };
 
   const addCoachQualification = () => {
-    const newElement: CoachQualification = {
+    const newElement: ICoachQualification = {
       heldCoachQualificationId: 0,
+      coachQualificationId: 0,
       acquisitionDate: '',
       expiryDate: '',
       qualName: '',
       isNewRow: true,
+      isDeleted: false,
     };
     setFetchData((prevData) => ({
       ...prevData,
-      coachQualifications: [...prevData.coachQualifications, newElement],
+      coachQualifications: [newElement, ...prevData.coachQualifications],
     }));
   };
 
   const addRefereeQualification = () => {
-    const newElement: RefereeQualification = {
+    const newElement: IRefereeQualification = {
       heldRefereeQualificationId: 0,
+      refereeQualificationId: 0,
       acquisitionDate: '',
       expiryDate: '',
       qualName: '',
       isNewRow: true,
+      isDeleted: false,
     };
     setFetchData((prevData) => ({
       ...prevData,
-      refereeQualifications: [...prevData.refereeQualifications, newElement],
+      refereeQualifications: [newElement, ...prevData.refereeQualifications],
     }));
   };
 
@@ -138,12 +256,14 @@ const UpdateView = () => {
         </div>
         <div className='flex flex-col gap-4'>
           {fetchData.coachingHistories.map((coachingHistory, index) => (
-            <CoachHistory
+            <CoachingHistory
               key={index}
               coachingHistory={coachingHistory}
               index={index}
-              options={options}
-              handleInputChange={handleInputChange}
+              handleInputChange={handleCoachingHistoryChange}
+              handleDelete={handleDelete}
+              organizationOptions={organizationData?.result || []}
+              staffOptions={staffData?.result || []}
             />
           ))}
         </div>
@@ -159,13 +279,23 @@ const UpdateView = () => {
             追加する
           </CustomButton>
         </div>
+        {fetchData.coachQualifications.length > 0 && (
+          <div className='flex flex-col gap-4 mb-2'>
+            <InputLabel label='JSPO ID' required />
+            <CustomTextField
+              placeHolder='12345'
+              value={String(fetchData.jspoId)}
+              widthClassName='w-full md:w-[150px]'
+            />
+          </div>
+        )}
         <div className='flex flex-col gap-4'>
-          {fetchData.coachQualifications.map((CoachQualification, index) => (
-            <QualificationElement
+          {fetchData.coachQualifications.map((coachQualification, index) => (
+            <CoachQualification
               key={index}
-              CoachQualification={CoachQualification}
+              coachQualification={coachQualification}
               index={index}
-              options={options}
+              coachQualificationOptions={coachQualificationData?.result || []}
               handleInputChange={handleUpdatedQualificationsChange}
             />
           ))}
@@ -183,12 +313,12 @@ const UpdateView = () => {
           </CustomButton>
         </div>
         <div className='flex flex-col gap-4'>
-          {fetchData.refereeQualifications.map((RefereeQualification, index) => (
-            <RefereeQualificationsElement
+          {fetchData.refereeQualifications.map((refereeQualification, index) => (
+            <RefereeQualification
               key={index}
-              RefereeQualification={RefereeQualification}
+              refereeQualification={refereeQualification}
               index={index}
-              options={options}
+              refereeQualificationsOptions={refereeQualificationData?.result || []}
               handleInputChange={handleUpdatedRefereeQualificationsChange}
             />
           ))}
