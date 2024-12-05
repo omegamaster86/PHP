@@ -1,8 +1,13 @@
 'use client';
 
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CustomButton, CustomTextField, InputLabel } from '@/app/components';
-import { ICoachQualification, IRefereeQualification, CoachRefereeResponse, SelectOption } from '@/app/types';
+import {
+  ICoachQualification,
+  IRefereeQualification,
+  CoachRefereeResponse,
+  SelectOption,
+} from '@/app/types';
 import useSWR from 'swr';
 import { fetcher } from '@/app/lib/swr';
 import CoachingHistory from './CoachingHistory';
@@ -173,7 +178,6 @@ const UpdateView = () => {
       };
     });
   };
-  
   const handleUpdatedRefereeQualificationsChange = (
     index: number,
     field: string,
@@ -261,7 +265,6 @@ const UpdateView = () => {
               coachingHistory={coachingHistory}
               index={index}
               handleInputChange={handleCoachingHistoryChange}
-              handleDelete={handleDelete}
               organizationOptions={organizationData?.result || []}
               staffOptions={staffData?.result || []}
             />

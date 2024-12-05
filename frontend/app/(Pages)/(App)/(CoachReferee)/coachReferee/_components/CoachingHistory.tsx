@@ -1,35 +1,46 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent } from 'react';
 import { InputLabel, CustomDatePicker, CustomDropdown, OriginalCheckbox } from '@/app/components';
 import { formatDate } from '@/app/utils/dateUtil';
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { CoachRefereeResponse, SelectOption } from '@/app/types';
 
 interface Props {
   coachingHistory: CoachRefereeResponse['coachingHistories'][number];
   index: number;
   handleInputChange: (index: number, field: string, value: string | number | boolean) => void;
-  handleDelete: (index: number) => void;
   organizationOptions: { org_id: number; org_name: string }[];
   staffOptions: SelectOption[];
 }
 
 const CoachingHistory: React.FC<Props> = ({
   coachingHistory,
-  index, 
+  index,
   handleInputChange,
-  handleDelete,
   organizationOptions,
   staffOptions,
 }) => {
-
   return (
     <div className='flex flex-col md:flex-row text-wrap gap-5'>
       <h2 className='flex items-center justify-between md:hidden'>
         指導履歴&nbsp;{index + 1}
-        <RemoveCircleOutlineIcon onClick={() => handleDelete((index = 1234))} />
+        <OriginalCheckbox
+          id={`delete_coachingHistory${index + 1}`}
+          label='削除'
+          value='削除'
+          checked={coachingHistory.isDeleted}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            handleInputChange(index, 'isDeleted', event.target.checked);
+          }}
+        />
       </h2>
       <div className='flex flex-col gap-2'>
-        <InputLabel label='開始日' required displayHelp />
+        {index === 0 && (
+          <div className='hidden md:block'>
+            <InputLabel label='開始日' required displayHelp />
+          </div>
+        )}
+        <div className='md:hidden'>
+          <InputLabel label='開始日' required displayHelp />
+        </div>
         <CustomDatePicker
           selectedDate={coachingHistory.startDate}
           onChange={(date: Date | null) => {
@@ -41,7 +52,14 @@ const CoachingHistory: React.FC<Props> = ({
         />
       </div>
       <div className='flex flex-col gap-2'>
-        <InputLabel label='終了日' required displayHelp />
+        {index === 0 && (
+          <div className='hidden md:block'>
+            <InputLabel label='終了日' required displayHelp />
+          </div>
+        )}
+        <div className='md:hidden'>
+          <InputLabel label='終了日' required displayHelp />
+        </div>
         <CustomDatePicker
           selectedDate={coachingHistory.endDate}
           disabled={coachingHistory.isCurrentlyCoaching}
@@ -63,7 +81,14 @@ const CoachingHistory: React.FC<Props> = ({
         />
       </div>
       <div className='flex flex-col gap-2'>
-        <InputLabel label='団体名' required />
+        {index === 0 && (
+          <div className='hidden md:block'>
+            <InputLabel label='団体名' required />
+          </div>
+        )}
+        <div className='md:hidden'>
+          <InputLabel label='団体名' required />
+        </div>
         <CustomDropdown<number>
           id={`org_name_${coachingHistory.orgCoachingHistoryId}`}
           placeHolder='団体名'
@@ -80,9 +105,16 @@ const CoachingHistory: React.FC<Props> = ({
         />
       </div>
       <div className='flex flex-col gap-2'>
-        <InputLabel label='スタッフ種別' required />
+        {index === 0 && (
+          <div className='hidden md:block'>
+            <InputLabel label='スタッフ種別' required />
+          </div>
+        )}
+        <div className='md:hidden'>
+          <InputLabel label='スタッフ種別' required />
+        </div>
         <CustomDropdown<number>
-          id={`org_name_${coachingHistory.orgCoachingHistoryId}`}
+          id={`staff_type_${coachingHistory.orgCoachingHistoryId}`}
           placeHolder='スタッフ種別'
           value={coachingHistory.staffTypeId}
           options={staffOptions}
@@ -93,8 +125,19 @@ const CoachingHistory: React.FC<Props> = ({
           className='h-12'
         />
       </div>
-      <div className='hidden md:block md:mt-10'>
-        <RemoveCircleOutlineIcon onClick={() => handleDelete(index)} />
+      <div className='hidden text-nowrap md:flex md:flex-col md:gap-2'>
+        {index === 0 && <InputLabel label='削除' />}
+        <div className='mt-4'>
+          <OriginalCheckbox
+            id={`delete_coachingHistory${index + 1}`}
+            label=''
+            value='削除'
+            checked={coachingHistory.isDeleted}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              handleInputChange(index, 'isDeleted', event.target.checked);
+            }}
+          />
+        </div>
       </div>
     </div>
   );
