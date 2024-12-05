@@ -1,14 +1,13 @@
-import React from 'react';
-import { InputLabel, CustomDatePicker, CustomDropdown } from '@/app/components';
+import React, { ChangeEvent, useState } from 'react';
+import { InputLabel, CustomDatePicker, CustomDropdown, OriginalCheckbox } from '@/app/components';
 import { formatDate } from '@/app/utils/dateUtil';
 import { IRefereeQualification, SelectOption } from '@/app/types';
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
 interface Props {
   refereeQualification: IRefereeQualification;
   index: number;
   refereeQualificationsOptions: SelectOption[];
-  handleInputChange: (index: number, field: string, value: string | number) => void;
+  handleInputChange: (index: number, field: string, value: string | number | boolean) => void;
 }
 
 const RefereeQualification: React.FC<Props> = ({
@@ -21,12 +20,27 @@ const RefereeQualification: React.FC<Props> = ({
     <div className='flex flex-col md:flex-row text-wrap gap-5'>
       <h2 className='flex items-center justify-between md:hidden'>
         審判資格&nbsp;{index + 1}
-        <RemoveCircleOutlineIcon />
+        <OriginalCheckbox
+          id={`delete_refereeQualification${index + 1}`}
+          label='削除'
+          value='削除'
+          checked={refereeQualification.isDeleted}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            handleInputChange(index, 'isDeleted', event.target.checked);
+          }}
+        />
       </h2>
       <div className='flex flex-col gap-2'>
-        <InputLabel label='資格名' required />
+        {index === 0 && (
+          <div className='hidden md:block'>
+            <InputLabel label='資格名' required />
+          </div>
+        )}
+        <div className='md:hidden'>
+          <InputLabel label='資格名' required />
+        </div>
         <CustomDropdown<number>
-          id={`org_name_${refereeQualification.heldRefereeQualificationId}`}
+          id={`referee_${refereeQualification.heldRefereeQualificationId}`}
           placeHolder='資格名'
           value={refereeQualification.refereeQualificationId}
           options={refereeQualificationsOptions}
@@ -36,7 +50,14 @@ const RefereeQualification: React.FC<Props> = ({
         />
       </div>
       <div className='flex flex-col gap-2'>
-        <InputLabel label='取得日' required displayHelp />
+        {index === 0 && (
+          <div className='hidden md:block'>
+            <InputLabel label='取得日' required displayHelp />
+          </div>
+        )}
+        <div className='md:hidden'>
+          <InputLabel label='取得日' required displayHelp />
+        </div>
         <CustomDatePicker
           placeHolder='2024/01/31'
           selectedDate={refereeQualification.acquisitionDate || ''}
@@ -49,7 +70,14 @@ const RefereeQualification: React.FC<Props> = ({
         />
       </div>
       <div className='flex flex-col gap-2'>
-        <InputLabel label='有効期限日' displayHelp />
+        {index === 0 && (
+          <div className='hidden md:block'>
+            <InputLabel label='有効期限日' displayHelp />
+          </div>
+        )}
+        <div className='md:hidden'>
+          <InputLabel label='有効期限日' displayHelp />
+        </div>
         <CustomDatePicker
           placeHolder='2024/06/31'
           selectedDate={refereeQualification.expiryDate}
@@ -61,8 +89,19 @@ const RefereeQualification: React.FC<Props> = ({
           }}
         />
       </div>
-      <div className='hidden md:block md:mt-10'>
-        <RemoveCircleOutlineIcon />
+      <div className='hidden md:flex md:flex-col md:gap-2'>
+        {index === 0 && <InputLabel label='削除' />}
+        <div className='mt-4'>
+          <OriginalCheckbox
+            id={`delete_refereeQualification${index + 1}`}
+            label=''
+            value='削除'
+            checked={refereeQualification.isDeleted}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              handleInputChange(index, 'isDeleted', event.target.checked);
+            }}
+          />
+        </div>
       </div>
     </div>
   );

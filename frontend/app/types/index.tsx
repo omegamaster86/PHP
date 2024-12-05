@@ -272,7 +272,7 @@ interface ICoachQualification {
   expiryDate: string | null;
   acquisitionDate: string;
   isNewRow?: true;
-  isDeleted?: boolean;
+  isDeleted: boolean;
   coachQualificationId: number;
 }
 
@@ -282,7 +282,7 @@ interface IRefereeQualification {
   expiryDate: string | null;
   acquisitionDate: string;
   isNewRow?: true;
-  isDeleted?: boolean;
+  isDeleted: boolean;
   refereeQualificationId: number;
 }
 
@@ -312,7 +312,7 @@ interface CoachingHistory {
   staffTypeId: number;
   staffTypeName: string;
   isNewRow?: true;
-  isDeleted?: boolean;
+  isDeleted: boolean;
 }
 
 // ボランティア情報
