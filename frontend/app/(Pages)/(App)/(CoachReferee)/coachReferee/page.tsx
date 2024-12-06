@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { CustomButton, ErrorBox, CustomTitle } from '@/app/components';
 import { Divider } from '@mui/material';
 import UpdateView from './_components/UpdateView';
+import ConfirmView from './_components/ConfirmView';
 
 type Mode = 'update' | 'confirm';
 
@@ -45,23 +46,15 @@ const CoachReferee = () => {
   return (
     <>
       <ErrorBox errorText={errorMessage} />
-      <div className='flex flex-row mb-5'>
-        <CustomTitle displayBack>
-          {mode === 'update' && '指導者・審判情報更新'}
-          {mode === 'confirm' && '指導者・審判情報確認'}
-        </CustomTitle>
-      </div>
-      {mode === 'update' && <UpdateView />}
-      {mode === 'confirm' && (
-        <>
-          <h2>指導履歴</h2>
-          <h2>指導者資格</h2>
-          <h2>審判資格</h2>
-        </>
-      )}
 
+      <CustomTitle displayBack>
+        {mode === 'update' && '指導者・審判情報更新'}
+        {mode === 'confirm' && '指導者・審判情報確認'}
+      </CustomTitle>
+      {mode === 'update' && <UpdateView />}
+      {mode === 'confirm' && <ConfirmView />}
       <Divider className='h-[1px] bg-border ' />
-      <div className='flex gap-4 justify-center'>
+      <div className='flex flex-col gap-4 items-center justify-center md:flex-row'>
         <CustomButton buttonType='white-outlined' onClick={() => router.back()}>
           戻る
         </CustomButton>

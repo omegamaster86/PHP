@@ -44,12 +44,21 @@ class CoachRefereeControlloer extends Controller
         Log::debug(sprintf("getUpdateCoachRefereeInfoList start"));
         $reqData = $request->all();
         Log::debug($reqData);
-
+        $coachingHistories = $tOrganizationCoachingHistory->getOrganizationCoachingHistoryData(Auth::user()->user_id);
+        $coachQualifications = $tHeldCoachQualifications->getHeldCoachQualificationsData();
+        $refereeQualifications = $tHeldRefereeQualifications->getHeldRefereeQualificationsData();
+        unset(
+            $coachingHistories->orgName, 
+            $coachingHistories->staffTypeName,
+            $coachQualifications->qualName, 
+            $refereeQualifications->qualName
+        );
+        
         $result = [
             'jspoId' => Auth::user()->jspo_id,
-            'coachingHistories' => $tOrganizationCoachingHistory->getOrganizationCoachingHistoryData(Auth::user()->user_id),
-            'coachQualifications' => $tHeldCoachQualifications->getHeldCoachQualificationsData(),
-            'refereeQualifications' => $tHeldRefereeQualifications->getHeldRefereeQualificationsData()
+            'coachingHistories' => $coachingHistories,
+            'coachQualifications' => $coachQualifications,
+            'refereeQualifications' => $refereeQualifications
         ];
 
         Log::debug(sprintf("getUpdateCoachRefereeInfoList end"));
