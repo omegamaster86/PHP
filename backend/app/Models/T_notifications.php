@@ -179,7 +179,7 @@ class T_notifications extends Model
     public function insertNotificationData($notificationData)
     {
         DB::insert(
-            'INSERT into t_notifications
+            'INSERT into t_notifications set 
                     sender_id = ?,
                     notification_destination_type_id = ?,
                     tourn_id = ?,
@@ -230,5 +230,26 @@ class T_notifications extends Model
                 $notificationData['notificationId']
             ]
         );
+    }
+
+    //メール送信用データを取得 20241206
+    public function getNotificationMailData($notificationId)
+    {
+        $result = DB::select(
+            'SELECT 
+                t_notifications.title,
+                t_notifications.body,
+                GROUP_CONCAT(t_users.mailaddress) as `to`
+            FROM t_notifications
+            inner join t_notification_recipients on t_notifications.notification_id = t_notification_recipients.notification_id and t_notification_recipients.delete_flag = 0
+            inner join t_users on t_notification_recipients.recipient_id = t_users.user_id and t_users.delete_flag = 0
+            where 1=1
+            and t_notifications.delete_flag = 0
+            and t_notifications.notification_id = ?',
+            [
+                $notificationId
+            ]
+        );
+        return $result;
     }
 }

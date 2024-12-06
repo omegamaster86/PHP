@@ -1,0 +1,34 @@
+{{--*************************************************************************
+* Project name: JARA
+* File name: notification_massage.blade.blade.php
+* File extension: .blade.php
+* Description: This is the main content of contact mail notification
+*************************************************************************
+* Author: DEY PRASHANTA KUMAR
+* Created At: 2024/11/25
+* Updated At: 2024/11/25
+*************************************************************************
+*
+* Copyright 2024 by DPT INC.
+*
+************************************************************************--}}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+</head>
+
+<body>
+    <p>
+
+        {{$mail_data['senderName']}} <br />
+
+        {{$mail_data['body']}}<br />
+
+    </p>
+</body>
+
+</html>
