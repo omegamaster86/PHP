@@ -10,6 +10,8 @@ use App\Models\T_notifications;
 use App\Models\T_notified_coach_qualifications;
 use App\Models\T_notified_referee_qualifications;
 use App\Models\T_notification_recipients;
+use App\Mail\NotificationMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -142,19 +144,22 @@ class NotificationsController extends Controller
             if ($req["notificationData"]["notificationDestinationTypeId"] == 1) {
                 //選手フォロー
                 $tNotificationRecipients->insertFollowedPlayersNotificationData($insertId);
-            } 
-            else if ($req["notificationData"]["notificationDestinationTypeId"] == 2) {
+            } else if ($req["notificationData"]["notificationDestinationTypeId"] == 2) {
                 //大会フォロー
                 $tNotificationRecipients->insertFollowedTournamentsNotificationData($insertId);
-            } 
-            else if ($req["notificationData"]["notificationDestinationTypeId"] == 3) {
+            } else if ($req["notificationData"]["notificationDestinationTypeId"] == 3) {
                 //有資格者
                 $tNotificationRecipients->insertHeldQualificationNotificationData($insertId);
-            } 
-            else {
+            } else {
                 //全ユーザー
                 $tNotificationRecipients->insertAllUserNotificationData($insertId);
             }
+            $mail_data = $tNotifications->getNotificationMailData($insertId); //メール送信用データ取得 20241128
+
+            $mail_data = (array)$mail_data[0];
+            $mail_data['senderName'] = Auth::user()->user_name; //送信者を設定 20241128
+            $mailList = explode(',', $mail_data['to']); //メール送信用のリストを作成 20241128
+            Mail::to($mailList)->send(new NotificationMail($mail_data)); //メール送信 20241128
 
             DB::commit();
         } catch (\Throwable $e) {
