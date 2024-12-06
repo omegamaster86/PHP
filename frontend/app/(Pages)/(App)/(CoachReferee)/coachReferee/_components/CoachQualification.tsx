@@ -40,7 +40,7 @@ const CoachQualification: React.FC<Props> = ({
           <InputLabel label='資格名' required />
         </div>
         <CustomDropdown<number>
-          id={`coach_${coachQualification.heldCoachQualificationId}`}
+          id={`coachQualification${coachQualification.heldCoachQualificationId}`}
           placeHolder='資格名'
           value={coachQualification.coachQualificationId}
           options={coachQualificationOptions}

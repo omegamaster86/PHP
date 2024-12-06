@@ -11,7 +11,6 @@ import {
 import useSWR from 'swr';
 import { fetcher } from '@/app/lib/swr';
 import CoachingHistory from './CoachingHistory';
-import useSWRMutation from 'swr/mutation';
 import CoachQualification from './CoachQualification';
 import RefereeQualification from './RefereeQualification';
 
@@ -93,75 +92,6 @@ const UpdateView = () => {
       };
     });
   };
-  // const deleteRequest = async (
-  //   url: string,
-  //   trigger: { arg: { jspoId: number; orgCoachingHistoryId: number; isDeleted: boolean } },
-  // ) => {
-  //   const payload = {
-  //     coachingHistories: fetchData.coachingHistories,
-  //     coachQualifications: fetchData.coachQualifications,
-  //     refereeQualifications: fetchData.refereeQualifications,
-  //     jspoId: fetchData.jspoId,
-  //   };
-
-  //   console.log('送信データ:', JSON.stringify(payload, null, 2));
-
-  //   return fetcher({
-  //     url,
-  //     method: 'PATCH',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify(payload),
-  //   });
-  // };
-
-  // const { trigger } = useSWRMutation('/updateCoachRefereeInfo', deleteRequest);
-
-  const handleDelete = () => {
-    console.log('削除');
-  };
-
-  // const sendUpdateRequest = async () => {
-  //   const payload = {
-  //     coachingHistories: fetchData.coachingHistories,
-  //     coachQualifications: fetchData.coachQualifications,
-  //     refereeQualifications: fetchData.refereeQualifications,
-  //     jspoId: fetchData.jspoId,
-  //   };
-
-  //   console.log('送信データ:', JSON.stringify(payload, null, 2));
-
-  //   try {
-  //     const response = await fetch('/updateCoachRefereeInfo', {
-  //       method: 'PATCH',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(payload),
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error(`HTTPエラー: ${response.status}`);
-  //     }
-
-  //     const responseData = await response.json();
-  //     console.log('サーバーからのレスポンス:', responseData);
-  //     return responseData;
-  //   } catch (error) {
-  //     console.error('リクエストエラー:', error);
-  //     throw error;
-  //   }
-  // };
-
-  // const handleDelete = async () => {
-  //   try {
-  //     const result = await sendUpdateRequest();
-  //     console.log('更新が成功しました:', result);
-  //   } catch (error) {
-  //     console.error('更新中にエラーが発生しました:', error);
-  //   }
-  // };
 
   const handleUpdatedQualificationsChange = (
     index: number,
@@ -199,9 +129,7 @@ const UpdateView = () => {
       startDate: '',
       endDate: '',
       orgId: 0,
-      orgName: '',
       staffTypeId: 0,
-      staffTypeName: '',
       orgCoachingHistoryId: 0,
       isNewRow: true,
       isDeleted: false,
@@ -219,7 +147,6 @@ const UpdateView = () => {
       coachQualificationId: 0,
       acquisitionDate: '',
       expiryDate: '',
-      qualName: '',
       isNewRow: true,
       isDeleted: false,
     };
@@ -235,7 +162,6 @@ const UpdateView = () => {
       refereeQualificationId: 0,
       acquisitionDate: '',
       expiryDate: '',
-      qualName: '',
       isNewRow: true,
       isDeleted: false,
     };
@@ -289,6 +215,7 @@ const UpdateView = () => {
               placeHolder='12345'
               value={String(fetchData.jspoId)}
               widthClassName='w-full md:w-[150px]'
+              onChange={(event) => setFetchData({ ...fetchData, jspoId: Number(event.target.value) })}
             />
           </div>
         )}

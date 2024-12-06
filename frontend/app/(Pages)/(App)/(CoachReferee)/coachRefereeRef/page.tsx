@@ -21,7 +21,7 @@ import EditIcon from '@mui/icons-material/EditOutlined';
 import { useAuth } from '@/app/hooks/auth';
 import { fetcher } from '@/app/lib/swr';
 
-export default function UserInformationReference() {
+export default function CoachRefereeRef() {
   const router = useRouter();
   const searchParams = useSearchParams();
 

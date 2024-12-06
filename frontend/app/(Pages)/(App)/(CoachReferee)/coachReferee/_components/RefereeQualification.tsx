@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent } from 'react';
 import { InputLabel, CustomDatePicker, CustomDropdown, OriginalCheckbox } from '@/app/components';
 import { formatDate } from '@/app/utils/dateUtil';
 import { IRefereeQualification, SelectOption } from '@/app/types';
@@ -40,7 +40,7 @@ const RefereeQualification: React.FC<Props> = ({
           <InputLabel label='資格名' required />
         </div>
         <CustomDropdown<number>
-          id={`referee_${refereeQualification.heldRefereeQualificationId}`}
+          id={`refereeQualification_${refereeQualification.heldRefereeQualificationId}`}
           placeHolder='資格名'
           value={refereeQualification.refereeQualificationId}
           options={refereeQualificationsOptions}

@@ -263,12 +263,14 @@ interface CoachRefereeRefResponse {
   coachQualificationNames: string[]; //指導者資格
   refereeQualificationNames: string[]; //審判資格
   jspoId: number; //JSPO ID
-  coachingHistories: CoachingHistory[]; //指導履歴
+  coachingHistories: (CoachingHistory & {
+    orgName: string;
+    staffTypeName: string;
+  })[]; //指導履歴
 }
 
 interface ICoachQualification {
   heldCoachQualificationId: number;
-  qualName: string;
   expiryDate: string | null;
   acquisitionDate: string;
   isNewRow?: true;
@@ -278,7 +280,6 @@ interface ICoachQualification {
 
 interface IRefereeQualification {
   heldRefereeQualificationId: number;
-  qualName: string;
   expiryDate: string | null;
   acquisitionDate: string;
   isNewRow?: true;
@@ -289,9 +290,16 @@ interface IRefereeQualification {
 interface MyPageCoachRefereeResponse {
   userName: string;
   jspoId: number;
-  coachingHistories: CoachingHistory[];
-  coachQualifications: ICoachQualification[];
-  refereeQualifications: IRefereeQualification[];
+  coachingHistories: (CoachingHistory & {
+    orgName: string;
+    staffTypeName: string;
+  })[];
+  coachQualifications: (ICoachQualification & {
+    qualName: string;
+  })[];
+  refereeQualifications: (IRefereeQualification & {
+    qualName: string;
+  })[];
 }
 
 interface CoachRefereeResponse {
@@ -308,9 +316,7 @@ interface CoachingHistory {
   endDate: string;
   orgCoachingHistoryId: number;
   orgId: number;
-  orgName: string;
   staffTypeId: number;
-  staffTypeName: string;
   isNewRow?: true;
   isDeleted: boolean;
 }
