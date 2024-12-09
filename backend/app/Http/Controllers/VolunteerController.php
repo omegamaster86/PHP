@@ -606,14 +606,20 @@ class VolunteerController extends Controller
         $reqData = $request->all();
         Log::debug($reqData);
         
-        $requestData = $request->all();
-        Log::debug($requestData['volunteer_id']);
-        $volData = $tVolunteer->updateDeleteFlag($requestData['volunteer_id']); //ボランティア情報を取得
-        $volAvaData = $tVolunteerAvailables->updateDeleteFlag($requestData['volunteer_id']); //ボランティアアベイラブル情報を取得
-        $volHistData = $tVolunteerHistories->updateDeleteFlag($requestData['volunteer_id']); //ボランティア履歴情報を取得
-        $volLangProData = $tVolunteerLanguageProficiency->updateDeleteFlag($requestData['volunteer_id']); //ボランティア言語レベル情報を取得
-        $volQualData = $tVolunteerQualificationsHold->updateDeleteFlag($requestData['volunteer_id']); //ボランティア保有資格情報を取得
-        $volSupDisData = $tVolunteerSupportableDisability->updateDeleteFlag($requestData['volunteer_id']); //ボランティア支援可能障害タイプ情報を取得
+        $volData = $tVolunteer->getVolunteers($reqData['volunteer_id']); //ボランティア情報を取得
+        $volInfo = (array)$volData;
+ 
+        //ログインユーザーに紐づいたボランティア情報の場合、削除処理を実行 20241203
+        if($volInfo['user_id'] != Auth::user()->user_id){
+            abort(403, '削除権限がありません。');
+        }
+ 
+        $volData = $tVolunteer->updateDeleteFlag($reqData['volunteer_id']); //ボランティア情報の更新
+        $volAvaData = $tVolunteerAvailables->updateDeleteFlag($reqData['volunteer_id']); //ボランティアアベイラブル情報の更新
+        $volHistData = $tVolunteerHistories->updateDeleteFlag($reqData['volunteer_id']); //ボランティア履歴情報の更新
+        $volLangProData = $tVolunteerLanguageProficiency->updateDeleteFlag($reqData['volunteer_id']); //ボランティア言語レベル情報の更新
+        $volQualData = $tVolunteerQualificationsHold->updateDeleteFlag($reqData['volunteer_id']); //ボランティア保有資格情報の更新
+        $volSupDisData = $tVolunteerSupportableDisability->updateDeleteFlag($reqData['volunteer_id']); //ボランティア支援可能障害タイプ情報の更新
 
         //ユーザ種別の更新
         $hoge = array();
