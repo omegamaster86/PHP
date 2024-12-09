@@ -156,17 +156,14 @@ class T_users extends Authenticatable
                                     ,user.`expiry_time_of_certification_number`
                                     ,user.`temp_password_flag`
                                     FROM `t_users` user
-                                    left join `m_sex` sex
-                                    on user.sex = sex.sex_id
-                                    left join m_countries coun
-                                    on user.residence_country = coun.country_id
+                                    inner join `m_sex` sex
+                                    on user.sex = sex.sex_id and sex.delete_flag = 0
+                                    inner join m_countries coun
+                                    on user.residence_country = coun.country_id and coun.delete_flag = 0
                                     left join m_prefectures	pref
-                                    on user.residence_prefecture = pref.pref_id
+                                    on user.residence_prefecture = pref.pref_id and pref.delete_flag = 0
                                     WHERE 1=1
                                     and user.delete_flag = 0
-                                    and sex.delete_flag = 0
-                                    and coun.delete_flag = 0
-                                    and pref.delete_flag = 0
                                     and user_id = ?
                                 )user'
                                 ,[$targetUserId]
