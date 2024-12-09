@@ -3,65 +3,76 @@ import { QualifiedUserForm } from '@/app/(Pages)/(App)/(Notification)/notificati
 import { TournFollowerForm } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/TournFollowerForm';
 import { UserFollowerForm } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/UserFollowerForm';
 import { CustomButton, CustomTextField, CustomTitle, InputLabel } from '@/app/components';
-import { NotificationToType } from '@/app/constants';
+import { getNotificationDestinationType } from '@/app/constants';
 import { useUserType } from '@/app/hooks/useUserType';
-import { SelectOption } from '@/app/types';
+import { fetcher } from '@/app/lib/swr';
+import { NotificationInfoData, NotificationUpdateFormInput, SelectOption } from '@/app/types';
+import { getSessionStorage, getStorageKey } from '@/app/utils/sessionStorage';
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import useSWR from 'swr';
 
-export type UpdateFormInput = {
-  to: NotificationToType;
-  subject: string;
-  body: string;
-  tournId: number;
-  qualIds: number[];
-};
-
 type Props = {
   tournaments: SelectOption[];
-  qualifications: SelectOption[];
-  onSubmit: (formData: UpdateFormInput) => void;
+  qualifications: SelectOption<string>[];
+  onSubmit: (formData: NotificationUpdateFormInput, notificationId: number) => void;
 };
 
 export const Update: React.FC<Props> = (props) => {
-  const { tournaments, qualifications, onSubmit } = props;
+  const { tournaments, qualifications } = props;
 
   const userType = useUserType();
+  const searchParams = useSearchParams();
 
-  const mockData = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    return {
-      to: 'qualifiedUser',
-      subject: 'test',
-      body: 'test',
-      tournId: 1,
-      qualIds: [1, 2],
-    };
-  };
+  const notificationId = Number(searchParams.get('id'));
 
-  const { data } = useSWR({ url: '/notifications/1' }, mockData, {
-    suspense: true,
+  const storageKey = getStorageKey({
+    pageName: 'notification',
+    type: 'update',
+    id: notificationId,
   });
+  const draftFormData = getSessionStorage<NotificationUpdateFormInput>(storageKey);
 
-  const defaultValues: UpdateFormInput = {
-    to: data.to as UpdateFormInput['to'],
-    subject: data.subject,
-    body: data.body,
-    tournId: data.tournId,
-    qualIds: data.qualIds,
+  const { data } = useSWR(
+    {
+      url: '/getNotificationInfoData',
+      params: {
+        notificationId,
+      },
+    },
+    notificationId ? fetcher<NotificationInfoData> : null,
+    { suspense: true },
+  );
+
+  const defaultValues: NotificationUpdateFormInput = {
+    to: getNotificationDestinationType(data.result.notificationDestinationTypeId),
+    title: draftFormData?.title ?? data.result.title,
+    body: draftFormData?.body ?? data.result.body,
+    tournId: draftFormData?.tournId ?? data.result.tournId,
+    qualIds: draftFormData?.qualIds ?? [
+      ...data.result.coachQualIds.map((id) => `coach_${id}`),
+      ...data.result.refereeQualIds.map((id) => `referee_${id}`),
+    ],
   };
 
-  const { register, setValue, handleSubmit, watch } = useForm<UpdateFormInput>({ defaultValues });
+  const { register, setValue, handleSubmit, watch } = useForm<NotificationUpdateFormInput>({
+    defaultValues,
+  });
 
   const to = watch('to');
   const body = watch('body');
+  const tournId = watch('tournId');
   const qualIds = watch('qualIds');
 
   const handleConfirm = (textLink: { text: string; link: string }) => {
     const mdText = `[${textLink.text}](${textLink.link})`;
     const newBody = body ? `${body}\n${mdText}` : mdText;
     setValue('body', newBody);
+  };
+
+  const onSubmit = (data: NotificationUpdateFormInput) => {
+    props.onSubmit(data, notificationId);
   };
 
   const radioValues = [
@@ -97,6 +108,7 @@ export const Update: React.FC<Props> = (props) => {
     ),
     tournFollower: (
       <TournFollowerForm
+        tournId={tournId}
         tournaments={tournaments}
         tournFieldProps={register('tournId', { required: to === 'tournFollower' })}
         bodyProps={register('body', { required: to === 'tournFollower' })}
@@ -125,6 +137,10 @@ export const Update: React.FC<Props> = (props) => {
 
   const ConditionalField = conditionalFields[to];
 
+  if (!notificationId) {
+    return null;
+  }
+
   return (
     <>
       <CustomTitle displayBack>通知更新</CustomTitle>
@@ -133,10 +149,10 @@ export const Update: React.FC<Props> = (props) => {
         <div>
           <InputLabel label='To' required />
           <RadioGroup
-            {...(register('to', { required: true }), { defaultValue: defaultValues.to })}
+            {...(register('to', { required: true }), { value: to })}
             aria-labelledby='controlled-radio-buttons-group'
             name='controlled-radio-buttons-group'
-            className='text-sm'
+            className='text-sm w-max'
           >
             {radioValues.map((x) => (
               <FormControlLabel
@@ -154,15 +170,15 @@ export const Update: React.FC<Props> = (props) => {
           <InputLabel label='件名' required />
           <CustomTextField
             className='w-full max-w-md'
-            {...register('subject', { required: true })}
-            onChange={(e) => setValue('subject', e.target.value)}
+            {...register('title', { required: true })}
+            onChange={(e) => setValue('title', e.target.value)}
           />
         </div>
 
         {ConditionalField}
 
         <CustomButton type='submit' buttonType='primary' className='w-full max-w-sm mx-auto'>
-          更新
+          確認
         </CustomButton>
       </form>
     </>

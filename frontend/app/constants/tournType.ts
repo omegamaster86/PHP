@@ -4,11 +4,11 @@ export const tournType = {
 } as const;
 export type TournType = (typeof tournType)[keyof typeof tournType];
 
-const tornTypeLabel = {
+const tournTypeLabel = {
   0: '非公式',
   1: '公式',
 } as const;
 
 export const getTournTypeLabel = (tournType: TournType) => {
-  return tornTypeLabel[tournType];
+  return tournTypeLabel[tournType];
 };

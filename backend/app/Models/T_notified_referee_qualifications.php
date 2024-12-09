@@ -14,8 +14,12 @@ class T_notified_referee_qualifications extends Model
     //審判資格の追加 20241119
     public function insertNotifiedRefereeQualificationsData($refereeQualification)
     {
+        $now = now()->format('Y-m-d H:i:s.u');
+        $userId = Auth::user()->user_id;
+
         DB::insert(
             'INSERT into t_notified_referee_qualifications
+                SET
                     notification_id = ?,
                     referee_qualification_id = ?,
                     registered_time = ?,
@@ -26,10 +30,10 @@ class T_notified_referee_qualifications extends Model
             [
                 $refereeQualification['notificationId'],
                 $refereeQualification['refereeQualificationId'],
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id,
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id
+                $now,
+                $userId,
+                $now,
+                $userId
             ]
         );
     }

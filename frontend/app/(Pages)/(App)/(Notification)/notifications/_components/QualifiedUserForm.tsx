@@ -1,15 +1,18 @@
-import { CreateFormInput } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/Create';
 import { InsertLinkDialog } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/InsertLinkDialog';
 import { CustomDropdown, InputLabel } from '@/app/components';
-import { SelectOption } from '@/app/types';
+import {
+  NotificationCreateFormInput,
+  NotificationUpdateFormInput,
+  SelectOption,
+} from '@/app/types';
 import { UseFormRegisterReturn, UseFormSetValue } from 'react-hook-form';
 
 type Props = {
-  qualIds: number[];
-  qualifications: SelectOption[];
+  qualIds: string[];
+  qualifications: SelectOption<string>[];
   qualFieldProps: UseFormRegisterReturn<'qualIds'>;
   bodyProps: UseFormRegisterReturn<'body'>;
-  setValue: UseFormSetValue<CreateFormInput>;
+  setValue: UseFormSetValue<NotificationCreateFormInput | NotificationUpdateFormInput>;
   handleConfirm: (textLink: { text: string; link: string }) => void;
 };
 
@@ -24,7 +27,7 @@ export const QualifiedUserForm: React.FC<Props> = (props) => {
         <div className='flex items-center gap-2'>
           <InputLabel label='資格' required />
         </div>
-        <CustomDropdown<number[]>
+        <CustomDropdown<string[]>
           id='qual-dropdown'
           options={qualifications}
           {...restQualFieldProps}

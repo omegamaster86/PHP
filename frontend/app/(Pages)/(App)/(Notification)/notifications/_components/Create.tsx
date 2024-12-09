@@ -2,32 +2,46 @@ import { AllUserForm } from '@/app/(Pages)/(App)/(Notification)/notifications/_c
 import { QualifiedUserForm } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/QualifiedUserForm';
 import { TournFollowerForm } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/TournFollowerForm';
 import { UserFollowerForm } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/UserFollowerForm';
-import { CustomButton, CustomTextField, CustomTitle, InputLabel } from '@/app/components';
-import { NotificationToType } from '@/app/constants';
+import { CustomButton, CustomTextField, CustomTitle, ErrorBox, InputLabel } from '@/app/components';
 import { useUserType } from '@/app/hooks/useUserType';
-import { SelectOption } from '@/app/types';
+import { NotificationCreateFormInput, SelectOption } from '@/app/types';
+import { getSessionStorage, getStorageKey } from '@/app/utils/sessionStorage';
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
 import { useForm } from 'react-hook-form';
 
-export type CreateFormInput = {
-  to: NotificationToType;
-  subject: string;
-  body: string;
-  tournId: number;
-  qualIds: number[];
-};
-
 type Props = {
   tournaments: SelectOption[];
-  qualifications: SelectOption[];
-  onSubmit: (formData: CreateFormInput) => void;
+  qualifications: SelectOption<string>[];
+  onSubmit: (formData: NotificationCreateFormInput) => void;
 };
 
-export const Create: React.FC<Props> = (props) => {
-  const userType = useUserType();
+const storageKey = getStorageKey({
+  pageName: 'notification',
+  type: 'create',
+});
 
+const errorMessages = {
+  to: 'Toを選択してください。',
+  title: '件名を入力してください。',
+  body: '本文を入力してください。',
+  tournId: '大会名を選択してください。',
+  qualIds: '資格を選択してください。',
+};
+export const Create: React.FC<Props> = (props) => {
   const { tournaments, qualifications, onSubmit } = props;
-  const { register, setValue, handleSubmit, watch } = useForm<CreateFormInput>();
+  const userType = useUserType();
+  const draftFormData = getSessionStorage<NotificationCreateFormInput>(storageKey);
+
+  const { register, setValue, handleSubmit, watch, formState } =
+    useForm<NotificationCreateFormInput>({
+      defaultValues: {
+        to: draftFormData?.to,
+        title: draftFormData?.title,
+        body: draftFormData?.body,
+        tournId: draftFormData?.tournId,
+        qualIds: draftFormData?.qualIds ?? [],
+      },
+    });
 
   const radioValues = [
     {
@@ -54,6 +68,7 @@ export const Create: React.FC<Props> = (props) => {
 
   const to = watch('to');
   const body = watch('body');
+  const tournId = watch('tournId');
   const qualIds = watch('qualIds');
 
   const handleConfirm = (textLink: { text: string; link: string }) => {
@@ -62,19 +77,26 @@ export const Create: React.FC<Props> = (props) => {
     setValue('body', newBody);
   };
 
-  const conditionalFields: Record<CreateFormInput['to'], React.ReactNode> = {
+  const conditionalFields: Record<NotificationCreateFormInput['to'], React.ReactNode> = {
     userFollower: (
       <UserFollowerForm
-        bodyProps={register('body', { required: to === 'userFollower' })}
+        bodyProps={register('body', {
+          required: to === 'userFollower' ? errorMessages.body : false,
+        })}
         setValue={setValue}
         handleConfirm={handleConfirm}
       />
     ),
     tournFollower: (
       <TournFollowerForm
+        tournId={tournId}
         tournaments={tournaments}
-        tournFieldProps={register('tournId', { required: to === 'tournFollower' })}
-        bodyProps={register('body', { required: to === 'tournFollower' })}
+        tournFieldProps={register('tournId', {
+          required: to === 'tournFollower' ? errorMessages.tournId : false,
+        })}
+        bodyProps={register('body', {
+          required: to === 'tournFollower' ? errorMessages.body : false,
+        })}
         setValue={setValue}
         handleConfirm={handleConfirm}
       />
@@ -83,15 +105,19 @@ export const Create: React.FC<Props> = (props) => {
       <QualifiedUserForm
         qualIds={qualIds}
         qualifications={qualifications}
-        qualFieldProps={register('qualIds', { required: to === 'qualifiedUser' })}
-        bodyProps={register('body', { required: to === 'qualifiedUser' })}
+        qualFieldProps={register('qualIds', {
+          required: to === 'qualifiedUser' ? errorMessages.qualIds : false,
+        })}
+        bodyProps={register('body', {
+          required: to === 'qualifiedUser' ? errorMessages.body : false,
+        })}
         setValue={setValue}
         handleConfirm={handleConfirm}
       />
     ),
     allUser: (
       <AllUserForm
-        bodyProps={register('body', { required: to === 'allUser' })}
+        bodyProps={register('body', { required: to === 'allUser' ? errorMessages.body : false })}
         setValue={setValue}
         handleConfirm={handleConfirm}
       />
@@ -100,23 +126,34 @@ export const Create: React.FC<Props> = (props) => {
 
   const ConditionalField = conditionalFields[to];
 
+  const formErrorMessages = [
+    formState.errors.to?.message,
+    formState.errors.title?.message,
+    formState.errors.tournId?.message,
+    formState.errors.qualIds?.message,
+    formState.errors.body?.message,
+  ].filter((x): x is string => !!x);
+
   return (
     <>
+      <ErrorBox errorText={formErrorMessages} />
+
       <CustomTitle displayBack>通知登録</CustomTitle>
 
       <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-12'>
         <div>
           <InputLabel label='To' required />
           <RadioGroup
-            {...(register('to', { required: true }),
+            {...(register('to', { required: errorMessages.to }),
             {
               onChange: (e) => {
-                setValue('to', e.target.value as CreateFormInput['to']);
+                setValue('to', e.target.value as NotificationCreateFormInput['to']);
               },
+              value: to,
             })}
             aria-labelledby='controlled-radio-buttons-group'
             name='controlled-radio-buttons-group'
-            className='text-sm'
+            className='text-sm w-max'
           >
             {radioValues.map((x) => (
               <FormControlLabel
@@ -134,8 +171,8 @@ export const Create: React.FC<Props> = (props) => {
           <InputLabel label='件名' required />
           <CustomTextField
             className='w-full max-w-md'
-            {...register('subject', { required: true })}
-            onChange={(e) => setValue('subject', e.target.value)}
+            {...register('title', { required: errorMessages.title })}
+            onChange={(e) => setValue('title', e.target.value)}
           />
         </div>
 

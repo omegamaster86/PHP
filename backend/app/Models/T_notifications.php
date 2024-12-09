@@ -19,15 +19,19 @@ class T_notifications extends Model
                 t_notifications.notification_id as notificationId,
                 MAX(t_notifications.title) as title,
                 t_notifications.notification_destination_type_id as notificationDestinationTypeId,
+                t_notifications.tourn_id as tournId,
+                GROUP_CONCAT(DISTINCT t_notified_coach_qualifications.coach_qualification_id) as coachQualIdsStr,
+                GROUP_CONCAT(DISTINCT t_notified_referee_qualifications.referee_qualification_id) as refereeQualIdsStr,                
                 CASE 
                     WHEN t_notifications.notification_destination_type_id = 1 THEN "フォロワー"
                     WHEN t_notifications.notification_destination_type_id = 2 THEN CONCAT(MAX(t_tournaments.tourn_name), "フォロワー")
                     WHEN t_notifications.notification_destination_type_id = 3 THEN CONCAT(
-                        GROUP_CONCAT(DISTINCT CONCAT(m_coach_qualifications.qual_name, "保有者") ORDER BY m_coach_qualifications.display_order),
-                        GROUP_CONCAT(DISTINCT CONCAT(m_referee_qualifications.qual_name, "保有者") ORDER BY m_referee_qualifications.display_order)
+                        IFNULL(GROUP_CONCAT(DISTINCT CONCAT(m_coach_qualifications.qual_name, "保有者") ORDER BY m_coach_qualifications.display_order), ""),
+                        ",",                 
+                        IFNULL(GROUP_CONCAT(DISTINCT CONCAT(m_referee_qualifications.qual_name, "保有者") ORDER BY m_referee_qualifications.display_order) , "")
                     )
                     WHEN t_notifications.notification_destination_type_id = 4 THEN "全ユーザー"
-                    ELSE NULL
+                    ELSE ""
                 END AS "to",
                 t_users.user_id as senderId,
                 CASE 
@@ -67,6 +71,32 @@ class T_notifications extends Model
                 $notificationId
             ]
         );
+
+        // toを配列に変換
+        $result->to = array_values(array_filter(explode(',', $result->to), fn($value) => !empty($value)));
+
+        // 指導者資格IDを配列に変換
+        $coachQualIdsStr = $result->coachQualIdsStr;
+        if (empty($coachQualIdsStr)) {
+            $result->coachQualIds = [];
+        } else {
+            $coachQualIdsToArr = explode(',', $coachQualIdsStr);
+            $result->coachQualIds = array_map('intval', $coachQualIdsToArr);
+        }
+
+        // 審判資格IDを配列に変換
+        $refereeQualIdsStr = $result->refereeQualIdsStr;
+        if (empty($refereeQualIdsStr)) {
+            $result->refereeQualIds = [];
+        } else {
+            $refereeQualIdsToArr = explode(',', $refereeQualIdsStr);
+            $result->refereeQualIds = array_map('intval', $refereeQualIdsToArr);
+        }
+
+        // 不要なプロパティを削除
+        unset($result->coachQualIdsStr);
+        unset($result->refereeQualIdsStr);
+
         return $result;
     }
 
@@ -178,6 +208,9 @@ class T_notifications extends Model
     //通知情報の追加 20241119
     public function insertNotificationData($notificationData)
     {
+        $now = now()->format('Y-m-d H:i:s.u');
+        $userId = Auth::user()->user_id;
+
         DB::insert(
             'INSERT into t_notifications set 
                     sender_id = ?,
@@ -198,10 +231,10 @@ class T_notifications extends Model
                 $notificationData['sentTime'],
                 $notificationData['title'],
                 $notificationData['body'],
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id,
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id
+                $now,
+                $userId,
+                $now,
+                $userId
             ]
         );
 
@@ -218,7 +251,7 @@ class T_notifications extends Model
                     title = ?,
                     body = ?,
                     updated_time = ?,
-                    updated_user_id = ?,
+                    updated_user_id = ?
                     where 1=1
                     and delete_flag = 0
                     and notification_id = ?',
