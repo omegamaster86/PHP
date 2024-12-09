@@ -1,19 +1,23 @@
-import { CreateFormInput } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/Create';
 import { InsertLinkDialog } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/InsertLinkDialog';
 import { CustomDropdown, InputLabel } from '@/app/components';
-import { SelectOption } from '@/app/types';
+import {
+  NotificationCreateFormInput,
+  NotificationUpdateFormInput,
+  SelectOption,
+} from '@/app/types';
 import { UseFormRegisterReturn, UseFormSetValue } from 'react-hook-form';
 
 type Props = {
+  tournId: number;
   tournaments: SelectOption[];
   tournFieldProps: UseFormRegisterReturn<'tournId'>;
   bodyProps: UseFormRegisterReturn<'body'>;
-  setValue: UseFormSetValue<CreateFormInput>;
+  setValue: UseFormSetValue<NotificationCreateFormInput | NotificationUpdateFormInput>;
   handleConfirm: (textLink: { text: string; link: string }) => void;
 };
 
 export const TournFollowerForm: React.FC<Props> = (props) => {
-  const { tournaments, tournFieldProps, bodyProps, setValue, handleConfirm } = props;
+  const { tournId, tournaments, tournFieldProps, bodyProps, setValue, handleConfirm } = props;
 
   return (
     <>
@@ -28,6 +32,7 @@ export const TournFollowerForm: React.FC<Props> = (props) => {
           onChange={(value) => {
             setValue('tournId', Number(value));
           }}
+          value={tournId}
         />
       </div>
 

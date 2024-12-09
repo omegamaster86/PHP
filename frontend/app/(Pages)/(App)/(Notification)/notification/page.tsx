@@ -1,16 +1,16 @@
 'use client';
 
 import { Confirm } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/Confirm';
-import {
-  Create,
-  CreateFormInput,
-} from '@/app/(Pages)/(App)/(Notification)/notifications/_components/Create';
-import {
-  Update,
-  UpdateFormInput,
-} from '@/app/(Pages)/(App)/(Notification)/notifications/_components/Update';
+import { Create } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/Create';
+import { Update } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/Update';
 import { fetcher } from '@/app/lib/swr';
-import { Qualification, SelectOption, TeamResponse, Tournament } from '@/app/types';
+import {
+  MyOrgsHostedTournament,
+  NotificationCreateFormInput,
+  NotificationUpdateFormInput,
+  SelectOption,
+} from '@/app/types';
+import { getStorageKey, setSessionStorage } from '@/app/utils/sessionStorage';
 import { useRouter, useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 
@@ -21,49 +21,55 @@ export default function Notification() {
   const searchParams = useSearchParams();
   const mode = (searchParams.get('mode') || 'create') as NotificationMode;
 
-  const teamOrgRes = useSWR({ url: '/getOrganizationForOrgManagement' }, fetcher<TeamResponse[]>);
-  const orgId = teamOrgRes.data ? teamOrgRes.data.result[0].org_id : null;
-  const qualRes = useSWR({ url: '/getQualifications' }, fetcher<Qualification[]>);
+  const coachRes = useSWR({ url: '/getCoachQualifications' }, fetcher<SelectOption[]>);
+  const refereeRes = useSWR({ url: '/getRefereeQualifications' }, fetcher<SelectOption[]>);
   const tournRes = useSWR(
-    orgId
-      ? {
-          url: '/getTournamentInfoData_org',
-          method: 'POST',
-          params: {
-            org_id: orgId,
-          },
-        }
-      : null,
-    fetcher<Tournament[]>,
+    { url: '/getMyOrgsHostedTournaments' },
+    fetcher<MyOrgsHostedTournament[]>,
   );
 
+  const coachQualifications = coachRes.data?.result ?? [];
+  const refereeQualifications = refereeRes.data?.result ?? [];
   const tournamentsResult = tournRes.data?.result ?? [];
-  // FIXME: fetcherでresultじゃない場合の考慮が必要
-  const qualificationsResult = (qualRes.data as unknown as Qualification[]) ?? [];
 
-  const tournaments: SelectOption[] =
-    tournamentsResult.map((x) => ({
-      key: Number(x.tourn_id),
-      value: x.tourn_name,
-    })) ?? [];
-  const qualifications: SelectOption[] =
-    qualificationsResult.map((x) => ({
-      key: Number(x.qual_id),
-      value: x.qual_name,
-    })) ?? [];
+  const tournaments: SelectOption[] = tournamentsResult.map((x) => ({
+    key: x.tournId,
+    value: x.tournName,
+  }));
+  const qualifications: SelectOption<string>[] = [
+    ...coachQualifications.map((x) => ({ key: `coach_${x.key}`, value: x.value })),
+    ...refereeQualifications.map((x) => ({ key: `referee_${x.key}`, value: x.value })),
+  ];
 
-  const createNotification = (formData: CreateFormInput) => {
-    router.push(`/notification?mode=confirm&formData=${JSON.stringify(formData)}`);
+  const createNotification = (formData: NotificationCreateFormInput) => {
+    const storageKey = getStorageKey({
+      pageName: 'notification',
+      type: 'create',
+    });
+    setSessionStorage(storageKey, formData);
+    router.push(`/notification?mode=confirm&type=create&storageKey=${storageKey}`);
   };
 
-  const updateNotification = (formData: UpdateFormInput) => {
-    console.log({
-      formData,
+  const updateNotification = (formData: NotificationUpdateFormInput, notificationId: number) => {
+    const storageKey = getStorageKey({
+      pageName: 'notification',
+      type: 'update',
+      id: notificationId,
     });
+    setSessionStorage(storageKey, formData);
+    router.push(
+      `/notification?mode=confirm&type=update&storageKey=${storageKey}&notificationId=${notificationId}`,
+    );
   };
 
   if (mode === 'confirm') {
-    return <Confirm tournaments={tournaments} qualifications={qualifications} />;
+    return (
+      <Confirm
+        tournaments={tournaments}
+        coachQualifications={coachQualifications}
+        refereeQualifications={refereeQualifications}
+      />
+    );
   }
   if (mode === 'create') {
     return (

@@ -1,5 +1,5 @@
 import { SelectOption } from '@/app/types';
-import MenuItem from '@mui/material/MenuItem';
+import MenuItem, { MenuItemProps } from '@mui/material/MenuItem';
 import Select, { SelectProps } from '@mui/material/Select';
 import { clsx } from 'clsx';
 import InputLabel from '../InputLabel';
@@ -9,7 +9,7 @@ type MuiSelectProps = Omit<SelectProps, 'onChange' | 'color'>;
 // Propsの型定義
 interface CustomDropdownProps<T = string> extends MuiSelectProps {
   id: string;
-  options: SelectOption[];
+  options: SelectOption<string | number>[];
   value?: T;
   errorMessages?: string[];
   onChange?: (value: T) => void;
@@ -87,7 +87,11 @@ const CustomDropdown = <T = string,>(props: CustomDropdownProps<T>) => {
               </MenuItem>
             )}
             {options.map((option, index) => (
-              <MenuItem key={index} value={option.key} className='text-primaryText'>
+              <MenuItem
+                key={index}
+                value={option.key as MenuItemProps['value']}
+                className='text-primaryText'
+              >
                 {option.value}
               </MenuItem>
             ))}

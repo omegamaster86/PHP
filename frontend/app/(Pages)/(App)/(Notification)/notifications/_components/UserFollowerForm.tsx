@@ -1,12 +1,12 @@
-import { CreateFormInput } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/Create';
 import { InsertLinkDialog } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/InsertLinkDialog';
 import { InputLabel } from '@/app/components';
+import { NotificationCreateFormInput, NotificationUpdateFormInput } from '@/app/types';
 import { HTMLAttributes } from 'react';
 import { UseFormSetValue } from 'react-hook-form';
 
 type Props = {
   bodyProps: HTMLAttributes<HTMLTextAreaElement>;
-  setValue: UseFormSetValue<CreateFormInput>;
+  setValue: UseFormSetValue<NotificationCreateFormInput | NotificationUpdateFormInput>;
   handleConfirm: (textLink: { text: string; link: string }) => void;
 };
 

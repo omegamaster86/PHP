@@ -14,8 +14,12 @@ class T_notified_coach_qualifications extends Model
     //指導者資格の追加 20241119
     public function insertNotifiedCoachQualificationsData($coachQualification)
     {
+        $now = now()->format('Y-m-d H:i:s.u');
+        $userId = Auth::user()->user_id;
+
         DB::insert(
-            'INSERT into t_notified_coach_qualifications
+            'INSERT INTO t_notified_coach_qualifications
+                    SET
                     notification_id = ?,
                     coach_qualification_id = ?,
                     registered_time = ?,
@@ -26,10 +30,10 @@ class T_notified_coach_qualifications extends Model
             [
                 $coachQualification['notificationId'],
                 $coachQualification['coachQualificationId'],
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id,
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id
+                $now,
+                $userId,
+                $now,
+                $userId
             ]
         );
     }

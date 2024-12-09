@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\ErrorHandler\Debug;
 
 class T_tournaments extends Model
 {
@@ -29,7 +30,8 @@ class T_tournaments extends Model
 
     public function getTournament($trnId)
     {
-        $tournaments = DB::select('select
+        $tournaments = DB::select(
+            'select
                                     `t_tournaments`.`tourn_id`,
                                     `tourn_name`,
                                     `sponsor_org_id`,
@@ -63,8 +65,9 @@ class T_tournaments extends Model
                                     and `t_tournaments`.`delete_flag` = 0
                                     and `t_organizations`.`delete_flag` = 0
                                     and `m_venue`.`delete_flag` = 0
-                                    and tourn_id = ?'
-                                    ,[$trnId]);
+                                    and tourn_id = ?',
+            [$trnId]
+        );
         //1つの団体IDを取得するため0番目だけを返す
         $targetTrn = null;
         if (!empty($tournaments)) {
@@ -142,7 +145,7 @@ class T_tournaments extends Model
                         :updated_time,
                         :updated_user_id,
                         0
-                    )',$tournament);
+                    )', $tournament);
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
@@ -152,7 +155,7 @@ class T_tournaments extends Model
         $result = "success";
         DB::beginTransaction();
         try {
-            
+
             DB::update(
                 'update t_tournaments set `tourn_id`=?,`tourn_name`=?,`sponsor_org_id`=?,`event_start_date`=?,`event_end_date`=?,`venue_id`=?,`venue_name`=?,`tourn_type`=?,`tourn_url`=?,`tourn_info_faile_path`=?,`entrysystem_tourn_id`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where tourn_id = ?',
                 [
@@ -180,14 +183,15 @@ class T_tournaments extends Model
             return $result;
         } catch (\Throwable $e) {
             // dd($request->all());
-            return response()->json("失敗しました。大会更新できませんでした。",500);  //DBの結果を返す
+            return response()->json("失敗しました。大会更新できませんでした。", 500);  //DBの結果を返す
         }
     }
 
     //interfaceのTournamentを引数としてupdateを実行
     public function updateTournament($tournamentInfo)
     {
-        DB::update('update t_tournaments
+        DB::update(
+            'update t_tournaments
                     set                    
                     `entrysystem_tourn_id`= :entrysystem_tourn_id,
                     `tourn_name`= :tourn_name,
@@ -201,14 +205,16 @@ class T_tournaments extends Model
                     `tourn_info_faile_path`= :tourn_info_faile_path,
                     `updated_time`= :updated_time,
                     `updated_user_id`= :updated_user_id,
-                    where tourn_id = :tourn_id'
-                    ,$tournamentInfo);
+                    where tourn_id = :tourn_id',
+            $tournamentInfo
+        );
     }
 
     //20231215 団体IDをキーとして大会情報を取得する
     public function getTournamentsFromOrgId($target_org_id)
     {
-        $tournaments = DB::select('select 
+        $tournaments = DB::select(
+            'select 
                                     `tourn_id`,
                                     `tourn_name`,
                                     `sponsor_org_id`,
@@ -239,8 +245,9 @@ class T_tournaments extends Model
                                     and `t_organizations`.`delete_flag` = 0
                                     and `m_venue`.`delete_flag` = 0
                                     and `sponsor_org_id` = ?
-                                    order by `event_start_date`'
-                                    ,[$target_org_id]);
+                                    order by `event_start_date`',
+            [$target_org_id]
+        );
         return $tournaments;
     }
 
@@ -327,18 +334,20 @@ class T_tournaments extends Model
     }
     public function getTournamentName()
     {
-        $tournament_name_list = DB::select('select tourn_name
+        $tournament_name_list = DB::select(
+            'select tourn_name
                                         from t_tournaments
                                         where delete_flag = 0
                                         order by tourn_id'
-                                    );
+        );
         return $tournament_name_list;
     }
 
     //大会IDを条件に大会情報を取得する
     public function getTournamentFromTournId($tourn_id)
     {
-        $tournament = DB::select('select
+        $tournament = DB::select(
+            'select
                                 `tourn_id`,
                                 `tourn_name`,
                                 `sponsor_org_id`,
@@ -367,15 +376,17 @@ class T_tournaments extends Model
                                 where `t_tournaments`.`delete_flag` = 0
                                 and `t_organizations`.`delete_flag` = 0
                                 and `m_venue`.`delete_flag` = 0
-                                and tourn_id = :tourn_id'
-                                ,[$tourn_id]);
+                                and tourn_id = :tourn_id',
+            [$tourn_id]
+        );
         return $tournament;
     }
 
     //フロントエンドで入力された大会IDを条件に、該当の大会情報を取得する
     public function getTournamentInfoFromTournId($tourn_id)
     {
-        $target_tournament = DB::select('select
+        $target_tournament = DB::select(
+            'select
                                         `tourn_id`,
                                         `tourn_name`,
                                         `sponsor_org_id`,
@@ -404,8 +415,9 @@ class T_tournaments extends Model
                                         where `t_tournaments`.`delete_flag` = 0
                                         and `t_organizations`.`delete_flag` = 0
                                         and `m_venue`.`delete_flag` = 0
-                                        and `t_tournaments`.`tourn_id` = :tourn_id'
-                                        ,['tourn_id' => $tourn_id]);
+                                        and `t_tournaments`.`tourn_id` = :tourn_id',
+            ['tourn_id' => $tourn_id]
+        );
         return $target_tournament;
     }
 
@@ -440,14 +452,15 @@ class T_tournaments extends Model
                                     and `t_tournaments`.`delete_flag` = 0
                                     and `t_organizations`.`delete_flag` = 0
                                     ');
-                                            
+
         return $tournaments; //大会テーブルの項目すべて渡す
     }
 
     //開催年を条件に大会情報を取得する
     public function getTournamentsFromEntryYear($entry_year)
     {
-        $tournaments = DB::select("select
+        $tournaments = DB::select(
+            "select
                                     `tourn_id`
                                     ,`tourn_name`
                                     ,`sponsor_org_id`
@@ -461,16 +474,18 @@ class T_tournaments extends Model
                                     ,`entrysystem_tourn_id`
                                     FROM `t_tournaments`
                                     WHERE 1=1
-                                    and DATE_FORMAT(event_start_date, '%Y') = ?"
-                                ,[$entry_year]);
+                                    and DATE_FORMAT(event_start_date, '%Y') = ?",
+            [$entry_year]
+        );
         return $tournaments;
     }
 
     //開催年とユーザーIDを条件に大会情報を取得する
     //団体管理者用
-    public function getTournamentsFromEntryYearAndUserId($entry_year,$user_id)
+    public function getTournamentsFromEntryYearAndUserId($entry_year, $user_id)
     {
-        $tournaments = DB::select("select distinct
+        $tournaments = DB::select(
+            "select distinct
                                     `tourn_id`
                                     ,`tourn_name`
                                     ,`sponsor_org_id`
@@ -489,19 +504,21 @@ class T_tournaments extends Model
                                     on org.org_id = staff.org_id 
                                     WHERE 1=1
                                     and DATE_FORMAT(event_start_date, '%Y') = ?
-                                    and staff.user_id = ?"
-                                ,[
-                                    $entry_year
-                                    ,$user_id
-                                ]);
+                                    and staff.user_id = ?",
+            [
+                $entry_year,
+                $user_id
+            ]
+        );
         return $tournaments;
     }
 
     //大会ID、ユーザーID、ユーザー種別の条件に該当する大会の件数を取得し、
     //0件なら0、1件以上あれば1を取得する
-    public function getIsTournament($tourn_id,$user_id,$user_type)
+    public function getIsTournament($tourn_id, $user_id, $user_type)
     {
-        $result = DB::select('select 
+        $result = DB::select(
+            'select 
                                 case count(*)
                                     when 0 then 0
                                     else 1
@@ -520,8 +537,9 @@ class T_tournaments extends Model
                                 and users.delete_flag = 0
                                 and tor.tourn_id = :tourn_id
                                 and users.user_id = :user_id
-                                and users.user_type = :user_type'
-                            ,['tourn_id' => $tourn_id, 'user_id' => $user_id, 'user_type' => $user_type]);        
+                                and users.user_type = :user_type',
+            ['tourn_id' => $tourn_id, 'user_id' => $user_id, 'user_type' => $user_type]
+        );
         return $result;
     }
 
@@ -530,36 +548,37 @@ class T_tournaments extends Model
     public function updateDeleteFlag($tourn_id)
     {
         Log::debug($tourn_id);
-        DB::update('update `t_tournaments`
+        DB::update(
+            'update `t_tournaments`
                     set `delete_flag` = 1
                     ,updated_time = ?
                     ,updated_user_id = ?
                     where 1=1
                     and `delete_flag` = 0
-                    and `tourn_id` = ?'
-                    ,[
-                        now()->format('Y-m-d H:i:s.u')
-                        ,Auth::user()->user_id
-                        ,$tourn_id
-                    ]
-                );
+                    and `tourn_id` = ?',
+            [
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                $tourn_id
+            ]
+        );
     }
 
     //エントリーシステムの大会IDが一致する大会を取得する
     //重複有無を確認するため
     //tourn_idが一致するレコードを除く（更新画面用）
-    public function getEntrysystemTournIdDuplicateRecordWithTournId($entrySystemTournId,$tourn_id)
+    public function getEntrysystemTournIdDuplicateRecordWithTournId($entrySystemTournId, $tourn_id)
     {
         $tournaments = DB::select(
-                                    'select 
+            'select 
                                     tourn_id
                                     ,tourn_name
                                     from `t_tournaments`
                                     where `delete_flag`=0
                                     and `entrysystem_tourn_id` = ?
-                                    and `tourn_id` <> ?'
-                                    ,[$entrySystemTournId,$tourn_id]
-                                );
+                                    and `tourn_id` <> ?',
+            [$entrySystemTournId, $tourn_id]
+        );
         return $tournaments;
     }
 
@@ -569,21 +588,22 @@ class T_tournaments extends Model
     public function getEntrysystemTournIdDuplicateRecord($entrySystemTournId)
     {
         $tournaments = DB::select(
-                                    'select 
+            'select 
                                     tourn_id
                                     ,tourn_name
                                     from `t_tournaments`
                                     where `delete_flag`=0
-                                    and `entrysystem_tourn_id` = ?'
-                                    ,[$entrySystemTournId]
-                                );
+                                    and `entrysystem_tourn_id` = ?',
+            [$entrySystemTournId]
+        );
         return $tournaments;
     }
 
-        //マイページ 大会情報用 選手IDに紐づいたレース結果情報及び、フォロー大会情報を取得 20241028
-        public function getMyPageTournamentInfo($playerId, $tournType)
-        {
-            $tournaments = DB::select('select 
+    //マイページ 大会情報用 選手IDに紐づいたレース結果情報及び、フォロー大会情報を取得 20241028
+    public function getMyPageTournamentInfo($playerId, $tournType)
+    {
+        $tournaments = DB::select(
+            'select 
                                             `t_tournaments`.`tourn_id` as `tournId`,
                                             `t_tournaments`.`tourn_name` as `tournName`,
                                             `t_tournaments`.`tourn_type` as `tournType`, 
@@ -627,8 +647,57 @@ class T_tournaments extends Model
                                             and `t_organizations`.`delete_flag` = 0
                                             and `t_tournaments`.tourn_type = ?
                                             and `t_tournaments`.event_start_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 9 MONTH) AND DATE_ADD(CURDATE(), INTERVAL 3 MONTH)
-                                            ORDER BY `t_tournaments`.`event_start_date` DESC', 
-                                            [Auth::user()->user_id, $playerId, Auth::user()->user_id, $tournType]);
-            return $tournaments;
-        }
+                                            ORDER BY `t_tournaments`.`event_start_date` DESC',
+            [Auth::user()->user_id, $playerId, Auth::user()->user_id, $tournType]
+        );
+        return $tournaments;
+    }
+
+
+    // 自分が、選手もしくはスタッフとして所属している団体(複数)でその団体が主催している大会を取得
+    public function getMyOrgsHostedTournaments()
+    {
+        $userId = Auth::user()->user_id;
+
+        $tournaments = DB::select(
+            'SELECT 
+                `t_tournaments`.`tourn_id` AS `tournId`,
+                `t_tournaments`.`tourn_name` AS `tournName`,
+                `t_tournaments`.`tourn_type` AS `tournType`, 
+                `t_tournaments`.`event_start_date` AS `eventStartDate`, 
+                `inv`.`org_name` AS `sponsorOrgName`
+                FROM `t_tournaments`
+                INNER JOIN (
+                    SELECT `org_id`, `org_name`
+                    FROM `t_organizations` `to`
+                    WHERE (
+                        EXISTS (
+                            SELECT `org_staff_id`
+                            FROM `t_organization_staff` `tos`
+                            WHERE `tos`.`org_id` = `to`.`org_id`
+                            AND `tos`.`user_id` = ?
+                            AND `tos`.`delete_flag` = 0
+                        )
+                        OR EXISTS (
+                            SELECT `org_player_id`
+                            FROM `t_organization_players` `top`
+                            INNER JOIN `t_players` `tp`
+                                ON `top`.`player_id` = `tp`.`player_id`
+                                AND `tp`.`user_id` = ?
+                                AND `tp`.`delete_flag` = 0
+                            WHERE `top`.`org_id` = `to`.`org_id`
+                            AND `top`.`delete_flag` = 0
+                        )
+                    )
+                    AND `to`.`delete_flag` = 0
+                ) AS `inv`
+                ON `t_tournaments`.`sponsor_org_id` = `inv`.`org_id`
+                WHERE 1=1
+                AND `t_tournaments`.`delete_flag` = 0 
+                ORDER BY `t_tournaments`.`event_start_date` DESC',
+            [$userId, $userId]
+        );
+
+        return $tournaments;
+    }
 }

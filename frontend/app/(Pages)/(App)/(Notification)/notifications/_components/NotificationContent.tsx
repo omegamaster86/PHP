@@ -76,7 +76,9 @@ export const NotificationContent: React.FC<Props> = (props) => {
       {isSent && (
         <div className='flex items-center gap-2 my-2 text-2xs'>
           <span>To: </span>
-          <Tag tag={to} className='bg-gray-50' />
+          {to.map((t, i) => (
+            <Tag key={`${t}-${i}`} tag={t} className='bg-gray-50' />
+          ))}
         </div>
       )}
 

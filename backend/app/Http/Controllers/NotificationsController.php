@@ -91,12 +91,10 @@ class NotificationsController extends Controller
             $tNotifications->deleteNotificationData($notificationId); //通知情報の削除 20241118
 
             DB::commit();
+        } catch (HttpException $e) {
+            throw $e;
         } catch (\Throwable $e) {
             DB::rollBack();
-
-            if ($e instanceof HttpException) {
-                throw $e;
-            }
 
             abort(500, '通知情報の削除に失敗しました。');
         }
@@ -183,12 +181,24 @@ class NotificationsController extends Controller
 
             $req = $request->all();
             Log::debug($req);
+            $notificationId = $req['notificationId'];
+            $userId = Auth::user()->user_id;
+
+            $targetNotification = $tNotifications->getNotificationInfoData($notificationId);
+            $targetSenderId = $targetNotification->senderId;
+            if (empty($targetSenderId) || $targetSenderId !== $userId) {
+                abort(403, '編集権限がありません。');
+            }
+
             $tNotifications->updateNotificationData($req); //通知情報の更新 20241118
 
             DB::commit();
+        } catch (HttpException $e) {
+            throw $e;
         } catch (\Throwable $e) {
             Log::debug($e);
             DB::rollBack();
+
             abort(500, '通知情報の更新に失敗しました。');
         }
 

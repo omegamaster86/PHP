@@ -1,4 +1,4 @@
-import { OfficialType, TournType } from '@/app/constants';
+import { NotificationDestinationId, OfficialType, TournType } from '@/app/constants';
 
 // Jsonの型定義
 interface CountryResponse {
@@ -699,27 +699,54 @@ interface MyPageProfileInfoData {
   photo: string; //写真
 }
 
-// 資格
-interface Qualification {
-  qual_id: number;
-  qual_name: string;
-}
-
 // 通知参照情報
 interface NotificationInfoData {
   notificationId: number;
   title: string;
-  notificationDestinationTypeId: 1 | 2 | 3 | 4; // 1:フォロワー, 2:大会フォロワー, 3:有資格者, 4: 全ユーザー
-  to: string;
+  notificationDestinationTypeId: NotificationDestinationId; // 1:フォロワー, 2:大会フォロワー, 3:有資格者, 4: 全ユーザー
+  to: string[];
   body: string;
+  tournId: number;
+  coachQualIds: number[];
+  refereeQualIds: number[];
   senderId: number;
   senderName: string;
   senderIcon: string | null;
   sentTime: string;
 }
 
+// 通知作成リクエスト
+interface CreateNotificationRequest {
+  notificationData: {
+    notificationDestinationTypeId: NotificationDestinationId; // 1:フォロワー, 2:大会フォロワー, 3:有資格者, 4: 全ユーザー
+    tournId: number | null;
+    title: string;
+    body: string;
+  };
+  coachQualificationsData: { coachQualificationId: number }[];
+  refereeQualificationsData: { refereeQualificationId: number }[];
+}
+
+// 通知更新リクエスト
+interface UpdateNotificationRequest {
+  notificationId: number;
+  tournId: number;
+  title: string;
+  body: string;
+  coachQualificationsData: { coachQualificationId: number }[];
+  refereeQualificationsData: { refereeQualificationId: number }[];
+}
+
 // 受信・送信一覧api用インターフェース
 interface NotificationListData extends Omit<NotificationInfoData, 'to' | 'body'> {}
+
+interface MyOrgsHostedTournament {
+  tournId: number; // 大会ID
+  tournName: string; // 大会名
+  tournType: TournType; // 公式／非公式
+  eventStartDate: string; // 開催日
+  sponsorOrgName: string; // 主催団体名
+}
 
 export type {
   CheckRace,
@@ -728,14 +755,17 @@ export type {
   CoachingHistory,
   CoachRefereeRefResponse,
   CoachRefereeResponse,
-  ICoachQualification,
   CountryResponse,
+  CreateNotificationRequest,
   CrewPlayer,
   CrewResponse,
   DisTypeResponse,
   EventResponse,
+  ICoachQualification,
+  IRefereeQualification,
   LangResponse,
   MasterResponse,
+  MyOrgsHostedTournament,
   MyPageCoachRefereeResponse,
   MyPagePlayerProfileInfoData,
   MyPageProfileInfoData,
@@ -755,12 +785,10 @@ export type {
   PlayerInformationResponse,
   PrefectureResponse,
   QualHoldResponse,
-  Qualification,
   Race,
   RaceResultRecordsResponse,
   RaceTable,
   RaceTypeResponse,
-  IRefereeQualification,
   SexResponse,
   Staff,
   TeamPlayerInformationResponse,
@@ -768,6 +796,7 @@ export type {
   Tournament,
   TournamentResponse,
   TourTypeResponse,
+  UpdateNotificationRequest,
   UserIdType,
   UserResponse,
   VenueResponse,
