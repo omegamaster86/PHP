@@ -542,6 +542,11 @@ interface OrgType {
   name: string; // 名称
 }
 
+interface OrganizationListData {
+  org_id: number;
+  org_name: string;
+}
+
 // 団体区分
 interface OrgClass {
   id: number; // ID
@@ -777,6 +782,7 @@ export type {
   NotificationInfoData,
   NotificationListData,
   Org,
+  OrganizationListData,
   Organization,
   OrganizationPlayer,
   OrgClass,
