@@ -1,81 +1,52 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 import { CustomButton, CustomTextField, InputLabel } from '@/app/components';
 import {
   ICoachQualification,
   IRefereeQualification,
   CoachRefereeResponse,
   SelectOption,
+  OrganizationListData,
 } from '@/app/types';
-import useSWR from 'swr';
-import { fetcher } from '@/app/lib/swr';
 import CoachingHistory from './CoachingHistory';
 import CoachQualification from './CoachQualification';
 import RefereeQualification from './RefereeQualification';
+import { useRouter } from 'next/navigation';
+import { Divider } from '@mui/material';
+import { getSessionStorage, getStorageKey, setSessionStorage } from '@/app/utils/sessionStorage';
 
-type OrganizationListData = {
-  org_id: number;
-  org_name: string;
-}[];
+interface UpdateViewProps {
+  coachRefereeInfoList: CoachRefereeResponse;
+  coachQualifications: SelectOption<number>[];
+  refereeQualifications: SelectOption<number>[];
+  organizations: OrganizationListData[];
+  staffs: SelectOption<number>[];
+}
 
-const UpdateView = () => {
-  const { data } = useSWR(
-    {
-      url: `getUpdateCoachRefereeInfoList`,
-    },
-    fetcher<CoachRefereeResponse>,
-  );
-  const { data: coachQualificationData } = useSWR(
-    {
-      url: `getCoachQualifications`,
-    },
-    fetcher<SelectOption[]>,
-  );
-  const { data: refereeQualificationData } = useSWR(
-    {
-      url: `getRefereeQualifications`,
-    },
-    fetcher<SelectOption[]>,
-  );
+const storageKey = getStorageKey({
+  pageName: 'coachReferee',
+  type: 'create',
+});
 
-  const { data: organizationData } = useSWR(
-    {
-      url: `getOrganizationListData`,
-    },
-    fetcher<OrganizationListData>,
-  );
-
-  const { data: staffData } = useSWR(
-    {
-      url: `getStaffTypes`,
-    },
-    fetcher<SelectOption[]>,
-  );
-
+const UpdateView: React.FC<UpdateViewProps> = ({
+  coachRefereeInfoList,
+  coachQualifications,
+  refereeQualifications,
+  organizations,
+  staffs,
+}) => {
+  const router = useRouter();
   // FIXME: エラーメッセージを考慮する
   const [errorMessage, setErrorMessage] = useState([] as string[]);
+  const draftFormData = getSessionStorage<CoachRefereeResponse>(storageKey);
 
   const [fetchData, setFetchData] = useState<CoachRefereeResponse>({
-    jspoId: 0,
-    coachingHistories: [],
-    coachQualifications: [],
-    refereeQualifications: [],
+    jspoId: draftFormData?.jspoId || 0,
+    coachingHistories: draftFormData?.coachingHistories || [],
+    coachQualifications: draftFormData?.coachQualifications || [],
+    refereeQualifications: draftFormData?.refereeQualifications || [],
   });
-
-  useEffect(() => {
-    if (data?.result) {
-      setFetchData({
-        jspoId: data.result.jspoId,
-        coachingHistories: data.result.coachingHistories.map((history) => ({
-          ...history,
-          isCurrentlyCoaching: history.endDate === null,
-        })),
-        coachQualifications: data.result.coachQualifications || [],
-        refereeQualifications: data.result.refereeQualifications || [],
-      });
-    }
-  }, [data]);
 
   const handleCoachingHistoryChange = (
     index: number,
@@ -108,6 +79,7 @@ const UpdateView = () => {
       };
     });
   };
+
   const handleUpdatedRefereeQualificationsChange = (
     index: number,
     field: string,
@@ -136,8 +108,8 @@ const UpdateView = () => {
       isCurrentlyCoaching: false,
     };
     setFetchData((prevData) => ({
-      ...prevData,
-      coachingHistories: [newElement, ...prevData.coachingHistories],
+        ...prevData,
+        coachingHistories: [newElement, ...prevData.coachingHistories],
     }));
   };
 
@@ -171,8 +143,14 @@ const UpdateView = () => {
     }));
   };
 
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSessionStorage(storageKey, fetchData);
+    router.push(`/coachReferee?mode=confirm&type=create&storageKey=${storageKey}`);
+  }
+
   return (
-    <div className='flex flex-col gap-8'>
+    <form onSubmit={onSubmit} className='flex flex-col gap-8'>
       <div className='flex flex-col gap-2'>
         <div className='flex items-center gap-2'>
           <h2>指導履歴</h2>
@@ -191,8 +169,8 @@ const UpdateView = () => {
               coachingHistory={coachingHistory}
               index={index}
               handleInputChange={handleCoachingHistoryChange}
-              organizationOptions={organizationData?.result || []}
-              staffOptions={staffData?.result || []}
+              organizationOptions={organizations}
+              staffOptions={staffs}
             />
           ))}
         </div>
@@ -215,7 +193,9 @@ const UpdateView = () => {
               placeHolder='12345'
               value={String(fetchData.jspoId)}
               widthClassName='w-full md:w-[150px]'
-              onChange={(event) => setFetchData({ ...fetchData, jspoId: Number(event.target.value) })}
+              onChange={(event) =>
+                setFetchData({ ...fetchData, jspoId: Number(event.target.value) })
+              }
             />
           </div>
         )}
@@ -225,7 +205,7 @@ const UpdateView = () => {
               key={index}
               coachQualification={coachQualification}
               index={index}
-              coachQualificationOptions={coachQualificationData?.result || []}
+              coachQualificationOptions={coachQualifications}
               handleInputChange={handleUpdatedQualificationsChange}
             />
           ))}
@@ -248,13 +228,22 @@ const UpdateView = () => {
               key={index}
               refereeQualification={refereeQualification}
               index={index}
-              refereeQualificationsOptions={refereeQualificationData?.result || []}
+              refereeQualificationsOptions={refereeQualifications}
               handleInputChange={handleUpdatedRefereeQualificationsChange}
             />
           ))}
         </div>
       </div>
-    </div>
+      <Divider className='h-[1px] bg-border ' />
+      <div className='flex flex-col gap-4 items-center justify-center md:flex-row'>
+        <CustomButton buttonType='white-outlined' onClick={() => router.back()}>
+          戻る
+        </CustomButton>
+        <CustomButton buttonType='primary' type='submit'>
+          確認
+        </CustomButton>
+      </div>
+    </form>
   );
 };
 
