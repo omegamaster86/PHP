@@ -542,11 +542,6 @@ interface OrgType {
   name: string; // 名称
 }
 
-interface OrganizationListData {
-  org_id: number;
-  org_name: string;
-}
-
 // 団体区分
 interface OrgClass {
   id: number; // ID
@@ -568,6 +563,11 @@ interface Org {
   residenceCountryName: string; // 　#置き換え作業対応不要
   location_prefecture: number; // 所在地（都道府県）
   residencePrefectureName: string; // 　#置き換え作業対応不要
+}
+
+interface OrganizationListData {
+  org_id: number;
+  org_name: string;
 }
 
 // レース情報

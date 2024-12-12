@@ -1,6 +1,38 @@
 import React from 'react';
+import { CoachRefereeResponse, SelectOption, OrganizationListData } from '@/app/types';
+import { formatDate } from '@/app/utils/dateUtil';
 
-const ConfirmCoachingHistory = () => {
+interface Props {
+  organizationOptions: OrganizationListData[];
+  staffOptions: SelectOption<number>[];
+  parsedData: CoachRefereeResponse | null;
+};
+
+
+const ConfirmCoachingHistory: React.FC<Props> = ({
+  organizationOptions,
+  staffOptions,
+  parsedData,
+}) => {
+
+  const organizations = organizationOptions.reduce(
+    (acc, organizationData) => {
+      acc[organizationData.org_id] = organizationData.org_name;
+      return acc;
+    },
+    {} as Record<number, string>,
+  );
+
+  const staffTypeOptions = staffOptions.reduce(
+    (acc, staffData) => {
+      acc[staffData.key] = staffData.value;
+      return acc;
+    },
+    {} as Record<number, string>,
+  );
+
+  const coachingHistories = parsedData?.coachingHistories || [];
+
   return (
     <div>
       <h2 className='text-lg md:text-xl font-bold'>指導履歴</h2>
@@ -14,12 +46,16 @@ const ConfirmCoachingHistory = () => {
           </tr>
         </thead>
         <tbody className='[&_td]:pt-2 [&_td]:pr-2 [&_td]:text-xs md:[&_td]:text-sm [&_td]:font-normal [&_td]:max-w-[50px] [&_td]:text-ellipsis [&_td]:overflow-hidden'>
-          <tr>
-            <td>2024/01/01</td>
-            <td>2024/01/01</td>
-            <td>日本ローイング協会</td>
-            <td>コーチ</td>
-          </tr>
+          {coachingHistories.map(
+            (history: CoachRefereeResponse['coachingHistories'][number]) => (
+              <tr key={history.orgCoachingHistoryId}>
+                <td>{formatDate(history.startDate, 'yyyy/MM/dd')}</td>
+                <td>{formatDate(history.endDate, 'yyyy/MM/dd') || '現在'}</td>
+                <td>{organizations[history.orgId]}</td>
+                <td>{staffTypeOptions[history.staffTypeId]}</td>
+              </tr>
+            ),
+          )}
         </tbody>
       </table>
     </div>

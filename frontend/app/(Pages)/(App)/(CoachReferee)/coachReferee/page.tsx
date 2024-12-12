@@ -8,6 +8,7 @@ import ConfirmView from './_components/ConfirmView';
 import { CoachRefereeResponse, SelectOption, OrganizationListData } from '@/app/types';
 import useSWR from 'swr';
 import { fetcher } from '@/app/lib/swr';
+import { getStorageKey } from '@/app/utils/sessionStorage';
 
 type Mode = 'update' | 'confirm';
 
@@ -16,12 +17,6 @@ const CoachReferee = () => {
   const mode = searchParams.get('mode') || ('update' as Mode);
   const [errorMessage, setErrorMessage] = useState([] as string[]);
 
-  const { data: coachRefereeInfoListRes } = useSWR(
-    {
-      url: `getUpdateCoachRefereeInfoList`,
-    },
-    fetcher<CoachRefereeResponse>,
-  );
   const { data: coachQualificationsRes } = useSWR(
     {
       url: `getCoachQualifications`,
@@ -48,12 +43,17 @@ const CoachReferee = () => {
     },
     fetcher<SelectOption[]>,
   );
-  const coachRefereeInfoList = coachRefereeInfoListRes?.result ?? [];
   const coachQualifications = coachQualificationsRes?.result ?? [];
   const refereeQualifications = refereeQualificationsRes?.result ?? [];
   const organizations = organizationsRes?.result ?? [];
   const staffs = staffsRes?.result ?? [];
-console.log(coachRefereeInfoList);
+  const storageKey = getStorageKey({
+    pageName: 'coachReferee',
+    type: 'create',
+  });
+  const rawData = sessionStorage.getItem(storageKey);
+  const parsedData: CoachRefereeResponse | null = rawData ? JSON.parse(rawData) : null;
+
   return (
     <>
       <ErrorBox errorText={errorMessage} />
@@ -64,20 +64,20 @@ console.log(coachRefereeInfoList);
       </CustomTitle>
       {mode === 'update' && (
         <UpdateView
-          coachRefereeInfoList={coachRefereeInfoList}
           coachQualifications={coachQualifications}
           refereeQualifications={refereeQualifications}
           organizations={organizations}
           staffs={staffs}
+          storageKey={storageKey}
         />
       )}
       {mode === 'confirm' && (
         <ConfirmView
-        // data={data.result}
-        // coachQualificationData={coachQualificationData.result}
-        // refereeQualificationData={refereeQualificationData.result}
-        // organizationData={organizationData.result}
-        // staffData={staffData.result}
+          coachQualifications={coachQualifications}
+          refereeQualifications={refereeQualifications}
+          organizations={organizations}
+          staffs={staffs}
+          parsedData={parsedData}
         />
       )}
     </>

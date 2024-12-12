@@ -1,6 +1,22 @@
 import React from 'react';
+import { IRefereeQualification, CoachRefereeResponse, SelectOption } from '@/app/types';
+import { formatDate } from '@/app/utils/dateUtil';
 
-const ConfirmRefereeQualification = () => {
+interface Props {
+  refereeQualificationOptions: SelectOption<number>[];
+  parsedData: CoachRefereeResponse | null;
+}
+
+const ConfirmRefereeQualification: React.FC<Props> = ({ refereeQualificationOptions, parsedData }) => {
+  const qualificationOptions = refereeQualificationOptions.reduce(
+    (acc, qualificationOption) => {
+      acc[qualificationOption.key] = qualificationOption.value;
+      return acc;
+    },
+    {} as Record<number, string>,
+  );
+  const refereeQualifications = parsedData?.refereeQualifications || [];
+
   return (
     <>
       <h2 className=' text-xl font-bold'>審判資格</h2>
@@ -14,11 +30,15 @@ const ConfirmRefereeQualification = () => {
             </tr>
           </thead>
           <tbody className='[&_td]:pt-2 [&_td]:pr-2 [&_td]:text-xs md:[&_td]:text-sm [&_td]:font-normal [&_td]:max-w-[50px] [&_td]:text-ellipsis [&_td]:overflow-hidden'>
-            <tr>
-              <td>資格A</td>
-              <td>2024/01/01</td>
-              <td>2024/01/01</td>
-            </tr>
+            {refereeQualifications.map(
+              (qualification: IRefereeQualification) => (
+                <tr key={qualification.heldRefereeQualificationId}>
+                  <td>{qualificationOptions[qualification.refereeQualificationId]}</td>
+                  <td>{formatDate(qualification.acquisitionDate, 'yyyy/MM/dd')}</td>
+                  <td>{formatDate(qualification.expiryDate, 'yyyy/MM/dd')}</td>
+                </tr>
+              ),
+            )}
           </tbody>
         </table>
       </div>

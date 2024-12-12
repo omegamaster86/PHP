@@ -15,39 +15,52 @@ import RefereeQualification from './RefereeQualification';
 import { useRouter } from 'next/navigation';
 import { Divider } from '@mui/material';
 import { getSessionStorage, getStorageKey, setSessionStorage } from '@/app/utils/sessionStorage';
+import useSWR from 'swr';
+import { fetcher } from '@/app/lib/swr';
 
 interface UpdateViewProps {
-  coachRefereeInfoList: CoachRefereeResponse;
   coachQualifications: SelectOption<number>[];
   refereeQualifications: SelectOption<number>[];
   organizations: OrganizationListData[];
   staffs: SelectOption<number>[];
+  storageKey: string;
 }
 
-const storageKey = getStorageKey({
-  pageName: 'coachReferee',
-  type: 'create',
-});
-
 const UpdateView: React.FC<UpdateViewProps> = ({
-  coachRefereeInfoList,
   coachQualifications,
   refereeQualifications,
   organizations,
   staffs,
+  storageKey,
 }) => {
   const router = useRouter();
+  const { data: coachRefereeInfoListRes } = useSWR(
+    {
+      url: `getUpdateCoachRefereeInfoList`,
+    },
+    fetcher<CoachRefereeResponse>,
+    { suspense: true },
+  );
+  const coachRefereeInfoList = coachRefereeInfoListRes?.result && {
+    ...coachRefereeInfoListRes.result,
+    coachingHistories: coachRefereeInfoListRes.result.coachingHistories.map((history) => ({
+      ...history,
+      isCurrentlyCoaching: history.endDate === null,
+    })),
+  };
   // FIXME: エラーメッセージを考慮する
   const [errorMessage, setErrorMessage] = useState([] as string[]);
   const draftFormData = getSessionStorage<CoachRefereeResponse>(storageKey);
 
   const [fetchData, setFetchData] = useState<CoachRefereeResponse>({
-    jspoId: draftFormData?.jspoId || 0,
-    coachingHistories: draftFormData?.coachingHistories || [],
-    coachQualifications: draftFormData?.coachQualifications || [],
-    refereeQualifications: draftFormData?.refereeQualifications || [],
+    jspoId: draftFormData?.jspoId || coachRefereeInfoList.jspoId,
+    coachingHistories: 
+      draftFormData?.coachingHistories || coachRefereeInfoList.coachingHistories,
+    coachQualifications:
+      draftFormData?.coachQualifications || coachRefereeInfoList.coachQualifications,
+    refereeQualifications:
+      draftFormData?.refereeQualifications || coachRefereeInfoList.refereeQualifications,
   });
-
   const handleCoachingHistoryChange = (
     index: number,
     field: string,
@@ -108,8 +121,8 @@ const UpdateView: React.FC<UpdateViewProps> = ({
       isCurrentlyCoaching: false,
     };
     setFetchData((prevData) => ({
-        ...prevData,
-        coachingHistories: [newElement, ...prevData.coachingHistories],
+      ...prevData,
+      coachingHistories: [newElement, ...prevData.coachingHistories],
     }));
   };
 
