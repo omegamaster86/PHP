@@ -1,6 +1,23 @@
 import React from 'react';
+import { ICoachQualification, CoachRefereeResponse, SelectOption } from '@/app/types';
+import { formatDate } from '@/app/utils/dateUtil';
 
-const ConfirmCoachQualification = () => {
+interface Props {
+  coachQualificationOptions: SelectOption<number>[];
+  parsedData: CoachRefereeResponse | null;
+}
+
+const ConfirmCoachQualification: React.FC<Props> = ({ coachQualificationOptions, parsedData }) => {
+  const qualificationOptions = coachQualificationOptions.reduce(
+    (acc, qualificationOption) => {
+      acc[qualificationOption.key] = qualificationOption.value;
+      return acc;
+    },
+    {} as Record<number, string>,
+  );
+
+  const coachQualifications = parsedData?.coachQualifications || [];
+
   return (
     <>
       <h2 className='text-lg md:text-xl font-bold text'>指導者資格</h2>
@@ -13,7 +30,9 @@ const ConfirmCoachQualification = () => {
           </thead>
           <tbody>
             <tr>
-              <td className='w-52 pr-2 pt-2 text-xs md:text-sm font-normal'>2024</td>
+              <td className='w-52 pr-2 pt-2 text-xs md:text-sm font-normal'>
+                {parsedData?.jspoId}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -26,16 +45,17 @@ const ConfirmCoachQualification = () => {
             </tr>
           </thead>
           <tbody className='[&_td]:pt-2 [&_td]:pr-2 [&_td]:text-xs md:[&_td]:text-sm [&_td]:font-normal [&_td]:max-w-[50px] [&_td]:text-ellipsis [&_td]:overflow-hidden'>
-            <tr>
-              <td>資格A</td>
-              <td>2024/01/01</td>
-              <td>2024/01/01</td>
-            </tr>
+            {coachQualifications.map((qualification: ICoachQualification) => (
+              <tr key={qualification.heldCoachQualificationId}>
+                <td>{qualificationOptions[qualification.coachQualificationId]}</td>
+                <td>{formatDate(qualification.acquisitionDate, 'yyyy/MM/dd')}</td>
+                <td>{formatDate(qualification.expiryDate, 'yyyy/MM/dd')}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
     </>
   );
 };
-
 export default ConfirmCoachQualification;
