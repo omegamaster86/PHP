@@ -243,16 +243,18 @@ interface UserResponse {
   user_name: string; // ユーザー名
   mailaddress: string; // メールアドレス
   sexName: string; // 性別　#置き換え作業未対応
-  sex?: number; // 性別
+  sex: number | null; // 性別
   date_of_birth: string; // 生年月日
-  residence_country?: number; // 居住地（国）
+  residence_country: number | null; // 居住地（国）
   residenceCountryName: string; // 居住地（国）　#置き換え作業対応不要
-  residence_prefecture?: number; // 居住地（都道府県）
+  residence_prefecture: string | null; // 居住地（都道府県）
   residencePrefectureName: string; // 居住地（都道府県）　#置き換え作業対応不要
-  height: string; // 身長
-  weight: string; // 体重
-  temp_password_flag: boolean; // 登録ステータス
-  photo: string; // 写真
+  height: number; // 身長
+  weight: number; // 体重
+  temp_password_flag: number; // 登録ステータス
+  photo: string | null; // 写真
+
+  /*  更新時に使用するためのプロパティ */
   uploadedPhoto?: File; // アップロードされて写真を保存する
   uploadedPhotoName?: string; // アップロードされて写真の名前を保存する
 }

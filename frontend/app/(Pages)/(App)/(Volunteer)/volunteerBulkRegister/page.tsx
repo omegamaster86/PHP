@@ -1,13 +1,14 @@
 // ボランティア一括登録
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { CustomButton, CustomTitle, ErrorBox } from '@/app/components';
+import axios from '@/app/lib/axios';
+import { UserResponse } from '@/app/types';
 import Validator from '@/app/utils/validator';
-import { CustomTitle, ErrorBox, CustomButton } from '@/app/components';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 import CsvHandler from './CsvHandler';
 import CsvTable from './CsvTable';
-import axios from '@/app/lib/axios';
 
 interface MasterData {
   id: number;
@@ -230,8 +231,7 @@ export default function VolunteerBulkRegister() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.get('/getUserData');
-        //console.log(response.data.result);
+        const response = await axios.get<{ result: UserResponse }>('/api/user');
         if (Object.keys(response.data.result).length > 0) {
           const playerInf = await axios.get('/getIDsAssociatedWithUser');
           if (

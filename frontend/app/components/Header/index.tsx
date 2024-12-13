@@ -1,6 +1,6 @@
 import { useAuth } from '@/app/hooks/auth';
 import axios from '@/app/lib/axios';
-import type { UserIdType } from '@/app/types';
+import type { UserIdType, UserResponse } from '@/app/types';
 import {
   CloseOutlined,
   MarkEmailUnreadOutlined,
@@ -127,8 +127,7 @@ const Header: FC = () => {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.get('/getUserData');
-        //console.log(response.data.result);
+        const response = await axios.get<{ result: UserResponse }>('/api/user');
         //ユーザ情報が存在し、仮パスワードフラグが0の場合ヘッダーメニューを表示 20240403
         if (Object.keys(response.data.result).length > 0) {
           if (response.data.result.temp_password_flag == 0) {

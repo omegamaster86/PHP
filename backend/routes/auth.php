@@ -75,10 +75,6 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    // 実装　ー　クマール　ー開始
-    Route::get('getUserData', [UserController::class, 'getUserData']);
-    // 実装　ー　クマール　ー終了
-
     //共通項目
     Route::get('getPrefecures', [M_prefectures::class, 'getPrefecures']); //都道府県マスター取得 20240117
     Route::get('getCountries', [M_countries::class, 'getCountries']); //国マスター取得 20240117
@@ -103,7 +99,6 @@ Route::middleware('auth')->group(function () {
     Route::get('getSeatNumber', [M_seat_number::class, 'getSeatNumber']); // シート番号（マスタ）
 
     //ユーザー関連
-    Route::get('getUserData', [UserController::class, 'getUserData']); //DBからユーザ情報を取得 20240131
     Route::post('updateUserData', [UserController::class, 'updateUserData']); //ユーザ情報をDBに送る 20240131
     Route::post('deleteUserData', [UserController::class, 'updateDeleteFlagInUserData']); //ユーザ情報を削除する 20240212
 

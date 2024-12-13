@@ -46,18 +46,19 @@ class T_users extends Authenticatable
     protected $table = 't_users';
     protected $primaryKey = 'user_id';
 
-    
+
     public function getUserName($targetUserId)
     {
-        $users = DB::select('select user_name
+        $users = DB::select(
+            'select user_name
                                 from t_users
                                 where delete_flag=0
-                                and user_id = ?'
-                                ,[$targetUserId]
-                            );
+                                and user_id = ?',
+            [$targetUserId]
+        );
         $userName = "";
         //userは一意に決まるため0番目を返す
-        if(isset($users[0])){
+        if (isset($users[0])) {
             $userName = $users[0]->user_name;
         }
         return $userName;
@@ -67,108 +68,101 @@ class T_users extends Authenticatable
     //ボランティア一括登録画面でユーザーIDの存在チェック用
     public function getUserIDList()
     {
-        $user_ids = DB::select('select user_id
+        $user_ids = DB::select(
+            'select user_id
                                 from t_users
                                 where delete_flag = ?',
-                                [0]
-                            );
+            [0]
+        );
         return $user_ids;
     }
     //対象ユーザーの情報を取得する
     public function getUserData($targetUserId)
     {
-        $users = DB::select('select 
-                                user.`user_id`
-                                ,user.`user_name`
-                                ,user.`mailaddress`
-                                ,user.`sex`
-                                ,user.`sex_name`
-                                ,user.`residence_country`
-                                ,user.`residenceCountryName`
-                                ,user.`residence_prefecture`
-                                ,user.`residencePrefectureName`
-                                ,user.`date_of_birth`
-                                ,user.`height`
-                                ,user.`weight`
-                                ,user.`user_type`
-                                ,trim("・" from CONCAT(is_administrator,
-                                        is_jara,
-                                        is_pref_boat_officer,
-                                        is_organization_manager,
-                                        is_player,
-                                        is_volunteer,
-                                        is_audience)) as `userTypeName`
-                                ,user.`photo`
-                                ,user.`password`
-                                ,user.`temp_password`
-                                ,user.`expiry_time_of_temp_password`
-                                ,user.`certification_number`
-                                ,user.`expiry_time_of_certification_number`
-                                ,user.`temp_password_flag`
-                                FROM
-                                (
-                                    select user.`user_id`
-                                    ,user.`user_name`
-                                    ,user.`mailaddress`
-                                    ,user.`sex`
-                                    ,sex.sex	as `sex_name`
-                                    ,user.`residence_country`
-                                    ,coun.country_name	as `residenceCountryName`
-                                    ,user.`residence_prefecture`
-                                    ,pref.pref_name	as `residencePrefectureName`
-                                    ,user.`date_of_birth`
-                                    ,user.`height`
-                                    ,user.`weight`
-                                    ,user.`user_type`
-                                    ,case 
-                                        when SUBSTR(user.`user_type`,2,1) = 1 then "管理者・"
-                                        else ""
-                                        end as `is_administrator`
-                                    ,case 
-                                        when SUBSTR(user.`user_type`,3,1) = 1 then "JARA・"
-                                        else ""
-                                        end as `is_jara`
-                                    ,case 
-                                        when SUBSTR(user.`user_type`,4,1) = 1 then "県ボ職員・"
-                                        else ""
-                                        end as `is_pref_boat_officer`
-                                    ,case 
-                                        when SUBSTR(user.`user_type`,5,1) = 1 then "団体管理者・"
-                                        else ""
-                                        end as `is_organization_manager`
-                                    ,case 
-                                        when SUBSTR(user.`user_type`,6,1) = 1 then "選手・"
-                                        else ""
-                                        end as `is_player`
-                                    ,case 
-                                        when SUBSTR(user.`user_type`,7,1) = 1 then "ボランティア・"
-                                        else ""
-                                        end as `is_volunteer`
-                                    ,case 
-                                        when SUBSTR(user.`user_type`,8,1) = 1 then "一般ユーザー（観客）"
-                                        else ""
-                                        end as `is_audience`
-                                    ,user.`photo`
-                                    ,user.`password`
-                                    ,user.`temp_password`
-                                    ,user.`expiry_time_of_temp_password`
-                                    ,user.`certification_number`
-                                    ,user.`expiry_time_of_certification_number`
-                                    ,user.`temp_password_flag`
-                                    FROM `t_users` user
-                                    inner join `m_sex` sex
-                                    on user.sex = sex.sex_id and sex.delete_flag = 0
-                                    inner join m_countries coun
-                                    on user.residence_country = coun.country_id and coun.delete_flag = 0
-                                    left join m_prefectures	pref
-                                    on user.residence_prefecture = pref.pref_id and pref.delete_flag = 0
-                                    WHERE 1=1
-                                    and user.delete_flag = 0
-                                    and user_id = ?
-                                )user'
-                                ,[$targetUserId]
-                            );
-        if(isset($users[0])){
+        $users = DB::select(
+            'SELECT
+                user.`user_id`,
+                user.`user_name`,
+                user.`mailaddress`,
+                user.`sex`,
+                user.`sexName`,
+                user.`residence_country`,
+                user.`residenceCountryName`,
+                user.`residence_prefecture`,
+                user.`residencePrefectureName`,
+                user.`date_of_birth`,
+                user.`height`,
+                user.`weight`,
+                user.`user_type`,
+                user.`photo`,
+                user.`temp_password_flag`,
+                trim("・" from CONCAT(is_administrator,
+                        is_jara,
+                        is_pref_boat_officer,
+                        is_organization_manager,
+                        is_player,
+                        is_volunteer,
+                        is_audience)
+                ) as `userTypeName`
+                FROM
+                (
+                    SELECT user.`user_id`,
+                    user.`user_name`,
+                    user.`mailaddress`,
+                    user.`sex`,
+                    sex.sex	as `sexName`,
+                    user.`residence_country`,
+                    coun.country_name as `residenceCountryName`,
+                    user.`residence_prefecture`,
+                    pref.pref_name as `residencePrefectureName`,
+                    user.`date_of_birth`,
+                    user.`height`,
+                    user.`weight`,
+                    user.`user_type`,
+                    user.`photo`,
+                    user.`temp_password_flag`,
+                    case 
+                        when SUBSTR(user.`user_type`,2,1) = 1 then "管理者・"
+                        else ""
+                    end as `is_administrator`,
+                    case 
+                        when SUBSTR(user.`user_type`,3,1) = 1 then "JARA・"
+                        else ""
+                    end as `is_jara`,
+                    case 
+                        when SUBSTR(user.`user_type`,4,1) = 1 then "県ボ職員・"
+                        else ""
+                    end as `is_pref_boat_officer`,
+                    case 
+                        when SUBSTR(user.`user_type`,5,1) = 1 then "団体管理者・"
+                        else ""
+                    end as `is_organization_manager`,
+                    case 
+                        when SUBSTR(user.`user_type`,6,1) = 1 then "選手・"
+                        else ""
+                    end as `is_player`,
+                    case 
+                        when SUBSTR(user.`user_type`,7,1) = 1 then "ボランティア・"
+                        else ""
+                    end as `is_volunteer`,
+                    case 
+                        when SUBSTR(user.`user_type`,8,1) = 1 then "一般ユーザー（観客）"
+                        else ""
+                    end as `is_audience`
+                    FROM `t_users` user
+                    inner join `m_sex` sex
+                    on user.sex = sex.sex_id and sex.delete_flag = 0
+                    inner join m_countries coun
+                    on user.residence_country = coun.country_id and coun.delete_flag = 0
+                    left join m_prefectures	pref
+                    on user.residence_prefecture = pref.pref_id and pref.delete_flag = 0
+                    WHERE 1=1
+                    and user.delete_flag = 0
+                    and user_id = ?
+                ) user',
+            [$targetUserId]
+        );
+        if (isset($users[0])) {
             $users = $users[0];
         }
         return $users;
@@ -217,7 +211,8 @@ class T_users extends Authenticatable
     //UserResponseを引数としてupdateを実行
     public function updateUserResponse($userResponse)
     {
-        DB::update('update `t_users`
+        DB::update(
+            'update `t_users`
                     set 
                     `user_type`= :user_type,
                     `user_name`= :user_name,
@@ -232,15 +227,17 @@ class T_users extends Authenticatable
                     `photo`= :photo,
                     `updated_time`= :updated_time,
                     `updated_user_id`= :updated_user_id,
-                    where user_id = :user_id'
-                ,$userResponse);
+                    where user_id = :user_id',
+            $userResponse
+        );
     }
 
     //メールアドレスを条件にユーザー情報を取得する
     public function getUserDataFromMailAddress($mailaddress)
     {
         // DB::enableQueryLog(); //SQLの実行ログを表示 20240419
-        $users = DB::select('select 
+        $users = DB::select(
+            'select 
                             `user_id`, 
                             `user_name`, 
                             `mailaddress`, 
@@ -248,8 +245,9 @@ class T_users extends Authenticatable
                             FROM `t_users`
                             WHERE 1=1
                             and `delete_flag` = 0
-                            and `mailaddress` = ?'
-                            ,[$mailaddress]);
+                            and `mailaddress` = ?',
+            [$mailaddress]
+        );
         // Log::debug(DB::getQueryLog()); //SQLの実行ログを表示 20240419
         return $users;
     }
@@ -257,7 +255,8 @@ class T_users extends Authenticatable
     //ユーザーIDを条件にユーザー情報を取得する
     public function getUserDataFromUserId($user_id)
     {
-        $users = DB::select('select 
+        $users = DB::select(
+            'select 
                                 `user_id`, 
                                 `user_name`, 
                                 `mailaddress`, 
@@ -266,25 +265,30 @@ class T_users extends Authenticatable
                                 FROM `t_users`
                                 WHERE 1=1
                                 and `delete_flag` = 0
-                                and `user_id` = ?'
-                            ,[$user_id]);
+                                and `user_id` = ?',
+            [$user_id]
+        );
         return $users;
     }
     //対象のユーザーの削除フラグを「１＝削除データ」に更新する 20240212
     public function updateDeleteFlagToInvalid()
     {
-        DB::update('update `t_users`
+        DB::update(
+            'update `t_users`
                     SET `updated_time`= ?,
                     `updated_user_id`= ?,
                     `delete_flag` = 1
                     where 1=1
-                    and `user_id` = ?'
-                    ,[now()->format('Y-m-d H:i:s.u')
-                    ,Auth::user()->user_id
-                    ,Auth::user()->user_id]);
+                    and `user_id` = ?',
+            [
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                Auth::user()->user_id
+            ]
+        );
     }
 
-    
+
     //ユーザー種別を更新する
     //フラグを立てる場合の関数
     //更新対象のユーザーIDを「user_id」
@@ -294,7 +298,8 @@ class T_users extends Authenticatable
     {
         // Log::debug("updateUserTypeRegist start.");
         // DB::enableQueryLog();
-        DB::update('update `t_users`
+        DB::update(
+            'update `t_users`
                     set `user_type` = 
                     (
                         select
@@ -314,12 +319,13 @@ class T_users extends Authenticatable
                             )t
                         )t
                     )
-                    where `user_id` = ?'
-                    ,[
-                        $updateInfo['input'],
-                        $updateInfo['user_id'],
-                        $updateInfo['user_id']
-                    ]);
+                    where `user_id` = ?',
+            [
+                $updateInfo['input'],
+                $updateInfo['user_id'],
+                $updateInfo['user_id']
+            ]
+        );
         //Log::debug(DB::getQueryLog());
         // Log::debug("updateUserTypeRegist end.");
     }
@@ -333,7 +339,8 @@ class T_users extends Authenticatable
     {
         // DB::enableQueryLog();
         // Log::debug("updateUserTypeDelete start.");
-        DB::update('update `t_users`
+        DB::update(
+            'update `t_users`
                     set `user_type` = 
                     (
                         select
@@ -353,12 +360,13 @@ class T_users extends Authenticatable
                             )t
                         )t
                     )
-                    where `user_id` = ?'
-                    ,[
-                        $updateInfo['input'],
-                        $updateInfo['user_id'],
-                        $updateInfo['user_id']
-                    ]);
+                    where `user_id` = ?',
+            [
+                $updateInfo['input'],
+                $updateInfo['user_id'],
+                $updateInfo['user_id']
+            ]
+        );
         // Log::debug(DB::getQueryLog());
         // Log::debug("updateUserTypeDelete end.");
     }
@@ -366,7 +374,8 @@ class T_users extends Authenticatable
     //読み込んだcsvの情報を条件としてユーザー情報を取得
     public function getUserDataFromInputCsv($mailaddress)
     {
-        $user = DB::select('select
+        $user = DB::select(
+            'select
                             `user_id`
                             ,`user_name`
                             ,`mailaddress`
@@ -384,15 +393,17 @@ class T_users extends Authenticatable
                             FROM `t_users`
                             where 1=1
                             and `delete_flag` = 0
-                            and `mailaddress` = :mailaddress'
-                            ,['mailaddress' => $mailaddress]);
+                            and `mailaddress` = :mailaddress',
+            ['mailaddress' => $mailaddress]
+        );
         return $user;
     }
 
     //仮ユーザーをinsertする
     public function insertTemporaryUser($userInfo)
     {
-        DB::insert('insert into t_users
+        DB::insert(
+            'insert into t_users
                     (
                         user_name, 
                         mailaddress, 
@@ -417,8 +428,9 @@ class T_users extends Authenticatable
                         :updated_time, 
                         :updated_user_id, 
                         0
-                    )'
-                    ,$userInfo);
+                    )',
+            $userInfo
+        );
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
         return $insertId;
@@ -427,7 +439,8 @@ class T_users extends Authenticatable
     //ユーザーに関連付いたIDを取得する
     public function getIDsAssociatedWithUser($user_id)
     {
-        $users = DB::select('select
+        $users = DB::select(
+            'select
                             `t_users`.`user_id`
                             ,SUBSTR(`t_users`.`user_type`,2,1) as `is_administrator`
                             ,SUBSTR(`t_users`.`user_type`,3,1) as `is_jara`
@@ -447,8 +460,9 @@ class T_users extends Authenticatable
                             and `t_volunteers`.`delete_flag` = 0
                             where 1=1
                             and `t_users`.`delete_flag` = 0
-                            and `t_users`.`user_id` = ?'
-                            ,[$user_id]);
+                            and `t_users`.`user_id` = ?',
+            [$user_id]
+        );
         return $users;
     }
 
@@ -456,7 +470,8 @@ class T_users extends Authenticatable
     //団体管理者のフラグを立てる
     public function updateOrganizationManagerFlagAllUser()
     {
-        DB::update("update `t_users`
+        DB::update(
+            "update `t_users`
                     ,(
                         select
                         user_id
@@ -489,18 +504,20 @@ class T_users extends Authenticatable
                     ,`t_users`.`updated_time`= ?
                     ,`t_users`.`updated_user_id`= ?
                     where 1=1
-                    and `t_users`.user_id = uuser.user_id"
-                    ,[
-                        now()->format('Y-m-d H:i:s.u')
-                        ,Auth::user()->user_id
-                    ]);
+                    and `t_users`.user_id = uuser.user_id",
+            [
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id
+            ]
+        );
     }
 
     //団体所属スタッフテーブルに存在しないユーザーのユーザー種別について、
     //団体管理者のフラグを戻す
     public function updateDeleteOrganizationManagerFlagAllUser()
     {
-        DB::update("update `t_users`
+        DB::update(
+            "update `t_users`
                     ,(
                         select
                         user_id
@@ -533,18 +550,19 @@ class T_users extends Authenticatable
                     ,`t_users`.`updated_time` = ?
                     ,`t_users`.`updated_user_id` = ?
                     where 1=1
-                    and `t_users`.user_id = uuser.user_id"
-                    ,[
-                        now()->format('Y-m-d H:i:s.u')
-                        ,Auth::user()->user_id
-                    ]
+                    and `t_users`.user_id = uuser.user_id",
+            [
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id
+            ]
         );
     }
 
     //ユーザーIDが有効かを確認してその結果を返す
     public function getUserIdIsValid($user_id)
     {
-        $is_valid = DB::select("select
+        $is_valid = DB::select(
+            "select
                                 user_id
                                 ,user_name
                                 ,case
@@ -555,8 +573,9 @@ class T_users extends Authenticatable
                                     end as `is_valid`
                                 from `t_users`
                                 where 1=1
-                                and user_id = :user_id"
-                                ,['user_id' => $user_id]);
+                                and user_id = :user_id",
+            ['user_id' => $user_id]
+        );
         return $is_valid;
     }
 
@@ -587,7 +606,7 @@ class T_users extends Authenticatable
                     and `m_sex`.`delete_flag` = 0
                     and `m_countries`.delete_flag = 0 
                     and (`m_countries`.`country_code` != 392 or `m_prefectures`.delete_flag = 0)
-                    and `user_id` = ?',[$userId]);
+                    and `user_id` = ?', [$userId]);
         $targetTrn = null;
         if (!empty($users)) {
             $targetTrn = $users[0];
@@ -619,29 +638,32 @@ class T_users extends Authenticatable
                 and `t_users`.user_id = ?',
             [
                 $user_id
-            ]);
-            $targetTrn = null;
-            if (!empty($users)) {
-                $targetTrn = $users[0];
-            }
-            return $targetTrn;
+            ]
+        );
+        $targetTrn = null;
+        if (!empty($users)) {
+            $targetTrn = $users[0];
+        }
+        return $targetTrn;
     }
 
     //JSPO IDの更新 20241108
     public function updateJspoId($jspoId)
     {
-        DB::update('update `t_users`
+        DB::update(
+            'update `t_users`
                     SET 
                     `jspo_id` = ?,
                     `updated_time`= ?,
                     `updated_user_id`= ?,
                     where 1=1
                     and `user_id` = ?',
-                [
-                    $jspoId,
-                    now()->format('Y-m-d H:i:s.u'),
-                    Auth::user()->user_id,
-                    Auth::user()->user_id
-                ]);
+            [
+                $jspoId,
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                Auth::user()->user_id
+            ]
+        );
     }
 }

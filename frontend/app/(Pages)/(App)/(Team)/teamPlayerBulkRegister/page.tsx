@@ -1,14 +1,14 @@
 'use client';
 // 機能名: 団体所属選手一括登録画面
 
-import React, { useEffect, useState, useRef } from 'react';
-import { CustomTitle, CustomButton, ErrorBox, InputLabel, CustomDropdown } from '@/app/components';
-import CsvTable from './CsvTable';
-import CsvHandler from './CsvHandler';
+import { CustomButton, CustomDropdown, CustomTitle, ErrorBox } from '@/app/components';
+import axios from '@/app/lib/axios';
+import { Org, UserIdType, UserResponse } from '@/app/types';
 import Validator from '@/app/utils/validator';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from '@/app/lib/axios';
-import { TeamResponse, Org, UserIdType } from '@/app/types';
+import { useEffect, useRef, useState } from 'react';
+import CsvHandler from './CsvHandler';
+import CsvTable from './CsvTable';
 
 // CSVデータの型定義
 interface CsvData {
@@ -83,8 +83,7 @@ export default function TeamPlayerBulkRegister() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.get('/getUserData');
-        //console.log(response.data.result);
+        const response = await axios.get<{ result: UserResponse }>('/api/user');
         if (Object.keys(response.data.result).length > 0) {
           const playerInf = await axios.get('/getIDsAssociatedWithUser');
           if (

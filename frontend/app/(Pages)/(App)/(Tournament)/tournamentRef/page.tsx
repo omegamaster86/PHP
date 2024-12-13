@@ -2,34 +2,34 @@
 'use client';
 
 // Reactおよび関連モジュールのインポート
-import { useState, useEffect, useRef, ChangeEvent, MouseEvent } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/app/lib/axios';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 // コンポーネントのインポート
-import {
-  ErrorBox,
-  CustomButton,
-  Label,
-  CustomTable,
-  CustomThead,
-  CustomTr,
-  CustomTh,
-  CustomTd,
-  CustomTitle,
-  CustomTbody,
-} from '@/app/components';
 import { TitleSideButton } from '@/app/(Pages)/(App)/_components/TitleSideButton';
-import { Tournament, Race, UserIdType } from '@/app/types';
-import Link from 'next/link';
-import EditIcon from '@mui/icons-material/EditOutlined';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+import {
+  CustomButton,
+  CustomTable,
+  CustomTbody,
+  CustomTd,
+  CustomTh,
+  CustomThead,
+  CustomTitle,
+  CustomTr,
+  ErrorBox,
+  Label,
+} from '@/app/components';
+import FollowButton from '@/app/components/FollowButton';
+import { Race, Tournament, UserIdType } from '@/app/types';
 import { ROLE } from '@/app/utils/consts';
 import { TOURNAMENT_PDF_URL } from '@/app/utils/imageUrl';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import EditIcon from '@mui/icons-material/EditOutlined';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { Autocomplete, Chip, TextField } from '@mui/material';
-import FollowButton from '@/app/components/FollowButton';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import Link from 'next/link';
 
 //種目フィルター用
 interface EventNameList {
@@ -51,9 +51,6 @@ interface RangeList {
 export default function TournamentRef() {
   // フック
   const router = useRouter();
-
-  // TODO: ユーザーの権限を取得する処理をuseEffectに記述すること
-  const [userType, setUserType] = useState('');
 
   // ページ全体のエラーハンドリング用のステート
   let isError = false;
@@ -309,11 +306,6 @@ export default function TournamentRef() {
     // StrictModeの制約回避のため、APIの呼び出し実績の有無をuseEffectの中に記述
     if (!isApiFetched.current) {
       const fetchData = async () => {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
-        // const userResponse = await axios.get<UserResponse>('http://localhost:3100/user');
-        const userResponse = await axios.get('getUserData');
-        setUserType(userResponse.data.result.user_type);
         // TODO: tournIdを元に大会情報を取得する処理の置き換え
         // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
         const tournamentResponse = await axios.post('/getTournamentInfoData', {
