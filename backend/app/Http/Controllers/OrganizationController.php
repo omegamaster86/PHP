@@ -601,7 +601,7 @@ class OrganizationController extends Controller
             //エラーメッセージを整形
             $errorMessage = str_replace('[団体名]', $duplicateOrgInfo->org_name, str_replace('[団体ID]', $duplicateOrgInfo->org_id, $entrysystemOrgId_registered));
             //エラーを返す
-            return response()->json(['system_error' => $errorMessage], 500);
+            abort(500,$errorMessage);
         }
 
         return true;
@@ -917,9 +917,9 @@ class OrganizationController extends Controller
             Log::debug(sprintf("storeOrgData end"));
             return response()->json(['result' => $lastInsertId]); //DBの結果を返す
         } catch (\Throwable $e) {            
+            Log::error($e);
             DB::rollBack();
-            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-            return response()->json(["団体登録に失敗しました。"], 403);
+            abort(500,"団体登録に失敗しました。");
         }
     }
 
@@ -1012,9 +1012,9 @@ class OrganizationController extends Controller
             Log::debug(sprintf("updateOrgData end"));
             return response()->json(['result' => true]); //DBの結果を返す
         } catch (\Throwable $e) {
+            Log::error($e);
             DB::rollBack();
-            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());        
-            return response()->json(["団体更新に失敗しました。"], 403);
+            abort(500,"団体更新に失敗しました。");
         }
     }
 
@@ -1145,9 +1145,9 @@ class OrganizationController extends Controller
             Log::debug(sprintf("deleteOrgData end"));
             return response()->json(['result' => true]); //DBの結果を返す
         } catch (\Throwable $e) {
+            Log::error($e);
             DB::rollBack();
-            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-            return response()->json(['result' => false]); //DBの結果を返す
+            abort(500,['result' => false]); //DBの結果を返す
         }
     }
 
@@ -1175,15 +1175,14 @@ class OrganizationController extends Controller
 
         if ($duplicationCount > 0) {
             // Log::debug(sprintf("validateOrgData duplication"));
-            return response()->json(["エントリーシステムの団体IDが重複しています。"], 401);
+            abort(400,"エントリーシステムの団体IDが重複しています。");
         }
 
         //スタッフのユーザーID重複チェック
         $user_ids = array_column($staff_list, 'user_id');
         $duplicates = array_unique(array_diff_assoc($user_ids, array_unique($user_ids)));
         if (!empty($duplicates)) {
-            // Log::debug(sprintf("validateOrgData duplicate user id. "));
-            return response()->json(["重複して登録されているユーザーが有ります。ユーザーID：".implode(', ', $duplicates)], 401);
+            abort(400,["重複して登録されているユーザーが有ります。ユーザーID：".implode(', ', $duplicates)]);
         }
 
         //スタッフのuser_idが有効かチェックする
@@ -1196,8 +1195,7 @@ class OrganizationController extends Controller
                                 }), 'user_id');
         if(!empty($disable_staffs_ids))
         {
-            // Log::debug(sprintf("validateOrgData disable user id exists. "));
-            return response()->json(["本システムに本登録されていないユーザー登録されていないユーザーが含まれています。ユーザーID：".implode(', ', $disable_staffs_ids)], 401);
+            abort(400,["本システムに本登録されていないユーザー登録されていないユーザーが含まれています。ユーザーID：".implode(', ', $disable_staffs_ids)]);
         }
 
         //スタッフの入力が100件以下のチェック
@@ -1215,9 +1213,7 @@ class OrganizationController extends Controller
         }
         if($enable_staff_count > 100)
         {
-            // Log::debug(sprintf("validateOrgData More than 100 staff entered. "));
-            return response()->json(["登録できるスタッフの人数が、100名を超えています。
-            1団体に登録できるスタッフ数は、100名までです。"], 401);
+            abort(400,"登録できるスタッフの人数が、100名を超えています。1団体に登録できるスタッフ数は、100名までです。");
         }
         Log::debug(sprintf("validateOrgData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す

@@ -34,104 +34,6 @@ class UserController extends Controller
         'user_name' => ""
     ];
 
-
-    public function storeEditConfirm(Request $request): View
-    {
-        if ((int)$request->mailaddress_status === 1) {
-
-            $certification_number = Str::random(6); // For Creating random password
-            $date = now()->format('Y-m-d H:i:s.u');
-
-            //For adding 30 minutes with current time
-            $converting_date = date_create($date);
-            date_add($converting_date, date_interval_create_from_date_string("30 minutes"));
-            $newDate = date_format($converting_date, "Y-m-d H:i:s.u");
-
-            DB::beginTransaction();
-            try {
-                DB::update(
-                    'update t_users set  certification_number = ? , expiry_time_of_certification_number = ? where user_id = ?',
-                    [Hash::make($certification_number), $new_date, Auth::user()->user_id]
-                );
-
-                DB::commit();
-            } catch (\Throwable $e) {
-                DB::rollBack();
-
-                $e_message = $e->getMessage();
-                $e_code = $e->getCode();
-                $e_file = $e->getFile();
-                $e_line = $e->getLine();
-                $e_sql = $e->getSql();
-                $e_errorCode = $e->errorInfo[1];
-                $e_bindings = implode(", ", $e->getBindings());
-                $e_connectionName = $e->connectionName;
-
-
-                //Store error message in the register log file.
-                Log::channel('user_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-                if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                    throw ValidationException::withMessages([
-                        'datachecked_error' => $database_registration_failed_try_again
-                    ]);
-                } else {
-                    throw ValidationException::withMessages([
-                        'datachecked_error' => $database_registration_failed
-                    ]);
-                }
-            }
-
-            //Sending mail to the user
-            $mail_date = date('Y/m/d H:i');
-            $new_mail_date = date('Y/m/d H:i', strtotime($mail_date . ' + 30 minutes'));
-            $mail_data = [
-                'user_name' => $request->user_name,
-                'mailaddress' => $request->mailaddress,
-                'certification_number' => $certification_number,
-                'expiry_time_of_certification_number' => $new_mail_date
-            ];
-            Mail::to($request->get('mailaddress'))->send(new VerificationMail($mail_data));
-
-            $user = $request->all();
-
-            // return redirect('user/edit/verification')->with('user', $user);
-            return view('user/edit/verification', ["user" => (object)$user]);
-        } else {
-
-            DB::beginTransaction();
-            try {
-                DB::update(
-                    'update t_users set photo = ? , user_name = ? , mailaddress = ?, sex = ?, residence_country = ?, residence_prefecture = ?, date_of_birth = ?, height = ?, weight = ? where user_id = ?',
-                    [$request->photo, $request->user_name, $request->mailaddress, $request->sex, $request->residence_country, $request->residence_prefecture, $request->date_of_birth, $request->height, $request->weight, Auth::user()->user_id]
-                );
-
-                DB::commit();
-            } catch (\Throwable $e) {
-                DB::rollBack();
-                // dd($request->all());
-                $e_message = $e->getMessage();
-                $e_code = $e->getCode();
-                $e_file = $e->getFile();
-                $e_line = $e->getLine();
-                $e_sql = $e->getSql();
-                $e_errorCode = $e->errorInfo[1];
-                $e_bindings = implode(", ", $e->getBindings());
-                $e_connectionName = $e->connectionName;
-
-                //Store error message in the user update log file.
-                Log::channel('user_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-                throw ValidationException::withMessages([
-                    'datachecked_error' => $update_failed
-                ]);
-            }
-            $page_status = "更新の件、完了になりました。";
-            $page_url = route('my-page');
-            $page_url_text = "マイページ";
-
-            return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-        }
-    }
-
     public function sentCertificationNumber(Request $request)
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
@@ -147,7 +49,7 @@ class UserController extends Controller
             );
             //userは一意に決まるため0番目を返す
             if (isset($user[0])) {
-                return response()->json($mailAddress_already_exists, 409);
+                abort(409,$mailAddress_already_exists);
             }
         }
         $certification_number = substr(number_format(time() * rand(), 0, '', ''), 0, 6);
@@ -166,25 +68,10 @@ class UserController extends Controller
             );
             DB::commit();
         } catch (\Throwable $e) {
+            Log::error($e);
             DB::rollBack();
-
-            $e_message = $e->getMessage();
-            $e_code = $e->getCode();
-            $e_file = $e->getFile();
-            $e_line = $e->getLine();
-            $e_sql = $e->getSql();
-            $e_errorCode = $e->errorInfo[1];
-            $e_bindings = implode(", ", $e->getBindings());
-            $e_connectionName = $e->connectionName;
-
-
-            //Store error message in the register log file.
-            Log::channel('user_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-            if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                return response()->json(["メールを送信に失敗しました。ユーザーサポートにお問い合わせください。"], 500);
-            } else {
-                return response()->json(["メールを送信に失敗しました。ユーザーサポートにお問い合わせください。"], 500);
-            }
+            
+            abort(500,"メールを送信に失敗しました。ユーザーサポートにお問い合わせください。");
         }
         //Sending mail to the user
         $mail_date = date('Y/m/d H:i');
@@ -198,7 +85,8 @@ class UserController extends Controller
         try {
             Mail::to($request->get('mailaddress'))->send(new VerificationMail($mail_data));
         } catch (\Throwable $e) {
-            return response()->json(["メールを送信に失敗しました。ユーザーサポートにお問い合わせください。"], 550);
+            Log::error($e);
+            abort(500,["メールを送信に失敗しました。ユーザーサポートにお問い合わせください。"]);
         }
 
         return response()->json(["メールを送信しました。"], 200);
@@ -211,7 +99,7 @@ class UserController extends Controller
         if (!Auth::user()->delete_flag) {
             if (Hash::check($request->certification_number, Auth::user()->certification_number)) {
                 if (Auth::user()->expiry_time_of_certification_number < now()->format('Y-m-d H:i:s.u')) {
-                    return response()->json($code_timed_out, 400);
+                    abort(400,$code_timed_out);
                 } else {
                     DB::beginTransaction();
                     try {
@@ -222,96 +110,18 @@ class UserController extends Controller
 
                         DB::commit();
                     } catch (\Throwable $e) {
+                        Log::error($e);
                         DB::rollBack();
-                        $e_message = $e->getMessage();
-                        $e_code = $e->getCode();
-                        $e_file = $e->getFile();
-                        $e_line = $e->getLine();
-                        $e_sql = $e->getSql();
-                        $e_errorCode = $e->errorInfo[1];
-                        $e_bindings = implode(", ", $e->getBindings());
-                        $e_connectionName = $e->connectionName;
 
-                        //Store error message in the register log file.
-                        Log::channel('user_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-                        if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                            return response()->json(["失敗しました。また試してみてください。"], 500);
-                        } else {
-                            return response()->json(["失敗しました。ユーザーサポートと連絡してください。"], 500);
-                        }
+                        abort(500,"失敗しました。ユーザーサポートと連絡してください。");
                     }
                     return response()->json("承認されました。「更新」ボタンを押して情報更新してください。", 200);
                 }
             } else {
-
-                return response()->json($code_not_found, 400);
+                abort(400,$code_not_found);
             }
         } else {
             redirect('/logout');
-        }
-    }
-
-
-    public function storeEditVerifiCation(Request $request): View
-    {
-
-        include('Auth/ErrorMessages/ErrorMessages.php');
-        if (!Auth::user()->delete_flag) {
-            if (Hash::check($request->certification_number, Auth::user()->certification_number)) {
-                if (Auth::user()->expiry_time_of_certification_number < date('Y-m-d H:i:s')) {
-                    throw ValidationException::withMessages([
-                        'verification_error' => $code_timed_out
-                    ]);
-                } else {
-                    DB::beginTransaction();
-                    try {
-
-                        DB::update(
-                            'update t_users set photo = ? , user_name = ? , mailaddress = ?, sex = ?, residence_country = ?, residence_prefecture = ?, date_of_birth = ?, height = ?, weight = ?, certification_number = ?,expiry_time_of_certification_number=?  where user_id = ?',
-                            [$request->photo, $request->user_name, $request->mailaddress, $request->sex, $request->residence_country, $request->residence_prefecture, $request->date_of_birth, $request->height, $request->weight, NULL, NULL, Auth::user()->user_id]
-                        );
-
-                        DB::commit();
-                    } catch (\Throwable $e) {
-                        DB::rollBack();
-                        $e_message = $e->getMessage();
-                        $e_code = $e->getCode();
-                        $e_file = $e->getFile();
-                        $e_line = $e->getLine();
-                        $e_sql = $e->getSql();
-                        $e_errorCode = $e->errorInfo[1];
-                        $e_bindings = implode(", ", $e->getBindings());
-                        $e_connectionName = $e->connectionName;
-
-                        //Store error message in the register log file.
-                        Log::channel('user_update')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-                        if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                            throw ValidationException::withMessages([
-                                'datachecked_error' => $database_registration_failed_try_again
-                            ]);
-                        } else {
-                            throw ValidationException::withMessages([
-                                'datachecked_error' => $database_registration_failed
-                            ]);
-                        }
-                    }
-
-
-                    $page_status = "更新の件、完了になりました。";
-                    $page_url = route('my-page');
-                    $page_url_text = "マイページ";
-
-                    return view('change-notification', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-                }
-            } else {
-                throw ValidationException::withMessages([
-                    'verification_error' => $code_not_found
-                ]);
-            }
-        } else {
-            throw ValidationException::withMessages([
-                'verification_error' => $code_not_found
-            ]);
         }
     }
 
@@ -376,29 +186,9 @@ class UserController extends Controller
 
             DB::commit();
         } catch (\Throwable $e) {
+            Log::error($e);
             DB::rollBack();
-
-            $e_message = $e->getMessage();
-            $e_code = $e->getCode();
-            $e_file = $e->getFile();
-            $e_line = $e->getLine();
-            $e_sql = $e->getSql();
-            $e_errorCode = $e->errorInfo[1];
-            $e_bindings = implode(", ", $e->getBindings());
-            $e_connectionName = $e->connectionName;
-
-
-            //Store error message in the register log file.
-            Log::channel('user_delete')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-            if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                throw ValidationException::withMessages([
-                    'datachecked_error' => $database_registration_failed_try_again
-                ]);
-            } else {
-                throw ValidationException::withMessages([
-                    'datachecked_error' => $database_registration_failed
-                ]);
-            }
+            abort(500,['errMessage' => $e->getMessage()]);
         }
 
         //Sending mail to the user
@@ -414,85 +204,7 @@ class UserController extends Controller
 
         return redirect('user/delete/verification');
     }
-
-    public function storeDeleteVerification(Request $request): RedirectResponse
-    {
-        include('Auth/ErrorMessages/ErrorMessages.php');
-        if ($request->certification_number === "") {
-            throw ValidationException::withMessages([
-                'verification_error' => $code_not_found
-            ]);
-        }
-
-        if (!Auth::user()->delete_flag) {
-            if (Hash::check($request->certification_number, Auth::user()->certification_number)) {
-                if (Auth::user()->expiry_time_of_certification_number < date('Y-m-d H:i:s')) {
-                    throw ValidationException::withMessages([
-                        'verification_error' => $code_timed_out
-                    ]);
-                } else {
-
-                    DB::beginTransaction();
-                    try {
-                        DB::update(
-                            'update t_users set delete_flag = ?, certification_number = ?, expiry_time_of_certification_number = ?   where mailaddress = ?',
-                            ["1", Null, Null, Auth::user()->mailaddress]
-                        );
-
-                        // Logout Function
-                        Auth::guard('web')->logout();
-
-                        //Destroy current session
-                        $request->session()->invalidate();
-
-                        //Destroy current  token
-                        $request->session()->regenerateToken();
-
-                        DB::commit();
-                    } catch (\Throwable $e) {
-                        DB::rollBack();
-                        $e_message = $e->getMessage();
-                        $e_code = $e->getCode();
-                        $e_file = $e->getFile();
-                        $e_line = $e->getLine();
-                        $e_sql = $e->getSql();
-                        $e_errorCode = $e->errorInfo[1];
-                        $e_bindings = implode(", ", $e->getBindings());
-                        $e_connectionName = $e->connectionName;
-
-
-                        //Store error message in the user delete log file.
-                        Log::channel('user_delete')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-                        if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                            throw ValidationException::withMessages([
-                                'datachecked_error' => $database_registration_failed_try_again
-                            ]);
-                        } else {
-                            throw ValidationException::withMessages([
-                                'datachecked_error' => $database_registration_failed
-                            ]);
-                        }
-                    }
-
-                    $page_status = "退会の件、完了しました。";
-                    $page_url = route('register');
-                    $page_url_text = "OK";
-
-                    //Redirect to registered user to the login page with success status.
-                    return redirect('status', ['status' => $page_status, "url" => $page_url, "url_text" => $page_url_text]);
-                }
-            } else {
-                throw ValidationException::withMessages([
-                    'verification_error' => $code_not_found
-                ]);
-            }
-        } else {
-            throw ValidationException::withMessages([
-                'verification_error' => $code_not_found
-            ]);
-        }
-    }
-
+    
     public function storePasswordChange(Request $request)
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
@@ -509,18 +221,15 @@ class UserController extends Controller
 
                     DB::commit();
                 } catch (\Throwable $e) {
+                    Log::error($e);
                     DB::rollBack();
-                    $e_errorCode = $e->errorInfo[1];
-                    if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                        return response()->json(['system_error' => $database_system_error], 500);
-                    } else {
-                        return response()->json(['system_error' => $database_system_error], 500);
-                    }
+                    
+                    abort(500,$database_system_error);
                 }
                 return response()->json(['result_message' => 'パスワードを変更しました','temp_password_flag' => Auth::user()->temp_password_flag]); //送信データ(debug用)とDBの結果を返す
             }
             else {
-                return response()->json(['system_error' => $previous_password_not_matched], 400);
+                abort(400,$previous_password_not_matched);
             }
         }
         //When logged as a registered user
@@ -535,18 +244,15 @@ class UserController extends Controller
                     );
                     DB::commit();
                 } catch (\Throwable $e) {
+                    Log::error($e);
                     DB::rollBack();
-                    $e_errorCode = $e->errorInfo[1];
-                    if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                        return response()->json(['system_error' => $database_system_error], 500);
-                    } else {
-                        return response()->json(['system_error' => $database_system_error], 500);
-                    }
+
+                    abort(500,$database_system_error);
                 }
                 return response()->json(['result_message' => 'パスワードを変更しました','temp_password_flag' => Auth::user()->temp_password_flag]); //DBの結果を返す
             }
             else {
-                return response()->json(['system_error' => $previous_password_not_matched], 400);
+                abort(400,$previous_password_not_matched);
             }
         }
     }
@@ -595,30 +301,10 @@ class UserController extends Controller
 
                 DB::commit();
             } catch (\Throwable $e) {
+                Log::error($e);
                 DB::rollBack();
 
-                $e_message = $e->getMessage();
-                $e_code = $e->getCode();
-                $e_file = $e->getFile();
-                $e_line = $e->getLine();
-                $e_sql = $e->getSql();
-                $e_errorCode = $e->errorInfo[1];
-                $e_bindings = implode(", ", $e->getBindings());
-                $e_connectionName = $e->connectionName;
-
-
-                //Store error message in the register log file.
-                Log::channel('user_password_reset')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailAddress,  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-                // if ($e_errorCode == 1213 || $e_errorCode == 1205) {
-                //     throw ValidationException::withMessages([
-                //         'datachecked_error' => $registration_failed
-                //     ]);
-                // } else {
-                //     throw ValidationException::withMessages([
-                //         'datachecked_error' => $registration_failed
-                //     ]);
-                // }
-                return response()->json($registration_failed, 500);
+                abort(500,$registration_failed);
             }
 
 
@@ -637,11 +323,11 @@ class UserController extends Controller
 
             try {
                 Mail::to($request->get('mailaddress'))->send(new PasswordResetMail($mail_data));
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 //Store error message in the user_password_reset log file.
-                Log::channel('user_password_reset')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $request->mailaddress,  \r\n \r\n ＊＊＊「EMAIL_SENT_ERROR_MESSAGE」  ： $e\r\n  \r\n ============================================================ \r\n \r\n");
+                Log::error($e);
                 //Display error message to the client
-                return response()->json($registration_failed, 500);
+                abort(500,$registration_failed);
             }
 
 
@@ -650,11 +336,7 @@ class UserController extends Controller
             // return redirect('password-reset')->with(['status' => $page_status]);
             return response()->json("パスワード再発行の件、完了しました。", 200);
         } else {
-
-            return response()->json($mailaddress_not_registered, 400);
-            // throw ValidationException::withMessages([
-            //     'datachecked_error' => $mailaddress_not_registered
-            // ]);
+            abort(400,$mailaddress_not_registered);
         }
 
         Log::debug(sprintf("storePasswordReset end"));
@@ -726,8 +408,8 @@ class UserController extends Controller
             return response()->json(['result' => "success"]); //DBの結果を返す
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+            Log::error($e);
+            abort(500,['errMessage' => $e->getMessage()]);
         }
     }
     //react ユーザー情報の削除 20240212
@@ -736,7 +418,7 @@ class UserController extends Controller
     {
         $orgFlag = substr(Auth::user()->user_type, 4, 1); //団体管理者の場合、削除処理を行わない
         if ($orgFlag == 1) {
-            return response()->json(["団体管理者権限を保有しています。"], 401);
+            abort(401,"団体管理者権限を保有しています。");
         }
 
         DB::beginTransaction();
@@ -745,13 +427,9 @@ class UserController extends Controller
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollback();
+            Log::error($e);
 
-            $e_message = $e->getMessage();
-            $e_code = $e->getCode();
-
-            //Store error message in the register log file.
-            Log::channel('user_update')->info("\r\n \r\n＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code  \r\n  \r\n ============================================================ \r\n \r\n");
-            return response()->json(["失敗しました。ユーザーサポートにお問い合わせください。"], 500);
+            abort(500,"失敗しました。ユーザーサポートにお問い合わせください。");
         }
         return response()->json(["退会が完了しました。"], 200); //処理結果を返す
     }

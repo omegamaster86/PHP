@@ -384,9 +384,9 @@ class TournamentInfoAlignmentController extends Controller
             Log::debug(sprintf("registerTournamentEntryCsvData end"));
             return response()->json(['result' => $inputData['csvDataList']]); //DBの結果を返す
         } catch (\Throwable $e) {
+            Log::error($e);
             DB::rollBack();
-            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+            abort(500,['errMessage' => $e->getMessage()]);
         }
     }
 
@@ -1113,8 +1113,8 @@ class TournamentInfoAlignmentController extends Controller
             Log::debug(sprintf("sendTournamentResultCsvData end"));
             return response()->json(['result' => $reqData]); //DBの結果を返す
         } catch (\Throwable $e) {
-            Log::debug('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-            return response()->json(['result' => $e->getMessage()], 403); //DBの結果を返す
+            Log::error($e);
+            abort(500,['result' => $e->getMessage()]);
         }
     }
 
@@ -1388,9 +1388,9 @@ class TournamentInfoAlignmentController extends Controller
             Log::debug(sprintf("registerTournamentResultCsvData end"));
             return response()->json(['result' => true]); //DBの結果を返す
         } catch (\Throwable $e) {
+            Log::error($e);
             DB::rollBack();
-            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-            return response()->json(['result' => false]); //DBの結果を返す
+            abort(500,['result' => false]);
         }
     }
 

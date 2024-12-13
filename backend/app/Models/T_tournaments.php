@@ -152,39 +152,28 @@ class T_tournaments extends Model
 
     public function updateTournaments($tournamentsInfo)
     {
-        $result = "success";
-        DB::beginTransaction();
-        try {
-
-            DB::update(
-                'update t_tournaments set `tourn_id`=?,`tourn_name`=?,`sponsor_org_id`=?,`event_start_date`=?,`event_end_date`=?,`venue_id`=?,`venue_name`=?,`tourn_type`=?,`tourn_url`=?,`tourn_info_faile_path`=?,`entrysystem_tourn_id`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where tourn_id = ?',
-                [
-                    $tournamentsInfo['tourn_id'],
-                    $tournamentsInfo['tourn_name'],
-                    $tournamentsInfo['sponsor_org_id'],
-                    $tournamentsInfo['event_start_date'],
-                    $tournamentsInfo['event_end_date'],
-                    $tournamentsInfo['venue_id'],
-                    $tournamentsInfo['venue_name'],
-                    $tournamentsInfo['tourn_type'],
-                    $tournamentsInfo['tourn_url'],
-                    $tournamentsInfo['tourn_info_faile_path'],
-                    $tournamentsInfo['entrysystem_tourn_id'],
-                    now()->format('Y-m-d H:i:s.u'),
-                    Auth::user()->user_id,
-                    now()->format('Y-m-d H:i:s.u'),
-                    Auth::user()->user_id,
-                    $tournamentsInfo['delete_flag'],
-                    $tournamentsInfo['tourn_id'], //where条件
-                ]
-            );
-
-            DB::commit();
-            return $result;
-        } catch (\Throwable $e) {
-            // dd($request->all());
-            return response()->json("失敗しました。大会更新できませんでした。", 500);  //DBの結果を返す
-        }
+        DB::update(
+            'update t_tournaments set `tourn_id`=?,`tourn_name`=?,`sponsor_org_id`=?,`event_start_date`=?,`event_end_date`=?,`venue_id`=?,`venue_name`=?,`tourn_type`=?,`tourn_url`=?,`tourn_info_faile_path`=?,`entrysystem_tourn_id`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where tourn_id = ?',
+            [
+                $tournamentsInfo['tourn_id'],
+                $tournamentsInfo['tourn_name'],
+                $tournamentsInfo['sponsor_org_id'],
+                $tournamentsInfo['event_start_date'],
+                $tournamentsInfo['event_end_date'],
+                $tournamentsInfo['venue_id'],
+                $tournamentsInfo['venue_name'],
+                $tournamentsInfo['tourn_type'],
+                $tournamentsInfo['tourn_url'],
+                $tournamentsInfo['tourn_info_faile_path'],
+                $tournamentsInfo['entrysystem_tourn_id'],
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                $tournamentsInfo['delete_flag'],
+                $tournamentsInfo['tourn_id'], //where条件
+            ]
+        );
     }
 
     //interfaceのTournamentを引数としてupdateを実行

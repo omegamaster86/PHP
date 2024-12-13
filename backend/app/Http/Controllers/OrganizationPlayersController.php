@@ -322,47 +322,6 @@ class OrganizationPlayersController extends Controller
         return response()->json(['result' => $players]); //DBの結果を返す
     }
 
-    //メールの送信
-    private function sendMail($user_name, $mailaddress, $temp_password, $mail_template, $error_message)
-    {
-        //任意のテンプレートを引数で選択してメールを送信
-        //ユーザー名、メールアドレスなど必要な値は引数で指定する
-
-        //For getting current time
-        $mail_date = date('Y/m/d H:i');
-        //For adding 24hour with current time
-        $new_mail_date = date('Y/m/d H:i', strtotime($mail_date . ' + 24 hours'));
-
-        //Getting url information from env file.
-        $frontend_url  = config ( 'env-data.frontend-url' ) ;
-
-        //Store user information for sending email.
-        $mail_data = [
-            'user_name' => $user_name,
-            'to_mailaddress' => $mailaddress,
-            'from_mailaddress' => 'xxxxx@jara.or.jp',
-            'temporary_password' => $temp_password,
-            'temporary_password_expiration_date' => $new_mail_date,
-            'login_url'=> $frontend_url.'/login'
-        ];
-
-        //Sending mail to the user
-
-        try {
-            Mail::to($mailaddress)->send(new WelcomeMail($mail_data));
-        } catch (Exception $e) {
-            //DB::delete('delete from t_users where mailaddress = ?', [$mailaddress ]);
-            //Store error message in the user_register log file.
-            Log::channel('user_register')->info("\r\n \r\n ＊＊＊「USER_EMAIL_ADDRESS」 ：  $mailaddress,  \r\n \r\n ＊＊＊「EMAIL_SENT_ERROR_MESSAGE」  ： $e\r\n  \r\n ============================================================ \r\n \r\n");
-            //Display error message to the client
-            // throw ValidationException::withMessages([
-            //     'datachecked_error' => $mail_sent_failed,
-            // ]);
-            return response()->json(['system_error' => $error_message], 500);
-            //Status code 500 for internal server error
-        }
-    }
-
     // 団体所属選手の更新処理 20240226
     public function updateOrgPlayerData(Request $request,T_organization_players $t_organization_players)
     {
@@ -402,9 +361,10 @@ class OrganizationPlayersController extends Controller
         }
         catch (\Throwable $e)
         {
+            Log::error($e);
             DB::rollBack();
-            Log::error('Line:'.$e->getLine().' message:'.$e->getMessage());
-            return response()->json(['errMessage' => $e->getMessage()], 403); //エラーメッセージを返す
+            abort(500,['errMessage' => $e->getMessage()]);
+            
         }
     }
 
@@ -1174,8 +1134,8 @@ class OrganizationPlayersController extends Controller
                     {
                         DB::rollback();
                         $error_message = "以下の選手の選手情報登録に失敗しました。選手名：".$target_player_name."　メールアドレス：".$target_mailaddress;
-                        Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-                        return response()->json($error_message,403);
+                        Log::error($e);
+                        abort(500,$error_message);
                     }
                 }
                 //団体所属選手テーブルに挿入
@@ -1194,8 +1154,8 @@ class OrganizationPlayersController extends Controller
                 {
                     DB::rollback();
                     $error_message = "以下の選手の団体所属処理に失敗しました。選手名：".$target_player_name."　メールアドレス：".$target_mailaddress;
-                    Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-                    return response()->json($error_message,403);
+                    Log::error($e);
+                    abort(500,$error_message);
                 }
                 
                 //ユーザー種別の更新処理
@@ -1218,8 +1178,8 @@ class OrganizationPlayersController extends Controller
                         {
                             DB::rollback();
                             $error_message = "以下の選手のユーザー種別の更新処理に失敗しました。選手名：".$target_player_name."　メールアドレス：".$target_mailaddress;
-                            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-                            return response()->json($error_message,403);
+                            Log::error($e);
+                            abort(500,$error_message);
                         }
                     }
                 }
@@ -1254,10 +1214,10 @@ class OrganizationPlayersController extends Controller
                         Mail::to($target_user_data[0]->{'mailaddress'})->send(new ForUnregisteredPlayerOrganizationRegistrationNotificationMail($unregistered_player_mail_data));
                     }
                     catch (Exception $e) {
+                        Log::error($e);
                         DB::rollBack();
                         $error_message = "以下の選手のメール送信に失敗しました。選手名：".$target_player_name."　メールアドレス：".$target_mailaddress;
-                        Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-                        return response()->json($error_message,403);
+                        abort(500,$error_message);
                     }
                 }
                 else
@@ -1278,10 +1238,10 @@ class OrganizationPlayersController extends Controller
                         Mail::to($target_user_data[0]->{'mailaddress'})->send(new ForRegisteredPlayerOrganizationRegistrationNotificationMail($registered_player_mail_data));
                     }
                     catch (Exception $e) {
+                        Log::error($e);
                         DB::rollBack();
                         $error_message = "以下の選手のメール送信に失敗しました。選手名：".$target_player_name."　メールアドレス：".$target_mailaddress;
-                        Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-                        return response()->json($error_message,403);
+                        abort(500,$error_message);
                     }
                 }
                 DB::commit();
@@ -1328,8 +1288,8 @@ class OrganizationPlayersController extends Controller
                 {
                     DB::rollback();
                     $error_message = "以下の選手のユーザー登録に失敗しました。選手名：".$target_player_name."　メールアドレス：".$target_mailaddress;
-                    Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-                    return response()->json($error_message,403);
+                    Log::error($e);
+                    abort(500,$error_message);
                 }
                 //登録したユーザー情報を取得
                 $target_user_data = $t_users->getUserDataFromInputCsv($target_mailaddress);
@@ -1355,10 +1315,10 @@ class OrganizationPlayersController extends Controller
                     Mail::to($target_mailaddress)->send(new WelcomeMail($mail_data));
                 }
                 catch (Exception $e) {
+                    Log::error($e);
                     DB::rollBack();
                     $error_message = "以下の選手のメール送信に失敗しました。選手名：".$target_player_name."　メールアドレス：".$target_mailaddress;
-                    Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-                    return response()->json($error_message,403);
+                    abort(500,$error_message);
                 }
                 DB::commit();
             }

@@ -241,7 +241,8 @@ class VolunteerInfoAlignmentController extends Controller
         }
         catch(\Throwable $e)
         {
-            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
+            Log::error($e);
+            abort(500,['errMessage' => $e->getMessage()]);
         }
     }
 
@@ -426,8 +427,8 @@ class VolunteerInfoAlignmentController extends Controller
         catch(\Throwable $e)
         {
             DB::rollBack();
-            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+            Log::error($e);
+            abort(500,['errMessage' => $e->getMessage()]);
         }
     }
 }

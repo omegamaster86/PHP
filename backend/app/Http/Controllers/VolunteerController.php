@@ -298,8 +298,8 @@ class VolunteerController extends Controller
         }
         catch(\Throwable $e)
         {
-            Log::error($e->getMessage().'-'.$e->getLine());
-            return response()->json(['errMessage' => $e->getMessage()], 403);
+            Log::error($e);
+            abort(500,['errMessage' => $e->getMessage()]);
         }
     }
 

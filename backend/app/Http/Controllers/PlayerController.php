@@ -693,8 +693,8 @@ class PlayerController extends Controller
             Log::debug(sprintf("playerSearch end"));
             return response()->json(['result' => $search_result]); //送信データ(debug用)とDBの結果を返す
         } catch (\Exception $e) {
-            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-            return response()->json(['errMessage' => $e->getMessage()]); //エラーメッセージを返す
+            Log::error($e);
+            abort(500,['errMessage' => $e->getMessage()]);
         }
     }
 
@@ -757,28 +757,41 @@ class PlayerController extends Controller
 
                 $tPlayersData::$playerInfo['photo'] = ''; //写真
             }
-            $result = $tPlayersData->insertPlayers($tPlayersData::$playerInfo); //DBに選手を登録 20240131
 
-            //ユーザ種別の更新
-            //右から3桁目が0のときだけユーザー種別を更新する
-            $user_type = (string)Auth::user()->user_type;
-            Log::debug("user_type_is_player = ".substr($user_type,-3,1));
-            if(mb_substr($user_type,-3,1) == '0')
-            {
-                $hoge = array();
-                $hoge['user_id'] = Auth::user()->user_id;
-                $hoge['input'] = '00000100'; //選手のユーザ種別を変更する
-                $t_users->updateUserTypeRegist($hoge);
+            try {
+                DB::beginTransaction();
+                $result = $tPlayersData->insertPlayers($tPlayersData::$playerInfo); //DBに選手を登録 20240131
+    
+                DB::commit();
+
+                //ユーザ種別の更新
+                //右から3桁目が0のときだけユーザー種別を更新する
+                $user_type = (string)Auth::user()->user_type;
+                Log::debug("user_type_is_player = ".substr($user_type,-3,1));
+                if(mb_substr($user_type,-3,1) == '0')
+                {
+                    $hoge = array();
+                    $hoge['user_id'] = Auth::user()->user_id;
+                    $hoge['input'] = '00000100'; //選手のユーザ種別を変更する
+                    $t_users->updateUserTypeRegist($hoge);
+                }
+                $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
+
+                Log::debug(sprintf("storePlayerData end"));
+                return response()->json(['users' => $users, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
+            } catch (\Throwable $e) {
+                Log::error($e);
+                DB::rollBack();
+                abort(500,"失敗しました。ユーザーサポートにお問い合わせください。");
             }
-            $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
 
-            Log::debug(sprintf("storePlayerData end"));
-            return response()->json(['users' => $users, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
+            
         }
         else
         {
             Log::debug(sprintf("選手登録済み"));
             return response()->json(['errMessage' => "選手IDはすでに登録されています。複数作成することはできません。"]); //エラーメッセージを返す
+            abort(500,"失敗しました。ユーザーサポートにお問い合わせください。");
         }
     }
 
@@ -869,9 +882,10 @@ class PlayerController extends Controller
             Log::debug(sprintf("updatePlayerData end"));
             return response()->json(['users' => $users, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
         } catch (\Throwable $e) {
+            Log::error($e);
             DB::rollBack();
-            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-            return response()->json(["選手情報の更新に失敗しました。ユーザーサポートにお問い合わせください。"],400); //エラーメッセージを返す
+
+            abort(500,"選手情報の更新に失敗しました。ユーザーサポートにお問い合わせください。");
         }
     }
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
@@ -945,7 +959,7 @@ class PlayerController extends Controller
             Log::debug(sprintf("deletePlayerData start"));
             $reqData = $request->all();
             if (empty($reqData['playerInformation'])) {
-                return response()->json("選手情報がないため選手を削除できません。", 400);
+                abort(400,"選手情報がないため選手を削除できません。");
             }
             Log::debug($reqData);
 
@@ -975,13 +989,11 @@ class PlayerController extends Controller
             if ($result === "success") {
                 return response()->json("選手情報の削除が完了しました。", 200);
             }
-            // else {
-            //     return response()->json("失敗しました。選手を削除できませんでした。", 500);
-            // }
+
         } catch (\Throwable $e) {
+            Log::error($e);
             DB::rollBack();
-            Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-            return response()->json("失敗しました。選手を削除できませんでした。", 500);
+            abort(500,"失敗しました。選手を削除できませんでした。");
         }
         // return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
     }
@@ -1018,7 +1030,7 @@ class PlayerController extends Controller
             );
             if (!empty($result)) {
                 Log::debug(sprintf("checkJARAPlayerId end 1"));
-                return response()->json(["選手IDはすでに登録されています。 複数作成することはできません。"], 403);
+                abort(400,"選手IDはすでに登録されています。 複数作成することはできません。");
             }
         }
         $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
@@ -1037,20 +1049,19 @@ class PlayerController extends Controller
                 if ($request["mode"] === "create") {
                     if ($registered_player->user_id === Auth::user()->user_id) {
                         Log::debug(sprintf("checkJARAPlayerId end 2"));
-                        return response()->json(["選手IDはすでに登録されています。 複数作成することはできません。"], 403);
+                        abort(403,"選手IDはすでに登録されています。 複数作成することはできません。");
                     } else {
                         Log::debug(sprintf("checkJARAPlayerId end 3"));
-                        return response()->json(["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
+                        abort(401,["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"]);
                     }
                 }
                 if ($request["mode"] === "create_confirm") {
                     if ($registered_player->user_id === Auth::user()->user_id) {
                         Log::debug(sprintf("checkJARAPlayerId end 4"));
-                        return response()->json(["登録に失敗しました。選手IDはすでに登録されています。 複数作成することはできません。"], 403);
+                        abort(403,"登録に失敗しました。選手IDはすでに登録されています。 複数作成することはできません。");
                     } else {
                         Log::debug(sprintf("checkJARAPlayerId end 5"));
-                        return response()->json(["登録に失敗しました。
-                        別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
+                        abort(401,["登録に失敗しました。別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"]);
                     }
                 } else if ($request["mode"] === "update") {
                     if ($registered_player->user_id === Auth::user()->user_id) {
@@ -1058,7 +1069,7 @@ class PlayerController extends Controller
                         return response()->json("");
                     } else {
                         Log::debug(sprintf("checkJARAPlayerId end 7"));
-                        return response()->json(["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
+                        abort(401,["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"]);
                     }
                 } else if ($request["mode"] === "update_confirm") {
                     if ($registered_player->user_id === Auth::user()->user_id) {
@@ -1066,12 +1077,13 @@ class PlayerController extends Controller
                         return response()->json("");
                     } else {
                         Log::debug(sprintf("checkJARAPlayerId end 9"));
-                        return response()->json(["更新に失敗しました。
-                        別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"], 401);
+                        abort(401,["更新に失敗しました。
+                        別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"]);
                     }
                 } else {
                     Log::debug(sprintf("checkJARAPlayerId end 10"));
-                    return response()->json(["失敗しました。"], 400);
+                    
+                    abort(400,"失敗しました。");
                 }
             }
         } else {
@@ -1090,7 +1102,8 @@ class PlayerController extends Controller
                 return response()->json([""]);
             } else {
                 Log::debug(sprintf("checkJARAPlayerId end 14"));
-                return response()->json(["失敗しました。"], 400);
+
+                abort(400,"失敗しました。");
             }
         }
     }
@@ -1120,6 +1133,7 @@ class PlayerController extends Controller
             }
             DB::commit();
         } catch (\Throwable $e) {
+            Log::error($e);
             DB::rollBack();
             abort(500, '選手フォローに失敗しました。');
         }
