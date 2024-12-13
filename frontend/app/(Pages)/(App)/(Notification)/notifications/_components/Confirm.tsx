@@ -1,4 +1,5 @@
 import { CustomButton, CustomTitle, ErrorBox } from '@/app/components';
+import LinkifyText from '@/app/components/LinkifyText';
 import { getNotificationDestination, getNotificationToTypeLabel } from '@/app/constants';
 import { fetcher } from '@/app/lib/swr';
 import {
@@ -114,7 +115,11 @@ export const Confirm: React.FC<Props> = (props) => {
     },
     {
       label: '本文',
-      value: formData.body,
+      value: (
+        <p className='whitespace-pre-wrap'>
+          <LinkifyText>{formData.body}</LinkifyText>
+        </p>
+      ),
     },
   ].filter((x) => !!x.value);
 
@@ -175,11 +180,20 @@ export const Confirm: React.FC<Props> = (props) => {
 
   const buttonLabel = formData.type === 'create' ? '登録' : '更新';
 
+  const handleGoBack = () => {
+    if (type === 'create') {
+      router.back();
+    }
+    if (type === 'update') {
+      router.push(`/notification?mode=update&id=${notificationId}&source=confirm`);
+    }
+  };
+
   return (
     <>
       <ErrorBox errorText={apiErrorMessages} />
 
-      <CustomTitle displayBack>通知入力確認</CustomTitle>
+      <CustomTitle customBack={handleGoBack}>通知入力確認</CustomTitle>
 
       <form onSubmit={handleSubmit} className='flex flex-col gap-12'>
         {info.map((x) => (

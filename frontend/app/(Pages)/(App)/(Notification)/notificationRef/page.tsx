@@ -66,9 +66,14 @@ export default function NotificationRef() {
     const handleDelete = (id: number) => {
       const ok = window.confirm('この通知を削除します。よろしいですか？');
       if (ok) {
-        trigger({
-          notificationId: id,
-        });
+        trigger(
+          { notificationId: id },
+          {
+            onSuccess: () => {
+              router.replace('/notifications/sent');
+            },
+          },
+        );
       }
     };
 

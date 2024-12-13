@@ -4,6 +4,7 @@ import { ListItem } from '@/app/(Pages)/(App)/(Notification)/notifications/_comp
 import { NotificationContent } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/NotificationContent';
 import { CustomButton, CustomTitle } from '@/app/components';
 import { useAuth } from '@/app/hooks/auth';
+import { useInfiniteList } from '@/app/hooks/useInfiniteList';
 import { fetcher } from '@/app/lib/swr';
 import { NotificationInfoData } from '@/app/types';
 import { Button } from '@mui/base';
@@ -43,6 +44,7 @@ export default function NotificationsSentList() {
       url: '/getSenderNotificationsList',
     },
     fetcher<NotificationInfoData[]>,
+    { suspense: true },
   );
   const notificationRes = useSWR(
     {
@@ -59,7 +61,9 @@ export default function NotificationsSentList() {
     },
   );
 
-  const notifications = data?.result ?? [];
+  const notifications = data.result ?? [];
+  const { infiniteList, isLastPage, fetchMore } = useInfiniteList(notifications);
+
   const hasNotifications = !!notifications.length;
   const notificationContent = notificationRes.data?.result;
   // 通知IDを指定してる&通知内容がある&通知内容の取得が終わっている
@@ -68,11 +72,6 @@ export default function NotificationsSentList() {
   const userId = Number(user?.user_id);
   const isAuthor = !!senderId && !!userId && senderId === userId;
   const isDeleteMode = mode === 'delete';
-  const hasMore = true;
-
-  const fetchMore = () => {
-    console.log('fetchMore');
-  };
 
   const updateIsRead = (id: number) => {
     console.log('updateIsRead id: ', id);
@@ -81,9 +80,14 @@ export default function NotificationsSentList() {
   const handleDelete = (id: number) => {
     const ok = window.confirm('この通知を削除します。よろしいですか？');
     if (ok) {
-      trigger({
-        notificationId: id,
-      });
+      trigger(
+        { notificationId: id },
+        {
+          onSuccess: () => {
+            router.replace('/notifications/sent');
+          },
+        },
+      );
     }
   };
 
@@ -105,7 +109,7 @@ export default function NotificationsSentList() {
       <div className='flex'>
         <div className='flex flex-col w-full md:max-w-xs border-r border-r-gray-50'>
           {hasNotifications ? (
-            notifications.map((n) => (
+            infiniteList.map((n) => (
               <Button key={n.notificationId} onClick={handleClickListItem(n.notificationId)}>
                 <ListItem notification={n} isSelected={currentId === n.notificationId} />
               </Button>
@@ -116,7 +120,7 @@ export default function NotificationsSentList() {
             </div>
           )}
 
-          {hasMore && (
+          {!isLastPage && (
             <div className='flex justify-center my-4'>
               <CustomButton buttonType='primary-outlined' className='w-28' onClick={fetchMore}>
                 もっと見る
@@ -126,8 +130,8 @@ export default function NotificationsSentList() {
         </div>
 
         {/* スマホの場合は非表示 */}
-        {isSelected ? (
-          <div className='hidden md:block w-full'>
+        <div className='hidden md:block w-full'>
+          {isSelected ? (
             <NotificationContent
               type='sent'
               notificationContent={notificationContent}
@@ -136,12 +140,12 @@ export default function NotificationsSentList() {
               isDeleteMode={isDeleteMode}
               onDelete={handleDelete}
             />
-          </div>
-        ) : (
-          <div className='flex justify-center items-center w-full'>
-            <p>{notSelectedMessage}</p>
-          </div>
-        )}
+          ) : (
+            <div className='flex justify-center items-center w-full'>
+              <p>{notSelectedMessage}</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

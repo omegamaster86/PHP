@@ -10,6 +10,7 @@ import { NotificationInfoData, NotificationUpdateFormInput, SelectOption } from 
 import { getSessionStorage, getStorageKey } from '@/app/utils/sessionStorage';
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
 import { useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import useSWR from 'swr';
 
@@ -26,6 +27,7 @@ export const Update: React.FC<Props> = (props) => {
   const searchParams = useSearchParams();
 
   const notificationId = Number(searchParams.get('id'));
+  const source = searchParams.get('source') as 'confirm' | null;
 
   const storageKey = getStorageKey({
     pageName: 'notification',
@@ -45,12 +47,12 @@ export const Update: React.FC<Props> = (props) => {
     { suspense: true },
   );
 
-  const defaultValues: NotificationUpdateFormInput = {
+  const defaultValues: Partial<NotificationUpdateFormInput> = {
     to: getNotificationDestinationType(data.result.notificationDestinationTypeId),
-    title: draftFormData?.title ?? data.result.title,
-    body: draftFormData?.body ?? data.result.body,
-    tournId: draftFormData?.tournId ?? data.result.tournId,
-    qualIds: draftFormData?.qualIds ?? [
+    title: data.result.title,
+    body: data.result.body,
+    tournId: data.result.tournId ?? undefined,
+    qualIds: [
       ...data.result.coachQualIds.map((id) => `coach_${id}`),
       ...data.result.refereeQualIds.map((id) => `referee_${id}`),
     ],
@@ -64,6 +66,33 @@ export const Update: React.FC<Props> = (props) => {
   const body = watch('body');
   const tournId = watch('tournId');
   const qualIds = watch('qualIds');
+
+  const setValues = (data: NotificationUpdateFormInput) => {
+    setValue('title', data.title);
+    setValue('body', data.body);
+    setValue('tournId', data.tournId);
+    setValue('qualIds', data.qualIds);
+  };
+
+  useEffect(() => {
+    // draftFormDataがない場合は復元しない
+    if (!draftFormData) {
+      return;
+    }
+
+    // 確認画面から戻ってきた場合はdraftFormDataをそのまま復元
+    if (source === 'confirm') {
+      setValues(draftFormData);
+      return;
+    }
+
+    const ok = confirm('編集中の入力内容があります。復元しますか？');
+    if (ok) {
+      setValues(draftFormData);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleConfirm = (textLink: { text: string; link: string }) => {
     const mdText = `[${textLink.text}](${textLink.link})`;

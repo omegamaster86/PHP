@@ -21,7 +21,8 @@ class T_notifications extends Model
                 t_notifications.notification_destination_type_id as notificationDestinationTypeId,
                 t_notifications.tourn_id as tournId,
                 GROUP_CONCAT(DISTINCT t_notified_coach_qualifications.coach_qualification_id) as coachQualIdsStr,
-                GROUP_CONCAT(DISTINCT t_notified_referee_qualifications.referee_qualification_id) as refereeQualIdsStr,                
+                GROUP_CONCAT(DISTINCT t_notified_referee_qualifications.referee_qualification_id) as refereeQualIdsStr,
+                t_players.player_id as playerId,
                 CASE 
                     WHEN t_notifications.notification_destination_type_id = 1 THEN "フォロワー"
                     WHEN t_notifications.notification_destination_type_id = 2 THEN CONCAT(MAX(t_tournaments.tourn_name), "フォロワー")
