@@ -1,26 +1,26 @@
 // 機能名: 大会結果情報一括登録
 'use client';
 // ライブラリのインポート
-import { useState, useRef, ChangeEvent, useEffect, FocusEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { ChangeEvent, FocusEvent, useEffect, useRef, useState } from 'react';
 // 共通コンポーネントのインポート
 import {
-  ErrorBox,
-  CustomTitle,
   CustomButton,
   CustomTextField,
+  CustomTitle,
   CustomYearPicker,
+  ErrorBox,
   InputLabel,
   Label,
 } from '@/app/components';
 import Validator from '@/app/utils/validator';
 // ローカルコンポーネントのインポート
-import CsvHandler from './CsvHandler';
-import CsvTable from './CsvTable';
-import { Tournament, TournamentResponse, CheckRace } from '@/app/types';
 import axios from '@/app/lib/axios';
+import { UserResponse } from '@/app/types';
 import { Autocomplete, TextField } from '@mui/material';
 import { CsvData } from './CsvDataInterface';
+import CsvHandler from './CsvHandler';
+import CsvTable from './CsvTable';
 
 interface FormData {
   tournId: number;
@@ -115,8 +115,7 @@ export default function TournamentResultInfomationBulkRegister() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.get('/getUserData');
-        //console.log(response.data.result);
+        const response = await axios.get<{ result: UserResponse }>('/api/user');
         if (Object.keys(response.data.result).length > 0) {
           const playerInf = await axios.get('/getIDsAssociatedWithUser');
           if (

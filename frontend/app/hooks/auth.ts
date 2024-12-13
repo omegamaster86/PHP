@@ -14,25 +14,18 @@ export const useAuth = ({
   const router = useRouter();
   const pathname = usePathname();
 
-  const {
-    data: user,
-    error,
-    mutate,
-  } = useSWR('/api/user', () =>
+  const { data, error, mutate } = useSWR('/api/user', () =>
     axios
-      .get<UserResponse>('/api/user')
+      .get<{ result: UserResponse }>('/api/user')
       .then((res) => res.data)
       .catch((error) => {
-        // if (error.response.status !== 409) {
-        //   // throw error
-        // }
-        if (pathname === '/signup' || pathname === '/forgotpassword' || pathname === '/inquiry') {
-        } else {
+        if (!['/signup', '/forgotpassword', '/inquiry'].includes(pathname)) {
           router.push('/login');
-          return undefined;
         }
+        return undefined;
       }),
   );
+  const user = data?.result;
 
   const csrf = () => axios.get('/sanctum/csrf-cookie');
 

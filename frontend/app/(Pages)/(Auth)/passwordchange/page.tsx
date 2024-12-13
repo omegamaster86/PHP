@@ -1,16 +1,16 @@
 // パスワード変更画面
 
 'use client';
-import { useState } from 'react';
-import { useAuth } from '@/app/hooks/auth';
-import CustomPasswordField from '@/app/components/CustomPasswordField';
 import CustomButton from '@/app/components/CustomButton';
-import { useRouter } from 'next/navigation';
-import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
-import Validator from '@/app/utils/validator';
+import CustomPasswordField from '@/app/components/CustomPasswordField';
 import CustomTitle from '@/app/components/CustomTitle';
 import ErrorBox from '@/app/components/ErrorBox';
+import { useAuth } from '@/app/hooks/auth';
 import axios from '@/app/lib/axios';
+import Validator from '@/app/utils/validator';
+import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function Passwordchange() {
   const [errorText, setErrorText] = useState([] as string[]);
@@ -80,8 +80,7 @@ export default function Passwordchange() {
           buttonType='white-outlined'
           className='flex-1'
           onClick={() => {
-            //console.log(user.temp_password_flag);
-            if (user.temp_password_flag == 1) {
+            if (user?.temp_password_flag == 1) {
               logout(); // 仮パスワードフラグが1の場合、ログイン画面に遷移する 20240404
             } else {
               router.back();

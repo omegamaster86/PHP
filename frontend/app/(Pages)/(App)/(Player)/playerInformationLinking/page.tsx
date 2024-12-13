@@ -1,15 +1,16 @@
 // 機能名: 選手情報連携
 'use client';
 // ライブラリのインポート
-import React, { useState, useRef, use, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 // 共通コンポーネントのインポート
 import CsvHandler from '@/app/(Pages)/(App)/(Player)/playerInformationLinking/CsvHandler';
-import { ErrorBox, CustomTitle, CustomButton } from '@/app/components';
+import { CustomButton, CustomTitle, ErrorBox } from '@/app/components';
+import axios from '@/app/lib/axios';
+import { UserResponse } from '@/app/types';
 import Validator from '@/app/utils/validator';
 // ローカルコンポーネントのインポート
 import CsvTable from './CsvTable';
-import axios from '@/app/lib/axios';
 
 // CSVデータの型定義
 interface CsvData {
@@ -70,8 +71,7 @@ export default function PlayerInformationLinking() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.get('/getUserData');
-        //console.log(response.data.result);
+        const response = await axios.get<{ result: UserResponse }>('/api/user');
         if (Object.keys(response.data.result).length > 0) {
           const playerInf = await axios.get('/getIDsAssociatedWithUser');
           if (

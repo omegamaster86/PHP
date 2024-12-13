@@ -1,25 +1,25 @@
 // 機能名: 団体管理画面
 'use client';
-import { useRouter } from 'next/navigation';
-import React, { useState, useEffect, ChangeEvent, useRef, MouseEvent } from 'react';
-import axios from '@/app/lib/axios';
 import {
   CustomButton,
-  ErrorBox,
-  CustomTitle,
   CustomTable,
+  CustomTbody,
+  CustomTd,
   CustomTh,
   CustomThead,
-  CustomTbody,
+  CustomTitle,
   CustomTr,
-  CustomTd,
+  ErrorBox,
 } from '@/app/components';
-import { TeamResponse } from '@/app/types';
+import axios from '@/app/lib/axios';
+import { TeamResponse, UserResponse } from '@/app/types';
 import { DeleteOutline, EditOutlined } from '@mui/icons-material';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 
-import { Autocomplete, Chip, TextField } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import { Autocomplete, Chip, TextField } from '@mui/material';
 
 //団体種別フィルター用
 interface OrgTypeList {
@@ -153,8 +153,7 @@ export default function TeamManagement() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.get('/getUserData');
-        //console.log(response.data.result);
+        const response = await axios.get<{ result: UserResponse }>('/api/user');
         if (Object.keys(response.data.result).length > 0) {
           const playerInf = await axios.get('/getIDsAssociatedWithUser');
           if (

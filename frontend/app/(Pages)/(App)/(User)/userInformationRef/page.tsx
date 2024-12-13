@@ -1,23 +1,22 @@
 // 機能名: ユーザー情報参照画面・ユーザー情報削除画面
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/app/lib/axios';
-import { Divider } from '@mui/material';
 import { UserResponse } from '@/app/types';
+import { Divider } from '@mui/material';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import {
   CustomButton,
-  ErrorBox,
-  CustomTitle,
   CustomTable,
-  CustomThead,
-  CustomTr,
-  CustomTh,
   CustomTbody,
   CustomTd,
-  CustomTextField,
+  CustomTh,
+  CustomThead,
+  CustomTitle,
+  CustomTr,
+  ErrorBox,
   RoundedBadge,
 } from '@/app/components';
 import { useAuth } from '@/app/hooks/auth';
@@ -35,15 +34,18 @@ export default function UserInformationReference() {
     user_id: '', // ユーザーID
     user_name: '', // ユーザー名
     date_of_birth: '', // 生年月日
+    sex: null, // 性別
     sexName: '', // 性別
-    height: '', // 身長
-    weight: '', // 体重
+    height: 0, // 身長
+    weight: 0, // 体重
+    residence_country: null, // 居住地（国）ID
     residenceCountryName: '', // 居住地（国）
+    residence_prefecture: null, // 居住地（都道府県）ID
     residencePrefectureName: '', // 居住地（都道府県）
     mailaddress: '', // メールアドレス
     user_type: '', // ユーザー種別
     userTypeName: '', // ユーザー種別名
-    temp_password_flag: false, // 仮登録ステータス
+    temp_password_flag: 0, // 仮登録ステータス
     photo: '', // 写真
   });
   // モードのチェック
@@ -80,7 +82,7 @@ export default function UserInformationReference() {
         // TODO: 仮のURL（繋ぎ込み時に変更すること）
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.get('/getUserData');
+        const response = await axios.get<{ result: UserResponse }>('/api/user');
         setFormData((prevFormData) => ({
           ...prevFormData,
           ...{
@@ -89,7 +91,7 @@ export default function UserInformationReference() {
             user_type: response.data.result.user_type,
             userTypeName: response.data.result.userTypeName,
             date_of_birth: response.data.result.date_of_birth,
-            sexName: response.data.result.sex_name,
+            sexName: response.data.result.sexName,
             sex: response.data.result.sex,
             height: response.data.result.height,
             weight: response.data.result.weight,

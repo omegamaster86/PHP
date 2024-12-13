@@ -1,6 +1,6 @@
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
-import type { ChangeEvent, FocusEvent } from 'react';
+import type { ChangeEvent, FocusEvent, HTMLInputTypeAttribute } from 'react';
 import { forwardRef } from 'react';
 import InputLabel from '../InputLabel';
 
@@ -11,7 +11,7 @@ type Props = {
   required?: boolean;
   value?: string;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
-  type?: string;
+  type?: HTMLInputTypeAttribute;
   readonly?: boolean;
   inputAdorment?: string;
   displayHelp?: boolean;

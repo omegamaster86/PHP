@@ -1,38 +1,30 @@
 // 団体登録・更新 / 入力確認画面
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import axios from '@/app/lib/axios';
-import _axios from 'axios';
-import Divider from '@mui/material/Divider';
 import {
-  OrgClass,
-  OrgType,
-  Organization,
-  PrefectureResponse,
-  Staff,
-  UserResponse,
-  UserIdType,
-} from '@/app/types';
-import Validator from '@/app/utils/validator';
-import { ROLE } from '@/app/utils/consts';
-import {
-  CustomTextField,
-  CustomYearPicker,
-  CustomDropdown,
   CustomButton,
-  InputLabel,
-  ErrorBox,
-  CustomTitle,
+  CustomDropdown,
   CustomTable,
-  CustomThead,
-  CustomTr,
-  CustomTh,
   CustomTbody,
   CustomTd,
+  CustomTextField,
+  CustomTh,
+  CustomThead,
+  CustomTitle,
+  CustomTr,
+  CustomYearPicker,
+  ErrorBox,
+  InputLabel,
   OriginalCheckbox,
 } from '@/app/components';
+import axios from '@/app/lib/axios';
+import { OrgClass, OrgType, Organization, Staff, UserIdType } from '@/app/types';
+import { ROLE } from '@/app/utils/consts';
+import Validator from '@/app/utils/validator';
+import Divider from '@mui/material/Divider';
+import _axios from 'axios';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function OrgInfo() {
   const [formData, setFormData] = useState<Organization>({
@@ -84,7 +76,6 @@ export default function OrgInfo() {
   const [addressErrorMessages, setAddressErrorMessages] = useState([] as string[]);
   const [orgClassErrorMessages, setOrgClassErrorMessages] = useState([] as string[]);
   const [tableErrorMessages, setTableErrorMessages] = useState([] as string[]);
-  const [user, setUser] = useState({} as UserResponse);
   const [jaraOrgTypeErrorMessages, setJaraOrgTypeErrorMessages] = useState([] as string[]);
   const [prefOrgTypeErrorMessages, setPrefOrgTypeErrorMessages] = useState([] as string[]);
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
@@ -191,13 +182,7 @@ export default function OrgInfo() {
             name: org_type,
           }),
         );
-        //console.log(orgTypeList);
         setOrgTypeOptions(orgTypeList);
-        // const user = await axios.get<UserResponse>('http://localhost:3100/user');
-        const userData = await axios.get('/getUserData');
-        //console.log(userData);
-        setUser(userData.data.result);
-        //console.log(user);
         if (mode === 'update' && !backKeyFlag) {
           // const organization = await axios.get<Organization>('http://localhost:3100/organization');
           const sendId = { org_id: orgId };

@@ -1,32 +1,32 @@
 // 機能名: ユーザー情報更新画面・入力確認画面
 'use client';
 
-import { USER_IMAGE_URL, NO_IMAGE_URL } from '../../../../utils/imageUrl'; //For importing image url from a single source of truth
+import { NO_IMAGE_URL, USER_IMAGE_URL } from '../../../../utils/imageUrl'; //For importing image url from a single source of truth
 
-import { useState, useEffect, ChangeEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { ChangeEvent, useEffect, useState } from 'react';
 // 実装　ー　クマール　ー開始
 import axios from '@/app/lib/axios';
 // 実装　ー　クマール　ー終了
-import DialogTitle from '@mui/material/DialogTitle';
-import Divider from '@mui/material/Divider';
+import { CountryResponse, PrefectureResponse, SexResponse, UserResponse } from '@/app/types';
 import Validator from '@/app/utils/validator';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-import { UserResponse, PrefectureResponse, SexResponse, CountryResponse } from '@/app/types';
+import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
 
 import {
-  CustomDialog,
-  CustomTextField,
-  CustomDatePicker,
-  CustomDropdown,
   CustomButton,
-  InputLabel,
-  ImageUploader,
-  ErrorBox,
+  CustomDatePicker,
+  CustomDialog,
+  CustomDropdown,
+  CustomTextField,
   CustomTitle,
+  ErrorBox,
+  ImageUploader,
+  InputLabel,
 } from '@/app/components';
 
 export default function UserInformationUpdate() {
@@ -47,17 +47,17 @@ export default function UserInformationUpdate() {
     user_name: '', // ユーザー名
     date_of_birth: '', // 生年月日
     sexName: '', // 性別
-    sex: 0, // 性別ID
-    height: '', // 身長
-    weight: '', // 体重
+    sex: null, // 性別ID
+    height: 0, // 身長
+    weight: 0, // 体重
+    residence_country: null, // 居住地（国）ID
     residenceCountryName: '', // 居住地（国）
-    residence_country: 0, // 居住地（国）ID
+    residence_prefecture: null, // 居住地（都道府県）ID
     residencePrefectureName: '', // 居住地（都道府県）
-    residence_prefecture: 0, // 居住地（都道府県）ID
     mailaddress: '', // メールアドレス
     user_type: '', // ユーザー種別
     userTypeName: '', // ユーザー種別名
-    temp_password_flag: false, // 仮登録フラグ
+    temp_password_flag: 0, // 仮登録フラグ
     photo: '', // 写真
   });
   // モードのチェック
@@ -195,13 +195,10 @@ export default function UserInformationUpdate() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        // const response = await axios.get<UserResponse>('http://localhost:3100/user');
-        //console.log("User : ", user);
-        // 実装　ー　クマール　ー開始
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.get('/getUserData');
-        // 実装　ー　クマール　ー終了
+        const response = await axios.get<{ result: UserResponse }>('/api/user');
+
         setFormData((prevFormData) => ({
           ...prevFormData,
           ...{
@@ -210,7 +207,7 @@ export default function UserInformationUpdate() {
             user_type: response.data.result.user_type,
             userTypeName: response.data.result.userTypeName,
             date_of_birth: response.data.result.date_of_birth,
-            sexName: response.data.result.sex_name,
+            sexName: response.data.result.sexName,
             sex: response.data.result.sex,
             height: response.data.result.height,
             weight: response.data.result.weight,
@@ -815,7 +812,7 @@ export default function UserInformationUpdate() {
             readonly={mode === 'confirm'}
             required={false}
             isDecimal={true}
-            value={formData.height}
+            value={formData.height.toString()}
             placeHolder='180'
             onChange={(e) => {
               handleInputChange('height', e.target.value);
@@ -831,7 +828,7 @@ export default function UserInformationUpdate() {
             isDecimal={true}
             readonly={mode === 'confirm'}
             required={false}
-            value={formData?.weight}
+            value={formData?.weight.toString()}
             onChange={(e) => {
               handleInputChange('weight', e.target.value);
             }}

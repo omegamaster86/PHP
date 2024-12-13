@@ -49,7 +49,7 @@ class UserController extends Controller
             );
             //userは一意に決まるため0番目を返す
             if (isset($user[0])) {
-                abort(409,$mailAddress_already_exists);
+                abort(409, $mailAddress_already_exists);
             }
         }
         $certification_number = substr(number_format(time() * rand(), 0, '', ''), 0, 6);
@@ -70,8 +70,8 @@ class UserController extends Controller
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            
-            abort(500,"メールを送信に失敗しました。ユーザーサポートにお問い合わせください。");
+
+            abort(500, "メールを送信に失敗しました。ユーザーサポートにお問い合わせください。");
         }
         //Sending mail to the user
         $mail_date = date('Y/m/d H:i');
@@ -86,7 +86,7 @@ class UserController extends Controller
             Mail::to($request->get('mailaddress'))->send(new VerificationMail($mail_data));
         } catch (\Throwable $e) {
             Log::error($e);
-            abort(500,["メールを送信に失敗しました。ユーザーサポートにお問い合わせください。"]);
+            abort(500, ["メールを送信に失敗しました。ユーザーサポートにお問い合わせください。"]);
         }
 
         return response()->json(["メールを送信しました。"], 200);
@@ -99,7 +99,7 @@ class UserController extends Controller
         if (!Auth::user()->delete_flag) {
             if (Hash::check($request->certification_number, Auth::user()->certification_number)) {
                 if (Auth::user()->expiry_time_of_certification_number < now()->format('Y-m-d H:i:s.u')) {
-                    abort(400,$code_timed_out);
+                    abort(400, $code_timed_out);
                 } else {
                     DB::beginTransaction();
                     try {
@@ -113,12 +113,12 @@ class UserController extends Controller
                         Log::error($e);
                         DB::rollBack();
 
-                        abort(500,"失敗しました。ユーザーサポートと連絡してください。");
+                        abort(500, "失敗しました。ユーザーサポートと連絡してください。");
                     }
                     return response()->json("承認されました。「更新」ボタンを押して情報更新してください。", 200);
                 }
             } else {
-                abort(400,$code_not_found);
+                abort(400, $code_not_found);
             }
         } else {
             redirect('/logout');
@@ -133,7 +133,8 @@ class UserController extends Controller
             "user_type" => Auth::user()->user_type,
             "mailaddress" => Auth::user()->mailaddress,
             "sex" => Auth::user()->sex,
-            "residence_country" => Auth::user()->residence_country, "residence_prefecture" => Auth::user()->residence_prefecture,
+            "residence_country" => Auth::user()->residence_country,
+            "residence_prefecture" => Auth::user()->residence_prefecture,
             "photo" => Auth::user()->photo,
             "date_of_birth" => Auth::user()->date_of_birth,
             "height" => Auth::user()->height,
@@ -155,7 +156,8 @@ class UserController extends Controller
             "user_type" => Auth::user()->user_type,
             "mailaddress" => Auth::user()->mailaddress,
             "sex" => Auth::user()->sex,
-            "residence_country" => Auth::user()->residence_country, "residence_prefecture" => Auth::user()->residence_prefecture,
+            "residence_country" => Auth::user()->residence_country,
+            "residence_prefecture" => Auth::user()->residence_prefecture,
             "photo" => Auth::user()->photo,
             "date_of_birth" => Auth::user()->date_of_birth,
             "height" => Auth::user()->height,
@@ -188,7 +190,7 @@ class UserController extends Controller
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            abort(500,['errMessage' => $e->getMessage()]);
+            abort(500, ['errMessage' => $e->getMessage()]);
         }
 
         //Sending mail to the user
@@ -204,7 +206,7 @@ class UserController extends Controller
 
         return redirect('user/delete/verification');
     }
-    
+
     public function storePasswordChange(Request $request)
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
@@ -223,13 +225,12 @@ class UserController extends Controller
                 } catch (\Throwable $e) {
                     Log::error($e);
                     DB::rollBack();
-                    
-                    abort(500,$database_system_error);
+
+                    abort(500, $database_system_error);
                 }
-                return response()->json(['result_message' => 'パスワードを変更しました','temp_password_flag' => Auth::user()->temp_password_flag]); //送信データ(debug用)とDBの結果を返す
-            }
-            else {
-                abort(400,$previous_password_not_matched);
+                return response()->json(['result_message' => 'パスワードを変更しました', 'temp_password_flag' => Auth::user()->temp_password_flag]); //送信データ(debug用)とDBの結果を返す
+            } else {
+                abort(400, $previous_password_not_matched);
             }
         }
         //When logged as a registered user
@@ -247,12 +248,11 @@ class UserController extends Controller
                     Log::error($e);
                     DB::rollBack();
 
-                    abort(500,$database_system_error);
+                    abort(500, $database_system_error);
                 }
-                return response()->json(['result_message' => 'パスワードを変更しました','temp_password_flag' => Auth::user()->temp_password_flag]); //DBの結果を返す
-            }
-            else {
-                abort(400,$previous_password_not_matched);
+                return response()->json(['result_message' => 'パスワードを変更しました', 'temp_password_flag' => Auth::user()->temp_password_flag]); //DBの結果を返す
+            } else {
+                abort(400, $previous_password_not_matched);
             }
         }
     }
@@ -304,7 +304,7 @@ class UserController extends Controller
                 Log::error($e);
                 DB::rollBack();
 
-                abort(500,$registration_failed);
+                abort(500, $registration_failed);
             }
 
 
@@ -327,7 +327,7 @@ class UserController extends Controller
                 //Store error message in the user_password_reset log file.
                 Log::error($e);
                 //Display error message to the client
-                abort(500,$registration_failed);
+                abort(500, $registration_failed);
             }
 
 
@@ -336,7 +336,7 @@ class UserController extends Controller
             // return redirect('password-reset')->with(['status' => $page_status]);
             return response()->json("パスワード再発行の件、完了しました。", 200);
         } else {
-            abort(400,$mailaddress_not_registered);
+            abort(400, $mailaddress_not_registered);
         }
 
         Log::debug(sprintf("storePasswordReset end"));
@@ -356,9 +356,7 @@ class UserController extends Controller
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
     public function getUserData(T_users $t_users)
     {
-        // 実装　ー　クマール　ー開始
         $result = $t_users->getUserData(Auth::user()->user_id); //ユーザ情報の取得
-        // 実装　ー　クマール　ー終了
         return response()->json(['result' => $result]); //DBの結果を返す
     }
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
@@ -409,7 +407,7 @@ class UserController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error($e);
-            abort(500,['errMessage' => $e->getMessage()]);
+            abort(500, ['errMessage' => $e->getMessage()]);
         }
     }
     //react ユーザー情報の削除 20240212
@@ -418,7 +416,7 @@ class UserController extends Controller
     {
         $orgFlag = substr(Auth::user()->user_type, 4, 1); //団体管理者の場合、削除処理を行わない
         if ($orgFlag == 1) {
-            abort(401,"団体管理者権限を保有しています。");
+            abort(401, "団体管理者権限を保有しています。");
         }
 
         DB::beginTransaction();
@@ -429,7 +427,7 @@ class UserController extends Controller
             DB::rollback();
             Log::error($e);
 
-            abort(500,"失敗しました。ユーザーサポートにお問い合わせください。");
+            abort(500, "失敗しました。ユーザーサポートにお問い合わせください。");
         }
         return response()->json(["退会が完了しました。"], 200); //処理結果を返す
     }
