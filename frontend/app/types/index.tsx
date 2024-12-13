@@ -711,7 +711,8 @@ interface NotificationInfoData {
   notificationDestinationTypeId: NotificationDestinationId; // 1:フォロワー, 2:大会フォロワー, 3:有資格者, 4: 全ユーザー
   to: string[];
   body: string;
-  tournId: number;
+  tournId: number | null;
+  playerId: number;
   coachQualIds: number[];
   refereeQualIds: number[];
   senderId: number;

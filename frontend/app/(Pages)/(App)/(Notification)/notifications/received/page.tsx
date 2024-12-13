@@ -3,6 +3,7 @@
 import { ListItem } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/ListItem';
 import { NotificationContent } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/NotificationContent';
 import { CustomButton, CustomTitle } from '@/app/components';
+import { useInfiniteList } from '@/app/hooks/useInfiniteList';
 import { fetcher } from '@/app/lib/swr';
 import { NotificationInfoData, NotificationListData } from '@/app/types';
 import { Button } from '@mui/base';
@@ -26,9 +27,9 @@ export default function NotificationsList() {
       url: '/getRecipientsNotificationsList',
     },
     fetcher<NotificationListData[]>,
+    { suspense: true },
   );
 
-  const notifications = data?.result ?? [];
   const notificationRes = useSWR(
     {
       url: '/getNotificationInfoData',
@@ -44,11 +45,13 @@ export default function NotificationsList() {
     },
   );
 
+  const notifications = data.result ?? [];
+  const { infiniteList, isLastPage, fetchMore } = useInfiniteList(notifications);
+
   const hasNotifications = !!notifications.length;
   const notificationContent = notificationRes.data?.result;
   // 通知IDを指定してる&通知内容がある&通知内容の取得が終わっている
   const isSelected = !!currentId && !!notificationContent && !notificationRes.isLoading;
-  const hasMore = true;
 
   const handleClickListItem = (id: number) => async () => {
     updateIsRead(id);
@@ -58,10 +61,6 @@ export default function NotificationsList() {
     } else {
       router.push(`/notificationRef?id=${id}`);
     }
-  };
-
-  const fetchMore = () => {
-    console.log('fetchMore');
   };
 
   const updateIsRead = (id: number) => {
@@ -76,7 +75,7 @@ export default function NotificationsList() {
       <div className='flex'>
         <div className='flex flex-col w-full md:max-w-xs border-r border-r-gray-50'>
           {hasNotifications ? (
-            notifications.map((n) => (
+            infiniteList.map((n) => (
               <Button key={n.notificationId} onClick={handleClickListItem(n.notificationId)}>
                 <ListItem notification={n} isSelected={currentId === n.notificationId} />
               </Button>
@@ -87,7 +86,7 @@ export default function NotificationsList() {
             </div>
           )}
 
-          {hasMore && (
+          {!isLastPage && (
             <div className='flex justify-center my-4'>
               <CustomButton buttonType='primary-outlined' className='w-28' onClick={fetchMore}>
                 もっと見る
@@ -97,19 +96,19 @@ export default function NotificationsList() {
         </div>
 
         {/* スマホの場合は非表示 */}
-        {isSelected ? (
-          <div className='hidden md:block w-full'>
+        <div className='hidden md:block w-full'>
+          {isSelected ? (
             <NotificationContent
               type='received'
               notificationContent={notificationContent}
               isWideScreen={isWideScreen}
             />
-          </div>
-        ) : (
-          <div className='flex justify-center items-center w-full'>
-            <p>{notSelectedMessage}</p>
-          </div>
-        )}
+          ) : (
+            <div className='flex justify-center items-center w-full'>
+              <p>{notSelectedMessage}</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

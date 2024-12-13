@@ -1,10 +1,13 @@
+import { NotificationAvatar } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/NotificationAvatar';
+import SenderName from '@/app/(Pages)/(App)/(Notification)/notifications/_components/SenderName';
 import { TitleSideButton } from '@/app/(Pages)/(App)/_components/TitleSideButton';
 import { CustomButton } from '@/app/components';
+import LinkifyText from '@/app/components/LinkifyText';
 import Tag from '@/app/components/Tag';
+import { getNotificationDestinationType } from '@/app/constants';
 import { NotificationInfoData } from '@/app/types';
 import { formatDate } from '@/app/utils/dateUtil';
 import { DeleteOutlined, EditOutlined } from '@mui/icons-material';
-import { Avatar } from '@mui/material';
 import { useRouter } from 'next/navigation';
 
 type Props =
@@ -35,6 +38,8 @@ export const NotificationContent: React.FC<Props> = (props) => {
     senderName,
     senderIcon,
     sentTime,
+    tournId,
+    playerId,
   } = notificationContent;
   const isSent = type === 'sent';
   const isAuthor = !!(isSent && props.isAuthor);
@@ -43,9 +48,7 @@ export const NotificationContent: React.FC<Props> = (props) => {
   const deletePath = isWideScreen
     ? `/notifications/sent?mode=delete&id=${notificationId}`
     : `/notificationRef?mode=delete&id=${notificationId}`;
-
-  // 有資格者(3)、全ユーザー(4)であればjara-icon.pngを表示
-  const avatarSrc = [3, 4].includes(notificationDestinationTypeId) ? '/jara-icon.png' : senderIcon;
+  const notificationDestinationType = getNotificationDestinationType(notificationDestinationTypeId);
 
   return (
     <div className='flex flex-col w-full px-6'>
@@ -84,14 +87,26 @@ export const NotificationContent: React.FC<Props> = (props) => {
 
       <div className='flex justify-between items-center my-4'>
         <div className='flex items-center gap-2'>
-          <Avatar src={avatarSrc ?? undefined} sx={{ width: 36, height: 36 }} />
-          <h2 className='text-sm font-bold'>{senderName}</h2>
+          <NotificationAvatar
+            notificationDestinationType={notificationDestinationType}
+            senderIcon={senderIcon}
+            senderName={senderName}
+            sx={{ width: 36, height: 36 }}
+          />
+          <SenderName
+            notificationDestinationType={notificationDestinationType}
+            senderName={senderName}
+            tournId={tournId}
+            playerId={playerId}
+          />
         </div>
 
         <p className='text-2xs text-gray-300'>{formatDate(sentTime, 'yyyy/MM/dd HH:mm')}</p>
       </div>
 
-      <p className='text-xs whitespace-pre-wrap'>{body}</p>
+      <p className='text-xs whitespace-pre-wrap'>
+        <LinkifyText>{body}</LinkifyText>
+      </p>
 
       {/* 送信詳細画面で通知の作者&削除モードのとき表示 */}
       {isAuthor && isDeleteMode && (
