@@ -124,13 +124,13 @@ class ContactUsController extends Controller
             
         try {
             Mail::to($request->get('mailaddress'))->send(new ContactUsMail($mail_data));
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
 
-            Log::debug($e);
+            Log::error($e);
 
             //Display error message to the client
             Log::debug(sprintf("contact-us end"));
-            return response()->json($mail_sent_failed_for_contact_us,400);
+            abort(400,$mail_sent_failed_for_contact_us);
             
         }
         Log::debug(sprintf("contact-us end"));

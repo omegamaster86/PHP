@@ -68,6 +68,7 @@ class TournamentRaceRefeController extends Controller
             }
             DB::commit();
         } catch (\Throwable $e) {
+            Log::error($e);
             DB::rollBack();
             abort(500, '大会フォローに失敗しました。');
         }

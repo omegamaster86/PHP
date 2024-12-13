@@ -94,7 +94,11 @@ class NotificationsController extends Controller
         } catch (HttpException $e) {
             throw $e;
         } catch (\Throwable $e) {
+            Log::error($e);
             DB::rollBack();
+            if ($e instanceof HttpException) {
+                throw $e;
+            }
 
             abort(500, '通知情報の削除に失敗しました。');
         }
@@ -161,7 +165,7 @@ class NotificationsController extends Controller
 
             DB::commit();
         } catch (\Throwable $e) {
-            Log::debug($e);
+            Log::error($e);
             DB::rollBack();
             abort(500, '通知情報の登録に失敗しました。');
         }
@@ -196,7 +200,7 @@ class NotificationsController extends Controller
         } catch (HttpException $e) {
             throw $e;
         } catch (\Throwable $e) {
-            Log::debug($e);
+            Log::error($e);
             DB::rollBack();
 
             abort(500, '通知情報の更新に失敗しました。');
@@ -221,7 +225,7 @@ class NotificationsController extends Controller
 
             DB::commit();
         } catch (\Throwable $e) {
-            Log::debug($e);
+            Log::error($e);
             DB::rollBack();
             abort(500, '既読フラグの更新に失敗しました。');
         }

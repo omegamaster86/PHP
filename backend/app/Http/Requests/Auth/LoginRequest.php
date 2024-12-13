@@ -104,19 +104,8 @@ class LoginRequest extends FormRequest
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
-
-            $e_message = $e->getMessage();
-            $e_code = $e->getCode();
-            $e_file = $e->getFile();
-            $e_line = $e->getLine();
-            $e_sql = $e->getSql();
-            $e_errorCode = $e->errorInfo[1];
-            $e_bindings = implode(", ",$e->getBindings());
-            $e_connectionName = $e->connectionName;
-
-            //Store log data of the logged in user.
-            Log::channel('user_login_access_log')->info("  \r\n \r\n ＊＊＊「MESSAGE」  ： $e_message, \r\n \r\n ＊＊＊「CODE」 ： $e_code,  \r\n \r\n ＊＊＊「FILE」 ： $e_file,  \r\n \r\n ＊＊＊「LINE」 ： $e_line,  \r\n \r\n ＊＊＊「CONNECTION_NAME」 -> $e_connectionName,  \r\n \r\n ＊＊＊「SQL」 ： $e_sql,  \r\n \r\n ＊＊＊「BINDINGS」 ： $e_bindings  \r\n  \r\n ============================================================ \r\n \r\n");
-            
+            Log::error($e);
+            abort(500,['errMessage' => $e->getMessage()]);
         }
         
 

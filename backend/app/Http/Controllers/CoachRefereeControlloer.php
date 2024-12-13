@@ -118,6 +118,7 @@ class CoachRefereeControlloer extends Controller
 
             DB::commit();
         } catch (\Throwable $e) {
+            Log::error($e);
             DB::rollBack();
             abort(500, '指導者・審判情報の更新に失敗しました。');
         }

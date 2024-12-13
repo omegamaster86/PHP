@@ -214,27 +214,16 @@ class T_players extends Model
         );
 
         if (!empty($searchingMappingData)) {
-
-            DB::beginTransaction();
-                try {
-                    DB::update(
-                        'update `t_players` set `updated_time` = ? , `updated_user_id` = ? , `delete_flag` = ? where 1=1 and `delete_flag` = ? and `jara_player_id` = ? and user_id is null',
-                        [
-                            now()->format('Y-m-d H:i:s.u'),
-                            Auth::user()->user_id,
-                            1,
-                            0,
-                            $playersInfo['jara_player_id']
-                        ]
-                    );
-                    DB::commit();
-                }
-                catch (\Throwable $e) {
-                    DB::rollBack();
-                    Log::debug($e);
-                    $result = "failed";
-                    return response()->json(["失敗しました。ユーザーサポートにお問い合わせください。"], 500);
-                }
+            DB::update(
+                'update `t_players` set `updated_time` = ? , `updated_user_id` = ? , `delete_flag` = ? where 1=1 and `delete_flag` = ? and `jara_player_id` = ? and user_id is null',
+                [
+                    now()->format('Y-m-d H:i:s.u'),
+                    Auth::user()->user_id,
+                    1,
+                    0,
+                    $playersInfo['jara_player_id']
+                ]
+            );
         }
         DB::update(
             'update `t_players` set `jara_player_id`=?,`player_name`=?,`date_of_birth`=?,`sex_id`=?,`height`=?,`weight`=?,`side_info`=?,`birth_country`=?, `birth_prefecture`=?,`residence_country`=?,`residence_prefecture`=?,`photo`=?,`updated_time`=?,`updated_user_id`=? where user_id = ?',
@@ -315,98 +304,52 @@ class T_players extends Model
     //選手テーブルに挿入する
     //選手登録時に使用
     public function insertPlayers($playersInfo)
-    {
-        $result = "success";
-
-        $searchingMappingData = DB::select(
-            'select `user_id`, `player_id`, `player_name` from `t_players` where `delete_flag` = 0 and `jara_player_id` = ? and user_id is null',
+    {   
+        $result = DB::insert(
+            'insert into t_players
+                            (
+                                user_id,
+                                jara_player_id,
+                                player_name,
+                                date_of_birth,
+                                sex_id,
+                                height,
+                                weight,		
+                                side_info,
+                                birth_country,
+                                birth_prefecture,
+                                residence_country,
+                                residence_prefecture,
+                                photo,
+                                registered_time,
+                                registered_user_id,
+                                updated_time,
+                                updated_user_id,
+                                delete_flag
+                            )values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             [
-                $playersInfo['jara_player_id']
+                Auth::user()->user_id, //選手登録時に入力されるuserIdはログイン中のuserId
+                $playersInfo['jara_player_id'],
+                $playersInfo['player_name'],
+                $playersInfo['date_of_birth'],
+                $playersInfo['sex_id'],
+                $playersInfo['height'],
+                $playersInfo['weight'],
+                $playersInfo['side_info'],
+                $playersInfo['birth_country'],
+                $playersInfo['birth_prefecture'],
+                $playersInfo['residence_country'],
+                $playersInfo['residence_prefecture'],
+                $playersInfo['photo'],
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                0
             ]
         );
 
-        if (!empty($searchingMappingData)) {
-
-            DB::beginTransaction();
-                try {
-                    DB::update(
-                        'update `t_players` set `updated_time` = ? , `updated_user_id` = ? , `delete_flag` = ? where 1=1 and `delete_flag` = ? and `jara_player_id` = ? and user_id is null',
-                        [
-                            now()->format('Y-m-d H:i:s.u'),
-                            Auth::user()->user_id,
-                            1,
-                            0,
-                            $playersInfo['jara_player_id']
-                        ]
-                    );
-                    DB::commit();
-                }
-                catch (\Throwable $e) {
-                    DB::rollBack();
-                    Log::debug($e);
-                    $result = "failed";
-                    return response()->json(["失敗しました。ユーザーサポートにお問い合わせください。"], 500);
-                }
-        }
-
-        
-        DB::beginTransaction();
-        try {
-            DB::insert(
-                'insert into t_players
-                                (
-                                    user_id,
-                                    jara_player_id,
-                                    player_name,
-                                    date_of_birth,
-                                    sex_id,
-                                    height,
-                                    weight,		
-                                    side_info,
-                                    birth_country,
-                                    birth_prefecture,
-                                    residence_country,
-                                    residence_prefecture,
-                                    photo,
-                                    registered_time,
-                                    registered_user_id,
-                                    updated_time,
-                                    updated_user_id,
-                                    delete_flag
-                                )values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                [
-                    Auth::user()->user_id, //選手登録時に入力されるuserIdはログイン中のuserId
-                    $playersInfo['jara_player_id'],
-                    $playersInfo['player_name'],
-                    $playersInfo['date_of_birth'],
-                    $playersInfo['sex_id'],
-                    $playersInfo['height'],
-                    $playersInfo['weight'],
-                    $playersInfo['side_info'],
-                    $playersInfo['birth_country'],
-                    $playersInfo['birth_prefecture'],
-                    $playersInfo['residence_country'],
-                    $playersInfo['residence_prefecture'],
-                    $playersInfo['photo'],
-                    now()->format('Y-m-d H:i:s.u'),
-                    Auth::user()->user_id,
-                    now()->format('Y-m-d H:i:s.u'),
-                    Auth::user()->user_id,
-                    0
-                ]
-            );
-            
-            DB::commit();
-            return "登録完了";
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            Log::debug($e);
-            $result = "failed";
-            return response()->json(["失敗しました。ユーザーサポートにお問い合わせください。"], 500);
-        }
-
-        
-        
+        return $result;
     }
 
     //PlayerInformationResponseを引数としてinsertを実行する
