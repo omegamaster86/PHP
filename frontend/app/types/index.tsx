@@ -140,7 +140,7 @@ interface CrewPlayer {
 
 // 団体情報
 interface TeamResponse {
-  teamTyp: string; // 団体種別　#置き換え作業対応不要
+  teamTyp: string; // 団体種別 #置き換え作業対応不要
   entrysystem_org_id: string; // エントリーシステムの団体ID
   org_id: string; // 団体ID
   org_name: string; // 団体名
@@ -152,9 +152,9 @@ interface Tournament {
   entrysystem_tourn_id: string; // エントリーシステムの大会ID
   tourn_name: string; // 大会名
   tourn_type: string; // 大会種別
-  tournTypeName: string; // 大会種別名　#置き換え作業対応不要
+  tournTypeName: string; // 大会種別名 #置き換え作業対応不要
   sponsor_org_id: string; // 主催団体ID
-  sponsorOrgName: string; // 主催団体名　#置き換え作業対応不要
+  sponsorOrgName: string; // 主催団体名 #置き換え作業対応不要
   event_start_date: string; // 開催日
   event_end_date: string; // 終了日
   venue_id: string; // 開催場所ID
@@ -191,8 +191,8 @@ interface RaceTable {
 
 // レース情報
 interface Race {
-  id: number; // ID　#置き換え作業未対応
-  checked: boolean; // チェックボックス　#置き換え作業未対応
+  id: number; // ID #置き換え作業未対応
+  checked: boolean; // チェックボックス #置き換え作業未対応
   race_id: string; //
   entrysystem_race_id: string; // エントリーシステムのレースID
   tourn_id: number; //大会ID
@@ -239,7 +239,7 @@ interface RaceTypeResponse {
 interface UserResponse {
   user_id: string; // ユーザーID
   user_type: string; // ユーザー種別
-  userTypeName: string; // ユーザー種別　#置き換え作業未対応
+  userTypeName: string; // ユーザー種別 #置き換え作業未対応
   user_name: string; // ユーザー名
   mailaddress: string; // メールアドレス
   sexName: string; // 性別　#置き換え作業未対応
@@ -275,7 +275,7 @@ interface ICoachQualification {
   heldCoachQualificationId: number;
   expiryDate: string | null;
   acquisitionDate: string;
-  isNewRow?: true;
+  isNewRow: boolean;
   isDeleted: boolean;
   coachQualificationId: number;
 }
@@ -284,7 +284,7 @@ interface IRefereeQualification {
   heldRefereeQualificationId: number;
   expiryDate: string | null;
   acquisitionDate: string;
-  isNewRow?: true;
+  isNewRow: boolean;
   isDeleted: boolean;
   refereeQualificationId: number;
 }
@@ -319,7 +319,7 @@ interface CoachingHistory {
   orgCoachingHistoryId: number;
   orgId: number;
   staffTypeId: number;
-  isNewRow?: true;
+  isNewRow: boolean;
   isDeleted: boolean;
 }
 
@@ -329,19 +329,19 @@ interface VolunteerResponse {
   volunteer_name: string; // 氏名
   residence_country: string; // 居住地（国）
   residence_prefecture: string; // 居住地（都道府県）
-  sex: string; // 性別　#置き換え作業未対応
+  sex: string; // 性別 #置き換え作業未対応
   date_of_birth: string; // 生年月日
   telephone_number: string; // 電話番号
   mailaddress: string; // メールアドレス
   clothes_size: string; // 服のサイズ
-  personality: string; // 性格　#置き換え作業未対応
+  personality: string; // 性格 #置き換え作業未対応
   dis_type_id: string[]; // 障碍タイプ
-  qualHold: string[]; // 保有資格　#置き換え作業未対応
-  language: any; // 言語　#置き換え作業未対応
+  qualHold: string[]; // 保有資格 #置き換え作業未対応
+  language: any; // 言語 #置き換え作業未対応
   language_proficiency: any; //言語レベル
   day_of_week: string; // 曜日
   time_zone: string; // 時間帯
-  photo: string; // 写真　#置き換え作業未対応
+  photo: string; // 写真 #置き換え作業未対応
 }
 
 // ボランティア履歴情報
@@ -364,18 +364,18 @@ interface PlayerInformationResponse {
   jara_player_id: string; // JARA選手コード
   player_name: string; // 選手名
   date_of_birth: string; // 生年月日
-  sexName: string; // 性別　#置き換え作業対応不要
+  sexName: string; // 性別 #置き換え作業対応不要
   sex_id?: number; // 性別
   height: string; // 身長
   weight: string; // 体重
   side_info: boolean[]; // サイド情報
-  birthCountryName: string; // 出身地（国）　#置き換え作業対応不要
+  birthCountryName: string; // 出身地（国） #置き換え作業対応不要
   birth_country?: number; // 出身地（国）
-  birthPrefectureName: string; // 出身地（都道府県）　#置き換え作業対応不要
+  birthPrefectureName: string; // 出身地（都道府県） #置き換え作業対応不要
   birth_prefecture?: number; // 出身地（都道府県）
-  residenceCountryName: string; // 居住地（国）　#置き換え作業対応不要
+  residenceCountryName: string; // 居住地（国） #置き換え作業対応不要
   residence_country?: number; // 居住地（国）
-  residencePrefectureName: string; // 居住地（都道府県）　#置き換え作業対応不要
+  residencePrefectureName: string; // 居住地（都道府県） #置き換え作業対応不要
   residence_prefecture?: number; // 居住地（都道府県）
   photo: string; // 写真
   previousPhotoName?: File; // アップロードされて写真を保存する
@@ -385,23 +385,23 @@ interface PlayerInformationResponse {
 
 // 団体所属選手情報
 interface TeamPlayerInformationResponse {
-  id: number; // ID　#置き換え作業未対応
+  id: number; // ID #置き換え作業未対応
   player_id: number; // 選手ID
   jara_player_id: string; // JARA選手コード
   player_name: string; // 選手名
   date_of_birth: string; // 生年月日
-  sexName: string; // 性別　#置き換え作業未対応
+  sexName: string; // 性別 #置き換え作業未対応
   sex_id?: number; // 性別
   height: string; // 身長
   weight: string; // 体重
   side_info: boolean[]; // サイド情報
-  birthCountryName: string; // 出身地（国）　#置き換え作業対応不要
+  birthCountryName: string; // 出身地（国） #置き換え作業対応不要
   birth_country?: number; // 出身地（国）
-  birthPrefectureName: string; // 出身地（都道府県）　#置き換え作業対応不要
+  birthPrefectureName: string; // 出身地（都道府県） #置き換え作業対応不要
   birth_prefecture?: number; // 出身地（都道府県）
-  residenceCountryName: string; // 居住地（国）　#置き換え作業対応不要
+  residenceCountryName: string; // 居住地（国） #置き換え作業対応不要
   residence_country?: number; // 居住地（国）
-  residencePrefectureName: string; // 居住地（都道府県）　#置き換え作業対応不要
+  residencePrefectureName: string; // 居住地（都道府県） #置き換え作業対応不要
   residence_prefecture?: number; // 居住地（都道府県）
   orgId: string; // 団体ID
   org_name: string; // 団体名
@@ -442,22 +442,22 @@ interface TournamentResponse {
 
 // 選手情報
 interface Player {
-  id: number; // 選手ID　#置き換え作業未対応
+  id: number; // 選手ID #置き換え作業未対応
   photo: string; // 選手画像
   player_name: string; // 選手名
   jara_player_id: string; // JARA選手コード
   player_id: string; // 選手ID
   sex_id: string; // 性別ID
-  sex: string; // 性別　#置き換え作業未対応
-  entrysystemOrgId1: string; // エントリーシステムの団体ID1　#置き換え作業未対応
-  orgId1: string; // 団体ID1　#置き換え作業未対応
-  orgName1: string; // 所属団体名1　#置き換え作業未対応
-  entrysystemOrgId2: string; // エントリーシステムの団体ID2　#置き換え作業未対応
-  orgId2: string; // 団体ID2　#置き換え作業未対応
-  orgName2: string; // 所属団体名2　#置き換え作業未対応
-  entrysystemOrgId3: string; // エントリーシステムの団体ID3　#置き換え作業未対応
-  orgId3: string; // 団体ID3　#置き換え作業未対応
-  orgName3: string; // 所属団体名3　#置き換え作業未対応
+  sex: string; // 性別 #置き換え作業未対応
+  entrysystemOrgId1: string; // エントリーシステムの団体ID1 #置き換え作業未対応
+  orgId1: string; // 団体ID1 #置き換え作業未対応
+  orgName1: string; // 所属団体名1 #置き換え作業未対応
+  entrysystemOrgId2: string; // エントリーシステムの団体ID2 #置き換え作業未対応
+  orgId2: string; // 団体ID2 #置き換え作業未対応
+  orgName2: string; // 所属団体名2 #置き換え作業未対応
+  entrysystemOrgId3: string; // エントリーシステムの団体ID3 #置き換え作業未対応
+  orgId3: string; // 団体ID3 #置き換え作業未対応
+  orgName3: string; // 所属団体名3 #置き換え作業未対応
 }
 
 // 大会レース結果入力画面
@@ -487,7 +487,7 @@ interface CrewResponse {
   player_name: string; // 選手名
   player_height: number; // 選手身長（出漕時点）
   player_weight: number; // 選手体重（出漕時点）
-  order: number; // 順番　#置き換え作業未対応
+  order: number; // 順番 #置き換え作業未対応
 }
 
 // 団体情報
@@ -557,14 +557,14 @@ interface Org {
   org_id: number; // 団体ID
   org_name: string; // 団体名
   org_class: number; // 団体区分
-  orgClassName: string; // 　#置き換え作業未対応
-  orgTypeId: number; // 　#置き換え作業未対応
-  orgTypeName: string; // 　#置き換え作業未対応
+  orgClassName: string; //  #置き換え作業未対応
+  orgTypeId: number; //  #置き換え作業未対応
+  orgTypeName: string; //  #置き換え作業未対応
   founding_year: string; // 創立年
   location_country: number; // 所在地（国）
-  residenceCountryName: string; // 　#置き換え作業対応不要
+  residenceCountryName: string; //  #置き換え作業対応不要
   location_prefecture: number; // 所在地（都道府県）
-  residencePrefectureName: string; // 　#置き換え作業対応不要
+  residencePrefectureName: string; //  #置き換え作業対応不要
 }
 
 interface OrganizationListData {

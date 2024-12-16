@@ -46,7 +46,23 @@ const UpdateView: React.FC<UpdateViewProps> = ({
     coachingHistories: coachRefereeInfoListRes.result.coachingHistories.map((history) => ({
       ...history,
       isCurrentlyCoaching: history.endDate === null,
+      isNewRow: false,
+      isDeleted: false,
     })),
+    coachQualifications: coachRefereeInfoListRes.result.coachQualifications.map(
+      (qualification) => ({
+        ...qualification,
+        isNewRow: false,
+        isDeleted: false,
+      }),
+    ),
+    refereeQualifications: coachRefereeInfoListRes.result.refereeQualifications.map(
+      (qualification) => ({
+        ...qualification,
+        isNewRow: false,
+        isDeleted: false,
+      }),
+    ),
   };
   // FIXME: エラーメッセージを考慮する
   const [errorMessage, setErrorMessage] = useState([] as string[]);
@@ -54,8 +70,7 @@ const UpdateView: React.FC<UpdateViewProps> = ({
 
   const [fetchData, setFetchData] = useState<CoachRefereeResponse>({
     jspoId: draftFormData?.jspoId || coachRefereeInfoList.jspoId,
-    coachingHistories: 
-      draftFormData?.coachingHistories || coachRefereeInfoList.coachingHistories,
+    coachingHistories: draftFormData?.coachingHistories || coachRefereeInfoList.coachingHistories,
     coachQualifications:
       draftFormData?.coachQualifications || coachRefereeInfoList.coachQualifications,
     refereeQualifications:

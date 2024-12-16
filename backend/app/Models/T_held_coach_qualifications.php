@@ -85,7 +85,7 @@ class T_held_coach_qualifications extends Model
                 now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 $coachQualificationData['isDeleted'],
-                $coachQualificationData['heldGoachQualificationId']
+                $coachQualificationData['heldCoachQualificationId']
             ]
         );
     }
