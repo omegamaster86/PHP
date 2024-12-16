@@ -85,7 +85,7 @@ class CoachRefereeControlloer extends Controller
 
             //指導履歴の追加・更新
             for ($i = 0; $i < count($reqData['coachingHistories']); $i++) {
-                if ($reqData['coachingHistories'][$i]['isNewRow'] == 1) {
+                if ($reqData['coachingHistories'][$i]['isNewRow']) {
                     //新規追加
                     $tOrganizationCoachingHistory->insertOrganizationCoachingHistoryData($reqData['coachingHistories'][$i]);
                 } else {
@@ -95,24 +95,24 @@ class CoachRefereeControlloer extends Controller
             }
 
             //指導者資格の追加・更新
-            for ($i = 0; $i < count($reqData['coachQualificationNames']); $i++) {
-                if ($reqData['coachQualificationNames'][$i]['isNewRow'] == 1) {
+            for ($i = 0; $i < count($reqData['coachQualifications']); $i++) {
+                if ($reqData['coachQualifications'][$i]['isNewRow']) {
                     //新規追加
-                    $tHeldCoachQualifications->insertHeldCoachQualificationsData($reqData['coachQualificationNames'][$i]);
+                    $tHeldCoachQualifications->insertHeldCoachQualificationsData($reqData['coachQualifications'][$i]);
                 } else {
                     //更新・削除
-                    $tHeldCoachQualifications->updateHeldCoachQualificationsData($reqData['coachQualificationNames'][$i]);
+                    $tHeldCoachQualifications->updateHeldCoachQualificationsData($reqData['coachQualifications'][$i]);
                 }
             }
 
             //審判資格の追加・更新
-            for ($i = 0; $i < count($reqData['refereeQualificationNames']); $i++) {
-                if ($reqData['refereeQualificationNames'][$i]['isNewRow'] == 1) {
+            for ($i = 0; $i < count($reqData['refereeQualifications']); $i++) {
+                if ($reqData['refereeQualifications'][$i]['isNewRow']) {
                     //新規追加
-                    $tHeldRefereeQualifications->insertHeldRefereeQualificationsData($reqData['refereeQualificationNames'][$i]);
+                    $tHeldRefereeQualifications->insertHeldRefereeQualificationsData($reqData['refereeQualifications'][$i]);
                 } else {
                     //更新・削除
-                    $tHeldRefereeQualifications->updateHeldRefereeQualificationsData($reqData['refereeQualificationNames'][$i]);
+                    $tHeldRefereeQualifications->updateHeldRefereeQualificationsData($reqData['refereeQualifications'][$i]);
                 }
             }
 

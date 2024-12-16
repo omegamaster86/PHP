@@ -655,7 +655,7 @@ class T_users extends Authenticatable
                     SET 
                     `jspo_id` = ?,
                     `updated_time`= ?,
-                    `updated_user_id`= ?,
+                    `updated_user_id`= ?
                     where 1=1
                     and `user_id` = ?',
             [
