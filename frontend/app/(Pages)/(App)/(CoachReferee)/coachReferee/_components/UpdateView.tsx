@@ -1,7 +1,7 @@
 'use client';
 
 import React, { FormEvent, useState } from 'react';
-import { CustomButton, CustomTextField, InputLabel } from '@/app/components';
+import { CustomButton, CustomTextField, CustomTitle, ErrorBox, InputLabel } from '@/app/components';
 import {
   ICoachQualification,
   IRefereeQualification,
@@ -14,7 +14,7 @@ import CoachQualification from './CoachQualification';
 import RefereeQualification from './RefereeQualification';
 import { useRouter } from 'next/navigation';
 import { Divider } from '@mui/material';
-import { getSessionStorage, getStorageKey, setSessionStorage } from '@/app/utils/sessionStorage';
+import { setSessionStorage } from '@/app/utils/sessionStorage';
 import useSWR from 'swr';
 import { fetcher } from '@/app/lib/swr';
 
@@ -24,6 +24,7 @@ interface UpdateViewProps {
   organizations: OrganizationListData[];
   staffs: SelectOption<number>[];
   storageKey: string;
+  parsedData: CoachRefereeResponse | null;
 }
 
 const UpdateView: React.FC<UpdateViewProps> = ({
@@ -32,8 +33,10 @@ const UpdateView: React.FC<UpdateViewProps> = ({
   organizations,
   staffs,
   storageKey,
+  parsedData,
 }) => {
   const router = useRouter();
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const { data: coachRefereeInfoListRes } = useSWR(
     {
       url: `getUpdateCoachRefereeInfoList`,
@@ -46,35 +49,29 @@ const UpdateView: React.FC<UpdateViewProps> = ({
     coachingHistories: coachRefereeInfoListRes.result.coachingHistories.map((history) => ({
       ...history,
       isCurrentlyCoaching: history.endDate === null,
-      isNewRow: false,
       isDeleted: false,
     })),
     coachQualifications: coachRefereeInfoListRes.result.coachQualifications.map(
       (qualification) => ({
         ...qualification,
-        isNewRow: false,
         isDeleted: false,
       }),
     ),
     refereeQualifications: coachRefereeInfoListRes.result.refereeQualifications.map(
       (qualification) => ({
         ...qualification,
-        isNewRow: false,
         isDeleted: false,
       }),
     ),
   };
-  // FIXME: エラーメッセージを考慮する
-  const [errorMessage, setErrorMessage] = useState([] as string[]);
-  const draftFormData = getSessionStorage<CoachRefereeResponse>(storageKey);
 
   const [fetchData, setFetchData] = useState<CoachRefereeResponse>({
-    jspoId: draftFormData?.jspoId || coachRefereeInfoList.jspoId,
-    coachingHistories: draftFormData?.coachingHistories || coachRefereeInfoList.coachingHistories,
+    jspoId: parsedData?.jspoId || coachRefereeInfoList.jspoId,
+    coachingHistories: parsedData?.coachingHistories || coachRefereeInfoList.coachingHistories,
     coachQualifications:
-      draftFormData?.coachQualifications || coachRefereeInfoList.coachQualifications,
+      parsedData?.coachQualifications || coachRefereeInfoList.coachQualifications,
     refereeQualifications:
-      draftFormData?.refereeQualifications || coachRefereeInfoList.refereeQualifications,
+      parsedData?.refereeQualifications || coachRefereeInfoList.refereeQualifications,
   });
   const handleCoachingHistoryChange = (
     index: number,
@@ -173,105 +170,165 @@ const UpdateView: React.FC<UpdateViewProps> = ({
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    const errors: string[] = [];
+
+    const coachDuplicateIds = new Set<number>();
+    const refereeDuplicateIds = new Set<number>();
+
+    fetchData.coachingHistories.forEach((history, index) => {
+      if (!history.startDate) {
+        errors.push(`指導履歴 ${index + 1}番目の開始日を入力してください。`);
+      }
+      if (history.orgId <= 0) {
+        errors.push(`指導履歴 ${index + 1}番目の団体を選択してください。`);
+      }
+      if (history.staffTypeId <= 0) {
+        errors.push(`指導履歴 ${index + 1}番目のスタッフ種別を選択してください。`);
+      }
+    });
+
+    fetchData.coachQualifications.forEach((qualification, index) => {
+      if (qualification.coachQualificationId <= 0) {
+        errors.push(`指導者資格 ${index + 1}番目の資格を選択してください。`);
+      }
+      if (!qualification.acquisitionDate) {
+        errors.push(`指導者資格 ${index + 1}番目の取得日を入力してください。`);
+      }
+
+      if (!coachDuplicateIds.add(qualification.coachQualificationId)) {
+        errors.push(`指導者資格の中で重複している資格があります。`);
+      }
+    });
+
+    if (fetchData.coachQualifications.length > 0 && !fetchData.jspoId) {
+      errors.push('指導者資格がある場合は、JSPO IDを入力してください。');
+    }
+
+    fetchData.refereeQualifications.forEach((qualification, index) => {
+      if (qualification.refereeQualificationId <= 0) {
+        errors.push(`審判資格 ${index + 1}番目の資格を選択してください。`);
+      }
+      if (!qualification.acquisitionDate) {
+        errors.push(`審判資格 ${index + 1}番目の取得日を入力してください。`);
+      }
+
+      if (!refereeDuplicateIds.add(qualification.refereeQualificationId)) {
+        errors.push(`審判資格の中で重複している資格があります。`);
+      }
+    });
+
+    setErrorMessages(errors);
+
+    if (errors.length > 0) {
+      return;
+    }
+
     setSessionStorage(storageKey, fetchData);
-    router.push(`/coachReferee?mode=confirm&type=create&storageKey=${storageKey}`);
+    router.push('/coachReferee?mode=confirm');
   }
 
   return (
-    <form onSubmit={onSubmit} className='flex flex-col gap-8'>
-      <div className='flex flex-col gap-2'>
-        <div className='flex items-center gap-2'>
-          <h2>指導履歴</h2>
-          <CustomButton
-            buttonType='primary'
-            className='h-10 w-[5rem] text-sm'
-            onClick={addCoachingHistory}
-          >
-            追加する
-          </CustomButton>
-        </div>
-        <div className='flex flex-col gap-4'>
-          {fetchData.coachingHistories.map((coachingHistory, index) => (
-            <CoachingHistory
-              key={index}
-              coachingHistory={coachingHistory}
-              index={index}
-              handleInputChange={handleCoachingHistoryChange}
-              organizationOptions={organizations}
-              staffOptions={staffs}
-            />
-          ))}
-        </div>
-      </div>
-      <div className='flex flex-col gap-2'>
-        <div className='flex items-center gap-2'>
-          <h2>指導者資格</h2>
-          <CustomButton
-            buttonType='primary'
-            className='h-10 w-[5rem] text-sm'
-            onClick={addCoachQualification}
-          >
-            追加する
-          </CustomButton>
-        </div>
-        {fetchData.coachQualifications.length > 0 && (
-          <div className='flex flex-col gap-4 mb-2'>
-            <InputLabel label='JSPO ID' required />
-            <CustomTextField
-              placeHolder='12345'
-              value={String(fetchData.jspoId)}
-              widthClassName='w-full md:w-[150px]'
-              onChange={(event) =>
-                setFetchData({ ...fetchData, jspoId: Number(event.target.value) })
-              }
-            />
+    <>
+      <ErrorBox errorText={errorMessages} />
+
+      <CustomTitle displayBack>指導者・審判情報更新</CustomTitle>
+
+      <form onSubmit={onSubmit} className='flex flex-col gap-8'>
+        <div className='flex flex-col gap-2'>
+          <div className='flex items-center gap-2'>
+            <h2>指導履歴</h2>
+            <CustomButton
+              buttonType='primary'
+              className='h-10 w-[5rem] text-sm'
+              onClick={addCoachingHistory}
+            >
+              追加する
+            </CustomButton>
           </div>
-        )}
-        <div className='flex flex-col gap-4'>
-          {fetchData.coachQualifications.map((coachQualification, index) => (
-            <CoachQualification
-              key={index}
-              coachQualification={coachQualification}
-              index={index}
-              coachQualificationOptions={coachQualifications}
-              handleInputChange={handleUpdatedQualificationsChange}
-            />
-          ))}
+          <div className='flex flex-col gap-4'>
+            {fetchData.coachingHistories.map((coachingHistory, index) => (
+              <CoachingHistory
+                key={index}
+                coachingHistory={coachingHistory}
+                index={index}
+                handleInputChange={handleCoachingHistoryChange}
+                organizationOptions={organizations}
+                staffOptions={staffs}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-      <div className='flex flex-col gap-2'>
-        <div className='flex items-center gap-2'>
-          <h2>審判資格</h2>
-          <CustomButton
-            buttonType='primary'
-            className='h-10 w-[5rem] text-sm'
-            onClick={addRefereeQualification}
-          >
-            追加する
+        <div className='flex flex-col gap-2'>
+          <div className='flex items-center gap-2'>
+            <h2>指導者資格</h2>
+            <CustomButton
+              buttonType='primary'
+              className='h-10 w-[5rem] text-sm'
+              onClick={addCoachQualification}
+            >
+              追加する
+            </CustomButton>
+          </div>
+          {fetchData.coachQualifications.length > 0 && (
+            <div className='flex flex-col gap-4 mb-2'>
+              <InputLabel label='JSPO ID' required />
+              <CustomTextField
+                placeHolder='12345'
+                value={String(fetchData.jspoId)}
+                widthClassName='w-full md:w-[150px]'
+                onChange={(event) =>
+                  setFetchData({ ...fetchData, jspoId: Number(event.target.value) })
+                }
+              />
+            </div>
+          )}
+          <div className='flex flex-col gap-4'>
+            {fetchData.coachQualifications.map((coachQualification, index) => (
+              <CoachQualification
+                key={index}
+                coachQualification={coachQualification}
+                index={index}
+                coachQualificationOptions={coachQualifications}
+                handleInputChange={handleUpdatedQualificationsChange}
+              />
+            ))}
+          </div>
+        </div>
+        <div className='flex flex-col gap-2'>
+          <div className='flex items-center gap-2'>
+            <h2>審判資格</h2>
+            <CustomButton
+              buttonType='primary'
+              className='h-10 w-[5rem] text-sm'
+              onClick={addRefereeQualification}
+            >
+              追加する
+            </CustomButton>
+          </div>
+          <div className='flex flex-col gap-4'>
+            {fetchData.refereeQualifications.map((refereeQualification, index) => (
+              <RefereeQualification
+                key={index}
+                refereeQualification={refereeQualification}
+                index={index}
+                refereeQualificationsOptions={refereeQualifications}
+                handleInputChange={handleUpdatedRefereeQualificationsChange}
+              />
+            ))}
+          </div>
+        </div>
+        <Divider className='h-[1px] bg-border ' />
+        <div className='flex flex-col gap-4 items-center justify-center md:flex-row'>
+          <CustomButton buttonType='white-outlined' onClick={() => router.back()}>
+            戻る
+          </CustomButton>
+          <CustomButton buttonType='primary' type='submit'>
+            確認
           </CustomButton>
         </div>
-        <div className='flex flex-col gap-4'>
-          {fetchData.refereeQualifications.map((refereeQualification, index) => (
-            <RefereeQualification
-              key={index}
-              refereeQualification={refereeQualification}
-              index={index}
-              refereeQualificationsOptions={refereeQualifications}
-              handleInputChange={handleUpdatedRefereeQualificationsChange}
-            />
-          ))}
-        </div>
-      </div>
-      <Divider className='h-[1px] bg-border ' />
-      <div className='flex flex-col gap-4 items-center justify-center md:flex-row'>
-        <CustomButton buttonType='white-outlined' onClick={() => router.back()}>
-          戻る
-        </CustomButton>
-        <CustomButton buttonType='primary' type='submit'>
-          確認
-        </CustomButton>
-      </div>
-    </form>
+      </form>
+    </>
   );
 };
 
