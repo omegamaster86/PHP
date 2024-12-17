@@ -11,6 +11,7 @@ use App\Models\T_held_referee_qualifications;
 use App\Models\T_held_coach_qualifications;
 use App\Models\T_users;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CoachRefereeControlloer extends Controller
 {
@@ -81,11 +82,27 @@ class CoachRefereeControlloer extends Controller
             $reqData = $request->all();
             Log::debug($reqData);
 
+            // 指導者資格の重複チェック
+            $coachQualificationIds = array_column($reqData['coachQualifications'], 'coachQualificationId');
+            $uniqueIds = array_unique($coachQualificationIds);
+
+            if (count($coachQualificationIds) !== count($uniqueIds)) {
+                abort(400, '指導者資格の中で資格名が重複しています。');
+            }
+    
+            // 審判資格の重複チェック
+            $refereeQualificationIds = array_column($reqData['refereeQualifications'], 'refereeQualificationId');
+            $uniqueRefereeIds = array_unique($refereeQualificationIds);
+            
+            if (count($refereeQualificationIds) !== count($uniqueRefereeIds)) {
+                abort(400, '審判資格の中で資格名が重複しています。');
+            }
+
             $tUsers->updateJspoId($reqData['jspoId']); //JSPO IDの更新
 
             //指導履歴の追加・更新
             for ($i = 0; $i < count($reqData['coachingHistories']); $i++) {
-                if ($reqData['coachingHistories'][$i]['isNewRow']) {
+                if (isset($reqData['coachingHistories'][$i]['isNewRow']) && $reqData['coachingHistories'][$i]['isNewRow']) {
                     //新規追加
                     $tOrganizationCoachingHistory->insertOrganizationCoachingHistoryData($reqData['coachingHistories'][$i]);
                 } else {
@@ -96,27 +113,30 @@ class CoachRefereeControlloer extends Controller
 
             //指導者資格の追加・更新
             for ($i = 0; $i < count($reqData['coachQualifications']); $i++) {
-                if ($reqData['coachQualifications'][$i]['isNewRow']) {
-                    //新規追加
+                if (isset($reqData['coachQualifications'][$i]['isNewRow']) && $reqData['coachQualifications'][$i]['isNewRow']) {
+                    // 新規追加
                     $tHeldCoachQualifications->insertHeldCoachQualificationsData($reqData['coachQualifications'][$i]);
                 } else {
-                    //更新・削除
+                    // 更新・削除
                     $tHeldCoachQualifications->updateHeldCoachQualificationsData($reqData['coachQualifications'][$i]);
                 }
             }
-
-            //審判資格の追加・更新
+            
+            // 審判資格の追加・更新
             for ($i = 0; $i < count($reqData['refereeQualifications']); $i++) {
-                if ($reqData['refereeQualifications'][$i]['isNewRow']) {
-                    //新規追加
+                if (isset($reqData['refereeQualifications'][$i]['isNewRow']) && $reqData['refereeQualifications'][$i]['isNewRow']) {
+                    // 新規追加
                     $tHeldRefereeQualifications->insertHeldRefereeQualificationsData($reqData['refereeQualifications'][$i]);
                 } else {
-                    //更新・削除
+                    // 更新・削除
                     $tHeldRefereeQualifications->updateHeldRefereeQualificationsData($reqData['refereeQualifications'][$i]);
                 }
             }
 
             DB::commit();
+        } catch (HttpException $e) {
+            throw $e;
+
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();

@@ -275,7 +275,7 @@ interface ICoachQualification {
   heldCoachQualificationId: number;
   expiryDate: string | null;
   acquisitionDate: string;
-  isNewRow: boolean;
+  isNewRow?: true;
   isDeleted: boolean;
   coachQualificationId: number;
 }
@@ -284,7 +284,7 @@ interface IRefereeQualification {
   heldRefereeQualificationId: number;
   expiryDate: string | null;
   acquisitionDate: string;
-  isNewRow: boolean;
+  isNewRow?: true;
   isDeleted: boolean;
   refereeQualificationId: number;
 }
@@ -319,7 +319,7 @@ interface CoachingHistory {
   orgCoachingHistoryId: number;
   orgId: number;
   staffTypeId: number;
-  isNewRow: boolean;
+  isNewRow?: true;
   isDeleted: boolean;
 }
 

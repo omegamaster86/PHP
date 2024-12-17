@@ -1,21 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { ErrorBox, CustomTitle } from '@/app/components';
+import React from 'react';
+import { useSearchParams } from 'next/navigation';
 import UpdateView from './_components/UpdateView';
 import ConfirmView from './_components/ConfirmView';
 import { CoachRefereeResponse, SelectOption, OrganizationListData } from '@/app/types';
 import useSWR from 'swr';
 import { fetcher } from '@/app/lib/swr';
-import { getStorageKey } from '@/app/utils/sessionStorage';
+import { getSessionStorage, getStorageKey } from '@/app/utils/sessionStorage';
 
 type Mode = 'update' | 'confirm';
 
 const CoachReferee = () => {
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode') || ('update' as Mode);
-  const [errorMessage, setErrorMessage] = useState([] as string[]);
 
   const { data: coachQualificationsRes } = useSWR(
     {
@@ -51,23 +49,17 @@ const CoachReferee = () => {
     pageName: 'coachReferee',
     type: 'create',
   });
-  const rawData = sessionStorage.getItem(storageKey);
-  const parsedData: CoachRefereeResponse | null = rawData ? JSON.parse(rawData) : null;
+  const parsedData = getSessionStorage<CoachRefereeResponse>(storageKey);
 
   return (
     <>
-      <ErrorBox errorText={errorMessage} />
-
-      <CustomTitle displayBack>
-        {mode === 'update' && '指導者・審判情報更新'}
-        {mode === 'confirm' && '指導者・審判情報確認'}
-      </CustomTitle>
       {mode === 'update' && (
         <UpdateView
           coachQualifications={coachQualifications}
           refereeQualifications={refereeQualifications}
           organizations={organizations}
           staffs={staffs}
+          parsedData={parsedData}
           storageKey={storageKey}
         />
       )}
