@@ -217,10 +217,26 @@ interface TourTypeResponse {
   name: string;
 }
 
+interface ApprovalType {
+  appro_type_id: number;
+  appro_type_id_name: string;
+  delete_flag: number;
+  display_order: number;
+  registered_time: string;
+  registered_user_id: number;
+  updated_time: string;
+  updated_user_id: number;
+}
+
 // 開催場所
 interface VenueResponse {
   id: number;
   name: string;
+}
+
+interface Venue {
+  venue_id: number;
+  venue_name: string;
 }
 
 // 種目
@@ -229,10 +245,22 @@ interface EventResponse {
   name: string;
 }
 
+interface Event {
+  abbr_name: string;
+  event_id: number;
+  event_name: string;
+  mixed_sex: string;
+}
+
 // レースID区分
 interface RaceTypeResponse {
   id: number;
   name: string;
+}
+
+interface RaceType {
+  race_class_id: number;
+  race_class_name: string;
 }
 
 // ユーザー情報
@@ -757,6 +785,7 @@ interface MyOrgsHostedTournament {
 }
 
 export type {
+  ApprovalType,
   CheckRace,
   CheckRaceResultRecord,
   CheckRaceResultRecordDeleted,
@@ -768,6 +797,7 @@ export type {
   CrewPlayer,
   CrewResponse,
   DisTypeResponse,
+  Event,
   EventResponse,
   ICoachQualification,
   IRefereeQualification,
@@ -785,8 +815,8 @@ export type {
   NotificationInfoData,
   NotificationListData,
   Org,
-  OrganizationListData,
   Organization,
+  OrganizationListData,
   OrganizationPlayer,
   OrgClass,
   OrgType,
@@ -797,6 +827,7 @@ export type {
   Race,
   RaceResultRecordsResponse,
   RaceTable,
+  RaceType,
   RaceTypeResponse,
   SexResponse,
   Staff,
@@ -808,6 +839,7 @@ export type {
   UpdateNotificationRequest,
   UserIdType,
   UserResponse,
+  Venue,
   VenueResponse,
   VolunteerHistoriesResponse,
   VolunteerResponse,
