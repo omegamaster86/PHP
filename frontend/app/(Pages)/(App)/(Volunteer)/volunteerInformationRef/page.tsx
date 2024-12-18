@@ -3,6 +3,7 @@
 
 import React, { useEffect, useState, ChangeEvent, useRef, MouseEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { TitleSideButton } from '@/app/(Pages)/(App)/_components/TitleSideButton';
 import {
   ErrorBox,
   CustomTitle,
@@ -21,7 +22,8 @@ import {
 import axios from '@/app/lib/axios';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/EditOutlined';
-import { VolunteerResponse, VolunteerHistoriesResponse } from '@/app/types';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { VolunteerResponse, VolunteerHistoriesResponse, UserIdType } from '@/app/types';
 
 import { Autocomplete, Chip, TextField } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -74,6 +76,7 @@ interface SaturdayList {
 }
 
 export default function VolunteerInformationRef() {
+  const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20241216
   const [volunteerdata, setVolunteerdata] = useState({} as VolunteerResponse);
   const [volunteerHistoriesdata, setVolunteerHistoriesdata] = useState(
     [] as VolunteerHistoriesResponse[],
@@ -697,6 +700,10 @@ export default function VolunteerInformationRef() {
         // TODO: 仮のURL（繋ぎ込み時に変更すること）
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
+
+        const userTypeInfo = await axios.get('/getIDsAssociatedWithUser');
+        setUserIdType(userTypeInfo.data.result[0]); //ユーザIDに紐づいた情報 20241216
+
         // const volunteerResponse = await axios.get<VolunteerResponse>('/volunteer',);
         const volunteerResponse = await axios.post('/getVolunteerData', volunteer_id); //ボランティア情報の取得 20240213
         //console.log(volunteerResponse.data);
@@ -1004,25 +1011,22 @@ export default function VolunteerInformationRef() {
 
   return (
     <>
-      <CustomTitle displayBack={true}>
-        ボランティア情報{mode === 'delete' && '削除'}
-        {mode !== 'delete' && '参照'}
-      </CustomTitle>
-      {/* 遷移先の画面未実装のため、コメントアウト 20240525 */}
-      {/* {mode !== 'delete' && (
-            // TODO: ボランティア情報変更画面に遷移
-            // ボランティア情報を変更ボタン
-            <Link
-              href={{
-                pathname: '/volunteerInformation',
-                query: { id: volunteerdata.volunteer_id, mode: 'update' },
-              }}
-              className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
-            >
-              <EditIcon className='cursor-pointer m-1 text-small md:text-h3' />
-              ボランティア情報を変更
-            </Link>
-          )} */}
+      <div className='flex flex-row justify-between items-center '>
+        <CustomTitle displayBack={true}>
+          ボランティア情報{mode === 'delete' && '削除'}
+          {mode !== 'delete' && '参照'}
+        </CustomTitle>
+        {mode !== 'delete' && (userIdType.is_administrator == 1 || userIdType.volunteer_id?.toString() == volunteerId) && (
+          <TitleSideButton
+            href={{
+              pathname: '/volunteerInformationRef',
+              query: { mode: 'delete', volunteer_id: volunteerId },
+            }}
+            icon={DeleteOutlineIcon}
+            text='ボランティア情報削除'
+          />
+        )}
+      </div>
       <ErrorBox errorText={errorMessage} />
       <div className='flex flex-row gap-[20px] justify-between'>
         <div className='flex flex-col gap-[20px]'>

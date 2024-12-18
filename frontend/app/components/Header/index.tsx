@@ -292,11 +292,6 @@ const Header: FC = () => {
           show: userIdType.is_volunteer == 1,
         },
         {
-          title: 'ボランティア情報削除',
-          link: '/volunteerInformationRef?mode=delete&volunteer_id=' + userIdType.volunteer_id,
-          show: userIdType.is_volunteer == 1,
-        },
-        {
           title: 'ボランティア一括登録',
           link: '/volunteerBulkRegister',
           show: userIdType.is_administrator == 1 || userIdType.is_jara == 1,
