@@ -1,8 +1,8 @@
-import InputAdornment from '@mui/material/InputAdornment';
-import TextField from '@mui/material/TextField';
-import type { ChangeEvent, FocusEvent, HTMLInputTypeAttribute } from 'react';
-import { forwardRef } from 'react';
-import InputLabel from '../InputLabel';
+import InputAdornment from "@mui/material/InputAdornment";
+import TextField from "@mui/material/TextField";
+import type { ChangeEvent, FocusEvent, HTMLInputTypeAttribute } from "react";
+import { forwardRef } from "react";
+import InputLabel from "../InputLabel";
 
 type Props = {
   label?: string;
@@ -49,7 +49,7 @@ const CustomTextField = forwardRef(
       maxLength,
       widthClassName,
     }: Props,
-    ref,
+    ref
   ) => {
     if (displayHelp === undefined) {
       displayHelp = true;
@@ -66,17 +66,17 @@ const CustomTextField = forwardRef(
           />
         )}
         {readonly ? (
-          <p className={className + '  text-secondaryText disable'}>
+          <p className={className + "  text-secondaryText disable"}>
             {value} {inputAdorment}
           </p>
         ) : (
           <TextField
-            type={type || 'text'}
+            type={type || "text"}
             error={isError}
             name={label}
             id={label}
             {...(disabled && { disabled: true })}
-            {...(disabled && { className: 'bg-disableBg' })}
+            {...(disabled && { className: "bg-disableBg" })}
             value={value}
             onChange={onChange}
             onBlur={(e) => {
@@ -86,15 +86,21 @@ const CustomTextField = forwardRef(
             }}
             placeholder={placeHolder}
             inputProps={
-              (isDecimal && { step: '0.01' }) || (maxLength && { maxLength: maxLength }) || {}
+              (isDecimal && { step: "0.01" }) ||
+              (maxLength && { maxLength: maxLength }) ||
+              {}
             }
             InputProps={
               inputAdorment &&
               ({
-                endAdornment: <InputAdornment position='end'>{inputAdorment}</InputAdornment>,
+                endAdornment: (
+                  <InputAdornment position="end">
+                    {inputAdorment}
+                  </InputAdornment>
+                ),
               } as any)
             }
-            className={`bg-white ${className ? className : ''}`}
+            className={`bg-white ${className ? className : ""}`}
             fullWidth
             inputRef={ref}
           />
@@ -102,16 +108,16 @@ const CustomTextField = forwardRef(
         {isError &&
           errorMessages?.map((message) => {
             return (
-              <p key={message} className='text-caption1 text-systemErrorText'>
+              <p key={message} className="text-caption1 text-systemErrorText">
                 {message}
               </p>
             );
           })}
       </div>
     );
-  },
+  }
 );
 
-CustomTextField.displayName = 'CustomTextField';
+CustomTextField.displayName = "CustomTextField";
 
 export default CustomTextField;

@@ -31,7 +31,7 @@ const CsvTable = ({
 
   // 読み込み結果がエラーかどうかを確認
   const checkLoadingResult = (row: CsvData) => {
-    return row.loadingResult === '登録不可データ' || row.loadingResult === '無効データ';
+    return row.loadingResult === '登録不可データ' || row.loadingResult === '-';
   };
 
   // エラーの有無を確認して背景色を変更
