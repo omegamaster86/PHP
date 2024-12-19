@@ -550,11 +550,14 @@ interface Staff {
   user_id: string; // ユーザーID
   user_name: string; // ユーザー名
   staff_type_id: string[]; // スタッフ種別
-  coachQualificationNames: string[]; //指導者資格 FIXME
-  refereeQualificationNames: string[]; //審判資格 FIXME
   delete_flag: boolean; // 削除フラグ
   isUserFound: boolean; // ユーザーが見つかったかどうか
-  jspo_id: number; //JSPO ID
+}
+
+interface StaffRef extends Staff {
+  coachQualificationNames: string[]; //指導者資格
+  refereeQualificationNames: string[]; //審判資格
+  jspo_id: number; // JSPO ID
 }
 
 //団体所属選手情報
@@ -831,6 +834,7 @@ export type {
   RaceTypeResponse,
   SexResponse,
   Staff,
+  StaffRef,
   TeamPlayerInformationResponse,
   TeamResponse,
   Tournament,

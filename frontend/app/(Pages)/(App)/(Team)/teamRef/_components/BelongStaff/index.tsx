@@ -9,10 +9,10 @@ import {
   OriginalCheckbox,
 } from '@/app/components';
 import Link from 'next/link';
-import { Staff } from '@/app/types';
+import { StaffRef } from '@/app/types';
 
 interface Props {
-  staffs: Staff[];
+  staffs: StaffRef[];
 }
 
 export const BelongStaff: React.FC<Props> = ({ staffs }) => {
