@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 
-type AlignType = "left" | "center" | "right" | "justify" | "char";
+type AlignType = 'left' | 'center' | 'right' | 'justify' | 'char';
 
 const CustomTd = ({
   children,
@@ -27,17 +27,17 @@ const CustomTd = ({
     <td
       className={`py-2 px-1 border border-gray-20 text-caption1
       ${
-        textType === "primary"
-          ? "text-primary-300"
-          : textType === "secondary"
-            ? "text-secondaryText"
-            : textType === "error"
-              ? "text-systemErrorText"
-              : textType === "warning"
-                ? "text-systemWarningText"
-                : "text-primaryText"
+        textType === 'primary'
+          ? 'text-primary-300'
+          : textType === 'secondary'
+            ? 'text-secondaryText'
+            : textType === 'error'
+              ? 'text-systemErrorText'
+              : textType === 'warning'
+                ? 'text-systemWarningText'
+                : 'text-primaryText'
       }
-      ${newLine ? "break-all whitespace-normal" : "whitespace-nowrap"}
+      ${newLine ? 'break-all whitespace-normal' : 'whitespace-nowrap'}
       ${className}
       `}
       align={align}
@@ -47,7 +47,7 @@ const CustomTd = ({
     </td>
   ) : (
     <td
-      className="py-2 px-1 text-primary-300 underline hover:text-primary-50 cursor-pointer border border-gray-20 whitespace-nowrap text-caption1"
+      className='py-2 px-1 text-primary-300 underline hover:text-primary-50 cursor-pointer border border-gray-20 whitespace-nowrap text-caption1'
       align={align}
       key={key}
       onClick={() => {

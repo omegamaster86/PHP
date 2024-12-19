@@ -1,26 +1,21 @@
 // 機能名: ユーザー情報更新画面・入力確認画面
-"use client";
+'use client';
 
-import { NO_IMAGE_URL, USER_IMAGE_URL } from "../../../../utils/imageUrl"; //For importing image url from a single source of truth
+import { NO_IMAGE_URL, USER_IMAGE_URL } from '../../../../utils/imageUrl'; //For importing image url from a single source of truth
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ChangeEvent, useEffect, useState } from 'react';
 // 実装　ー　クマール　ー開始
-import axios from "@/app/lib/axios";
+import axios from '@/app/lib/axios';
 // 実装　ー　クマール　ー終了
-import {
-  CountryResponse,
-  PrefectureResponse,
-  SexResponse,
-  UserResponse,
-} from "@/app/types";
-import Validator from "@/app/utils/validator";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import Divider from "@mui/material/Divider";
+import { CountryResponse, PrefectureResponse, SexResponse, UserResponse } from '@/app/types';
+import Validator from '@/app/utils/validator';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
 
 import {
   CustomButton,
@@ -32,14 +27,14 @@ import {
   ErrorBox,
   ImageUploader,
   InputLabel,
-} from "@/app/components";
+} from '@/app/components';
 
 export default function UserInformationUpdate() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const mode = searchParams.get("mode");
-  const prevScreen = searchParams.get("prevScreen");
-  let isMailChanged = searchParams.get("isMailChanged");
+  const mode = searchParams.get('mode');
+  const prevScreen = searchParams.get('prevScreen');
+  let isMailChanged = searchParams.get('isMailChanged');
 
   //For storing the verification status of certification number
   const [isNumberVerified, setIsNumberVerified] = useState(false);
@@ -48,28 +43,28 @@ export default function UserInformationUpdate() {
 
   // フォームの入力値を管理するステート
   const [formData, setFormData] = useState<UserResponse>({
-    user_id: "", // ユーザーID
-    user_name: "", // ユーザー名
-    date_of_birth: "", // 生年月日
-    sexName: "", // 性別
+    user_id: '', // ユーザーID
+    user_name: '', // ユーザー名
+    date_of_birth: '', // 生年月日
+    sexName: '', // 性別
     sex: null, // 性別ID
     height: 0, // 身長
     weight: 0, // 体重
     residence_country: null, // 居住地（国）ID
-    residenceCountryName: "", // 居住地（国）
+    residenceCountryName: '', // 居住地（国）
     residence_prefecture: null, // 居住地（都道府県）ID
-    residencePrefectureName: "", // 居住地（都道府県）
-    mailaddress: "", // メールアドレス
-    user_type: "", // ユーザー種別
-    userTypeName: "", // ユーザー種別名
+    residencePrefectureName: '', // 居住地（都道府県）
+    mailaddress: '', // メールアドレス
+    user_type: '', // ユーザー種別
+    userTypeName: '', // ユーザー種別名
     temp_password_flag: 0, // 仮登録フラグ
-    photo: "", // 写真
+    photo: '', // 写真
   });
   // モードのチェック
   switch (mode) {
-    case "update":
+    case 'update':
       break;
-    case "confirm":
+    case 'confirm':
       break;
     default:
       paramError = true;
@@ -77,19 +72,14 @@ export default function UserInformationUpdate() {
   }
 
   const [errorMessage, setErrorMessage] = useState([] as string[]);
-  const [userNameErrorMessages, setUserNameErrorMessages] = useState(
-    [] as string[]
+  const [userNameErrorMessages, setUserNameErrorMessages] = useState([] as string[]);
+  const [livingCountryErrorMessages, setLivingCountryErrorMessages] = useState([] as string[]);
+  const [livingPrefectureErrorMessages, setLivingPrefectureErrorMessages] = useState(
+    [] as string[],
   );
-  const [livingCountryErrorMessages, setLivingCountryErrorMessages] = useState(
-    [] as string[]
-  );
-  const [livingPrefectureErrorMessages, setLivingPrefectureErrorMessages] =
-    useState([] as string[]);
   const [sexErrorMessages, setSexErrorMessages] = useState([] as string[]);
-  const [dateOfBirthErrorMessages, setDateOfBirthErrorMessages] = useState(
-    [] as string[]
-  );
-  const [prevEmail, setPrevEmail] = useState("" as string);
+  const [dateOfBirthErrorMessages, setDateOfBirthErrorMessages] = useState([] as string[]);
+  const [prevEmail, setPrevEmail] = useState('' as string);
 
   const [countries, setCountries] = useState([] as CountryResponse[]);
   const [prefectures, setPrefectures] = useState([] as PrefectureResponse[]);
@@ -102,14 +92,12 @@ export default function UserInformationUpdate() {
       }
     | undefined
   >(undefined);
-  const [email, setEmail] = useState("");
-  const [confirmEmail, setConfirmEmail] = useState("");
+  const [email, setEmail] = useState('');
+  const [confirmEmail, setConfirmEmail] = useState('');
   const [emailErrorMessages, setEmailErrorMessages] = useState([] as string[]);
-  const [emailConfirmErrorMessages, setEmailConfirmErrorMessages] = useState(
-    [] as string[]
-  );
+  const [emailConfirmErrorMessages, setEmailConfirmErrorMessages] = useState([] as string[]);
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
-  const [authNumber, setAuthNumber] = useState("" as string);
+  const [authNumber, setAuthNumber] = useState('' as string);
 
   const [backKeyFlag, setBackKeyFlag] = useState<boolean>(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
 
@@ -129,7 +117,7 @@ export default function UserInformationUpdate() {
       setFormData((prevFormData) => ({
         ...prevFormData,
         residencePrefectureId: 0,
-        residencePrefectureName: "東京",
+        residencePrefectureName: '東京',
       }));
     }
   }, [formData?.residence_country]);
@@ -145,14 +133,14 @@ export default function UserInformationUpdate() {
         ...prevFormData,
         uploadedPhotoName: currentShowFile.file.name,
         uploadedPhoto: currentShowFile.file,
-        photo: "",
+        photo: '',
       }));
     } else {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        uploadedPhotoName: "",
+        uploadedPhotoName: '',
         uploadedPhoto: undefined,
-        photo: "",
+        photo: '',
       }));
     }
   }, [currentShowFile]); //ファイルのアップロード終わったら
@@ -165,48 +153,39 @@ export default function UserInformationUpdate() {
   useEffect(() => {
     const fetchMaster = async () => {
       try {
-        const csrf = () => axios.get("/sanctum/csrf-cookie");
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         // TODO: APIを叩いて、マスタ情報を取得する処理の置き換え
         // const prefectureResponse = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
-        const prefectureResponse = await axios.get("/getPrefecures");
+        const prefectureResponse = await axios.get('/getPrefecures');
         const stateList = prefectureResponse.data.map(
           ({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({
             id: pref_id,
             name: pref_name,
-          })
+          }),
         );
         //console.log(stateList);
         setPrefectures(stateList);
         // setPrefectures(prefectureResponse.data);
         // const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
-        const sexResponse = await axios.get("/getSexList");
+        const sexResponse = await axios.get('/getSexList');
         const sexList = sexResponse.data.map(
-          ({ sex_id, sex }: { sex_id: number; sex: string }) => ({
-            id: sex_id,
-            name: sex,
-          })
+          ({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }),
         );
         setSex(sexList);
         // setSex(sexResponse.data);
         // const countryResponse = await axios.get<CountryResponse[]>('http://localhost:3100/countries',);
-        const countryResponse = await axios.get("/getCountries");
+        const countryResponse = await axios.get('/getCountries');
         const countryList = countryResponse.data.map(
-          ({
-            country_id,
-            country_name,
-          }: {
-            country_id: number;
-            country_name: string;
-          }) => ({
+          ({ country_id, country_name }: { country_id: number; country_name: string }) => ({
             id: country_id,
             name: country_name,
-          })
+          }),
         );
         setCountries(countryList);
         // setCountries(countryResponse.data);
       } catch (error: any) {
-        setErrorMessage(["API取得エラー:" + error.message]);
+        setErrorMessage(['API取得エラー:' + error.message]);
       }
     };
     fetchMaster();
@@ -216,9 +195,9 @@ export default function UserInformationUpdate() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const csrf = () => axios.get("/sanctum/csrf-cookie");
+        const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.get<{ result: UserResponse }>("/api/user");
+        const response = await axios.get<{ result: UserResponse }>('/api/user');
 
         setFormData((prevFormData) => ({
           ...prevFormData,
@@ -238,8 +217,7 @@ export default function UserInformationUpdate() {
             //   ? response.data.result.residenceCountryName
             //   : '日本国 （jpn）',
             residence_prefecture: response.data.result.residence_prefecture,
-            residencePrefectureName:
-              response.data.result.residencePrefectureName,
+            residencePrefectureName: response.data.result.residencePrefectureName,
             mailaddress: response.data.result.mailaddress,
             temp_password_flag: response.data.result.temp_password_flag,
             photo: response.data.result.photo,
@@ -247,11 +225,11 @@ export default function UserInformationUpdate() {
         }));
         setPrevEmail(response.data.result.mailaddress);
       } catch (error: any) {
-        setErrorMessage(["API取得エラー:" + error.message]);
+        setErrorMessage(['API取得エラー:' + error.message]);
       }
     };
     // 更新モード、参照モード、削除モードの時にユーザー情報を取得し、フォームにセットする。
-    if (mode === "update" && !backKeyFlag) {
+    if (mode === 'update' && !backKeyFlag) {
       fetchUser();
     }
     setBackKeyFlag(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
@@ -262,41 +240,35 @@ export default function UserInformationUpdate() {
   const modeCustomButtons = {
     update: (
       <CustomButton
-        buttonType="primary"
+        buttonType='primary'
         onClick={() => {
           const userNameError = Validator.getErrorMessages([
-            Validator.validateRequired(formData?.user_name, "ユーザー名"),
+            Validator.validateRequired(formData?.user_name, 'ユーザー名'),
             Validator.validateUserNameFormat(formData?.user_name),
           ]);
 
           const sexError = Validator.getErrorMessages([
-            Validator.validateRequired(formData?.sexName, "性別"),
+            Validator.validateRequired(formData?.sexName, '性別'),
           ]);
 
           const birthDateError = Validator.getErrorMessages([
             Validator.validateBirthOfDateRange(
               new Date(formData?.date_of_birth),
-              "生年月日",
+              '生年月日',
               5,
-              150
+              150,
             ),
           ]);
 
           const livingCountryError = Validator.getErrorMessages([
-            Validator.validateRequired(
-              formData?.residenceCountryName,
-              "居住地"
-            ),
+            Validator.validateRequired(formData?.residenceCountryName, '居住地'),
           ]);
 
           let livingPrefectureError = [];
 
-          if (formData?.residenceCountryName === "日本国 （jpn）") {
+          if (formData?.residenceCountryName === '日本国 （jpn）') {
             livingPrefectureError = Validator.getErrorMessages([
-              Validator.validateRequired(
-                formData?.residencePrefectureName,
-                "居住地"
-              ),
+              Validator.validateRequired(formData?.residencePrefectureName, '居住地'),
             ]);
             setLivingPrefectureErrorMessages(livingPrefectureError as string[]);
           }
@@ -325,9 +297,9 @@ export default function UserInformationUpdate() {
           }
           setErrorMessage([]);
           router.push(
-            "/userInformation?mode=confirm&isMailChanged=" +
-              (email && email !== prevEmail ? "true" : "false") +
-              (prevScreen ? "&prevScreen=" + prevScreen : "")
+            '/userInformation?mode=confirm&isMailChanged=' +
+              (email && email !== prevEmail ? 'true' : 'false') +
+              (prevScreen ? '&prevScreen=' + prevScreen : ''),
           );
         }}
       >
@@ -336,29 +308,29 @@ export default function UserInformationUpdate() {
     ),
     confirm: (
       <CustomButton
-        buttonType="primary"
+        buttonType='primary'
         onClick={async () => {
           // TODO: 更新処理
-          if (isMailChanged === "true") {
+          if (isMailChanged === 'true') {
             if (isNumberVerified) {
               const updateUser = async () => {
-                const csrf = () => axios.get("/sanctum/csrf-cookie");
+                const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
                 const requestBody = {};
 
                 axios
                   // .post('http://localhost:3100/', requestBody)
-                  .post("/updateUserData", formData, {
+                  .post('/updateUserData', formData, {
                     //ファイルを送るため
                     headers: {
-                      "content-type": "multipart/form-data",
+                      'content-type': 'multipart/form-data',
                     },
                   })
                   .then((response) => {
                     // 成功時の処理を実装
-                    window.alert("ユーザー情報を更新しました。");
+                    window.alert('ユーザー情報を更新しました。');
                     // router.push('/' + (prevScreen ? prevScreen : ''));
-                    router.push("/userInformationRef");
+                    router.push('/userInformationRef');
                   })
                   .catch((error) => {
                     if (error?.response) {
@@ -371,14 +343,14 @@ export default function UserInformationUpdate() {
               updateUser();
             } else {
               const isOK = window.confirm(
-                "メールアドレスが変更されている為、表示されているメールアドレス宛に6桁の認証番号が送られます。メール本文に記載されている認証番号を入力してください。※認証番号の有効期限は30分間です。"
+                'メールアドレスが変更されている為、表示されているメールアドレス宛に6桁の認証番号が送られます。メール本文に記載されている認証番号を入力してください。※認証番号の有効期限は30分間です。',
               );
               if (isOK) {
-                const csrf = () => axios.get("/sanctum/csrf-cookie");
+                const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
                 axios
                   // .post('http://localhost:3100/', requestBody)
-                  .post("/user/sent-certification-number", {
+                  .post('/user/sent-certification-number', {
                     user_name: formData?.user_name,
                     mailaddress: formData?.mailaddress,
                   })
@@ -401,24 +373,24 @@ export default function UserInformationUpdate() {
             }
           } else {
             const updateUser = async () => {
-              const csrf = () => axios.get("/sanctum/csrf-cookie");
+              const csrf = () => axios.get('/sanctum/csrf-cookie');
               await csrf();
               const requestBody = {};
 
               axios
                 // .post('http://localhost:3100/', requestBody)
-                .post("/updateUserData", formData, {
+                .post('/updateUserData', formData, {
                   //ファイルを送るため
                   headers: {
-                    "content-type": "multipart/form-data",
+                    'content-type': 'multipart/form-data',
                   },
                 })
 
                 .then((response) => {
                   // 成功時の処理を実装
-                  window.alert("ユーザー情報を更新しました。");
+                  window.alert('ユーザー情報を更新しました。');
                   // router.push('/' + (prevScreen ? prevScreen : ''));
-                  router.push("/userInformationRef");
+                  router.push('/userInformationRef');
                 })
                 .catch((error) => {
                   if (error?.response?.response?.data) {
@@ -443,13 +415,13 @@ export default function UserInformationUpdate() {
   // 日付をYYYY/MM/DDの形式に変換する
   const formatDate = (dt: Date | null | undefined) => {
     if (!dt) {
-      return "";
+      return '';
     }
 
     const y = dt.getFullYear();
-    const m = ("00" + (dt.getMonth() + 1)).slice(-2);
-    const d = ("00" + dt.getDate()).slice(-2);
-    return y + "/" + m + "/" + d;
+    const m = ('00' + (dt.getMonth() + 1)).slice(-2);
+    const d = ('00' + dt.getDate()).slice(-2);
+    return y + '/' + m + '/' + d;
   };
 
   // モードが不正の時にエラー画面を表示する
@@ -458,72 +430,68 @@ export default function UserInformationUpdate() {
   }
   return (
     <>
-      <div className="flex flex-col justify-start gap-[20px]">
+      <div className='flex flex-col justify-start gap-[20px]'>
         <ErrorBox errorText={errorMessage} />
-        <div className="flex flex-row justify-start gap-[20px]">
+        <div className='flex flex-row justify-start gap-[20px]'>
           {/* 画面名 */}
           <CustomTitle displayBack>
-            {mode === "update" && "ユーザー情報更新"}
-            {mode === "confirm" && "ユーザー情報確認"}
+            {mode === 'update' && 'ユーザー情報更新'}
+            {mode === 'confirm' && 'ユーザー情報確認'}
           </CustomTitle>
         </div>
-        <div className="flex flex-col justify-start gap-[10px]">
+        <div className='flex flex-col justify-start gap-[10px]'>
           {/* 写真 */}
           {/*写真　は　必要ものではありませんので "required" は　はずしました。*/}
           <InputLabel
-            displayHelp={mode !== "confirm"}
-            label="写真"
+            displayHelp={mode !== 'confirm'}
+            label='写真'
             toolTipText={`<span style="display: block;">登録可能な画像ファイルの種類は以下になります。</span>
           <span style="display: block;">jpg</span>
           <span style="display: block;">jpeg</span>
           <span style="display: block;">png</span>`}
           />
-          {mode === "update" && (
+          {mode === 'update' && (
             <ImageUploader
               currentShowFile={currentShowFile}
               setCurrentShowFile={setCurrentShowFile}
               setFormData={setFormData}
-              initialPhotoUrl={
-                formData?.photo ? `${USER_IMAGE_URL}${formData.photo}` : ""
-              }
+              initialPhotoUrl={formData?.photo ? `${USER_IMAGE_URL}${formData.photo}` : ''}
             />
           )}
           {/* 写真 */}
           {/* src={formData.photo} */}
-          {mode === "confirm" && (
+          {mode === 'confirm' && (
             <img
               src={
                 currentShowFile?.preview ??
-                (formData.photo
-                  ? `${USER_IMAGE_URL}${formData.photo}`
-                  : `${NO_IMAGE_URL}`)
+                (formData.photo ? `${USER_IMAGE_URL}${formData.photo}` : `${NO_IMAGE_URL}`)
               }
-              className="w-[300px] h-[300px] rounded-[2px] object-cover"
-              alt="Profile Photo"
+              className='w-[300px] h-[300px] rounded-[2px] object-cover'
+              alt='Profile Photo'
             />
           )}
         </div>
         {/* ユーザーID */}
         <CustomTextField
-          label="ユーザーID"
+          label='ユーザーID'
           readonly
           value={formData?.user_id}
           displayHelp={false}
-          placeHolder="XXXXXXX"
+          placeHolder='XXXXXXX'
         />
         {/* ユーザー種別 */}
         <CustomTextField
-          label="ユーザー種別"
+          label='ユーザー種別'
           readonly
-          placeHolder="XXXXXXX"
+          placeHolder='XXXXXXX'
           value={formData?.userTypeName}
           displayHelp={false}
         />
         {/* ユーザー名 */}
         <CustomTextField
-          label="ユーザー名"
-          placeHolder="山田 太郎"
-          readonly={mode === "confirm"}
+          label='ユーザー名'
+          placeHolder='山田 太郎'
+          readonly={mode === 'confirm'}
           toolTipText={`<span style="display: block;">文字制限</span>
           <span style="display: block;">最大文字数：32文字（全半角区別なし）</span>
           <span style="display: block;">利用可能文字：</span>
@@ -533,55 +501,48 @@ export default function UserInformationUpdate() {
           <span style="display: block;">数字：[0-9]（10 文字）</span>
           <span style="display: block;">記号：-,_`}
           onChange={(e) => {
-            handleInputChange("user_name", e.target.value);
+            handleInputChange('user_name', e.target.value);
           }}
           errorMessages={[...userNameErrorMessages]}
           isError={userNameErrorMessages.length > 0}
-          displayHelp={mode === "update"}
-          required={mode === "update"}
+          displayHelp={mode === 'update'}
+          required={mode === 'update'}
           value={formData?.user_name}
         />
         {/* メールアドレス */}
-        <div className="flex flex-row gap-[10px]">
+        <div className='flex flex-row gap-[10px]'>
           <CustomTextField
-            label="メールアドレス"
+            label='メールアドレス'
             errorMessages={[]}
-            displayHelp={mode === "update"}
-            required={mode === "update"}
+            displayHelp={mode === 'update'}
+            required={mode === 'update'}
             readonly
-            placeHolder="メールアドレスを入力してください。"
-            type="email"
+            placeHolder='メールアドレスを入力してください。'
+            type='email'
             value={formData?.mailaddress}
-            toolTipText="入力したメールアドレスは、ログインの時に使用します。"
+            toolTipText='入力したメールアドレスは、ログインの時に使用します。'
             onChange={() => {
-              handleInputChange("mailaddress", "");
+              handleInputChange('mailaddress', '');
             }}
           />
-          {!formData?.temp_password_flag && mode == "update" && (
-            <div className="mt-auto">
+          {!formData?.temp_password_flag && mode == 'update' && (
+            <div className='mt-auto'>
               <CustomDialog
-                className="w-[120px]"
-                title="メールアドレスの変更"
-                buttonLabel="変更する"
+                className='w-[120px]'
+                title='メールアドレスの変更'
+                buttonLabel='変更する'
                 displayCancel={true}
-                confirmButtonLabel="変更"
+                confirmButtonLabel='変更'
                 // ダイアログ内で確認ボタンを押した時の処理
                 handleConfirm={() => {
                   const errorMessages = Validator.getErrorMessages([
-                    Validator.validateRequired(email, "メールアドレス"),
+                    Validator.validateRequired(email, 'メールアドレス'),
                     Validator.validateEmailFormat2(email),
                   ]);
                   setEmailErrorMessages(errorMessages);
                   const confEmailError = Validator.getErrorMessages([
-                    Validator.validateRequired(
-                      confirmEmail,
-                      "確認用にもう一度メールアドレス"
-                    ),
-                    Validator.validateEqual(
-                      email,
-                      confirmEmail,
-                      "メールアドレス"
-                    ),
+                    Validator.validateRequired(confirmEmail, '確認用にもう一度メールアドレス'),
+                    Validator.validateEqual(email, confirmEmail, 'メールアドレス'),
                   ]);
                   setEmailConfirmErrorMessages(confEmailError);
 
@@ -598,37 +559,37 @@ export default function UserInformationUpdate() {
                 // キャンセルボタンを押した時の処理
                 // ダイアログでの入力データを初期化する
                 handleCancel={() => {
-                  setConfirmEmail("");
-                  setEmail("");
+                  setConfirmEmail('');
+                  setEmail('');
                   setEmailErrorMessages([]);
                   setEmailConfirmErrorMessages([]);
                 }}
               >
                 {/* メールアドレス */}
-                <div className="flex flex-col justify-start gap-[10px] my-[24px]">
+                <div className='flex flex-col justify-start gap-[10px] my-[24px]'>
                   <CustomTextField
-                    label="メールアドレス"
+                    label='メールアドレス'
                     errorMessages={emailErrorMessages}
                     isError={emailErrorMessages.length > 0}
                     value={email}
                     required
                     displayHelp={false}
-                    placeHolder="メールアドレスを入力してください。"
-                    type="email"
+                    placeHolder='メールアドレスを入力してください。'
+                    type='email'
                     onChange={(e) => {
                       setEmail(e.target.value);
                     }}
                   />
                   {/* メールアドレス確認 */}
                   <CustomTextField
-                    label="メールアドレス確認 "
+                    label='メールアドレス確認 '
                     errorMessages={emailConfirmErrorMessages}
                     required
                     isError={emailConfirmErrorMessages.length > 0}
                     displayHelp={false}
                     value={confirmEmail}
-                    placeHolder="メールアドレスを入力してください。"
-                    type="email"
+                    placeHolder='メールアドレスを入力してください。'
+                    type='email'
                     onChange={(e) => {
                       setConfirmEmail(e.target.value);
                     }}
@@ -638,77 +599,64 @@ export default function UserInformationUpdate() {
             </div>
           )}
         </div>
-        <div className="flex flex-col justify-start gap-[10px]">
+        <div className='flex flex-col justify-start gap-[10px]'>
           {/* 性別 */}
           <CustomDropdown
-            id="性別"
-            label="性別"
-            required={mode === "update"}
-            value={
-              mode !== "confirm"
-                ? formData?.sex?.toString() || ""
-                : formData?.sexName
-            }
+            id='性別'
+            label='性別'
+            required={mode === 'update'}
+            value={mode !== 'confirm' ? formData?.sex?.toString() || '' : formData?.sexName}
             options={sex.map((item) => ({ key: item.id, value: item.name }))}
-            placeHolder="男性"
-            className="w-full"
-            readonly={mode === "confirm"}
+            placeHolder='男性'
+            className='w-full'
+            readonly={mode === 'confirm'}
             onChange={(e) => {
-              handleInputChange("sex", e);
-              handleInputChange(
-                "sexName",
-                sex.find((item) => item.id === Number(e))?.name || ""
-              );
+              handleInputChange('sex', e);
+              handleInputChange('sexName', sex.find((item) => item.id === Number(e))?.name || '');
             }}
             errorMessages={sexErrorMessages}
             isError={sexErrorMessages.length > 0}
           />
         </div>
-        <div className="flex flex-col justify-start gap-[10px]">
+        <div className='flex flex-col justify-start gap-[10px]'>
           {/* 生年月日 */}
           <InputLabel
-            label="生年月日"
-            displayHelp={mode === "update"}
-            toolTipText="西暦で入力してください。"
+            label='生年月日'
+            displayHelp={mode === 'update'}
+            toolTipText='西暦で入力してください。'
           />
           <CustomDatePicker
-            readonly={mode === "confirm"}
+            readonly={mode === 'confirm'}
             selectedDate={formData?.date_of_birth}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              handleInputChange(
-                "date_of_birth",
-                formatDate(e as unknown as Date)
-              );
+              handleInputChange('date_of_birth', formatDate(e as unknown as Date));
             }}
             maxDate={new Date()}
             errorMessages={dateOfBirthErrorMessages}
             isError={dateOfBirthErrorMessages.length > 0}
           />
         </div>
-        <div className="flex flex-col items-start sm:flex-row sm:justify-start gap-[16px]">
-          <div className="flex flex-col justify-start w-full">
+        <div className='flex flex-col items-start sm:flex-row sm:justify-start gap-[16px]'>
+          <div className='flex flex-col justify-start w-full'>
             {/* 居住地（国） */}
             <CustomDropdown
-              id="residenceCountry"
-              label="居住地"
-              className="w-full"
-              required={mode === "update"}
-              readonly={mode === "confirm"}
-              options={
-                countries.map((item) => ({ key: item.id, value: item.name })) ||
-                []
-              }
-              placeHolder="日本国 （jpn）"
+              id='residenceCountry'
+              label='居住地'
+              className='w-full'
+              required={mode === 'update'}
+              readonly={mode === 'confirm'}
+              options={countries.map((item) => ({ key: item.id, value: item.name })) || []}
+              placeHolder='日本国 （jpn）'
               value={
-                mode !== "confirm"
-                  ? formData?.residence_country?.toString() || ""
+                mode !== 'confirm'
+                  ? formData?.residence_country?.toString() || ''
                   : formData?.residenceCountryName
               }
               onChange={(e) => {
-                handleInputChange("residence_country", e);
+                handleInputChange('residence_country', e);
                 handleInputChange(
-                  "residenceCountryName",
-                  countries.find((item) => item.id === Number(e))?.name || ""
+                  'residenceCountryName',
+                  countries.find((item) => item.id === Number(e))?.name || '',
                 );
               }}
               errorMessages={livingCountryErrorMessages}
@@ -716,32 +664,26 @@ export default function UserInformationUpdate() {
             />
           </div>
           {/* 居住地（都道府県） */}
-          {formData?.residenceCountryName === "日本国 （jpn）" && (
-            <div className="flex flex-col justify-start w-full">
+          {formData?.residenceCountryName === '日本国 （jpn）' && (
+            <div className='flex flex-col justify-start w-full'>
               <CustomDropdown
-                id="residencePrefecture"
-                label="都道府県"
-                className="w-full"
-                required={mode === "update"}
-                readonly={mode === "confirm"}
-                options={
-                  prefectures.map((item) => ({
-                    key: item.id,
-                    value: item.name,
-                  })) || []
-                }
+                id='residencePrefecture'
+                label='都道府県'
+                className='w-full'
+                required={mode === 'update'}
+                readonly={mode === 'confirm'}
+                options={prefectures.map((item) => ({ key: item.id, value: item.name })) || []}
                 value={
-                  mode !== "confirm"
-                    ? formData?.residence_prefecture?.toString() || ""
+                  mode !== 'confirm'
+                    ? formData?.residence_prefecture?.toString() || ''
                     : formData?.residencePrefectureName
                 }
-                placeHolder="東京"
+                placeHolder='東京'
                 onChange={(e) => {
-                  handleInputChange("residence_prefecture", e);
+                  handleInputChange('residence_prefecture', e);
                   handleInputChange(
-                    "residencePrefectureName",
-                    prefectures.find((item) => item.id === Number(e))?.name ||
-                      ""
+                    'residencePrefectureName',
+                    prefectures.find((item) => item.id === Number(e))?.name || '',
                   );
                 }}
                 errorMessages={livingPrefectureErrorMessages}
@@ -763,9 +705,9 @@ export default function UserInformationUpdate() {
               受信したメールに記載されているコードを入力してください。
             </DialogContentText>
             <CustomTextField
-              label="認証番号"
-              placeHolder="6桁のコードを入力"
-              type="number"
+              label='認証番号'
+              placeHolder='6桁のコードを入力'
+              type='number'
               value={authNumber}
               onChange={(e) => {
                 setAuthNumber(e.target.value);
@@ -775,37 +717,37 @@ export default function UserInformationUpdate() {
           </DialogContent>
           <DialogActions>
             <CustomButton
-              buttonType="white-outlined"
-              className="w-full"
+              buttonType='white-outlined'
+              className='w-full'
               onClick={() => {
                 setIsAuthDialogOpen(false);
-                setAuthNumber("");
+                setAuthNumber('');
                 setErrorMessage([]);
               }}
             >
               キャンセル
             </CustomButton>
             <CustomButton
-              buttonType="primary"
-              className="w-[200px]"
+              buttonType='primary'
+              className='w-[200px]'
               onClick={async () => {
                 // 認証処理。認証番号が入力されていない場合はバリデーションエラーを表示する。
                 if (!authNumber) {
-                  setErrorMessage(["認証番号を入力してください。"]);
+                  setErrorMessage(['認証番号を入力してください。']);
                   // setIsAuthDialogOpen(false);
                   return;
                 }
 
-                const csrf = () => axios.get("/sanctum/csrf-cookie");
+                const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
 
                 axios
-                  .post("/user/verify-certification-number", {
+                  .post('/user/verify-certification-number', {
                     certification_number: authNumber,
                   })
                   .then((response) => {
                     setIsNumberVerified(true);
-                    setAuthNumber("");
+                    setAuthNumber('');
                     setErrorMessage([]);
                     setIsAuthDialogOpen(false);
                     window.alert(response?.data);
@@ -862,46 +804,46 @@ export default function UserInformationUpdate() {
             </CustomButton>
           </DialogActions>
         </Dialog>
-        <div className="flex flex-col sm:flex-row sm:justify-start gap-[16px] w-full">
+        <div className='flex flex-col sm:flex-row sm:justify-start gap-[16px] w-full'>
           {/* 身長 */}
           <CustomTextField
-            label="身長"
-            type="number"
-            readonly={mode === "confirm"}
+            label='身長'
+            type='number'
+            readonly={mode === 'confirm'}
             required={false}
             isDecimal={true}
             value={formData.height.toString()}
-            placeHolder="180"
+            placeHolder='180'
             onChange={(e) => {
-              handleInputChange("height", e.target.value);
+              handleInputChange('height', e.target.value);
             }}
-            displayHelp={mode === "update"}
-            inputAdorment="cm"
-            toolTipText="半角数字で入力してください。"
+            displayHelp={mode === 'update'}
+            inputAdorment='cm'
+            toolTipText='半角数字で入力してください。'
           />
           {/* 体重 */}
           <CustomTextField
-            label="体重"
-            type="number"
+            label='体重'
+            type='number'
             isDecimal={true}
-            readonly={mode === "confirm"}
+            readonly={mode === 'confirm'}
             required={false}
             value={formData?.weight.toString()}
             onChange={(e) => {
-              handleInputChange("weight", e.target.value);
+              handleInputChange('weight', e.target.value);
             }}
-            placeHolder="80"
-            displayHelp={mode === "update"}
-            toolTipText="半角数字で入力してください。"
-            inputAdorment="kg"
+            placeHolder='80'
+            displayHelp={mode === 'update'}
+            toolTipText='半角数字で入力してください。'
+            inputAdorment='kg'
           />
         </div>
       </div>
-      <Divider className="h-[1px] bg-border" />
-      <div className="flex flex-col items-center sm:flex-row sm:justify-center gap-[16px]">
+      <Divider className='h-[1px] bg-border' />
+      <div className='flex flex-col items-center sm:flex-row sm:justify-center gap-[16px]'>
         {/* 戻るボタン */}
         <CustomButton
-          buttonType="white-outlined"
+          buttonType='white-outlined'
           onClick={() => {
             setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
             setErrorMessage([]);
