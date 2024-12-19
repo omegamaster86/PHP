@@ -6,7 +6,7 @@ import axios from '@/app/lib/axios';
 import {
   Organization,
   PlayerInformationResponse,
-  Staff,
+  StaffRef,
   TeamResponse,
   Tournament,
   UserIdType,
@@ -28,7 +28,7 @@ export default function TeamRef() {
   const [entTournaments, setEntTournaments] = useState([] as Tournament[]);
   const [players, setPlayers] = useState([] as PlayerInformationResponse[]);
   const [userData, setUserData] = useState({} as UserResponse);
-  const [staffs, setStaffs] = useState([] as Staff[]);
+  const [staffs, setStaffs] = useState([] as StaffRef[]);
   const [value, setValue] = useState(0);
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
   const [teamdata, setTeamdata] = useState([] as TeamResponse[]); //該当ユーザが管理する団体情報の取得 20240415
@@ -152,7 +152,7 @@ export default function TeamRef() {
         setUserData(userDataResponse.data);
 
         // 所属スタッフ
-        // const staffsResponse = await axios.get<Staff[]>('/staff');
+        // const staffsResponse = await axios.get<StaffRef[]>('/staff');
         const staffsResponse = await axios.post('/getOrgStaffData', org_id); //スタッフ情報取得
         //console.log(staffsResponse.data.result);
         setStaffs(staffsResponse.data.result);
