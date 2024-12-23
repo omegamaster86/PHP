@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 import { Divider } from '@mui/material';
 import { CoachRefereeRefResponse } from '@/app/types';
-
+import { formatDate } from '@/app/utils/dateUtil';
 import {
   CustomButton,
   CustomTitle,
@@ -55,8 +55,7 @@ export default function CoachRefereeRef() {
         <div className='flex items-center gap-2'>
           {Number(user.user_id) === userId && (
             <TitleSideButton
-              // FIXME リンク先のURLを修正する
-              href='/user-information-edit'
+              href='/coachReferee?mode=update'
               icon={EditIcon}
               text='指導者・審判情報更新'
             />
@@ -84,7 +83,7 @@ export default function CoachRefereeRef() {
                 {data.result.coachingHistories.map((history) => (
                   <CustomTr key={history.orgCoachingHistoryId}>
                     <CustomTd>
-                      <span>{history.startDate}</span>
+                      <span>{formatDate(history.startDate, 'yyyy/MM/dd')} ~ {formatDate(history.endDate, 'yyyy/MM/dd')}</span>
                     </CustomTd>
                     <CustomTd>
                       <span>{history.orgName}</span>

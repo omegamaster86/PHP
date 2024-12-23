@@ -1,6 +1,6 @@
 'use client';
 
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 import { CustomButton, CustomTextField, CustomTitle, ErrorBox, InputLabel } from '@/app/components';
 import {
   ICoachQualification,
@@ -12,7 +12,7 @@ import {
 import CoachingHistory from './CoachingHistory';
 import CoachQualification from './CoachQualification';
 import RefereeQualification from './RefereeQualification';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Divider } from '@mui/material';
 import { setSessionStorage } from '@/app/utils/sessionStorage';
 import useSWR from 'swr';
@@ -36,6 +36,8 @@ const UpdateView: React.FC<UpdateViewProps> = ({
   parsedData,
 }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const source = searchParams.get('source') as 'confirm' | null;
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const { data: coachRefereeInfoListRes } = useSWR(
     {
@@ -48,7 +50,7 @@ const UpdateView: React.FC<UpdateViewProps> = ({
     ...coachRefereeInfoListRes.result,
     coachingHistories: coachRefereeInfoListRes.result.coachingHistories.map((history) => ({
       ...history,
-      isCurrentlyCoaching: history.endDate === null,
+      isEndDateUndefined: history.endDate === null,
       isDeleted: false,
     })),
     coachQualifications: coachRefereeInfoListRes.result.coachQualifications.map(
@@ -66,17 +68,15 @@ const UpdateView: React.FC<UpdateViewProps> = ({
   };
 
   const [fetchData, setFetchData] = useState<CoachRefereeResponse>({
-    jspoId: parsedData?.jspoId || coachRefereeInfoList.jspoId,
-    coachingHistories: parsedData?.coachingHistories || coachRefereeInfoList.coachingHistories,
-    coachQualifications:
-      parsedData?.coachQualifications || coachRefereeInfoList.coachQualifications,
-    refereeQualifications:
-      parsedData?.refereeQualifications || coachRefereeInfoList.refereeQualifications,
+    jspoId: coachRefereeInfoList.jspoId,
+    coachingHistories: coachRefereeInfoList.coachingHistories,
+    coachQualifications: coachRefereeInfoList.coachQualifications,
+    refereeQualifications: coachRefereeInfoList.refereeQualifications,
   });
   const handleCoachingHistoryChange = (
     index: number,
     field: string,
-    value: string | number | boolean,
+    value: string | number | boolean | null,
   ) => {
     setFetchData((prevData) => {
       const updatedHistory = prevData.coachingHistories.map((history, i) =>
@@ -92,7 +92,7 @@ const UpdateView: React.FC<UpdateViewProps> = ({
   const handleUpdatedQualificationsChange = (
     index: number,
     field: string,
-    value: string | number | boolean,
+    value: string | number | boolean | null,
   ) => {
     setFetchData((prevData) => {
       const updatedQualifications = prevData.coachQualifications.map((qualification, i) =>
@@ -108,7 +108,7 @@ const UpdateView: React.FC<UpdateViewProps> = ({
   const handleUpdatedRefereeQualificationsChange = (
     index: number,
     field: string,
-    value: string | number | boolean,
+    value: string | number | boolean | null,
   ) => {
     setFetchData((prevData) => {
       const updatedRefereeQualifications = prevData.refereeQualifications.map((qualification, i) =>
@@ -130,7 +130,7 @@ const UpdateView: React.FC<UpdateViewProps> = ({
       orgCoachingHistoryId: 0,
       isNewRow: true,
       isDeleted: false,
-      isCurrentlyCoaching: false,
+      isEndDateUndefined: false,
     };
     setFetchData((prevData) => ({
       ...prevData,
@@ -168,6 +168,30 @@ const UpdateView: React.FC<UpdateViewProps> = ({
     }));
   };
 
+  useEffect(() => {
+    if (!parsedData) {
+      return;
+    }
+  
+    if (source === 'confirm') {
+      setFetchData(parsedData);
+      return;
+    }
+  
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        if (parsedData) {
+          const ok = confirm('編集中の入力内容があります。復元しますか？');
+          if (ok) {
+            setFetchData(parsedData);
+          }
+        }
+      }, 0);
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -181,7 +205,7 @@ const UpdateView: React.FC<UpdateViewProps> = ({
         errors.push(`指導履歴 ${index + 1}番目の開始日を入力してください。`);
       }
       if (history.orgId <= 0) {
-        errors.push(`指導履歴 ${index + 1}番目の団体を選択してください。`);
+        errors.push(`指導履歴 ${index + 1}番目の団体名を選択してください。`);
       }
       if (history.staffTypeId <= 0) {
         errors.push(`指導履歴 ${index + 1}番目のスタッフ種別を選択してください。`);
@@ -190,14 +214,16 @@ const UpdateView: React.FC<UpdateViewProps> = ({
 
     fetchData.coachQualifications.forEach((qualification, index) => {
       if (qualification.coachQualificationId <= 0) {
-        errors.push(`指導者資格 ${index + 1}番目の資格を選択してください。`);
+        errors.push(`指導者資格${index + 1}番目の資格名を選択してください。`);
       }
       if (!qualification.acquisitionDate) {
-        errors.push(`指導者資格 ${index + 1}番目の取得日を入力してください。`);
+        errors.push(`指導者資格${index + 1}番目の取得日を入力してください。`);
       }
 
-      if (!coachDuplicateIds.add(qualification.coachQualificationId)) {
-        errors.push(`指導者資格の中で重複している資格があります。`);
+      if (coachDuplicateIds.has(qualification.coachQualificationId)) {
+        errors.push(`指導者資格名の中で重複している資格があります。`);
+      } else {
+        coachDuplicateIds.add(qualification.coachQualificationId);
       }
     });
 
@@ -207,14 +233,16 @@ const UpdateView: React.FC<UpdateViewProps> = ({
 
     fetchData.refereeQualifications.forEach((qualification, index) => {
       if (qualification.refereeQualificationId <= 0) {
-        errors.push(`審判資格 ${index + 1}番目の資格を選択してください。`);
+        errors.push(`審判資格${index + 1}番目の資格名を選択してください。`);
       }
       if (!qualification.acquisitionDate) {
-        errors.push(`審判資格 ${index + 1}番目の取得日を入力してください。`);
+        errors.push(`審判資格${index + 1}番目の取得日を入力してください。`);
       }
 
-      if (!refereeDuplicateIds.add(qualification.refereeQualificationId)) {
-        errors.push(`審判資格の中で重複している資格があります。`);
+      if (refereeDuplicateIds.has(qualification.refereeQualificationId)) {
+        errors.push(`審判資格名の中で重複している資格があります。`);
+      } else {
+        refereeDuplicateIds.add(qualification.refereeQualificationId);
       }
     });
 

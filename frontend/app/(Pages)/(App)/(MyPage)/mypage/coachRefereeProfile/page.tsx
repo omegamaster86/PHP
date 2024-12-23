@@ -32,18 +32,18 @@ type Qualification = {
 
 const QualificationItem: React.FC<{ item: Qualification }> = ({ item }) => {
   const expiryDate = item.expiryDate ? new Date(item.expiryDate) : null;
-  
+
   const isWithinTwoMonths = (expiryDate: Date): boolean => {
     const today = new Date();
     const twoMonthsBeforeExpiry = addMonths(expiryDate, -2);
     return isAfter(today, twoMonthsBeforeExpiry) || isEqual(today, twoMonthsBeforeExpiry);
   };
-  
+
   const qualificationToolTipText = (item: Qualification): string => {
     if (!item.expiryDate) return '無期限で有効です。';
     return `有効期限は ${formatDate(item.expiryDate, 'yyyy/MM/dd')} です。`;
   };
-  
+
   const toolTipText = qualificationToolTipText(item);
 
   return (
@@ -61,11 +61,7 @@ const QualificationItem: React.FC<{ item: Qualification }> = ({ item }) => {
 export default function CoachRefereeProfile() {
   const router = useRouter();
   const EditButton = (
-    <TitleSideButton
-      href='/coachReferee?mode=update'
-      icon={EditIcon}
-      text='編集'
-    />
+    <TitleSideButton href='/coachReferee?mode=update' icon={EditIcon} text='編集' />
   );
 
   const { data } = useSWR(
@@ -125,7 +121,7 @@ export default function CoachRefereeProfile() {
                   <CustomTr key={history.orgCoachingHistoryId}>
                     <CustomTd>
                       <span>
-                        {history.startDate}~{history.endDate || '現在'}
+                        {formatDate(history.startDate, 'yyyy/MM/dd')} ~ {formatDate(history.endDate, 'yyyy/MM/dd') || '現在'}
                       </span>
                     </CustomTd>
                     <CustomTd>

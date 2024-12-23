@@ -69,11 +69,11 @@ class T_organization_staff extends Model
                                     left join `t_users` `user`
                                     on `staff`.`user_id` = `user`.`user_id`
 									left join `t_held_coach_qualifications` `held_coach_qual`
-									on `user`.`user_id` = `held_coach_qual`.`user_id` and `held_coach_qual`.`delete_flag` = 0
+									on `user`.`user_id` = `held_coach_qual`.`user_id` and `held_coach_qual`.`delete_flag` = 0 and `held_coach_qual`.`expiry_date` >= CURDATE()
                                     left join `m_coach_qualifications` `coach_qual`
 									on `held_coach_qual`.`coach_qualification_id` = `coach_qual`.`coach_qualification_id` and `coach_qual`.`delete_flag` = 0
                                     left join `t_held_referee_qualifications` `held_referee_qual`
-									on `user`.`user_id` = `held_referee_qual`.`user_id` and `held_referee_qual`.`delete_flag` = 0
+									on `user`.`user_id` = `held_referee_qual`.`user_id` and `held_referee_qual`.`delete_flag` = 0 and `held_referee_qual`.`expiry_date` >= CURDATE()
                                     left join `m_referee_qualifications` `referee_qual`
 									on `held_referee_qual`.`referee_qualification_id` = `referee_qual`.`referee_qualification_id` and `referee_qual`.`delete_flag` = 0
                                     where `staff`.`delete_flag` = 0

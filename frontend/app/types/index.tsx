@@ -335,7 +335,7 @@ interface MyPageCoachRefereeResponse {
 interface CoachRefereeResponse {
   jspoId: number;
   coachingHistories: (CoachingHistory & {
-    isCurrentlyCoaching: boolean;
+    isEndDateUndefined: boolean;
   })[];
   coachQualifications: ICoachQualification[];
   refereeQualifications: IRefereeQualification[];
