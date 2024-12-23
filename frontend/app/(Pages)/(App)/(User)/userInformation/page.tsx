@@ -423,7 +423,6 @@ export default function UserInformationUpdate() {
     const d = ('00' + dt.getDate()).slice(-2);
     return y + '/' + m + '/' + d;
   };
-
   // モードが不正の時にエラー画面を表示する
   if (paramError) {
     return <div>ページが見つかりません</div>;

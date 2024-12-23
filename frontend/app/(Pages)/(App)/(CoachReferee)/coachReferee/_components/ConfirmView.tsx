@@ -58,13 +58,17 @@ const ConfirmView: React.FC<Props> = ({
     };
 
     await resisterMutation.trigger({ reqFormData: reqData });
-    alert('データが送信されました');
-    router.push('/coachRefereeRef')
+    alert('指導者・審判情報を更新しました。');
+    router.push('/mypage/coachRefereeProfile');
   };
+
+  const handleGoBack = () => {
+    router.push('/coachReferee?mode=update&source=confirm')
+  }
 
   return (
     <>
-      <CustomTitle displayBack>指導者・審判情報確認</CustomTitle>
+      <CustomTitle customBack={handleGoBack}>指導者・審判情報確認</CustomTitle>
       <form onSubmit={handleSubmit} className='flex flex-col gap-5'>
         <ConfirmCoachingHistory
           parsedData={parsedData}
@@ -83,6 +87,7 @@ const ConfirmView: React.FC<Props> = ({
         <div className='flex flex-col gap-4 items-center justify-center md:flex-row'>
           <CustomButton
             buttonType='white-outlined'
+            onClick={handleGoBack}
           >
             戻る
           </CustomButton>

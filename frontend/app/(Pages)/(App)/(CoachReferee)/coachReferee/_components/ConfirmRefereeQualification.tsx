@@ -1,6 +1,7 @@
 import React from 'react';
 import { IRefereeQualification, CoachRefereeResponse, SelectOption } from '@/app/types';
 import { formatDate } from '@/app/utils/dateUtil';
+import { OriginalCheckbox } from '@/app/components';
 
 interface Props {
   refereeQualificationOptions: SelectOption<number>[];
@@ -27,15 +28,17 @@ const ConfirmRefereeQualification: React.FC<Props> = ({ refereeQualificationOpti
               <th>資格名</th>
               <th>取得日</th>
               <th>有効期限</th>
+              <th>削除</th>
             </tr>
           </thead>
           <tbody className='[&_td]:pt-2 [&_td]:pr-2 [&_td]:text-xs md:[&_td]:text-sm [&_td]:font-normal [&_td]:max-w-[50px] [&_td]:text-ellipsis [&_td]:overflow-hidden'>
             {refereeQualifications.map(
-              (qualification: IRefereeQualification) => (
+              (qualification: IRefereeQualification, index: number) => (
                 <tr key={qualification.heldRefereeQualificationId}>
                   <td>{qualificationOptions[qualification.refereeQualificationId]}</td>
                   <td>{formatDate(qualification.acquisitionDate, 'yyyy/MM/dd')}</td>
                   <td>{formatDate(qualification.expiryDate, 'yyyy/MM/dd')}</td>
+                  <td><OriginalCheckbox id={`delete_refereeQualification${index + 1}`} value='削除' checked={qualification.isDeleted} readonly onChange={()=> {}}/></td>
                 </tr>
               ),
             )}

@@ -6,7 +6,7 @@ import { CoachRefereeResponse, SelectOption } from '@/app/types';
 interface Props {
   coachingHistory: CoachRefereeResponse['coachingHistories'][number];
   index: number;
-  handleInputChange: (index: number, field: string, value: string | number | boolean) => void;
+  handleInputChange: (index: number, field: string, value: string | number | boolean | null) => void;
   organizationOptions: { org_id: number; org_name: string }[];
   staffOptions: SelectOption[];
 }
@@ -47,6 +47,8 @@ const CoachingHistory: React.FC<Props> = ({
             if (date) {
               const formattedDate = formatDate(date.toISOString(), 'yyyy/MM/dd');
               handleInputChange(index, 'startDate', formattedDate);
+            } else {
+              handleInputChange(index, 'startDate', null);
             }
           }}
         />
@@ -54,29 +56,31 @@ const CoachingHistory: React.FC<Props> = ({
       <div className='flex flex-col gap-2'>
         {index === 0 && (
           <div className='hidden md:block'>
-            <InputLabel label='終了日' required displayHelp />
+            <InputLabel label='終了日' displayHelp />
           </div>
         )}
         <div className='md:hidden'>
-          <InputLabel label='終了日' required displayHelp />
+          <InputLabel label='終了日' displayHelp />
         </div>
         <CustomDatePicker
           selectedDate={coachingHistory.endDate}
-          disabled={coachingHistory.isCurrentlyCoaching}
+          disabled={coachingHistory.isEndDateUndefined}
           onChange={(date: Date | null) => {
             if (date) {
               const formattedDate = formatDate(date.toISOString(), 'yyyy/MM/dd');
               handleInputChange(index, 'endDate', formattedDate);
+            } else {
+              handleInputChange(index, 'endDate', null);
             }
           }}
         />
         <OriginalCheckbox
-          id={`currently_coaching_${index + 1}`}
-          label='現在指導中'
-          value='現在指導中'
-          checked={coachingHistory.isCurrentlyCoaching}
+          id={`isEndDateUndefined_${index + 1}`}
+          label='終了日未定'
+          value='終了日未定'
+          checked={coachingHistory.isEndDateUndefined}
           onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            handleInputChange(index, 'isCurrentlyCoaching', event.target.checked);
+            handleInputChange(index, 'isEndDateUndefined', event.target.checked);
           }}
         />
       </div>
