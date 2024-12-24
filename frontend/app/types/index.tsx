@@ -7,16 +7,31 @@ interface CountryResponse {
   cd: string;
 }
 
+interface Country {
+  country_id: number;
+  country_name: string;
+}
+
 // Jsonの型定義
 interface PrefectureResponse {
   id: number;
   name: string;
 }
 
+interface Prefecture {
+  pref_id: number;
+  pref_name: string;
+}
+
 // Jsonの型定義
 interface SexResponse {
   id: number;
   name: string;
+}
+
+interface Sex {
+  sex_id: number;
+  sex: string;
 }
 
 // 出漕結果情報一覧
@@ -795,6 +810,7 @@ export type {
   CoachingHistory,
   CoachRefereeRefResponse,
   CoachRefereeResponse,
+  Country,
   CountryResponse,
   CreateNotificationRequest,
   CrewPlayer,
@@ -825,6 +841,7 @@ export type {
   OrgType,
   Player,
   PlayerInformationResponse,
+  Prefecture,
   PrefectureResponse,
   QualHoldResponse,
   Race,
@@ -832,6 +849,7 @@ export type {
   RaceTable,
   RaceType,
   RaceTypeResponse,
+  Sex,
   SexResponse,
   Staff,
   StaffRef,
