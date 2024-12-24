@@ -1,28 +1,39 @@
 // 機能名: 選手情報登録・更新・入力確認
 'use client';
-import { PLAYER_IMAGE_URL, NO_IMAGE_URL } from '../../../../utils/imageUrl'; //For importing image url from a single source of truth
-import { useEffect, useState, ChangeEvent } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import {
+  CustomButton,
+  CustomDatePicker,
+  CustomDropdown,
+  CustomTextField,
+  CustomTitle,
+  ErrorBox,
+  ImageUploader,
+  InputLabel,
+  OriginalCheckbox,
+} from '@/app/components';
 import axios from '@/app/lib/axios';
 import {
-  CustomDropdown,
-  CustomDatePicker,
-  OriginalCheckbox,
-  CustomButton,
-  CustomTextField,
-  InputLabel,
-  ErrorBox,
-  CustomTitle,
-  ImageUploader,
-} from '@/app/components';
-import Validator from '@/app/utils/validator';
-import {
+  Country,
   CountryResponse,
-  PrefectureResponse,
-  SexResponse,
   PlayerInformationResponse,
+  Prefecture,
+  PrefectureResponse,
+  Sex,
+  SexResponse,
 } from '@/app/types';
+import {
+  getSessionStorage,
+  getStorageKey,
+  removeSessionStorage,
+  setSessionStorage,
+} from '@/app/utils/sessionStorage';
+import Validator from '@/app/utils/validator';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { NO_IMAGE_URL, PLAYER_IMAGE_URL } from '../../../../utils/imageUrl'; //For importing image url from a single source of truth
+
+type PlayerFormData = PlayerInformationResponse;
 
 export default function PlayerInformation() {
   const router = useRouter();
@@ -55,10 +66,14 @@ export default function PlayerInformation() {
       break;
   }
 
+  const source = searchParams.get('source') as 'confirm' | null;
+
   // クエリパラメータを取得する
-  const playerId = searchParams.get('player_id')?.toString() || '';
-  const player_id = { player_id: playerId };
-  switch (playerId) {
+  const playerIdParams = searchParams.get('player_id')?.toString() || '';
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const playerId = useMemo(() => Number(playerIdParams), []);
+  const player_id = { player_id: playerIdParams };
+  switch (playerIdParams) {
     case '':
       break;
     default:
@@ -85,7 +100,7 @@ export default function PlayerInformation() {
     return y + '/' + m + '/' + d;
   };
 
-  const [formData, setFormData] = useState<PlayerInformationResponse>({
+  const [formData, setFormData] = useState<PlayerFormData>({
     player_id: 0,
     jara_player_id: '',
     player_name: '',
@@ -123,7 +138,7 @@ export default function PlayerInformation() {
     [] as string[],
   );
   const [sideInfoErrorMessage, setSideInfoErrorMessage] = useState([] as string[]);
-  const [countries, setCountries] = useState<CountryResponse[]>([]);
+  const [countries, setCountries] = useState<Omit<CountryResponse, 'cd'>[]>([]);
   const [prefectures, setPrefectures] = useState<PrefectureResponse[]>([]);
   const [sex, setSex] = useState<SexResponse[]>([]);
   const [currentShowFile, setCurrentShowFile] = useState<{
@@ -133,7 +148,20 @@ export default function PlayerInformation() {
   }>();
   const [errorMessage, setErrorMessage] = useState([] as string[]);
 
-  const [backKeyFlag, setBackKeyFlag] = useState<boolean>(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+  const storageKey =
+    mode === 'update'
+      ? getStorageKey({ pageName: 'player', type: 'update', id: playerId })
+      : getStorageKey({ pageName: 'player', type: 'create' });
+
+  const draftFormData = getSessionStorage<PlayerFormData>(storageKey);
+
+  const removeDraftFormData = () => {
+    const storageKeyOnConfirmPage =
+      prevMode === 'update'
+        ? getStorageKey({ pageName: 'player', type: 'update', id: playerId })
+        : getStorageKey({ pageName: 'player', type: 'create' });
+    removeSessionStorage(storageKeyOnConfirmPage);
+  };
 
   // 選手情報登録・更新・入力確認画面の「出身地（国）」が「日本」の場合、「出身地（都道府県）」を「東京」で設定する
   useEffect(() => {
@@ -178,74 +206,78 @@ export default function PlayerInformation() {
         photo: '',
       }));
     }
-  }, [currentShowFile]); //ファイルのアップロード終わったら
+  }, [currentShowFile]);
   //アップロードされたファイルを保存するー完了
 
   // 更新モードの時に、選手情報を取得する
   useEffect(() => {
+    const restoreFormData = () => {
+      // draftFormDataが存在しない場合は復元しない
+      if (!draftFormData || mode === 'confirm') {
+        return;
+      }
+
+      // 確認画面から戻ってきた場合は、draftFormDataを適用する
+      if (source === 'confirm') {
+        setFormData(draftFormData);
+        return;
+      }
+
+      if (mode === 'update') {
+        const ok = confirm('編集中の入力内容があります。復元しますか？');
+        if (!ok) {
+          return;
+        }
+      }
+
+      setFormData(draftFormData);
+    };
+
     const fetchPrefecture = async () => {
-      // 仮のURL（繋ぎ込み時に変更すること）
       try {
-        // TODO: 都道府県情報の取得処理を実装
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         axios
-          //20240123 DBからデータ取得
-          // .get<PrefectureResponse[]>('http://localhost:3100/prefecture')
-          .get('/getPrefecures')
+          .get<Prefecture[]>('/getPrefecures')
           .then((response) => {
-            const stateList = response.data.map(
-              ({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({
-                id: pref_id,
-                name: pref_name,
-              }),
-            );
-            //console.log(stateList);
+            const stateList = response.data.map((x) => ({
+              id: x.pref_id,
+              name: x.pref_name,
+            }));
             setPrefectures(stateList);
-            // setPrefectures(response.data);
           })
           .catch((error) => {
-            // TODO: 個別エラー処理を実装
             setErrorMessage([
               ...(errorMessage as string[]),
               'API取得エラー:' + (error as Error).message,
             ]);
           });
-        // TODO: 性別の取得処理を実装
+
         axios
-          // .get<SexResponse[]>('http://localhost:3100/sex')
-          .get('/getSexList') //20240123 DBからデータ取得
+          .get<Sex[]>('/getSexList')
           .then((response) => {
-            //console.log(response.data);
-            const sexList = response.data.map(
-              ({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }),
-            );
+            const sexList = response.data.map((x) => ({
+              id: x.sex_id,
+              name: x.sex,
+            }));
             setSex(sexList);
           })
           .catch((error) => {
-            // TODO: 個別エラー処理を実装
             setErrorMessage([
               ...(errorMessage as string[]),
               'API取得エラー:' + (error as Error).message,
             ]);
           });
-        // TODO: 国の取得処理を実装
         axios
-          //20240123 DBからデータ取得
-          // .get<CountryResponse[]>('http://localhost:3100/countries')
-          .get('/getCountries')
+          .get<Country[]>('/getCountries')
           .then((response) => {
-            const countryList = response.data.map(
-              ({ country_id, country_name }: { country_id: number; country_name: string }) => ({
-                id: country_id,
-                name: country_name,
-              }),
-            );
+            const countryList = response.data.map((x) => ({
+              id: x.country_id,
+              name: x.country_name,
+            }));
             setCountries(countryList);
-            // setCountries(response.data);
           })
           .catch((error) => {
-            // TODO: 個別エラー処理を実装
             setErrorMessage([
               ...(errorMessage as string[]),
               'API取得エラー:' + (error as Error).message,
@@ -260,19 +292,13 @@ export default function PlayerInformation() {
     };
     fetchPrefecture();
 
-    //console.log(backKeyFlag);
-    if (mode === 'update' && !backKeyFlag) {
-      //console.log(formData.residencePrefectureName);
-      // TODO: 選手情報を取得する処理を実装
-      // searchParams.get('id')から選手IDを取得
+    if (mode === 'update') {
       const fetchPlayerData = async () => {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         axios
-          // .get<PlayerInformationResponse>('http://localhost:3100/player')
           .post('/getUpdatePlayerData', player_id)
           .then(async (response) => {
-            //console.log(response.data);
             //サイド情報のデータ変換
             var data = response.data.result.side_info.split('');
             data.splice(0, 4); //サイド情報の先頭４つ分の不要なデータを削除
@@ -313,18 +339,18 @@ export default function PlayerInformation() {
                 previousPhotoName: response.data.result.photo, //写真
               },
             }));
+
+            restoreFormData();
           })
           .catch((error) => {
-            // TODO: エラー処理を実装
             setErrorMessage([
               ...(errorMessage as string[]),
               'API取得エラー:' + (error as Error).message,
             ]);
           });
       };
-      fetchPlayerData(); // APIを叩いて、選手情報を取得する
-      //console.log(formData.birthPrefectureName);
-    } else if (mode === 'create' && !backKeyFlag) {
+      fetchPlayerData();
+    } else if (mode === 'create') {
       setFormData((prevFormData) => ({
         ...prevFormData,
         ...{
@@ -348,9 +374,9 @@ export default function PlayerInformation() {
           photo: '',
         },
       }));
+
+      restoreFormData();
     }
-    setBackKeyFlag(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
-    //console.log(backKeyFlag);
   }, [mode]);
 
   /**
@@ -409,7 +435,6 @@ export default function PlayerInformation() {
         ? Validator.validateSelectRequired(formData.birthPrefectureName, '出身地（都道府県）')
         : '',
     ]);
-    //console.log(birthPlacePrefectureError);
 
     // 居住地（国）の入力チェック
     const residenceCountryNameError = Validator.getErrorMessages([
@@ -422,7 +447,6 @@ export default function PlayerInformation() {
         ? Validator.validateSelectRequired(formData.residencePrefectureName, '居住地（都道府県）')
         : '',
     ]);
-    //console.log(livingPrefectureError);
 
     // エラーメッセージを設定
     setJaraPlayerCodeErrorMessage(jaraPlayerCodeError);
@@ -467,16 +491,13 @@ export default function PlayerInformation() {
           if (isError) {
             return;
           }
-          // jara_player_id登録されているかどうかチェック
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
           axios
-            // .post('http://localhost:3100/', registerData)
             .post('/checkJARAPlayerId', { jara_player_id: formData.jara_player_id, mode: 'create' })
             .then((response) => {
-              // TODO: 更新処理成功時の処理
-              //console.log(response);
               setErrorMessage([]);
+              setSessionStorage<PlayerFormData>(storageKey, formData);
               // OK が押下された場合、確認画面に遷移する　※短絡評価
               // window.confirm('入力したJARA選手コードと紐づくデータが存在しません。\nこのJARA選手コードで登録しますか？') && router.push('/playerInformation?mode=confirm&prevMode=create');
               // window.alert('入力したJARA選手コードと紐づくデータが存在しません。\nこのJARA選手コードで登録しますか？');
@@ -484,13 +505,11 @@ export default function PlayerInformation() {
                 // OK が押下された場合、確認画面に遷移する　※短絡評価
                 window.confirm(response?.data) &&
                   router.push('/playerInformation?mode=confirm&prevMode=create');
-                // window.alert(response?.data);
               } else {
                 router.push('/playerInformation?mode=confirm&prevMode=create');
               }
             })
             .catch((error) => {
-              // TODO: 更新処理失敗時の処理
               setErrorMessage([...(error?.response?.data as string[])]);
             });
         }}
@@ -510,23 +529,19 @@ export default function PlayerInformation() {
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
           axios
-            // .post('http://localhost:3100/', registerData)
             .post('/checkJARAPlayerId', { jara_player_id: formData.jara_player_id, mode: 'update' })
             .then((response) => {
-              // TODO: 更新処理成功時の処理
-              //console.log(response);
               setErrorMessage([]);
+              setSessionStorage<PlayerFormData>(storageKey, formData);
               if (response?.data != '') {
                 // OK が押下された場合、確認画面に遷移する　※短絡評価
                 window.confirm(response?.data) &&
                   router.push('/playerInformation?mode=confirm&prevMode=update');
-                // window.alert(response?.data);
               } else {
                 router.push('/playerInformation?mode=confirm&prevMode=update');
               }
             })
             .catch((error) => {
-              // TODO: 更新処理失敗時の処理
               setErrorMessage([...(error?.response?.data as string[])]);
             });
         }}
@@ -540,12 +555,10 @@ export default function PlayerInformation() {
         onClick={async () => {
           //確認画面で更新処理（F5,リロードボタン）された場合、formDataの値が空になるのでバックエンドに送信させないようにする 20240402
           if (formData.player_name == null || formData.player_name == '') {
-            setErrorMessage([...('データが空です。もう一度必須項目を入力してください' as string)]);
+            setErrorMessage(['データが空です。もう一度必須項目を入力してください']);
             return;
           }
           if (prevMode == 'update') {
-            // TODO: 更新処理を実装
-            const registerData = {};
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
 
@@ -554,10 +567,8 @@ export default function PlayerInformation() {
               .post('/checkJARAPlayerId', {
                 jara_player_id: formData.jara_player_id,
                 mode: 'update_confirm',
-              }) //20240123 送信テスト
+              })
               .then((response) => {
-                // TODO: 更新処理成功時の処理
-                //console.log(response);
                 if (formData.birth_country != 112) {
                   //出身地が日本以外の場合、都道府県に関連したデータを削除する
                   formData.birth_prefecture = 0;
@@ -575,7 +586,6 @@ export default function PlayerInformation() {
                 }
                 formData.side_info = tmpArray;
                 formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
-                //console.log(formData);
 
                 //nullのパラメータを空のパラメータに置き換える
                 Object.keys(formData).forEach((key) => {
@@ -583,20 +593,18 @@ export default function PlayerInformation() {
                 });
                 setErrorMessage([]);
                 axios
-                  // .post('http://localhost:3100/', registerData)
                   .post('/updatePlayerData', formData, {
                     //ファイルを送るため
                     headers: { 'content-type': 'multipart/form-data' },
-                  }) //20240123 送信テスト
+                  })
                   .then((response) => {
-                    // TODO: 更新処理成功時の処理
                     window.alert('選手情報を更新しました。');
+                    removeDraftFormData();
                     const urlStr =
-                      '/playerInformationRef' + '?player_id=' + response.data.users[0].player_id;
+                      '/playerInformationRef?player_id=' + response.data.users[0].player_id;
                     router.push(urlStr); //選手情報参照画面に遷移する
                   })
                   .catch((error) => {
-                    // TODO: 更新処理失敗時の処理
                     setErrorMessage([
                       '選手情報の更新に失敗しました。',
                       'ユーザーサポートにお問い合わせください。',
@@ -604,48 +612,21 @@ export default function PlayerInformation() {
                   });
               })
               .catch((error) => {
-                // TODO: 更新処理失敗時の処理
                 setErrorMessage([...(error?.response?.data as string[])]);
 
                 return;
               });
-            // axios
-            //   // .post('http://localhost:3100/', registerData)
-            //   .post('/updatePlayerData', formData,{
-            //     //ファイルを送るため
-            //     headers: {
-            //       'content-type' : 'multipart/form-data' ,
-            //      } ,
-            //    }) //20240123 送信テスト
-            //   .then((response) => {
-            //     // TODO: 更新処理成功時の処理
-            //     //console.log(response);
-            //     window.confirm('選手情報を更新しました。');
-            //     router.push('/DummyMyPage');
-            //   })
-            //   .catch((error) => {
-            //     // TODO: 更新処理失敗時の処理
-            //     setErrorMessage([
-            //       ...(errorMessage as string[]),
-            //       '更新に失敗しました。原因：' + (error as Error).message,
-            //     ]);
-            //   });
           } else if (prevMode == 'create') {
-            // TODO: 登録処理を実装
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
-            const registerData = {};
 
             // jara_player_id登録されているかどうかチェック
             await axios
-              // .post('http://localhost:3100/', registerData)
               .post('/checkJARAPlayerId', {
                 jara_player_id: formData.jara_player_id,
                 mode: 'create_confirm',
               })
               .then((response) => {
-                // TODO: 更新処理成功時の処理
-                //console.log(response);
                 if (formData.birth_country != 112) {
                   //出身地が日本以外の場合、都道府県に関連したデータを削除する
                   formData.birth_prefecture = 0;
@@ -663,7 +644,6 @@ export default function PlayerInformation() {
                 }
                 formData.side_info = tmpArray;
                 formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
-                //console.log(formData);
 
                 //nullのパラメータを空のパラメータに置き換える
                 Object.keys(formData).forEach((key) => {
@@ -671,13 +651,11 @@ export default function PlayerInformation() {
                 });
                 setErrorMessage([]);
                 axios
-                  // .post('http://localhost:3100/', registerData)
                   .post('/storePlayerData', formData, {
                     //ファイルを送るため
                     headers: { 'content-type': 'multipart/form-data' },
                   })
                   .then((response) => {
-                    // TODO: 登録処理成功時の処理の実装
                     if (response.data.errMessage != null || response.data.errMessage != undefined) {
                       setErrorMessage([
                         ...(errorMessage as string[]),
@@ -685,13 +663,13 @@ export default function PlayerInformation() {
                       ]);
                     } else {
                       window.alert('選手情報を登録しました。');
+                      removeDraftFormData();
                       const urlStr =
-                        '/playerInformationRef' + '?player_id=' + response.data.users[0].player_id;
+                        '/playerInformationRef?player_id=' + response.data.users[0].player_id;
                       router.push(urlStr); //選手情報参照画面に遷移する
                     }
                   })
                   .catch((error) => {
-                    // TODO: 登録処理失敗時の処理の実装
                     setErrorMessage([
                       ...(errorMessage as string[]),
                       '登録に失敗しました。原因：' + (error as Error).message,
@@ -699,7 +677,6 @@ export default function PlayerInformation() {
                   });
               })
               .catch((error) => {
-                // TODO: 更新処理失敗時の処理
                 setErrorMessage([...(error?.response?.data as string[])]);
 
                 return;
@@ -713,9 +690,23 @@ export default function PlayerInformation() {
     ),
   };
 
+  const customBack = () => {
+    if (mode !== 'confirm') {
+      router.back();
+      return;
+    }
+
+    if (prevMode === 'create') {
+      router.replace('/playerInformation?mode=create&source=confirm');
+    }
+    if (prevMode === 'update') {
+      router.replace(`/playerInformation?mode=update&source=confirm&player_id=${playerId}`);
+    }
+  };
+
   return (
     <>
-      <CustomTitle displayBack>
+      <CustomTitle customBack={customBack}>
         選手情報{mode === 'create' ? '登録' : mode === 'update' ? '更新' : '入力確認'}
       </CustomTitle>
       {/* エラーメッセージの表示 */}
@@ -932,7 +923,7 @@ export default function PlayerInformation() {
                   prevFormData.side_info[2],
                   prevFormData.side_info[3],
                 ],
-              })) as void
+              }))
             }
           />
           <OriginalCheckbox
@@ -950,7 +941,7 @@ export default function PlayerInformation() {
                   prevFormData.side_info[2],
                   prevFormData.side_info[3],
                 ],
-              })) as void
+              }))
             }
           />
           <OriginalCheckbox
@@ -968,7 +959,7 @@ export default function PlayerInformation() {
                   !prevFormData.side_info[2],
                   prevFormData.side_info[3],
                 ],
-              })) as void
+              }))
             }
           />
           <OriginalCheckbox
@@ -986,7 +977,7 @@ export default function PlayerInformation() {
                   prevFormData.side_info[2],
                   !prevFormData.side_info[3],
                 ],
-              })) as void
+              }))
             }
           />
         </div>
@@ -1048,7 +1039,6 @@ export default function PlayerInformation() {
                   prefectures.find((item) => item.id === Number(e))?.name || '',
                 );
               }}
-              //errorMessages={birthPlacePrefectureErrorMessage}
               className='rounded w-[300px] '
             />
           </div>
@@ -1116,9 +1106,8 @@ export default function PlayerInformation() {
         {/* 戻るボタン */}
         <CustomButton
           onClick={async () => {
-            await setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
             setErrorMessage([]);
-            router.back();
+            customBack();
           }}
           buttonType='white-outlined'
         >
