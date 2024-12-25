@@ -17,7 +17,16 @@ export const getStorageKey = (params: GetStorageKeyParams) => {
 
 export const getSessionStorage = <T>(key: string): T | null => {
   const data = sessionStorage.getItem(key);
-  return data ? (JSON.parse(data) as T) : null;
+
+  if (!data) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(data) as T;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const setSessionStorage = <T>(key: string, value: T): void => {

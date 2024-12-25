@@ -3,12 +3,16 @@
 
 import { NO_IMAGE_URL, USER_IMAGE_URL } from '../../../../utils/imageUrl'; //For importing image url from a single source of truth
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { ChangeEvent, useEffect, useState } from 'react';
-// 実装　ー　クマール　ー開始
 import axios from '@/app/lib/axios';
-// 実装　ー　クマール　ー終了
-import { CountryResponse, PrefectureResponse, SexResponse, UserResponse } from '@/app/types';
+import {
+  Country,
+  CountryResponse,
+  Prefecture,
+  PrefectureResponse,
+  Sex,
+  SexResponse,
+  UserResponse,
+} from '@/app/types';
 import Validator from '@/app/utils/validator';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -16,6 +20,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Divider from '@mui/material/Divider';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 import {
   CustomButton,
@@ -28,13 +34,22 @@ import {
   ImageUploader,
   InputLabel,
 } from '@/app/components';
+import {
+  getSessionStorage,
+  getStorageKey,
+  removeSessionStorage,
+  setSessionStorage,
+} from '@/app/utils/sessionStorage';
+
+type UserFormData = UserResponse;
 
 export default function UserInformationUpdate() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode');
   const prevScreen = searchParams.get('prevScreen');
-  let isMailChanged = searchParams.get('isMailChanged');
+  const source = searchParams.get('source') as 'confirm' | null;
+  const isMailChanged = searchParams.get('isMailChanged');
 
   //For storing the verification status of certification number
   const [isNumberVerified, setIsNumberVerified] = useState(false);
@@ -42,7 +57,7 @@ export default function UserInformationUpdate() {
   let paramError = false;
 
   // フォームの入力値を管理するステート
-  const [formData, setFormData] = useState<UserResponse>({
+  const [formData, setFormData] = useState<UserFormData>({
     user_id: '', // ユーザーID
     user_name: '', // ユーザー名
     date_of_birth: '', // 生年月日
@@ -81,9 +96,9 @@ export default function UserInformationUpdate() {
   const [dateOfBirthErrorMessages, setDateOfBirthErrorMessages] = useState([] as string[]);
   const [prevEmail, setPrevEmail] = useState('' as string);
 
-  const [countries, setCountries] = useState([] as CountryResponse[]);
-  const [prefectures, setPrefectures] = useState([] as PrefectureResponse[]);
-  const [sex, setSex] = useState([] as SexResponse[]);
+  const [countries, setCountries] = useState<Omit<CountryResponse, 'cd'>[]>([]);
+  const [prefectures, setPrefectures] = useState<PrefectureResponse[]>([]);
+  const [sex, setSex] = useState<SexResponse[]>([]);
   const [currentShowFile, setCurrentShowFile] = useState<
     | {
         file: File;
@@ -99,11 +114,14 @@ export default function UserInformationUpdate() {
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [authNumber, setAuthNumber] = useState('' as string);
 
-  const [backKeyFlag, setBackKeyFlag] = useState<boolean>(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
+  const storageKey = getStorageKey({ pageName: 'userInformation', type: 'update', id: 0 });
 
-  // // 実装　ー　クマール　ー開始
-  // const { user} = useAuth({ middleware: 'auth' }) //簡単にユーザー情報もらうため
-  // // 実装　ー　クマール　ー終了
+  const draftFormData = getSessionStorage<UserFormData>(storageKey);
+
+  const removeDraftFormData = () => {
+    removeSessionStorage(storageKey);
+  };
+
   // フォームの入力値を管理する関数
   const handleInputChange = (name: string, value: string | File | null) => {
     setFormData((prevFormData) => ({
@@ -121,10 +139,6 @@ export default function UserInformationUpdate() {
       }));
     }
   }, [formData?.residence_country]);
-  // useEffect(() => {
-
-  //   setCurrentShowFile(undefined)
-  // }, [formData?.uploadedPhoto]);
 
   //アップロードされたファイルを保存するー開始
   useEffect(() => {
@@ -143,47 +157,38 @@ export default function UserInformationUpdate() {
         photo: '',
       }));
     }
-  }, [currentShowFile]); //ファイルのアップロード終わったら
+  }, [currentShowFile]);
   //アップロードされたファイルを保存するー完了
-
-  useEffect(() => {
-    //console.log(formData.sex);
-  }, [formData?.sex]);
 
   useEffect(() => {
     const fetchMaster = async () => {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        // TODO: APIを叩いて、マスタ情報を取得する処理の置き換え
-        // const prefectureResponse = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
-        const prefectureResponse = await axios.get('/getPrefecures');
-        const stateList = prefectureResponse.data.map(
-          ({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({
-            id: pref_id,
-            name: pref_name,
-          }),
-        );
-        //console.log(stateList);
+        // APIを叩いて、マスタ情報を取得する処理の置き換え
+        const [prefectureResponse, sexResponse, countryResponse] = await Promise.all([
+          axios.get<Prefecture[]>('/getPrefecures'),
+          axios.get<Sex[]>('/getSexList'),
+          axios.get<Country[]>('/getCountries'),
+        ]);
+
+        const stateList = prefectureResponse.data.map((x) => ({
+          id: x.pref_id,
+          name: x.pref_name,
+        }));
         setPrefectures(stateList);
-        // setPrefectures(prefectureResponse.data);
-        // const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
-        const sexResponse = await axios.get('/getSexList');
-        const sexList = sexResponse.data.map(
-          ({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }),
-        );
+
+        const sexList = sexResponse.data.map((x) => ({
+          id: x.sex_id,
+          name: x.sex,
+        }));
         setSex(sexList);
-        // setSex(sexResponse.data);
-        // const countryResponse = await axios.get<CountryResponse[]>('http://localhost:3100/countries',);
-        const countryResponse = await axios.get('/getCountries');
-        const countryList = countryResponse.data.map(
-          ({ country_id, country_name }: { country_id: number; country_name: string }) => ({
-            id: country_id,
-            name: country_name,
-          }),
-        );
+
+        const countryList = countryResponse.data.map((x) => ({
+          id: x.country_id,
+          name: x.country_name,
+        }));
         setCountries(countryList);
-        // setCountries(countryResponse.data);
       } catch (error: any) {
         setErrorMessage(['API取得エラー:' + error.message]);
       }
@@ -193,6 +198,28 @@ export default function UserInformationUpdate() {
 
   // ユーザー情報のセットアップ
   useEffect(() => {
+    const restoreFormData = () => {
+      // draftFormDataが存在しない場合は復元しない
+      if (!draftFormData || mode === 'confirm') {
+        return;
+      }
+
+      // 確認画面から戻ってきた場合は、draftFormDataを適用する
+      if (source === 'confirm') {
+        setFormData(draftFormData);
+        return;
+      }
+
+      if (mode === 'update') {
+        const ok = confirm('編集中の入力内容があります。復元しますか？');
+        if (!ok) {
+          return;
+        }
+      }
+
+      setFormData(draftFormData);
+    };
+
     const fetchUser = async () => {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
@@ -213,9 +240,6 @@ export default function UserInformationUpdate() {
             weight: response.data.result.weight,
             residence_country: response.data.result.residence_country,
             residenceCountryName: response.data.result.residenceCountryName,
-            // residenceCountryName: response.data.result.residenceCountryName
-            //   ? response.data.result.residenceCountryName
-            //   : '日本国 （jpn）',
             residence_prefecture: response.data.result.residence_prefecture,
             residencePrefectureName: response.data.result.residencePrefectureName,
             mailaddress: response.data.result.mailaddress,
@@ -223,18 +247,17 @@ export default function UserInformationUpdate() {
             photo: response.data.result.photo,
           },
         }));
+        restoreFormData();
+
         setPrevEmail(response.data.result.mailaddress);
       } catch (error: any) {
         setErrorMessage(['API取得エラー:' + error.message]);
       }
     };
     // 更新モード、参照モード、削除モードの時にユーザー情報を取得し、フォームにセットする。
-    if (mode === 'update' && !backKeyFlag) {
+    if (mode === 'update') {
       fetchUser();
     }
-    setBackKeyFlag(false); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
-    //console.log(backKeyFlag);
-    // APIを叩いて、ユーザー情報を取得する
   }, []);
 
   const modeCustomButtons = {
@@ -296,6 +319,7 @@ export default function UserInformationUpdate() {
             return;
           }
           setErrorMessage([]);
+          setSessionStorage<UserFormData>(storageKey, formData);
           router.push(
             '/userInformation?mode=confirm&isMailChanged=' +
               (email && email !== prevEmail ? 'true' : 'false') +
@@ -316,10 +340,8 @@ export default function UserInformationUpdate() {
               const updateUser = async () => {
                 const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
-                const requestBody = {};
 
                 axios
-                  // .post('http://localhost:3100/', requestBody)
                   .post('/updateUserData', formData, {
                     //ファイルを送るため
                     headers: {
@@ -328,8 +350,8 @@ export default function UserInformationUpdate() {
                   })
                   .then((response) => {
                     // 成功時の処理を実装
+                    removeDraftFormData();
                     window.alert('ユーザー情報を更新しました。');
-                    // router.push('/' + (prevScreen ? prevScreen : ''));
                     router.push('/userInformationRef');
                   })
                   .catch((error) => {
@@ -349,7 +371,6 @@ export default function UserInformationUpdate() {
                 const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
                 axios
-                  // .post('http://localhost:3100/', requestBody)
                   .post('/user/sent-certification-number', {
                     user_name: formData?.user_name,
                     mailaddress: formData?.mailaddress,
@@ -375,10 +396,8 @@ export default function UserInformationUpdate() {
             const updateUser = async () => {
               const csrf = () => axios.get('/sanctum/csrf-cookie');
               await csrf();
-              const requestBody = {};
 
               axios
-                // .post('http://localhost:3100/', requestBody)
                 .post('/updateUserData', formData, {
                   //ファイルを送るため
                   headers: {
@@ -388,8 +407,8 @@ export default function UserInformationUpdate() {
 
                 .then((response) => {
                   // 成功時の処理を実装
+                  removeDraftFormData();
                   window.alert('ユーザー情報を更新しました。');
-                  // router.push('/' + (prevScreen ? prevScreen : ''));
                   router.push('/userInformationRef');
                 })
                 .catch((error) => {
@@ -423,6 +442,16 @@ export default function UserInformationUpdate() {
     const d = ('00' + dt.getDate()).slice(-2);
     return y + '/' + m + '/' + d;
   };
+
+  const customBack = () => {
+    if (mode === 'confirm') {
+      router.push(`/userInformation?mode=update&source=confirm`);
+      return;
+    }
+
+    router.back();
+  };
+
   // モードが不正の時にエラー画面を表示する
   if (paramError) {
     return <div>ページが見つかりません</div>;
@@ -433,7 +462,7 @@ export default function UserInformationUpdate() {
         <ErrorBox errorText={errorMessage} />
         <div className='flex flex-row justify-start gap-[20px]'>
           {/* 画面名 */}
-          <CustomTitle displayBack>
+          <CustomTitle customBack={customBack}>
             {mode === 'update' && 'ユーザー情報更新'}
             {mode === 'confirm' && 'ユーザー情報確認'}
           </CustomTitle>
@@ -458,7 +487,6 @@ export default function UserInformationUpdate() {
             />
           )}
           {/* 写真 */}
-          {/* src={formData.photo} */}
           {mode === 'confirm' && (
             <img
               src={
@@ -844,7 +872,6 @@ export default function UserInformationUpdate() {
         <CustomButton
           buttonType='white-outlined'
           onClick={() => {
-            setBackKeyFlag(true); //戻るボタン押下時に前回入力された内容を維持するためのフラグ 20240326
             setErrorMessage([]);
             router.back();
           }}
