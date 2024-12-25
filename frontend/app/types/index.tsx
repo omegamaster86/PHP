@@ -10,6 +10,7 @@ interface CountryResponse {
 interface Country {
   country_id: number;
   country_name: string;
+  country_code: string;
 }
 
 // Jsonの型定義
@@ -21,6 +22,7 @@ interface PrefectureResponse {
 interface Prefecture {
   pref_id: number;
   pref_name: string;
+  pref_code_jis: string;
 }
 
 // Jsonの型定義
