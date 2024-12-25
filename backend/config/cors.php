@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Cross-Origin Resource Sharing (CORS) Configuration
@@ -16,9 +15,7 @@ return [
     */
 
     'paths' => ['*'],
-
     'allowed_methods' => ['*'],
-
     'allowed_origins' => [
         env('FRONTEND_URL', 'http://localhost:3000'),
         'http://192.168.3.65:3000',
@@ -26,15 +23,9 @@ return [
         'https://59.106.213.254',
         'https://59.106.213.254:443'
     ],
-
     'allowed_origins_patterns' => [],
-
     'allowed_headers' => ['*'],
-
     'exposed_headers' => [],
-
     'max_age' => 0,
-
     'supports_credentials' => true,
-
 ];
