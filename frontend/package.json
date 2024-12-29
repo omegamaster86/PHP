@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "debug": "NODE_OPTIONS='--inspect' next dev",
-    "build:staging": "APP_ENV=staging next build",
+    "build:development": "APP_ENV=development next build",
     "build": "APP_ENV=production next build",
     "start": "next start",
     "lint": "next lint",

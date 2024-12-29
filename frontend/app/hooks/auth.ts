@@ -32,7 +32,7 @@ export const useAuth = ({
   const login = async (data: { email: string; password: string }) => {
     try {
       await csrf();
-      await axios.post('/login', data);
+      await axios.post('api/login', data);
       mutate();
     } catch (error) {
       throw error;

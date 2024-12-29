@@ -53,25 +53,8 @@ Route::post('organization-player-register', [OrganizationPlayersController::clas
 //団体選手一括登録
 
 Route::middleware('guest')->group(function () {
-
-    // Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
-
-    // Route::post('register', [RegisteredUserController::class, 'store']);
-
     Route::post('signup', [RegisteredUserController::class, 'store'])->name('signup');
-
-    // Route::get('password-reset', [UserController::class, 'createPasswordReset'])->name('password-reset');
     Route::post('password-reset', [UserController::class, 'storePasswordReset']);
-
-    // Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
-
-    // Route::post('login', [AuthenticatedSessionController::class, 'store']);
-
-    Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
-
-    // Route::get('status', function () {
-    //     return view('auth.guest_user_status');
-    // })->name('guest_user_status');
 });
 
 Route::middleware('auth')->group(function () {
