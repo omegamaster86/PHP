@@ -30,15 +30,12 @@ use App\Models\M_events;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'getUserData']);
+Route::group(['middleware' => ['api']], function () {
+    Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login');
+});
 
-// Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'setLoginUserData']);
-
-Route::group(['middleware' => ['api', 'cors']], function () {
-    Route::get('list', [TournamentController::class, 'index']); //Laravel_Reactデータ送信テスト 20231227
-    Route::post('postSample', [TournamentController::class, 'postTest']); //React_Laravelデータ送信テスト 20231228
-
-
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('user', [UserController::class, 'getUserData']);
     Route::get('getPrefecures', [M_prefectures::class, 'getPrefecures']); //都道府県マスター取得 20240117
     Route::get('getCountries', [M_countries::class, 'getCountries']); //国マスター取得 20240117
     Route::get('getSexList', [M_sex::class, 'getSexList']); //性別マスター取得 20240131
@@ -46,7 +43,6 @@ Route::group(['middleware' => ['api', 'cors']], function () {
     Route::get('getRaceClass', [M_race_class::class, 'getRaceClass']); //レースクラスマスター取得 20240202
     Route::get('getEvents', [M_events::class, 'getEvents']); //イベントマスター取得 20240202
 
-    //---------------以下にAPIを追加する----------------
     Route::post('updateUserData', [UserController::class, 'updateUserData']); //DBからユーザ画面にデータを渡す 20240131
 
     Route::get('createCsrf', [AuthenticatedSessionController::class, 'createCsrf']); //ログイン画面遷移時にcsrfトークンを取得 20240122
@@ -70,5 +66,4 @@ Route::group(['middleware' => ['api', 'cors']], function () {
     Route::post('updateTournamentInfoData', [TournamentController::class, 'updateTournamentInfoData']); //大会情報更新 20240202
     Route::get('getRaceInfoData', [TournamentController::class, 'getRaceInfoData']); //DBから大会情報更新画面にデータを渡す 20240201
     Route::post('deleteTournamentData', [TournamentController::class, 'deleteTournamentData']); //DBから大会情報を削除する 20240205
-
 });

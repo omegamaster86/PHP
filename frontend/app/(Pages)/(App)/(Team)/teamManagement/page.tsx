@@ -236,21 +236,6 @@ export default function TeamManagement() {
     }
   }, [showOrgTypeAutocomplete, showOrgNameAutocomplete]);
 
-  //React_Laravelデータ送信テスト 20240108
-  const onClick = async () => {
-    const csrf = () => axios.get('/sanctum/csrf-cookie');
-    await csrf();
-    await axios
-      .post('/postSample', '送信成功')
-      .then((res) => {
-        //console.log(res);
-      })
-      .catch((error) => {
-        //console.log(error);
-      });
-  };
-  //React_Laravelデータ送信テスト 20240108
-
   if (!validFlag) return null;
 
   return (

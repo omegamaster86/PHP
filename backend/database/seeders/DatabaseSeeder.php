@@ -31,5 +31,6 @@ class DatabaseSeeder extends Seeder
         $this->call(MVolunteerQualificationsSeeder::class);
         $this->call(MWeatherTypeSeeder::class);
         $this->call(MWindDirectionSeeder::class);
+        $this->call(TUsersSeeder::class);
     }
 }
