@@ -41,7 +41,7 @@ const UpdateView: React.FC<UpdateViewProps> = ({
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const { data: coachRefereeInfoListRes } = useSWR(
     {
-      url: `getUpdateCoachRefereeInfoList`,
+      url: `api/getUpdateCoachRefereeInfoList`,
     },
     fetcher<CoachRefereeResponse>,
     { suspense: true },
@@ -172,12 +172,12 @@ const UpdateView: React.FC<UpdateViewProps> = ({
     if (!parsedData) {
       return;
     }
-  
+
     if (source === 'confirm') {
       setFetchData(parsedData);
       return;
     }
-  
+
     requestAnimationFrame(() => {
       setTimeout(() => {
         if (parsedData) {

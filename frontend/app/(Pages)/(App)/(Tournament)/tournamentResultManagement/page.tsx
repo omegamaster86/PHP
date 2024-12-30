@@ -199,12 +199,9 @@ export default function TournamentResultManagement() {
     // apiUri = apiUri.slice(0, -1);
 
     try {
-      // 仮のURL（繋ぎ込み時に変更すること）
-      // const response = await axios.get<Race[]>('http://localhost:3100/race/');
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
-      const response = await axios.post('searchRaceData', searchCond);
-      //console.log(response.data.result);
+      const response = await axios.post('api/searchRaceData', searchCond);
       setSearchResponse(response.data.result);
       setSelectedByGroupList([]);
 
@@ -229,7 +226,7 @@ export default function TournamentResultManagement() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         //console.log(sendVal);
-        const tournamentResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
+        const tournamentResponse = await axios.post('api/tournamentEntryYearSearch', sendVal);
         const TournamentsResponseList = tournamentResponse.data.result.map(
           ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
             id: tourn_id,
@@ -252,10 +249,9 @@ export default function TournamentResultManagement() {
       getTournamentList();
 
       try {
-        // const eventResponse = await axios.get<EventResponse[]>('http://localhost:3100/event');
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const eventResponse = await axios.get('/getEvents'); //イベント(種目)マスター取得
+        const eventResponse = await axios.get('api/getEvents'); //イベント(種目)マスター取得
         const eventResponseList = eventResponse.data.map(
           ({ event_id, event_name }: { event_id: number; event_name: string }) => ({
             id: event_id,
@@ -264,8 +260,7 @@ export default function TournamentResultManagement() {
         );
         setEvent(eventResponseList);
 
-        // const raceTypeResponse = await axios.get<RaceTypeResponse[]>('http://localhost:3100/raceType',);
-        const raceTypeResponse = await axios.get('/getRaceClass'); //レース区分マスター取得
+        const raceTypeResponse = await axios.get('api/getRaceClass'); //レース区分マスター取得
         const stateList = raceTypeResponse.data.map(
           ({
             race_class_id,

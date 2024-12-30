@@ -38,17 +38,17 @@ export default function NotificationsSentList() {
   const mode = searchParams.get('mode') as NotificationMode | null;
   const { user } = useAuth({ middleware: 'auth' });
 
-  const { trigger } = useSWRMutation('/deleteNotification', sendDeleteRequest);
+  const { trigger } = useSWRMutation('api/deleteNotification', sendDeleteRequest);
   const { data } = useSWR(
     {
-      url: '/getSenderNotificationsList',
+      url: 'api/getSenderNotificationsList',
     },
     fetcher<NotificationInfoData[]>,
     { suspense: true },
   );
   const notificationRes = useSWR(
     {
-      url: '/getNotificationInfoData',
+      url: 'api/getNotificationInfoData',
       params: {
         notificationId: currentId,
       },

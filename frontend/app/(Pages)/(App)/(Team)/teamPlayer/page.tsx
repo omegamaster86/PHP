@@ -84,12 +84,7 @@ export default function TeamPlayer() {
           let data = transformData(addPlayerList, '追加');
 
           if (mode == 'update') {
-            //const response = await axios.get('http://localhost:3100/teamPlayers');
-            //const searchRes = transformData(response.data, '既存');
-            //data = setIndex(searchRes.concat(data));
-
-            // const response = await axios.get('/teamPlayers');
-            const response = await axios.post('/searchOrganizationPlayersForTeamRef', sendId);
+            const response = await axios.post('api/searchOrganizationPlayersForTeamRef', sendId);
             const searchRes = transformData(response.data.result, '既存');
             data = setIndex(data.concat(searchRes));
             //console.log(response.data.result);
@@ -103,10 +98,7 @@ export default function TeamPlayer() {
             // );
           }
           if (mode == 'create') {
-            // const response = await axios.get('http://localhost:3100/teamPlayers');
-            // const searchRes = setIndex(transformData(response.data, '既存'));
-            const response = await axios.post('/searchOrganizationPlayersForTeamRef', sendId);
-            //console.log(response);
+            const response = await axios.post('api/searchOrganizationPlayersForTeamRef', sendId);
             const searchRes = transformData(response.data.result, '既存');
 
             //追加選手の重複チェック処理 20240416
@@ -135,22 +127,15 @@ export default function TeamPlayer() {
             data = setIndex(data.concat(searchRes)); // concatで配列の結合をしてからindexをmapする
           }
           setFormData(data);
-          // sessionStorage.removeItem('addPlayerList');
         } else {
           if (mode == 'create') {
-            // const response = await axios.get('http://localhost:3100/teamPlayers');
-            // const searchRes = setIndex(transformData(response.data, '既存'));
-            const response = await axios.post('/searchOrganizationPlayersForTeamRef', sendId);
-            //console.log(response);
+            const response = await axios.post('api/searchOrganizationPlayersForTeamRef', sendId);
             const searchRes = transformData(response.data.result, '既存');
-            //console.log(searchRes);
             setFormData(searchRes);
           }
         }
 
-        // const teamResponse = await axios.get('/team');
-        const teamResponse = await axios.post('/getOrgData', sendId);
-        //console.log(teamResponse.data.result);
+        const teamResponse = await axios.post('api/getOrgData', sendId);
         setTeamData(teamResponse.data.result);
       } catch (error) {
         //console.log(error);
@@ -380,7 +365,7 @@ export default function TeamPlayer() {
                 const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
                 axios
-                  .post('/updateOrgPlayerData', sendData) //20240226
+                  .post('api/updateOrgPlayerData', sendData)
                   .then((response) => {
                     //console.log(response.data);
                     router.push('/teamRef?orgId=' + teamData.org_id); //変更後は、該当の団体参照画面に遷移する 20240401

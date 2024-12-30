@@ -185,12 +185,8 @@ export default function TournamentResult() {
   const handleCrewPlayerIdChange = async (index: number, crewIndex: number, value: string) => {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
-    //const playerSearch = await axios.get('http://localhost:3100/teamPlayers?id=' + value);
     const sendId = { player_id: value };
-    //console.log(sendId);
-    const playerSearch = await axios.post('/getCrewPlayerInfo', sendId);
-    //console.log('player_id', value);
-    //console.log('playerSearch', playerSearch);
+    const playerSearch = await axios.post('api/getCrewPlayerInfo', sendId);
 
     //名前の異なるバックエンド側とフロント側のキーを紐づける 20240410
     if (playerSearch.data.result.length > 0) {
@@ -840,18 +836,11 @@ export default function TournamentResult() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        // レース名（マスタ）の取得
-        //const response = await axios.get('http://localhost:3100/raceName');
-
-        //大会結果管理 試作中 20240422
         const sendData = {
           tourn_id: tournId,
           event_id: eventId,
         };
-        const responseDataList = await axios.post('/getTournLinkRaces', sendData); //大会IDと種目IDに紐づいたレース結果のないレースを取得 20240422
-        //console.log(responseDataList); //20240422
-        // const response = await axios.get('/getAllRaces');
-        //console.log(response);
+        const responseDataList = await axios.post('api/getTournLinkRaces', sendData); //大会IDと種目IDに紐づいたレース結果のないレースを取得
         const raceList = responseDataList.data.result.map(
           ({ race_id, race_name }: { race_id: number; race_name: string }) => ({
             id: race_id,
@@ -860,9 +849,7 @@ export default function TournamentResult() {
         );
         setRaceNameOptions(raceList);
 
-        // 所属団体（マスタ）の取得
-        //const response2 = await axios.get('http://localhost:3100/orgName');
-        const response2 = await axios.get('/getOrganizations');
+        const response2 = await axios.get('api/getOrganizations');
         const orgList = response2.data.map(
           ({ org_id, org_name }: { org_id: number; org_name: string }) => ({
             id: org_id,
@@ -871,9 +858,7 @@ export default function TournamentResult() {
         );
         setOrgOptions(orgList);
 
-        // 天候（マスタ）の取得
-        //const response3 = await axios.get('http://localhost:3100/weather');
-        const response3 = await axios.get('/getWeatherType');
+        const response3 = await axios.get('api/getWeatherType');
         const weatherList = response3.data.map(
           ({ weather_id, weather_name }: { weather_id: number; weather_name: string }) => ({
             id: weather_id,
@@ -882,9 +867,7 @@ export default function TournamentResult() {
         );
         setWeatherOptions(weatherList);
 
-        // 風向き（マスタ）の取得
-        //const response4 = await axios.get('http://localhost:3100/windDirection');
-        const response4 = await axios.get('/getWindDirection');
+        const response4 = await axios.get('api/getWindDirection');
         const windDirectionList = response4.data.map(
           ({
             wind_direction_id,
@@ -896,9 +879,7 @@ export default function TournamentResult() {
         );
         setWindDirectionOptions(windDirectionList);
 
-        // レース結果備考（マスタ）の取得
-        //const response5 = await axios.get('http://localhost:3100/remark');
-        const response5 = await axios.get('/getRaceResultNotes');
+        const response5 = await axios.get('api/getRaceResultNotes');
         const raceResultNoteList = response5.data.map(
           ({
             race_result_notes_id,
@@ -925,17 +906,13 @@ export default function TournamentResult() {
     const fetchRaceInfo = async () => {
       try {
         // レース情報の取得
-        // TODO: 検索処理に置き換え
-        // const response = await axios.get('http://localhost:3100/raceInfo?id=1');
         const sendData = {
           tourn_id: tournId,
           event_id: eventId,
         };
-        //console.log(sendData);
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.post('/getRaceDataFromTournIdAndEventId', sendData);
-        //console.log(response);
+        const response = await axios.post('api/getRaceDataFromTournIdAndEventId', sendData);
         const data = response.data.result;
         if (data.length === 0) {
           alert('本大会の全レース結果は既に登録されています。');
@@ -945,12 +922,9 @@ export default function TournamentResult() {
         }
 
         // 種目に対応したシート位置（マスタ）の取得 20240514
-        const response6 = await axios.post('/getEventSheetPosForEventID', sendData);
+        const response6 = await axios.post('api/getEventSheetPosForEventID', sendData);
 
-        // シート番号（マスタ）の取得
-        //const response6 = await axios.get('http://localhost:3100/seatNo');
-        const response7 = await axios.get('/getSeatNumber');
-        // //console.log(response7.data);
+        const response7 = await axios.get('api/getSeatNumber');
         const seatNumberList = response7.data.map(
           ({ seat_id, seat_name }: { seat_id: number; seat_name: string }) => ({
             id: seat_id,
@@ -980,7 +954,6 @@ export default function TournamentResult() {
             return e;
           }
         });
-        // //console.log(newSeatNumberArray);
         setSheetNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする 20240514
       } catch (error: any) {
         setErrorText([error.message]);
@@ -1002,12 +975,9 @@ export default function TournamentResult() {
         const sendData = {
           race_id: raceId,
         };
-        //console.log(sendData);
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.post('/getRaceDataRaceId', sendData);
-        //console.log(response.data);
-        // window.alert("hoge");
+        const response = await axios.post('api/getRaceDataRaceId', sendData);
         const data = response.data;
         if (data.length == 0) {
           setErrorText(['レース情報が取得できませんでした。']);
@@ -1021,12 +991,11 @@ export default function TournamentResult() {
         const sendEventData = {
           event_id: eventId || data.race_result[0].event_id,
         };
-        // 種目に対応したシート位置（マスタ）の取得 20240514
-        const response6 = await axios.post('/getEventSheetPosForEventID', sendEventData);
+        // 種目に対応したシート位置（マスタ）の取得
+        const response6 = await axios.post('api/getEventSheetPosForEventID', sendEventData);
 
         // シート番号（マスタ）の取得
-        const response7 = await axios.get('/getSeatNumber');
-        // //console.log(response7.data);
+        const response7 = await axios.get('api/getSeatNumber');
         const seatNumberList = response7.data.map(
           ({ seat_id, seat_name }: { seat_id: number; seat_name: string }) => ({
             id: seat_id,
@@ -1034,7 +1003,7 @@ export default function TournamentResult() {
           }),
         );
 
-        // 種目に対応したシート位置になるように要素をフィルタする 20240514
+        // 種目に対応したシート位置になるように要素をフィルタする
         const newSeatNumberArray = seatNumberList.filter((e: any) => {
           if (e.name == 'ストローク' && response6.data.result[0].seat_s == 1) {
             return e;
@@ -1056,15 +1025,10 @@ export default function TournamentResult() {
             return e;
           }
         });
-        // //console.log(newSeatNumberArray);
-        setSheetNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする 20240514
+        setSheetNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする
 
         // 出漕結果記録情報の取得
-        // const response2 = await axios.get('http://localhost:3100/raceResultRecord');
         setRaceResultRecordResponse(data.record_result[0]);
-
-        // レース結果情報の取得
-        // const response3 = await axios.get('http://localhost:3100/raceResultRecords');
 
         // 10件以上は表示できないため、エラーメッセージを表示する
         if (data.record_result.length > 10) {
@@ -1102,7 +1066,7 @@ export default function TournamentResult() {
           };
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
-          const response = await axios.post('/getRaceDataRaceId', sendData);
+          const response = await axios.post('api/getRaceDataRaceId', sendData);
           //console.log(response.data.race_result);
 
           data = response.data.race_result;
@@ -1124,10 +1088,8 @@ export default function TournamentResult() {
           const sendEventId = {
             event_id: eventId || data[0].event_id,
           };
-          //console.log(sendEventId);
-          const res2 = await axios.post('/getCrewNumberForEventId', sendEventId);
+          const res2 = await axios.post('api/getCrewNumberForEventId', sendEventId);
           const response2 = res2.data.result;
-          //console.log(response2);
 
           setPlayerCount(response2);
           if (mode === 'create') {
@@ -1215,7 +1177,7 @@ export default function TournamentResult() {
                     };
                     const csrf = () => axios.get('/sanctum/csrf-cookie');
                     await csrf();
-                    const response = await axios.post('/getRaceDataRaceId', sendData);
+                    const response = await axios.post('api/getRaceDataRaceId', sendData);
                     //console.log(response.data);
                     const data = response.data.race_result;
                     if (data.length == 0) {
@@ -1266,7 +1228,7 @@ export default function TournamentResult() {
                         };
                         const csrf = () => axios.get('/sanctum/csrf-cookie');
                         await csrf();
-                        const response = await axios.post('/getRaceDataRaceId', sendData);
+                        const response = await axios.post('api/getRaceDataRaceId', sendData);
                         //console.log(response.data);
                         const data = response.data.race_result;
                         if (data.length == 0) {
@@ -2377,7 +2339,7 @@ export default function TournamentResult() {
                   const csrf = () => axios.get('/sanctum/csrf-cookie');
                   await csrf();
                   const raceResponse = await axios.post(
-                    '/registerRaceResultRecordForRegisterConfirm',
+                    'api/registerRaceResultRecordForRegisterConfirm',
                     sendData,
                   );
                   //console.log(raceResponse);
@@ -2398,7 +2360,7 @@ export default function TournamentResult() {
                   const csrf = () => axios.get('/sanctum/csrf-cookie');
                   await csrf();
                   const raceResponse = await axios.post(
-                    '/updateRaceResultRecordForUpdateConfirm',
+                    'api/updateRaceResultRecordForUpdateConfirm',
                     sendData,
                   );
                   //console.log(raceResponse);

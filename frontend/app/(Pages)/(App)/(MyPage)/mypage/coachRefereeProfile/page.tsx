@@ -66,7 +66,7 @@ export default function CoachRefereeProfile() {
 
   const { data } = useSWR(
     {
-      url: `/getCoachRefereeProfileInfo`,
+      url: `api/getCoachRefereeProfileInfo`,
     },
     fetcher<MyPageCoachRefereeResponse>,
     {
@@ -121,7 +121,8 @@ export default function CoachRefereeProfile() {
                   <CustomTr key={history.orgCoachingHistoryId}>
                     <CustomTd>
                       <span>
-                        {formatDate(history.startDate, 'yyyy/MM/dd')} ~ {formatDate(history.endDate, 'yyyy/MM/dd') || '現在'}
+                        {formatDate(history.startDate, 'yyyy/MM/dd')} ~{' '}
+                        {formatDate(history.endDate, 'yyyy/MM/dd') || '現在'}
                       </span>
                     </CustomTd>
                     <CustomTd>

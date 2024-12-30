@@ -82,7 +82,7 @@ export default function UserInformationReference() {
         // TODO: 仮のURL（繋ぎ込み時に変更すること）
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.get<{ result: UserResponse }>('/api/user');
+        const response = await axios.get<{ result: UserResponse }>('api/user');
         setFormData((prevFormData) => ({
           ...prevFormData,
           ...{
@@ -134,10 +134,8 @@ export default function UserInformationReference() {
               const csrf = () => axios.get('/sanctum/csrf-cookie');
               await csrf();
               axios
-                // .delete('http://localhost:3100/')
-                .post('/deleteUserData') //20240212 削除するデータを送信
+                .post('api/deleteUserData')
                 .then((res) => {
-                  // ログイン画面に遷移する
                   logout();
                 })
                 .catch((error) => {

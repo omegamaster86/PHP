@@ -153,9 +153,9 @@ export default function TeamManagement() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.get<{ result: UserResponse }>('/api/user');
+        const response = await axios.get<{ result: UserResponse }>('api/user');
         if (Object.keys(response.data.result).length > 0) {
-          const playerInf = await axios.get('/getIDsAssociatedWithUser');
+          const playerInf = await axios.get('api/getIDsAssociatedWithUser');
           if (
             playerInf.data.result[0].is_administrator == 1 ||
             playerInf.data.result[0].is_organization_manager == 1
@@ -179,9 +179,7 @@ export default function TeamManagement() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        // const response = await axios.get<TeamResponse[]>('/teams');
-        const responseData = await axios.get('/getOrganizationForOrgManagement'); //団体データ取得 20240201
-        //console.log(responseData.data.result);
+        const responseData = await axios.get('api/getOrganizationForOrgManagement'); //団体データ取得
         setTeamdata(responseData.data.result);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);

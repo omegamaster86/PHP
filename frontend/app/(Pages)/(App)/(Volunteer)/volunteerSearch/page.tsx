@@ -430,8 +430,7 @@ export default function VolunteerSearch() {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     axios
-      // .get<VolunteerResponse[]>('http://localhost:3100/volunteerSearch')
-      .post('/volunteerSearch', searchCond)
+      .post('api/volunteerSearch', searchCond)
       .then((response) => {
         //console.log(response.data.result);
         // レスポンスからデータを取り出してstateにセット
@@ -450,30 +449,23 @@ export default function VolunteerSearch() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        // 仮のURL（繋ぎ込み時に変更すること）
-        // 性別マスタの取得
-        // const response = await axios.get<SexResponse[]>('http://localhost:3100/sex');
-        const sexResponse = await axios.get('/getSexList');
+        const sexResponse = await axios.get('api/getSexList');
         const sexList = sexResponse.data.map(
           ({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }),
         );
         setSex(sexList);
 
-        // 大会マスタの取得
-        // const tour = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments');
-        const TournamentsResponse = await axios.get('/getTournamentInfoData_allData');
+        const TournamentsResponse = await axios.get('api/getTournamentInfoData_allData');
         const TournamentsResponseList = TournamentsResponse.data.result.map(
           ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
             id: tourn_id,
             name: tourn_name,
           }),
         );
-        //console.log(TournamentsResponseList);
         setTour(TournamentsResponseList);
 
         // 障碍タイプマスタの取得
-        // const disType = await axios.get<DisTypeResponse[]>('http://localhost:3100/disType');
-        const disType = await axios.get('/getDisabilityType');
+        const disType = await axios.get('api/getDisabilityType');
         const disTypeList = disType.data.map(
           ({ dis_type_id, dis_type_name }: { dis_type_id: number; dis_type_name: string }) => ({
             id: dis_type_id,
@@ -483,9 +475,7 @@ export default function VolunteerSearch() {
         setDisType(disTypeList);
 
         // 資格マスタの取得
-        // const qualHold = await axios.get<QualHoldResponse[]>('http://localhost:3100/qualHold');
-        const qualHold = await axios.get('/getQualifications');
-        //console.log(qualHold.data);
+        const qualHold = await axios.get('api/getQualifications');
         const qualHoldList = qualHold.data.map(
           ({ qual_id, qual_name }: { qual_id: number; qual_name: string }) => ({
             id: qual_id,
@@ -494,10 +484,7 @@ export default function VolunteerSearch() {
         );
         setQualHold(qualHoldList);
 
-        // 言語マスタの取得
-        // const lang = await axios.get<LangResponse[]>('http://localhost:3100/language');
-        const lang = await axios.get('/getLanguages');
-        //console.log(lang.data);
+        const lang = await axios.get('api/getLanguages');
         const langList = lang.data.map(
           ({ lang_id, lang_name }: { lang_id: number; lang_name: string }) => ({
             id: lang_id,
@@ -507,9 +494,7 @@ export default function VolunteerSearch() {
         setLang(langList);
 
         // 言語レベルマスタの取得
-        // const langLevel = await axios.get<LangResponse[]>('http://localhost:3100/languageLevel');
-        const langLevel = await axios.get('/getLanguageProficiency');
-        //console.log(langLevel.data);
+        const langLevel = await axios.get('api/getLanguageProficiency');
         const langLevelList = langLevel.data.map(
           ({ lang_pro_id, lang_pro_name }: { lang_pro_id: number; lang_pro_name: string }) => ({
             id: lang_pro_id,
@@ -518,9 +503,7 @@ export default function VolunteerSearch() {
         );
         setLangLevel(langLevelList);
 
-        // const country = await axios.get<CountryResponse[]>('http://localhost:3100/countries');
-        const countryResponse = await axios.get('/getCountries');
-        //console.log(countryResponse.data);
+        const countryResponse = await axios.get('api/getCountries');
         const countryList = countryResponse.data.map(
           ({ country_id, country_name }: { country_id: number; country_name: string }) => ({
             id: country_id,
@@ -529,8 +512,7 @@ export default function VolunteerSearch() {
         );
         setCountry(countryList);
 
-        // const prefecture = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
-        const prefectureResponse = await axios.get('/getPrefecures');
+        const prefectureResponse = await axios.get('api/getPrefectures');
         const stateList = prefectureResponse.data.map(
           ({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({
             id: pref_id,

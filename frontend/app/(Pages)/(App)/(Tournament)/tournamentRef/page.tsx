@@ -306,9 +306,7 @@ export default function TournamentRef() {
     // StrictModeの制約回避のため、APIの呼び出し実績の有無をuseEffectの中に記述
     if (!isApiFetched.current) {
       const fetchData = async () => {
-        // TODO: tournIdを元に大会情報を取得する処理の置き換え
-        // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
-        const tournamentResponse = await axios.post('/getTournamentInfoData', {
+        const tournamentResponse = await axios.post('api/getTournamentInfoData', {
           tourn_id: tournId,
         }); //大会IDを元に大会情報を取得する
         // console.log(tournamentResponse);
@@ -316,23 +314,21 @@ export default function TournamentRef() {
         setTournamentFormData(tournamentResponse.data.result);
 
         // TODO: tournIdを元にレース情報を取得する処理の置き換え
-        // const raceResponse = await axios.get<Race[]>('http://localhost:3100/race');
-        const raceResponse = await axios.post('/getRaceData', {
+        const raceResponse = await axios.post('api/getRaceData', {
           tourn_id: tournId,
         });
-        //console.log(raceResponse.data.result);
         raceResponse.data.result.map((data: any) => {
           setTableData((prevData) => [...prevData, { ...data }]);
         });
 
-        const playerInf = await axios.get('/getIDsAssociatedWithUser');
+        const playerInf = await axios.get('api/getIDsAssociatedWithUser');
         setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
 
         const sendData = {
           userInfo: playerInf.data.result[0],
           tournInfo: tournamentResponse.data.result,
         };
-        const resData = await axios.post('/checkOrgManager', sendData); //大会情報参照画面 主催団体管理者の判別 20240402
+        const resData = await axios.post('api/checkOrgManager', sendData); //大会情報参照画面 主催団体管理者の判別 20240402
         //console.log(resData.data.result);
         setOrgManagerFlag(resData.data.result);
 
@@ -368,7 +364,7 @@ export default function TournamentRef() {
             name: item,
           })),
         );
-        const followStatus = await axios.get('/getTournamentFollowStatus', {
+        const followStatus = await axios.get('api/getTournamentFollowStatus', {
           params: { tourn_id: tournId },
         });
         setFollowStatus({
@@ -417,7 +413,7 @@ export default function TournamentRef() {
 
   const handleFollowToggle = () => {
     axios
-      .patch('/tournamentFollowed', { tournId })
+      .patch('api/tournamentFollowed', { tournId })
       .then(() => {
         setFollowStatus((prevStatus) => ({
           isFollowed: !prevStatus.isFollowed,
@@ -949,8 +945,7 @@ export default function TournamentRef() {
                 if (isOk) {
                   // TODO: 削除確認画面でOKボタンが押された場合、テーブルの当該項目に削除フラグを立てる処理の置き換え
                   axios
-                    // .delete('http://localhost:3100/tournament')
-                    .post('/deleteTournamentData', sendFormData) //大会情報の削除 20240202
+                    .post('api/deleteTournamentData', sendFormData) //大会情報の削除 20240202
                     .then((response) => {
                       // TODO: 削除完了時の処理の置き換え
                       window.alert('大会情報の削除が完了しました');

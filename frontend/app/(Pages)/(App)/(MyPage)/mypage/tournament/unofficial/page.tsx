@@ -17,7 +17,7 @@ export default function TournamentUnofficial() {
 
   const { data, isLoading } = useSWR(
     {
-      url: '/getMyPageTournamentInfoList',
+      url: 'api/getMyPageTournamentInfoList',
       params: myPageTournamentParams,
       key: 'unofficial',
     },

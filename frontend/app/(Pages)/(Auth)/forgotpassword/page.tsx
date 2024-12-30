@@ -116,7 +116,7 @@ export default function ForgotPassword() {
                     const csrf = () => axios.get('/sanctum/csrf-cookie');
                     await csrf();
                     axios
-                      .post('/password-reset', {
+                      .post('api/password-reset', {
                         // params: {
                         //   email: email,
                         // },
@@ -146,7 +146,7 @@ export default function ForgotPassword() {
           </div>
         </div>
       </main>
-      <BeforeLoginFooter/>
+      <BeforeLoginFooter />
     </>
   );
 }

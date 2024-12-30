@@ -43,21 +43,15 @@ export default function TournamentResultRef() {
   useEffect(() => {
     const fetch = async () => {
       try {
-        // レース情報の取得
-        // const raceResponse = await axios.get('http://localhost:3100/raceInfo');
         const sendData = {
           race_id: raceId,
         };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const raceResponse = await axios.post('/getRaceDataRaceId', sendData);
-        //console.log(raceResponse);
+        const raceResponse = await axios.post('api/getRaceDataRaceId', sendData);
 
         setRaceInfo(raceResponse.data.race_result[0]);
 
-        // 出漕結果記録情報の取得
-        // const raceResultRecords = await axios.get('http://localhost:3100/raceResultRecords');
-        //console.log(raceResponse.data.record_result);
         setRaceResultRecords(raceResponse.data.record_result);
       } catch (error: any) {
         setErrorText([error.message]);
@@ -472,7 +466,7 @@ export default function TournamentResultRef() {
                 //console.log(deleteSendData);
                 const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
-                const response = await axios.post('/deleteRaceResultRecordData', deleteSendData); //削除処理 20240520
+                const response = await axios.post('api/deleteRaceResultRecordData', deleteSendData); //削除処理 20240520
                 //console.log(response);
                 if (response.data?.errMessage) {
                   setErrorText([response.data?.errMessage]);

@@ -771,7 +771,7 @@ export default function PlayerInformationRef() {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     await axios
-      .post('/deletePlayerData', deleteData)
+      .post('api/deletePlayerData', deleteData)
       .then((res) => {
         //console.log(res.data);
       })
@@ -784,11 +784,9 @@ export default function PlayerInformationRef() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 仮のURL（繋ぎ込み時に変更すること）
-        // const playerInf = await axios.get<PlayerInformationResponse>('http://localhost:3100/player',);
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const playerInf = await axios.post('/getPlayerInfoData', {
+        const playerInf = await axios.post('api/getPlayerInfoData', {
           playerId,
         });
         //console.log(playerInf.data.result);
@@ -823,13 +821,12 @@ export default function PlayerInformationRef() {
           residence_prefecture: playerInf.data.result.residence_prefecture,
           photo: playerInf.data.result.photo,
         });
-        // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
-        const response = await axios.post('/getRaceResultRecordsData', {
+        const response = await axios.post('api/getRaceResultRecordsData', {
           playerId,
         });
         setResultRecordsData(response.data.result);
 
-        const followStatus = await axios.get('/getPlayerFollowStatus', {
+        const followStatus = await axios.get('api/getPlayerFollowStatus', {
           params: { player_id: playerId },
         });
         setFollowStatus({
@@ -845,11 +842,13 @@ export default function PlayerInformationRef() {
 
   const handleFollowToggle = () => {
     axios
-      .patch('/playerFollowed', { playerId })
+      .patch('api/playerFollowed', { playerId })
       .then(() => {
         setFollowStatus((prevStatus) => ({
           isFollowed: !prevStatus.isFollowed,
-          followerCount: prevStatus.isFollowed ? prevStatus.followerCount-- : prevStatus.followerCount++,
+          followerCount: prevStatus.isFollowed
+            ? prevStatus.followerCount--
+            : prevStatus.followerCount++,
         }));
       })
       .catch(() => {

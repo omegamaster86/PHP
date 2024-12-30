@@ -14,7 +14,7 @@ export default function Volunteer() {
 
   const { data } = useSWR(
     {
-      url: '/getMyPageVolunteerInfoList',
+      url: 'api/getMyPageVolunteerInfoList',
     },
     fetcher<MyPageVolunteerInfoData>,
     {

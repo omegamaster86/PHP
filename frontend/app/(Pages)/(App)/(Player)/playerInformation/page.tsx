@@ -238,7 +238,7 @@ export default function PlayerInformation() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         axios
-          .get<Prefecture[]>('/getPrefecures')
+          .get<Prefecture[]>('api/getPrefectures')
           .then((response) => {
             const stateList = response.data.map((x) => ({
               id: x.pref_id,
@@ -254,7 +254,7 @@ export default function PlayerInformation() {
           });
 
         axios
-          .get<Sex[]>('/getSexList')
+          .get<Sex[]>('api/getSexList')
           .then((response) => {
             const sexList = response.data.map((x) => ({
               id: x.sex_id,
@@ -269,7 +269,7 @@ export default function PlayerInformation() {
             ]);
           });
         axios
-          .get<Country[]>('/getCountries')
+          .get<Country[]>('api/getCountries')
           .then((response) => {
             const countryList = response.data.map((x) => ({
               id: x.country_id,
@@ -297,7 +297,7 @@ export default function PlayerInformation() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         axios
-          .post('/getUpdatePlayerData', player_id)
+          .post('api/getUpdatePlayerData', player_id)
           .then(async (response) => {
             //サイド情報のデータ変換
             var data = response.data.result.side_info.split('');
@@ -494,7 +494,10 @@ export default function PlayerInformation() {
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
           axios
-            .post('/checkJARAPlayerId', { jara_player_id: formData.jara_player_id, mode: 'create' })
+            .post('api/checkJARAPlayerId', {
+              jara_player_id: formData.jara_player_id,
+              mode: 'create',
+            })
             .then((response) => {
               setErrorMessage([]);
               setSessionStorage<PlayerFormData>(storageKey, formData);
@@ -529,7 +532,10 @@ export default function PlayerInformation() {
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
           axios
-            .post('/checkJARAPlayerId', { jara_player_id: formData.jara_player_id, mode: 'update' })
+            .post('api/checkJARAPlayerId', {
+              jara_player_id: formData.jara_player_id,
+              mode: 'update',
+            })
             .then((response) => {
               setErrorMessage([]);
               setSessionStorage<PlayerFormData>(storageKey, formData);
@@ -564,7 +570,7 @@ export default function PlayerInformation() {
 
             // jara_player_id登録されているかどうかチェック
             await axios
-              .post('/checkJARAPlayerId', {
+              .post('api/checkJARAPlayerId', {
                 jara_player_id: formData.jara_player_id,
                 mode: 'update_confirm',
               })
@@ -593,8 +599,7 @@ export default function PlayerInformation() {
                 });
                 setErrorMessage([]);
                 axios
-                  .post('/updatePlayerData', formData, {
-                    //ファイルを送るため
+                  .post('api/updatePlayerData', formData, {
                     headers: { 'content-type': 'multipart/form-data' },
                   })
                   .then((response) => {
@@ -622,7 +627,7 @@ export default function PlayerInformation() {
 
             // jara_player_id登録されているかどうかチェック
             await axios
-              .post('/checkJARAPlayerId', {
+              .post('api/checkJARAPlayerId', {
                 jara_player_id: formData.jara_player_id,
                 mode: 'create_confirm',
               })
@@ -651,8 +656,7 @@ export default function PlayerInformation() {
                 });
                 setErrorMessage([]);
                 axios
-                  .post('/storePlayerData', formData, {
-                    //ファイルを送るため
+                  .post('api/storePlayerData', formData, {
                     headers: { 'content-type': 'multipart/form-data' },
                   })
                   .then((response) => {

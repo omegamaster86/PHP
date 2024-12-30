@@ -106,7 +106,8 @@ class T_races extends Model
     //で指定する
     public function insertRace($race)
     {
-        DB::insert('insert into t_races
+        DB::insert(
+            'insert into t_races
                     (
                         `race_id`,
                         `entrysystem_race_id`, 
@@ -145,8 +146,9 @@ class T_races extends Model
                         :current_datetime,
                         :user_id,
                         0
-                    )'
-                    ,$race);
+                    )',
+            $race
+        );
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
@@ -198,7 +200,8 @@ class T_races extends Model
     //interfaceのRaceを引数としてupdateを実行する
     public function updateRace($race)
     {
-        DB::update('update t_races
+        DB::update(
+            'update t_races
                     set
                     `race_number`= :race_number,
                     `entrysystem_race_id`= :entrysystem_race_id,
@@ -213,14 +216,16 @@ class T_races extends Model
                     `start_date_time`= :start_date_time,
                     `updated_time`= :updated_time,
                     `updated_user_id`= :updated_user_id,
-                    where `tourn_id` = :'
-                ,$race);
+                    where `tourn_id` = :',
+            $race
+        );
     }
 
     //大会IDを条件にレース情報を取得する
     public function getRaces($trnId)
     {
-        $races = DB::select('select
+        $races = DB::select(
+            'select
                             race.`race_id`
                             ,race.`race_number`
                             ,race.`entrysystem_race_id`
@@ -248,15 +253,17 @@ class T_races extends Model
                             where 1=1
                             and race.delete_flag = 0
                             and race.`tourn_id` = :tourn_id
-                            group by race.`race_id`'
-                        , $trnId);
+                            group by race.`race_id`',
+            $trnId
+        );
         return $races;
     }
 
     //大会IDと種目IDを条件に出漕結果記録テーブルに登録されていないレース情報を取得する
     public function getRacesWithoutRaceResult($values)
     {
-        $races = DB::select('select
+        $races = DB::select(
+            'select
                                 race.`race_id`
                                 ,race.`race_number`
                                 ,race.`entrysystem_race_id`
@@ -282,8 +289,9 @@ class T_races extends Model
                                 and race.`tourn_id` = :tourn_id
                                 and race.`race_class_id` = :race_class_id
                                 group by race.`race_id`
-                                having count(rrr.race_result_record_id) = 0'
-                            , $values);
+                                having count(rrr.race_result_record_id) = 0',
+            $values
+        );
         return $races;
     }
 
@@ -291,7 +299,8 @@ class T_races extends Model
     public function getRaceFromRaceId($race_id)
     {
         Log::debug("getRaceFromRaceId start.");
-        $race = DB::select("select
+        $race = DB::select(
+            "select
                             race.`race_id`
                             ,race.`race_number`
                             ,race.`entrysystem_race_id`
@@ -315,8 +324,9 @@ class T_races extends Model
                             where 1=1
                             and race.`delete_flag` = 0
                             and eve.`delete_flag` = 0
-                            and race.race_id = ?"
-                            ,[$race_id]);
+                            and race.race_id = ?",
+            [$race_id]
+        );
         //Log::debug($race);
         Log::debug("getRaceFromRaceId end.");
         return $race;
@@ -324,7 +334,7 @@ class T_races extends Model
 
     //条件に合致するレースの件数を取得する
     //大会エントリー一括登録画面用
-    public function getRaceCount($condition,$values)
+    public function getRaceCount($condition, $values)
     {
         $sql_string = "select count(*)  as `count`
                         from `t_races`
@@ -337,45 +347,16 @@ class T_races extends Model
                         and by_group = :by_group
                         and race_number = :race_number
                         #ReplaceConditionString#";
-        $sql_string = str_replace("#ReplaceConditionString#",$condition,$sql_string);
-        $race_count = DB::select($sql_string,$values);
+        $sql_string = str_replace("#ReplaceConditionString#", $condition, $sql_string);
+        $race_count = DB::select($sql_string, $values);
         return $race_count;
-    }
-
-    //レース情報を全取得
-    public function getAllRaces()
-    {
-        $races = DB::select('select
-                            race.`race_id`
-                            ,race.`race_number`
-                            ,race.`entrysystem_race_id`
-                            ,race.`tourn_id`
-                            ,race.`race_name`
-                            ,race.`event_id`
-                            ,case
-                                when race.`event_name` is null then eve.`event_name` 
-                                else race.`event_name`
-                                end as `event_name`
-                            ,race.`race_class_id`
-                            ,mrc.`race_class_name`
-                            ,race.`by_group`
-                            ,race.`range`
-                            ,race.`start_date_time`
-                            FROM `t_races` race
-                            left join `m_events` eve
-                            on race.`event_id` = eve.`event_id`
-                            left join `m_race_class` mrc
-                            on race.`race_class_id` = mrc.`race_class_id`
-                            where 1=1
-                            and race.`delete_flag` = 0
-                            and eve.`delete_flag` = 0');
-        return $races;
     }
 
     //大会IDと種目IDに紐づいたレース結果のないレースを取得 20240422
     public function getLinkRaces($racesInfo)
     {
-        $races = DB::select('select
+        $races = DB::select(
+            'select
                             race.`race_id`
                             ,race.`race_number`
                             ,race.`entrysystem_race_id`
@@ -408,19 +389,18 @@ class T_races extends Model
                                     `t_race_result_record`.delete_flag = 0
                             )
                             and race.`tourn_id` = ?
-                            and race.`event_id` = ?'
-                        ,
-                        [
-                            $racesInfo['tourn_id'],
-                            $racesInfo['event_id'],
-                        ]
-                    );
+                            and race.`event_id` = ?',
+            [
+                $racesInfo['tourn_id'],
+                $racesInfo['event_id'],
+            ]
+        );
         return $races;
     }
 
     //大会レース結果管理画面用
     //検索条件を入力して出漕記録結果が存在するレース情報を取得する
-    public function getRaceResultWithCondition($conditionString,$values)
+    public function getRaceResultWithCondition($conditionString, $values)
     {
         $sqlString = 'select
                         race.`race_id`
@@ -445,15 +425,16 @@ class T_races extends Model
                         having sum(case rrr.delete_flag when 0 then 1 else 0 end) > 0   -- 出漕記録結果が存在するレースを条件とする
                         ';
         $sqlString = str_replace('#ReplaceConditionString#', $conditionString, $sqlString);
-        $races = DB::select($sqlString,$values);
+        $races = DB::select($sqlString, $values);
         return $races;
     }
 
     //レース基本情報を取得
     //レース結果編集画面登録モード用
-    public function getBasicRaceInfoList($tourn_id,$event_id)
+    public function getBasicRaceInfoList($tourn_id, $event_id)
     {
-        $races = DB::select("select
+        $races = DB::select(
+            "select
                             row_number() over (order by race_id) as `id`
                             ,race.race_id
                             ,race.race_name
@@ -480,43 +461,45 @@ class T_races extends Model
                             where 1=1
                             and race.delete_flag = 0
                             and race.tourn_id = :tourn_id
-                            and race.event_id = :event_id"
-                        ,["tourn_id" => $tourn_id, "event_id" => $event_id]);
+                            and race.event_id = :event_id",
+            ["tourn_id" => $tourn_id, "event_id" => $event_id]
+        );
         return $races;
     }
 
     //対象のレース情報の削除フラグを有効にする 20240403
     public function updateDeleteFlagToValid($values)
     {
-        DB::update('update t_races
+        DB::update(
+            'update t_races
                     set `delete_flag` = 1
                     ,updated_time = ?
                     ,updated_user_id = ?
                     where 1=1
                     and `delete_flag` = 0
-                    and `tourn_id` = ?'
-                    ,[
-                        now()->format('Y-m-d H:i:s.u')
-                        ,Auth::user()->user_id
-                        ,$values
-                    ]
-                );
+                    and `tourn_id` = ?',
+            [
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                $values
+            ]
+        );
     }
 
     //エントリーシステムのレースIDの数を取得する
     //重複有無を確認するため
     //race_idが一致するレコードを除く（更新画面用）
-    public function getEntrysystemRaceIdCountWithRaceId($entrySystemRaceId,$race_id)
+    public function getEntrysystemRaceIdCountWithRaceId($entrySystemRaceId, $race_id)
     {
         $counts = DB::select(
-                                'select count(*) as "count"
+            'select count(*) as "count"
                                 from `t_races`
                                 where 1=1
                                 and `delete_flag`=0
                                 and `entrysystem_race_id` = ?
-                                and `race_id` <> ?'
-                                ,[$entrySystemRaceId,$race_id]
-                            );
+                                and `race_id` <> ?',
+            [$entrySystemRaceId, $race_id]
+        );
         $count = $counts[0]->count;
         return $count;
     }
@@ -527,13 +510,13 @@ class T_races extends Model
     public function getEntrysystemRaceIdCount($entrySystemRaceId)
     {
         $counts = DB::select(
-                                'select count(*) as "count"
+            'select count(*) as "count"
                                 from `t_races`
                                 where 1=1
                                 and `delete_flag`=0
-                                and `entrysystem_race_id` = ?'
-                                ,[$entrySystemRaceId]
-                            );
+                                and `entrysystem_race_id` = ?',
+            [$entrySystemRaceId]
+        );
         $count = $counts[0]->count;
         return $count;
     }

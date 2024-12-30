@@ -38,7 +38,7 @@ export const Update: React.FC<Props> = (props) => {
 
   const { data } = useSWR(
     {
-      url: '/getNotificationInfoData',
+      url: 'api/getNotificationInfoData',
       params: {
         notificationId,
       },

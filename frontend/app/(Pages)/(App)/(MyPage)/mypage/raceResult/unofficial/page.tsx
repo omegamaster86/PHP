@@ -16,7 +16,7 @@ export default function RaceResultUnofficial() {
   };
   const { data, isLoading } = useSWR(
     {
-      url: '/getMyPageRaceResultRecordInfoList',
+      url: 'api/getMyPageRaceResultRecordInfoList',
       params: myPageRaceResultParams,
       key: 'unofficial',
     },

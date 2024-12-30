@@ -154,8 +154,7 @@ export default function TeamSearch() {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     axios
-      // .get<Org[]>('/orgSearch')
-      .post('/orgSearch', formData)
+      .post('api/orgSearch', formData)
       .then((response) => {
         const data = response.data.result;
         for (let index = 0; index < data.length; index++) {
@@ -201,9 +200,7 @@ export default function TeamSearch() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
 
-        //団体種別マスターの取得 20240209
-        // const orgType = await axios.get<OrgType[]>('/orgType');
-        const orgType = await axios.get('/getOrganizationTypeData');
+        const orgType = await axios.get('api/getOrganizationTypeData');
         const orgTypeList = orgType.data.map(
           ({ org_type_id, org_type }: { org_type_id: number; org_type: string }) => ({
             id: org_type_id,
@@ -212,9 +209,7 @@ export default function TeamSearch() {
         );
         setOrgTypeOptions(orgTypeList);
 
-        //団体区分マスターの取得 20240209
-        // const orgClass = await axios.get<OrgClass[]>('/orgClass');
-        const orgClass = await axios.get('/getOrganizationClass');
+        const orgClass = await axios.get('api/getOrganizationClass');
         const orgClassList = orgClass.data.map(
           ({ org_class_id, org_class_name }: { org_class_id: number; org_class_name: string }) => ({
             id: org_class_id,
@@ -223,7 +218,7 @@ export default function TeamSearch() {
         );
         setOrgClassOptions(orgClassList);
 
-        const prefectures = await axios.get('/getPrefecures'); //都道府県マスターの取得 20240208
+        const prefectures = await axios.get('api/getPrefectures'); //都道府県マスターの取得 20240208
         const stateList = prefectures.data.map(
           ({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({
             id: pref_id,
@@ -232,11 +227,10 @@ export default function TeamSearch() {
         );
         setPrefectureOptions(stateList);
 
-        // const userInfo = await axios.get<UserResponse>('/api/user');
-        const userInfo = await axios.get('/api/user');
+        const userInfo = await axios.get('api/user');
         setUser(userInfo.data);
 
-        const playerInf = await axios.get('/getIDsAssociatedWithUser');
+        const playerInf = await axios.get('api/getIDsAssociatedWithUser');
         setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
       } catch (error: any) {
         setErrorMessages(['APIの呼び出しに失敗しました。']);

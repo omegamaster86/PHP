@@ -21,7 +21,7 @@ const MyPageLayout: NextPage<Props> = (props) => {
   const pathname = usePathname();
   const { data: profile } = useSWR(
     {
-      url: '/getMyPageProfileList',
+      url: 'api/getMyPageProfileList',
     },
     fetcher<MyPageProfileInfoData>,
   );

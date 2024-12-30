@@ -125,7 +125,7 @@ export default function Inquiry() {
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
           axios
-            .post('/contact-us', requestBody)
+            .post('api/contact-us', requestBody)
             .then((response) => {
               {
                 window.alert('メールの送信が完了しました');

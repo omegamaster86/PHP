@@ -419,16 +419,6 @@ class TournamentController extends Controller
         }
     }
 
-    //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
-    public function getRaceInfoData(T_races $tRace)
-    {
-        Log::debug(sprintf("getRaceInfoData start"));
-        // $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
-        $result = $tRace->getRace(1); //レース情報を取得
-        Log::debug(sprintf("getRaceInfoData end"));
-        return response()->json(['result' => $result]); //DBの結果を返す
-    }
-
     //大会削除 未使用 20240408
     // public function deleteTournamentInfoData(Request $request, T_tournaments $tTournament, T_races $tRace)
     // {
@@ -846,20 +836,6 @@ class TournamentController extends Controller
             $valueArray["race_number"] = $reqData["raceNo"];
         }
         return $condition;
-    }
-
-    //大会レース結果入力画面
-    //選手情報とレース情報を取得
-    public function getRaceResultRecord(Request $request, T_players $t_players)
-    {
-        Log::debug(sprintf("getRaceResultRecord start."));
-        $reqData = $request->all();
-        // Log::debug($reqData);
-        $player_id = $reqData['player_id'];
-        $race_id = $reqData['race_id'];
-        $getData = $t_players->getPlayerInfoAndRaceResultRecord($player_id, $race_id);
-        Log::debug(sprintf("getRaceResultRecord end."));
-        return response()->json(['result' => $getData]); //DBの結果を返す
     }
 
     //大会レース結果入力確認画面

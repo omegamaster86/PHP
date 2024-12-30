@@ -13,7 +13,7 @@ use App\Models\T_users;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class CoachRefereeControlloer extends Controller
+class CoachRefereeController extends Controller
 {
     //指導者・審判情報を取得 20241106
     public function getCoachRefereeInfoList(Request $request, T_users $tUsers, T_organization_coaching_history $tOrganizationCoachingHistory)
@@ -25,11 +25,12 @@ class CoachRefereeControlloer extends Controller
         $result->coachingHistories = $tOrganizationCoachingHistory->getOrganizationCoachingHistoryData($reqData['userId']); //ユーザIDに紐づいた指導履歴を取得する 20241106
         $result->coachQualificationNames = array_filter(
             explode(",", $result->coachQualificationNames),
-            fn($name) => trim($name) !== '' 
+            fn($name) => trim($name) !== ''
         );
         $result->refereeQualificationNames = array_filter(
             explode(",", $result->refereeQualificationNames),
-            fn($name) => trim($name) !== '');
+            fn($name) => trim($name) !== ''
+        );
 
         Log::debug(sprintf("getCoachRefereeInfoList end"));
         return response()->json(['result' => $result]); //DBの結果を返す
@@ -49,12 +50,12 @@ class CoachRefereeControlloer extends Controller
         $coachQualifications = $tHeldCoachQualifications->getHeldCoachQualificationsData();
         $refereeQualifications = $tHeldRefereeQualifications->getHeldRefereeQualificationsData();
         unset(
-            $coachingHistories->orgName, 
+            $coachingHistories->orgName,
             $coachingHistories->staffTypeName,
-            $coachQualifications->qualName, 
+            $coachQualifications->qualName,
             $refereeQualifications->qualName
         );
-        
+
         $result = [
             'jspoId' => Auth::user()->jspo_id,
             'coachingHistories' => $coachingHistories,
@@ -89,11 +90,11 @@ class CoachRefereeControlloer extends Controller
             if (count($coachQualificationIds) !== count($uniqueIds)) {
                 abort(400, '指導者資格の中で資格名が重複しています。');
             }
-    
+
             // 審判資格の重複チェック
             $refereeQualificationIds = array_column($reqData['refereeQualifications'], 'refereeQualificationId');
             $uniqueRefereeIds = array_unique($refereeQualificationIds);
-            
+
             if (count($refereeQualificationIds) !== count($uniqueRefereeIds)) {
                 abort(400, '審判資格の中で資格名が重複しています。');
             }
@@ -105,7 +106,8 @@ class CoachRefereeControlloer extends Controller
                 if ($reqData['coachingHistories'][$i]['isEndDateUndefined']) {
                     $reqData['coachingHistories'][$i]['endDate'] = null;
                 }
-                if (isset($reqData['coachingHistories'][$i]['isNewRow']) && $reqData['coachingHistories'][$i]['isNewRow'] && !$reqData['coachingHistories'][$i]['isDeleted']
+                if (
+                    isset($reqData['coachingHistories'][$i]['isNewRow']) && $reqData['coachingHistories'][$i]['isNewRow'] && !$reqData['coachingHistories'][$i]['isDeleted']
                 ) {
                     //新規追加
                     $tOrganizationCoachingHistory->insertOrganizationCoachingHistoryData($reqData['coachingHistories'][$i]);
@@ -117,7 +119,8 @@ class CoachRefereeControlloer extends Controller
 
             //指導者資格の追加・更新
             for ($i = 0; $i < count($reqData['coachQualifications']); $i++) {
-                if (isset($reqData['coachQualifications'][$i]['isNewRow']) && $reqData['coachQualifications'][$i]['isNewRow'] && !$reqData['coachQualifications'][$i]['isDeleted']
+                if (
+                    isset($reqData['coachQualifications'][$i]['isNewRow']) && $reqData['coachQualifications'][$i]['isNewRow'] && !$reqData['coachQualifications'][$i]['isDeleted']
                 ) {
                     // 新規追加
                     $tHeldCoachQualifications->insertHeldCoachQualificationsData($reqData['coachQualifications'][$i]);
@@ -126,10 +129,11 @@ class CoachRefereeControlloer extends Controller
                     $tHeldCoachQualifications->updateHeldCoachQualificationsData($reqData['coachQualifications'][$i]);
                 }
             }
-            
+
             // 審判資格の追加・更新
             for ($i = 0; $i < count($reqData['refereeQualifications']); $i++) {
-                if (isset($reqData['refereeQualifications'][$i]['isNewRow']) && $reqData['refereeQualifications'][$i]['isNewRow'] && !$reqData['refereeQualifications'][$i]['isDeleted']
+                if (
+                    isset($reqData['refereeQualifications'][$i]['isNewRow']) && $reqData['refereeQualifications'][$i]['isNewRow'] && !$reqData['refereeQualifications'][$i]['isDeleted']
                 ) {
                     // 新規追加
                     $tHeldRefereeQualifications->insertHeldRefereeQualificationsData($reqData['refereeQualifications'][$i]);
@@ -143,7 +147,6 @@ class CoachRefereeControlloer extends Controller
             DB::commit();
         } catch (HttpException $e) {
             throw $e;
-
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
@@ -169,7 +172,7 @@ class CoachRefereeControlloer extends Controller
             'jspoId' => Auth::user()->jspo_id,
             'coachingHistories' => $tOrganizationCoachingHistory->getOrganizationCoachingHistoryDataForProfile(),
             'coachQualifications' => $tHeldCoachQualifications->getHeldCoachQualificationsDataForProfile(),
-            'refereeQualifications' =>$tHeldRefereeQualifications->getHeldRefereeQualificationsDataForProfile()
+            'refereeQualifications' => $tHeldRefereeQualifications->getHeldRefereeQualificationsDataForProfile()
         ]);
         Log::debug(sprintf("getCoachRefereeProfileInfo end"));
         return response()->json(['result' => $result]); //DBの結果を返す

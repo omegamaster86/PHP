@@ -33,7 +33,7 @@ export default function CoachRefereeRef() {
   const { data } = useSWR(
     userId
       ? {
-          url: `/getCoachRefereeInfoList`,
+          url: `api/getCoachRefereeInfoList`,
           params: { userId },
         }
       : null,
@@ -83,7 +83,10 @@ export default function CoachRefereeRef() {
                 {data.result.coachingHistories.map((history) => (
                   <CustomTr key={history.orgCoachingHistoryId}>
                     <CustomTd>
-                      <span>{formatDate(history.startDate, 'yyyy/MM/dd')} ~ {formatDate(history.endDate, 'yyyy/MM/dd')}</span>
+                      <span>
+                        {formatDate(history.startDate, 'yyyy/MM/dd')} ~{' '}
+                        {formatDate(history.endDate, 'yyyy/MM/dd')}
+                      </span>
                     </CustomTd>
                     <CustomTd>
                       <span>{history.orgName}</span>

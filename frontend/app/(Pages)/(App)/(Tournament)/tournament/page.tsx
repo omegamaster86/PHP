@@ -563,7 +563,7 @@ export default function Tournaments() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const playerInf = await axios.get('/getIDsAssociatedWithUser');
+        const playerInf = await axios.get('api/getIDsAssociatedWithUser');
         setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
       } catch (error: any) {}
     };
@@ -606,10 +606,10 @@ export default function Tournaments() {
       await csrf();
 
       const [approvalTypesRes, venuesRes, eventsRes, raceTypesRes] = await Promise.all([
-        axios.get<ApprovalType[]>('/getApprovalType'),
-        axios.get<Venue[]>('/getVenueList'),
-        axios.get<Event[]>('/getEvents'),
-        axios.get<RaceType[]>('/getRaceClass'),
+        axios.get<ApprovalType[]>('api/getApprovalType'),
+        axios.get<Venue[]>('api/getVenueList'),
+        axios.get<Event[]>('api/getEvents'),
+        axios.get<RaceType[]>('api/getRaceClass'),
       ]);
 
       const tourTypeList: TourTypeResponse[] = approvalTypesRes.data.map((x) => ({
@@ -644,8 +644,8 @@ export default function Tournaments() {
         await csrf();
 
         const [tournamentRes, racesRes] = await Promise.all([
-          axios.post<{ result: Tournament }>('/getTournamentInfoData', tourn_id),
-          axios.post<{ result: Race[] }>('/getRaceData', tourn_id),
+          axios.post<{ result: Tournament }>('api/getTournamentInfoData', tourn_id),
+          axios.post<{ result: Race[] }>('api/getRaceData', tourn_id),
         ]);
 
         setTournamentFormData(tournamentRes.data.result);
@@ -697,7 +697,7 @@ export default function Tournaments() {
             await csrf();
 
             axios
-              .post('/tournamentRegistOrUpdateValidationCheck', {
+              .post('api/tournamentRegistOrUpdateValidationCheck', {
                 entrysystem_tourn_id: tournamentFormData.entrysystem_tourn_id,
                 tourn_type: tournamentFormData.tourn_type,
                 sponsor_org_id: tournamentFormData.sponsor_org_id,
@@ -717,8 +717,7 @@ export default function Tournaments() {
                   await csrf();
 
                   axios
-                    .post('/storeTournamentInfoData', registerData, {
-                      //ファイルを送るため
+                    .post('api/storeTournamentInfoData', registerData, {
                       headers: {
                         'content-type': 'multipart/form-data',
                       },
@@ -816,7 +815,7 @@ export default function Tournaments() {
             await csrf();
 
             axios
-              .post('/tournamentRegistOrUpdateValidationCheck', {
+              .post('api/tournamentRegistOrUpdateValidationCheck', {
                 tourn_id: tournamentFormData.tourn_id,
                 entrysystem_tourn_id: tournamentFormData.entrysystem_tourn_id,
                 tourn_type: tournamentFormData.tourn_type,
@@ -832,8 +831,7 @@ export default function Tournaments() {
                       (registerData.tournamentFormData as any)[key] ?? '';
                   });
                   axios
-                    .post('/updateTournamentInfoData', registerData, {
-                      //ファイルを送るため
+                    .post('api/updateTournamentInfoData', registerData, {
                       headers: {
                         'content-type': 'multipart/form-data',
                       },
@@ -934,7 +932,7 @@ export default function Tournaments() {
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
             axios
-              .post('/tournamentRegistOrUpdateValidationCheck', {
+              .post('api/tournamentRegistOrUpdateValidationCheck', {
                 tourn_id: tournamentFormData.tourn_id,
                 entrysystem_tourn_id: tournamentFormData.entrysystem_tourn_id,
                 tourn_type: tournamentFormData.tourn_type,
