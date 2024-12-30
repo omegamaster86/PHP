@@ -197,17 +197,10 @@ export default function TournamentSearch() {
   }
 
   const handleSearch = async () => {
-    // var apiUri = 'http://localhost:3100/tournamentSearch?';
-    // getNonEmptyProperties(searchCond).forEach((item) => {
-    //   apiUri += item.key + '=' + item.value + '&';
-    // });
-    // apiUri = apiUri.slice(0, -1);
-
     try {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
-      const response = await axios.post('/tournamentSearch', searchCond);
-      //console.log(response.data);
+      const response = await axios.post('api/searchTournament', searchCond);
       if (response.data.result.length > 100) {
         window.alert('検索結果が100件を超えました、上位100件を表示しています。');
       }
@@ -230,11 +223,9 @@ export default function TournamentSearch() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 仮のURL（繋ぎ込み時に変更すること）
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        // const tourTypeResponse = await axios.get<TourTypeResponse[]>('/tourType',);
-        const tourTypeResponse = await axios.get('/getApprovalType');
+        const tourTypeResponse = await axios.get('api/getApprovalType');
         const tourTypeList = tourTypeResponse.data.map(
           ({
             appro_type_id,
@@ -246,8 +237,7 @@ export default function TournamentSearch() {
         );
         setTourType(tourTypeList);
 
-        // const venueResponse = await axios.get<VenueResponse[]>('/venue');
-        const venueResponse = await axios.get('/getVenueList');
+        const venueResponse = await axios.get('api/getVenueList');
         const stateList = venueResponse.data.map(
           ({ venue_id, venue_name }: { venue_id: number; venue_name: string }) => ({
             id: venue_id,

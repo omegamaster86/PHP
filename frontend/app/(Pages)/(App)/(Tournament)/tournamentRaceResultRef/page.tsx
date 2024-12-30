@@ -85,11 +85,9 @@ export default function TournamentRaceResultRef() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 仮のURL（繋ぎ込み時に変更すること）
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        // const response = await axios.get<RaceResultRecordsResponse[]>('http://localhost:3100/raceResultRecords',);
-        const response = await axios.post('/getTournRaceResultRecords', race_id); //残件対象項目
+        const response = await axios.post('api/getTournRaceResultRecords', race_id); //残件対象項目
         //クルー情報を取得するためのパラメータをセット
         setSearchCrewInfo(response.data.result);
         setResultRecordsData(response.data.result);
@@ -233,8 +231,7 @@ export default function TournamentRaceResultRef() {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     await axios
-      // .get<CrewResponse[]>('/crew/') //残件対象項目
-      .post('/getCrewData', searchCrewInfo[index])
+      .post('api/getCrewData', searchCrewInfo[index])
       .then((response) => {
         // レスポンスからデータを取り出してstateにセット
         setCurrentCrewName(searchCrewInfo[index].crew_name);

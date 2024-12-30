@@ -90,9 +90,9 @@ export default function TournamentEntryBulkRegister() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.get<{ result: UserResponse }>('/api/user');
+        const response = await axios.get<{ result: UserResponse }>('api/user');
         if (Object.keys(response.data.result).length > 0) {
-          const playerInf = await axios.get('/getIDsAssociatedWithUser');
+          const playerInf = await axios.get('api/getIDsAssociatedWithUser');
           if (
             playerInf.data.result[0].is_administrator == 1 ||
             playerInf.data.result[0].is_jara == 1 ||
@@ -222,16 +222,10 @@ export default function TournamentEntryBulkRegister() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 仮のURL（繋ぎ込み時に変更すること）
-        // TODO: ログインユーザーの権限によって取得する大会情報を変更すること
-        // 大会名
-        // const tournamentResponse = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments',);
-        // const TournamentsResponse = await axios.get('/getTournamentInfoData_allData');
-        //console.log(formData?.eventYear);
         const sendVal = { event_start_year: formData?.eventYear };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const TournamentsResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
+        const TournamentsResponse = await axios.post('api/tournamentEntryYearSearch', sendVal);
         const TournamentsResponseList = TournamentsResponse.data.result.map(
           ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
             id: tourn_id,
@@ -249,17 +243,10 @@ export default function TournamentEntryBulkRegister() {
 
   const handleSearchTournament = async (name: string, eventYearVal: string) => {
     try {
-      //console.log(eventYearVal);
-      // var eventYearVal = { event_start_year: e.target.value };
-      // 仮のURL（繋ぎ込み時に変更すること）
-      // const apiURL = `http://localhost:3100/tournament?${name}=${e.target.value}`;
-      // 大会情報を取得
-      // const tournamentResponse = await axios.get<Tournament>('http://localhost:3100/tournament');
       const sendVal = { event_start_year: eventYearVal };
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
-      const tournamentResponse = await axios.post('/tournamentEntryYearSearch', sendVal);
-      //console.log(tournamentResponse.data);
+      const tournamentResponse = await axios.post('api/tournamentEntryYearSearch', sendVal);
 
       //該当の開催年に紐づく大会が存在する場合、リストの最初の大会を表示させる 20240514
       if (tournamentResponse.data.result.length > 0) {
@@ -485,9 +472,8 @@ export default function TournamentEntryBulkRegister() {
       };
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
-      const response = await axios.post('/sendTournamentEntryCsvData', sendTournData);
+      const response = await axios.post('api/sendTournamentEntryCsvData', sendTournData);
       const data = response.data.result as CsvData[];
-      //console.log(response.data.result.csvDataList);
       setCsvData([]);
       var resList = Array();
       for (let index = 0; index < response.data.result.csvDataList.length; index++) {
@@ -514,9 +500,8 @@ export default function TournamentEntryBulkRegister() {
         tournData: formData,
         csvDataList: csvData,
       };
-      // ToDo バックエンドの例外処理に関する仕様が決まり次第、エラーメッセージを修正すること
-      // const response = await axios.get<CheckRaceResultRecord>('http://localhost:3100/checkRaceResultRecord/',);
-      const response = await axios.post('/registerTournamentEntryCsvData', sendTournData);
+      // TODO: バックエンドの例外処理に関する仕様が決まり次第、エラーメッセージを修正すること
+      const response = await axios.post('api/registerTournamentEntryCsvData', sendTournData);
       const data = response.data;
 
       if (data.hasError) {

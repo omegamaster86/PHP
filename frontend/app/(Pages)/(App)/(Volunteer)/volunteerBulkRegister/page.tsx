@@ -231,9 +231,9 @@ export default function VolunteerBulkRegister() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.get<{ result: UserResponse }>('/api/user');
+        const response = await axios.get<{ result: UserResponse }>('api/user');
         if (Object.keys(response.data.result).length > 0) {
-          const playerInf = await axios.get('/getIDsAssociatedWithUser');
+          const playerInf = await axios.get('api/getIDsAssociatedWithUser');
           if (
             playerInf.data.result[0].is_administrator == 1 ||
             playerInf.data.result[0].is_jara == 1
@@ -258,10 +258,7 @@ export default function VolunteerBulkRegister() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        // APIを叩いて、マスターデータを取得する
-        // 国マスタ
-        // const residenceCountryMaster = await axios.get('http://localhost:3100/countries');
-        const countryResponse = await axios.get('/getCountries');
+        const countryResponse = await axios.get('api/getCountries');
         const countryList = countryResponse.data.map(
           ({ country_id, country_name }: { country_id: number; country_name: string }) => ({
             id: country_id,
@@ -269,9 +266,7 @@ export default function VolunteerBulkRegister() {
           }),
         );
         setCountry(countryList);
-        // 都道府県マスタ
-        // const residencePrefectureMaster = await axios.get('http://localhost:3100/prefecture');
-        const prefectureResponse = await axios.get('/getPrefecures');
+        const prefectureResponse = await axios.get('api/getPrefectures');
         const stateList = prefectureResponse.data.map(
           ({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({
             id: pref_id,
@@ -280,15 +275,13 @@ export default function VolunteerBulkRegister() {
         );
         setPrefecture(stateList);
         // 性別マスタ
-        // const sexMaster = await axios.get('http://localhost:3100/sex');
-        const sexResponse = await axios.get('/getSexList');
+        const sexResponse = await axios.get('api/getSexList');
         const sexList = sexResponse.data.map(
           ({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }),
         );
         setSex(sexList);
         // 服サイズマスタ
-        // const clothesSizeMaster = await axios.get('http://localhost:3100/clothesSize');
-        const clothesSizeMaster = await axios.get('/getClothesSize');
+        const clothesSizeMaster = await axios.get('api/getClothesSize');
         const clothesSizeMasterList = clothesSizeMaster.data.map(
           ({
             clothes_size_id,
@@ -299,9 +292,7 @@ export default function VolunteerBulkRegister() {
           }) => ({ id: clothes_size_id, name: clothes_size }),
         );
         setClothesSize(clothesSizeMasterList);
-        // 資格マスタ
-        // const qualificationMaster = await axios.get('http://localhost:3100/qualHold');
-        const qualHold = await axios.get('/getQualifications');
+        const qualHold = await axios.get('api/getQualifications');
         const qualHoldList = qualHold.data.map(
           ({ qual_id, qual_name }: { qual_id: number; qual_name: string }) => ({
             id: qual_id,
@@ -309,9 +300,7 @@ export default function VolunteerBulkRegister() {
           }),
         );
         setQualHold(qualHoldList);
-        // 言語マスタ
-        // const languageMaster = await axios.get('http://localhost:3100/language');
-        const lang = await axios.get('/getLanguages');
+        const lang = await axios.get('api/getLanguages');
         const langList = lang.data.map(
           ({ lang_id, lang_name }: { lang_id: number; lang_name: string }) => ({
             id: lang_id,
@@ -319,9 +308,7 @@ export default function VolunteerBulkRegister() {
           }),
         );
         setLanguage(langList);
-        // 言語レベルマスタ
-        // const languageProficiencyMaster = await axios.get('http://localhost:3100/languageLevel');
-        const langLevel = await axios.get('/getLanguageProficiency');
+        const langLevel = await axios.get('api/getLanguageProficiency');
         const langLevelList = langLevel.data.map(
           ({ lang_pro_id, lang_pro_name }: { lang_pro_id: number; lang_pro_name: string }) => ({
             id: lang_pro_id,
@@ -915,7 +902,7 @@ export default function VolunteerBulkRegister() {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     await axios
-      .post('/sendVolunteerCsvData', array)
+      .post('api/sendVolunteerCsvData', array)
       .then((res) => {
         var contentData = res.data.result as CsvData[];
 
@@ -948,10 +935,8 @@ export default function VolunteerBulkRegister() {
     await csrf();
     //console.log(csvData);
     await axios
-      .post('/registerVolunteerCsvData', csvData)
+      .post('api/registerVolunteerCsvData', csvData)
       .then((res) => {
-        //console.log('res.data');
-        //console.log(res.data);
         // router.push('/tournamentSearch'); // 20240222
       })
       .catch((error) => {

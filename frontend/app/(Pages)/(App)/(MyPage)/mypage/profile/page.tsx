@@ -14,7 +14,7 @@ export default function Profile() {
   const router = useRouter();
   const { data } = useSWR(
     {
-      url: '/getMyPageProfileList',
+      url: 'api/getMyPageProfileList',
     },
     fetcher<MyPageProfileInfoData>,
     {

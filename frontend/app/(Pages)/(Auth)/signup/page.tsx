@@ -169,7 +169,7 @@ export default function Signup() {
               await csrf();
               // 仮登録処理
               axios
-                .post('/signup', {
+                .post('api/signup', {
                   userName,
                   email,
                   confirmEmail,

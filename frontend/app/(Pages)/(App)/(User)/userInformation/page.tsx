@@ -167,9 +167,9 @@ export default function UserInformationUpdate() {
         await csrf();
         // APIを叩いて、マスタ情報を取得する処理の置き換え
         const [prefectureResponse, sexResponse, countryResponse] = await Promise.all([
-          axios.get<Prefecture[]>('/getPrefecures'),
-          axios.get<Sex[]>('/getSexList'),
-          axios.get<Country[]>('/getCountries'),
+          axios.get<Prefecture[]>('api/getPrefectures'),
+          axios.get<Sex[]>('api/getSexList'),
+          axios.get<Country[]>('api/getCountries'),
         ]);
 
         const stateList = prefectureResponse.data.map((x) => ({
@@ -224,7 +224,7 @@ export default function UserInformationUpdate() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.get<{ result: UserResponse }>('/api/user');
+        const response = await axios.get<{ result: UserResponse }>('api/user');
 
         setFormData((prevFormData) => ({
           ...prevFormData,
@@ -342,7 +342,7 @@ export default function UserInformationUpdate() {
                 await csrf();
 
                 axios
-                  .post('/updateUserData', formData, {
+                  .post('api/updateUserData', formData, {
                     //ファイルを送るため
                     headers: {
                       'content-type': 'multipart/form-data',
@@ -371,7 +371,7 @@ export default function UserInformationUpdate() {
                 const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
                 axios
-                  .post('/user/sent-certification-number', {
+                  .post('api/user/sent-certification-number', {
                     user_name: formData?.user_name,
                     mailaddress: formData?.mailaddress,
                   })
@@ -398,7 +398,7 @@ export default function UserInformationUpdate() {
               await csrf();
 
               axios
-                .post('/updateUserData', formData, {
+                .post('api/updateUserData', formData, {
                   //ファイルを送るため
                   headers: {
                     'content-type': 'multipart/form-data',
@@ -769,7 +769,7 @@ export default function UserInformationUpdate() {
                 await csrf();
 
                 axios
-                  .post('/user/verify-certification-number', {
+                  .post('api/user/verify-certification-number', {
                     certification_number: authNumber,
                   })
                   .then((response) => {

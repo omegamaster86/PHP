@@ -15,7 +15,7 @@ type UserType = {
 };
 
 export const useUserType = (): UserType | null => {
-  const { data } = useSWR({ url: '/getIDsAssociatedWithUser' }, fetcher<UserIdType[]>);
+  const { data } = useSWR({ url: 'api/getIDsAssociatedWithUser' }, fetcher<UserIdType[]>);
   const result: UserIdType | undefined = data?.result[0];
 
   if (!result) {

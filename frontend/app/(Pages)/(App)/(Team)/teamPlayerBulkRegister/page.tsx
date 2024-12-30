@@ -83,9 +83,9 @@ export default function TeamPlayerBulkRegister() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.get<{ result: UserResponse }>('/api/user');
+        const response = await axios.get<{ result: UserResponse }>('api/user');
         if (Object.keys(response.data.result).length > 0) {
-          const playerInf = await axios.get('/getIDsAssociatedWithUser');
+          const playerInf = await axios.get('api/getIDsAssociatedWithUser');
           if (
             playerInf.data.result[0].is_administrator == 1 ||
             playerInf.data.result[0].is_jara == 1 ||
@@ -197,18 +197,15 @@ export default function TeamPlayerBulkRegister() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
         if (isOrgNameActive == false) {
-          // const org = await axios.get<Org[]>('http://localhost:3100/orgSearch');
           const orgSearchId = { org_id };
-          const org = await axios.post('/getOrgData', orgSearchId);
-          //console.log(org.data.result);
+          const org = await axios.post('api/getOrgData', orgSearchId);
           setOrg(org.data.result);
           setTargetOrgData({
             targetOrgId: org.data.result.org_id,
             targetOrgName: org.data.result.org_name,
           });
         } else {
-          // const org = await axios.get<Org[]>('http://localhost:3100/orgSearch');
-          const playerInf = await axios.get('/getIDsAssociatedWithUser');
+          const playerInf = await axios.get('api/getIDsAssociatedWithUser');
           const userIdInfo = playerInf.data.result[0];
           if (
             userIdInfo.is_administrator == '0' &&
@@ -216,12 +213,10 @@ export default function TeamPlayerBulkRegister() {
             userIdInfo.is_pref_boat_officer == '0'
           ) {
             //団体管理者の権限だけが1の場合
-            const responseData = await axios.get('/getOrganizationForOrgManagement'); //ログインユーザーが管理している団体データの取得 20240201
-            //console.log(responseData.data.result);
+            const responseData = await axios.get('api/getOrganizationForOrgManagement'); //ログインユーザーが管理している団体データの取得
             setOrgs(responseData.data.result);
           } else {
-            const responseData = await axios.get('/getOrganizationListData'); //すべての団体データの取得 20240410
-            //console.log(responseData.data.result);
+            const responseData = await axios.get('api/getOrganizationListData'); //すべての団体データの取得
             setOrgs(responseData.data.result);
           }
         }
@@ -344,8 +339,7 @@ export default function TeamPlayerBulkRegister() {
       }
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
-      const response = await axios.post('/sendOrgCsvData', sendData);
-      //console.log(response.data.result);
+      const response = await axios.post('api/sendOrgCsvData', sendData);
       setCsvData(response.data.result);
       setActivationFlg(false);
     } catch (error) {
@@ -364,7 +358,7 @@ export default function TeamPlayerBulkRegister() {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     await axios
-      .post('/registerOrgCsvData', sendData)
+      .post('api/registerOrgCsvData', sendData)
       .then((res) => {
         //console.log(res.data.result);
         // router.push('/tournamentSearch'); // 20240222

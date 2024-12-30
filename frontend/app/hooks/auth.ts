@@ -14,9 +14,9 @@ export const useAuth = ({
   const router = useRouter();
   const pathname = usePathname();
 
-  const { data, error, mutate } = useSWR('/api/user', () =>
+  const { data, error, mutate } = useSWR('api/user', () =>
     axios
-      .get<{ result: UserResponse }>('/api/user')
+      .get<{ result: UserResponse }>('api/user')
       .then((res) => res.data)
       .catch((error) => {
         if (!['/signup', '/forgotpassword', '/inquiry'].includes(pathname)) {
@@ -44,7 +44,7 @@ export const useAuth = ({
       if (pathname === '/signup' || pathname === '/forgotpassword') {
       } else {
         try {
-          await axios.post('/logout').then(() => {
+          await axios.post('api/logout').then(() => {
             mutate();
             window.history.replaceState(null, '', '/login');
           });

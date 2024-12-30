@@ -49,7 +49,7 @@ class OrganizationController extends Controller
     //         // //団体区分マスターを取得 20231215 t_futamura
     //         // $mOrgClass = $mOrganizationClass->getOrganizationClass();
     //         // //都道府県マスターを取得 20231215 t_futamura
-    //         // $mPref = $mPrefectures->getPrefecures();
+    //         // $mPref = $mPrefectures->getPrefectures();
     //         //団体所属スタッフテーブルを取得 20231215 t_futamura
     //         $tStaff = $tOrganizationStaff->getOrganizationStaffFromOrgId($targetOrgId['org_id']);
     //         //スタッフ種別マスターを取得 20231215 t_futamura
@@ -270,7 +270,7 @@ class OrganizationController extends Controller
     //         //国マスタを取得
     //         $countries = $mCountries->getCountries();
     //         //都道府県マスタを取得
-    //         $prefectures = $mPrefectures->getPrefecures();
+    //         $prefectures = $mPrefectures->getPrefectures();
     //         //団体区分マスタを取得
     //         $organizationClass = $mOrganizationClass->getOrganizationClass();
     //         //団体種別マスタを取得
@@ -601,7 +601,7 @@ class OrganizationController extends Controller
             //エラーメッセージを整形
             $errorMessage = str_replace('[団体名]', $duplicateOrgInfo->org_name, str_replace('[団体ID]', $duplicateOrgInfo->org_id, $entrysystemOrgId_registered));
             //エラーを返す
-            abort(500,$errorMessage);
+            abort(500, $errorMessage);
         }
 
         return true;
@@ -682,37 +682,30 @@ class OrganizationController extends Controller
     private function generateUpdateStaffCondition($organizationInfo)
     {
         $condition = "";
-        $staffList = $organizationInfo['staffList'];        
-        foreach($staffList as $staff)
-        {
+        $staffList = $organizationInfo['staffList'];
+        foreach ($staffList as $staff) {
             //団体IDを持つ、かつ削除フラグが立っていないとき
             // = 新規スタッフでない、かつ削除対象ではないスタッフに対して処理する
-            if(isset($staff['org_id']) && !$staff['delete_flag'])
-            {
+            if (isset($staff['org_id']) && !$staff['delete_flag']) {
                 //監督にチェックが入っていない
-                if($staff['is_director'] == 0)
-                {
-                    $condition .= " or ( `user_id`= ".$staff['id']. " and `staff_type_id`= 1)\r\n";
+                if ($staff['is_director'] == 0) {
+                    $condition .= " or ( `user_id`= " . $staff['id'] . " and `staff_type_id`= 1)\r\n";
                 }
                 //部長にチェックが入っていない
-                if($staff['is_head'] == 0)
-                {
-                    $condition .= " or ( `user_id`= ".$staff['id']. " and `staff_type_id`= 2)\r\n";
+                if ($staff['is_head'] == 0) {
+                    $condition .= " or ( `user_id`= " . $staff['id'] . " and `staff_type_id`= 2)\r\n";
                 }
                 //コーチにチェックが入っていない
-                if($staff['is_coach'] == 0)
-                {
-                    $condition .= " or ( `user_id`= ".$staff['id']. " and `staff_type_id`= 3)\r\n";
+                if ($staff['is_coach'] == 0) {
+                    $condition .= " or ( `user_id`= " . $staff['id'] . " and `staff_type_id`= 3)\r\n";
                 }
                 //マネージャーにチェックが入っていない
-                if($staff['is_manager'] == 0)
-                {
-                    $condition .= " or ( `user_id`= ".$staff['id']. " and `staff_type_id`= 4)\r\n";
+                if ($staff['is_manager'] == 0) {
+                    $condition .= " or ( `user_id`= " . $staff['id'] . " and `staff_type_id`= 4)\r\n";
                 }
                 //管理代理にチェックが入っていない
-                if($staff['is_acting_director'] == 0)
-                {
-                    $condition .= " or ( `user_id`= ".$staff['id']. " and `staff_type_id`= 5)\r\n";
+                if ($staff['is_acting_director'] == 0) {
+                    $condition .= " or ( `user_id`= " . $staff['id'] . " and `staff_type_id`= 5)\r\n";
                 }
             }
             //削除フラグが立っているときは別途処理
@@ -730,7 +723,7 @@ class OrganizationController extends Controller
         //スタッフごとの処理
         foreach ($organizationInfo['staffList'] as $rowData) {
             //if (isset($rowData['user_id']) && isset($rowData['user_name'])) {
-                if (!$rowData['delete_flag']) {
+            if (!$rowData['delete_flag']) {
                 for ($staff_array_index = 0; $staff_array_index < count($rowData['staff_type_id']); $staff_array_index++) {
                     //置き換える文字列を生成
                     $replace_string .= "union select " . $org_id . " AS `org_id`,\r\n";
@@ -870,7 +863,7 @@ class OrganizationController extends Controller
     }
 
     //react 団体登録確認画面からDBにデータを渡してInsertを実行する 20240209
-    public function storeOrgData(Request $request, T_organizations $tOrganizations, T_organization_staff $tOrganizationStaff,T_users $t_users)
+    public function storeOrgData(Request $request, T_organizations $tOrganizations, T_organization_staff $tOrganizationStaff, T_users $t_users)
     {
         Log::debug(sprintf("storeOrgData start"));
         $lastInsertId = "";
@@ -916,10 +909,10 @@ class OrganizationController extends Controller
             DB::commit();
             Log::debug(sprintf("storeOrgData end"));
             return response()->json(['result' => $lastInsertId]); //DBの結果を返す
-        } catch (\Throwable $e) {            
+        } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            abort(500,"団体登録に失敗しました。");
+            abort(500, "団体登録に失敗しました。");
         }
     }
 
@@ -927,7 +920,7 @@ class OrganizationController extends Controller
     public function updateOrgData(Request $request, T_organizations $tOrganizations, T_organization_staff $tOrganizationStaff, T_users $t_users)
     {
         Log::debug(sprintf("updateOrgData start"));
-        
+
         $organizationInfo = $request->all();
         Log::debug($organizationInfo);
         $target_org_id = $organizationInfo['formData']['org_id'];   //更新対象の団体ID
@@ -960,7 +953,7 @@ class OrganizationController extends Controller
                 return response()->json(['errorMessage' => "他のユーザーにより団体情報が削除されています。情報の更新ができません。"]);
             }
         }
-        
+
 
         DB::beginTransaction();
         try {
@@ -986,24 +979,21 @@ class OrganizationController extends Controller
             //スタッフの更新 20240318
             //前のスタッフをupdateする
             $updateCondition = $this->generateUpdateStaffCondition($organizationInfo);
-            if(!empty($updateCondition))
-            {
-                $tOrganizationStaff->updateDeleteFlagInOrganizationStaff($updateCondition,$target_org_id);
+            if (!empty($updateCondition)) {
+                $tOrganizationStaff->updateDeleteFlagInOrganizationStaff($updateCondition, $target_org_id);
             }
             //新しく入力されたスタッフをInsertする
             $replace_string = $this->generateInsertStaffValues($organizationInfo, $organizationInfo['formData']['org_id']);
             $tOrganizationStaff->insertOrganizationStaff($replace_string, $target_org_id);
 
             //削除のチェックボックスにチェックしたユーザーを団体所属スタッフテーブルから削除する
-            foreach($organizationInfo['staffList'] as $staff)
-            {
-                if($staff['delete_flag'])
-                {
+            foreach ($organizationInfo['staffList'] as $staff) {
+                if ($staff['delete_flag']) {
                     $target_user_id = $staff['user_id'];
-                    $tOrganizationStaff->updateDeleteFlagByUserDeletion($target_user_id,$target_org_id);
+                    $tOrganizationStaff->updateDeleteFlagByUserDeletion($target_user_id, $target_org_id);
                 }
             }
-            
+
             //ユーザー種別の団体管理者を更新
             $t_users->updateOrganizationManagerFlagAllUser();
             $t_users->updateDeleteOrganizationManagerFlagAllUser();
@@ -1014,7 +1004,7 @@ class OrganizationController extends Controller
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            abort(500,"団体更新に失敗しました。");
+            abort(500, "団体更新に失敗しました。");
         }
     }
 
@@ -1067,25 +1057,20 @@ class OrganizationController extends Controller
             $tOrg[$i]->isUserFound = true;
             $tOrg[$i]->delete_flag = false;
             $tOrg[$i]->id = ($i + 1);
-            if(!$tOrg[$i]->enable)
-            {
+            if (!$tOrg[$i]->enable) {
                 $tOrg[$i]->delete_flag = true;
                 $is_error = true;
             }
             $tOrg[$i]->coachQualificationNames = explode(",", $tOrg[$i]->coachQualificationNames);
             $tOrg[$i]->refereeQualificationNames = explode(",", $tOrg[$i]->refereeQualificationNames);
-
         }
         Log::debug(sprintf("getOrgStaffData end"));
         //Log::debug($tOrg);
 
-        if($is_error)
-        {
+        if ($is_error) {
             //エラーがあった場合
             return response()->json(['result' => $tOrg, $is_error => true]); //DBの結果を返す
-        }
-        else
-        {
+        } else {
             //エラーがなかった場合
             return response()->json(['result' => $tOrg, $is_error => false]); //DBの結果を返す
         }
@@ -1116,12 +1101,13 @@ class OrganizationController extends Controller
     }
 
     //団体削除 20240307
-    public function deleteOrgData(Request $request,
-                                    T_organization_staff $t_organization_staff
-                                    ,T_organization_players $t_organization_players
-                                    ,T_organizations $t_organizations
-                                    ,T_users $t_users)
-    {
+    public function deleteOrgData(
+        Request $request,
+        T_organization_staff $t_organization_staff,
+        T_organization_players $t_organization_players,
+        T_organizations $t_organizations,
+        T_users $t_users
+    ) {
         Log::debug(sprintf("deleteOrgData start"));
         $organizationInfo = $request->all();
         //Log::debug($organizationInfo);
@@ -1140,19 +1126,19 @@ class OrganizationController extends Controller
             //ユーザー種別の団体管理者を更新
             //$t_users->updateOrganizationManagerFlagAllUser();
             $t_users->updateDeleteOrganizationManagerFlagAllUser();
-            
+
             DB::commit();
             Log::debug(sprintf("deleteOrgData end"));
             return response()->json(['result' => true]); //DBの結果を返す
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            abort(500,['result' => false]); //DBの結果を返す
+            abort(500, ['result' => false]); //DBの結果を返す
         }
     }
 
     //団体のバリデーションチェック 20240307
-    public function validateOrgData(Request $request,  T_organizations $tOrganizations,T_users $t_users)
+    public function validateOrgData(Request $request,  T_organizations $tOrganizations, T_users $t_users)
     {
         Log::debug(sprintf("validateOrgData start"));
         $reqData = $request->all();
@@ -1175,45 +1161,40 @@ class OrganizationController extends Controller
 
         if ($duplicationCount > 0) {
             // Log::debug(sprintf("validateOrgData duplication"));
-            abort(400,"エントリーシステムの団体IDが重複しています。");
+            abort(400, "エントリーシステムの団体IDが重複しています。");
         }
 
         //スタッフのユーザーID重複チェック
         $user_ids = array_column($staff_list, 'user_id');
         $duplicates = array_unique(array_diff_assoc($user_ids, array_unique($user_ids)));
         if (!empty($duplicates)) {
-            abort(400,["重複して登録されているユーザーが有ります。ユーザーID：".implode(', ', $duplicates)]);
+            abort(400, ["重複して登録されているユーザーが有ります。ユーザーID：" . implode(', ', $duplicates)]);
         }
 
         //スタッフのuser_idが有効かチェックする
         //user_idを判定してenableに結果を格納する      
-        $this->checkUserIdIsValid($staff_list,$t_users);
+        $this->checkUserIdIsValid($staff_list, $t_users);
         //有効なユーザーかをチェック
         //staffListを確認し、enableが0のuser_idを抽出
-        $disable_staffs_ids = array_column(array_filter($staff_list, function($item) {
-                                    return isset($item['enable']) && $item['enable'] == 0 && $item['delete_flag'] == false;
-                                }), 'user_id');
-        if(!empty($disable_staffs_ids))
-        {
-            abort(400,["本システムに本登録されていないユーザー登録されていないユーザーが含まれています。ユーザーID：".implode(', ', $disable_staffs_ids)]);
+        $disable_staffs_ids = array_column(array_filter($staff_list, function ($item) {
+            return isset($item['enable']) && $item['enable'] == 0 && $item['delete_flag'] == false;
+        }), 'user_id');
+        if (!empty($disable_staffs_ids)) {
+            abort(400, ["本システムに本登録されていないユーザー登録されていないユーザーが含まれています。ユーザーID：" . implode(', ', $disable_staffs_ids)]);
         }
 
         //スタッフの入力が100件以下のチェック
         $enable_staff_count = 0;
-        foreach($staff_list as $staff)
-        {
-            if(!$staff['delete_flag'])
-            {
+        foreach ($staff_list as $staff) {
+            if (!$staff['delete_flag']) {
                 $enable_staff_count++;
             }
-            if($enable_staff_count > 100)
-            {
+            if ($enable_staff_count > 100) {
                 break;
             }
         }
-        if($enable_staff_count > 100)
-        {
-            abort(400,"登録できるスタッフの人数が、100名を超えています。1団体に登録できるスタッフ数は、100名までです。");
+        if ($enable_staff_count > 100) {
+            abort(400, "登録できるスタッフの人数が、100名を超えています。1団体に登録できるスタッフ数は、100名までです。");
         }
         Log::debug(sprintf("validateOrgData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
@@ -1223,10 +1204,8 @@ class OrganizationController extends Controller
     private function checkUserIdIsValid(&$staff_list, T_users $t_users)
     {
         Log::debug("checkUserIdIsValid start.");
-        for($iStaff = 0;$iStaff < count($staff_list);$iStaff++)
-        {
-            if(isset($staff_list[$iStaff]['user_id']) && $staff_list[$iStaff]['delete_flag'] == false)
-            {
+        for ($iStaff = 0; $iStaff < count($staff_list); $iStaff++) {
+            if (isset($staff_list[$iStaff]['user_id']) && $staff_list[$iStaff]['delete_flag'] == false) {
                 $user_id = $staff_list[$iStaff]['user_id'];
                 $is_valid = $t_users->getUserIdIsValid($user_id);
                 $staff_list[$iStaff]['enable'] = $is_valid[0]->{'is_valid'};

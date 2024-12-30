@@ -17,27 +17,27 @@ const CoachReferee = () => {
 
   const { data: coachQualificationsRes } = useSWR(
     {
-      url: `getCoachQualifications`,
+      url: `api/getCoachQualifications`,
     },
     fetcher<SelectOption[]>,
   );
   const { data: refereeQualificationsRes } = useSWR(
     {
-      url: `getRefereeQualifications`,
+      url: `api/getRefereeQualifications`,
     },
     fetcher<SelectOption[]>,
   );
 
   const { data: organizationsRes } = useSWR(
     {
-      url: `getOrganizationListData`,
+      url: `api/getOrganizationListData`,
     },
     fetcher<OrganizationListData[]>,
   );
 
   const { data: staffsRes } = useSWR(
     {
-      url: `getStaffTypes`,
+      url: `api/getStaffTypes`,
     },
     fetcher<SelectOption[]>,
   );

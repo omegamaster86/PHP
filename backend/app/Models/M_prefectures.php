@@ -29,26 +29,28 @@ class M_prefectures extends Model
     ];
 
     //都道府県マスタを取得
-    public function getPrefecures()
+    public function getPrefectures()
     {
-        $prefectures = DB::select('select pref_id
+        $prefectures = DB::select(
+            'select pref_id
                                         ,pref_code_jis
                                         ,pref_name
                                         from m_prefectures
                                         where delete_flag=0
                                         order by display_order'
-                                    );
+        );
         return $prefectures;
     }
 
     public function getPrefIdFromPrefCodeJis($pref_code_jis)
     {
-        $pref_ids = DB::select('select pref_id
+        $pref_ids = DB::select(
+            'select pref_id
                                 from m_prefectures
                                 where delete_flag=0
-                                and pref_code_jis = ?'
-                                ,[$pref_code_jis]
-                            );
+                                and pref_code_jis = ?',
+            [$pref_code_jis]
+        );
         //pref_idは一意に決まるため0番目を返す
         $pref_id = $pref_ids[0]->pref_id;
         return $pref_id;
@@ -56,34 +58,35 @@ class M_prefectures extends Model
 
     public function getPrefInfoFromPrefCodeJis($pref_code_jis)
     {
-        $pred_info = DB::select('select
+        $pred_info = DB::select(
+            'select
                                 pref_id
                                 ,pref_name
                                 from m_prefectures
                                 where delete_flag=0
-                                and pref_code_jis = ?'
-                                ,[$pref_code_jis]
-                            );
+                                and pref_code_jis = ?',
+            [$pref_code_jis]
+        );
         //pref_infoは一意に決まるため0番目を返す
-        if(!empty($pred_info)){
+        if (!empty($pred_info)) {
             $target_pref = $pred_info[0];
         }
         return $target_pref;
     }
     public function getPrefName($pref_id)
     {
-        $pref_name_info = DB::select('select pref_name
+        $pref_name_info = DB::select(
+            'select pref_name
                                 from m_prefectures
                                 where delete_flag=0
-                                and pref_id = ?'
-                                ,[$pref_id]
-                            );
+                                and pref_id = ?',
+            [$pref_id]
+        );
         //pref_name_infoは一意に決まるため0番目を返す
-        if(!empty($pref_name_info))
+        if (!empty($pref_name_info))
             $pref_name = $pref_name_info[0]->pref_name;
         else
             $pref_name = "";
         return $pref_name;
     }
-    
 }

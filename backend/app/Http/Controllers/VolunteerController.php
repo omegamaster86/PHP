@@ -175,7 +175,7 @@ class VolunteerController extends Controller
     //     } else {
     //         $sex = $m_sex->getSexList();
     //         $countries = $m_countries->getCountries();
-    //         $prefectures = $m_prefectures->getPrefecures();
+    //         $prefectures = $m_prefectures->getPrefectures();
     //         $languages =  $m_languages->getLanguages();
     //         $language_proficiency = $m_language_proficiency->getLanguageProficiency();
 
@@ -193,10 +193,9 @@ class VolunteerController extends Controller
     public function searchVolunteers(Request $request, T_volunteers $t_volunteers)
     {
         Log::debug(sprintf("searchVolunteers start"));
-        $searchInfo = $request->all();        
+        $searchInfo = $request->all();
         //Log::debug($searchInfo);
-        try
-        {
+        try {
             //参加しやすい曜日
             $pieces = str_split((string) $searchInfo['dayOfWeek']);
             $searchInfo['sunday'] = $pieces[0];
@@ -229,9 +228,9 @@ class VolunteerController extends Controller
 
             //言語レベル
             for ($i = 0; $i < count($searchInfo['lang']); $i++) {
-                if(isset($searchInfo['lang'][$i]['id']) && $searchInfo['lang'][$i]['id'] != 0) {
+                if (isset($searchInfo['lang'][$i]['id']) && $searchInfo['lang'][$i]['id'] != 0) {
                     $searchInfo['language' . ($i + 1)] = $searchInfo['lang'][$i]['id'];
-                    if(isset($searchInfo['lang'][$i]['levelId'])) {
+                    if (isset($searchInfo['lang'][$i]['levelId'])) {
                         $searchInfo['lang_pro' . ($i + 1)] = $searchInfo['lang'][$i]['levelId'];
                     }
                 }
@@ -295,11 +294,9 @@ class VolunteerController extends Controller
 
             Log::debug(sprintf("searchVolunteers end"));
             return response()->json(['result' => $result]); //DBの結果を返す
-        }
-        catch(\Throwable $e)
-        {
+        } catch (\Throwable $e) {
             Log::error($e);
-            abort(500,['errMessage' => $e->getMessage()]);
+            abort(500, ['errMessage' => $e->getMessage()]);
         }
     }
 
@@ -449,7 +446,7 @@ class VolunteerController extends Controller
                     if ($searchInfo['qualifications' . $i] == $other_qualification_id) {
                         $condition .= ",count((tq.qual_id = :qualifications" . $i . " and tq.others_qual LIKE :other_qualification ) or null) as `qualifications" . $i . "`\r\n";
                         $conditionValue['qualifications' . $i] = $searchInfo['qualifications' . $i];
-                        $conditionValue['other_qualification'] = "%".$searchInfo['othersQual']."%";
+                        $conditionValue['other_qualification'] = "%" . $searchInfo['othersQual'] . "%";
                     }
                     //「その他」ではない資格のとき
                     else {
@@ -538,19 +535,16 @@ class VolunteerController extends Controller
             $condition .= "and SUBSTRING(t_volunteer_availables.`time_zone`,1,1) = '1'\r\n";
         }
         //過去に参加した大会
-        if(count($searchInfo['tour']) > 0)
-        {
+        if (count($searchInfo['tour']) > 0) {
             //and条件の場合
 
             //or条件の場合
-            $condition .= "and t_tournaments.tourn_id in (".$searchInfo['tour'][0]['id'];
-            if(isset($searchInfo['tour'][1]))
-            {
-                $condition .= ",".$searchInfo['tour'][1]['id'];
+            $condition .= "and t_tournaments.tourn_id in (" . $searchInfo['tour'][0]['id'];
+            if (isset($searchInfo['tour'][1])) {
+                $condition .= "," . $searchInfo['tour'][1]['id'];
             }
-            if(isset($searchInfo['tour'][2]))
-            {
-                $condition .= ",".$searchInfo['tour'][2]['id'];
+            if (isset($searchInfo['tour'][2])) {
+                $condition .= "," . $searchInfo['tour'][2]['id'];
             }
             $condition .= ")";
         }
@@ -605,15 +599,15 @@ class VolunteerController extends Controller
         Log::debug(sprintf("deleteVolunteer start"));
         $reqData = $request->all();
         Log::debug($reqData);
-        
+
         $volData = $tVolunteer->getVolunteers($reqData['volunteer_id']); //ボランティア情報を取得
         $volInfo = (array)$volData;
- 
+
         //ログインユーザーに紐づいたボランティア情報の場合、削除処理を実行 20241203
-        if($volInfo['user_id'] != Auth::user()->user_id){
+        if ($volInfo['user_id'] != Auth::user()->user_id) {
             abort(403, '削除権限がありません。');
         }
- 
+
         $volData = $tVolunteer->updateDeleteFlag($reqData['volunteer_id']); //ボランティア情報の更新
         $volAvaData = $tVolunteerAvailables->updateDeleteFlag($reqData['volunteer_id']); //ボランティアアベイラブル情報の更新
         $volHistData = $tVolunteerHistories->updateDeleteFlag($reqData['volunteer_id']); //ボランティア履歴情報の更新
@@ -628,8 +622,7 @@ class VolunteerController extends Controller
         Log::debug($hoge);
         $user_type = (string)Auth::user()->user_type;
         //右から2桁目が1のときだけユーザー種別を更新する
-        if(substr($user_type,-2,1) == '1')
-        {
+        if (substr($user_type, -2, 1) == '1') {
             $t_users->updateUserTypeDelete($hoge);
         }
 

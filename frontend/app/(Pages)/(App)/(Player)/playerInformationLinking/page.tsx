@@ -71,9 +71,9 @@ export default function PlayerInformationLinking() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const response = await axios.get<{ result: UserResponse }>('/api/user');
+        const response = await axios.get<{ result: UserResponse }>('api/user');
         if (Object.keys(response.data.result).length > 0) {
-          const playerInf = await axios.get('/getIDsAssociatedWithUser');
+          const playerInf = await axios.get('api/getIDsAssociatedWithUser');
           if (
             playerInf.data.result[0].is_administrator == 1 ||
             playerInf.data.result[0].is_jara == 1
@@ -192,7 +192,7 @@ export default function PlayerInformationLinking() {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     await axios
-      .post('/sendCsvData', element)
+      .post('api/sendCsvData', element)
       .then((res) => {
         //console.log(res.data.result);
         var contentData = res.data.result as CsvData[];
@@ -261,7 +261,7 @@ export default function PlayerInformationLinking() {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     await axios
-      .post('/registerCsvData', csvData)
+      .post('api/registerCsvData', csvData)
       .then((res) => {
         //console.log(res.data);
         // router.push('/tournamentSearch'); // 20240222

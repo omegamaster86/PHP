@@ -36,7 +36,7 @@ const ConfirmView: React.FC<Props> = ({
     });
   };
 
-  const resisterMutation = useSWRMutation('/updateCoachRefereeInfo', sendResisterRequest);
+  const resisterMutation = useSWRMutation('api/updateCoachRefereeInfo', sendResisterRequest);
   if (!parsedData) {
     return null;
   }
@@ -63,8 +63,8 @@ const ConfirmView: React.FC<Props> = ({
   };
 
   const handleGoBack = () => {
-    router.push('/coachReferee?mode=update&source=confirm')
-  }
+    router.push('/coachReferee?mode=update&source=confirm');
+  };
 
   return (
     <>
@@ -85,10 +85,7 @@ const ConfirmView: React.FC<Props> = ({
         />
         <Divider className='h-[1px] bg-border ' />
         <div className='flex flex-col gap-4 items-center justify-center md:flex-row'>
-          <CustomButton
-            buttonType='white-outlined'
-            onClick={handleGoBack}
-          >
+          <CustomButton buttonType='white-outlined' onClick={handleGoBack}>
             戻る
           </CustomButton>
           <CustomButton type='submit' buttonType='primary'>

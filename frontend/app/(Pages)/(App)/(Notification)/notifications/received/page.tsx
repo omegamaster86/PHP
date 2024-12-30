@@ -24,7 +24,7 @@ export default function NotificationsList() {
 
   const { data } = useSWR(
     {
-      url: '/getRecipientsNotificationsList',
+      url: 'api/getRecipientsNotificationsList',
     },
     fetcher<NotificationListData[]>,
     { suspense: true },
@@ -32,7 +32,7 @@ export default function NotificationsList() {
 
   const notificationRes = useSWR(
     {
-      url: '/getNotificationInfoData',
+      url: 'api/getNotificationInfoData',
       params: {
         notificationId: currentId,
       },

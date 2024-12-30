@@ -146,8 +146,7 @@ export default function OrgInfo() {
         // TODO: APIを叩いて、マスタ情報を取得する処理の置き換え
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        // const prefectures = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
-        const prefectures = await axios.get('/getPrefecures'); //都道府県マスターの取得 20240208
+        const prefectures = await axios.get('api/getPrefectures'); //都道府県マスターの取得 20240208
         //console.log(prefectures);
         const stateList = prefectures.data.map(
           ({
@@ -165,8 +164,7 @@ export default function OrgInfo() {
           }),
         );
         setPrefectureOptions(stateList);
-        // const orgClass = await axios.get<OrgClass[]>('http://localhost:3100/orgClass');
-        const orgClass = await axios.get('/getOrganizationClass'); //団体区分マスターの取得 20240208
+        const orgClass = await axios.get('api/getOrganizationClass'); //団体区分マスターの取得
         const orgClassList = orgClass.data.map(
           ({ org_class_id, org_class_name }: { org_class_id: number; org_class_name: string }) => ({
             id: org_class_id,
@@ -174,8 +172,7 @@ export default function OrgInfo() {
           }),
         );
         setOrgClassOptions(orgClassList);
-        // const orgType = await axios.get<OrgType[]>('http://localhost:3100/orgType');
-        const orgType = await axios.get('/getOrganizationTypeData'); //団体種別マスターの取得 20240208
+        const orgType = await axios.get('api/getOrganizationTypeData'); //団体種別マスターの取得
         const orgTypeList = orgType.data.map(
           ({ org_type_id, org_type }: { org_type_id: number; org_type: string }) => ({
             id: org_type_id,
@@ -184,12 +181,10 @@ export default function OrgInfo() {
         );
         setOrgTypeOptions(orgTypeList);
         if (mode === 'update' && !backKeyFlag) {
-          // const organization = await axios.get<Organization>('http://localhost:3100/organization');
           const sendId = { org_id: orgId };
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
-          const organizationDataList = await axios.post('/getOrgData', sendId);
-          //console.log(organizationDataList.data.result);
+          const organizationDataList = await axios.post('api/getOrgData', sendId);
           setFormData((prevFormData) => ({
             ...prevFormData,
             ...{
@@ -215,9 +210,7 @@ export default function OrgInfo() {
               pref_org_reg_trail: organizationDataList.data.result.pref_org_reg_trail,
             },
           }));
-          // const staff = await axios.get<Staff[]>('http://localhost:3100/staff');
-          const staff = await axios.post('/getOrgStaffData', sendId);
-          //console.log(staff.data);
+          const staff = await axios.post('api/getOrgStaffData', sendId);
           setTableData(staff.data.result);
         } else if (mode === 'create' && !backKeyFlag) {
           setFormData((prevFormData) => ({
@@ -260,7 +253,7 @@ export default function OrgInfo() {
           ]);
         }
 
-        const playerInf = await axios.get('/getIDsAssociatedWithUser');
+        const playerInf = await axios.get('api/getIDsAssociatedWithUser');
         setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
       } catch (error: any) {
         setErrorMessage(['API取得エラー:' + error.message]);
@@ -511,7 +504,7 @@ export default function OrgInfo() {
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
             axios
-              .post('/validateOrgData', sendData) //20240308
+              .post('api/validateOrgData', sendData)
               .then((response) => {
                 //console.log(response.data);
                 setTableData(response.data.result.staffList); //ユーザIDを元にユーザ名を表示する 20240405
@@ -559,7 +552,7 @@ export default function OrgInfo() {
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
             axios
-              .post('/validateOrgData', sendData) //20240308
+              .post('api/validateOrgData', sendData)
               .then((response) => {
                 //console.log(response);
                 setTableData(response.data.result.staffList); //ユーザIDを元にユーザ名を表示する 20240405
@@ -607,8 +600,7 @@ export default function OrgInfo() {
               const csrf = () => axios.get('/sanctum/csrf-cookie');
               await csrf();
               axios
-                // .post('http://localhost:3100/', requestBody)
-                .post('/storeOrgData', sendData) //20240226
+                .post('api/storeOrgData', sendData)
                 .then((response) => {
                   // console.log(response);
                   // TODO: 登録処理成功時の処理
@@ -638,8 +630,7 @@ export default function OrgInfo() {
               const csrf = () => axios.get('/sanctum/csrf-cookie');
               await csrf();
               axios
-                // .post('http://localhost:3100/', requestBody)
-                .post('/updateOrgData', sendData) //20240226
+                .post('api/updateOrgData', sendData)
                 .then((response) => {
                   if (
                     response.data.errorMessage == undefined ||

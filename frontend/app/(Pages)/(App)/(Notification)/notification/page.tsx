@@ -21,10 +21,10 @@ export default function Notification() {
   const searchParams = useSearchParams();
   const mode = (searchParams.get('mode') || 'create') as NotificationMode;
 
-  const coachRes = useSWR({ url: '/getCoachQualifications' }, fetcher<SelectOption[]>);
-  const refereeRes = useSWR({ url: '/getRefereeQualifications' }, fetcher<SelectOption[]>);
+  const coachRes = useSWR({ url: 'api/getCoachQualifications' }, fetcher<SelectOption[]>);
+  const refereeRes = useSWR({ url: 'api/getRefereeQualifications' }, fetcher<SelectOption[]>);
   const tournRes = useSWR(
-    { url: '/getMyOrgsHostedTournaments' },
+    { url: 'api/getMyOrgsHostedTournaments' },
     fetcher<MyOrgsHostedTournament[]>,
   );
 

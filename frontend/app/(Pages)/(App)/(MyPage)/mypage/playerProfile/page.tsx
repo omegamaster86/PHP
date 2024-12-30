@@ -15,7 +15,7 @@ export default function PlayerProfile() {
   const router = useRouter();
   const { data } = useSWR(
     {
-      url: '/getMyPagePlayerProfileList',
+      url: 'api/getMyPagePlayerProfileList',
     },
     fetcher<MyPagePlayerProfileInfoData>,
     {
@@ -64,7 +64,9 @@ export default function PlayerProfile() {
   ];
 
   const birthPlace = [user.birthCountryName, user.birthPrefectureName].filter((x) => x).join(' ');
-  const residence = [user.residenceCountryName, user.residencePrefectureName].filter((x) => x).join(' ');
+  const residence = [user.residenceCountryName, user.residencePrefectureName]
+    .filter((x) => x)
+    .join(' ');
 
   return (
     <main>

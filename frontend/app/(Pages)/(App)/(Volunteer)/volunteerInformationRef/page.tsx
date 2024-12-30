@@ -685,7 +685,7 @@ export default function VolunteerInformationRef() {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     await axios
-      .post('/deleteVolunteer', volunteer_id)
+      .post('api/deleteVolunteer', volunteer_id)
       .then((res) => {
         //console.log(res.data);
       })
@@ -697,16 +697,13 @@ export default function VolunteerInformationRef() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // TODO: 仮のURL（繋ぎ込み時に変更すること）
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
 
-        const userTypeInfo = await axios.get('/getIDsAssociatedWithUser');
-        setUserIdType(userTypeInfo.data.result[0]); //ユーザIDに紐づいた情報 20241216
+        const userTypeInfo = await axios.get('api/getIDsAssociatedWithUser');
+        setUserIdType(userTypeInfo.data.result[0]); //ユーザIDに紐づいた情報
 
-        // const volunteerResponse = await axios.get<VolunteerResponse>('/volunteer',);
-        const volunteerResponse = await axios.post('/getVolunteerData', volunteer_id); //ボランティア情報の取得 20240213
-        //console.log(volunteerResponse.data);
+        const volunteerResponse = await axios.post('api/getVolunteerData', volunteer_id); //ボランティア情報の取得
         const volLangProDataList = volunteerResponse.data.volLangProData.map(
           ({ lang_pro_name, lang_name }: { lang_pro_name: number; lang_name: string }) => ({
             level: lang_pro_name,
@@ -1016,16 +1013,18 @@ export default function VolunteerInformationRef() {
           ボランティア情報{mode === 'delete' && '削除'}
           {mode !== 'delete' && '参照'}
         </CustomTitle>
-        {mode !== 'delete' && (userIdType.is_administrator == 1 || userIdType.volunteer_id?.toString() == volunteerId) && (
-          <TitleSideButton
-            href={{
-              pathname: '/volunteerInformationRef',
-              query: { mode: 'delete', volunteer_id: volunteerId },
-            }}
-            icon={DeleteOutlineIcon}
-            text='ボランティア情報削除'
-          />
-        )}
+        {mode !== 'delete' &&
+          (userIdType.is_administrator == 1 ||
+            userIdType.volunteer_id?.toString() == volunteerId) && (
+            <TitleSideButton
+              href={{
+                pathname: '/volunteerInformationRef',
+                query: { mode: 'delete', volunteer_id: volunteerId },
+              }}
+              icon={DeleteOutlineIcon}
+              text='ボランティア情報削除'
+            />
+          )}
       </div>
       <ErrorBox errorText={errorMessage} />
       <div className='flex flex-row gap-[20px] justify-between'>

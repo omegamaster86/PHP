@@ -136,11 +136,8 @@ export default function AddPlayerSearch() {
     }
 
     try {
-      // TODO: APIを叩いて検索結果を取得する
-      // const response = await axios.get('http://localhost:3100/teamPlayerSearch');
-      const response = await axios.post('/teamPlayerSearch', searchCond);
+      const response = await axios.post('api/teamPlayerSearch', searchCond);
       const data = response.data.result;
-      //console.log(data);
       data.forEach((item: TeamPlayerInformationResponse) => {
         item.checked = false;
       });
@@ -222,20 +219,16 @@ export default function AddPlayerSearch() {
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        // const teamResponse = await axios.get('http://localhost:3100/team');
         const sendId = { org_id: orgId };
-        const teamResponse = await axios.post('/getOrgData', sendId);
+        const teamResponse = await axios.post('api/getOrgData', sendId);
         setTeamData(teamResponse.data.result);
         // 性別
-        // const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
-        const sexResponse = await axios.get('/getSexList');
+        const sexResponse = await axios.get('api/getSexList');
         const sexList = sexResponse.data.map(
           ({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }),
         );
         setSex(sexList);
-        // TODO: 都道府県情報の取得処理を実装
-        // const prefectureResponse = await axios.get<PrefectureResponse[]>('http://localhost:3100/prefecture',);
-        const prefectures = await axios.get('/getPrefecures'); //都道府県マスターの取得 20240208
+        const prefectures = await axios.get('api/getPrefectures'); //都道府県マスターの取得 20240208
         const stateList = prefectures.data.map(
           ({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({
             id: pref_id,
@@ -244,8 +237,7 @@ export default function AddPlayerSearch() {
         );
         setPrefectures(stateList);
         // 種目
-        // const eventResponse = await axios.get<EventResponse[]>('http://localhost:3100/event');
-        const eventResponse = await axios.get('/getEvents');
+        const eventResponse = await axios.get('api/getEvents');
         const eventResponseList = eventResponse.data.map(
           ({ event_id, event_name }: { event_id: number; event_name: string }) => ({
             id: event_id,

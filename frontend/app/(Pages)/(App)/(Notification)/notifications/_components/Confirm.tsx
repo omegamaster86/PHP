@@ -55,8 +55,8 @@ export const Confirm: React.FC<Props> = (props) => {
 
   const router = useRouter();
 
-  const createMutation = useSWRMutation('/insertNotification', sendCreateRequest);
-  const updateMutation = useSWRMutation('/updateNotification', sendUpdateRequest);
+  const createMutation = useSWRMutation('api/insertNotification', sendCreateRequest);
+  const updateMutation = useSWRMutation('api/updateNotification', sendUpdateRequest);
 
   const searchParams = useSearchParams();
   const notificationId = Number(searchParams.get('notificationId'));

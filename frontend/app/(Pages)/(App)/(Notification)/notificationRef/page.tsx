@@ -28,10 +28,10 @@ export default function NotificationRef() {
   const userId = Number(user?.user_id);
   const mode = searchParams.get('mode') as NotificationMode | null;
 
-  const { trigger } = useSWRMutation('/deleteNotification', sendDeleteRequest);
+  const { trigger } = useSWRMutation('api/deleteNotification', sendDeleteRequest);
   const { data } = useSWR(
     {
-      url: '/getNotificationInfoData',
+      url: 'api/getNotificationInfoData',
       params: {
         notificationId: currentId,
       },

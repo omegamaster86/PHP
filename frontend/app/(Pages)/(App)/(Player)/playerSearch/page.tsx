@@ -132,17 +132,10 @@ export default function PlayerSearch() {
    * 検索結果をstateにセットする
    */
   const handleSearch = async () => {
-    // var apiUri = 'http://localhost:3100/playerSearch?';
-    // getNonEmptyProperties(searchCond).forEach((item) => {
-    //   apiUri += item.key + '=' + item.value + '&';
-    // });
-    // apiUri = apiUri.slice(0, -1);
-
     try {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
-      // const response = await axios.get<Player[]>('/playerSearch/');
-      const response = await axios.post('/playerSearch', searchCond);
+      const response = await axios.post('api/playerSearch', searchCond);
       const data = response.data.result;
       if (data.length > 100) {
         window.alert('検索結果が100件を超えました、上位100件を表示しています。');
@@ -224,14 +217,13 @@ export default function PlayerSearch() {
         // const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const sexResponse = await axios.get('/getSexList');
+        const sexResponse = await axios.get('api/getSexList');
         const sexList = sexResponse.data.map(
           ({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }),
         );
         setSex(sexList);
         // 種目
-        // const eventResponse = await axios.get<EventResponse[]>('/event');
-        const eventResponse = await axios.get('/getEvents');
+        const eventResponse = await axios.get('api/getEvents');
         const eventResponseList = eventResponse.data.map(
           ({ event_id, event_name }: { event_id: number; event_name: string }) => ({
             id: event_id,
@@ -240,7 +232,7 @@ export default function PlayerSearch() {
         );
         setEvent(eventResponseList);
 
-        const playerInf = await axios.get('/getIDsAssociatedWithUser');
+        const playerInf = await axios.get('api/getIDsAssociatedWithUser');
         setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
