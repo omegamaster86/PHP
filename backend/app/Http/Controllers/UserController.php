@@ -125,29 +125,30 @@ class UserController extends Controller
         }
     }
 
-    public function createDetails(Request $request, M_sex $sex, M_countries $countries, M_prefectures $prefectures): View
-    {
-        $user = array(
-            "user_name" => Auth::user()->user_name,
-            "user_id" => Auth::user()->user_id,
-            "user_type" => Auth::user()->user_type,
-            "mailaddress" => Auth::user()->mailaddress,
-            "sex" => Auth::user()->sex,
-            "residence_country" => Auth::user()->residence_country,
-            "residence_prefecture" => Auth::user()->residence_prefecture,
-            "photo" => Auth::user()->photo,
-            "date_of_birth" => Auth::user()->date_of_birth,
-            "height" => Auth::user()->height,
-            "weight" => Auth::user()->weight
-        );
+    // public function createDetails(Request $request, M_sex $sex, M_countries $countries, M_prefectures $prefectures): View
+    // {
+    //     $user = array(
+    //         "user_name" => Auth::user()->user_name,
+    //         "user_id" => Auth::user()->user_id,
+    //         "user_type" => Auth::user()->user_type,
+    //         "mailaddress" => Auth::user()->mailaddress,
+    //         "sex" => Auth::user()->sex,
+    //         "residence_country" => Auth::user()->residence_country,
+    //         "residence_prefecture" => Auth::user()->residence_prefecture,
+    //         "photo" => Auth::user()->photo,
+    //         "date_of_birth" => Auth::user()->date_of_birth,
+    //         "height" => Auth::user()->height,
+    //         "weight" => Auth::user()->weight
+    //     );
 
 
-        $user['sex_name'] = $sex->getSexName($user['sex']);
-        $user['country_name'] = $countries->getCountryName($user['residence_country']);
-        $user['pref_name'] = $prefectures->getPrefName($user['residence_prefecture']);
+    //     $user['sex_name'] = $sex->getSexName($user['sex']);
+    //     $user['country_name'] = $countries->getCountryName($user['residence_country']);
+    //     $user['pref_name'] = $prefectures->getPrefName($user['residence_prefecture']);
 
-        return view('user.details', ["page_mode" => "details", "user" => (object)$user]);
-    }
+    //     return view('user.details', ["page_mode" => "details", "user" => (object)$user]);
+    // }
+
     public function createDelete(Request $request, M_sex $sex, M_countries $countries, M_prefectures $prefectures): View
     {
         $user = array(

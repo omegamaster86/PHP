@@ -1,18 +1,20 @@
 <?php
+
 /*************************************************************************
-*  Project name: JARA
-*  File name: RegisteredUserController.php
-*  File extension: .php
-*  Description: This is the controller file to manage register request
-*************************************************************************
-*  Author: DEY PRASHANTA KUMAR
-*  Created At: 2023/11/04
-*  Updated At: 2023/12/04
-*************************************************************************
-*
-*  Copyright 2023 by DPT INC.
-*
-************************************************************************/
+ *  Project name: JARA
+ *  File name: RegisteredUserController.php
+ *  File extension: .php
+ *  Description: This is the controller file to manage register request
+ *************************************************************************
+ *  Author: DEY PRASHANTA KUMAR
+ *  Created At: 2023/11/04
+ *  Updated At: 2023/12/04
+ *************************************************************************
+ *
+ *  Copyright 2023 by DPT INC.
+ *
+ ************************************************************************/
+
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
@@ -111,17 +113,17 @@ class ContactUsController extends Controller
 
         Log::debug(sprintf("contact-us start"));
         Log::debug($request->all());
-        
+
         $mail_data = [
             'user_name' => $request->user_name,
             'mailaddress' => $request->mailaddress,
             'content' => $request->content,
-            'user_id'=> Auth::user()->user_id ?? ""
+            'user_id' => Auth::user()->user_id ?? ""
         ];
-        
+
 
         //Sending mail to the user
-            
+
         try {
             Mail::to($request->get('mailaddress'))->send(new ContactUsMail($mail_data));
         } catch (\Throwable $e) {
@@ -130,11 +132,9 @@ class ContactUsController extends Controller
 
             //Display error message to the client
             Log::debug(sprintf("contact-us end"));
-            abort(400,$mail_sent_failed_for_contact_us);
-            
+            abort(400, $mail_sent_failed_for_contact_us);
         }
         Log::debug(sprintf("contact-us end"));
-        return response()->json(["メール送信の件、完了しました。"],200);
-        
+        return response()->json(["メール送信の件、完了しました。"], 200);
     }
 }

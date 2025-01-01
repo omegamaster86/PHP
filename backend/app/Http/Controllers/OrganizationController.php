@@ -139,15 +139,15 @@ class OrganizationController extends Controller
         return $tag;
     }
 
-    //団体情報登録・更新確認画面を開く
-    public function createEditConfirm()
-    {
-        if (Auth::user()->temp_password_flag === 1) {
-            return redirect('user/password-change');
-        } else {
-            return view('organizations.register-confirm', ["pagemode" => "edit"]);
-        }
-    }
+    // //団体情報登録・更新確認画面を開く
+    // public function createEditConfirm()
+    // {
+    //     if (Auth::user()->temp_password_flag === 1) {
+    //         return redirect('user/password-change');
+    //     } else {
+    //         return view('organizations.register-confirm', ["pagemode" => "edit"]);
+    //     }
+    // }
 
     //団体情報参照画面を開く
     // public function createReference(

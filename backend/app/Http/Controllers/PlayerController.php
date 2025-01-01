@@ -36,93 +36,94 @@ use App\Models\M_sex;
 
 class PlayerController extends Controller
 {
-    public function createRegister(): View
-    {
-        $retrieve_player_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+    // public function createRegister(): View
+    // {
+    //     $retrieve_player_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
 
-        if (empty($retrieve_player_ID[0])) {
-            return view('player.register-edit', ["page_mode" => "register"]);
-        } else {
-            if ($retrieve_player_ID[count($retrieve_player_ID) - 1]->delete_flag) {
-                return view('player.register-edit', ["page_mode" => "register"]);
-            } else {
-                $player_info = $retrieve_player_ID[count($retrieve_player_ID) - 1];
-                $player_info->date_of_birth = date('Y/m/d', strtotime($retrieve_player_ID[count($retrieve_player_ID) - 1]->date_of_birth));
+    //     if (empty($retrieve_player_ID[0])) {
+    //         return view('player.register-edit', ["page_mode" => "register"]);
+    //     } else {
+    //         if ($retrieve_player_ID[count($retrieve_player_ID) - 1]->delete_flag) {
+    //             return view('player.register-edit', ["page_mode" => "register"]);
+    //         } else {
+    //             $player_info = $retrieve_player_ID[count($retrieve_player_ID) - 1];
+    //             $player_info->date_of_birth = date('Y/m/d', strtotime($retrieve_player_ID[count($retrieve_player_ID) - 1]->date_of_birth));
 
-                return view('player.register-edit', ["page_mode" => "edit", "player_info" => $player_info]);
-            }
-        }
-    }
+    //             return view('player.register-edit', ["page_mode" => "edit", "player_info" => $player_info]);
+    //         }
+    //     }
+    // }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
+    // /**
+    //  * Handle an incoming registration request.
+    //  *
+    //  * @throws \Illuminate\Validation\ValidationException
+    //  */
 
 
-    public function storeRegister(Request $request): RedirectResponse
-    {
-        include('Auth/ErrorMessages/ErrorMessages.php');
-        $random_file_name = Str::random(12);
-        if ($request->hasFile('photo')) {
+    // public function storeRegister(Request $request): RedirectResponse
+    // {
+    //     include('Auth/ErrorMessages/ErrorMessages.php');
+    //     $random_file_name = Str::random(12);
+    //     if ($request->hasFile('photo')) {
 
-            $file = $request->file('photo');
+    //         $file = $request->file('photo');
 
-            $fileName = $random_file_name . '.' . $request->file('photo')->getClientOriginalExtension();
+    //         $fileName = $random_file_name . '.' . $request->file('photo')->getClientOriginalExtension();
 
-            $destinationPath = public_path() . '/images/players/';
-            $file->move($destinationPath, $fileName);
-        }
-        // $request->validate([
-        //     'playerCode' => ['required', 'string', 'regex:/^[0-9a-zA-Z]+$/'],
-        //     'playerName' => ['required', 'string', 'regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'],
-        //     'dateOfBirth' => ['required', 'regex:/^[0-9\/]+$/'],
-        //     'sex' => ['required', 'regex:/^[1-3]+$/'],
-        //     'height' => ['required'],
-        //     'weight' => ['required'],
-        //     'sideInfo' => ['required_without_all'],
-        // ], [
-        //     'playerCode.required' => $playerCode_required,
-        //     'playerCode.regex' => $playerCode_regex,
-        //     'playerName.required' => $playerName_required,
-        //     'playerName.regex' => $playerName_regex,
-        //     'dateOfBirth.required' => $dateOfBirth_required,
-        //     'dateOfBirth.regex' => $dateOfBirth_required,
-        //     'sex.required' => $sex_required,
-        //     'sex.regex' => $sex_required,
-        //     'height.required' => $height_required,
-        //     'weight.required' => $weight_required,
-        //     'sideInfo.required_without_all' => $sideInfo_required,
-        // ]);
-        if (DB::table('t_players')->where('jara_player_id', $request->playerCode)->where('delete_flag', 0)->exists()) {
-            $retrieve_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->playerCode]);
-            $existing_player_name = $retrieve_player_name[0]->player_name;
-            //Display error message to the client
-            throw ValidationException::withMessages([
-                'system_error' => "このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手I：[$request->playerCode] [$existing_player_name]"
-            ]);
-        } else {
-        }
-        $player_info = $request->all();
-        if ($request->hasFile('photo')) {
-            $player_info['photo'] = $random_file_name . '.' . $request->file('photo')->getClientOriginalExtension();
-        } else {
-            if ($request->playerPictureStatus === "delete")
-                $player_info['photo'] = "";
-            else
-                $player_info['photo'] = DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('photo');
-        }
-        $sideInfo_xor = "00000000";
-        foreach ($request->sideInfo as $sideInfo) {
-            $sideInfo_xor = $sideInfo_xor ^ $sideInfo;
-        }
-        if (count($request->sideInfo) % 2)
-            $sideInfo_xor = $sideInfo_xor ^ "00000000";
-        $player_info['side_info'] = $sideInfo_xor;
-        $player_info['previousPageStatus'] = "success";
-        return redirect('player/register/confirm')->with('player_info', $player_info);
-    }
+    //         $destinationPath = public_path() . '/images/players/';
+    //         $file->move($destinationPath, $fileName);
+    //     }
+    //     // $request->validate([
+    //     //     'playerCode' => ['required', 'string', 'regex:/^[0-9a-zA-Z]+$/'],
+    //     //     'playerName' => ['required', 'string', 'regex:/^[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_][ぁ-んァ-ヶー一-龯0-9a-zA-Z-_ ]*[ぁ-んァ-ヶー一-龯0-9a-zA-Z-_]$/'],
+    //     //     'dateOfBirth' => ['required', 'regex:/^[0-9\/]+$/'],
+    //     //     'sex' => ['required', 'regex:/^[1-3]+$/'],
+    //     //     'height' => ['required'],
+    //     //     'weight' => ['required'],
+    //     //     'sideInfo' => ['required_without_all'],
+    //     // ], [
+    //     //     'playerCode.required' => $playerCode_required,
+    //     //     'playerCode.regex' => $playerCode_regex,
+    //     //     'playerName.required' => $playerName_required,
+    //     //     'playerName.regex' => $playerName_regex,
+    //     //     'dateOfBirth.required' => $dateOfBirth_required,
+    //     //     'dateOfBirth.regex' => $dateOfBirth_required,
+    //     //     'sex.required' => $sex_required,
+    //     //     'sex.regex' => $sex_required,
+    //     //     'height.required' => $height_required,
+    //     //     'weight.required' => $weight_required,
+    //     //     'sideInfo.required_without_all' => $sideInfo_required,
+    //     // ]);
+    //     if (DB::table('t_players')->where('jara_player_id', $request->playerCode)->where('delete_flag', 0)->exists()) {
+    //         $retrieve_player_name = DB::select('select player_name from t_players where jara_player_id = ?', [$request->playerCode]);
+    //         $existing_player_name = $retrieve_player_name[0]->player_name;
+    //         //Display error message to the client
+    //         throw ValidationException::withMessages([
+    //             'system_error' => "このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手I：[$request->playerCode] [$existing_player_name]"
+    //         ]);
+    //     } else {
+    //     }
+    //     $player_info = $request->all();
+    //     if ($request->hasFile('photo')) {
+    //         $player_info['photo'] = $random_file_name . '.' . $request->file('photo')->getClientOriginalExtension();
+    //     } else {
+    //         if ($request->playerPictureStatus === "delete")
+    //             $player_info['photo'] = "";
+    //         else
+    //             $player_info['photo'] = DB::table('t_players')->where('user_id', Auth::user()->user_id)->value('photo');
+    //     }
+    //     $sideInfo_xor = "00000000";
+    //     foreach ($request->sideInfo as $sideInfo) {
+    //         $sideInfo_xor = $sideInfo_xor ^ $sideInfo;
+    //     }
+    //     if (count($request->sideInfo) % 2)
+    //         $sideInfo_xor = $sideInfo_xor ^ "00000000";
+    //     $player_info['side_info'] = $sideInfo_xor;
+    //     $player_info['previousPageStatus'] = "success";
+    //     return redirect('player/register/confirm')->with('player_info', $player_info);
+    // }
+
     /**
      * Display the edit view.
      */
@@ -584,58 +585,49 @@ class PlayerController extends Controller
             $search_values_array['jara_player_id'] = $searchInfo['jara_player_id'];
         }
         //選手ID
-        if (isset($searchInfo['player_id'])) {            
+        if (isset($searchInfo['player_id'])) {
             $condition .= " and `tp`.`player_id`= :player_id\r\n";
             $search_values_array['player_id'] = $searchInfo['player_id'];
         }
         //選手名
         if (isset($searchInfo['player_name'])) {
             $condition .= " and `tp`.`player_name` LIKE :player_name\r\n";
-            $search_values_array['player_name'] = "%".$searchInfo['player_name']."%";
+            $search_values_array['player_name'] = "%" . $searchInfo['player_name'] . "%";
         }
         //性別
-        if(isset($searchInfo['sexId']))
-        {
+        if (isset($searchInfo['sexId'])) {
             $condition .= "and tp.`sex_id`= :sex_id\r\n";
             $search_values_array['sex_id'] = $searchInfo['sexId'];
         }
         //生年月日
-        if(isset($searchInfo['startDateOfBirth']))
-        {
+        if (isset($searchInfo['startDateOfBirth'])) {
             $condition .= "and tp.date_of_birth >= :start_date_of_birth\r\n";
             $search_values_array['start_date_of_birth'] = $searchInfo['startDateOfBirth'];
         }
-        if(isset($searchInfo['endDateOfBirth']))
-        {
+        if (isset($searchInfo['endDateOfBirth'])) {
             $condition .= "and tp.date_of_birth <= :end_date_of_birth\r\n";
             $search_values_array['end_date_of_birth'] = $searchInfo['endDateOfBirth'];
         }
         //サイド情報
-        if($searchInfo['side_info']['S'] == true)
-        {
+        if ($searchInfo['side_info']['S'] == true) {
             $condition .= "and SUBSTRING(tp.`side_info`,8,1) = 1\r\n";
         }
-        if($searchInfo['side_info']['B'] == true)
-        {
+        if ($searchInfo['side_info']['B'] == true) {
             $condition .= "and SUBSTRING(tp.`side_info`,7,1) = 1\r\n";
         }
-        if($searchInfo['side_info']['X'] == true)
-        {
+        if ($searchInfo['side_info']['X'] == true) {
             $condition .= "and SUBSTRING(tp.`side_info`,6,1) = 1\r\n";
         }
-        if($searchInfo['side_info']['X'] == true)
-        {
+        if ($searchInfo['side_info']['X'] == true) {
             $condition .= "and SUBSTRING(tp.`side_info`,5,1) = 1\r\n";
         }
         //出漕大会名
-        if(isset($searchInfo['race_class_name']))
-        {
+        if (isset($searchInfo['race_class_name'])) {
             $condition .= "and rrr.tourn_name LIKE :tourn_name\r\n";
-            $search_values_array['tourn_name'] = "%".$searchInfo['race_class_name']."%";
+            $search_values_array['tourn_name'] = "%" . $searchInfo['race_class_name'] . "%";
         }
         //出漕種目
-        if(isset($searchInfo['event_id']))
-        {
+        if (isset($searchInfo['event_id'])) {
             $condition .= "and rrr.event_id = :event_id\r\n";
             $search_values_array['event_id'] = $searchInfo['event_id'];
         }
@@ -644,17 +636,15 @@ class PlayerController extends Controller
             Log::debug("org_idがNULLでない");
             $search_values_array['org_id_1'] = $searchInfo['org_id'];
             $search_values_array['org_id_2'] = $searchInfo['org_id'];
-
         } else if (isset($searchInfo['entrysystem_org_id'])) {
             Log::debug("entrysystem_org_idがNULLでない");
             $search_values_array['entrysystem_id_1'] = $searchInfo['entrysystem_org_id'];
             $search_values_array['entrysystem_id_2'] = $searchInfo['entrysystem_org_id'];
-
         } else if (isset($searchInfo['org_name'])) {
             Log::debug("org_nameがNULLでない");
-            $search_values_array['org_name_1'] = "%".$searchInfo['org_name']."%";
-            $search_values_array['org_name_2'] = "%".$searchInfo['org_name']."%";
-            $search_values_array['org_name_3'] = "%".$searchInfo['org_name']."%";
+            $search_values_array['org_name_1'] = "%" . $searchInfo['org_name'] . "%";
+            $search_values_array['org_name_2'] = "%" . $searchInfo['org_name'] . "%";
+            $search_values_array['org_name_3'] = "%" . $searchInfo['org_name'] . "%";
         }
 
         Log::debug(sprintf("generateSearchCondition end"));
@@ -668,33 +658,29 @@ class PlayerController extends Controller
         $searched_data = $request->all();
         //Log::debug($searched_data);
         $search_values_array = array();
-        $replace_condition_string = $this->generateSearchCondition($searched_data,$search_values_array);
-        
+        $replace_condition_string = $this->generateSearchCondition($searched_data, $search_values_array);
+
         $search_result = null;
-        try
-        {
+        try {
             if (isset($searched_data['org_id'])) {
                 Log::debug("団体IDの条件が入力されている場合");
-                $search_result = $tPlayersData->getPlayerSearchResultWithOrgIdCondition($replace_condition_string,$search_values_array);
-                
+                $search_result = $tPlayersData->getPlayerSearchResultWithOrgIdCondition($replace_condition_string, $search_values_array);
             } else if (isset($searched_data['entrysystem_org_id'])) {
                 Log::debug("エントリーシステムの団体IDの条件が入力されている場合");
-                $search_result = $tPlayersData->getPlayerSearchResultWithEntrySystemIdCondition($replace_condition_string,$search_values_array);
-
+                $search_result = $tPlayersData->getPlayerSearchResultWithEntrySystemIdCondition($replace_condition_string, $search_values_array);
             } else if (isset($searched_data['org_name'])) {
                 Log::debug("団体名の条件が入力されている場合");
-                $search_result = $tPlayersData->getPlayerSearchResultWithOrgNameCondition($replace_condition_string,$search_values_array);
-
+                $search_result = $tPlayersData->getPlayerSearchResultWithOrgNameCondition($replace_condition_string, $search_values_array);
             } else {
                 Log::debug("エントリーシステムの団体ID、団体ID、団体名以外の条件が入力されている場合");
-                $search_result = $tPlayersData->getPlayerSearchResult($replace_condition_string,$search_values_array);
+                $search_result = $tPlayersData->getPlayerSearchResult($replace_condition_string, $search_values_array);
             }
             //Log::debug($search_result);
             Log::debug(sprintf("playerSearch end"));
             return response()->json(['result' => $search_result]); //送信データ(debug用)とDBの結果を返す
         } catch (\Exception $e) {
             Log::error($e);
-            abort(500,['errMessage' => $e->getMessage()]);
+            abort(500, ['errMessage' => $e->getMessage()]);
         }
     }
 
@@ -722,8 +708,7 @@ class PlayerController extends Controller
         Log::debug("********************target_player_data********************");
         Log::debug($target_player_data);
         //登録するユーザーIDを持つ選手が未登録なら登録実行
-        if(empty($target_player_data))
-        {
+        if (empty($target_player_data)) {
             $reqData = $request->all();
 
             $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
@@ -761,15 +746,14 @@ class PlayerController extends Controller
             try {
                 DB::beginTransaction();
                 $result = $tPlayersData->insertPlayers($tPlayersData::$playerInfo); //DBに選手を登録 20240131
-    
+
                 DB::commit();
 
                 //ユーザ種別の更新
                 //右から3桁目が0のときだけユーザー種別を更新する
                 $user_type = (string)Auth::user()->user_type;
-                Log::debug("user_type_is_player = ".substr($user_type,-3,1));
-                if(mb_substr($user_type,-3,1) == '0')
-                {
+                Log::debug("user_type_is_player = " . substr($user_type, -3, 1));
+                if (mb_substr($user_type, -3, 1) == '0') {
                     $hoge = array();
                     $hoge['user_id'] = Auth::user()->user_id;
                     $hoge['input'] = '00000100'; //選手のユーザ種別を変更する
@@ -782,16 +766,12 @@ class PlayerController extends Controller
             } catch (\Throwable $e) {
                 Log::error($e);
                 DB::rollBack();
-                abort(500,"失敗しました。ユーザーサポートにお問い合わせください。");
+                abort(500, "失敗しました。ユーザーサポートにお問い合わせください。");
             }
-
-            
-        }
-        else
-        {
+        } else {
             Log::debug(sprintf("選手登録済み"));
             return response()->json(['errMessage' => "選手IDはすでに登録されています。複数作成することはできません。"]); //エラーメッセージを返す
-            abort(500,"失敗しました。ユーザーサポートにお問い合わせください。");
+            abort(500, "失敗しました。ユーザーサポートにお問い合わせください。");
         }
     }
 
@@ -849,11 +829,11 @@ class PlayerController extends Controller
         if ($request->hasFile('uploadedPhoto')) {
             $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
             $tPlayersData::$playerInfo['photo'] = $file_name; //写真
-            
-            
+
+
             if ($reqData['previousPhotoName'] ?? "") {
-                $file_path = public_path().'/images/players/'.$reqData['previousPhotoName'];
-                if (file_exists($file_path)){
+                $file_path = public_path() . '/images/players/' . $reqData['previousPhotoName'];
+                if (file_exists($file_path)) {
                     unlink($file_path); //前の写真削除
                 }
             }
@@ -864,8 +844,8 @@ class PlayerController extends Controller
             } else {
                 $tPlayersData::$playerInfo['photo'] = ''; //写真
                 if ($reqData['previousPhotoName'] ?? "") {
-                    $file_path = public_path().'/images/players/'.$reqData['previousPhotoName'];
-                    if (file_exists($file_path)){
+                    $file_path = public_path() . '/images/players/' . $reqData['previousPhotoName'];
+                    if (file_exists($file_path)) {
                         unlink($file_path); //前の写真削除
                     }
                 }
@@ -885,7 +865,7 @@ class PlayerController extends Controller
             Log::error($e);
             DB::rollBack();
 
-            abort(500,"選手情報の更新に失敗しました。ユーザーサポートにお問い合わせください。");
+            abort(500, "選手情報の更新に失敗しました。ユーザーサポートにお問い合わせください。");
         }
     }
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
@@ -894,7 +874,7 @@ class PlayerController extends Controller
         Log::debug(sprintf("getPlayerInfoData start"));
         $reqData = $request->all();
         Log::debug($reqData);
-        $result = $tPlayersData->getPlayerData($reqData['playerId']); 
+        $result = $tPlayersData->getPlayerData($reqData['playerId']);
         Log::debug(sprintf("getPlayerInfoData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
@@ -921,11 +901,12 @@ class PlayerController extends Controller
 
     //浮動小数点型を時間フォーマット文字列に変換する 20240423
     //example.)70.34 → 01:10.34
-    private function convertToTimeFormat($floatNumber) {
+    private function convertToTimeFormat($floatNumber)
+    {
         $hours = floor($floatNumber / 60);
         $minutes = floor($floatNumber % 60);
         $seconds = round(($floatNumber - floor($floatNumber)) * 100);
-    
+
         return sprintf("%02d:%02d.%02d", $hours, $minutes, $seconds);
     }
 
@@ -938,11 +919,11 @@ class PlayerController extends Controller
         $result = $tRaceResultRecord->getRaceResultRecord_playerId($reqData['playerId']); //選手IDを元に出漕結果記録を取得 20240212
 
         //laptimeをSS.msからMM:SS.msに変換 20240423
-        for($result_index = 0;$result_index < count($result); $result_index++) {
+        for ($result_index = 0; $result_index < count($result); $result_index++) {
             $result[$result_index]->{"laptime_500m"} = $this->convertToTimeFormat($result[$result_index]->{"laptime_500m"});
             $result[$result_index]->{"laptime_1000m"} = $this->convertToTimeFormat($result[$result_index]->{"laptime_1000m"});
             $result[$result_index]->{"laptime_1500m"} = $this->convertToTimeFormat($result[$result_index]->{"laptime_1500m"});
-            $result[$result_index]->{"laptime_2000m"} = $this->convertToTimeFormat($result[$result_index]->{"laptime_2000m"});                
+            $result[$result_index]->{"laptime_2000m"} = $this->convertToTimeFormat($result[$result_index]->{"laptime_2000m"});
             $result[$result_index]->{"final_time"} = $this->convertToTimeFormat($result[$result_index]->{"final_time"});
         }
 
@@ -959,7 +940,7 @@ class PlayerController extends Controller
             Log::debug(sprintf("deletePlayerData start"));
             $reqData = $request->all();
             if (empty($reqData['playerInformation'])) {
-                abort(400,"選手情報がないため選手を削除できません。");
+                abort(400, "選手情報がないため選手を削除できません。");
             }
             Log::debug($reqData);
 
@@ -978,8 +959,7 @@ class PlayerController extends Controller
             Log::debug($hoge);
             $user_type = (string)Auth::user()->user_type;
             //右から3桁目が1のときだけユーザー種別を更新する
-            if(substr($user_type,-3,1) == '1')
-            {
+            if (substr($user_type, -3, 1) == '1') {
                 $t_users->updateUserTypeDelete($hoge);
             }
 
@@ -989,11 +969,10 @@ class PlayerController extends Controller
             if ($result === "success") {
                 return response()->json("選手情報の削除が完了しました。", 200);
             }
-
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            abort(500,"失敗しました。選手を削除できませんでした。");
+            abort(500, "失敗しました。選手を削除できませんでした。");
         }
         // return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
     }
@@ -1007,10 +986,10 @@ class PlayerController extends Controller
 
         Log::debug($reqData['jara_player_id']);
 
-        if($reqData['jara_player_id']==""){
+        if ($reqData['jara_player_id'] == "") {
             //選手更新の際に、JARA選手コードが空欄で渡された場合、ユーザの変更によるものかを判定する 20240507
-            if($request["mode"] == "update"){
-                $jara_player_id_result = DB::select('select `jara_player_id` from `t_players` where `delete_flag` = 0 and `user_id` = ?',[Auth::user()->user_id]);
+            if ($request["mode"] == "update") {
+                $jara_player_id_result = DB::select('select `jara_player_id` from `t_players` where `delete_flag` = 0 and `user_id` = ?', [Auth::user()->user_id]);
                 Log::debug($jara_player_id_result);
                 if (!empty($jara_player_id_result) && $jara_player_id_result[0]->jara_player_id != NULL && $jara_player_id_result[0]->jara_player_id != "") {
                     Log::debug(sprintf("checkJARAPlayerId update jara_player_id end 1"));
@@ -1018,50 +997,50 @@ class PlayerController extends Controller
                 }
             }
             return response()->json([""]);
-        }//JARA選手コードを入力されてない場合
+        } //JARA選手コードを入力されてない場合
 
         if ($request["mode"] === "create") {
-            
+
             $result = DB::select(
                 'select `player_id`, `player_name` from `t_players` where `delete_flag` = 0 and `user_id` = ?',
                 [
-                    Auth::user()->user_id 
+                    Auth::user()->user_id
                 ]
             );
             if (!empty($result)) {
                 Log::debug(sprintf("checkJARAPlayerId end 1"));
-                abort(400,"選手IDはすでに登録されています。 複数作成することはできません。");
+                abort(400, "選手IDはすでに登録されています。 複数作成することはできません。");
             }
         }
         $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
         $registered_player = $tPlayersData->checkJARAPlayerId($tPlayersData::$playerInfo);
 
-        
+
 
         if (!empty($registered_player)) {
             Log::debug($registered_player->user_id);
 
-            if($registered_player->user_id === NULL or $registered_player->user_id === "") {
+            if ($registered_player->user_id === NULL or $registered_player->user_id === "") {
                 return response()->json([""]);
             } //マッピング用なJARA選手コードの場合
 
-            else{
+            else {
                 if ($request["mode"] === "create") {
                     if ($registered_player->user_id === Auth::user()->user_id) {
                         Log::debug(sprintf("checkJARAPlayerId end 2"));
-                        abort(403,"選手IDはすでに登録されています。 複数作成することはできません。");
+                        abort(403, "選手IDはすでに登録されています。 複数作成することはできません。");
                     } else {
                         Log::debug(sprintf("checkJARAPlayerId end 3"));
-                        abort(401,["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"]);
+                        abort(401, ["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"]);
                     }
                 }
                 if ($request["mode"] === "create_confirm") {
                     if ($registered_player->user_id === Auth::user()->user_id) {
                         Log::debug(sprintf("checkJARAPlayerId end 4"));
-                        abort(403,"登録に失敗しました。選手IDはすでに登録されています。 複数作成することはできません。");
+                        abort(403, "登録に失敗しました。選手IDはすでに登録されています。 複数作成することはできません。");
                     } else {
                         Log::debug(sprintf("checkJARAPlayerId end 5"));
-                        abort(401,["登録に失敗しました。別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"]);
+                        abort(401, ["登録に失敗しました。別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"]);
                     }
                 } else if ($request["mode"] === "update") {
                     if ($registered_player->user_id === Auth::user()->user_id) {
@@ -1069,7 +1048,7 @@ class PlayerController extends Controller
                         return response()->json("");
                     } else {
                         Log::debug(sprintf("checkJARAPlayerId end 7"));
-                        abort(401,["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"]);
+                        abort(401, ["このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「$registered_player->player_id 」「 $registered_player->player_name 」"]);
                     }
                 } else if ($request["mode"] === "update_confirm") {
                     if ($registered_player->user_id === Auth::user()->user_id) {
@@ -1077,13 +1056,13 @@ class PlayerController extends Controller
                         return response()->json("");
                     } else {
                         Log::debug(sprintf("checkJARAPlayerId end 9"));
-                        abort(401,["更新に失敗しました。
+                        abort(401, ["更新に失敗しました。
                         別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「$registered_player->player_id 」「 $registered_player->player_name 」"]);
                     }
                 } else {
                     Log::debug(sprintf("checkJARAPlayerId end 10"));
-                    
-                    abort(400,"失敗しました。");
+
+                    abort(400, "失敗しました。");
                 }
             }
         } else {
@@ -1103,7 +1082,7 @@ class PlayerController extends Controller
             } else {
                 Log::debug(sprintf("checkJARAPlayerId end 14"));
 
-                abort(400,"失敗しました。");
+                abort(400, "失敗しました。");
             }
         }
     }
@@ -1120,7 +1099,7 @@ class PlayerController extends Controller
             Log::debug($reqData);
             $playerId = $reqData["playerId"];
             $followPlayer = $tFollowedPlayers->getFollowedPlayersData($playerId); //選手IDとユーザIDを元にフォロー情報が存在するかを確認 202401029
-            
+
             //フォロー選手テーブルにデータが存在しない場合、新規追加する 20241029
             if (empty($followPlayer)) {
                 $tFollowedPlayers->insertFollowedPlayers($playerId); //選手のフォロー追加 202401029
@@ -1140,5 +1119,4 @@ class PlayerController extends Controller
 
         Log::debug(sprintf("playerFollowed end"));
     }
-
 }
