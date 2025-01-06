@@ -101,4 +101,49 @@ class T_followed_players extends Model
         return !empty($result) ? (int) $result[0]->follower : 0;
 
     }
+
+    // フォローしている選手数取得（mypageのtop画面で使用）
+    public function getFollowPlayerCount()
+    {
+        $userId = Auth::user()->user_id;
+
+        $top_page = DB::select(
+            '
+            SELECT
+                COUNT(1) as followPlayerCount
+            FROM 
+                t_followed_players
+            WHERE
+                t_followed_players.user_id = ?
+                and t_followed_players.delete_flag = 0
+            ',
+            [$userId]
+        );
+
+        return $top_page[0];
+    }
+
+    // フォローされている選手数取得（mypageのtop画面で使用）
+    public function getFollowedPlayerCount()
+    {
+        $userId = Auth::user()->user_id;
+    
+        $top_page = DB::select(
+            '
+            SELECT
+                COUNT(1) as followedPlayerCount
+            FROM 
+                t_followed_players
+            INNER JOIN t_players
+                ON t_followed_players.player_id = t_players.player_id
+            WHERE
+                t_players.user_id = ?
+                AND t_followed_players.delete_flag = 0
+                AND t_players.delete_flag = 0
+            ',
+            [$userId]
+        );
+
+        return $top_page[0];
+    }
 }

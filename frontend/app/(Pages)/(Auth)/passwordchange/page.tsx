@@ -144,7 +144,7 @@ export default function Passwordchange() {
                 await csrf();
                 await axios.get('api/user');
                 if (response?.data.temp_password_flag == 0) {
-                  router.push('tournamentSearch'); //本登録済みのユーザは大会検索画面に遷移させる
+                  router.push('/mypage/top'); //本登録済みのユーザは大会検索画面に遷移させる 20240408
                 } else {
                   router.push('userInformation?mode=update'); //仮登録状態のユーザはユーザ情報更新画面に遷移させる
                 }

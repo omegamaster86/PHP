@@ -20,12 +20,12 @@ export default function Profile() {
     {
       onSuccess: (data) => {
         if (!data.result) {
-          router.push('/tournamentSearch');
+          router.push('/mypage/top');
         }
       },
       onError: (error) => {
         console.error(error);
-        router.push('/tournamentSearch');
+        router.push('/mypage/top');
       },
     },
   );

@@ -30,7 +30,7 @@ type Qualification = {
   label: string;
 };
 
-const QualificationItem: React.FC<{ item: Qualification }> = ({ item }) => {
+  const QualificationItem: React.FC<{ item: Qualification }> = ({ item }) => {
   const expiryDate = item.expiryDate ? new Date(item.expiryDate) : null;
 
   const isWithinTwoMonths = (expiryDate: Date): boolean => {
@@ -105,7 +105,7 @@ export default function CoachRefereeProfile() {
       </div>
 
       <div className='flex flex-col text-xs sm:text-sm'>
-        <h3 className='mb-3 font-bold'>指導履歴</h3>
+        <h3 className='mb-3 text-sm font-bold'>指導履歴</h3>
         <div className='overflow-auto mb-7 '>
           {profile.coachingHistories.length > 0 ? (
             <CustomTable>

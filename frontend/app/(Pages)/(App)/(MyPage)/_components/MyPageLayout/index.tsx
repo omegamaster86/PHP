@@ -42,9 +42,15 @@ const MyPageLayout: NextPage<Props> = (props) => {
     volunteer: pathname === '/mypage/volunteer',
     profile: pathname === '/mypage/profile',
     coachRefereeProfile: pathname === '/mypage/coachRefereeProfile',
+    top: pathname === '/mypage/top',
   };
 
   const listItems: MyPageSideBarListItem[] = [
+    {
+      title: 'トップ',
+      link: '/mypage/top',
+      active: routerStatuses.top,
+    },
     {
       title: '大会情報',
       active: routerStatuses.officialTournament || routerStatuses.unofficialTournament,

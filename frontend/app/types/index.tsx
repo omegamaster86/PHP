@@ -309,7 +309,7 @@ interface CoachRefereeRefResponse {
   userName: string; // ユーザー名
   coachQualificationNames: string[]; //指導者資格
   refereeQualificationNames: string[]; //審判資格
-  jspoId: number; //JSPO ID
+  jspoId: string; //JSPO ID
   coachingHistories: (CoachingHistory & {
     orgName: string;
     staffTypeName: string;
@@ -336,7 +336,7 @@ interface IRefereeQualification {
 
 interface MyPageCoachRefereeResponse {
   userName: string;
-  jspoId: number;
+  jspoId: string;
   coachingHistories: (CoachingHistory & {
     orgName: string;
     staffTypeName: string;
@@ -350,7 +350,7 @@ interface MyPageCoachRefereeResponse {
 }
 
 interface CoachRefereeResponse {
-  jspoId: number;
+  jspoId: string;
   coachingHistories: (CoachingHistory & {
     isEndDateUndefined: boolean;
   })[];
@@ -574,7 +574,7 @@ interface Staff {
 interface StaffRef extends Staff {
   coachQualificationNames: string[]; //指導者資格
   refereeQualificationNames: string[]; //審判資格
-  jspo_id: number; // JSPO ID
+  jspo_id: string; // JSPO ID
 }
 
 //団体所属選手情報
@@ -814,6 +814,13 @@ interface MyOrgsHostedTournament {
   sponsorOrgName: string; // 主催団体名
 }
 
+interface TopPageCountResponse {
+  followedTournCount: number;
+  raceCount: number;
+  followPlayerCount: number;
+  followedPlayerCount: number;
+};
+
 export type {
   ApprovalType,
   CheckRace,
@@ -879,6 +886,7 @@ export type {
   VenueResponse,
   VolunteerHistoriesResponse,
   VolunteerResponse,
+  TopPageCountResponse,
 };
 
 export * from './form';

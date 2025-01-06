@@ -689,4 +689,28 @@ class T_tournaments extends Model
 
         return $tournaments;
     }
+
+    //大会出場回数を取得
+    public function getParticipatedTournCount()
+    {
+        $userId = Auth::user()->user_id;
+    
+        $racesResultRecord = DB::select(
+            '
+            SELECT 
+                COUNT(DISTINCT t_race_result_record.tourn_name) as raceCount
+            FROM 
+                t_race_result_record
+            INNER JOIN t_players
+                ON t_race_result_record.player_id = t_players.player_id
+            WHERE 
+                t_race_result_record.delete_flag = 0
+                AND t_players.delete_flag = 0
+                AND t_players.user_id = ?
+            ',
+            [$userId]
+        );
+
+        return $racesResultRecord[0];
+    }
 }

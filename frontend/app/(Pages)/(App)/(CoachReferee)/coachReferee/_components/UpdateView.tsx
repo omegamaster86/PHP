@@ -303,10 +303,10 @@ const UpdateView: React.FC<UpdateViewProps> = ({
               <InputLabel label='JSPO ID' required />
               <CustomTextField
                 placeHolder='12345'
-                value={String(fetchData.jspoId)}
+                value={fetchData.jspoId}
                 widthClassName='w-full md:w-[150px]'
                 onChange={(event) =>
-                  setFetchData({ ...fetchData, jspoId: Number(event.target.value) })
+                  setFetchData({ ...fetchData, jspoId: event.target.value })
                 }
               />
             </div>

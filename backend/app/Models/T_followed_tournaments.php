@@ -101,4 +101,25 @@ class T_followed_tournaments extends Model
 
         return !empty($result) ? (int) $result[0]->follower : 0;
     }
+
+    // 大会のフォロワー数取得（mypageのtop画面で使用）
+    public function getFollowedTournCount()
+    {
+        $userId = Auth::user()->user_id;
+
+        $top_page = DB::select(
+            '
+            SELECT
+                COUNT(followed_tourn_id) as followedTournCount
+            FROM 
+                t_followed_tournaments
+            WHERE
+                t_followed_tournaments.user_id = ?
+                and t_followed_tournaments.delete_flag = 0
+            ',
+            [$userId]
+        );
+
+        return $top_page[0];
+    }
 }
