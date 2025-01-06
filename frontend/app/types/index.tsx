@@ -587,15 +587,25 @@ interface OrganizationPlayer {
 }
 
 // 団体種別
+interface OrgTypeResponse {
+  id: string; // ID
+  name: string; // 名称
+}
+
 interface OrgType {
+  org_type: string;
+  org_type_id: string;
+}
+
+// 団体区分
+interface OrgClassResponse {
   id: number; // ID
   name: string; // 名称
 }
 
-// 団体区分
 interface OrgClass {
-  id: number; // ID
-  name: string; // 名称
+  org_class_id: number;
+  org_class_name: string;
 }
 
 //Organizationに統合したため、OrgではなくOrganizationを使用すること
@@ -840,7 +850,9 @@ export type {
   OrganizationListData,
   OrganizationPlayer,
   OrgClass,
+  OrgClassResponse,
   OrgType,
+  OrgTypeResponse,
   Player,
   PlayerInformationResponse,
   Prefecture,
