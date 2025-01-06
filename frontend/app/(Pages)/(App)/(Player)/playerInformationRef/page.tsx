@@ -29,6 +29,7 @@ import { Autocomplete, Chip, TextField } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import FollowButton from '@/app/components/FollowButton';
 import RowingIcon from '@mui/icons-material/Rowing';
+import { useAuth } from '@/app/hooks/auth';
 
 //種目フィルター用
 interface EventNameList {
@@ -803,6 +804,7 @@ export default function PlayerInformationRef() {
 
         setplayerInformation({
           player_id: playerInf.data.result.player_id,
+          user_id: playerInf.data.result.user_id,
           jara_player_id: playerInf.data.result.jara_player_id,
           player_name: playerInf.data.result.player_name,
           date_of_birth: playerInf.data.result.date_of_birth,
@@ -1068,6 +1070,9 @@ export default function PlayerInformationRef() {
     '1000m地点風速',
     '1000m地点風向',
   ];
+  const { user } = useAuth({
+    middleware: 'auth',
+  });
 
   return (
     <>
@@ -1098,13 +1103,15 @@ export default function PlayerInformationRef() {
                   textColor='white'
                   textSize='h3'
                 ></Label>
-                <FollowButton
-                  isFollowed={followStatus.isFollowed}
-                  handleFollowToggle={handleFollowToggle}
-                  followedCount={followStatus.followerCount}
-                  icon={RowingIcon}
-                  text='選手'
-                />
+                {playerInformation.user_id !== Number(user?.user_id) && (
+                  <FollowButton
+                    isFollowed={followStatus.isFollowed}
+                    handleFollowToggle={handleFollowToggle}
+                    followedCount={followStatus.followerCount}
+                    icon={RowingIcon}
+                    text='選手'
+                  />
+                )}
               </div>
               <div className='flex flex-row gap-[10px]'>
                 <div className='flex flex-row gap-[10px]'>
