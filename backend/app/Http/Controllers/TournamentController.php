@@ -259,9 +259,20 @@ class TournamentController extends Controller
         //If new PDF is uploaded
         if ($request->hasfile('tournamentFormData')) {
             $file = $request->tournamentFormData['uploadedPDFFile'];
-            $file_name = $random_file_name . '.' . $file->getClientOriginalExtension();
-            $destination_path = public_path() . '/pdf/tournaments/';
-            $file->move($destination_path, $file_name);
+            $fileName = $random_file_name . '.' . $file->getClientOriginalExtension();
+            try {
+                if (config('app.env') === 'local') {
+                    // ローカル環境ではpublic配下に保存する。
+                    $destinationPath = public_path() . '/pdf/tournaments/';
+                    $file->move($destinationPath, $fileName);
+                } else {
+                    // 本番環境ではS3にアップロードする。
+                    $path = $file->storeAs('pdf/tournaments/', $fileName, 's3');
+                    Log::debug('S3 Upload Path:', ['path' => $path]);
+                }
+            } catch (\Exception $e) {
+                Log::error('File Upload Error:', ['message' => $e->getMessage()]);
+            }
         }
         $reqData = $request->all();
         // Log::debug($reqData);
@@ -336,9 +347,20 @@ class TournamentController extends Controller
             //If new PDF is uploaded
             if ($request->hasfile('tournamentFormData')) {
                 $file = $request->tournamentFormData['uploadedPDFFile'];
-                $file_name = $random_file_name . '.' . $file->getClientOriginalExtension();
-                $destination_path = public_path() . '/pdf/tournaments/';
-                $file->move($destination_path, $file_name);
+                $fileName = $random_file_name . '.' . $file->getClientOriginalExtension();
+                try {
+                    if (config('app.env') === 'local') {
+                        // ローカル環境ではpublic配下に保存する。
+                        $destinationPath = public_path() . '/pdf/tournaments/';
+                        $file->move($destinationPath, $fileName);
+                    } else {
+                        // 本番環境ではS3にアップロードする。
+                        $path = $file->storeAs('pdf/tournaments/', $fileName, 's3');
+                        Log::debug('S3 Upload Path:', ['path' => $path]);
+                    }
+                } catch (\Exception $e) {
+                    Log::error('File Upload Error:', ['message' => $e->getMessage()]);
+                }
             }
             $reqData = $request->all();
 
@@ -746,7 +768,7 @@ class TournamentController extends Controller
         if (empty($target_organization)) {
             Log::debug("主催団体IDに該当する団体が存在しない.");
             $errMessage = "[主催団体ID " . $sponsor_org_id . "]の団体は、既にシステムより削除されているか、本登録されていない団体IDが入力されています。";
-            abort(403, ["response_org_id" => $errMessage]);
+            abort(403, $errMessage);
         } else {
             $reqData["org_name"] = $target_organization->org_name;
         }

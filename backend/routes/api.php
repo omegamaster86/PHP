@@ -99,9 +99,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('checkJARAPlayerId', [PlayerController::class, 'checkJARAPlayerId']); //選手登録画面から登録
     Route::post('deletePlayerData', [PlayerController::class, 'deletePlayerData']); //該当データをDBから削除する
     Route::get('getPlayerFollowStatus', [PlayerController::class, 'getPlayerFollowStatus']); // 選手のフォロー状態・フォロワー数取得
-    Route::get('getPlayerInfoData', [PlayerController::class, 'getPlayerInfoData']); //DBから選手情報更新画面にデータを渡す
-    Route::get('getRaceResultRecordsData', [PlayerController::class, 'getRaceResultRecordsData']); //DBから選手情報更新画面にデータを渡す
-    Route::get('getUpdatePlayerData', [PlayerController::class, 'getUpdatePlayerData']); //DBから選手情報更新画面にデータを渡す
+    Route::post('getPlayerInfoData', [PlayerController::class, 'getPlayerInfoData']); //DBから選手情報更新画面にデータを渡す
+    Route::post('getRaceResultRecordsData', [PlayerController::class, 'getRaceResultRecordsData']); //DBから選手情報更新画面にデータを渡す
+    Route::post('getUpdatePlayerData', [PlayerController::class, 'getUpdatePlayerData']); //DBから選手情報更新画面にデータを渡す
     Route::patch('playerFollowed', [PlayerController::class, 'playerFollowed']); //選手フォロー (選手情報参照画面)
     Route::post('playerSearch', [PlayerController::class, 'playerSearch']); //選手検索
     Route::post('registerCsvData', [PlayerInfoAlignmentController::class, 'registerCsvData']); //連携ボタン押下時

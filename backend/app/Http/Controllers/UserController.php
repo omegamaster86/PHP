@@ -366,11 +366,20 @@ class UserController extends Controller
         //If new picture is uploaded
         if ($request->hasFile('uploadedPhoto')) {
             $file = $request->file('uploadedPhoto');
-            $file_name = Auth::user()->user_id . '.' . $file->getClientOriginalExtension();
-            $destination_path = public_path() . '/images/users/';
-            $file->move($destination_path, $file_name);
-            // $file->storeAs('public/images/users', $file_name);
-            // return response()->json(['message' => 'File uploaded successfully']);
+            $fileName = Auth::user()->user_id . '.' . $file->getClientOriginalExtension();
+            try {
+                if (config('app.env') === 'local') {
+                    // ローカル環境ではpublic配下に保存する。
+                    $destinationPath = public_path() . '/images/users/';
+                    $file->move($destinationPath, $fileName);
+                } else {
+                    // 本番環境ではS3にアップロードする。
+                    $path = $file->storeAs('images/users/', $fileName, 's3');
+                    Log::debug('S3 Upload Path:', ['path' => $path]);
+                }
+            } catch (\Exception $e) {
+                Log::error('File Upload Error:', ['message' => $e->getMessage()]);
+            }
         }
 
         //store all requested information
@@ -389,8 +398,8 @@ class UserController extends Controller
 
         //If new picture is uploaded
         if ($request->hasFile('uploadedPhoto')) {
-            $file_name = Auth::user()->user_id . '.' . $file->getClientOriginalExtension();
-            $t_users::$userInfo['photo'] = $file_name; //写真
+            $fileName = Auth::user()->user_id . '.' . $file->getClientOriginalExtension();
+            $t_users::$userInfo['photo'] = $fileName; //写真
         } else {
             //If  picture is not uploaded
             if ($reqData['photo'] ?? "") {
