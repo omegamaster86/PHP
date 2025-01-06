@@ -5,26 +5,36 @@ import {
   CustomButton,
   CustomDropdown,
   CustomTable,
-  CustomTextField,
-  CustomThead,
-  CustomTr,
   CustomTd,
+  CustomTextField,
   CustomTh,
+  CustomThead,
   CustomTitle,
+  CustomTr,
   CustomYearPicker,
-  InputLabel,
   ErrorBox,
+  InputLabel,
 } from '@/app/components';
-import { useEffect, useState } from 'react';
 import axios from '@/app/lib/axios';
-import { OrgClass, OrgType, UserResponse, Org, PrefectureResponse, UserIdType } from '@/app/types';
-import { Divider } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import {
+  Org,
+  OrgClass,
+  OrgClassResponse,
+  OrgType,
+  OrgTypeResponse,
+  Prefecture,
+  PrefectureResponse,
+  UserIdType,
+  UserResponse,
+} from '@/app/types';
 import { ROLE } from '@/app/utils/consts';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import SearchIcon from '@mui/icons-material/Search';
+import { Divider } from '@mui/material';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface SearchCond {
   entrySystemId: string;
@@ -44,9 +54,9 @@ interface SearchCond {
 
 export default function TeamSearch() {
   const router = useRouter();
-  const [orgTypeOptions, setOrgTypeOptions] = useState<OrgType[]>([]); // 団体種別
-  const [orgClassOptions, setOrgClassOptions] = useState<OrgClass[]>([]); // 団体区分
-  const [prefectureOptions, setPrefectureOptions] = useState([] as PrefectureResponse[]);
+  const [orgTypeOptions, setOrgTypeOptions] = useState<OrgTypeResponse[]>([]); // 団体種別
+  const [orgClassOptions, setOrgClassOptions] = useState<OrgClassResponse[]>([]); // 団体区分
+  const [prefectureOptions, setPrefectureOptions] = useState<PrefectureResponse[]>([]);
   const [user, setUser] = useState<UserResponse>({} as UserResponse); // ユーザー情報
   const [formData, setFormData] = useState<SearchCond>({
     entrySystemId: '',
@@ -200,31 +210,25 @@ export default function TeamSearch() {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
 
-        const orgType = await axios.get('api/getOrganizationTypeData');
-        const orgTypeList = orgType.data.map(
-          ({ org_type_id, org_type }: { org_type_id: number; org_type: string }) => ({
-            id: org_type_id,
-            name: org_type,
-          }),
-        );
+        const orgType = await axios.get<OrgType[]>('api/getOrganizationTypeData');
+        const orgTypeList = orgType.data.map(({ org_type_id, org_type }) => ({
+          id: org_type_id,
+          name: org_type,
+        }));
         setOrgTypeOptions(orgTypeList);
 
-        const orgClass = await axios.get('api/getOrganizationClass');
-        const orgClassList = orgClass.data.map(
-          ({ org_class_id, org_class_name }: { org_class_id: number; org_class_name: string }) => ({
-            id: org_class_id,
-            name: org_class_name,
-          }),
-        );
+        const orgClass = await axios.get<OrgClass[]>('api/getOrganizationClass');
+        const orgClassList = orgClass.data.map(({ org_class_id, org_class_name }) => ({
+          id: org_class_id,
+          name: org_class_name,
+        }));
         setOrgClassOptions(orgClassList);
 
-        const prefectures = await axios.get('api/getPrefectures'); //都道府県マスターの取得 20240208
-        const stateList = prefectures.data.map(
-          ({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({
-            id: pref_id,
-            name: pref_name,
-          }),
-        );
+        const prefectures = await axios.get<Prefecture[]>('api/getPrefectures'); //都道府県マスターの取得 20240208
+        const stateList = prefectures.data.map(({ pref_id, pref_name }) => ({
+          id: pref_id,
+          name: pref_name,
+        }));
         setPrefectureOptions(stateList);
 
         const userInfo = await axios.get('api/user');
@@ -324,7 +328,7 @@ export default function TeamSearch() {
                   handleInputChange('org_type', e);
                   handleInputChange(
                     'orgTypeName',
-                    orgTypeOptions.find((orgType) => orgType.id === Number(e))?.name || '',
+                    orgTypeOptions.find((orgType) => Number(orgType.id) === Number(e))?.name || '',
                   );
                 }}
               />
