@@ -2286,7 +2286,7 @@ export default function VolunteerInformationRef() {
                   (dataDelete(),
                   // setDisplayFlg(true),
                   window.alert('ボランティア情報の削除が完了しました。'),
-                  router.push('/tournamentSearch')) //大会検索画面に遷移する 20240222
+                  router.push('/volunteerSearch')) //大会検索画面に遷移する 20240222
                 : '';
             }}
           >

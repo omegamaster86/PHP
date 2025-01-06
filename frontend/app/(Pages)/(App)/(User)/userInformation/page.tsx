@@ -352,7 +352,7 @@ export default function UserInformationUpdate() {
                     // 成功時の処理を実装
                     removeDraftFormData();
                     window.alert('ユーザー情報を更新しました。');
-                    router.push('/userInformationRef');
+                    router.push('/mypage/profile');
                   })
                   .catch((error) => {
                     if (error?.response) {
@@ -409,7 +409,7 @@ export default function UserInformationUpdate() {
                   // 成功時の処理を実装
                   removeDraftFormData();
                   window.alert('ユーザー情報を更新しました。');
-                  router.push('/userInformationRef');
+                  router.push('/mypage/profile');
                 })
                 .catch((error) => {
                   if (error?.response?.response?.data) {
@@ -469,7 +469,6 @@ export default function UserInformationUpdate() {
         </div>
         <div className='flex flex-col justify-start gap-[10px]'>
           {/* 写真 */}
-          {/*写真　は　必要ものではありませんので "required" は　はずしました。*/}
           <InputLabel
             displayHelp={mode !== 'confirm'}
             label='写真'

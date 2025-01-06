@@ -33,7 +33,7 @@ export default function Login() {
 
   const { login } = useAuth({
     middleware: 'guest',
-    redirectIfAuthenticated: '/tournamentSearch',
+    redirectIfAuthenticated: '/mypage/top',
   });
 
   const submitForm = async (values: Values): Promise<any> => {

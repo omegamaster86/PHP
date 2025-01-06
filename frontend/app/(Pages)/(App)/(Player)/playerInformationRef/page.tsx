@@ -86,7 +86,7 @@ export default function PlayerInformationRef() {
   );
 
   if (!playerId) {
-    router.push('/tournamentSearch');
+    router.push('/mypage/top');
   }
 
   // タブ切り替え用のステート
@@ -2157,7 +2157,7 @@ export default function PlayerInformationRef() {
                   (dataDelete(),
                   setDisplayFlg(true),
                   window.alert('選手情報の削除が完了しました。'),
-                  router.push('/tournamentSearch')) //大会検索画面に遷移する 20240222
+                  router.push('/playerSearch'))
                 : //router.push('/myPage') : setDisplayFlg(true)
                   setDisplayFlg(true);
             }}

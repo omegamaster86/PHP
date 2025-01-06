@@ -1,4 +1,4 @@
-import { NotificationAvatar } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/NotificationAvatar';
+import { NotificationAvatar } from '@/app/components/Notification/NotificationAvatar';
 import { getNotificationDestinationType } from '@/app/constants';
 import { NotificationListData } from '@/app/types';
 import { cn } from '@/app/utils/cn';
@@ -20,7 +20,7 @@ export const ListItem: React.FC<Props> = (props) => {
       className={cn(
         'flex items-center gap-4 p-4',
         isRead && 'opacity-50',
-        isSelected && 'border-r-2 border-r-primary-500 bg-primary-40',
+        isSelected && 'border-r-2 border-r-primary-500 md:bg-primary-40',
       )}
     >
       <div className='flex flex-col gap-4 w-full'>

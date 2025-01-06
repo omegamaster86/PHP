@@ -13,6 +13,7 @@ use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\OrganizationPlayersController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\PlayerInfoAlignmentController;
+use App\Http\Controllers\TopPageController;
 use App\Http\Controllers\TournamentController;
 use App\Http\Controllers\TournamentInfoAlignmentController;
 use App\Http\Controllers\TournamentRaceRefeController;
@@ -193,4 +194,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('insertNotification', [NotificationsController::class, 'insertNotification']); //通知情報の登録
     Route::patch('updateNotification', [NotificationsController::class, 'updateNotification']); //通知情報の更新
     Route::patch('updateNotificationReadFlag', [NotificationsController::class, 'updateNotificationReadFlag']); //既読フラグの更新
+
+        // トップ画面
+        Route::get('getTopPageSummaryCount', [TopPageController::class, 'getTopPageSummaryCount']); //トップページのフォロー中の選手、大会数、出場した大会数、フォロワーの値を取得
 });

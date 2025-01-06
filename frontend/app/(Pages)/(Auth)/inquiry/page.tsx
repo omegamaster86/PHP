@@ -129,7 +129,7 @@ export default function Inquiry() {
             .then((response) => {
               {
                 window.alert('メールの送信が完了しました');
-                isLogIn ? router.push('/tournamentSearch') : router.push('/login');
+                isLogIn ? router.push('/mypage/top') : router.push('/login');
               }
             })
             .catch((error) => {

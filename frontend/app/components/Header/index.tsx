@@ -99,7 +99,7 @@ const Header: FC = () => {
         setCurrentIndex(3);
         break;
       case '/userInformation':
-      case '/userInformationRef':
+      case '/mypage/profile':
         setCurrentIndex(4);
         break;
       default:
@@ -311,7 +311,7 @@ const Header: FC = () => {
         },
         {
           title: 'ユーザ情報参照',
-          link: '/userInformationRef',
+          link: '/mypage/profile',
           show: userIdType.is_audience == 1,
         },
         {
@@ -361,8 +361,7 @@ const Header: FC = () => {
     {
       title: 'マイページ',
       index: 6,
-      // FIXME 仮のリンク
-      link: '/mypage/tournament/official',
+      link: '/mypage/top',
       show: true,
       active: currentIndex === 6,
     },
@@ -535,8 +534,7 @@ const Header: FC = () => {
                   active={currentIndex === 6}
                   onClick={(e) => {
                     handleClick(e, 6);
-                    // FIXME 仮のリンク
-                    router.push('/mypage/tournament/official');
+                    router.push('/mypage/top');
                   }}
                 >
                   <PersonOutlined

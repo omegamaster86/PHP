@@ -241,11 +241,11 @@ export default function VolunteerBulkRegister() {
             setValidFlag(true); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
           } else {
             //console.log('ユーザ種別不正');
-            router.push('/tournamentSearch');
+            router.push('/volunteerSearch');
           }
         } else {
           //console.log('ユーザ情報なし');
-          router.push('/tournamentSearch');
+          router.push('/volunteerSearch');
         }
       } catch (error: any) {}
     };

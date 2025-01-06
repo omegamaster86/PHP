@@ -1,6 +1,6 @@
 'use client';
 
-import { NotificationContent } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/NotificationContent';
+import { NotificationContent } from '@/app/components/Notification/NotificationContent';
 import { useAuth } from '@/app/hooks/auth';
 import { fetcher } from '@/app/lib/swr';
 import { NotificationInfoData } from '@/app/types';

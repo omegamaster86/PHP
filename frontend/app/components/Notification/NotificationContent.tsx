@@ -1,5 +1,5 @@
-import { NotificationAvatar } from '@/app/(Pages)/(App)/(Notification)/notifications/_components/NotificationAvatar';
-import SenderName from '@/app/(Pages)/(App)/(Notification)/notifications/_components/SenderName';
+import { NotificationAvatar } from '@/app/components/Notification/NotificationAvatar';
+import SenderName from '@/app/components/Notification/SenderName';
 import { TitleSideButton } from '@/app/(Pages)/(App)/_components/TitleSideButton';
 import { CustomButton } from '@/app/components';
 import LinkifyText from '@/app/components/LinkifyText';
