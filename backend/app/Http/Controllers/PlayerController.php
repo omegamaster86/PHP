@@ -694,11 +694,20 @@ class PlayerController extends Controller
         //If new picture is uploaded
         if ($request->hasFile('uploadedPhoto')) {
             $file = $request->file('uploadedPhoto');
-            $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
-            $destination_path = public_path() . '/images/players/';
-            $file->move($destination_path, $file_name);
-            // $file->storeAs('public/images/users', $file_name);
-            // return response()->json(['message' => 'File uploaded successfully']);
+            $fileName = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
+            try {
+                if (config('app.env') === 'local') {
+                    // ローカル環境ではpublic配下に保存する。
+                    $destinationPath = public_path() . '/images/players/';
+                    $file->move($destinationPath, $fileName);
+                } else {
+                    // 本番環境ではS3にアップロードする。
+                    $path = $file->storeAs('images/players/', $fileName, 's3');
+                    Log::debug('S3 Upload Path:', ['path' => $path]);
+                }
+            } catch (\Exception $e) {
+                Log::error('File Upload Error:', ['message' => $e->getMessage()]);
+            }
         }
         Log::debug(sprintf("storePlayerData start"));
 
@@ -793,11 +802,20 @@ class PlayerController extends Controller
         //If new picture is uploaded
         if ($request->hasFile('uploadedPhoto')) {
             $file = $request->file('uploadedPhoto');
-            $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
-            $destination_path = public_path() . '/images/players/';
-            $file->move($destination_path, $file_name);
-            // $file->storeAs('public/images/users', $file_name);
-            // return response()->json(['message' => 'File uploaded successfully']);
+            $fileName = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
+            try {
+                if (config('app.env') === 'local') {
+                    // ローカル環境ではpublic配下に保存する。
+                    $destinationPath = public_path() . '/images/players/';
+                    $file->move($destinationPath, $fileName);
+                } else {
+                    // 本番環境ではS3にアップロードする。
+                    $path = $file->storeAs('images/players/', $fileName, 's3');
+                    Log::debug('S3 Upload Path:', ['path' => $path]);
+                }
+            } catch (\Exception $e) {
+                Log::error('File Upload Error:', ['message' => $e->getMessage()]);
+            }
         }
         Log::debug(sprintf("updatePlayerData start"));
         $reqData = $request->all();
