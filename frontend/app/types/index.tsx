@@ -405,6 +405,7 @@ interface VolunteerHistoriesResponse {
 
 // 選手情報
 interface PlayerInformationResponse {
+  user_id: number; // ユーザーID
   player_id: number; // 選手ID
   jara_player_id: string; // JARA選手コード
   player_name: string; // 選手名
