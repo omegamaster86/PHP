@@ -115,7 +115,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('getEntryTournamentsViewForTeamRef', [OrganizationController::class, 'getEntryTournamentsViewForTeamRef']); //エントリー大会
     Route::get('getOrganizationForOrgManagement', [OrganizationController::class, 'getOrganizationForOrgManagement']); //団体管理画面用に団体情報を取得
     Route::get('getOrganizationListData', [OrganizationController::class, 'getOrganizationListData']); //団体所属選手一括登録画面用に団体情報を取得
-    Route::get('getOrgData', [OrganizationController::class, 'getOrgData']); //DBから団体管理画面にデータを渡す
+    Route::post('getOrgData', [OrganizationController::class, 'getOrgData']); //DBから団体管理画面にデータを渡す
     Route::post('orgSearch', [OrganizationController::class, 'searchOrganization']); //団体検索
     Route::post('registerOrgCsvData', [OrganizationPlayersController::class, 'registerOrgCsvData']); //団体一括 登録ボタン押下
     Route::post('searchOrganizationPlayersForTeamRef', [OrganizationPlayersController::class, 'searchOrganizationPlayersForTeamRef']); //主催大会
@@ -195,6 +195,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::patch('updateNotification', [NotificationsController::class, 'updateNotification']); //通知情報の更新
     Route::patch('updateNotificationReadFlag', [NotificationsController::class, 'updateNotificationReadFlag']); //既読フラグの更新
 
-        // トップ画面
-        Route::get('getTopPageSummaryCount', [TopPageController::class, 'getTopPageSummaryCount']); //トップページのフォロー中の選手、大会数、出場した大会数、フォロワーの値を取得
+    // トップ画面
+    Route::get('getTopPageSummaryCount', [TopPageController::class, 'getTopPageSummaryCount']); //トップページのフォロー中の選手、大会数、出場した大会数、フォロワーの値を取得
 });
