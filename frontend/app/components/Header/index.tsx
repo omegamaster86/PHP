@@ -405,7 +405,7 @@ const Header: FC = () => {
                   link: x.link,
                   show: x.show,
                   active: x.active ?? x.link === page,
-                  action: toggleDrawer(false),
+                  action: x.action,
                 })),
               }}
             />
