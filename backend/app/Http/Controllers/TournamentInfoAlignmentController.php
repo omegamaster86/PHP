@@ -123,7 +123,7 @@ class TournamentInfoAlignmentController extends Controller
         for ($rowIndex = 0; $rowIndex < count($inputData['csvDataList']); $rowIndex++) {
 
             //フロント側のバリデーション結果に未入力が存在する場合、以降の処理を実行しない 20240419
-            if($inputData['csvDataList'][$rowIndex]['loadingResult'] != ''){
+            if ($inputData['csvDataList'][$rowIndex]['loadingResult'] != '') {
                 continue;
             }
 
@@ -386,11 +386,11 @@ class TournamentInfoAlignmentController extends Controller
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            abort(500,['errMessage' => $e->getMessage()]);
+            abort(500, ['errMessage' => $e->getMessage()]);
         }
     }
 
-    //大会結果一括 読み込むボタン押下 20240301
+    //レース結果一括 読み込むボタン押下 20240301
     public function sendTournamentResultCsvData(
         Request $request,
         T_tournaments $t_tournaments,
@@ -994,16 +994,16 @@ class TournamentInfoAlignmentController extends Controller
                         // }
 
                         if (!isset($target_row['orgId'])) {                     // 団体IDが未入力の場合、エントリーシステムの団体IDで一致確認
-                            if ($organization->entrysystem_org_id == $target_row['entrysystemOrgId']){
+                            if ($organization->entrysystem_org_id == $target_row['entrysystemOrgId']) {
                                 $is_organization_exists = true;
                                 break;
                             }
-                        }else if (!isset($target_row['entrysystemOrgId'])) {    // エントリーシステムの団体IDが未入力の場合、団体IDで一致確認
+                        } else if (!isset($target_row['entrysystemOrgId'])) {    // エントリーシステムの団体IDが未入力の場合、団体IDで一致確認
                             if ($organization->org_id == $target_row['orgId']) {
                                 $is_organization_exists = true;
                                 break;
                             }
-                        }else{                                                  // 団体IDとエントリーシステムの団体IDともに入力の場合、両方で一致確認
+                        } else {                                                  // 団体IDとエントリーシステムの団体IDともに入力の場合、両方で一致確認
                             if (
                                 $organization->org_id == $target_row['orgId']
                                 && $organization->entrysystem_org_id == $target_row['entrysystemOrgId']
@@ -1043,16 +1043,16 @@ class TournamentInfoAlignmentController extends Controller
                         // }
 
                         if (!isset($target_row['userId'])) {                     // 選手IDが未入力の場合、JARA選手コードで一致確認
-                            if ($player->jara_player_id == $target_row['jaraPlayerId']){
+                            if ($player->jara_player_id == $target_row['jaraPlayerId']) {
                                 $is_player_exists = true;
                                 break;
                             }
-                        }else if (!isset($target_row['jaraPlayerId'])) {        // JARA選手コードが未入力の場合、選手IDで一致確認
+                        } else if (!isset($target_row['jaraPlayerId'])) {        // JARA選手コードが未入力の場合、選手IDで一致確認
                             if ($player->player_id == $target_row['userId']) {
                                 $is_player_exists = true;
                                 break;
                             }
-                        }else{                                                  // 選手IDとJARA選手コードともに入力の場合、両方で一致確認
+                        } else {                                                  // 選手IDとJARA選手コードともに入力の場合、両方で一致確認
                             if (
                                 $player->player_id == $target_row['userId']
                                 && $player->jara_player_id == $target_row['jaraPlayerId']
@@ -1061,7 +1061,6 @@ class TournamentInfoAlignmentController extends Controller
                                 break;
                             }
                         }
-
                     }
                     if (!$is_player_exists) {
                         //Log::debug("選手情報不一致");
@@ -1114,11 +1113,11 @@ class TournamentInfoAlignmentController extends Controller
             return response()->json(['result' => $reqData]); //DBの結果を返す
         } catch (\Throwable $e) {
             Log::error($e);
-            abort(500,['result' => $e->getMessage()]);
+            abort(500, ['result' => $e->getMessage()]);
         }
     }
 
-    //大会結果一括 登録ボタン押下 20240301
+    //レース結果一括 登録ボタン押下 20240301
     public function registerTournamentResultCsvData(
         Request $request,
         T_tournaments $t_tournaments,
@@ -1390,7 +1389,7 @@ class TournamentInfoAlignmentController extends Controller
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            abort(500,['result' => false]);
+            abort(500, ['result' => false]);
         }
     }
 

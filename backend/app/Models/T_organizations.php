@@ -39,7 +39,8 @@ class T_organizations extends Model
 
     public function getOrganization($orgId)
     {
-        $organization = DB::select('select 
+        $organization = DB::select(
+            'select 
                                     `org_id`,
                                     `entrysystem_org_id`,
                                     `org_name`,
@@ -90,11 +91,12 @@ class T_organizations extends Model
                                     and `m_organization_class`.`delete_flag` = 0
                                     and jmot.`delete_flag` = 0
                                     and pmot.`delete_flag` = 0
-                                    and `org_id`=?'
-                                    ,[$orgId]);
+                                    and `org_id`=?',
+            [$orgId]
+        );
         //1つの団体IDを取得するため0番目だけを返す
         $targetOrg = null;
-        if(!empty($organization)){
+        if (!empty($organization)) {
             $targetOrg = $organization[0];
         }
         return $targetOrg;
@@ -161,10 +163,11 @@ class T_organizations extends Model
 
     //interfaceのOrganizationを引数としてInsertを実行し、InsertしたレコードのID（主キー）を返す
     public function insertOrganization($organization)
-    {        
+    {
         $current_datetime = now()->format('Y-m-d H:i:s.u');
         $register_user_id = Auth::user()->user_id;
-        DB::insert('insert into t_organizations
+        DB::insert(
+            'insert into t_organizations
                     (
                         org_name,
                         entrysystem_org_id,
@@ -185,27 +188,28 @@ class T_organizations extends Model
                         updated_user_id,
                         delete_flag
                     )
-                    values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
-                    ,[
-                        $organization['formData']['org_name'],
-                        $organization['formData']['entrysystem_org_id'],
-                        $organization['formData']['founding_year'],
-                        $organization['formData']['post_code'],
-                        $organization['formData']['location_country'],
-                        $organization['formData']['location_prefecture'],
-                        $organization['formData']['address1'],
-                        $organization['formData']['address2'],
-                        $organization['formData']['org_class'],
-                        $organization['formData']['jara_org_type'],
-                        $organization['formData']['jara_org_reg_trail'],
-                        $organization['formData']['pref_org_type'],
-                        $organization['formData']['pref_org_reg_trail'],
-                        $current_datetime,
-                        $register_user_id,
-                        $current_datetime,
-                        $register_user_id,
-                        0
-                    ]);
+                    values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            [
+                $organization['formData']['org_name'],
+                $organization['formData']['entrysystem_org_id'],
+                $organization['formData']['founding_year'],
+                $organization['formData']['post_code'],
+                $organization['formData']['location_country'],
+                $organization['formData']['location_prefecture'],
+                $organization['formData']['address1'],
+                $organization['formData']['address2'],
+                $organization['formData']['org_class'],
+                $organization['formData']['jara_org_type'],
+                $organization['formData']['jara_org_reg_trail'],
+                $organization['formData']['pref_org_type'],
+                $organization['formData']['pref_org_reg_trail'],
+                $current_datetime,
+                $register_user_id,
+                $current_datetime,
+                $register_user_id,
+                0
+            ]
+        );
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
         //Log::debug($insertId);
@@ -235,19 +239,20 @@ class T_organizations extends Model
                     `updated_time` = :updated_time,
                     `updated_user_id` = :updated_user_id
                     where `org_id` = :org_id
-                ',$organization);
+                ', $organization);
         Log::debug('updateOrganization end.');
     }
 
     //団体更新する際に、既に団体が削除されていないかを判定する 20240527
     public function orgDataDeleteCheck($org_id)
     {
-        $counts = DB::select('select count(*) as "count"
+        $counts = DB::select(
+            'select count(*) as "count"
                                     from `t_organizations`
                                     where `delete_flag`= 1
-                                    and `org_id` = ?'
-                                ,[$org_id]
-                            );
+                                    and `org_id` = ?',
+            [$org_id]
+        );
         $count = $counts[0]->count;
         return $count;
     }
@@ -255,15 +260,16 @@ class T_organizations extends Model
     //エントリーシステムの団体IDの数を取得する
     //重複有無を確認するため
     //org_idが一致するレコードを除く（更新画面用）
-    public function getEntrysystemOrgIdCountWithOrgId($entrySystemOrgId,$org_id)
+    public function getEntrysystemOrgIdCountWithOrgId($entrySystemOrgId, $org_id)
     {
-        $counts = DB::select('select count(*) as "count"
+        $counts = DB::select(
+            'select count(*) as "count"
                                     from `t_organizations`
                                     where `delete_flag`=0
                                     and `entrysystem_org_id` = ?
-                                    and `org_id` <> ?'
-                                ,[$entrySystemOrgId,$org_id]
-                            );
+                                    and `org_id` <> ?',
+            [$entrySystemOrgId, $org_id]
+        );
         $count = $counts[0]->count;
         return $count;
     }
@@ -273,12 +279,13 @@ class T_organizations extends Model
     //（登録画面用）
     public function getEntrysystemOrgIdCount($entrySystemOrgId)
     {
-        $counts = DB::select('select count(*) as "count"
+        $counts = DB::select(
+            'select count(*) as "count"
                                     from `t_organizations`
                                     where `delete_flag`=0
-                                    and `entrysystem_org_id` = ?'
-                                ,[$entrySystemOrgId]
-                            );
+                                    and `entrysystem_org_id` = ?',
+            [$entrySystemOrgId]
+        );
         $count = $counts[0]->count;
         return $count;
     }
@@ -286,14 +293,15 @@ class T_organizations extends Model
     //エントリー団体IDから団体名を取得する
     public function getOrgInfoFromEntrySystemOrgId($entrySystemOrgId)
     {
-        $orgInfos = DB::select('select 
+        $orgInfos = DB::select(
+            'select 
                                 `org_id`
                                 ,`org_name`
                                 from `t_organizations`
                                 where `delete_flag`=0
-                                and `entrysystem_org_id`=?'
-                                ,[$entrySystemOrgId]
-                            );
+                                and `entrysystem_org_id`=?',
+            [$entrySystemOrgId]
+        );
         $orgInfo = $orgInfos[0];
         return $orgInfo;
     }
@@ -304,24 +312,26 @@ class T_organizations extends Model
     {
         // 確認したいSQLの前にこれを仕込んで
         //DB::enableQueryLog();
-        DB::update('update `t_organizations`
+        DB::update(
+            'update `t_organizations`
                     set `delete_flag` = ?
                     ,`updated_time` = ?
                     ,`updated_user_id` = ?
                     where 1=1
-                    and `org_id` = ?'
-                    ,[
-                        1
-                        ,now()->format('Y-m-d H:i:s.u')
-                        ,Auth::user()->user_id
-                        ,$org_id
-                    ]);
+                    and `org_id` = ?',
+            [
+                1,
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                $org_id
+            ]
+        );
         // Log::debug("***************************SQL LOG***************************");
         // Log::debug(DB::getQueryLog());
     }
 
     //検索条件を受け取って、t_organizationを検索し、その結果を返す
-    public function getOrganizationWithSearchCondition($searchCondition,$value_array)
+    public function getOrganizationWithSearchCondition($searchCondition, $value_array)
     {
         //DB::enableQueryLog();
 
@@ -378,26 +388,28 @@ class T_organizations extends Model
                         and pmot.`delete_flag` = 0
                         #SearchCondition#
                         order by `org_id`';
-        $sqlString = str_replace('#SearchCondition#',$searchCondition,$sqlString);
+        $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
         //Log::debug($sqlString);
-        $organizations = DB::select($sqlString,$value_array);
+        $organizations = DB::select($sqlString, $value_array);
         //Log::debug(DB::getQueryLog());
         return $organizations;
     }
 
     public function getOrganizationName()
     {
-        $organization_name_list = DB::select('select org_name
+        $organization_name_list = DB::select(
+            'select org_name
                                         from t_organizations
                                         where delete_flag = 0
                                         order by org_id'
-                                    );
+        );
         return $organization_name_list;
     }
 
     public function getOrganizations()
     {
-        $organizations = DB::select('select 
+        $organizations = DB::select(
+            'select 
                                     `org_id`,
                                     `entrysystem_org_id`,
                                     `org_name`,
@@ -447,14 +459,15 @@ class T_organizations extends Model
                                     and `m_organization_class`.`delete_flag` = 0
                                     and jmot.`delete_flag` = 0
                                     and pmot.`delete_flag` = 0'
-                                );
+        );
         return $organizations;
     }
 
     //ユーザーIDを条件にinterfaceのTeamResponseを取得する
     public function getManagementOrganizations($user_id)
     {
-        $organizations = DB::select("select distinct
+        $organizations = DB::select(
+            "select distinct
                                     case
                                         when org.jara_org_type = 0 and org.pref_org_type = 0 then '任意'
                                         else '正規'
@@ -472,8 +485,9 @@ class T_organizations extends Model
                                     and staff.delete_flag = 0
                                     and users.delete_flag = 0
                                     and users.user_id = ?
-                                    order by org.org_id"
-                                    ,[$user_id]);
+                                    order by org.org_id",
+            [$user_id]
+        );
         return $organizations;
     }
 
@@ -497,16 +511,18 @@ class T_organizations extends Model
 
     //csvの団体ID、団体名に一致する団体情報が登録済みかを確認するため、
     //条件に合う団体の数を返す
-    //大会結果情報一括登録画面用
-    public function getOrganizationCountFromCsvData($org_id,$org_name)
+    //レース結果情報一括登録画面用
+    public function getOrganizationCountFromCsvData($org_id, $org_name)
     {
-        $org_count = DB::select("select count(*)    as `count`
+        $org_count = DB::select(
+            "select count(*)    as `count`
                                 from t_organizations
                                 where 1=1
                                 and delete_flag = 0
                                 and org_id = :org_id
                                 and org_name = :org_name",
-                                ["org_id"=>$org_id,"org_name"=>$org_name]);
+            ["org_id" => $org_id, "org_name" => $org_name]
+        );
         return $org_count;
     }
 }

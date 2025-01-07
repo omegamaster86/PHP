@@ -1,4 +1,4 @@
-// 機能名: 大会レース結果管理画面
+// 機能名: レース結果管理画面
 'use client';
 
 // Reactおよび関連モジュールのインポート
@@ -346,7 +346,7 @@ export default function TournamentResultManagement() {
   // レンダリング
   return (
     <>
-      <CustomTitle displayBack>大会レース結果管理</CustomTitle>
+      <CustomTitle displayBack>レース結果管理</CustomTitle>
       <div className='flex flex-col justify-center items-center'>
         {/* 説明 */}
         <p>

@@ -1,4 +1,4 @@
-// 大会結果登録（参照・削除）画面
+// レース結果登録（参照・削除）画面
 'use client';
 // ライブラリのインポート
 import React, { useState, useEffect } from 'react';
@@ -20,7 +20,7 @@ import {
 import { Race, RaceResultRecordsResponse } from '@/app/types';
 import axios from '@/app/lib/axios';
 
-// 大会結果登録（参照・削除）画面のメインコンポーネント
+// レース結果登録（参照・削除）画面のメインコンポーネント
 export default function TournamentResultRef() {
   // フック
   const router = useRouter();
@@ -444,7 +444,7 @@ export default function TournamentResultRef() {
         <CustomButton
           buttonType='secondary'
           onClick={() => {
-            router.push('/tournamentResultManagement'); //大会結果管理（大会レース結果管理）画面に戻す 20240516
+            router.push('/tournamentResultManagement');
           }}
           className='w-[170px]'
         >

@@ -99,8 +99,7 @@ const Header: FC = () => {
         setCurrentIndex(3);
         break;
       case '/userInformation':
-      case '/mypage/profile':
-        setCurrentIndex(4);
+        setCurrentIndex(6);
         break;
       default:
         setCurrentIndex(999);
@@ -108,11 +107,11 @@ const Header: FC = () => {
     }
 
     if (page.startsWith('/notification')) {
-      setCurrentIndex(5);
+      setCurrentIndex(4);
       return;
     }
     if (page.startsWith('/mypage')) {
-      setCurrentIndex(6);
+      setCurrentIndex(5);
       return;
     }
   };
@@ -159,7 +158,7 @@ const Header: FC = () => {
           show: true,
         },
         {
-          title: '大会結果管理',
+          title: 'レース結果管理',
           link: '/tournamentResultManagement',
           show:
             userIdType.is_administrator == 1 ||
@@ -177,7 +176,7 @@ const Header: FC = () => {
             userIdType.is_organization_manager == 1,
         },
         {
-          title: '大会結果情報一括登録',
+          title: 'レース結果情報一括登録',
           link: '/tournamentResultInfomationBulkRegister',
           show:
             userIdType.is_administrator == 1 ||
@@ -299,46 +298,10 @@ const Header: FC = () => {
       ],
     },
     {
-      title: 'その他',
-      index: 4,
-      active: currentIndex === 4,
-      show: true,
-      items: [
-        {
-          title: 'ユーザ情報更新',
-          link: '/userInformation?mode=update',
-          show: userIdType.is_audience == 1,
-        },
-        {
-          title: 'ユーザ情報参照',
-          link: '/mypage/profile',
-          show: userIdType.is_audience == 1,
-        },
-        {
-          title: 'ユーザ情報削除',
-          link: '/userInformationRef?mode=delete',
-          show: userIdType.is_audience == 1,
-        },
-        {
-          title: 'パスワード変更',
-          link: '/passwordchange',
-          show: userIdType.is_audience == 1,
-        },
-        {
-          title: 'ログアウト',
-          link: '',
-          show: true,
-          action: () => {
-            logout();
-          },
-        },
-      ],
-    },
-    {
       title: 'お知らせ',
-      index: 5,
+      index: 4,
       show: true,
-      active: currentIndex === 5,
+      active: currentIndex === 4,
       items: [
         {
           title: '通知登録',
@@ -360,10 +323,41 @@ const Header: FC = () => {
     },
     {
       title: 'マイページ',
-      index: 6,
+      index: 5,
       link: '/mypage/top',
       show: true,
+      active: currentIndex === 5,
+    },
+    {
+      title: 'その他',
+      index: 6,
       active: currentIndex === 6,
+      show: true,
+      items: [
+        {
+          title: 'ユーザー情報更新',
+          link: '/userInformation?mode=update',
+          show: userIdType.is_audience == 1,
+        },
+        {
+          title: 'パスワード変更',
+          link: '/passwordchange',
+          show: userIdType.is_audience == 1,
+        },
+        {
+          title: 'ログアウト',
+          link: '',
+          show: true,
+          action: () => {
+            logout();
+          },
+        },
+        {
+          title: '退会',
+          link: '/withdrawal',
+          show: userIdType.is_audience == 1,
+        },
+      ],
     },
   ];
 
@@ -505,7 +499,7 @@ const Header: FC = () => {
                   ''
                 )}
                 <div>
-                  <MenuButton active={currentIndex === 4} onClick={(e) => handleClick(e, 4)}>
+                  <MenuButton active={currentIndex === 6} onClick={(e) => handleClick(e, 6)}>
                     その他
                   </MenuButton>
                 </div>
@@ -514,9 +508,9 @@ const Header: FC = () => {
               {/* メニュー右側 */}
               <div className='flex'>
                 <MenuButton
-                  active={currentIndex === 5}
+                  active={currentIndex === 4}
                   onClick={(e) => {
-                    handleClick(e, 5);
+                    handleClick(e, 4);
                   }}
                 >
                   <MarkEmailUnreadOutlined
@@ -531,9 +525,9 @@ const Header: FC = () => {
                   <span>お知らせ</span>
                 </MenuButton>
                 <MenuButton
-                  active={currentIndex === 6}
+                  active={currentIndex === 5}
                   onClick={(e) => {
-                    handleClick(e, 6);
+                    handleClick(e, 5);
                     router.push('/mypage/top');
                   }}
                 >

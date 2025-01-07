@@ -632,7 +632,7 @@ class T_players extends Model
     }
 
     //全選手情報を取得
-    //大会結果一括登録画面用
+    //レース結果一括登録画面用
     //修正 マッピング用選手を除外するよう修正　2024.04.20 吉川 
     public function getPlayers()
     {
@@ -1352,7 +1352,7 @@ class T_players extends Model
     }
 
     //選手IDと選手名に一致する選手の件数を抽出する
-    //大会結果情報一括登録画面用
+    //レース結果情報一括登録画面用
     public function getPlayerCountFromCsvData($player_id, $player_name)
     {
         $player_count = DB::select(
@@ -1367,7 +1367,7 @@ class T_players extends Model
         return $player_count;
     }
 
-    //大会結果登録画面で選手IDを入力したとき、選手情報とレース結果情報を取得する
+    //レース結果登録画面で選手IDを入力したとき、選手情報とレース結果情報を取得する
     public function getPlayerInfoAndRaceResultRecord($player_id, $race_id)
     {
         $player_info = DB::select(

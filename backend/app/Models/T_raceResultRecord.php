@@ -267,7 +267,8 @@ class T_raceResultRecord extends Model
     //マイページ 出漕履歴用 選手IDに紐づいたレース結果情報を取得 20241015
     public function getMyPageRaceResultRecordInfo($playerId, $official)
     {
-        $racesResultRecord = DB::select('select 
+        $racesResultRecord = DB::select(
+            'select 
                                         `t_race_result_record`.`race_result_record_id` as `raceId`,
                                         `t_race_result_record`.`tourn_name` as `tournName`,
                                         `t_race_result_record`.`official`,
@@ -280,8 +281,9 @@ class T_raceResultRecord extends Model
                                         and `t_race_result_record`.delete_flag = 0
                                         and `t_race_result_record`.player_id = ?
                                         and `t_race_result_record`.official = ?
-                                        ORDER BY `t_race_result_record`.`start_datetime` DESC', 
-                                        [$playerId, $official]);
+                                        ORDER BY `t_race_result_record`.`start_datetime` DESC',
+            [$playerId, $official]
+        );
         // Log::debug($racesResultRecord);
         return $racesResultRecord;
     }
@@ -314,7 +316,8 @@ class T_raceResultRecord extends Model
     //で指定すること
     public function insertRaceResultRecordResponse($raceResultRecordResponse)
     {
-        DB::insert('insert into t_race_result_record
+        DB::insert(
+            'insert into t_race_result_record
                     (
                         `player_id`, 
                         `jara_player_id`, 
@@ -343,35 +346,36 @@ class T_raceResultRecord extends Model
                         `updated_user_id`, 
                         `delete_flag`
                     )VALUES
-                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
-                ,[
-                    $raceResultRecordResponse["player_id"],
-                    $raceResultRecordResponse["jara_player_id"],
-                    $raceResultRecordResponse["player_name"],
-                    $raceResultRecordResponse["entrysystem_tourn_id"],
-                    $raceResultRecordResponse["tourn_id"],
-                    $raceResultRecordResponse["tourn_name"],
-                    $raceResultRecordResponse["race_id"],
-                    $raceResultRecordResponse["entrysystem_race_id"],
-                    $raceResultRecordResponse["race_number"],
-                    $raceResultRecordResponse["race_name"],
-                    $raceResultRecordResponse["race_class_id"],
-                    $raceResultRecordResponse["race_class_name"],
-                    $raceResultRecordResponse["org_id"],
-                    $raceResultRecordResponse["entrysystem_org_id"],
-                    $raceResultRecordResponse["org_name"],
-                    $raceResultRecordResponse["crew_name"],
-                    $raceResultRecordResponse["by_group"],
-                    $raceResultRecordResponse["event_id"],
-                    $raceResultRecordResponse["event_name"],
-                    $raceResultRecordResponse["range"],
-                    $raceResultRecordResponse["start_datetime"],
-                    $raceResultRecordResponse["current_datetime"],
-                    $raceResultRecordResponse["user_id"],
-                    $raceResultRecordResponse["current_datetime"],
-                    $raceResultRecordResponse["user_id"],
-                    0
-                ]);
+                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            [
+                $raceResultRecordResponse["player_id"],
+                $raceResultRecordResponse["jara_player_id"],
+                $raceResultRecordResponse["player_name"],
+                $raceResultRecordResponse["entrysystem_tourn_id"],
+                $raceResultRecordResponse["tourn_id"],
+                $raceResultRecordResponse["tourn_name"],
+                $raceResultRecordResponse["race_id"],
+                $raceResultRecordResponse["entrysystem_race_id"],
+                $raceResultRecordResponse["race_number"],
+                $raceResultRecordResponse["race_name"],
+                $raceResultRecordResponse["race_class_id"],
+                $raceResultRecordResponse["race_class_name"],
+                $raceResultRecordResponse["org_id"],
+                $raceResultRecordResponse["entrysystem_org_id"],
+                $raceResultRecordResponse["org_name"],
+                $raceResultRecordResponse["crew_name"],
+                $raceResultRecordResponse["by_group"],
+                $raceResultRecordResponse["event_id"],
+                $raceResultRecordResponse["event_name"],
+                $raceResultRecordResponse["range"],
+                $raceResultRecordResponse["start_datetime"],
+                $raceResultRecordResponse["current_datetime"],
+                $raceResultRecordResponse["user_id"],
+                $raceResultRecordResponse["current_datetime"],
+                $raceResultRecordResponse["user_id"],
+                0
+            ]
+        );
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
         return $insertId;
@@ -379,7 +383,8 @@ class T_raceResultRecord extends Model
 
     public function updateRaceResultRecordsResponse($raceResultRecordsResponse)
     {
-        DB::update('update t_race_result_record
+        DB::update(
+            'update t_race_result_record
                     set
                     `player_id` = :player_id
                     ,`jara_player_id` = :jara_player_id
@@ -404,8 +409,9 @@ class T_raceResultRecord extends Model
                     ,`start_datetime` = :start_datetime
                     ,`updated_time` = :updated_time
                     ,`updated_user_id` = :updated_user_id
-                    WHERE `race_result_record_id` = :race_result_record_id'
-                    ,$raceResultRecordsResponse);
+                    WHERE `race_result_record_id` = :race_result_record_id',
+            $raceResultRecordsResponse
+        );
     }
 
     //団体IDを条件として出漕結果記録テーブル内の大会IDを取得する
@@ -422,7 +428,7 @@ class T_raceResultRecord extends Model
     }
 
     //エントリー大会ID、エントリーレースID、JARA選手IDが一致する公式のレース結果の件数を取得する
-    public function getTargetOfficialRaceCount($values,$searchCondition)
+    public function getTargetOfficialRaceCount($values, $searchCondition)
     {
         Log::debug("getTargetOfficialRaceCount start.");
         $sqlString = 'select count(*)    as "target_race_count"
@@ -432,13 +438,13 @@ class T_raceResultRecord extends Model
                         and rrr.`official` = 1
                         #ReplaceConditionString#';
         $sqlString = str_replace('#ReplaceConditionString#', $searchCondition, $sqlString);
-        $target_race_count = DB::select($sqlString,$values);
+        $target_race_count = DB::select($sqlString, $values);
         Log::debug("getTargetOfficialRaceCount end.");
         return $target_race_count;
     }
 
     //エントリー大会ID、エントリーレースID、JARA選手IDが一致する公式のレース結果を取得する
-    public function getTargetOfficialRace($values,$searchCondition)
+    public function getTargetOfficialRace($values, $searchCondition)
     {
         $sqlString = 'select
                         rrr.`race_result_record_id`
@@ -475,7 +481,7 @@ class T_raceResultRecord extends Model
                         and rrr.`official` = 1	#公式大会
                         #ReplaceConditionString#';
         $sqlString = str_replace('#ReplaceConditionString#', $searchCondition, $sqlString);
-        $target_race = DB::select($sqlString,$values);
+        $target_race = DB::select($sqlString, $values);
         return $target_race;
     }
 
@@ -491,7 +497,7 @@ class T_raceResultRecord extends Model
                                             and rrr.`tourn_id` = :tourn_id	        #大会ID
                                             and rrr.`race_id` = :race_id	        #レースID
                                             and rrr.`player_id` = :player_id		#選手ID
-                                        ',$conditions);
+                                        ', $conditions);
         Log::debug("getTargetUnofficialRaceCount end.");
         return $target_race_count;
     }
@@ -499,7 +505,8 @@ class T_raceResultRecord extends Model
     //大会ID、レースID、選手IDが一致する非公式のレース結果を取得する
     public function getTargetUnofficialRace($conditions)
     {
-        $target_race_count = DB::select('select
+        $target_race_count = DB::select(
+            'select
                                             rrr.`race_result_record_id`     
                                             ,tour.`tourn_id`				#大会ID
                                             ,tour.`entrysystem_tourn_id`	#既存大会ID
@@ -534,16 +541,18 @@ class T_raceResultRecord extends Model
                                             and rrr.`official` = 0	#非公式大会
                                             and rrr.tourn_id = :tourn_id    #大会ID
                                             and rrr.race_id = :race_id      #レースID
-                                            and rrr.player_id = :player_id  #選手ID'
-                                        ,$conditions);
+                                            and rrr.player_id = :player_id  #選手ID',
+            $conditions
+        );
         return $target_race_count;
     }
 
     //出漕結果記録テーブルを更新する
-    //大会結果情報一括登録画面用
+    //レース結果情報一括登録画面用
     public function updateBulkRaceResultRecord($values)
     {
-        DB::update('update `t_race_result_record`
+        DB::update(
+            'update `t_race_result_record`
                         SET `player_id` = :player_id,
                             `jara_player_id` = :jara_player_id,
                             `player_name` = :player_name,
@@ -598,15 +607,17 @@ class T_raceResultRecord extends Model
                             `updated_time`= :updated_time,
                             `updated_user_id`= :user_id
                             WHERE 1=1
-                            and `race_result_record_id` = :race_result_record_id'
-                            ,$values);
+                            and `race_result_record_id` = :race_result_record_id',
+            $values
+        );
     }
 
     //出漕結果記録テーブルに挿入する
-    //大会結果情報一括登録画面用
+    //レース結果情報一括登録画面用
     public function insertBulkRaceResultRecord($values)
     {
-        DB::insert('insert INTO `t_race_result_record`
+        DB::insert(
+            'insert INTO `t_race_result_record`
                     (
                         `player_id`,
                         `jara_player_id`, 
@@ -666,65 +677,66 @@ class T_raceResultRecord extends Model
                         `delete_flag`
                     )
                     VALUES
-                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
-                ,[
-                    $values['player_id']
-                    ,$values['jara_player_id']
-                    ,$values['player_name']
-                    ,$values['entrysystem_tourn_id']
-                    ,$values['tourn_id']
-                    ,$values['tourn_name']
-                    ,$values['race_id']
-                    ,$values['entrysystem_race_id']
-                    ,$values['race_number']
-                    ,$values['race_name']
-                    ,$values['race_class_id']
-                    ,$values['race_class_name']
-                    ,$values['org_id']
-                    ,$values['entrysystem_org_id']
-                    ,$values['org_name']
-                    ,$values['crew_name']
-                    ,$values['by_group']
-                    ,$values['event_id']
-                    ,$values['event_name']
-                    ,$values['range']
-                    ,$values['rank']
-                    ,$values['laptime_500m']
-                    ,$values['laptime_1000m']
-                    ,$values['laptime_1500m']
-                    ,$values['laptime_2000m']
-                    ,$values['final_time']
-                    ,$values['stroke_rate_avg']
-                    ,$values['stroke_rat_500m']
-                    ,$values['stroke_rat_1000m']
-                    ,$values['stroke_rat_1500m']
-                    ,$values['stroke_rat_2000m']
-                    ,$values['heart_rate_avg']
-                    ,$values['heart_rate_500m']
-                    ,$values['heart_rate_1000m']
-                    ,$values['heart_rate_1500m']
-                    ,$values['heart_rate_2000m']
-                    ,$values['official']
-                    ,$values['attendance']
-                    ,$values['ergo_weight']
-                    ,$values['player_height']
-                    ,$values['player_weight']
-                    ,$values['seat_number']
-                    ,$values['seat_name']
-                    ,$values['race_result_record_name']
-                    ,$values['start_datetime']
-                    ,$values['weather']
-                    ,$values['wind_speed_2000m_point']
-                    ,$values['wind_direction_2000m_point']
-                    ,$values['wind_speed_1000m_point']
-                    ,$values['wind_direction_1000m_point']
-                    ,$values['race_result_notes']
-                    ,$values['registered_time']
-                    ,$values['user_id']
-                    ,$values['registered_time']
-                    ,$values['user_id']
-                    ,0
-                ]);
+                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            [
+                $values['player_id'],
+                $values['jara_player_id'],
+                $values['player_name'],
+                $values['entrysystem_tourn_id'],
+                $values['tourn_id'],
+                $values['tourn_name'],
+                $values['race_id'],
+                $values['entrysystem_race_id'],
+                $values['race_number'],
+                $values['race_name'],
+                $values['race_class_id'],
+                $values['race_class_name'],
+                $values['org_id'],
+                $values['entrysystem_org_id'],
+                $values['org_name'],
+                $values['crew_name'],
+                $values['by_group'],
+                $values['event_id'],
+                $values['event_name'],
+                $values['range'],
+                $values['rank'],
+                $values['laptime_500m'],
+                $values['laptime_1000m'],
+                $values['laptime_1500m'],
+                $values['laptime_2000m'],
+                $values['final_time'],
+                $values['stroke_rate_avg'],
+                $values['stroke_rat_500m'],
+                $values['stroke_rat_1000m'],
+                $values['stroke_rat_1500m'],
+                $values['stroke_rat_2000m'],
+                $values['heart_rate_avg'],
+                $values['heart_rate_500m'],
+                $values['heart_rate_1000m'],
+                $values['heart_rate_1500m'],
+                $values['heart_rate_2000m'],
+                $values['official'],
+                $values['attendance'],
+                $values['ergo_weight'],
+                $values['player_height'],
+                $values['player_weight'],
+                $values['seat_number'],
+                $values['seat_name'],
+                $values['race_result_record_name'],
+                $values['start_datetime'],
+                $values['weather'],
+                $values['wind_speed_2000m_point'],
+                $values['wind_direction_2000m_point'],
+                $values['wind_speed_1000m_point'],
+                $values['wind_direction_1000m_point'],
+                $values['race_result_notes'],
+                $values['registered_time'],
+                $values['user_id'],
+                $values['registered_time'],
+                $values['user_id'],
+                0
+            ]
+        );
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
         return $insertId;
@@ -734,7 +746,8 @@ class T_raceResultRecord extends Model
     public function getCrews($values)
     {
         //DB::enableQueryLog();
-        $crews = DB::select('select
+        $crews = DB::select(
+            'select
                             rrr.`player_id`
                             ,msn.`seat_id`
                             ,msn.`seat_name`
@@ -752,8 +765,9 @@ class T_raceResultRecord extends Model
                             and rrr.race_id = :race_id
                             and rrr.crew_name = :crew_name
                             and rrr.org_id = :org_id
-                            order by msn.`display_order`'
-                        ,$values);
+                            order by msn.`display_order`',
+            $values
+        );
         //Log::debug(DB::getQueryLog());
         return $crews;
     }
@@ -781,14 +795,15 @@ class T_raceResultRecord extends Model
                             and race_id = :race_id
                             and org_id = :org_id
                             and player_id = :player_id
-                            ',$conditionValues);
+                            ', $conditionValues);
         return $races;
     }
 
     //レースIDを条件としてレース結果情報を取得する
     public function getRaceResultRecordsFromRaceId($race_id)
     {
-        $race_result_records = DB::select("select
+        $race_result_records = DB::select(
+            "select
                                             rrr.`race_result_record_id`
                                             ,rrr.`range`                        #距離
                                             ,rrr.`start_datetime`               #発艇日時
@@ -842,20 +857,23 @@ class T_raceResultRecord extends Model
                                             and rrr.`delete_flag` = 0
                                             and ply.`delete_flag` = 0
                                             and sex.`delete_flag` = 0
-                                            and rrr.race_id = :race_id"
-                                            ,$race_id);
+                                            and rrr.race_id = :race_id",
+            $race_id
+        );
         return $race_result_records;
     }
 
     //対象のレースに出漕結果の件数を取得する
     public function getIsExistsTargetRaceResult($race_id)
     {
-        $counts = DB::select('select count(*) as "count"
+        $counts = DB::select(
+            'select count(*) as "count"
                                 from t_race_result_record
                                 where 1=1
                                 and delete_flag = 0
-                                and race_id = ?'
-                                ,[$race_id]);
+                                and race_id = ?',
+            [$race_id]
+        );
         $count = $counts[0]->count;
         return $count;
     }
@@ -863,25 +881,29 @@ class T_raceResultRecord extends Model
     //対象の出漕結果の件数を取得する
     public function getIsExistsTargetRaceResultRecord($race_result_record_id)
     {
-        $is_exists = DB::select("select count(*) as `result`
+        $is_exists = DB::select(
+            "select count(*) as `result`
                                 from t_race_result_record
                                 where 1=1
                                 and race_result_record_id = ?
-                                and delete_flag = 0"
-                                ,[$race_result_record_id]);
+                                and delete_flag = 0",
+            [$race_result_record_id]
+        );
         return $is_exists;
     }
 
     //対象のレース結果情報の削除フラグを有効にする（つまりレコードの論理削除を実行）
     public function updateDeleteFlagToValid($values)
     {
-        DB::update("update t_race_result_record
+        DB::update(
+            "update t_race_result_record
                     set delete_flag = 1
                     ,updated_time = ?
                     ,updated_user_id = ?
                     where 1=1
-                    and race_result_record_id = ?"
-                    ,[$values['updated_datetime'],$values['updated_user_id'],$values['race_result_record_id']]);
+                    and race_result_record_id = ?",
+            [$values['updated_datetime'], $values['updated_user_id'], $values['race_result_record_id']]
+        );
     }
 
     //出漕時点情報を取得
@@ -890,7 +912,8 @@ class T_raceResultRecord extends Model
     public function getRaceResultRecordOnRowingPoint($race_id)
     {
         Log::debug("getRaceResultRecordOnRowingPoint start.");
-        $race_result_record = DB::select("select distinct
+        $race_result_record = DB::select(
+            "select distinct
                                             rrr.race_id
                                             ,mwt.`weather_name` as weatherName
                                             ,rrr.`range`                        #距離
@@ -937,8 +960,9 @@ class T_raceResultRecord extends Model
                                             and org.`delete_flag` = 0
                                             and wd2000p.`delete_flag` = 0
                                             and wd1000p.`delete_flag` = 0
-                                            and race_id = :race_id"
-                                            ,["race_id" => $race_id]);
+                                            and race_id = :race_id",
+            ["race_id" => $race_id]
+        );
         Log::debug("getRaceResultRecordOnRowingPoint end.");
         return $race_result_record;
     }
@@ -948,7 +972,8 @@ class T_raceResultRecord extends Model
     //レース結果参照・削除画面用 ※出漕結果記録IDも取得する 
     public function getRaceResultRecordList($race_id, $crew_name, $org_id)
     {
-        $race_result_record_list = DB::select("select 
+        $race_result_record_list = DB::select(
+            "select 
                                                 ply.player_id as playerId
                                                 ,ply.player_name as playerName
                                                 ,msex.sex_id
@@ -982,12 +1007,13 @@ class T_raceResultRecord extends Model
                                                 and race_id = :race_id
                                                 and org_id = :org_id
                                                 and crew_name = :crew_name
-                                                order by seat_number"
-                                            ,[
-                                                "race_id" => $race_id
-                                                ,"crew_name" => $crew_name
-                                                ,"org_id" => $org_id
-                                            ,]);
+                                                order by seat_number",
+            [
+                "race_id" => $race_id,
+                "crew_name" => $crew_name,
+                "org_id" => $org_id,
+            ]
+        );
         return $race_result_record_list;
     }
 
@@ -1111,7 +1137,7 @@ class T_raceResultRecord extends Model
                         , :updated_time
                         , :updated_user_id
                         , :delete_flag
-                    )",$values);
+                    )", $values);
         Log::debug("insertRaceResultRecordForInputConfirm end.");
     }
 
@@ -1119,7 +1145,8 @@ class T_raceResultRecord extends Model
     //レース結果更新画面で入力し、レース結果入力確認画面で更新を実行するときに使用
     public function updateRaceResultRecordForUpdateConfirm($values)
     {
-        DB::update("update `t_race_result_record`
+        DB::update(
+            "update `t_race_result_record`
                     SET
                         `jara_player_id` = :jara_player_id
                         , `race_id` = :race_id
@@ -1162,15 +1189,17 @@ class T_raceResultRecord extends Model
                         , `updated_user_id` = :updated_user_id
                         WHERE 1=1
                         and delete_flag = 0
-                        and `race_result_record_id` = :race_result_record_id"
-                        ,$values);
+                        and `race_result_record_id` = :race_result_record_id",
+            $values
+        );
     }
 
     //「レースID」と「クルー名」と「団体ID」を条件に
     //対象のレース結果情報の削除フラグを有効にする（つまりレコードの論理削除を実行）
     public function updateTargetCrewDeleteFlagToValid($values)
     {
-        DB::update("update t_race_result_record
+        DB::update(
+            "update t_race_result_record
                     set delete_flag = 1
                     ,updated_time = :updated_datetime
                     ,updated_user_id = :updated_user_id
@@ -1178,25 +1207,28 @@ class T_raceResultRecord extends Model
                     and delete_flag = 0
                     and race_id = :race_id
                     and org_id = :org_id
-                    and crew_name = :crew_name"
-                    ,$values);
+                    and crew_name = :crew_name",
+            $values
+        );
     }
 
     //レースID、クルー名、選手ID、団体IDを条件とした出漕結果記録が存在するかを取得
     //レース結果更新で登録か更新を判断するため
     public function getIsExistsTargetResultRecordForConditions($race_result_record_id)
     {
-        $is_record_exists = DB::select("select race_result_record_id
+        $is_record_exists = DB::select(
+            "select race_result_record_id
                                         from `t_race_result_record`
                                         where 1=1
                                         and delete_flag = 0
-                                        and race_result_record_id = :race_result_record_id"
-                                    ,[
-                                        "race_result_record_id" => $race_result_record_id
-                                    ]);
+                                        and race_result_record_id = :race_result_record_id",
+            [
+                "race_result_record_id" => $race_result_record_id
+            ]
+        );
         //1つの結果を取得するため0番目だけを返す
         $target_result = null;
-        if(!empty($is_record_exists)){
+        if (!empty($is_record_exists)) {
             $target_result = $is_record_exists[0];
         }
         return $target_result;

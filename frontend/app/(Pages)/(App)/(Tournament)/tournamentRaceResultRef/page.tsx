@@ -1,4 +1,4 @@
-// 大会レース結果参照画面
+// レース結果参照画面
 'use client';
 
 // Reactおよび関連モジュールのインポート
@@ -266,7 +266,7 @@ export default function TournamentRaceResultRef() {
   return (
     <>
       <div className='flex flex-col gap-[30px] max-w-5xl m-auto'>
-        <CustomTitle displayBack>大会レース結果参照</CustomTitle>
+        <CustomTitle displayBack>レース結果参照</CustomTitle>
         <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
         <div className='flex flex-col gap-[20px] bg-primary-900 p-4'>
           {/* 種目名 */}

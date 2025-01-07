@@ -1,4 +1,4 @@
-// 機能名: 大会結果情報一括登録
+// 機能名: レース結果情報一括登録
 'use client';
 // ライブラリのインポート
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -1322,7 +1322,7 @@ export default function TournamentResultInfomationBulkRegister() {
             <br />
             ※既に登録されているレース結果は上書きされます。
             <br />
-            ※登録後、レース結果の更新・削除をする場合は「大会レース結果編集画面」から行ってください。
+            ※登録後、レース結果の更新・削除をする場合は「レース結果編集画面」から行ってください。
             <br />
           </p>
           <CsvTable

@@ -499,7 +499,7 @@ class TournamentController extends Controller
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 
-    //大会レース結果参照画面に表示する用 20240216
+    //レース結果参照画面に表示する用 20240216
     public function getTournRaceResultRecords(Request $request, T_raceResultRecord $tRaceResultRecord)
     {
         Log::debug(sprintf("getTournRaceResultRecords start"));
@@ -661,7 +661,7 @@ class TournamentController extends Controller
             $reqData = $request->all();
             Log::debug($reqData);
 
-            //大会結果の削除チェックを行う 20240529
+            //レース結果の削除チェックを行う 20240529
             $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData['raceInfo']['race_id']);
             if ($result_count == 0) {
                 return response()->json(['errMessage' => "当該レースの結果は、ほかのユーザーによって削除されています。"]); //エラーメッセージを返す
@@ -816,7 +816,7 @@ class TournamentController extends Controller
         return response()->json(["success" => $reqData], 200); //登録できる
     }
 
-    //大会レース結果管理画面
+    //レース結果管理画面
     //レース結果検索
     public function searchRaceData(Request $request, T_races $t_races)
     {
@@ -860,7 +860,7 @@ class TournamentController extends Controller
         return $condition;
     }
 
-    //大会レース結果入力確認画面
+    //レース結果入力確認画面
     //レース結果情報を登録する
     public function registerRaceResultRecordForRegisterConfirm(
         Request $request,
@@ -885,7 +885,7 @@ class TournamentController extends Controller
         $raceResultRecords = &$reqData['raceResultRecords'];
         DB::beginTransaction();
         try {
-            //大会結果の重複チェックを行う 20240529
+            //レース結果の重複チェックを行う 20240529
             // Log::debug($reqData['raceInfo']);
             $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData['raceInfo']['race_id']);
             Log::debug($result_count);
@@ -1097,7 +1097,7 @@ class TournamentController extends Controller
         }
     }
 
-    //大会レース結果更新確認画面
+    //レース結果更新確認画面
     //レース結果更新確認画面で更新処理を実行する
     public function updateRaceResultRecordForUpdateConfirm(
         Request $request,
@@ -1119,7 +1119,7 @@ class TournamentController extends Controller
         $raceResultRecords = &$reqData['raceResultRecords'];
         DB::beginTransaction();
         try {
-            //大会結果の削除チェックを行う 20240529
+            //レース結果の削除チェックを行う 20240529
             $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData['raceInfo']['race_id']);
             if ($result_count == 0) {
                 return response()->json(['errMessage' => "当該レースの結果は、ほかのユーザーによって削除されています。"]); //エラーメッセージを返す
@@ -1509,8 +1509,8 @@ class TournamentController extends Controller
         }
     }
 
-    //大会レース結果入力確認画面
-    //更新ボタンを押して大会レース結果入力画面に遷移するときに、レース情報を取得する
+    //レース結果入力確認画面
+    //更新ボタンを押してレース結果入力画面に遷移するときに、レース情報を取得する
     public function getRaceDataRaceId(Request $request, T_races $tRace, T_raceResultRecord $t_raceResultRecord)
     {
         Log::debug(sprintf("getRaceDataRaceId start"));
@@ -1551,8 +1551,8 @@ class TournamentController extends Controller
         }
     }
 
-    //大会レース結果入力確認画面
-    //レース結果追加ボタンを押して大会レース結果入力画面に遷移するときに、レース情報を取得する
+    //レース結果入力確認画面
+    //レース結果追加ボタンを押してレース結果入力画面に遷移するときに、レース情報を取得する
     public function getRaceDataFromTournIdAndEventId(Request $request, T_races $tRace)
     {
         Log::debug(sprintf("getRaceDataFromTournIdAndEventId start."));
@@ -1627,7 +1627,7 @@ class TournamentController extends Controller
         return sprintf("%02d:%02d.%02d", $hours, $minutes, $seconds);
     }
 
-    //大会結果情報一括登録画面用 csvフォーマット出力に使用するレース情報の取得 20240418
+    //レース結果情報一括登録画面用 csvフォーマット出力に使用するレース情報の取得 20240418
     public function getCsvFormatRaceData(Request $request, T_tournaments $tourn, T_races $tRace)
     {
         Log::debug(sprintf("getCsvFormatRaceData start"));
@@ -1645,7 +1645,7 @@ class TournamentController extends Controller
         return response()->json(['result' => $result, 'tournResult' => $tournResult]); //DBの結果を返す
     }
 
-    //大会結果管理　レース登録画面用 レース情報の取得 20240422
+    //レース結果管理　レース登録画面用 レース情報の取得 20240422
     public function getTournLinkRaces(Request $request, T_tournaments $tourn, T_races $tRace)
     {
         Log::debug(sprintf("getTournLinkRaces start"));
@@ -1656,7 +1656,7 @@ class TournamentController extends Controller
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 
-    //大会結果管理　種目IDを条件に対象の種目に対応するシート位置を取得する 20240514
+    //レース結果管理　種目IDを条件に対象の種目に対応するシート位置を取得する 20240514
     public function getEventSheetPosForEventID(Request $request, M_events $m_events)
     {
         Log::debug(sprintf("getEventSheetPosForEventID start"));

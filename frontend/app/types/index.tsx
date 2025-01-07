@@ -104,7 +104,7 @@ interface RaceResultRecordsResponse {
   sex: number; // 性別ID
   //種目IDを追加 20240405---------
   event_id: number; //種目ID
-  //大会結果管理用バリデーション項目を追加 20240515---------
+  //レース結果管理用バリデーション項目を追加 20240515---------
   orgNameErrorText: string; //所属団体エラーメッセージ
   crewNameErrorText: string; //クルー名エラーメッセージ
   laneNumberErrorText: string; //レーンNo.エラーメッセージ
@@ -506,7 +506,7 @@ interface Player {
   orgName3: string; // 所属団体名3 #置き換え作業未対応
 }
 
-// 大会レース結果入力画面
+// レース結果入力画面
 // interface CrewPlayer {
 //   id: number; // 選手ID
 //   playerPhoto: string; // 選手画像
@@ -820,7 +820,7 @@ interface TopPageCountResponse {
   raceCount: number;
   followPlayerCount: number;
   followedPlayerCount: number;
-};
+}
 
 export type {
   ApprovalType,

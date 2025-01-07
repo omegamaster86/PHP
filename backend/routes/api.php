@@ -142,8 +142,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('tournamentEntryYearSearch', [TournamentInfoAlignmentController::class, 'tournamentEntryYearSearch']); //大会エントリー一括登録
     Route::post('sendTournamentEntryCsvData', [TournamentInfoAlignmentController::class, 'sendTournamentEntryCsvData']); //大会エントリー一括登録 読み込むボタン押下
     Route::post('registerTournamentEntryCsvData', [TournamentInfoAlignmentController::class, 'registerTournamentEntryCsvData']); //大会エントリー一括登録 登録ボタン押下
-    Route::post('sendTournamentResultCsvData', [TournamentInfoAlignmentController::class, 'sendTournamentResultCsvData']); //大会結果一括 読み込むボタン押下
-    Route::post('registerTournamentResultCsvData', [TournamentInfoAlignmentController::class, 'registerTournamentResultCsvData']); //大会結果一括 登録ボタン押下
+    Route::post('sendTournamentResultCsvData', [TournamentInfoAlignmentController::class, 'sendTournamentResultCsvData']); //レース結果一括 読み込むボタン押下
+    Route::post('registerTournamentResultCsvData', [TournamentInfoAlignmentController::class, 'registerTournamentResultCsvData']); //レース結果一括 登録ボタン押下
     Route::post('checkOrgManager', [TournamentController::class, 'checkOrgManager']); //大会情報参照画面 主催団体管理者の判別
     Route::post('getEventSheetPosForEventID', [TournamentController::class, 'getEventSheetPosForEventID']); //種目IDを条件に対象の種目に対応するシート位置を取得する
     Route::get('getMyOrgsHostedTournaments', [TournamentController::class, 'getMyOrgsHostedTournaments']); // 自分が、選手もしくはスタッフとして所属している団体(複数)でその団体が主催している大会を取得
@@ -151,20 +151,20 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     // レース関連
     Route::post('getRaceData', [TournamentController::class, 'getRaceData']); // 大会情報に基づくレース情報
-    Route::post('searchRaceData', [TournamentController::class, 'searchRaceData']); //大会レース結果管理　レース結果検索
+    Route::post('searchRaceData', [TournamentController::class, 'searchRaceData']); //レース結果管理　レース結果検索
     Route::post('getRaceDataRaceId', [TournamentController::class, 'getRaceDataRaceId']); //レース結果登録 レースIDを元にレース情報を取得
     Route::post('getRaceDataFromTournIdAndEventId', [TournamentController::class, 'getRaceDataFromTournIdAndEventId']); //レース結果登録 大会IDと種目IDを元にレース情報を取得
-    Route::post('getCsvFormatRaceData', [TournamentController::class, 'getCsvFormatRaceData']); //大会結果情報一括登録画面用 csvフォーマット出力に使用するレース情報の取得
-    Route::post('getTournLinkRaces', [TournamentController::class, 'getTournLinkRaces']); //大会結果管理　レース登録画面用 レース情報の取得
+    Route::post('getCsvFormatRaceData', [TournamentController::class, 'getCsvFormatRaceData']); //レース結果情報一括登録画面用 csvフォーマット出力に使用するレース情報の取得
+    Route::post('getTournLinkRaces', [TournamentController::class, 'getTournLinkRaces']); //レース結果管理　レース登録画面用 レース情報の取得
 
     // レース結果(出漕結果記録)関連
-    Route::post('getTournRaceResultRecords', [TournamentController::class, 'getTournRaceResultRecords']); //大会レース結果参照画面
+    Route::post('getTournRaceResultRecords', [TournamentController::class, 'getTournRaceResultRecords']); //レース結果参照画面
     Route::post('getCrewData', [TournamentController::class, 'getCrewData']); //クルー取得
     Route::post('getCrewNumberForEventId', [TournamentController::class, 'getCrewNumberForEventId']); //種目名毎のクルー人数を取得
     Route::post('registerRaceResultRecordForRegisterConfirm', [TournamentController::class, 'registerRaceResultRecordForRegisterConfirm']); //レース結果入力確認画面で登録を実行
     Route::post('updateRaceResultRecordForUpdateConfirm', [TournamentController::class, 'updateRaceResultRecordForUpdateConfirm']); //レース結果更新確認画面で更新を実行
     Route::post('getCrewPlayerInfo', [TournamentController::class, 'getCrewPlayerInfo']); //レース結果登録画面で選手IDを入力したとき、その選手情報を取得する
-    Route::post('deleteRaceResultRecordData', [TournamentController::class, 'updateDeleteFlagOfRaceResultRecord']); //大会結果管理画面（レース結果削除） で「削除ボタン」押下時に実行される
+    Route::post('deleteRaceResultRecordData', [TournamentController::class, 'updateDeleteFlagOfRaceResultRecord']); //レース結果管理画面（レース結果削除） で「削除ボタン」押下時に実行される
 
     //ボランティア関連
     Route::post('getVolunteerData', [VolunteerController::class, 'getVolunteerData']); //ボランティア情報取得

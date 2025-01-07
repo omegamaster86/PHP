@@ -1,4 +1,4 @@
-// // 大会レース結果管理画面
+// レース結果管理画面
 'use client';
 // ライブラリのインポート
 import React, { useState, useEffect, ChangeEvent } from 'react';
@@ -32,7 +32,7 @@ interface UpdatedRaceResultRecordsResponse extends RaceResultRecordsResponse {
   isAdded: boolean;
 }
 
-// // 大会レース結果管理画面のメインコンポーネント
+// レース結果管理画面のメインコンポーネント
 export default function TournamentResult() {
   // フック
   const router = useRouter();
@@ -899,7 +899,7 @@ export default function TournamentResult() {
     /**
      * 登録モード
      * 遷移元より渡された大会IDと種目IDに紐づく「レーステーブル」のレースの内、「出漕結果記録テーブル」に登録されていないレースの「レース情報」を取得する。
-     * 取得した「レース情報」の件数が0件の場合、以下のメッセージをポップアップ表示し、「大会レース結果管理画面」に遷移する。
+     * 取得した「レース情報」の件数が0件の場合、以下のメッセージをポップアップ表示し、「レース結果管理画面」に遷移する。
      * 既に全てのレース結果が登録されています。
      * 新たにレース結果を登録することはできません。
      */
