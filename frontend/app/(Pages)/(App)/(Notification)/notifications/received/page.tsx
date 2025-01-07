@@ -7,7 +7,7 @@ const page = () => {
   return (
     <>
       <CustomTitle displayBack>{'受信通知一覧'}</CustomTitle>
-      <NotificationsList />;
+      <NotificationsList />
     </>
   );
 };
