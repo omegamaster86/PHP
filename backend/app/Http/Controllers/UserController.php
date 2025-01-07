@@ -426,7 +426,7 @@ class UserController extends Controller
     {
         $orgFlag = substr(Auth::user()->user_type, 4, 1); //団体管理者の場合、削除処理を行わない
         if ($orgFlag == 1) {
-            abort(401, "団体管理者権限を保有しています。");
+            abort(401, "団体管理者権限を保有しています。団体管理画面から権限の破棄を行ってください。");
         }
 
         DB::beginTransaction();

@@ -18,7 +18,7 @@ import CustomTextField from '@mui/material/TextField';
 interface Props {
   label: string; // ラベル
   readonly: boolean; // 読み取り専用かどうか
-  setTournamentFormData: Dispatch<SetStateAction<any>>; //アップロードされた場合、退会ファイル名更新
+  setTournamentFormData: Dispatch<SetStateAction<any>>; //アップロードされた場合、大会ファイル名更新
 }
 
 // Handlerの型定義

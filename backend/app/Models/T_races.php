@@ -398,7 +398,7 @@ class T_races extends Model
         return $races;
     }
 
-    //大会レース結果管理画面用
+    //レース結果管理画面用
     //検索条件を入力して出漕記録結果が存在するレース情報を取得する
     public function getRaceResultWithCondition($conditionString, $values)
     {
