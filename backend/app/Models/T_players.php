@@ -159,7 +159,8 @@ class T_players extends Model
     //マイページ 選手プロフィール user_idに紐づいた選手情報を取得 20241016
     public function getPlayerProfileInfo($user_id)
     {
-        $result = DB::select('select
+        $result = DB::select(
+            'select
                                 `player_name` as `playerName`
                                 ,`player_id` as `playerId`
                                 ,`jara_player_id` as `jaraPlayerId`
@@ -191,9 +192,10 @@ class T_players extends Model
                                 and  bir_pref.`delete_flag` = 0
                                 and  res_cont.`delete_flag` = 0
                                 and  res_pref.`delete_flag` = 0
-                                and `t_players`.user_id = ?',[$user_id]
-                            );
- 
+                                and `t_players`.user_id = ?',
+            [$user_id]
+        );
+
         //1つのデータを取得するため0番目だけを返す
         // Log::debug($result);
         $targetTrn = null;
@@ -245,7 +247,6 @@ class T_players extends Model
                 Auth::user()->user_id //where条件用
             ]
         );
-        
     }
 
     //interfaceのPlayerInformationResponseを引数としてupdateを実行する
@@ -296,7 +297,6 @@ class T_players extends Model
         $registeredPlayer = [];
         if (!empty($result)) {
             $registeredPlayer = $result[0];
-            
         }
         return $registeredPlayer;
     }
@@ -304,7 +304,7 @@ class T_players extends Model
     //選手テーブルに挿入する
     //選手登録時に使用
     public function insertPlayers($playersInfo)
-    {   
+    {
         $result = DB::insert(
             'insert into t_players
                             (
@@ -381,26 +381,27 @@ class T_players extends Model
                         `delete_flag`
                     )
                     values
-                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
-                    ,[
-                        $playerInfo['user_id'],
-                        $playerInfo['jara_player_id'],
-                        $playerInfo['player_name'],
-                        $playerInfo['date_of_birth'],
-                        $playerInfo['sex_id'],
-                        $playerInfo['height'],
-                        $playerInfo['weight'],
-                        $playerInfo['side_info'],
-                        $playerInfo['birth_country'],
-                        $playerInfo['birth_prefecture'],
-                        $playerInfo['residence_country'],
-                        $playerInfo['residence_prefecture'],
-                        $playerInfo['current_datetime'],
-                        $playerInfo['update_user_id'],
-                        $playerInfo['current_datetime'],
-                        $playerInfo['update_user_id'],
-                        0
-                    ]);
+                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            [
+                $playerInfo['user_id'],
+                $playerInfo['jara_player_id'],
+                $playerInfo['player_name'],
+                $playerInfo['date_of_birth'],
+                $playerInfo['sex_id'],
+                $playerInfo['height'],
+                $playerInfo['weight'],
+                $playerInfo['side_info'],
+                $playerInfo['birth_country'],
+                $playerInfo['birth_prefecture'],
+                $playerInfo['residence_country'],
+                $playerInfo['residence_prefecture'],
+                $playerInfo['current_datetime'],
+                $playerInfo['update_user_id'],
+                $playerInfo['current_datetime'],
+                $playerInfo['update_user_id'],
+                0
+            ]
+        );
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
         Log::debug('insertPlayer end.');
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
@@ -425,7 +426,12 @@ class T_players extends Model
                     values
                     (?,?,?,?,?,?)',
             [
-                $playerInfo["oldPlayerId"], $current_datetime, $user_id, $current_datetime, $user_id, 0
+                $playerInfo["oldPlayerId"],
+                $current_datetime,
+                $user_id,
+                $current_datetime,
+                $user_id,
+                0
             ]
         );
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
@@ -682,7 +688,7 @@ class T_players extends Model
     public function getPlayer($player_id)
     {
         $player = DB::select(
-                                'select
+            'select
                                 `player_id`
                                 ,`user_id`
                                 ,`jara_player_id`
@@ -726,9 +732,9 @@ class T_players extends Model
                                 and  bir_pref.`delete_flag` = 0
                                 and  res_cont.`delete_flag` = 0
                                 and  res_pref.`delete_flag` = 0
-                                and player_id = ?'
-                                ,[$player_id]
-                            );
+                                and player_id = ?',
+            [$player_id]
+        );
         return $player;
     }
 
@@ -736,7 +742,7 @@ class T_players extends Model
     public function getPlayerFromJaraPlayerId($jara_player_id)
     {
         $players = DB::select(
-                                'select
+            'select
                                 `player_id`
                                 ,`user_id`
                                 ,`jara_player_id`
@@ -790,7 +796,7 @@ class T_players extends Model
     public function getPlayerFromUserId($user_id)
     {
         $players = DB::select(
-                                'select
+            'select
                                 `player_id`
                                 ,`user_id`
                                 ,`jara_player_id`
@@ -1239,14 +1245,15 @@ class T_players extends Model
                             FROM `t_players` tp
                             left join `t_organization_players` top
                             on tp.`player_id` = top.`player_id`
+                            and top.`delete_flag` = 0
                             left join `t_organizations` org
                             on top.`org_id` = org.`org_id`
+                            and org.`delete_flag` = 0
                             left join `t_race_result_record` rrr
                             on tp.player_id = rrr.player_id
+                            and rrr.`delete_flag` = 0
                             where 1=1
                             and tp.`delete_flag` = 0
-                            and top.`delete_flag` = 0
-                            and org.`delete_flag` = 0
                             #ここにエントリーシステムの団体ID、団体ID、団体名以外の条件を入力#
                             #SearchCondition#
                         )
@@ -1361,9 +1368,10 @@ class T_players extends Model
     }
 
     //大会結果登録画面で選手IDを入力したとき、選手情報とレース結果情報を取得する
-    public function getPlayerInfoAndRaceResultRecord($player_id,$race_id)
+    public function getPlayerInfoAndRaceResultRecord($player_id, $race_id)
     {
-        $player_info = DB::select('select
+        $player_info = DB::select(
+            'select
                                     ply.player_id
                                     ,ply.player_name
                                     ,msex.sex_id
@@ -1390,44 +1398,9 @@ class T_players extends Model
                                     and msex.delete_flag = 0
                                     and seat.delete_flag = 0
                                     and ply.player_id = :player_id
-                                    and rrr.race_id = :race_id'
-                                ,["player_id" => $player_id, "race_id" => $race_id]);
+                                    and rrr.race_id = :race_id',
+            ["player_id" => $player_id, "race_id" => $race_id]
+        );
         return $player_info;
-    }
-
-    //レースIDを条件に、出漕結果記録テーブルから選手情報を取得する
-    //
-    public function getRecordResultPlayers($race_id,$crew_name,$org_id)
-    {
-        $record_players = DB::select('select 
-                                    ply.player_id
-                                    ,ply.player_name
-                                    ,msex.sex_id
-                                    ,msex.sex
-                                    ,ply.height
-                                    ,ply.weight
-                                    ,rrr.seat_number
-                                    ,seat.seat_name
-                                    ,rrr.heart_rate_500m
-                                    ,rrr.heart_rate_1000m
-                                    ,rrr.heart_rate_1500m
-                                    ,rrr.heart_rate_2000m
-                                    ,rrr.attendance
-                                    from `t_players` ply
-                                    left join `t_race_result_record` rrr
-                                    on ply.player_id = rrr.player_id
-                                    left join `m_sex` msex
-                                    on ply.sex_id = msex.sex_id
-                                    left join `m_seat_number` seat
-                                    on rrr.seat_number = seat.seat_id
-                                    where 1=1
-                                    and ply.delete_flag = 0
-                                    and rrr.delete_flag = 0
-                                    and msex.delete_flag = 0
-                                    and seat.delete_flag = 0
-                                    and race_id = :race_id
-                                    order by seat_number'
-                                    ,["race_id" => $race_id]);
-        return $record_players;
     }
 }
