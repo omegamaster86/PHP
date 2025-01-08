@@ -169,7 +169,7 @@ class T_raceResultRecord extends Model
                                         `t_race_result_record`.`wind_speed_1000m_point`, 
                                         `t_race_result_record`.`wind_direction_1000m_point`, 
                                         `t_race_result_record`.`race_result_notes`,
-                                        `m_seat_number`.`display_order` 	as "order",
+                                        `m_seat_number`.`display_order` as "order",
                                         `t_tournaments`.`event_start_date` as "eventStartDate",
                                         `m_venue`.`venue_name`
                                         FROM `t_race_result_record` 
@@ -241,7 +241,7 @@ class T_raceResultRecord extends Model
                                         `t_race_result_record`.`wind_speed_1000m_point`, 
                                         `t_race_result_record`.`wind_direction_1000m_point`, 
                                         `t_race_result_record`.`race_result_notes`,
-                                        `m_seat_number`.`display_order` 	as "order",
+                                        `m_seat_number`.`display_order` as "order",
                                         `t_tournaments`.`event_start_date` as "eventStartDate",
                                         `m_venue`.`venue_name`,
                                         `m_events`.`event_name` 
@@ -448,21 +448,21 @@ class T_raceResultRecord extends Model
     {
         $sqlString = 'select
                         rrr.`race_result_record_id`
-                        ,tour.`tourn_id`				#大会ID
-                        ,tour.`entrysystem_tourn_id`	#既存大会ID
-                        ,tour.`tourn_name`				#大会名
-                        ,race.`race_id`					#レースID
-                        ,race.`entrysystem_race_id`		#既存レースID
+                        ,tour.`tourn_id`                #大会ID
+                        ,tour.`entrysystem_tourn_id`    #既存大会ID
+                        ,tour.`tourn_name`              #大会名
+                        ,race.`race_id`                 #レースID
+                        ,race.`entrysystem_race_id`     #既存レースID
                         ,race.`race_number`             #レースNo.
-                        ,race.`race_name`				#レース名
-                        ,org.`org_id`					#団体ID
-                        ,org.`entrysystem_org_id`		#既存団体ID
-                        ,org.`org_name`					#団体名
-                        ,ply.`player_id`				#選手名
-                        ,ply.`jara_player_id`			#既存選手ID
-                        ,ply.`player_name`				#選手名
-                        ,ply.`height`					#選手身長
-                        ,ply.`weight`					#選手体重
+                        ,race.`race_name`               #レース名
+                        ,org.`org_id`                   #団体ID
+                        ,org.`entrysystem_org_id`       #既存団体ID
+                        ,org.`org_name`                 #団体名
+                        ,ply.`player_id`                #選手名
+                        ,ply.`jara_player_id`           #既存選手ID
+                        ,ply.`player_name`              #選手名
+                        ,ply.`height`                   #選手身長
+                        ,ply.`weight`                   #選手体重
                         FROM `t_race_result_record` rrr
                         left join `t_tournaments` tour
                         on rrr.`tourn_id` = tour.`tourn_id`
@@ -478,7 +478,7 @@ class T_raceResultRecord extends Model
                         and  race.`delete_flag` = 0
                         and  org.`delete_flag` = 0
                         and  ply.`delete_flag` = 0
-                        and rrr.`official` = 1	#公式大会
+                        and rrr.`official` = 1 #公式大会
                         #ReplaceConditionString#';
         $sqlString = str_replace('#ReplaceConditionString#', $searchCondition, $sqlString);
         $target_race = DB::select($sqlString, $values);
@@ -493,10 +493,10 @@ class T_raceResultRecord extends Model
                                             FROM `t_race_result_record` rrr
                                             where 1=1
                                             and rrr.`delete_flag` = 0
-                                            and rrr.`official` = 0	                #非公式大会
-                                            and rrr.`tourn_id` = :tourn_id	        #大会ID
-                                            and rrr.`race_id` = :race_id	        #レースID
-                                            and rrr.`player_id` = :player_id		#選手ID
+                                            and rrr.`official` = 0              #非公式大会
+                                            and rrr.`tourn_id` = :tourn_id      #大会ID
+                                            and rrr.`race_id` = :race_id        #レースID
+                                            and rrr.`player_id` = :player_id    #選手ID
                                         ', $conditions);
         Log::debug("getTargetUnofficialRaceCount end.");
         return $target_race_count;
@@ -508,21 +508,21 @@ class T_raceResultRecord extends Model
         $target_race_count = DB::select(
             'select
                                             rrr.`race_result_record_id`     
-                                            ,tour.`tourn_id`				#大会ID
-                                            ,tour.`entrysystem_tourn_id`	#既存大会ID
-                                            ,tour.`tourn_name`				#大会名
-                                            ,race.`race_id`					#レースID
-                                            ,race.`entrysystem_race_id`		#既存レースID
+                                            ,tour.`tourn_id`                #大会ID
+                                            ,tour.`entrysystem_tourn_id`    #既存大会ID
+                                            ,tour.`tourn_name`              #大会名
+                                            ,race.`race_id`                 #レースID
+                                            ,race.`entrysystem_race_id`     #既存レースID
                                             ,race.`race_number`             #レースNo.
-                                            ,race.`race_name`				#レース名
-                                            ,org.`org_id`					#団体ID
-                                            ,org.`entrysystem_org_id`		#既存団体ID
-                                            ,org.`org_name`					#団体名
-                                            ,ply.`player_id`				#選手名
-                                            ,ply.`jara_player_id`			#既存選手ID
-                                            ,ply.`player_name`				#選手名
-                                            ,ply.`height`					#選手身長
-                                            ,ply.`weight`					#選手体重
+                                            ,race.`race_name`               #レース名
+                                            ,org.`org_id`                   #団体ID
+                                            ,org.`entrysystem_org_id`       #既存団体ID
+                                            ,org.`org_name`                 #団体名
+                                            ,ply.`player_id`                #選手名
+                                            ,ply.`jara_player_id`           #既存選手ID
+                                            ,ply.`player_name`              #選手名
+                                            ,ply.`height`                   #選手身長
+                                            ,ply.`weight`                   #選手体重
                                             FROM `t_race_result_record` rrr
                                             left join `t_tournaments` tour
                                             on rrr.`tourn_id` = tour.`tourn_id`
@@ -538,7 +538,7 @@ class T_raceResultRecord extends Model
                                             and  race.`delete_flag` = 0
                                             and  org.`delete_flag` = 0
                                             and  ply.`delete_flag` = 0
-                                            and rrr.`official` = 0	#非公式大会
+                                            and rrr.`official` = 0 #非公式大会
                                             and rrr.tourn_id = :tourn_id    #大会ID
                                             and rrr.race_id = :race_id      #レースID
                                             and rrr.player_id = :player_id  #選手ID',

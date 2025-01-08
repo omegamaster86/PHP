@@ -314,7 +314,7 @@ class T_players extends Model
                                 date_of_birth,
                                 sex_id,
                                 height,
-                                weight,		
+                                weight,
                                 side_info,
                                 birth_country,
                                 birth_prefecture,
@@ -936,7 +936,7 @@ class T_players extends Model
                                     ,entrysystem_org_id
                                     ,org_id
                                     ,org_name
-                                    ,0	as `org_index`
+                                    ,0 as `org_index`
                                     from player
                                     where 1=1
                                     and entrysystem_org_id = :entrysystem_id_1
@@ -945,7 +945,7 @@ class T_players extends Model
                                     ,entrysystem_org_id
                                     ,org_id
                                     ,org_name
-                                    ,ROW_NUMBER() OVER (PARTITION BY `player_id` ORDER BY `entrysystem_org_id`)	as `org_index`
+                                    ,ROW_NUMBER() OVER (PARTITION BY `player_id` ORDER BY `entrysystem_org_id`) as `org_index`
                                     from player
                                     where 1=1
                                     and (entrysystem_org_id <> :entrysystem_id_2 or entrysystem_org_id is null)
@@ -1056,7 +1056,7 @@ class T_players extends Model
                                     ,entrysystem_org_id
                                     ,org_id
                                     ,org_name
-                                    ,0	as `org_index`
+                                    ,0 as `org_index`
                                     from player
                                     where 1=1
                                     and org_id = :org_id_1
@@ -1065,7 +1065,7 @@ class T_players extends Model
                                     ,entrysystem_org_id
                                     ,org_id
                                     ,org_name
-                                    ,ROW_NUMBER() OVER (PARTITION BY `player_id` ORDER BY `org_id`)	as `org_index`
+                                    ,ROW_NUMBER() OVER (PARTITION BY `player_id` ORDER BY `org_id`) as `org_index`
                                     from player
                                     where 1=1
                                     and (org_id <> :org_id_2 or org_id is null)
@@ -1184,7 +1184,7 @@ class T_players extends Model
                                     ,entrysystem_org_id
                                     ,org_id
                                     ,org_name
-                                    ,ROW_NUMBER() OVER (PARTITION BY `player_id` ORDER BY `org_id`)	as `org_index`
+                                    ,ROW_NUMBER() OVER (PARTITION BY `player_id` ORDER BY `org_id`) as `org_index`
                                     from
                                     (
                                         select distinct
