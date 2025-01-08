@@ -294,8 +294,8 @@ interface UserResponse {
   residenceCountryName: string; // 居住地（国）　#置き換え作業対応不要
   residence_prefecture: string | null; // 居住地（都道府県）
   residencePrefectureName: string; // 居住地（都道府県）　#置き換え作業対応不要
-  height: number; // 身長
-  weight: number; // 体重
+  height: number | null; // 身長
+  weight: number | null; // 体重
   temp_password_flag: number; // 登録ステータス
   photo: string | null; // 写真
 

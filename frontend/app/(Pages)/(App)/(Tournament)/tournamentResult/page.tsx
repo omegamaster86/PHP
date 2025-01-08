@@ -1208,10 +1208,10 @@ export default function TournamentResult() {
                     />
                     <Autocomplete
                       id='race_name'
-                      value={
-                        ({ name: raceInfo?.race_name, id: raceInfo?.race_id } as any) ||
-                        ({ id: 0, name: '' } as MasterResponse)
-                      }
+                      value={{
+                        id: Number(raceInfo?.race_id || 0),
+                        name: raceInfo?.race_name ?? '',
+                      }}
                       disableClearable
                       options={
                         (raceNameOptions?.length > 0 &&
@@ -1738,9 +1738,7 @@ export default function TournamentResult() {
                             getOptionLabel={(option) =>
                               typeof option === 'string' ? option : option?.name || ''
                             }
-                            value={
-                              { id: Number(item.remarkId), name: item.race_result_notes } || ''
-                            }
+                            value={{ id: item.remarkId, name: item.race_result_notes }}
                             onChange={(e: ChangeEvent<{}>, newValue) => {
                               handleRaceResultRecordsInputChangebyIndex(
                                 index,

@@ -838,7 +838,7 @@ export default function UserInformationUpdate() {
             readonly={mode === 'confirm'}
             required={false}
             isDecimal={true}
-            value={formData.height.toString()}
+            value={formData.height?.toString()}
             placeHolder='180'
             onChange={(e) => {
               handleInputChange('height', e.target.value);
@@ -854,7 +854,7 @@ export default function UserInformationUpdate() {
             isDecimal={true}
             readonly={mode === 'confirm'}
             required={false}
-            value={formData?.weight.toString()}
+            value={formData.weight?.toString()}
             onChange={(e) => {
               handleInputChange('weight', e.target.value);
             }}

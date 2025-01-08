@@ -101,6 +101,7 @@ export default function PlayerInformation() {
   };
 
   const [formData, setFormData] = useState<PlayerFormData>({
+    user_id: 0,
     player_id: 0,
     jara_player_id: '',
     player_name: '',
