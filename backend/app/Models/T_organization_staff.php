@@ -18,7 +18,8 @@ class T_organization_staff extends Model
 
     public function getOrganizationStaffFromOrgId($orgId)
     {
-        $orgStaffs = DB::select('select
+        $orgStaffs = DB::select(
+            'select
                                 `org_id`
                                 ,`user_id`
                                 ,`user_name`
@@ -56,9 +57,9 @@ class T_organization_staff extends Model
                                         when `user`.`user_name` is null then "該当ユーザー無し"
                                         else `user`.`user_name`
                                         end as `user_name`
-									,GROUP_CONCAT(distinct(`coach_qual`.`qual_name`) order by `coach_qual`.`display_order`) AS "coach_qual_name"
+                                    ,GROUP_CONCAT(distinct(`coach_qual`.`qual_name`) order by `coach_qual`.`display_order`) AS "coach_qual_name"
                                     ,GROUP_CONCAT(distinct(`referee_qual`.`qual_name`) order by `referee_qual`.`display_order`) AS "referee_qual_name"
-                                    ,GROUP_CONCAT(`staff_type_id` order by `staff_type_id`)	AS "staff_type_array"
+                                    ,GROUP_CONCAT(`staff_type_id` order by `staff_type_id`) AS "staff_type_array"
                                     ,case
                                         when `user`.`user_id` is null then false
                                         when `user`.`temp_password_flag` = 1 then false
@@ -68,25 +69,26 @@ class T_organization_staff extends Model
                                     from `t_organization_staff` `staff`
                                     left join `t_users` `user`
                                     on `staff`.`user_id` = `user`.`user_id`
-									left join `t_held_coach_qualifications` `held_coach_qual`
-									on `user`.`user_id` = `held_coach_qual`.`user_id` and `held_coach_qual`.`delete_flag` = 0 and `held_coach_qual`.`expiry_date` >= CURDATE()
+                                    left join `t_held_coach_qualifications` `held_coach_qual`
+                                    on `user`.`user_id` = `held_coach_qual`.`user_id` and `held_coach_qual`.`delete_flag` = 0 and `held_coach_qual`.`expiry_date` >= CURDATE()
                                     left join `m_coach_qualifications` `coach_qual`
-									on `held_coach_qual`.`coach_qualification_id` = `coach_qual`.`coach_qualification_id` and `coach_qual`.`delete_flag` = 0
+                                    on `held_coach_qual`.`coach_qualification_id` = `coach_qual`.`coach_qualification_id` and `coach_qual`.`delete_flag` = 0
                                     left join `t_held_referee_qualifications` `held_referee_qual`
-									on `user`.`user_id` = `held_referee_qual`.`user_id` and `held_referee_qual`.`delete_flag` = 0 and `held_referee_qual`.`expiry_date` >= CURDATE()
+                                    on `user`.`user_id` = `held_referee_qual`.`user_id` and `held_referee_qual`.`delete_flag` = 0 and `held_referee_qual`.`expiry_date` >= CURDATE()
                                     left join `m_referee_qualifications` `referee_qual`
-									on `held_referee_qual`.`referee_qualification_id` = `referee_qual`.`referee_qualification_id` and `referee_qual`.`delete_flag` = 0
+                                    on `held_referee_qual`.`referee_qualification_id` = `referee_qual`.`referee_qualification_id` and `referee_qual`.`delete_flag` = 0
                                     where `staff`.`delete_flag` = 0
                                     and `user`.`delete_flag` = 0
                                     and `staff`.`org_id` = ?
                                     group by `staff`.`org_id`, `staff`.`user_id`,`user`.`user_name`,`user`.`jspo_id`
-                                ) as `staff`'
-                                ,[$orgId]);
+                                ) as `staff`',
+            [$orgId]
+        );
         return $orgStaffs;
     }
 
     //団体所属スタッフテーブルの削除フラグを更新する    
-    public function updateDeleteFlagInOrganizationStaff($condition,$values)
+    public function updateDeleteFlagInOrganizationStaff($condition, $values)
     {
         //Log::debug('updateDeleteFlagInOrganizationStaff start.');        
         $sqlString = 'with target_ids as
@@ -109,13 +111,13 @@ class T_organization_staff extends Model
                             SELECT `org_staff_id`
                             FROM target_ids
                         )';
-        $sqlString = str_replace('#ConditionReplace#',$condition,$sqlString);
-        DB::update($sqlString,["org_id" => $values]);
+        $sqlString = str_replace('#ConditionReplace#', $condition, $sqlString);
+        DB::update($sqlString, ["org_id" => $values]);
         //Log::debug('updateDeleteFlagInOrganizationStaff end.');
     }
 
     //団体所属スタッフテーブルに挿入する
-    public function insertOrganizationStaff($replace_str,$org_id)
+    public function insertOrganizationStaff($replace_str, $org_id)
     {
         //Log::debug('insertOrganizationStaff start.');
         $sqlString = "insert into `t_organization_staff`
@@ -146,11 +148,11 @@ class T_organization_staff extends Model
                         and `t_organization_staff`.`user_id` = `value_table`.`user_id`
                         and `t_organization_staff`.`staff_type_id` = `value_table`.`staff_type_id`
                     )";
-        $sqlString = str_replace("#ValuesReplace#",$replace_str,$sqlString);
+        $sqlString = str_replace("#ValuesReplace#", $replace_str, $sqlString);
         // Log::debug('**********insertOrganizationStaff**********');
         // Log::debug($sqlString);
-        
-        DB::insert($sqlString,[$org_id]);
+
+        DB::insert($sqlString, [$org_id]);
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
 
         //Log::debug('insertOrganizationStaff end.');
@@ -162,28 +164,31 @@ class T_organization_staff extends Model
     public function updateDeleteFlagByOrganizationDeletion($org_id)
     {
         //Log::debug("updateDeleteFlagByOrganizationDeletion start.");
-        DB::update('update `t_organization_staff`
+        DB::update(
+            'update `t_organization_staff`
                     set `delete_flag` = 1
                     ,`updated_time` = ?
                     ,`updated_user_id` = ?
                     where 1=1
-                    and `org_id` = ?'
-                    ,[
-                        now()->format('Y-m-d H:i:s.u')
-                        ,Auth::user()->user_id
-                        ,$org_id
-                    ]);
+                    and `org_id` = ?',
+            [
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                $org_id
+            ]
+        );
         //Log::debug("updateDeleteFlagByOrganizationDeletion end.");
     }
 
     public function getOrganizationStaff($org_id)
     {
-        $organizationStaffs = DB::select('select
+        $organizationStaffs = DB::select(
+            'select
                                             `org_staff_id`
                                             ,staff.`user_id`
                                             ,users.user_name as `userName`
                                             ,`staff_type_id`
-                                            ,0	as `delete_flag`
+                                            ,0 as `delete_flag`
                                             ,CASE
                                                 when users.user_id is null then 0
                                                 else 1
@@ -194,36 +199,40 @@ class T_organization_staff extends Model
                                             WHERE 1=1
                                             and staff.delete_flag = 0
                                             and users.delete_flag = 0
-                                            and staff.org_id = :org_id'
-                                        ,$org_id);
+                                            and staff.org_id = :org_id',
+            $org_id
+        );
         return $organizationStaffs;
     }
 
     //団体削除による団体所属スタッフの削除
     //org_idをキーとして、該当所属スタッフのdelete_flagを1にする
-    public function updateDeleteFlagByUserDeletion($user_id,$org_id)
+    public function updateDeleteFlagByUserDeletion($user_id, $org_id)
     {
         //Log::debug("updateDeleteFlagByUserDeletion start.");
-        DB::update('update `t_organization_staff`
+        DB::update(
+            'update `t_organization_staff`
                     set `delete_flag` = 1
                     ,`updated_time` = ?
                     ,`updated_user_id` = ?
                     where 1=1
                     and `user_id` = ?
-                    and `org_id` = ?'
-                    ,[
-                        now()->format('Y-m-d H:i:s.u')
-                        ,Auth::user()->user_id
-                        ,$user_id
-                        ,$org_id
-                    ]);
+                    and `org_id` = ?',
+            [
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                $user_id,
+                $org_id
+            ]
+        );
         //Log::debug("updateDeleteFlagByUserDeletion end.");
     }
 
     //ユーザーが大会の主催団体に所属しているスタッフかを判定する
-    public function getIsOrgManager($tourn_id,$org_id,$user_id)
+    public function getIsOrgManager($tourn_id, $org_id, $user_id)
     {
-        $is_org_manager = DB::select("select 
+        $is_org_manager = DB::select(
+            "select 
                                         case count(*)
                                             when 0 then 0
                                             else 1
@@ -236,12 +245,13 @@ class T_organization_staff extends Model
                                         and staff.delete_flag = 0 
                                         and tourn_id = :tourn_id
                                         and staff.org_id = :org_id
-                                        and user_id = :user_id"
-                                    ,[
-                                        "tourn_id" => $tourn_id,
-                                        "org_id" => $org_id,
-                                        "user_id" => $user_id
-                                    ]);
+                                        and user_id = :user_id",
+            [
+                "tourn_id" => $tourn_id,
+                "org_id" => $org_id,
+                "user_id" => $user_id
+            ]
+        );
         //主催団体管理者であれば1、そうでなければ0を返す
         return $is_org_manager;
     }

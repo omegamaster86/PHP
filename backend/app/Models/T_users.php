@@ -110,7 +110,7 @@ class T_users extends Authenticatable
                     user.`user_name`,
                     user.`mailaddress`,
                     user.`sex`,
-                    sex.sex	as `sexName`,
+                    sex.sex as `sexName`,
                     user.`residence_country`,
                     coun.country_name as `residenceCountryName`,
                     user.`residence_prefecture`,
@@ -150,11 +150,12 @@ class T_users extends Authenticatable
                         else ""
                     end as `is_audience`
                     FROM `t_users` user
-                    inner join `m_sex` sex
+                    -- NOTE: ユーザー仮登録時には性別、居住地、生年月日が未入力のため、LEFT OUTER JOIN
+                    LEFT OUTER JOIN `m_sex` sex
                     on user.sex = sex.sex_id and sex.delete_flag = 0
-                    inner join m_countries coun
+                    LEFT OUTER JOIN m_countries coun
                     on user.residence_country = coun.country_id and coun.delete_flag = 0
-                    left join m_prefectures	pref
+                    LEFT OUTER JOIN m_prefectures pref
                     on user.residence_prefecture = pref.pref_id and pref.delete_flag = 0
                     WHERE 1=1
                     and user.delete_flag = 0
@@ -307,12 +308,12 @@ class T_users extends Authenticatable
                         FROM
                         (
                             SELECT
-                            conv(`user_type`,2,10)	as `user_type_decimal`
+                            conv(`user_type`,2,10) as `user_type_decimal`
                             ,conv(`input`,2,10) as `input_decimal`
                             FROM
                             (
                                 select `user_type`
-                                , ?	as `input`
+                                , ? as `input`
                                 from `t_users`
                                 where 1=1
                                 and user_id = ?
@@ -348,12 +349,12 @@ class T_users extends Authenticatable
                         FROM
                         (
                             SELECT
-                            conv(`user_type`,2,10)	as `user_type_decimal`
+                            conv(`user_type`,2,10) as `user_type_decimal`
                             ,conv(`input`,2,10) as `input_decimal`
                             FROM
                             (
                                 select `user_type`
-                                , ?	as `input`
+                                , ? as `input`
                                 from `t_users`
                                 where 1=1
                                 and user_id = ?
@@ -480,13 +481,13 @@ class T_users extends Authenticatable
                         (
                             select
                             user_id
-                            ,conv(`user_type`,2,10)	as `user_type_decimal`
+                            ,conv(`user_type`,2,10) as `user_type_decimal`
                             ,conv(`input`,2,10) as `input_decimal`
                             from
                             (
                                 select user_id
                                 ,`user_type`
-                                , '1000'	as `input`
+                                , '1000' as `input`
                                 from `t_users`
                                 where 1=1
                                 and user_id in
@@ -526,13 +527,13 @@ class T_users extends Authenticatable
                         (
                             select
                             user_id
-                            ,conv(`user_type`,2,10)	as `user_type_decimal`
+                            ,conv(`user_type`,2,10) as `user_type_decimal`
                             ,conv(`input`,2,10) as `input_decimal`
                             from
                             (
                                 select user_id
                                 ,`user_type`
-                                , '1000'	as `input`
+                                , '1000' as `input`
                                 from `t_users`
                                 where 1=1
                                 and user_id not in
