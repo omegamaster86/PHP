@@ -1150,9 +1150,7 @@ export default function TournamentResultInfomationBulkRegister() {
             }))}
             getOptionLabel={(option) => option.name}
             readOnly={tournNameActivFlag}
-            value={
-              { id: formData.tournId, name: formData.tournName, year: formData.eventYear } || ''
-            }
+            value={{ id: formData.tournId, name: formData.tournName, year: formData.eventYear }}
             onChange={(e: ChangeEvent<{}>, newValue) => {
               //console.log(newValue);
               handleInputChange('tournName', newValue ? (newValue as TournResponse).name : '');

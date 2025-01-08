@@ -401,7 +401,7 @@ export default function TournamentResultManagement() {
                   <Autocomplete
                     options={tournamentList.map((item) => ({ id: item.id, name: item.name }))}
                     getOptionLabel={(option) => option.name}
-                    value={{ id: Number(searchCond.tournId), name: searchCond.tournName } || ''}
+                    value={{ id: Number(searchCond.tournId), name: searchCond.tournName }}
                     onChange={(e: ChangeEvent<{}>, newValue) => {
                       handleInputChange(
                         'tournId',
@@ -454,7 +454,7 @@ export default function TournamentResultManagement() {
                   <Autocomplete
                     options={event.map((item) => ({ id: item.id, name: item.name }))}
                     getOptionLabel={(option) => option.name}
-                    value={{ id: Number(searchCond?.eventId), name: searchCond?.eventIdName } || ''}
+                    value={{ id: Number(searchCond?.eventId || 0), name: searchCond?.eventIdName }}
                     onChange={(e: ChangeEvent<{}>, newValue) => {
                       handleInputChange(
                         'eventId',
@@ -520,7 +520,7 @@ export default function TournamentResultManagement() {
               <Autocomplete
                 options={raceTypeList.map((item) => ({ id: item.id, name: item.name }))}
                 getOptionLabel={(option) => option.name}
-                value={{ id: Number(searchCond?.raceTypeId), name: searchCond?.raceTypeName } || ''}
+                value={{ id: Number(searchCond?.raceTypeId || 0), name: searchCond?.raceTypeName }}
                 onChange={(e: ChangeEvent<{}>, newValue) => {
                   handleInputChange(
                     'raceTypeId',
