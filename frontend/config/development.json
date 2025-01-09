@@ -1,4 +1,4 @@
 {
-  "NEXT_PUBLIC_BACKEND_URL": "http://portalsite-dev-alb-1434609180.ap-northeast-1.elb.amazonaws.com",
+  "NEXT_PUBLIC_BACKEND_URL": "http://pf.jara-test.com",
   "NEXT_PUBLIC_S3_URL": "https://portalsite-dev-image-940482429708.s3.ap-northeast-1.amazonaws.com"
 }
