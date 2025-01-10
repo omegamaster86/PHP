@@ -456,6 +456,7 @@ export default function UserInformationUpdate() {
   if (paramError) {
     return <div>ページが見つかりません</div>;
   }
+
   return (
     <>
       <div className='flex flex-col justify-start gap-[20px]'>

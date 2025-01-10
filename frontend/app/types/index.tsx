@@ -405,24 +405,24 @@ interface VolunteerHistoriesResponse {
 
 // 選手情報
 interface PlayerInformationResponse {
-  user_id: number; // ユーザーID
+  user_id?: number; // ユーザーID
   player_id: number; // 選手ID
   jara_player_id: string; // JARA選手コード
   player_name: string; // 選手名
   date_of_birth: string; // 生年月日
-  sexName: string; // 性別 #置き換え作業対応不要
+  sexName: string; // 性別
   sex_id?: number; // 性別
   height: string; // 身長
   weight: string; // 体重
   side_info: boolean[]; // サイド情報
-  birthCountryName: string; // 出身地（国） #置き換え作業対応不要
-  birth_country?: number; // 出身地（国）
-  birthPrefectureName: string; // 出身地（都道府県） #置き換え作業対応不要
-  birth_prefecture?: number; // 出身地（都道府県）
-  residenceCountryName: string; // 居住地（国） #置き換え作業対応不要
-  residence_country?: number; // 居住地（国）
-  residencePrefectureName: string; // 居住地（都道府県） #置き換え作業対応不要
-  residence_prefecture?: number; // 居住地（都道府県）
+  birthCountryName: string; // 出身地（国）
+  birth_country: number; // 出身地（国）
+  birthPrefectureName: string; // 出身地（都道府県）
+  birth_prefecture: number | null; // 出身地（都道府県）
+  residenceCountryName: string; // 居住地（国）
+  residence_country: number; // 居住地（国）
+  residencePrefectureName: string; // 居住地（都道府県）
+  residence_prefecture: number | null; // 居住地（都道府県）
   photo: string; // 写真
   previousPhotoName?: File; // アップロードされて写真を保存する
   uploadedPhoto?: File; // アップロードされて写真を保存する

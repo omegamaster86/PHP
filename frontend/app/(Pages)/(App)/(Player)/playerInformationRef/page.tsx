@@ -790,7 +790,6 @@ export default function PlayerInformationRef() {
         const playerInf = await axios.post('api/getPlayerInfoData', {
           playerId,
         });
-        //console.log(playerInf.data.result);
         //サイド情報のデータ変換
         const sideList = playerInf.data.result.side_info.split('');
         sideList.splice(0, 4); //サイド情報の先頭４つ分の不要なデータを削除
@@ -801,7 +800,6 @@ export default function PlayerInformationRef() {
             sideList[i] = false;
           }
         }
-
         setplayerInformation({
           player_id: playerInf.data.result.player_id,
           user_id: playerInf.data.result.user_id,
@@ -1182,14 +1180,12 @@ export default function PlayerInformationRef() {
                   </div>
                 </div>
                 <div className='flex flex-row'>
-                  {/* 出身地（国） */}
                   <div className='text-gray-40 text-caption1'>出身&nbsp;&nbsp;</div>
                   <Label
                     label={playerInformation.birthCountryName}
                     textColor='white'
                     textSize='caption1'
                   ></Label>
-                  {/* 出身地（都道府県） */}
                   <div
                     className={
                       !playerInformation.birthPrefectureName ||
@@ -1199,35 +1195,33 @@ export default function PlayerInformationRef() {
                     }
                   >
                     <Label
-                      label={'　/　' + playerInformation.birthPrefectureName}
+                      label={' / ' + playerInformation.birthPrefectureName}
                       textColor='white'
                       textSize='caption1'
                     ></Label>
                   </div>
                 </div>
-                <div className='flex flex-row'>
-                  <div className='text-gray-40 text-caption1'>居住&nbsp;&nbsp;</div>
-                  {/* 居住地（国） */}
+              </div>
+              <div className='flex flex-row'>
+                <div className='text-gray-40 text-caption1'>居住&nbsp;&nbsp;</div>
+                <Label
+                  label={playerInformation.residenceCountryName}
+                  textColor='white'
+                  textSize='caption1'
+                ></Label>
+                <div
+                  className={
+                    !playerInformation.residencePrefectureName ||
+                    playerInformation.residencePrefectureName === ''
+                      ? 'hidden'
+                      : ''
+                  }
+                >
                   <Label
-                    label={playerInformation.residenceCountryName}
+                    label={' / ' + playerInformation.residencePrefectureName}
                     textColor='white'
                     textSize='caption1'
                   ></Label>
-                  {/* 居住地（都道府県） */}
-                  <div
-                    className={
-                      !playerInformation.residencePrefectureName ||
-                      playerInformation.residencePrefectureName === ''
-                        ? 'hidden'
-                        : ''
-                    }
-                  >
-                    <Label
-                      label={'　/　' + playerInformation.residencePrefectureName}
-                      textColor='white'
-                      textSize='caption1'
-                    ></Label>
-                  </div>
                 </div>
               </div>
             </div>

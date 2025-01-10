@@ -439,7 +439,7 @@ class T_volunteers extends Model
         `t_volunteers`.`date_of_birth` as `dateOfBirth`,
         `t_volunteers`.`telephone_number` as `telephoneNumber`, 
         `t_volunteers`.`mailaddress`,  
-        `m_countries`.`country_name` as `countryName`, 
+        `m_countries`.`country_name` as `countryName`,
         `m_prefectures`.`pref_name` as `prefName`, 
         `m_sex`.`sex`, 
         `m_clothes_size`.`clothes_size` as `clothesSize`,
