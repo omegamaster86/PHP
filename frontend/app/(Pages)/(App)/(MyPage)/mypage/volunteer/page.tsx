@@ -106,18 +106,20 @@ export default function Volunteer() {
       </div>
 
       <h3 className='my-4'>言語レベル</h3>
-      {!!volunteerInfo.languageProficiency.length ? (
-        volunteerInfo.languageProficiency.map((lang) => (
-          <Info
-            key={lang.langId}
-            label={lang.langName}
-            value={lang.langProName}
-            labelClassName='font-normal text-gray-300'
-          />
-        ))
-      ) : (
-        <EmptyScreen message='登録なし' />
-      )}
+      <div className='flex gap-2'>
+        {!!volunteerInfo.languageProficiency.length ? (
+          volunteerInfo.languageProficiency.map((lang) => (
+            <Info
+              key={lang.langId}
+              label={lang.langName}
+              value={lang.langProName}
+              labelClassName='font-normal text-gray-300'
+            />
+          ))
+        ) : (
+          <EmptyScreen message='登録なし' />
+        )}
+      </div>
 
       <h3 className='my-4'>参加しやすい曜日</h3>
       <div className='flex flex-wrap gap-2'>

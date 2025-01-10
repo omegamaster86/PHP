@@ -578,12 +578,12 @@ export default function PlayerInformation() {
               .then((response) => {
                 if (formData.birth_country != 112) {
                   //出身地が日本以外の場合、都道府県に関連したデータを削除する
-                  formData.birth_prefecture = 0;
+                  formData.birth_prefecture = null;
                   formData.birthPrefectureName = '';
                 }
                 if (formData.residence_country != 112) {
                   //居住地が日本以外の場合、都道府県に関連したデータを削除する
-                  formData.residence_prefecture = 0;
+                  formData.residence_prefecture = null;
                   formData.residencePrefectureName = '';
                 }
                 //サイド情報のデータ位置入れ替え
@@ -708,7 +708,6 @@ export default function PlayerInformation() {
       router.replace(`/playerInformation?mode=update&source=confirm&player_id=${playerId}`);
     }
   };
-
   return (
     <>
       <CustomTitle customBack={customBack}>

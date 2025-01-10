@@ -71,17 +71,17 @@ class T_players extends Model
                                 on `t_players`.birth_country = bir_cont.country_id
                                 left join m_prefectures bir_pref
                                 on `t_players`.birth_prefecture = bir_pref.pref_id
+                                and  bir_pref.`delete_flag` = 0
                                 left join m_countries res_cont
                                 on `t_players`.residence_country = res_cont.country_id
                                 left join m_prefectures res_pref
                                 on `t_players`.residence_prefecture = res_pref.pref_id
+                                and  res_pref.`delete_flag` = 0
                                 where 1=1
                                 and `t_players`.delete_flag = 0
                                 and  `m_sex`.`delete_flag` = 0
                                 and  bir_cont.`delete_flag` = 0
-                                and  bir_pref.`delete_flag` = 0
                                 and  res_cont.`delete_flag` = 0
-                                and  res_pref.`delete_flag` = 0
                                 and `t_players`.player_id = ?',
             [$player_id]
         );

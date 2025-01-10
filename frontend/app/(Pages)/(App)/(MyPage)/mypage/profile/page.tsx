@@ -46,6 +46,7 @@ export default function Profile() {
       value: `${profile.height}cm`,
     },
   ];
+
   const residence = [profile.countryName, profile.prefName].filter((x) => x).join(' ');
 
   const right = [
