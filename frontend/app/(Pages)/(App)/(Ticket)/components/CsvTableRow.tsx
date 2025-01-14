@@ -1,4 +1,4 @@
-import { type CsvTableRow as Row } from '@/app/(Pages)/(App)/(Ticket)/shared/csv';
+import { canRegisterText, type CsvTableRow as Row } from '@/app/(Pages)/(App)/(Ticket)/shared/csv';
 import CustomTd from '@/app/components/CustomTable/Td';
 import CustomTr from '@/app/components/CustomTable/Tr';
 import CustomCheckbox from '@/app/components/OriginalCheckbox';
@@ -12,10 +12,8 @@ type Props = {
 
 export const CsvTableRow: React.FC<Props> = (props) => {
   const { rowIndex, row, activationFlg, onChangeCheckbox } = props;
-  const { result } = row;
 
-  const isResultError = result.startsWith('無効データ') || result.includes('未入力');
-
+  const isResultError = row.result !== canRegisterText;
   const textType = isResultError ? 'error' : 'secondary';
 
   const items: {
