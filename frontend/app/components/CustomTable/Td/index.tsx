@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
+import { ReactNode } from 'react';
 
 type AlignType = 'left' | 'center' | 'right' | 'justify' | 'char';
 
@@ -7,7 +7,6 @@ const CustomTd = ({
   children,
   transitionDest,
   align,
-  key,
   textType,
   className,
   newLine,
@@ -15,8 +14,7 @@ const CustomTd = ({
   children: ReactNode;
   transitionDest?: string;
   align?: AlignType;
-  key?: number;
-  textType?: string;
+  textType?: 'primary' | 'secondary' | 'error' | 'warning';
   className?: string;
   newLine?: boolean;
 }) => {
@@ -41,7 +39,6 @@ const CustomTd = ({
       ${className}
       `}
       align={align}
-      key={key}
     >
       {children}
     </td>
@@ -49,7 +46,6 @@ const CustomTd = ({
     <td
       className='py-2 px-1 text-primary-300 underline hover:text-primary-50 cursor-pointer border border-gray-20 whitespace-nowrap text-caption1'
       align={align}
-      key={key}
       onClick={() => {
         router.push(transitionDest);
       }}
