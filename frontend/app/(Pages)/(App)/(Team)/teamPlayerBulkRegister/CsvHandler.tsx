@@ -1,10 +1,10 @@
-import React, { useState, useCallback, forwardRef, useImperativeHandle } from 'react';
-import type { FileRejection } from 'react-dropzone';
-import { useDropzone } from 'react-dropzone';
-import Papa from 'papaparse';
+import { CustomButton } from '@/app/components';
 import CustomInputLabel from '@/app/components/InputLabel';
 import CustomTextField from '@mui/material/TextField';
-import { CustomButton } from '../../../../components';
+import Papa from 'papaparse';
+import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
+import type { FileRejection } from 'react-dropzone';
+import { useDropzone } from 'react-dropzone';
 
 interface Props {
   csvUploadProps: CsvUploadProps;
@@ -15,7 +15,7 @@ interface Props {
 interface CsvUploadProps {
   label: string; // ラベル
   readonly: boolean; // 読み取り専用かどうか
-  csvUpload: (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => void; // CSVアップロード時のコールバック
+  csvUpload: (newCsvData: { content: string[][]; isSet: boolean }) => void; // CSVアップロード時のコールバック
   resetActivationFlg: () => void; // アクティベーションフラグのリセット
 }
 // CSVダウンロードのプロパティの型定義

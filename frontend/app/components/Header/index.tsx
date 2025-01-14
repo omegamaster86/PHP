@@ -98,6 +98,8 @@ const Header: FC = () => {
       case '/volunteerInformationRef':
         setCurrentIndex(3);
         break;
+      case '/ticketBulkRegister':
+      case '/donationBulkRegister':
       case '/userInformation':
         setCurrentIndex(6);
         break;
@@ -334,6 +336,16 @@ const Header: FC = () => {
       active: currentIndex === 6,
       show: true,
       items: [
+        {
+          title: 'チケット購入履歴一括登録',
+          link: '/ticketBulkRegister',
+          show: userIdType.is_jara == 1,
+        },
+        {
+          title: '寄付履歴一括登録',
+          link: '/donationBulkRegister',
+          show: userIdType.is_jara == 1,
+        },
         {
           title: 'ユーザー情報更新',
           link: '/userInformation?mode=update',
