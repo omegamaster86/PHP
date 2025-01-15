@@ -104,6 +104,7 @@ export default function OrgInfo() {
   const [userIdErrorMessage, setUserIdErrorMessage] = useState([] as string[]);
   const [userNameErrorMessage, setUserNameErrorMessage] = useState([] as string[]);
   const [userTypeErrorMessage, setUserTypeErrorMessage] = useState([] as string[]);
+  const [staffTableErrorMessage, setStaffTableErrorMessage] = useState([] as string[]);
 
   // フォームデータを管理する状態
   const [tableData, setTableData] = useState<Staff[]>([]);
@@ -391,10 +392,20 @@ export default function OrgInfo() {
       if (row.delete_flag) return false;
       return Validator.validateRequired(row.user_id, 'ユーザーID').length > 0;
     });
-    // const userNameErrorFlg = tableData.some((row) => {
-    //   if (row.delete_flag) return false;
-    //   return Validator.validateSelectRequired(row.user_name, 'ユーザー名').length > 0;
-    // });
+    if (userIdErrorFlg) {
+      setUserIdErrorMessage(
+        Validator.getErrorMessages([Validator.validateRequired(null, 'ユーザーID')]),
+      );
+    } else {
+      setUserIdErrorMessage([]);
+    }
+
+    const staffTableErrorMessage =
+      tableData.length === 0 || tableData.every((row) => row.delete_flag)
+        ? ['1人以上のスタッフ登録が必要です。']
+        : [];
+    setTableErrorMessages(staffTableErrorMessage);
+
     const userTypeErrorFlg = tableData.some((row) => {
       if (row.delete_flag) return false;
       var staff_type = null;
@@ -403,20 +414,7 @@ export default function OrgInfo() {
       }
       return Validator.validateRequired(staff_type, 'ユーザー種別').length > 0;
     });
-    if (userIdErrorFlg) {
-      setUserIdErrorMessage(
-        Validator.getErrorMessages([Validator.validateRequired(null, 'ユーザーID')]),
-      );
-    } else {
-      setUserIdErrorMessage([]);
-    }
-    // if (userNameErrorFlg) {
-    //   setUserNameErrorMessage(
-    //     Validator.getErrorMessages([Validator.validateRequired(null, 'ユーザー名')]),
-    //   );
-    // } else {
-    //   setUserNameErrorMessage([]);
-    // }
+
     if (userTypeErrorFlg) {
       setUserTypeErrorMessage(
         Validator.getErrorMessages([Validator.validateSelectRequired(null, 'ユーザー種別')]),
@@ -432,8 +430,8 @@ export default function OrgInfo() {
       orgClassError.length > 0 ||
       jaraTrailError.length > 0 ||
       prefTrailError.length > 0 ||
+      staffTableErrorMessage.length > 0 ||
       userIdErrorFlg ||
-      // userNameErrorFlg ||
       userTypeErrorFlg
     ) {
       return true;
@@ -441,7 +439,6 @@ export default function OrgInfo() {
       return false;
     }
   };
-
   // スタッフ追加
   const addCustomButton = addStaffDisplayFlg && (
     <CustomButton
@@ -546,6 +543,7 @@ export default function OrgInfo() {
                 setDisableFlag(false);
                 setErrorMessage([]);
                 setTableErrorMessages([]);
+                setStaffTableErrorMessage([]);
                 setSessionStorage<OrganizationFormData>(storageKey, sendData);
                 router.push('/team?mode=confirm&prevMode=create');
               })
@@ -591,6 +589,7 @@ export default function OrgInfo() {
                 setDisableFlag(false);
                 setErrorMessage([]);
                 setTableErrorMessages([]);
+                setStaffTableErrorMessage([]);
                 setSessionStorage<OrganizationFormData>(storageKey, sendData);
                 router.push('/team?mode=confirm&prevMode=update');
               })
@@ -1263,12 +1262,14 @@ export default function OrgInfo() {
         (userIdErrorMessage.length > 0 ||
           userNameErrorMessage.length > 0 ||
           userTypeErrorMessage.length > 0 ||
+          staffTableErrorMessage.length > 0 ||
           tableErrorMessages.length > 0) && (
           <div key='tableErrorMessage' className='text-caption1 text-systemErrorText'>
             <p>{userIdErrorMessage}</p>
             <p>{userNameErrorMessage}</p>
             <p>{userTypeErrorMessage}</p>
             <p>{tableErrorMessages}</p>
+            <p>{staffTableErrorMessage}</p>
           </div>
         )
       }
