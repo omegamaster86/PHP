@@ -548,7 +548,8 @@ export default function OrgInfo() {
                 router.push('/team?mode=confirm&prevMode=create');
               })
               .catch((error) => {
-                setErrorMessage(['入力値エラー: ' + (error?.response?.data as string[])]);
+                const errorMessage = error?.response?.data?.message;
+                setErrorMessage(['入力値エラー: ' + errorMessage]);
               });
           }
           setDisableFlag(false);
@@ -594,7 +595,8 @@ export default function OrgInfo() {
                 router.push('/team?mode=confirm&prevMode=update');
               })
               .catch((error) => {
-                setErrorMessage(['入力値エラー: ' + (error?.response?.data as string[])]);
+                const errorMessage = error?.response?.data?.message;
+                setErrorMessage(['入力値エラー: ' + errorMessage]);
               });
           }
           setDisableFlag(false);
