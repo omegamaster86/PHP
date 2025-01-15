@@ -2,11 +2,11 @@
 
 import Info from '@/app/(Pages)/(App)/(MyPage)/_components/Info';
 import { TitleSideButton } from '@/app/(Pages)/(App)/_components/TitleSideButton';
+import { CustomAvatar } from '@/app/components/CustomAvatar';
 import { fetcher } from '@/app/lib/swr';
 import { MyPageProfileInfoData } from '@/app/types';
 import { formatDate } from '@/app/utils/dateUtil';
 import { EditOutlined } from '@mui/icons-material';
-import { Avatar } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 
@@ -74,7 +74,7 @@ export default function Profile() {
         </div>
 
         <div className='flex items-center justify-center flex-row md:items-start'>
-          <Avatar src={profile.photo ?? undefined} sx={{ width: 260, height: 260 }} />
+          <CustomAvatar fileName={profile.photo ?? undefined} sx={{ width: 260, height: 260 }} />
         </div>
 
         <div className='md:max-w-lg'>

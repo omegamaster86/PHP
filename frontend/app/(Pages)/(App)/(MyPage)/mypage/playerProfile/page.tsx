@@ -3,11 +3,11 @@
 import Info from '@/app/(Pages)/(App)/(MyPage)/_components/Info';
 import { TitleSideButton } from '@/app/(Pages)/(App)/_components/TitleSideButton';
 import { RoundedBadge } from '@/app/components';
+import { CustomAvatar } from '@/app/components/CustomAvatar';
 import { fetcher } from '@/app/lib/swr';
 import { MyPagePlayerProfileInfoData } from '@/app/types';
 import { formatDate } from '@/app/utils/dateUtil';
 import { EditOutlined } from '@mui/icons-material';
-import { Avatar } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 
@@ -78,7 +78,7 @@ export default function PlayerProfile() {
         </div>
 
         <div className='flex items-center justify-center flex-row gap-2 md:items-start'>
-          <Avatar src={user.photo ?? undefined} sx={{ width: 260, height: 260 }} />
+          <CustomAvatar fileName={user.photo ?? undefined} sx={{ width: 260, height: 260 }} />
         </div>
 
         <div className='md:max-w-sm'>

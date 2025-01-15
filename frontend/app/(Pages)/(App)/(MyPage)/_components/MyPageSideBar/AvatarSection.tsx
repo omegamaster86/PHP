@@ -1,5 +1,5 @@
+import { CustomAvatar } from '@/app/components/CustomAvatar';
 import Tag from '@/app/components/Tag';
-import { Avatar } from '@mui/material';
 import { MyPageSideBarUser } from '.';
 
 type Props = {
@@ -11,7 +11,7 @@ const AvatarSection: React.FC<Props> = (props) => {
 
   return (
     <div className='flex items-center justify-center flex-row gap-2'>
-      <Avatar src={user.avatarUrl} sx={{ width: 44, height: 44 }} />
+      <CustomAvatar fileName={user.avatarUrl} sx={{ width: 44, height: 44 }} />
       <div className='flex flex-col gap-2'>
         <div className='flex flex-wrap justify-start gap-[2px]'>
           {user.tags.map((tag) => (
