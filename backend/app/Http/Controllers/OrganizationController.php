@@ -1196,6 +1196,12 @@ class OrganizationController extends Controller
         if ($enable_staff_count > 100) {
             abort(400, "登録できるスタッフの人数が、100名を超えています。1団体に登録できるスタッフ数は、100名までです。");
         }
+
+        $non_deleted_staffs = array_filter($staff_list, fn($staff) => !$staff['delete_flag']);
+        if (count($non_deleted_staffs) === 0) {
+            abort(400, "1人以上のスタッフ登録が必要です。");
+        }
+
         Log::debug(sprintf("validateOrgData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
     }
