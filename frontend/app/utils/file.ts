@@ -1,4 +1,4 @@
-export const fileDownload = (blob: Blob, filename: string) => {
+export const downloadFile = (blob: Blob, filename: string) => {
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
