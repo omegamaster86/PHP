@@ -43,7 +43,7 @@ export default function Profile() {
     },
     {
       label: '身長',
-      value: `${profile.height}cm`,
+      value: profile.height === null ? '-' : `${profile.height}cm`,
     },
   ];
 
@@ -56,7 +56,7 @@ export default function Profile() {
     },
     {
       label: '体重',
-      value: `${profile.weight}kg`,
+      value: profile.weight === null ? '-' : `${profile.weight}kg`,
     },
   ];
 

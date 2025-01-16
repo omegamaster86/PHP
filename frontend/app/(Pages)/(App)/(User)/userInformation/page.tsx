@@ -63,8 +63,8 @@ export default function UserInformationUpdate() {
     date_of_birth: '', // 生年月日
     sexName: '', // 性別
     sex: null, // 性別ID
-    height: 0, // 身長
-    weight: 0, // 体重
+    height: null, // 身長
+    weight: null, // 体重
     residence_country: null, // 居住地（国）ID
     residenceCountryName: '', // 居住地（国）
     residence_prefecture: null, // 居住地（都道府県）ID
@@ -456,7 +456,6 @@ export default function UserInformationUpdate() {
   if (paramError) {
     return <div>ページが見つかりません</div>;
   }
-
   return (
     <>
       <div className='flex flex-col justify-start gap-[20px]'>
@@ -842,10 +841,10 @@ export default function UserInformationUpdate() {
             value={formData.height?.toString()}
             placeHolder='180'
             onChange={(e) => {
-              handleInputChange('height', e.target.value);
+              handleInputChange('height', e.target.value === '' ? null : e.target.value);
             }}
             displayHelp={mode === 'update'}
-            inputAdorment='cm'
+            inputAdorment={mode === 'confirm' && formData.height === null ? '-' : 'cm'}
             toolTipText='半角数字で入力してください。'
           />
           {/* 体重 */}
@@ -857,12 +856,12 @@ export default function UserInformationUpdate() {
             required={false}
             value={formData.weight?.toString()}
             onChange={(e) => {
-              handleInputChange('weight', e.target.value);
+              handleInputChange('weight', e.target.value === '' ? null : e.target.value);
             }}
             placeHolder='80'
             displayHelp={mode === 'update'}
             toolTipText='半角数字で入力してください。'
-            inputAdorment='kg'
+            inputAdorment={mode === 'confirm' && formData.weight === null ? '-' : 'kg'}
           />
         </div>
       </div>
