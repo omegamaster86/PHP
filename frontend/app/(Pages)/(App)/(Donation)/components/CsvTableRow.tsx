@@ -1,4 +1,7 @@
-import { canRegisterText, type CsvTableRow as Row } from '@/app/(Pages)/(App)/(Ticket)/shared/csv';
+import {
+  canRegisterText,
+  type CsvTableRow as Row,
+} from '@/app/(Pages)/(App)/(Donation)/shared/csv';
 import CustomTd from '@/app/components/CustomTable/Td';
 import CustomTr from '@/app/components/CustomTable/Tr';
 import CustomCheckbox from '@/app/components/OriginalCheckbox';
@@ -21,17 +24,11 @@ export const CsvTableRow: React.FC<Props> = (props) => {
     value: string;
   }[] = [
     { key: 'result', value: row.result },
-    { key: 'purchasedTime', value: row.purchasedTime },
-    { key: 'purchaserName', value: row.purchaserName },
     { key: 'mailaddress', value: row.mailaddress },
-    { key: 'eventDate', value: row.eventDate },
-    { key: 'ticketName', value: row.ticketName },
-    { key: 'ticketNumber', value: row.ticketNumber },
-    { key: 'subTicketName', value: row.subTicketName },
-    { key: 'ticketCount', value: row.ticketCount },
-    { key: 'ticketAmount', value: row.ticketAmount },
-    { key: 'admissionCount', value: row.admissionCount },
-    { key: 'questionnaireMailaddress', value: row.questionnaireMailaddress },
+    { key: 'donatorName', value: row.donatorName },
+    { key: 'donatedDate', value: row.donatedDate },
+    { key: 'donationAmount', value: row.donationAmount },
+    { key: 'donationTarget', value: row.donationTarget },
   ];
 
   return (

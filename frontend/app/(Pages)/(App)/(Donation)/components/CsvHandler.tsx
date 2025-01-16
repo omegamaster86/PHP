@@ -1,11 +1,10 @@
 import {
+  CsvDownloadProps,
   CsvUploadProps,
-  ExcelDownloadProps,
   FileHandler,
-} from '@/app/(Pages)/(App)/(Ticket)/shared/csv';
+} from '@/app/(Pages)/(App)/(Donation)/shared/csv';
 import { CustomButton } from '@/app/components';
 import CustomInputLabel from '@/app/components/InputLabel';
-import axios from '@/app/lib/axios';
 import { downloadFile } from '@/app/utils/file';
 import CustomTextField from '@mui/material/TextField';
 import Papa from 'papaparse';
@@ -15,12 +14,12 @@ import { useDropzone } from 'react-dropzone';
 
 interface Props {
   csvUploadProps: CsvUploadProps;
-  excelDownloadProps: ExcelDownloadProps;
+  csvDownloadProps: CsvDownloadProps;
 }
 
 // FileUploaderコンポーネント
 const CsvHandler = forwardRef<FileHandler, Props>((props, ref) => {
-  const { csvUploadProps, excelDownloadProps } = props;
+  const { csvUploadProps, csvDownloadProps } = props;
   const { readonly } = csvUploadProps;
   const [currentShowFile, setCurrentShowFile] = useState<{ file: File; isUploaded: boolean }>();
   useImperativeHandle(ref, () => {
@@ -108,16 +107,17 @@ const CsvHandler = forwardRef<FileHandler, Props>((props, ref) => {
   });
 
   // ダウンロード処理を行う関数
-  const handleDownload = async () => {
+  const handleDownload = () => {
     try {
-      const res = await axios.get(excelDownloadProps.fileUrl);
-      const blob = new Blob([res.data], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
-      downloadFile(blob, excelDownloadProps.filename);
+      const csvContent = csvDownloadProps.header.map((h) => h).join(',') + '\n';
+
+      // ダウンロード用のBlobを作成（UTF-8指定）
+      const bom = new Uint8Array([0xef, 0xbb, 0xbf]);
+      const blob = new Blob([bom, csvContent], { type: 'text/csv' });
+      downloadFile(blob, csvDownloadProps.filename);
     } catch (error) {
-      console.error('Excel Download Error:', error);
-      alert('Excelのダウンロード中にエラーが発生しました。もう一度試してください。');
+      console.error('CSV Download Error:', error);
+      alert('CSVのダウンロード中にエラーが発生しました。もう一度試してください。');
     }
   };
 
@@ -165,7 +165,7 @@ const CsvHandler = forwardRef<FileHandler, Props>((props, ref) => {
               onClick={handleDownload}
               className='w-[200px] h-[57px]'
             >
-              {excelDownloadProps.label}
+              {csvDownloadProps.label}
             </CustomButton>
           </div>
         </div>

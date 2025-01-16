@@ -1,12 +1,11 @@
-import { useState } from 'react';
 import CustomButton from '@/app/components/CustomButton';
-import CustomCheckbox from '@/app/components/OriginalCheckbox';
 import CustomTable from '@/app/components/CustomTable/Table';
-import CustomThead from '@/app/components/CustomTable/Thead';
 import CustomTbody from '@/app/components/CustomTable/Tbody';
-import CustomTr from '@/app/components/CustomTable/Tr';
-import CustomTh from '@/app/components/CustomTable/Th';
 import CustomTd from '@/app/components/CustomTable/Td';
+import CustomTh from '@/app/components/CustomTable/Th';
+import CustomThead from '@/app/components/CustomTable/Thead';
+import CustomTr from '@/app/components/CustomTable/Tr';
+import CustomCheckbox from '@/app/components/OriginalCheckbox';
 import { CsvData } from './CsvDataInterface';
 
 // CSVテーブルコンポーネント
@@ -48,10 +47,11 @@ const CsvTable = ({
     return error ? 'bg-yellow' : '';
   };
 
-  //console.log('content');
-  //console.log(content);
+  if (!visibilityFlg) {
+    return null;
+  }
 
-  return visibilityFlg && (
+  return (
     <div className='overflow-auto h-[331px] w-[800px]'>
       <CustomTable>
         <CustomThead>
@@ -88,127 +88,85 @@ const CsvTable = ({
           </CustomTr>
           <CustomTr>
             <CustomTh key={0}>選択</CustomTh>
-            {header.map((header: any, index: any) => (
+            {header.map((header, index) => (
               <CustomTh key={index}>{header}</CustomTh>
             ))}
           </CustomTr>
         </CustomThead>
         <CustomTbody>
-          {content?.map((row, rowIndex) => (
-            <CustomTr index={rowIndex} key={rowIndex}>
-              {/* 選択 */}
-              <CustomTd align='center'>
-                <CustomCheckbox
-                  id={`delete-${rowIndex}`}
-                  label={''}
-                  value={`delete-${rowIndex}`}
-                  checked={row.checked}
-                  readonly={checkLoadingResult(row)}
-                  onChange={(e) => {
-                    handleInputChange(row.id, 'checked', e.target.checked);
-                    // チェックボックスの変更により連携ボタンの表示を切り替える 20240525
-                    var data = content.map((row) => row.checked.toString());
-                    data[rowIndex] = e.target.checked.toString();
-                    data.includes('true')
-                      ? displayRegisterButton(true)
-                      : displayRegisterButton(false);
-                  }}
-                ></CustomCheckbox>
-              </CustomTd>
-              {/* 読み込み結果 */}
-              <CustomTd textType={checkLoadingResult(row) ? 'error' : ''}>
-                {row.loadingResult}
-              </CustomTd>
-              {/* 以下、各列のデータ */}
-              <CustomTd
-                textType={checkLoadingResult(row) ? 'error' : ''}
-                className={checkError(row.tournIdError)}
-              >
-                {row.tournId}
-              </CustomTd>
-              <CustomTd textType={checkLoadingResult(row) ? 'error' : ''}>{row.tournName}</CustomTd>
-              <CustomTd
-                textType={checkLoadingResult(row) ? 'error' : ''}
-                className={checkError(row.eventIdError)}
-              >
-                {row.eventId}
-              </CustomTd>
-              <CustomTd textType={checkLoadingResult(row) ? 'error' : ''}>{row.eventName}</CustomTd>
-              <CustomTd
-                textType={checkLoadingResult(row) ? 'error' : ''}
-                className={checkError(row.raceTypeIdError)}
-              >
-                {row.raceTypeId}
-              </CustomTd>
-              <CustomTd textType={checkLoadingResult(row) ? 'error' : ''}>
-                {row.raceTypeName}
-              </CustomTd>
-              <CustomTd
-                textType={checkLoadingResult(row) ? 'error' : ''}
-                className={checkError(row.raceIdError)}
-              >
-                {row.raceId}
-              </CustomTd>
-              <CustomTd textType={checkLoadingResult(row) ? 'error' : ''}>{row.raceName}</CustomTd>
-              <CustomTd
-                textType={checkLoadingResult(row) ? 'error' : ''}
-                className={checkError(row.byGroupError)}
-              >
-                {row.byGroup}
-              </CustomTd>
-              <CustomTd
-                textType={checkLoadingResult(row) ? 'error' : ''}
-                className={checkError(row.raceNumberError)}
-              >
-                {row.raceNumber}
-              </CustomTd>
-              <CustomTd textType={checkLoadingResult(row) ? 'error' : ''}>
-                {row.startDatetime}
-              </CustomTd>
-              <CustomTd
-                textType={checkLoadingResult(row) ? 'error' : ''}
-                className={checkError(row.orgIdError)}
-              >
-                {row.orgId}
-              </CustomTd>
-              <CustomTd
-                textType={checkLoadingResult(row) ? 'error' : ''}
-                className={checkError(row.orgNameError)}
-              >
-                {row.orgName}
-              </CustomTd>
-              <CustomTd
-                textType={checkLoadingResult(row) ? 'error' : ''}
-                className={checkError(row.crewNameError)}
-              >
-                {row.crewName}
-              </CustomTd>
-              <CustomTd
-                textType={checkLoadingResult(row) ? 'error' : ''}
-                className={checkError(row.mSheetNumberError)}
-              >
-                {row.mSheetNumber}
-              </CustomTd>
-              <CustomTd
-                textType={checkLoadingResult(row) ? 'error' : ''}
-                className={checkError(row.sheetNameError)}
-              >
-                {row.sheetName}
-              </CustomTd>
-              <CustomTd
-                textType={checkLoadingResult(row) ? 'error' : ''}
-                className={checkError(row.userIdError)}
-              >
-                {row.userId}
-              </CustomTd>
-              <CustomTd
-                textType={checkLoadingResult(row) ? 'error' : ''}
-                className={checkError(row.playerNameError)}
-              >
-                {row.playerName}
-              </CustomTd>
-            </CustomTr>
-          ))}
+          {content?.map((row, rowIndex) => {
+            const textType = checkLoadingResult(row) ? 'error' : 'secondary';
+            return (
+              <CustomTr index={rowIndex} key={rowIndex}>
+                {/* 選択 */}
+                <CustomTd align='center'>
+                  <CustomCheckbox
+                    id={`delete-${rowIndex}`}
+                    label={''}
+                    value={`delete-${rowIndex}`}
+                    checked={row.checked}
+                    readonly={checkLoadingResult(row)}
+                    onChange={(e) => {
+                      handleInputChange(row.id, 'checked', e.target.checked);
+                      // チェックボックスの変更により連携ボタンの表示を切り替える 20240525
+                      var data = content.map((row) => row.checked.toString());
+                      data[rowIndex] = e.target.checked.toString();
+                      data.includes('true')
+                        ? displayRegisterButton(true)
+                        : displayRegisterButton(false);
+                    }}
+                  />
+                </CustomTd>
+                {/* 読み込み結果 */}
+                <CustomTd textType={textType}>{row.loadingResult}</CustomTd>
+                {/* 以下、各列のデータ */}
+                <CustomTd textType={textType} className={checkError(row.tournIdError)}>
+                  {row.tournId}
+                </CustomTd>
+                <CustomTd textType={textType}>{row.tournName}</CustomTd>
+                <CustomTd textType={textType} className={checkError(row.eventIdError)}>
+                  {row.eventId}
+                </CustomTd>
+                <CustomTd textType={textType}>{row.eventName}</CustomTd>
+                <CustomTd textType={textType} className={checkError(row.raceTypeIdError)}>
+                  {row.raceTypeId}
+                </CustomTd>
+                <CustomTd textType={textType}>{row.raceTypeName}</CustomTd>
+                <CustomTd textType={textType} className={checkError(row.raceIdError)}>
+                  {row.raceId}
+                </CustomTd>
+                <CustomTd textType={textType}>{row.raceName}</CustomTd>
+                <CustomTd textType={textType} className={checkError(row.byGroupError)}>
+                  {row.byGroup}
+                </CustomTd>
+                <CustomTd textType={textType} className={checkError(row.raceNumberError)}>
+                  {row.raceNumber}
+                </CustomTd>
+                <CustomTd textType={textType}>{row.startDatetime}</CustomTd>
+                <CustomTd textType={textType} className={checkError(row.orgIdError)}>
+                  {row.orgId}
+                </CustomTd>
+                <CustomTd textType={textType} className={checkError(row.orgNameError)}>
+                  {row.orgName}
+                </CustomTd>
+                <CustomTd textType={textType} className={checkError(row.crewNameError)}>
+                  {row.crewName}
+                </CustomTd>
+                <CustomTd textType={textType} className={checkError(row.mSheetNumberError)}>
+                  {row.mSheetNumber}
+                </CustomTd>
+                <CustomTd textType={textType} className={checkError(row.sheetNameError)}>
+                  {row.sheetName}
+                </CustomTd>
+                <CustomTd textType={textType} className={checkError(row.userIdError)}>
+                  {row.userId}
+                </CustomTd>
+                <CustomTd textType={textType} className={checkError(row.playerNameError)}>
+                  {row.playerName}
+                </CustomTd>
+              </CustomTr>
+            );
+          })}
         </CustomTbody>
       </CustomTable>
     </div>

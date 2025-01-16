@@ -1,5 +1,8 @@
-import { CsvTableRow } from '@/app/(Pages)/(App)/(Ticket)/components/CsvTableRow';
-import { canRegisterText, type CsvTableRow as Row } from '@/app/(Pages)/(App)/(Ticket)/shared/csv';
+import { CsvTableRow } from '@/app/(Pages)/(App)/(Donation)/components/CsvTableRow';
+import {
+  canRegisterText,
+  type CsvTableRow as Row,
+} from '@/app/(Pages)/(App)/(Donation)/shared/csv';
 import CustomButton from '@/app/components/CustomButton';
 import CustomTable from '@/app/components/CustomTable/Table';
 import CustomTbody from '@/app/components/CustomTable/Tbody';
