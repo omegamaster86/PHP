@@ -758,8 +758,8 @@ interface MyPageProfileInfoData {
   }[]; //ユーザ種別
   sex: string; //性別
   dateOfBirth: string; //誕生日
-  height: number; //身長
-  weight: number; //体重
+  height: number | null; //身長
+  weight: number | null; //体重
   countryName: string; //居住 国
   prefName: string; //居住 都道府県
   photo: string; //写真
