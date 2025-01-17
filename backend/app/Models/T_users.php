@@ -598,15 +598,15 @@ class T_users extends Authenticatable
                     from `t_users`
                     left join `m_sex`
                     on `t_users`.`sex` = `m_sex`.`sex_id`
+                    and `m_sex`.`delete_flag` = 0
                     left join `m_countries`
                     on `t_users`.`residence_country` = `m_countries`.`country_id`
+                    and `m_countries`.delete_flag = 0
                     left join `m_prefectures`
                     on `t_users`.`residence_prefecture` = `m_prefectures`.`pref_id`
+                    and `m_prefectures`.delete_flag = 0
                     where 1=1
                     and `t_users`.`delete_flag` = 0
-                    and `m_sex`.`delete_flag` = 0
-                    and `m_countries`.delete_flag = 0 
-                    and (`m_countries`.`country_code` != 392 or `m_prefectures`.delete_flag = 0)
                     and `user_id` = ?', [$userId]);
         $targetTrn = null;
         if (!empty($users)) {

@@ -39,7 +39,7 @@ export default function Profile() {
   const left = [
     {
       label: '性別',
-      value: profile.sex,
+      value: profile.sex === null ? '-' : profile.sex,
     },
     {
       label: '身長',
@@ -47,12 +47,15 @@ export default function Profile() {
     },
   ];
 
-  const residence = [profile.countryName, profile.prefName].filter((x) => x).join(' ');
+  const residence =
+    profile.countryName === null && profile.prefName === null
+      ? '-'
+      : [profile.countryName, profile.prefName].filter((x) => x).join(' ');
 
   const right = [
     {
       label: '生年月日',
-      value: formatDate(profile.dateOfBirth, 'yyyy/MM/dd'),
+      value: profile.dateOfBirth === null ? '-' : formatDate(profile.dateOfBirth, 'yyyy/MM/dd'),
     },
     {
       label: '体重',
