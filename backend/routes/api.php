@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\CoachRefereeController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\ContactUsController;
+use App\Http\Controllers\DonationHistoryController;
 use App\Http\Controllers\MyPageController;
 use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\OrganizationController;
@@ -198,6 +199,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     //チケット購入履歴関連
     Route::post('insertTeketSalesHistoryCsvUpload', [TicketPurchaseHistoryController::class, 'insertTeketSalesHistoryCsvUpload']); //teket販売履歴CSVアップロードテーブルにデータを追加 20241225
+
+    //寄付履歴関連
+    Route::post('insertDonationHistory', [DonationHistoryController::class, 'insertDonationHistory']); //寄付履歴の登録 20250117
 
     // トップ画面
     Route::get('getTopPageSummaryCount', [TopPageController::class, 'getTopPageSummaryCount']); //トップページのフォロー中の選手、大会数、出場した大会数、フォロワーの値を取得
