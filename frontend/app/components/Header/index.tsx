@@ -1,3 +1,4 @@
+import { CustomAvatar } from '@/app/components/CustomAvatar';
 import { useAuth } from '@/app/hooks/auth';
 import axios from '@/app/lib/axios';
 import type { UserIdType, UserResponse } from '@/app/types';
@@ -7,16 +8,7 @@ import {
   MenuOutlined,
   PersonOutlined,
 } from '@mui/icons-material';
-import {
-  Avatar,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  Menu,
-  MenuItem,
-} from '@mui/material';
+import { Drawer, IconButton, List, ListItem, ListItemIcon, Menu, MenuItem } from '@mui/material';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState, type FC, type MouseEvent } from 'react';
 import NestedItem from '../../(Pages)/(App)/(MyPage)/_components/MyPageSideBar/NestedItem';
@@ -386,7 +378,7 @@ const Header: FC = () => {
       </ListItem>
 
       <div className='flex flex-row p-3 gap-2'>
-        <Avatar />
+        <CustomAvatar fileName={user?.photo ?? undefined} />
         <h2 className='text-normal font-semibold flex items-center'>{username}</h2>
       </div>
 

@@ -1,4 +1,6 @@
+import { CustomAvatar } from '@/app/components/CustomAvatar';
 import { NotificationToType } from '@/app/constants';
+import { JARA_IMAGE_URL } from '@/app/utils/imageUrl';
 import { Avatar, AvatarProps } from '@mui/material';
 
 type Props = {
@@ -16,9 +18,9 @@ export const NotificationAvatar: React.FC<Props> = (props) => {
   }
 
   // 有資格者(3)、全ユーザー(4)であればjara-icon.pngを表示
-  const avatarSrc = ['qualifiedUser', 'allUser'].includes(notificationDestinationType)
-    ? '/jara-icon.png'
-    : senderIcon;
+  if (['qualifiedUser', 'allUser'].includes(notificationDestinationType)) {
+    return <Avatar src={JARA_IMAGE_URL} alt={senderName} sx={sx} />;
+  }
 
-  return <Avatar src={avatarSrc ?? undefined} alt={senderName} sx={sx} />;
+  return <CustomAvatar fileName={senderIcon ?? undefined} alt={senderName} sx={sx} />;
 };
