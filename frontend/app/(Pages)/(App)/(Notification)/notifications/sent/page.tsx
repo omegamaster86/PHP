@@ -1,12 +1,12 @@
 'use client';
 
+import { CustomButton, CustomTitle } from '@/app/components';
 import { ListItem } from '@/app/components/Notification/ListItem';
 import { NotificationContent } from '@/app/components/Notification/NotificationContent';
-import { CustomButton, CustomTitle } from '@/app/components';
 import { useAuth } from '@/app/hooks/auth';
 import { useInfiniteList } from '@/app/hooks/useInfiniteList';
 import { fetcher } from '@/app/lib/swr';
-import { NotificationInfoData } from '@/app/types';
+import { NotificationInfoData, NotificationListData } from '@/app/types';
 import { Button } from '@mui/base';
 import { useMediaQuery } from '@mui/material';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -43,7 +43,7 @@ export default function NotificationsSentList() {
     {
       url: 'api/getSenderNotificationsList',
     },
-    fetcher<NotificationInfoData[]>,
+    fetcher<NotificationListData[]>,
     { suspense: true },
   );
   const notificationRes = useSWR(
@@ -73,10 +73,6 @@ export default function NotificationsSentList() {
   const isAuthor = !!senderId && !!userId && senderId === userId;
   const isDeleteMode = mode === 'delete';
 
-  const updateIsRead = (id: number) => {
-    console.log('updateIsRead id: ', id);
-  };
-
   const handleDelete = (id: number) => {
     const ok = window.confirm('この通知を削除します。よろしいですか？');
     if (ok) {
@@ -92,8 +88,6 @@ export default function NotificationsSentList() {
   };
 
   const handleClickListItem = (id: number) => async () => {
-    updateIsRead(id);
-
     if (isWideScreen) {
       router.push(`/notifications/sent?id=${id}`);
     } else {
