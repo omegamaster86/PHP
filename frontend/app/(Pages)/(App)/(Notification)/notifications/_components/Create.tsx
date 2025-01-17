@@ -47,7 +47,7 @@ export const Create: React.FC<Props> = (props) => {
     {
       label: '自分をフォローしているユーザー',
       value: 'userFollower',
-      show: true,
+      show: userType?.isPlayer,
     },
     {
       label: '大会をフォローしているユーザー',
