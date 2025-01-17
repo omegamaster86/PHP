@@ -197,15 +197,15 @@ class T_notification_recipients extends Model
     public function updateNotificationReadFlagData($notificationRecipientsData)
     {
         DB::update(
-            'UPDATE t_notification_recipients
-                    set
-                    read_flag = 1
-                    updated_time = ?,
-                    updated_user_id = ?,
-                    where 1=1
-                    and delete_flag = 0
-                    and notification_id = ?
-                    and recipient_id = ?',
+            'UPDATE `t_notification_recipients`
+                SET
+                    `read_flag` = 1,
+                    `updated_time` = ?,
+                    `updated_user_id` = ?
+                WHERE 1=1
+                AND `delete_flag` = 0
+                AND `notification_id` = ?
+                AND `recipient_id` = ?',
             [
                 now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,

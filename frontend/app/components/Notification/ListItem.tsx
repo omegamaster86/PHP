@@ -11,15 +11,15 @@ type Props = {
 
 export const ListItem: React.FC<Props> = (props) => {
   const { notification, isSelected } = props;
-  const { title, sentTime, senderName, senderIcon, notificationDestinationTypeId } = notification;
-  const isRead = false;
+  const { title, sentTime, senderName, senderIcon, notificationDestinationTypeId, isRead } =
+    notification;
   const notificationDestinationType = getNotificationDestinationType(notificationDestinationTypeId);
 
   return (
     <div
       className={cn(
         'flex items-center gap-4 p-4',
-        isRead && 'opacity-50',
+        !isSelected && isRead && 'opacity-50',
         isSelected && 'border-r-2 border-r-primary-500 md:bg-primary-40',
       )}
     >

@@ -1,18 +1,36 @@
 'use client';
 
+import { CustomButton } from '@/app/components';
 import { ListItem } from '@/app/components/Notification/ListItem';
 import { NotificationContent } from '@/app/components/Notification/NotificationContent';
-import { CustomButton, CustomTitle } from '@/app/components';
 import { useInfiniteList } from '@/app/hooks/useInfiniteList';
 import { fetcher } from '@/app/lib/swr';
 import { NotificationInfoData, NotificationListData } from '@/app/types';
 import { Button } from '@mui/base';
 import { useMediaQuery } from '@mui/material';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
+import useSWRMutation from 'swr/mutation';
 
 const notSelectedMessage = '受信トレイからメールを選択してください。';
 const noDataMessage = '受信したメールはありません。';
+
+const sendUpdateRequest = async (
+  url: string,
+  trigger: {
+    arg: {
+      notificationId: number;
+    };
+  },
+) => {
+  return fetcher({
+    url,
+    method: 'PATCH',
+    data: {
+      notificationId: trigger.arg.notificationId,
+    },
+  });
+};
 
 export default function NotificationsList() {
   // tailwindのmdの幅を超えているかどうか
@@ -21,7 +39,7 @@ export default function NotificationsList() {
   const searchParams = useSearchParams();
   const currentId = Number(searchParams.get('id'));
 
-  const { data } = useSWR(
+  const { data, mutate } = useSWR(
     {
       url: 'api/getRecipientsNotificationsList',
     },
@@ -44,6 +62,8 @@ export default function NotificationsList() {
     },
   );
 
+  const updateReadStatus = useSWRMutation('api/updateNotificationReadFlag', sendUpdateRequest);
+
   const notifications = data.result ?? [];
   const { infiniteList, isLastPage, fetchMore } = useInfiniteList(notifications);
 
@@ -55,8 +75,10 @@ export default function NotificationsList() {
   const pathname = usePathname();
   const isTopPage = pathname === '/mypage/top';
 
-  const handleClickListItem = (id: number) => async () => {
-    updateIsRead(id);
+  const handleClickListItem = (id: number, isRead: boolean) => async () => {
+    if (!isRead) {
+      updateIsRead(id);
+    }
 
     if (isTopPage) {
       if (isWideScreen) {
@@ -74,7 +96,39 @@ export default function NotificationsList() {
   };
 
   const updateIsRead = (id: number) => {
-    console.log('updateIsRead id: ', id);
+    const newNotifications = notifications.map((n) => {
+      if (n.notificationId === id) {
+        return { ...n, isRead: 1 };
+      }
+      return n;
+    });
+
+    mutate(
+      { result: newNotifications },
+      {
+        optimisticData: {
+          result: newNotifications,
+        },
+        revalidate: false,
+      },
+    );
+
+    updateReadStatus.trigger(
+      { notificationId: id },
+      {
+        onError: () => {
+          mutate(
+            { result: notifications },
+            {
+              optimisticData: {
+                result: notifications,
+              },
+              revalidate: false,
+            },
+          );
+        },
+      },
+    );
   };
 
   return (
@@ -83,7 +137,10 @@ export default function NotificationsList() {
         <div className='flex flex-col w-full md:max-w-xs border-r border-r-gray-50'>
           {hasNotifications ? (
             infiniteList.map((n) => (
-              <Button key={n.notificationId} onClick={handleClickListItem(n.notificationId)}>
+              <Button
+                key={n.notificationId}
+                onClick={handleClickListItem(n.notificationId, Boolean(n.isRead))}
+              >
                 <ListItem notification={n} isSelected={currentId === n.notificationId} />
               </Button>
             ))

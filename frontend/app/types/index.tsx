@@ -782,6 +782,22 @@ interface NotificationInfoData {
   sentTime: string;
 }
 
+// 受信・送信一覧api用インターフェース
+interface NotificationListData {
+  notificationId: number;
+  title: string;
+  notificationDestinationTypeId: NotificationDestinationId; // 1:フォロワー, 2:大会フォロワー, 3:有資格者, 4: 全ユーザー
+  tournId: number | null;
+  playerId: number;
+  coachQualIds: number[];
+  refereeQualIds: number[];
+  senderId: number;
+  senderName: string;
+  senderIcon: string | null;
+  sentTime: string;
+  isRead: number;
+}
+
 // 通知作成リクエスト
 interface CreateNotificationRequest {
   notificationData: {
@@ -803,9 +819,6 @@ interface UpdateNotificationRequest {
   coachQualificationsData: { coachQualificationId: number }[];
   refereeQualificationsData: { refereeQualificationId: number }[];
 }
-
-// 受信・送信一覧api用インターフェース
-interface NotificationListData extends Omit<NotificationInfoData, 'to' | 'body'> {}
 
 interface MyOrgsHostedTournament {
   tournId: number; // 大会ID
@@ -877,6 +890,7 @@ export type {
   StaffRef,
   TeamPlayerInformationResponse,
   TeamResponse,
+  TopPageCountResponse,
   Tournament,
   TournamentResponse,
   TourTypeResponse,
@@ -887,7 +901,6 @@ export type {
   VenueResponse,
   VolunteerHistoriesResponse,
   VolunteerResponse,
-  TopPageCountResponse,
 };
 
 export * from './form';
