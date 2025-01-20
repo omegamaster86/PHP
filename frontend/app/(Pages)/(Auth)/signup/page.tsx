@@ -41,7 +41,7 @@ export default function Signup() {
             errorMessages={userNameErrorMessages}
             required
             value={userName}
-            placeHolder='山田 太郎'
+            placeHolder='山田太郎'
             onChange={(e) => setUserName(e.target.value)}
             toolTipText={`<span style="display: block;">文字制限</span>
                     <span style="display: block;">最大文字数：32文字（全半角区別なし）</span>
