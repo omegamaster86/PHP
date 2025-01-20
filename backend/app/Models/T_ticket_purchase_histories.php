@@ -12,7 +12,7 @@ class T_ticket_purchase_histories extends Model
     use HasFactory;
 
     //teket販売履歴CSVのデータから、最後に追加した項目を追加 20250106
-    public function insertTicketPurchaseHistory($tournId,$uuid)
+    public function insertTicketPurchaseHistory($tournId, $uuid)
     {
         $now = now()->format('Y-m-d H:i:s.u');
         $userId = Auth::user()->user_id;

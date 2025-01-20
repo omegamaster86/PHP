@@ -5,8 +5,6 @@ import {
 } from '@/app/(Pages)/(App)/(Ticket)/shared/csv';
 import { CustomButton } from '@/app/components';
 import CustomInputLabel from '@/app/components/InputLabel';
-import axios from '@/app/lib/axios';
-import { downloadFile } from '@/app/utils/file';
 import CustomTextField from '@mui/material/TextField';
 import Papa from 'papaparse';
 import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
@@ -69,6 +67,7 @@ const CsvHandler = forwardRef<FileHandler, Props>((props, ref) => {
           complete: (results: Papa.ParseResult<string[]>) => {
             csvUploadProps.csvUpload({
               content: results.data,
+              fileName: acceptedFiles[0].name,
               isSet: true,
             });
           },
@@ -106,20 +105,6 @@ const CsvHandler = forwardRef<FileHandler, Props>((props, ref) => {
     maxSize: 50 * 1024 * 1024, // 50MB
     multiple: false,
   });
-
-  // ダウンロード処理を行う関数
-  const handleDownload = async () => {
-    try {
-      const res = await axios.get(excelDownloadProps.fileUrl);
-      const blob = new Blob([res.data], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
-      downloadFile(blob, excelDownloadProps.filename);
-    } catch (error) {
-      console.error('Excel Download Error:', error);
-      alert('Excelのダウンロード中にエラーが発生しました。もう一度試してください。');
-    }
-  };
 
   return (
     <>
@@ -159,14 +144,11 @@ const CsvHandler = forwardRef<FileHandler, Props>((props, ref) => {
             </div>
           )}
           <div className='flex flex-col gap-[10px]'>
-            <CustomButton
-              buttonType='primary'
-              disabled={readonly}
-              onClick={handleDownload}
-              className='w-[200px] h-[57px]'
-            >
-              {excelDownloadProps.label}
-            </CustomButton>
+            <a href={excelDownloadProps.fileUrl} download>
+              <CustomButton buttonType='primary' disabled={readonly} className='w-[200px] h-[57px]'>
+                {excelDownloadProps.label}
+              </CustomButton>
+            </a>
           </div>
         </div>
       </div>

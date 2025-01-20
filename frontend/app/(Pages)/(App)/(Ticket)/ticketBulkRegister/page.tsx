@@ -6,7 +6,6 @@ import { HowToLoad } from '@/app/(Pages)/(App)/(Ticket)/components/HowToLoad';
 import { HowToRegister } from '@/app/(Pages)/(App)/(Ticket)/components/HowToRegister';
 import {
   canRegisterText,
-  CsvData,
   CsvFileData,
   csvHeaders,
   CsvTableRow,
@@ -14,18 +13,21 @@ import {
   ExcelDownloadProps,
   FileHandler,
 } from '@/app/(Pages)/(App)/(Ticket)/shared/csv';
-import { CustomButton, CustomTitle, ErrorBox } from '@/app/components';
+import { CustomButton, CustomDropdown, CustomTitle, ErrorBox } from '@/app/components';
 import { fetcher } from '@/app/lib/swr';
+import { TeketSalesHistoryRequest, TournamentOption } from '@/app/types';
+import { TEMPLATE_URL } from '@/app/utils/imageUrl';
 import Validator from '@/app/utils/validator';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
+import useSWRImmutable from 'swr/immutable';
 import useSWRMutation from 'swr/mutation';
 
 const sendMutateRequest = (
   url: string,
   trigger: {
     arg: {
-      csvDataList: CsvData[];
+      reqData: TeketSalesHistoryRequest;
     };
   },
 ) => {
@@ -33,7 +35,9 @@ const sendMutateRequest = (
     url,
     method: 'POST',
     data: {
-      csvDataList: trigger.arg.csvDataList,
+      fileName: trigger.arg.reqData.fileName,
+      tournId: trigger.arg.reqData.tournId,
+      csvData: trigger.arg.reqData.csvData,
     },
   });
 };
@@ -41,13 +45,34 @@ const sendMutateRequest = (
 export default function TicketBulkRegister() {
   const router = useRouter();
   const fileUploaderRef = useRef<FileHandler>(null);
-  const mutation = useSWRMutation('api/registerTicketCsvData', sendMutateRequest);
-
-  const [csvFileData, setCsvFileData] = useState<CsvFileData>({ content: [], isSet: false });
+  const [tournId, setTournId] = useState(0);
+  const [csvFileData, setCsvFileData] = useState<CsvFileData>({
+    content: [],
+    fileName: '',
+    isSet: false,
+  });
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const [csvValidateResults, setCsvValidateResults] = useState<CsvTableRow[]>([]);
 
+  const { data } = useSWRImmutable({ url: 'api/getTournaments' }, fetcher<TournamentOption[]>, {
+    revalidateOnMount: true,
+  });
+  const mutation = useSWRMutation('api/insertTeketSalesHistoryCsvUpload', sendMutateRequest);
   const resultHeader = ['選択', '読み込み結果', ...csvHeaders];
+
+  const tournamentOptions =
+    data?.result.map((x) => ({
+      key: x.tournId,
+      value: x.tournName,
+    })) ?? [];
+
+  const reset = () => {
+    setCsvFileData({ content: [], fileName: '', isSet: false });
+    fileUploaderRef?.current?.clearFile();
+    setTournId(0);
+    setCsvValidateResults([]);
+    setErrorMessages([]);
+  };
 
   // CSVファイルのアップロードを処理する関数
   const handleCsvUpload = (newCsvData: CsvFileData) => {
@@ -129,33 +154,72 @@ export default function TicketBulkRegister() {
   };
 
   const register = async () => {
+    if (!tournId) {
+      window.alert('大会名を選択してください。');
+      return;
+    }
+
     if (!csvValidateResults.length) {
       window.alert('データが読み込まれていません。');
       return;
     }
 
-    const ok = window.confirm('登録を実施しますか？');
-    if (ok) {
-      const sendData = {
-        csvDataList: csvValidateResults,
-      };
+    const reqCsvData = csvValidateResults.reduce<TeketSalesHistoryRequest['csvData']>(
+      (acc, row) => {
+        if (row.checked) {
+          acc.push({
+            rowNumber: row.id + 1,
+            purchasedTime: row.purchasedTime,
+            purchaserName: row.purchaserName,
+            mailaddress: row.mailaddress,
+            eventDate: row.eventDate,
+            ticketName: row.ticketName,
+            ticketNumber: row.ticketNumber,
+            subTicketName: row.subTicketName,
+            ticketCount: row.ticketCount,
+            ticketAmount: row.ticketAmount,
+            admissionCount: row.admissionCount,
+            questionnaireMailaddress: row.questionnaireMailaddress,
+          });
+        }
 
-      await mutation.trigger(sendData, {
-        onSuccess: () => {
-          setCsvFileData({ content: [], isSet: false });
-          fileUploaderRef?.current?.clearFile();
-          window.alert('登録を完了しました。');
-        },
-        onError: (error) => {
-          //メール送信に失敗した場合、エラーメッセージを表示
-          setErrorMessages([...error?.response?.data]);
-        },
-      });
+        return acc;
+      },
+      [],
+    );
+
+    if (!reqCsvData.length) {
+      window.alert('1つ以上のデータを選択してください。');
+      return;
     }
+
+    const ok = window.confirm('登録を実施しますか？');
+    if (!ok) {
+      return;
+    }
+
+    const reqData: TeketSalesHistoryRequest = {
+      fileName: csvFileData.fileName,
+      tournId,
+      csvData: reqCsvData,
+    };
+    const sendData = {
+      reqData,
+    };
+
+    await mutation.trigger(sendData, {
+      onSuccess: () => {
+        reset();
+        window.alert('登録を完了しました。');
+      },
+      onError: (error) => {
+        const errorMessage = error?.response?.data?.message || '登録に失敗しました。';
+        setErrorMessages([errorMessage]);
+      },
+    });
   };
 
   const handleLoadCsv = () => {
-    // ファイルが読み込まれていない場合
     if (!csvFileData.isSet) {
       setErrorMessages(['ファイルを選択してください。']);
       return;
@@ -204,9 +268,7 @@ export default function TicketBulkRegister() {
 
   // Excelダウンロードのプロパティ
   const excelDownloadProps: ExcelDownloadProps = {
-    // TODO: サンプルファイルのURLを修正する
-    fileUrl: '/example.xlsx',
-    filename: 'チケット購入履歴一括登録ファイル.xlsx',
+    fileUrl: `${TEMPLATE_URL}チケット購入履歴一括登録用CSV作成ツール.xlsm`,
     label: 'Excelフォーマット出力',
   };
 
@@ -214,6 +276,18 @@ export default function TicketBulkRegister() {
     <>
       <CustomTitle displayBack>チケット購入履歴一括登録</CustomTitle>
       <ErrorBox errorText={errorMessages} />
+
+      <div className='flex flex-col gap-[10px] w-[300px]'>
+        <CustomDropdown<number>
+          id='tourn'
+          label='大会名'
+          displayHelp
+          value={tournId}
+          options={tournamentOptions}
+          onChange={(v) => setTournId(v)}
+          className='w-[300px]'
+        />
+      </div>
 
       <div className='flex flex-row justify-start'>
         <CsvHandler

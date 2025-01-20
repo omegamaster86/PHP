@@ -331,12 +331,18 @@ const Header: FC = () => {
         {
           title: 'チケット購入履歴一括登録',
           link: '/ticketBulkRegister',
-          show: userIdType.is_jara == 1,
+          show:
+            userIdType.is_administrator == 1 ||
+            userIdType.is_jara == 1 ||
+            userIdType.is_pref_boat_officer == 1,
         },
         {
           title: '寄付履歴一括登録',
           link: '/donationBulkRegister',
-          show: userIdType.is_jara == 1,
+          show:
+            userIdType.is_administrator == 1 ||
+            userIdType.is_jara == 1 ||
+            userIdType.is_pref_boat_officer == 1,
         },
         {
           title: 'ユーザー情報更新',

@@ -182,6 +182,12 @@ interface Tournament {
   uploadedPDFFilePath?: string; // アップロードされて写真の名前を保存する
 }
 
+// 大会情報
+interface TournamentOption {
+  tournId: number;
+  tournName: string;
+}
+
 // レーステーブル
 interface RaceTable {
   race_id: string; // レースID
@@ -835,6 +841,26 @@ interface TopPageCountResponse {
   followedPlayerCount: number;
 }
 
+// チケット購入履歴一括登録リクエスト
+interface TeketSalesHistoryRequest {
+  fileName: string;
+  tournId: number;
+  csvData: {
+    rowNumber: number;
+    purchasedTime: string;
+    purchaserName: string;
+    mailaddress: string;
+    eventDate: string;
+    ticketName: string;
+    ticketNumber: string;
+    subTicketName: string;
+    ticketCount: string;
+    ticketAmount: string;
+    admissionCount: string;
+    questionnaireMailaddress: string;
+  }[];
+}
+
 export type {
   ApprovalType,
   CheckRace,
@@ -890,8 +916,10 @@ export type {
   StaffRef,
   TeamPlayerInformationResponse,
   TeamResponse,
+  TeketSalesHistoryRequest,
   TopPageCountResponse,
   Tournament,
+  TournamentOption,
   TournamentResponse,
   TourTypeResponse,
   UpdateNotificationRequest,

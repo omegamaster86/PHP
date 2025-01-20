@@ -23,20 +23,27 @@ class TicketPurchaseHistoryController extends Controller
         try {
             DB::beginTransaction();
 
-            $req = $request->all();
-            if (!isset($req['csvData']) || empty($req['csvData'])) {
+            $req = $request->only(['fileName', 'csvData', 'tournId']);
+            $fileName = $req['fileName'];
+            $csvData = $req['csvData'];
+            $tournId = $req['tournId'];
+
+            if (empty($tournId)) {
+                abort(400, '大会IDを指定してください。');
+            }
+            if (!isset($csvData) || empty($csvData)) {
                 abort(400, '取り込み対象データが存在しません。');
             }
 
             $timeData = now()->format('Y-m-d H:i:s.u');
             $uuid = Uuid::uuid4()->getBytes(); //UUIDの生成 20250110
+
             $dataList = [];
-            foreach ($req['csvData'] as $data) {
+            foreach ($csvData as $data) {
                 $dataList[] = [
                     'transaction_uuid' => $uuid,
                     'row_number' => $data['rowNumber'],
-                    'file_name' => $data['fileName'],
-                    'order_number' => $data['orderNumber'],
+                    'file_name' => $fileName,
                     'purchased_time' => $data['purchasedTime'],
                     'purchaser_name' => $data['purchaserName'],
                     'mailaddress' => $data['mailaddress'],
@@ -54,12 +61,12 @@ class TicketPurchaseHistoryController extends Controller
                     'updated_user_id' => Auth::user()->user_id,
                 ];
             }
-            
+
             //teket販売履歴CSVの追加
             $tTeketSalesHistoryCsvUpload->insertTeketSalesHistoryCsvUploadData($dataList); //バルクインサート 20250107
 
             //チケット購入履歴に追加する
-            $tTicketPurchaseHistory->insertTicketPurchaseHistory($req['tournId'],$uuid); //20250107
+            $tTicketPurchaseHistory->insertTicketPurchaseHistory($tournId, $uuid); //20250107
 
             DB::commit();
         } catch (\Throwable $e) {
