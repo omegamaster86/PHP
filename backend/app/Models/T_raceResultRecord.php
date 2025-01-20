@@ -103,15 +103,15 @@ class T_raceResultRecord extends Model
                                         on `t_race_result_record`.`tourn_id` = `t_tournaments`.`tourn_id`
                                         left join `m_wind_direction` wd2000p
                                         on `t_race_result_record`.`wind_direction_2000m_point` = wd2000p.`wind_direction_id`
+                                        and  wd2000p.`delete_flag` = 0
                                         left join `m_wind_direction` wd1000p
                                         on `t_race_result_record`.`wind_direction_1000m_point` = wd1000p.`wind_direction_id`
+                                        and  wd1000p.`delete_flag` = 0
                                         left join `m_venue`
                                         on `t_tournaments`.venue_id = `m_venue`.venue_id
                                         where 1=1
                                         and `t_race_result_record`.delete_flag = 0                                        
                                         and  `t_tournaments`.`delete_flag` = 0
-                                        and  wd2000p.`delete_flag` = 0
-                                        and  wd1000p.`delete_flag` = 0
                                         and `t_race_result_record`.race_id = ?', [$raceId]);
         return $racesResultRecord;
     }
@@ -948,18 +948,18 @@ class T_raceResultRecord extends Model
                                             from `t_race_result_record` rrr
                                             left join `m_weather_type` mwt
                                             on rrr.`weather` = mwt.`weather_id`
-                                            left join `t_organizations` org
+                                            and mwt.`delete_flag` = 0
+                                            inner join `t_organizations` org
                                             on rrr.org_id = org.org_id
+                                            and org.`delete_flag` = 0
                                             left join `m_wind_direction` wd2000p
                                             on rrr.`wind_direction_2000m_point` = wd2000p.`wind_direction_id`
+                                            and wd2000p.`delete_flag` = 0
                                             left join `m_wind_direction` wd1000p
                                             on rrr.`wind_direction_1000m_point` = wd1000p.`wind_direction_id`
+                                            and wd1000p.`delete_flag` = 0
                                             where 1=1
                                             and rrr.`delete_flag` = 0
-                                            and mwt.`delete_flag` = 0
-                                            and org.`delete_flag` = 0
-                                            and wd2000p.`delete_flag` = 0
-                                            and wd1000p.`delete_flag` = 0
                                             and race_id = :race_id",
             ["race_id" => $race_id]
         );

@@ -30,6 +30,7 @@ import {
   Link,
   TextField,
 } from '@mui/material';
+import { formatDate } from '@/app/utils/dateUtil';
 
 interface RaceNameList {
   id: number;
@@ -153,10 +154,10 @@ export default function TournamentRaceResultRef() {
     // 'シート番号ID',
     // 'シート番号',
     // '出漕結果記録名',
-    '2000m地点風速',
-    '2000m地点風向',
     '1000m地点風速',
     '1000m地点風向',
+    '2000m地点風速',
+    '2000m地点風向',
   ];
 
   // フィルター用のステート
@@ -378,8 +379,8 @@ export default function TournamentRaceResultRef() {
                       <CustomTd>{row.race_number}</CustomTd>
                       {/* 組別 */}
                       <CustomTd>{row.by_group}</CustomTd>
-                      {/* 発艇日時 「YYYY-MM-DD hh:mm」表記で表示 */}
-                      <CustomTd>{row.start_datetime.substring(0, 16)}</CustomTd>
+                      {/* 発艇日時 「YYYY/MM/DD hh:mm」表記で表示 */}
+                      <CustomTd>{formatDate(row.start_datetime,'yyyy/MM/dd HH:mm')}</CustomTd>
                       {/* 順位 */}
                       <CustomTd>{row.rank}</CustomTd>
                       {/* クルー名 */}
@@ -444,14 +445,14 @@ export default function TournamentRaceResultRef() {
                       {/* <CustomTd>{row.seat_name}</CustomTd> */}
                       {/* 出漕結果記録名 */}
                       {/* <CustomTd>{row.race_result_record_name}</CustomTd> */}
-                      {/* 2000m地点風速 */}
-                      <CustomTd>{row.wind_speed_2000m_point}</CustomTd>
-                      {/* 2000m地点風向 */}
-                      <CustomTd>{row.wind_direction_2000m_point}</CustomTd>
                       {/* 1000m地点風速 */}
                       <CustomTd>{row.wind_speed_1000m_point}</CustomTd>
                       {/* 1000m地点風向 */}
                       <CustomTd>{row.wind_direction_1000m_point}</CustomTd>
+                      {/* 2000m地点風速 */}
+                      <CustomTd>{row.wind_speed_2000m_point}</CustomTd>
+                      {/* 2000m地点風向 */}
+                      <CustomTd>{row.wind_direction_2000m_point}</CustomTd>
                     </CustomTr>
                   ))}
               </CustomTbody>
