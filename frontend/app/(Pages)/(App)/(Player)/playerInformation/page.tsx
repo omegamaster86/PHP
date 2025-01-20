@@ -813,7 +813,7 @@ export default function PlayerInformation() {
           required={mode !== 'confirm'}
           displayHelp={mode !== 'confirm'}
           errorMessages={playerNameErrorMessage}
-          placeHolder='山田 太郎'
+          placeHolder='山田太郎'
           readonly={mode === 'confirm'}
           value={formData.player_name}
           onChange={(e) => handleInputChange('player_name', e.target.value)}

@@ -516,7 +516,7 @@ export default function UserInformationUpdate() {
         {/* ユーザー名 */}
         <CustomTextField
           label='ユーザー名'
-          placeHolder='山田 太郎'
+          placeHolder='山田太郎'
           readonly={mode === 'confirm'}
           toolTipText={`<span style="display: block;">文字制限</span>
           <span style="display: block;">最大文字数：32文字（全半角区別なし）</span>
