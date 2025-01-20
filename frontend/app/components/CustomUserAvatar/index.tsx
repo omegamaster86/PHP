@@ -5,7 +5,7 @@ type Props = Omit<AvatarProps, 'src'> & {
   fileName?: string;
 };
 
-export const CustomAvatar: React.FC<Props> = (props) => {
+export const CustomUserAvatar: React.FC<Props> = (props) => {
   const { fileName, ...rest } = props;
 
   const src = fileName ? `${USER_IMAGE_URL}${fileName}` : undefined;

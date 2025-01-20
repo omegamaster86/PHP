@@ -1,4 +1,4 @@
-import { CustomAvatar } from '@/app/components/CustomAvatar';
+import { CustomPlayerAvatar } from '@/app/components/CustomPlayerAvatar';
 import { NotificationToType } from '@/app/constants';
 import { JARA_IMAGE_URL } from '@/app/utils/imageUrl';
 import { Avatar, AvatarProps } from '@mui/material';
@@ -22,5 +22,5 @@ export const NotificationAvatar: React.FC<Props> = (props) => {
     return <Avatar src={JARA_IMAGE_URL} alt={senderName} sx={sx} />;
   }
 
-  return <CustomAvatar fileName={senderIcon ?? undefined} alt={senderName} sx={sx} />;
+  return <CustomPlayerAvatar fileName={senderIcon ?? undefined} alt={senderName} sx={sx} />;
 };

@@ -2,7 +2,7 @@
 
 import Info from '@/app/(Pages)/(App)/(MyPage)/_components/Info';
 import { TitleSideButton } from '@/app/(Pages)/(App)/_components/TitleSideButton';
-import { CustomAvatar } from '@/app/components/CustomAvatar';
+import { CustomUserAvatar } from '@/app/components/CustomUserAvatar';
 import { fetcher } from '@/app/lib/swr';
 import { MyPageProfileInfoData } from '@/app/types';
 import { formatDate } from '@/app/utils/dateUtil';
@@ -77,7 +77,10 @@ export default function Profile() {
         </div>
 
         <div className='flex items-center justify-center flex-row md:items-start'>
-          <CustomAvatar fileName={profile.photo ?? undefined} sx={{ width: 260, height: 260 }} />
+          <CustomUserAvatar
+            fileName={profile.photo ?? undefined}
+            sx={{ width: 260, height: 260 }}
+          />
         </div>
 
         <div className='md:max-w-lg'>

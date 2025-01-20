@@ -1,4 +1,4 @@
-import { CustomAvatar } from '@/app/components/CustomAvatar';
+import { CustomUserAvatar } from '@/app/components/CustomUserAvatar';
 import { useAuth } from '@/app/hooks/auth';
 import axios from '@/app/lib/axios';
 import type { UserIdType, UserResponse } from '@/app/types';
@@ -378,7 +378,7 @@ const Header: FC = () => {
       </ListItem>
 
       <div className='flex flex-row p-3 gap-2'>
-        <CustomAvatar fileName={user?.photo ?? undefined} />
+        <CustomUserAvatar fileName={user?.photo ?? undefined} />
         <h2 className='text-normal font-semibold flex items-center'>{username}</h2>
       </div>
 
