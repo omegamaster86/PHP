@@ -517,7 +517,7 @@ class TournamentController extends Controller
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            abort(500, ['errMessage' => $e->getMessage()]);
+            abort(500, $e->getMessage());
         }
     }
 
@@ -544,7 +544,7 @@ class TournamentController extends Controller
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            abort(500, ['errMessage' => $e->getMessage()]);
+            abort(500, $e->getMessage());
         }
     }
 
@@ -590,7 +590,7 @@ class TournamentController extends Controller
             Log::error($e);
             DB::rollBack();
             Log::debug(sprintf("updateDeleteFlagOfRaceResultRecord end"));
-            abort(500, ['errMessage' => $e->getMessage()]);
+            abort(500, $e->getMessage());
         }
     }
 
@@ -617,7 +617,7 @@ class TournamentController extends Controller
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            abort(500, ['errMessage' => $e->getMessage()]);
+            abort(500, $e->getMessage());
         }
         Log::debug(sprintf("deleteTournamentData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
@@ -656,7 +656,7 @@ class TournamentController extends Controller
                 foreach ($duplicate_tournnaments as $tourn) {
                     $errMessage .= "[大会ID " . $tourn->{"tourn_id"} . "]：[大会名 " . $tourn->{"tourn_name"} . "]\r\n";
                 }
-                abort(403, ["response_entrysystem_tourn_id" => $errMessage]);
+                abort(403, $errMessage);
             }
         }
         //主催団体ID
@@ -677,7 +677,7 @@ class TournamentController extends Controller
         $org_type_name = $target_organization->orgTypeName;
         if ($tourn_type == 1 && $org_type_name == "任意") {
             $errMessage = "[団体ID " . $sponsor_org_id . "]：[団体名 " . $target_organization->org_name . "]は、任意団体の為、公式大会を主催することはできません。";
-            abort(403, ["response_org_id" => $errMessage]);
+            abort(403, $errMessage);
         }
         //エントリーシステムレースID
         $error_entrysystem_race_id_array = array();
@@ -708,7 +708,7 @@ class TournamentController extends Controller
             $errMessage = "「エントリーシステムのレースID」が重複しています。\r\n";
             //配列をカンマ区切りで文字列に展開
             $errMessage .= implode(",", $error_entrysystem_race_id_array);
-            abort(403, ["response_race_id" => $errMessage]);
+            abort(403, $errMessage);
         }
         Log::debug(sprintf("tournamentRegistOrUpdateValidationCheck end."));
         return response()->json(["success" => $reqData], 200); //登録できる
@@ -991,7 +991,7 @@ class TournamentController extends Controller
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            abort(500, ['errMessage' => $e->getMessage()]);
+            abort(500, $e->getMessage());
         }
     }
 
@@ -1403,7 +1403,7 @@ class TournamentController extends Controller
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            abort(500, ['errMessage' => $e->getMessage()]);
+            abort(500, $e->getMessage());
         }
     }
 
@@ -1445,7 +1445,7 @@ class TournamentController extends Controller
             return response()->json(['race_result' => $race_result, 'record_result' => $record_result]); //DBの結果を返す
         } catch (\Throwable $e) {
             Log::error($e);
-            abort(500, ['errMessage' => "レース結果の取得に失敗しました。"]);
+            abort(500, "レース結果の取得に失敗しました。");
         }
     }
 

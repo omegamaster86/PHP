@@ -386,7 +386,7 @@ class TournamentInfoAlignmentController extends Controller
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            abort(500, ['errMessage' => $e->getMessage()]);
+            abort(500, $e->getMessage());
         }
     }
 
@@ -1113,7 +1113,7 @@ class TournamentInfoAlignmentController extends Controller
             return response()->json(['result' => $reqData]); //DBの結果を返す
         } catch (\Throwable $e) {
             Log::error($e);
-            abort(500, ['result' => $e->getMessage()]);
+            abort(500, $e->getMessage());
         }
     }
 
@@ -1389,7 +1389,7 @@ class TournamentInfoAlignmentController extends Controller
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            abort(500, ['result' => false]);
+            abort(500, "レース結果一括登録に失敗しました。");
         }
     }
 
