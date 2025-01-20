@@ -86,7 +86,7 @@ class UserController extends Controller
             Mail::to($request->get('mailaddress'))->send(new VerificationMail($mail_data));
         } catch (\Throwable $e) {
             Log::error($e);
-            abort(500, ["メールを送信に失敗しました。ユーザーサポートにお問い合わせください。"]);
+            abort(500, "メールを送信に失敗しました。ユーザーサポートにお問い合わせください。");
         }
 
         return response()->json(["メールを送信しました。"], 200);
@@ -191,7 +191,7 @@ class UserController extends Controller
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            abort(500, ['errMessage' => $e->getMessage()]);
+            abort(500, $e->getMessage());
         }
 
         //Sending mail to the user
@@ -417,7 +417,7 @@ class UserController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error($e);
-            abort(500, ['errMessage' => $e->getMessage()]);
+            abort(500, $e->getMessage());
         }
     }
     //react ユーザー情報の削除 20240212

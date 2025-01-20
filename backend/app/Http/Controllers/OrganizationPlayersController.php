@@ -354,7 +354,7 @@ class OrganizationPlayersController extends Controller
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            abort(500, ['errMessage' => $e->getMessage()]);
+            abort(500, $e->getMessage());
         }
     }
 

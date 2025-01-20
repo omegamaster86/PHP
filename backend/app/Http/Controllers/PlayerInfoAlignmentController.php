@@ -243,7 +243,7 @@ class PlayerInfoAlignmentController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error($e);
-            abort(500, ['result' => false, 'errMessage' => $e->getMessage()]);
+            abort(500, $e->getMessage());
         }
     }
 }

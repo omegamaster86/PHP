@@ -207,7 +207,7 @@ class VolunteerInfoAlignmentController extends Controller
             return response()->json(['result' => $reqData]); //DBの結果を返す
         } catch (\Throwable $e) {
             Log::error($e);
-            abort(500, ['errMessage' => $e->getMessage()]);
+            abort(500, $e->getMessage());
         }
     }
 
@@ -380,7 +380,7 @@ class VolunteerInfoAlignmentController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error($e);
-            abort(500, ['errMessage' => $e->getMessage()]);
+            abort(500, $e->getMessage());
         }
     }
 }

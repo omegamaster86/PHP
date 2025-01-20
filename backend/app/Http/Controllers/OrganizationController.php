@@ -1133,7 +1133,7 @@ class OrganizationController extends Controller
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            abort(500, ['result' => false]); //DBの結果を返す
+            abort(500, "団体削除に失敗しました。"); //DBの結果を返す
         }
     }
 
@@ -1168,7 +1168,7 @@ class OrganizationController extends Controller
         $user_ids = array_column($staff_list, 'user_id');
         $duplicates = array_unique(array_diff_assoc($user_ids, array_unique($user_ids)));
         if (!empty($duplicates)) {
-            abort(400, ["重複して登録されているユーザーが有ります。ユーザーID：" . implode(', ', $duplicates)]);
+            abort(400, "重複して登録されているユーザーが有ります。ユーザーID：" . implode(', ', $duplicates));
         }
 
         //スタッフのuser_idが有効かチェックする
@@ -1180,7 +1180,7 @@ class OrganizationController extends Controller
             return isset($item['enable']) && $item['enable'] == 0 && $item['delete_flag'] == false;
         }), 'user_id');
         if (!empty($disable_staffs_ids)) {
-            abort(400, ["本システムに本登録されていないユーザー登録されていないユーザーが含まれています。ユーザーID：" . implode(', ', $disable_staffs_ids)]);
+            abort(400, "本システムに本登録されていないユーザー登録されていないユーザーが含まれています。ユーザーID：" . implode(', ', $disable_staffs_ids));
         }
 
         //スタッフの入力が100件以下のチェック
