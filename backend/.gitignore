@@ -5,6 +5,7 @@
 /public/storage
 /public/images/*
 !/public/images/jara-icon.png
+!/public/templates/*
 /public/pdf/*
 /public/csv/*
 /public/storage

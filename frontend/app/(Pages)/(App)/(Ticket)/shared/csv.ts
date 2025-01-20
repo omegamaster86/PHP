@@ -31,6 +31,7 @@ export type CsvData = {
 
 export type CsvFileData = {
   content: string[][];
+  fileName: string;
   isSet: boolean;
 };
 
@@ -52,7 +53,6 @@ export type CsvUploadProps = {
 // Excelダウンロードのプロパティの型定義
 export type ExcelDownloadProps = {
   fileUrl: string;
-  filename: string;
   label: string;
 };
 

@@ -28,6 +28,19 @@ class T_tournaments extends Model
         'delete_flag' => 0,
     ];
 
+    public function getTournaments()
+    {
+        $tournaments = DB::table('t_tournaments')
+            ->select(
+                'tourn_id as tournId',
+                'tourn_name as tournName',
+            )
+            ->where('delete_flag', 0)
+            ->get();
+
+        return $tournaments;
+    }
+
     public function getTournament($trnId)
     {
         $tournaments = DB::select(
@@ -694,7 +707,7 @@ class T_tournaments extends Model
     public function getParticipatedTournCount()
     {
         $userId = Auth::user()->user_id;
-    
+
         $racesResultRecord = DB::select(
             '
             SELECT 
