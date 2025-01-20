@@ -418,8 +418,8 @@ export default function TournamentRef() {
         setFollowStatus((prevStatus) => ({
           isFollowed: !prevStatus.isFollowed,
           followerCount: prevStatus.isFollowed
-            ? prevStatus.followerCount--
-            : prevStatus.followerCount++,
+            ? prevStatus.followerCount - 1
+            : prevStatus.followerCount + 1,
         }));
       })
       .catch(() => {
