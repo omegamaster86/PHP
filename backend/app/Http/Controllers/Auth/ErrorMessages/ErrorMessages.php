@@ -76,7 +76,7 @@ $new_password_required = '新パスワードを入力してください。';
 $new_password_confirm_required = 'パスワード確認を入力してください。';
 $password_compare = 'メールアドレスかパスワードに誤りがあります。';
 $previous_and_new_password_compare = ["旧パスワードと新パスワードは同じです。", "異なるパスワードを入力してください。"];
-$previous_password_not_matched = ["旧パスワードが正しくありません。", "正しい旧パスワードを入力してください。"];
+$previous_password_not_matched = '旧パスワードが正しくありません。';
 $temp_password_timed_out = ["このパスワードは有効期限が切れています。", "
 新規登録からユーザー仮登録を行ってくさい。"];
 

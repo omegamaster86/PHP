@@ -546,7 +546,7 @@ export default function UserInformationUpdate() {
             placeHolder='メールアドレスを入力してください。'
             type='email'
             value={formData?.mailaddress}
-            toolTipText='入力したメールアドレスは、ログインの時に使用します。'
+            toolTipText='変更するボタンをクリックし、新しいメールアドレスを入力して、画面下部の確認ボタンから更新を行なってください。'
             onChange={() => {
               handleInputChange('mailaddress', '');
             }}
@@ -594,13 +594,13 @@ export default function UserInformationUpdate() {
                 {/* メールアドレス */}
                 <div className='flex flex-col justify-start gap-[10px] my-[24px]'>
                   <CustomTextField
-                    label='メールアドレス'
+                    label='新しいメールアドレス'
                     errorMessages={emailErrorMessages}
                     isError={emailErrorMessages.length > 0}
                     value={email}
                     required
                     displayHelp={false}
-                    placeHolder='メールアドレスを入力してください。'
+                    placeHolder='新しいメールアドレスを入力してください。'
                     type='email'
                     onChange={(e) => {
                       setEmail(e.target.value);
@@ -608,13 +608,13 @@ export default function UserInformationUpdate() {
                   />
                   {/* メールアドレス確認 */}
                   <CustomTextField
-                    label='メールアドレス確認 '
+                    label='新しいメールアドレス確認 '
                     errorMessages={emailConfirmErrorMessages}
                     required
                     isError={emailConfirmErrorMessages.length > 0}
                     displayHelp={false}
                     value={confirmEmail}
-                    placeHolder='メールアドレスを入力してください。'
+                    placeHolder='新しいメールアドレスを入力してください。'
                     type='email'
                     onChange={(e) => {
                       setConfirmEmail(e.target.value);
