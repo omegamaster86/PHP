@@ -155,7 +155,7 @@ export default function Passwordchange() {
                 if (error.response?.status === 422) {
                   systemError.push(error?.response?.data?.message);
                 } else if (error.response?.status === 400) {
-                  systemError = [...error?.response?.data?.system_error];
+                  systemError = [error?.response?.data?.message];
                 } else {
                   systemError = ['内部処理エラーが発生しました、', 'サポートにご連絡ください。'];
                 }
