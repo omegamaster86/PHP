@@ -161,7 +161,14 @@ class NotificationsController extends Controller
             $mail_data = (array)$mail_data[0];
             $mail_data['senderName'] = Auth::user()->user_name; //送信者を設定 20241128
             $mailList = explode(',', $mail_data['to']); //メール送信用のリストを作成 20241128
-            Mail::to($mailList)->send(new NotificationMail($mail_data)); //メール送信 20241128
+            foreach ($mailList as $recipient) {
+                try {
+                    Mail::to($recipient)->send(new NotificationMail($mail_data)); // 個別にメール送信 20250121
+                } catch (\Exception $e) {
+                    Log::error('ErrorMailAddress: ' . $recipient . ' ErrorMessage: ' . $e->getMessage()); //送信エラーのメールアドレスとメッセージをログに出力 20250121
+                    continue;
+                }
+            }
 
             DB::commit();
         } catch (\Throwable $e) {
