@@ -186,7 +186,7 @@ export default function Signup() {
                   if (error.response?.status === 422) {
                     systemError.push(error?.response?.data?.message);
                   } else if (error.response?.status === 400) {
-                    systemError = [...error?.response?.data?.system_error];
+                    systemError = [error?.response?.data?.message];
                   } else {
                     systemError = [
                       '仮登録に失敗しました。',

@@ -36,15 +36,6 @@ class LoginRequest extends FormRequest
             // 'password' => ['required', 'string'],
         ];
     }
-    // public function messages()
-    // {
-    //     include(app_path() . '/Http/Controllers/Auth/ErrorMessages/ErrorMessages.php');
-    //     return [
-    //         'email.required' => $mailAddress_required,
-    //         'email.email'=> $email_validation,
-    //         // 'password.required' => $password_required 
-    //     ];
-    // }
 
     /**
      * Attempt to authenticate the request's credentials.
