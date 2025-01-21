@@ -486,16 +486,16 @@ const validateUrlFormat = (url: string) => {
     return '';
   }
   let errorMessage = '';
-  const urlRegex = new RegExp('https?://[w/:%#$&?()~.=+-]+');
+  const urlRegex = new RegExp(/^https?:\/\/[\w!?/+\-_~;.,*&@#$%()'[\]]+$/);
   if (!urlRegex.test(url)) {
-    return 'URLが正しいことを確認してください';
+    return 'URL形式の文字列を入力してください';
   }
   return errorMessage;
 };
 
 const validateAlphabetNumber = (elm: string, elmName: string) => {
   let errorMessage = '';
-  const urlRegex = new RegExp('^[a-zA-Z0-9]+$');
+  const urlRegex = new RegExp(/^[a-zA-Z0-9]+$/);
   if (!urlRegex.test(elm)) {
     return elmName + 'に使用できる文字は以下になります。使用可能文字: 半角英数字';
   }
