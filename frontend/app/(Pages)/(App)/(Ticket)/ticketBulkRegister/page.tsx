@@ -6,6 +6,7 @@ import { HowToLoad } from '@/app/(Pages)/(App)/(Ticket)/components/HowToLoad';
 import { HowToRegister } from '@/app/(Pages)/(App)/(Ticket)/components/HowToRegister';
 import {
   canRegisterText,
+  CsvData,
   CsvFileData,
   csvHeaders,
   CsvTableRow,
@@ -86,24 +87,57 @@ export default function TicketBulkRegister() {
     );
   };
 
-  const handleValidate = (row: string[]) => {
+  const rowToCsvData = (row: string[]): CsvData => {
+    const [
+      orderNumber,
+      purchasedTime,
+      purchaserName,
+      mailaddress,
+      eventDate,
+      ticketName,
+      ticketNumber,
+      subTicketName,
+      ticketCount,
+      ticketAmount,
+      admissionCount,
+      questionnaireMailaddress,
+    ] = row;
+
+    return {
+      orderNumber,
+      purchasedTime,
+      purchaserName,
+      mailaddress,
+      eventDate,
+      ticketName,
+      ticketNumber,
+      subTicketName,
+      ticketCount,
+      ticketAmount,
+      admissionCount,
+      questionnaireMailaddress,
+    };
+  };
+
+  const handleValidate = (csvData: CsvData) => {
     const validateErrors: string[] = [];
-    if (!row[0]) {
+
+    if (!csvData.purchasedTime) {
       validateErrors.push('購入日時が未入力です');
     }
-    if (!row[1]) {
+    if (!csvData.purchaserName) {
       validateErrors.push('購入者が未入力です');
     }
-    if (!row[7]) {
+    if (!csvData.ticketCount) {
       validateErrors.push('枚数が未入力です');
     }
-    if (!row[8]) {
+    if (!csvData.ticketAmount) {
       validateErrors.push('金額が未入力です');
     }
-    if (!row[9]) {
+    if (!csvData.admissionCount) {
       validateErrors.push('入場済数が未入力です');
     }
-    const emailValidationMessage = Validator.validateEmailFormat2(row[10]);
+    const emailValidationMessage = Validator.validateEmailFormat2(csvData.questionnaireMailaddress);
     if (emailValidationMessage) {
       validateErrors.push(emailValidationMessage);
     }
@@ -118,6 +152,7 @@ export default function TicketBulkRegister() {
         id: index,
         checked: false,
         result: 'CSVのフォーマットが不正です',
+        orderNumber: '',
         purchasedTime: '',
         purchaserName: '',
         mailaddress: '',
@@ -131,24 +166,26 @@ export default function TicketBulkRegister() {
         questionnaireMailaddress: '',
       };
     } else {
-      const errors = handleValidate(row);
+      const csvData = rowToCsvData(row);
+      const errors = handleValidate(csvData);
       const hasErrors = !!errors.length;
 
       return {
         id: index,
         checked: !hasErrors,
-        result: hasErrors ? handleValidate(row).join('\n') : canRegisterText,
-        purchasedTime: row[0],
-        purchaserName: row[1],
-        mailaddress: row[2],
-        eventDate: row[3],
-        ticketName: row[4],
-        ticketNumber: row[5],
-        subTicketName: row[6],
-        ticketCount: row[7],
-        ticketAmount: row[8],
-        admissionCount: row[9],
-        questionnaireMailaddress: row[10],
+        result: hasErrors ? errors.join('\n') : canRegisterText,
+        orderNumber: csvData.orderNumber,
+        purchasedTime: csvData.purchasedTime,
+        purchaserName: csvData.purchaserName,
+        mailaddress: csvData.mailaddress,
+        eventDate: csvData.eventDate,
+        ticketName: csvData.ticketName,
+        ticketNumber: csvData.ticketNumber,
+        subTicketName: csvData.subTicketName,
+        ticketCount: csvData.ticketCount,
+        ticketAmount: csvData.ticketAmount,
+        admissionCount: csvData.admissionCount,
+        questionnaireMailaddress: csvData.questionnaireMailaddress,
       };
     }
   };
@@ -169,6 +206,7 @@ export default function TicketBulkRegister() {
         if (row.checked) {
           acc.push({
             rowNumber: row.id + 1,
+            orderNumber: row.orderNumber,
             purchasedTime: row.purchasedTime,
             purchaserName: row.purchaserName,
             mailaddress: row.mailaddress,

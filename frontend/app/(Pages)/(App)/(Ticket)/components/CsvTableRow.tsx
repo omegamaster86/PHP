@@ -21,6 +21,7 @@ export const CsvTableRow: React.FC<Props> = (props) => {
     value: string;
   }[] = [
     { key: 'result', value: row.result },
+    { key: 'orderNumber', value: row.orderNumber },
     { key: 'purchasedTime', value: row.purchasedTime },
     { key: 'purchaserName', value: row.purchaserName },
     { key: 'mailaddress', value: row.mailaddress },

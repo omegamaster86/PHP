@@ -44,6 +44,7 @@ class TicketPurchaseHistoryController extends Controller
                     'transaction_uuid' => $uuid,
                     'row_number' => $data['rowNumber'],
                     'file_name' => $fileName,
+                    'order_number' => $data['orderNumber'],
                     'purchased_time' => $data['purchasedTime'],
                     'purchaser_name' => $data['purchaserName'],
                     'mailaddress' => $data['mailaddress'],

@@ -1,4 +1,5 @@
 export const csvHeaders = [
+  '注文番号',
   '購入日時',
   '購入者',
   'メールアドレス',
@@ -16,6 +17,7 @@ export const canRegisterText = '登録可能';
 
 // CSVデータの型定義
 export type CsvData = {
+  orderNumber: string; // 注文番号
   purchasedTime: string; // 購入日時
   purchaserName: string; // 購入者
   mailaddress: string; // メールアドレス
