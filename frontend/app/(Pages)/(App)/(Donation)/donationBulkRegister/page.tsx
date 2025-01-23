@@ -16,6 +16,7 @@ import {
 } from '@/app/(Pages)/(App)/(Donation)/shared/csv';
 import { CustomButton, CustomTitle, ErrorBox } from '@/app/components';
 import { fetcher } from '@/app/lib/swr';
+import { DonationRequest } from '@/app/types';
 import Validator from '@/app/utils/validator';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
@@ -25,7 +26,7 @@ const sendMutateRequest = (
   url: string,
   trigger: {
     arg: {
-      csvDataList: CsvData[];
+      csvData: CsvData[];
     };
   },
 ) => {
@@ -33,7 +34,7 @@ const sendMutateRequest = (
     url,
     method: 'POST',
     data: {
-      csvDataList: trigger.arg.csvDataList,
+      csvData: trigger.arg.csvData,
     },
   });
 };
@@ -41,13 +42,20 @@ const sendMutateRequest = (
 export default function DonationBulkRegister() {
   const router = useRouter();
   const fileUploaderRef = useRef<FileHandler>(null);
-  const mutation = useSWRMutation('api/registerDonationCsvData', sendMutateRequest);
+  const mutation = useSWRMutation('api/insertDonationHistory', sendMutateRequest);
 
   const [csvFileData, setCsvFileData] = useState<CsvFileData>({ content: [], isSet: false });
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const [csvValidateResults, setCsvValidateResults] = useState<CsvTableRow[]>([]);
 
   const resultHeader = ['選択', '読み込み結果', ...csvHeaders];
+
+  const reset = () => {
+    setCsvFileData({ content: [], isSet: false });
+    fileUploaderRef?.current?.clearFile();
+    setCsvValidateResults([]);
+    setErrorMessages([]);
+  };
 
   // CSVファイルのアップロードを処理する関数
   const handleCsvUpload = (newCsvData: CsvFileData) => {
@@ -72,7 +80,7 @@ export default function DonationBulkRegister() {
       validationMessages.push('寄付日が未入力です');
     }
     if (!row[3]) {
-      validationMessages.push('金額が未入力です');
+      validationMessages.push('寄付額が未入力です');
     }
     if (!row[4]) {
       validationMessages.push('寄付対象が未入力です');
@@ -117,24 +125,45 @@ export default function DonationBulkRegister() {
       return;
     }
 
-    const ok = window.confirm('登録を実施しますか？');
-    if (ok) {
-      const sendData = {
-        csvDataList: csvValidateResults,
-      };
+    const reqCsvData = csvValidateResults.reduce<DonationRequest['csvData']>((acc, row) => {
+      if (row.checked) {
+        acc.push({
+          rowNumber: row.id + 1,
+          mailaddress: row.mailaddress,
+          donatorName: row.donatorName,
+          donatedDate: row.donatedDate,
+          donationAmount: row.donationAmount,
+          donationTarget: row.donationTarget,
+        });
+      }
 
-      await mutation.trigger(sendData, {
-        onSuccess: () => {
-          setCsvFileData({ content: [], isSet: false });
-          fileUploaderRef?.current?.clearFile();
-          window.alert('登録を完了しました。');
-        },
-        onError: (error) => {
-          //メール送信に失敗した場合、エラーメッセージを表示
-          setErrorMessages([...error?.response?.data]);
-        },
-      });
+      return acc;
+    }, []);
+
+    if (!reqCsvData.length) {
+      window.alert('1つ以上のデータを選択してください。');
+      return;
     }
+
+    const ok = window.confirm('登録を実施しますか？');
+    if (!ok) {
+      return;
+    }
+
+    const sendData = {
+      csvData: reqCsvData,
+    };
+
+    await mutation.trigger(sendData, {
+      onSuccess: () => {
+        reset();
+        window.alert('登録を完了しました。');
+      },
+      onError: (error) => {
+        const errorMessage = error?.response?.data?.message || '登録に失敗しました。';
+        setErrorMessages([errorMessage]);
+      },
+    });
   };
 
   const handleLoadCsv = () => {

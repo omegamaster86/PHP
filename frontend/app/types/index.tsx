@@ -862,6 +862,18 @@ interface TeketSalesHistoryRequest {
   }[];
 }
 
+// 寄付履歴一括登録リクエスト
+interface DonationRequest {
+  csvData: {
+    rowNumber: number;
+    mailaddress: string;
+    donatorName: string;
+    donatedDate: string;
+    donationAmount: string;
+    donationTarget: string;
+  }[];
+}
+
 export type {
   ApprovalType,
   CheckRace,
@@ -876,6 +888,7 @@ export type {
   CrewPlayer,
   CrewResponse,
   DisTypeResponse,
+  DonationRequest,
   Event,
   EventResponse,
   ICoachQualification,
