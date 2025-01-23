@@ -21,6 +21,7 @@ class T_ticket_purchase_histories extends Model
             'INSERT INTO t_ticket_purchase_histories (
                 `user_id`, 
                 `tourn_id`, 
+                `order_number`,
                 `purchased_time`,
                 `purchaser_name`,
                 `event_date`,
@@ -38,6 +39,7 @@ class T_ticket_purchase_histories extends Model
             SELECT 
                 t_users.`user_id`,
                 ?,
+                teket.`order_number`,
                 teket.`purchased_time`,
                 teket.`purchaser_name`,
                 CAST(teket.`event_date` AS DATE),
@@ -52,7 +54,8 @@ class T_ticket_purchase_histories extends Model
                 ?,
                 ?
             FROM (
-                SELECT 
+                SELECT
+                    `order_number`,
                     `purchased_time`,
                     `purchaser_name`,
                     `event_date`,

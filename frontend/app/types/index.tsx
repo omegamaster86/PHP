@@ -847,6 +847,7 @@ interface TeketSalesHistoryRequest {
   tournId: number;
   csvData: {
     rowNumber: number;
+    orderNumber: string;
     purchasedTime: string;
     purchaserName: string;
     mailaddress: string;
