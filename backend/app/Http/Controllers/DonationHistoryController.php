@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class DonationHistoryController extends Controller
 {
@@ -20,30 +22,40 @@ class DonationHistoryController extends Controller
         try {
             DB::beginTransaction();
 
-            $req = $request->all();
-            if (!isset($req['csvData']) || empty($req['csvData'])) {
+            $req = $request->only(['csvData']);
+            $csvData = $req['csvData'];
+
+            if (!isset($csvData) || empty($csvData)) {
                 abort(400, '取り込み対象データが存在しません。');
             }
 
-            $timeData = now()->format('Y-m-d H:i:s.u');
+            $uuid = Uuid::uuid4()->getBytes();
+            $now = now()->format('Y-m-d H:i:s.u');
+            $userId = Auth::user()->user_id;
+
             $dataList = [];
-            foreach ($req['csvData'] as $data) {
+            foreach ($csvData as $data) {
                 $dataList[] = [
-                    'user_id' => $data['userId'],
+                    'transaction_uuid' => $uuid,
+                    'row_number' => $data['rowNumber'],
+                    'mailaddress' => $data['mailaddress'],
                     'donator_name' => $data['donatorName'],
                     'donated_date' => $data['donatedDate'],
                     'donation_amount' => $data['donationAmount'],
                     'donation_target' => $data['donationTarget'],
-                    'registered_time' => $timeData,
-                    'registered_user_id' => Auth::user()->user_id,
-                    'updated_time' => $timeData,
-                    'updated_user_id' => Auth::user()->user_id,
+                    'registered_time' => $now,
+                    'registered_user_id' => $userId,
+                    'updated_time' => $now,
+                    'updated_user_id' => $userId,
                 ];
             }
 
-            $tDonationHistories->insertDonationHistoriesData($dataList);
+            $tDonationHistories->insertDonationHistoryCsvUploadData($dataList);
+            $tDonationHistories->insertDonationHistoriesData($uuid);
 
             DB::commit();
+        } catch (HttpException $e) {
+            throw $e;
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
