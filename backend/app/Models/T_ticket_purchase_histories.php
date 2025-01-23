@@ -81,4 +81,25 @@ class T_ticket_purchase_histories extends Model
             ]
         );
     }
+
+    //大会IDに紐づくデータを削除する 20250123
+    public function updateTicketPurchaseHistory($tournId)
+    {
+        $now = now()->format('Y-m-d H:i:s.u');
+        $userId = Auth::user()->user_id;
+
+        DB::update(
+            'UPDATE `t_ticket_purchase_histories`
+                    set 
+                    `updated_time` = ?,
+                    `updated_user_id` = ?,
+                    `delete_flag` = 1
+                    where `tourn_id` = ? and delete_flag = 0',
+                    [
+                        $now,
+                        $userId,
+                        $tournId
+                    ]
+        );
+    }
 }

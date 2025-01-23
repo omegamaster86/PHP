@@ -66,6 +66,9 @@ class TicketPurchaseHistoryController extends Controller
             //teket販売履歴CSVの追加
             $tTeketSalesHistoryCsvUpload->insertTeketSalesHistoryCsvUploadData($dataList); //バルクインサート 20250107
 
+            //大会IDに紐づくデータを削除する
+            $tTicketPurchaseHistory->updateTicketPurchaseHistory($tournId); //20250123
+
             //チケット購入履歴に追加する
             $tTicketPurchaseHistory->insertTicketPurchaseHistory($tournId, $uuid); //20250107
 
