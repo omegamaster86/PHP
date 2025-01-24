@@ -179,19 +179,7 @@ export default function Signup() {
                   router.push('/login');
                 })
                 .catch((error) => {
-                  // エラー時の処理を実装
-                  let systemError = [] as string[];
-                  if (error.response?.status === 422) {
-                    systemError.push(error?.response?.data?.message);
-                  } else if (error.response?.status === 400) {
-                    systemError = [error?.response?.data?.message];
-                  } else {
-                    systemError = [
-                      '仮登録に失敗しました。',
-                      'ユーザーサポートにお問い合わせください。',
-                    ];
-                  }
-                  setErrorText(systemError);
+                  setErrorText([error.response?.data?.message]);
                 });
             }}
           >

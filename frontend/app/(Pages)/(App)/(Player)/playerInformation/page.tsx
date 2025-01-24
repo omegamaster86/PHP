@@ -509,7 +509,7 @@ export default function PlayerInformation() {
               }
             })
             .catch((error) => {
-              setErrorMessage([...(error?.response?.data as string[])]);
+              setErrorMessage([error.response?.data?.message]);
             });
         }}
       >
@@ -543,7 +543,7 @@ export default function PlayerInformation() {
               }
             })
             .catch((error) => {
-              setErrorMessage([...(error?.response?.data as string[])]);
+              setErrorMessage([error.response?.data?.message]);
             });
         }}
       >
@@ -612,9 +612,7 @@ export default function PlayerInformation() {
                   });
               })
               .catch((error) => {
-                setErrorMessage([...(error?.response?.data as string[])]);
-
-                return;
+                setErrorMessage([error.response?.data?.message]);
               });
           } else if (prevMode == 'create') {
             const csrf = () => axios.get('/sanctum/csrf-cookie');
@@ -676,9 +674,7 @@ export default function PlayerInformation() {
                   });
               })
               .catch((error) => {
-                setErrorMessage([...(error?.response?.data as string[])]);
-
-                return;
+                setErrorMessage([error.response?.data?.message]);
               });
           }
         }}

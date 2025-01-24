@@ -342,7 +342,7 @@ export default function TeamPlayerBulkRegister() {
         // router.push('/tournamentSearch'); // 20240222
       })
       .catch((error) => {
-        setErrorMessage([...error?.response?.data]); //メール送信に失敗した場合、エラーメッセージを表示 20240423
+        setErrorMessage([error.response?.data?.message]);
       });
   };
 
