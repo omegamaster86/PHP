@@ -387,7 +387,7 @@ class PlayerController extends Controller
                         abort(403, "選手IDはすでに登録されています。 複数作成することはできません。");
                     } else {
                         Log::debug(sprintf("checkJARAPlayerId end 3"));
-                        abort(401, "このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「" . $registered_player->player_id . " 」「" .  $registered_player->player_name . "」");
+                        abort(401, "このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。");
                     }
                 }
                 if ($request["mode"] === "create_confirm") {
@@ -396,7 +396,7 @@ class PlayerController extends Controller
                         abort(403, "登録に失敗しました。選手IDはすでに登録されています。 複数作成することはできません。");
                     } else {
                         Log::debug(sprintf("checkJARAPlayerId end 5"));
-                        abort(401, "登録に失敗しました。別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「" . $registered_player->player_id . " 」「" . $registered_player->player_name . "」");
+                        abort(401, "登録に失敗しました。別のユーザーによってJARA選手コードが別の選手と紐づけられています。");
                     }
                 } else if ($request["mode"] === "update") {
                     if ($registered_player->user_id === Auth::user()->user_id) {
@@ -404,7 +404,7 @@ class PlayerController extends Controller
                         return response()->json("");
                     } else {
                         Log::debug(sprintf("checkJARAPlayerId end 7"));
-                        abort(401, "このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。紐づいていた選手：「" . $registered_player->player_id . "」「" . $registered_player->player_name . "」");
+                        abort(401, "このJARA選手IDは既に別の選手と紐づいています。入力したJARA選手IDを確認してください。");
                     }
                 } else if ($request["mode"] === "update_confirm") {
                     if ($registered_player->user_id === Auth::user()->user_id) {
@@ -413,7 +413,7 @@ class PlayerController extends Controller
                     } else {
                         Log::debug(sprintf("checkJARAPlayerId end 9"));
                         abort(401, "更新に失敗しました。
-                        別のユーザーによってJARA選手コードが別の選手と紐づけられています。紐づいていた選手ID：「" . $registered_player->player_id . "」「" . $registered_player->player_name . "」");
+                        別のユーザーによってJARA選手コードが別の選手と紐づけられています。");
                     }
                 } else {
                     Log::debug(sprintf("checkJARAPlayerId end 10"));

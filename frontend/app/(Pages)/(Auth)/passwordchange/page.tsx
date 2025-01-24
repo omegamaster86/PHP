@@ -150,16 +150,7 @@ export default function Passwordchange() {
                 }
               })
               .catch((error) => {
-                // エラー時の処理を実装
-                let systemError = [] as string[];
-                if (error.response?.status === 422) {
-                  systemError.push(error?.response?.data?.message);
-                } else if (error.response?.status === 400) {
-                  systemError = [error?.response?.data?.message];
-                } else {
-                  systemError = ['内部処理エラーが発生しました、', 'サポートにご連絡ください。'];
-                }
-                setErrorText(systemError);
+                setErrorText([error.response?.data?.message]);
               });
           }}
         >

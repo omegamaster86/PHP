@@ -345,11 +345,7 @@ export default function UserInformationUpdate() {
                     router.push('/mypage/profile');
                   })
                   .catch((error) => {
-                    if (error?.response) {
-                      setErrorMessage([...error?.response?.data]);
-                    } else {
-                      setErrorMessage([error?.message]);
-                    }
+                    setErrorMessage([error.response?.data?.message]);
                   });
               };
               updateUser();
@@ -371,11 +367,7 @@ export default function UserInformationUpdate() {
                     setErrorMessage([]);
                   })
                   .catch((error) => {
-                    if (error?.response) {
-                      setErrorMessage([...error?.response?.data]);
-                    } else {
-                      setErrorMessage([error?.message]);
-                    }
+                    setErrorMessage([error.response?.data?.message]);
                   });
               }
             }
@@ -399,11 +391,7 @@ export default function UserInformationUpdate() {
                   router.push('/mypage/profile');
                 })
                 .catch((error) => {
-                  if (error?.response?.response?.data) {
-                    setErrorMessage([...error?.response?.data]);
-                  } else {
-                    setErrorMessage([error?.message]);
-                  }
+                  setErrorMessage([error.response?.data?.message]);
                 });
             };
             updateUser();
@@ -761,11 +749,7 @@ export default function UserInformationUpdate() {
                     window.alert(response?.data);
                   })
                   .catch((error) => {
-                    if (error?.response) {
-                      setErrorMessage([...error?.response?.data]);
-                    } else {
-                      setErrorMessage([error?.message]);
-                    }
+                    setErrorMessage([error.response?.data?.message]);
                   });
               }}
             >
