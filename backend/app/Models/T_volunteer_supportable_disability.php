@@ -37,24 +37,6 @@ class T_volunteer_supportable_disability extends Model
         return $volunteers;
     }
 
-    public function updateVolunteerSupportableDisability($volunteersInfo)
-    {
-        DB::update(
-            'update t_volunteer_supportable_disability set `volunteer_sprt_id`=?,`volunteer_id`=?,`dis_type_id`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where volunteer_id = ?',
-            [
-                $volunteersInfo['volunteer_sprt_id'],
-                $volunteersInfo['volunteer_id'],
-                $volunteersInfo['dis_type_id'],
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id,
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id,
-                $volunteersInfo['delete_flag'],
-                $volunteersInfo['volunteer_id'], //where条件
-            ]
-        );
-    }
-
     public function insertVolunteerSupportableDisability($values)
     {
         //DB::enableQueryLog();

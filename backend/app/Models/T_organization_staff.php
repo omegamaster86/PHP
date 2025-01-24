@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 class T_organization_staff extends Model
@@ -178,31 +177,6 @@ class T_organization_staff extends Model
             ]
         );
         //Log::debug("updateDeleteFlagByOrganizationDeletion end.");
-    }
-
-    public function getOrganizationStaff($org_id)
-    {
-        $organizationStaffs = DB::select(
-            'select
-                                            `org_staff_id`
-                                            ,staff.`user_id`
-                                            ,users.user_name as `userName`
-                                            ,`staff_type_id`
-                                            ,0 as `delete_flag`
-                                            ,CASE
-                                                when users.user_id is null then 0
-                                                else 1
-                                                end as `isUserFound`
-                                            FROM `t_organization_staff` staff
-                                            left join `t_users` users
-                                            on staff.`user_id` = users.`user_id`
-                                            WHERE 1=1
-                                            and staff.delete_flag = 0
-                                            and users.delete_flag = 0
-                                            and staff.org_id = :org_id',
-            $org_id
-        );
-        return $organizationStaffs;
     }
 
     //団体削除による団体所属スタッフの削除

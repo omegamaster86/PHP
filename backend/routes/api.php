@@ -18,10 +18,8 @@ use App\Http\Controllers\TicketPurchaseHistoryController;
 use App\Http\Controllers\TopPageController;
 use App\Http\Controllers\TournamentController;
 use App\Http\Controllers\TournamentInfoAlignmentController;
-use App\Http\Controllers\TournamentRaceRefeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VolunteerController;
-use App\Http\Controllers\VolunteerInfoAlignmentController;
 use App\Models\M_prefectures;
 use App\Models\M_countries;
 use App\Models\M_sex;
@@ -149,7 +147,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('checkOrgManager', [TournamentController::class, 'checkOrgManager']); //大会情報参照画面 主催団体管理者の判別
     Route::post('getEventSheetPosForEventID', [TournamentController::class, 'getEventSheetPosForEventID']); //種目IDを条件に対象の種目に対応するシート位置を取得する
     Route::get('getMyOrgsHostedTournaments', [TournamentController::class, 'getMyOrgsHostedTournaments']); // 自分が、選手もしくはスタッフとして所属している団体(複数)でその団体が主催している大会を取得
-    Route::patch('tournamentFollowed', [TournamentRaceRefeController::class, 'tournamentFollowed']); //大会フォロー (大会参照画面)
+    Route::patch('tournamentFollowed', [TournamentController::class, 'tournamentFollowed']); //大会フォロー (大会参照画面)
     Route::get('getTournaments', [TournamentController::class, 'getTournaments']); // 削除されていない全ての大会情報を取得
 
     // レース関連
@@ -172,8 +170,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     //ボランティア関連
     Route::post('getVolunteerData', [VolunteerController::class, 'getVolunteerData']); //ボランティア情報取得
     Route::post('volunteerSearch', [VolunteerController::class, 'searchVolunteers']); //ボランティア検索
-    Route::post('sendVolunteerCsvData', [VolunteerInfoAlignmentController::class, 'sendVolunteerCsvData']); //ボランティア一括 読み込むボタン押下
-    Route::post('registerVolunteerCsvData', [VolunteerInfoAlignmentController::class, 'registerVolunteerCsvData']); //ボランティア一括 登録ボタン押下
+    Route::post('sendVolunteerCsvData', [VolunteerController::class, 'sendVolunteerCsvData']); //ボランティア一括 読み込むボタン押下
+    Route::post('registerVolunteerCsvData', [VolunteerController::class, 'registerVolunteerCsvData']); //ボランティア一括 登録ボタン押下
     Route::post('deleteVolunteer', [VolunteerController::class, 'deleteVolunteer']); //ボランティア削除
 
     //マイページ関連

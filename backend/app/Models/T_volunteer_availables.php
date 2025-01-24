@@ -35,31 +35,13 @@ class T_volunteer_availables extends Model
         return $targetTrn;
     }
 
-    public function updateVolunteerAvailables($volunteersInfo)
-    {
-        DB::update(
-            'update t_volunteer_availables set `available_id`=?,`volunteer_id`=?,`day_of_week`=?,`time_zone`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where volunteer_id = ?',
-            [
-                $volunteersInfo['available_id'],
-                $volunteersInfo['volunteer_id'],
-                $volunteersInfo['day_of_week'],
-                $volunteersInfo['time_zone'],
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id,
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id,
-                $volunteersInfo['delete_flag'],
-                $volunteersInfo['volunteer_id'], //where条件
-            ]
-        );
-    }
-
     //ボランティアアベイラブルテーブルに挿入する
     //ボランティア一括登録画面用
     public function insertVolunteerAvailables($values)
     {
         //DB::enableQueryLog();
-        DB::insert('insert into `t_volunteer_availables`
+        DB::insert(
+            'insert into `t_volunteer_availables`
                     (
                         `volunteer_id`,
                         `day_of_week`,
@@ -71,16 +53,17 @@ class T_volunteer_availables extends Model
                         `delete_flag`
                     )
                     VALUES(?,?,?,?,?,?,?,?)',
-                    [
-                        $values['volunteer_id']
-                        ,$values['day_of_week']
-                        ,$values['time_zone']
-                        ,$values['registered_time']
-                        ,$values['registered_user_id']
-                        ,$values['updated_time']
-                        ,$values['updated_user_id']
-                        ,$values['delete_flag']
-                    ]);
+            [
+                $values['volunteer_id'],
+                $values['day_of_week'],
+                $values['time_zone'],
+                $values['registered_time'],
+                $values['registered_user_id'],
+                $values['updated_time'],
+                $values['updated_user_id'],
+                $values['delete_flag']
+            ]
+        );
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
         //Log::debug(DB::getQueryLog());
@@ -92,18 +75,19 @@ class T_volunteer_availables extends Model
     public function updateDeleteFlag($volunteer_id)
     {
         Log::debug($volunteer_id);
-        DB::update('update `t_volunteer_availables`
+        DB::update(
+            'update `t_volunteer_availables`
                     set `delete_flag` = 1
                     ,updated_time = ?
                     ,updated_user_id = ?
                     where 1=1
                     and `delete_flag` = 0
-                    and `volunteer_id` = ?'
-                    ,[
-                        now()->format('Y-m-d H:i:s.u')
-                        ,Auth::user()->user_id
-                        ,$volunteer_id
-                    ]
-                );
+                    and `volunteer_id` = ?',
+            [
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                $volunteer_id
+            ]
+        );
     }
 }

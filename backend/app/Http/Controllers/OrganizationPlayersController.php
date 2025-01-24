@@ -21,267 +21,6 @@ use Illuminate\Support\Facades\Hash;
 class OrganizationPlayersController extends Controller
 {
     //団体所属追加選手検索画面で、選手を検索する
-    public function searchOrganizationPlayers(Request $request, T_organization_players $t_organization_players)
-    {
-        $searchInfo = $request->all();
-        $searchValue = [];
-        $searchCondition = $this->generateOrganizationPlayersSearchCondition($searchInfo, $searchValue);
-        $players = $t_organization_players->getOrganizationPlayersFromCondition($searchCondition, $searchValue);
-        dd($players);
-    }
-
-    //団体所属選手を検索するための条件を生成する
-    private function generateOrganizationPlayersSearchCondition($searchInfo, &$conditionValue)
-    {
-        $condition = "";
-        //JARA選手コード
-        if (isset($searchInfo['jaraPlayerId'])) {
-            $condition .= "and tp.jara_player_id = :jara_player_id\r\n";
-            $conditionValue['jara_player_id'] = $searchInfo['jaraPlayerId'];
-        }
-        //選手ID
-        if (isset($searchInfo['playerId'])) {
-            $condition .= "and tp.player_id = :player_id\r\n";
-            $conditionValue['player_id'] = $searchInfo['playerId'];
-        }
-        //選手名
-        if (isset($searchInfo['playerName'])) {
-            $condition .= "and tp.player_name LIKE :player_name\r\n";
-            $conditionValue['player_name'] = "%" . $searchInfo['playerName'] . "%";
-        }
-        //性別
-        if (isset($searchInfo['sex'])) {
-            $condition .= "and `m_sex`.`sex_id` = :sex\r\n";
-            $conditionValue['sex'] = $searchInfo['sexId'];
-        }
-        //出身地（都道府県）
-        if (isset($searchInfo['birthPrefectureId'])) {
-            $condition .= "and bir_pref.pref_id =:birth_prefecture\r\n";
-            $conditionValue['birth_prefecture'] = $searchInfo['birthPrefectureId'];
-        }
-        //居住地（都道府県）
-        if (isset($searchInfo['residencePrefectureId'])) {
-            $condition .= "and res_pref.pref_id =:residence_prefecture\r\n";
-            $conditionValue['residence_prefecture'] = $searchInfo['residencePrefectureId'];
-        }
-        if (isset($searchInfo['sideInfo'])) {
-            //S(ストロークサイド)
-            if ($searchInfo['sideInfo']['S'] == true) {
-                $condition .= "and SUBSTRING(tp.`side_info`,8,1) = 1\r\n";
-            }
-            //B(バウサイド)
-            if ($searchInfo['sideInfo']['B'] == true) {
-                $condition .= "and SUBSTRING(tp.`side_info`,7,1) = 1\r\n";
-            }
-            //X(スカルサイド)
-            if ($searchInfo['sideInfo']['X'] == true) {
-                $condition .= "and SUBSTRING(tp.`side_info`,6,1) = 1\r\n";
-            }
-            //C(コックスサイド)
-            if ($searchInfo['sideInfo']['C'] == true) {
-                $condition .= "and SUBSTRING(tp.`side_info`,5,1) = 1\r\n";
-            }
-        }
-        //団体ID
-        if (isset($searchInfo['orgId'])) {
-            $condition .= "and org.org_id = :org_id\r\n";
-            $conditionValue['org_id'] = $searchInfo['orgId'];
-        } elseif (isset($searchInfo['org_id'])) {
-            $condition .= "and org.org_id = :org_id\r\n";
-            $conditionValue['org_id'] = $searchInfo['org_id'];
-        }
-        //エントリーシステムID
-        if (isset($searchInfo['entrysystemOrgId'])) {
-            $condition .= "and org.entrysystem_org_id =:entry_system_id\r\n";
-            $conditionValue['entry_system_id'] = $searchInfo['entrysystemOrgId'];
-        }
-        //団体名
-        if (isset($searchInfo['orgName'])) {
-            $condition .= "and org.org_name LIKE :org_name\r\n";
-            $conditionValue['org_name'] = "%" . $searchInfo['orgName'] . "%";
-        }
-        //出漕大会名
-        if (isset($searchInfo['raceEventName'])) {
-            $condition .= "and trrr.tourn_name LIKE :tourn_name\r\n";
-            $conditionValue['tourn_name'] = "%" . $searchInfo['raceEventName'] . "%";
-        }
-        //出漕履歴情報
-        if (isset($searchInfo['eventId'])) {
-            $condition .= "and trrr.event_id = :event_id\r\n";
-            $conditionValue['event_id'] = $searchInfo['eventId'];
-        }
-        return $condition;
-    }
-
-    //団体に登録する選手検索画面用の条件を生成する 20240417
-    private function generatePlayersSearchCondition($searchInfo, &$conditionValue)
-    {
-        $condition = "";
-        //JARA選手コード
-        if (isset($searchInfo['jaraPlayerId'])) {
-            $condition .= "and tp.jara_player_id = :jara_player_id\r\n";
-            $conditionValue['jara_player_id'] = $searchInfo['jaraPlayerId'];
-        }
-        //選手ID
-        if (isset($searchInfo['playerId'])) {
-            $condition .= "and tp.player_id = :player_id\r\n";
-            $conditionValue['player_id'] = $searchInfo['playerId'];
-        }
-        //選手名
-        if (isset($searchInfo['playerName'])) {
-            $condition .= "and tp.player_name LIKE :player_name\r\n";
-            $conditionValue['player_name'] = "%" . $searchInfo['playerName'] . "%";
-        }
-        //性別
-        if (isset($searchInfo['sex'])) {
-            $condition .= "and tp.sex_id = :sex\r\n";
-            $conditionValue['sex'] = $searchInfo['sexId'];
-        }
-        //出身地（都道府県）
-        if (isset($searchInfo['birthPrefectureId'])) {
-            $condition .= "and tp.birth_prefecture =:birth_prefecture\r\n";
-            $conditionValue['birth_prefecture'] = $searchInfo['birthPrefectureId'];
-        }
-        //居住地（都道府県）
-        if (isset($searchInfo['residencePrefectureId'])) {
-            $condition .= "and tp.residence_prefecture =:residence_prefecture\r\n";
-            $conditionValue['residence_prefecture'] = $searchInfo['residencePrefectureId'];
-        }
-        if (isset($searchInfo['sideInfo'])) {
-            $side_info_list = array();
-            //S(ストロークサイド)
-            if ($searchInfo['sideInfo']['S'] == true) {
-                // $condition .= "and SUBSTRING(tp.`side_info`,8,1) = 1\r\n";
-                array_push($side_info_list, "SUBSTRING(tp.`side_info`,8,1) = 1\r\n");
-            }
-            //B(バウサイド)
-            if ($searchInfo['sideInfo']['B'] == true) {
-                // $condition .= "and SUBSTRING(tp.`side_info`,7,1) = 1\r\n";
-                array_push($side_info_list, "SUBSTRING(tp.`side_info`,7,1) = 1\r\n");
-            }
-            //X(スカルサイド)
-            if ($searchInfo['sideInfo']['X'] == true) {
-                // $condition .= "and SUBSTRING(tp.`side_info`,6,1) = 1\r\n";
-                array_push($side_info_list, "SUBSTRING(tp.`side_info`,6,1) = 1\r\n");
-            }
-            //C(コックスサイド)
-            if ($searchInfo['sideInfo']['C'] == true) {
-                // $condition .= "and SUBSTRING(tp.`side_info`,5,1) = 1\r\n";
-                array_push($side_info_list, "SUBSTRING(tp.`side_info`,5,1) = 1\r\n");
-            }
-
-            //サイド情報のいずれかにチェックがされている場合or条件で条件式を生成する 20240521
-            if (count($side_info_list) > 0) {
-                $condition .= "and (\r\n";
-                for ($i = 0; $i < count($side_info_list); $i++) {
-                    $condition .= $side_info_list[$i] . "\r\n";
-                    if ($i != count($side_info_list) - 1) {
-                        $condition .= "or "; //末尾のデータ以外はorを追加
-                    }
-                }
-                $condition .= ")\r\n";
-            }
-        }
-        //団体ID
-        if (isset($searchInfo['orgId'])) {
-            $condition .= "and top.org_id = :org_id\r\n";
-            $conditionValue['org_id'] = $searchInfo['orgId'];
-        } elseif (isset($searchInfo['org_id'])) {
-            $condition .= "and top.org_id = :org_id\r\n";
-            $conditionValue['org_id'] = $searchInfo['org_id'];
-        }
-        //エントリーシステムID
-        if (isset($searchInfo['entrysystemOrgId'])) {
-            $condition .= "and top.entrysystem_org_id =:entry_system_id\r\n";
-            $conditionValue['entry_system_id'] = $searchInfo['entrysystemOrgId'];
-        }
-        //団体名
-        if (isset($searchInfo['orgName'])) {
-            $condition .= "and top.org_name LIKE :org_name\r\n";
-            $conditionValue['org_name'] = "%" . $searchInfo['orgName'] . "%";
-        }
-        //出漕大会名
-        if (isset($searchInfo['raceEventName'])) {
-            $condition .= "and tr.tourn_name LIKE :tourn_name\r\n";
-            $conditionValue['tourn_name'] = "%" . $searchInfo['raceEventName'] . "%";
-        }
-        //出漕履歴情報
-        if (isset($searchInfo['eventId'])) {
-            $condition .= "and tr.event_id = :event_id\r\n";
-            $conditionValue['event_id'] = $searchInfo['eventId'];
-        }
-        return $condition;
-    }
-
-    // //団体所属選手一括登録画面を開く
-    // public function createOrganizationPlayerRegister(T_organizations $organizations)
-    // {
-    //     $organization_name_list = $organizations->getOrganizationName();
-    //     return view("organizations.player-register", ["dataList" => [], "errorMsg" => "", "checkList" => "", "organization_name_list" => $organization_name_list]);
-
-    //     //user can visit this page if he/she is an admin
-    //     // if (((Auth::user()->user_type & "01000000") === "01000000") or ((Auth::user()->user_type & "00100000") === "00100000") or ((Auth::user()->user_type & "00010000") === "00010000") or ((Auth::user()->user_type & "00001000") === "00001000")) {
-    //     //     $tournament_name_list = $tourn->getTournamentName();
-    //     //     return view("tournament.entry-register", ["dataList" => [], "errorMsg" => "", "checkList" => "", "tournament_name_list" => $tournament_name_list]);
-    //     // }
-    //     // //redirect to my-page those have no permission to access tournament-entry-register page
-    //     // else {
-    //     //     return redirect('my-page');
-    //     // }
-    // }
-
-    //データのチェックで不備があったときの変数代入処理
-    private function assignInvalidRowdata($error_description, &$rowData)
-    {
-        $rowData["result"] = $error_description;
-        $rowData["checked"] = false;
-    }
-
-    //フロントエンドに返す１行データの配列に値を代入する
-    private function assignRowArray(&$rowArray, $renkei, $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $org_id, $ord_name, $player_data)
-    {
-        $rowArray['renkei'] = $renkei;
-        $rowArray['user_id'] = $user_id;
-        $rowArray['player_id'] = $player_id;
-        $rowArray['jara_player_code'] = $jara_player_code;
-        $rowArray['player_name'] = $player_name;
-        $rowArray['mail_address'] = $mail_address;
-        $rowArray['org_id'] = $org_id;
-        $rowArray['org_name'] = $ord_name;
-        $rowArray['birth_country_id'] = $player_data['birth_country_id'];
-        $rowArray['birth_pref_id'] = $player_data['birth_pref_id'];
-        $rowArray['birth_place'] =  $player_data['birth_country_name'] . $player_data['birth_pref_name'];
-        $rowArray['residence_country_id'] = $player_data['residence_country_id'];
-        $rowArray['residence_pref_id'] = $player_data['residence_pref_id'];
-        $rowArray['residence'] = $player_data['residence_country_name'] . $player_data['residence_pref_name'];
-    }
-
-    //フロントエンドに返す１行データの配列に値を代入する
-    private function assignRowData(&$rowData, $renkei, $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $org_id, $ord_name, $player_data, $checked)
-    {
-        Log::debug("assignRowData");
-        $rowData['result'] = $renkei;
-        $rowData['userId'] = $user_id;
-        $rowData['playerId'] = $player_id;
-        $rowData['jaraPlayerId'] = $jara_player_code;
-        $rowData['playerName'] = $player_name;
-        $rowData['mailaddress'] = $mail_address;
-        $rowData['teamId'] = $org_id;
-        $rowData['teamName'] = $ord_name;
-        $rowData['birthCountryId'] = $player_data->birth_country;
-        $rowData['birthPrefId'] = $player_data->birth_prefecture;
-        $rowData['birthPlace'] =  $player_data->birthCountryName . $player_data->birthPrefectureName;
-        $rowData['residenceCountryId'] = $player_data->residence_country;
-        $rowData['residencePrefId'] = $player_data->residence_prefecture;
-        $rowData['residence'] = $player_data->residenceCountryName . $player_data->residencePrefectureName;
-        $rowData['checked'] = $checked;
-
-        // Log::debug($rowData);
-
-        Log::debug("assignRowData End.");
-    }
-
-    //団体所属追加選手検索画面で、選手を検索する
     public function searchOrganizationPlayersForTeamRef(Request $request, T_organization_players $t_organization_players)
     {
         Log::debug(sprintf("searchOrganizationPlayersForTeamRef start"));
@@ -1474,5 +1213,220 @@ class OrganizationPlayersController extends Controller
         }
         Log::debug(sprintf("registerOrgCsvData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
+    }
+
+    //団体所属選手を検索するための条件を生成する
+    private function generateOrganizationPlayersSearchCondition($searchInfo, &$conditionValue)
+    {
+        $condition = "";
+        //JARA選手コード
+        if (isset($searchInfo['jaraPlayerId'])) {
+            $condition .= "and tp.jara_player_id = :jara_player_id\r\n";
+            $conditionValue['jara_player_id'] = $searchInfo['jaraPlayerId'];
+        }
+        //選手ID
+        if (isset($searchInfo['playerId'])) {
+            $condition .= "and tp.player_id = :player_id\r\n";
+            $conditionValue['player_id'] = $searchInfo['playerId'];
+        }
+        //選手名
+        if (isset($searchInfo['playerName'])) {
+            $condition .= "and tp.player_name LIKE :player_name\r\n";
+            $conditionValue['player_name'] = "%" . $searchInfo['playerName'] . "%";
+        }
+        //性別
+        if (isset($searchInfo['sex'])) {
+            $condition .= "and `m_sex`.`sex_id` = :sex\r\n";
+            $conditionValue['sex'] = $searchInfo['sexId'];
+        }
+        //出身地（都道府県）
+        if (isset($searchInfo['birthPrefectureId'])) {
+            $condition .= "and bir_pref.pref_id =:birth_prefecture\r\n";
+            $conditionValue['birth_prefecture'] = $searchInfo['birthPrefectureId'];
+        }
+        //居住地（都道府県）
+        if (isset($searchInfo['residencePrefectureId'])) {
+            $condition .= "and res_pref.pref_id =:residence_prefecture\r\n";
+            $conditionValue['residence_prefecture'] = $searchInfo['residencePrefectureId'];
+        }
+        if (isset($searchInfo['sideInfo'])) {
+            //S(ストロークサイド)
+            if ($searchInfo['sideInfo']['S'] == true) {
+                $condition .= "and SUBSTRING(tp.`side_info`,8,1) = 1\r\n";
+            }
+            //B(バウサイド)
+            if ($searchInfo['sideInfo']['B'] == true) {
+                $condition .= "and SUBSTRING(tp.`side_info`,7,1) = 1\r\n";
+            }
+            //X(スカルサイド)
+            if ($searchInfo['sideInfo']['X'] == true) {
+                $condition .= "and SUBSTRING(tp.`side_info`,6,1) = 1\r\n";
+            }
+            //C(コックスサイド)
+            if ($searchInfo['sideInfo']['C'] == true) {
+                $condition .= "and SUBSTRING(tp.`side_info`,5,1) = 1\r\n";
+            }
+        }
+        //団体ID
+        if (isset($searchInfo['orgId'])) {
+            $condition .= "and org.org_id = :org_id\r\n";
+            $conditionValue['org_id'] = $searchInfo['orgId'];
+        } elseif (isset($searchInfo['org_id'])) {
+            $condition .= "and org.org_id = :org_id\r\n";
+            $conditionValue['org_id'] = $searchInfo['org_id'];
+        }
+        //エントリーシステムID
+        if (isset($searchInfo['entrysystemOrgId'])) {
+            $condition .= "and org.entrysystem_org_id =:entry_system_id\r\n";
+            $conditionValue['entry_system_id'] = $searchInfo['entrysystemOrgId'];
+        }
+        //団体名
+        if (isset($searchInfo['orgName'])) {
+            $condition .= "and org.org_name LIKE :org_name\r\n";
+            $conditionValue['org_name'] = "%" . $searchInfo['orgName'] . "%";
+        }
+        //出漕大会名
+        if (isset($searchInfo['raceEventName'])) {
+            $condition .= "and trrr.tourn_name LIKE :tourn_name\r\n";
+            $conditionValue['tourn_name'] = "%" . $searchInfo['raceEventName'] . "%";
+        }
+        //出漕履歴情報
+        if (isset($searchInfo['eventId'])) {
+            $condition .= "and trrr.event_id = :event_id\r\n";
+            $conditionValue['event_id'] = $searchInfo['eventId'];
+        }
+        return $condition;
+    }
+
+    //団体に登録する選手検索画面用の条件を生成する 20240417
+    private function generatePlayersSearchCondition($searchInfo, &$conditionValue)
+    {
+        $condition = "";
+        //JARA選手コード
+        if (isset($searchInfo['jaraPlayerId'])) {
+            $condition .= "and tp.jara_player_id = :jara_player_id\r\n";
+            $conditionValue['jara_player_id'] = $searchInfo['jaraPlayerId'];
+        }
+        //選手ID
+        if (isset($searchInfo['playerId'])) {
+            $condition .= "and tp.player_id = :player_id\r\n";
+            $conditionValue['player_id'] = $searchInfo['playerId'];
+        }
+        //選手名
+        if (isset($searchInfo['playerName'])) {
+            $condition .= "and tp.player_name LIKE :player_name\r\n";
+            $conditionValue['player_name'] = "%" . $searchInfo['playerName'] . "%";
+        }
+        //性別
+        if (isset($searchInfo['sex'])) {
+            $condition .= "and tp.sex_id = :sex\r\n";
+            $conditionValue['sex'] = $searchInfo['sexId'];
+        }
+        //出身地（都道府県）
+        if (isset($searchInfo['birthPrefectureId'])) {
+            $condition .= "and tp.birth_prefecture =:birth_prefecture\r\n";
+            $conditionValue['birth_prefecture'] = $searchInfo['birthPrefectureId'];
+        }
+        //居住地（都道府県）
+        if (isset($searchInfo['residencePrefectureId'])) {
+            $condition .= "and tp.residence_prefecture =:residence_prefecture\r\n";
+            $conditionValue['residence_prefecture'] = $searchInfo['residencePrefectureId'];
+        }
+        if (isset($searchInfo['sideInfo'])) {
+            $side_info_list = array();
+            //S(ストロークサイド)
+            if ($searchInfo['sideInfo']['S'] == true) {
+                // $condition .= "and SUBSTRING(tp.`side_info`,8,1) = 1\r\n";
+                array_push($side_info_list, "SUBSTRING(tp.`side_info`,8,1) = 1\r\n");
+            }
+            //B(バウサイド)
+            if ($searchInfo['sideInfo']['B'] == true) {
+                // $condition .= "and SUBSTRING(tp.`side_info`,7,1) = 1\r\n";
+                array_push($side_info_list, "SUBSTRING(tp.`side_info`,7,1) = 1\r\n");
+            }
+            //X(スカルサイド)
+            if ($searchInfo['sideInfo']['X'] == true) {
+                // $condition .= "and SUBSTRING(tp.`side_info`,6,1) = 1\r\n";
+                array_push($side_info_list, "SUBSTRING(tp.`side_info`,6,1) = 1\r\n");
+            }
+            //C(コックスサイド)
+            if ($searchInfo['sideInfo']['C'] == true) {
+                // $condition .= "and SUBSTRING(tp.`side_info`,5,1) = 1\r\n";
+                array_push($side_info_list, "SUBSTRING(tp.`side_info`,5,1) = 1\r\n");
+            }
+
+            //サイド情報のいずれかにチェックがされている場合or条件で条件式を生成する 20240521
+            if (count($side_info_list) > 0) {
+                $condition .= "and (\r\n";
+                for ($i = 0; $i < count($side_info_list); $i++) {
+                    $condition .= $side_info_list[$i] . "\r\n";
+                    if ($i != count($side_info_list) - 1) {
+                        $condition .= "or "; //末尾のデータ以外はorを追加
+                    }
+                }
+                $condition .= ")\r\n";
+            }
+        }
+        //団体ID
+        if (isset($searchInfo['orgId'])) {
+            $condition .= "and top.org_id = :org_id\r\n";
+            $conditionValue['org_id'] = $searchInfo['orgId'];
+        } elseif (isset($searchInfo['org_id'])) {
+            $condition .= "and top.org_id = :org_id\r\n";
+            $conditionValue['org_id'] = $searchInfo['org_id'];
+        }
+        //エントリーシステムID
+        if (isset($searchInfo['entrysystemOrgId'])) {
+            $condition .= "and top.entrysystem_org_id =:entry_system_id\r\n";
+            $conditionValue['entry_system_id'] = $searchInfo['entrysystemOrgId'];
+        }
+        //団体名
+        if (isset($searchInfo['orgName'])) {
+            $condition .= "and top.org_name LIKE :org_name\r\n";
+            $conditionValue['org_name'] = "%" . $searchInfo['orgName'] . "%";
+        }
+        //出漕大会名
+        if (isset($searchInfo['raceEventName'])) {
+            $condition .= "and tr.tourn_name LIKE :tourn_name\r\n";
+            $conditionValue['tourn_name'] = "%" . $searchInfo['raceEventName'] . "%";
+        }
+        //出漕履歴情報
+        if (isset($searchInfo['eventId'])) {
+            $condition .= "and tr.event_id = :event_id\r\n";
+            $conditionValue['event_id'] = $searchInfo['eventId'];
+        }
+        return $condition;
+    }
+
+    //データのチェックで不備があったときの変数代入処理
+    private function assignInvalidRowdata($error_description, &$rowData)
+    {
+        $rowData["result"] = $error_description;
+        $rowData["checked"] = false;
+    }
+
+    //フロントエンドに返す１行データの配列に値を代入する
+    private function assignRowData(&$rowData, $renkei, $user_id, $player_id, $jara_player_code, $player_name, $mail_address, $org_id, $ord_name, $player_data, $checked)
+    {
+        Log::debug("assignRowData");
+        $rowData['result'] = $renkei;
+        $rowData['userId'] = $user_id;
+        $rowData['playerId'] = $player_id;
+        $rowData['jaraPlayerId'] = $jara_player_code;
+        $rowData['playerName'] = $player_name;
+        $rowData['mailaddress'] = $mail_address;
+        $rowData['teamId'] = $org_id;
+        $rowData['teamName'] = $ord_name;
+        $rowData['birthCountryId'] = $player_data->birth_country;
+        $rowData['birthPrefId'] = $player_data->birth_prefecture;
+        $rowData['birthPlace'] =  $player_data->birthCountryName . $player_data->birthPrefectureName;
+        $rowData['residenceCountryId'] = $player_data->residence_country;
+        $rowData['residencePrefId'] = $player_data->residence_prefecture;
+        $rowData['residence'] = $player_data->residenceCountryName . $player_data->residencePrefectureName;
+        $rowData['checked'] = $checked;
+
+        // Log::debug($rowData);
+
+        Log::debug("assignRowData End.");
     }
 }

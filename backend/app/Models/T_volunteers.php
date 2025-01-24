@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-use function Laravel\Prompts\select;
-
 class T_volunteers extends Model
 {
     use HasFactory;
@@ -59,41 +57,15 @@ class T_volunteers extends Model
         return $targetTrn;
     }
 
-    public function updateVolunteers($volunteersInfo)
-    {
-        DB::update(
-            'update t_volunteers set `volunteer_id`=?,`user_id`=?,`volunteer_name`=?,`residence_country`=?,`residence_prefecture`=?,`sex`=?,`date_of_birth`=?,`dis_type_id`=?,`telephone_number`=?,`mailaddress`=?,`users_email_flag`=?,`clothes_size`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? where volunteer_id = ?',
-            [
-                $volunteersInfo['volunteer_id'],
-                $volunteersInfo['user_id'],
-                $volunteersInfo['volunteer_name'],
-                $volunteersInfo['residence_country'],
-                $volunteersInfo['residence_prefecture'],
-                $volunteersInfo['sex'],
-                $volunteersInfo['date_of_birth'],
-                $volunteersInfo['dis_type_id'],
-                $volunteersInfo['telephone_number'],
-                $volunteersInfo['mailaddress'],
-                $volunteersInfo['users_email_flag'],
-                $volunteersInfo['clothes_size'],
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id,
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id,
-                $volunteersInfo['delete_flag'],
-                $volunteersInfo['volunteer_id'], //where条件
-            ]
-        );
-    }
-
     //検索条件を以て、ボランティア情報を取得する
-    public function getVolunteersWithSearchCondition($supportableDisabilityCondition,
-                                                        $languageCondition,
-                                                        $condition,
-                                                        $langJoinType,
-                                                        $SupportableDisabilityJoinType,
-                                                        $conditionValue)
-    {
+    public function getVolunteersWithSearchCondition(
+        $supportableDisabilityCondition,
+        $languageCondition,
+        $condition,
+        $langJoinType,
+        $SupportableDisabilityJoinType,
+        $conditionValue
+    ) {
         $sqlString = 'select distinct
                     `t_volunteers`.`volunteer_id`
                     ,`t_volunteers`.`volunteer_name`
@@ -205,26 +177,28 @@ class T_volunteers extends Model
                     and t_tournaments.delete_flag = 0
                     #Condition#
                     ';
-        $sqlString = str_replace("#SupportableDisabilityCondition#",$supportableDisabilityCondition,$sqlString);
-        $sqlString = str_replace("#languageCondition#",$languageCondition,$sqlString);
-        $sqlString = str_replace("#Condition#",$condition,$sqlString);
-        $sqlString = str_replace("#langJoinType#",$langJoinType,$sqlString);
-        $sqlString = str_replace("#SupportableDisabilityJoinType#",$SupportableDisabilityJoinType,$sqlString);        
-        $volunteers = DB::select($sqlString,$conditionValue);
+        $sqlString = str_replace("#SupportableDisabilityCondition#", $supportableDisabilityCondition, $sqlString);
+        $sqlString = str_replace("#languageCondition#", $languageCondition, $sqlString);
+        $sqlString = str_replace("#Condition#", $condition, $sqlString);
+        $sqlString = str_replace("#langJoinType#", $langJoinType, $sqlString);
+        $sqlString = str_replace("#SupportableDisabilityJoinType#", $SupportableDisabilityJoinType, $sqlString);
+        $volunteers = DB::select($sqlString, $conditionValue);
         return $volunteers;
     }
 
     //ボランティアの一覧を取得
     public function getVolunteer()
     {
-        $volunteer = DB::select('select
+        $volunteer = DB::select(
+            'select
                                 `volunteer_id`,
                                 `user_id`,
                                 `volunteer_name`
                                 from t_volunteers
-                                where delete_flag = ?'
-                                ,[0]);
-        
+                                where delete_flag = ?',
+            [0]
+        );
+
         return $volunteer;
     }
 
@@ -235,7 +209,8 @@ class T_volunteers extends Model
     public function insertVolunteer($values)
     {
         //DB::enableQueryLog();
-        DB::insert("insert into `t_volunteers`
+        DB::insert(
+            "insert into `t_volunteers`
                     (
                         `user_id`,
                         `volunteer_name`,
@@ -254,25 +229,26 @@ class T_volunteers extends Model
                         `updated_user_id`,
                         `delete_flag`
                     )
-                    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-                    ,[
-                        $values["user_id"]
-                        ,$values["volunteer_name"]
-                        ,$values["residence_country"]
-                        ,$values["residence_prefecture"]
-                        ,$values["sex"]
-                        ,$values["date_of_birth"]
-                        ,NULL
-                        ,$values["telephone_number"]
-                        ,$values["mailaddress"]
-                        ,$values["users_email_flag"]
-                        ,$values["clothes_size"]
-                        ,$values["registered_time"]
-                        ,$values["registered_user_id"]
-                        ,$values["updated_time"]
-                        ,$values["updated_user_id"]
-                        ,$values["delete_flag"]
-                    ]);
+                    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            [
+                $values["user_id"],
+                $values["volunteer_name"],
+                $values["residence_country"],
+                $values["residence_prefecture"],
+                $values["sex"],
+                $values["date_of_birth"],
+                NULL,
+                $values["telephone_number"],
+                $values["mailaddress"],
+                $values["users_email_flag"],
+                $values["clothes_size"],
+                $values["registered_time"],
+                $values["registered_user_id"],
+                $values["updated_time"],
+                $values["updated_user_id"],
+                $values["delete_flag"]
+            ]
+        );
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
         //Log::debug(DB::getQueryLog());
@@ -283,7 +259,8 @@ class T_volunteers extends Model
     //interfaceのVolunteerResponseに合うデータを取得する
     public function getVolunteerResponse($volunteer_id)
     {
-        $volunteer = DB::select("select
+        $volunteer = DB::select(
+            "select
                                 vol.volunteer_id    as `vol_id`
                                 ,CONCAT('V',lpad(vol.volunteer_id, 7, '0'))   as `volunteer_id`
                                 ,vol.`volunteer_name`
@@ -405,8 +382,9 @@ class T_volunteers extends Model
                                 and pref.delete_flag = 0
                                 and clt.delete_flag = 0
                                 and vav.delete_flag = 0
-                                and vol.volunteer_id = :volunteer_id"
-                            ,$volunteer_id);
+                                and vol.volunteer_id = :volunteer_id",
+            $volunteer_id
+        );
         return $volunteer;
     }
 
@@ -415,19 +393,20 @@ class T_volunteers extends Model
     public function updateDeleteFlag($volunteer_id)
     {
         Log::debug($volunteer_id);
-        DB::update('update `t_volunteers`
+        DB::update(
+            'update `t_volunteers`
                     set `delete_flag` = 1
                     ,updated_time = ?
                     ,updated_user_id = ?
                     where 1=1
                     and `delete_flag` = 0
-                    and `volunteer_id` = ?'
-                    ,[
-                        now()->format('Y-m-d H:i:s.u')
-                        ,Auth::user()->user_id
-                        ,$volunteer_id
-                    ]
-                );
+                    and `volunteer_id` = ?',
+            [
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                $volunteer_id
+            ]
+        );
     }
 
     //マイページ ボランティア情報用 ユーザIDに紐づいたボランティア情報を取得 20241017
@@ -464,7 +443,7 @@ class T_volunteers extends Model
         and `m_sex`.delete_flag = 0 
         and `m_clothes_size`.delete_flag = 0 
         and `t_volunteers`.user_id = ?', [$user_id]);
-        
+
         return $volunteers;
     }
 }
