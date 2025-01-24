@@ -108,7 +108,6 @@ export default function TeamRef() {
 
   //表示中の団体がログインユーザの管理する団体か判定する 20240415
   const checkOrgManage = () => {
-    //console.log(teamdata);
     for (let index = 0; index < teamdata.length; index++) {
       if (teamdata[index].org_id == orgId) {
         return true;
@@ -120,7 +119,6 @@ export default function TeamRef() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 仮のURL（繋ぎ込み時に変更すること）
         // 主催大会
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
@@ -133,9 +131,7 @@ export default function TeamRef() {
           org_id,
         );
         setEntTournaments(entTournamentsResponse.data.result);
-        // // 所属選手
         const playersResponse = await axios.post('api/searchOrganizationPlayersForTeamRef', org_id);
-        //console.log(playersResponse.data.result);
         setPlayers(playersResponse.data.result);
 
         const userDataResponse = await axios.get('api/user');

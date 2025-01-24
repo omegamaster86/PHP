@@ -16,8 +16,6 @@ class ContactUsController extends Controller
         include('Auth/ErrorMessages/ErrorMessages.php');
 
         Log::debug(sprintf("contact-us start"));
-        Log::debug($request->all());
-
         $mail_data = [
             'user_name' => $request->user_name,
             'mailaddress' => $request->mailaddress,
@@ -25,16 +23,11 @@ class ContactUsController extends Controller
             'user_id' => Auth::user()->user_id ?? ""
         ];
 
-
         //Sending mail to the user
-
         try {
             Mail::to($request->get('mailaddress'))->send(new ContactUsMail($mail_data));
         } catch (\Throwable $e) {
-
             Log::error($e);
-
-            //Display error message to the client
             Log::debug(sprintf("contact-us end"));
             abort(400, $mail_sent_failed_for_contact_us);
         }

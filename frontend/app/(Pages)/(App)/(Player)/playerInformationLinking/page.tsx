@@ -194,11 +194,7 @@ export default function PlayerInformationLinking() {
     await axios
       .post('api/sendCsvData', element)
       .then((res) => {
-        //console.log(res.data.result);
         var contentData = res.data.result as CsvData[];
-        // contentData.map((row, rowIndex) => {
-        //   //console.log(row, rowIndex);
-        // });
 
         if (dialogDisplayFlg) {
           window.confirm('読み込み結果に表示されているデータはクリアされます。よろしいですか？')
@@ -264,7 +260,6 @@ export default function PlayerInformationLinking() {
       .post('api/registerCsvData', csvData)
       .then((res) => {
         //console.log(res.data);
-        // router.push('/tournamentSearch'); // 20240222
       })
       .catch((error) => {
         //console.log(error);
@@ -325,7 +320,6 @@ export default function PlayerInformationLinking() {
             <CustomButton
               buttonType='primary'
               onClick={() => {
-                //console.log(csvFileData);
                 sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
               }}
             >
@@ -380,7 +374,6 @@ export default function PlayerInformationLinking() {
             <CustomButton
               buttonType='primary'
               onClick={() => {
-                //console.log(csvData);
                 setActivationFlg(true);
                 if (csvData.find((row) => row.checked)?.id === undefined) {
                   window.alert('1件以上選択してください。');

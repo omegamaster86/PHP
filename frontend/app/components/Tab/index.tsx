@@ -31,5 +31,5 @@ const Tab: FC<TabProps> = ({ number, isActive, onClick, rounded, children }) => 
     </div>
   );
 };
-// タブコンポーネントのエクスポート
+
 export default Tab;

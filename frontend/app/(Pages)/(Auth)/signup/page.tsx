@@ -10,7 +10,6 @@ import {
   CustomTitle,
   CustomTextField,
   OriginalCheckbox,
-  Header,
 } from '@/app/components';
 import Validator from '@/app/utils/validator';
 import axios from '@/app/lib/axios';
@@ -176,7 +175,6 @@ export default function Signup() {
                   checked,
                 })
                 .then((response) => {
-                  //console.log(response);
                   window.alert(response?.data); //仮パスワード通知メール送信メッセージの表示 20240522
                   router.push('/login');
                 })

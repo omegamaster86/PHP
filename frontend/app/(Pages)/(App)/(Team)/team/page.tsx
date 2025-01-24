@@ -336,7 +336,6 @@ export default function OrgInfo() {
         addressNumbers.push(formData.post_code?.slice(-4)); //郵便番号の後半4文字
         formData.post_code1 = addressNumbers[0];
         formData.post_code2 = addressNumbers[1];
-        // setAddressNumbers(addressNumbers);
       }
     }
   }, [formData.post_code]);
@@ -367,7 +366,6 @@ export default function OrgInfo() {
       Validator.validateAddressNumberFormat(formData.post_code),
       Validator.validateRequired(formData.locationPrefectureName, '都道府県'),
       Validator.validateRequired(formData.address1, '市区町村・町字番地'),
-      // Validator.validateRequired(formData.address2, '建物名'),
     ]);
     setAddressErrorMessages(addressError);
 
@@ -778,19 +776,6 @@ export default function OrgInfo() {
             <div className='w-full flex flex-row justify-start gap-[8px]'>
               <div className='h-[40px] self-end'>〒</div>
               {/* 郵便番号1 */}
-              {/* <CustomTextField
-                required={mode !== 'confirm'}
-                displayHelp={mode !== 'confirm'}
-                value={addressNumbers?.[0]}
-                onChange={(e) =>
-                  handleInputChange(
-                    'post_code',
-                    e.target.value + '-' + (addressNumbers?.[1] || ''),
-                  )
-                }
-                isError={addressErrorMessages.length > 0}
-                className='w-[120px]'
-              /> */}
               <CustomTextField
                 required={mode !== 'confirm'}
                 displayHelp={mode !== 'confirm'}
@@ -801,18 +786,6 @@ export default function OrgInfo() {
               />
               <div className='h-[40px] self-end'>-</div>
               {/* 郵便番号2 */}
-              {/* <CustomTextField
-                required={mode !== 'confirm'}
-                value={addressNumbers?.[1]}
-                onChange={(e) =>
-                  handleInputChange(
-                    'post_code',
-                    (addressNumbers?.[0] || '') + '-' + e.target.value,
-                  )
-                }
-                isError={addressErrorMessages.length > 0}
-                className='w-[120px] self-end'
-              /> */}
               <CustomTextField
                 required={mode !== 'confirm'}
                 value={formData.post_code2}
@@ -899,13 +872,10 @@ export default function OrgInfo() {
         {/* マンション・アパート */}
         <CustomTextField
           label='マンション・アパート'
-          // required={mode !== 'confirm'}
           displayHelp={false}
           value={formData.address2}
           readonly={mode === 'confirm'}
           onChange={(e) => handleInputChange('address2', e.target.value)}
-          // isError={addressErrorMessages.length > 0}
-          // errorMessages={addressErrorMessages}
         />
         <div className='w-full flex flex-col justify-between gap-[8px]'>
           {/* 団体区分 */}
@@ -1104,7 +1074,6 @@ export default function OrgInfo() {
                 ユーザーID
               </CustomTh>
               <CustomTh rowSpan={2} align='center'>
-                {/* {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>} */}
                 ユーザー名
               </CustomTh>
               <CustomTh colSpan={5} align='center'>

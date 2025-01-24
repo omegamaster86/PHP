@@ -387,7 +387,6 @@ export default function PlayerInformation() {
   const validate = () => {
     // JARA選手コードの入力チェック
     const jaraPlayerCodeError = Validator.getErrorMessages([
-      // Validator.validateSelectRequired(formData.jara_player_id.toString(), 'JARA選手コード'), //必須項目ではないためコメントアウト 20240412
       Validator.validateJaraPlayerCodeFormat(formData.jara_player_id?.toString()),
     ]);
 
@@ -502,11 +501,7 @@ export default function PlayerInformation() {
             .then((response) => {
               setErrorMessage([]);
               setSessionStorage<PlayerFormData>(storageKey, formData);
-              // OK が押下された場合、確認画面に遷移する　※短絡評価
-              // window.confirm('入力したJARA選手コードと紐づくデータが存在しません。\nこのJARA選手コードで登録しますか？') && router.push('/playerInformation?mode=confirm&prevMode=create');
-              // window.alert('入力したJARA選手コードと紐づくデータが存在しません。\nこのJARA選手コードで登録しますか？');
               if (response?.data != '') {
-                // OK が押下された場合、確認画面に遷移する　※短絡評価
                 window.confirm(response?.data) &&
                   router.push('/playerInformation?mode=confirm&prevMode=create');
               } else {
@@ -541,7 +536,6 @@ export default function PlayerInformation() {
               setErrorMessage([]);
               setSessionStorage<PlayerFormData>(storageKey, formData);
               if (response?.data != '') {
-                // OK が押下された場合、確認画面に遷移する　※短絡評価
                 window.confirm(response?.data) &&
                   router.push('/playerInformation?mode=confirm&prevMode=update');
               } else {
@@ -766,23 +760,17 @@ export default function PlayerInformation() {
                   (formData.photo ? `${PLAYER_IMAGE_URL}${formData.photo}` : `${NO_IMAGE_URL}`)
                 }
                 alt='Profile Photo'
-                // Revoke data uri after image is loaded
-                // onLoad={() => {
-                //   //console.log(currentShowFile);
-                // }}
               />
             </div>
           )}
         </div>
       </div>
-      {/* 選手ID */}
 
+      {/* 選手ID */}
       {(mode === 'update' || prevMode === 'update') && (
         <CustomTextField
           label='選手ID'
           isError={false}
-          // errorMessages={[]}
-          // required={mode !== 'confirm'}
           displayHelp={false}
           readonly
           value={formData.player_id?.toString()}
@@ -793,7 +781,6 @@ export default function PlayerInformation() {
         {/* JARA選手コード */}
         <CustomTextField
           label='JARA選手コード'
-          // required={mode !== 'confirm'}
           displayHelp={mode !== 'confirm'}
           isError={jaraPlayerCodeErrorMessage.length > 0}
           placeHolder='123456789012'

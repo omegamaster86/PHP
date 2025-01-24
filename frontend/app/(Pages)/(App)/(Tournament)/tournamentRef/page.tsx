@@ -309,7 +309,6 @@ export default function TournamentRef() {
         const tournamentResponse = await axios.post('api/getTournamentInfoData', {
           tourn_id: tournId,
         }); //大会IDを元に大会情報を取得する
-        // console.log(tournamentResponse);
         tournamentResponse.data.result.tourn_url = tournamentResponse.data.result.tourn_url ?? ''; //nullのパラメータを空のパラメータに置き換える
         setTournamentFormData(tournamentResponse.data.result);
 
@@ -329,12 +328,10 @@ export default function TournamentRef() {
           tournInfo: tournamentResponse.data.result,
         };
         const resData = await axios.post('api/checkOrgManager', sendData); //大会情報参照画面 主催団体管理者の判別 20240402
-        //console.log(resData.data.result);
         setOrgManagerFlag(resData.data.result);
 
         //種目をフィルターできるようにする 20240509
         const eventNameArray = raceResponse.data.result.map((item: any) => item.event_name);
-        //console.log(eventNameArray);
         const uniqueEventNameSet = new Set(eventNameArray);
         const uniqueEventNameArray = Array.from(uniqueEventNameSet);
         setEventNameList(
@@ -345,7 +342,6 @@ export default function TournamentRef() {
         );
         //組別をフィルターできるようにする 20240509
         const byGroupsArray = raceResponse.data.result.map((item: any) => item.by_group);
-        //console.log(byGroupsArray);
         const uniqueByGroupsSet = new Set(byGroupsArray);
         const uniqueByGroupsArray = Array.from(uniqueByGroupsSet);
         setByGroupList(
@@ -379,7 +375,6 @@ export default function TournamentRef() {
 
   useEffect(() => {
     if (showEventNameAutocomplete) {
-      // //console.log(eventNamefocusTarget.current);
       if (eventNamefocusTarget.current != null) {
         var target = eventNamefocusTarget.current as HTMLDivElement;
         (
@@ -722,7 +717,6 @@ export default function TournamentRef() {
                   <CustomTr key={index}>
                     {/* 「出漕結果記録テーブル」に「レーステーブル」.「レースID」と紐づくデータが存在する場合、リンクボタンを表示するかどうかを制御するためにhasHistoryを利用 */}
                     {row.hasHistory == true && (
-                      // TODO: 遷移先のURLは仮置き。置き換えること。
                       <CustomTd
                         transitionDest={
                           '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
@@ -734,7 +728,6 @@ export default function TournamentRef() {
                     {/* レースID */}
                     {!row.hasHistory && <CustomTd>{row.race_id}</CustomTd>}
                     {row.hasHistory == true && (
-                      // TODO: 遷移先のURLは仮置き。置き換えること。
                       <CustomTd
                         transitionDest={
                           '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
@@ -784,7 +777,6 @@ export default function TournamentRef() {
               }
               value={selectedEventNameList || []}
               onChange={(e: ChangeEvent<{}>, newValue: EventNameList[]) => {
-                //console.log(newValue);
                 setSelectedEventNameList(newValue);
               }}
               renderOption={(props: any, option: EventNameList) => {
@@ -834,7 +826,6 @@ export default function TournamentRef() {
               }
               value={selectedByGroupList || []}
               onChange={(e: ChangeEvent<{}>, newValue: ByGroupList[]) => {
-                //console.log(newValue);
                 setSelectedByGroupList(newValue);
               }}
               renderOption={(props: any, option: ByGroupList) => {
@@ -884,7 +875,6 @@ export default function TournamentRef() {
               }
               value={selectedRangeList || []}
               onChange={(e: ChangeEvent<{}>, newValue: RangeList[]) => {
-                //console.log(newValue);
                 setSelectedRangeList(newValue);
               }}
               renderOption={(props: any, option: RangeList) => {

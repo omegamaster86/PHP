@@ -24,10 +24,6 @@ const CsvTable = ({
   activationFlg: boolean;
   visibilityFlg: boolean; //データが0件の場合でもヘッダーは表示させるためのフラグ 20240508
 }) => {
-  // if (content.length === 0) {
-  //   return <div className='text-primaryText'>CSVファイルをアップロードしてください。</div>;
-  // }
-
   // 読み込み結果がエラーかどうかを確認
   const checkLoadingResult = (row: CsvData) => {
     return row.loadingResult === '登録不可データ' || row.loadingResult === '無効データ';
@@ -46,7 +42,6 @@ const CsvTable = ({
     <div className='overflow-auto h-[331px] w-[800px]'>
       <CustomTable>
         <CustomThead>
-          {/* contentがundefinedまたは空の配列でないことを確認 */}
           <CustomTr>
             <CustomTh>
               <CustomButton
@@ -99,7 +94,6 @@ const CsvTable = ({
                     readonly={checkLoadingResult(row)}
                     onChange={(e) => {
                       handleInputChange(row.id, 'checked', e.target.checked);
-                      // e.target.checked ? displayRegisterButton(true) : null;
                       var data = content.map((row) => row.checked.toString());
                       data[rowIndex] = e.target.checked.toString();
                       data.includes('true')

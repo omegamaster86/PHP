@@ -82,25 +82,6 @@ export default function Tournaments() {
   // フォームデータを管理する状態
   const [tableData, setTableData] = useState<Race[]>([]);
 
-  // const [raceFormData, setRaceFormData] = useState<Race>({
-  //   id: 0,
-  //   checked: false,
-  //   race_id: '',
-  //   entrysystem_race_id: '',
-  //   tourn_id: Number(tournId) ?? 0, //大会更新の場合は既に存在する大会IDに紐づける 20240409
-  //   race_number: '',
-  //   event_id: '',
-  //   event_name: '',
-  //   race_name: '',
-  //   race_class_id: '',
-  //   race_class_name: '',
-  //   by_group: '',
-  //   range: '',
-  //   start_date_time: '',
-  //   hasHistory: false,
-  //   tournName: '',
-  // });
-
   //大会情報 20240202
   const [tournamentFormData, setTournamentFormData] = useState<Tournament>({
     tourn_id: tournId,
@@ -157,10 +138,6 @@ export default function Tournaments() {
   // テーブルに設定するキーの最大値
   const [maxId, setMaxId] = useState(0);
 
-  // エラーメッセージ
-  // const [entrysystemRaceIdErrorMessage, setEntrysystemRaceIdErrorMessage] = useState(
-  //   [] as string[],
-  // );
   const [entrysystemTournIdErrorMessage, setEntrysystemTournIdErrorMessage] = useState(
     [] as string[],
   ); //エントリーシステムの大会ID用エラーメッセージ 20240409
@@ -194,8 +171,6 @@ export default function Tournaments() {
 
   // バリデーションを実行する関数
   const performValidation = () => {
-    // const entrysystemRaceIdError = Validator.getErrorMessages([]);
-
     //エントリーシステムの大会ID用エラーメッセージ 20240606
     const entrysystemTournIdError = Validator.getErrorMessages([
       tournamentFormData.entrysystem_tourn_id?.length > 0
@@ -252,7 +227,6 @@ export default function Tournaments() {
       if (row.checked) {
         return false; //削除チェックがされている場合、バリデーションを行わない 20240606
       }
-      // return row.entrysystem_race_id.length > 0;
       return row.entrysystem_race_id?.length > 0
         ? Validator.validateAlphabetNumber(row.entrysystem_race_id, 'エントリーシステムの大会ID')
             .length > 0
@@ -264,18 +238,7 @@ export default function Tournaments() {
         return false; //削除チェックがされている場合、バリデーションを行わない 20240508
       }
       return Validator.validateRequired(row.race_number, 'レースNo.').length > 0;
-      // if () {
-      //   //console.log(Validator.getErrorMessages([Validator.validatePositiveNumber(row.race_number)]));
-      //   setRaceNumberErrorMessage(Validator.getErrorMessages([Validator.validatePositiveNumber(row.race_number)]));
-
-      //   return false;
-      // } else {
-      //   return true;
-      // }
     });
-    // const raceIdErrorFlg = tableData.some((row) => {
-    //   return Validator.validateIntegerRange(row.entrysystem_race_id).length > 0;
-    // });
     const raceNumberNegativeErrorFlg = tableData.some((row) => {
       if (row.checked) {
         return false; //削除チェックがされている場合、バリデーションを行わない 20240508
@@ -369,15 +332,6 @@ export default function Tournaments() {
       }
     }
 
-    // if (raceIdErrorFlg) {
-    //   setRaceIdErrorMessage(
-    //     Validator.getErrorMessages([
-    //       'エントリーシステムのレースIDは不正な番号です、1以上数値と　2147483647以下数値を入力してください。',
-    //     ]),
-    //   );
-    // } else {
-    //   setRaceIdErrorMessage([]);
-    // }
     if (eventIdErrorFlg) {
       setEventIdErrorMessage(
         Validator.getErrorMessages([Validator.validateSelectRequired(null, '種目')]),
@@ -442,7 +396,6 @@ export default function Tournaments() {
       tournUrlError.length > 0 ||
       eventIdErrorFlg ||
       raceNameErrorFlg ||
-      // raceIdErrorFlg ||
       entryRaceIdErrorFlg ||
       raceNumberErrorFlg ||
       raceNumberNegativeErrorFlg ||
@@ -482,7 +435,6 @@ export default function Tournaments() {
         ),
       );
     } else if (mode == 'update') {
-      //console.log('update check');
       tableData.filter(
         (element, index, self) => (
           self.findIndex(
@@ -504,7 +456,6 @@ export default function Tournaments() {
         ),
       );
     }
-    //console.log(strArray);
     if (strArray.length > 0) {
       //console.log('エントリーシステムエラーあり');
       return true;
@@ -711,8 +662,6 @@ export default function Tournaments() {
                     (registerData.tournamentFormData as any)[key] =
                       (registerData.tournamentFormData as any)[key] ?? '';
                   });
-                  // sendFormData.tournamentFormData = tournamentFormData;
-                  // sendFormData.tableData = tableData;
                   const csrf = () => axios.get('/sanctum/csrf-cookie');
                   await csrf();
 
@@ -725,24 +674,6 @@ export default function Tournaments() {
                     .then((response) => {
                       // TODO: 処理成功時の処理
                       setTournamentFormData({} as Tournament);
-                      // setRaceFormData({
-                      //   id: 0,
-                      //   checked: false,
-                      //   race_id: '',
-                      //   entrysystem_race_id: '',
-                      //   tourn_id: 0,
-                      //   race_number: '',
-                      //   event_id: '',
-                      //   event_name: '',
-                      //   race_name: '',
-                      //   race_class_id: '',
-                      //   race_class_name: '',
-                      //   by_group: '',
-                      //   range: '',
-                      //   start_date_time: '',
-                      //   hasHistory: false,
-                      //   tournName: '',
-                      // });
                       setTableData([
                         {
                           id: 0,
@@ -770,11 +701,7 @@ export default function Tournaments() {
                     })
                     .catch((error) => {
                       // TODO: 処理失敗時の処理
-                      setErrorMessages([
-                        // ...(errorMessages as string[]),
-                        // '登録に失敗しました。原因：' + (error as Error).message,
-                        '登録に失敗しました。',
-                      ]);
+                      setErrorMessages(['登録に失敗しました。']);
                     })
                     .finally(() => {
                       setDisplayFlg(true);
@@ -839,24 +766,6 @@ export default function Tournaments() {
                     .then((response) => {
                       // TODO: 処理成功時の処理
                       setTournamentFormData({} as Tournament);
-                      // setRaceFormData({
-                      //   id: 0,
-                      //   checked: false,
-                      //   race_id: '',
-                      //   entrysystem_race_id: '',
-                      //   tourn_id: 0,
-                      //   race_number: '',
-                      //   event_id: '',
-                      //   event_name: '',
-                      //   race_name: '',
-                      //   race_class_id: '',
-                      //   race_class_name: '',
-                      //   by_group: '',
-                      //   range: '',
-                      //   start_date_time: '',
-                      //   hasHistory: false,
-                      //   tournName: '',
-                      // });
                       setTableData([
                         {
                           id: 0,
@@ -886,11 +795,7 @@ export default function Tournaments() {
                     })
                     .catch((error) => {
                       // TODO: 処理失敗時の処理
-                      setErrorMessages([
-                        // ...(errorMessages as string[]),
-                        // '更新に失敗しました。原因：' + (error as Error).message,
-                        '更新に失敗しました。',
-                      ]);
+                      setErrorMessages(['更新に失敗しました。']);
                     })
                     .finally(() => {
                       setDisplayFlg(true);
@@ -943,9 +848,6 @@ export default function Tournaments() {
               .then((response) => {
                 tournamentFormData.sponsorOrgName = response.data.success.org_name;
                 setTableData((prevData) => {
-                  // return prevData.filter((row) => {
-                  //   return !row.checked;
-                  // });
                   return prevData; //全てのデータをバックエンド側に送る 20240311
                 });
                 setErrorMessages([]);
@@ -1008,25 +910,6 @@ export default function Tournaments() {
             tournName: '',
           },
         ]);
-        // フォームデータをリセット
-        // setRaceFormData({
-        //   id: 1,
-        //   checked: false,
-        //   race_id: '',
-        //   entrysystem_race_id: '',
-        //   tourn_id: Number(tournId) ?? 0, //大会更新の場合は既に存在する大会IDに紐づける 20240409
-        //   race_number: '',
-        //   event_id: '',
-        //   event_name: '',
-        //   race_name: '',
-        //   race_class_id: '',
-        //   race_class_name: '',
-        //   by_group: '',
-        //   range: '',
-        //   start_date_time: '',
-        //   hasHistory: false,
-        //   tournName: '',
-        // });
       }}
     >
       追加
@@ -1066,10 +949,7 @@ export default function Tournaments() {
           <TextField
             type={'text'}
             value={row.entrysystem_race_id}
-            onChange={(e) =>
-              //console.log(tableData),
-              handleInputChangeRace(row.id, 'entrysystem_race_id', e.target.value)
-            }
+            onChange={(e) => handleInputChangeRace(row.id, 'entrysystem_race_id', e.target.value)}
             className='my-[8px]'
             inputProps={{ maxLength: 8 }}
           />
@@ -1233,7 +1113,6 @@ export default function Tournaments() {
             displayHelp={mode !== 'confirm'}
             value={tournamentFormData.entrysystem_tourn_id}
             onChange={(e) => handleInputChangeTournament('entrysystem_tourn_id', e.target.value)}
-            // toolTipTitle='Title エントリーシステムの大会ID' //はてなボタン用
             toolTipText='大会エントリーシステムに発番される大会ID
               この大会IDについては、日本ローイング協会にお問い合わせください。' //はてなボタン用
             maxLength={8}
@@ -1252,7 +1131,6 @@ export default function Tournaments() {
             readonly={mode === 'confirm'}
             value={tournamentFormData.tourn_name}
             onChange={(e) => handleInputChangeTournament('tourn_name', e.target.value)}
-            // toolTipTitle='Title 大会名' //はてなボタン用
             toolTipText='開催する大会名と大会種別（公式/非公式）を選択してください。' //はてなボタン用
           />
           {/* 大会種別（公式・非公式） */}
@@ -1291,7 +1169,6 @@ export default function Tournaments() {
           readonly={mode === 'confirm'}
           value={tournamentFormData.sponsor_org_id}
           onChange={(e) => handleInputChangeTournament('sponsor_org_id', e.target.value)}
-          // toolTipTitle='Title 主催団体ID' //はてなボタン用
           toolTipText='団体IDは団体情報参照画面で確認できます。' //はてなボタン用
         />
       </div>
@@ -1315,7 +1192,6 @@ export default function Tournaments() {
             label='開催開始年月日'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
-            // toolTipTitle='Title 開催開始年月日' //はてなボタン用
             toolTipText='YYYY/MM/DDの形式で入力してください。' //はてなボタン用
           ></InputLabel>
           <CustomDatePicker
@@ -1334,7 +1210,6 @@ export default function Tournaments() {
             label='開催終了年月日'
             required={mode !== 'confirm'}
             displayHelp={mode !== 'confirm'}
-            // toolTipTitle='Title 開催終了年月日' //はてなボタン用
             toolTipText='YYYY/MM/DDの形式で入力してください。' //はてなボタン用
           ></InputLabel>
           <CustomDatePicker
@@ -1354,7 +1229,6 @@ export default function Tournaments() {
           label={'開催場所'}
           required={mode !== 'confirm'}
           displayHelp={mode !== 'confirm'}
-          // toolTipTitle='Title 開催場所' //はてなボタン用
           toolTipText='大会を開催する水域を選択してください。' //はてなボタン用
         ></InputLabel>
         <div className='flex flex-row justify-start gap-[4px]'>
@@ -1408,7 +1282,6 @@ export default function Tournaments() {
           displayHelp={mode !== 'confirm'}
           value={tournamentFormData.tourn_url}
           onChange={(e) => handleInputChangeTournament('tourn_url', e.target.value)}
-          // toolTipTitle='Title 大会個別URL' //はてなボタン用
           toolTipText='大会用のホームページを公開している場合、URLを入力してください。' //はてなボタン用
         />
       </div>
@@ -1561,12 +1434,6 @@ export default function Tournaments() {
                     {mode === 'confirm' ? (
                       <p className='h-12 text-secondaryText py-3 disable'>{row.race_id}</p>
                     ) : (
-                      // <TextField
-                      //   type={'text'}
-                      //   value={row.race_id}
-                      //   onChange={(e) => handleInputChangeRace(row.id, 'race_id', e.target.value)}
-                      //   className='my-[8px]'
-                      // />
                       <p className='h-12 text-secondaryText py-3 disable'>{row.race_id}</p>
                     )}
                   </CustomTd>
@@ -1585,7 +1452,6 @@ export default function Tournaments() {
                             }
                             return newList;
                           });
-                          //console.log(tableData);
                         }}
                       >
                         削除

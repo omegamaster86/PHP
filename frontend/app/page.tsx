@@ -1,6 +1,4 @@
 'use client';
-import Link from 'next/link';
-import CsvUploader from './(Pages)/(App)/(Player)/playerInformationLinking/CsvHandler';
 import Header from './components/Header';
 
 export default function Home() {

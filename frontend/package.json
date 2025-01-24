@@ -9,8 +9,7 @@
     "build": "APP_ENV=production next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write --ignore-path .gitignore './**/*.{js,jsx,ts,tsx,json,css}'",
-    "mock": "npx json-server ./mock/db.json --port 3100"
+    "format": "prettier --write --ignore-path .gitignore './**/*.{js,jsx,ts,tsx,json,css}'"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",

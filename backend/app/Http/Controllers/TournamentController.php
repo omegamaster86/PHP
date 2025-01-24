@@ -25,9 +25,7 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("searchTournament start"));
         $searchInfo = $request->all();
-        Log::debug($searchInfo);
         $searchCondition = $this->generateSearchCondition($searchInfo);
-        Log::debug($searchCondition);
         $tournamentList =  $tTournaments->getTournamentWithSearchCondition($searchCondition);
         $venueList = $venueData->getVenueList();
 
@@ -52,7 +50,6 @@ class TournamentController extends Controller
         $reqData = $request->all();
         Log::debug($reqData['tourn_id']);
         $result = $tourn->getTournament($reqData['tourn_id']);
-        // Log::debug($result);
         Log::debug(sprintf("getTournamentInfoData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
@@ -82,7 +79,6 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("getTournamentInfoData_org start"));
         $reqData = $request->all();
-        Log::debug($reqData['org_id']);
         $result = $tourn->getTournamentsFromOrgId($reqData['org_id']); //DBに選手を登録 20240215
         Log::debug(sprintf("getTournamentInfoData_org end"));
         return response()->json(['result' => $result]); //DBの結果を返す
@@ -94,7 +90,6 @@ class TournamentController extends Controller
         Log::debug(sprintf("getTournamentInfoData_allData start"));
         // $reqData = $request->all();
         $result = $tourn->getTournament_allData();
-        // Log::debug($result);
         Log::debug(sprintf("getTournamentInfoData_allData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
@@ -103,7 +98,6 @@ class TournamentController extends Controller
     public function storeTournamentInfoData(Request $request, T_tournaments $tTournament, T_races $tRace)
     {
         Log::debug(sprintf("storeTournamentInfoData start"));
-        Log::debug($request);
         $random_file_name = Str::random(12);
         //If new PDF is uploaded
         if ($request->hasfile('tournamentFormData')) {
@@ -124,8 +118,6 @@ class TournamentController extends Controller
             }
         }
         $reqData = $request->all();
-        // Log::debug($reqData);
-        // Log::debug(isset($reqData['tableData']));
         //確認画面から登録
         DB::beginTransaction();
         try {
@@ -213,7 +205,6 @@ class TournamentController extends Controller
             }
             $reqData = $request->all();
 
-            Log::debug($reqData);
             //確認画面から登録
             $tTournament::$tournamentInfo['tourn_id'] = $reqData['tournamentFormData']['tourn_id']; //大会ID
             $tTournament::$tournamentInfo['tourn_name'] = $reqData['tournamentFormData']['tourn_name']; //大会名
@@ -295,7 +286,6 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("getRaceData start"));
         $reqData = $request->all();
-        Log::debug($reqData['tourn_id']);
         //$result = $tRace->getRace($reqData['tourn_id']); //レース情報を取得
         $result = $tRace->getRaces($reqData); //レース情報を取得
         if (isset($result)) {
@@ -303,9 +293,7 @@ class TournamentController extends Controller
                 $result[$i]->id = $i;
             }
         }
-        // Log::debug($result);
         Log::debug(sprintf("getRaceData end"));
-        Log::debug($result);
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 
@@ -314,7 +302,6 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("getTournRaceResultRecords start"));
         $reqData = $request->all();
-        Log::debug($reqData);
         $result = $tRaceResultRecord->getRaceResultRecord_raceId($reqData['race_id']);
 
         //ラップタイムをsss.msからmm:ss.msに変換 20240423
@@ -335,14 +322,12 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("getCrewData start"));
         $reqData = $request->all();
-        //Log::debug($reqData);
         foreach ($reqData as $key => $val) { //foreachで取り出す配列と要素の値を格納する変数を指定する。
             if ($key == 'race_id' || $key == 'crew_name' || $key == 'org_id') {
                 continue;
             }
             unset($reqData[$key]);
         }
-        //Log::debug($reqData);
 
         $search_values = array();
         $search_values['race_id'] = $reqData['race_id'];
@@ -363,7 +348,6 @@ class TournamentController extends Controller
             DB::beginTransaction();
             //出漕結果記録テーブルを検索
             $reqData = $request->all();
-            Log::debug($reqData);
 
             //レース結果の削除チェックを行う 20240529
             $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData['raceInfo']['race_id']);
@@ -376,15 +360,12 @@ class TournamentController extends Controller
             for ($i = 0; $i < count($reqData['raceResultRecords']); $i++) {
                 for ($j = 0; $j < count($reqData['raceResultRecords'][$i]['crewPlayer']); $j++) {
                     $delete_race_result_record_id = $reqData['raceResultRecords'][$i]['crewPlayer'][$j]['race_result_record_id'];
-                    Log::debug($delete_race_result_record_id);
                     $result_count = $t_raceResultRecord->getIsExistsTargetRaceResultRecord($delete_race_result_record_id);
 
                     if (isset($result_count)) {
-                        Log::debug($result_count);
                         $deleteDataInfo['updated_datetime'] = now()->format('Y-m-d H:i:s.u');
                         $deleteDataInfo['updated_user_id'] = Auth::user()->user_id;
                         $deleteDataInfo['race_result_record_id'] = $delete_race_result_record_id;
-                        Log::debug($deleteDataInfo);
                         $t_raceResultRecord->updateDeleteFlagToValid($deleteDataInfo);
                     }
                 }
@@ -407,7 +388,6 @@ class TournamentController extends Controller
         DB::beginTransaction();
         try {
             $reqData = $request->all();
-            // Log::debug($reqData);
             Log::debug($reqData['tournamentFormData']['tourn_id']);
 
             if (isset($reqData['tournamentFormData']['tourn_id'])) {
@@ -438,7 +418,6 @@ class TournamentController extends Controller
     ) {
         Log::debug(sprintf("tournamentRegistOrUpdateValidationCheck start"));
         $reqData = $request->all();
-        Log::debug($reqData);
         //エントリーシステム大会ID
         $mode = $reqData["mode"];   //入力モード
         $entrysystem_tourn_id = $reqData["entrysystem_tourn_id"];
@@ -497,9 +476,6 @@ class TournamentController extends Controller
                         $count = $t_races->getEntrysystemRaceIdCount($entrysystem_race_id);
                     } elseif ($mode === "update") {
                         $count = $t_races->getEntrysystemRaceIdCountWithRaceId($entrysystem_race_id, $target_race_id);
-                        // Log::debug($count);
-                        // Log::debug($target_race_id);
-                        // Log::debug($entrysystem_race_id);
                     }
 
                     if ($count > 0) {
@@ -526,12 +502,10 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("searchRaceData start."));
         $reqData = $request->all();
-        // Log::debug($reqData);        
         $values = array();
         //検索条件の文字列を生成
         $conditionString = $this->generateRaceSearchCondition($reqData, $values);
         $getData = $t_races->getRaceResultWithCondition($conditionString, $values);
-        // Log::debug($getData);
         Log::debug(sprintf("searchRaceData end."));
         return response()->json(['result' => $getData]); //DBの結果を返す
     }
@@ -548,7 +522,6 @@ class TournamentController extends Controller
     ) {
         Log::debug(sprintf("registerRaceResultRecord start."));
         $reqData = $request->all();
-        Log::debug($reqData);
         //挿入時の値を格納する配列
         $insert_values = array();
         //日時 登録用
@@ -562,9 +535,7 @@ class TournamentController extends Controller
         DB::beginTransaction();
         try {
             //レース結果の重複チェックを行う 20240529
-            // Log::debug($reqData['raceInfo']);
             $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData['raceInfo']['race_id']);
-            Log::debug($result_count);
             if ($result_count > 0) {
                 return response()->json(['errMessage' => "当該レースの結果は、既にほかのユーザーによって登録されています。"]); //エラーメッセージを返す
             }
@@ -784,7 +755,6 @@ class TournamentController extends Controller
     ) {
         Log::debug(sprintf("updateRaceResultRecordForUpdateConfirm start."));
         $reqData = $request->all();
-        Log::debug($reqData);
         //日時　更新用
         $current_datetime = now()->format('Y-m-d H:i:s.u');
         //ユーザーID　更新用
@@ -834,8 +804,6 @@ class TournamentController extends Controller
                     $delete_values["crew_name"] = $crew_name;
                     $delete_values["updated_datetime"] = $current_datetime;
                     $delete_values["updated_user_id"] = $update_user_id;
-                    // Log::debug("********************delete_values********************");
-                    // Log::debug($delete_values);
                     $t_raceResultRecord->updateTargetCrewDeleteFlagToValid($delete_values);
                 } else {
                     //クルー情報
@@ -897,8 +865,6 @@ class TournamentController extends Controller
                             $delete_race_result_record_array["race_result_record_id"] = $race_result_record_id;
                             $delete_race_result_record_array["updated_datetime"] = $current_datetime;
                             $delete_race_result_record_array["updated_user_id"] = $update_user_id;
-                            // Log::debug("********************delete_race_result_record_array********************");
-                            // Log::debug($delete_race_result_record_array);
                             //削除フラグ更新実行
                             $t_raceResultRecord->updateDeleteFlagToValid($delete_race_result_record_array);
                         } elseif (!$player["deleteFlg"]) {
@@ -1076,8 +1042,6 @@ class TournamentController extends Controller
                                 //削除フラグ
                                 $insert_values_array["delete_flag"] = 0;
 
-                                // Log::debug("********************update_values_array********************");
-                                // Log::debug($update_values_array);
                                 //登録実行
                                 $t_raceResultRecord->insertRaceResultRecordForInputConfirm($insert_values_array);
                             } else {
@@ -1166,8 +1130,6 @@ class TournamentController extends Controller
                                 //更新ユーザーID
                                 $update_values_array["updated_user_id"] = $update_user_id;
 
-                                // Log::debug("********************update_values_array********************");
-                                // Log::debug($update_values_array);
                                 //更新実行
                                 $t_raceResultRecord->updateRaceResultRecordForUpdateConfirm($update_values_array);
                             }
@@ -1192,7 +1154,6 @@ class TournamentController extends Controller
         Log::debug(sprintf("getRaceDataRaceId start"));
         try {
             $reqData = $request->all();
-            //Log::debug($reqData['race_id']);
             $target_race_id = $reqData['race_id'];
             $race_result = $tRace->getRaceFromRaceId($target_race_id); //レース情報を取得
             //出漕時点情報を取得
@@ -1215,10 +1176,6 @@ class TournamentController extends Controller
                 // $record_result[$index]->{'crew_player'} = $player_result;
                 $record_result[$index]->{'crewPlayer'} = $player_result;
             }
-            // Log::debug("********************race_result********************");
-            // Log::debug($race_result);
-            // Log::debug("********************record_result********************");
-            // Log::debug($record_result);
             Log::debug(sprintf("getRaceDataRaceId end"));
             return response()->json(['race_result' => $race_result, 'record_result' => $record_result]); //DBの結果を返す
         } catch (\Throwable $e) {
@@ -1233,13 +1190,11 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("getRaceDataFromTournIdAndEventId start."));
         $reqData = $request->all();
-        Log::debug($reqData);
         // $tourn_id = $reqData['tourn_id'];
         // $event_id = $reqData['event_id'];
         // $result = $tRace->getBasicRaceInfoList($tourn_id,$event_id); //レース情報を取得
         $result = $tRace->getLinkRaces($reqData); //レース結果のないレース情報を取得 20240422
         Log::debug(sprintf("getRaceDataFromTournIdAndEventId end."));
-        Log::debug($result);
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 
@@ -1248,7 +1203,6 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("checkOrgManager start"));
         $reqData = $request->all();
-        Log::debug($reqData);
         $target_tourn_id = $reqData['tournInfo']['tourn_id'];
         $target_org_id = $reqData['tournInfo']['sponsor_org_id'];
         $target_user_id = $reqData['userInfo']['user_id'];
@@ -1261,12 +1215,12 @@ class TournamentController extends Controller
     //種目IDを受け取り、種目テーブルから人数を取得する
     public function getCrewNumberForEventId(Request $request, M_events $m_events)
     {
-        //Log::debug(sprintf("getCrewNumberForEventId start."));
+        Log::debug(sprintf("getCrewNumberForEventId start."));
         $reqData = $request->all();
         $target_event_id = $reqData["event_id"];
         $events = $m_events->getEventForEventID($target_event_id);
         $crew_number = $events[0]->{"crew_number"};
-        //Log::debug(sprintf("getCrewNumberForEventId end."));
+        Log::debug(sprintf("getCrewNumberForEventId end."));
         return response()->json(['result' => $crew_number]); //DBの結果を返す
     }
 
@@ -1277,9 +1231,7 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("getCrewPlayerInfo start."));
         $reqData = $request->all();
-        //Log::debug($reqData);
         $player_info = $t_players->getPlayer($reqData["player_id"]);
-        //Log::debug($player_info);
         Log::debug(sprintf("getCrewPlayerInfo end."));
         return response()->json(['result' => $player_info]); //DBの結果を返す
     }
@@ -1297,7 +1249,6 @@ class TournamentController extends Controller
                 $result[$i]->id = $i;
             }
         }
-        Log::debug($result);
         Log::debug(sprintf("getCsvFormatRaceData end"));
         return response()->json(['result' => $result, 'tournResult' => $tournResult]); //DBの結果を返す
     }
@@ -1307,7 +1258,6 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("getTournLinkRaces start"));
         $reqData = $request->all();
-        Log::debug($reqData);
         $result = $tRace->getLinkRaces($reqData); //レース情報を取得
         Log::debug(sprintf("getTournLinkRaces end"));
         return response()->json(['result' => $result]); //DBの結果を返す
@@ -1318,7 +1268,6 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("getEventSheetPosForEventID start"));
         $reqData = $request->all();
-        Log::debug($reqData);
         $result = $m_events->getEventSheetPosForEventID($reqData['event_id']); //レース情報を取得
         Log::debug(sprintf("getEventSheetPosForEventID end"));
         return response()->json(['result' => $result]); //DBの結果を返す
@@ -1342,7 +1291,6 @@ class TournamentController extends Controller
             DB::beginTransaction();
 
             $reqData = $request->all();
-            Log::debug($reqData);
             $tournId = $reqData["tournId"];
             $followTourn = $tFollowedTournaments->getFollowedTournamentsData($tournId); //大会IDとユーザIDを元にフォロー情報が存在するかを確認 202401028
 

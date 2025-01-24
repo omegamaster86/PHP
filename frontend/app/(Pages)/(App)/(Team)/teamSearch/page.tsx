@@ -272,17 +272,6 @@ export default function TeamSearch() {
             value={formData.org_name}
             widthClassName='w-full sm:w-[300px]'
           />
-          {/* 所在地（国） */}
-          {/* <CustomTextField
-            label='国'
-            displayHelp
-            onChange={(e) => {
-              handleInputChange('residenceCountryName', e.target.value);
-            }}
-            value={formData.residenceCountryName}
-            toolTipTitle='Title' //はてなボタン用
-            toolTipText='サンプル用のツールチップ表示' //はてなボタン用
-          /> */}
           {/* 都道府県 */}
           <CustomDropdown
             label='都道府県'
@@ -343,7 +332,6 @@ export default function TeamSearch() {
                 widthClassName='w-full sm:w-[200px]'
                 value={formData?.org_class || ''}
                 onChange={(e) => {
-                  //console.log(e);
                   handleInputChange('org_class', e);
                   handleInputChange(
                     'orgClassName',

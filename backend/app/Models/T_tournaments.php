@@ -400,7 +400,6 @@ class T_tournaments extends Model
     //delete_flagを1にする
     public function updateDeleteFlag($tourn_id)
     {
-        Log::debug($tourn_id);
         DB::update(
             'update `t_tournaments`
                     set `delete_flag` = 1

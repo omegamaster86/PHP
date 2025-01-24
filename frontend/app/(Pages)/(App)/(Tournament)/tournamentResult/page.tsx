@@ -83,11 +83,6 @@ export default function TournamentResult() {
   const tournId = param.get('tournId'); // 大会ID
   const eventId = param.get('eventId'); // 種目ID
   const prevMode = param.get('prevMode'); // 遷移元画面のモード
-  // //console.log(mode);
-  // //console.log(raceId);
-  // //console.log(tournId);
-  // //console.log(eventId);
-  // //console.log(prevMode);
   switch (mode) {
     case 'create':
       break;
@@ -196,7 +191,6 @@ export default function TournamentResult() {
       playerSearch.data.result[0].sex = playerSearch.data.result[0].sexName;
     }
     const player = playerSearch.data.result[0];
-    //console.log(player);
     if (value === '') {
       //選手IDが空になった場合、当該行のすべての項目を空欄にする 20240517
       handleRaceResultRecordsCrewPlayerChangeBooleanbyIndex(index, crewIndex, 'deleteFlg', false); //削除フラグ
@@ -255,11 +249,7 @@ export default function TournamentResult() {
 
     //選手の重複チェック
     const isExist = raceResultRecords.some((record, i) => {
-      //console.log(record?.crewPlayer);
       return record?.crewPlayer?.some((player, j) => {
-        //console.log(player.deleteFlg);
-        //console.log(record?.crewPlayer[crewIndex].playerId);
-        //console.log(record?.crewPlayer[crewIndex].deleteFlg);
         return (
           player.playerId == value &&
           !(index == i && crewIndex == j) &&
@@ -369,14 +359,12 @@ export default function TournamentResult() {
     //レースID　必須チェック
     const raceId = Validator.validateRequired(raceInfo?.race_id, 'レースID');
     if (raceId) {
-      // setErrorText([raceId]);
       setRaceIdErrorText(raceId);
       errorCount++;
     }
     //レース名　必須チェック
     const raceName = Validator.validateRequired(raceInfo?.race_name, 'レース名');
     if (raceName) {
-      // setErrorText([raceName]);
       setRaceNameErrorText(raceName);
       errorCount++;
     }
@@ -392,22 +380,15 @@ export default function TournamentResult() {
     //1000m地点風速 入力値チェック
     const windSpeed = raceResultRecordResponse.wind_speed_1000m_point;
     if (windSpeed && !/^\d{1,3}$/.test(windSpeed.toString())) {
-      // setErrorText(['半角数字で、999までの数字を入力してください。']);
       setWindSpeed1000mPointErrorText('半角数字で、999までの数字を入力してください。');
       errorCount++;
     }
     //2000m地点風速 入力値チェック
     const windSpeed2 = raceResultRecordResponse.wind_speed_2000m_point;
     if (windSpeed2 && !/^\d{1,3}$/.test(windSpeed2.toString())) {
-      // setErrorText(['半角数字で、999までの数字を入力してください。']);
       setWindSpeed2000mPointErrorText('半角数字で、999までの数字を入力してください。');
       errorCount++;
     }
-
-    //共通部分　ここまで
-    //=============================================================
-    //=============================================================
-    //クルー単位の内容　ここから
 
     //選手情報に全削除チェックされていないかつ、レース結果情報に削除チェックがされていない項目をバリデーションチェック対象とする 20240517
     var validateCheckList = raceResultRecords.filter(
@@ -601,11 +582,6 @@ export default function TournamentResult() {
       }
     });
 
-    //クルー単位の内容　ここまで
-    //=============================================================
-    //=============================================================
-    //選手単位の内容　ここから
-
     //空欄チェック
     validateCheckList.map((record, i) => {
       record?.crewPlayer?.map((player, j) => {
@@ -790,7 +766,6 @@ export default function TournamentResult() {
     validateCheckList.some((record, index) => {
       var count = 0;
       record?.crewPlayer?.map((player) => {
-        // //console.log(playerCount,count, player.deleteFlg, player.errorText);
         //「登録可能」行の条件判定 （削除チェックなし、選手ID、選手名、身長、体重、シート名）
         if (
           !player.deleteFlg &&
@@ -811,7 +786,6 @@ export default function TournamentResult() {
           count++;
         }
       });
-      //console.log(count, playerCount);
       if (count != playerCount) {
         handleRaceResultRecordsInputChangebyIndex(
           index,
@@ -823,9 +797,6 @@ export default function TournamentResult() {
     });
     return errorCount;
   };
-
-  //バリデーションここまで
-  //================================================================
 
   useEffect(() => {
     /**
@@ -917,8 +888,6 @@ export default function TournamentResult() {
         if (data.length === 0) {
           alert('本大会の全レース結果は既に登録されています。');
           router.back();
-        } else {
-          // setRaceInfo(data[0]); //レース結果登録に画面遷移時は「レース基本情報」の項目はすべて空の状態にする 20240422
         }
 
         // 種目に対応したシート位置（マスタ）の取得 20240514
@@ -1032,19 +1001,15 @@ export default function TournamentResult() {
 
         // 10件以上は表示できないため、エラーメッセージを表示する
         if (data.record_result.length > 10) {
-          // setErrorText(['1つのレースに登録できるクルーは、10クルーまでです。']); //既に注釈で同じ文章が記載されているため不要 20240405
           // 設定するのは10件まで
           setRaceResultRecords(data.record_result.slice(0, 10));
           scrollTo(0, 0);
         } else if (data.record_result.length > 0 && data.record_result.length < 10) {
           //データが10件未満の場合の処理がなかったため追加 20240408
-          //console.log(data.record_result);
           setRaceResultRecords(data.record_result);
           scrollTo(0, 0);
         }
       } catch (error: any) {
-        //console.log(error);
-        // setErrorText([error.message]);
         scrollTo(0, 0);
       }
     };
@@ -1059,7 +1024,6 @@ export default function TournamentResult() {
       try {
         var data = null;
         // レース情報の取得
-        // const response = await axios.get('http://localhost:3100/raceInfo?id=' + raceInfo?.race_id);
         if (raceId != '' && raceId != null && raceId != undefined) {
           const sendData = {
             race_id: raceId,
@@ -1067,7 +1031,6 @@ export default function TournamentResult() {
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
           const response = await axios.post('api/getRaceDataRaceId', sendData);
-          //console.log(response.data.race_result);
 
           data = response.data.race_result;
           data[0].startDateTime = data[0].start_date_time; //バックエンド側のキーをフロント側のキーに入れ直す 20240422
@@ -1099,7 +1062,6 @@ export default function TournamentResult() {
               if (record?.crewPlayer?.length < response2) {
                 record.crewPlayer = record?.crewPlayer.concat(
                   Array.from({ length: response2 }, () => ({
-                    //id: undefined,
                     race_result_record_id: undefined,
                     playerPhoto: '',
                     playerName: '',
@@ -1143,7 +1105,6 @@ export default function TournamentResult() {
     fetchRaceInfo();
   }, [raceInfo?.race_id]);
 
-  // レンダリング
   return (
     <>
       <CustomTitle>
@@ -1178,7 +1139,6 @@ export default function TournamentResult() {
                     const csrf = () => axios.get('/sanctum/csrf-cookie');
                     await csrf();
                     const response = await axios.post('api/getRaceDataRaceId', sendData);
-                    //console.log(response.data);
                     const data = response.data.race_result;
                     if (data.length == 0) {
                       setRaceInfo({} as RaceTable);
@@ -1229,7 +1189,6 @@ export default function TournamentResult() {
                         const csrf = () => axios.get('/sanctum/csrf-cookie');
                         await csrf();
                         const response = await axios.post('api/getRaceDataRaceId', sendData);
-                        //console.log(response.data);
                         const data = response.data.race_result;
                         if (data.length == 0) {
                           setErrorText(['レース情報が取得できませんでした。']);
@@ -1323,7 +1282,6 @@ export default function TournamentResult() {
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     handleRaceResultRecordInputChange(
                       'startDateTime',
-                      // e.toISOString('yyyy/MM/dd HH:mm'),
                       (e as unknown as Date)?.toLocaleString().toString().replaceAll('/', '-'),
                     );
                   }}
@@ -1489,7 +1447,6 @@ export default function TournamentResult() {
                   ...prevFormData,
                 ]);
               } else {
-                // setErrorText(['1つのレースに登録できるクルーは、10クルーまでです。']);
                 scrollTo(0, 0);
               }
             }}
@@ -1708,28 +1665,6 @@ export default function TournamentResult() {
                         />
                         <div className='flex flex-col gap-[8px]'>
                           <InputLabel label='備考' />
-                          {/* <CustomDropdown
-                            value={
-                              mode === 'confirm'
-                                ? item.race_result_notes
-                                : item?.remarkId?.toString() || ''
-                            }
-                            options={remarkOptions.map((item) => ({
-                              key: item.id,
-                              value: item.name,
-                            }))}
-                            className='w-[120px]'
-                            id='remark'
-                            onChange={(e: any) => {
-                              handleRaceResultRecordsInputChangebyIndex(index, 'remarkId', e);
-                              handleRaceResultRecordsInputChangebyIndex(
-                                index,
-                                'race_result_notes',
-                                remarkOptions.find((item) => item.id == e)?.name || '',
-                              );
-                            }}
-                            readonly={mode === 'confirm'}
-                          /> */}
                           <Autocomplete
                             options={remarkOptions.map((item) => ({
                               id: item.id,
@@ -1934,7 +1869,6 @@ export default function TournamentResult() {
                 <CustomButton
                   buttonType='secondary'
                   onClick={() => {
-                    //console.log(index);
                     addCrewPlayerToRaceResultRecords(index);
                   }}
                   className='w-[120px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300 absolute right-[20px]'
@@ -2025,7 +1959,6 @@ export default function TournamentResult() {
                         <CustomTextField
                           value={player.playerId || ''}
                           onBlur={async (e) => {
-                            //console.log(player);
                             // 検索して選手情報を取得する
                             handleCrewPlayerIdChange(index, crewIndex, e.target.value);
                           }}
@@ -2244,7 +2177,6 @@ export default function TournamentResult() {
         <CustomButton
           buttonType='primary'
           onClick={async () => {
-            //console.log(raceResultRecords);
             var errorCount = 0;
             if (mode == 'create' || mode == 'update') {
               //レース結果情報のリストが0件、または、(選手情報に全削除チェックされていないかつ、レース結果情報に削除チェックがされていない)リストが0件の場合
@@ -2274,7 +2206,6 @@ export default function TournamentResult() {
               clearError(); //エラーメッセージのクリア
               errorCount = validateRaceResultRecords(); // バリデーション
             }
-            //console.log(errorCount);
             if (errorCount == 0) {
               clearError(); //エラーメッセージのクリア
               if (mode === 'create') {
@@ -2333,15 +2264,12 @@ export default function TournamentResult() {
                     raceResultRecordResponse: raceResultRecordResponse,
                     raceResultRecords: raceResultRecords,
                   };
-                  //console.log(sendData);
                   const csrf = () => axios.get('/sanctum/csrf-cookie');
                   await csrf();
                   const raceResponse = await axios.post(
                     'api/registerRaceResultRecordForRegisterConfirm',
                     sendData,
                   );
-                  //console.log(raceResponse);
-                  // router.push('/tournamentResult?mode=confirm&prevMode=update');
                   if (!raceResponse.data?.errMessage) {
                     router.push('/tournamentResultRef?raceId=' + raceInfo.race_id);
                   } else {
@@ -2354,15 +2282,12 @@ export default function TournamentResult() {
                     raceResultRecordResponse: raceResultRecordResponse,
                     raceResultRecords: raceResultRecords,
                   };
-                  //console.log(sendData);
                   const csrf = () => axios.get('/sanctum/csrf-cookie');
                   await csrf();
                   const raceResponse = await axios.post(
                     'api/updateRaceResultRecordForUpdateConfirm',
                     sendData,
                   );
-                  //console.log(raceResponse);
-                  // router.push('/tournamentResult?mode=confirm&prevMode=update');
                   if (!raceResponse.data?.errMessage) {
                     router.push('/tournamentResultRef?raceId=' + raceInfo.race_id);
                   } else {

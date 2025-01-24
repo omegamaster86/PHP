@@ -26,8 +26,6 @@ import {
 import { Tournament } from '@/app/types';
 import SearchIcon from '@mui/icons-material/Search';
 import Link from 'next/link';
-import Validator from '@/app/utils/validator';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import Divider from '@mui/material/Divider';
 // モデルのインポート
 import AddIcon from '@mui/icons-material/Add';
@@ -65,7 +63,6 @@ interface VenueResponse {
 }
 
 export default function TournamentSearch() {
-  // フック
   const router = useRouter();
 
   // フォームデータを管理する状態
@@ -76,8 +73,6 @@ export default function TournamentSearch() {
     tourn_name: '',
     tourn_type: '',
     tournTypeName: '',
-    // event_start_date: new Date().toLocaleDateString(),
-    // event_end_date: new Date().toLocaleDateString(),
     event_start_date: '',
     event_end_date: '',
     venue_id: '',
@@ -365,7 +360,6 @@ export default function TournamentSearch() {
               <div className='flex flex-col sm:flex-row gap-[16px]'>
                 {/* JARA選手コード */}
                 <CustomTextField
-                  // type='number'
                   label='JARA選手コード'
                   placeHolder='JARA選手コード'
                   displayHelp={false}
@@ -376,7 +370,6 @@ export default function TournamentSearch() {
                 />
                 {/* 選手ID */}
                 <CustomTextField
-                  // type='number'
                   label='選手ID'
                   placeHolder='選手ID'
                   displayHelp={false}
@@ -444,8 +437,6 @@ export default function TournamentSearch() {
                   tourn_name: '',
                   tourn_type: '',
                   tournTypeName: '',
-                  // event_start_date: new Date().toLocaleDateString(),
-                  // event_end_date: new Date().toLocaleDateString(),
                   event_start_date: '',
                   event_end_date: '',
                   venue_id: '',

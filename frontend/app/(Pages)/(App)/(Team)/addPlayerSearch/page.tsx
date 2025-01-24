@@ -172,7 +172,6 @@ export default function AddPlayerSearch() {
     const newData = searchResult.slice(visibleItems, visibleItems + 10);
     setVisibleData((prevData) => [...prevData, ...newData]);
     setVisibleItems((prevCount) => prevCount + newData.length);
-    //console.log(visibleItems);
   };
 
   /**

@@ -24,7 +24,6 @@ class NotificationsController extends Controller
     ) {
         Log::debug(sprintf("getNotificationInfoData start"));
         $reqData = $request->all();
-        Log::debug($reqData);
         $notificationId = $reqData["notificationId"];
 
         $result = $tNotifications->getNotificationInfoData($notificationId); //通知情報を取得 20241112
@@ -44,7 +43,6 @@ class NotificationsController extends Controller
     ) {
         Log::debug(sprintf("getSenderNotificationsList start"));
         $reqData = $request->all();
-        Log::debug($reqData);
 
         $result = $tNotifications->getSenderNotificationsListData(); //送信通知情報を取得 20241115
 
@@ -59,7 +57,6 @@ class NotificationsController extends Controller
     ) {
         Log::debug(sprintf("getRecipientsNotificationsList start"));
         $reqData = $request->all();
-        Log::debug($reqData);
 
         $result = $tNotifications->getRecipientsNotificationsListData(); //受信通知情報を取得 20241115
 
@@ -78,7 +75,6 @@ class NotificationsController extends Controller
             DB::beginTransaction();
 
             $reqData = $request->all();
-            Log::debug($reqData);
             $notificationId = $reqData["notificationId"];
             $userId = Auth::user()->user_id;
 
@@ -123,7 +119,6 @@ class NotificationsController extends Controller
             $req = $request->all();
             $req["notificationData"]["senderId"] = Auth::user()->user_id;
             $req["notificationData"]["sentTime"] = now()->format('Y-m-d H:i:s.u');
-            Log::debug($req);
             $insertId = $tNotifications->insertNotificationData($req["notificationData"]); //通知情報の登録 20241118
 
             //指導者資格の追加
@@ -191,7 +186,6 @@ class NotificationsController extends Controller
             DB::beginTransaction();
 
             $req = $request->all();
-            Log::debug($req);
             $notificationId = $req['notificationId'];
             $userId = Auth::user()->user_id;
 
@@ -227,7 +221,6 @@ class NotificationsController extends Controller
             DB::beginTransaction();
 
             $req = $request->all();
-            Log::debug($req);
             $tNotificationRecipients->updateNotificationReadFlagData($req); //通知情報の更新 20241118
 
             DB::commit();

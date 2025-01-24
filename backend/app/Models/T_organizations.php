@@ -212,7 +212,6 @@ class T_organizations extends Model
         );
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
-        //Log::debug($insertId);
         Log::debug(sprintf("insertOrganization end."));
         return $insertId;
     }
@@ -310,8 +309,6 @@ class T_organizations extends Model
                 $org_id
             ]
         );
-        // Log::debug("***************************SQL LOG***************************");
-        // Log::debug(DB::getQueryLog());
     }
 
     //検索条件を受け取って、t_organizationを検索し、その結果を返す
@@ -373,9 +370,7 @@ class T_organizations extends Model
                         #SearchCondition#
                         order by `org_id`';
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
-        //Log::debug($sqlString);
         $organizations = DB::select($sqlString, $value_array);
-        //Log::debug(DB::getQueryLog());
         return $organizations;
     }
 

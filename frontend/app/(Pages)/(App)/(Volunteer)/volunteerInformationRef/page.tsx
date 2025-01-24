@@ -21,7 +21,6 @@ import {
 } from '@/app/components';
 import axios from '@/app/lib/axios';
 import Link from 'next/link';
-import EditIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { VolunteerResponse, VolunteerHistoriesResponse, UserIdType } from '@/app/types';
 
@@ -710,7 +709,6 @@ export default function VolunteerInformationRef() {
             languageName: lang_name,
           }),
         );
-        //console.log(volLangProDataList);
 
         var day_of_week_List = volunteerResponse.data.volAvaData.day_of_week.split('');
 
@@ -746,23 +744,15 @@ export default function VolunteerInformationRef() {
           time_zone: time_zone_List, // 時間帯
           photo: volunteerResponse.data.result.photo, // 写真　#置き換え作業未対応
         });
-        // const volunteerHistoriesResponse = await axios.get<VolunteerHistoriesResponse[]>(
-        //   '/volunteerHistories',
-        // );
-        //console.log(volunteerResponse.data.volHistData);
         for (let index = 0; index < volunteerResponse.data.volHistData.length; index++) {
           var hist_day_of_week_List =
             volunteerResponse.data.volHistData[index].day_of_week.split('');
           var strData = '';
-          //console.log(volunteerResponse.data.volHistData[index].day_of_week);
           for (let j = hist_day_of_week_List.length - 1; j >= 0; j--) {
             strData += hist_day_of_week_List[j];
           }
-          //console.log(strData);
           volunteerResponse.data.volHistData[index].day_of_week = strData;
-          //console.log(volunteerResponse.data.volHistData[index].day_of_week);
         }
-        //console.log(volunteerResponse.data.volHistData);
         setVolunteerHistoriesdata(volunteerResponse.data.volHistData);
       } catch (error) {
         // TODO: エラーハンドリングを実装
@@ -1117,7 +1107,6 @@ export default function VolunteerInformationRef() {
             onChange={(e) => {}}
           />
           {/* 障碍タイプ */}
-          {/* <label htmlFor='disType'>補助が可能な障碍タイプ</label> */}
           <InputLabel
             label='補助が可能な障碍タイプ'
             displayHelp={true}
@@ -1142,7 +1131,6 @@ export default function VolunteerInformationRef() {
             ))}
           </div>
           {/* 資格情報 */}
-          {/* <label htmlFor='qualHold'>資格情報</label> */}
           <InputLabel label='資格情報' />
           <div className='flex flex-row gap-[16px] justify-start'>
             {volunteerdata.qualHold?.map((qualHold: any) => (
@@ -1155,7 +1143,6 @@ export default function VolunteerInformationRef() {
               </div>
             ))}
           </div>
-          {/* <label htmlFor='language'>言語</label> */}
           <InputLabel
             label='言語'
             displayHelp={true}
@@ -1341,19 +1328,6 @@ export default function VolunteerInformationRef() {
               非公式
             </Tab>
           </div>
-          {/* 遷移先の画面未実装のため、コメントアウト 20240525 */}
-          {/* {mode !== 'delete' && (
-              <Link
-                className='text-primary-500 hover:text-primary-700 underline text-small md:text-normal'
-                href={{
-                  // TODO: ボランティア履歴情報登録画面の正規URLに変更
-                  pathname: '/volunteerHistoriesInformationDelete',
-                  query: { id: volunteerdata.volunteer_id },
-                }}
-              >
-                履歴の削除
-              </Link>
-            )} */}
         </div>
         <div className='w-screen flex justify-between items-center'>
           <CustomTable>
@@ -1775,7 +1749,6 @@ export default function VolunteerInformationRef() {
                 }
                 value={selectedADList || []}
                 onChange={(e: ChangeEvent<{}>, newValue: ADList[]) => {
-                  //console.log(newValue);
                   setSelectedADList(newValue);
                 }}
                 renderOption={(props: any, option: ADList) => {
@@ -1827,13 +1800,11 @@ export default function VolunteerInformationRef() {
                 }}
                 value={selectedHolidayList || []}
                 onChange={(e: ChangeEvent<{}>, newValue: HolidayList[]) => {
-                  //console.log(newValue);
                   setSelectedHolidayList(newValue);
                 }}
                 renderOption={(props: any, option: HolidayList) => {
                   return (
                     <li {...props} key={option.id}>
-                      {/* {option.name} */}
                       {option.name === true ? '可' : ''}
                     </li>
                   );
@@ -2265,26 +2236,9 @@ export default function VolunteerInformationRef() {
             buttonType='primary'
             className='text-secondaryText text-normal h-12 mr-1 mb-6'
             onClick={() => {
-              // TODO: 削除処理
-              /**
-               * 以下のテーブルに登録されている当該ボランティアのデータの「削除フラグ」に"1"を設定する。
-               * 「ボランティアテーブル」
-               * 「ボランティア履歴テーブル」
-               * 「ボランティアアベイラブルテーブル」
-               * 「ボランティア保有資格情報テーブル」
-               * 「ボランティア言語レベルテーブル」
-               * 「ボランティア支援可能障碍タイプテーブル」
-               */
-              // TODO: エラーハンドリングを実装
-              // 削除に失敗した場合、
-              // 以下のメッセージをシステムエラーとして赤文字で表示し、以降の処理は行わない。
-              // setErrorMessage(['ユーザー情報の登録に失敗しました。ユーザーサポートにお問い合わせください。']);
-
-              // setDisplayFlg(false);
               window.confirm('ボランティア情報を削除します。よろしいですか？')
                 ? //okを押したら下の処理を実行 キャンセルを押したらflagをtrueにしてそのまま
                   (dataDelete(),
-                  // setDisplayFlg(true),
                   window.alert('ボランティア情報の削除が完了しました。'),
                   router.push('/volunteerSearch')) //大会検索画面に遷移する 20240222
                 : '';

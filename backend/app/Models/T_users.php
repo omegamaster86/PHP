@@ -193,7 +193,6 @@ class T_users extends Authenticatable
                             and `mailaddress` = ?',
             [$mailaddress]
         );
-        // Log::debug(DB::getQueryLog()); //SQLの実行ログを表示 20240419
         return $users;
     }
 
@@ -243,7 +242,6 @@ class T_users extends Authenticatable
     public function updateUserTypeRegist($updateInfo)
     {
         // Log::debug("updateUserTypeRegist start.");
-        // DB::enableQueryLog();
         DB::update(
             'update `t_users`
                     set `user_type` = 
@@ -272,7 +270,6 @@ class T_users extends Authenticatable
                 $updateInfo['user_id']
             ]
         );
-        //Log::debug(DB::getQueryLog());
         // Log::debug("updateUserTypeRegist end.");
     }
 
@@ -283,7 +280,6 @@ class T_users extends Authenticatable
     //で指定すること
     public function updateUserTypeDelete($updateInfo)
     {
-        // DB::enableQueryLog();
         // Log::debug("updateUserTypeDelete start.");
         DB::update(
             'update `t_users`
@@ -313,7 +309,6 @@ class T_users extends Authenticatable
                 $updateInfo['user_id']
             ]
         );
-        // Log::debug(DB::getQueryLog());
         // Log::debug("updateUserTypeDelete end.");
     }
 

@@ -86,7 +86,6 @@ export default function ForgotPassword() {
           </div>
           <div className='flex flex-col sm:flex-row items-center gap-4'>
             <CustomButton
-              // buttonType='white-outlined'
               className='flex-1'
               onClick={() => {
                 router.push('/login');
@@ -117,9 +116,6 @@ export default function ForgotPassword() {
                     await csrf();
                     axios
                       .post('api/password-reset', {
-                        // params: {
-                        //   email: email,
-                        // },
                         mailaddress: email,
                       })
                       .then((res) => {

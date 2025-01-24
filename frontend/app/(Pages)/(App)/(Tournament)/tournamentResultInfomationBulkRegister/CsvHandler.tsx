@@ -6,8 +6,6 @@ import CustomInputLabel from '@/app/components/InputLabel';
 import CustomTextField from '@mui/material/TextField';
 import { CustomButton } from '../../../../components';
 import axios from '@/app/lib/axios';
-import { CsvData } from './CsvDataInterface';
-import { resolve } from 'path';
 
 interface Props {
   csvUploadProps: CsvUploadProps;
@@ -76,10 +74,8 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
   // ファイルのクリア処理
   const clearFile = () => {
     setcurrentShowFile(undefined);
-    // 他にクリアするべきデータがあればここに追加
   };
 
-  // useCallback は、関数のメモ化を行うフックです。
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       // アップロード可能なファイルが存在する場合、アップロード中のスイッチを true にし、アップロードを開始する
@@ -94,8 +90,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
             preview: URL.createObjectURL(file),
           }))[0],
         );
-
-        //console.log(acceptedFiles[0] + 'is Uploaded');
 
         // FileをList<List<String>>に変換
         Papa.parse(acceptedFiles[0], {
@@ -153,15 +147,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
     try {
       // 大会IDを取得
       const tournData = props.csvDownloadProps.formData;
-      //console.log(tournData);
-      //console.log(props.csvDownloadProps.filename);
-      // レース情報を取得
-      // 仮実装　レース情報取得処理に変更
-      // const raceResponse = await axios.get<CsvData[]>('http://localhost:3100/raceResultRecords'); //残件対応項目
-      // const raceResponse = await axios.get<CsvData[]>('http://localhost:3100/emptyRace');
-      // const raceResponse = await axios.get<Race[]>(
-      //   'http://localhost:3100/race?tournamentId=' + tournId,
-      // );
       const senddata = {
         tourn_id: tournData.tournId,
       };
@@ -179,7 +164,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           )
         ) {
           csvContent = header;
-          // props.csvDownloadProps.filename = raceResponse.data[0].tournName + '_レース結果一括登録用フォーマット.csv';
           props.csvDownloadProps.filename =
             response.data.tournResult.tourn_name + '_レース結果一括登録用フォーマット.csv'; //ファイル名修正 20240412
         } else {
@@ -187,10 +171,9 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
         }
       } else {
         //レース情報が存在する場合
-        // props.csvDownloadProps.filename = raceResponse.data[0].tournName + '_レース結果一括登録用フォーマット.csv';
         props.csvDownloadProps.filename =
           response.data.tournResult.tourn_name + '_レース結果一括登録用フォーマット.csv'; //ファイル名修正 20240412
-        // Todo: レース情報を取得してCSVに変換する処理を実装
+        // TODO: レース情報を取得してCSVに変換する処理を実装
         // csvContent = header + '\n' + raceResponse.data.map((row) => Object.values(row).join(',')).join('\n');
         csvContent = header + '\n';
         for (let index = 0; index < response.data.result.length; index++) {
@@ -272,7 +255,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
 
     try {
       // ダウンロード用のBlobを作成（UTF-8指定）
-      // const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
       const bom = new Uint8Array([0xef, 0xbb, 0xbf]); //UTF-8を指定
       const blob = new Blob([bom, csvContent], { type: 'text/csv' });
 
@@ -290,7 +272,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
-      // console.error('CSV Download Error:', error);
       alert('CSVのダウンロード中にエラーが発生しました。もう一度試してください。');
     }
   };

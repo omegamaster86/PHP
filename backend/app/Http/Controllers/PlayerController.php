@@ -21,7 +21,6 @@ class PlayerController extends Controller
     {
         Log::debug(sprintf("playerSearch start"));
         $searched_data = $request->all();
-        //Log::debug($searched_data);
         $search_values_array = array();
         $replace_condition_string = $this->generateSearchCondition($searched_data, $search_values_array);
 
@@ -40,7 +39,6 @@ class PlayerController extends Controller
                 Log::debug("エントリーシステムの団体ID、団体ID、団体名以外の条件が入力されている場合");
                 $search_result = $tPlayersData->getPlayerSearchResult($replace_condition_string, $search_values_array);
             }
-            //Log::debug($search_result);
             Log::debug(sprintf("playerSearch end"));
             return response()->json(['result' => $search_result]); //送信データ(debug用)とDBの結果を返す
         } catch (\Exception $e) {
@@ -79,8 +77,6 @@ class PlayerController extends Controller
         //登録するユーザーIDを持つ選手情報の有無を確認
         $target_user_id = Auth::user()->user_id;
         $target_player_data = $tPlayersData->getPlayerFromUserId($target_user_id);
-        Log::debug("********************target_player_data********************");
-        Log::debug($target_player_data);
         //登録するユーザーIDを持つ選手が未登録なら登録実行
         if (empty($target_player_data)) {
             $reqData = $request->all();
@@ -126,7 +122,6 @@ class PlayerController extends Controller
                 //ユーザ種別の更新
                 //右から3桁目が0のときだけユーザー種別を更新する
                 $user_type = (string)Auth::user()->user_type;
-                Log::debug("user_type_is_player = " . substr($user_type, -3, 1));
                 if (mb_substr($user_type, -3, 1) == '0') {
                     $hoge = array();
                     $hoge['user_id'] = Auth::user()->user_id;
@@ -155,7 +150,6 @@ class PlayerController extends Controller
         Log::debug(sprintf("getUpdatePlayerData start"));
         // $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
         $reqData = $request->all();
-        Log::debug($reqData);
         $retrieve_player_by_ID = $tPlayersData->getPlayerData($reqData['player_id']); //DBに選手を登録 20240131
         Log::debug(sprintf("getUpdatePlayerData end"));
         return response()->json(['result' => $retrieve_player_by_ID]); //DBの結果を返す
@@ -184,7 +178,6 @@ class PlayerController extends Controller
         }
         Log::debug(sprintf("updatePlayerData start"));
         $reqData = $request->all();
-        Log::debug($reqData);
         $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
         $tPlayersData::$playerInfo['player_name'] = $reqData['player_name']; //選手名
         $tPlayersData::$playerInfo['date_of_birth'] = $reqData['date_of_birth']; //誕生日
@@ -237,7 +230,6 @@ class PlayerController extends Controller
 
         DB::beginTransaction();
         try {
-            Log::debug($tPlayersData::$playerInfo);
             $result = $tPlayersData->updatePlayerData($tPlayersData::$playerInfo); //DBに選手を更新 20240131
 
             $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
@@ -257,7 +249,6 @@ class PlayerController extends Controller
     {
         Log::debug(sprintf("getPlayerInfoData start"));
         $reqData = $request->all();
-        Log::debug($reqData);
         $result = $tPlayersData->getPlayerData($reqData['playerId']);
         Log::debug(sprintf("getPlayerInfoData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
@@ -288,7 +279,6 @@ class PlayerController extends Controller
     {
         Log::debug(sprintf("getRaceResultRecordsData start"));
         $reqData = $request->all();
-        Log::debug($reqData);
         $result = $tRaceResultRecord->getRaceResultRecord_playerId($reqData['playerId']); //選手IDを元に出漕結果記録を取得 20240212
 
         //laptimeをSS.msからMM:SS.msに変換 20240423
@@ -315,7 +305,6 @@ class PlayerController extends Controller
             if (empty($reqData['playerInformation'])) {
                 abort(400, "選手情報がないため選手を削除できません。");
             }
-            Log::debug($reqData);
 
             $tPlayersData::$playerInfo['player_id'] = $reqData['playerInformation']['player_id']; //選手ID
             $tPlayersData->deletePlayerData($tPlayersData::$playerInfo); //該当選手に削除フラグを立てる 20240208
@@ -329,7 +318,6 @@ class PlayerController extends Controller
             $hoge = array();
             $hoge['user_id'] = Auth::user()->user_id;
             $hoge['input'] = '00000100'; //選手のユーザ種別を変更する
-            Log::debug($hoge);
             $user_type = (string)Auth::user()->user_type;
             //右から3桁目が1のときだけユーザー種別を更新する
             if (substr($user_type, -3, 1) == '1') {
@@ -363,9 +351,7 @@ class PlayerController extends Controller
             //選手更新の際に、JARA選手コードが空欄で渡された場合、ユーザの変更によるものかを判定する 20240507
             if ($request["mode"] == "update") {
                 $jara_player_id_result = DB::select('select `jara_player_id` from `t_players` where `delete_flag` = 0 and `user_id` = ?', [Auth::user()->user_id]);
-                Log::debug($jara_player_id_result);
                 if (!empty($jara_player_id_result) && $jara_player_id_result[0]->jara_player_id != NULL && $jara_player_id_result[0]->jara_player_id != "") {
-                    Log::debug(sprintf("checkJARAPlayerId update jara_player_id end 1"));
                     return response()->json(["エントリーシステムの選手IDが変更されています。\n過去のレース結果との紐づけが失われます。\n変更しますか？"]);
                 }
             }
@@ -381,7 +367,6 @@ class PlayerController extends Controller
                 ]
             );
             if (!empty($result)) {
-                Log::debug(sprintf("checkJARAPlayerId end 1"));
                 abort(400, "選手IDはすでに登録されています。 複数作成することはできません。");
             }
         }
@@ -391,8 +376,6 @@ class PlayerController extends Controller
 
 
         if (!empty($registered_player)) {
-            Log::debug($registered_player->user_id);
-
             if ($registered_player->user_id === NULL or $registered_player->user_id === "") {
                 return response()->json([""]);
             } //マッピング用なJARA選手コードの場合
@@ -469,7 +452,6 @@ class PlayerController extends Controller
             DB::beginTransaction();
 
             $reqData = $request->all();
-            Log::debug($reqData);
             $playerId = $reqData["playerId"];
             $followPlayer = $tFollowedPlayers->getFollowedPlayersData($playerId); //選手IDとユーザIDを元にフォロー情報が存在するかを確認 202401029
 
@@ -497,7 +479,6 @@ class PlayerController extends Controller
     private function generateSearchCondition($searchInfo, &$search_values_array)
     {
         Log::debug(sprintf("generateSearchCondition start"));
-        Log::debug($searchInfo);
         $condition = "";
         //JARA選手コード
         if (isset($searchInfo['jara_player_id'])) {

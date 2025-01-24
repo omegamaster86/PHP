@@ -19,9 +19,8 @@ class TournamentInfoAlignmentController extends Controller
     //大会エントリー一括登録 20240229
     public function tournamentEntryYearSearch(Request $request, T_tournaments $t_tournaments)
     {
-        //Log::debug(sprintf("tournamentEntryYearSearch start."));
+        Log::debug(sprintf("tournamentEntryYearSearch start."));
         $reqData = $request->all();
-        // Log::debug($reqData);
         $event_start_year = $reqData["event_start_year"];
         $user_type = Auth::user()->user_type;
         //ログインユーザーの種別が団体管理者のみの場合、
@@ -38,7 +37,7 @@ class TournamentInfoAlignmentController extends Controller
         else {
             $tournaments = $t_tournaments->getTournamentsFromEntryYear($event_start_year);
         }
-        //Log::debug(sprintf("tournamentEntryYearSearch end."));
+        Log::debug(sprintf("tournamentEntryYearSearch end."));
         return response()->json(['result' => $tournaments]); //DBの結果を返す
     }
 
@@ -53,7 +52,6 @@ class TournamentInfoAlignmentController extends Controller
     ) {
         Log::debug(sprintf("sendTournamentEntryCsvData start"));
         $inputData = $request->all();
-        Log::debug($inputData);
         //$input_event_year = $inputData['tournData']['eventYear'];
         $input_tourn_id = $inputData['tournData']['tournId'];
         //$input_tourn_name = $inputData['tournData']['tournName'];
@@ -72,8 +70,6 @@ class TournamentInfoAlignmentController extends Controller
             $search_values['by_group'] = $inputData['csvDataList'][$rowIndex]['byGroup'];
             $search_values['race_number'] = $inputData['csvDataList'][$rowIndex]['raceNumber'];
             //選択されている大会の大会IDと一致していること
-            // Log::debug("input_tourn_id = ".$input_tourn_id);
-            // Log::debug("csv tourn_id = ".$inputData['csvDataList'][$rowIndex]['tournId']);
             if ($input_tourn_id != $inputData['csvDataList'][$rowIndex]['tournId']) {
                 Log::debug("選択されている大会の大会IDと一致していません.");
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
@@ -84,7 +80,6 @@ class TournamentInfoAlignmentController extends Controller
             $replace_condition_string = $this->generateRaceSearchCondition($inputData['csvDataList'][$rowIndex], $search_values);
             $race_count_array = $t_races->getRaceCount($replace_condition_string, $search_values);
             $race_count = $race_count_array[0]->{"count"};
-            //Log::debug("race_count = ".$race_count);
             //「レーステーブル」から条件が全て一致するレース情報を検索し、1件のみ見つかること
             if ($race_count != 1) {
                 Log::debug("「レーステーブル」から条件が全て一致するレース情報を検索し、1件のみ見つかることが不正.");
@@ -102,7 +97,6 @@ class TournamentInfoAlignmentController extends Controller
             $org_name = $inputData['csvDataList'][$rowIndex]['orgName'];
             $org_count_array = $t_organizations->getOrganizationCountFromCsvData($org_id, $org_name);
             $org_count = $org_count_array[0]->{"count"};
-            //Log::debug("org_count = ".$org_count);
             if ($org_count != 1) {
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
@@ -115,7 +109,6 @@ class TournamentInfoAlignmentController extends Controller
             $seat_name = $inputData['csvDataList'][$rowIndex]['sheetName'];
             $seat_count_array = $m_seat_number->getSeatNumberCountFromCsvData($seat_number, $seat_name);
             $seat_count = $seat_count_array[0]->{"count"};
-            //Log::debug("seat_count = ".$seat_count);
             if ($seat_count != 1) {
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
@@ -128,7 +121,6 @@ class TournamentInfoAlignmentController extends Controller
             $player_name = $inputData['csvDataList'][$rowIndex]['playerName'];
             $player_count_array = $t_players->getPlayerCountFromCsvData($player_id, $player_name);
             $player_count = $player_count_array[0]->{"count"};
-            //Log::debug("player_count = ".$player_count);
             if ($player_count != 1) {
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
@@ -169,7 +161,6 @@ class TournamentInfoAlignmentController extends Controller
         }
         Log::debug(sprintf("sendTournamentEntryCsvData end"));
         //$inputData['csvDataList'] = $inputData['csvDataList'];
-        Log::debug($inputData);
         return response()->json(['result' => $inputData]); //DBの結果を返す
     }
 
@@ -186,7 +177,6 @@ class TournamentInfoAlignmentController extends Controller
         Log::debug(sprintf("registerTournamentEntryCsvData start"));
         $inputData = $request->all();
         //$inputData['csvDataList'] = $request->all();
-        //Log::debug($inputData['csvDataList']);
 
         $current_datetime = now()->format('Y-m-d H:i:s.u');
         $user_id = Auth::user()->user_id;
@@ -278,8 +268,6 @@ class TournamentInfoAlignmentController extends Controller
                             $update_values["updated_time"] = $current_datetime;
                             $update_values["updated_user_id"] = $user_id;
                             $update_values["race_result_record_id"] = $race_result_record_id;
-                            Log::debug("*****************update_values*****************");
-                            Log::debug($update_values);
                             //更新実行
                             $t_raceResultRecord->updateRaceResultRecordsResponse($update_values);
                         }
@@ -309,11 +297,8 @@ class TournamentInfoAlignmentController extends Controller
                         $insert_values["start_datetime"] = $start_datetime;
                         $insert_values["current_datetime"] = $current_datetime;
                         $insert_values["user_id"] = $user_id;
-                        Log::debug("*****************insert_values*****************");
-                        Log::debug($insert_values);
                         //新規登録実行
                         $inserted_id = $t_raceResultRecord->insertRaceResultRecordResponse($insert_values);
-                        Log::debug("inserted_id = " . $inserted_id);
                     }
                 }
             }
@@ -338,7 +323,6 @@ class TournamentInfoAlignmentController extends Controller
     ) {
         Log::debug(sprintf("sendTournamentResultCsvData start"));
         $reqData = $request->all();
-        // Log::debug($reqData);
         try {
             //フロントエンドで入力された大会ID
             $input_tourn_id = $reqData['tournData']['tournId'];
@@ -728,8 +712,6 @@ class TournamentInfoAlignmentController extends Controller
                 }
                 // 発艇日時
                 if (isset($target_row['startDatetime'])) {
-                    // Log::debug($target_row['startDatetime']);
-                    // Log::debug(date('Y/m/d H:i', strtotime($target_row['startDatetime'])));
                     //文字数が16文字(YYYY/MM/DD hh:mm)でない場合、エラーとする
                     if (mb_strlen($target_row['startDatetime']) != 16) {
                         $checkResult = false;
@@ -1045,7 +1027,6 @@ class TournamentInfoAlignmentController extends Controller
                     $target_row['loadingResult'] = "登録不可データ";
                 }
             }
-            //Log::debug($reqData);
             Log::debug(sprintf("sendTournamentResultCsvData end"));
             return response()->json(['result' => $reqData]); //DBの結果を返す
         } catch (\Throwable $e) {
@@ -1065,7 +1046,6 @@ class TournamentInfoAlignmentController extends Controller
     ) {
         Log::debug(sprintf("registerTournamentResultCsvData start"));
         $reqData = $request->all();
-        //Log::debug($reqData);
 
         //選択された大会ID
         $input_tourn_id = $reqData['tournData']['tournId'];
@@ -1114,7 +1094,6 @@ class TournamentInfoAlignmentController extends Controller
                         $replaceString = $this->generateCondStrOfOfficialRaceRecCnt($target_row, $tournament_condition_array); //試作中 20240419
                         $race_count = $t_raceResultRecord->getTargetOfficialRaceCount($tournament_condition_array, $replaceString);
                     }
-                    Log::debug($race_count);
                     $target_race_count = $race_count[0]->{'target_race_count'};
                     if ($target_race_count == 1) {
                         Log::debug("update execute.");
@@ -1130,7 +1109,6 @@ class TournamentInfoAlignmentController extends Controller
                             //公式のレースデータを取得
                             $race_data = $t_raceResultRecord->getTargetOfficialRace($tournament_condition_array, $replace_string);
                         }
-                        Log::debug($race_data);
                         //更新データの各要素を配列に格納する
                         //DBのテーブルから取得した値を格納
                         $race_result_array['tourn_id'] = $race_data[0]->{'tourn_id'};                                         //大会ID
@@ -1189,8 +1167,6 @@ class TournamentInfoAlignmentController extends Controller
                         //検索条件
                         $race_result_array['race_result_record_id'] = $race_data[0]->{'race_result_record_id'};
 
-                        Log::debug("**********race_result_array**********");
-                        Log::debug($race_result_array);
                         //更新実行
                         $t_raceResultRecord->updateBulkRaceResultRecord($race_result_array);
                     } elseif ($target_race_count == 0) {
@@ -1314,7 +1290,6 @@ class TournamentInfoAlignmentController extends Controller
                         //その他データを格納
                         $race_result_array['registered_time'] = $current_datetime;
                         $race_result_array['user_id'] = $register_user_id;
-                        Log::debug($race_result_array);
                         //挿入実行
                         $t_raceResultRecord->insertBulkRaceResultRecord($race_result_array);
                     }

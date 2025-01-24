@@ -25,25 +25,22 @@ final class DatabaseQueryServiceProvider extends ServiceProvider
             return;
         }
 
-        DB::listen(static function(QueryExecuted $event) {
+        DB::listen(static function (QueryExecuted $event) {
             $sql = $event->connection
                 ->getQueryGrammar()
                 ->substituteBindingsIntoRawSql(
                     sql: $event->sql,
                     bindings: $event->connection->prepareBindings($event->bindings),
                 );
-            $text = '%.2f ms,'."\n".'SQL: %s;';
+            $text = '%.2f ms,' . "\n" . 'SQL: %s;';
             if ($event->time > config('logging.sql.slow_query_time')) {
                 Log::warning(sprintf($text, $event->time, $sql));
             }
-            // else {
-            //     Log::debug(sprintf($text, $event->time, $sql));
-            // }
         });
 
-        Event::listen(static fn (TransactionBeginning $event) => Log::debug('START TRANSACTION'));
-        Event::listen(static fn (TransactionCommitted $event) => Log::debug('COMMIT'));
-        Event::listen(static fn (TransactionRolledBack $event) => Log::debug('ROLLBACK'));
+        Event::listen(static fn(TransactionBeginning $event) => Log::debug('START TRANSACTION'));
+        Event::listen(static fn(TransactionCommitted $event) => Log::debug('COMMIT'));
+        Event::listen(static fn(TransactionRolledBack $event) => Log::debug('ROLLBACK'));
     }
 
     /**

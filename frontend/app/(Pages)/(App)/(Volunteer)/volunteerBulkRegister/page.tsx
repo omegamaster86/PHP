@@ -432,16 +432,8 @@ export default function VolunteerBulkRegister() {
     return !/^[a-zA-Z0-9０-９ぁ-んァ-ヶー一-龠ａ-ｚＡ-Ｚ]+$/g.test(value) || value.length > 50;
   };
 
-  // const validateCountryIsNotJapan = (key: string) => {
-  //   //console.log(key);
-  //   if (key === '' || key === undefined || key === null) return false;
-  //   // 居住国が日本=112の時のみ、居住都道府県の形式をチェックする
-  //   // 居住国が日本=112の時、falseを返す
-  //   return key !== '112';
-  // };
   //居住地のバリデーションチェックで日本以外かつ都道府県ありをチェックできるように条件を修正 20240412
   const validateCountryIsNotJapanAndPref = (cntKey: string, prefKey: string) => {
-    //console.log(cntKey,prefKey);
     if (cntKey != '112' && prefKey != '') {
       return true; //日本以外かつ都道府県あり
     } else if (cntKey == '112' && (prefKey == '' || prefKey == undefined || prefKey == null)) {
@@ -544,17 +536,6 @@ export default function VolunteerBulkRegister() {
             : validateNumber(row[4], 3) ||
               country.filter((item) => item.id === Number(row[4])).length !== 1,
         },
-        // 必須項目
-        // residencePrefectureId: { //20240411
-        //   key: row[5],
-        //   value: prefecture.find((item) => item.id === Number(row[5]))?.name || row[5],
-        //   isError: validateCountryIsNotJapan(row[4])
-        //     ? false
-        //     : validateRequired(row[5])
-        //       ? true
-        //       : validateNumber(row[5], 2) ||
-        //         prefecture.filter((item) => item.id === Number(row[5])).length !== 1,
-        // },
         residencePrefectureId: {
           key: row[5],
           value: prefecture.find((item) => item.id === Number(row[5]))?.name || row[5],
@@ -755,12 +736,6 @@ export default function VolunteerBulkRegister() {
                 country.filter((item) => item.id === Number(row[4])).length !== 1) ||
             // 居住都道府県の形式かどうかを判定する
             // 居住国が日本=112の時のみ、居住都道府県の形式をチェックする
-            // (validateCountryIsNotJapan(row[4])
-            //   ? false
-            //   : validateRequired(row[5])
-            //     ? true
-            //     : validateNumber(row[5], 2) ||
-            //       prefecture.filter((item) => item.id === Number(row[5])).length !== 1) ||
             (validateCountryIsNotJapanAndPref(row[4], row[5])
               ? true
               : validateNumber(row[5], 2) ||
@@ -915,7 +890,6 @@ export default function VolunteerBulkRegister() {
             return;
           }
         }
-        //console.log(contentData);
         setCsvData(contentData as CsvData[]);
         setDialogDisplayFlg(true);
         setActivationFlg(false);
@@ -933,7 +907,6 @@ export default function VolunteerBulkRegister() {
   const registerCsvData = async () => {
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
-    //console.log(csvData);
     await axios
       .post('api/registerVolunteerCsvData', csvData)
       .then((res) => {

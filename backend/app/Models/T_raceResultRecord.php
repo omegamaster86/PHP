@@ -187,7 +187,6 @@ class T_raceResultRecord extends Model
                                         and  `m_seat_number`.`delete_flag` = 0
                                         and  `m_venue`.`delete_flag` = 0
                                         and `t_race_result_record`.player_id = ?', [$playerId]);
-        // Log::debug($racesResultRecord);
         return $racesResultRecord;
     }
 
@@ -211,7 +210,6 @@ class T_raceResultRecord extends Model
                                         ORDER BY `t_race_result_record`.`start_datetime` DESC',
             [$playerId, $official]
         );
-        // Log::debug($racesResultRecord);
         return $racesResultRecord;
     }
 
@@ -673,7 +671,6 @@ class T_raceResultRecord extends Model
                             order by msn.`display_order`',
             $values
         );
-        //Log::debug(DB::getQueryLog());
         return $crews;
     }
 

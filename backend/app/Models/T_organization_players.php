@@ -72,7 +72,6 @@ class T_organization_players extends Model
             ]
         );
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
-        //Log::debug(DB::getQueryLog());
         Log::debug('insertOrganizationPlayer end.');
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
@@ -229,7 +228,6 @@ class T_organization_players extends Model
                         ';
         $sqlString = str_replace("#ReplaceConditionString#", $condition, $sqlString);
         $players = DB::select($sqlString, $conditionValue);
-        Log::debug(DB::getQueryLog());
         Log::debug('getOrganizationPlayersFromCondition end.');
         return $players;
     }
@@ -398,7 +396,6 @@ class T_organization_players extends Model
                         ';
         $sqlString = str_replace("#ReplaceConditionString#", $condition, $sqlString);
         $players = DB::select($sqlString, $conditionValue);
-        Log::debug(DB::getQueryLog());
         Log::debug('getOrgPlayersForAddPlayerSearch end.');
         return $players;
     }

@@ -35,9 +35,6 @@ import {
   TournamentResponse,
 } from '@/app/types';
 
-// モデルのインポート
-import { Tournament } from '@/app/types';
-
 // マテリアルUI関連モジュールのインポート
 import SearchIcon from '@mui/icons-material/Search';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -50,13 +47,10 @@ import {
   Chip,
   MenuItem,
   Select,
-  Autocomplete,
-  TextField,
   Accordion,
   AccordionSummary,
   AccordionDetails,
 } from '@mui/material';
-import CustomAutocomplete from '@/app/components/CustomAutocomplete';
 
 import Validator from '@/app/utils/validator';
 
@@ -426,13 +420,11 @@ export default function VolunteerSearch() {
    * 検索結果をstateにセットする
    */
   const handleSearch = async () => {
-    //console.log(searchCond);
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     axios
       .post('api/volunteerSearch', searchCond)
       .then((response) => {
-        //console.log(response.data.result);
         // レスポンスからデータを取り出してstateにセット
         setSearchResponse(response.data.result as VolunteerResponse[]);
       })
@@ -522,13 +514,11 @@ export default function VolunteerSearch() {
         setPrefecture(stateList);
       } catch (error) {
         //console.log(error);
-        // alert(error);
       }
     };
     fetchData();
   }, []);
 
-  // React Hook
   // 検索条件のうち、資格情報の変更を監視
   useEffect(() => {
     if ((searchCond.qualHold?.length || 0) > 5) {
@@ -547,7 +537,6 @@ export default function VolunteerSearch() {
     }
   }, [searchCond.qualHold]);
 
-  // React Hook
   // 検索条件のうち、大会情報の変更を監視
   useEffect(() => {
     if ((searchCond.tour?.length || 0) > 3) {
@@ -559,7 +548,6 @@ export default function VolunteerSearch() {
     }
   }, [searchCond.tour]);
 
-  // レンダリング
   return (
     <>
       {/* タイトルの表示 */}
@@ -1289,19 +1277,6 @@ export default function VolunteerSearch() {
                       })
                   : null}
               </Select>
-              {/* <CustomAutocomplete
-                id='tournament'
-                errorMessages={[]}
-                placeholder='大会名'
-                value={searchCond.tour || []}
-                onChange={(e, val) => {
-                  setSearchCond((prevFormData) => ({
-                    ...prevFormData,
-                    tour: val as [TournamentResponse],
-                  }));
-                }}
-                options={tour.map((item) => ({ id: item.id, name: item.name }))}
-              /> */}
               <p className='self-start text-small text-gray-400'>※複数選択可（3大会まで）</p>
             </div>
           </div>
@@ -1337,7 +1312,6 @@ export default function VolunteerSearch() {
                 startDateExistsError.length > 0 ||
                 endDateExistsError.length > 0 ||
                 compareDatesVolunteerError.length > 0
-                // dateOfBirthError.length > 0
               ) {
                 return;
               }

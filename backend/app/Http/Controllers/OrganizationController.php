@@ -21,7 +21,6 @@ class OrganizationController extends Controller
     {
         Log::debug(sprintf("searchOrganization start"));
         $searchInfo = $request->all();
-        Log::debug($searchInfo);
         $searchValue = [];
         $searchCondition = $this->generateOrganizationSearchCondition($searchInfo, $searchValue);
         $organizations = $tOrganizations->getOrganizationWithSearchCondition($searchCondition, $searchValue);
@@ -35,7 +34,6 @@ class OrganizationController extends Controller
     {
         Log::debug(sprintf("getOrgData start"));
         $result = $request->all();
-        Log::debug($result);
         $tOrg = $tOrganizations->getOrganization($result['org_id']);
         Log::debug(sprintf("getOrgData end"));
         return response()->json(['result' => $tOrg]); //DBの結果を返す
@@ -47,7 +45,6 @@ class OrganizationController extends Controller
         Log::debug(sprintf("storeOrgData start"));
         $lastInsertId = "";
         $organizationInfo = $request->all();
-        Log::debug($organizationInfo);
         //郵便番号に「-(ハイフン)」が含まれていると、
         //DBのテーブルの設定が7文字固定であることから登録データの下一桁が欠落するため削除しておく
         $post_code = $organizationInfo['formData']['post_code'];
@@ -64,17 +61,14 @@ class OrganizationController extends Controller
         $duplicationCount = 0;
         //団体IDがnullでエントリーシステムの団体IDが入力されている場合、登録時の重複チェックを行う
         if (!isset($formData['org_id']) && isset($formData['entrysystem_org_id'])) {
-            // Log::debug("call getEntrysystemOrgIdCount");
             $duplicationCount = $tOrganizations->getEntrysystemOrgIdCount($formData['entrysystem_org_id']);
         }
         if ($duplicationCount > 0) {
-            // Log::debug(sprintf("validateOrgData duplication"));
             return response()->json(['duplicationError' => "エントリーシステムの団体IDが重複しています。"]);
         }
 
         DB::beginTransaction();
         try {
-            //Log::debug("=========================");
             //確認画面から登録
             $lastInsertId = $tOrganizations->insertOrganization($organizationInfo);
             //新しく入力されたスタッフをInsertする
@@ -101,7 +95,6 @@ class OrganizationController extends Controller
         Log::debug(sprintf("updateOrgData start"));
 
         $organizationInfo = $request->all();
-        Log::debug($organizationInfo);
         $target_org_id = $organizationInfo['formData']['org_id'];   //更新対象の団体ID
         //郵便番号に「-(ハイフン)」が含まれていると、
         //DBのテーブルの設定が7文字固定であることから登録データの下一桁が欠落するため削除しておく
@@ -119,7 +112,6 @@ class OrganizationController extends Controller
         $errorCount = 0;
         //団体IDとエントリーシステムの団体IDが入力されている場合、更新時の重複チェックを行う
         if (isset($formData['org_id']) && isset($formData['entrysystem_org_id'])) {
-            // Log::debug("call getEntrysystemOrgIdCountWithOrgId");
             $errorCount = $tOrganizations->getEntrysystemOrgIdCountWithOrgId($formData['entrysystem_org_id'], $formData['org_id']);
             if ($errorCount > 0) {
                 return response()->json(['errorMessage' => "エントリーシステムの団体IDが重複しています。"]);
@@ -244,7 +236,6 @@ class OrganizationController extends Controller
             $tOrg[$i]->refereeQualificationNames = explode(",", $tOrg[$i]->refereeQualificationNames);
         }
         Log::debug(sprintf("getOrgStaffData end"));
-        //Log::debug($tOrg);
 
         if ($is_error) {
             //エラーがあった場合
@@ -263,7 +254,6 @@ class OrganizationController extends Controller
     ) {
         Log::debug(sprintf("getEntryTournamentsViewForTeamRef start"));
         $targetOrgId = $request->all();
-        Log::debug($targetOrgId);
         //出漕結果記録情報を取得
         $tournamentIds = $tRaceResultRecord->getTournamentIdForResultsRecord($targetOrgId);
         //エントリー大会情報取得のための条件文を生成する
@@ -289,12 +279,9 @@ class OrganizationController extends Controller
     ) {
         Log::debug(sprintf("deleteOrgData start"));
         $organizationInfo = $request->all();
-        //Log::debug($organizationInfo);
         DB::beginTransaction();
         try {
             $org_id = $organizationInfo['org_id'];
-            //Log::debug("org_id = ".$org_id);
-
             //団体所属スタッフを削除
             $t_organization_staff->updateDeleteFlagByOrganizationDeletion($org_id);
             //団体所属選手を削除
@@ -321,25 +308,20 @@ class OrganizationController extends Controller
     {
         Log::debug(sprintf("validateOrgData start"));
         $reqData = $request->all();
-        //Log::debug($reqData);
-        //Log::debug($reqData['formData']['entrysystem_org_id']);
         $formData = $reqData['formData'];
         $staff_list = &$reqData['staffList'];
 
         $duplicationCount = 0;
         //団体IDがnullでエントリーシステムの団体IDが入力されている場合、登録時の重複チェックを行う
         if (!isset($formData['org_id']) && isset($formData['entrysystem_org_id'])) {
-            // Log::debug("call getEntrysystemOrgIdCount");
             $duplicationCount = $tOrganizations->getEntrysystemOrgIdCount($formData['entrysystem_org_id']);
         }
         //団体IDとエントリーシステムの団体IDが入力されている場合、更新時の重複チェックを行う
         if (isset($formData['org_id']) && isset($formData['entrysystem_org_id'])) {
-            // Log::debug("call getEntrysystemOrgIdCountWithOrgId");
             $duplicationCount = $tOrganizations->getEntrysystemOrgIdCountWithOrgId($formData['entrysystem_org_id'], $formData['org_id']);
         }
 
         if ($duplicationCount > 0) {
-            // Log::debug(sprintf("validateOrgData duplication"));
             abort(400, "エントリーシステムの団体IDが重複しています。");
         }
 
@@ -549,7 +531,6 @@ class OrganizationController extends Controller
                 $staff_list[$iStaff]['user_name'] = $is_valid[0]->{'user_name'};
             }
         }
-        Log::debug($staff_list);
         Log::debug("checkUserIdIsValid end.");
     }
 }

@@ -54,7 +54,7 @@ class T_volunteer_histories extends Model
         left join `t_tournaments`
         on `t_volunteer_histories`.`tourn_id` = `t_tournaments`.`tourn_id`
         where `t_volunteer_histories`.delete_flag=0 and `t_volunteer_histories`.volunteer_id = ?', [$vlntrId]);
-        
+
         return $volunteers;
     }
 
@@ -85,7 +85,8 @@ class T_volunteer_histories extends Model
     //volunteer_idを条件としてボランティア履歴を取得
     public function getVolunteerHistoriesResponse($volunteer_id)
     {
-        $histories = DB::select("select
+        $histories = DB::select(
+            "select
                                 tvh.tourn_id
                                 ,tourn.tourn_name
                                 ,tourn.tourn_type
@@ -101,8 +102,9 @@ class T_volunteer_histories extends Model
                                 where 1=1
                                 and tvh.delete_flag = 0
                                 and tourn.delete_flag = 0
-                                and `volunteer_id` = :volunteer_id"
-                            ,$volunteer_id);
+                                and `volunteer_id` = :volunteer_id",
+            $volunteer_id
+        );
         return $histories;
     }
 
@@ -115,26 +117,26 @@ class T_volunteer_histories extends Model
                     ,delete_flag = 1
                     where 1=1
                     and volunteer_history_id = :volunteer_history_id
-                    ",$values);
+                    ", $values);
     }
 
     //ボランティア削除
     //delete_flagを1にする
     public function updateDeleteFlag($volunteer_id)
     {
-        Log::debug($volunteer_id);
-        DB::update('update `t_volunteer_histories`
+        DB::update(
+            'update `t_volunteer_histories`
                     set `delete_flag` = 1
                     ,updated_time = ?
                     ,updated_user_id = ?
                     where 1=1
                     and `delete_flag` = 0
-                    and `volunteer_id` = ?'
-                    ,[
-                        now()->format('Y-m-d H:i:s.u')
-                        ,Auth::user()->user_id
-                        ,$volunteer_id
-                    ]
-                );
+                    and `volunteer_id` = ?',
+            [
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                $volunteer_id
+            ]
+        );
     }
 }
