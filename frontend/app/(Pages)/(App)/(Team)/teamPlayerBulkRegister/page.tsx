@@ -65,15 +65,12 @@ export default function TeamPlayerBulkRegister() {
     isSet: boolean;
   }>({ content: [], isSet: false });
   const [activationFlg, setActivationFlg] = useState<boolean>(false);
-  const [disableFlg, setDisableFlg] = useState<boolean>(false);
   const [orgSelected, setOrgSelected] = useState<string>('');
-  const [errorText, setErrorText] = useState([] as string[]);
   const [csvFileErrorMessage, setCsvFileErrorMessage] = useState([] as string[]);
   const [csvData, setCsvData] = useState<CsvData[]>([]);
   const [dialogDisplayFlg, setDialogDisplayFlg] = useState<boolean>(false);
   const [displayLinkButtonFlg, setDisplayLinkButtonFlg] = useState<boolean>(false);
   const searchParams = useSearchParams();
-  const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
   const [visibilityFlg, setVisibilityFlg] = useState<boolean>(false); //CSVテーブルの表示切替フラグ 20240424
 
   const [validFlag, setValidFlag] = useState(false); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
@@ -253,25 +250,18 @@ export default function TeamPlayerBulkRegister() {
    * @returns
    */
   const handleResult = async (row: string[]) => {
-    //console.log(row[3], ' sss ', row[4]);
     // 選手名の形式
     //　日本語：^[ぁ-んァ-ヶｱ-ﾝﾞﾟ一-龠]*$
     //　半角英数字：^[0-9a-zA-Z]*$
     //　記号：^[-,_]*$
     //　最大文字数：32文字（全半角区別なし）
-    // const plaerNameRegex = /^[ぁ-んァ-ヶｱ-ﾝﾞﾟ一-龠0-9a-zA-Z-,_]{1,32}$/;
-    // メールアドレスの形式
-    // const maidAddressRegex =
-    //   /^[A-Za-z0-9]{1}[A-Za-z0-9_.-]*@{1}[A-Za-z0-9_.-]{1,}\.[A-Za-z0-9]{1,}$/;
 
     if (row[3] === '' || row[3] === undefined || row[3] === null) {
       return '無効データ（メールアドレス未設定）';
-      // } else if (row[4].match(maidAddressRegex) === null) {
     } else if (validateEmailFormat(row[3])) {
       return '無効データ（メールアドレス不正）';
     } else if (row[4] === '' || row[4] === undefined || row[4] === null) {
       return '無効データ（選手名未設定）';
-      // } else if (row[3].match(plaerNameRegex) === null) {
     } else if (validatePlayerName(row[4])) {
       return '無効データ（選手名不正）';
     } else if (row.length !== 5) return '無効データ';
@@ -282,7 +272,6 @@ export default function TeamPlayerBulkRegister() {
 
   const getJsonRow = async (row: string[], index: number) => {
     const expectedColumnCount = 5; // 期待する列数
-    //console.log(row.length);
     if (row.length !== expectedColumnCount) {
       return {
         id: index,
@@ -303,15 +292,6 @@ export default function TeamPlayerBulkRegister() {
         id: index,
         checked: handleCheckboxValue(await handleResult(row)),
         result: await handleResult(row),
-        // userId: row[0],
-        // playerId: row[1],
-        // jaraPlayerId: row[2],
-        // playerName: row[3],
-        // mailaddress: row[4],
-        // teamId: row[5],
-        // teamName: row[6],
-        // birthPlace: row[7],
-        // residence: row[8],
         userId: row[2],
         playerId: row[1],
         jaraPlayerId: row[0],
@@ -354,17 +334,14 @@ export default function TeamPlayerBulkRegister() {
       targetOrgData,
       csvDataList: csvData,
     };
-    //console.log(sendData.csvDataList);
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
     await axios
       .post('api/registerOrgCsvData', sendData)
       .then((res) => {
-        //console.log(res.data.result);
         // router.push('/tournamentSearch'); // 20240222
       })
       .catch((error) => {
-        //console.log(error);
         setErrorMessage([...error?.response?.data]); //メール送信に失敗した場合、エラーメッセージを表示 20240423
       });
   };
@@ -406,7 +383,6 @@ export default function TeamPlayerBulkRegister() {
               }
             }
             setOrgSelected(e);
-            //console.log(e);
             handleFormInputChange('targetOrgId', e);
             handleFormInputChange(
               'targetOrgName',
@@ -451,7 +427,6 @@ export default function TeamPlayerBulkRegister() {
               buttonType='primary'
               onClick={() => {
                 setActivationFlg(true);
-                //console.log(dialogDisplayFlg);
                 if (dialogDisplayFlg) {
                   if (
                     !window.confirm(
@@ -476,7 +451,6 @@ export default function TeamPlayerBulkRegister() {
                     .slice(isHeaderMatch ? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
                     .map((row, index) => getJsonRow(row, index)),
                 ).then((results) => {
-                  //console.log(results);
                   var resList = results as any;
                   resList.forEach((element: any) => {
                     element['birthCountryId'] = null;
@@ -484,7 +458,6 @@ export default function TeamPlayerBulkRegister() {
                     element['residenceCountryId'] = null;
                     element['residencePrefectureId'] = null;
                   });
-                  //console.log(resList);
                   sendCsvData(resList); //バックエンド側のバリデーションチェックを行う為にデータを送信する 20240302
                   setDialogDisplayFlg(true); //2回目以降のcsv読み込みで確認ダイアログを表示させる 20240419
                   setVisibilityFlg(true); //CSVテーブルの表示切替フラグ 20240424

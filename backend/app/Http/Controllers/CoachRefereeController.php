@@ -20,7 +20,6 @@ class CoachRefereeController extends Controller
     {
         Log::debug(sprintf("getCoachRefereeInfoList start"));
         $reqData = $request->all();
-        Log::debug($reqData);
         $result = $tUsers->getCoachRefereeInfoData($reqData['userId']); //ユーザIDに紐づいた指導者・審判資格を取得する 20241106
         $result->coachingHistories = $tOrganizationCoachingHistory->getOrganizationCoachingHistoryData($reqData['userId']); //ユーザIDに紐づいた指導履歴を取得する 20241106
         $result->coachQualificationNames = array_filter(
@@ -45,7 +44,6 @@ class CoachRefereeController extends Controller
     ) {
         Log::debug(sprintf("getUpdateCoachRefereeInfoList start"));
         $reqData = $request->all();
-        Log::debug($reqData);
         $coachingHistories = $tOrganizationCoachingHistory->getOrganizationCoachingHistoryData(Auth::user()->user_id);
         $coachQualifications = $tHeldCoachQualifications->getHeldCoachQualificationsData();
         $refereeQualifications = $tHeldRefereeQualifications->getHeldRefereeQualificationsData();
@@ -81,7 +79,6 @@ class CoachRefereeController extends Controller
             DB::beginTransaction();
 
             $reqData = $request->all();
-            Log::debug($reqData);
 
             // 指導者資格の重複チェック
             $coachQualificationIds = array_column($reqData['coachQualifications'], 'coachQualificationId');
@@ -165,7 +162,6 @@ class CoachRefereeController extends Controller
     ) {
         Log::debug(sprintf("getCoachRefereeProfileInfo start"));
         $reqData = $request->all();
-        Log::debug($reqData);
 
         $result = ([
             'userName' => Auth::user()->user_name,

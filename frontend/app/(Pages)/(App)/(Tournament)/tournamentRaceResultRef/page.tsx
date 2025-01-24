@@ -141,19 +141,7 @@ export default function TournamentRaceResultRef() {
     '1000mストローク',
     '1500mストローク',
     '2000mストローク',
-    // '心拍数/分（平均）',
-    // '500m心拍数/分',
-    // '1000m心拍数/分',
-    // '1500m心拍数/分',
-    // '2000m心拍数/分',
     '非公式／公式',
-    // '立ち合い有無',
-    // 'エルゴ体重',
-    // '選手身長',
-    // '選手体重',
-    // 'シート番号ID',
-    // 'シート番号',
-    // '出漕結果記録名',
     '1000m地点風速',
     '1000m地点風向',
     '2000m地点風速',
@@ -217,7 +205,6 @@ export default function TournamentRaceResultRef() {
    */
   const [currentCrewName, setCurrentCrewName] = useState('');
   const getCrew = async (rowData: RaceResultRecordsResponse) => {
-    // var apiUri = 'http://localhost:3100/crew?';
     // クルー名、団体ID、レースIDのすべてが一致するクルー情報を取得
     var index = 0;
     for (; index < searchCrewInfo.length; index++) {
@@ -380,7 +367,7 @@ export default function TournamentRaceResultRef() {
                       {/* 組別 */}
                       <CustomTd>{row.by_group}</CustomTd>
                       {/* 発艇日時 「YYYY/MM/DD hh:mm」表記で表示 */}
-                      <CustomTd>{formatDate(row.start_datetime,'yyyy/MM/dd HH:mm')}</CustomTd>
+                      <CustomTd>{formatDate(row.start_datetime, 'yyyy/MM/dd HH:mm')}</CustomTd>
                       {/* 順位 */}
                       <CustomTd>{row.rank}</CustomTd>
                       {/* クルー名 */}
@@ -405,8 +392,6 @@ export default function TournamentRaceResultRef() {
                       <CustomTd>{row.laptime_2000m}</CustomTd>
                       {/* 最終タイム */}
                       <CustomTd>{row.final_time}</CustomTd>
-                      {/* B.No */}
-                      {/* <CustomTd>{row.bNo}</CustomTd> */}
                       {/* 備考 */}
                       <CustomTd>{row.race_result_notes}</CustomTd>
                       {/* ストローク（平均） */}
@@ -419,32 +404,8 @@ export default function TournamentRaceResultRef() {
                       <CustomTd>{row.stroke_rat_1500m}</CustomTd>
                       {/* 2000mlapストローク */}
                       <CustomTd>{row.stroke_rat_2000m}</CustomTd>
-                      {/* 心拍数/分（平均） */}
-                      {/* <CustomTd>{row.heart_rate_avg}</CustomTd> */}
-                      {/* 500m心拍数/分 */}
-                      {/* <CustomTd>{row.heart_rate_500m}</CustomTd> */}
-                      {/* 1000m心拍数/分 */}
-                      {/* <CustomTd>{row.heart_rate_1000m}</CustomTd> */}
-                      {/* 1500m心拍数/分 */}
-                      {/* <CustomTd>{row.heart_rate_1500m}</CustomTd> */}
-                      {/* 2000m心拍数/分 */}
-                      {/* <CustomTd>{row.heart_rate_2000m}</CustomTd> */}
                       {/* 非公式／公式 */}
                       <CustomTd>{row.official === 0 ? '非公式' : '公式'}</CustomTd>
-                      {/* 立ち合い有無 */}
-                      {/* <CustomTd>{row.attendance}</CustomTd> */}
-                      {/* エルゴ体重 */}
-                      {/* <CustomTd>{row.ergo_weight}</CustomTd> */}
-                      {/* 選手身長 */}
-                      {/* <CustomTd>{row.player_height}</CustomTd> */}
-                      {/* 選手体重 */}
-                      {/* <CustomTd>{row.player_weight}</CustomTd> */}
-                      {/* シート番号ID */}
-                      {/* <CustomTd>{row.seat_number}</CustomTd> */}
-                      {/* シート番号 */}
-                      {/* <CustomTd>{row.seat_name}</CustomTd> */}
-                      {/* 出漕結果記録名 */}
-                      {/* <CustomTd>{row.race_result_record_name}</CustomTd> */}
                       {/* 1000m地点風速 */}
                       <CustomTd>{row.wind_speed_1000m_point}</CustomTd>
                       {/* 1000m地点風向 */}

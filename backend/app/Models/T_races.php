@@ -214,7 +214,6 @@ class T_races extends Model
                             and race.race_id = ?",
             [$race_id]
         );
-        //Log::debug($race);
         Log::debug("getRaceFromRaceId end.");
         return $race;
     }

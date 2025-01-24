@@ -25,7 +25,6 @@ class MyPageController extends Controller
     {
         Log::debug(sprintf("getMyPageTournamentInfoList start"));
         $reqData = $request->all();
-        Log::debug($reqData);
         $tournType = $reqData["tournType"];
         $playerData = $tPlayers->getPlayerDataFromUserId(Auth::user()->user_id); //ユーザIDを元に選手IDを取得 202401008
 
@@ -40,7 +39,6 @@ class MyPageController extends Controller
     {
         Log::debug(sprintf("getMyPageRaceResultRecordInfoList start"));
         $reqData = $request->all();
-        Log::debug($reqData);
         $official = $reqData["official"];
         $playerData = $tPlayers->getPlayerDataFromUserId(Auth::user()->user_id); //ユーザIDを元に選手IDを取得 202401008
 

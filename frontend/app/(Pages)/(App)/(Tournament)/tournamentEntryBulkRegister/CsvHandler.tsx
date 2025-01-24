@@ -6,7 +6,6 @@ import CustomInputLabel from '@/app/components/InputLabel';
 import CustomTextField from '@mui/material/TextField';
 import { CustomButton } from '../../../../components';
 import axios from '@/app/lib/axios';
-import { CsvData } from './CsvDataInterface';
 import { FormData } from './FormDataInterface';
 
 interface Props {
@@ -35,11 +34,6 @@ interface CsvDownloadProps {
 // Handlerの型定義
 interface Handler {}
 
-interface Header {
-  key: string;
-  label: string;
-}
-
 // FileUploaderコンポーネント
 const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) {
   const [currentShowFile, setcurrentShowFile] = useState<{ file: File; isUploaded: boolean }>();
@@ -67,10 +61,8 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
   // ファイルのクリア処理
   const clearFile = () => {
     setcurrentShowFile(undefined);
-    // 他にクリアするべきデータがあればここに追加
   };
 
-  // useCallback は、関数のメモ化を行うフックです。
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       // アップロード可能なファイルが存在する場合、アップロード中のスイッチを true にし、アップロードを開始する
@@ -85,8 +77,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
             preview: URL.createObjectURL(file),
           }))[0],
         );
-
-        //console.log(acceptedFiles[0] + 'is Uploaded');
 
         // FileをList<List<String>>に変換
         Papa.parse(acceptedFiles[0], {
@@ -159,7 +149,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           )
         ) {
           csvContent = header;
-          // props.csvDownloadProps.filename = raceResponse.data[0].tournName + '_レース結果一括登録用フォーマット.csv'; //残件対応項目
           props.csvDownloadProps.filename =
             response.data.tournResult.tourn_name + '_大会エントリー一括登録用フォーマット.csv'; //ファイル名修正 20240419
         } else {
@@ -206,7 +195,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
 
     try {
       // ダウンロード用のBlobを作成（UTF-8指定）
-      // const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
       const bom = new Uint8Array([0xef, 0xbb, 0xbf]); //UTF-8を指定
       const blob = new Blob([bom, csvContent], { type: 'text/csv' });
 

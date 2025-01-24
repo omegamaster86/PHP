@@ -1,7 +1,6 @@
 import React, {
   useState,
   useCallback,
-  useRef,
   forwardRef,
   Dispatch,
   SetStateAction,
@@ -10,7 +9,6 @@ import React, {
 } from 'react';
 import type { FileRejection } from 'react-dropzone';
 import { useDropzone } from 'react-dropzone';
-import Papa from 'papaparse';
 import CustomInputLabel from '@/app/components/InputLabel';
 import CustomTextField from '@mui/material/TextField';
 
@@ -37,10 +35,8 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
     };
   });
 
-  //アップロードされたファイルを保存するー開始
   useEffect(() => {
     if (currentShowFile?.file) {
-      //console.log(currentShowFile?.file);
       props.setTournamentFormData((prevFormData: any) => ({
         ...prevFormData,
         uploadedPDFFilePath: currentShowFile.file.name,
@@ -49,14 +45,12 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
       }));
     }
   }, [currentShowFile]); //ファイルのアップロード終わったら
-  //アップロードされたファイルを保存するー完了
 
   // ファイルアップロード時の処理
   const onUploadFile = async (file: File) => {
     try {
       setcurrentShowFile({ file, isUploaded: false });
 
-      // const uploadTime = Math.random() * 9000 + 1000; // 1秒から10秒
       const uploadTime = 1000; // 1秒
       await new Promise((resolve) => setTimeout(resolve, uploadTime));
 
@@ -64,7 +58,6 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
       setcurrentShowFile({ file, isUploaded: true });
     } catch (error) {
       // エラーが発生した場合の処理
-      //console.log(`アップロード中にエラーが発生しました: ${error}`);
       alert(`アップロード中にエラーが発生しました。`);
     }
   };
@@ -72,10 +65,8 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
   // ファイルのクリア処理
   const clearFile = () => {
     setcurrentShowFile(undefined);
-    // 他にクリアするべきデータがあればここに追加
   };
 
-  // useCallback は、関数のメモ化を行うフックです。
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       // アップロード可能なファイルが存在する場合、アップロード中のスイッチを true にし、アップロードを開始する
@@ -90,8 +81,6 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
             preview: URL.createObjectURL(file),
           }))[0],
         );
-
-        //console.log(acceptedFiles[0] + 'is Uploaded');
       } catch (error) {
         // エラーが発生した場合の処理
         //console.log(`アップロード中にエラーが発生しました: ${error}`);
@@ -135,9 +124,6 @@ const PdfFileUploader = forwardRef<Handler, Props>(function PdfFileUploaderBase(
     multiple: false,
   });
 
-  {
-    /* ファイルアップロードのテキストボックスとボタンの表示 */
-  }
   return (
     <>
       <div>

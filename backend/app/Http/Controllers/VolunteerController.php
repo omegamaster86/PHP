@@ -41,7 +41,6 @@ class VolunteerController extends Controller
             //return redirect('user/password-change');
         }
         $requestData = $request->all();
-        Log::debug($requestData['volunteer_id']);
         $volData = $tVolunteer->getVolunteers($requestData['volunteer_id']); //ボランティア情報を取得
         $volAvaData = $tVolunteerAvailables->getVolunteerAvailables($requestData['volunteer_id']); //ボランティアアベイラブル情報を取得
         $volHistData = $tVolunteerHistories->getVolunteerHistories($requestData['volunteer_id']); //ボランティア履歴情報を取得
@@ -65,7 +64,6 @@ class VolunteerController extends Controller
     {
         Log::debug(sprintf("searchVolunteers start"));
         $searchInfo = $request->all();
-        //Log::debug($searchInfo);
         try {
             //参加しやすい曜日
             $pieces = str_split((string) $searchInfo['dayOfWeek']);
@@ -147,7 +145,6 @@ class VolunteerController extends Controller
                 $SupportableDisabilityJoinType,
                 $conditionValue
             );
-            Log::debug($result);
 
             for ($i = 0; $i < count($result); $i++) {
                 $dis_type_id = array();
@@ -198,7 +195,6 @@ class VolunteerController extends Controller
     ) {
         Log::debug(sprintf("deleteVolunteer start"));
         $reqData = $request->all();
-        Log::debug($reqData);
 
         $volData = $tVolunteer->getVolunteers($reqData['volunteer_id']); //ボランティア情報を取得
         $volInfo = (array)$volData;
@@ -219,7 +215,6 @@ class VolunteerController extends Controller
         $hoge = array();
         $hoge['user_id'] = Auth::user()->user_id;
         $hoge['input'] = '00000010'; //選手のユーザ種別を変更する
-        Log::debug($hoge);
         $user_type = (string)Auth::user()->user_type;
         //右から2桁目が1のときだけユーザー種別を更新する
         if (substr($user_type, -2, 1) == '1') {
@@ -244,7 +239,6 @@ class VolunteerController extends Controller
     ) {
         Log::debug(sprintf("sendVolunteerCsvData start"));
         $reqData = $request->all();
-        //Log::debug($reqData);
 
         //ボランティアの一覧を取得
         $volunteer_list = $t_volunteers->getVolunteer();
@@ -417,7 +411,6 @@ class VolunteerController extends Controller
     ) {
         Log::debug(sprintf("registerVolunteerCsvData start"));
         $reqData = $request->all();
-        //Log::debug($reqData);
         //登録・更新するユーザー名を取得
         $register_user_id = Auth::user()->user_id;
         //登録・更新日時のために現在の日時を取得
@@ -559,7 +552,6 @@ class VolunteerController extends Controller
                     $addAuthority = array();
                     $addAuthority['user_id'] = $volunteer_data['user_id']; //ボランティア情報を連携させたいユーザーのユーザーID
                     $addAuthority['input'] = '10'; //ボランティアのユーザ種別を変更する
-                    Log::debug($addAuthority);
                     $user_type = (string)$user_list[0]->{'user_type'};
                     //右から2桁目が0のときだけユーザー種別を更新する (該当ユーザーのボランティアフラグが0だった場合)
                     if (substr($user_type, -2, 1) == '0') {

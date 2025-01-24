@@ -162,9 +162,6 @@ class UserController extends Controller
     {
         Log::debug(sprintf("storePasswordReset start"));
 
-        Log::debug($request->mailaddress);
-        // ddd("");
-
         include('Auth/ErrorMessages/ErrorMessages.php');
 
         if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 0', [$request->mailaddress]))) {
@@ -336,9 +333,7 @@ class UserController extends Controller
     //ユーザーに関連付いたIDを取得する
     public function getIDsAssociatedWithUser(T_users $t_users)
     {
-        Log::debug("user_id = " . Auth::user()->user_id);
         $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
-        Log::debug($users);
         return response()->json(['result' => $users]); //DBの結果を返す
     }
 }

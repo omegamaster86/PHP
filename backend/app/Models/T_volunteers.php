@@ -251,7 +251,6 @@ class T_volunteers extends Model
         );
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
-        //Log::debug(DB::getQueryLog());
         return $insertId;
     }
 
@@ -392,7 +391,6 @@ class T_volunteers extends Model
     //delete_flagを1にする
     public function updateDeleteFlag($volunteer_id)
     {
-        Log::debug($volunteer_id);
         DB::update(
             'update `t_volunteers`
                     set `delete_flag` = 1

@@ -24,10 +24,6 @@ const CsvTable = ({
   activationFlg: boolean;
   visibilityFlg: boolean; //データが0件の場合でもヘッダーは表示させるためのフラグ 20240508
 }) => {
-  // if (content.length === 0) {
-  //   return <div className='text-primaryText'>CSVファイルをアップロードしてください。</div>;
-  // }
-
   // 読み込み結果がエラーかどうかを確認
   const checkLoadingResult = (row: CsvData) => {
     return (
@@ -35,9 +31,7 @@ const CsvTable = ({
       row.loadingResult === '入力値不正項目あり' ||
       row.loadingResult === '無効データ' ||
       row.loadingResult === '登録情報と不一致あり' ||
-      // row.loadingResult === '不一致情報あり' ||
       row.loadingResult === '記録情報あり' ||
-      // row.loadingResult === 'エントリー情報変更' ||
       row.loadingResult === '登録エラー（記録情報あり）'
     );
   };

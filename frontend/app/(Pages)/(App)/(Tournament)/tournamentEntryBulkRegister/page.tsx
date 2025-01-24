@@ -51,8 +51,6 @@ export default function TournamentEntryBulkRegister() {
 
   // URLパラメータの取得
   const prevScreen = searchParams.get('prevScreen');
-  const eventYear = searchParams.get('eventYear');
-  const tournName = searchParams.get('tournName');
 
   // ステート変数
   const [csvFileData, setCsvFileData] = useState<{
@@ -61,7 +59,6 @@ export default function TournamentEntryBulkRegister() {
   }>({ content: [], isSet: false });
   const [activationFlg, setActivationFlg] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState([] as string[]);
-  const [eventYearErrorMessage, setEventYearErrorMessage] = useState([] as string[]);
   const [tournNameErrorMessage, setTournNameErrorMessage] = useState([] as string[]);
   const [csvFileErrorMessage, setCsvFileErrorMessage] = useState([] as string[]);
   const [csvData, setCsvData] = useState<CsvData[]>([]);
@@ -113,7 +110,6 @@ export default function TournamentEntryBulkRegister() {
     fetchData();
   }, []);
 
-  // var [loadingResultList, setloadingResultList] = useState<string[]>([]); //バックエンド側の読み込み結果を受け取る 20230304
   var loadingResultList = Array();
 
   // CSVファイルのアップロードを処理する関数
@@ -150,7 +146,6 @@ export default function TournamentEntryBulkRegister() {
    * nameとvalueを受け取り、stateを更新する
    */
   const handleInputChange = (name: string, value: string) => {
-    //console.log(value);
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -232,7 +227,6 @@ export default function TournamentEntryBulkRegister() {
             name: tourn_name,
           }),
         );
-        //console.log(TournamentsResponseList);
         setTournamentList(TournamentsResponseList);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
@@ -294,20 +288,6 @@ export default function TournamentEntryBulkRegister() {
 
   const checkMaxInt = (element: string, maxNumber: number) => {
     return Number(element) >= maxNumber; //境界値を判定できるように修正 20240513
-  };
-
-  const checkMaxDouble = (element: string, maxInt: number, maxDecimal: number) => {
-    const regexPart = '\\d{1,' + maxInt + '}(\\.\\d{0,' + maxDecimal + '})?';
-    const regex = new RegExp('^' + regexPart + '$');
-    return !regex.test(element);
-  };
-
-  const checkTimestamp = (element: string) => {
-    return !/^\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}$/.test(element);
-  };
-
-  const checkFlg = (element: string) => {
-    return element !== '0' && element !== '1';
   };
 
   const checkRequired = (element: string) => {
@@ -465,7 +445,6 @@ export default function TournamentEntryBulkRegister() {
           }
         });
       var element = array as CsvData[];
-      //console.log(element);
       const sendTournData = {
         tournData: formData,
         csvDataList: element,
@@ -480,13 +459,9 @@ export default function TournamentEntryBulkRegister() {
         const element = array[index];
         resList.push(response.data.result.csvDataList[index].loadingResult);
       }
-      //console.log(resList);
-      // setloadingResultList(resList);
       loadingResultList = resList.filter(Boolean); //リスト内のnullを削除して渡す
-      //console.log(loadingResultList);
       setCsvData(response.data.result.csvDataList);
       setDialogDisplayFlg(true);
-      // 仮実装。チェック内容に応じて登録ボタンの表示を判定
       displayRegisterButton(true);
     } catch (error) {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
@@ -494,7 +469,6 @@ export default function TournamentEntryBulkRegister() {
   };
 
   const checkRaceResultRecords = async () => {
-    let apiUri = 'http://localhost:3100/checkRaceResultRecord';
     try {
       const sendTournData = {
         tournData: formData,
@@ -538,10 +512,8 @@ export default function TournamentEntryBulkRegister() {
             placeHolder={new Date().toLocaleDateString('ja-JP').slice(0, 4)}
             selectedDate={formData?.eventYear}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              //console.log(e);
               var eventYearVal = e as any as Date;
               if (eventYearVal.getFullYear().toString().length === 4) {
-                // handleInputChange('eventYear', e as unknown as string);//eventYearVal.getFullYear().toString()
                 handleInputChange('eventYear', eventYearVal.getFullYear().toString());
               }
             }}
@@ -582,9 +554,8 @@ export default function TournamentEntryBulkRegister() {
           <Autocomplete
             options={tournamentList.map((item) => ({ id: item.id, name: item.name }))}
             getOptionLabel={(option) => option.name}
-            value={{ id: formData.tournId, name: formData.tournName } || ''}
+            value={{ id: formData.tournId, name: formData.tournName }}
             onChange={(e: ChangeEvent<{}>, newValue) => {
-              //console.log(newValue);
               handleInputChange(
                 'tournId',
                 newValue ? (newValue as TournamentResponse).id.toString() : '',
@@ -600,7 +571,6 @@ export default function TournamentEntryBulkRegister() {
                   tournName: (newValue as TournamentResponse)?.name,
                 },
               }));
-              //console.log(formData.tournName, formData.tournId);
               if (newValue != undefined && newValue != null) {
                 checkTournName(false);
               }

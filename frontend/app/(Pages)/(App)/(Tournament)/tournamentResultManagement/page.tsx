@@ -4,7 +4,6 @@
 // Reactおよび関連モジュールのインポート
 import { useState, useEffect, ChangeEvent, FocusEvent, useRef, MouseEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-// import axios from 'axios';
 import axios from '@/app/lib/axios';
 // コンポーネントのインポート
 import {
@@ -22,8 +21,7 @@ import {
   Label,
   CustomYearPicker,
 } from '@/app/components/';
-// モデルのインポート
-import { EventResponse, Race, RaceTypeResponse, Tournament, TournamentResponse } from '@/app/types';
+import { EventResponse, Race, RaceTypeResponse, TournamentResponse } from '@/app/types';
 import SearchIcon from '@mui/icons-material/Search';
 import Validator from '@/app/utils/validator';
 import Divider from '@mui/material/Divider';
@@ -70,7 +68,7 @@ export default function TournamentResultManagement() {
     eventYear:
       prevScreen === 'tournamentResult'
         ? sessionStorageData.eventYear
-        : new Date().getFullYear().toString(), //new Date().toLocaleDateString(),
+        : new Date().getFullYear().toString(),
     tournId: prevScreen === 'tournamentResult' ? sessionStorageData.tournId : '',
     tournName: prevScreen === 'tournamentResult' ? sessionStorageData.tournName : '',
     eventId: prevScreen === 'tournamentResult' ? sessionStorageData.eventId : '',
@@ -181,23 +179,7 @@ export default function TournamentResultManagement() {
     }));
   };
 
-  function getNonEmptyProperties(obj: SearchCond): { key: string; value: any }[] {
-    return Object.entries(obj)
-      .filter(([key, value]) => value !== null && value !== undefined && value !== '')
-      .map(([key, value]) => ({
-        key,
-        value,
-      }));
-  }
-
   const handleSearch = async () => {
-    // var apiUri = 'http://localhost:3100/race?';
-
-    // getNonEmptyProperties(searchCond).forEach((item) => {
-    //   apiUri += item.key + '=' + item.value + '&';
-    // });
-    // apiUri = apiUri.slice(0, -1);
-
     try {
       const csrf = () => axios.get('/sanctum/csrf-cookie');
       await csrf();
@@ -214,9 +196,7 @@ export default function TournamentResultManagement() {
 
   const getTournamentList = async () => {
     try {
-      // 仮のURL（繋ぎ込み時に変更すること）
       // TODO: ログインユーザーの権限によって取得する大会情報を変更すること
-      // const response = await axios.get<TournamentResponse[]>('http://localhost:3100/tournaments');
       if (
         searchCond?.eventYear != '' &&
         searchCond?.eventYear != null &&
@@ -225,7 +205,6 @@ export default function TournamentResultManagement() {
         const sendVal = { event_start_year: searchCond?.eventYear };
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        //console.log(sendVal);
         const tournamentResponse = await axios.post('api/tournamentEntryYearSearch', sendVal);
         const TournamentsResponseList = tournamentResponse.data.result.map(
           ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
@@ -233,7 +212,6 @@ export default function TournamentResultManagement() {
             name: tourn_name,
           }),
         );
-        //console.log(TournamentsResponseList);
         setTournamentList(TournamentsResponseList);
       }
     } catch (error) {
@@ -244,7 +222,6 @@ export default function TournamentResultManagement() {
   // データ取得
   useEffect(() => {
     const fetchData = async () => {
-      //console.log(searchCond?.eventYear);
       // 大会名
       getTournamentList();
 
@@ -365,7 +342,6 @@ export default function TournamentResultManagement() {
               <InputLabel label='大会開催年（西暦）' required />
               <div className='flex flex-row justify-start gap-[4px]'>
                 <CustomYearPicker
-                  // placeHolder={new Date().toLocaleDateString('ja-JP').slice(0, 4)}
                   placeHolder={'YYYY'}
                   selectedDate={searchCond?.eventYear}
                   onChange={(date: Date) => {
@@ -494,23 +470,6 @@ export default function TournamentResultManagement() {
                   ))}
                 </div>
               </div>
-              {/* 種目名 ペンディング対象のため表示されないようにコメントアウト 20240516 */}
-              {/* <div
-                  className={`${
-                    (prevScreen === 'tournamentResult' && searchCond?.eventId !== '0') ||
-                    searchCond?.eventId !== '999'
-                      ? 'hidden'
-                      : ''
-                  }`}
-                >
-                  <CustomTextField
-                    label='種目名 ※部分一致'
-                    displayHelp={false}
-                    value={searchCond?.eventName}
-                    onChange={(e) => handleInputChange('eventName', e.target.value)}
-                    className='w-[300px]'
-                  />
-                </div> */}
             </div>
           </div>
           {/* レース区分 */}
@@ -791,7 +750,6 @@ export default function TournamentResultManagement() {
               }
               value={selectedByGroupList || []}
               onChange={(e: ChangeEvent<{}>, newValue: ByGroupList[]) => {
-                //console.log(newValue);
                 setSelectedByGroupList(newValue);
               }}
               renderOption={(props: any, option: ByGroupList) => {
@@ -817,8 +775,6 @@ export default function TournamentResultManagement() {
             />
           </div>
         )}
-        {/* <CustomTable>
-          </CustomTable> */}
       </div>
       <div className='flex flex-row justify-center gap-[16px] my-[30px]'>
         <CustomButton

@@ -3,7 +3,7 @@
 
 import axios from '@/app/lib/axios';
 import { Divider } from '@mui/material';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { CustomButton, CustomTitle, ErrorBox } from '@/app/components';

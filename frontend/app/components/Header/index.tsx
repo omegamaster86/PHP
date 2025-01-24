@@ -110,10 +110,6 @@ const Header: FC = () => {
     }
   };
 
-  // useEffect(() => {
-  //   handleIndex();
-  // }, [page]);
-
   //ユーザIDに紐づいた情報の取得 20240221
   useEffect(() => {
     const fetchData = async () => {

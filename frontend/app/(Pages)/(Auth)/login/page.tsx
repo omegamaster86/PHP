@@ -42,14 +42,10 @@ export default function Login() {
     } catch (error: Error | AxiosError | any) {
       if (!error?.response) {
         setErrorText(['サーバーへの接続に失敗しました。', 'ネットワークを確認してください。']);
-        console.log(Error);
       }
       if (axios.isAxiosError(error) && error.response?.status === 422) {
         setErrorText(error.response?.data?.errors?.system_error);
       }
-    } finally {
-      // setSubmitting(false)
-      // setStatus('')
     }
   };
 

@@ -140,7 +140,6 @@ export default function UserInformationUpdate() {
     }
   }, [formData?.residence_country]);
 
-  //アップロードされたファイルを保存するー開始
   useEffect(() => {
     if (currentShowFile?.file) {
       setFormData((prevFormData) => ({
@@ -158,7 +157,6 @@ export default function UserInformationUpdate() {
       }));
     }
   }, [currentShowFile]);
-  //アップロードされたファイルを保存するー完了
 
   useEffect(() => {
     const fetchMaster = async () => {
@@ -296,17 +294,10 @@ export default function UserInformationUpdate() {
             setLivingPrefectureErrorMessages(livingPrefectureError as string[]);
           }
 
-          // const dateOfBirthError = Validator.getErrorMessages([
-          //   Validator.validateRequired(formData?.date_of_birth, '生年月日'),
-          //   Validator.validateBirthOfDateRange(new Date(formData?.date_of_birth), '生年月日', 5, 150),
-          // ]);
-
           setUserNameErrorMessages(userNameError as string[]);
           setSexErrorMessages(sexError as string[]);
           setDateOfBirthErrorMessages(birthDateError as string[]);
           setLivingCountryErrorMessages(livingCountryError as string[]);
-
-          // setDateOfBirthErrorMessages(dateOfBirthError as string[]);
 
           if (
             userNameError.length > 0 ||
@@ -314,7 +305,6 @@ export default function UserInformationUpdate() {
             birthDateError.length > 0 ||
             livingCountryError.length > 0 ||
             livingPrefectureError.length > 0
-            // dateOfBirthError.length > 0
           ) {
             return;
           }
@@ -386,9 +376,6 @@ export default function UserInformationUpdate() {
                     } else {
                       setErrorMessage([error?.message]);
                     }
-                    // setErrorMessage([
-                    //   'メールを送信に失敗しました。ユーザーサポートにお問い合わせください。',
-                    // ]);
                   });
               }
             }
@@ -417,9 +404,6 @@ export default function UserInformationUpdate() {
                   } else {
                     setErrorMessage([error?.message]);
                   }
-                  // setErrorMessage([
-                  //   'ユーザー情報の登録に失敗しました。ユーザーサポートにお問い合わせください。',
-                  // ]);
                 });
             };
             updateUser();
@@ -573,7 +557,6 @@ export default function UserInformationUpdate() {
                   setEmailConfirmErrorMessages(confEmailError);
 
                   if (errorMessages.length == 0 && confEmailError.length == 0) {
-                    // setPrevEmail(formData.mailaddress);
                     setFormData((prevFormData) => ({
                       ...prevFormData,
                       mailaddress: email,
@@ -760,7 +743,6 @@ export default function UserInformationUpdate() {
                 // 認証処理。認証番号が入力されていない場合はバリデーションエラーを表示する。
                 if (!authNumber) {
                   setErrorMessage(['認証番号を入力してください。']);
-                  // setIsAuthDialogOpen(false);
                   return;
                 }
 
@@ -779,51 +761,12 @@ export default function UserInformationUpdate() {
                     window.alert(response?.data);
                   })
                   .catch((error) => {
-                    // setAuthNumber('');
                     if (error?.response) {
                       setErrorMessage([...error?.response?.data]);
                     } else {
                       setErrorMessage([error?.message]);
                     }
                   });
-
-                // const verifyResult = () => {
-                //   // TODO: 「ユーザーテーブル」の当該ユーザーの「メールアドレス変更認証番号」に登録されている数字と一致することを確認する処理に置き換え
-                //   true;
-                // };
-                // if (!verifyResult) {
-                //   setErrorMessage(['認証番号が不正です。']);
-                //   setIsAuthDialogOpen(false);
-                //   return;
-                // }
-                // const expireResult = () => {
-                //   // TODO: 当該認証番号の有効期限切れていないことを確認する処理に置き換え
-                //   true;
-                // };
-                // if (!expireResult) {
-                //   setErrorMessage(['認証番号の有効期限が切れています。']);
-                //   setIsAuthDialogOpen(false);
-                //   return;
-                // }
-
-                // setIsAuthDialogOpen(false);
-
-                // TODO: 「ユーザーテーブル」に上記で作成した承認番号と承認番号の有効期限を削除（null）する処理に置き換える
-                // const csrf = () => axios.get('/sanctum/csrf-cookie')
-                // await csrf()
-                // axios
-                //   .delete('/user')
-                //   .then((response) => {
-                //     //console.log('認証番号を削除しました。');
-                //     setAuthNumber('');
-                //     router.push('/' + prevScreen);
-                //   })
-                //   .catch((error) => {
-                //     // TODO: エラーハンドリング処理の置き換え
-                //     setErrorMessage([
-                //       'ユーザー情報の登録に失敗しました。ユーザーサポートにお問い合わせください。',
-                //     ]);
-                //   });
               }}
             >
               送信

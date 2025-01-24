@@ -23,10 +23,8 @@ import { formatDate } from '@/app/utils/dateUtil';
 
 // レース結果登録（参照・削除）画面のメインコンポーネント
 export default function TournamentResultRef() {
-  // フック
   const router = useRouter();
 
-  // ステート変数
   const [errorText, setErrorText] = useState([] as string[]);
 
   // 遷移元画面からのパラメータ取得
@@ -61,7 +59,6 @@ export default function TournamentResultRef() {
     fetch();
   }, []);
 
-  // レンダリング
   return (
     <>
       <CustomTitle>レース結果{mode === 'delete' ? '削除' : '参照'}</CustomTitle>
@@ -188,7 +185,6 @@ export default function TournamentResultRef() {
         </div>
       </div>
       {raceResultRecords?.map((item, index) => (
-        // eslint-disable-next-line react/jsx-key
         <div
           className={`flex flex-col gap-[20px] border border-solid p-[20px] ${
             raceInfo.checked ? 'bg-gray-500' : ''
@@ -464,11 +460,9 @@ export default function TournamentResultRef() {
                   raceInfo: raceInfo,
                   raceResultRecords: raceResultRecords,
                 };
-                //console.log(deleteSendData);
                 const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
                 const response = await axios.post('api/deleteRaceResultRecordData', deleteSendData); //削除処理 20240520
-                //console.log(response);
                 if (response.data?.errMessage) {
                   setErrorText([response.data?.errMessage]);
                   window.scrollTo(0, 0);

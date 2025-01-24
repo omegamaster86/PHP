@@ -80,22 +80,12 @@ export default function TeamPlayer() {
         // SessionStorageに追加選手リストがある場合、追加選手リストを取得
         if (sessionStorage.getItem('addPlayerList') !== null) {
           var addPlayerList = JSON.parse(sessionStorage.getItem('addPlayerList') as string);
-          //console.log(addPlayerList);
           let data = transformData(addPlayerList, '追加');
 
           if (mode == 'update') {
             const response = await axios.post('api/searchOrganizationPlayersForTeamRef', sendId);
             const searchRes = transformData(response.data.result, '既存');
             data = setIndex(data.concat(searchRes));
-            //console.log(response.data.result);
-
-            // setFormData(
-            //   response.data.result.map((data: TeamPlayerInformationResponse) => ({
-            //     ...data,
-            //     deleteFlag: false,
-            //     type: '既存',
-            //   })),
-            // );
           }
           if (mode == 'create') {
             const response = await axios.post('api/searchOrganizationPlayersForTeamRef', sendId);
@@ -109,7 +99,6 @@ export default function TeamPlayer() {
               searchRes.some((item) => item.player_id == data[index].player_id);
               //要素が1つでも条件に合致するかを調べる 20240416
               if (searchRes.some((item) => item.player_id == data[index].player_id)) {
-                //console.log(data[index].player_id);
                 element.push(
                   ' 選手ID: ' + data[index].player_id + '選手名:' + data[index].player_name,
                 );
@@ -122,7 +111,6 @@ export default function TeamPlayer() {
             }
             data = data.filter((item) => !item.deleteFlag); //削除フラグがfalse（重複していないデータ）のみを取り出す 20240416
             addPlayerList = addPlayerList.filter((item: any) => !item.deleteFlag); //削除フラグがfalse（重複していないデータ）のみを取り出す 20240416
-            //console.log(addPlayerList);
             sessionStorage.setItem('addPlayerList', JSON.stringify(addPlayerList)); //セッションストレージの内容を更新
             data = setIndex(data.concat(searchRes)); // concatで配列の結合をしてからindexをmapする
           }

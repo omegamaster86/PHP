@@ -98,13 +98,10 @@ interface RaceResultRecordsResponse {
   laptimeErrorText: string; // ラップタイムエラーテキスト
   strokeRateErrorText: string; // ストロークレートエラーテキスト
   finalHeartRate: number; // 最終心拍数
-  //選手に関する情報を追加 20240401---------
   player_id: string; // 選手ID
   player_name: string; // 選手名
   sex: number; // 性別ID
-  //種目IDを追加 20240405---------
   event_id: number; //種目ID
-  //レース結果管理用バリデーション項目を追加 20240515---------
   orgNameErrorText: string; //所属団体エラーメッセージ
   crewNameErrorText: string; //クルー名エラーメッセージ
   laneNumberErrorText: string; //レーンNo.エラーメッセージ
@@ -511,24 +508,6 @@ interface Player {
   orgId3: string; // 団体ID3 #置き換え作業未対応
   orgName3: string; // 所属団体名3 #置き換え作業未対応
 }
-
-// レース結果入力画面
-// interface CrewPlayer {
-//   id: number; // 選手ID
-//   playerPhoto: string; // 選手画像
-//   playerName: string; // 選手名
-//   jaraPlayerId: string; // JARA選手コード
-//   playerId: string; // 選手ID
-//   sexId: string; // 性別ID
-//   sex: string; // 性別
-//   entrysystemRaceId: string; // エントリーシステムの団体ID
-//   orgId1: string; // 団体ID1
-//   orgName1: string; // 所属団体名1
-//   orgId2: string; // 団体ID2
-//   orgName2: string; // 所属団体名2
-//   orgId3: string; // 団体ID3
-//   orgName3: string; // 所属団体名3
-// }
 
 // クルー
 interface CrewResponse {

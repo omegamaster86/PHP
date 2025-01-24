@@ -4,14 +4,12 @@ import type { FileRejection } from 'react-dropzone';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import Papa from 'papaparse';
 import CloseIcon from '@mui/icons-material/Close';
-// import { UserResponse, PlayerInformationResponse } from '@/app/types';
 
 interface ImageUploaderProps {
   currentShowFile: { file: File; isUploaded: boolean; preview?: string } | undefined;
   setCurrentShowFile: Dispatch<
     SetStateAction<{ file: File; isUploaded: boolean; preview?: string } | undefined>
   >;
-  // // UserResponse , PlayerInformationResponse
   setFormData: Dispatch<SetStateAction<any>>;
   initialPhotoUrl?: string;
   displayCloseIcon?: boolean;
@@ -31,7 +29,6 @@ const ImageUploader: FC<ImageUploaderProps> = ({
     try {
       setCurrentShowFile({ file, isUploaded: false });
 
-      // const uploadTime = Math.random() * 9000 + 1000; // 1秒から10秒
       const uploadTime = 1000; // 1秒
       await new Promise((resolve) => setTimeout(resolve, uploadTime));
 
@@ -39,12 +36,10 @@ const ImageUploader: FC<ImageUploaderProps> = ({
       setCurrentShowFile({ file, isUploaded: true });
     } catch (error) {
       // ここでエラーに関するユーザーへの通知や処理を行う
-      // alert(`アップロード中にエラーが発生しました: ${error}`);
       alert(`アップロード中にエラーが発生しました。`);
     }
   };
 
-  // useCallback は、関数のメモ化を行うフックです。
   const onDrop = useCallback(
     // ドロップしたファイルを受け取る
     async (acceptedFiles: File[]) => {
@@ -67,7 +62,6 @@ const ImageUploader: FC<ImageUploaderProps> = ({
         });
       } catch (error) {
         // ↓ここでエラーに関するユーザーへの通知や処理を行う
-        //console.log(`アップロード中にエラーが発生しました: ${error}`);
         //console.log(`アップロード中にエラーが発生しました。`);
       }
     },
@@ -208,10 +202,6 @@ const ImageUploader: FC<ImageUploaderProps> = ({
             </div>
           )}
         </div>
-        {/* <p className='text-secondaryText font-xs'>
-          1つのファイルを選択できます。png, jpg, jpeg ファイルを選択できます。
-        </p>
-        <p className='text-primary-100 font-xs'>※1ファイルの最大サイズは50MBです</p> */}
       </div>
       {currentShowFile && (
         <aside>
