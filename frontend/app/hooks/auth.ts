@@ -62,7 +62,10 @@ export const useAuth = ({
 
   useEffect(() => {
     if (user?.temp_password_flag) {
-      router.push('/passwordchange');
+      // NOTE: 退会は常に可能にする。
+      if (pathname !== '/withdrawal') {
+        router.push('/passwordchange');
+      }
     }
 
     if (middleware === 'guest' && redirectIfAuthenticated && user) {
