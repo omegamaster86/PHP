@@ -2,6 +2,7 @@ import React from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import ja from 'date-fns/locale/ja';
+import { cn } from '@/app/utils/cn';
 
 // 日本語ロケールの登録
 registerLocale('ja', ja);
@@ -37,9 +38,11 @@ const CustomDatePicker = ({
       {!readonly && (
         <DatePicker
           id={id}
-          className={`border-[0.5px] border-solid rounded h-12 w-full p-3 ${
-            isError ? 'border-red' : 'border-gray-200 '
-          } ${className ? className : ''}`}
+          className={cn(
+            'border-[0.5px] border-solid rounded w-full p-3',
+            isError ? 'border-red' : 'border-gray-200 ',
+            className,
+          )}
           {...(selectedDate && { selected: new Date(selectedDate) })}
           onChange={onChange}
           {...(useTime ? { dateFormat: 'yyyy/MM/dd HH:mm' } : { dateFormat: 'yyyy/MM/dd' })}

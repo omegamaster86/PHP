@@ -980,7 +980,7 @@ export default function Tournaments() {
                 event.find((item) => item.id === Number(e))?.name || '',
               );
             }}
-            className='border-[0.5px] border-solid border-gray-50 rounded w-[150px]'
+            className='rounded'
           />
         </CustomTd>
         {/* レース名 */}
@@ -1008,11 +1008,11 @@ export default function Tournaments() {
                 );
                 handleInputChangeRace(row.id, 'otherRaceName', ''); //レース区分を切り替えた際に、その他のレース区分内容をリセットする 20240308
               }}
-              className='border-[0.5px] border-solid border-gray-50 rounded self-end w-[150px]'
+              className='rounded'
               readonly={mode === 'confirm'}
             />
             {/* その他選択時に表示のテキストボックス */}
-            <div className={`${row.race_class_id == '999' ? 'visible' : 'hidden'} `}>
+            {row.race_class_id == '999' && (
               <CustomTextField
                 label=''
                 isError={raceTypeNameErrorMessage.length > 0}
@@ -1020,15 +1020,14 @@ export default function Tournaments() {
                 readonly={mode === 'confirm'}
                 value={row.otherRaceName}
                 onChange={(e) => handleInputChangeRace(row.id, 'otherRaceName', e.target.value)}
-                className='w-[150px]'
+                widthClassName='w-[150px]'
               />
-            </div>
+            )}
           </div>
         </CustomTd>
         {/* 組別 */}
         <CustomTd>
           <TextField
-            // type={'number'}
             value={row.by_group}
             onChange={(e) => handleInputChangeRace(row.id, 'by_group', e.target.value)}
             className='w-[150px]'
@@ -1056,6 +1055,7 @@ export default function Tournaments() {
                 formatDateTime(e as unknown as Date),
               );
             }}
+            className='!w-[200px] text-base'
           />
         </CustomTd>
       </>
