@@ -13,72 +13,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use Exception;
 
 class TournamentInfoAlignmentController extends Controller
 {
-    //フロントエンドから大会IDを取得し、
-    //大会開催年（西暦）、大会名をフロントエンドへ返す
-    public function getTournamentInfo(
-        Request $request,
-        T_tournaments $t_tournaments
-    ) {
-        $inputValue = $request->all();
-        $tourn_id = $inputValue['tourn_id'];
-        $tournament = $t_tournaments->getTournamentFromTournId($tourn_id);
-
-        return $tournament;
-    }
-
-    //対象の変数が整数かつX桁以内であることをチェックする
-    private function checkInteger($value, $digits, &$checkResult, &$isError)
-    {
-        //数値かつX桁以内であることをチェック
-        if (!is_numeric($value) || mb_strlen($value) > $digits) {
-            $checkResult = false;
-            $isError = true;
-        }
-    }
-
-    //対象の変数が0か1であるかをチェックする
-    private function checkZeroOrOne($value, &$checkResult, &$isError)
-    {
-        //0または1でないときは登録不可データとする
-        if (!($value == '0' || $value == '1')) {
-            $checkResult = false;
-            $isError = true;
-        }
-    }
-
-    //対象の変数が小数かつ指定の桁数であるかを判定する
-    //整数部3桁、小数部2桁をチェックしたいときは$format="3.2"とする
-    private function isDecimal($value, $format)
-    {
-        list($il, $dl) = explode(".", $format);
-
-        return (bool) preg_match('/^([0-9]|([1-9][0-9]{1,' . ($il - 1) . '}))(\.[0-9]{1,' . $dl . '}){0,1}$/', $value);
-    }
-
-    //対象の変数が小数かつ指定の桁数であるかをチェックする
-    private function checkDecimal($value, $format, &$checkResult, &$isError)
-    {
-        //小数かつ指定の桁数かチェック
-        if (!($this->isDecimal($value, $format))) {
-            $checkResult = false;
-            $isError = true;
-        }
-    }
-
-    //対象の変数が$byteバイト以内であることをチェックする
-    private function checkWithinByte($value, $byte, &$checkResult, &$isError)
-    {
-        //Xバイト以内であることをチェック
-        if (strlen($value) > $byte) {
-            $checkResult = false;
-            $isError = true;
-        }
-    }
-
     //大会エントリー一括登録 20240229
     public function tournamentEntryYearSearch(Request $request, T_tournaments $t_tournaments)
     {
@@ -1473,5 +1410,54 @@ class TournamentInfoAlignmentController extends Controller
             $value_array['player_id'] = $target_row['userId'];  // userId は、選手ID
         }
         return $condition;
+    }
+
+    //対象の変数が整数かつX桁以内であることをチェックする
+    private function checkInteger($value, $digits, &$checkResult, &$isError)
+    {
+        //数値かつX桁以内であることをチェック
+        if (!is_numeric($value) || mb_strlen($value) > $digits) {
+            $checkResult = false;
+            $isError = true;
+        }
+    }
+
+    //対象の変数が0か1であるかをチェックする
+    private function checkZeroOrOne($value, &$checkResult, &$isError)
+    {
+        //0または1でないときは登録不可データとする
+        if (!($value == '0' || $value == '1')) {
+            $checkResult = false;
+            $isError = true;
+        }
+    }
+
+    //対象の変数が小数かつ指定の桁数であるかを判定する
+    //整数部3桁、小数部2桁をチェックしたいときは$format="3.2"とする
+    private function isDecimal($value, $format)
+    {
+        list($il, $dl) = explode(".", $format);
+
+        return (bool) preg_match('/^([0-9]|([1-9][0-9]{1,' . ($il - 1) . '}))(\.[0-9]{1,' . $dl . '}){0,1}$/', $value);
+    }
+
+    //対象の変数が小数かつ指定の桁数であるかをチェックする
+    private function checkDecimal($value, $format, &$checkResult, &$isError)
+    {
+        //小数かつ指定の桁数かチェック
+        if (!($this->isDecimal($value, $format))) {
+            $checkResult = false;
+            $isError = true;
+        }
+    }
+
+    //対象の変数が$byteバイト以内であることをチェックする
+    private function checkWithinByte($value, $byte, &$checkResult, &$isError)
+    {
+        //Xバイト以内であることをチェック
+        if (strlen($value) > $byte) {
+            $checkResult = false;
+            $isError = true;
+        }
     }
 }

@@ -1,10 +1,8 @@
 <?php
 
 namespace App\Logging;
-//use Hikaeme\Monolog\Formatter\LtsvFormatter;
+
 use Monolog\Formatter\LineFormatter;
-use Monolog\Logger;
-use Monolog\Processor\IntrospectionProcessor;
 use Monolog\Processor\WebProcessor;
 
 class ActionLogFormatter

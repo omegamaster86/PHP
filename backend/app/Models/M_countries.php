@@ -31,25 +31,14 @@ class M_countries extends Model
     //国マスタを取得
     public function getCountries()
     {
-        $countryies = DB::select('select `country_id`,
+        $countries = DB::select(
+            'select `country_id`,
                                     `country_code`,
                                     `country_name`
                                     from `m_countries`
                                     where `delete_flag`=0
                                     order by `display_order`'
-                                );
-        return $countryies;
-    }
-    public function getCountryName($country_id)
-    {
-        $country_name_info = DB::select('select country_name
-                                from m_countries
-                                where delete_flag = 0
-                                and country_id = ?'
-                                ,[$country_id]
-                            );
-        //country_name_infoは一意に決まるため0番目を返す
-        $country_name = $country_name_info[0]->country_name;
-        return $country_name;
+        );
+        return $countries;
     }
 }

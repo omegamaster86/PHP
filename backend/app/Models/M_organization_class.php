@@ -28,30 +28,14 @@ class M_organization_class extends Model
     //団体区分マスタを取得
     public function getOrganizationClass()
     {
-        $organizationClass = DB::select('select 
-                                        org_class_id
-                                        ,org_class_name
-                                        from m_organization_class 
-                                        where delete_flag=0
-                                        order by display_order'
-                                    );
+        $organizationClass = DB::select(
+            'select 
+            org_class_id
+            ,org_class_name
+            from m_organization_class 
+            where delete_flag=0
+            order by display_order'
+        );
         return $organizationClass;
-    }
-
-    //団体区分IDに該当する団体区分名を取得
-    public function getOrganizationClassName($org_class_id)
-    {
-        $organizationClassName = DB::select('select org_class_name
-                                            from m_organization_class 
-                                            where delete_flag=0
-                                            and org_class_id = ?
-                                            order by display_order'
-                                            ,[$org_class_id]
-                                        );
-        //区分名は1つに決まるため0番目を取得して返す.
-        if(isset($organizationClassName[0])){
-            $targetName = $organizationClassName[0]->org_class_name;
-        }
-        return $targetName;
     }
 }

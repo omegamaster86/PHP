@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -116,78 +115,6 @@ class T_raceResultRecord extends Model
         return $racesResultRecord;
     }
 
-    //大会IDに紐づいたレース結果情報を取得
-    public function getRaceResultRecord_tournId($tournId)
-    {
-        $racesResultRecord = DB::select('select 
-                                        `t_race_result_record`.`race_result_record_id`, 
-                                        `t_race_result_record`.`player_id`, 
-                                        `t_race_result_record`.`jara_player_id`, 
-                                        `t_race_result_record`.`player_name`, 
-                                        `t_race_result_record`.`entrysystem_tourn_id`, 
-                                        `t_race_result_record`.`tourn_id`, 
-                                        `t_race_result_record`.`tourn_name`, 
-                                        `t_race_result_record`.`race_id`, 
-                                        `t_race_result_record`.`entrysystem_race_id`, 
-                                        `t_race_result_record`.`race_number`, 
-                                        `t_race_result_record`.`race_name`, 
-                                        `t_race_result_record`.`org_id`, 
-                                        `t_race_result_record`.`entrysystem_org_id`, 
-                                        `t_race_result_record`.`org_name`, 
-                                        `t_race_result_record`.`crew_name`, 
-                                        `t_race_result_record`.`by_group`, 
-                                        `t_race_result_record`.`event_id`, 
-                                        `t_race_result_record`.`event_name`, 
-                                        `t_race_result_record`.`range`, 
-                                        `t_race_result_record`.`rank`, 
-                                        `t_race_result_record`.`laptime_500m`, 
-                                        `t_race_result_record`.`laptime_1000m`, 
-                                        `t_race_result_record`.`laptime_1500m`, 
-                                        `t_race_result_record`.`laptime_2000m`, 
-                                        `t_race_result_record`.`final_time`, 
-                                        `t_race_result_record`.`stroke_rate_avg`, 
-                                        `t_race_result_record`.`stroke_rat_500m`, 
-                                        `t_race_result_record`.`stroke_rat_1000m`, 
-                                        `t_race_result_record`.`stroke_rat_1500m`, 
-                                        `t_race_result_record`.`stroke_rat_2000m`, 
-                                        `t_race_result_record`.`heart_rate_avg`, 
-                                        `t_race_result_record`.`heart_rate_500m`, 
-                                        `t_race_result_record`.`heart_rate_1000m`, 
-                                        `t_race_result_record`.`heart_rate_1500m`, 
-                                        `t_race_result_record`.`heart_rate_2000m`, 
-                                        `t_race_result_record`.`official`, 
-                                        `t_race_result_record`.`attendance`, 
-                                        `t_race_result_record`.`ergo_weight`, 
-                                        `t_race_result_record`.`player_height`, 
-                                        `t_race_result_record`.`player_weight`, 
-                                        `t_race_result_record`.`seat_number`, 
-                                        `t_race_result_record`.`seat_name`, 
-                                        `t_race_result_record`.`race_result_record_name`, 
-                                        `t_race_result_record`.`start_datetime`, 
-                                        `t_race_result_record`.`wind_speed_2000m_point`, 
-                                        `t_race_result_record`.`wind_direction_2000m_point`, 
-                                        `t_race_result_record`.`wind_speed_1000m_point`, 
-                                        `t_race_result_record`.`wind_direction_1000m_point`, 
-                                        `t_race_result_record`.`race_result_notes`,
-                                        `m_seat_number`.`display_order` as "order",
-                                        `t_tournaments`.`event_start_date` as "eventStartDate",
-                                        `m_venue`.`venue_name`
-                                        FROM `t_race_result_record` 
-                                        left join `m_seat_number`
-                                        on `t_race_result_record`.`seat_number` = `m_seat_number`.`seat_id`
-                                        left join `t_tournaments`
-                                        on `t_race_result_record`.`tourn_id` = `t_tournaments`.`tourn_id`
-                                        left join `m_venue`
-                                        on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
-                                        where 1=1
-                                        and `t_race_result_record`.delete_flag = 0                                        
-                                        and  `t_tournaments`.`delete_flag` = 0
-                                        and  `m_seat_number`.`delete_flag` = 0
-                                        and  `m_venue`.`delete_flag` = 0
-                                        and `t_race_result_record`.tourn_id = ?', [$tournId]);
-        return $racesResultRecord;
-    }
-
     //選手IDに紐づいたレース結果情報を取得 20240201
     public function getRaceResultRecord_playerId($playerId)
     {
@@ -285,28 +212,6 @@ class T_raceResultRecord extends Model
             [$playerId, $official]
         );
         // Log::debug($racesResultRecord);
-        return $racesResultRecord;
-    }
-
-    //クルー一覧に表示する選手の情報を取得
-    public function getRaceResultRecord_crewData($raceId, $crewName, $orgId)
-    {
-        $racesResultRecord = DB::select('select `race_result_record_id`,  
-        `player_name`, 
-        `player_height`, 
-        `player_weight`, 
-        `seat_number`, 
-        `t_race_result_record`.`seat_name`, 
-        `t_race_result_record`.`delete_flag`, 
-        `m_seat_number`.`display_order`
-        FROM `t_race_result_record` 
-        left join `m_seat_number`
-        on `t_race_result_record`.`seat_number` = `m_seat_number`.`seat_id`
-        where `t_race_result_record`.delete_flag=0 
-        and `t_race_result_record`.race_id = ?
-        and `t_race_result_record`.crew_name = ?
-        and `t_race_result_record`.org_id = ?', [$raceId, $crewName, $orgId]);
-
         return $racesResultRecord;
     }
 
@@ -797,70 +702,6 @@ class T_raceResultRecord extends Model
                             and player_id = :player_id
                             ', $conditionValues);
         return $races;
-    }
-
-    //レースIDを条件としてレース結果情報を取得する
-    public function getRaceResultRecordsFromRaceId($race_id)
-    {
-        $race_result_records = DB::select(
-            "select
-                                            rrr.`race_result_record_id`
-                                            ,rrr.`range`                        #距離
-                                            ,rrr.`start_datetime`               #発艇日時
-                                            ,rrr.`weather`                      #天候
-                                            ,rrr.`wind_direction_1000m_point`   #1000m地点風向
-                                            ,rrr.`wind_speed_1000m_point`       #1000m地点風速
-                                            ,rrr.`wind_direction_2000m_point`   #2000m地点風向
-                                            ,rrr.`wind_speed_2000m_point`       #2000m地点風速
-                                            ,case
-                                                when rrr.`org_id` is null then rrr.`org_id`
-                                                else rrr.`org_name`
-                                                end as `org_name              #所属団体`
-                                            ,rrr.`crew_name`                  #クルー名
-                                            ,rrr.`lane_number`                #出漕レーンNo.
-                                            ,rrr.`rank`                       #順位
-                                            ,rrr.`laptime_500m`               #500mラップタイム
-                                            ,rrr.`laptime_1000m`              #1000mラップタイム
-                                            ,rrr.`laptime_1500m`              #1500mラップタイム
-                                            ,rrr.`laptime_2000m`              #2000mラップタイム
-                                            ,rrr.`final_time`                 #最終タイム
-                                            ,rrr.`race_result_notes`          #備考
-                                            ,rrr.`stroke_rat_500m`            #500mストロークレート
-                                            ,rrr.`stroke_rat_1000m`           #1000mストロークレート
-                                            ,rrr.`stroke_rat_1500m`           #1500mストロークレート
-                                            ,rrr.`stroke_rat_2000m`           #2000mストロークレート
-                                            ,rrr.`stroke_rate_avg`            #ストロークレート(平均)                                            
-                                            ,rrr.`player_id`                  #選手ID
-                                            ,rrr.`player_name`                #選手名
-                                            ,sex.`sex`                        #性別
-                                            ,case
-                                                when rrr.`player_height` is null then ply.`height`
-                                                else rrr.`player_height`
-                                                end as `player_height`        #身長
-                                            ,case
-                                                when rrr.`player_weight` is null then ply.`weight`
-                                                else rrr.`player_weight`
-                                                end as `player_weight`        #体重
-                                            ,rrr.`seat_number`                #シート番号
-                                            ,rrr.`heart_rate_500m`            #500m心拍数
-                                            ,rrr.`heart_rate_1000m`           #1000m心拍数
-                                            ,rrr.`heart_rate_1500m`           #1500m心拍数
-                                            ,rrr.`heart_rate_2000m`           #2000m心拍数
-                                            ,rrr.`heart_rate_avg`             #心拍数（平均）
-                                            ,rrr.`attendance`                 #立会有無
-                                            FROM `t_race_result_record` rrr
-                                            left join `t_players` ply
-                                            on rrr.`player_id` = ply.`player_id`
-                                            left join `m_sex` sex
-                                            on ply.`sex_id` = sex.`sex_id`
-                                            where 1=1
-                                            and rrr.`delete_flag` = 0
-                                            and ply.`delete_flag` = 0
-                                            and sex.`delete_flag` = 0
-                                            and rrr.race_id = :race_id",
-            $race_id
-        );
-        return $race_result_records;
     }
 
     //対象のレースに出漕結果の件数を取得する

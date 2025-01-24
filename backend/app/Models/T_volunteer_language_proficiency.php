@@ -36,28 +36,8 @@ class T_volunteer_language_proficiency extends Model
         left join `m_language_proficiency`
         on `t_volunteer_language_proficiency`.`lang_pro` = `m_language_proficiency`.`lang_pro_id`
         where `t_volunteer_language_proficiency`.delete_flag=0 and `t_volunteer_language_proficiency`.volunteer_id = ?', [$vlntrId]);
-       
-        return $volunteers;
-    }
 
-    public function updateVolunteerLanguageProficiency($volunteersInfo)
-    {
-        DB::update(
-            'update t_volunteer_language_proficiency set `lang_pro_id`=?,`volunteer_id`=?,`lang_id`=?,`lang_pro`=?,`registered_time`=?,`registered_user_id`=?,`updated_time`=?,`updated_user_id`=?,`delete_flag`=? 
-            where volunteer_id = ?',
-            [
-                $volunteersInfo['lang_pro_id'],
-                $volunteersInfo['volunteer_id'],
-                $volunteersInfo['lang_id'],
-                $volunteersInfo['lang_pro'],
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id,
-                now()->format('Y-m-d H:i:s.u'),
-                Auth::user()->user_id,
-                $volunteersInfo['delete_flag'],
-                $volunteersInfo['volunteer_id'], //where条件
-            ]
-        );
+        return $volunteers;
     }
 
     //ボランティア言語レベルテーブルに挿入する
@@ -65,7 +45,8 @@ class T_volunteer_language_proficiency extends Model
     public function insertVolunteerLanguageProficiency($values)
     {
         //DB::enableQueryLog();
-        DB::insert('insert into `t_volunteer_language_proficiency`
+        DB::insert(
+            'insert into `t_volunteer_language_proficiency`
                     (
                         `volunteer_id`,
                         `lang_id`,
@@ -76,17 +57,18 @@ class T_volunteer_language_proficiency extends Model
                         `updated_user_id`,
                         `delete_flag`
                     )
-                    VALUES(?,?,?,?,?,?,?,?)'
-                    ,[
-                        $values['volunteer_id']
-                        ,$values['lang_id']
-                        ,$values['lang_pro']
-                        ,$values['registered_time']
-                        ,$values['registered_user_id']
-                        ,$values['updated_time']
-                        ,$values['updated_user_id']
-                        ,$values['delete_flag']
-                    ]);
+                    VALUES(?,?,?,?,?,?,?,?)',
+            [
+                $values['volunteer_id'],
+                $values['lang_id'],
+                $values['lang_pro'],
+                $values['registered_time'],
+                $values['registered_user_id'],
+                $values['updated_time'],
+                $values['updated_user_id'],
+                $values['delete_flag']
+            ]
+        );
         //挿入したIDを取得
         $insertId =  DB::getPdo()->lastInsertId();
         //Log::debug(DB::getQueryLog());
@@ -98,19 +80,20 @@ class T_volunteer_language_proficiency extends Model
     public function updateDeleteFlag($volunteer_id)
     {
         Log::debug($volunteer_id);
-        DB::update('update `t_volunteer_language_proficiency`
+        DB::update(
+            'update `t_volunteer_language_proficiency`
                     set `delete_flag` = 1
                     ,updated_time = ?
                     ,updated_user_id = ?
                     where 1=1
                     and `delete_flag` = 0
-                    and `volunteer_id` = ?'
-                    ,[
-                        now()->format('Y-m-d H:i:s.u')
-                        ,Auth::user()->user_id
-                        ,$volunteer_id
-                    ]
-                );
+                    and `volunteer_id` = ?',
+            [
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                $volunteer_id
+            ]
+        );
     }
 
     //マイページ ボランティア情報 20241017
@@ -128,7 +111,7 @@ class T_volunteer_language_proficiency extends Model
         where 1=1
         and `t_volunteer_language_proficiency`.delete_flag = 0 
         and `t_volunteer_language_proficiency`.volunteer_id = ?', [$vlntrId]);
-       
+
         return $volunteers;
     }
 }

@@ -1,37 +1,13 @@
 <?php
 
-/*************************************************************************
- *  Project name: JARA
- *  File name: RegisteredUserController.php
- *  File extension: .php
- *  Description: This is the controller file to manage register request
- *************************************************************************
- *  Author: DEY PRASHANTA KUMAR
- *  Created At: 2023/11/04
- *  Updated At: 2023/12/04
- *************************************************************************
- *
- *  Copyright 2023 by DPT INC.
- *
- ************************************************************************/
-
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Illuminate\View\View;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\VerificationMail;
 use App\Mail\ContactUsMail;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
 
 class ContactUsController extends Controller
 {

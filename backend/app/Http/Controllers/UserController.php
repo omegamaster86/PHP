@@ -2,38 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
-use App\Services\FileUploadService;
-use App\Models\T_users;
-use App\Http\Requests\FileUploadRequest;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\VerificationMail;
-use App\Mail\PasswordResetMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\UploadedFile;
 
-
-use App\Models\M_sex;
-use App\Models\M_countries;
-use App\Models\M_prefectures;
+use App\Http\Controllers\Controller;
+use App\Mail\VerificationMail;
+use App\Mail\PasswordResetMail;
+use App\Models\T_users;
 
 class UserController extends Controller
 {
-    public static $loginUserInfo = [
-        'user_id' => null,
-        'user_name' => ""
-    ];
-
     public function sentCertificationNumber(Request $request)
     {
         include('Auth/ErrorMessages/ErrorMessages.php');
@@ -123,89 +106,6 @@ class UserController extends Controller
         } else {
             redirect('/logout');
         }
-    }
-
-    // public function createDetails(Request $request, M_sex $sex, M_countries $countries, M_prefectures $prefectures): View
-    // {
-    //     $user = array(
-    //         "user_name" => Auth::user()->user_name,
-    //         "user_id" => Auth::user()->user_id,
-    //         "user_type" => Auth::user()->user_type,
-    //         "mailaddress" => Auth::user()->mailaddress,
-    //         "sex" => Auth::user()->sex,
-    //         "residence_country" => Auth::user()->residence_country,
-    //         "residence_prefecture" => Auth::user()->residence_prefecture,
-    //         "photo" => Auth::user()->photo,
-    //         "date_of_birth" => Auth::user()->date_of_birth,
-    //         "height" => Auth::user()->height,
-    //         "weight" => Auth::user()->weight
-    //     );
-
-
-    //     $user['sex_name'] = $sex->getSexName($user['sex']);
-    //     $user['country_name'] = $countries->getCountryName($user['residence_country']);
-    //     $user['pref_name'] = $prefectures->getPrefName($user['residence_prefecture']);
-
-    //     return view('user.details', ["page_mode" => "details", "user" => (object)$user]);
-    // }
-
-    public function createDelete(Request $request, M_sex $sex, M_countries $countries, M_prefectures $prefectures): View
-    {
-        $user = array(
-            "user_name" => Auth::user()->user_name,
-            "user_id" => Auth::user()->user_id,
-            "user_type" => Auth::user()->user_type,
-            "mailaddress" => Auth::user()->mailaddress,
-            "sex" => Auth::user()->sex,
-            "residence_country" => Auth::user()->residence_country,
-            "residence_prefecture" => Auth::user()->residence_prefecture,
-            "photo" => Auth::user()->photo,
-            "date_of_birth" => Auth::user()->date_of_birth,
-            "height" => Auth::user()->height,
-            "weight" => Auth::user()->weight
-        );
-
-
-        $user['sex_name'] = $sex->getSexName($user['sex']);
-        $user['country_name'] = $countries->getCountryName($user['residence_country']);
-        $user['pref_name'] = $prefectures->getPrefName($user['residence_prefecture']);
-
-        return view('user.details', ["page_mode" => "delete", "user" => (object)$user]);
-    }
-    public function storeDelete(Request $request): RedirectResponse
-    {
-        include('Auth/ErrorMessages/ErrorMessages.php');
-        $certification_number = Str::random(6); // For Creating random password
-        $date = date('Y-m-d H:i:s');
-        $new_date = date('Y-m-d H:i:s', strtotime($date . ' + 24 hours'));
-
-        DB::beginTransaction();
-        try {
-            DB::update(
-                'update t_users set  certification_number = ? , expiry_time_of_certification_number = ? where user_id = ?',
-                [Hash::make($certification_number), $new_date, Auth::user()->user_id]
-            );
-
-
-            DB::commit();
-        } catch (\Throwable $e) {
-            Log::error($e);
-            DB::rollBack();
-            abort(500, $e->getMessage());
-        }
-
-        //Sending mail to the user
-        $mail_date = date('Y/m/d H:i');
-        $new_mail_date = date('Y/m/d H:i', strtotime($mail_date . ' + 24 hours'));
-        $mail_data = [
-            'user_name' => Auth::user()->user_name,
-            'mailaddress' => Auth::user()->mailaddress,
-            'certification_number' => $certification_number,
-            'expiry_time_of_certification_number' => $new_mail_date
-        ];
-        Mail::to(Auth::user()->mailaddress)->send(new VerificationMail($mail_data));
-
-        return redirect('user/delete/verification');
     }
 
     public function storePasswordChange(Request $request)
@@ -343,23 +243,13 @@ class UserController extends Controller
         Log::debug(sprintf("storePasswordReset end"));
     }
 
-    //======================================================================================
-    //======================================================================================
-
-    public function setLoginUserData(Request $request, T_users $t_users)
-    {
-        $reqData = $request->user();
-        $this::$loginUserInfo['user_id'] = $reqData['user_id'];
-        $this::$loginUserInfo['user_name'] = $reqData['user_name'];
-        return $request->user();
-    }
-
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
     public function getUserData(T_users $t_users)
     {
         $result = $t_users->getUserData(Auth::user()->user_id); //ユーザ情報の取得
         return response()->json(['result' => $result]); //DBの結果を返す
     }
+
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
     public function updateUserData(Request $request, T_users $t_users)
     {
@@ -420,6 +310,7 @@ class UserController extends Controller
             abort(500, $e->getMessage());
         }
     }
+
     //react ユーザー情報の削除 20240212
     //delete_flagを1にupdateする
     public function updateDeleteFlagInUserData(T_users $t_users)

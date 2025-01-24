@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class T_users extends Authenticatable
 {
@@ -46,36 +44,6 @@ class T_users extends Authenticatable
     protected $table = 't_users';
     protected $primaryKey = 'user_id';
 
-
-    public function getUserName($targetUserId)
-    {
-        $users = DB::select(
-            'select user_name
-                                from t_users
-                                where delete_flag=0
-                                and user_id = ?',
-            [$targetUserId]
-        );
-        $userName = "";
-        //userは一意に決まるため0番目を返す
-        if (isset($users[0])) {
-            $userName = $users[0]->user_name;
-        }
-        return $userName;
-    }
-
-    //全てのユーザーIDを取得する
-    //ボランティア一括登録画面でユーザーIDの存在チェック用
-    public function getUserIDList()
-    {
-        $user_ids = DB::select(
-            'select user_id
-                                from t_users
-                                where delete_flag = ?',
-            [0]
-        );
-        return $user_ids;
-    }
     //対象ユーザーの情報を取得する
     public function getUserData($targetUserId)
     {
@@ -209,30 +177,6 @@ class T_users extends Authenticatable
         );
     }
 
-    //UserResponseを引数としてupdateを実行
-    public function updateUserResponse($userResponse)
-    {
-        DB::update(
-            'update `t_users`
-                    set 
-                    `user_type`= :user_type,
-                    `user_name`= :user_name,
-                    `mailaddress`= :mailaddress,
-                    `sex`= :sex,
-                    `date_of_birth`= :date_of_birth,
-                    `residence_country`= :residence_country,
-                    `residence_prefecture`= :residence_prefecture,
-                    `height`= :height,
-                    `weight`= :weight,
-                    `temp_password_flag`= :temp_password_flag,
-                    `photo`= :photo,
-                    `updated_time`= :updated_time,
-                    `updated_user_id`= :updated_user_id,
-                    where user_id = :user_id',
-            $userResponse
-        );
-    }
-
     //メールアドレスを条件にユーザー情報を取得する
     public function getUserDataFromMailAddress($mailaddress)
     {
@@ -271,6 +215,7 @@ class T_users extends Authenticatable
         );
         return $users;
     }
+
     //対象のユーザーの削除フラグを「１＝削除データ」に更新する 20240212
     public function updateDeleteFlagToInvalid()
     {

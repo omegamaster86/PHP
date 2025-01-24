@@ -19,57 +19,8 @@ use App\Models\T_organization_staff;
 use App\Models\M_venue;
 use App\Models\M_events;
 
-/*
-登録：register
-変更：edit
-確認：confirm
-削除：delete
-参照：reference
-*/
-
 class TournamentController extends Controller
 {
-
-    //----------------大会検索で使用　ここから----------------------------
-    private function generateSearchCondition($searchInfo)
-    {
-        Log::debug(sprintf("generateSearchCondition start"));
-        $condition = "";
-
-        if (isset($searchInfo['tourn_name'])) {
-            $condition .= " and `t_tournaments`.`tourn_name` like " . "\"%" . $searchInfo['tourn_name'] . "%\""; //大会名
-        }
-        if (isset($searchInfo['tourn_type'])) {
-            $condition .= " and `t_tournaments`.`tourn_type`=" . $searchInfo['tourn_type']; //大会種別
-        }
-        if (isset($searchInfo['venue_id'])) {
-            $condition .= " and `t_tournaments`.`venue_id` = " . $searchInfo['venue_id']; //開催場所
-        }
-        if (isset($searchInfo['event_start_date'])) {
-            $condition .= " and `t_tournaments`.`event_start_date`>= CAST('" . $searchInfo['event_start_date'] . "' AS DATE)"; //開催開始年月日
-        }
-        if (isset($searchInfo['event_end_date'])) {
-            $condition .= " and `t_tournaments`.`event_end_date` <= CAST('" . $searchInfo['event_end_date'] . "' AS DATE)"; //開催終了年月日
-        }
-        if (isset($searchInfo['jara_player_id'])) {
-            $condition .= " and `t_race_result_record`.`jara_player_id`=" . $searchInfo['jara_player_id']; //JARA選手コード
-        }
-        if (isset($searchInfo['player_id'])) {
-            $condition .= " and `t_race_result_record`.`player_id`=" . $searchInfo['player_id']; //選手ID
-        }
-        if (isset($searchInfo['player_name'])) {
-            $condition .= " and `t_race_result_record`.`player_name` like " . "\"%" . $searchInfo['player_name'] . "%\""; //選手名
-        }
-        if (isset($searchInfo['sponsor_org_id'])) {
-            $condition .= " and `t_tournaments`.`sponsor_org_id`= " . $searchInfo['sponsor_org_id']; //主催団体ID
-        }
-        if (isset($searchInfo['sponsorOrgName'])) {
-            $condition .= " and `t_organizations`.`org_name` like " . "\"%" . $searchInfo['sponsorOrgName'] . "%\""; //主催団体名
-        }
-        Log::debug(sprintf("generateSearchCondition end"));
-        return $condition;
-    }
-
     public function searchTournament(Request $request, T_tournaments $tTournaments, M_venue $venueData)
     {
         Log::debug(sprintf("searchTournament start"));
@@ -339,45 +290,6 @@ class TournamentController extends Controller
         }
     }
 
-    //大会削除 未使用 20240408
-    // public function deleteTournamentInfoData(Request $request, T_tournaments $tTournament, T_races $tRace)
-    // {
-    //     Log::debug(sprintf("deleteTournamentInfoData start"));
-    //     $reqData = $request->all();
-
-    //     //確認画面から登録
-    //     // $tTournament::$tournamentInfo['tourn_id'] = 1;
-    //     $tTournament::$tournamentInfo['tourn_name'] = $reqData['tournamentFormData']['tourn_name']; //大会名
-    //     $tTournament::$tournamentInfo['sponsor_org_id'] = $reqData['tournamentFormData']['sponsor_org_id']; //主催団体ID
-    //     $tTournament::$tournamentInfo['event_start_date'] = $reqData['tournamentFormData']['event_start_date']; //大会開始日
-    //     $tTournament::$tournamentInfo['event_end_date'] = $reqData['tournamentFormData']['event_end_date']; //大会終了日 
-    //     $tTournament::$tournamentInfo['venue_id'] = $reqData['tournamentFormData']['venue_id']; //水域ID
-    //     $tTournament::$tournamentInfo['venue_name'] = $reqData['tournamentFormData']['venue_name']; //水域名
-    //     $tTournament::$tournamentInfo['entrysystem_tourn_id'] = $reqData['tournamentFormData']['entrysystem_tourn_id']; //エントリーシステムの大会ID
-    //     $tTournament::$tournamentInfo['delete_flag'] = 1; //エントリーシステムの大会ID
-    //     $result = $tTournament->updateTournaments($tTournament::$tournamentInfo);
-
-    //     //レース登録リスト行数分登録する
-    //     for ($i = 0; $i < count($reqData['tableData']); $i++) {
-    //         $tRace::$racesData['race_number'] = $reqData['tableData'][$i]['race_number']; //レース番号
-    //         $tRace::$racesData['entrysystem_race_id'] = $reqData['tableData'][$i]['entrysystem_race_id']; //エントリーシステムのレースID
-    //         $tRace::$racesData['tourn_id'] = $reqData['tableData'][$i]['id']; //大会IDに紐づける
-    //         $tRace::$racesData['race_name'] = $reqData['tableData'][$i]['race_name']; //レース名
-    //         $tRace::$racesData['event_id'] = $reqData['tableData'][$i]['event_id']; //イベントID
-    //         $tRace::$racesData['event_name'] = $reqData['tableData'][$i]['event_name']; //イベント名
-    //         $tRace::$racesData['race_class_id'] = $reqData['tableData'][$i]['race_class_id']; //レース区分ID
-    //         $tRace::$racesData['race_class_name'] = $reqData['tableData'][$i]['race_class_name']; //レース区分
-    //         $tRace::$racesData['by_group'] = $reqData['tableData'][$i]['byGroup']; //レース区分
-    //         $tRace::$racesData['range'] = $reqData['tableData'][$i]['range']; //距離
-    //         $tRace::$racesData['start_date_time'] = $reqData['tableData'][$i]['start_date_time']; //発艇日時
-    //         $tRace::$racesData['delete_flag'] = 1; //削除フラグ
-    //         $tRace->updateRaces($tRace::$racesData); //レーステーブルの挿入
-    //     }
-
-    //     Log::debug(sprintf("deleteTournamentInfoData end"));
-    //     return response()->json(['reqData' => $reqData, 'result' => $result]); //送信データ(debug用)とDBの結果を返す
-    // }
-
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
     public function getRaceData(Request $request, T_races $tRace)
     {
@@ -440,112 +352,6 @@ class TournamentController extends Controller
         $result = $tRaceResultRecord->getCrews($search_values);
         Log::debug(sprintf("getCrewData end"));
         return response()->json(['result' => $result]); //DBの結果を返す
-    }
-
-    //レース結果一覧を取得 
-    // public function getRaceResultsData(Request $request,T_raceResultRecord $T_raceResultRecord)
-    // {
-    //     $input = $request->all();
-    //     //検索条件の値
-    //     $searchValues = [];
-    //     //置換文字列の生成
-    //     $replaceString = $this->generateRaceResultSearchCondition($input,$searchValues);
-    //     //レース結果一覧を取得
-    //     $result = $T_raceResultRecord->getRacesWithSearchCondition($replaceString,$searchValues);
-    //     return response()->json(['result' => $result]); //取得結果を返す
-    // }
-
-    //レース結果一覧を取得するための検索条件の文字列を生成する
-    //SQLの文字列を置き換える
-    private function generateRaceResultSearchCondition($request, &$searchValues)
-    {
-        $condition = "";
-        //大会名
-        if (isset($request['tourn_name'])) {
-            $condition .= "and `tourn_name` LIKE :tourn_name\r\n";
-            $searchValues['event_year'] = "%" . $request['tourn_name'] . "%";
-        }
-        //種目
-        if (isset($request['event_id'])) {
-            $condition .= "and `event_id` = :event_id\r\n";
-            $searchValues['event_id'] = $request['event_id'];
-        }
-        //種目名
-        if (isset($request['event_name'])) {
-            $condition .= "and event_name LIKE :event_name\r\n";
-            $searchValues['event_name'] = "%" . $request['event_name'] . "%";
-        }
-        //レース区分
-        if (isset($request['race_class_id'])) {
-            $condition .= "and race_class_id = :race_class_id\r\n";
-            $searchValues['race_class_id'] = $request['race_class_id'];
-        }
-        //組別
-        if (isset($request['by_group'])) {
-            $condition .= "and by_group LIKE :by_group\r\n";
-            $searchValues['by_group'] = "%" . $request['by_group'] . "%";
-        }
-        //レースNo.
-        if (isset($request['race_number'])) {
-            $condition .= "and race_number = :race_number\r\n";
-            $searchValues['race_number'] = $request['race_number'];
-        }
-        return $condition;
-    }
-
-    //レース結果情報を登録(insert)する
-    public function registRaceResultRecord(Request $request, T_raceResultRecord $t_raceResultRecord)
-    {
-        include('Auth/ErrorMessages/ErrorMessages.php');
-        try {
-            DB::beginTransaction();
-            //出漕結果記録テーブルを検索
-            $reqData = $request->all();
-            $reqData['current_datetime'] = now()->format('Y-m-d H:i:s.u');
-            $reqData['user_id'] = Auth::user()->user_id;
-            $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData);
-            //結果が0件なら、insertを実行
-            if ($result_count['result'] == 0) {
-                $t_raceResultRecord->insertRaceResultRecordResponse($reqData);
-                DB::commit();
-                return response()->json(['errMessage' => ""]); //エラーメッセージを返す
-            } else {
-                DB::commit();
-                //結果が1件以上存在するとき
-                return response()->json(['errMessage' => $race_result_record_have_been_registred]); //エラーメッセージを返す
-            }
-        } catch (\Throwable $e) {
-            Log::error($e);
-            DB::rollBack();
-            abort(500, $e->getMessage());
-        }
-    }
-
-    //レース結果情報を更新(update)する
-    public function updateRaceResultRecord(Request $request, T_raceResultRecord $t_raceResultRecord)
-    {
-        include('Auth/ErrorMessages/ErrorMessages.php');
-        try {
-            DB::transaction();
-            //出漕結果記録テーブルを検索
-            $reqData = $request->all();
-            $reqData['updated_time'] = now()->format('Y-m-d H:i:s.u');
-            $reqData['updated_user_id'] = Auth::user()->user_id;
-            $result_count = $t_raceResultRecord->getIsExistsTargetRaceResult($reqData);
-            //結果が0件なら、insertを実行
-            if ($result_count['result'] > 0) {
-                $t_raceResultRecord->updateRaceResultRecordsResponse($reqData);
-                DB::commit();
-            } else {
-                DB::commit();
-                //結果が存在しないとき
-                return response()->json(['errMessage' => $race_result_record_have_been_deleted]); //エラーメッセージを返す
-            }
-        } catch (\Throwable $e) {
-            Log::error($e);
-            DB::rollBack();
-            abort(500, $e->getMessage());
-        }
     }
 
     //レース結果情報を削除（update delete_flag)する 20240520
@@ -728,34 +534,6 @@ class TournamentController extends Controller
         // Log::debug($getData);
         Log::debug(sprintf("searchRaceData end."));
         return response()->json(['result' => $getData]); //DBの結果を返す
-    }
-
-    //レース結果一覧を取得する検索条件の文字列を生成する
-    private function generateRaceSearchCondition($reqData, &$valueArray)
-    {
-        $condition = "";
-        //大会名(必須項目)
-        $condition .= "and race.tourn_id = :tourn_id\r\n";
-        $valueArray["tourn_id"] = $reqData["tournId"];
-        //種目(必須項目)
-        $condition .= "and race.event_id = :event_id\r\n";
-        $valueArray["event_id"] = $reqData["eventId"];
-        //レース区分
-        if (isset($reqData["raceTypeId"])) {
-            $condition .= "and race.race_class_id = :race_class_id\r\n";
-            $valueArray["race_class_id"] = $reqData["raceTypeId"];
-        }
-        //組別
-        if (isset($reqData["byGroup"])) {
-            $condition .= "and race.by_group LIKE :by_group\r\n";
-            $valueArray["by_group"] = "%" . $reqData["byGroup"] . "%";
-        }
-        //レースNo.
-        if (isset($reqData["raceNo"])) {
-            $condition .= "and race.race_number = :race_number\r\n";
-            $valueArray["race_number"] = $reqData["raceNo"];
-        }
-        return $condition;
     }
 
     //レース結果入力確認画面
@@ -1506,25 +1284,6 @@ class TournamentController extends Controller
         return response()->json(['result' => $player_info]); //DBの結果を返す
     }
 
-    //時間フォーマット文字列を浮動小数点型に変換する
-    //example.)01:10.34 → 70.34
-    private function convertTimeToFloat($timeString)
-    {
-        list($minutes, $seconds) = explode(':', $timeString);
-        return $minutes * 60 + $seconds;
-    }
-
-    //浮動小数点型を時間フォーマット文字列に変換する
-    //example.)70.34 → 01:10.34
-    private function convertToTimeFormat($floatNumber)
-    {
-        $hours = floor($floatNumber / 60);
-        $minutes = floor($floatNumber % 60);
-        $seconds = round(($floatNumber - floor($floatNumber)) * 100);
-
-        return sprintf("%02d:%02d.%02d", $hours, $minutes, $seconds);
-    }
-
     //レース結果情報一括登録画面用 csvフォーマット出力に使用するレース情報の取得 20240418
     public function getCsvFormatRaceData(Request $request, T_tournaments $tourn, T_races $tRace)
     {
@@ -1572,5 +1331,124 @@ class TournamentController extends Controller
         $result = $tTournaments->getMyOrgsHostedTournaments();
         Log::debug(sprintf("getMyOrgsHostedTournaments end"));
         return response()->json(['result' => $result]);
+    }
+
+    //大会フォロー機能 20241028
+    public function tournamentFollowed(Request $request, T_followed_tournaments $tFollowedTournaments)
+    {
+        Log::debug(sprintf("tournamentFollowed start"));
+
+        try {
+            DB::beginTransaction();
+
+            $reqData = $request->all();
+            Log::debug($reqData);
+            $tournId = $reqData["tournId"];
+            $followTourn = $tFollowedTournaments->getFollowedTournamentsData($tournId); //大会IDとユーザIDを元にフォロー情報が存在するかを確認 202401028
+
+            //フォロー大会テーブルにデータが存在しない場合、新規追加する 20241028
+            if (empty($followTourn)) {
+                $tFollowedTournaments->insertFollowedTournaments($tournId); //大会のフォロー追加 202401028
+            } else {
+                if ($followTourn->delete_flag == 0) {
+                    $tFollowedTournaments->updateFollowedTournaments(1, $tournId); //大会のフォロー解除 202401028
+                } else {
+                    $tFollowedTournaments->updateFollowedTournaments(0, $tournId); //大会のフォロー 202401028
+                }
+            }
+            DB::commit();
+        } catch (\Throwable $e) {
+            Log::error($e);
+            DB::rollBack();
+            abort(500, '大会フォローに失敗しました。');
+        }
+
+        Log::debug(sprintf("tournamentFollowed end"));
+    }
+
+    private function generateSearchCondition($searchInfo)
+    {
+        Log::debug(sprintf("generateSearchCondition start"));
+        $condition = "";
+
+        if (isset($searchInfo['tourn_name'])) {
+            $condition .= " and `t_tournaments`.`tourn_name` like " . "\"%" . $searchInfo['tourn_name'] . "%\""; //大会名
+        }
+        if (isset($searchInfo['tourn_type'])) {
+            $condition .= " and `t_tournaments`.`tourn_type`=" . $searchInfo['tourn_type']; //大会種別
+        }
+        if (isset($searchInfo['venue_id'])) {
+            $condition .= " and `t_tournaments`.`venue_id` = " . $searchInfo['venue_id']; //開催場所
+        }
+        if (isset($searchInfo['event_start_date'])) {
+            $condition .= " and `t_tournaments`.`event_start_date`>= CAST('" . $searchInfo['event_start_date'] . "' AS DATE)"; //開催開始年月日
+        }
+        if (isset($searchInfo['event_end_date'])) {
+            $condition .= " and `t_tournaments`.`event_end_date` <= CAST('" . $searchInfo['event_end_date'] . "' AS DATE)"; //開催終了年月日
+        }
+        if (isset($searchInfo['jara_player_id'])) {
+            $condition .= " and `t_race_result_record`.`jara_player_id`=" . $searchInfo['jara_player_id']; //JARA選手コード
+        }
+        if (isset($searchInfo['player_id'])) {
+            $condition .= " and `t_race_result_record`.`player_id`=" . $searchInfo['player_id']; //選手ID
+        }
+        if (isset($searchInfo['player_name'])) {
+            $condition .= " and `t_race_result_record`.`player_name` like " . "\"%" . $searchInfo['player_name'] . "%\""; //選手名
+        }
+        if (isset($searchInfo['sponsor_org_id'])) {
+            $condition .= " and `t_tournaments`.`sponsor_org_id`= " . $searchInfo['sponsor_org_id']; //主催団体ID
+        }
+        if (isset($searchInfo['sponsorOrgName'])) {
+            $condition .= " and `t_organizations`.`org_name` like " . "\"%" . $searchInfo['sponsorOrgName'] . "%\""; //主催団体名
+        }
+        Log::debug(sprintf("generateSearchCondition end"));
+        return $condition;
+    }
+
+    //レース結果一覧を取得する検索条件の文字列を生成する
+    private function generateRaceSearchCondition($reqData, &$valueArray)
+    {
+        $condition = "";
+        //大会名(必須項目)
+        $condition .= "and race.tourn_id = :tourn_id\r\n";
+        $valueArray["tourn_id"] = $reqData["tournId"];
+        //種目(必須項目)
+        $condition .= "and race.event_id = :event_id\r\n";
+        $valueArray["event_id"] = $reqData["eventId"];
+        //レース区分
+        if (isset($reqData["raceTypeId"])) {
+            $condition .= "and race.race_class_id = :race_class_id\r\n";
+            $valueArray["race_class_id"] = $reqData["raceTypeId"];
+        }
+        //組別
+        if (isset($reqData["byGroup"])) {
+            $condition .= "and race.by_group LIKE :by_group\r\n";
+            $valueArray["by_group"] = "%" . $reqData["byGroup"] . "%";
+        }
+        //レースNo.
+        if (isset($reqData["raceNo"])) {
+            $condition .= "and race.race_number = :race_number\r\n";
+            $valueArray["race_number"] = $reqData["raceNo"];
+        }
+        return $condition;
+    }
+
+    //時間フォーマット文字列を浮動小数点型に変換する
+    //example.)01:10.34 → 70.34
+    private function convertTimeToFloat($timeString)
+    {
+        list($minutes, $seconds) = explode(':', $timeString);
+        return $minutes * 60 + $seconds;
+    }
+
+    //浮動小数点型を時間フォーマット文字列に変換する
+    //example.)70.34 → 01:10.34
+    private function convertToTimeFormat($floatNumber)
+    {
+        $hours = floor($floatNumber / 60);
+        $minutes = floor($floatNumber % 60);
+        $seconds = round(($floatNumber - floor($floatNumber)) * 100);
+
+        return sprintf("%02d:%02d.%02d", $hours, $minutes, $seconds);
     }
 }

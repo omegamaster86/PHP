@@ -290,22 +290,6 @@ class T_organizations extends Model
         return $count;
     }
 
-    //エントリー団体IDから団体名を取得する
-    public function getOrgInfoFromEntrySystemOrgId($entrySystemOrgId)
-    {
-        $orgInfos = DB::select(
-            'select 
-                                `org_id`
-                                ,`org_name`
-                                from `t_organizations`
-                                where `delete_flag`=0
-                                and `entrysystem_org_id`=?',
-            [$entrySystemOrgId]
-        );
-        $orgInfo = $orgInfos[0];
-        return $orgInfo;
-    }
-
     //団体の削除
     //org_idをキーとして、delete_flagを1にする
     public function updateDeleteFlag($org_id)
@@ -393,17 +377,6 @@ class T_organizations extends Model
         $organizations = DB::select($sqlString, $value_array);
         //Log::debug(DB::getQueryLog());
         return $organizations;
-    }
-
-    public function getOrganizationName()
-    {
-        $organization_name_list = DB::select(
-            'select org_name
-                                        from t_organizations
-                                        where delete_flag = 0
-                                        order by org_id'
-        );
-        return $organization_name_list;
     }
 
     public function getOrganizations()
