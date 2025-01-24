@@ -319,16 +319,13 @@ class T_tournaments extends Model
                         `tourn_info_faile_path`,
                         `t_tournaments`.`entrysystem_tourn_id`
                         from `t_tournaments`
-                        left join `t_organizations`
-                        on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
-                        left join `m_venue`
-                        on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
+                        inner join `t_organizations`
+                        on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id` and `t_organizations`.`delete_flag` = 0
+                        inner join `m_venue`
+                        on `t_tournaments`.`venue_id` = `m_venue`.`venue_id` and `m_venue`.`delete_flag` = 0
                         left join `t_race_result_record`
-                        on `t_tournaments`.`tourn_id` = `t_race_result_record`.`tourn_id`
+                        on `t_tournaments`.`tourn_id` = `t_race_result_record`.`tourn_id` and `t_race_result_record`.`delete_flag` = 0
                         where `t_tournaments`.`delete_flag` = 0
-                        and `t_organizations`.`delete_flag` = 0
-                        and `t_race_result_record`.`delete_flag` = 0
-                        and `m_venue`.`delete_flag` = 0
                         #SearchCondition#';
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
         $tournaments = DB::select($sqlString);
