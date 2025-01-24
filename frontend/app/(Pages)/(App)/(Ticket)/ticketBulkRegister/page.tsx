@@ -147,6 +147,7 @@ export default function TicketBulkRegister() {
 
   const getJsonRow = (row: string[], index: number): CsvTableRow => {
     const expectedColumnCount = csvHeaders.length; // 期待する列数
+
     if (row.length !== expectedColumnCount) {
       return {
         id: index,
@@ -257,6 +258,29 @@ export default function TicketBulkRegister() {
     });
   };
 
+  const addTicketAmount = (rows: string[][]) => {
+    let tmpParentOrderNumber = '';
+    let tmpTicketAmount = '';
+
+    const newRows: string[][] = [];
+
+    rows.forEach((row) => {
+      const csvData = rowToCsvData(row);
+
+      if (csvData.orderNumber === tmpParentOrderNumber && csvData.ticketAmount === '') {
+        // 親注文番号がある場合かつ金額が空の場合、前の行の金額を設定
+        csvData.ticketAmount = tmpTicketAmount;
+      }
+
+      newRows.push(Object.values(csvData));
+
+      tmpParentOrderNumber = csvData.orderNumber;
+      tmpTicketAmount = csvData.ticketAmount;
+    });
+
+    return newRows;
+  };
+
   const handleLoadCsv = () => {
     if (!csvFileData.isSet) {
       setErrorMessages(['ファイルを選択してください。']);
@@ -284,14 +308,15 @@ export default function TicketBulkRegister() {
       return;
     }
 
-    const results = csvFileData.content
+    const filteredCsvData = csvFileData.content
       ?.filter(
         (x) =>
           // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
           x.length > 0 && x.some((y) => y.length > 0),
       )
-      .slice(isHeaderMatch ? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
-      .map((row, index) => getJsonRow(row, index));
+      .slice(isHeaderMatch ? 1 : 0); // ヘッダー行が一致する場合は1行目をスキップ
+
+    const results = addTicketAmount(filteredCsvData).map((row, index) => getJsonRow(row, index));
 
     setCsvValidateResults(results);
     setErrorMessages([]);
