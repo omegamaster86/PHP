@@ -705,6 +705,7 @@ export default function OrgInfo() {
   if (paramError) {
     return <div>ページが見つかりません</div>;
   }
+
   return (
     <>
       <div className='flex flex-col justify-start gap-[20px]'>
@@ -902,7 +903,7 @@ export default function OrgInfo() {
                 orgClassOptions.find((orgClass) => orgClass.id === Number(e))?.name || '',
               );
             }}
-            className='w-[300px]'
+            widthClassName='max-w-[300px]'
           />
         </div>
         {/* JARA団体種別 */}
@@ -919,89 +920,81 @@ export default function OrgInfo() {
           />
         )}
         {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN || userIdType.is_jara == ROLE.JARA) && (
-          <div className='w-full flex flex-row justify-start gap-[8px]'>
-            <div className='w-full flex flex-col justify-between gap-[8px]'>
-              <CustomDropdown
-                id='JARA'
-                label='JARA'
-                value={
-                  mode !== 'confirm' ? formData.jara_org_type?.toString() : formData.jaraOrgTypeName
-                }
-                onChange={(e) => {
-                  handleInputChange('jara_org_type', e);
-                  handleInputChange(
-                    'jaraOrgTypeName',
-                    orgTypeOptions.find((orgType) => Number(orgType.id) == Number(e))?.name || '',
-                  );
-                  handleInputChange('jara_org_reg_trail', ''); //団体種別を切り替えるごとに証跡をリセットする 20240308
-                }}
-                readonly={mode === 'confirm'}
-                options={orgTypeOptions.map((orgType) => ({
-                  value: orgType.name,
-                  key: orgType.id,
-                }))}
-                className='w-[300px]'
-                errorMessages={jaraOrgTypeErrorMessages}
-                isError={jaraOrgTypeErrorMessages.length > 0}
-              />
-            </div>
+          <div className='flex gap-2'>
+            <CustomDropdown
+              id='JARA'
+              label='JARA'
+              value={
+                mode !== 'confirm' ? formData.jara_org_type?.toString() : formData.jaraOrgTypeName
+              }
+              onChange={(e) => {
+                handleInputChange('jara_org_type', e);
+                handleInputChange(
+                  'jaraOrgTypeName',
+                  orgTypeOptions.find((orgType) => Number(orgType.id) == Number(e))?.name || '',
+                );
+                handleInputChange('jara_org_reg_trail', ''); //団体種別を切り替えるごとに証跡をリセットする 20240308
+              }}
+              readonly={mode === 'confirm'}
+              options={orgTypeOptions.map((orgType) => ({
+                value: orgType.name,
+                key: orgType.id,
+              }))}
+              widthClassName='w-28'
+              errorMessages={jaraOrgTypeErrorMessages}
+              isError={jaraOrgTypeErrorMessages.length > 0}
+            />
             {/* JARA証跡 */}
-            {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
-              userIdType.is_jara == ROLE.JARA) &&
-              formData.jara_org_type == 1 && (
-                <CustomTextField
-                  label='証跡'
-                  displayHelp={false}
-                  className='w-[300px]'
-                  value={formData.jara_org_reg_trail}
-                  readonly={mode === 'confirm'}
-                  onChange={(e) => handleInputChange('jara_org_reg_trail', e.target.value)}
-                />
-              )}
+            {formData.jara_org_type == 1 && (
+              <CustomTextField
+                label='証跡'
+                displayHelp={false}
+                widthClassName='w-48'
+                value={formData.jara_org_reg_trail}
+                readonly={mode === 'confirm'}
+                onChange={(e) => handleInputChange('jara_org_reg_trail', e.target.value)}
+              />
+            )}
           </div>
         )}
         {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
           userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
-          <div className='w-full flex flex-row justify-start gap-[8px]'>
-            <div className='w-full flex flex-col justify-between gap-[8px]'>
-              {/* 県ボ団体種別 */}
-              <CustomDropdown
-                id='県ボ'
-                label='県ボ'
-                value={
-                  mode !== 'confirm' ? formData.pref_org_type?.toString() : formData.prefOrgTypeName
-                }
-                onChange={(e) => {
-                  handleInputChange('pref_org_type', e);
-                  handleInputChange(
-                    'prefOrgTypeName',
-                    orgTypeOptions.find((orgType) => Number(orgType.id) == Number(e))?.name || '',
-                  );
-                  handleInputChange('pref_org_reg_trail', ''); //団体種別を切り替えるごとに証跡をリセットする 20240308
-                }}
-                options={orgTypeOptions.map((orgType) => ({
-                  value: orgType.name,
-                  key: orgType.id,
-                }))}
-                readonly={mode === 'confirm'}
-                className='w-[300px]'
-                errorMessages={prefOrgTypeErrorMessages}
-                isError={prefOrgTypeErrorMessages.length > 0}
-              />
-            </div>
+          <div className='flex gap-2'>
+            {/* 県ボ団体種別 */}
+            <CustomDropdown
+              id='県ボ'
+              label='県ボ'
+              value={
+                mode !== 'confirm' ? formData.pref_org_type?.toString() : formData.prefOrgTypeName
+              }
+              onChange={(e) => {
+                handleInputChange('pref_org_type', e);
+                handleInputChange(
+                  'prefOrgTypeName',
+                  orgTypeOptions.find((orgType) => Number(orgType.id) == Number(e))?.name || '',
+                );
+                handleInputChange('pref_org_reg_trail', ''); //団体種別を切り替えるごとに証跡をリセットする 20240308
+              }}
+              options={orgTypeOptions.map((orgType) => ({
+                value: orgType.name,
+                key: orgType.id,
+              }))}
+              readonly={mode === 'confirm'}
+              widthClassName='w-28'
+              errorMessages={prefOrgTypeErrorMessages}
+              isError={prefOrgTypeErrorMessages.length > 0}
+            />
             {/* 県ボ証跡 */}
-            {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
-              userIdType.is_pref_boat_officer == ROLE.PREFECTURE) &&
-              formData.pref_org_type == 1 && (
-                <CustomTextField
-                  label='証跡'
-                  className='w-[300px]'
-                  displayHelp={false}
-                  readonly={mode === 'confirm'}
-                  value={formData.pref_org_reg_trail}
-                  onChange={(e) => handleInputChange('pref_org_reg_trail', e.target.value)}
-                />
-              )}
+            {formData.pref_org_type == 1 && (
+              <CustomTextField
+                label='証跡'
+                widthClassName='w-48'
+                displayHelp={false}
+                readonly={mode === 'confirm'}
+                value={formData.pref_org_reg_trail}
+                onChange={(e) => handleInputChange('pref_org_reg_trail', e.target.value)}
+              />
+            )}
           </div>
         )}
       </div>
@@ -1244,9 +1237,8 @@ export default function OrgInfo() {
           </div>
         )
       }
-      <Divider className='w-[900px] h-[1px] bg-border' />
+      <Divider />
       <div className='flex flex-row justify-center gap-[16px]'>
-        {/* 戻る */}
         <CustomButton
           buttonType='white-outlined'
           className='w-[200px]'
@@ -1254,7 +1246,6 @@ export default function OrgInfo() {
         >
           戻る
         </CustomButton>
-        {/* 更新/確認ボタン */}
         {modeCustomButtons[mode as keyof typeof modeCustomButtons]}
       </div>
     </>
