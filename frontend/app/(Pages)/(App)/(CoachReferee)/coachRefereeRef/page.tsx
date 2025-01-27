@@ -20,6 +20,7 @@ import { TitleSideButton } from '../../_components/TitleSideButton';
 import EditIcon from '@mui/icons-material/EditOutlined';
 import { useAuth } from '@/app/hooks/auth';
 import { fetcher } from '@/app/lib/swr';
+import { useUserType } from '@/app/hooks/useUserType';
 
 export default function CoachRefereeRef() {
   const router = useRouter();
@@ -29,6 +30,7 @@ export default function CoachRefereeRef() {
     middleware: 'auth',
   });
 
+  const userType = useUserType();
   const userId = Number(searchParams.get('userId') || user?.user_id);
   const { data } = useSWR(
     userId
@@ -102,30 +104,34 @@ export default function CoachRefereeRef() {
             <span>指導履歴はありません。</span>
           )}
         </div>
-        <h3 className='mb-3'>指導者資格</h3>
-        <div className='flex gap-3 mb-3'>
-          <span>JSPO ID</span>
-          {data.result.jspoId ? <span>{data.result.jspoId}</span> : <span>未登録</span>}
-        </div>
-        <div className='flex gap-3 mb-7 flex-wrap'>
-          {data.result.coachQualificationNames.length > 0 ? (
-            data.result.coachQualificationNames.map((name) => (
-              <RoundedBadge key={name} label={name} isValid={true} />
-            ))
-          ) : (
-            <span>指導者資格がありません。</span>
-          )}
-        </div>
-        <h3 className='mb-3'>審判資格</h3>
-        <div className='flex gap-3 flex-wrap'>
-          {data.result.refereeQualificationNames.length > 0 ? (
-            data.result.refereeQualificationNames.map((name) => (
-              <RoundedBadge key={name} label={name} isValid={true} />
-            ))
-          ) : (
-            <span>審判資格がありません。</span>
-          )}
-        </div>
+        {(userType?.isPrefBoatOfficer || userType?.isJara) && (
+          <>
+            <h3 className='mb-3'>指導者資格</h3>
+            <div className='flex gap-3 mb-3'>
+              <span>JSPO ID</span>
+              {data.result.jspoId ? <span>{data.result.jspoId}</span> : <span>未登録</span>}
+            </div>
+            <div className='flex gap-3 mb-7 flex-wrap'>
+              {data.result.coachQualificationNames.length > 0 ? (
+                data.result.coachQualificationNames.map((name) => (
+                  <RoundedBadge key={name} label={name} isValid={true} />
+                ))
+              ) : (
+                <span>指導者資格がありません。</span>
+              )}
+            </div>
+            <h3 className='mb-3'>審判資格</h3>
+            <div className='flex gap-3 flex-wrap'>
+              {data.result.refereeQualificationNames.length > 0 ? (
+                data.result.refereeQualificationNames.map((name) => (
+                  <RoundedBadge key={name} label={name} isValid={true} />
+                ))
+              ) : (
+                <span>審判資格がありません。</span>
+              )}
+            </div>
+          </>
+        )}
       </div>
       <Divider className='h-[1px] bg-border' />
       <div className='flex flex-row justify-center gap-4'>

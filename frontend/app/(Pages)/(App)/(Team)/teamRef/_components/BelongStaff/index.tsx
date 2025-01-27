@@ -10,12 +10,16 @@ import {
 } from '@/app/components';
 import Link from 'next/link';
 import { StaffRef } from '@/app/types';
+import { useUserType } from '@/app/hooks/useUserType';
 
 interface Props {
   staffs: StaffRef[];
 }
 
 export const BelongStaff: React.FC<Props> = ({ staffs }) => {
+  const userType = useUserType();
+  const showPermission = userType?.isPrefBoatOfficer || userType?.isJara;
+
   return (
     <>
       <div className='w-full bg-secondary-500 text-white h-[40px] flex justify-center items-center font-bold'>
@@ -34,9 +38,11 @@ export const BelongStaff: React.FC<Props> = ({ staffs }) => {
               <CustomTh align='center' colSpan={5}>
                 役職
               </CustomTh>
-              <CustomTh align='center' colSpan={3}>
-                資格
-              </CustomTh>
+              {showPermission && (
+                <CustomTh align='center' colSpan={3}>
+                  資格
+                </CustomTh>
+              )}
             </CustomTr>
             <CustomTr>
               <CustomTh align='center'>管理者(監督)</CustomTh>
@@ -44,9 +50,13 @@ export const BelongStaff: React.FC<Props> = ({ staffs }) => {
               <CustomTh align='center'>コーチ</CustomTh>
               <CustomTh align='center'>マネージャー</CustomTh>
               <CustomTh align='center'>管理代理</CustomTh>
-              <CustomTh align='center'>JSPO ID</CustomTh>
-              <CustomTh align='center'>指導者</CustomTh>
-              <CustomTh align='center'>審判</CustomTh>
+              {showPermission && (
+                <>
+                  <CustomTh align='center'>JSPO ID</CustomTh>
+                  <CustomTh align='center'>指導者</CustomTh>
+                  <CustomTh align='center'>審判</CustomTh>
+                </>
+              )}
             </CustomTr>
           </CustomThead>
           <CustomTbody>
@@ -117,9 +127,13 @@ export const BelongStaff: React.FC<Props> = ({ staffs }) => {
                     readonly={true}
                   ></OriginalCheckbox>
                 </CustomTd>
-                <CustomTd>{row.jspo_id}</CustomTd>
-                <CustomTd>{row.coachQualificationNames.join(', ')}</CustomTd>
-                <CustomTd>{row.refereeQualificationNames.join(', ')}</CustomTd>
+                {showPermission && (
+                  <>
+                    <CustomTd>{row.jspo_id}</CustomTd>
+                    <CustomTd>{row.coachQualificationNames.join(', ')}</CustomTd>
+                    <CustomTd>{row.refereeQualificationNames.join(', ')}</CustomTd>
+                  </>
+                )}
               </CustomTr>
             ))}
           </CustomTbody>
