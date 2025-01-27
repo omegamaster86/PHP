@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class T_followed_tournaments extends Model
 {
@@ -24,7 +23,7 @@ class T_followed_tournaments extends Model
                     and `user_id` = ?
                     and `tourn_id` = ?',
             [
-                Auth::user()->user_id, 
+                Auth::user()->user_id,
                 $tournId
             ]
         );
@@ -61,7 +60,7 @@ class T_followed_tournaments extends Model
     }
 
     //大会のフォロー更新 202401028
-    public function updateFollowedTournaments($deleteFlag,$tournId)
+    public function updateFollowedTournaments($deleteFlag, $tournId)
     {
         DB::update(
             'update `t_followed_tournaments`

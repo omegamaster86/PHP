@@ -189,6 +189,7 @@ export default function TournamentResultRef() {
           className={`flex flex-col gap-[20px] border border-solid p-[20px] ${
             raceInfo.checked ? 'bg-gray-500' : ''
           }`}
+          key={index}
         >
           {/* レース結果情報 */}
           <Label label={`レース結果情報${raceResultRecords.length - index}`} />
