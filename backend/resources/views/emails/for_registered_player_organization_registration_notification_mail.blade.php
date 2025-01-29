@@ -12,7 +12,7 @@
 *
 ************************************************************************--}}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="jp">
 
 <head>
     <meta charset="UTF-8">
@@ -25,7 +25,7 @@
         ※本メールはシステムから自動送信されています。<br /><br />
 
         {{$registered_player_mail_data['player_name']}} 様
-        {{$registered_player_mail_data['to_mailaddress']}} 
+        {{$registered_player_mail_data['to_mailaddress']}}
 
         {{$registered_player_mail_data['manager_type']}}の管理者により、団体の所属選手として登録されました。
 

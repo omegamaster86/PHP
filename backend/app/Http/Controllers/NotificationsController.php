@@ -151,14 +151,15 @@ class NotificationsController extends Controller
                 //全ユーザー
                 $tNotificationRecipients->insertAllUserNotificationData($insertId);
             }
-            $mail_data = $tNotifications->getNotificationMailData($insertId); //メール送信用データ取得 20241128
+            $mailData = $tNotifications->getNotificationMailData($insertId); //メール送信用データ取得 20241128
+            $mailData = (array)$mailData[0];
 
-            $mail_data = (array)$mail_data[0];
-            $mail_data['senderName'] = Auth::user()->user_name; //送信者を設定 20241128
-            $mailList = explode(',', $mail_data['to']); //メール送信用のリストを作成 20241128
+            $mailData['user_name'] = Auth::user()->user_name; //送信者を設定 20241128
+            $mailData['received_notifications_url'] = config('env-data.frontend-url') . '/notifications/received';
+            $mailList = explode(',', $mailData['to']); //メール送信用のリストを作成 20241128
             foreach ($mailList as $recipient) {
                 try {
-                    Mail::to($recipient)->send(new NotificationMail($mail_data)); // 個別にメール送信 20250121
+                    Mail::to($recipient)->send(new NotificationMail($mailData)); // 個別にメール送信 20250121
                 } catch (\Exception $e) {
                     Log::error('ErrorMailAddress: ' . $recipient . ' ErrorMessage: ' . $e->getMessage()); //送信エラーのメールアドレスとメッセージをログに出力 20250121
                     continue;

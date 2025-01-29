@@ -13,7 +13,7 @@
 *
 ************************************************************************--}}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="jp">
 
 <head>
     <meta charset="UTF-8">
@@ -23,11 +23,14 @@
 
 <body>
     <p>
-
-        {{$mail_data['senderName']}} <br />
-
-        {{$mail_data['body']}}<br />
-
+        @if($mail_data['notification_destination_type_id'] == 1 || $mail_data['notification_destination_type_id'] == 2)
+        {{$mail_data['userName']}} さんから新しいお知らせがあります。
+        @else
+        JARAから新しいお知らせがあります。
+        @endif
+    </p>
+    <p>
+        {{$received_notifications_url}}
     </p>
 </body>
 
