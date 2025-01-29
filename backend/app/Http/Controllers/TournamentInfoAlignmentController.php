@@ -52,9 +52,8 @@ class TournamentInfoAlignmentController extends Controller
     ) {
         Log::debug(sprintf("sendTournamentEntryCsvData start"));
         $inputData = $request->all();
-        //$input_event_year = $inputData['tournData']['eventYear'];
         $input_tourn_id = $inputData['tournData']['tournId'];
-        //$input_tourn_name = $inputData['tournData']['tournName'];
+
         for ($rowIndex = 0; $rowIndex < count($inputData['csvDataList']); $rowIndex++) {
 
             //フロント側のバリデーション結果に未入力が存在する場合、以降の処理を実行しない 20240419
@@ -348,403 +347,444 @@ class TournamentInfoAlignmentController extends Controller
                 //非公式
                 if ($is_target_tournament_official == 0) {
                     // 大会ID   非公式大会は必須入力
-                    if (isset($tourn_id)) {
-                        $this->checkInteger($tourn_id, 5, $checkResult, $target_row['tournIdError']);
-                    } else {
+                    if (!isset($tourn_id)) {
+                        $errorMessage = "大会IDは必須入力です。";
                         $checkResult = false;
-                        $target_row['tournIdError'] = true;
+                        $target_row['tournIdError'] = $errorMessage;
                     }
                     // エントリー大会ID
                     if (isset($entrysystem_tourn_id)) {
-                        $this->checkInteger($entrysystem_tourn_id, 8, $checkResult, $target_row['entrysystemTournIdError']);
+                        $errorMessage = "エントリー大会IDは8桁以内の整数で入力してください。";
+                        $this->checkInteger($entrysystem_tourn_id, 8, $checkResult, $target_row['entrysystemTournIdError'], $errorMessage);
                     }
                     // 大会名
                     if (isset($target_row['tournName'])) {
-                        $this->checkWithinByte($target_row['tournName'], 255, $checkResult, $target_row['tournNameError']);
+                        $errorMessage = "大会名は255文字以内で入力してください。";
+                        $this->checkWithinByte($target_row['tournName'], 255, $checkResult, $target_row['tournNameError'], $errorMessage);
                     }
                     // 選手ID   非公式大会は必須入力
-                    if (isset($player_id)) {
-                        $this->checkInteger($player_id, 7, $checkResult, $target_row['userIdError']);
-                    } else {
+                    if (!isset($player_id)) {
+                        $errorMessage = "選手IDは必須入力です。";
                         $checkResult = false;
-                        $target_row['userIdError'] = true;
+                        $target_row['userIdError'] = $errorMessage;
                     }
                     // JARA選手コード
                     if (isset($jara_player_id)) {
                         //半角数字かつ12桁でなければエラーとする
                         if (!(is_numeric($jara_player_id) && mb_strlen($jara_player_id) == 12)) {
+                            $errorMessage = "JARA選手コードは12桁の半角数字で入力してください。";
                             $checkResult = false;
-                            $target_row['jaraPlayerIdError'] = true;
+                            $target_row['jaraPlayerIdError'] = $errorMessage;
                         }
                     }
                     // 選手名
                     if (isset($target_row['playerName'])) {
-                        $this->checkWithinByte($target_row['playerName'], 100, $checkResult, $target_row['playerNameError']);
+                        $errorMessage = "選手名は100文字以内で入力してください。";
+                        $this->checkWithinByte($target_row['playerName'], 100, $checkResult, $target_row['playerNameError'], $errorMessage);
                     } else {
+                        $errorMessage = "選手名は必須入力です。";
                         $checkResult = false;
-                        $target_row['playerNameError'] = true;
+                        $target_row['playerNameError'] = $errorMessage;
                     }
                     // レースID
-                    if (isset($race_id)) {
-                        $this->checkInteger($race_id, 8, $checkResult, $target_row['raceIdError']);
-                    } else {
+                    if (!isset($race_id)) {
+                        $errorMessage = "レースIDは必須入力です。";
                         $checkResult = false;
-                        $target_row['raceIdError'] = true;
+                        $target_row['raceIdError'] = $errorMessage;
                     }
                     // エントリーレースID
                     if (isset($entrysystem_race_id)) {
-                        $this->checkInteger($entrysystem_race_id, 8, $checkResult, $target_row['entrysystemRaceIdError']);
+                        $errorMessage = "エントリーレースIDは8桁以内の整数で入力してください。";
+                        $this->checkInteger($entrysystem_race_id, 8, $checkResult, $target_row['entrysystemRaceIdError'], $errorMessage);
                     }
                     //レースNo.
                     if (isset($target_row['raceNumber'])) {
-                        $this->checkInteger($target_row['raceNumber'], 3, $checkResult, $target_row['raceNumberError']);
+                        $errorMessage = "レースNo.は3桁以内の整数で入力してください。";
+                        $this->checkInteger($target_row['raceNumber'], 3, $checkResult, $target_row['raceNumberError'], $errorMessage);
                     } else {
+                        $errorMessage = "レースNo.は必須入力です。";
                         $checkResult = false;
-                        $target_row['raceNumberError'] = true;
+                        $target_row['raceNumberError'] = $errorMessage;
                     }
                     //レース名
                     if (isset($target_row['raceName'])) {
-                        $this->checkWithinByte($target_row['raceName'], 255, $checkResult, $target_row['raceNameError']);
+                        $errorMessage = "レース名は255文字以内で入力してください。";
+                        $this->checkWithinByte($target_row['raceName'], 255, $checkResult, $target_row['raceNameError'], $errorMessage);
                     }
                     //レース区分ID
-                    if (isset($target_row['raceTypeId'])) {
-                        $this->checkInteger($target_row['raceTypeId'], 3, $checkResult, $target_row['raceTypeIdError']);
-                    } else {
+                    if (!isset($target_row['raceTypeId'])) {
+                        $errorMessage = "レース区分IDは必須入力です。";
                         $checkResult = false;
-                        $target_row['raceTypeIdError'] = true;
+                        $target_row['raceTypeIdError'] = $errorMessage;
                     }
                     // レース区分名
                     if (isset($target_row['raceTypeName'])) {
-                        $this->checkWithinByte($target_row['raceTypeName'], 255, $checkResult, $target_row['raceTypeNameError']);
+                        $errorMessage = "レース区分名は255文字以内で入力してください。";
+                        $this->checkWithinByte($target_row['raceTypeName'], 255, $checkResult, $target_row['raceTypeNameError'], $errorMessage);
                     }
                     //団体名
                     if (!(isset($target_row['orgId']))) {
+                        $errorMessage = "団体IDは必須入力です。";
                         $checkResult = false;
-                        $target_row['orgIdError'] = true;
+                        $target_row['orgIdError'] = $errorMessage;
                     }
                 }
                 //公式
                 else {
                     //大会IDかエントリー大会IDのどちらかが入力されていることを確認
                     //どちらも入力されていなかったら両項目をエラーとする
-
                     if (!(isset($target_row['tournId']) || isset($target_row['entrysystemTournId']))) {
+                        $tournIdErrorMessage = "大会IDは必須入力です。";
+                        $entrysystemTournIdErrorMessage = "エントリー大会IDは必須入力です。";
                         $checkResult = false;
-                        $target_row['tournIdError'] = true;
-                        $target_row['entrysystemTournIdError'] = true;
-                    }
-                    // 大会ID
-                    if (isset($target_row['tournId'])) {
-                        $this->checkInteger($target_row['tournId'], 5, $checkResult, $target_row['tournIdError']);
+                        $target_row['tournIdError'] = $tournIdErrorMessage;
+                        $target_row['entrysystemTournIdError'] = $entrysystemTournIdErrorMessage;
                     }
                     // エントリー大会ID
                     if (isset($target_row['entrysystemTournId'])) {
-                        $this->checkInteger($target_row['entrysystemTournId'], 8, $checkResult, $target_row['entrysystemTournIdError']);
+                        $errorMessage = "エントリー大会IDは8桁以内の整数で入力してください。";
+                        $this->checkInteger($target_row['entrysystemTournId'], 8, $checkResult, $target_row['entrysystemTournIdError'], $errorMessage);
                     }
-                    // else {
-                    //     $checkResult = false;
-                    //     $target_row['entrysystemTournIdError'] = true;
-                    // }
                     //大会名
                     if (isset($target_row['tournName'])) {
-                        $this->checkWithinByte($target_row['tournName'], 255, $checkResult, $target_row['tournNameError']);
+                        $errorMessage = "大会名は255文字以内で入力してください。";
+                        $this->checkWithinByte($target_row['tournName'], 255, $checkResult, $target_row['tournNameError'], $errorMessage);
                     }
-                    // else {
-                    //     $checkResult = false;
-                    //     $target_row['tournNameError'] = true;
-                    // }
                     //選手IDかJARA選手コードのいずれかが入力されていることを確認する
                     //どちらも入力されていない場合、両項目をエラーとする
                     if (!isset($player_id) && !isset($target_row['jaraPlayerId'])) {
+                        $userIdErrorMessage = "選手IDは必須入力です。";
+                        $jaraPlayerIdErrorMessage = "JARA選手コードは必須入力です。";
                         $checkResult = false;
-                        $target_row['userIdError'] = true;
-                        $target_row['jaraPlayerIdError'] = true;
-                    }
-                    // 選手ID
-                    if (isset($player_id)) {
-                        $this->checkInteger($player_id, 7, $checkResult, $target_row['userIdError']);
+                        $target_row['userIdError'] = $userIdErrorMessage;
+                        $target_row['jaraPlayerIdError'] = $jaraPlayerIdErrorMessage;
                     }
                     // JARA選手コード
                     //jara_player_codeにデータがあれば判定する
                     if (isset($target_row['jaraPlayerId'])) {
                         if (!(is_numeric($target_row['jaraPlayerId']) && mb_strlen($target_row['jaraPlayerId']) == 12)) {
+                            $errorMessage = "JARA選手コードは12桁の半角数字で入力してください。";
                             $checkResult = false;
-                            $target_row['jaraPlayerIdError'] = true;
+                            $target_row['jaraPlayerIdError'] = $errorMessage;
                         }
                     }
-                    // else {
-                    //     $checkResult = false;
-                    //     $target_row['jaraPlayerIdError'] = true;
-                    // }
                     // 選手名
                     if (isset($target_row['playerName'])) {
-                        $this->checkWithinByte($target_row['playerName'], 100, $checkResult, $target_row['playerNameError']);
+                        $errorMessage = "選手名は100文字以内で入力してください。";
+                        $this->checkWithinByte($target_row['playerName'], 100, $checkResult, $target_row['playerNameError'], $errorMessage);
                     } else {
+                        $errorMessage = "選手名は必須入力です。";
                         $checkResult = false;
-                        $target_row['playerNameError'] = true;
+                        $target_row['playerNameError'] = $errorMessage;
                     }
                     //レースIDかエントリーレースIDのいずれかが入力されていることを確認
                     //どちらも入力されていなかったら両項目をエラーとする
                     if (!(isset($race_id) || isset($target_row['entrysystemRaceId']))) {
+                        $raceIdErrorMessage = "レースIDは必須入力です。";
+                        $entrysystemRaceIdErrorMessage = "エントリーレースIDは必須入力です。";
                         $checkResult = false;
-                        $target_row['raceIdError'] = true;
-                        $target_row['entrysystemRaceIdError'] = true;
-                    }
-                    // レースID
-                    if (isset($race_id)) {
-                        $this->checkInteger($race_id, 8, $checkResult, $target_row['raceIdError']);
+                        $target_row['raceIdError'] = $raceIdErrorMessage;
+                        $target_row['entrysystemRaceIdError'] = $entrysystemRaceIdErrorMessage;
                     }
                     // エントリーレースID
                     if (isset($target_row['entrysystemRaceId'])) {
-                        $this->checkInteger($target_row['entrysystemRaceId'], 8, $checkResult, $target_row['entrysystemRaceIdError']);
+                        $errorMessage = "エントリーレースIDは8桁以内の整数で入力してください。";
+                        $this->checkInteger($target_row['entrysystemRaceId'], 8, $checkResult, $target_row['entrysystemRaceIdError'], $errorMessage);
                     }
                     //レースNo.
                     if (isset($target_row['raceNumber'])) {
-                        $this->checkInteger($target_row['raceNumber'], 3, $checkResult, $target_row['raceNumberError']);
+                        $errorMessage = "レースNo.は3桁以内の整数で入力してください。";
+                        $this->checkInteger($target_row['raceNumber'], 3, $checkResult, $target_row['raceNumberError'], $errorMessage);
                     } else {
+                        $errorMessage = "レースNo.は必須入力です。";
                         $checkResult = false;
-                        $target_row['raceNumberError'] = true;
+                        $target_row['raceNumberError'] = $errorMessage;
                     }
                     //レース名
                     if (isset($target_row['raceName'])) {
-                        $this->checkWithinByte($target_row['raceName'], 255, $checkResult, $target_row['raceNameError']);
+                        $errorMessage = "レース名は255文字以内で入力してください。";
+                        $this->checkWithinByte($target_row['raceName'], 255, $checkResult, $target_row['raceNameError'], $errorMessage);
                     } else {
+                        $errorMessage = "レース名は必須入力です。";
                         $checkResult = false;
-                        $target_row['raceNameError'] = true;
+                        $target_row['raceNameError'] = $errorMessage;
                     }
                     //レース区分ID
-                    if (isset($target_row['raceTypeId'])) {
-                        $this->checkInteger($target_row['raceTypeId'], 3, $checkResult, $target_row['raceTypeIdError']);
-                    } else {
+                    if (!isset($target_row['raceTypeId'])) {
+                        $errorMessage = "レース区分IDは必須入力です。";
                         $checkResult = false;
-                        $target_row['raceTypeIdError'] = true;
+                        $target_row['raceTypeIdError'] = $errorMessage;
                     }
                     //レース区分名
                     if (isset($target_row['raceTypeName'])) {
-                        $this->checkWithinByte($target_row['raceTypeName'], 255, $checkResult, $target_row['raceTypeNameError']);
+                        $errorMessage = "レース区分名は255文字以内で入力してください。";
+                        $this->checkWithinByte($target_row['raceTypeName'], 255, $checkResult, $target_row['raceTypeNameError'], $errorMessage);
                     } else {
+                        $errorMessage = "レース区分名は必須入力です。";
                         $checkResult = false;
-                        $target_row['raceTypeNameError'] = true;
+                        $target_row['raceTypeNameError'] = $errorMessage;
                     }
                     //団体IDとエントリー団体コードのいずれかが入力されていることを確認
                     //どちらも入力されていなかったら両項目をエラーとする
                     if (!isset($target_row['orgId']) && !isset($target_row['entrysystemOrgId'])) {
                         Log::debug("団体IDとエントリー団体コードのいずれかが入力されていない");
+                        $orgIdErrorMessage = "団体IDは必須入力です。";
+                        $entrysystemOrgIdErrorMessage = "エントリー団体コードは必須入力です。";
                         $checkResult = false;
-                        $target_row['orgIdError'] = true;
-                        $target_row['entrysystemOrgIdError'] = true;
+                        $target_row['orgIdError'] = $orgIdErrorMessage;
+                        $target_row['entrysystemOrgIdError'] = $entrysystemOrgIdErrorMessage;
                     }
                     //団体名
                     if (!(isset($target_row['orgName']))) {
+                        $errorMessage = "団体名は必須入力です。";
                         $checkResult = false;
-                        $target_row['orgNameError'] = true;
+                        $target_row['orgNameError'] = $errorMessage;
                     }
                 }
                 //公式・非公式で区別しない項目
-                // 団体ID
-                if (isset($target_row['orgId'])) {
-                    $this->checkInteger($target_row['orgId'], 4, $checkResult, $target_row['orgIdError']);
-                }
                 // エントリー団体コード
                 if (isset($target_row['entrysystemOrgId'])) {
-                    if (!(is_numeric($target_row['entrysystemOrgId'])
-                        && mb_strlen($target_row['entrysystemOrgId']) == 6)) {
+                    if (!(is_numeric($target_row['entrysystemOrgId']) && mb_strlen($target_row['entrysystemOrgId']) == 6)) {
+                        $errorMessage = "エントリー団体コードは6桁の半角数字で入力してください。";
                         $checkResult = false;
-                        $target_row['entrysystemOrgIdError'] = true;
+                        $target_row['entrysystemOrgIdError'] = $errorMessage;
                     }
                 }
                 //団体名
                 if (isset($target_row['orgName'])) {
-                    $this->checkWithinByte($target_row['orgName'], 255, $checkResult, $target_row['orgNameError']);
+                    $errorMessage = "団体名は255文字以内で入力してください。";
+                    $this->checkWithinByte($target_row['orgName'], 255, $checkResult, $target_row['orgNameError'], $errorMessage);
                 }
                 //クルー名
                 if (isset($target_row['crewName'])) {
-                    $this->checkWithinByte($target_row['crewName'], 255, $checkResult, $target_row['crewNameError']);
+                    $errorMessage = "クルー名は255文字以内で入力してください。";
+                    $this->checkWithinByte($target_row['crewName'], 255, $checkResult, $target_row['crewNameError'], $errorMessage);
                 } else {
+                    $errorMessage = "クルー名は必須入力です。";
                     $checkResult = false;
-                    $target_row['crewNameError'] = true;
+                    $target_row['crewNameError'] = $errorMessage;
                 }
                 //組別
                 if (isset($target_row['byGroup'])) {
-                    $this->checkWithinByte($target_row['byGroup'], 255, $checkResult, $target_row['byGroupError']);
+                    $errorMessage = "組別は255文字以内で入力してください。";
+                    $this->checkWithinByte($target_row['byGroup'], 255, $checkResult, $target_row['byGroupError'], $errorMessage);
                 } else {
+                    $errorMessage = "組別は必須入力です。";
                     $checkResult = false;
-                    $target_row['byGroupError'] = true;
+                    $target_row['byGroupError'] = $errorMessage;
                 }
                 //種目ID
-                if (isset($target_row['eventId'])) {
-                    $this->checkInteger($target_row['eventId'], 3, $checkResult, $target_row['eventIdError']);
-                } else {
+                if (!isset($target_row['eventId'])) {
+                    $errorMessage = "種目IDは必須入力です。";
                     $checkResult = false;
-                    $target_row['eventIdError'] = true;
+                    $target_row['eventIdError'] = $errorMessage;
                 }
                 //種目名
                 if (isset($target_row['eventName'])) {
-                    $this->checkWithinByte($target_row['eventName'], 255, $checkResult, $target_row['eventNameError']);
+                    $errorMessage = "種目名は255文字以内で入力してください。";
+                    $this->checkWithinByte($target_row['eventName'], 255, $checkResult, $target_row['eventNameError'], $errorMessage);
                 } else {
+                    $errorMessage = "種目名は必須入力です。";
                     $checkResult = false;
-                    $target_row['eventNameError'] = true;
+                    $target_row['eventNameError'] = $errorMessage;
                 }
                 //距離
                 if (isset($target_row['range'])) {
-                    $this->checkInteger($target_row['range'], 4, $checkResult, $target_row['rangeError']);
+                    $errorMessage = "距離は4桁以内の整数で入力してください。";
+                    $this->checkInteger($target_row['range'], 4, $checkResult, $target_row['rangeError'], $errorMessage);
                 }
                 //順位
                 if (isset($target_row['rank'])) {
-                    $this->checkInteger($target_row['rank'], 3, $checkResult, $target_row['rankError']);
+                    $errorMessage = "順位は3桁以内の整数で入力してください。";
+                    $this->checkInteger($target_row['rank'], 3, $checkResult, $target_row['rankError'], $errorMessage);
                 } else {
+                    $errorMessage = "順位は必須入力です。";
                     $checkResult = false;
-                    $target_row['rankError'] = true;
+                    $target_row['rankError'] = $errorMessage;
                 }
 
                 //ラップタイムは500m～最終までの何れかの入力が必須（すべて空の場合、エラーとする） 20240417
                 if (!(isset($target_row['fiveHundredmLaptime']) || isset($target_row['tenHundredmLaptime']) || isset($target_row['fifteenHundredmLaptime']) || isset($target_row['twentyHundredmLaptime']) || isset($target_row['finalTime']))) {
+                    $errorMessage = "500mラップタイム、1000mラップタイム、1500mラップタイム、2000mラップタイム、最終タイムのいずれかの入力が必須です。";
                     $checkResult = false;
-                    $target_row['fiveHundredmLaptimeError'] = true;
-                    $target_row['tenHundredmLaptimeError'] = true;
-                    $target_row['fifteenHundredmLaptimeError'] = true;
-                    $target_row['twentyHundredmLaptimeError'] = true;
-                    $target_row['finalTimeError'] = true;
+                    // フロントエンドでxxxErrorはfalse以外のセルを黄色にさせるので空文字を設定
+                    $target_row['fiveHundredmLaptimeError'] = "";
+                    $target_row['tenHundredmLaptimeError'] = "";
+                    $target_row['fifteenHundredmLaptimeError'] = "";
+                    $target_row['twentyHundredmLaptimeError'] = "";
+                    // 代表して最終タイムのエラーメッセージを設定
+                    $target_row['finalTimeError'] = $errorMessage;
                 }
 
                 // 500mlapタイム
                 if (isset($target_row['fiveHundredmLaptime'])) {
-                    $this->checkDecimal($target_row['fiveHundredmLaptime'], "5.2", $checkResult, $target_row['fiveHundredmLaptimeError']);
+                    $errorMessage = "500mラップタイムは整数部5桁以内、小数部2桁以内の数値で入力してください。";
+                    $this->checkDecimal($target_row['fiveHundredmLaptime'], "5.2", $checkResult, $target_row['fiveHundredmLaptimeError'], $errorMessage);
                 }
                 //1000mlapタイム
                 if (isset($target_row['tenHundredmLaptime'])) {
-                    $this->checkDecimal($target_row['tenHundredmLaptime'], "5.2", $checkResult, $target_row['tenHundredmLaptimeError']);
+                    $errorMessage = "1000mラップタイムは整数部5桁以内、小数部2桁以内の数値で入力してください。";
+                    $this->checkDecimal($target_row['tenHundredmLaptime'], "5.2", $checkResult, $target_row['tenHundredmLaptimeError'], $errorMessage);
                 }
                 // 1500mlapタイム
                 if (isset($target_row['fifteenHundredmLaptime'])) {
-                    $this->checkDecimal($target_row['fifteenHundredmLaptime'], "5.2", $checkResult, $target_row['fifteenHundredmLaptimeError']);
+                    $errorMessage = "1500mラップタイムは整数部5桁以内、小数部2桁以内の数値で入力してください。";
+                    $this->checkDecimal($target_row['fifteenHundredmLaptime'], "5.2", $checkResult, $target_row['fifteenHundredmLaptimeError'], $errorMessage);
                 }
                 // 2000mlapタイム
                 if (isset($target_row['twentyHundredmLaptime'])) {
-                    $this->checkDecimal($target_row['twentyHundredmLaptime'], "5.2", $checkResult, $target_row['twentyHundredmLaptimeError']);
+                    $errorMessage = "2000mラップタイムは整数部5桁以内、小数部2桁以内の数値で入力してください。";
+                    $this->checkDecimal($target_row['twentyHundredmLaptime'], "5.2", $checkResult, $target_row['twentyHundredmLaptimeError'], $errorMessage);
                 }
                 // 最終タイム
                 if (isset($target_row['finalTime'])) {
-                    $this->checkDecimal($target_row['finalTime'], "5.2", $checkResult, $target_row['finalTimeError']);
+                    $errorMessage = "最終タイムは整数部5桁以内、小数部2桁以内の数値で入力してください。";
+                    $this->checkDecimal($target_row['finalTime'], "5.2", $checkResult, $target_row['finalTimeError'], $errorMessage);
                 }
                 // ストロークレート（平均）
                 if (isset($target_row['strokeRateAvg'])) {
-                    $this->checkInteger($target_row['strokeRateAvg'], 3, $checkResult, $target_row['strokeRateAvgError']);
+                    $errorMessage = "ストロークレート（平均）は3桁以内の整数で入力してください。";
+                    $this->checkInteger($target_row['strokeRateAvg'], 3, $checkResult, $target_row['strokeRateAvgError'], $errorMessage);
                 }
                 // 500mストロークレート
                 if (isset($target_row['fiveHundredmStrokeRat'])) {
-                    $this->checkInteger($target_row['fiveHundredmStrokeRat'], 3, $checkResult, $target_row['fiveHundredmStrokeRatError']);
+                    $errorMessage = "500mストロークレートは3桁以内の整数で入力してください。";
+                    $this->checkInteger($target_row['fiveHundredmStrokeRat'], 3, $checkResult, $target_row['fiveHundredmStrokeRatError'], $errorMessage);
                 }
                 // 1000mストロークレート
                 if (isset($target_row['tenHundredmStrokeRat'])) {
-                    $this->checkInteger($target_row['tenHundredmStrokeRat'], 3, $checkResult, $target_row['tenHundredmStrokeRatError']);
+                    $errorMessage = "1000mストロークレートは3桁以内の整数で入力してください。";
+                    $this->checkInteger($target_row['tenHundredmStrokeRat'], 3, $checkResult, $target_row['tenHundredmStrokeRatError'], $errorMessage);
                 }
                 // 1500mストロークレート
                 if (isset($target_row['fifteenHundredmStrokeRat'])) {
-                    $this->checkInteger($target_row['fifteenHundredmStrokeRat'], 3, $checkResult, $target_row['fifteenHundredmStrokeRatError']);
+                    $errorMessage = "1500mストロークレートは3桁以内の整数で入力してください。";
+                    $this->checkInteger($target_row['fifteenHundredmStrokeRat'], 3, $checkResult, $target_row['fifteenHundredmStrokeRatError'], $errorMessage);
                 }
                 // 2000mストロークレート
                 if (isset($target_row['twentyHundredmStrokeRat'])) {
-                    $this->checkInteger($target_row['twentyHundredmStrokeRat'], 3, $checkResult, $target_row['twentyHundredmStrokeRatError']);
+                    $errorMessage = "2000mストロークレートは3桁以内の整数で入力してください。";
+                    $this->checkInteger($target_row['twentyHundredmStrokeRat'], 3, $checkResult, $target_row['twentyHundredmStrokeRatError'], $errorMessage);
                 }
                 // 心拍数（平均）
                 if (isset($target_row['heartRateAvg'])) {
-                    $this->checkInteger($target_row['heartRateAvg'], 3, $checkResult, $target_row['heartRateAvgError']);
+                    $errorMessage = "心拍数（平均）は3桁以内の整数で入力してください。";
+                    $this->checkInteger($target_row['heartRateAvg'], 3, $checkResult, $target_row['heartRateAvgError'], $errorMessage);
                 }
                 // 500m心拍数
                 if (isset($target_row['fiveHundredmHeartRate'])) {
-                    $this->checkInteger($target_row['fiveHundredmHeartRate'], 3, $checkResult, $target_row['fiveHundredmHeartRateError']);
+                    $errorMessage = "500m心拍数は3桁以内の整数で入力してください。";
+                    $this->checkInteger($target_row['fiveHundredmHeartRate'], 3, $checkResult, $target_row['fiveHundredmHeartRateError'], $errorMessage);
                 }
                 // 1000m心拍数
                 if (isset($target_row['tenHundredmHeartRate'])) {
-                    $this->checkInteger($target_row['tenHundredmHeartRate'], 3, $checkResult, $target_row['tenHundredmHeartRateError']);
+                    $errorMessage = "1000m心拍数は3桁以内の整数で入力してください。";
+                    $this->checkInteger($target_row['tenHundredmHeartRate'], 3, $checkResult, $target_row['tenHundredmHeartRateError'], $errorMessage);
                 }
                 // 1500m心拍数
                 if (isset($target_row['fifteenHundredmHeartRate'])) {
-                    $this->checkInteger($target_row['fifteenHundredmHeartRate'], 3, $checkResult, $target_row['fifteenHundredmHeartRateError']);
+                    $errorMessage = "1500m心拍数は3桁以内の整数で入力してください。";
+                    $this->checkInteger($target_row['fifteenHundredmHeartRate'], 3, $checkResult, $target_row['fifteenHundredmHeartRateError'], $errorMessage);
                 }
                 // 2000m心拍数
                 if (isset($target_row['twentyHundredmHeartRate'])) {
-                    $this->checkInteger($target_row['twentyHundredmHeartRate'], 3, $checkResult, $target_row['twentyHundredmHeartRateError']);
+                    $errorMessage = "2000m心拍数は3桁以内の整数で入力してください。";
+                    $this->checkInteger($target_row['twentyHundredmHeartRate'], 3, $checkResult, $target_row['twentyHundredmHeartRateError'], $errorMessage);
                 }
                 // 公式／非公式
                 if (isset($target_row['official'])) {
-                    $this->checkZeroOrOne($target_row['official'], $checkResult, $target_row['officialError']);
+                    $errorMessage = "公式／非公式は0または1で入力してください。";
+                    $this->checkZeroOrOne($target_row['official'], $checkResult, $target_row['officialError'], $errorMessage);
                     //選択した大会と公式／非公式が一致していることを確認する
                     if ($is_target_tournament_official != $target_row['official']) {
+                        $errorMessage = "選択した大会と公式／非公式が一致していません。";
                         $checkResult = false;
-                        $target_row['officialError'] = true;
+                        $target_row['officialError'] = $errorMessage;
                     }
                 }
                 // 立ち合い有無
                 if (isset($target_row['attendance'])) {
-                    $this->checkZeroOrOne($target_row['attendance'], $checkResult, $target_row['attendanceError']);
+                    $errorMessage = "立ち合い有無は0または1で入力してください。";
+                    $this->checkZeroOrOne($target_row['attendance'], $checkResult, $target_row['attendanceError'], $errorMessage);
                 }
                 // エルゴ体重
                 if (isset($target_row['ergoWeight'])) {
-                    $this->checkDecimal($target_row['ergoWeight'], "3.2", $checkResult, $target_row['ergoWeightError']);
+                    $errorMessage = "エルゴ体重は整数部3桁以内、小数部2桁以内の数値で入力してください。";
+                    $this->checkDecimal($target_row['ergoWeight'], "3.2", $checkResult, $target_row['ergoWeightError'], $errorMessage);
                 }
                 // 選手身長
                 if (isset($target_row['playerHeight'])) {
-                    $this->checkDecimal($target_row['playerHeight'], "3.2", $checkResult, $target_row['playerHeightError']);
+                    $errorMessage = "選手身長は整数部3桁以内、小数部2桁以内の数値で入力してください。";
+                    $this->checkDecimal($target_row['playerHeight'], "3.2", $checkResult, $target_row['playerHeightError'], $errorMessage);
                 }
                 // 選手体重
                 if (isset($target_row['playerWeight'])) {
-                    $this->checkDecimal($target_row['playerWeight'], "3.2", $checkResult, $target_row['playerWeightError']);
+                    $errorMessage = "選手体重は整数部3桁以内、小数部2桁以内の数値で入力してください。";
+                    $this->checkDecimal($target_row['playerWeight'], "3.2", $checkResult, $target_row['playerWeightError'], $errorMessage);
                 }
                 // シート番号ID
-                if (isset($target_row['mSheetNumber'])) {
-                    $this->checkInteger($target_row['mSheetNumber'], 2, $checkResult, $target_row['mSheetNumberError']);
-                } else {
+                if (!isset($target_row['mSheetNumber'])) {
+                    $errorMessage = "シート番号IDは必須入力です。";
                     $checkResult = false;
-                    $target_row['mSheetNumberError'] = true;
+                    $target_row['mSheetNumberError'] = $errorMessage;
                 }
                 // シート番号
                 if (isset($target_row['sheetName'])) {
-                    $this->checkWithinByte($target_row['sheetName'], 255, $checkResult, $target_row['sheetNameError']);
+                    $errorMessage = "シート番号は255文字以内で入力してください。";
+                    $this->checkWithinByte($target_row['sheetName'], 255, $checkResult, $target_row['sheetNameError'], $errorMessage);
                 } else {
+                    $errorMessage = "シート番号は必須入力です。";
                     $checkResult = false;
-                    $target_row['sheetNameError'] = true;
+                    $target_row['sheetNameError'] = $errorMessage;
                 }
                 // 出漕結果記録名
                 if (isset($target_row['raceResultRecordName'])) {
-                    $this->checkWithinByte($target_row['raceResultRecordName'], 255, $checkResult, $target_row['raceResultRecordNameError']);
+                    $errorMessage = "出漕結果記録名は255文字以内で入力してください。";
+                    $this->checkWithinByte($target_row['raceResultRecordName'], 255, $checkResult, $target_row['raceResultRecordNameError'], $errorMessage);
                 }
                 // 発艇日時
                 if (isset($target_row['startDatetime'])) {
                     //文字数が16文字(YYYY/MM/DD hh:mm)でない場合、エラーとする
                     if (mb_strlen($target_row['startDatetime']) != 16) {
+                        $errorMessage = "発艇日時は16文字で入力してください。";
                         $checkResult = false;
-                        $target_row['startDatetimeError'] = true;
+                        $target_row['startDatetimeError'] = $errorMessage;
                     }
                     if (!($target_row['startDatetime'] === date('Y/m/d H:i', strtotime($target_row['startDatetime'])))) {
+                        $errorMessage = "発艇日時は日付形式で入力してください。";
                         $checkResult = false;
-                        $target_row['startDatetimeError'] = true;
+                        $target_row['startDatetimeError'] = $errorMessage;
                     }
                 }
                 // 天候
                 if (isset($target_row['weather'])) {
-                    $this->checkWithinByte($target_row['weather'], 255, $checkResult, $target_row['weatherError']);
+                    $errorMessage = "天候は255文字以内で入力してください。";
+                    $this->checkWithinByte($target_row['weather'], 255, $checkResult, $target_row['weatherError'], $errorMessage);
                 }
                 // 2000m地点風速
                 if (isset($target_row['windSpeedTwentyHundredmPoint'])) {
-                    $this->checkDecimal($target_row['windSpeedTwentyHundredmPoint'], "3.2", $checkResult, $target_row['windSpeedTwentyHundredmPointError']);
+                    $errorMessage = "2000m地点風速は整数部3桁以内、小数部2桁以内の数値で入力してください。";
+                    $this->checkDecimal($target_row['windSpeedTwentyHundredmPoint'], "3.2", $checkResult, $target_row['windSpeedTwentyHundredmPointError'], $errorMessage);
                 }
                 // 2000m地点風向
                 if (isset($target_row['windDirectionTwentyHundredmPoint'])) {
-                    $this->checkWithinByte($target_row['windDirectionTwentyHundredmPoint'], 255, $checkResult, $target_row['windDirectionTwentyHundredmPointError']);
+                    $errorMessage = "2000m地点風向は255文字以内で入力してください。";
+                    $this->checkWithinByte($target_row['windDirectionTwentyHundredmPoint'], 255, $checkResult, $target_row['windDirectionTwentyHundredmPointError'], $errorMessage);
                 }
                 // 1000m地点風速
                 if (isset($target_row['windSpeedTenHundredmPoint'])) {
-                    $this->checkDecimal($target_row['windSpeedTenHundredmPoint'], "3.2", $checkResult, $target_row['windSpeedTenHundredmPointError']);
+                    $errorMessage = "1000m地点風速は整数部3桁以内、小数部2桁以内の数値で入力してください。";
+                    $this->checkDecimal($target_row['windSpeedTenHundredmPoint'], "3.2", $checkResult, $target_row['windSpeedTenHundredmPointError'], $errorMessage);
                 }
                 // 1000m地点風向
                 if (isset($target_row['windDirectionTenHundredmPoint'])) {
-                    $this->checkWithinByte($target_row['windDirectionTenHundredmPoint'], 255, $checkResult, $target_row['windDirectionTenHundredmPointError']);
+                    $errorMessage = "1000m地点風向は255文字以内で入力してください。";
+                    $this->checkWithinByte($target_row['windDirectionTenHundredmPoint'], 255, $checkResult, $target_row['windDirectionTenHundredmPointError'], $errorMessage);
                 }
                 // 備考
                 if (isset($target_row['remark'])) {
-                    $this->checkWithinByte($target_row['remark'], 255, $checkResult, $target_row['remarkError']);
+                    $errorMessage = "備考は255文字以内で入力してください。";
+                    $this->checkWithinByte($target_row['remark'], 255, $checkResult, $target_row['remarkError'], $errorMessage);
                 }
                 //大会ID情報
                 if ($checkResult == true) {
@@ -772,17 +812,18 @@ class TournamentInfoAlignmentController extends Controller
                         }
                     }
                     if (!$is_tournament_exists) {
+                        $tournIdErrorMessage = "大会IDが存在しません。";
+                        $entrysystemTournIdErrorMessage = "エントリー大会IDが存在しません。";
                         //大会ID
-                        $target_row['tournIdError'] = isset($target_row['tournId']) ? true : false;
+                        $target_row['tournIdError'] = isset($target_row['tournId']) ? $tournIdErrorMessage : false;
                         //既存大会ID
-                        $target_row['entrysystemTournIdError'] = isset($target_row['entrysystemTournId']) ? true : false;
+                        $target_row['entrysystemTournIdError'] = isset($target_row['entrysystemTournId']) ? $entrysystemTournIdErrorMessage : false;
                         $checkResult = false;
                     }
                 }
 
                 //レース情報の一致確認
                 if ($checkResult == true) {
-                    //Log::debug("レース情報　チェック");
                     $is_race_exists = false;    //一致するレースの有無
                     //対象の大会に登録されているレース情報
                     $target_races = $t_races->getRace($input_tourn_id);
@@ -872,23 +913,31 @@ class TournamentInfoAlignmentController extends Controller
                     }
                     //一致の結果を確認して登録不可データかどうかを判断する
                     if (!$is_race_exists) {
-                        //Log::debug("レース情報不一致");
+                        $raceIdErrorMessage = "レースIDが存在しません。";
+                        $entrysystemRaceIdErrorMessage = "エントリーレースIDが存在しません。";
+                        $eventIdErrorMessage = "種目IDが存在しません。";
+                        $eventNameErrorMessage = "種目名が存在しません。";
+                        $raceTypeIdErrorMessage = "レース区分IDが存在しません。";
+                        $raceTypeNameErrorMessage = "レース区分名が存在しません。";
+                        $byGroupErrorMessage = "組別が存在しません。";
+                        $raceNumberErrorMessage = "レースNo.が存在しません。";
+
                         //レースID
-                        $target_row['raceIdError'] = isset($target_row['raceId']) ? true : false;
+                        $target_row['raceIdError'] = isset($target_row['raceId']) ? $raceIdErrorMessage : false;
                         //エントリーシステムのレースID
-                        $target_row['entrysystemRaceIdError'] = isset($target_row['entrysystemRaceId']) ? true : false;
+                        $target_row['entrysystemRaceIdError'] = isset($target_row['entrysystemRaceId']) ? $entrysystemRaceIdErrorMessage : false;
                         //種目ID
-                        $target_row['eventIdError'] = isset($target_row['eventId']) ? true : false;
+                        $target_row['eventIdError'] = isset($target_row['eventId']) ? $eventIdErrorMessage : false;
                         //種目名                       
-                        $target_row['eventNameError'] = isset($target_row['eventName']) ? true : false;
+                        $target_row['eventNameError'] = isset($target_row['eventName']) ? $eventNameErrorMessage : false;
                         //レース区分ID                        
-                        $target_row['raceTypeIdError'] = isset($target_row['raceTypeId']) ? true : false;
+                        $target_row['raceTypeIdError'] = isset($target_row['raceTypeId']) ? $raceTypeIdErrorMessage : false;
                         //レース区分名                        
-                        $target_row['raceTypeNameError'] = isset($target_row['raceTypeName']) ? true : false;
+                        $target_row['raceTypeNameError'] = isset($target_row['raceTypeName']) ? $raceTypeNameErrorMessage : false;
                         //組別
-                        $target_row['byGroupError'] = isset($target_row['byGroup']) ? true : false;
+                        $target_row['byGroupError'] = isset($target_row['byGroup']) ? $byGroupErrorMessage : false;
                         //レースNo.                        
-                        $target_row['raceNumberError'] = isset($target_row['raceNumber']) ? true : false;
+                        $target_row['raceNumberError'] = isset($target_row['raceNumber']) ? $raceNumberErrorMessage : false;
                         $checkResult = false;
                     }
                 }
@@ -933,34 +982,19 @@ class TournamentInfoAlignmentController extends Controller
                         }
                     }
                     if (!$is_organization_exists) {
-                        //Log::debug("団体情報不一致");
+                        $orgIdErrorMessage = "団体IDが存在しません。";
+                        $entrysystemOrgIdErrorMessage = "エントリー団体IDが存在しません。";
                         //団体ID
-                        $target_row['orgIdError'] = true;
+                        $target_row['orgIdError'] = $orgIdErrorMessage;
                         //既存団体ID
-                        $target_row['entrysystemOrgIdError'] = isset($target_row['entrysystemOrgId']) ? true : false;
+                        $target_row['entrysystemOrgIdError'] = isset($target_row['entrysystemOrgId']) ? $entrysystemOrgIdErrorMessage : false;
                         $checkResult = false;
                     }
                 }
                 //選手情報の一致確認
                 if ($checkResult == true) {
-                    //Log::debug("選手情報　チェック");
                     $is_player_exists = false;
                     foreach ($players as $player) {
-                        // if (isset($target_row['jaraPlayerId'])) {
-                        //     if (
-                        //         $player->player_id == $target_row['userId']
-                        //         && $player->jara_player_id == $target_row['jaraPlayerId']
-                        //     ) {
-                        //         $is_player_exists = true;
-                        //         break;
-                        //     }
-                        // } else {
-                        //     if ($player->player_id == $target_row['userId']) {
-                        //         $is_player_exists = true;
-                        //         break;
-                        //     }
-                        // }
-
                         if (!isset($target_row['userId'])) {                     // 選手IDが未入力の場合、JARA選手コードで一致確認
                             if ($player->jara_player_id == $target_row['jaraPlayerId']) {
                                 $is_player_exists = true;
@@ -982,11 +1016,12 @@ class TournamentInfoAlignmentController extends Controller
                         }
                     }
                     if (!$is_player_exists) {
-                        //Log::debug("選手情報不一致");
+                        $userIdErrorMessage = "選手IDが存在しません。";
+                        $jaraPlayerIdErrorMessage = "JARA選手コードが存在しません。";
                         //選手ID
-                        $target_row['userIdError'] = true;
+                        $target_row['userIdError'] = $userIdErrorMessage;
                         //JARA選手コード
-                        $target_row['jaraPlayerIdError'] = isset($target_row['jaraPlayerId']) ? true : false;
+                        $target_row['jaraPlayerIdError'] = isset($target_row['jaraPlayerId']) ? $jaraPlayerIdErrorMessage : false;
                         $checkResult = false;
                     }
                 }
@@ -1006,7 +1041,6 @@ class TournamentInfoAlignmentController extends Controller
                     //公式大会の場合
                     elseif ($is_target_tournament_official == 1) {
                         Log::debug("公式大会の場合");
-                        // $replaceString = $this->generateConditionStringOfOfficialRaceRecordCount($target_row, $tournament_condition_array);
                         $replaceString = $this->generateCondStrOfOfficialRaceRecCnt($target_row, $tournament_condition_array); //試作中 20240419
                         $target_race_count = $t_raceResultRecord->getTargetOfficialRaceCount($tournament_condition_array, $replaceString);
                     }
@@ -1027,6 +1061,7 @@ class TournamentInfoAlignmentController extends Controller
                     $target_row['loadingResult'] = "登録不可データ";
                 }
             }
+
             Log::debug(sprintf("sendTournamentResultCsvData end"));
             return response()->json(['result' => $reqData]); //DBの結果を返す
         } catch (\Throwable $e) {
@@ -1388,22 +1423,22 @@ class TournamentInfoAlignmentController extends Controller
     }
 
     //対象の変数が整数かつX桁以内であることをチェックする
-    private function checkInteger($value, $digits, &$checkResult, &$isError)
+    private function checkInteger($value, $digits, &$checkResult, mixed &$cellError, string $errorMessage)
     {
         //数値かつX桁以内であることをチェック
         if (!is_numeric($value) || mb_strlen($value) > $digits) {
             $checkResult = false;
-            $isError = true;
+            $cellError = $errorMessage;
         }
     }
 
     //対象の変数が0か1であるかをチェックする
-    private function checkZeroOrOne($value, &$checkResult, &$isError)
+    private function checkZeroOrOne($value, &$checkResult, mixed &$cellError, string $errorMessage)
     {
         //0または1でないときは登録不可データとする
         if (!($value == '0' || $value == '1')) {
             $checkResult = false;
-            $isError = true;
+            $cellError = $errorMessage;
         }
     }
 
@@ -1417,22 +1452,22 @@ class TournamentInfoAlignmentController extends Controller
     }
 
     //対象の変数が小数かつ指定の桁数であるかをチェックする
-    private function checkDecimal($value, $format, &$checkResult, &$isError)
+    private function checkDecimal($value, $format, &$checkResult, mixed &$cellError, string $errorMessage)
     {
         //小数かつ指定の桁数かチェック
         if (!($this->isDecimal($value, $format))) {
             $checkResult = false;
-            $isError = true;
+            $cellError = $errorMessage;
         }
     }
 
     //対象の変数が$byteバイト以内であることをチェックする
-    private function checkWithinByte($value, $byte, &$checkResult, &$isError)
+    private function checkWithinByte($value, $byte, &$checkResult, mixed &$cellError, string $errorMessage)
     {
         //Xバイト以内であることをチェック
         if (strlen($value) > $byte) {
             $checkResult = false;
-            $isError = true;
+            $cellError = $errorMessage;
         }
     }
 }
