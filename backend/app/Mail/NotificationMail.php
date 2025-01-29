@@ -28,7 +28,7 @@ class NotificationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: $this->mail_data['title'],
+            subject: 'JARAポータルサイトへの新着通知',
         );
     }
 

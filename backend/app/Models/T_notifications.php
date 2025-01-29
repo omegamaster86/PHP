@@ -272,8 +272,7 @@ class T_notifications extends Model
     {
         $result = DB::select(
             'SELECT 
-                t_notifications.title,
-                t_notifications.body,
+                t_notifications.notification_destination_type_id as notification_destination_type_id,
                 GROUP_CONCAT(t_users.mailaddress) as `to`
             FROM t_notifications
             inner join t_notification_recipients on t_notifications.notification_id = t_notification_recipients.notification_id and t_notification_recipients.delete_flag = 0
