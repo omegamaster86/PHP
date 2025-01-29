@@ -24,13 +24,13 @@
 <body>
     <p>
         @if($mail_data['notification_destination_type_id'] == 1 || $mail_data['notification_destination_type_id'] == 2)
-        {{$mail_data['userName']}} さんから新しいお知らせがあります。
+        {{$mail_data['user_name']}} さんから新しいお知らせがあります。
         @else
         JARAから新しいお知らせがあります。
         @endif
     </p>
     <p>
-        {{$received_notifications_url}}
+        {{$mail_data['received_notifications_url']}}
     </p>
 </body>
 
