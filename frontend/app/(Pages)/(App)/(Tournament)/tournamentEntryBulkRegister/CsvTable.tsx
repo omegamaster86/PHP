@@ -37,8 +37,28 @@ const CsvTable = ({
   };
 
   // エラーの有無を確認して背景色を変更
-  const checkError = (error: boolean) => {
-    return error ? 'bg-yellow' : '';
+  const checkError = (error: string | boolean) => {
+    return error !== false ? 'bg-yellow' : '';
+  };
+
+  const getErrorMessages = (row: CsvData) => {
+    const errorMessages = [
+      row.tournIdError,
+      row.eventIdError,
+      row.raceTypeIdError,
+      row.raceIdError,
+      row.byGroupError,
+      row.raceNumberError,
+      row.orgIdError,
+      row.orgNameError,
+      row.crewNameError,
+      row.mSheetNumberError,
+      row.sheetNameError,
+      row.userIdError,
+      row.playerNameError,
+    ].filter((x) => typeof x === 'string' && !!x);
+
+    return errorMessages.join('\n');
   };
 
   if (!visibilityFlg) {
@@ -49,7 +69,6 @@ const CsvTable = ({
     <div className='overflow-auto h-[331px] w-[800px]'>
       <CustomTable>
         <CustomThead>
-          {/* contentがundefinedまたは空の配列でないことを確認 */}
           <CustomTr>
             <CustomTh>
               <CustomButton
@@ -90,6 +109,8 @@ const CsvTable = ({
         <CustomTbody>
           {content?.map((row, rowIndex) => {
             const textType = checkLoadingResult(row) ? 'error' : 'secondary';
+            const errorMessages = getErrorMessages(row) || row.loadingResult;
+
             return (
               <CustomTr index={rowIndex} key={rowIndex}>
                 {/* 選択 */}
@@ -102,8 +123,8 @@ const CsvTable = ({
                     readonly={checkLoadingResult(row)}
                     onChange={(e) => {
                       handleInputChange(row.id, 'checked', e.target.checked);
-                      // チェックボックスの変更により連携ボタンの表示を切り替える 20240525
-                      var data = content.map((row) => row.checked.toString());
+                      // チェックボックスの変更により連携ボタンの表示を切り替える
+                      const data = content.map((row) => row.checked.toString());
                       data[rowIndex] = e.target.checked.toString();
                       data.includes('true')
                         ? displayRegisterButton(true)
@@ -112,7 +133,9 @@ const CsvTable = ({
                   />
                 </CustomTd>
                 {/* 読み込み結果 */}
-                <CustomTd textType={textType}>{row.loadingResult}</CustomTd>
+                <CustomTd textType={textType} className='whitespace-pre-wrap'>
+                  {errorMessages}
+                </CustomTd>
                 {/* 以下、各列のデータ */}
                 <CustomTd textType={textType} className={checkError(row.tournIdError)}>
                   {row.tournId}

@@ -346,20 +346,22 @@ export default function TournamentEntryBulkRegister() {
               playerNameError: false,
             };
           } else {
-            //必須入力チェック 必須入力項目のいずれかがエラーの場合エラーとする 20240514
-            const tournIdError = checkRequired(row[0]);
-            const eventIdError = checkRequired(row[2]);
-            const raceTypeIdError = checkRequired(row[4]);
-            const raceIdError = checkRequired(row[6]);
-            const byGroupError = checkRequired(row[8]);
-            const raceNumberError = checkRequired(row[9]);
-            const orgIdError = checkRequired(row[11]);
-            const orgNameError = checkRequired(row[12]);
-            const crewNameError = checkRequired(row[13]);
-            const mSheetNumberError = checkRequired(row[14]);
-            const sheetNameError = checkRequired(row[15]);
-            const userIdError = checkRequired(row[16]);
-            const playerNameError = checkRequired(row[17]);
+            //必須入力チェック 必須入力項目のいずれかがエラーの場合エラーとする
+            const tournIdError = checkRequired(row[0]) ? '大会IDは必須入力です。' : false;
+            const eventIdError = checkRequired(row[2]) ? '種目IDは必須入力です。' : false;
+            const raceTypeIdError = checkRequired(row[4]) ? 'レース区分IDは必須入力です。' : false;
+            const raceIdError = checkRequired(row[6]) ? 'レースIDは必須入力です。' : false;
+            const byGroupError = checkRequired(row[8]) ? '組別は必須入力です。' : false;
+            const raceNumberError = checkRequired(row[9]) ? 'レースNoは必須入力です。' : false;
+            const orgIdError = checkRequired(row[11]) ? '団体IDは必須入力です。' : false;
+            const orgNameError = checkRequired(row[12]) ? '団体名は必須入力です。' : false;
+            const crewNameError = checkRequired(row[13]) ? 'クルー名は必須入力です。' : false;
+            const mSheetNumberError = checkRequired(row[14])
+              ? 'シート番号IDは必須入力です。'
+              : false;
+            const sheetNameError = checkRequired(row[15]) ? 'シート番号は必須入力です。' : false;
+            const userIdError = checkRequired(row[16]) ? '選手IDは必須入力です。' : false;
+            const playerNameError = checkRequired(row[17]) ? '選手名は必須入力です。' : false;
 
             const error =
               tournIdError ||
@@ -376,34 +378,28 @@ export default function TournamentEntryBulkRegister() {
               mSheetNumberError ||
               sheetNameError;
 
-            //データ型チェック（入力値範囲チェック）入力項目のいずれかがエラーの場合エラーとする 20240514
-            const tournIdRangeError = checkMaxInt(row[0], 100000);
-            const eventIdRangeError = checkMaxInt(row[2], 1000);
-            const raceTypeIdRangeError = checkMaxInt(row[4], 1000);
-            const raceIdRangeError = checkMaxInt(row[6], 100000000);
-            const byGroupRangeError = checkStringLegnth(row[8], 255);
-            const raceNumberRangeError = checkMaxInt(row[9], 1000);
-            const orgIdRangeError = checkMaxInt(row[11], 10000);
-            const orgNameRangeError = checkStringLegnth(row[12], 255);
-            const crewNameRangeError = checkStringLegnth(row[13], 255);
-            const mSheetNumberRangeError = checkMaxInt(row[14], 100);
-            const sheetNameRangeError = checkStringLegnth(row[15], 255);
-            const userIdRangeError = checkMaxInt(row[16], 10000000);
-            const playerNameRangeError = checkStringLegnth(row[17], 100);
+            //データ型チェック（入力値範囲チェック）入力項目のいずれかがエラーの場合エラーとする
+            const byGroupRangeError = checkStringLegnth(row[8], 255)
+              ? '組別は255文字以内で入力してください。'
+              : false;
+            const orgNameRangeError = checkStringLegnth(row[12], 255)
+              ? '団体名は255文字以内で入力してください。'
+              : false;
+            const crewNameRangeError = checkStringLegnth(row[13], 255)
+              ? 'クルー名は255文字以内で入力してください。'
+              : false;
+            const sheetNameRangeError = checkStringLegnth(row[15], 255)
+              ? 'シート番号は255文字以内で入力してください。'
+              : false;
+            const playerNameRangeError = checkStringLegnth(row[17], 100)
+              ? '選手名は100文字以内で入力してください。'
+              : false;
 
             const RangeError =
-              tournIdRangeError ||
-              userIdRangeError ||
               playerNameRangeError ||
-              raceIdRangeError ||
-              raceNumberRangeError ||
-              raceTypeIdRangeError ||
-              orgIdRangeError ||
               orgNameRangeError ||
               crewNameRangeError ||
               byGroupRangeError ||
-              eventIdRangeError ||
-              mSheetNumberRangeError ||
               sheetNameRangeError;
 
             return {
@@ -411,34 +407,34 @@ export default function TournamentEntryBulkRegister() {
               checked: false,
               loadingResult: error ? '未入力項目あり' : RangeError ? '入力値不正項目あり' : '',
               tournId: row[0],
-              tournIdError: tournIdError || tournIdRangeError,
+              tournIdError,
               tournName: row[1],
               eventId: row[2],
-              eventIdError: eventIdError || eventIdRangeError,
+              eventIdError,
               eventName: row[3],
               raceTypeId: row[4],
-              raceTypeIdError: raceTypeIdError || raceTypeIdRangeError,
+              raceTypeIdError,
               raceTypeName: row[5],
               raceId: row[6],
-              raceIdError: raceIdError || raceIdRangeError,
+              raceIdError,
               raceName: row[7],
               byGroup: row[8],
               byGroupError: byGroupError || byGroupRangeError,
               raceNumber: row[9],
-              raceNumberError: raceNumberError || raceNumberRangeError,
+              raceNumberError,
               startDatetime: row[10],
               orgId: row[11],
-              orgIdError: orgIdError || orgIdRangeError,
+              orgIdError,
               orgName: row[12],
               orgNameError: orgNameError || orgNameRangeError,
               crewName: row[13],
               crewNameError: crewNameError || crewNameRangeError,
               mSheetNumber: row[14],
-              mSheetNumberError: mSheetNumberError || mSheetNumberRangeError,
+              mSheetNumberError,
               sheetName: row[15],
               sheetNameError: sheetNameError || sheetNameRangeError,
               userId: row[16],
-              userIdError: userIdError || userIdRangeError,
+              userIdError,
               playerName: row[17],
               playerNameError: playerNameError || playerNameRangeError,
             };
