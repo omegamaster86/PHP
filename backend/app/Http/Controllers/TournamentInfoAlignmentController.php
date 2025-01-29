@@ -71,9 +71,10 @@ class TournamentInfoAlignmentController extends Controller
             //選択されている大会の大会IDと一致していること
             if ($input_tourn_id != $inputData['csvDataList'][$rowIndex]['tournId']) {
                 Log::debug("選択されている大会の大会IDと一致していません.");
+                $errorMessage = "選択されている大会の大会IDと一致していません。";
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
-                $inputData['csvDataList'][$rowIndex]['tournIdError'] = true;
+                $inputData['csvDataList'][$rowIndex]['tournIdError'] = $errorMessage;
                 continue;
             }
             $replace_condition_string = $this->generateRaceSearchCondition($inputData['csvDataList'][$rowIndex], $search_values);
@@ -82,13 +83,15 @@ class TournamentInfoAlignmentController extends Controller
             //「レーステーブル」から条件が全て一致するレース情報を検索し、1件のみ見つかること
             if ($race_count != 1) {
                 Log::debug("「レーステーブル」から条件が全て一致するレース情報を検索し、1件のみ見つかることが不正.");
+                $errorMessage = "大会ID、種目ID、レース区分ID、組別、レースNoの組み合わせが不正です。";
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
-                $inputData['csvDataList'][$rowIndex]['tournIdError'] = true;
-                $inputData['csvDataList'][$rowIndex]['eventIdError'] = true;
-                $inputData['csvDataList'][$rowIndex]['raceTypeIdError'] = true;
-                $inputData['csvDataList'][$rowIndex]['byGroupError'] = true;
-                $inputData['csvDataList'][$rowIndex]['raceNumberError'] = true;
+                // 代表でtournIdErrorを設定する
+                $inputData['csvDataList'][$rowIndex]['tournIdError'] = $errorMessage;
+                $inputData['csvDataList'][$rowIndex]['eventIdError'] = "";
+                $inputData['csvDataList'][$rowIndex]['raceTypeIdError'] = "";
+                $inputData['csvDataList'][$rowIndex]['byGroupError'] = "";
+                $inputData['csvDataList'][$rowIndex]['raceNumberError'] = "";
                 continue;
             }
             //団体名
@@ -97,10 +100,11 @@ class TournamentInfoAlignmentController extends Controller
             $org_count_array = $t_organizations->getOrganizationCountFromCsvData($org_id, $org_name);
             $org_count = $org_count_array[0]->{"count"};
             if ($org_count != 1) {
+                $errorMessage = "団体ID、団体名の組み合わせが不正です。";
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
-                $inputData['csvDataList'][$rowIndex]['orgIdError'] = true;
-                $inputData['csvDataList'][$rowIndex]['orgNameError'] = true;
+                $inputData['csvDataList'][$rowIndex]['orgIdError'] = $errorMessage;
+                $inputData['csvDataList'][$rowIndex]['orgNameError'] = "";
                 continue;
             }
             //シート番号
@@ -109,10 +113,11 @@ class TournamentInfoAlignmentController extends Controller
             $seat_count_array = $m_seat_number->getSeatNumberCountFromCsvData($seat_number, $seat_name);
             $seat_count = $seat_count_array[0]->{"count"};
             if ($seat_count != 1) {
+                $errorMessage = "シート番号ID、シート番号の組み合わせが不正です。";
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
-                $inputData['csvDataList'][$rowIndex]['mSheetNumberError'] = true;
-                $inputData['csvDataList'][$rowIndex]['sheetNameError'] = true;
+                $inputData['csvDataList'][$rowIndex]['mSheetNumberError'] = $errorMessage;
+                $inputData['csvDataList'][$rowIndex]['sheetNameError'] = "";
                 continue;
             }
             //選手名
@@ -121,11 +126,12 @@ class TournamentInfoAlignmentController extends Controller
             $player_count_array = $t_players->getPlayerCountFromCsvData($player_id, $player_name);
             $player_count = $player_count_array[0]->{"count"};
             if ($player_count != 1) {
+                $errorMessage = "選手ID、選手名の組み合わせが不正です。";
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
-                $inputData['csvDataList'][$rowIndex]['userIdError'] = true;
-                $inputData['csvDataList'][$rowIndex]['playerNameError'] = true;
-                continue; //不一致情報が存在する場合、以降の処理を実行しない 20240514
+                $inputData['csvDataList'][$rowIndex]['userIdError'] = $errorMessage;
+                $inputData['csvDataList'][$rowIndex]['playerNameError'] = "";
+                continue; //不一致情報が存在する場合、以降の処理を実行しない
             }
             //出漕結果記録テーブルを検索して判定する
             $condition_values = array();
@@ -158,8 +164,8 @@ class TournamentInfoAlignmentController extends Controller
                 }
             }
         }
+
         Log::debug(sprintf("sendTournamentEntryCsvData end"));
-        //$inputData['csvDataList'] = $inputData['csvDataList'];
         return response()->json(['result' => $inputData]); //DBの結果を返す
     }
 
