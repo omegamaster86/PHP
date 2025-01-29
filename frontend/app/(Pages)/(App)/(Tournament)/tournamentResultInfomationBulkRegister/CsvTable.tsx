@@ -30,8 +30,66 @@ const CsvTable = ({
   };
 
   // エラーの有無を確認して背景色を変更
-  const checkError = (error: boolean) => {
-    return error ? 'bg-yellow' : '';
+  const checkError = (error: string | boolean) => {
+    return error !== false ? 'bg-yellow' : '';
+  };
+
+  const getErrorMessages = (row: CsvData) => {
+    const errorMessages = [
+      row.tournIdError,
+      row.entrysystemTournIdError,
+      row.tournNameError,
+      row.userIdError,
+      row.jaraPlayerIdError,
+      row.playerNameError,
+      row.raceIdError,
+      row.entrysystemRaceIdError,
+      row.raceNumberError,
+      row.raceNameError,
+      row.raceTypeIdError,
+      row.raceTypeNameError,
+      row.orgIdError,
+      row.entrysystemOrgIdError,
+      row.orgNameError,
+      row.crewNameError,
+      row.byGroupError,
+      row.eventIdError,
+      row.eventNameError,
+      row.rangeError,
+      row.rankError,
+      row.fiveHundredmLaptimeError,
+      row.tenHundredmLaptimeError,
+      row.fifteenHundredmLaptimeError,
+      row.twentyHundredmLaptimeError,
+      row.finalTimeError,
+      row.strokeRateAvgError,
+      row.fiveHundredmStrokeRatError,
+      row.tenHundredmStrokeRatError,
+      row.fifteenHundredmStrokeRatError,
+      row.twentyHundredmStrokeRatError,
+      row.heartRateAvgError,
+      row.fiveHundredmHeartRateError,
+      row.tenHundredmHeartRateError,
+      row.fifteenHundredmHeartRateError,
+      row.twentyHundredmHeartRateError,
+      row.officialError,
+      row.attendanceError,
+      row.ergoWeightError,
+      row.playerHeightError,
+      row.playerWeightError,
+      row.mSheetNumberError,
+      row.sheetNameError,
+      row.raceResultRecordNameError,
+      row.startDatetimeError,
+      row.weatherError,
+      row.windSpeedTwentyHundredmPointError,
+      row.windDirectionTwentyHundredmPointError,
+      row.windSpeedTenHundredmPointError,
+      row.windDirectionTenHundredmPointError,
+      row.remarkError,
+    ].filter((x) => !!x);
+
+    return errorMessages.join('\n');
   };
 
   if (!visibilityFlg) {
@@ -82,6 +140,8 @@ const CsvTable = ({
         <CustomTbody>
           {content?.map((row, rowIndex) => {
             const textType = checkLoadingResult(row) ? 'error' : 'secondary';
+            const errorMessages = getErrorMessages(row) || row.loadingResult;
+
             return (
               <CustomTr index={rowIndex} key={rowIndex}>
                 {/* 選択 */}
@@ -94,7 +154,8 @@ const CsvTable = ({
                     readonly={checkLoadingResult(row)}
                     onChange={(e) => {
                       handleInputChange(row.id, 'checked', e.target.checked);
-                      var data = content.map((row) => row.checked.toString());
+
+                      const data = content.map((row) => row.checked.toString());
                       data[rowIndex] = e.target.checked.toString();
                       data.includes('true')
                         ? displayRegisterButton(true)
@@ -103,7 +164,9 @@ const CsvTable = ({
                   />
                 </CustomTd>
                 {/* 読み込み結果 */}
-                <CustomTd textType={textType}>{row.loadingResult}</CustomTd>
+                <CustomTd textType={textType} className='whitespace-pre-wrap'>
+                  {errorMessages}
+                </CustomTd>
                 {/* 以下、各列のデータ */}
                 <CustomTd textType={textType} className={checkError(row.tournIdError)}>
                   {row.tournId}
