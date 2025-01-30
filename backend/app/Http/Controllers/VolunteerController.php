@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 use App\Models\T_volunteers;
 use App\Models\T_volunteer_availables;
-use App\Models\T_volunteer_histories;
 use App\Models\T_volunteer_language_proficiency;
 use App\Models\T_volunteer_qualifications_hold;
 use App\Models\T_volunteer_supportable_disability;
@@ -30,7 +29,6 @@ class VolunteerController extends Controller
         Request $request,
         T_volunteers $tVolunteer,
         T_volunteer_availables $tVolunteerAvailables,
-        T_volunteer_histories $tVolunteerHistories,
         T_volunteer_language_proficiency $tVolunteerLanguageProficiency,
         T_volunteer_qualifications_hold $tVolunteerQualificationsHold,
         T_volunteer_supportable_disability $tVolunteerSupportableDisability
@@ -43,7 +41,6 @@ class VolunteerController extends Controller
         $requestData = $request->all();
         $volData = $tVolunteer->getVolunteers($requestData['volunteer_id']); //ボランティア情報を取得
         $volAvaData = $tVolunteerAvailables->getVolunteerAvailables($requestData['volunteer_id']); //ボランティアアベイラブル情報を取得
-        $volHistData = $tVolunteerHistories->getVolunteerHistories($requestData['volunteer_id']); //ボランティア履歴情報を取得
         $volLangProData = $tVolunteerLanguageProficiency->getVolunteerLanguageProficiency($requestData['volunteer_id']); //ボランティア言語レベル情報を取得
         $volQualData = $tVolunteerQualificationsHold->getVolunteerQualificationsHold($requestData['volunteer_id']); //ボランティア保有資格情報を取得
         $volSupDisData = $tVolunteerSupportableDisability->getVolunteerSupportableDisability($requestData['volunteer_id']); //ボランティア支援可能障害タイプ情報を取得
@@ -52,7 +49,6 @@ class VolunteerController extends Controller
         return response()->json([
             'result' => $volData,
             'volAvaData' => $volAvaData,
-            'volHistData' => $volHistData,
             'volLangProData' => $volLangProData,
             'volQualData' => $volQualData,
             'volSupDisData' => $volSupDisData
@@ -110,7 +106,6 @@ class VolunteerController extends Controller
                 $searchInfo[$searchInfo['disType'][$i]['name']] = 1;
             }
 
-            //過去に参加した大会 //残件対象項目
             $conditionValue = array();  //検索条件の値を格納する配列
             $supportableDisabilityCondition = $this->generateSupportableDisabilityCondition($searchInfo); //障碍タイプ
             $languageCondition = $this->generateLanguageCondition($searchInfo, $conditionValue); //言語レベル 
@@ -175,19 +170,11 @@ class VolunteerController extends Controller
         return response()->json(['result' => $volunteerResponse]); //DBの結果を返す
     }
 
-    //ボランティア履歴情報を取得する
-    public function VolunteerHistoriesResponse(Request $request, T_volunteer_histories $t_volunteer_histories)
-    {
-        $volunteerHistoriesResponse = $t_volunteer_histories->getVolunteerHistoriesResponse($request); //ボランティアIDに基づいたボランティア履歴情報を取得
-        return response()->json(['result' => $volunteerHistoriesResponse]); //DBの結果を返す
-    }
-
     //ボランティア削除 20240315
     public function deleteVolunteer(
         Request $request,
         T_volunteers $tVolunteer,
         T_volunteer_availables $tVolunteerAvailables,
-        T_volunteer_histories $tVolunteerHistories,
         T_volunteer_language_proficiency $tVolunteerLanguageProficiency,
         T_volunteer_qualifications_hold $tVolunteerQualificationsHold,
         T_volunteer_supportable_disability $tVolunteerSupportableDisability,
@@ -206,7 +193,6 @@ class VolunteerController extends Controller
 
         $volData = $tVolunteer->updateDeleteFlag($reqData['volunteer_id']); //ボランティア情報の更新
         $volAvaData = $tVolunteerAvailables->updateDeleteFlag($reqData['volunteer_id']); //ボランティアアベイラブル情報の更新
-        $volHistData = $tVolunteerHistories->updateDeleteFlag($reqData['volunteer_id']); //ボランティア履歴情報の更新
         $volLangProData = $tVolunteerLanguageProficiency->updateDeleteFlag($reqData['volunteer_id']); //ボランティア言語レベル情報の更新
         $volQualData = $tVolunteerQualificationsHold->updateDeleteFlag($reqData['volunteer_id']); //ボランティア保有資格情報の更新
         $volSupDisData = $tVolunteerSupportableDisability->updateDeleteFlag($reqData['volunteer_id']); //ボランティア支援可能障害タイプ情報の更新
@@ -803,20 +789,6 @@ class VolunteerController extends Controller
         //相談可
         if ($searchInfo['time_negotiable'] == '1') {
             $condition .= "and SUBSTRING(t_volunteer_availables.`time_zone`,1,1) = '1'\r\n";
-        }
-        //過去に参加した大会
-        if (count($searchInfo['tour']) > 0) {
-            //and条件の場合
-
-            //or条件の場合
-            $condition .= "and t_tournaments.tourn_id in (" . $searchInfo['tour'][0]['id'];
-            if (isset($searchInfo['tour'][1])) {
-                $condition .= "," . $searchInfo['tour'][1]['id'];
-            }
-            if (isset($searchInfo['tour'][2])) {
-                $condition .= "," . $searchInfo['tour'][2]['id'];
-            }
-            $condition .= ")";
         }
         return $condition;
     }

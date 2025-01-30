@@ -185,10 +185,6 @@ class T_volunteers extends Model
                     on `t_volunteers`.`volunteer_id` = `v_lang`.`volunteer_id`
                     left join t_volunteer_availables
                     on t_volunteers.volunteer_id = t_volunteer_availables.volunteer_id
-                    left join t_volunteer_histories
-                    on t_volunteers.volunteer_id = t_volunteer_histories.volunteer_id
-                    left join t_tournaments
-                    on t_volunteer_histories.`tourn_id` = t_tournaments.`tourn_id`
                     where 1=1
                     and t_volunteers.delete_flag = 0
                     and m_countries.delete_flag = 0
@@ -196,8 +192,6 @@ class T_volunteers extends Model
                     and m_sex.delete_flag = 0
                     and t_users.delete_flag = 0                    
                     and t_volunteer_availables.delete_flag = 0
-                    and t_volunteer_histories.delete_flag = 0
-                    and t_tournaments.delete_flag = 0
                     #Condition#
                     ';
         $sqlString = str_replace("#SupportableDisabilityCondition#", $supportableDisabilityCondition, $sqlString);

@@ -392,20 +392,6 @@ interface VolunteerResponse {
   photo: string; // 写真 #置き換え作業未対応
 }
 
-// ボランティア履歴情報
-interface VolunteerHistoriesResponse {
-  tourn_id: string; // 大会ID
-  tourn_name: string; // 大会名
-  tourn_type: number; // 大会種別
-  event_start_date: string; // 開催日
-  event_end_date: string; // 終了日
-  role: string; // 役割名
-  ad: string; // 役割名
-  date_type: number; // 平日/休日（祝日）
-  day_of_week: string; // 曜日
-  time_zone: string; // 時間帯
-}
-
 // 選手情報
 interface PlayerInformationResponse {
   user_id?: number; // ユーザーID
@@ -919,7 +905,6 @@ export type {
   UserResponse,
   Venue,
   VenueResponse,
-  VolunteerHistoriesResponse,
   VolunteerResponse,
 };
 
