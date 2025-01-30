@@ -203,6 +203,8 @@ class T_raceResultRecord extends Model
                                         `t_race_result_record`.`race_name` as `raceName`, 
                                         `t_race_result_record`.`by_group` as `byGroup`
                                         FROM `t_race_result_record`
+                                        INNER JOIN `t_tournaments`
+                                        ON `t_race_result_record`.`tourn_id` = `t_tournaments`.`tourn_id` and `t_tournaments`.delete_flag = 0
                                         where 1=1
                                         and `t_race_result_record`.delete_flag = 0
                                         and `t_race_result_record`.player_id = ?
