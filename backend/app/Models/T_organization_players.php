@@ -304,16 +304,8 @@ class T_organization_players extends Model
                                         , p.residence_prefecture
                                         , ms.sex AS sexName
                                         , p.sex_id
-                                        , CASE 
-                                            when p.birth_country = 112 
-                                                then bir_pref.`pref_name` 
-                                            else null 
-                                            end as birthPrefectureName #出身地
-                                        , CASE 
-                                            when p.residence_country = 112 
-                                                then res_pref.`pref_name` 
-                                            else null 
-                                            end as residencePrefectureName #居住地
+                                        , bir_pref.`pref_name` as birthPrefectureName
+                                        , res_pref.`pref_name` as residencePrefectureName
                                         , p.side_info
                                         , CASE 
                                             when SUBSTRING(p.side_info, 8, 1) = 1 
@@ -337,24 +329,19 @@ class T_organization_players extends Model
                                             end as side_C 
                                     from
                                         t_players p 
-                                        LEFT JOIN m_sex ms 
-                                            ON p.sex_id = ms.sex_id 
-                                        LEFT JOIN m_countries bir_cont 
-                                            ON p.birth_country = bir_cont.country_id 
+                                        INNER JOIN m_sex ms 
+                                            ON p.sex_id = ms.sex_id and `ms`.`delete_flag` = 0
+                                        INNER JOIN m_countries bir_cont 
+                                            ON p.birth_country = bir_cont.country_id and bir_cont.`delete_flag` = 0
                                         LEFT JOIN m_prefectures bir_pref 
-                                            ON p.birth_prefecture = bir_pref.pref_id 
-                                        LEFT JOIN m_countries res_cont 
-                                            ON p.residence_country = res_cont.country_id 
+                                            ON p.birth_prefecture = bir_pref.pref_id and bir_pref.`delete_flag` = 0
+                                        INNER JOIN m_countries res_cont 
+                                            ON p.residence_country = res_cont.country_id and res_cont.`delete_flag` = 0
                                         LEFT JOIN m_prefectures res_pref 
-                                            ON p.residence_prefecture = res_pref.pref_id 
+                                            ON p.residence_prefecture = res_pref.pref_id and res_pref.`delete_flag` = 0
                                     where
                                         1 = 1 
                                         and p.`delete_flag` = 0 
-                                        and `ms`.`delete_flag` = 0
-                                        and bir_cont.`delete_flag` = 0
-                                        and bir_pref.`delete_flag` = 0
-                                        and res_cont.`delete_flag` = 0
-                                        and res_pref.`delete_flag` = 0
                                         and p.user_id IS NOT NULL
                                 ) tp 
                                 LEFT JOIN ( 
