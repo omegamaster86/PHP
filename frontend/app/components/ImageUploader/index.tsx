@@ -4,6 +4,7 @@ import type { FileRejection } from 'react-dropzone';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import Papa from 'papaparse';
 import CloseIcon from '@mui/icons-material/Close';
+import { Avatar } from '@mui/material';
 
 interface ImageUploaderProps {
   currentShowFile: { file: File; isUploaded: boolean; preview?: string } | undefined;
@@ -123,12 +124,10 @@ const ImageUploader: FC<ImageUploaderProps> = ({
               >
                 <CloseIcon />
               </button>
-              <img
-                className='w-[320px] h-[320px] rounded-[2px] object-cover cursor-pointer'
+              <Avatar
+                alt='プレビュー画像'
                 src={currentShowFile.preview}
-                alt='image preview'
-                // Revoke data uri after image is loaded
-                onLoad={() => {}}
+                sx={{ width: 200, height: 200, cursor: 'pointer' }}
               />
             </div>
           ) : initialPhotoUrl && isinitial ? (
@@ -152,11 +151,10 @@ const ImageUploader: FC<ImageUploaderProps> = ({
                 </button>
               )}
               {initialPhoto ? (
-                <img
-                  className='object-cover w-[320px] h-[320px] cursor-pointer'
+                <Avatar
+                  alt='プレビュー画像'
                   src={initialPhoto}
-                  // Revoke data uri after image is loaded
-                  onLoad={() => {}}
+                  sx={{ width: 200, height: 200, cursor: 'pointer' }}
                 />
               ) : (
                 <div className='w-[320px] h-[320px] bg-containerBg m-auto mt-auto justify-center flex items-center flex-col gap-[10px]'>

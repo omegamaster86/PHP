@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
 import {
   CustomTable,
   CustomThead,
@@ -12,6 +12,7 @@ import {
   CustomButton,
 } from '@/app/components';
 import { PLAYER_IMAGE_URL, NO_IMAGE_URL } from '@/app/utils/imageUrl';
+import { CustomPlayerAvatar } from '@/app/components/CustomPlayerAvatar';
 
 interface Player {
   player_id: number;
@@ -44,7 +45,7 @@ export const BelongPlayer: React.FC<Props> = ({
   orgId,
 }) => {
   const router = useRouter();
-  
+
   return (
     <>
       <div className='w-full bg-secondary-500 text-white h-[60px] sm:h-[40px] flex flex-col sm:flex-row justify-center items-center font-bold relative'>
@@ -122,10 +123,14 @@ export const BelongPlayer: React.FC<Props> = ({
               <CustomTr key={index}>
                 {/* 選手画像 */}
                 <CustomTd align='center'>
-                  <img
-                    src={row.photo ? `${PLAYER_IMAGE_URL}${row.photo}` : `${NO_IMAGE_URL}`}
+                  <CustomPlayerAvatar
+                    fileName={row.photo}
                     alt={row.player_name}
-                    className='w-[50px] h-[50px] rounded-full'
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      fontSize: 14,
+                    }}
                   />
                 </CustomTd>
                 {/* 選手名 */}

@@ -32,6 +32,7 @@ import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { NO_IMAGE_URL, PLAYER_IMAGE_URL } from '../../../../utils/imageUrl'; //For importing image url from a single source of truth
+import { CustomPlayerAvatar } from '@/app/components/CustomPlayerAvatar';
 
 type PlayerFormData = PlayerInformationResponse;
 
@@ -748,14 +749,15 @@ export default function PlayerInformation() {
           )}
           {mode === 'confirm' && (
             <div className='relative'>
-              {/* 写真 */}
-              <img
-                className='object-cover w-[320px] h-[320px] rounded-[2px]'
-                src={
-                  currentShowFile?.preview ??
-                  (formData.photo ? `${PLAYER_IMAGE_URL}${formData.photo}` : `${NO_IMAGE_URL}`)
-                }
-                alt='Profile Photo'
+              <CustomPlayerAvatar
+                alt='選手画像'
+                fileName={currentShowFile?.preview ?? formData.photo}
+                isPreview={!!currentShowFile?.preview}
+                sx={{
+                  width: 200,
+                  height: 200,
+                  fontSize: 14,
+                }}
               />
             </div>
           )}

@@ -31,6 +31,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import Label from '@/app/components/Label';
 import { NO_IMAGE_URL, PLAYER_IMAGE_URL } from '@/app/utils/imageUrl';
+import { CustomPlayerAvatar } from '@/app/components/CustomPlayerAvatar';
 
 // 検索条件フォームの型定義
 // 検索条件
@@ -596,13 +597,15 @@ export default function PlayerSearch() {
           <CustomTbody>
             {visibleData.map((row, index) => (
               <CustomTr index={index} key={index}>
-                <CustomTd>
-                  <img
-                    src={row.photo ? `${PLAYER_IMAGE_URL}${row.photo}` : `${NO_IMAGE_URL}`}
-                    width={100}
-                    height={50}
-                    alt='Player Photo'
-                    className='rounded-full'
+                <CustomTd align='center'>
+                  <CustomPlayerAvatar
+                    fileName={row.photo}
+                    alt={row.player_name}
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      fontSize: 14,
+                    }}
                   />
                 </CustomTd>
                 {/* TODO 仮実装なので、以下リンク設定があるものには、遷移時に必要なパラメータを設定 */}
