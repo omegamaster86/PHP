@@ -179,7 +179,7 @@ class T_notification_recipients extends Model
                 ?,
                 0
             FROM t_notifications 
-            inner join t_users on t_notifications.sender_id != t_users.user_id and t_users.delete_flag = 0 and t_users.temp_password_flag = 0
+            inner join t_users on t_notifications.sender_id != t_users.user_id and t_users.delete_flag = 0
             where 1=1
             and t_notifications.delete_flag = 0
             and t_notifications.notification_id = ?',
