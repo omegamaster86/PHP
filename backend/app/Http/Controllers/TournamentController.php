@@ -47,12 +47,21 @@ class TournamentController extends Controller
     //react 大会情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
     public function getTournamentInfoData(Request $request, T_tournaments $tourn)
     {
-        Log::debug(sprintf("getTournamentInfoData start"));
-        $reqData = $request->all();
-        Log::debug($reqData['tourn_id']);
-        $result = $tourn->getTournament($reqData['tourn_id']);
-        Log::debug(sprintf("getTournamentInfoData end"));
-        return response()->json(['result' => $result]); //DBの結果を返す
+        try {
+            Log::debug(sprintf("getTournamentInfoData start"));
+
+            $reqData = $request->all();
+            Log::debug($reqData['tourn_id']);
+            $result = $tourn->getTournament($reqData['tourn_id']);
+            if (empty($result)) {
+                abort(404, '大会情報が見つかりません。');
+            }
+
+            Log::debug(sprintf("getTournamentInfoData end"));
+            return response()->json(['result' => $result]); //DBの結果を返す
+        } catch (HttpException $e) {
+            throw $e;
+        }
     }
 
     // 大会のフォロー状態・フォロワー数を取得する。
