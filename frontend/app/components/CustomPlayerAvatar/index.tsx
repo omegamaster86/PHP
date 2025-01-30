@@ -3,12 +3,16 @@ import { Avatar, AvatarProps } from '@mui/material';
 
 type Props = Omit<AvatarProps, 'src'> & {
   fileName?: string;
+  isPreview?: boolean;
 };
 
 export const CustomPlayerAvatar: React.FC<Props> = (props) => {
-  const { fileName, ...rest } = props;
+  const { fileName, isPreview = false, ...rest } = props;
 
-  const src = fileName ? `${PLAYER_IMAGE_URL}${fileName}` : undefined;
+  let src = fileName;
+  if (!isPreview && fileName) {
+    src = `${PLAYER_IMAGE_URL}${fileName}`;
+  }
 
   return <Avatar {...rest} src={src} />;
 };

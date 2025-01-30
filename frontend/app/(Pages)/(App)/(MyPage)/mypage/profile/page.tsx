@@ -78,6 +78,7 @@ export default function Profile() {
 
         <div className='flex items-center justify-center flex-row md:items-start'>
           <CustomUserAvatar
+            alt='プロフィール画像'
             fileName={profile.photo ?? undefined}
             sx={{ width: 260, height: 260 }}
           />

@@ -3,12 +3,16 @@ import { Avatar, AvatarProps } from '@mui/material';
 
 type Props = Omit<AvatarProps, 'src'> & {
   fileName?: string;
+  isPreview?: boolean;
 };
 
 export const CustomUserAvatar: React.FC<Props> = (props) => {
-  const { fileName, ...rest } = props;
+  const { fileName, isPreview = false, ...rest } = props;
 
-  const src = fileName ? `${USER_IMAGE_URL}${fileName}` : undefined;
+  let src = fileName;
+  if (!isPreview && fileName) {
+    src = `${USER_IMAGE_URL}${fileName}`;
+  }
 
   return <Avatar {...rest} src={src} />;
 };

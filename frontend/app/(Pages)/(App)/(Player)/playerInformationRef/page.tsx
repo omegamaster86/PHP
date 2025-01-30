@@ -30,6 +30,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import FollowButton from '@/app/components/FollowButton';
 import RowingIcon from '@mui/icons-material/Rowing';
 import { useAuth } from '@/app/hooks/auth';
+import { CustomPlayerAvatar } from '@/app/components/CustomPlayerAvatar';
 
 //種目フィルター用
 interface EventNameList {
@@ -1079,17 +1080,14 @@ export default function PlayerInformationRef() {
       <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4 '>
         <div className='flex flex-col sm:flex-row gap-[40px]'>
           <div>
-            {/* 写真 */}
-            <img
-              src={
-                playerInformation.photo
-                  ? `${PLAYER_IMAGE_URL}${playerInformation.photo}`
-                  : `${NO_IMAGE_URL}`
-              }
-              width={200}
-              height={200}
-              alt='Random'
-              className='rounded-full'
+            <CustomPlayerAvatar
+              fileName={playerInformation.photo}
+              alt={playerInformation.player_name}
+              sx={{
+                width: 200,
+                height: 200,
+                fontSize: 14,
+              }}
             />
           </div>
           <div className='flex flex-col gap-[10px]'>

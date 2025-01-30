@@ -34,21 +34,44 @@ class T_volunteers extends Model
 
     public function getVolunteers($volunteer_id)
     {
-        $volunteers = DB::select('select `t_volunteers`.`volunteer_id`, `t_volunteers`.`user_id`, `t_volunteers`.`volunteer_name`, `t_volunteers`.`residence_country`, 
-        `t_volunteers`.`residence_prefecture`, `t_volunteers`.`sex`, `t_volunteers`.`date_of_birth`, `t_volunteers`.`dis_type_id`, `t_volunteers`.`telephone_number`, 
-        `t_volunteers`.`mailaddress`, `t_volunteers`.`users_email_flag`, `t_volunteers`.`clothes_size`, `t_volunteers`.`registered_time`, `t_volunteers`.`registered_user_id`, 
-        `t_volunteers`.`updated_time`, `t_volunteers`.`updated_user_id`, `t_volunteers`.`delete_flag` , 
-        `m_countries`.`country_name`, `m_prefectures`.`pref_name`, `m_sex`.`sex` as `master_sex_type`, `m_clothes_size`.`clothes_size` as `master_clothes_size`
-        FROM `t_volunteers` 
-        left join `m_countries`
-        on `t_volunteers`.`residence_country` = `m_countries`.`country_id`
-        left join `m_prefectures`
-        on `t_volunteers`.`residence_prefecture` = `m_prefectures`.`pref_id`
-        left join `m_sex`
-        on `t_volunteers`.`sex` = `m_sex`.`sex_id`
-        left join `m_clothes_size`
-        on `t_volunteers`.`clothes_size` = `m_clothes_size`.`clothes_size_id`
-        where `t_volunteers`.delete_flag=0 and `t_volunteers`.volunteer_id = ?', [$volunteer_id]);
+        $volunteers = DB::select(
+            '
+            select
+                `t_volunteers`.`volunteer_id`,
+                `t_volunteers`.`user_id`,
+                `t_volunteers`.`volunteer_name`,
+                `t_volunteers`.`residence_country`, 
+                `t_volunteers`.`residence_prefecture`,
+                `t_volunteers`.`sex`,
+                `t_volunteers`.`date_of_birth`,
+                `t_volunteers`.`dis_type_id`,
+                `t_volunteers`.`telephone_number`, 
+                `t_volunteers`.`mailaddress`,
+                `t_volunteers`.`users_email_flag`,
+                `t_volunteers`.`clothes_size`,
+                `t_volunteers`.`registered_time`,
+                `t_volunteers`.`registered_user_id`, 
+                `t_volunteers`.`updated_time`,
+                `t_volunteers`.`updated_user_id`,
+                `t_volunteers`.`delete_flag`, 
+                `m_countries`.`country_name`,
+                `m_prefectures`.`pref_name`,
+                `m_sex`.`sex` as `master_sex_type`,
+                `m_clothes_size`.`clothes_size` as `master_clothes_size`
+            FROM `t_volunteers` 
+            left join `m_countries`
+            on `t_volunteers`.`residence_country` = `m_countries`.`country_id`
+            left join `m_prefectures`
+            on `t_volunteers`.`residence_prefecture` = `m_prefectures`.`pref_id`
+            left join `m_sex`
+            on `t_volunteers`.`sex` = `m_sex`.`sex_id`
+            left join `m_clothes_size`
+            on `t_volunteers`.`clothes_size` = `m_clothes_size`.`clothes_size_id`
+            where
+                `t_volunteers`.delete_flag=0
+                and `t_volunteers`.volunteer_id = ?',
+            [$volunteer_id]
+        );
         //1つの団体IDを取得するため0番目だけを返す
         $targetTrn = null;
         if (!empty($volunteers)) {

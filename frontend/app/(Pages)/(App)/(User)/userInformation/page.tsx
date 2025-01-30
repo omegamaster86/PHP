@@ -40,6 +40,7 @@ import {
   removeSessionStorage,
   setSessionStorage,
 } from '@/app/utils/sessionStorage';
+import { CustomUserAvatar } from '@/app/components/CustomUserAvatar';
 
 type UserFormData = UserResponse;
 
@@ -459,13 +460,11 @@ export default function UserInformationUpdate() {
           )}
           {/* 写真 */}
           {mode === 'confirm' && (
-            <img
-              src={
-                currentShowFile?.preview ??
-                (formData.photo ? `${USER_IMAGE_URL}${formData.photo}` : `${NO_IMAGE_URL}`)
-              }
-              className='w-[300px] h-[300px] rounded-[2px] object-cover'
-              alt='Profile Photo'
+            <CustomUserAvatar
+              alt='プロフィール画像'
+              fileName={currentShowFile?.preview ?? formData.photo ?? undefined}
+              isPreview={!!currentShowFile?.preview}
+              sx={{ width: 300, height: 300 }}
             />
           )}
         </div>
