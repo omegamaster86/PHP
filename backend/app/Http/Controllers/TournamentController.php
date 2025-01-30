@@ -18,6 +18,7 @@ use App\Models\T_players;
 use App\Models\T_organization_staff;
 use App\Models\M_venue;
 use App\Models\M_events;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class TournamentController extends Controller
 {
@@ -1156,6 +1157,11 @@ class TournamentController extends Controller
             $reqData = $request->all();
             $target_race_id = $reqData['race_id'];
             $race_result = $tRace->getRaceFromRaceId($target_race_id); //レース情報を取得
+
+            if (empty($race_result)) {
+                abort(404, 'レース情報が存在しません。');
+            }
+
             //出漕時点情報を取得
             $record_result = $t_raceResultRecord->getRaceResultRecordOnRowingPoint($target_race_id);
             //laptimeをSS.msからMM:SS.msに変換
@@ -1178,6 +1184,8 @@ class TournamentController extends Controller
             }
             Log::debug(sprintf("getRaceDataRaceId end"));
             return response()->json(['race_result' => $race_result, 'record_result' => $record_result]); //DBの結果を返す
+        } catch (HttpException $e) {
+            throw $e;
         } catch (\Throwable $e) {
             Log::error($e);
             abort(500, "レース結果の取得に失敗しました。");
