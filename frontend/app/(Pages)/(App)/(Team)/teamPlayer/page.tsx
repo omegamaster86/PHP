@@ -1,23 +1,23 @@
 // 団体所属選手登録
 'use client';
 
-import React, { useEffect, useState } from 'react';
 import {
-  CustomTitle,
+  CustomButton,
   CustomTable,
-  CustomThead,
-  CustomTr,
-  CustomTh,
   CustomTbody,
   CustomTd,
-  OriginalCheckbox,
-  CustomButton,
+  CustomTh,
+  CustomThead,
+  CustomTitle,
+  CustomTr,
   ErrorBox,
+  OriginalCheckbox,
 } from '@/app/components';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import axios from '@/app/lib/axios';
 import { TeamPlayerInformationResponse, TeamResponse } from '@/app/types';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const JAPAN_COUNTRY_ID = 112;
 
@@ -38,10 +38,8 @@ export default function TeamPlayer() {
   const orgId = useSearchParams().get('org_id')?.toString() || '';
 
   useEffect(() => {
-    // modeの値を取得 update, create
+    // modeの値を取得 create
     switch (mode) {
-      case 'update':
-        break;
       case 'create':
         break;
       case 'confirm':
@@ -82,11 +80,6 @@ export default function TeamPlayer() {
           var addPlayerList = JSON.parse(sessionStorage.getItem('addPlayerList') as string);
           let data = transformData(addPlayerList, '追加');
 
-          if (mode == 'update') {
-            const response = await axios.post('api/searchOrganizationPlayersForTeamRef', sendId);
-            const searchRes = transformData(response.data.result, '既存');
-            data = setIndex(data.concat(searchRes));
-          }
           if (mode == 'create') {
             const response = await axios.post('api/searchOrganizationPlayersForTeamRef', sendId);
             const searchRes = transformData(response.data.result, '既存');
