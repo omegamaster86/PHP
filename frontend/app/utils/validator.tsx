@@ -530,13 +530,13 @@ const validateSideInfoIsInput = (sideInfo: boolean[]) => {
  * 1750年から現在までの範囲であるかチェックする。
  * 範囲外の場合、エラーメッセージを返す。
  */
-const validateFoundingYear = (foundingYear: string) => {
+const validateFoundingYear = (foundingYear: number | null) => {
   let errorMessage = '';
-  if (foundingYear === '') {
+  if (foundingYear === null) {
     return '';
   }
 
-  if (Number(foundingYear) < 1750 || Number(foundingYear) > new Date().getFullYear()) {
+  if (foundingYear < 1750 || foundingYear > new Date().getFullYear()) {
     errorMessage = '設立年は1750年から現在までの範囲で入力してください。';
     return errorMessage;
   }

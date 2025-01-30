@@ -170,7 +170,7 @@ export default function TeamRef() {
             <div className='flex flex-row'>
               <div className='text-gray-40 text-sm w-[100px]'>創立年</div>
               <Label
-                label={formData.founding_year?.toString()}
+                label={formData.founding_year?.toString() ?? '-'}
                 textColor='white'
                 textSize='small'
               />

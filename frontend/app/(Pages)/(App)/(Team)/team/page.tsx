@@ -59,7 +59,7 @@ export default function OrgInfo() {
     org_name: '',
     entrysystem_org_id: '',
     orgTypeName: '',
-    founding_year: 0,
+    founding_year: null,
     post_code: '',
     post_code1: '',
     post_code2: '',
@@ -155,7 +155,7 @@ export default function OrgInfo() {
    * @description
    * nameとvalueを受け取り、stateを更新する
    */
-  const handleInputChange = (name: string, value: string) => {
+  const handleInputChange = (name: string, value: string | null) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -270,7 +270,7 @@ export default function OrgInfo() {
               org_name: '',
               entrysystem_org_id: '',
               orgTypeName: '',
-              founding_year: 0,
+              founding_year: null,
               post_code: '',
               post_code1: '',
               post_code2: '',
@@ -352,11 +352,7 @@ export default function OrgInfo() {
     setOrgNameErrorMessages(orgNameError);
 
     const foundingYearError = Validator.getErrorMessages([
-      Validator.validateFoundingYear(
-        formData.founding_year === 0 || formData.founding_year == null
-          ? ''
-          : formData.founding_year.toString(),
-      ),
+      Validator.validateFoundingYear(formData.founding_year),
     ]);
     setFoundingYearErrorMessages(foundingYearError);
 
@@ -758,11 +754,16 @@ export default function OrgInfo() {
             toolTipText='団体の創立年を西暦で入力してください。' //はてなボタン用
           />
           <CustomYearPicker
-            selectedDate={formData.founding_year === 0 ? '' : formData.founding_year?.toString()}
+            selectedDate={formData.founding_year?.toString() ?? ''}
             errorMessages={foundingYearErrorMessages}
-            onChange={(date: Date) => {
-              handleInputChange('founding_year', date == null ? '' : date.getFullYear().toString()); //創立年に空欄を入力できるように対応 ※nullの場合、空文字にする 20240315
-            }} //創立年を4桁年で取得するように修正 200240308
+            onChange={(date: Date | null) => {
+              if (date) {
+                const formattedDate = date.getFullYear().toString();
+                handleInputChange('founding_year', formattedDate);
+              } else {
+                handleInputChange('founding_year', null);
+              }
+            }}
             readonly={mode === 'confirm'}
             isError={foundingYearErrorMessages.length > 0}
             className='w-[300px]'

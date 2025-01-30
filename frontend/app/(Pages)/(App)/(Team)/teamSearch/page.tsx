@@ -118,17 +118,20 @@ export default function TeamSearch() {
       visibleData.sort((a, b) => ('' + b.org_name).localeCompare(a.org_name));
     }
   };
+
   // 創立年のソート用　20240724
   const [foundingYearSortFlag, setFoundingYearSortFlag] = useState(false);
   const foundingYearSort = () => {
-    if (foundingYearSortFlag) {
-      setFoundingYearSortFlag(false);
-      visibleData.sort((a, b) => Number(a.founding_year) - Number(b.founding_year));
-    } else {
-      setFoundingYearSortFlag(true);
-      visibleData.sort((a, b) => Number(b.founding_year) - Number(a.founding_year));
-    }
+    setFoundingYearSortFlag((previous) => !previous);
+    visibleData.sort((a, b) => {
+      if (a.founding_year === null) return 1;
+      if (b.founding_year === null) return -1;
+      return foundingYearSortFlag
+        ? a.founding_year - b.founding_year
+        : b.founding_year - a.founding_year;
+    });
   };
+
   // 団体種別のソート用　20240724
   const [orgTypeSortFlag, setOrgTypeSortFlag] = useState(false);
   const orgTypeSort = () => {

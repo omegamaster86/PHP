@@ -527,7 +527,7 @@ interface Organization {
   org_name: string; // 団体名
   entrysystem_org_id: string; // エントリーシステムの団体ID
   orgTypeName: string; // 団体種別名
-  founding_year: number; // 設立年
+  founding_year: number | null; // 設立年
   post_code: string; // 郵便番号
   post_code1: string; // 郵便番号 分割した前3文字
   post_code2: string; // 郵便番号 分割した後4文字
@@ -594,21 +594,20 @@ interface OrgClass {
   org_class_name: string;
 }
 
-//Organizationに統合したため、OrgではなくOrganizationを使用すること
 // 団体情報
 interface Org {
   entrysystem_org_id: number;
   org_id: number; // 団体ID
   org_name: string; // 団体名
   org_class: number; // 団体区分
-  orgClassName: string; //  #置き換え作業未対応
-  orgTypeId: number; //  #置き換え作業未対応
-  orgTypeName: string; //  #置き換え作業未対応
-  founding_year: string; // 創立年
+  orgClassName: string;
+  orgTypeId: number;
+  orgTypeName: string;
+  founding_year: number | null; // 創立年
   location_country: number; // 所在地（国）
-  residenceCountryName: string; //  #置き換え作業対応不要
+  residenceCountryName: string;
   location_prefecture: number; // 所在地（都道府県）
-  residencePrefectureName: string; //  #置き換え作業対応不要
+  residencePrefectureName: string;
 }
 
 interface OrganizationListData {
