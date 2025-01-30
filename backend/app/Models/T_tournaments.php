@@ -304,41 +304,6 @@ class T_tournaments extends Model
         return $target_tournament;
     }
 
-    public function getTournament_allData()
-    {
-        $tournaments = DB::select('select
-                                    `tourn_id`,
-                                    `tourn_name`,
-                                    `sponsor_org_id`,
-                                    `t_organizations`.`org_name` as `sponsorOrgName`,
-                                    `event_start_date`,
-                                    `event_end_date`,
-                                    `venue_id`,
-                                    `venue_name`,
-                                    `tourn_type`,
-                                    CASE
-                                        when `tourn_type` = 0 then "非公式"
-                                        when `tourn_type` = 1 then "公式"
-                                        end as `tournTypeName`,
-                                    `tourn_url`,
-                                    `tourn_info_faile_path`,
-                                    `entrysystem_tourn_id`,
-                                    `t_tournaments`.`registered_time`,
-                                    `t_tournaments`.`registered_user_id`,
-                                    `t_tournaments`.`updated_time`,
-                                    `t_tournaments`.`updated_user_id`,
-                                    `t_tournaments`.`delete_flag`
-                                    from `t_tournaments`
-                                    left join `t_organizations`
-                                    on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
-                                    where 1=1
-                                    and `t_tournaments`.`delete_flag` = 0
-                                    and `t_organizations`.`delete_flag` = 0
-                                    ');
-
-        return $tournaments; //大会テーブルの項目すべて渡す
-    }
-
     //開催年を条件に大会情報を取得する
     public function getTournamentsFromEntryYear($entry_year)
     {

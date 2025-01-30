@@ -132,7 +132,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     //大会関連
     Route::post('deleteTournamentData', [TournamentController::class, 'deleteTournamentData']); //DBから大会情報を削除する
     Route::get('getTournamentFollowStatus', [TournamentController::class, 'getTournamentFollowStatus']); // 大会のフォロー状態・フォロワー数取得
-    Route::get('getTournamentInfoData_allData', [TournamentController::class, 'getTournamentInfoData_allData']); //大会検索
     Route::post('getTournamentInfoData_org', [TournamentController::class, 'getTournamentInfoData_org']); //主催大会
     Route::post('getTournamentInfoData', [TournamentController::class, 'getTournamentInfoData']); //DBから大会情報更新画面にデータを渡す
     Route::post('searchTournament', [TournamentController::class, 'searchTournament']); //大会検索

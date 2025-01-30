@@ -32,7 +32,6 @@ import {
   LangResponse,
   CountryResponse,
   PrefectureResponse,
-  TournamentResponse,
 } from '@/app/types';
 
 // マテリアルUI関連モジュールのインポート
@@ -102,7 +101,6 @@ interface SearchCond {
   ]; // 障碍タイプ
   dayOfWeek?: string; // 参加しやすい曜日
   timeZone?: string; // 参加しやすい時間帯
-  tour?: [TournamentResponse]; // 参加したい大会
 }
 
 export default function VolunteerSearch() {
@@ -133,14 +131,12 @@ export default function VolunteerSearch() {
       disType: [] as { id: number; name: string }[],
       dayOfWeek: '000000000000',
       timeZone: '00000000',
-      tour: [] as TournamentResponse[],
     } as unknown as SearchCond;
   };
 
   const [searchCond, setSearchCond] = useState<SearchCond>(initialSearchCond); // 検索条件
   const [searchResponse, setSearchResponse] = useState<VolunteerResponse[]>([]); // 検索結果
   const [sex, setSex] = useState<SexResponse[]>([]); // 性別マスタ
-  const [tour, setTour] = useState<TournamentResponse[]>([]); // 大会マスタ
   const [qualHold, setQualHold] = useState<QualHoldResponse[]>([]); // 資格マスタ
   const [disType, setDisType] = useState<DisTypeResponse[]>([]); // 障碍タイプマスタ
   const [lang, setLang] = useState<LangResponse[]>([]); // 言語マスタ
@@ -447,15 +443,6 @@ export default function VolunteerSearch() {
         );
         setSex(sexList);
 
-        const TournamentsResponse = await axios.get('api/getTournamentInfoData_allData');
-        const TournamentsResponseList = TournamentsResponse.data.result.map(
-          ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
-            id: tourn_id,
-            name: tourn_name,
-          }),
-        );
-        setTour(TournamentsResponseList);
-
         // 障碍タイプマスタの取得
         const disType = await axios.get('api/getDisabilityType');
         const disTypeList = disType.data.map(
@@ -537,17 +524,6 @@ export default function VolunteerSearch() {
     }
   }, [searchCond.qualHold]);
 
-  // 検索条件のうち、大会情報の変更を監視
-  useEffect(() => {
-    if ((searchCond.tour?.length || 0) > 3) {
-      alert('大会は3つまで選択できます。');
-      setSearchCond((prevFormData) => ({
-        ...prevFormData,
-        tour: prevFormData.tour?.slice(0, 3) as [TournamentResponse],
-      }));
-    }
-  }, [searchCond.tour]);
-
   return (
     <>
       {/* タイトルの表示 */}
@@ -607,7 +583,6 @@ export default function VolunteerSearch() {
                 >
                   <CustomDatePicker
                     id='date_of_birth_start'
-                    placeHolder={new Date().toLocaleDateString('ja-JP')}
                     selectedDate={searchCond.date_of_birth_start?.toString() || ''}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
                       handleInputChange('date_of_birth_start', formatDate(e as unknown as Date));
@@ -618,7 +593,6 @@ export default function VolunteerSearch() {
                   <p className='self-center text-small text-gray-400'>〜</p>
                   <CustomDatePicker
                     id='date_of_birth_end'
-                    placeHolder={new Date().toLocaleDateString('ja-JP')}
                     selectedDate={searchCond.date_of_birth_end?.toString() || ''}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
                       handleInputChange('date_of_birth_end', formatDate(e as unknown as Date));
@@ -1233,51 +1207,6 @@ export default function VolunteerSearch() {
                   }}
                 />
               </div>
-            </div>
-            {/* 過去に参加した大会 */}
-            <div>
-              <InputLabel label='過去に参加した大会' />
-              <Select
-                id='tournament'
-                multiple
-                className='self-end border-[0.1px] border-solid border-gray-50 rounded-md bg-white w-[467px] my-1'
-                value={searchCond.tour?.map((item) => item?.id) || []}
-                onChange={(e) => {
-                  let currentData = Array.isArray(e.target.value)
-                    ? e.target.value.map((item: any) => {
-                        return {
-                          id: item,
-                          name: tour.find((tour) => tour.id === item)?.name || '',
-                        };
-                      })
-                    : [];
-                  setSearchCond((prevFormData) => ({
-                    ...prevFormData,
-                    tour: currentData as [TournamentResponse],
-                  }));
-                }}
-                renderValue={() => (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {searchCond.tour?.map((value, index) =>
-                      value?.id === 0 ? null : <Chip key={index} label={value?.name} />,
-                    )}
-                  </Box>
-                )}
-              >
-                {tour
-                  ? tour
-                      .filter((item) => item.id !== undefined)
-                      .filter((item) => item.name !== undefined)
-                      .map((item, index) => {
-                        return (
-                          <MenuItem key={index} value={item.id}>
-                            {item.name}
-                          </MenuItem>
-                        );
-                      })
-                  : null}
-              </Select>
-              <p className='self-start text-small text-gray-400'>※複数選択可（3大会まで）</p>
             </div>
           </div>
         </AccordionDetails>
