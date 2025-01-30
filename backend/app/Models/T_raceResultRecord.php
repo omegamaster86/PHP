@@ -195,21 +195,25 @@ class T_raceResultRecord extends Model
     {
         $racesResultRecord = DB::select(
             'select 
-                                        `t_race_result_record`.`race_result_record_id` as `raceId`,
-                                        `t_race_result_record`.`tourn_name` as `tournName`,
-                                        `t_race_result_record`.`official`,
-                                        `t_race_result_record`.`start_datetime` as `startDateTime`, 
-                                        `t_race_result_record`.`race_number` as `raceNumber`, 
-                                        `t_race_result_record`.`race_name` as `raceName`, 
-                                        `t_race_result_record`.`by_group` as `byGroup`
-                                        FROM `t_race_result_record`
-                                        INNER JOIN `t_tournaments`
-                                        ON `t_race_result_record`.`tourn_id` = `t_tournaments`.`tourn_id` and `t_tournaments`.delete_flag = 0
-                                        where 1=1
-                                        and `t_race_result_record`.delete_flag = 0
-                                        and `t_race_result_record`.player_id = ?
-                                        and `t_race_result_record`.official = ?
-                                        ORDER BY `t_race_result_record`.`start_datetime` DESC',
+                `t_races`.`race_id` as `raceId`,
+                `t_race_result_record`.`tourn_name` as `tournName`,
+                `t_race_result_record`.`official`,
+                `t_race_result_record`.`start_datetime` as `startDateTime`, 
+                `t_race_result_record`.`race_number` as `raceNumber`, 
+                `t_race_result_record`.`race_name` as `raceName`, 
+                `t_race_result_record`.`by_group` as `byGroup`
+                FROM `t_race_result_record`
+                INNER JOIN `t_tournaments` ON
+                    `t_tournaments`.`tourn_id` = `t_race_result_record`.`tourn_id`
+                    AND `t_tournaments`.delete_flag = 0
+                INNER JOIN `t_races` ON
+                    `t_races`.`race_id` = `t_race_result_record`.`race_id`
+                    AND `t_races`.delete_flag = 0
+                where 1=1
+                and `t_race_result_record`.delete_flag = 0
+                and `t_race_result_record`.player_id = ?
+                and `t_race_result_record`.official = ?
+                ORDER BY `t_race_result_record`.`start_datetime` DESC',
             [$playerId, $official]
         );
         return $racesResultRecord;
