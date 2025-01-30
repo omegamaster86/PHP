@@ -173,24 +173,24 @@ class T_players extends Model
                                 ,`photo`
                                 ,`m_sex`.`sex`
                                 FROM `t_players`
-                                left join `m_sex`
-                                on `t_players`.`sex_id`=`m_sex`.`sex_id`
-                                left join m_countries bir_cont
-                                on `t_players`.birth_country = bir_cont.country_id
-                                left join m_prefectures bir_pref
-                                on `t_players`.birth_prefecture = bir_pref.pref_id
-                                left join m_countries res_cont
-                                on `t_players`.residence_country = res_cont.country_id
-                                left join m_prefectures res_pref
-                                on `t_players`.residence_prefecture = res_pref.pref_id
-                                where 1=1
-                                and `t_players`.delete_flag = 0
-                                and `m_sex`.`delete_flag` = 0
-                                and  bir_cont.`delete_flag` = 0
-                                and  bir_pref.`delete_flag` = 0
-                                and  res_cont.`delete_flag` = 0
-                                and  res_pref.`delete_flag` = 0
-                                and `t_players`.user_id = ?',
+                                INNER JOIN `m_sex` ON
+                                    `t_players`.`sex_id`=`m_sex`.`sex_id`
+                                    AND `m_sex`.`delete_flag` = 0
+                                INNER JOIN m_countries bir_cont ON
+                                    `t_players`.birth_country = bir_cont.country_id
+                                    AND  bir_cont.`delete_flag` = 0
+                                LEFT OUTER JOIN m_prefectures bir_pref ON
+                                    `t_players`.birth_prefecture = bir_pref.pref_id
+                                    AND  bir_pref.`delete_flag` = 0
+                                INNER JOIN m_countries res_cont ON
+                                    `t_players`.residence_country = res_cont.country_id
+                                    AND  res_cont.`delete_flag` = 0
+                                LEFT OUTER JOIN m_prefectures res_pref ON
+                                    `t_players`.residence_prefecture = res_pref.pref_id
+                                    AND  res_pref.`delete_flag` = 0
+                                WHERE 1=1
+                                AND `t_players`.delete_flag = 0
+                                AND `t_players`.user_id = ?',
             [$user_id]
         );
 

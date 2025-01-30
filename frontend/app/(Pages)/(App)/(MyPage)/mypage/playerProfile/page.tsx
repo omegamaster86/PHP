@@ -3,7 +3,7 @@
 import Info from '@/app/(Pages)/(App)/(MyPage)/_components/Info';
 import { TitleSideButton } from '@/app/(Pages)/(App)/_components/TitleSideButton';
 import { RoundedBadge } from '@/app/components';
-import { CustomUserAvatar } from '@/app/components/CustomUserAvatar';
+import { CustomPlayerAvatar } from '@/app/components/CustomPlayerAvatar';
 import { fetcher } from '@/app/lib/swr';
 import { MyPagePlayerProfileInfoData } from '@/app/types';
 import { formatDate } from '@/app/utils/dateUtil';
@@ -38,7 +38,11 @@ export default function PlayerProfile() {
   }
 
   const EditButton = (
-    <TitleSideButton href='/playerInformation?mode=update' icon={EditOutlined} text='編集' />
+    <TitleSideButton
+      href={`/playerInformation?mode=update&player_id=${user.playerId}`}
+      icon={EditOutlined}
+      text='編集'
+    />
   );
 
   const left = [
@@ -78,7 +82,7 @@ export default function PlayerProfile() {
         </div>
 
         <div className='flex items-center justify-center flex-row gap-2 md:items-start'>
-          <CustomUserAvatar fileName={user.photo ?? undefined} sx={{ width: 260, height: 260 }} />
+          <CustomPlayerAvatar fileName={user.photo ?? undefined} sx={{ width: 260, height: 260 }} />
         </div>
 
         <div className='md:max-w-sm'>
