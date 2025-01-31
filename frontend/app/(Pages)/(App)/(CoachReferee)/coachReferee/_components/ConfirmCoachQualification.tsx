@@ -47,11 +47,15 @@ const ConfirmCoachQualification: React.FC<Props> = ({ coachQualificationOptions,
             </tr>
           </thead>
           <tbody className='[&_td]:pt-2 [&_td]:pr-2 [&_td]:text-xs md:[&_td]:text-sm [&_td]:font-normal [&_td]:max-w-[50px] [&_td]:text-ellipsis [&_td]:overflow-hidden'>
-            {coachQualifications.map((qualification: ICoachQualification, index:number) => (
+            {coachQualifications.map((qualification: ICoachQualification, index: number) => (
               <tr key={qualification.heldCoachQualificationId}>
                 <td>{qualificationOptions[qualification.coachQualificationId]}</td>
                 <td>{formatDate(qualification.acquisitionDate, 'yyyy/MM/dd')}</td>
-                <td>{formatDate(qualification.expiryDate, 'yyyy/MM/dd')}</td>
+                <td>
+                  {!qualification.expiryDate
+                    ? '-'
+                    : formatDate(qualification.expiryDate, 'yyyy/MM/dd')}
+                </td>
                 <td>
                   <OriginalCheckbox
                     id={`delete_coachQualification${index + 1}`}

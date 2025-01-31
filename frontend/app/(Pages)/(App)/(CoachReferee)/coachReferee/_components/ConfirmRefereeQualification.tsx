@@ -8,7 +8,10 @@ interface Props {
   parsedData: CoachRefereeResponse | null;
 }
 
-const ConfirmRefereeQualification: React.FC<Props> = ({ refereeQualificationOptions, parsedData }) => {
+const ConfirmRefereeQualification: React.FC<Props> = ({
+  refereeQualificationOptions,
+  parsedData,
+}) => {
   const qualificationOptions = refereeQualificationOptions.reduce(
     (acc, qualificationOption) => {
       acc[qualificationOption.key] = qualificationOption.value;
@@ -32,16 +35,26 @@ const ConfirmRefereeQualification: React.FC<Props> = ({ refereeQualificationOpti
             </tr>
           </thead>
           <tbody className='[&_td]:pt-2 [&_td]:pr-2 [&_td]:text-xs md:[&_td]:text-sm [&_td]:font-normal [&_td]:max-w-[50px] [&_td]:text-ellipsis [&_td]:overflow-hidden'>
-            {refereeQualifications.map(
-              (qualification: IRefereeQualification, index: number) => (
-                <tr key={qualification.heldRefereeQualificationId}>
-                  <td>{qualificationOptions[qualification.refereeQualificationId]}</td>
-                  <td>{formatDate(qualification.acquisitionDate, 'yyyy/MM/dd')}</td>
-                  <td>{formatDate(qualification.expiryDate, 'yyyy/MM/dd')}</td>
-                  <td><OriginalCheckbox id={`delete_refereeQualification${index + 1}`} value='削除' checked={qualification.isDeleted} readonly onChange={()=> {}}/></td>
-                </tr>
-              ),
-            )}
+            {refereeQualifications.map((qualification: IRefereeQualification, index: number) => (
+              <tr key={qualification.heldRefereeQualificationId}>
+                <td>{qualificationOptions[qualification.refereeQualificationId]}</td>
+                <td>{formatDate(qualification.acquisitionDate, 'yyyy/MM/dd')}</td>
+                <td>
+                  {!qualification.expiryDate
+                    ? '-'
+                    : formatDate(qualification.expiryDate, 'yyyy/MM/dd')}
+                </td>
+                <td>
+                  <OriginalCheckbox
+                    id={`delete_refereeQualification${index + 1}`}
+                    value='削除'
+                    checked={qualification.isDeleted}
+                    readonly
+                    onChange={() => {}}
+                  />
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
