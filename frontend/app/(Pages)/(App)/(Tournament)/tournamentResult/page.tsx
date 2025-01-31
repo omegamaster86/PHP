@@ -32,6 +32,20 @@ interface UpdatedRaceResultRecordsResponse extends RaceResultRecordsResponse {
   isAdded: boolean;
 }
 
+const initialRaceInfo = {
+  race_id: '',
+  race_number: 0,
+  entrysystem_race_id: 0,
+  tourn_id: 0,
+  race_name: '',
+  race_class_name: 0,
+  event_id: 0,
+  event_name: '',
+  by_group: '',
+  range: 0,
+  startDateTime: '',
+};
+
 // レース結果管理画面のメインコンポーネント
 export default function TournamentResult() {
   // フック
@@ -60,7 +74,7 @@ export default function TournamentResult() {
   const [sheetNameIdOptions, setSheetNameIdOptions] = useState<MasterResponse[]>([]);
 
   // レース基本情報のモデル
-  const [raceInfo, setRaceInfo] = useState<RaceTable>({} as RaceTable);
+  const [raceInfo, setRaceInfo] = useState<RaceTable>(initialRaceInfo);
 
   // 出漕結果記録情報のモデル（出漕時点情報）
   const [raceResultRecordResponse, setRaceResultRecordResponse] =
@@ -881,8 +895,6 @@ export default function TournamentResult() {
           tourn_id: tournId,
           event_id: eventId,
         };
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const response = await axios.post('api/getRaceDataFromTournIdAndEventId', sendData);
         const data = response.data.result;
         if (data.length === 0) {
@@ -940,32 +952,21 @@ export default function TournamentResult() {
     const fetchRaceInfoForUpdate = async () => {
       try {
         // レース情報の取得
-        // const response = await axios.get('http://localhost:3100/raceInfo?id=' + raceId);
-        const sendData = {
-          race_id: raceId,
-        };
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
-        const response = await axios.post('api/getRaceDataRaceId', sendData);
-        const data = response.data;
-        if (data.length == 0) {
-          setErrorText(['レース情報が取得できませんでした。']);
-          setRaceInfo({} as RaceTable);
-          scrollTo(0, 0);
-        } else {
-          data.race_result[0].startDateTime = data.race_result[0].start_date_time; //バックエンド側のキーをフロント側のキーに入れ直す 20240410
-          setRaceInfo(data.race_result[0]);
-        }
+        const raceResponse = await axios.post('api/getRaceDataRaceId', { race_id: raceId });
 
-        const sendEventData = {
-          event_id: eventId || data.race_result[0].event_id,
-        };
+        const race = raceResponse.data.race_result[0];
+        race.startDateTime = race.start_date_time; //バックエンド側のキーをフロント側のキーに入れ直す 20240410
+        setRaceInfo(race);
+
         // 種目に対応したシート位置（マスタ）の取得
-        const response6 = await axios.post('api/getEventSheetPosForEventID', sendEventData);
+        const seatPositionResponse = await axios.post('api/getEventSheetPosForEventID', {
+          event_id: eventId || race.event_id,
+        });
+        const seatPosition = seatPositionResponse.data.result[0];
 
         // シート番号（マスタ）の取得
-        const response7 = await axios.get('api/getSeatNumber');
-        const seatNumberList = response7.data.map(
+        const seatNumberResponse = await axios.get('api/getSeatNumber');
+        const seatNumbers = seatNumberResponse.data.map(
           ({ seat_id, seat_name }: { seat_id: number; seat_name: string }) => ({
             id: seat_id,
             name: seat_name,
@@ -973,44 +974,45 @@ export default function TournamentResult() {
         );
 
         // 種目に対応したシート位置になるように要素をフィルタする
-        const newSeatNumberArray = seatNumberList.filter((e: any) => {
-          if (e.name == 'ストローク' && response6.data.result[0].seat_s == 1) {
-            return e;
-          } else if (e.name == '7' && response6.data.result[0].seat_7 == 1) {
-            return e;
-          } else if (e.name == '6' && response6.data.result[0].seat_6 == 1) {
-            return e;
-          } else if (e.name == '5' && response6.data.result[0].seat_5 == 1) {
-            return e;
-          } else if (e.name == '4' && response6.data.result[0].seat_4 == 1) {
-            return e;
-          } else if (e.name == '3' && response6.data.result[0].seat_3 == 1) {
-            return e;
-          } else if (e.name == '2' && response6.data.result[0].seat_2 == 1) {
-            return e;
-          } else if (e.name == 'バウ' && response6.data.result[0].seat_b == 1) {
-            return e;
-          } else if (e.name == 'コックス' && response6.data.result[0].seat_c == 1) {
-            return e;
+        const newSeatNumberArray = seatNumbers.filter((seatNumber: any) => {
+          if (seatNumber.name == 'ストローク' && seatPosition.seat_s == 1) {
+            return seatNumber;
+          } else if (seatNumber.name == '7' && seatPosition.seat_7 == 1) {
+            return seatNumber;
+          } else if (seatNumber.name == '6' && seatPosition.seat_6 == 1) {
+            return seatNumber;
+          } else if (seatNumber.name == '5' && seatPosition.seat_5 == 1) {
+            return seatNumber;
+          } else if (seatNumber.name == '4' && seatPosition.seat_4 == 1) {
+            return seatNumber;
+          } else if (seatNumber.name == '3' && seatPosition.seat_3 == 1) {
+            return seatNumber;
+          } else if (seatNumber.name == '2' && seatPosition.seat_2 == 1) {
+            return seatNumber;
+          } else if (seatNumber.name == 'バウ' && seatPosition.seat_b == 1) {
+            return seatNumber;
+          } else if (seatNumber.name == 'コックス' && seatPosition.seat_c == 1) {
+            return seatNumber;
           }
         });
         setSheetNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする
 
+        setRaceResultRecordResponse(race);
         // 出漕結果記録情報の取得
-        setRaceResultRecordResponse(data.record_result[0]);
+        const recordResults = raceResponse.data.record_result;
 
         // 10件以上は表示できないため、エラーメッセージを表示する
-        if (data.record_result.length > 10) {
+        if (recordResults.length > 10) {
           // 設定するのは10件まで
-          setRaceResultRecords(data.record_result.slice(0, 10));
+          setRaceResultRecords(recordResults.slice(0, 10));
           scrollTo(0, 0);
-        } else if (data.record_result.length > 0 && data.record_result.length < 10) {
+        } else if (recordResults.length > 0 && recordResults.length < 10) {
           //データが10件未満の場合の処理がなかったため追加 20240408
-          setRaceResultRecords(data.record_result);
+          setRaceResultRecords(recordResults);
           scrollTo(0, 0);
         }
       } catch (error: any) {
-        scrollTo(0, 0);
+        setErrorText([error.response?.data?.message]);
       }
     };
     if (mode == 'update') {
@@ -1028,8 +1030,6 @@ export default function TournamentResult() {
           const sendData = {
             race_id: raceId,
           };
-          const csrf = () => axios.get('/sanctum/csrf-cookie');
-          await csrf();
           const response = await axios.post('api/getRaceDataRaceId', sendData);
 
           data = response.data.race_result;
@@ -1100,10 +1100,16 @@ export default function TournamentResult() {
             }, []);
           }
         }
-      } catch (error: any) {}
+      } catch (error: any) {
+        setErrorText([error.response?.data?.message]);
+      }
     };
     fetchRaceInfo();
-  }, [raceInfo?.race_id]);
+  }, [raceInfo.race_id]);
+
+  if (raceInfo.race_id === '') {
+    return <ErrorBox errorText={errorText?.length > 0 ? errorText : []} />;
+  }
 
   return (
     <>
@@ -1141,7 +1147,7 @@ export default function TournamentResult() {
                     const response = await axios.post('api/getRaceDataRaceId', sendData);
                     const data = response.data.race_result;
                     if (data.length == 0) {
-                      setRaceInfo({} as RaceTable);
+                      setRaceInfo(initialRaceInfo);
                       if ((e as string) != '' && e != null && e != undefined) {
                         //未選択の場合、エラーメッセージは表示させない 20240516
                         setErrorText(['レース情報が取得できませんでした。']);
@@ -1192,7 +1198,7 @@ export default function TournamentResult() {
                         const data = response.data.race_result;
                         if (data.length == 0) {
                           setErrorText(['レース情報が取得できませんでした。']);
-                          setRaceInfo({} as RaceTable);
+                          setRaceInfo(initialRaceInfo);
                           scrollTo(0, 0);
                         } else {
                           //名前の異なるバックエンド側とフロント側のキーを紐づける 20240420
