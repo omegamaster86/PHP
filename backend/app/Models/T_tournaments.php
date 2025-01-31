@@ -322,6 +322,7 @@ class T_tournaments extends Model
                                     ,`entrysystem_tourn_id`
                                     FROM `t_tournaments`
                                     WHERE 1=1
+                                    and `t_tournaments`.`delete_flag` = 0
                                     and DATE_FORMAT(event_start_date, '%Y') = ?",
             [$entry_year]
         );
@@ -351,6 +352,7 @@ class T_tournaments extends Model
                                     left join `t_organization_staff` staff
                                     on org.org_id = staff.org_id 
                                     WHERE 1=1
+                                    and tour.`delete_flag` = 0
                                     and DATE_FORMAT(event_start_date, '%Y') = ?
                                     and staff.user_id = ?",
             [
