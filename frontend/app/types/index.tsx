@@ -197,16 +197,7 @@ interface RaceTable {
   event_name: string; // 種目名
   by_group: string; // 組別
   range: number; // 距離
-  startDateTime: string; // 発艇日時
-  windSpeedGoalPoint: number; // ゴール地点風速
-  windDirectionGoalPoint: number; // ゴール地点風向
-  windSpeedStartPoint: number; // スタート地点風速
-  windDirectionStartPoint: number; // スタート地点風向
-  registeredTime: string; // 登録日時
-  registeredUserId: number; // 登録ユーザーID
-  updatedTime: string; // 更新日時
-  updatedUserId: number; // 更新ユーザーID
-  deleteFlag: number; // 削除フラグ
+  startDateTime: string; // 発艇予定日時
 }
 
 // レース情報
