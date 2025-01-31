@@ -26,8 +26,9 @@ class TournamentController extends Controller
     {
         Log::debug(sprintf("searchTournament start"));
         $searchInfo = $request->all();
-        $searchCondition = $this->generateSearchCondition($searchInfo);
-        $tournamentList =  $tTournaments->getTournamentWithSearchCondition($searchCondition);
+        $bindingParams = [];
+        $searchCondition = $this->generateSearchCondition($searchInfo, $bindingParams);
+        $tournamentList =  $tTournaments->getTournamentWithSearchCondition($searchCondition, $bindingParams);
         $venueList = $venueData->getVenueList();
 
         Log::debug(sprintf("searchTournament end"));
@@ -1321,40 +1322,50 @@ class TournamentController extends Controller
         Log::debug(sprintf("tournamentFollowed end"));
     }
 
-    private function generateSearchCondition($searchInfo)
+    private function generateSearchCondition($searchInfo, &$bindingParams)
     {
         Log::debug(sprintf("generateSearchCondition start"));
         $condition = "";
 
         if (isset($searchInfo['tourn_name'])) {
-            $condition .= " and `t_tournaments`.`tourn_name` like " . "\"%" . $searchInfo['tourn_name'] . "%\""; //大会名
+            $condition .= " and `t_tournaments`.`tourn_name` like :tourn_name"; //大会名
+            $bindingParams["tourn_name"] = '%' . $searchInfo['tourn_name'] . '%';
         }
         if (isset($searchInfo['tourn_type'])) {
-            $condition .= " and `t_tournaments`.`tourn_type`=" . $searchInfo['tourn_type']; //大会種別
+            $condition .= " and `t_tournaments`.`tourn_type` = :tourn_type"; //大会種別
+            $bindingParams["tourn_type"] = $searchInfo['tourn_type'];
         }
         if (isset($searchInfo['venue_id'])) {
-            $condition .= " and `t_tournaments`.`venue_id` = " . $searchInfo['venue_id']; //開催場所
+            $condition .= " and `t_tournaments`.`venue_id` = :venue_id"; //開催場所
+            $bindingParams["venue_id"] = $searchInfo['venue_id'];
         }
         if (isset($searchInfo['event_start_date'])) {
-            $condition .= " and `t_tournaments`.`event_start_date`>= CAST('" . $searchInfo['event_start_date'] . "' AS DATE)"; //開催開始年月日
+            $condition .= " and `t_tournaments`.`event_start_date`>= CAST(:event_start_date AS DATE)"; //開催開始年月日
+            $bindingParams["event_start_date"] = $searchInfo['event_start_date'];
         }
         if (isset($searchInfo['event_end_date'])) {
-            $condition .= " and `t_tournaments`.`event_end_date` <= CAST('" . $searchInfo['event_end_date'] . "' AS DATE)"; //開催終了年月日
+            $condition .= " and `t_tournaments`.`event_end_date` <= CAST(:event_end_date AS DATE)"; //開催終了年月日
+            $bindingParams["event_end_date"] = $searchInfo['event_end_date'];
         }
         if (isset($searchInfo['jara_player_id'])) {
-            $condition .= " and `t_race_result_record`.`jara_player_id`=" . $searchInfo['jara_player_id']; //JARA選手コード
+            $condition .= " and `t_race_result_record`.`jara_player_id`= :jara_player_id"; //JARA選手コード
+            $bindingParams["jara_player_id"] = $searchInfo['jara_player_id'];
         }
         if (isset($searchInfo['player_id'])) {
-            $condition .= " and `t_race_result_record`.`player_id`=" . $searchInfo['player_id']; //選手ID
+            $condition .= " and `t_race_result_record`.`player_id` = :player_id"; //選手ID
+            $bindingParams["player_id"] = $searchInfo['player_id'];
         }
         if (isset($searchInfo['player_name'])) {
-            $condition .= " and `t_race_result_record`.`player_name` like " . "\"%" . $searchInfo['player_name'] . "%\""; //選手名
+            $condition .= " and `t_race_result_record`.`player_name` like :player_name"; //選手名
+            $bindingParams["player_name"] = '%' . $searchInfo['player_name'] . '%';
         }
         if (isset($searchInfo['sponsor_org_id'])) {
-            $condition .= " and `t_tournaments`.`sponsor_org_id`= " . $searchInfo['sponsor_org_id']; //主催団体ID
+            $condition .= " and `t_tournaments`.`sponsor_org_id`= :sponsor_org_id"; //主催団体ID
+            $bindingParams["sponsor_org_id"] = $searchInfo['sponsor_org_id'];
         }
         if (isset($searchInfo['sponsorOrgName'])) {
-            $condition .= " and `t_organizations`.`org_name` like " . "\"%" . $searchInfo['sponsorOrgName'] . "%\""; //主催団体名
+            $condition .= " and `t_organizations`.`org_name` like :sponsorOrgName"; //主催団体名
+            $bindingParams["sponsorOrgName"] = '%' . $searchInfo['sponsorOrgName'] . '%';
         }
         Log::debug(sprintf("generateSearchCondition end"));
         return $condition;

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 class T_organization_staff extends Model
@@ -124,7 +125,7 @@ class T_organization_staff extends Model
                             FROM target_ids
                         )';
         $sqlString = str_replace('#ConditionReplace#', $condition, $sqlString);
-        DB::update($sqlString, ["org_id" => $values]);
+        DB::update($sqlString, $values);
         //Log::debug('updateDeleteFlagInOrganizationStaff end.');
     }
 

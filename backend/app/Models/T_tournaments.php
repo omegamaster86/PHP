@@ -227,7 +227,7 @@ class T_tournaments extends Model
         return $entryTournaments;
     }
 
-    public function getTournamentWithSearchCondition($searchCondition)
+    public function getTournamentWithSearchCondition($searchCondition, $bindingParams)
     {
         //大会種別(公式・非公式)　大会名　開催開始年月日　開催終了年月日　開催場所　主催団体ID　主催団体名　を取得
         $sqlString = 'select distinct
@@ -261,7 +261,7 @@ class T_tournaments extends Model
                         where `t_tournaments`.`delete_flag` = 0
                         #SearchCondition#';
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
-        $tournaments = DB::select($sqlString);
+        $tournaments = DB::select($sqlString, $bindingParams);
         return $tournaments;
     }
 

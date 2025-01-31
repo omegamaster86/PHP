@@ -67,6 +67,13 @@ class OrganizationController extends Controller
             return response()->json(['duplicationError' => "エントリーシステムの団体IDが重複しています。"]);
         }
 
+        # SQLインジェクション対策
+        foreach ($organizationInfo['staffList'] as $staff) {
+            if (!preg_match('/^[0-9]+$/', $staff['user_id'])) {
+                abort(400, 'スタッフのユーザーIDに不正な文字列が含まれています。');
+            }
+        }
+
         DB::beginTransaction();
         try {
             //確認画面から登録
@@ -149,9 +156,11 @@ class OrganizationController extends Controller
 
             //スタッフの更新 20240318
             //前のスタッフをupdateする
-            $updateCondition = $this->generateUpdateStaffCondition($organizationInfo);
+            $bindingParams = [];
+            $bindingParams['org_id'] = $target_org_id;
+            $updateCondition = $this->generateUpdateStaffCondition($organizationInfo, $bindingParams);
             if (!empty($updateCondition)) {
-                $tOrganizationStaff->updateDeleteFlagInOrganizationStaff($updateCondition, $target_org_id);
+                $tOrganizationStaff->updateDeleteFlagInOrganizationStaff($updateCondition, $bindingParams);
             }
             //新しく入力されたスタッフをInsertする
             $replace_string = $this->generateInsertStaffValues($organizationInfo, $organizationInfo['formData']['org_id']);
@@ -368,7 +377,7 @@ class OrganizationController extends Controller
     }
 
     //団体所属スタッフテーブルを更新するための条件文を生成する
-    private function generateUpdateStaffCondition($organizationInfo)
+    private function generateUpdateStaffCondition($organizationInfo, &$bindingParams)
     {
         $condition = "";
         $staffList = $organizationInfo['staffList'];
@@ -378,23 +387,28 @@ class OrganizationController extends Controller
             if (isset($staff['org_id']) && !$staff['delete_flag']) {
                 //監督にチェックが入っていない
                 if ($staff['is_director'] == 0) {
-                    $condition .= " or ( `user_id`= " . $staff['id'] . " and `staff_type_id`= 1)\r\n";
+                    $condition .= " or ( `user_id`= :director_user_id and `staff_type_id`= 1)\r\n";
+                    $bindingParams['director_user_id'] = $staff['id'];
                 }
                 //部長にチェックが入っていない
                 if ($staff['is_head'] == 0) {
-                    $condition .= " or ( `user_id`= " . $staff['id'] . " and `staff_type_id`= 2)\r\n";
+                    $condition .= " or ( `user_id`= :captain_user_id and `staff_type_id`= 2)\r\n";
+                    $bindingParams['captain_user_id'] = $staff['id'];
                 }
                 //コーチにチェックが入っていない
                 if ($staff['is_coach'] == 0) {
-                    $condition .= " or ( `user_id`= " . $staff['id'] . " and `staff_type_id`= 3)\r\n";
+                    $condition .= " or ( `user_id`= :coach_user_id and `staff_type_id`= 3)\r\n";
+                    $bindingParams['coach_user_id'] = $staff['id'];
                 }
                 //マネージャーにチェックが入っていない
                 if ($staff['is_manager'] == 0) {
-                    $condition .= " or ( `user_id`= " . $staff['id'] . " and `staff_type_id`= 4)\r\n";
+                    $condition .= " or ( `user_id`= :manager_user_id and `staff_type_id`= 4)\r\n";
+                    $bindingParams['manager_user_id'] = $staff['id'];
                 }
                 //管理代理にチェックが入っていない
                 if ($staff['is_acting_director'] == 0) {
-                    $condition .= " or ( `user_id`= " . $staff['id'] . " and `staff_type_id`= 5)\r\n";
+                    $condition .= " or ( `user_id`= :agent_user_id and `staff_type_id`= 5)\r\n";
+                    $bindingParams['agent_user_id'] = $staff['id'];
                 }
             }
             //削除フラグが立っているときは別途処理
