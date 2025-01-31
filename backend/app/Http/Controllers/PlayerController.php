@@ -13,6 +13,7 @@ use App\Models\T_players;
 use App\Models\T_raceResultRecord;
 use App\Models\T_users;
 use App\Models\T_organization_players;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class PlayerController extends Controller
 {
@@ -147,12 +148,19 @@ class PlayerController extends Controller
     //react 選手情報更新画面に表示するuserIDに紐づいたデータを送信 20240131
     public function getUpdatePlayerData(Request $request, T_players $tPlayersData)
     {
-        Log::debug(sprintf("getUpdatePlayerData start"));
-        // $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
-        $reqData = $request->all();
-        $retrieve_player_by_ID = $tPlayersData->getPlayerData($reqData['player_id']); //DBに選手を登録 20240131
-        Log::debug(sprintf("getUpdatePlayerData end"));
-        return response()->json(['result' => $retrieve_player_by_ID]); //DBの結果を返す
+        try {
+            Log::debug(sprintf("getUpdatePlayerData start"));
+            // $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
+            $reqData = $request->all();
+            $retrieve_player_by_ID = $tPlayersData->getPlayerData($reqData['player_id']); //DBに選手を登録 20240131
+            if (empty($retrieve_player_by_ID)) {
+                abort(404, '選手情報が存在しません。');
+            }
+            Log::debug(sprintf("getUpdatePlayerData end"));
+            return response()->json(['result' => $retrieve_player_by_ID]); //DBの結果を返す
+        } catch (HttpException $e) {
+            throw $e;
+        }
     }
     //reactからの選手登録 20240131
     public function updatePlayerData(Request $request, T_players $tPlayersData, T_users $t_users)
