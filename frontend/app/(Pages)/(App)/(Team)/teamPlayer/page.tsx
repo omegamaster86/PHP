@@ -19,8 +19,6 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-const JAPAN_COUNTRY_ID = 112;
-
 export default function TeamPlayer() {
   const router = useRouter();
   // テーブルデータの入力値を管理する関数
@@ -81,7 +79,7 @@ export default function TeamPlayer() {
           let data = transformData(addPlayerList, '追加');
 
           if (mode == 'create') {
-            const response = await axios.post('api/searchOrganizationPlayersForTeamRef', sendId);
+            const response = await axios.post('api/getOrgPlayers', sendId);
             const searchRes = transformData(response.data.result, '既存');
 
             //追加選手の重複チェック処理 20240416
@@ -110,7 +108,7 @@ export default function TeamPlayer() {
           setFormData(data);
         } else {
           if (mode == 'create') {
-            const response = await axios.post('api/searchOrganizationPlayersForTeamRef', sendId);
+            const response = await axios.post('api/getOrgPlayers', sendId);
             const searchRes = transformData(response.data.result, '既存');
             setFormData(searchRes);
           }
@@ -292,14 +290,12 @@ export default function TeamPlayer() {
                   </Link>
                 </CustomTd>
                 <CustomTd align='center'>
-                  {data.birth_country == JAPAN_COUNTRY_ID
-                    ? data.birthPrefectureName
-                    : data.birthCountryName}
+                  {[data.birthCountryName, data.birthPrefectureName].filter((x) => x).join(' ')}
                 </CustomTd>
                 <CustomTd align='center'>
-                  {data.residence_country == JAPAN_COUNTRY_ID
-                    ? data.residencePrefectureName
-                    : data.residenceCountryName}
+                  {[data.residenceCountryName, data.residencePrefectureName]
+                    .filter((x) => x)
+                    .join(' ')}
                 </CustomTd>
                 <CustomTd align='center'>{data.side_info[0] ? '◯' : '×'}</CustomTd>
                 <CustomTd align='center'>{data.side_info[1] ? '◯' : '×'}</CustomTd>
@@ -345,12 +341,9 @@ export default function TeamPlayer() {
                 };
                 const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
-                axios
-                  .post('api/updateOrgPlayerData', sendData)
-                  .then((response) => {
-                    router.push('/teamRef?orgId=' + teamData.org_id); //変更後は、該当の団体参照画面に遷移する 20240401
-                  })
-                  .catch((error) => {});
+                axios.post('api/updateOrgPlayerData', sendData).then((response) => {
+                  router.push('/teamRef?orgId=' + teamData.org_id); //変更後は、該当の団体参照画面に遷移する 20240401
+                });
               }}
             >
               反映
