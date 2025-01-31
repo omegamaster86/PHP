@@ -102,7 +102,6 @@ export default function AddPlayerSearch() {
     },
   } as SearchCond);
 
-  const JAPAN_COUNTRY_ID = 112;
   const router = useRouter();
 
   const orgId = useSearchParams().get('org_id')?.toString() || '';
@@ -602,14 +601,12 @@ export default function AddPlayerSearch() {
                 </CustomTd>
                 <CustomTd>{data.sexName}</CustomTd>
                 <CustomTd>
-                  {data.birth_country == JAPAN_COUNTRY_ID
-                    ? data.birthPrefectureName
-                    : data.birthCountryName}
+                  {[data.birthCountryName, data.birthPrefectureName].filter((x) => x).join(' ')}
                 </CustomTd>
                 <CustomTd>
-                  {data.residence_country == JAPAN_COUNTRY_ID
-                    ? data.residencePrefectureName
-                    : data.residenceCountryName}
+                  {[data.residenceCountryName, data.residencePrefectureName]
+                    .filter((x) => x)
+                    .join(' ')}
                 </CustomTd>
                 <CustomTd>{data.side_info[0] ? '○' : '×'}</CustomTd>
                 <CustomTd>{data.side_info[1] ? '○' : '×'}</CustomTd>

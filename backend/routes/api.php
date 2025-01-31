@@ -118,7 +118,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('getOrgData', [OrganizationController::class, 'getOrgData']); //DBから団体管理画面にデータを渡す
     Route::post('orgSearch', [OrganizationController::class, 'searchOrganization']); //団体検索
     Route::post('registerOrgCsvData', [OrganizationPlayersController::class, 'registerOrgCsvData']); //団体一括 登録ボタン押下
-    Route::post('searchOrganizationPlayersForTeamRef', [OrganizationPlayersController::class, 'searchOrganizationPlayersForTeamRef']); //主催大会
+    Route::post('getOrgPlayers', [OrganizationPlayersController::class, 'getOrgPlayers']); //団体に所属する選手取得
     Route::post('sendOrgCsvData', [OrganizationPlayersController::class, 'sendOrgCsvData']); //団体一括 読み込むボタン押下
     Route::post('storeOrgData', [OrganizationController::class, 'storeOrgData']); //団体情報をDBに送る
     Route::post('teamPlayerSearch', [OrganizationPlayersController::class, 'teamPlayerSearch']); //団体所属選手更新

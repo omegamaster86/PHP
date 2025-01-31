@@ -131,7 +131,7 @@ export default function TeamRef() {
           org_id,
         );
         setEntTournaments(entTournamentsResponse.data.result);
-        const playersResponse = await axios.post('api/searchOrganizationPlayersForTeamRef', org_id);
+        const playersResponse = await axios.post('api/getOrgPlayers', org_id);
         setPlayers(playersResponse.data.result);
 
         const userDataResponse = await axios.get('api/user');

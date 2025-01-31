@@ -420,27 +420,20 @@ interface PlayerInformationResponse {
 
 // 団体所属選手情報
 interface TeamPlayerInformationResponse {
-  id: number; // ID #置き換え作業未対応
+  id: number; // ID
   player_id: number; // 選手ID
   jara_player_id: string; // JARA選手コード
   player_name: string; // 選手名
-  date_of_birth: string; // 生年月日
-  sexName: string; // 性別 #置き換え作業未対応
-  sex_id?: number; // 性別
+  sexName: string; // 性別
   height: string; // 身長
   weight: string; // 体重
   side_info: boolean[]; // サイド情報
-  birthCountryName: string; // 出身地（国） #置き換え作業対応不要
-  birth_country?: number; // 出身地（国）
-  birthPrefectureName: string; // 出身地（都道府県） #置き換え作業対応不要
-  birth_prefecture?: number; // 出身地（都道府県）
-  residenceCountryName: string; // 居住地（国） #置き換え作業対応不要
-  residence_country?: number; // 居住地（国）
-  residencePrefectureName: string; // 居住地（都道府県） #置き換え作業対応不要
-  residence_prefecture?: number; // 居住地（都道府県）
+  birthCountryName: string; // 出身地（国）
+  birthPrefectureName: string; // 出身地（都道府県）
+  residenceCountryName: string; // 居住地（国）
+  residencePrefectureName: string; // 居住地（都道府県）
   orgId: string; // 団体ID
   org_name: string; // 団体名
-  photo: string; // 写真
   deleteFlag: boolean; // 削除フラグ
   checked?: boolean; // チェックボックス
   type: string; // 種別

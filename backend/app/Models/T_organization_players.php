@@ -118,117 +118,68 @@ class T_organization_players extends Model
         );
     }
 
-    //検索条件で所属選手を取得する
-    public function getOrganizationPlayersFromCondition($condition, $conditionValue)
+    // 団体に所属する選手を取得する。
+    public function getOrgPlayers($orgId)
     {
-        DB::enableQueryLog();
-        Log::debug('getOrganizationPlayersFromCondition start.');
-        $sqlString = 'select
-                        player_id
-                        ,jara_player_id
-                        ,player_name
-                        ,date_of_birth
-                        ,height
-                        ,weight
-                        ,photo
-                        ,birth_country
-                        ,birthCountryName
-                        ,birth_prefecture
-                        ,residence_country
-                        ,residenceCountryName
-                        ,residence_prefecture
-                        ,sexName
-                        ,sex_id
-                        ,birthPrefectureName
-                        ,residencePrefectureName
-                        ,side_S
-                        ,side_B
-                        ,side_X
-                        ,side_C
-                        ,players.org_id
-                        ,org.org_name
-                        from
-                        (
-                            select
-                            top.`player_id`			#選手ID
-                            ,tp.`jara_player_id`	#JARA選手コード
-                            ,tp.`player_name`		#選手名
-                            ,tp.date_of_birth
-                            ,tp.height
-                            ,tp.weight
-                            ,tp.photo
-                            ,tp.`birth_country`
-                            ,bir_cont.`country_name` as `birthCountryName`
-                            ,`birth_prefecture`
-                            ,tp.`residence_country`
-                            ,res_cont.`country_name` as `residenceCountryName`
-                            ,`residence_prefecture`
-                            ,m_sex.sex as sexName	#性別
-                            ,m_sex.sex_id		    #性別ID
-                            ,CASE 
-                                when tp.`birth_country` = 112 then bir_pref.`pref_name`
-                                else null
-                                end as birthPrefectureName	#出身地
-                            ,CASE
-                                when tp.`residence_country` = 112 then res_pref.`pref_name`
-                                else null
-                                end as residencePrefectureName	#居住地
-                            ,CASE
-                                when SUBSTRING(tp.`side_info`,8,1) = 1 then 1
-                                else 0
-                                end as side_S
-                            ,CASE
-                                when SUBSTRING(tp.`side_info`,7,1) = 1 then 1
-                                else 0
-                                end as side_B
-                            ,CASE
-                                when SUBSTRING(tp.`side_info`,6,1) = 1 then 1
-                                else 0
-                                end as side_X
-                            ,CASE
-                                when SUBSTRING(tp.`side_info`,5,1) = 1 then 1
-                                else 0
-                                end as side_C
-                            ,min(org.org_id) as `org_id`
-                            from `t_organization_players` top
-                            join `t_players` tp
-                            on top.`player_id` = tp.`player_id`
-                            left join `m_sex`
-                            on tp.`sex_id` = `m_sex`.`sex_id`
-                            left join m_countries bir_cont
-                            on tp.birth_country = bir_cont.country_id
-                            left join m_prefectures bir_pref
-                            on tp.birth_prefecture = bir_pref.pref_id
-                            left join m_countries res_cont
-                            on tp.residence_country = res_cont.country_id
-                            left join m_prefectures res_pref
-                            on tp.residence_prefecture = res_pref.pref_id
-                            join t_organizations org
-                            on top.org_id = org.org_id
-                            left join t_race_result_record trrr
-                            on tp.player_id = trrr.player_id
-                            left join t_tournaments tour
-                            on trrr.`tourn_id` = tour.`tourn_id`
-                            where 1=1
-                            and top.`delete_flag` = 0
-                            and tp.`delete_flag` = 0
-                            and `m_sex`.`delete_flag` = 0
-                            and bir_cont.`delete_flag` = 0
-                            and bir_pref.`delete_flag` = 0
-                            and res_cont.`delete_flag` = 0
-                            and res_pref.`delete_flag` = 0
-                            and org.`delete_flag` = 0
-                            and trrr.`delete_flag` = 0
-                            and tour.`delete_flag` = 0
-                            #ReplaceConditionString#
-                            group by top.player_id
-                        )players
-                        join t_organizations org
-                        on players.org_id = org.org_id
-                        ';
-        $sqlString = str_replace("#ReplaceConditionString#", $condition, $sqlString);
-        $players = DB::select($sqlString, $conditionValue);
-        Log::debug('getOrganizationPlayersFromCondition end.');
+        Log::debug('getOrgPlayers start.');
+        $sqlString = "
+            select
+                top.`player_id`
+                ,tp.`jara_player_id`
+                ,tp.`player_name`
+                ,tp.height
+                ,tp.weight
+                ,bir_cont.`country_name` as `birthCountryName`
+                ,bir_pref.`pref_name` as birthPrefectureName
+                ,res_cont.`country_name` as `residenceCountryName`
+                ,res_pref.`pref_name` as residencePrefectureName
+                ,m_sex.sex as sexName
+                ,CASE
+                    when SUBSTRING(tp.`side_info`,8,1) = 1 then 1
+                    else 0
+                    end as side_S
+                ,CASE
+                    when SUBSTRING(tp.`side_info`,7,1) = 1 then 1
+                    else 0
+                    end as side_B
+                ,CASE
+                    when SUBSTRING(tp.`side_info`,6,1) = 1 then 1
+                    else 0
+                    end as side_X
+                ,CASE
+                    when SUBSTRING(tp.`side_info`,5,1) = 1 then 1
+                    else 0
+                    end as side_C
+                ,org.org_id as `org_id`
+                ,org.org_name as `org_name`
+            from `t_organization_players` top
+            inner join `t_players` tp on
+                top.`player_id` = tp.`player_id`
+                and tp.`delete_flag` = 0
+            inner join `m_sex` on
+                tp.`sex_id` = `m_sex`.`sex_id`
+                and m_sex.`delete_flag` = 0
+            inner join m_countries bir_cont on
+                tp.birth_country = bir_cont.country_id
+                and bir_cont.`delete_flag` = 0
+            left join m_prefectures bir_pref on
+                tp.birth_prefecture = bir_pref.pref_id
+                and bir_pref.`delete_flag` = 0
+            inner join m_countries res_cont on
+                tp.residence_country = res_cont.country_id
+                and res_cont.`delete_flag` = 0
+            left join m_prefectures res_pref on
+                tp.residence_prefecture = res_pref.pref_id
+                and res_pref.`delete_flag` = 0
+            inner join t_organizations org on
+                top.org_id = org.org_id
+                and org.`delete_flag` = 0
+            where 1=1
+            and top.`delete_flag` = 0
+            and top.org_id = :org_id
+            ";
+        $players = DB::select($sqlString, ['org_id' => $orgId]);
+        Log::debug('getOrgPlayers end.');
         return $players;
     }
 

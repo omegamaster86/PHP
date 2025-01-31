@@ -20,14 +20,13 @@ use Illuminate\Support\Facades\Hash;
 
 class OrganizationPlayersController extends Controller
 {
-    //団体所属追加選手検索画面で、選手を検索する
-    public function searchOrganizationPlayersForTeamRef(Request $request, T_organization_players $t_organization_players)
+    // 団体に所属する選手を取得する。
+    public function getOrgPlayers(Request $request, T_organization_players $t_organization_players)
     {
-        Log::debug(sprintf("searchOrganizationPlayersForTeamRef start"));
-        $searchInfo = $request->all();
-        $searchValue = [];
-        $searchCondition = $this->generateOrganizationPlayersSearchCondition($searchInfo, $searchValue);
-        $players = $t_organization_players->getOrganizationPlayersFromCondition($searchCondition, $searchValue);
+        Log::debug(sprintf("getOrgPlayers start"));
+        $req = $request->only(['org_id']);
+        $orgId = $req['org_id'];
+        $players = $t_organization_players->getOrgPlayers($orgId);
         for ($i = 0; $i < count($players); $i++) {
             $side_info = array();
             if ($players[$i]->side_S == 1) {
@@ -54,7 +53,7 @@ class OrganizationPlayersController extends Controller
             $players[$i]->id = ($i + 1);
         }
 
-        Log::debug(sprintf("searchOrganizationPlayersForTeamRef end"));
+        Log::debug(sprintf("getOrgPlayers end"));
         return response()->json(['result' => $players]); //DBの結果を返す
     }
 
@@ -100,8 +99,6 @@ class OrganizationPlayersController extends Controller
         Log::debug(sprintf("teamPlayerSearch start"));
         $searchInfo = $request->all();
         $searchValue = [];
-        // $searchCondition = $this->generateOrganizationPlayersSearchCondition($searchInfo, $searchValue);
-        // $players = $t_organization_players->getOrganizationPlayersFromCondition($searchCondition, $searchValue);
         $searchCondition = $this->generatePlayersSearchCondition($searchInfo, $searchValue);
         $players = $t_organization_players->getOrgPlayersForAddPlayerSearch($searchCondition, $searchValue);
         for ($i = 0; $i < count($players); $i++) {
@@ -1181,89 +1178,6 @@ class OrganizationPlayersController extends Controller
         }
         Log::debug(sprintf("registerOrgCsvData end"));
         return response()->json(['result' => $reqData]); //DBの結果を返す
-    }
-
-    //団体所属選手を検索するための条件を生成する
-    private function generateOrganizationPlayersSearchCondition($searchInfo, &$conditionValue)
-    {
-        $condition = "";
-        //JARA選手コード
-        if (isset($searchInfo['jaraPlayerId'])) {
-            $condition .= "and tp.jara_player_id = :jara_player_id\r\n";
-            $conditionValue['jara_player_id'] = $searchInfo['jaraPlayerId'];
-        }
-        //選手ID
-        if (isset($searchInfo['playerId'])) {
-            $condition .= "and tp.player_id = :player_id\r\n";
-            $conditionValue['player_id'] = $searchInfo['playerId'];
-        }
-        //選手名
-        if (isset($searchInfo['playerName'])) {
-            $condition .= "and tp.player_name LIKE :player_name\r\n";
-            $conditionValue['player_name'] = "%" . $searchInfo['playerName'] . "%";
-        }
-        //性別
-        if (isset($searchInfo['sex'])) {
-            $condition .= "and `m_sex`.`sex_id` = :sex\r\n";
-            $conditionValue['sex'] = $searchInfo['sexId'];
-        }
-        //出身地（都道府県）
-        if (isset($searchInfo['birthPrefectureId'])) {
-            $condition .= "and bir_pref.pref_id =:birth_prefecture\r\n";
-            $conditionValue['birth_prefecture'] = $searchInfo['birthPrefectureId'];
-        }
-        //居住地（都道府県）
-        if (isset($searchInfo['residencePrefectureId'])) {
-            $condition .= "and res_pref.pref_id =:residence_prefecture\r\n";
-            $conditionValue['residence_prefecture'] = $searchInfo['residencePrefectureId'];
-        }
-        if (isset($searchInfo['sideInfo'])) {
-            //S(ストロークサイド)
-            if ($searchInfo['sideInfo']['S'] == true) {
-                $condition .= "and SUBSTRING(tp.`side_info`,8,1) = 1\r\n";
-            }
-            //B(バウサイド)
-            if ($searchInfo['sideInfo']['B'] == true) {
-                $condition .= "and SUBSTRING(tp.`side_info`,7,1) = 1\r\n";
-            }
-            //X(スカルサイド)
-            if ($searchInfo['sideInfo']['X'] == true) {
-                $condition .= "and SUBSTRING(tp.`side_info`,6,1) = 1\r\n";
-            }
-            //C(コックスサイド)
-            if ($searchInfo['sideInfo']['C'] == true) {
-                $condition .= "and SUBSTRING(tp.`side_info`,5,1) = 1\r\n";
-            }
-        }
-        //団体ID
-        if (isset($searchInfo['orgId'])) {
-            $condition .= "and org.org_id = :org_id\r\n";
-            $conditionValue['org_id'] = $searchInfo['orgId'];
-        } elseif (isset($searchInfo['org_id'])) {
-            $condition .= "and org.org_id = :org_id\r\n";
-            $conditionValue['org_id'] = $searchInfo['org_id'];
-        }
-        //エントリーシステムID
-        if (isset($searchInfo['entrysystemOrgId'])) {
-            $condition .= "and org.entrysystem_org_id =:entry_system_id\r\n";
-            $conditionValue['entry_system_id'] = $searchInfo['entrysystemOrgId'];
-        }
-        //団体名
-        if (isset($searchInfo['orgName'])) {
-            $condition .= "and org.org_name LIKE :org_name\r\n";
-            $conditionValue['org_name'] = "%" . $searchInfo['orgName'] . "%";
-        }
-        //出漕大会名
-        if (isset($searchInfo['raceEventName'])) {
-            $condition .= "and trrr.tourn_name LIKE :tourn_name\r\n";
-            $conditionValue['tourn_name'] = "%" . $searchInfo['raceEventName'] . "%";
-        }
-        //出漕履歴情報
-        if (isset($searchInfo['eventId'])) {
-            $condition .= "and trrr.event_id = :event_id\r\n";
-            $conditionValue['event_id'] = $searchInfo['eventId'];
-        }
-        return $condition;
     }
 
     //団体に登録する選手検索画面用の条件を生成する 20240417
