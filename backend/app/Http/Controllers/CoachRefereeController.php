@@ -20,7 +20,12 @@ class CoachRefereeController extends Controller
     {
         Log::debug(sprintf("getCoachRefereeInfoList start"));
         $reqData = $request->all();
-        $result = $tUsers->getCoachRefereeInfoData($reqData['userId']); //ユーザIDに紐づいた指導者・審判資格を取得する 20241106
+
+        // 指導者・審判資格を閲覧できるのはJARA/県ボのみ
+        $userType = Auth::user()->user_type;
+        $canShowQualification = substr($userType, -6, 1) == '1' || substr($userType, -5, 1) == '1';
+
+        $result = $tUsers->getCoachRefereeInfoData($reqData['userId'], $canShowQualification); //ユーザIDに紐づいた指導者・審判資格を取得する
         $result->coachingHistories = $tOrganizationCoachingHistory->getOrganizationCoachingHistoryData($reqData['userId']); //ユーザIDに紐づいた指導履歴を取得する 20241106
         $result->coachQualificationNames = array_filter(
             explode(",", $result->coachQualificationNames),

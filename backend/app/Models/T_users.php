@@ -556,15 +556,24 @@ class T_users extends Authenticatable
     }
 
     //指導者・審判情報の取得 20241106
-    public function getCoachRefereeInfoData($user_id)
+    public function getCoachRefereeInfoData($user_id, $canShowQualification)
     {
         $users = DB::select(
             'SELECT 
                 `t_users`.user_id as `userId`,
                 `t_users`.user_name as `userName`,
-                `t_users`.jspo_id as `jspoId`,
-                GROUP_CONCAT(distinct(`coach_qual`.`qual_name`) order by `coach_qual`.`display_order`) AS "coachQualificationNames",
-                GROUP_CONCAT(distinct(`referee_qual`.`qual_name`) order by `referee_qual`.`display_order`) AS "refereeQualificationNames"
+                CASE
+                    WHEN ? THEN `t_users`.jspo_id
+                    ELSE NULL
+                    END as `jspoId`,
+                CASE
+                    WHEN ? THEN GROUP_CONCAT(distinct(`coach_qual`.`qual_name`) order by `coach_qual`.`display_order`)
+                    ELSE ""
+                    END AS "coachQualificationNames",
+                CASE
+                    WHEN ? THEN GROUP_CONCAT(distinct(`referee_qual`.`qual_name`) order by `referee_qual`.`display_order`)
+                    ELSE ""
+                    END AS "refereeQualificationNames"
                 FROM `t_users`
                 left join `t_held_coach_qualifications` `held_coach_qual`
                 on `t_users`.`user_id` = `held_coach_qual`.`user_id` and `held_coach_qual`.delete_flag = 0 and `held_coach_qual`.`expiry_date` >= CURDATE()
@@ -578,6 +587,9 @@ class T_users extends Authenticatable
                 and `t_users`.delete_flag = 0
                 and `t_users`.user_id = ?',
             [
+                $canShowQualification,
+                $canShowQualification,
+                $canShowQualification,
                 $user_id
             ]
         );

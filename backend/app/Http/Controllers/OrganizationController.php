@@ -215,7 +215,12 @@ class OrganizationController extends Controller
         Log::debug(sprintf("getOrgStaffData start"));
         $result = $request->all();
         $is_error = false;
-        $tOrg = $tOrganizationStaff->getOrganizationStaffFromOrgId($result['org_id']); //userIDに紐づいた団体を取得するように修正する必要がある 二村さん残件対応箇所
+
+        // 指導者・審判資格を閲覧できるのはJARA/県ボのみ
+        $userType = Auth::user()->user_type;
+        $canShowQualification = substr($userType, -6, 1) == '1' || substr($userType, -5, 1) == '1';
+
+        $tOrg = $tOrganizationStaff->getOrganizationStaffFromOrgId($result['org_id'], $canShowQualification); //userIDに紐づいた団体を取得するように修正する必要がある 二村さん残件対応箇所
         for ($i = 0; $i < count($tOrg); $i++) {
             $staff_type_id = array();
             if ($tOrg[$i]->is_director == 1) {
