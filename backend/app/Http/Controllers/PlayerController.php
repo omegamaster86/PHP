@@ -13,6 +13,7 @@ use App\Models\T_players;
 use App\Models\T_raceResultRecord;
 use App\Models\T_users;
 use App\Models\T_organization_players;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class PlayerController extends Controller
 {
@@ -247,11 +248,18 @@ class PlayerController extends Controller
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
     public function getPlayerInfoData(Request $request, T_players $tPlayersData)
     {
-        Log::debug(sprintf("getPlayerInfoData start"));
-        $reqData = $request->all();
-        $result = $tPlayersData->getPlayerData($reqData['playerId']);
-        Log::debug(sprintf("getPlayerInfoData end"));
-        return response()->json(['result' => $result]); //DBの結果を返す
+        try {
+            Log::debug(sprintf("getPlayerInfoData start"));
+            $reqData = $request->all();
+            $result = $tPlayersData->getPlayerData($reqData['playerId']);
+            if (empty($result)) {
+                abort(404, '選手情報が存在しません。');
+            }
+            Log::debug(sprintf("getPlayerInfoData end"));
+            return response()->json(['result' => $result]); //DBの結果を返す
+        } catch (HttpException $e) {
+            throw $e;
+        }
     }
 
     // 選手のフォロー状態・フォロワー数を取得する。
