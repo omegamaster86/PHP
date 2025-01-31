@@ -668,6 +668,8 @@ class T_raceResultRecord extends Model
                             from `t_race_result_record` rrr
                             left join `m_seat_number` msn
                             on rrr.seat_number = msn.seat_id
+                            INNER JOIN `t_players`
+                            on rrr.player_id = `t_players`.player_id and `t_players`.`delete_flag` = 0
                             where 1=1
                             and rrr.`delete_flag` = 0
                             and msn.`delete_flag` = 0
