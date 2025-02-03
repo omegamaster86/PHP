@@ -1,36 +1,32 @@
 // 機能名: 選手情報参照画面・選手情報削除画面
 'use client';
 
-// Reactおよび関連モジュールのインポート
-import React, { useState, useEffect, ChangeEvent, useRef, MouseEvent } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import axios from '@/app/lib/axios';
-// コンポーネントのインポート
 import {
   CustomButton,
   CustomTable,
-  CustomThead,
   CustomTbody,
-  CustomTr,
-  CustomTh,
   CustomTd,
-  Tab,
-  Label,
+  CustomTh,
+  CustomThead,
   CustomTitle,
+  CustomTr,
   ErrorBox,
+  Label,
+  Tab,
 } from '@/app/components';
-import { RoundedBadge } from '@/app/components/RoundedBadge';
-import Link from 'next/link';
-import AddIcon from '@mui/icons-material/Add';
-import { RaceResultRecordsResponse, PlayerInformationResponse } from '@/app/types';
-import { NO_IMAGE_URL, PLAYER_IMAGE_URL } from '@/app/utils/imageUrl';
-
-import { Autocomplete, Chip, TextField } from '@mui/material';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import FollowButton from '@/app/components/FollowButton';
-import RowingIcon from '@mui/icons-material/Rowing';
-import { useAuth } from '@/app/hooks/auth';
 import { CustomPlayerAvatar } from '@/app/components/CustomPlayerAvatar';
+import FollowButton from '@/app/components/FollowButton';
+import { RoundedBadge } from '@/app/components/RoundedBadge';
+import { useAuth } from '@/app/hooks/auth';
+import axios from '@/app/lib/axios';
+import { PlayerInformationResponse, RaceResultRecordsResponse } from '@/app/types';
+import AddIcon from '@mui/icons-material/Add';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import RowingIcon from '@mui/icons-material/Rowing';
+import { Autocomplete, Chip, TextField } from '@mui/material';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 
 //種目フィルター用
 interface EventNameList {
@@ -1627,35 +1623,35 @@ export default function PlayerInformationRef() {
             {/* テーブルボディー */}
             <CustomTbody>
               {raceResultRecordsData
-                .filter((row, index) => {
+                .filter((row) => {
                   if (selectedEventNameList.length > 0) {
                     return selectedEventNameList.some((item) => item.name === row.event_name);
                   } else {
                     return true;
                   }
                 })
-                .filter((row, index) => {
+                .filter((row) => {
                   if (selectedRaceNameList.length > 0) {
                     return selectedRaceNameList.some((item) => item.name === row.race_name);
                   } else {
                     return true;
                   }
                 })
-                .filter((row, index) => {
+                .filter((row) => {
                   if (selectedByGroupList.length > 0) {
                     return selectedByGroupList.some((item) => item.name === row.by_group);
                   } else {
                     return true;
                   }
                 })
-                .filter((row, index) => {
+                .filter((row) => {
                   if (selectedCrewNameList.length > 0) {
                     return selectedCrewNameList.some((item) => item.name === row.crew_name);
                   } else {
                     return true;
                   }
                 })
-                .filter((row, index) => {
+                .filter((row) => {
                   if (selectedRankList.length > 0) {
                     return selectedRankList.some((item) => item.name === row.rank);
                   } else {
@@ -1774,11 +1770,11 @@ export default function PlayerInformationRef() {
                     {/* 2000m地点風速 */}
                     <CustomTd>{row.wind_speed_2000m_point}</CustomTd>
                     {/* 2000m地点風向 */}
-                    <CustomTd>{row.wind_direction_2000m_point}</CustomTd>
+                    <CustomTd>{row.twentyHundredmWindDirectionName}</CustomTd>
                     {/* 1000m地点風速 */}
                     <CustomTd>{row.wind_speed_1000m_point}</CustomTd>
                     {/* 1000m地点風向 */}
-                    <CustomTd>{row.wind_direction_1000m_point}</CustomTd>
+                    <CustomTd>{row.tenHundredmWindDirectionName}</CustomTd>
                   </CustomTr>
                 ))}
             </CustomTbody>
