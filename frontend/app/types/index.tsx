@@ -79,12 +79,12 @@ interface RaceResultRecordsResponse {
   race_result_record_name: string; // 出漕結果記録名
   registered_time: string; // 登録日時
   start_datetime: string; // 発艇日時
-  wind_speed_2000m_point: number; // 2000m地点風速
-  wind_direction_2000m_point: number; // 2000m地点風向
-  twentyHundredmWindDirectionName: string; // 2000m地点風向
-  wind_speed_1000m_point: number; // 1000m地点風速
-  wind_direction_1000m_point: number; // 1000m地点風向
-  tenHundredmWindDirectionName: string; // 1000m地点風向
+  wind_speed_2000m_point: number | null; // 2000m地点風速
+  wind_direction_2000m_point: number | null; // 2000m地点風向ID
+  twentyHundredmWindDirectionName: string | null; // 2000m地点風向名
+  wind_speed_1000m_point: number | null; // 1000m地点風速
+  wind_direction_1000m_point: number | null; // 1000m地点風向ID
+  tenHundredmWindDirectionName: string | null; // 1000m地点風向名
   venue_name: string; // 開催場所
   range: number; // 距離
   order: number; // 順番
