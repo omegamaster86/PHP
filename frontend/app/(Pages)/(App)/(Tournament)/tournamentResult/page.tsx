@@ -121,7 +121,7 @@ export default function TournamentResult() {
    * @param name
    * @param value
    */
-  const handleRaceResultRecordInputChange = (name: string, value: string) => {
+  const handleRaceResultRecordInputChange = (name: string, value: string | null) => {
     setRaceResultRecordResponse((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -993,9 +993,10 @@ export default function TournamentResult() {
         });
         setSheetNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする
 
-        setRaceResultRecordResponse(race);
         // 出漕結果記録情報の取得
         const recordResults = raceResponse.data.record_result;
+
+        setRaceResultRecordResponse(recordResults[0]);
 
         // 10件以上は表示できないため、エラーメッセージを表示する
         if (recordResults.length > 10) {
@@ -1320,7 +1321,7 @@ export default function TournamentResult() {
               <CustomDropdown
                 value={
                   mode === 'confirm'
-                    ? raceResultRecordResponse?.weatherName
+                    ? raceResultRecordResponse?.weatherName || '-'
                     : raceResultRecordResponse?.weatherId?.toString() || ''
                 }
                 options={weatherOptions.map((item) => ({
@@ -1329,11 +1330,11 @@ export default function TournamentResult() {
                 }))}
                 className='w-[200px]'
                 id='weather'
-                onChange={(e) => {
-                  handleRaceResultRecordInputChange('weatherId', e);
+                onChange={(value) => {
+                  handleRaceResultRecordInputChange('weatherId', value === '' ? null : value);
                   handleRaceResultRecordInputChange(
                     'weatherName',
-                    weatherOptions.find((item) => item.id === Number(e))?.name || '',
+                    weatherOptions.find((item) => item.id === Number(value))?.name || '',
                   );
                 }}
                 readonly={mode === 'confirm'}
@@ -1347,7 +1348,7 @@ export default function TournamentResult() {
                 id='1000mWindDirection'
                 value={
                   mode === 'confirm'
-                    ? raceResultRecordResponse?.tenHundredmWindDirectionName || ''
+                    ? raceResultRecordResponse?.tenHundredmWindDirectionName || '-'
                     : raceResultRecordResponse?.wind_direction_1000m_point?.toString() || ''
                 }
                 options={windDirectionOptions.map((item) => ({
@@ -1355,11 +1356,14 @@ export default function TournamentResult() {
                   value: item.name,
                 }))}
                 className='w-[200px]'
-                onChange={(e) => {
-                  handleRaceResultRecordInputChange('wind_direction_1000m_point', e);
+                onChange={(value) => {
+                  handleRaceResultRecordInputChange(
+                    'wind_direction_1000m_point',
+                    value === '' ? null : value,
+                  );
                   handleRaceResultRecordInputChange(
                     'tenHundredmWindDirectionName',
-                    windDirectionOptions.find((item) => item.id === Number(e))?.name || '',
+                    windDirectionOptions.find((item) => item.id === Number(value))?.name || '',
                   );
                 }}
                 readonly={mode === 'confirm'}
@@ -1371,9 +1375,16 @@ export default function TournamentResult() {
               value={raceResultRecordResponse?.wind_speed_1000m_point?.toString() || ''}
               displayHelp={false}
               type='number'
-              inputAdorment='m/秒'
+              inputAdorment={
+                mode === 'confirm' && raceResultRecordResponse?.wind_speed_1000m_point === null
+                  ? '-'
+                  : 'm/秒'
+              }
               onChange={(e) => {
-                handleRaceResultRecordInputChange('wind_speed_1000m_point', e.target.value);
+                handleRaceResultRecordInputChange(
+                  'wind_speed_1000m_point',
+                  e.target.value === '' ? null : e.target.value,
+                );
               }}
               readonly={mode === 'confirm'}
               isError={windSpeed1000mPointErrorText !== ''}
@@ -1387,7 +1398,7 @@ export default function TournamentResult() {
                 id='2000mWindDirection'
                 value={
                   mode === 'confirm'
-                    ? raceResultRecordResponse?.twentyHundredmWindDirectionName || ''
+                    ? raceResultRecordResponse?.twentyHundredmWindDirectionName || '-'
                     : raceResultRecordResponse?.wind_direction_2000m_point?.toString() || ''
                 }
                 options={windDirectionOptions.map((item) => ({
@@ -1395,11 +1406,14 @@ export default function TournamentResult() {
                   value: item.name,
                 }))}
                 className='w-[200px]'
-                onChange={(e) => {
-                  handleRaceResultRecordInputChange('wind_direction_2000m_point', e);
+                onChange={(value) => {
+                  handleRaceResultRecordInputChange(
+                    'wind_direction_2000m_point',
+                    value === '' ? null : value,
+                  );
                   handleRaceResultRecordInputChange(
                     'twentyHundredmWindDirectionName',
-                    windDirectionOptions.find((item) => item.id === Number(e))?.name || '',
+                    windDirectionOptions.find((item) => item.id === Number(value))?.name || '',
                   );
                 }}
                 readonly={mode === 'confirm'}
@@ -1410,9 +1424,16 @@ export default function TournamentResult() {
               value={raceResultRecordResponse?.wind_speed_2000m_point?.toString() || ''}
               displayHelp={false}
               type='number'
-              inputAdorment='m/秒'
+              inputAdorment={
+                mode === 'confirm' && raceResultRecordResponse?.wind_speed_2000m_point === null
+                  ? '-'
+                  : 'm/秒'
+              }
               onChange={(e) => {
-                handleRaceResultRecordInputChange('wind_speed_2000m_point', e.target.value);
+                handleRaceResultRecordInputChange(
+                  'wind_speed_2000m_point',
+                  e.target.value === '' ? null : e.target.value,
+                );
               }}
               readonly={mode === 'confirm'}
               isError={windSpeed2000mPointErrorText !== ''}
