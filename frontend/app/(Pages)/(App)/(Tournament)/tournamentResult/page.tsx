@@ -1,32 +1,31 @@
 // レース結果管理画面
 'use client';
-// ライブラリのインポート
-import React, { useState, useEffect, ChangeEvent } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import AddIcon from '@mui/icons-material/Add';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
-// 共通コンポーネントのインポート
+
 import {
-  CustomTitle,
   CustomButton,
-  ErrorBox,
-  Label,
-  CustomTextField,
   CustomDatePicker,
   CustomDropdown,
   CustomTable,
-  CustomThead,
-  InputLabel,
-  CustomTr,
-  CustomTd,
-  CustomTh,
   CustomTbody,
+  CustomTd,
+  CustomTextField,
+  CustomTh,
+  CustomThead,
+  CustomTitle,
+  CustomTr,
+  ErrorBox,
+  InputLabel,
+  Label,
   OriginalCheckbox,
 } from '@/app/components';
-import { RaceTable, RaceResultRecordsResponse, MasterResponse, CrewPlayer } from '@/app/types';
 import axios from '@/app/lib/axios';
+import { CrewPlayer, MasterResponse, RaceResultRecordsResponse, RaceTable } from '@/app/types';
 import Validator from '@/app/utils/validator';
+import AddIcon from '@mui/icons-material/Add';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 interface UpdatedRaceResultRecordsResponse extends RaceResultRecordsResponse {
   isAdded: boolean;
@@ -48,11 +47,8 @@ const initialRaceInfo = {
 
 // レース結果管理画面のメインコンポーネント
 export default function TournamentResult() {
-  // フック
   const router = useRouter();
 
-  // ステート変数
-  //エラーメッセージの設定
   const [errorText, setErrorText] = useState([] as string[]);
   const [raceIdErrorText, setRaceIdErrorText] = useState(''); //レースID
   const [raceNameErrorText, setRaceNameErrorText] = useState(''); //レース名
@@ -1206,7 +1202,7 @@ export default function TournamentResult() {
                           setRaceInfo(data[0]);
                         }
                       }}
-                      renderOption={(props: any, option: MasterResponse) => {
+                      renderOption={(props, option) => {
                         return (
                           <li {...props} key={option.id}>
                             {option.name}
@@ -1230,7 +1226,7 @@ export default function TournamentResult() {
                     value={raceInfo?.race_name || ''}
                     readonly
                     displayHelp={false}
-                  ></CustomTextField>
+                  />
                 )}
               </div>
 
@@ -1311,7 +1307,7 @@ export default function TournamentResult() {
                   }
                   displayHelp={false}
                   readonly
-                ></CustomTextField>
+                />
               )}
             </div>
             {mode !== 'confirm' && (
@@ -1351,7 +1347,7 @@ export default function TournamentResult() {
                 id='1000mWindDirection'
                 value={
                   mode === 'confirm'
-                    ? raceResultRecordResponse?.tenHundredmWindDirectionName
+                    ? raceResultRecordResponse?.tenHundredmWindDirectionName || ''
                     : raceResultRecordResponse?.wind_direction_1000m_point?.toString() || ''
                 }
                 options={windDirectionOptions.map((item) => ({
@@ -1367,7 +1363,7 @@ export default function TournamentResult() {
                   );
                 }}
                 readonly={mode === 'confirm'}
-              ></CustomDropdown>
+              />
             </div>
             {/* 単位はm/秒 */}
             <CustomTextField
@@ -1391,7 +1387,7 @@ export default function TournamentResult() {
                 id='2000mWindDirection'
                 value={
                   mode === 'confirm'
-                    ? raceResultRecordResponse?.twentyHundredmWindDirectionName
+                    ? raceResultRecordResponse?.twentyHundredmWindDirectionName || ''
                     : raceResultRecordResponse?.wind_direction_2000m_point?.toString() || ''
                 }
                 options={windDirectionOptions.map((item) => ({
@@ -1407,7 +1403,7 @@ export default function TournamentResult() {
                   );
                 }}
                 readonly={mode === 'confirm'}
-              ></CustomDropdown>
+              />
             </div>
             <CustomTextField
               label='2000m地点風速'
@@ -1699,7 +1695,7 @@ export default function TournamentResult() {
                                 newValue || '',
                               );
                             }}
-                            renderOption={(props: any, option: MasterResponse) => {
+                            renderOption={(props, option) => {
                               return (
                                 <li {...props} key={option.id}>
                                   {option.name}
@@ -2170,7 +2166,7 @@ export default function TournamentResult() {
           </div>
         </div>
       ))}
-      <div className='flex flex-row justify-between gap-[80px] mt-[20px]'>
+      <div className='flex flex-row justify-center gap-[80px] mt-[20px]'>
         <CustomButton
           buttonType='secondary'
           onClick={() => {
@@ -2307,7 +2303,6 @@ export default function TournamentResult() {
         >
           {prevMode === 'create' ? '登録' : prevMode === 'update' ? '更新' : '確認'}
         </CustomButton>
-        <div className='w-[170px]'></div>
       </div>
     </>
   );
