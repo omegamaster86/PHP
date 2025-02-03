@@ -61,7 +61,7 @@ const CustomDropdown = <T = string,>(props: CustomDropdownProps<T>) => {
         />
       )}
       <div className={className}>
-        {readonly && <p className='h-12  text-secondaryText py-3 disable'>{readOnlyValue}</p>}
+        {readonly && <p className='text-secondaryText disable'>{readOnlyValue}</p>}
         {!readonly && (
           <Select<T>
             id={id}
