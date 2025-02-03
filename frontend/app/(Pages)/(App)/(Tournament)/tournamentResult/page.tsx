@@ -1105,7 +1105,7 @@ export default function TournamentResult() {
   }, [raceInfo.race_id]);
 
   if (raceInfo.race_id === '') {
-    return <ErrorBox errorText={errorText?.length > 0 ? errorText : []} />;
+    return <ErrorBox errorText={errorText} />;
   }
 
   return (
@@ -1113,7 +1113,7 @@ export default function TournamentResult() {
       <CustomTitle>
         レース結果{mode === 'create' ? '登録' : mode === 'update' ? '更新' : '入力確認'}
       </CustomTitle>
-      <ErrorBox errorText={errorText?.length > 0 ? errorText : []} />
+      <ErrorBox errorText={errorText} />
       {/* レース基本情報 */}
       <div className='flex flex-col gap-[20px] border p-[20px]'>
         <Label label='レース基本情報' />

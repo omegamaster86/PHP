@@ -52,9 +52,6 @@ export default function TournamentRef() {
   // フック
   const router = useRouter();
 
-  // ページ全体のエラーハンドリング用のステート
-  let isError = false;
-
   // クエリパラメータを取得する
   const searchParams = useSearchParams();
   // modeの値を取得
@@ -66,15 +63,9 @@ export default function TournamentRef() {
       break;
   }
 
-  const tournId = searchParams.get('tournId')?.toString() || '';
+  const tournId = searchParams.get('tournId')?.toString();
   // tournIdの値を取得
-  switch (tournId) {
-    case '':
-      isError = true;
-      break;
-    default:
-      break;
-  }
+  if (typeof tournId === 'undefined') return null;
 
   // フォームデータを管理する状態
   const [tableData, setTableData] = useState<Race[]>([]);
@@ -297,7 +288,7 @@ export default function TournamentRef() {
   const [orgManagerFlag, setOrgManagerFlag] = useState(0);
 
   // エラーハンドリング用のステート
-  const [error, setError] = useState({ isError: false, errorMessage: '' });
+  const [errors, setErrors] = useState<string[]>([]);
 
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
 
@@ -306,67 +297,71 @@ export default function TournamentRef() {
     // StrictModeの制約回避のため、APIの呼び出し実績の有無をuseEffectの中に記述
     if (!isApiFetched.current) {
       const fetchData = async () => {
-        const tournamentResponse = await axios.post('api/getTournamentInfoData', {
-          tourn_id: tournId,
-        }); //大会IDを元に大会情報を取得する
-        tournamentResponse.data.result.tourn_url = tournamentResponse.data.result.tourn_url ?? ''; //nullのパラメータを空のパラメータに置き換える
-        setTournamentFormData(tournamentResponse.data.result);
+        try {
+          const tournamentResponse = await axios.post('api/getTournamentInfoData', {
+            tourn_id: tournId,
+          }); //大会IDを元に大会情報を取得する
+          tournamentResponse.data.result.tourn_url = tournamentResponse.data.result.tourn_url ?? ''; //nullのパラメータを空のパラメータに置き換える
+          setTournamentFormData(tournamentResponse.data.result);
 
-        // TODO: tournIdを元にレース情報を取得する処理の置き換え
-        const raceResponse = await axios.post('api/getRaceData', {
-          tourn_id: tournId,
-        });
-        raceResponse.data.result.map((data: any) => {
-          setTableData((prevData) => [...prevData, { ...data }]);
-        });
+          // TODO: tournIdを元にレース情報を取得する処理の置き換え
+          const raceResponse = await axios.post('api/getRaceData', {
+            tourn_id: tournId,
+          });
+          raceResponse.data.result.map((data: any) => {
+            setTableData((prevData) => [...prevData, { ...data }]);
+          });
 
-        const playerInf = await axios.get('api/getIDsAssociatedWithUser');
-        setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
+          const playerInf = await axios.get('api/getIDsAssociatedWithUser');
+          setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
 
-        const sendData = {
-          userInfo: playerInf.data.result[0],
-          tournInfo: tournamentResponse.data.result,
-        };
-        const resData = await axios.post('api/checkOrgManager', sendData); //大会情報参照画面 主催団体管理者の判別 20240402
-        setOrgManagerFlag(resData.data.result);
+          const sendData = {
+            userInfo: playerInf.data.result[0],
+            tournInfo: tournamentResponse.data.result,
+          };
+          const resData = await axios.post('api/checkOrgManager', sendData); //大会情報参照画面 主催団体管理者の判別 20240402
+          setOrgManagerFlag(resData.data.result);
 
-        //種目をフィルターできるようにする 20240509
-        const eventNameArray = raceResponse.data.result.map((item: any) => item.event_name);
-        const uniqueEventNameSet = new Set(eventNameArray);
-        const uniqueEventNameArray = Array.from(uniqueEventNameSet);
-        setEventNameList(
-          uniqueEventNameArray.map((item: any, index: any) => ({
-            id: index,
-            name: item,
-          })),
-        );
-        //組別をフィルターできるようにする 20240509
-        const byGroupsArray = raceResponse.data.result.map((item: any) => item.by_group);
-        const uniqueByGroupsSet = new Set(byGroupsArray);
-        const uniqueByGroupsArray = Array.from(uniqueByGroupsSet);
-        setByGroupList(
-          uniqueByGroupsArray.map((item: any, index: any) => ({
-            id: index,
-            name: item,
-          })),
-        );
-        //距離をフィルターできるようにする 20240509
-        const rangeArray = raceResponse.data.result.map((item: any) => item.range);
-        const uniqueRangeSet = new Set(rangeArray);
-        const uniqueRangeArray = Array.from(uniqueRangeSet);
-        setRangeList(
-          uniqueRangeArray.map((item: any, index: any) => ({
-            id: index,
-            name: item,
-          })),
-        );
-        const followStatus = await axios.get('api/getTournamentFollowStatus', {
-          params: { tourn_id: tournId },
-        });
-        setFollowStatus({
-          isFollowed: followStatus.data.result.isFollowed,
-          followerCount: followStatus.data.result.followerCount,
-        });
+          //種目をフィルターできるようにする 20240509
+          const eventNameArray = raceResponse.data.result.map((item: any) => item.event_name);
+          const uniqueEventNameSet = new Set(eventNameArray);
+          const uniqueEventNameArray = Array.from(uniqueEventNameSet);
+          setEventNameList(
+            uniqueEventNameArray.map((item: any, index: any) => ({
+              id: index,
+              name: item,
+            })),
+          );
+          //組別をフィルターできるようにする 20240509
+          const byGroupsArray = raceResponse.data.result.map((item: any) => item.by_group);
+          const uniqueByGroupsSet = new Set(byGroupsArray);
+          const uniqueByGroupsArray = Array.from(uniqueByGroupsSet);
+          setByGroupList(
+            uniqueByGroupsArray.map((item: any, index: any) => ({
+              id: index,
+              name: item,
+            })),
+          );
+          //距離をフィルターできるようにする 20240509
+          const rangeArray = raceResponse.data.result.map((item: any) => item.range);
+          const uniqueRangeSet = new Set(rangeArray);
+          const uniqueRangeArray = Array.from(uniqueRangeSet);
+          setRangeList(
+            uniqueRangeArray.map((item: any, index: any) => ({
+              id: index,
+              name: item,
+            })),
+          );
+          const followStatus = await axios.get('api/getTournamentFollowStatus', {
+            params: { tourn_id: tournId },
+          });
+          setFollowStatus({
+            isFollowed: followStatus.data.result.isFollowed,
+            followerCount: followStatus.data.result.followerCount,
+          });
+        } catch (error: any) {
+          setErrors([error.response?.data?.message]);
+        }
       };
       fetchData();
       isApiFetched.current = true;
@@ -423,12 +418,13 @@ export default function TournamentRef() {
   };
 
   // エラーがある場合はエラーメッセージを表示
-  if (isError) {
-    return <div>404エラー</div>;
+  if (tournamentFormData.tourn_id === '') {
+    return <ErrorBox errorText={errors} />;
   }
+
   return (
     <>
-      <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
+      <ErrorBox errorText={errors} />
       <div className='flex flex-row justify-between items-center '>
         {/* 画面名 */}
         <CustomTitle displayBack>{mode === 'delete' ? '大会情報削除' : '大会情報'}</CustomTitle>
@@ -943,11 +939,9 @@ export default function TournamentRef() {
                     })
                     .catch((error) => {
                       // TODO: エラーハンドリングの実装の置き換え
-                      setError({
-                        isError: true,
-                        errorMessage:
-                          '大会情報の削除に失敗しました。ユーザーサポートにお問い合わせください。',
-                      });
+                      setErrors([
+                        '大会情報の削除に失敗しました。ユーザーサポートにお問い合わせください。',
+                      ]);
                       window.scrollTo(0, 0);
                       return;
                     });
