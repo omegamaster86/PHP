@@ -1054,7 +1054,6 @@ export default function PlayerInformationRef() {
     '1500mlap心拍数/分',
     '2000mlap心拍数/分',
     '立ち合い有無',
-    'エルゴ体重',
     '選手身長（出漕時点）',
     '選手体重（出漕時点）',
     'シート番号（出漕時点）',
@@ -1585,7 +1584,6 @@ export default function PlayerInformationRef() {
                         </div>
                       </div>
                     )}
-                    {header === 'エルゴ体重' && header}
                     {header === '選手身長（出漕時点）' && header}
                     {header === '選手体重（出漕時点）' && header}
                     {header === 'シート番号（出漕時点）' && (
@@ -1755,8 +1753,6 @@ export default function PlayerInformationRef() {
                     <CustomTd>
                       {row.attendance === 0 ? '無' : row.attendance === 1 ? '有' : ''}
                     </CustomTd>
-                    {/* エルゴ体重 */}
-                    <CustomTd>{row.ergo_weight}</CustomTd>
                     {/* 選手身長（出漕時点） */}
                     <CustomTd>{row.player_height}</CustomTd>
                     {/* 選手体重（出漕時点） */}

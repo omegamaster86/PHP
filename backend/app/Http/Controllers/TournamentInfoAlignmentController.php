@@ -713,11 +713,6 @@ class TournamentInfoAlignmentController extends Controller
                     $errorMessage = "立ち合い有無は0または1で入力してください。";
                     $this->checkZeroOrOne($target_row['attendance'], $checkResult, $target_row['attendanceError'], $errorMessage);
                 }
-                // エルゴ体重
-                if (isset($target_row['ergoWeight'])) {
-                    $errorMessage = "エルゴ体重は整数部3桁以内、小数部2桁以内の数値で入力してください。";
-                    $this->checkDecimal($target_row['ergoWeight'], "3.2", $checkResult, $target_row['ergoWeightError'], $errorMessage);
-                }
                 // 選手身長
                 if (isset($target_row['playerHeight'])) {
                     $errorMessage = "選手身長は整数部3桁以内、小数部2桁以内の数値で入力してください。";
@@ -1190,7 +1185,6 @@ class TournamentInfoAlignmentController extends Controller
                         $race_result_array['heart_rate_2000m'] = $target_row['twentyHundredmHeartRate'];                    //2000m心拍数                        
                         $race_result_array['official'] = $is_official;                                                     //公式／非公式                        
                         $race_result_array['attendance'] = $target_row['attendance'];                                       //立会有無
-                        $race_result_array['ergo_weight'] = $target_row['ergoWeight'];                                      //エルゴ体重
                         $race_result_array['player_height'] = $race_data[0]->{'height'};                                      //選手身長
                         $race_result_array['player_weight'] = $race_data[0]->{'weight'};                                      //選手体重
                         $race_result_array['seat_number'] = $target_row['mSheetNumber'];                                    //シート番号ID
@@ -1317,7 +1311,6 @@ class TournamentInfoAlignmentController extends Controller
                         $race_result_array['heart_rate_2000m'] = $target_row['twentyHundredmHeartRate'];                        //2000m心拍数
                         $race_result_array['official'] = isset($target_row['official']) ? $target_row['official'] : $is_target_tournament_official; //公式・非公式
                         $race_result_array['attendance'] = $target_row['attendance'];                                           //立会有無
-                        $race_result_array['ergo_weight'] = $target_row['ergoWeight'];                                          //エルゴ体重
                         $race_result_array['seat_number'] = $target_row['mSheetNumber'];                                        //シート番号ID
                         $race_result_array['seat_name'] = $target_row['sheetName'];                                             //シート番号
                         $race_result_array['race_result_record_name'] = $target_row['raceResultRecordName'];                    //出漕結果記録名

@@ -79,8 +79,6 @@ interface CsvData {
   officialError: string | false; // 公式/非公式エラーの有無
   attendance: string; // 立ち合い有無
   attendanceError: string | false; // 立ち合い有無エラーの有無
-  ergoWeight: string; // エルゴ重量
-  ergoWeightError: string | false; // エルゴ重量エラーの有無
   playerHeight: string; // 選手身長
   playerHeightError: string | false; // 選手身長エラーの有無
   playerWeight: string; // 選手体重

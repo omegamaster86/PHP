@@ -74,7 +74,6 @@ const CsvTable = ({
       row.twentyHundredmHeartRateError,
       row.officialError,
       row.attendanceError,
-      row.ergoWeightError,
       row.playerHeightError,
       row.playerWeightError,
       row.mSheetNumberError,
@@ -305,9 +304,6 @@ const CsvTable = ({
                 </CustomTd>
                 <CustomTd textType={textType} className={checkError(row.attendanceError)}>
                   {row.attendance}
-                </CustomTd>
-                <CustomTd textType={textType} className={checkError(row.ergoWeightError)}>
-                  {row.ergoWeight}
                 </CustomTd>
                 <CustomTd textType={textType} className={checkError(row.playerHeightError)}>
                   {row.playerHeight}

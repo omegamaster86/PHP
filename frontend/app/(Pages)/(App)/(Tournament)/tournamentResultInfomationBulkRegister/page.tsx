@@ -247,7 +247,6 @@ export default function TournamentResultInfomationBulkRegister() {
       { label: '2000m心拍数', key: 'twentyHundredmHeartRate' },
       { label: '公式／非公式', key: 'official' },
       { label: '立ち合い有無', key: 'attendance' },
-      { label: 'エルゴ体重', key: 'ergoWeight' },
       { label: '選手身長', key: 'playerHeight' },
       { label: '選手体重', key: 'playerWeight' },
       { label: 'シート番号ID', key: 'mSheetNumber' },
@@ -472,8 +471,6 @@ export default function TournamentResultInfomationBulkRegister() {
         officialError: true,
         attendance: '-',
         attendanceError: true,
-        ergoWeight: '-',
-        ergoWeightError: true,
         playerHeight: '-',
         playerHeightError: true,
         playerWeight: '-',
@@ -580,31 +577,29 @@ export default function TournamentResultInfomationBulkRegister() {
         officialError: false,
         attendance: row[37],
         attendanceError: false,
-        ergoWeight: row[38],
-        ergoWeightError: false,
-        playerHeight: row[39],
+        playerHeight: row[38],
         playerHeightError: false,
-        playerWeight: row[40],
+        playerWeight: row[39],
         playerWeightError: false,
-        mSheetNumber: row[41],
+        mSheetNumber: row[40],
         mSheetNumberError: false,
-        sheetName: row[42],
+        sheetName: row[41],
         sheetNameError: false,
-        raceResultRecordName: row[43],
+        raceResultRecordName: row[42],
         raceResultRecordNameError: false,
-        startDatetime: row[44],
+        startDatetime: row[43],
         startDatetimeError: false,
-        weather: row[45],
+        weather: row[44],
         weatherError: false,
-        windSpeedTwentyHundredmPoint: row[46],
+        windSpeedTwentyHundredmPoint: row[45],
         windSpeedTwentyHundredmPointError: false,
-        windDirectionTwentyHundredmPoint: row[47],
+        windDirectionTwentyHundredmPoint: row[46],
         windDirectionTwentyHundredmPointError: false,
-        windSpeedTenHundredmPoint: row[48],
+        windSpeedTenHundredmPoint: row[47],
         windSpeedTenHundredmPointError: false,
-        windDirectionTenHundredmPoint: row[49],
+        windDirectionTenHundredmPoint: row[48],
         windDirectionTenHundredmPointError: false,
-        remark: row[50],
+        remark: row[49],
         remarkError: false,
       };
     }
@@ -832,7 +827,7 @@ export default function TournamentResultInfomationBulkRegister() {
                 onClick={() => {
                   setActivationFlg(true);
                   const specifiedHeader =
-                    '大会ID,エントリー大会ID,大会名,選手ID,JARA選手コード,選手名,レースID,エントリーレースID,レースNo,レース名,レース区分ID,レース区分名,団体ID,エントリー団体コード,団体名,クルー名,組別,種目ID,種目名,距離,順位,500mlapタイム,1000mlapタイム,1500mlapタイム,2000mlapタイム,最終タイム,ストロークレート（平均）,500mストロークレート,1000mストロークレート,1500mストロークレート,2000mストロークレート,心拍数（平均）,500m心拍数,1000m心拍数,1500m心拍数,2000m心拍数,公式／非公式,立ち合い有無,エルゴ体重,選手身長,選手体重,シート番号ID,シート番号,出漕結果記録名,発艇日時,天候,2000m地点風速,2000m地点風向,1000m地点風速,1000m地点風向,備考'; // 指定のヘッダー文字列
+                    '大会ID,エントリー大会ID,大会名,選手ID,JARA選手コード,選手名,レースID,エントリーレースID,レースNo,レース名,レース区分ID,レース区分名,団体ID,エントリー団体コード,団体名,クルー名,組別,種目ID,種目名,距離,順位,500mlapタイム,1000mlapタイム,1500mlapタイム,2000mlapタイム,最終タイム,ストロークレート（平均）,500mストロークレート,1000mストロークレート,1500mストロークレート,2000mストロークレート,心拍数（平均）,500m心拍数,1000m心拍数,1500m心拍数,2000m心拍数,公式／非公式,立ち合い有無,選手身長,選手体重,シート番号ID,シート番号,出漕結果記録名,発艇日時,天候,2000m地点風速,2000m地点風向,1000m地点風速,1000m地点風向,備考'; // 指定のヘッダー文字列
                   const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
                   const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
                   if (dialogDisplayFlg) {
@@ -940,7 +935,6 @@ export default function TournamentResultInfomationBulkRegister() {
               '2000m心拍数',
               '公式／非公式',
               '立ち合い有無',
-              'エルゴ体重',
               '選手身長',
               '選手体重',
               'シート番号ID',
