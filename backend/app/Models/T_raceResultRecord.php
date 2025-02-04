@@ -118,7 +118,7 @@ class T_raceResultRecord extends Model
     //選手IDに紐づいたレース結果情報を取得 20240201
     public function getRaceResultRecord_playerId($playerId)
     {
-        $racesResultRecord = DB::select('select 
+        $racesResultRecord = DB::select('SELECT 
                                         `t_race_result_record`.`race_result_record_id`, 
                                         `t_race_result_record`.`player_id`, 
                                         `t_race_result_record`.`jara_player_id`, 
@@ -136,7 +136,7 @@ class T_raceResultRecord extends Model
                                         `t_race_result_record`.`crew_name`, 
                                         `t_race_result_record`.`by_group`, 
                                         `t_race_result_record`.`event_id`, 
-                                        `t_race_result_record`.`event_name` as eventName, 
+                                        `t_race_result_record`.`event_name` AS eventName, 
                                         `t_race_result_record`.`range`, 
                                         `t_race_result_record`.`rank`, 
                                         `t_race_result_record`.`laptime_500m`, 
@@ -165,28 +165,36 @@ class T_raceResultRecord extends Model
                                         `t_race_result_record`.`start_datetime`, 
                                         `t_race_result_record`.`wind_speed_2000m_point`, 
                                         `t_race_result_record`.`wind_direction_2000m_point`, 
+                                        `mwd2000`.`wind_direction` AS `twentyHundredmWindDirectionName`,                                         
                                         `t_race_result_record`.`wind_speed_1000m_point`, 
                                         `t_race_result_record`.`wind_direction_1000m_point`, 
+                                        `mwd1000`.`wind_direction` AS `tenHundredmWindDirectionName`,
                                         `t_race_result_record`.`race_result_notes`,
-                                        `m_seat_number`.`display_order` as "order",
-                                        `t_tournaments`.`event_start_date` as "eventStartDate",
+                                        `m_seat_number`.`display_order` AS "order",
+                                        `t_tournaments`.`event_start_date` AS "eventStartDate",
                                         `m_venue`.`venue_name`,
                                         `m_events`.`event_name` 
                                         FROM `t_race_result_record` 
-                                        left join `m_seat_number`
-                                        on `t_race_result_record`.`seat_number` = `m_seat_number`.`seat_id`
-                                        left join `t_tournaments`
-                                        on `t_race_result_record`.`tourn_id` = `t_tournaments`.`tourn_id`
-                                        left join `m_venue`
-                                        on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
-                                        left join `m_events`
-                                        on `t_race_result_record`.`event_id` = `m_events`.`event_id`
-                                        where 1=1
-                                        and `t_race_result_record`.delete_flag = 0                                        
-                                        and  `t_tournaments`.`delete_flag` = 0
-                                        and  `m_seat_number`.`delete_flag` = 0
-                                        and  `m_venue`.`delete_flag` = 0
-                                        and `t_race_result_record`.player_id = ?', [$playerId]);
+                                        LEFT JOIN `m_seat_number`
+                                        ON `t_race_result_record`.`seat_number` = `m_seat_number`.`seat_id`
+                                        LEFT JOIN `t_tournaments`
+                                        ON `t_race_result_record`.`tourn_id` = `t_tournaments`.`tourn_id`
+                                        LEFT JOIN `m_venue`
+                                        ON `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
+                                        LEFT JOIN `m_events`
+                                        ON `t_race_result_record`.`event_id` = `m_events`.`event_id`
+                                        LEFT JOIN `m_wind_direction` mwd1000
+                                        ON `t_race_result_record`.`wind_direction_1000m_point` = mwd1000.`wind_direction_id`
+                                        AND `mwd1000`.`delete_flag` = 0
+                                        LEFT JOIN `m_wind_direction` mwd2000
+                                        ON `t_race_result_record`.`wind_direction_2000m_point` = mwd2000.`wind_direction_id`
+                                        AND `mwd2000`.`delete_flag` = 0
+                                        WHERE 1=1
+                                        AND `t_race_result_record`.delete_flag = 0                                        
+                                        AND  `t_tournaments`.`delete_flag` = 0
+                                        AND  `m_seat_number`.`delete_flag` = 0
+                                        AND  `m_venue`.`delete_flag` = 0
+                                        AND `t_race_result_record`.player_id = ?', [$playerId]);
         return $racesResultRecord;
     }
 
