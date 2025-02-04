@@ -53,9 +53,12 @@ type OrganizationFormData = {
   staffList: Staff[];
 };
 
-export default function OrgInfo() {
+type TeamMode = 'create' | 'update' | 'confirm';
+
+export default function Team() {
   const [formData, setFormData] = useState<OrganizationFormData['formData']>({
     org_id: '',
+    isStaff: false,
     org_name: '',
     entrysystem_org_id: '',
     orgTypeName: '',
@@ -79,17 +82,17 @@ export default function OrgInfo() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
+  const mode = (searchParams.get('mode') || 'create') as TeamMode;
+  const prevMode = searchParams.get('prevMode');
+  const source = searchParams.get('source') as 'confirm' | null;
+
   const [prefectureOptions, setPrefectureOptions] = useState<PrefResponse[]>([]);
   const [orgClassOptions, setOrgClassOptions] = useState<OrgClassResponse[]>([]);
   const [orgTypeOptions, setOrgTypeOptions] = useState<OrgTypeResponse[]>([]);
-  const mode = searchParams.get('mode');
-  const prevMode = searchParams.get('prevMode');
-  const source = searchParams.get('source') as 'confirm' | null;
-  let paramError = false;
   const [disableFlag, setDisableFlag] = useState<boolean>(false);
-  // ボタンの活性・非活性を保持するステート
-  const [displayFlg, setDisplayFlg] = useState<boolean>(true);
   const [addStaffDisplayFlg, setAddStaffDisplayFlg] = useState<boolean>(true);
+  const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
+
   const [errorMessage, setErrorMessage] = useState([] as string[]);
   const [orgNameErrorMessages, setOrgNameErrorMessages] = useState([] as string[]);
   const [foundingYearErrorMessages, setFoundingYearErrorMessages] = useState([] as string[]);
@@ -98,45 +101,28 @@ export default function OrgInfo() {
   const [tableErrorMessages, setTableErrorMessages] = useState([] as string[]);
   const [jaraOrgTypeErrorMessages, setJaraOrgTypeErrorMessages] = useState([] as string[]);
   const [prefOrgTypeErrorMessages, setPrefOrgTypeErrorMessages] = useState([] as string[]);
-  const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
-
-  // スタッフ登録のバリデーションチェック 20240307
   const [userIdErrorMessage, setUserIdErrorMessage] = useState([] as string[]);
-  const [userNameErrorMessage, setUserNameErrorMessage] = useState([] as string[]);
   const [userTypeErrorMessage, setUserTypeErrorMessage] = useState([] as string[]);
   const [staffTableErrorMessage, setStaffTableErrorMessage] = useState([] as string[]);
 
   // フォームデータを管理する状態
   const [tableData, setTableData] = useState<Staff[]>([]);
 
-  // モードのチェック
-  switch (mode) {
-    case 'create':
-      break;
-    case 'update':
-      break;
-    case 'confirm':
-      break;
-    default:
-      paramError = true;
-      break;
-  }
-
   // クエリパラメータを取得する
   const orgIdParam = searchParams.get('org_id')?.toString() || '';
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const orgId = useMemo(() => orgIdParam, []);
-  switch (orgIdParam) {
-    case '':
-      break;
-    default:
-      break;
-  }
 
   const storageKey =
     mode === 'update'
       ? getStorageKey({ pageName: 'team', type: 'update', id: orgId })
       : getStorageKey({ pageName: 'team', type: 'create' });
+
+  const canEditJaraOrgType =
+    userIdType.is_administrator == ROLE.SYSTEM_ADMIN || userIdType.is_jara == ROLE.JARA;
+  const canEditPrefOrgType =
+    userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
+    userIdType.is_pref_boat_officer == ROLE.PREFECTURE;
 
   const draftFormData = getSessionStorage<OrganizationFormData>(storageKey);
 
@@ -176,9 +162,14 @@ export default function OrgInfo() {
       prevRows.map((row) => (row.id === rowId ? { ...row, [name]: value } : row)),
     );
   };
+
   useEffect(() => {
     const setDraftToFormData = (data: OrganizationFormData) => {
-      setFormData(data.formData);
+      setFormData({
+        ...data.formData,
+        founding_year:
+          Number(data.formData.founding_year) === 0 ? null : Number(data.formData.founding_year),
+      });
       setTableData(data.staffList);
     };
 
@@ -206,9 +197,6 @@ export default function OrgInfo() {
 
     const fetchData = async () => {
       try {
-        // TODO: APIを叩いて、マスタ情報を取得する処理の置き換え
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const prefectures = await axios.get<Prefecture[]>('api/getPrefectures'); //都道府県マスターの取得 20240208
         const stateList = prefectures.data.map(({ pref_id, pref_name, pref_code_jis }) => ({
           id: pref_id,
@@ -230,13 +218,12 @@ export default function OrgInfo() {
         setOrgTypeOptions(orgTypeList);
         if (mode === 'update') {
           const sendId = { org_id: orgId };
-          const csrf = () => axios.get('/sanctum/csrf-cookie');
-          await csrf();
           const organizationDataList = await axios.post('api/getOrgData', sendId);
           setFormData((prevFormData) => ({
             ...prevFormData,
             ...{
               org_id: organizationDataList.data.result.org_id,
+              isStaff: organizationDataList.data.result.isStaff === 1,
               org_name: organizationDataList.data.result.org_name,
               entrysystem_org_id: organizationDataList.data.result.entrysystem_org_id,
               orgTypName: organizationDataList.data.result.orgTypeName,
@@ -528,8 +515,6 @@ export default function OrgInfo() {
               formData,
               staffList,
             };
-            const csrf = () => axios.get('/sanctum/csrf-cookie');
-            await csrf();
             axios
               .post('api/validateOrgData', sendData)
               .then((response) => {
@@ -574,8 +559,6 @@ export default function OrgInfo() {
               formData,
               staffList,
             };
-            const csrf = () => axios.get('/sanctum/csrf-cookie');
-            await csrf();
             axios
               .post('api/validateOrgData', sendData)
               .then((response) => {
@@ -619,8 +602,6 @@ export default function OrgInfo() {
 
           if (prevMode === 'create') {
             const storeOrgData = async () => {
-              const csrf = () => axios.get('/sanctum/csrf-cookie');
-              await csrf();
               axios
                 .post('api/storeOrgData', sendData)
                 .then((response) => {
@@ -647,8 +628,6 @@ export default function OrgInfo() {
             storeOrgData();
           } else {
             const updateOrgData = async () => {
-              const csrf = () => axios.get('/sanctum/csrf-cookie');
-              await csrf();
               axios
                 .post('api/updateOrgData', sendData)
                 .then((response) => {
@@ -695,10 +674,7 @@ export default function OrgInfo() {
     }
   };
 
-  // モードが不正の時にエラー画面を表示する
-  if (paramError) {
-    return <div>ページが見つかりません</div>;
-  }
+  const canEdit = mode === 'create' || (mode === 'update' && formData.isStaff);
 
   return (
     <>
@@ -727,7 +703,7 @@ export default function OrgInfo() {
         {/* エントリーシステムの団体ID */}
         <CustomTextField
           label='エントリーシステムの団体ID'
-          readonly={mode === 'confirm'}
+          readonly={!canEdit}
           value={formData.entrysystem_org_id}
           displayHelp={mode !== 'confirm'}
           onChange={(e) => handleInputChange('entrysystem_org_id', e.target.value)}
@@ -737,7 +713,7 @@ export default function OrgInfo() {
         {/* 団体名 */}
         <CustomTextField
           label='団体名'
-          readonly={mode === 'confirm'}
+          readonly={!canEdit}
           required={mode !== 'confirm'}
           errorMessages={orgNameErrorMessages}
           isError={orgNameErrorMessages.length > 0}
@@ -754,7 +730,7 @@ export default function OrgInfo() {
             toolTipText='団体の創立年を西暦で入力してください。' //はてなボタン用
           />
           <CustomYearPicker
-            selectedDate={formData.founding_year?.toString() ?? ''}
+            selectedDate={formData.founding_year?.toString()}
             errorMessages={foundingYearErrorMessages}
             onChange={(date: Date | null) => {
               if (date) {
@@ -764,7 +740,7 @@ export default function OrgInfo() {
                 handleInputChange('founding_year', null);
               }
             }}
-            readonly={mode === 'confirm'}
+            readonly={!canEdit}
             isError={foundingYearErrorMessages.length > 0}
             className='w-[300px]'
           />
@@ -772,13 +748,13 @@ export default function OrgInfo() {
         <div className='w-full flex flex-col justify-between gap-[8px]'>
           {/* 所在地 */}
           <InputLabel label='所在地' required={mode !== 'confirm'} displayHelp={false} />
-          {mode !== 'confirm' && (
+          {canEdit ? (
             <div className='w-full flex flex-row justify-start gap-[8px]'>
               <div className='h-[40px] self-end'>〒</div>
               {/* 郵便番号1 */}
               <CustomTextField
-                required={mode !== 'confirm'}
-                displayHelp={mode !== 'confirm'}
+                required
+                displayHelp
                 value={formData.post_code1}
                 onChange={(e) => handleInputChange('post_code1', e.target.value)}
                 isError={addressErrorMessages.length > 0}
@@ -787,7 +763,7 @@ export default function OrgInfo() {
               <div className='h-[40px] self-end'>-</div>
               {/* 郵便番号2 */}
               <CustomTextField
-                required={mode !== 'confirm'}
+                required
                 value={formData.post_code2}
                 onChange={(e) => handleInputChange('post_code2', e.target.value)}
                 isError={addressErrorMessages.length > 0}
@@ -810,15 +786,13 @@ export default function OrgInfo() {
                   } else {
                     setAddressErrorMessages([]);
                   }
-                  // TODO: 検索ボタンが押された時の処理
                   getAddress(); //外部サイトから所在地を検索 20240315
                 }}
               >
                 検索
               </CustomButton>
             </div>
-          )}
-          {mode === 'confirm' && (
+          ) : (
             <div className='w-full flex flex-row justify-start gap-[8px]'>
               <CustomTextField
                 displayHelp={false}
@@ -843,11 +817,11 @@ export default function OrgInfo() {
             }))}
             isError={addressErrorMessages.length > 0}
             value={
-              (mode !== 'confirm'
+              (canEdit
                 ? formData.location_prefecture?.toString()
                 : formData.locationPrefectureName) || ''
             }
-            readonly={mode === 'confirm'}
+            readonly={!canEdit}
             onChange={(e) => {
               handleInputChange('location_prefecture', e);
               handleInputChange(
@@ -864,7 +838,7 @@ export default function OrgInfo() {
           required={mode !== 'confirm'}
           displayHelp={false}
           value={formData.address1}
-          readonly={mode === 'confirm'}
+          readonly={!canEdit}
           isError={addressErrorMessages.length > 0}
           errorMessages={addressErrorMessages}
           onChange={(e) => handleInputChange('address1', e.target.value)}
@@ -874,7 +848,7 @@ export default function OrgInfo() {
           label='マンション・アパート'
           displayHelp={false}
           value={formData.address2}
-          readonly={mode === 'confirm'}
+          readonly={!canEdit}
           onChange={(e) => handleInputChange('address2', e.target.value)}
         />
         <div className='w-full flex flex-col justify-between gap-[8px]'>
@@ -890,11 +864,9 @@ export default function OrgInfo() {
               key: orgClass.id,
             }))}
             errorMessages={orgClassErrorMessages}
-            readonly={mode === 'confirm'}
+            readonly={!canEdit}
             isError={orgClassErrorMessages.length > 0}
-            value={
-              (mode !== 'confirm' ? formData.org_class.toString() : formData.orgClassName) || ''
-            }
+            value={(canEdit ? formData.org_class.toString() : formData.orgClassName) || ''}
             onChange={(e) => {
               handleInputChange('org_class', e);
               handleInputChange(
@@ -906,170 +878,161 @@ export default function OrgInfo() {
           />
         </div>
         {/* JARA団体種別 */}
-        {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN || userIdType.is_jara == ROLE.JARA) && (
-          <InputLabel
-            label='団体種別'
-            displayHelp={mode !== 'confirm'}
-            toolTipText='JARA
+        <InputLabel
+          label='団体種別'
+          displayHelp={mode !== 'confirm'}
+          toolTipText='JARA
           　日本ローイング協会より証跡が発行されている場合、"正規" を選択し
           　発行された証跡を入力してください。
           県ボ
           　都道府県ボート協会より証跡が発行されている場合、"正規" を選択し
           　発行された証跡を入力してください。' //はてなボタン用
+        />
+        <div className='flex gap-2'>
+          <CustomDropdown
+            id='JARA'
+            label='JARA'
+            value={
+              mode !== 'confirm' && canEditJaraOrgType
+                ? formData.jara_org_type?.toString()
+                : formData.jaraOrgTypeName
+            }
+            onChange={(e) => {
+              handleInputChange('jara_org_type', e);
+              handleInputChange(
+                'jaraOrgTypeName',
+                orgTypeOptions.find((orgType) => Number(orgType.id) == Number(e))?.name || '',
+              );
+              handleInputChange('jara_org_reg_trail', ''); //団体種別を切り替えるごとに証跡をリセットする 20240308
+            }}
+            readonly={mode === 'confirm' || !canEditJaraOrgType}
+            options={orgTypeOptions.map((orgType) => ({
+              value: orgType.name,
+              key: orgType.id,
+            }))}
+            widthClassName='w-28'
+            errorMessages={jaraOrgTypeErrorMessages}
+            isError={jaraOrgTypeErrorMessages.length > 0}
           />
-        )}
-        {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN || userIdType.is_jara == ROLE.JARA) && (
-          <div className='flex gap-2'>
-            <CustomDropdown
-              id='JARA'
-              label='JARA'
-              value={
-                mode !== 'confirm' ? formData.jara_org_type?.toString() : formData.jaraOrgTypeName
-              }
-              onChange={(e) => {
-                handleInputChange('jara_org_type', e);
-                handleInputChange(
-                  'jaraOrgTypeName',
-                  orgTypeOptions.find((orgType) => Number(orgType.id) == Number(e))?.name || '',
-                );
-                handleInputChange('jara_org_reg_trail', ''); //団体種別を切り替えるごとに証跡をリセットする 20240308
-              }}
-              readonly={mode === 'confirm'}
-              options={orgTypeOptions.map((orgType) => ({
-                value: orgType.name,
-                key: orgType.id,
-              }))}
-              widthClassName='w-28'
-              errorMessages={jaraOrgTypeErrorMessages}
-              isError={jaraOrgTypeErrorMessages.length > 0}
+          {/* JARA証跡 */}
+          {formData.jara_org_type == 1 && (
+            <CustomTextField
+              label='証跡'
+              displayHelp={false}
+              widthClassName='w-48'
+              value={formData.jara_org_reg_trail}
+              readonly={mode === 'confirm' || !canEditJaraOrgType}
+              onChange={(e) => handleInputChange('jara_org_reg_trail', e.target.value)}
             />
-            {/* JARA証跡 */}
-            {formData.jara_org_type == 1 && (
-              <CustomTextField
-                label='証跡'
-                displayHelp={false}
-                widthClassName='w-48'
-                value={formData.jara_org_reg_trail}
-                readonly={mode === 'confirm'}
-                onChange={(e) => handleInputChange('jara_org_reg_trail', e.target.value)}
-              />
-            )}
-          </div>
-        )}
-        {(userIdType.is_administrator == ROLE.SYSTEM_ADMIN ||
-          userIdType.is_pref_boat_officer == ROLE.PREFECTURE) && (
-          <div className='flex gap-2'>
-            {/* 県ボ団体種別 */}
-            <CustomDropdown
-              id='県ボ'
-              label='県ボ'
-              value={
-                mode !== 'confirm' ? formData.pref_org_type?.toString() : formData.prefOrgTypeName
-              }
-              onChange={(e) => {
-                handleInputChange('pref_org_type', e);
-                handleInputChange(
-                  'prefOrgTypeName',
-                  orgTypeOptions.find((orgType) => Number(orgType.id) == Number(e))?.name || '',
-                );
-                handleInputChange('pref_org_reg_trail', ''); //団体種別を切り替えるごとに証跡をリセットする 20240308
-              }}
-              options={orgTypeOptions.map((orgType) => ({
-                value: orgType.name,
-                key: orgType.id,
-              }))}
-              readonly={mode === 'confirm'}
-              widthClassName='w-28'
-              errorMessages={prefOrgTypeErrorMessages}
-              isError={prefOrgTypeErrorMessages.length > 0}
+          )}
+        </div>
+        <div className='flex gap-2'>
+          {/* 県ボ団体種別 */}
+          <CustomDropdown
+            id='県ボ'
+            label='県ボ'
+            value={
+              mode !== 'confirm' && canEditPrefOrgType
+                ? formData.pref_org_type?.toString()
+                : formData.prefOrgTypeName
+            }
+            onChange={(e) => {
+              handleInputChange('pref_org_type', e);
+              handleInputChange(
+                'prefOrgTypeName',
+                orgTypeOptions.find((orgType) => Number(orgType.id) == Number(e))?.name || '',
+              );
+              handleInputChange('pref_org_reg_trail', ''); //団体種別を切り替えるごとに証跡をリセットする 20240308
+            }}
+            options={orgTypeOptions.map((orgType) => ({
+              value: orgType.name,
+              key: orgType.id,
+            }))}
+            readonly={mode === 'confirm' || !canEditPrefOrgType}
+            widthClassName='w-28'
+            errorMessages={prefOrgTypeErrorMessages}
+            isError={prefOrgTypeErrorMessages.length > 0}
+          />
+          {/* 県ボ証跡 */}
+          {formData.pref_org_type == 1 && (
+            <CustomTextField
+              label='証跡'
+              widthClassName='w-48'
+              displayHelp={false}
+              readonly={mode === 'confirm' || !canEditPrefOrgType}
+              value={formData.pref_org_reg_trail}
+              onChange={(e) => handleInputChange('pref_org_reg_trail', e.target.value)}
             />
-            {/* 県ボ証跡 */}
-            {formData.pref_org_type == 1 && (
-              <CustomTextField
-                label='証跡'
-                widthClassName='w-48'
-                displayHelp={false}
-                readonly={mode === 'confirm'}
-                value={formData.pref_org_reg_trail}
-                onChange={(e) => handleInputChange('pref_org_reg_trail', e.target.value)}
-              />
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </div>
       <div className='overflow-auto'>
         <CustomTable>
           {/* 所属スタッフ一覧ヘッダー表示 */}
           <CustomThead>
             <CustomTr>
-              {mode !== 'confirm' ? (
+              {canEdit ? (
                 <>
                   {/* 全選択ボタン */}
-                  <CustomTh>
-                    {displayFlg && (
-                      <CustomButton
-                        className='w-[100px] text-small'
-                        buttonType='primary'
-                        onClick={() => {
-                          tableData.length > 0 &&
-                            setTableData((prevData) =>
-                              prevData.map((data) => ({ ...data, delete_flag: true })),
-                            );
-                        }}
-                        disabled={disableFlag}
-                      >
-                        全選択
-                      </CustomButton>
-                    )}
-                  </CustomTh>
-                  {/* 全選択解除ボタン */}
-                  <CustomTh>
-                    {displayFlg && (
-                      <CustomButton
-                        className='w-[110px] text-small'
-                        buttonType='primary'
-                        onClick={() => {
-                          tableData.length > 0 &&
-                            setTableData((prevData) =>
-                              prevData.map((data) => ({ ...data, delete_flag: false })),
-                            );
-                        }}
-                        disabled={disableFlag}
-                      >
-                        全選択解除
-                      </CustomButton>
+                  <CustomTh colSpan={canEdit ? 2 : 1}>
+                    {canEdit && (
+                      <div className='flex gap-2'>
+                        <CustomButton
+                          className='w-[100px] text-small'
+                          buttonType='primary'
+                          onClick={() => {
+                            tableData.length > 0 &&
+                              setTableData((prevData) =>
+                                prevData.map((data) => ({ ...data, delete_flag: true })),
+                              );
+                          }}
+                          disabled={disableFlag}
+                        >
+                          全選択
+                        </CustomButton>
+                        {/* 全選択解除ボタン */}
+                        <CustomButton
+                          className='w-[110px] text-small'
+                          buttonType='primary'
+                          onClick={() => {
+                            tableData.length > 0 &&
+                              setTableData((prevData) =>
+                                prevData.map((data) => ({ ...data, delete_flag: false })),
+                              );
+                          }}
+                          disabled={disableFlag}
+                        >
+                          全選択解除
+                        </CustomButton>
+                      </div>
                     )}
                   </CustomTh>
                   <CustomTh align='center' colSpan={5}>
                     スタッフ登録
                   </CustomTh>
-                  <CustomTh align='center'>{addCustomButton}</CustomTh>
+                  <CustomTh align='center'>{canEdit && addCustomButton}</CustomTh>
                 </>
-              ) : mode === 'confirm' ? (
+              ) : (
                 <CustomTh align='center' colSpan={9}>
                   スタッフ登録
                 </CustomTh>
-              ) : (
-                <></>
               )}
             </CustomTr>
             <CustomTr>
-              {mode !== 'confirm' ? (
+              {canEdit && (
                 <CustomTh rowSpan={2} align='center'>
                   削除
                 </CustomTh>
-              ) : (
-                <></>
               )}
               <CustomTh rowSpan={2} align='center'>
-                {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
+                {canEdit && <p className='text-caption2 text-systemErrorText'>必須</p>}
                 ユーザーID
               </CustomTh>
               <CustomTh rowSpan={2} align='center'>
                 ユーザー名
               </CustomTh>
               <CustomTh colSpan={5} align='center'>
-                {mode !== 'confirm' && <p className='text-caption2 text-systemErrorText'>必須</p>}
+                {canEdit && <p className='text-caption2 text-systemErrorText'>必須</p>}
                 ユーザー種別
               </CustomTh>
             </CustomTr>
@@ -1086,20 +1049,18 @@ export default function OrgInfo() {
             {tableData.map((data, index) => (
               <CustomTr key={index}>
                 {/** 削除 */}
-                {mode !== 'confirm' ? (
+                {canEdit && (
                   <CustomTd align='center'>
                     <OriginalCheckbox
                       id='delete_flag'
                       value='delete'
                       checked={data.isUserFound ? data.delete_flag : true}
-                      readonly={mode === 'confirm' || !data.isUserFound}
+                      readonly={!data.isUserFound}
                       onChange={() => {
                         handleInputChangeStaff(data.id, 'delete_flag', !data.delete_flag);
                       }}
                     />
                   </CustomTd>
-                ) : (
-                  <></>
                 )}
                 {/** ユーザーID */}
                 <CustomTd align='center'>
@@ -1108,7 +1069,7 @@ export default function OrgInfo() {
                     required={false}
                     value={data.user_id}
                     className='border-transparent'
-                    readonly={mode === 'confirm'}
+                    readonly={!canEdit}
                     disabled={!data.isUserFound}
                     onChange={(e) => handleInputChangeStaff(data.id, 'user_id', e.target.value)}
                   />
@@ -1131,7 +1092,7 @@ export default function OrgInfo() {
                     id='director'
                     value='監督'
                     checked={data.staff_type_id.includes('監督')}
-                    readonly={mode === 'confirm' || !data.isUserFound}
+                    readonly={!canEdit || !data.isUserFound}
                     onChange={() => {
                       handleInputChangeStaff(
                         data.id,
@@ -1149,7 +1110,7 @@ export default function OrgInfo() {
                     id='generalmanager'
                     value='部長'
                     checked={data.staff_type_id.includes('部長')}
-                    readonly={mode === 'confirm' || !data.isUserFound}
+                    readonly={!canEdit || !data.isUserFound}
                     onChange={() => {
                       handleInputChangeStaff(
                         data.id,
@@ -1167,7 +1128,7 @@ export default function OrgInfo() {
                     id='coach'
                     value='コーチ'
                     checked={data.staff_type_id.includes('コーチ')}
-                    readonly={mode === 'confirm' || !data.isUserFound}
+                    readonly={!canEdit || !data.isUserFound}
                     onChange={() => {
                       handleInputChangeStaff(
                         data.id,
@@ -1185,7 +1146,7 @@ export default function OrgInfo() {
                     id='manager'
                     value='マネージャー'
                     checked={data.staff_type_id.includes('マネージャー')}
-                    readonly={mode === 'confirm' || !data.isUserFound}
+                    readonly={!canEdit || !data.isUserFound}
                     onChange={() => {
                       handleInputChangeStaff(
                         data.id,
@@ -1203,7 +1164,7 @@ export default function OrgInfo() {
                     id='actingdirector'
                     value='管理代理'
                     checked={data.staff_type_id.includes('管理代理')}
-                    readonly={mode === 'confirm' || !data.isUserFound}
+                    readonly={!canEdit || !data.isUserFound}
                     onChange={() => {
                       handleInputChangeStaff(
                         data.id,
@@ -1223,13 +1184,11 @@ export default function OrgInfo() {
       {
         // スタッフ登録のエラーメッセージの表示 20240308
         (userIdErrorMessage.length > 0 ||
-          userNameErrorMessage.length > 0 ||
           userTypeErrorMessage.length > 0 ||
           staffTableErrorMessage.length > 0 ||
           tableErrorMessages.length > 0) && (
           <div key='tableErrorMessage' className='text-caption1 text-systemErrorText'>
             <p>{userIdErrorMessage}</p>
-            <p>{userNameErrorMessage}</p>
             <p>{userTypeErrorMessage}</p>
             <p>{tableErrorMessages}</p>
             <p>{staffTableErrorMessage}</p>

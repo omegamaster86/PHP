@@ -158,6 +158,7 @@ interface TeamResponse {
   entrysystem_org_id: string; // エントリーシステムの団体ID
   org_id: string; // 団体ID
   org_name: string; // 団体名
+  isStaff: boolean;
 }
 
 // 大会情報
@@ -494,6 +495,7 @@ interface CrewResponse {
 // 団体情報
 interface Organization {
   org_id: string; // 団体ID
+  isStaff: boolean;
   org_name: string; // 団体名
   entrysystem_org_id: string; // エントリーシステムの団体ID
   orgTypeName: string; // 団体種別名

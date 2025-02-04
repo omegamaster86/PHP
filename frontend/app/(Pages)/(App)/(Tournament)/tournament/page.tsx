@@ -721,8 +721,10 @@ export default function Tournaments() {
                 error?.response?.data?.response_race_id &&
                   setRaceNumberErrorMessage(error?.response?.data?.response_race_id);
 
-                const errorMessage = error?.response?.data?.message || 'エラーが発生しました。';
-                setErrorMessages([errorMessage]);
+                const errorMessage = error?.response?.data?.message;
+                if (errorMessage) {
+                  setErrorMessages([errorMessage]);
+                }
               })
               .finally(() => {
                 setDisplayFlg(true);
@@ -818,8 +820,10 @@ export default function Tournaments() {
                 error?.response?.data?.response_race_id &&
                   setRaceNumberErrorMessage(error?.response?.data?.response_race_id);
 
-                const errorMessage = error?.response?.data?.message || 'エラーが発生しました。';
-                setErrorMessages([errorMessage]);
+                const errorMessage = error?.response?.data?.message;
+                if (errorMessage) {
+                  setErrorMessages([errorMessage]);
+                }
               })
               .finally(() => {
                 setDisplayFlg(true);
@@ -875,8 +879,10 @@ export default function Tournaments() {
                 error?.response?.data?.response_race_id &&
                   setRaceNumberErrorMessage(error?.response?.data?.response_race_id);
 
-                const errorMessage = error?.response?.data?.message || 'エラーが発生しました。';
-                setErrorMessages([errorMessage]);
+                const errorMessage = error?.response?.data?.message;
+                if (errorMessage) {
+                  setErrorMessages([errorMessage]);
+                }
               });
           }
           setDisplayFlg(true);

@@ -17,7 +17,7 @@ const CustomYearPicker = ({
   className,
   onBlur,
 }: {
-  selectedDate: string;
+  selectedDate: string | undefined;
   onChange?: any;
   maxDate?: Date;
   errorMessages?: string[];
@@ -27,12 +27,11 @@ const CustomYearPicker = ({
   className?: string;
   onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
 }) => {
-  const dispYear = new Date(selectedDate).getFullYear();
   return (
     <>
       {readonly && (
-        <p className='h-12 w-[300px] text-secondaryText py-3 disable'>
-          {selectedDate ? dispYear : ''}
+        <p className='w-[300px] text-secondaryText disable'>
+          {selectedDate ? new Date(selectedDate).getFullYear() : ''}
         </p>
       )}
       {!readonly && (

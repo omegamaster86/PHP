@@ -34,7 +34,8 @@ class OrganizationController extends Controller
     {
         Log::debug(sprintf("getOrgData start"));
         $result = $request->all();
-        $tOrg = $tOrganizations->getOrganization($result['org_id']);
+        $userId = Auth::user()->user_id;
+        $tOrg = $tOrganizations->getOrganization($result['org_id'], $userId);
         Log::debug(sprintf("getOrgData end"));
         return response()->json(['result' => $tOrg]); //DBの結果を返す
     }
@@ -152,6 +153,17 @@ class OrganizationController extends Controller
             $tOrganizations::$tournamentUpdateInfo['updated_time'] = now()->format('Y-m-d H:i:s.u'); //更新日時
             $tOrganizations::$tournamentUpdateInfo['updated_user_id'] = Auth::user()->user_id; //更新ユーザID
 
+            $userType = Auth::user()->user_type;
+            $canUpdateJaraOrgType =
+                substr($userType, -7, 1) == '1' // 管理者
+                || substr($userType, -6, 1) == '1'; // JARA
+            $canUpdatePrefOrgType =
+                substr($userType, -7, 1) == '1' // 管理者
+                || substr($userType, -5, 1) == '1'; // 県ボ
+            $tOrganizations::$tournamentUpdateInfo['canUpdateJaraOrgType1'] = $canUpdateJaraOrgType;
+            $tOrganizations::$tournamentUpdateInfo['canUpdateJaraOrgType2'] = $canUpdateJaraOrgType;
+            $tOrganizations::$tournamentUpdateInfo['canUpdatePrefOrgType1'] = $canUpdatePrefOrgType;
+            $tOrganizations::$tournamentUpdateInfo['canUpdatePrefOrgType2'] = $canUpdatePrefOrgType;
             $tOrganizations->updateOrganization($tOrganizations::$tournamentUpdateInfo);
 
             //スタッフの更新 20240318
@@ -192,10 +204,13 @@ class OrganizationController extends Controller
     public function getOrganizationForOrgManagement(T_organizations $tOrganization)
     {
         Log::debug(sprintf("getOrganizationForOrgManagement start"));
-        //団体情報を取得 20231215 t_futamura
-        $targetOrgId = Auth::user()->user_id;
-        //$tOrg = $tOrganization->getOrganizationForOrgManagement($targetOrgId); //userIDに紐づいた団体を取得するように修正する必要がある 二村さん残件対応箇所
-        $tOrg = $tOrganization->getManagementOrganizations($targetOrgId);
+        $userId = Auth::user()->user_id;
+        $userType = Auth::user()->user_type;
+        $canEdit =
+            substr($userType, -7, 1) == '1' // 管理者
+            || substr($userType, -6, 1) == '1' // JARA
+            || substr($userType, -5, 1) == '1'; // 県ボ
+        $tOrg = $tOrganization->getManagementOrganizations($userId, $canEdit);
         Log::debug(sprintf("getOrganizationForOrgManagement end"));
         return response()->json(['result' => $tOrg]); //DBの結果を返す
     }
@@ -392,28 +407,28 @@ class OrganizationController extends Controller
             if (isset($staff['org_id']) && !$staff['delete_flag']) {
                 //監督にチェックが入っていない
                 if ($staff['is_director'] == 0) {
-                    $condition .= " or ( `user_id`= :director_user_id and `staff_type_id`= 1)\r\n";
-                    $bindingParams['director_user_id'] = $staff['id'];
+                    $condition .= " or ( `user_id`= :director_user_id_" . $staff['id'] . " and `staff_type_id`= 1)\r\n";
+                    $bindingParams['director_user_id_' . $staff['id']] = $staff['id'];
                 }
                 //部長にチェックが入っていない
                 if ($staff['is_head'] == 0) {
-                    $condition .= " or ( `user_id`= :captain_user_id and `staff_type_id`= 2)\r\n";
-                    $bindingParams['captain_user_id'] = $staff['id'];
+                    $condition .= " or ( `user_id`= :captain_user_id_" . $staff['id'] . " and `staff_type_id`= 2)\r\n";
+                    $bindingParams['captain_user_id_' . $staff['id']] = $staff['id'];
                 }
                 //コーチにチェックが入っていない
                 if ($staff['is_coach'] == 0) {
-                    $condition .= " or ( `user_id`= :coach_user_id and `staff_type_id`= 3)\r\n";
-                    $bindingParams['coach_user_id'] = $staff['id'];
+                    $condition .= " or ( `user_id`= :coach_user_id_" . $staff['id'] . " and `staff_type_id`= 3)\r\n";
+                    $bindingParams['coach_user_id_' . $staff['id']] = $staff['id'];
                 }
                 //マネージャーにチェックが入っていない
                 if ($staff['is_manager'] == 0) {
-                    $condition .= " or ( `user_id`= :manager_user_id and `staff_type_id`= 4)\r\n";
-                    $bindingParams['manager_user_id'] = $staff['id'];
+                    $condition .= " or ( `user_id`= :manager_user_id_" . $staff['id'] . " and `staff_type_id`= 4)\r\n";
+                    $bindingParams['manager_user_id_' . $staff['id']] = $staff['id'];
                 }
                 //管理代理にチェックが入っていない
                 if ($staff['is_acting_director'] == 0) {
-                    $condition .= " or ( `user_id`= :agent_user_id and `staff_type_id`= 5)\r\n";
-                    $bindingParams['agent_user_id'] = $staff['id'];
+                    $condition .= " or ( `user_id`= :agent_user_id_" . $staff['id'] . " and `staff_type_id`= 5)\r\n";
+                    $bindingParams['agent_user_id_' . $staff['id']] = $staff['id'];
                 }
             }
             //削除フラグが立っているときは別途処理

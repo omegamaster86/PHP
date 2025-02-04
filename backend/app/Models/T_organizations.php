@@ -37,62 +37,70 @@ class T_organizations extends Model
         'updated_user_id' => null, //更新ユーザID
     ];
 
-    public function getOrganization($orgId)
+    public function getOrganization($orgId, $userId)
     {
         $organization = DB::select(
-            'select 
-                                    `org_id`,
-                                    `entrysystem_org_id`,
-                                    `org_name`,
-                                    `jara_org_type`,
-                                    case jmot.`org_type_id`
-                                        when 0 then "任意"
-                                        when 1 then "正規"
-                                    end as `jaraOrgTypeName`,
-                                    `jara_org_reg_trail`,
-                                    `pref_org_type`,
-                                    case pmot.`org_type_id`
-                                        when 0 then "任意"
-                                        when 1 then "正規"
-                                    end as `prefOrgTypeName`,
-                                    `pref_org_reg_trail`,
-                                    case
-                                        when `jara_org_type` = 1 and `pref_org_type` = 1 then "JARA・県ボ"
-                                        when `jara_org_type` = 1 then "JARA"
-                                        when `pref_org_type` = 1 then "県ボ"
-                                        else "任意"
-                                    end as `orgTypeName`,
-                                    `org_class`,
-                                    `org_class_name`    as `orgClassName`,
-                                    `founding_year`,
-                                    `post_code`,
-                                    `location_country`,
-                                    `country_name`,
-                                    `country_name` as `locationCountry`,
-                                    `location_prefecture`,
-                                    `pref_name` as `locationPrefectureName`,
-                                    `address1`,
-                                    `address2`
-                                    from `t_organizations`
-                                    left join `m_countries`
-                                    on `t_organizations`.`location_country` = `m_countries`.`country_id`
-                                    left join `m_prefectures`
-                                    on `t_organizations`.`location_prefecture` = `m_prefectures`.`pref_id`
-                                    left join `m_organization_class`
-                                    on `t_organizations`.`org_class` = `m_organization_class`.`org_class_id`
-                                    left join `m_organization_type` jmot
-                                    on `t_organizations`.`jara_org_type` = jmot.`org_type_id`
-                                    left join `m_organization_type` pmot
-                                    on `t_organizations`.`pref_org_type` = pmot.`org_type_id`
-                                    where 1=1
-                                    and `t_organizations`.`delete_flag`=0
-                                    and `m_countries`.`delete_flag` = 0
-                                    and `m_prefectures`.`delete_flag` = 0
-                                    and `m_organization_class`.`delete_flag` = 0
-                                    and jmot.`delete_flag` = 0
-                                    and pmot.`delete_flag` = 0
-                                    and `org_id`=?',
-            [$orgId]
+            'SELECT DISTINCT
+                `to`.`org_id`,
+                `to`.`entrysystem_org_id`,
+                `to`.`org_name`,
+                CASE  
+                    WHEN tos.`org_staff_id` IS NULL THEN 0
+                    ELSE 1
+                END AS `isStaff`,
+                `to`.`jara_org_type`,
+                CASE jmot.`org_type_id`
+                    WHEN 0 THEN "任意"
+                    WHEN 1 THEN "正規"
+                END AS `jaraOrgTypeName`,
+                `to`.`jara_org_reg_trail`,
+                `to`.`pref_org_type`,
+                CASE pmot.`org_type_id`
+                    WHEN 0 THEN "任意"
+                    WHEN 1 THEN "正規"
+                END AS `prefOrgTypeName`,
+                `pref_org_reg_trail`,
+                CASE
+                    WHEN `to`.`jara_org_type` = 1 AND `to`.`pref_org_type` = 1 THEN "JARA・県ボ"
+                    WHEN `to`.`jara_org_type` = 1 THEN "JARA"
+                    WHEN `to`.`pref_org_type` = 1 THEN "県ボ"
+                    ELSE "任意"
+                END AS `orgTypeName`,
+                `to`.`org_class`,
+                moc.`org_class_name`    AS `orgClassName`,
+                `to`.`founding_year`,
+                `to`.`post_code`,
+                `to`.`location_country`,
+                mc.`country_name`,
+                mc.`country_name` AS `locationCountry`,
+                `to`.`location_prefecture`,
+                mp.`pref_name` AS `locationPrefectureName`,
+                `to`.`address1`,
+                `to`.`address2`
+            FROM `t_organizations` `to`
+            INNER JOIN `m_countries` mc ON
+                mc.`country_id` = `to`.`location_country`
+                AND mc.`delete_flag` = 0
+            LEFT OUTER JOIN `m_prefectures` mp ON
+                mp.`pref_id` = `to`.`location_prefecture`
+                AND mp.`delete_flag` = 0
+            INNER JOIN `m_organization_class` moc ON
+                moc.`org_class_id` = `to`.`org_class`
+                AND moc.`delete_flag` = 0
+            INNER JOIN `m_organization_type` jmot ON
+                jmot.`org_type_id` = `to`.`jara_org_type`
+                AND jmot.`delete_flag` = 0
+            INNER JOIN `m_organization_type` pmot ON
+                pmot.`org_type_id` = `to`.`pref_org_type`
+                AND pmot.`delete_flag` = 0
+            LEFT OUTER JOIN `t_organization_staff` tos ON
+                tos.`org_id` = `to`.`org_id`
+                AND tos.`user_id` = :user_id
+                AND tos.`delete_flag` = 0
+            WHERE 1=1
+                AND `to`.`delete_flag`=0
+                AND `to`.`org_id` = :org_id',
+            ['org_id' => $orgId, 'user_id' => $userId]
         );
         //1つの団体IDを取得するため0番目だけを返す
         $targetOrg = null;
@@ -101,65 +109,6 @@ class T_organizations extends Model
         }
         return $targetOrg;
     }
-
-    //reactの団体管理画面用に作成
-    // public function getOrganizationForOrgManagement($orgId)
-    // {
-    //     $organization = DB::select('select 
-    //                                 `org_id`,
-    //                                 `entrysystem_org_id`,
-    //                                 `org_name`,
-    //                                 `jara_org_type`,
-    //                                 case jmot.org_type
-    //                                     when 0 then "任意"
-    //                                     when 1 then "正式"
-    //                                 end as `jaraOrgTypeName`,
-    //                                 `jara_org_reg_trail`,
-    //                                 `pref_org_type`,
-    //                                 case pmot.org_type
-    //                                     when 0 then "任意"
-    //                                     when 1 then "正式"
-    //                                 end as `prefOrgTypeName`,
-    //                                 `pref_org_reg_trail`,
-    //                                 case
-    //                                     when `jara_org_type` = 1 and `pref_org_type` = 1 then "JARA・県ボ"
-    //                                     when `jara_org_type` = 1 then "JARA"
-    //                                     when `pref_org_type` = 1 then "県ボ"
-    //                                     else "任意"
-    //                                 end as `orgTypeName`,
-    //                                 `org_class`,
-    //                                 `org_class_name`    as `orgClassName`,
-    //                                 `founding_year`,
-    //                                 `post_code`,
-    //                                 `location_country`,
-    //                                 `country_name`,
-    //                                 `country_name` as `locationCountry`,
-    //                                 `location_prefecture`,
-    //                                 `pref_name` as `locationPrefectureName`,
-    //                                 `address1`,
-    //                                 `address2`
-    //                                 from `t_organizations`
-    //                                 left join `m_countries`
-    //                                 on `t_organizations`.`location_country` = `m_countries`.`country_id`
-    //                                 left join `m_prefectures`
-    //                                 on `t_organizations`.`location_prefecture` = `m_prefectures`.`pref_id`
-    //                                 left join `m_organization_class`
-    //                                 on `t_organizations`.`org_class` = `m_organization_class`.`org_class_id`
-    //                                 left join `m_organization_type` jmot
-    //                                 on `t_organizations`.`jara_org_type` = jmot.`org_type_id`
-    //                                 left join `m_organization_type` pmot
-    //                                 on `t_organizations`.`pref_org_type` = pmot.`org_type_id`
-    //                                 where 1=1
-    //                                 and `t_organizations`.`delete_flag`=0
-    //                                 and `m_countries`.`delete_flag` = 0
-    //                                 and `m_prefectures`.`delete_flag` = 0
-    //                                 and `m_organization_class`.`delete_flag` = 0
-    //                                 and jmot.`delete_flag` = 0
-    //                                 and pmot.`delete_flag` = 0
-    //                                 and `org_id`=?'
-    //                                 ,[$orgId]);
-    //     return $organization;
-    // }
 
     //interfaceのOrganizationを引数としてInsertを実行し、InsertしたレコードのID（主キー）を返す
     public function insertOrganization($organization)
@@ -224,10 +173,26 @@ class T_organizations extends Model
                     set
                     `entrysystem_org_id` = :entrysystem_org_id,
                     `org_name` = :org_name,
-                    `jara_org_type` = :jara_org_type,
-                    `jara_org_reg_trail` = :jara_org_reg_trail,
-                    `pref_org_type` = :pref_org_type,
-                    `pref_org_reg_trail` = :pref_org_reg_trail,
+                    `jara_org_type` =
+                        CASE
+                            WHEN :canUpdateJaraOrgType1 THEN :jara_org_type
+                            ELSE `jara_org_type`
+                        END,
+                    `jara_org_reg_trail` =
+                        CASE
+                            WHEN :canUpdateJaraOrgType2 THEN :jara_org_reg_trail
+                            ELSE `jara_org_reg_trail`
+                        END,
+                    `pref_org_type` =
+                        CASE
+                            WHEN :canUpdatePrefOrgType1 THEN :pref_org_type
+                            ELSE `pref_org_type`
+                        END,
+                    `pref_org_reg_trail` =
+                        CASE
+                            WHEN :canUpdatePrefOrgType2 THEN :pref_org_reg_trail
+                            ELSE `pref_org_reg_trail`
+                        END,
                     `org_class` = :org_class,
                     `founding_year` = :founding_year,
                     `location_country` = :location_country,
@@ -432,29 +397,60 @@ class T_organizations extends Model
     }
 
     //ユーザーIDを条件にinterfaceのTeamResponseを取得する
-    public function getManagementOrganizations($user_id)
+    public function getManagementOrganizations($userId, $canEdit)
     {
         $organizations = DB::select(
-            "select distinct
-                                    case
-                                        when org.jara_org_type = 0 and org.pref_org_type = 0 then '任意'
-                                        else '正規'
-                                        end as `teamTyp`
-                                    ,org.entrysystem_org_id
-                                    ,org.org_id
-                                    ,org.org_name
-                                    from `t_organizations` org
-                                    left join `t_organization_staff` staff
-                                    on org.org_id = staff.org_id
-                                    left join `t_users` users
-                                    on staff.`user_id` = users.`user_id`
-                                    where 1=1
-                                    and org.delete_flag = 0
-                                    and staff.delete_flag = 0
-                                    and users.delete_flag = 0
-                                    and users.user_id = ?
-                                    order by org.org_id",
-            [$user_id]
+            "with orgs as (
+                select
+                    case
+                        when org.jara_org_type = 0 and org.pref_org_type = 0 then '任意'
+                        else '正規'
+                        end as `teamTyp`
+                    ,org.entrysystem_org_id
+                    ,org.org_id
+                    ,org.org_name
+                from `t_organizations` org
+                where
+                    org.delete_flag = 0
+            )
+            select
+                orgs.`teamTyp`,
+                orgs.entrysystem_org_id,
+                orgs.org_id,
+                orgs.org_name,
+                case
+                    when inv.org_id is null then 0
+                    else 1
+                end as `isStaff`
+            from orgs
+            left outer join (
+                # ログインユーザーがスタッフとして登録している団体を取得する。
+                select
+                    org_id
+                from orgs
+                where
+                    exists (
+                        select
+                            'x'
+                        from `t_organization_staff` tos
+                        inner join `t_users` tu on
+                            tu.`user_id` = tos.`user_id`
+                            and tu.user_id = :user_id
+                            and tu.delete_flag = 0
+                        where
+                            tos.org_id = orgs.org_id
+                            and tos.delete_flag = 0
+                    )
+            ) inv on orgs.org_id = inv.org_id
+            where
+                (
+                    # スタッフとして登録している団体を取得する。
+                    # JARA/県ボ証跡の編集権限がある場合は全ての団体を取得する。
+                    inv.org_id is not null
+                    or :can_edit = 1
+                )
+            order by orgs.org_id",
+            ['user_id' => $userId, 'can_edit' => $canEdit]
         );
         return $organizations;
     }
