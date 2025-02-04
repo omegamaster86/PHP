@@ -64,8 +64,6 @@ export default function TournamentRef() {
   }
 
   const tournId = searchParams.get('tournId')?.toString();
-  // tournIdの値を取得
-  if (typeof tournId === 'undefined') return null;
 
   // フォームデータを管理する状態
   const [tableData, setTableData] = useState<Race[]>([]);
@@ -416,6 +414,9 @@ export default function TournamentRef() {
         window.alert('フォロー状態の更新に失敗しました:');
       });
   };
+
+  // tournIdの値を取得
+  if (typeof tournId === 'undefined') return null;
 
   // エラーがある場合はエラーメッセージを表示
   if (tournamentFormData.tourn_id === '') {
