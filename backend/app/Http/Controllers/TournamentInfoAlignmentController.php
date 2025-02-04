@@ -207,7 +207,7 @@ class TournamentInfoAlignmentController extends Controller
                     $race_class_id = $inputData['csvDataList'][$rowIndex]["raceTypeId"];       //レース区分ID
                     $race_class_name = $target_race[0]->race_class_name;         //レース区分名
                     $org_id = $inputData['csvDataList'][$rowIndex]["orgId"];                   //団体ID
-                    $target_organization = $t_organizations->getOrganization($org_id);  //対象の団体データを取得
+                    $target_organization = $t_organizations->getOrganization($org_id, $user_id);  //対象の団体データを取得
                     $entrysystem_org_id = $target_organization->entrysystem_org_id;   //エントリー団体ID
                     $org_name = $target_organization->org_name;               //団体名
                     $crew_name = $inputData['csvDataList'][$rowIndex]["crewName"];             //クルー名
@@ -1252,7 +1252,7 @@ class TournamentInfoAlignmentController extends Controller
                         }
                         //団体情報をテーブルから取得
                         if (isset($target_row['orgId'])) {
-                            $target_organization = $t_organizations->getOrganization($target_row['orgId']);
+                            $target_organization = $t_organizations->getOrganization($target_row['orgId'], $register_user_id);
                             if (isset($target_organization)) {
                                 $race_result_array['org_id'] = $target_organization->org_id;                                    //団体ID
                                 $race_result_array['entrysystem_org_id'] = $target_organization->entrysystem_org_id;            //エントリーシステム団体ID

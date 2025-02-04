@@ -27,7 +27,6 @@ export default function TeamRef() {
   const [hostTournaments, setHostTournaments] = useState([] as Tournament[]);
   const [entTournaments, setEntTournaments] = useState([] as Tournament[]);
   const [players, setPlayers] = useState([] as PlayerInformationResponse[]);
-  const [userData, setUserData] = useState({} as UserResponse);
   const [staffs, setStaffs] = useState([] as StaffRef[]);
   const [value, setValue] = useState(0);
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
@@ -133,9 +132,6 @@ export default function TeamRef() {
         setEntTournaments(entTournamentsResponse.data.result);
         const playersResponse = await axios.post('api/getOrgPlayers', org_id);
         setPlayers(playersResponse.data.result);
-
-        const userDataResponse = await axios.get('api/user');
-        setUserData(userDataResponse.data);
 
         const staffsResponse = await axios.post('api/getOrgStaffData', org_id); //スタッフ情報取得
         setStaffs(staffsResponse.data.result);

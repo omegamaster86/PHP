@@ -34,7 +34,7 @@ interface OrgNameList {
 
 export default function TeamManagement() {
   const [errorMessage, setErrorMessage] = useState([] as string[]);
-  const [teamdata, setTeamdata] = useState([] as TeamResponse[]);
+  const [team, setTeam] = useState([] as TeamResponse[]);
   const router = useRouter();
   const [validFlag, setValidFlag] = useState(false); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
 
@@ -43,10 +43,10 @@ export default function TeamManagement() {
   const orgTypeSort = () => {
     if (orgTypeSortFlag) {
       setOrgTypeSortFlag(false);
-      teamdata.sort((a, b) => ('' + a.teamTyp).localeCompare(b.teamTyp));
+      team.sort((a, b) => ('' + a.teamTyp).localeCompare(b.teamTyp));
     } else {
       setOrgTypeSortFlag(true);
-      teamdata.sort((a, b) => ('' + b.teamTyp).localeCompare(a.teamTyp));
+      team.sort((a, b) => ('' + b.teamTyp).localeCompare(a.teamTyp));
     }
   };
 
@@ -55,10 +55,10 @@ export default function TeamManagement() {
   const entrySystemIdSort = () => {
     if (entrySystemIdSortFlag) {
       setEntrySystemIdSortFlag(false);
-      teamdata.sort((a, b) => Number(a.entrysystem_org_id) - Number(b.entrysystem_org_id));
+      team.sort((a, b) => Number(a.entrysystem_org_id) - Number(b.entrysystem_org_id));
     } else {
       setEntrySystemIdSortFlag(true);
-      teamdata.sort((a, b) => Number(b.entrysystem_org_id) - Number(a.entrysystem_org_id));
+      team.sort((a, b) => Number(b.entrysystem_org_id) - Number(a.entrysystem_org_id));
     }
   };
 
@@ -67,10 +67,10 @@ export default function TeamManagement() {
   const orgIdSort = () => {
     if (orgIdSortFlag) {
       setOrgIdSortFlag(false);
-      teamdata.sort((a, b) => Number(a.org_id) - Number(b.org_id));
+      team.sort((a, b) => Number(a.org_id) - Number(b.org_id));
     } else {
       setOrgIdSortFlag(true);
-      teamdata.sort((a, b) => Number(b.org_id) - Number(a.org_id));
+      team.sort((a, b) => Number(b.org_id) - Number(a.org_id));
     }
   };
   // 団体名のソート用　20240724
@@ -78,10 +78,10 @@ export default function TeamManagement() {
   const orgNameSort = () => {
     if (orgNameSortFlag) {
       setOrgNameSortFlag(false);
-      teamdata.sort((a, b) => ('' + a.org_name).localeCompare(b.org_name));
+      team.sort((a, b) => ('' + a.org_name).localeCompare(b.org_name));
     } else {
       setOrgNameSortFlag(true);
-      teamdata.sort((a, b) => ('' + b.org_name).localeCompare(a.org_name));
+      team.sort((a, b) => ('' + b.org_name).localeCompare(a.org_name));
     }
   };
 
@@ -177,10 +177,12 @@ export default function TeamManagement() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
-        const responseData = await axios.get('api/getOrganizationForOrgManagement'); //団体データ取得
-        setTeamdata(responseData.data.result);
+        const response = await axios.get('api/getOrganizationForOrgManagement'); //団体データ取得
+        const fetchedTeams = response.data.result.map((record: any) => ({
+          ...record,
+          isStaff: record.isStaff === 1,
+        }));
+        setTeam(fetchedTeams);
       } catch (error) {
         setErrorMessage(['API取得エラー:' + (error as Error).message]);
       }
@@ -190,7 +192,7 @@ export default function TeamManagement() {
 
   useEffect(() => {
     //団体種別をフィルターできるようにする 20240724
-    const orgTypeArray = teamdata.map((item: any) => item.teamTyp);
+    const orgTypeArray = team.map((item: any) => item.teamTyp);
     const uniqueOrgTypeSet = new Set(orgTypeArray);
     const uniqueOrgTypeArray = Array.from(uniqueOrgTypeSet);
     setOrgTypeList(
@@ -200,7 +202,7 @@ export default function TeamManagement() {
       })),
     );
     //団体種別をフィルターできるようにする 20240724
-    const orgNameArray = teamdata.map((item: any) => item.org_name);
+    const orgNameArray = team.map((item: any) => item.org_name);
     const uniqueOrgNameSet = new Set(orgNameArray);
     const uniqueOrgNameArray = Array.from(uniqueOrgNameSet);
     setOrgNameList(
@@ -209,7 +211,7 @@ export default function TeamManagement() {
         name: item,
       })),
     );
-  }, [teamdata]);
+  }, [team]);
 
   useEffect(() => {
     if (showOrgTypeAutocomplete) {
@@ -310,7 +312,7 @@ export default function TeamManagement() {
             </CustomTr>
           </CustomThead>
           <CustomTbody>
-            {teamdata
+            {team
               .filter((row, index) => {
                 if (selectedOrgTypeList.length > 0) {
                   return selectedOrgTypeList.some((item) => item.name === row.teamTyp);
@@ -372,20 +374,20 @@ export default function TeamManagement() {
                     </Link>
                   </CustomTd>
                   <CustomTd>
-                    <div>
-                      <div className='flex justify-center items-center gap-[10px]'>
-                        {/* 更新ボタン */}
-                        <CustomButton
-                          onClick={() => {
-                            router.push('/team?mode=update&org_id=' + row.org_id.toString());
-                          }}
-                          buttonType='white-outlined'
-                          className='w-[60px] text-small h-[40px] p-[0px] border-transparent'
-                        >
-                          <EditOutlined className='text-secondaryText text-normal mr-[2px]'></EditOutlined>
-                          更新
-                        </CustomButton>
-                        {/* 削除ボタン */}
+                    <div className='flex items-center gap-4'>
+                      {/* 更新ボタン */}
+                      <CustomButton
+                        onClick={() => {
+                          router.push('/team?mode=update&org_id=' + row.org_id.toString());
+                        }}
+                        buttonType='white-outlined'
+                        className='w-[60px] text-small h-[40px] p-[0px] border-transparent'
+                      >
+                        <EditOutlined className='text-secondaryText text-normal mr-[2px]'></EditOutlined>
+                        更新
+                      </CustomButton>
+                      {/* 削除ボタン */}
+                      {row.isStaff && (
                         <CustomButton
                           onClick={() => {
                             router.push('/teamRef?mode=delete&org_id=' + row.org_id.toString());
@@ -396,7 +398,7 @@ export default function TeamManagement() {
                           <DeleteOutline className='text-secondaryText text-normal mr-[2px]' />
                           削除
                         </CustomButton>
-                      </div>
+                      )}
                     </div>
                   </CustomTd>
                 </CustomTr>

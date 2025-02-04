@@ -142,6 +142,7 @@ class OrganizationPlayersController extends Controller
         $inputData = $request->all();
         $reqData = $inputData["csvDataList"];
         $input_org_id = $inputData["targetOrgData"]["targetOrgId"];
+        $userId = Auth::user()->user_id;
         for ($rowIndex = 0; $rowIndex < count($reqData); $rowIndex++) {
             //フロントからの送信データ
             $jara_player_code = $reqData[$rowIndex]["jaraPlayerId"];
@@ -186,7 +187,7 @@ class OrganizationPlayersController extends Controller
                 //所属情報テーブルを取得
                 $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);
                 //団体テーブルから団体名を取得
-                $target_organization = $t_organizations->getOrganization($input_org_id);
+                $target_organization = $t_organizations->getOrganization($input_org_id, $userId);
                 //選手テーブルから出身地と居住地を取得
                 $player_data = $t_players->getPlayersFromPlayerId($player_id);
                 //所属情報を取得できなかった場合
@@ -208,7 +209,7 @@ class OrganizationPlayersController extends Controller
                 }
                 //取得情報が取得できた場合
                 else {
-                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
+                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id, $userId); //既に所属している団体の情報を取得 20240420
                     //Log::debug("所属情報を取得できた場合");
                     //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
                     if (in_array($input_org_id, array_column($org_player_info, 'org_id'))) {
@@ -273,7 +274,7 @@ class OrganizationPlayersController extends Controller
                 //所属情報テーブルを取得
                 $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);
                 //団体テーブルから団体名を取得
-                $target_organization = $t_organizations->getOrganization($input_org_id);
+                $target_organization = $t_organizations->getOrganization($input_org_id, $userId);
                 //選手テーブルから出身地と居住地を取得
                 $player_data = $t_players->getPlayersFromPlayerId($player_id);
                 //所属情報を取得できなかった場合
@@ -294,7 +295,7 @@ class OrganizationPlayersController extends Controller
                 }
                 //取得情報が取得できた場合
                 else {
-                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
+                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id, $userId); //既に所属している団体の情報を取得 20240420
                     //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
                     if (in_array($input_org_id, array_column($org_player_info, 'org_id'))) {
                         //存在するとき
@@ -356,7 +357,7 @@ class OrganizationPlayersController extends Controller
                 //所属情報テーブルを取得
                 $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromJaraPlayerId($jara_player_code);
                 //団体テーブルから団体名を取得
-                $target_organization = $t_organizations->getOrganization($input_org_id);
+                $target_organization = $t_organizations->getOrganization($input_org_id, $userId);
                 //所属情報を取得できなかった場合
                 if (empty($org_player_info)) {
                     //Log::debug("所属情報を取得できなかった場合");
@@ -376,7 +377,7 @@ class OrganizationPlayersController extends Controller
                 }
                 //取得情報が取得できた場合
                 else {
-                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
+                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id, $userId); //既に所属している団体の情報を取得 20240420
                     //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
                     if (in_array($input_org_id, array_column($org_player_info, 'org_id'))) {
                         //Log::debug("画面の所属団体の入力値が団体所属情報のorg_id列に存在する");
@@ -442,7 +443,7 @@ class OrganizationPlayersController extends Controller
                         //所属情報テーブルを取得
                         $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_data->player_id);
                         //団体テーブルから団体名を取得
-                        $target_organization = $t_organizations->getOrganization($input_org_id); //重複する団体の検索用 20240420
+                        $target_organization = $t_organizations->getOrganization($input_org_id, $userId); //重複する団体の検索用 20240420
                         if (empty($org_player_info)) {
                             //Log::debug("所属情報を取得できなかった場合");
                             $this->assignRowData(
@@ -459,7 +460,7 @@ class OrganizationPlayersController extends Controller
                                 $reqData[$rowIndex]['checked']
                             );
                         } else {
-                            $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
+                            $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id, $userId); //既に所属している団体の情報を取得 20240420
                             //Log::debug("所属情報を取得できた場合");
                             //団体テーブルから団体名を取得
                             // $org_player_org_id = $org_player_info[0]->{'org_id'};
@@ -542,7 +543,7 @@ class OrganizationPlayersController extends Controller
                 //所属情報テーブルを取得
                 $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);
                 //団体テーブルから団体名を取得
-                $target_organization = $t_organizations->getOrganization($input_org_id);
+                $target_organization = $t_organizations->getOrganization($input_org_id, $userId);
                 //選手テーブルから出身地と居住地を取得
                 $player_data = $t_players->getPlayersFromPlayerId($player_id);
                 //所属情報を取得できなかった場合
@@ -564,7 +565,7 @@ class OrganizationPlayersController extends Controller
                 }
                 //取得情報が取得できた場合
                 else {
-                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
+                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id, $userId); //既に所属している団体の情報を取得 20240420
                     //Log::debug("所属情報を取得できた場合");
                     //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
                     if (in_array($input_org_id, array_column($org_player_info, 'org_id'))) {
@@ -629,7 +630,7 @@ class OrganizationPlayersController extends Controller
                 //所属情報テーブルを取得
                 $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_id);
                 //団体テーブルから団体名を取得
-                $target_organization = $t_organizations->getOrganization($input_org_id);
+                $target_organization = $t_organizations->getOrganization($input_org_id, $userId);
                 //選手テーブルから出身地と居住地を取得
                 $player_data = $t_players->getPlayersFromPlayerId($player_id);
                 //所属情報を取得できなかった場合
@@ -651,7 +652,7 @@ class OrganizationPlayersController extends Controller
                 }
                 //取得情報が取得できた場合
                 else {
-                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
+                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id, $userId); //既に所属している団体の情報を取得 20240420
                     //Log::debug("所属情報を取得できた場合");
                     //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
                     if (in_array($input_org_id, array_column($org_player_info, 'org_id'))) {
@@ -715,7 +716,7 @@ class OrganizationPlayersController extends Controller
                 //所属情報テーブルを取得
                 $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_data[0]->{'player_id'});
                 //団体テーブルから団体名を取得
-                $target_organization = $t_organizations->getOrganization($input_org_id);
+                $target_organization = $t_organizations->getOrganization($input_org_id, $userId);
                 //選手テーブルから出身地と居住地を取得
                 $player_data = $t_players->getPlayersFromPlayerId($player_data[0]->{'player_id'});
                 //所属情報を取得できなかった場合
@@ -737,7 +738,7 @@ class OrganizationPlayersController extends Controller
                 }
                 //取得情報が取得できた場合
                 else {
-                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
+                    $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id, $userId); //既に所属している団体の情報を取得 20240420
                     //Log::debug("所属情報を取得できた場合");
                     //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
                     if (in_array($input_org_id, array_column($org_player_info, 'org_id'))) {
@@ -816,7 +817,7 @@ class OrganizationPlayersController extends Controller
                             //所属情報テーブルを取得
                             $org_player_info = $t_organization_players->getOrganizationPlayersInfoFromPlayerId($player_data->player_id);
                             //団体テーブルから団体名を取得
-                            $target_organization = $t_organizations->getOrganization($input_org_id);
+                            $target_organization = $t_organizations->getOrganization($input_org_id, $userId);
                             if (empty($org_player_info)) {
                                 //所属情報が取得できなかった場合                                
                                 //Log::debug("所属情報を取得できなかった場合");
@@ -834,7 +835,7 @@ class OrganizationPlayersController extends Controller
                                     $reqData[$rowIndex]['checked']
                                 );
                             } else {
-                                $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id); //既に所属している団体の情報を取得 20240420
+                                $affiliation_org = $t_organizations->getOrganization($org_player_info[0]->org_id, $userId); //既に所属している団体の情報を取得 20240420
                                 //Log::debug("所属情報を取得できた場合");
                                 //所属情報が取得できた場合
                                 //画面の所属団体の入力値が団体所属情報のorg_id列に存在するかをチェック
