@@ -53,7 +53,6 @@ return new class extends Migration
             `heart_rate_2000m` int DEFAULT NULL,
             `official` int DEFAULT NULL,
             `attendance` int DEFAULT NULL,
-            `ergo_weight` double DEFAULT NULL,
             `player_height` double DEFAULT NULL,
             `player_weight` double DEFAULT NULL,
             `seat_number` int DEFAULT NULL,

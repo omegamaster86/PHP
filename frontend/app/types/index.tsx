@@ -71,7 +71,6 @@ interface RaceResultRecordsResponse {
   heart_rate_1500m: number; // 1500mlap心拍数/分
   heart_rate_2000m: number; // 2000mlap心拍数/分
   attendance: number; // 立ち合い有無
-  ergo_weight: number; // エルゴ体重
   player_height: number; // 選手身長（出漕時点）
   player_weight: number; // 選手体重（出漕時点）
   seat_number: number; // シート番号ID（出漕時点）

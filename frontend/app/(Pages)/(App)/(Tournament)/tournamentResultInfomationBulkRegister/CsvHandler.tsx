@@ -228,7 +228,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           csvContent += ','; //2000m心拍数
           csvContent += ','; //公式／非公式
           csvContent += ','; //立ち合い有無
-          csvContent += ','; //エルゴ体重
           csvContent += ','; //選手身長
           csvContent += ','; //選手体重
           csvContent += ','; //シート番号ID
