@@ -1,59 +1,48 @@
 // 機能名: ボランティア検索
 'use client';
 
-// ReactおよびNext関連モジュールのインポート
-import React, { useState, useEffect, ChangeEvent } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-// コンポーネントのインポート
 import {
-  CustomTitle,
-  ErrorBox,
-  CustomTextField,
-  CustomDropdown,
-  InputLabel,
-  CustomDatePicker,
   CustomButton,
+  CustomDatePicker,
+  CustomDropdown,
   CustomTable,
-  CustomThead,
-  CustomTh,
-  CustomTr,
   CustomTbody,
   CustomTd,
+  CustomTextField,
+  CustomTh,
+  CustomThead,
+  CustomTitle,
+  CustomTr,
+  ErrorBox,
+  InputLabel,
   OriginalCheckbox,
 } from '@/app/components/';
-
-// モデルのインポート
+import axios from '@/app/lib/axios';
 import {
+  CountryResponse,
+  DisTypeResponse,
+  LangResponse,
+  PrefectureResponse,
+  QualHoldResponse,
   SexResponse,
   VolunteerResponse,
-  DisTypeResponse,
-  QualHoldResponse,
-  LangResponse,
-  CountryResponse,
-  PrefectureResponse,
 } from '@/app/types';
-
-// マテリアルUI関連モジュールのインポート
-import SearchIcon from '@mui/icons-material/Search';
+import Validator from '@/app/utils/validator';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
-// その他モジュールのインポート
-import axios from '@/app/lib/axios';
-
+import SearchIcon from '@mui/icons-material/Search';
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Chip,
   MenuItem,
   Select,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
 } from '@mui/material';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { ChangeEvent, useEffect, useState } from 'react';
 
-import Validator from '@/app/utils/validator';
-
-// 検索条件フォームの型定義
 // 検索条件
 interface SearchCond {
   volunteer_id?: number; // ボランティアID
@@ -103,15 +92,12 @@ interface SearchCond {
   timeZone?: string; // 参加しやすい時間帯
 }
 
-export default function VolunteerSearch() {
-  /** 定数定義 **/
-  const JAPAN_COUNTRY_ID = 112; //居住地 日本国選択時
-  const OTHERS_QUAL_ID = 99; //保有資格 その他選択時
+const JAPAN_COUNTRY_ID = 112; //居住地 日本国選択時
+const OTHERS_QUAL_ID = 99; //保有資格 その他選択時
 
-  /** フック **/
+export default function VolunteerSearch() {
   const router = useRouter();
 
-  /** 状態定義 **/
   // 検索条件の初期値
   const initialSearchCond = () => {
     return {
@@ -144,10 +130,10 @@ export default function VolunteerSearch() {
   const [country, setCountry] = useState<CountryResponse[]>([]); // 国マスタ
   const [prefecture, setPrefecture] = useState<PrefectureResponse[]>([]); // 都道府県マスタ
 
-  const [startDateExistsErrorMessages, setStartDateExistsErrorMessages] = useState([] as string[]);
-  const [endDateExistsErrorMessages, setEndDateExistsErrorMessages] = useState([] as string[]);
+  const [startDateExistsErrorMessages, setStartDateExistsErrorMessages] = useState<string[]>([]);
+  const [endDateExistsErrorMessages, setEndDateExistsErrorMessages] = useState<string[]>([]);
 
-  // ボランティアIDのソート用　20240725
+  // ボランティアIDのソート用
   const [volunteerIdSortFlag, setVolunteerIdSortFlag] = useState(false);
   const volunteerIdSort = () => {
     if (volunteerIdSortFlag) {
@@ -158,7 +144,7 @@ export default function VolunteerSearch() {
       searchResponse.sort((a, b) => Number(b.volunteer_id) - Number(a.volunteer_id));
     }
   };
-  //氏名のソート用　20240725
+  //氏名のソート用
   const [volunteerNameSortFlag, setVolunteerNameSortFlag] = useState(false);
   const volunteerNameSort = () => {
     if (volunteerNameSortFlag) {
@@ -169,7 +155,7 @@ export default function VolunteerSearch() {
       searchResponse.sort((a, b) => ('' + b.volunteer_name).localeCompare(a.volunteer_name));
     }
   };
-  //居住地のソート用　20240725
+  //居住地のソート用
   const [volunteerCountrySortFlag, setVolunteerCountrySortFlag] = useState(false);
   const volunteerCountrySort = () => {
     if (volunteerCountrySortFlag) {
@@ -180,7 +166,7 @@ export default function VolunteerSearch() {
       searchResponse.sort((a, b) => ('' + b.residence_country).localeCompare(a.residence_country));
     }
   };
-  //性別のソート用　20240725
+  //性別のソート用
   const [sexSortFlag, setSexSortFlag] = useState(false);
   const sexSort = () => {
     if (sexSortFlag) {
@@ -191,7 +177,7 @@ export default function VolunteerSearch() {
       searchResponse.sort((a, b) => ('' + b.sex).localeCompare(a.sex));
     }
   };
-  //年齢のソート用　20240725
+  //年齢のソート用
   const [ageSortFlag, setAgeSortFlag] = useState(false);
   const ageSort = () => {
     if (ageSortFlag) {
@@ -210,7 +196,7 @@ export default function VolunteerSearch() {
       );
     }
   };
-  //補助が可能な障碍タイプ （PR1）のソート用　20240725
+  //補助が可能な障碍タイプ （PR1）のソート用
   const [PR1SortFlag, setPR1SortFlag] = useState(false);
   const PR1Sort = () => {
     if (PR1SortFlag) {
@@ -221,7 +207,7 @@ export default function VolunteerSearch() {
       searchResponse.sort((a, b) => Number(b.dis_type_id?.[0]) - Number(a.dis_type_id?.[0]));
     }
   };
-  //補助が可能な障碍タイプ （PR2）のソート用　20240725
+  //補助が可能な障碍タイプ （PR2）のソート用
   const [PR2SortFlag, setPR2SortFlag] = useState(false);
   const PR2Sort = () => {
     if (PR2SortFlag) {
@@ -232,7 +218,7 @@ export default function VolunteerSearch() {
       searchResponse.sort((a, b) => Number(b.dis_type_id?.[1]) - Number(a.dis_type_id?.[1]));
     }
   };
-  //補助が可能な障碍タイプ （PR3）のソート用　20240725
+  //補助が可能な障碍タイプ （PR3）のソート用
   const [PR3SortFlag, setPR3SortFlag] = useState(false);
   const PR3Sort = () => {
     if (PR3SortFlag) {
@@ -243,8 +229,6 @@ export default function VolunteerSearch() {
       searchResponse.sort((a, b) => Number(b.dis_type_id?.[2]) - Number(a.dis_type_id?.[2]));
     }
   };
-
-  /** 関数 **/
 
   /**
    * 年齢を計算する関数
@@ -387,7 +371,7 @@ export default function VolunteerSearch() {
     });
     setSearchCond((prevFormData) => ({
       ...prevFormData,
-      [name]: resultString as string,
+      [name]: resultString,
     }));
   };
 
@@ -421,7 +405,6 @@ export default function VolunteerSearch() {
     axios
       .post('api/volunteerSearch', searchCond)
       .then((response) => {
-        // レスポンスからデータを取り出してstateにセット
         setSearchResponse(response.data.result as VolunteerResponse[]);
       })
       .catch((error) => {
@@ -430,7 +413,6 @@ export default function VolunteerSearch() {
       });
   };
 
-  // React Hook
   // データ取得
   useEffect(() => {
     const fetchData = async () => {
@@ -526,9 +508,8 @@ export default function VolunteerSearch() {
 
   return (
     <>
-      {/* タイトルの表示 */}
       <CustomTitle displayBack>ボランティア検索</CustomTitle>
-      {/* エラーメッセージの表示 */}
+
       <ErrorBox errorText={[]} />
       <Accordion
         defaultExpanded
@@ -573,12 +554,12 @@ export default function VolunteerSearch() {
               />
               <p className='text-small text-gray-400'>※部分一致</p>
             </div>
-            <div className='flex flex-row justify-start gap-[16px]'>
+            <div className='flex flex-row justify-start gap-4'>
               {/* 開催開始年月日 */}
               <div className='flex flex-col justify-start'>
                 <InputLabel label='生年月日' />
                 <div
-                  className='flex flex-row justify-start gap-[16px] mt-[8px]'
+                  className='flex flex-row justify-start flex-wrap gap-4 mt-2'
                   style={{ width: '100%', height: '100%' }}
                 >
                   <CustomDatePicker
@@ -589,6 +570,7 @@ export default function VolunteerSearch() {
                     }}
                     errorMessages={startDateExistsErrorMessages}
                     className='w-[210px] border-[1px] border-solid border-border rounded-md bg-white h-[56px]'
+                    wrapperClassName=''
                   />
                   <p className='self-center text-small text-gray-400'>〜</p>
                   <CustomDatePicker
@@ -599,6 +581,7 @@ export default function VolunteerSearch() {
                     }}
                     errorMessages={endDateExistsErrorMessages}
                     className='w-[210px] border-[1px] border-solid border-border rounded-md bg-white h-[56px]'
+                    wrapperClassName=''
                   />
                 </div>
               </div>
@@ -661,22 +644,20 @@ export default function VolunteerSearch() {
             </div>
             {/* 保有資格 */}
             <div className='flex flex-col justify-start gap-[16px]'>
-              <div className='flex flex-row justify-start gap-[16px]'>
-                <div>
+              <div className='flex flex-row flex-wrap sm:flex-nowrap justify-start gap-[16px]'>
+                <div className='w-full'>
                   <InputLabel label='保有資格' />
                   <Select
                     id='qualHold'
                     multiple
-                    className='self-end border-[0.1px] border-solid border-gray-50 rounded-md bg-white w-[467px] my-1'
+                    className='self-end border-[0.1px] border-solid border-gray-50 rounded-md bg-white w-full max-w-[467px] my-1'
                     value={searchCond.qualHold?.map((item) => item?.id) || []}
                     onChange={(e) => {
-                      let currentData = Array.isArray(e.target.value)
-                        ? e.target.value.map((item: any) => {
-                            return {
-                              id: item,
-                              name: qualHold.find((qualHold) => qualHold.id === item)?.name || '',
-                            };
-                          })
+                      const currentData = Array.isArray(e.target.value)
+                        ? e.target.value.map((item) => ({
+                            id: item,
+                            name: qualHold.find((qualHold) => qualHold.id === item)?.name || '',
+                          }))
                         : [];
                       setSearchCond((prevFormData) => ({
                         ...prevFormData,
@@ -685,23 +666,20 @@ export default function VolunteerSearch() {
                     }}
                     renderValue={() => (
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {searchCond.qualHold?.map((value, index) =>
-                          value?.id === 0 ? null : <Chip key={index} label={value?.name} />,
+                        {searchCond.qualHold?.map((value) =>
+                          value?.id === 0 ? null : <Chip key={value?.id} label={value?.name} />,
                         )}
                       </Box>
                     )}
                   >
                     {qualHold
                       ? qualHold
-                          .filter((item) => item.id !== undefined)
-                          .filter((item) => item.name !== undefined)
-                          .map((item, index) => {
-                            return (
-                              <MenuItem key={index} value={item.id}>
-                                {item.name}
-                              </MenuItem>
-                            );
-                          })
+                          .filter((item) => item.id !== undefined && item.name !== undefined)
+                          .map((item) => (
+                            <MenuItem key={item.id} value={item.id}>
+                              {item.name}
+                            </MenuItem>
+                          ))
                       : null}
                   </Select>
                   <p className='self-end text-small text-gray-400'>※複数選択可（5資格まで）</p>
@@ -723,43 +701,36 @@ export default function VolunteerSearch() {
             {/* 言語 */}
             <div className='flex flex-col justify-start gap-[16px]'>
               <div className='flex flex-row justify-start gap-[16px]'>
-                <div className='flex flex-col justify-start gap-[8px]'>
-                  <CustomDropdown
-                    id='lang1'
-                    label='言語'
-                    placeHolder='言語1'
-                    className='w-[467px]'
-                    isError={false}
-                    errorMessages={[]}
-                    value={searchCond?.lang?.[0]?.id?.toString() || ''}
-                    onChange={(e) => {
-                      setSearchCond((prevFormData) => ({
-                        ...prevFormData,
-                        lang: [
-                          {
-                            id: Number(e) || 0,
-                            name: lang.find((item) => item.id === Number(e))?.name || '',
-                            levelId: prevFormData.lang?.[0]?.levelId || 0,
-                            levelName: prevFormData.lang?.[0]?.levelName || '未選択',
-                          },
-                          prevFormData.lang?.[1],
-                          prevFormData.lang?.[2],
-                        ] as [
-                          { id: number; name: string; levelId: number; levelName: string },
-                          { id: number; name: string; levelId: number; levelName: string },
-                          { id: number; name: string; levelId: number; levelName: string },
-                        ],
-                      }));
-                    }}
-                    options={lang.map((item) => ({ key: item.id, value: item.name }))}
-                  />
-                </div>
-                <div className='flex flex-col justify-start gap-[8px]'>
-                  <CustomDropdown
-                    id='言語レベル1'
-                    label='言語レベル'
-                    displayHelp={true}
-                    toolTipText='A1（初心者）：<br>
+                <CustomDropdown
+                  id='lang1'
+                  label='言語'
+                  placeHolder='言語1'
+                  className='w-[120px] sm:w-full max-w-[467px]'
+                  isError={false}
+                  errorMessages={[]}
+                  value={searchCond?.lang?.[0]?.id?.toString() || ''}
+                  onChange={(e) => {
+                    setSearchCond((prevFormData) => ({
+                      ...prevFormData,
+                      lang: [
+                        {
+                          id: Number(e) || 0,
+                          name: lang.find((item) => item.id === Number(e))?.name || '',
+                          levelId: prevFormData.lang?.[0]?.levelId || 0,
+                          levelName: prevFormData.lang?.[0]?.levelName || '未選択',
+                        },
+                        prevFormData.lang?.[1],
+                        prevFormData.lang?.[2],
+                      ] as SearchCond['lang'],
+                    }));
+                  }}
+                  options={lang.map((item) => ({ key: item.id, value: item.name }))}
+                />
+                <CustomDropdown
+                  id='言語レベル1'
+                  label='言語レベル'
+                  displayHelp={true}
+                  toolTipText='A1（初心者）：<br>
                     自己紹介ができ、どこに住んでいるか、誰を知っているか、何を持っているかと言った個人的なことを聞き、こたえることができる。<br>
                     A2（初級）：<br>
                      慣れ親しんだ内容であれば単純で直接的な会話ができる。<br>
@@ -771,40 +742,35 @@ export default function VolunteerSearch() {
                     言葉や表現に悩まずに自身の考えを流暢によどみなく伝えることができる。<br>
                     C2（ネイティブ）：<br>
                     どんな複雑な状況下でも一貫して言葉のニュアンスの違いなどに気を配りながら流暢に正確に自己表現ができる。'
-                    placeHolder='言語レベル'
-                    className='w-[467px]'
-                    isError={false}
-                    errorMessages={[]}
-                    value={searchCond?.lang?.[0]?.levelId?.toString() || ''}
-                    onChange={(e) => {
-                      setSearchCond((prevFormData) => ({
-                        ...prevFormData,
-                        lang: [
-                          {
-                            id: prevFormData.lang?.[0]?.id || 0,
-                            name: prevFormData.lang?.[0]?.name || '',
-                            levelId: Number(e) || 0,
-                            levelName:
-                              langLevel.find((item) => item.id === Number(e))?.name || '未選択',
-                          },
-                          prevFormData.lang?.[1],
-                          prevFormData.lang?.[2],
-                        ] as [
-                          { id: number; name: string; levelId: number; levelName: string },
-                          { id: number; name: string; levelId: number; levelName: string },
-                          { id: number; name: string; levelId: number; levelName: string },
-                        ],
-                      }));
-                    }}
-                    options={langLevel.map((item) => ({ key: item.id, value: item.name }))}
-                  />
-                </div>
+                  placeHolder='言語レベル'
+                  className='w-[120px] sm:w-full max-w-[467px]'
+                  isError={false}
+                  errorMessages={[]}
+                  value={searchCond?.lang?.[0]?.levelId?.toString() || ''}
+                  onChange={(e) => {
+                    setSearchCond((prevFormData) => ({
+                      ...prevFormData,
+                      lang: [
+                        {
+                          id: prevFormData.lang?.[0]?.id || 0,
+                          name: prevFormData.lang?.[0]?.name || '',
+                          levelId: Number(e) || 0,
+                          levelName:
+                            langLevel.find((item) => item.id === Number(e))?.name || '未選択',
+                        },
+                        prevFormData.lang?.[1],
+                        prevFormData.lang?.[2],
+                      ] as SearchCond['lang'],
+                    }));
+                  }}
+                  options={langLevel.map((item) => ({ key: item.id, value: item.name }))}
+                />
               </div>
               <div className='flex flex-row justify-start gap-[16px]'>
                 <CustomDropdown
                   id='lang2'
                   placeHolder='言語2'
-                  className='w-[467px]'
+                  className='w-[120px] sm:w-full max-w-[467px]'
                   isError={false}
                   errorMessages={[]}
                   value={searchCond?.lang?.[1]?.id?.toString() || ''}
@@ -820,11 +786,7 @@ export default function VolunteerSearch() {
                           levelName: prevFormData.lang?.[1]?.levelName || '未選択',
                         },
                         prevFormData.lang?.[2],
-                      ] as [
-                        { id: number; name: string; levelId: number; levelName: string },
-                        { id: number; name: string; levelId: number; levelName: string },
-                        { id: number; name: string; levelId: number; levelName: string },
-                      ],
+                      ] as SearchCond['lang'],
                     }));
                   }}
                   options={lang.map((item) => ({ key: item.id, value: item.name }))}
@@ -832,7 +794,7 @@ export default function VolunteerSearch() {
                 <CustomDropdown
                   id='言語レベル'
                   placeHolder='言語レベル'
-                  className='w-[467px]'
+                  className='w-[120px] sm:w-full max-w-[467px]'
                   isError={false}
                   errorMessages={[]}
                   value={searchCond?.lang?.[1]?.levelId?.toString() || ''}
@@ -849,11 +811,7 @@ export default function VolunteerSearch() {
                             langLevel.find((item) => item.id === Number(e))?.name || '未選択',
                         },
                         prevFormData.lang?.[2],
-                      ] as [
-                        { id: number; name: string; levelId: number; levelName: string },
-                        { id: number; name: string; levelId: number; levelName: string },
-                        { id: number; name: string; levelId: number; levelName: string },
-                      ],
+                      ] as SearchCond['lang'],
                     }));
                   }}
                   options={langLevel.map((item) => ({ key: item.id, value: item.name }))}
@@ -863,7 +821,7 @@ export default function VolunteerSearch() {
                 <CustomDropdown
                   id='lang3'
                   placeHolder='言語3'
-                  className='w-[467px]'
+                  className='w-[120px] sm:w-full max-w-[467px]'
                   isError={false}
                   errorMessages={[]}
                   value={searchCond?.lang?.[2]?.id?.toString() || ''}
@@ -879,11 +837,7 @@ export default function VolunteerSearch() {
                           levelId: prevFormData.lang?.[2]?.levelId || 0,
                           levelName: prevFormData.lang?.[2]?.levelName || '未選択',
                         },
-                      ] as [
-                        { id: number; name: string; levelId: number; levelName: string },
-                        { id: number; name: string; levelId: number; levelName: string },
-                        { id: number; name: string; levelId: number; levelName: string },
-                      ],
+                      ] as SearchCond['lang'],
                     }));
                   }}
                   options={lang.map((item) => ({ key: item.id, value: item.name }))}
@@ -891,7 +845,7 @@ export default function VolunteerSearch() {
                 <CustomDropdown
                   id='言語レベル3'
                   placeHolder='言語レベル3'
-                  className='w-[467px]'
+                  className='w-[120px] sm:w-full max-w-[467px]'
                   isError={false}
                   errorMessages={[]}
                   value={searchCond?.lang?.[2]?.levelId?.toString() || ''}
@@ -908,11 +862,7 @@ export default function VolunteerSearch() {
                           levelName:
                             langLevel.find((item) => item.id === Number(e))?.name || '未選択',
                         },
-                      ] as [
-                        { id: number; name: string; levelId: number; levelName: string },
-                        { id: number; name: string; levelId: number; levelName: string },
-                        { id: number; name: string; levelId: number; levelName: string },
-                      ],
+                      ] as SearchCond['lang'],
                     }));
                   }}
                   options={langLevel.map((item) => ({ key: item.id, value: item.name }))}
@@ -989,7 +939,7 @@ export default function VolunteerSearch() {
             {/* 参加しやすい曜日 */}
             <div>
               <div className='text-small font-bold'>参加しやすい曜日</div>
-              <div className='flex flex-row gap-[14px] my-1'>
+              <div className='flex flex-row flex-wrap gap-[14px] my-1'>
                 <OriginalCheckbox
                   id='anyday'
                   label='祝日は可'
@@ -1211,9 +1161,9 @@ export default function VolunteerSearch() {
           </div>
         </AccordionDetails>
       </Accordion>
-      {/* 検索ボタン */}
+
       <div className='flex flex-col justify-start'>
-        <div className='flex flex-row justify-start gap-[4px]'>
+        <div className='flex flex-col sm:flex-row items-center justify-center gap-4'>
           <CustomButton
             buttonType='primary'
             onClick={() => {
@@ -1230,11 +1180,11 @@ export default function VolunteerSearch() {
                 ),
               ]);
 
-              setStartDateExistsErrorMessages(startDateExistsError as string[]);
-              setEndDateExistsErrorMessages(endDateExistsError as string[]);
+              setStartDateExistsErrorMessages(startDateExistsError);
+              setEndDateExistsErrorMessages(endDateExistsError);
 
               if (startDateExistsError.length < 1) {
-                setStartDateExistsErrorMessages(compareDatesVolunteerError as string[]);
+                setStartDateExistsErrorMessages(compareDatesVolunteerError);
               }
 
               if (
@@ -1247,159 +1197,160 @@ export default function VolunteerSearch() {
 
               handleSearch();
             }}
-            className='flex flex-row justify-center gap-[4px] w-[100px]'
+            className='flex flex-row justify-center items-center gap-1'
           >
             <SearchIcon />
             <div>検索</div>
           </CustomButton>
-          {/* クリアボタン */}
+
           <CustomButton
             buttonType='secondary'
             onClick={() => {
               setSearchCond(initialSearchCond());
             }}
-            className='w-[100px]'
           >
             クリア
           </CustomButton>
         </div>
       </div>
       {/* ボランティア一覧 */}
-      <CustomTable>
-        <CustomThead>
-          <CustomTr>
-            <CustomTh rowSpan={2}>
-              <div
-                className='underline'
-                style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                onClick={() => volunteerIdSort()}
-              >
-                ボランティアID
-              </div>
-            </CustomTh>
-            <CustomTh rowSpan={2}>
-              <div
-                className='underline'
-                style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                onClick={() => volunteerNameSort()}
-              >
-                氏名
-              </div>
-            </CustomTh>
-            <CustomTh rowSpan={2}>
-              <div
-                className='underline'
-                style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                onClick={() => volunteerCountrySort()}
-              >
-                居住地
-              </div>
-            </CustomTh>
-            <CustomTh rowSpan={2}>
-              <div
-                className='underline'
-                style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                onClick={() => sexSort()}
-              >
-                性別
-              </div>
-            </CustomTh>
-            <CustomTh rowSpan={2}>
-              <div
-                className='underline'
-                style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                onClick={() => ageSort()}
-              >
-                年齢
-              </div>
-            </CustomTh>
-            <CustomTh rowSpan={1} colSpan={3}>
-              補助が可能な障碍タイプ
-            </CustomTh>
-            <CustomTh rowSpan={2}>言語1</CustomTh>
-            <CustomTh rowSpan={2}>言語2</CustomTh>
-            <CustomTh rowSpan={2}>言語3</CustomTh>
-            <CustomTh rowSpan={2}>電話番号</CustomTh>
-            <CustomTh rowSpan={2}>メールアドレス</CustomTh>
-          </CustomTr>
-          <CustomTr>
-            <CustomTh>
-              <div
-                className='underline'
-                style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                onClick={() => PR1Sort()}
-              >
-                PR1
-              </div>
-            </CustomTh>
-            <CustomTh>
-              <div
-                className='underline'
-                style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                onClick={() => PR2Sort()}
-              >
-                PR2
-              </div>
-            </CustomTh>
-            <CustomTh>
-              <div
-                className='underline'
-                style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                onClick={() => PR3Sort()}
-              >
-                PR3
-              </div>
-            </CustomTh>
-          </CustomTr>
-        </CustomThead>
-        <CustomTbody>
-          {searchResponse.map((row, index) => (
-            <CustomTr index={index} key={index}>
-              <CustomTd>
-                <Link
-                  className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                  href={{
-                    pathname: '/volunteerInformationRef',
-                    query: { volunteer_id: row.volunteer_id },
-                  }}
-                  rel='noopener noreferrer'
-                  target='_blank'
+      <div className='overflow-auto'>
+        <CustomTable>
+          <CustomThead>
+            <CustomTr>
+              <CustomTh rowSpan={2}>
+                <div
+                  className='underline'
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                  onClick={() => volunteerIdSort()}
                 >
-                  {row.volunteer_id}
-                </Link>
-              </CustomTd>
-              <CustomTd>
-                <Link
-                  className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                  href={{
-                    pathname: '/volunteerInformationRef',
-                    query: { volunteer_id: row.volunteer_id },
-                  }}
-                  rel='noopener noreferrer'
-                  target='_blank'
+                  ボランティアID
+                </div>
+              </CustomTh>
+              <CustomTh rowSpan={2}>
+                <div
+                  className='underline'
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                  onClick={() => volunteerNameSort()}
                 >
-                  {row.volunteer_name}
-                </Link>
-              </CustomTd>
-              <CustomTd>
-                {row.residence_country.includes('日本')
-                  ? row.residence_prefecture
-                  : row.residence_country}
-              </CustomTd>
-              <CustomTd>{row.sex}</CustomTd>
-              <CustomTd>{calculateAgeFromBirthday(row.date_of_birth)}</CustomTd>
-              <CustomTd>{row.dis_type_id?.[0] ? '◯' : '×'}</CustomTd>
-              <CustomTd>{row.dis_type_id?.[1] ? '◯' : '×'}</CustomTd>
-              <CustomTd>{row.dis_type_id?.[2] ? '◯' : '×'}</CustomTd>
-              <CustomTd>{row.language?.[0]}</CustomTd>
-              <CustomTd>{row.language?.[1]}</CustomTd>
-              <CustomTd>{row.language?.[2]}</CustomTd>
-              <CustomTd>{row.telephone_number}</CustomTd>
-              <CustomTd>{row.mailaddress}</CustomTd>
+                  氏名
+                </div>
+              </CustomTh>
+              <CustomTh rowSpan={2}>
+                <div
+                  className='underline'
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                  onClick={() => volunteerCountrySort()}
+                >
+                  居住地
+                </div>
+              </CustomTh>
+              <CustomTh rowSpan={2}>
+                <div
+                  className='underline'
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                  onClick={() => sexSort()}
+                >
+                  性別
+                </div>
+              </CustomTh>
+              <CustomTh rowSpan={2}>
+                <div
+                  className='underline'
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                  onClick={() => ageSort()}
+                >
+                  年齢
+                </div>
+              </CustomTh>
+              <CustomTh rowSpan={1} colSpan={3}>
+                補助が可能な障碍タイプ
+              </CustomTh>
+              <CustomTh rowSpan={2}>言語1</CustomTh>
+              <CustomTh rowSpan={2}>言語2</CustomTh>
+              <CustomTh rowSpan={2}>言語3</CustomTh>
+              <CustomTh rowSpan={2}>電話番号</CustomTh>
+              <CustomTh rowSpan={2}>メールアドレス</CustomTh>
             </CustomTr>
-          ))}
-        </CustomTbody>
-      </CustomTable>
+            <CustomTr>
+              <CustomTh>
+                <div
+                  className='underline'
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                  onClick={() => PR1Sort()}
+                >
+                  PR1
+                </div>
+              </CustomTh>
+              <CustomTh>
+                <div
+                  className='underline'
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                  onClick={() => PR2Sort()}
+                >
+                  PR2
+                </div>
+              </CustomTh>
+              <CustomTh>
+                <div
+                  className='underline'
+                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                  onClick={() => PR3Sort()}
+                >
+                  PR3
+                </div>
+              </CustomTh>
+            </CustomTr>
+          </CustomThead>
+          <CustomTbody>
+            {searchResponse.map((row, index) => (
+              <CustomTr index={index} key={index}>
+                <CustomTd>
+                  <Link
+                    className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                    href={{
+                      pathname: '/volunteerInformationRef',
+                      query: { volunteer_id: row.volunteer_id },
+                    }}
+                    rel='noopener noreferrer'
+                    target='_blank'
+                  >
+                    {row.volunteer_id}
+                  </Link>
+                </CustomTd>
+                <CustomTd>
+                  <Link
+                    className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                    href={{
+                      pathname: '/volunteerInformationRef',
+                      query: { volunteer_id: row.volunteer_id },
+                    }}
+                    rel='noopener noreferrer'
+                    target='_blank'
+                  >
+                    {row.volunteer_name}
+                  </Link>
+                </CustomTd>
+                <CustomTd>
+                  {row.residence_country.includes('日本')
+                    ? row.residence_prefecture
+                    : row.residence_country}
+                </CustomTd>
+                <CustomTd>{row.sex}</CustomTd>
+                <CustomTd>{calculateAgeFromBirthday(row.date_of_birth)}</CustomTd>
+                <CustomTd>{row.dis_type_id?.[0] ? '◯' : '×'}</CustomTd>
+                <CustomTd>{row.dis_type_id?.[1] ? '◯' : '×'}</CustomTd>
+                <CustomTd>{row.dis_type_id?.[2] ? '◯' : '×'}</CustomTd>
+                <CustomTd>{row.language?.[0]}</CustomTd>
+                <CustomTd>{row.language?.[1]}</CustomTd>
+                <CustomTd>{row.language?.[2]}</CustomTd>
+                <CustomTd>{row.telephone_number}</CustomTd>
+                <CustomTd>{row.mailaddress}</CustomTd>
+              </CustomTr>
+            ))}
+          </CustomTbody>
+        </CustomTable>
+      </div>
       <div className='flex flex-row justify-center gap-[16px] my-[30px]'>
         <CustomButton
           onClick={() => {

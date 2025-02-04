@@ -1,8 +1,7 @@
-import React from 'react';
+import { cn } from '@/app/utils/cn';
+import ja from 'date-fns/locale/ja';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import ja from 'date-fns/locale/ja';
-import { cn } from '@/app/utils/cn';
 
 // 日本語ロケールの登録
 registerLocale('ja', ja);
@@ -17,6 +16,7 @@ const CustomDatePicker = ({
   placeHolder,
   isError,
   className,
+  wrapperClassName = 'w-full',
   id,
   disabled,
 }: {
@@ -29,6 +29,7 @@ const CustomDatePicker = ({
   placeHolder?: string;
   isError?: boolean;
   className?: string;
+  wrapperClassName?: string;
   id?: string;
   disabled?: boolean;
 }) => {
@@ -57,7 +58,7 @@ const CustomDatePicker = ({
           timeIntervals={15}
           readOnly={readonly}
           placeholderText={placeHolder}
-          wrapperClassName='w-full'
+          wrapperClassName={wrapperClassName}
           disabled={disabled}
         />
       )}
