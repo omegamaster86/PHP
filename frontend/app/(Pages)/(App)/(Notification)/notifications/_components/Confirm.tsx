@@ -202,9 +202,15 @@ export const Confirm: React.FC<Props> = (props) => {
             <span className='text-gray-400'>{x.value}</span>
           </div>
         ))}
-        <CustomButton type='submit' buttonType='primary' className='w-full max-w-sm mx-auto'>
-          {buttonLabel}
-        </CustomButton>
+
+        <div className='m-auto flex gap-3'>
+          <CustomButton type='button' buttonType='secondary' onClick={() => router.back()}>
+            戻る
+          </CustomButton>
+          <CustomButton type='submit' buttonType='primary' className='w-full'>
+            {buttonLabel}
+          </CustomButton>
+        </div>
       </form>
     </>
   );
