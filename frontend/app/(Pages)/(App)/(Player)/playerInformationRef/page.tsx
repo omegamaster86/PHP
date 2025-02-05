@@ -105,7 +105,7 @@ export default function PlayerInformationRef() {
   });
 
   // エラーハンドリング用のステート
-  const [error, setError] = useState({ isError: false, errorMessage: '' });
+  const [errors, setErrors] = useState<string[]>([]);
 
   // レース結果情報のデータステート
   const [raceResultRecordsData, setResultRecordsData] = useState([] as RaceResultRecordsResponse[]);
@@ -766,15 +766,13 @@ export default function PlayerInformationRef() {
   const dataDelete = async () => {
     deleteData.playerInformation = playerInformation;
     deleteData.raceResultRecordsData = raceResultRecordsData;
-    const csrf = () => axios.get('/sanctum/csrf-cookie');
-    await csrf();
     await axios
       .post('api/deletePlayerData', deleteData)
       .then((res) => {
         //console.log(res.data);
       })
       .catch((error) => {
-        setError({ isError: true, errorMessage: error.response?.data });
+        setErrors([error.response?.data?.message]);
       });
   };
 
@@ -782,8 +780,6 @@ export default function PlayerInformationRef() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const playerInf = await axios.post('api/getPlayerInfoData', {
           playerId,
         });
@@ -831,7 +827,7 @@ export default function PlayerInformationRef() {
           followerCount: followStatus.data.result.followerCount,
         });
       } catch (error: any) {
-        setError({ isError: true, errorMessage: 'API取得エラー:' + error.message });
+        setErrors([error.response?.data?.message]);
       }
     };
     fetchData();
@@ -1068,10 +1064,14 @@ export default function PlayerInformationRef() {
     middleware: 'auth',
   });
 
+  if (typeof playerInformation.player_id === 'undefined') {
+    return <ErrorBox errorText={errors} />;
+  }
+
   return (
     <>
       <CustomTitle displayBack>{mode === 'delete' ? '選手情報削除' : '選手情報参照'}</CustomTitle>
-      <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
+      <ErrorBox errorText={errors} />
       <div className='bg-gradient-to-r from-primary-900 via-primary-500 to-primary-900 p-4 '>
         <div className='flex flex-col sm:flex-row gap-[40px]'>
           <div>

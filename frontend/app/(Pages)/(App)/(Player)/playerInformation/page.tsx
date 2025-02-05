@@ -31,41 +31,24 @@ import Validator from '@/app/utils/validator';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
-import { NO_IMAGE_URL, PLAYER_IMAGE_URL } from '../../../../utils/imageUrl'; //For importing image url from a single source of truth
+import { PLAYER_IMAGE_URL } from '../../../../utils/imageUrl'; //For importing image url from a single source of truth
 import { CustomPlayerAvatar } from '@/app/components/CustomPlayerAvatar';
 
 type PlayerFormData = PlayerInformationResponse;
+
+const availableModes = ['create', 'update', 'confirm'] as const;
+type AvailableModes = (typeof availableModes)[number];
+const availablePrevModes = ['create', 'update', 'delete', ''] as const;
+type AvailablePrevModes = (typeof availablePrevModes)[number];
 
 export default function PlayerInformation() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // modeの値を取得 update, create
-  const mode = searchParams.get('mode')?.toString() || '';
-  switch (mode) {
-    case 'update':
-      break;
-    case 'create':
-      break;
-    case 'confirm':
-      break;
-    default:
-      // TODO: 404エラーの表示処理に切り替え
-      router.push('/playerInformation?mode=create');
-      break;
-  }
-  const prevMode = searchParams.get('prevMode')?.toString() || '';
-  switch (prevMode) {
-    case 'update':
-      break;
-    case 'create':
-      break;
-    case 'delete':
-      break;
-    default:
-      // TODO: 404エラーの表示処理に切り替え
-      break;
-  }
+  const mode = (searchParams.get('mode')?.toString() || 'create') as AvailableModes;
+
+  const prevMode = (searchParams.get('prevMode')?.toString() || '') as AvailablePrevModes;
 
   const source = searchParams.get('source') as 'confirm' | null;
 
@@ -237,8 +220,6 @@ export default function PlayerInformation() {
 
     const fetchPrefecture = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         axios
           .get<Prefecture[]>('api/getPrefectures')
           .then((response) => {
@@ -296,8 +277,6 @@ export default function PlayerInformation() {
 
     if (mode === 'update') {
       const fetchPlayerData = async () => {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         axios
           .post('api/getUpdatePlayerData', player_id)
           .then(async (response) => {
@@ -345,10 +324,7 @@ export default function PlayerInformation() {
             restoreFormData();
           })
           .catch((error) => {
-            setErrorMessage([
-              ...(errorMessage as string[]),
-              'API取得エラー:' + (error as Error).message,
-            ]);
+            setErrorMessage([error.response?.data?.message]);
           });
       };
       fetchPlayerData();
@@ -492,8 +468,6 @@ export default function PlayerInformation() {
           if (isError) {
             return;
           }
-          const csrf = () => axios.get('/sanctum/csrf-cookie');
-          await csrf();
           axios
             .post('api/checkJARAPlayerId', {
               jara_player_id: formData.jara_player_id,
@@ -526,8 +500,6 @@ export default function PlayerInformation() {
             return;
           }
           // jara_player_id登録されているかどうかチェック
-          const csrf = () => axios.get('/sanctum/csrf-cookie');
-          await csrf();
           axios
             .post('api/checkJARAPlayerId', {
               jara_player_id: formData.jara_player_id,
@@ -561,9 +533,6 @@ export default function PlayerInformation() {
             return;
           }
           if (prevMode == 'update') {
-            const csrf = () => axios.get('/sanctum/csrf-cookie');
-            await csrf();
-
             // jara_player_id登録されているかどうかチェック
             await axios
               .post('api/checkJARAPlayerId', {
@@ -616,9 +585,6 @@ export default function PlayerInformation() {
                 setErrorMessage([error.response?.data?.message]);
               });
           } else if (prevMode == 'create') {
-            const csrf = () => axios.get('/sanctum/csrf-cookie');
-            await csrf();
-
             // jara_player_id登録されているかどうかチェック
             await axios
               .post('api/checkJARAPlayerId', {
@@ -699,6 +665,14 @@ export default function PlayerInformation() {
       router.replace(`/playerInformation?mode=update&source=confirm&player_id=${playerId}`);
     }
   };
+
+  if (!availableModes.includes(mode)) return null;
+
+  if (!availablePrevModes.includes(prevMode)) return null;
+
+  if (mode !== 'create' && prevMode !== 'create' && formData.player_id === 0)
+    return <ErrorBox errorText={errorMessage} />;
+
   return (
     <>
       <CustomTitle customBack={customBack}>
