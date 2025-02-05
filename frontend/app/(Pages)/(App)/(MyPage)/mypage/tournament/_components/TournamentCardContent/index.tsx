@@ -17,11 +17,10 @@ const TournamentCardContent: React.FC<Props> = (props) => {
       tag={getTournTypeLabel(cardItem.tournType)}
       className='text-secondary-500 bg-secondary-100'
     />,
-    // TODO: チケット購入済みフラグの実装時にコメントアウトを外す
-    // true && (
-    //   <Tag key='ticket' tag='チケット購入済み' className='text-primary-500 bg-primary-100' />
-    // ),
-  ];
+    cardItem.isPurchased && (
+      <Tag key='ticket' tag='チケット購入済み' className='text-primary-500 bg-primary-100' />
+    ),
+  ].filter(Boolean);
 
   return (
     <div className='flex flex-col text-xs'>

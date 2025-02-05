@@ -26,10 +26,16 @@ class MyPageController extends Controller
         Log::debug(sprintf("getMyPageTournamentInfoList start"));
         $reqData = $request->all();
         $tournType = $reqData["tournType"];
-        $playerData = $tPlayers->getPlayerDataFromUserId(Auth::user()->user_id); //ユーザIDを元に選手IDを取得 202401008
+        $userId = Auth::user()->user_id;
 
+        $playerData = $tPlayers->getPlayerDataFromUserId($userId); //ユーザIDを元に選手IDを取得 202401008
         $playerId = $playerData->player_id ?? null;
-        $result = $tTournaments->getMyPageTournamentInfo($playerId, $tournType); //選手IDを元に大会情報を取得 20241008
+        $result = $tTournaments->getMyPageTournamentInfo($userId, $playerId, $tournType); //選手IDを元に大会情報を取得 20241008
+        foreach ($result as $value) {
+            // boolに変換
+            $value->isPurchased = $value->isPurchased === 1;
+        }
+
         Log::debug(sprintf("getMyPageTournamentInfoList end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
