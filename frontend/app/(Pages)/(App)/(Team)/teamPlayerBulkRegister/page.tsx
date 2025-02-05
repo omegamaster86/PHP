@@ -3,7 +3,7 @@
 
 import { CustomButton, CustomDropdown, CustomTitle, ErrorBox } from '@/app/components';
 import axios from '@/app/lib/axios';
-import { Org, UserIdType, UserResponse } from '@/app/types';
+import { Org, UserResponse } from '@/app/types';
 import Validator from '@/app/utils/validator';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -53,9 +53,11 @@ interface FileHandler {
 export default function TeamPlayerBulkRegister() {
   const [errorMessage, setErrorMessage] = useState([] as string[]);
 
-  // フック
   const router = useRouter();
+  const searchParams = useSearchParams();
   const fileUploaderRef = useRef<FileHandler>(null);
+
+  const org_id = searchParams.get('org_id')?.toString() || '';
 
   const [orgs, setOrgs] = useState([] as Org[]);
   const [orgData, setOrg] = useState({} as Org);
@@ -65,12 +67,11 @@ export default function TeamPlayerBulkRegister() {
     isSet: boolean;
   }>({ content: [], isSet: false });
   const [activationFlg, setActivationFlg] = useState<boolean>(false);
-  const [orgSelected, setOrgSelected] = useState<string>('');
+  const [orgSelected, setOrgSelected] = useState<string>(org_id);
   const [csvFileErrorMessage, setCsvFileErrorMessage] = useState([] as string[]);
   const [csvData, setCsvData] = useState<CsvData[]>([]);
   const [dialogDisplayFlg, setDialogDisplayFlg] = useState<boolean>(false);
   const [displayLinkButtonFlg, setDisplayLinkButtonFlg] = useState<boolean>(false);
-  const searchParams = useSearchParams();
   const [visibilityFlg, setVisibilityFlg] = useState<boolean>(false); //CSVテーブルの表示切替フラグ 20240424
 
   const [validFlag, setValidFlag] = useState(false); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
@@ -105,11 +106,6 @@ export default function TeamPlayerBulkRegister() {
 
   // 所属団体名の活性状態を制御
   let isOrgNameActive = false;
-  const org_id =
-    searchParams.get('orgId')?.toString() ||
-    searchParams.get('org_id')?.toString() ||
-    searchParams.get('sponsor_org_id')?.toString() ||
-    '';
   // orgIdの値を取得
   switch (org_id) {
     case '':
