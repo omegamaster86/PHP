@@ -626,6 +626,7 @@ interface MyPageTournamentInfoData {
   eventStartDate: string; // 開催日
   venueName: string; //開催場所
   sponsorOrgName: string; // 主催団体名
+  isPurchased: boolean; // 購入済みかどうか
 }
 
 interface MyPageTournamentParams {

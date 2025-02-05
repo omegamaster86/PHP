@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class T_tournaments extends Model
 {
@@ -419,55 +418,65 @@ class T_tournaments extends Model
     }
 
     //マイページ 大会情報用 選手IDに紐づいたレース結果情報及び、フォロー大会情報を取得 20241028
-    public function getMyPageTournamentInfo($playerId, $tournType)
+    public function getMyPageTournamentInfo($userId, $playerId, $tournType)
     {
         $tournaments = DB::select(
-            'select 
-                                            `t_tournaments`.`tourn_id` as `tournId`,
-                                            `t_tournaments`.`tourn_name` as `tournName`,
-                                            `t_tournaments`.`tourn_type` as `tournType`, 
-                                            `t_tournaments`.`event_start_date` as `eventStartDate`,
-                                            `m_venue`.`venue_name` as `venueName`,
-                                            `t_organizations`.`org_name` as `sponsorOrgName`
-                                            FROM `t_tournaments` 
-                                            left join `m_venue`
-                                            on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
-                                            left join `t_organizations`
-                                            on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
-                                            where 1=1
-                                            and (
-                                                exists (
-                                                    select 1
-                                                        FROM `t_followed_tournaments`
-                                                        WHERE 1=1
-                                                        and `t_tournaments`.`tourn_id` = `t_followed_tournaments`.`tourn_id`
-                                                        and `t_followed_tournaments`.delete_flag = 0
-                                                        and `t_followed_tournaments`.user_id = ?
-                                                )
-                                                or exists (
-                                                    select 1
-                                                        FROM `t_race_result_record` 
-                                                        left join `t_followed_players` 
-													    on `t_race_result_record`.`player_id` = `t_followed_players`.`player_id`
-                                                        WHERE 1=1
-                                                        and `t_tournaments`.`tourn_id` = `t_race_result_record`.`tourn_id`
-                                                        and `t_race_result_record`.delete_flag = 0
-                                                        and (
-                                                            `t_race_result_record`.player_id = ?
-                                                            or (
-                                                                `t_followed_players`.delete_flag = 0
-														        and `t_followed_players`.user_id = ?
-                                                            )
-                                                        )
-                                                )
-                                            )
-                                            and `t_tournaments`.`delete_flag` = 0
-                                            and `m_venue`.`delete_flag` = 0
-                                            and `t_organizations`.`delete_flag` = 0
-                                            and `t_tournaments`.tourn_type = ?
-                                            and `t_tournaments`.event_start_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 9 MONTH) AND DATE_ADD(CURDATE(), INTERVAL 3 MONTH)
-                                            ORDER BY `t_tournaments`.`event_start_date` DESC',
-            [Auth::user()->user_id, $playerId, Auth::user()->user_id, $tournType]
+            'SELECT 
+                `t_tournaments`.`tourn_id` AS `tournId`,
+                `t_tournaments`.`tourn_name` AS `tournName`,
+                `t_tournaments`.`tourn_type` AS `tournType`,
+                `t_tournaments`.`event_start_date` AS `eventStartDate`,
+                `m_venue`.`venue_name` AS `venueName`,
+                `t_organizations`.`org_name` AS `sponsorOrgName`,
+                CASE
+                    WHEN `t_ticket_purchase_histories`.`tourn_id` IS NOT NULL THEN 1
+                    ELSE 0
+                END AS `isPurchased`
+                FROM `t_tournaments`
+                    INNER JOIN `m_venue` 
+                    ON `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
+                    AND `m_venue`.`delete_flag` = 0
+                    INNER JOIN `t_organizations` 
+                    ON `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
+                    AND `t_organizations`.`delete_flag` = 0
+                    LEFT JOIN `t_ticket_purchase_histories`
+                    ON `t_tournaments`.`tourn_id` = `t_ticket_purchase_histories`.`tourn_id`
+                    AND `t_ticket_purchase_histories`.`user_id` = ?
+                    AND `t_ticket_purchase_histories`.`delete_flag` = 0
+                WHERE 1=1
+                AND (
+                    EXISTS (
+                        SELECT 1
+                        FROM `t_followed_tournaments`
+                        WHERE 1=1
+                            AND `t_tournaments`.`tourn_id` = `t_followed_tournaments`.`tourn_id`
+                            AND `t_followed_tournaments`.delete_flag = 0
+                            AND `t_followed_tournaments`.user_id = ?
+                    )
+                    OR EXISTS (
+                        SELECT 1
+                        FROM `t_race_result_record`
+                            LEFT JOIN `t_followed_players` 
+                            ON `t_race_result_record`.`player_id` = `t_followed_players`.`player_id`
+                        WHERE 1=1
+                            AND `t_tournaments`.`tourn_id` = `t_race_result_record`.`tourn_id`
+                            AND `t_race_result_record`.delete_flag = 0
+                            AND (
+                                `t_race_result_record`.player_id = ?
+                                OR (
+                                    `t_followed_players`.delete_flag = 0
+                                    AND `t_followed_players`.user_id = ?
+                                )
+                            )
+                    )
+                    OR `t_ticket_purchase_histories`.`tourn_id` IS NOT NULL
+                )
+                AND `t_tournaments`.`delete_flag` = 0
+                AND `t_tournaments`.tourn_type = ?
+                AND `t_tournaments`.event_start_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 9 MONTH)
+                AND DATE_ADD(CURDATE(), INTERVAL 3 MONTH)
+                ORDER BY `t_tournaments`.`event_start_date` DESC',
+            [$userId, $userId, $playerId, $userId, $tournType]
         );
         return $tournaments;
     }
