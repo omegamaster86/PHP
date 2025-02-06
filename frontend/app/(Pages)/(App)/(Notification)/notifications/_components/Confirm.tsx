@@ -207,7 +207,7 @@ export const Confirm: React.FC<Props> = (props) => {
           <CustomButton type='button' buttonType='secondary' onClick={() => router.back()}>
             戻る
           </CustomButton>
-          <CustomButton type='submit' buttonType='primary' className='w-full'>
+          <CustomButton type='submit' buttonType='primary'>
             {buttonLabel}
           </CustomButton>
         </div>
