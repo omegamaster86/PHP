@@ -154,6 +154,7 @@ export default function Tournaments() {
   const [raceIdErrorMessage, setRaceIdErrorMessage] = useState([] as string[]);
   const [raceNumberErrorMessage, setRaceNumberErrorMessage] = useState([] as string[]);
   const [eventIdErrorMessage, setEventIdErrorMessage] = useState([] as string[]);
+  const [eventNameErrorMessage, setEventNameErrorMessage] = useState([] as string[]);
   const [raceNameErrorMessage, setRaceNameErrorMessage] = useState([] as string[]);
   const [raceTypeErrorMessage, setRaceTypeErrorMessage] = useState([] as string[]);
   const [raceTypeNameErrorMessage, setRaceTypeNameErrorMessage] = useState([] as string[]);
@@ -235,68 +236,77 @@ export default function Tournaments() {
 
     const raceNumberErrorFlg = tableData.some((row) => {
       if (row.checked) {
-        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+        return false; //削除チェックがされている場合、バリデーションを行わない
       }
       return Validator.validateRequired(row.race_number, 'レースNo.').length > 0;
     });
     const raceNumberNegativeErrorFlg = tableData.some((row) => {
       if (row.checked) {
-        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+        return false; //削除チェックがされている場合、バリデーションを行わない
       }
       return Validator.validatePositiveNumber(row.race_number).length > 0;
     });
     const eventIdErrorFlg = tableData.some((row) => {
       if (row.checked) {
-        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+        return false; //削除チェックがされている場合、バリデーションを行わない
       }
       return Validator.validateSelectRequired(row.event_id, '種目').length > 0;
     });
 
+    const eventNameErrorFlg = tableData.some((row) => {
+      if (row.checked) {
+        return false; //削除チェックがされている場合、バリデーションを行わない
+      }
+      return row.event_id === '999'
+        ? Validator.validateRequired(row.otherEventName, '種目').length > 0
+        : false;
+    });
+
     const raceNameErrorFlg = tableData.some((row) => {
       if (row.checked) {
-        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+        return false; //削除チェックがされている場合、バリデーションを行わない
       }
       return Validator.validateRequired(row.race_name, 'レース名').length > 0;
     });
     const raceTypeErrorFlg = tableData.some((row) => {
       if (row.checked) {
-        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+        return false; //削除チェックがされている場合、バリデーションを行わない
       }
       return Validator.validateRequired(row.race_class_id, 'レース区分').length > 0;
     });
     const raceTypeNameErrorFlg = tableData.some((row) => {
       if (row.checked) {
-        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+        return false; //削除チェックがされている場合、バリデーションを行わない
       }
 
       return row.race_class_id === '999'
-        ? Validator.validateRequired(row.otherRaceName, 'レース区分').length > 0
+        ? Validator.validateRequired(row.otherRaceClassName, 'レース区分').length > 0
         : false;
     });
 
     const byGroupErrorFlg = tableData.some((row) => {
       if (row.checked) {
-        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+        return false; //削除チェックがされている場合、バリデーションを行わない
       }
       return Validator.validateRequired(row.by_group, '組別').length > 0;
     });
 
     const rangeErrorFlg = tableData.some((row) => {
       if (row.checked) {
-        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+        return false; //削除チェックがされている場合、バリデーションを行わない
       }
       return Validator.validateRequired(row.range, '距離').length > 0;
     });
     const rangeNegativeErrorFlg = tableData.some((row) => {
       if (row.checked) {
-        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+        return false; //削除チェックがされている場合、バリデーションを行わない
       }
       return Validator.validatePositiveNumber(row.range).length > 0;
     });
 
     const startDateTimeErrorFlg = tableData.some((row) => {
       if (row.checked) {
-        return false; //削除チェックがされている場合、バリデーションを行わない 20240508
+        return false; //削除チェックがされている場合、バリデーションを行わない
       }
       return Validator.validateRequired(row.start_date_time, '発艇日時').length > 0;
     });
@@ -338,6 +348,14 @@ export default function Tournaments() {
       );
     } else {
       setEventIdErrorMessage([]);
+    }
+
+    if (eventNameErrorFlg) {
+      setEventNameErrorMessage(
+        Validator.getErrorMessages([Validator.validateSelectRequired(null, '種目')]),
+      );
+    } else {
+      setEventNameErrorMessage([]);
     }
 
     if (raceNameErrorFlg) {
@@ -395,6 +413,7 @@ export default function Tournaments() {
       venueNameError.length > 0 ||
       tournUrlError.length > 0 ||
       eventIdErrorFlg ||
+      eventNameErrorFlg ||
       raceNameErrorFlg ||
       entryRaceIdErrorFlg ||
       raceNumberErrorFlg ||
@@ -512,8 +531,6 @@ export default function Tournaments() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const playerInf = await axios.get('api/getIDsAssociatedWithUser');
         setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
       } catch (error: any) {}
@@ -551,11 +568,6 @@ export default function Tournaments() {
     };
 
     const fetchData = async () => {
-      // APIを叩いてデータを取得する
-      // TODO: データ取得処理の実装置き換え
-      const csrf = () => axios.get('/sanctum/csrf-cookie');
-      await csrf();
-
       const [approvalTypesRes, venuesRes, eventsRes, raceTypesRes] = await Promise.all([
         axios.get<ApprovalType[]>('api/getApprovalType'),
         axios.get<Venue[]>('api/getVenueList'),
@@ -589,11 +601,6 @@ export default function Tournaments() {
 
       // 更新モードの時に、大会情報を取得する
       if (mode === 'update') {
-        // APIを叩いて、大会情報とレース情報を取得する
-        // TODO: データ取得処理の実装置き換え
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
-
         const [tournamentRes, racesRes] = await Promise.all([
           axios.post<{ result: Tournament }>('api/getTournamentInfoData', tourn_id),
           axios.post<{ result: Race[] }>('api/getRaceData', tourn_id),
@@ -644,9 +651,6 @@ export default function Tournaments() {
           setDisplayFlg(false);
           const isError = performValidation();
           if (!isError) {
-            const csrf = () => axios.get('/sanctum/csrf-cookie');
-            await csrf();
-
             axios
               .post('api/tournamentRegistOrUpdateValidationCheck', {
                 entrysystem_tourn_id: tournamentFormData.entrysystem_tourn_id,
@@ -662,9 +666,6 @@ export default function Tournaments() {
                     (registerData.tournamentFormData as any)[key] =
                       (registerData.tournamentFormData as any)[key] ?? '';
                   });
-                  const csrf = () => axios.get('/sanctum/csrf-cookie');
-                  await csrf();
-
                   axios
                     .post('api/storeTournamentInfoData', registerData, {
                       headers: {
@@ -684,9 +685,11 @@ export default function Tournaments() {
                           race_number: '',
                           event_id: '',
                           event_name: '',
+                          otherEventName: '',
                           race_name: '',
                           race_class_id: '',
                           race_class_name: '',
+                          otherRaceClassName: '',
                           by_group: '',
                           range: '',
                           start_date_time: '',
@@ -743,9 +746,6 @@ export default function Tournaments() {
           const isError = performValidation();
 
           if (!isError) {
-            const csrf = () => axios.get('/sanctum/csrf-cookie');
-            await csrf();
-
             axios
               .post('api/tournamentRegistOrUpdateValidationCheck', {
                 tourn_id: tournamentFormData.tourn_id,
@@ -781,9 +781,11 @@ export default function Tournaments() {
                           race_number: '',
                           event_id: '',
                           event_name: '',
+                          otherEventName: '',
                           race_name: '',
                           race_class_id: '',
                           race_class_name: '',
+                          otherRaceClassName: '',
                           by_group: '',
                           range: '',
                           start_date_time: '',
@@ -844,8 +846,6 @@ export default function Tournaments() {
           const isRaceNoError = raceNumberDuplicatCheck(); //レースNo.の重複チェック 20240506
 
           if (!isError && !isEntryRaceIdError && !isRaceNoError) {
-            const csrf = () => axios.get('/sanctum/csrf-cookie');
-            await csrf();
             axios
               .post('api/tournamentRegistOrUpdateValidationCheck', {
                 tourn_id: tournamentFormData.tourn_id,
@@ -915,9 +915,11 @@ export default function Tournaments() {
             race_number: '',
             event_id: '',
             event_name: '',
+            otherEventName: '',
             race_name: '',
             race_class_id: '',
             race_class_name: '',
+            otherRaceClassName: '',
             by_group: '',
             range: '',
             start_date_time: '',
@@ -983,20 +985,34 @@ export default function Tournaments() {
         </CustomTd>
         {/* 種目 */}
         <CustomTd>
-          <CustomDropdown
-            id='event'
-            options={event.map((item) => ({ key: item.id, value: item.name }))}
-            value={row.event_id}
-            onChange={(e) => {
-              handleInputChangeRace(row.id, 'event_id', e);
-              handleInputChangeRace(
-                row.id,
-                'event_name',
-                event.find((item) => item.id === Number(e))?.name || '',
-              );
-            }}
-            className='rounded'
-          />
+          <div className='flex gap-1'>
+            <CustomDropdown
+              id='event'
+              options={event.map((item) => ({ key: item.id, value: item.name }))}
+              value={row.event_id}
+              onChange={(e) => {
+                handleInputChangeRace(row.id, 'event_id', e);
+                handleInputChangeRace(
+                  row.id,
+                  'event_name',
+                  event.find((item) => item.id === Number(e))?.name || '',
+                );
+              }}
+              className='rounded'
+            />
+            {/* その他選択時に表示のテキストボックス */}
+            {row.event_id == '999' && (
+              <CustomTextField
+                label=''
+                isError={eventNameErrorMessage.length > 0}
+                displayHelp={false}
+                readonly={mode === 'confirm'}
+                value={row.otherEventName}
+                onChange={(e) => handleInputChangeRace(row.id, 'otherEventName', e.target.value)}
+                widthClassName='w-[150px]'
+              />
+            )}
+          </div>
         </CustomTd>
         {/* レース名 */}
         <CustomTd>
@@ -1009,7 +1025,7 @@ export default function Tournaments() {
         </CustomTd>
         {/* レース区分 */}
         <CustomTd>
-          <div className='flex flex-row gap-[4px]'>
+          <div className='flex gap-1'>
             <CustomDropdown
               id='raceType'
               options={raceType.map((item) => ({ key: item.id, value: item.name }))}
@@ -1021,7 +1037,7 @@ export default function Tournaments() {
                   'race_class_name',
                   raceType.find((item) => item.id === Number(e))?.name || '',
                 );
-                handleInputChangeRace(row.id, 'otherRaceName', ''); //レース区分を切り替えた際に、その他のレース区分内容をリセットする 20240308
+                handleInputChangeRace(row.id, 'otherRaceClassName', ''); //レース区分を切り替えた際に、その他のレース区分内容をリセットする
               }}
               className='rounded'
               readonly={mode === 'confirm'}
@@ -1033,8 +1049,10 @@ export default function Tournaments() {
                 isError={raceTypeNameErrorMessage.length > 0}
                 displayHelp={false}
                 readonly={mode === 'confirm'}
-                value={row.otherRaceName}
-                onChange={(e) => handleInputChangeRace(row.id, 'otherRaceName', e.target.value)}
+                value={row.otherRaceClassName}
+                onChange={(e) =>
+                  handleInputChangeRace(row.id, 'otherRaceClassName', e.target.value)
+                }
                 widthClassName='w-[150px]'
               />
             )}
@@ -1481,18 +1499,18 @@ export default function Tournaments() {
                     {/* レースNo. */}
                     <CustomTd textType='secondary'>{row.race_number}</CustomTd>
                     {/* 種目 */}
-                    <CustomTd textType='secondary'>{row.event_name}</CustomTd>
+                    <CustomTd textType='secondary'>
+                      {row.event_id == '999'
+                        ? `${row.event_name} ${row.otherEventName}`
+                        : row.event_name}
+                    </CustomTd>
                     {/* レース名 */}
                     <CustomTd textType='secondary'>{row.race_name}</CustomTd>
+                    {/* レース区分 */}
                     <CustomTd textType='secondary'>
-                      {/* レース区分 */}
-                      <div className='flex flex-row gap-[8px] items-center'>
-                        {row.race_class_name}
-                        {/* レース区分名 */}
-                        <div className={`${row.race_class_id == '999' ? 'visible' : 'hidden'} `}>
-                          {row.otherRaceName}
-                        </div>
-                      </div>
+                      {row.race_class_id == '999'
+                        ? `${row.race_class_name} ${row.otherRaceClassName}`
+                        : row.race_class_name}
                     </CustomTd>
                     {/* 組別 */}
                     <CustomTd textType='secondary'>{row.by_group}</CustomTd>
@@ -1517,6 +1535,7 @@ export default function Tournaments() {
           raceNumberErrorMessage.length > 0 ||
           raceIdErrorMessage.length > 0 ||
           eventIdErrorMessage.length > 0 ||
+          eventNameErrorMessage.length > 0 ||
           raceNameErrorMessage.length > 0 ||
           raceTypeErrorMessage.length > 0 ||
           raceTypeNameErrorMessage.length > 0 ||
@@ -1530,6 +1549,7 @@ export default function Tournaments() {
             <p>{raceIdErrorMessage}</p>
             <p>{raceNumberErrorMessage}</p>
             <p>{eventIdErrorMessage}</p>
+            <p>{eventNameErrorMessage}</p>
             <p>{raceNameErrorMessage}</p>
             <p>{raceTypeErrorMessage}</p>
             <p>{raceTypeNameErrorMessage}</p>

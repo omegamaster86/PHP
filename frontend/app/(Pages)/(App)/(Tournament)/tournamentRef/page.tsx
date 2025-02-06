@@ -302,7 +302,6 @@ export default function TournamentRef() {
           tournamentResponse.data.result.tourn_url = tournamentResponse.data.result.tourn_url ?? ''; //nullのパラメータを空のパラメータに置き換える
           setTournamentFormData(tournamentResponse.data.result);
 
-          // TODO: tournIdを元にレース情報を取得する処理の置き換え
           const raceResponse = await axios.post('api/getRaceData', {
             tourn_id: tournId,
           });
@@ -713,7 +712,7 @@ export default function TournamentRef() {
                 .map((row, index) => (
                   <CustomTr key={index}>
                     {/* 「出漕結果記録テーブル」に「レーステーブル」.「レースID」と紐づくデータが存在する場合、リンクボタンを表示するかどうかを制御するためにhasHistoryを利用 */}
-                    {row.hasHistory == true && (
+                    {row.hasHistory ? (
                       <CustomTd
                         transitionDest={
                           '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
@@ -721,10 +720,10 @@ export default function TournamentRef() {
                       >
                         {row.race_id}
                       </CustomTd>
+                    ) : (
+                      <CustomTd>{row.race_id}</CustomTd>
                     )}
-                    {/* レースID */}
-                    {!row.hasHistory && <CustomTd>{row.race_id}</CustomTd>}
-                    {row.hasHistory == true && (
+                    {row.hasHistory ? (
                       <CustomTd
                         transitionDest={
                           '/tournamentRaceResultRef?raceId=' + row.race_id?.toString()
@@ -732,13 +731,17 @@ export default function TournamentRef() {
                       >
                         {row.race_name}
                       </CustomTd>
+                    ) : (
+                      <CustomTd>{row.race_name}</CustomTd>
                     )}
-                    {/* レース名 */}
-                    {!row.hasHistory && <CustomTd>{row.race_name}</CustomTd>}
                     {/* レースNo. */}
                     <CustomTd>{row.race_number}</CustomTd>
                     {/* 種目 */}
-                    <CustomTd>{row.event_name}</CustomTd>
+                    <CustomTd>
+                      {row.event_id == '999'
+                        ? `${row.event_name} ${row.otherEventName}`
+                        : row.event_name}
+                    </CustomTd>
                     {/* 組別 */}
                     <CustomTd>{row.by_group}</CustomTd>
                     {/* 距離 */}

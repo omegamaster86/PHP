@@ -148,35 +148,37 @@ class T_races extends Model
     public function getRaces($trnId)
     {
         $races = DB::select(
-            'select
-                            race.`race_id`
-                            ,race.`race_number`
-                            ,race.`entrysystem_race_id`
-                            ,race.`tourn_id`
-                            ,race.`race_name`
-                            ,race.`event_id`
-                            ,`m_events`.`event_name`
-                            ,race.`race_class_id`
-                            ,race.`race_class_name` as otherRaceName
-                            ,`m_race_class`.`race_class_name`
-                            ,race.`by_group`
-                            ,race.`range`
-                            ,race.`start_date_time`
-                            ,case
-                                when sum(case rrr.delete_flag when 0 then 1 else 0 end) > 0 then 1
-                                else 0
-                                end as `hasHistory`
-                            FROM `t_races` race
-                            left join `t_race_result_record` rrr
-                            on race.race_id = rrr.race_id
-                            left join `m_race_class`
-                            on race.`race_class_id` = `m_race_class`.`race_class_id`
-                            left join `m_events`
-                            on race.`event_id` = `m_events`.`event_id`
-                            where 1=1
-                            and race.delete_flag = 0
-                            and race.`tourn_id` = :tourn_id
-                            group by race.`race_id`',
+            'SELECT
+                race.`race_id`
+                ,race.`race_number`
+                ,race.`entrysystem_race_id`
+                ,race.`tourn_id`
+                ,race.`race_name`
+                ,race.`event_id`
+                ,me.`event_name` AS `event_name`
+                ,race.`event_name` AS otherEventName
+                ,race.`race_class_id`
+                ,`m_race_class`.`race_class_name`
+                ,race.`race_class_name` AS otherRaceClassName
+                ,race.`by_group`
+                ,race.`range`
+                ,race.`start_date_time`
+                ,CASE
+                    WHEN COUNT(rrr.race_result_record_id) > 0 THEN 1
+                    ELSE 0
+                    END AS `hasHistory`
+            FROM `t_races` race
+            LEFT OUTER JOIN `t_race_result_record` rrr ON
+                rrr.race_id = race.race_id
+                AND rrr.delete_flag = 0
+            INNER JOIN `m_race_class` ON
+                `m_race_class`.`race_class_id` = race.`race_class_id`
+            INNER JOIN `m_events` me ON
+                me.`event_id` = race.`event_id`
+            WHERE 1=1
+                AND race.delete_flag = 0
+                AND race.`tourn_id` = :tourn_id
+            GROUP BY race.`race_id`',
             $trnId
         );
         return $races;
@@ -194,12 +196,11 @@ class T_races extends Model
                             ,race.`tourn_id`
                             ,race.`race_name`
                             ,race.`event_id`
-                            ,case
-                                when race.`event_name` is null then eve.`event_name` 
-                                else race.`event_name`
-                                end as `event_name`
+                            ,eve.`event_name`
+                            ,race.`event_name` AS otherEventName
                             ,race.`race_class_id`
                             ,mrc.`race_class_name`
+                            ,race.`race_class_name` AS otherRaceClassName
                             ,race.`by_group`
                             ,race.`range`
                             ,race.`start_date_time`
@@ -293,10 +294,8 @@ class T_races extends Model
                         ,race.`race_name`
                         ,race.`race_number`
                         ,race.`race_class_id`
-                        ,case
-                            when race.race_class_name is null then mrc.`race_class_name` 
-                            else race.race_class_name
-                            end as race_class_name
+                        ,mrc.race_class_name
+                        ,race.race_class_name as otherRaceClassName
                         ,race.`by_group`
                         FROM `t_races` race
                         left join `t_race_result_record` rrr

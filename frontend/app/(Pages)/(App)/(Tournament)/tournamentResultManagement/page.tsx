@@ -719,7 +719,11 @@ export default function TournamentResultManagement() {
                   {/* レースNo */}
                   <CustomTd>{row.race_number}</CustomTd>
                   {/* レース区分 */}
-                  <CustomTd>{row.race_class_name}</CustomTd>
+                  <CustomTd>
+                    {row.race_class_id == '999'
+                      ? `${row.race_class_name} ${row.otherRaceClassName}`
+                      : row.race_class_name}
+                  </CustomTd>
                   {/* 組別 */}
                   <CustomTd>{row.by_group}</CustomTd>
                 </CustomTr>

@@ -37,9 +37,12 @@ const initialRaceInfo = {
   entrysystem_race_id: 0,
   tourn_id: 0,
   race_name: '',
-  race_class_name: 0,
+  race_class_id: 0,
+  race_class_name: '',
+  otherRaceClassName: '',
   event_id: 0,
   event_name: '',
+  otherEventName: '',
   by_group: '',
   range: 0,
   startDateTime: '',
@@ -1239,7 +1242,11 @@ export default function TournamentResult() {
               />
               <CustomTextField
                 label='種目'
-                value={raceInfo?.event_name || ''}
+                value={
+                  raceInfo.event_id == 999
+                    ? `${raceInfo.event_name} ${raceInfo.otherEventName}`
+                    : raceInfo.event_name
+                }
                 readonly
                 displayHelp={false}
               />
@@ -1247,7 +1254,11 @@ export default function TournamentResult() {
             <div className='flex flex-col justify-between gap-[1px] w-[50%]'>
               <CustomTextField
                 label='レース区分'
-                value={raceInfo?.race_class_name?.toString() || ''}
+                value={
+                  raceInfo.race_class_id == 999
+                    ? `${raceInfo.race_class_name} ${raceInfo.otherRaceClassName}`
+                    : raceInfo.race_class_name
+                }
                 readonly
                 displayHelp={false}
               />
