@@ -421,37 +421,53 @@ class T_tournaments extends Model
     public function getMyPageTournamentInfo($userId, $playerId, $tournType)
     {
         $tournaments = DB::select(
-            'SELECT 
-                `t_tournaments`.`tourn_id` AS `tournId`,
-                `t_tournaments`.`tourn_name` AS `tournName`,
-                `t_tournaments`.`tourn_type` AS `tournType`,
-                `t_tournaments`.`event_start_date` AS `eventStartDate`,
-                `m_venue`.`venue_name` AS `venueName`,
-                `t_organizations`.`org_name` AS `sponsorOrgName`,
-                CASE
-                    WHEN `t_ticket_purchase_histories`.`tourn_id` IS NOT NULL THEN 1
-                    ELSE 0
-                END AS `isPurchased`
+            'SELECT
+                tournaments.`tourn_id` AS `tournId`,
+                tournaments.`tourn_name` AS `tournName`,
+                tournaments.`tourn_type` AS `tournType`,
+                tournaments.`event_start_date` AS `eventStartDate`,
+                tournaments.`venue_name` AS `venueName`,
+                tournaments.`sponsor_org_name` AS `sponsorOrgName`,
+                tournaments.`isPurchased` AS `isPurchased`
+            FROM (
+                SELECT
+                    `t_tournaments`.`tourn_id` AS `tourn_id`,
+                    `t_tournaments`.`tourn_name` AS `tourn_name`,
+                    `t_tournaments`.`tourn_type` AS `tourn_type`,
+                    `t_tournaments`.`event_start_date` AS `event_start_date`,
+                    `m_venue`.`venue_name` AS `venue_name`,
+                    `t_organizations`.`org_name` AS `sponsor_org_name`,
+                    CASE
+                        WHEN COUNT(`t_ticket_purchase_histories`.`tourn_id`) > 0 THEN 1
+                        ELSE 0
+                    END AS `isPurchased`
                 FROM `t_tournaments`
-                    INNER JOIN `m_venue` 
-                    ON `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
+                INNER JOIN `m_venue` ON
+                    `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
                     AND `m_venue`.`delete_flag` = 0
-                    INNER JOIN `t_organizations` 
-                    ON `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
+                INNER JOIN `t_organizations` ON
+                    `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
                     AND `t_organizations`.`delete_flag` = 0
-                    LEFT JOIN `t_ticket_purchase_histories`
-                    ON `t_tournaments`.`tourn_id` = `t_ticket_purchase_histories`.`tourn_id`
+                LEFT JOIN `t_ticket_purchase_histories` ON
+                    `t_tournaments`.`tourn_id` = `t_ticket_purchase_histories`.`tourn_id`
                     AND `t_ticket_purchase_histories`.`user_id` = ?
                     AND `t_ticket_purchase_histories`.`delete_flag` = 0
                 WHERE 1=1
+                    AND `t_tournaments`.`delete_flag` = 0
+                    AND `t_tournaments`.tourn_type = ?
+                    AND `t_tournaments`.event_start_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 9 MONTH)
+                    AND DATE_ADD(CURDATE(), INTERVAL 3 MONTH)
+                GROUP BY `t_tournaments`.`tourn_id`
+            ) tournaments
+            WHERE 1=1
                 AND (
                     EXISTS (
                         SELECT 1
-                        FROM `t_followed_tournaments`
+                        FROM `t_followed_tournaments` tft
                         WHERE 1=1
-                            AND `t_tournaments`.`tourn_id` = `t_followed_tournaments`.`tourn_id`
-                            AND `t_followed_tournaments`.delete_flag = 0
-                            AND `t_followed_tournaments`.user_id = ?
+                            AND tft.`tourn_id` = tournaments.`tourn_id`
+                            AND tft.delete_flag = 0
+                            AND tft.user_id = ?
                     )
                     OR EXISTS (
                         SELECT 1
@@ -459,7 +475,7 @@ class T_tournaments extends Model
                             LEFT JOIN `t_followed_players` 
                             ON `t_race_result_record`.`player_id` = `t_followed_players`.`player_id`
                         WHERE 1=1
-                            AND `t_tournaments`.`tourn_id` = `t_race_result_record`.`tourn_id`
+                            AND tournaments.`tourn_id` = `t_race_result_record`.`tourn_id`
                             AND `t_race_result_record`.delete_flag = 0
                             AND (
                                 `t_race_result_record`.player_id = ?
@@ -469,13 +485,9 @@ class T_tournaments extends Model
                                 )
                             )
                     )
-                    OR `t_ticket_purchase_histories`.`tourn_id` IS NOT NULL
+                    OR tournaments.`isPurchased` = 1
                 )
-                AND `t_tournaments`.`delete_flag` = 0
-                AND `t_tournaments`.tourn_type = ?
-                AND `t_tournaments`.event_start_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 9 MONTH)
-                AND DATE_ADD(CURDATE(), INTERVAL 3 MONTH)
-                ORDER BY `t_tournaments`.`event_start_date` DESC',
+            ORDER BY tournaments.`event_start_date` DESC',
             [$userId, $userId, $playerId, $userId, $tournType]
         );
         return $tournaments;
