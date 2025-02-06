@@ -77,7 +77,7 @@ export default function TournamentResultRef() {
               {/* レース名 */}
               <div className='flex flex-col gap-1'>
                 <Label label='レース名' textSize='small' isBold />
-                {<p className='text-secondaryText disable'>{raceInfo.race_name || ''}</p>}
+                <p className='text-secondaryText disable'>{raceInfo.race_name || ''}</p>
               </div>
               {/* レースNo */}
               <div className='flex flex-col gap-1'>
@@ -87,14 +87,22 @@ export default function TournamentResultRef() {
               {/* 種目 */}
               <div className='flex flex-col gap-1'>
                 <Label label='種目' textSize='small' isBold />
-                {<p className='text-secondaryText disable'>{raceInfo.event_name || ''}</p>}
+                <p className='text-secondaryText disable'>
+                  {raceInfo.event_id == '999'
+                    ? `${raceInfo.event_name} ${raceInfo.otherEventName}`
+                    : raceInfo.event_name}
+                </p>
               </div>
             </div>
             <div className='flex flex-col gap-3'>
               {/* レース区分 */}
               <div className='flex flex-col gap-1'>
                 <Label label='レース区分' textSize='small' isBold />
-                <p className='text-secondaryText disable'>{raceInfo.race_class_name || ''}</p>
+                <p className='text-secondaryText disable'>
+                  {raceInfo.race_class_id == '999'
+                    ? `${raceInfo.race_class_name} ${raceInfo.otherRaceClassName}`
+                    : raceInfo.race_class_name}
+                </p>
               </div>
               {/* 組別 */}
               <div className='flex flex-col gap-1'>

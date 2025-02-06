@@ -192,9 +192,12 @@ interface RaceTable {
   entrysystem_race_id: number; // エントリーレースID
   tourn_id: number; // 大会ID
   race_name: string; // レース名
-  race_class_name: number; // レース区分
+  race_class_id: number;
+  race_class_name: string; // レース区分
+  otherRaceClassName: string; // その他レース区分名
   event_id: number; // 種目ID
   event_name: string; // 種目名
+  otherEventName: string; // その他種目名
   by_group: string; // 組別
   range: number; // 距離
   startDateTime: string; // 発艇予定日時
@@ -210,10 +213,11 @@ interface Race {
   race_number: string; // レースNo.
   event_id: string; // 種目ID
   event_name: string; // 種目名
+  otherEventName: string; // その他種目名
   race_name: string; // レース名
   race_class_id: string; // レース区分
   race_class_name: string; // レース区分名
-  otherRaceName?: string; // その他レース名
+  otherRaceClassName: string; // その他レース区分名
   by_group: string; // 組別
   range: string; // 距離
   start_date_time: string; // 開始日時

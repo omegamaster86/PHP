@@ -197,7 +197,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           csvContent += response.data.result[index].race_name + ','; //レース名
           csvContent += response.data.result[index].race_class_id + ','; //レース区分ID
           if (response.data.result[index].race_class_id == 999) {
-            csvContent += response.data.result[index].otherRaceName + ','; //レース区分名
+            csvContent += response.data.result[index].otherRaceClassName + ','; //レース区分名
           } else {
             csvContent += response.data.result[index].race_class_name + ','; //レース区分名
           }
