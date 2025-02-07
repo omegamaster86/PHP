@@ -48,6 +48,8 @@ const initialRaceInfo = {
   startDateTime: '',
 };
 
+const tournamentResultMode = ['create', 'update', 'confirm'];
+
 // レース結果管理画面のメインコンポーネント
 export default function TournamentResult() {
   const router = useRouter();
@@ -91,21 +93,11 @@ export default function TournamentResult() {
 
   // 遷移元画面からのパラメータ取得
   const param = useSearchParams();
-  const mode = param.get('mode');
+  const mode = param.get('mode') || '';
   const [raceId, setRaceId] = useState<string | null>(param.get('raceId')); // レースID
   const tournId = param.get('tournId'); // 大会ID
   const eventId = param.get('eventId'); // 種目ID
   const prevMode = param.get('prevMode'); // 遷移元画面のモード
-  switch (mode) {
-    case 'create':
-      break;
-    case 'update':
-      break;
-    case 'confirm':
-      break;
-    default:
-      break;
-  }
 
   /**
    * レース情報の入力値を管理する関数
@@ -1107,7 +1099,9 @@ export default function TournamentResult() {
     fetchRaceInfo();
   }, [raceInfo.race_id]);
 
-  if (raceInfo.race_id === '') {
+  if (!tournamentResultMode.includes(mode)) return null;
+
+  if (['update', 'confirm'].includes(mode) && raceInfo.race_id === '') {
     return <ErrorBox errorText={errorText} />;
   }
 
