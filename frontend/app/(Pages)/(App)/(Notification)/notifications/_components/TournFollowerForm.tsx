@@ -11,13 +11,22 @@ type Props = {
   tournId: number;
   tournaments: SelectOption[];
   tournFieldProps: UseFormRegisterReturn<'tournId'>;
+  tournFieldDisabled?: boolean;
   bodyProps: UseFormRegisterReturn<'body'>;
   setValue: UseFormSetValue<NotificationCreateFormInput | NotificationUpdateFormInput>;
   handleConfirm: (textLink: { text: string; link: string }) => void;
 };
 
 export const TournFollowerForm: React.FC<Props> = (props) => {
-  const { tournId, tournaments, tournFieldProps, bodyProps, setValue, handleConfirm } = props;
+  const {
+    tournId,
+    tournaments,
+    tournFieldProps,
+    tournFieldDisabled,
+    bodyProps,
+    setValue,
+    handleConfirm,
+  } = props;
 
   return (
     <>
@@ -33,6 +42,7 @@ export const TournFollowerForm: React.FC<Props> = (props) => {
             setValue('tournId', Number(value));
           }}
           value={tournId}
+          disabled={tournFieldDisabled}
         />
       </div>
 
