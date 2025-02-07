@@ -139,7 +139,8 @@ export const Update: React.FC<Props> = (props) => {
       <TournFollowerForm
         tournId={tournId}
         tournaments={tournaments}
-        tournFieldProps={register('tournId', { required: to === 'tournFollower' })}
+        tournFieldProps={register('tournId', { required: to === 'tournFollower', disabled: true })}
+        tournFieldDisabled
         bodyProps={register('body', { required: to === 'tournFollower' })}
         setValue={setValue}
         handleConfirm={handleConfirm}
@@ -150,6 +151,7 @@ export const Update: React.FC<Props> = (props) => {
         qualIds={qualIds}
         qualifications={qualifications}
         qualFieldProps={register('qualIds', { required: to === 'qualifiedUser' })}
+        qualFieldDisabled
         bodyProps={register('body', { required: to === 'qualifiedUser' })}
         setValue={setValue}
         handleConfirm={handleConfirm}

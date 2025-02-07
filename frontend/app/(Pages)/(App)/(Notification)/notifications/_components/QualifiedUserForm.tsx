@@ -11,13 +11,22 @@ type Props = {
   qualIds: string[];
   qualifications: SelectOption<string>[];
   qualFieldProps: UseFormRegisterReturn<'qualIds'>;
+  qualFieldDisabled?: boolean;
   bodyProps: UseFormRegisterReturn<'body'>;
   setValue: UseFormSetValue<NotificationCreateFormInput | NotificationUpdateFormInput>;
   handleConfirm: (textLink: { text: string; link: string }) => void;
 };
 
 export const QualifiedUserForm: React.FC<Props> = (props) => {
-  const { qualIds, qualifications, qualFieldProps, bodyProps, setValue, handleConfirm } = props;
+  const {
+    qualIds,
+    qualifications,
+    qualFieldProps,
+    qualFieldDisabled,
+    bodyProps,
+    setValue,
+    handleConfirm,
+  } = props;
 
   const { ref: _, ...restQualFieldProps } = qualFieldProps;
 
@@ -35,6 +44,7 @@ export const QualifiedUserForm: React.FC<Props> = (props) => {
             setValue('qualIds', value);
           }}
           value={qualIds ?? []}
+          disabled={qualFieldDisabled}
           multiple
         />
       </div>

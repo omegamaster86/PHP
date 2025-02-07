@@ -45,6 +45,7 @@ const CustomDropdown = <T = string,>(props: CustomDropdownProps<T>) => {
     widthClassName,
     multiple = false,
     customRef,
+    disabled,
   } = props;
 
   const readOnlyValue = Array.isArray(value) ? value.join(', ') : String(value);
@@ -75,6 +76,7 @@ const CustomDropdown = <T = string,>(props: CustomDropdownProps<T>) => {
             error={isError}
             multiple={multiple}
             ref={customRef}
+            disabled={disabled}
           >
             {required && !multiple && (
               <MenuItem key='default' disabled value='0'>
