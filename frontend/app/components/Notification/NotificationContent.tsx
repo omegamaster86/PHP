@@ -1,8 +1,8 @@
+import { TitleSideButton } from '@/app/(Pages)/(App)/_components/TitleSideButton';
+import { CustomButton, CustomTitle } from '@/app/components';
+import LinkifyText from '@/app/components/LinkifyText';
 import { NotificationAvatar } from '@/app/components/Notification/NotificationAvatar';
 import SenderName from '@/app/components/Notification/SenderName';
-import { TitleSideButton } from '@/app/(Pages)/(App)/_components/TitleSideButton';
-import { CustomButton } from '@/app/components';
-import LinkifyText from '@/app/components/LinkifyText';
 import Tag from '@/app/components/Tag';
 import { getNotificationDestinationType } from '@/app/constants';
 import { NotificationInfoData } from '@/app/types';
@@ -53,7 +53,9 @@ export const NotificationContent: React.FC<Props> = (props) => {
   return (
     <div className='flex flex-col w-full px-6'>
       <div className='flex justify-between gap-4'>
-        <h2 className='text-lg font-bold'>{title}</h2>
+        <CustomTitle displayBack={!isWideScreen} className='text-lg lg:text-lg'>
+          {title}
+        </CustomTitle>
 
         {/* 送信詳細画面で通知の作者&削除モードではないとき表示 */}
         {isAuthor && !isDeleteMode && (
@@ -116,6 +118,16 @@ export const NotificationContent: React.FC<Props> = (props) => {
             削除
           </CustomButton>
         </div>
+      )}
+
+      {!isWideScreen && (
+        <CustomButton
+          buttonType='white-outlined'
+          className='mx-auto mt-4'
+          onClick={() => router.back()}
+        >
+          戻る
+        </CustomButton>
       )}
     </div>
   );
