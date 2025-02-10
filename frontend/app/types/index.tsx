@@ -543,8 +543,6 @@ interface OrganizationPlayer {
   org_player_id: number; //団体所属ID
   org_id: number; //団体ID
   player_id: number; //選手ID
-  joining_date: string; //団体登録年月日
-  deperture_date: string; //退団年月日
 }
 
 // 団体種別
