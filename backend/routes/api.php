@@ -190,6 +190,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('getNotificationInfoData', [NotificationsController::class, 'getNotificationInfoData']); //通知参照画面用の情報を取得
     Route::get('getSenderNotificationsList', [NotificationsController::class, 'getSenderNotificationsList']); //通知一覧画面(送信)の情報を取得
     Route::get('getRecipientsNotificationsList', [NotificationsController::class, 'getRecipientsNotificationsList']); //通知一覧画面(受信)の情報を取得
+    Route::get('unreadCount', [NotificationsController::class, 'unreadCount']); //通知の未読カウントを取得
     Route::delete('deleteNotification', [NotificationsController::class, 'deleteNotification']); //通知情報の削除 
     Route::post('insertNotification', [NotificationsController::class, 'insertNotification']); //通知情報の登録
     Route::patch('updateNotification', [NotificationsController::class, 'updateNotification']); //通知情報の更新

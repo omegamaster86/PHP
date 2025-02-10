@@ -1,16 +1,22 @@
 import { CustomUserAvatar } from '@/app/components/CustomUserAvatar';
 import { useAuth } from '@/app/hooks/auth';
 import axios from '@/app/lib/axios';
-import type { UserIdType, UserResponse } from '@/app/types';
+import { fetcher } from '@/app/lib/swr';
+import type { NotificationUnreadCount, UserIdType, UserResponse } from '@/app/types';
+import { CloseOutlined, MailOutline, MenuOutlined, PersonOutlined } from '@mui/icons-material';
 import {
-  CloseOutlined,
-  MarkEmailUnreadOutlined,
-  MenuOutlined,
-  PersonOutlined,
-} from '@mui/icons-material';
-import { Drawer, IconButton, List, ListItem, ListItemIcon, Menu, MenuItem } from '@mui/material';
+  Badge,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+} from '@mui/material';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState, type FC, type MouseEvent } from 'react';
+import useSWRImmutable from 'swr/immutable';
 import NestedItem from '../../(Pages)/(App)/(MyPage)/_components/MyPageSideBar/NestedItem';
 import Logo from '../Logo';
 import MenuButton from '../MenuButton';
@@ -36,17 +42,24 @@ type MenuItem = {
 };
 
 const Header: FC = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
   const router = useRouter();
+  const page = usePathname();
+  const { user, logout } = useAuth({ middleware: 'auth' });
+  const unreadCount = useSWRImmutable(
+    { url: '/api/unreadCount' },
+    fetcher<NotificationUnreadCount>,
+  );
+
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [drawerOpen, setDrawerOpenOpen] = useState(false);
-  const open = Boolean(anchorEl);
   const [clickIndex, setClickIndex] = useState(0);
   const [headerMenuFlag, setHeaderMenuFlag] = useState(0);
-  const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
-  const { user, logout } = useAuth({ middleware: 'auth' });
+  const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報
 
+  const open = Boolean(anchorEl);
   const username = user?.user_name;
+  const hasNotifications = Number(unreadCount.data?.result.unreadCount ?? 0) > 0;
 
   // メニューを開く
   const handleClick = (event: MouseEvent<HTMLButtonElement>, clickIndex: number) => {
@@ -62,8 +75,6 @@ const Header: FC = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const page = usePathname();
 
   // ページによってindexを変更
   const handleIndex = () => {
@@ -365,7 +376,7 @@ const Header: FC = () => {
         },
       ],
     },
-  ];
+  ] as const;
 
   const DrawerList = (
     <List sx={{ minWidth: '280px', paddingX: '8px' }}>
@@ -519,15 +530,20 @@ const Header: FC = () => {
                     handleClick(e, 4);
                   }}
                 >
-                  <MarkEmailUnreadOutlined
-                    sx={{
-                      fontSize: 18,
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      marginRight: '4px',
-                    }}
-                  />
+                  <Badge
+                    color='error'
+                    variant={hasNotifications ? 'dot' : 'standard'}
+                    sx={{ marginRight: '4px' }}
+                  >
+                    <MailOutline
+                      sx={{
+                        fontSize: 18,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                    />
+                  </Badge>
                   <span>お知らせ</span>
                 </MenuButton>
                 <MenuButton

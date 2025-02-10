@@ -64,6 +64,23 @@ class NotificationsController extends Controller
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 
+    // 未読通知カウントを取得
+    public function unreadCount(
+        T_notifications $tNotifications
+    ) {
+        Log::debug(sprintf("unreadCount start"));
+
+        $userId = Auth::user()->user_id;
+        $unreadCount = $tNotifications->getUnreadNotificationCount($userId);
+
+        $result = [
+            'unreadCount' => $unreadCount
+        ];
+
+        Log::debug(sprintf("unreadCount end"));
+        return response()->json(['result' => $result]);
+    }
+
     //通知情報の削除 20241108
     public function deleteNotification(
         Request $request,
