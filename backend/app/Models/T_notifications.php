@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -186,6 +187,22 @@ class T_notifications extends Model
             ]
         );
         return $result;
+    }
+
+    // 未読通知カウントを取得
+    public function getUnreadNotificationCount($userId)
+    {
+        $unreadCount = DB::table('t_notification_recipients')
+            ->join('t_notifications', function (JoinClause $join) {
+                $join->on('t_notification_recipients.notification_id', '=', 't_notifications.notification_id');
+                $join->on('t_notifications.delete_flag', '=', DB::raw(0));
+            })
+            ->where('t_notification_recipients.recipient_id', $userId)
+            ->where('t_notification_recipients.read_flag', 0)
+            ->where('t_notification_recipients.delete_flag', 0)
+            ->count();
+
+        return $unreadCount;
     }
 
     //通知情報を削除する 20241118

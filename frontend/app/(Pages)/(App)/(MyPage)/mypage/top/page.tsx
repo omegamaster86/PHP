@@ -1,12 +1,11 @@
 'use client';
 
-import React from 'react';
-import YourInformation from './_components/YourInformation';
-import { fetcher } from '@/app/lib/swr';
-import useSWR from 'swr';
-import { useUserType } from '@/app/hooks/useUserType';
-import { TopPageCountResponse } from '@/app/types';
 import NotificationsList from '@/app/components/NotificationsList';
+import { useUserType } from '@/app/hooks/useUserType';
+import { fetcher } from '@/app/lib/swr';
+import { TopPageCountResponse } from '@/app/types';
+import useSWR from 'swr';
+import YourInformation from './_components/YourInformation';
 
 const TopPage = () => {
   const userType = useUserType();

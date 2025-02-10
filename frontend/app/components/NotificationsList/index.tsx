@@ -9,7 +9,7 @@ import { NotificationInfoData, NotificationListData } from '@/app/types';
 import { Button } from '@mui/base';
 import { useMediaQuery } from '@mui/material';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 import useSWRMutation from 'swr/mutation';
 
 const notSelectedMessage = '受信トレイからメールを選択してください。';
@@ -32,14 +32,19 @@ const sendUpdateRequest = async (
   });
 };
 
+// unreadCountのSWRキャッシュを更新するためのキー
+const unreadCountKey = { url: '/api/unreadCount' };
+
 export default function NotificationsList() {
   // tailwindのmdの幅を超えているかどうか
   const isWideScreen = useMediaQuery('(min-width: 768px)');
   const router = useRouter();
   const searchParams = useSearchParams();
+  const swrConfig = useSWRConfig();
+
   const currentId = Number(searchParams.get('id'));
 
-  const { data, mutate } = useSWR(
+  const receivedNotifications = useSWR(
     {
       url: 'api/getRecipientsNotificationsList',
     },
@@ -64,7 +69,7 @@ export default function NotificationsList() {
 
   const updateReadStatus = useSWRMutation('api/updateNotificationReadFlag', sendUpdateRequest);
 
-  const notifications = data.result ?? [];
+  const notifications = receivedNotifications.data.result ?? [];
   const { infiniteList, isLastPage, fetchMore } = useInfiniteList(notifications);
 
   const hasNotifications = !!notifications.length;
@@ -77,7 +82,7 @@ export default function NotificationsList() {
 
   const handleClickListItem = (id: number, isRead: boolean) => async () => {
     if (!isRead) {
-      updateIsRead(id);
+      await updateIsRead(id);
     }
 
     if (isTopPage) {
@@ -95,7 +100,7 @@ export default function NotificationsList() {
     }
   };
 
-  const updateIsRead = (id: number) => {
+  const updateIsRead = async (id: number) => {
     const newNotifications = notifications.map((n) => {
       if (n.notificationId === id) {
         return { ...n, isRead: 1 };
@@ -103,32 +108,21 @@ export default function NotificationsList() {
       return n;
     });
 
-    mutate(
+    receivedNotifications.mutate(
       { result: newNotifications },
       {
         optimisticData: {
           result: newNotifications,
         },
         revalidate: false,
+        rollbackOnError: true,
       },
     );
 
-    updateReadStatus.trigger(
-      { notificationId: id },
-      {
-        onError: () => {
-          mutate(
-            { result: notifications },
-            {
-              optimisticData: {
-                result: notifications,
-              },
-              revalidate: false,
-            },
-          );
-        },
-      },
-    );
+    // 1. 未読数を更新
+    await updateReadStatus.trigger({ notificationId: id });
+    // 2. 未読数のキャッシュを更新
+    await swrConfig.mutate(unreadCountKey);
   };
 
   return (

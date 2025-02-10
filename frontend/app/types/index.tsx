@@ -758,6 +758,11 @@ interface NotificationListData {
   isRead: number;
 }
 
+// 未読通知カウント
+interface NotificationUnreadCount {
+  unreadCount: number;
+}
+
 // 通知作成リクエスト
 interface CreateNotificationRequest {
   notificationData: {
@@ -860,6 +865,7 @@ export type {
   MyPageVolunteerInfoData,
   NotificationInfoData,
   NotificationListData,
+  NotificationUnreadCount,
   Org,
   Organization,
   OrganizationListData,
