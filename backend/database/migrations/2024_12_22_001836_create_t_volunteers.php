@@ -20,7 +20,6 @@ return new class extends Migration
             `residence_prefecture` int DEFAULT NULL,
             `sex` int DEFAULT NULL,
             `date_of_birth` date DEFAULT NULL,
-            `dis_type_id` int DEFAULT NULL,
             `telephone_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
             `mailaddress` varchar(320) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
             `users_email_flag` int NOT NULL,
