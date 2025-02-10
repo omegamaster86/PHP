@@ -20,7 +20,6 @@ class T_volunteers extends Model
         'residence_prefecture' => 1,
         'sex' => 2,
         'date_of_birth' => "2024/01/01",
-        'dis_type_id' => 1,
         'telephone_number' => "2354523532",
         'mailaddress' => "1223442",
         'users_email_flag' => 0,
@@ -44,7 +43,6 @@ class T_volunteers extends Model
                 `t_volunteers`.`residence_prefecture`,
                 `t_volunteers`.`sex`,
                 `t_volunteers`.`date_of_birth`,
-                `t_volunteers`.`dis_type_id`,
                 `t_volunteers`.`telephone_number`, 
                 `t_volunteers`.`mailaddress`,
                 `t_volunteers`.`users_email_flag`,
@@ -235,7 +233,6 @@ class T_volunteers extends Model
                         `residence_prefecture`,
                         `sex`,
                         `date_of_birth`,
-                        `dis_type_id`,
                         `telephone_number`,
                         `mailaddress`,
                         `users_email_flag`,
@@ -246,7 +243,7 @@ class T_volunteers extends Model
                         `updated_user_id`,
                         `delete_flag`
                     )
-                    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             [
                 $values["user_id"],
                 $values["volunteer_name"],
@@ -254,7 +251,6 @@ class T_volunteers extends Model
                 $values["residence_prefecture"],
                 $values["sex"],
                 $values["date_of_birth"],
-                NULL,
                 $values["telephone_number"],
                 $values["mailaddress"],
                 $values["users_email_flag"],
