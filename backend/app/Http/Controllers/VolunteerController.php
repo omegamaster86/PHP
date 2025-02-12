@@ -21,6 +21,7 @@ use App\Models\M_clothes_size;
 use App\Models\M_volunteer_qualifications;
 use App\Models\M_languages;
 use App\Models\M_language_proficiency;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class VolunteerController extends Controller
 {
@@ -33,26 +34,34 @@ class VolunteerController extends Controller
         T_volunteer_qualifications_hold $tVolunteerQualificationsHold,
         T_volunteer_supportable_disability $tVolunteerSupportableDisability
     ) {
-        Log::debug(sprintf("createReference start"));
-        //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
-        if (Auth::user()->temp_password_flag === 1) {
-            //return redirect('user/password-change');
-        }
-        $requestData = $request->all();
-        $volData = $tVolunteer->getVolunteers($requestData['volunteer_id']); //ボランティア情報を取得
-        $volAvaData = $tVolunteerAvailables->getVolunteerAvailables($requestData['volunteer_id']); //ボランティアアベイラブル情報を取得
-        $volLangProData = $tVolunteerLanguageProficiency->getVolunteerLanguageProficiency($requestData['volunteer_id']); //ボランティア言語レベル情報を取得
-        $volQualData = $tVolunteerQualificationsHold->getVolunteerQualificationsHold($requestData['volunteer_id']); //ボランティア保有資格情報を取得
-        $volSupDisData = $tVolunteerSupportableDisability->getVolunteerSupportableDisability($requestData['volunteer_id']); //ボランティア支援可能障害タイプ情報を取得
+        try {
+            Log::debug(sprintf("createReference start"));
+            //仮登録が完了していないユーザが別ページのURLを入力して遷移しないように条件分岐する
+            if (Auth::user()->temp_password_flag === 1) {
+                //return redirect('user/password-change');
+            }
+            $requestData = $request->all();
+            $volData = $tVolunteer->getVolunteers($requestData['volunteer_id']); //ボランティア情報を取得
+            if (!isset($volData) || empty($volData)) {
+                abort(404, 'ボランティア情報が存在しません。');
+            }
 
-        Log::debug(sprintf("createReference end"));
-        return response()->json([
-            'result' => $volData,
-            'volAvaData' => $volAvaData,
-            'volLangProData' => $volLangProData,
-            'volQualData' => $volQualData,
-            'volSupDisData' => $volSupDisData
-        ]); //DBの結果を返す
+            $volAvaData = $tVolunteerAvailables->getVolunteerAvailables($requestData['volunteer_id']); //ボランティアアベイラブル情報を取得
+            $volLangProData = $tVolunteerLanguageProficiency->getVolunteerLanguageProficiency($requestData['volunteer_id']); //ボランティア言語レベル情報を取得
+            $volQualData = $tVolunteerQualificationsHold->getVolunteerQualificationsHold($requestData['volunteer_id']); //ボランティア保有資格情報を取得
+            $volSupDisData = $tVolunteerSupportableDisability->getVolunteerSupportableDisability($requestData['volunteer_id']); //ボランティア支援可能障害タイプ情報を取得
+
+            Log::debug(sprintf("createReference end"));
+            return response()->json([
+                'result' => $volData,
+                'volAvaData' => $volAvaData,
+                'volLangProData' => $volLangProData,
+                'volQualData' => $volQualData,
+                'volSupDisData' => $volSupDisData
+            ]); //DBの結果を返す
+        } catch (HttpException $e) {
+            throw $e;
+        }
     }
 
     //条件に合うボランティアの検索結果を表示する
