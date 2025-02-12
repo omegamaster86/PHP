@@ -56,7 +56,7 @@ interface RankList {
 //立ち会いフィルター用
 interface AttendanceList {
   id: number;
-  name: number;
+  name: number | null;
 }
 //シート番号（出漕時点）フィルター用
 interface SeatNameList {
@@ -2071,7 +2071,9 @@ export default function PlayerInformationRef() {
                 multiple
                 options={attendanceList}
                 filterOptions={(options, { inputValue }) =>
-                  options.filter((option) => option.name.toString().includes(inputValue.toString()))
+                  options.filter(
+                    (option) => option.name?.toString().includes(inputValue.toString()),
+                  )
                 }
                 value={selectedAttendanceList || []}
                 onChange={(e: ChangeEvent<{}>, newValue: AttendanceList[]) => {
