@@ -1,37 +1,36 @@
-'use client';
 // 団体所属追加選手検索画面
-import React, { useState, useEffect, ChangeEvent } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import axios from '@/app/lib/axios';
-import {
-  TeamPlayerInformationResponse,
-  TeamResponse,
-  SexResponse,
-  EventResponse,
-  PrefectureResponse,
-} from '@/app/types';
-
-import { Divider } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import SearchIcon from '@mui/icons-material/Search';
+'use client';
 
 import {
-  CustomTitle,
   CustomButton,
+  CustomDropdown,
   CustomTable,
-  CustomThead,
-  CustomTr,
-  CustomTh,
   CustomTbody,
   CustomTd,
-  ErrorBox,
-  OriginalCheckbox,
   CustomTextField,
-  CustomDropdown,
+  CustomTh,
+  CustomThead,
+  CustomTitle,
+  CustomTr,
+  ErrorBox,
   InputLabel,
   Label,
+  OriginalCheckbox,
 } from '@/app/components';
+import axios from '@/app/lib/axios';
+import {
+  EventResponse,
+  PrefectureResponse,
+  SexResponse,
+  TeamPlayerInformationResponse,
+  TeamResponse,
+} from '@/app/types';
+import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
+import { Divider } from '@mui/material';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 interface SearchCond {
   playerName: string;
@@ -75,6 +74,7 @@ export default function AddPlayerSearch() {
   const [searchResult, setSearchResult] = useState<TeamPlayerInformationResponse[]>([]);
   const [visibleData, setVisibleData] = useState<TeamPlayerInformationResponse[]>([]); // 表示するデータ
   const [visibleItems, setVisibleItems] = useState(10); // 表示するデータの数
+  const [isSearched, setIsSearched] = useState(false);
 
   const [searchCond, setSearchCond] = useState<SearchCond>({
     playerName: '',
@@ -154,6 +154,7 @@ export default function AddPlayerSearch() {
       setSearchResult(data);
       setVisibleItems(10);
       setVisibleData(data.slice(0, 10));
+      setIsSearched(true);
 
       setErrorMessage([]);
     } catch (error) {
@@ -627,7 +628,10 @@ export default function AddPlayerSearch() {
           </CustomTbody>
         </CustomTable>
       </div>
-      {searchResult.length !== visibleItems && (
+      {isSearched && !searchResult.length && (
+        <div className='flex flex-row justify-center'>選手が見つかりませんでした。</div>
+      )}
+      {isSearched && searchResult.length !== visibleItems && (
         <div
           className='flex flex-row justify-center gap-[16px] my-[30px] text-primary-500 font-bold cursor-pointer'
           onClick={loadMoreData}
