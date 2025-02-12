@@ -756,6 +756,10 @@ class TournamentInfoAlignmentController extends Controller
                         $checkResult = false;
                         $target_row['startDatetimeError'] = $errorMessage;
                     }
+                } else {
+                    $errorMessage = "発艇日時は必須入力です。";
+                    $checkResult = false;
+                    $target_row['startDatetimeError'] = $errorMessage;
                 }
                 // 天候
                 if (isset($target_row['weather'])) {
