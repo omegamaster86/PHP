@@ -71,8 +71,6 @@ export default function TeamPlayer() {
         }));
       try {
         const sendId = { org_id: orgId };
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         // SessionStorageに追加選手リストがある場合、追加選手リストを取得
         if (sessionStorage.getItem('addPlayerList') !== null) {
           var addPlayerList = JSON.parse(sessionStorage.getItem('addPlayerList') as string);

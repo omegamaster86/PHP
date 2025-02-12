@@ -63,6 +63,29 @@ interface SeatNameList {
   id: number;
   name: string;
 }
+
+const playerInformationInitialValue: PlayerInformationResponse = {
+  user_id: 0,
+  player_id: 0,
+  jara_player_id: '',
+  player_name: '',
+  date_of_birth: null,
+  sexName: '',
+  sex_id: null,
+  height: null,
+  weight: null,
+  side_info: [],
+  birthCountryName: '',
+  birth_country: null,
+  birthPrefectureName: '',
+  birth_prefecture: null,
+  residenceCountryName: '',
+  residence_country: null,
+  residencePrefectureName: '',
+  residence_prefecture: null,
+  photo: '',
+};
+
 // 選手情報参照画面
 export default function PlayerInformationRef() {
   // Next.jsのRouterを利用
@@ -111,7 +134,9 @@ export default function PlayerInformationRef() {
   const [raceResultRecordsData, setResultRecordsData] = useState([] as RaceResultRecordsResponse[]);
 
   // 選手情報のデータステート
-  const [playerInformation, setplayerInformation] = useState({} as PlayerInformationResponse);
+  const [playerInformation, setPlayerInformation] = useState<PlayerInformationResponse>(
+    playerInformationInitialValue,
+  );
 
   // 削除ボタンの表示制御用のステート
   const [displayFlg, setDisplayFlg] = useState<boolean>(true);
@@ -784,16 +809,14 @@ export default function PlayerInformationRef() {
           playerId,
         });
         //サイド情報のデータ変換
-        const sideList = playerInf.data.result.side_info.split('');
-        sideList.splice(0, 4); //サイド情報の先頭４つ分の不要なデータを削除
-        for (let i = 0; i < 4; i++) {
-          if (sideList[i] == '1') {
-            sideList[i] = true;
-          } else {
-            sideList[i] = false;
+        const sideList = new Array<boolean>(4).fill(false);
+        const sideInfo: string | null = playerInf.data.result.side_info;
+        if (sideInfo) {
+          for (let i = 0; i < 4; i++) {
+            sideList[i] = sideInfo.charAt(i + 4) === '1';
           }
         }
-        setplayerInformation({
+        setPlayerInformation({
           player_id: playerInf.data.result.player_id,
           user_id: playerInf.data.result.user_id,
           jara_player_id: playerInf.data.result.jara_player_id,
@@ -1143,7 +1166,7 @@ export default function PlayerInformationRef() {
                       {/* 生年月日 */}
                       <div className='text-gray-40 text-caption1'>生年月日&nbsp;&nbsp;</div>
                       <Label
-                        label={playerInformation.date_of_birth}
+                        label={playerInformation.date_of_birth ?? ''}
                         textColor='white'
                         textSize='caption1'
                       ></Label>
@@ -1153,22 +1176,30 @@ export default function PlayerInformationRef() {
                     <div className='flex flex-row'>
                       {/* 身長 */}
                       <div className='text-gray-40 text-caption1'>身長&nbsp;&nbsp;</div>
-                      <Label
-                        label={playerInformation.height?.toString()} // 身長は数値なのでtoString()で文字列に変換
-                        textColor='white'
-                        textSize='caption1'
-                      ></Label>
-                      <div className='text-gray-40 text-caption1'>&nbsp;&nbsp;cm</div>
+                      {playerInformation.height && (
+                        <>
+                          <Label
+                            label={playerInformation.height}
+                            textColor='white'
+                            textSize='caption1'
+                          ></Label>
+                          <div className='text-white text-caption1'>&nbsp;cm</div>
+                        </>
+                      )}
                     </div>
                     <div className='flex flex-row'>
                       {/* 体重 */}
                       <div className='text-gray-40 text-caption1'>体重&nbsp;&nbsp;</div>
-                      <Label
-                        label={playerInformation.weight?.toString() + ' '} // 体重は数値なのでtoString()で文字列に変換
-                        textColor='white'
-                        textSize='caption1'
-                      ></Label>
-                      <div className='text-gray-40 text-caption1'>&nbsp;&nbsp;kg</div>
+                      {playerInformation.weight && (
+                        <>
+                          <Label
+                            label={playerInformation.weight}
+                            textColor='white'
+                            textSize='caption1'
+                          ></Label>
+                          <div className='text-gray-40 text-caption1'>&nbsp;kg</div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

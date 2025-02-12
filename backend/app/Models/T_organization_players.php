@@ -156,16 +156,16 @@ class T_organization_players extends Model
             inner join `t_players` tp on
                 top.`player_id` = tp.`player_id`
                 and tp.`delete_flag` = 0
-            inner join `m_sex` on
+            left outer join `m_sex` on
                 tp.`sex_id` = `m_sex`.`sex_id`
                 and m_sex.`delete_flag` = 0
-            inner join m_countries bir_cont on
+            left outer join m_countries bir_cont on
                 tp.birth_country = bir_cont.country_id
                 and bir_cont.`delete_flag` = 0
-            left join m_prefectures bir_pref on
+            left outer join m_prefectures bir_pref on
                 tp.birth_prefecture = bir_pref.pref_id
                 and bir_pref.`delete_flag` = 0
-            inner join m_countries res_cont on
+            left outer join m_countries res_cont on
                 tp.residence_country = res_cont.country_id
                 and res_cont.`delete_flag` = 0
             left join m_prefectures res_pref on
@@ -188,150 +188,151 @@ class T_organization_players extends Model
     {
         DB::enableQueryLog();
         Log::debug('getOrgPlayersForAddPlayerSearch start.');
-        $sqlString = 'select
-                        player_id
-                        , jara_player_id
-                        , player_name
-                        , date_of_birth
-                        , height
-                        , weight
-                        , photo
-                        , birth_country
-                        , birthCountryName
-                        , birth_prefecture
-                        , residence_country
-                        , residenceCountryName
-                        , residence_prefecture
-                        , sexName
-                        , sex_id
-                        , birthPrefectureName
-                        , residencePrefectureName
-                        , side_S
-                        , side_B
-                        , side_X
-                        , side_C
-                        , players.org_id
-                        , org.org_name 
+        $sqlString = '
+            select
+                player_id
+                , jara_player_id
+                , player_name
+                , date_of_birth
+                , height
+                , weight
+                , photo
+                , birth_country
+                , birthCountryName
+                , birth_prefecture
+                , residence_country
+                , residenceCountryName
+                , residence_prefecture
+                , sexName
+                , sex_id
+                , birthPrefectureName
+                , residencePrefectureName
+                , side_S
+                , side_B
+                , side_X
+                , side_C
+                , players.org_id
+                , org.org_name 
+            from ( 
+                select
+                    tp.player_id AS player_id
+                    , jara_player_id
+                    , player_name
+                    , date_of_birth
+                    , height
+                    , weight
+                    , photo
+                    , birth_country
+                    , birthCountryName
+                    , birth_prefecture
+                    , residence_country
+                    , residenceCountryName
+                    , residence_prefecture
+                    , sexName
+                    , sex_id
+                    , birthPrefectureName
+                    , residencePrefectureName
+                    , side_S
+                    , side_B
+                    , side_X
+                    , side_C
+                    , MAX(top.org_id) AS org_id 
+                from ( 
+                    select
+                        p.player_id
+                        , p.jara_player_id
+                        , p.player_name
+                        , p.date_of_birth
+                        , p.height
+                        , p.weight
+                        , p.photo
+                        , p.birth_country
+                        , bir_cont.country_name AS birthCountryName
+                        , p.birth_prefecture
+                        , p.residence_country
+                        , res_cont.country_name AS residenceCountryName
+                        , p.residence_prefecture
+                        , ms.sex AS sexName
+                        , p.sex_id
+                        , bir_pref.`pref_name` as birthPrefectureName
+                        , res_pref.`pref_name` as residencePrefectureName
+                        , p.side_info
+                        , CASE 
+                            when SUBSTRING(p.side_info, 8, 1) = 1 
+                                then 1 
+                            else 0 
+                            end as side_S
+                        , CASE 
+                            when SUBSTRING(p.side_info, 7, 1) = 1 
+                                then 1 
+                            else 0 
+                            end as side_B
+                        , CASE 
+                            when SUBSTRING(p.side_info, 6, 1) = 1 
+                                then 1 
+                            else 0 
+                            end as side_X
+                        , CASE 
+                            when SUBSTRING(p.`side_info`, 5, 1) = 1 
+                                then 1 
+                            else 0 
+                            end as side_C 
                     from
-                        ( 
-                            select
-                                tp.player_id AS player_id
-                                , jara_player_id
-                                , player_name
-                                , date_of_birth
-                                , height
-                                , weight
-                                , photo
-                                , birth_country
-                                , birthCountryName
-                                , birth_prefecture
-                                , residence_country
-                                , residenceCountryName
-                                , residence_prefecture
-                                , sexName
-                                , sex_id
-                                , birthPrefectureName
-                                , residencePrefectureName
-                                , side_S
-                                , side_B
-                                , side_X
-                                , side_C
-                                , MAX(top.org_id) AS org_id 
-                            from
-                                ( 
-                                    select
-                                        p.player_id
-                                        , p.jara_player_id
-                                        , p.player_name
-                                        , p.date_of_birth
-                                        , p.height
-                                        , p.weight
-                                        , p.photo
-                                        , p.birth_country
-                                        , bir_cont.country_name AS birthCountryName
-                                        , p.birth_prefecture
-                                        , p.residence_country
-                                        , res_cont.country_name AS residenceCountryName
-                                        , p.residence_prefecture
-                                        , ms.sex AS sexName
-                                        , p.sex_id
-                                        , bir_pref.`pref_name` as birthPrefectureName
-                                        , res_pref.`pref_name` as residencePrefectureName
-                                        , p.side_info
-                                        , CASE 
-                                            when SUBSTRING(p.side_info, 8, 1) = 1 
-                                                then 1 
-                                            else 0 
-                                            end as side_S
-                                        , CASE 
-                                            when SUBSTRING(p.side_info, 7, 1) = 1 
-                                                then 1 
-                                            else 0 
-                                            end as side_B
-                                        , CASE 
-                                            when SUBSTRING(p.side_info, 6, 1) = 1 
-                                                then 1 
-                                            else 0 
-                                            end as side_X
-                                        , CASE 
-                                            when SUBSTRING(p.`side_info`, 5, 1) = 1 
-                                                then 1 
-                                            else 0 
-                                            end as side_C 
-                                    from
-                                        t_players p 
-                                        INNER JOIN m_sex ms 
-                                            ON p.sex_id = ms.sex_id and `ms`.`delete_flag` = 0
-                                        INNER JOIN m_countries bir_cont 
-                                            ON p.birth_country = bir_cont.country_id and bir_cont.`delete_flag` = 0
-                                        LEFT JOIN m_prefectures bir_pref 
-                                            ON p.birth_prefecture = bir_pref.pref_id and bir_pref.`delete_flag` = 0
-                                        INNER JOIN m_countries res_cont 
-                                            ON p.residence_country = res_cont.country_id and res_cont.`delete_flag` = 0
-                                        LEFT JOIN m_prefectures res_pref 
-                                            ON p.residence_prefecture = res_pref.pref_id and res_pref.`delete_flag` = 0
-                                    where
-                                        1 = 1 
-                                        and p.`delete_flag` = 0 
-                                        and p.user_id IS NOT NULL
-                                ) tp 
-                                LEFT JOIN ( 
-                                    select
-                                        player_id
-                                        , org_p.org_id
-                                        , torg.entrysystem_org_id
-                                        , torg.org_name 
-                                    from
-                                        t_organization_players org_p 
-                                        LEFT JOIN t_organizations torg 
-                                            ON org_p.org_id = torg.org_id 
-                                            AND torg.delete_flag = 0 
-                                    where
-                                        org_p.delete_flag = 0
-                                ) top 
-                                    ON tp.player_id = top.player_id 
-                                LEFT JOIN ( 
-                                    select
-                                        trrr.player_id
-                                        , tourn.tourn_name
-                                        , trrr.event_id 
-                                    from
-                                        t_race_result_record trrr 
-                                        LEFT JOIN t_tournaments tourn 
-                                            ON trrr.tourn_id = tourn.tourn_id 
-                                    where
-                                        trrr.delete_flag = 0
-                                ) tr 
-                                    ON tp.player_id = tr.player_id 
-                            where
-                                1 = 1
-                                #ReplaceConditionString# 
-                            GROUP BY
-                                player_id
-                        ) players 
-                        LEFT JOIN t_organizations org 
-                        on players.org_id = org.org_id
-                        ';
+                        t_players p 
+                    LEFT OUTER JOIN m_sex ms ON
+                        p.sex_id = ms.sex_id
+                        and `ms`.`delete_flag` = 0
+                    LEFT OUTER JOIN m_countries bir_cont ON
+                        p.birth_country = bir_cont.country_id
+                        and bir_cont.`delete_flag` = 0
+                    LEFT OUTER JOIN m_prefectures bir_pref ON
+                        p.birth_prefecture = bir_pref.pref_id
+                        and bir_pref.`delete_flag` = 0
+                    LEFT OUTER JOIN m_countries res_cont ON
+                        p.residence_country = res_cont.country_id
+                        and res_cont.`delete_flag` = 0
+                    LEFT OUTER JOIN m_prefectures res_pref ON
+                        p.residence_prefecture = res_pref.pref_id
+                        and res_pref.`delete_flag` = 0
+                    where
+                        1 = 1 
+                        and p.`delete_flag` = 0 
+                ) tp 
+                LEFT JOIN ( 
+                    select
+                        player_id
+                        , org_p.org_id
+                        , torg.entrysystem_org_id
+                        , torg.org_name 
+                    from
+                        t_organization_players org_p 
+                    LEFT JOIN t_organizations torg ON
+                        org_p.org_id = torg.org_id 
+                        AND torg.delete_flag = 0 
+                    where
+                        org_p.delete_flag = 0
+                ) top ON tp.player_id = top.player_id 
+                LEFT JOIN ( 
+                    select
+                        trrr.player_id
+                        , tourn.tourn_name
+                        , trrr.event_id 
+                    from
+                        t_race_result_record trrr 
+                    LEFT JOIN t_tournaments tourn ON
+                        trrr.tourn_id = tourn.tourn_id 
+                    where
+                        trrr.delete_flag = 0
+                ) tr ON tp.player_id = tr.player_id 
+                where
+                    1 = 1
+                    #ReplaceConditionString# 
+                GROUP BY
+                    player_id
+            ) players 
+            LEFT JOIN t_organizations org on
+                players.org_id = org.org_id
+            ';
         $sqlString = str_replace("#ReplaceConditionString#", $condition, $sqlString);
         $players = DB::select($sqlString, $conditionValue);
         Log::debug('getOrgPlayersForAddPlayerSearch end.');
