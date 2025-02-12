@@ -20,8 +20,8 @@ interface Player {
   photo: string;
   birthCountryName: string;
   birthPrefectureName: string;
-  height: string;
-  weight: string;
+  height: string | null;
+  weight: string | null;
   side_info: boolean[];
 }
 interface UserIdType {
@@ -157,9 +157,9 @@ export const BelongPlayer: React.FC<Props> = ({
                 {/* 出身地(都道府県) */}
                 <CustomTd>{row.birthPrefectureName}</CustomTd>
                 {/* 身長 */}
-                <CustomTd>{row.height}cm</CustomTd>
+                <CustomTd>{row.height ? `${row.height} cm` : ''}</CustomTd>
                 {/* 体重 */}
-                <CustomTd>{row.weight}kg</CustomTd>
+                <CustomTd>{row.weight ? `${row.weight} kg` : ''}</CustomTd>
                 {/* サイド情報 */}
                 <CustomTd>
                   <OriginalCheckbox

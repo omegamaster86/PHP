@@ -39,50 +39,45 @@ class T_players extends Model
     {
         $result = DB::select(
             'select
-                                `player_id`
-                                ,`user_id`
-                                ,`jara_player_id`
-                                ,`player_name`
-                                ,`date_of_birth`
-                                ,`m_sex`.`sex` as `sexName`
-                                ,`t_players`.`sex_id`
-                                ,`height`
-                                ,`weight`
-                                ,`side_info`
-                                ,bir_cont.`country_name` as `birthCountryName`
-                                ,`birth_country`
-                                ,bir_pref.`pref_name` as `birthPrefectureName`
-                                ,`birth_prefecture`
-                                ,res_cont.`country_name` as `residenceCountryName`
-                                ,`residence_country`
-                                ,res_pref.`pref_name` as `residencePrefectureName`
-                                ,`residence_prefecture`
-                                ,`photo`
-                                ,`t_players`.`registered_time`
-                                ,`t_players`.`registered_user_id`
-                                ,`t_players`.`updated_time`
-                                ,`t_players`.`updated_user_id`
-                                ,`t_players`.`delete_flag`
-                                ,`m_sex`.`sex` as `sex_name`
-                                FROM `t_players`
-                                left join `m_sex`
-                                on `t_players`.`sex_id`=`m_sex`.`sex_id`
-                                left join m_countries bir_cont
-                                on `t_players`.birth_country = bir_cont.country_id
-                                left join m_prefectures bir_pref
-                                on `t_players`.birth_prefecture = bir_pref.pref_id
-                                and  bir_pref.`delete_flag` = 0
-                                left join m_countries res_cont
-                                on `t_players`.residence_country = res_cont.country_id
-                                left join m_prefectures res_pref
-                                on `t_players`.residence_prefecture = res_pref.pref_id
-                                and  res_pref.`delete_flag` = 0
-                                where 1=1
-                                and `t_players`.delete_flag = 0
-                                and  `m_sex`.`delete_flag` = 0
-                                and  bir_cont.`delete_flag` = 0
-                                and  res_cont.`delete_flag` = 0
-                                and `t_players`.player_id = ?',
+                `player_id`
+                , `user_id`
+                , `jara_player_id`
+                , `player_name`
+                , `date_of_birth`
+                , COALESCE(`m_sex`.`sex`, "") as `sex_name`
+                , `t_players`.`sex_id`
+                , `height`
+                , `weight`
+                , `side_info`
+                , COALESCE(bir_cont.`country_name`, "") as `birthCountryName`
+                , `birth_country`
+                , COALESCE(bir_pref.`pref_name`, "") as `birthPrefectureName`
+                , `birth_prefecture`
+                , COALESCE(res_cont.`country_name`, "") as `residenceCountryName`
+                , `residence_country`
+                , COALESCE(res_pref.`pref_name`, "") as `residencePrefectureName`
+                , `residence_prefecture`
+                , COALESCE(`photo`, "") as `photo`
+            FROM `t_players`
+            # NOTE: 選手情報連携で"連携待ち"の選手がいる場合を考慮しすべて外部結合する。
+            LEFT OUTER JOIN `m_sex` ON
+                `m_sex`.`sex_id` = `t_players`.`sex_id`
+                AND `m_sex`.`delete_flag` = 0
+            LEFT JOIN m_countries bir_cont ON
+                bir_cont.country_id = `t_players`.birth_country
+                AND bir_cont.`delete_flag` = 0
+            LEFT JOIN m_prefectures bir_pref ON
+                bir_pref.pref_id = `t_players`.birth_prefecture
+                AND bir_pref.`delete_flag` = 0
+            LEFT JOIN m_countries res_cont ON
+                res_cont.country_id = `t_players`.residence_country
+                AND res_cont.`delete_flag` = 0
+            LEFT JOIN m_prefectures res_pref ON
+                res_pref.pref_id = `t_players`.residence_prefecture
+                AND res_pref.`delete_flag` = 0
+            WHERE 1=1
+                AND `t_players`.delete_flag = 0
+                AND `t_players`.player_id = ?',
             [$player_id]
         );
 
@@ -392,14 +387,24 @@ class T_players extends Model
             'insert into t_players
                     (
                         `jara_player_id`,
+                        `player_name`,
+                        `photo`,
                         `registered_time`,
                         `registered_user_id`,
                         `updated_time`,
                         `updated_user_id`,
                         `delete_flag`
                     )
-                    values
-                    (?,?,?,?,?,?)',
+                    values (
+                        ? as jara_player_id,
+                        "" as player_name,
+                        "" as photo,
+                        ? as registered_time,
+                        ? as registered_user_id,
+                        ? as updated_time,
+                        ? as updated_user_id,
+                        ? as delete_flag
+                    )',
             [
                 $playerInfo["oldPlayerId"],
                 $current_datetime,
@@ -699,115 +704,114 @@ class T_players extends Model
         $sqlString = 'with player as
                         (
                             SELECT
-                            tp.`player_id`
-                            ,org.entrysystem_org_id
-                            ,org.org_id
-                            ,org.org_name
+                                tp.`player_id`
+                                ,org.entrysystem_org_id
+                                ,org.org_id
+                                ,org.org_name
                             FROM `t_players` tp
-                            left join `t_organization_players` top
-                            on tp.`player_id` = top.`player_id`
-                            left join `t_organizations` org
-                            on top.`org_id` = org.`org_id`
-                            left join `t_race_result_record` rrr
-                            on tp.player_id = rrr.player_id
+                            inner join `t_organization_players` top on
+                                tp.`player_id` = top.`player_id`
+                                and top.`delete_flag` = 0
+                            inner join `t_organizations` org on
+                                top.`org_id` = org.`org_id`
+                                and org.`delete_flag` = 0
+                            left join `t_race_result_record` rrr on
+                                tp.player_id = rrr.player_id
                             where 1=1
                             and tp.`delete_flag` = 0
-                            and top.`delete_flag` = 0
-                            and org.`delete_flag` = 0
                             #ここにエントリーシステムの団体ID、団体ID、団体名以外の条件を入力#
                             #SearchCondition#
                         )
                         select
-                        tp.photo
-                        ,tp.player_name
-                        ,tp.jara_player_id
-                        ,pwo.player_id
-                        ,sex.sex_id
-                        ,sex.sex
-                        ,pwo.entrysystemOrgId1
-                        ,pwo.orgId1
-                        ,pwo.orgName1
-                        ,pwo.entrysystemOrgId2
-                        ,pwo.orgId2
-                        ,pwo.orgName2
-                        ,pwo.entrysystemOrgId3
-                        ,pwo.orgId3
-                        ,pwo.orgName3
-                        from
-                        (
+                            tp.photo
+                            ,tp.player_name
+                            ,tp.jara_player_id
+                            ,pwo.player_id
+                            ,sex.sex_id
+                            ,sex.sex
+                            ,pwo.entrysystemOrgId1
+                            ,pwo.orgId1
+                            ,pwo.orgName1
+                            ,pwo.entrysystemOrgId2
+                            ,pwo.orgId2
+                            ,pwo.orgName2
+                            ,pwo.entrysystemOrgId3
+                            ,pwo.orgId3
+                            ,pwo.orgName3
+                        from (
                             select
-                            pwo.player_id
-                            ,group_concat(Nullif(entrysystemOrgId1,"")) as `entrysystemOrgId1`
-                            ,group_concat(Nullif(orgId1,"")) as `orgId1`
-                            ,group_concat(Nullif(orgName1,"")) as `orgName1`
-                            ,group_concat(Nullif(entrysystemOrgId2,"")) as `entrysystemOrgId2`
-                            ,group_concat(Nullif(orgId2,"")) as `orgId2`
-                            ,group_concat(Nullif(orgName2,"")) as `orgName2`
-                            ,group_concat(Nullif(entrysystemOrgId3,"")) as `entrysystemOrgId3`
-                            ,group_concat(Nullif(orgId3,"")) as `orgId3`
-                            ,group_concat(Nullif(orgName3,"")) as `orgName3`
-                            FROM
-                            (
-                                select `player_id`
-                                ,case `org_index`
-                                    when 0 then `entrysystem_org_id`
-                                    else null end as `entrysystemOrgId1`
-                                ,case `org_index`
-                                    when 0 then `org_id`
-                                    else null end as `orgId1`
-                                ,case `org_index`
-                                    when 0 then `org_name`
-                                    else null end as `orgName1`
-                                ,case `org_index`
-                                    when 1 then `entrysystem_org_id`
-                                    else null end as `entrysystemOrgId2`
-                                ,case `org_index`
-                                    when 1 then `org_id`
-                                    else null end as `orgId2`
-                                ,case `org_index`
-                                    when 1 then `org_name`
-                                    else null end as `orgName2`
-                                ,case `org_index`
-                                    when 2 then `entrysystem_org_id`
-                                    else null end as `entrysystemOrgId3`
-                                ,case `org_index`
-                                    when 2 then `org_id`
-                                    else null end as `orgId3`
-                                ,case `org_index`
-                                    when 2 then `org_name`
-                                    else null end as `orgName3`
-                                FROM
-                                (
+                                pwo.player_id
+                                ,group_concat(Nullif(entrysystemOrgId1,"")) as `entrysystemOrgId1`
+                                ,group_concat(Nullif(orgId1,"")) as `orgId1`
+                                ,group_concat(Nullif(orgName1,"")) as `orgName1`
+                                ,group_concat(Nullif(entrysystemOrgId2,"")) as `entrysystemOrgId2`
+                                ,group_concat(Nullif(orgId2,"")) as `orgId2`
+                                ,group_concat(Nullif(orgName2,"")) as `orgName2`
+                                ,group_concat(Nullif(entrysystemOrgId3,"")) as `entrysystemOrgId3`
+                                ,group_concat(Nullif(orgId3,"")) as `orgId3`
+                                ,group_concat(Nullif(orgName3,"")) as `orgName3`
+                            FROM (
+                                select
+                                    `player_id`
+                                    ,case `org_index`
+                                        when 0 then `entrysystem_org_id`
+                                        else null end as `entrysystemOrgId1`
+                                    ,case `org_index`
+                                        when 0 then `org_id`
+                                        else null end as `orgId1`
+                                    ,case `org_index`
+                                        when 0 then `org_name`
+                                        else null end as `orgName1`
+                                    ,case `org_index`
+                                        when 1 then `entrysystem_org_id`
+                                        else null end as `entrysystemOrgId2`
+                                    ,case `org_index`
+                                        when 1 then `org_id`
+                                        else null end as `orgId2`
+                                    ,case `org_index`
+                                        when 1 then `org_name`
+                                        else null end as `orgName2`
+                                    ,case `org_index`
+                                        when 2 then `entrysystem_org_id`
+                                        else null end as `entrysystemOrgId3`
+                                    ,case `org_index`
+                                        when 2 then `org_id`
+                                        else null end as `orgId3`
+                                    ,case `org_index`
+                                        when 2 then `org_name`
+                                        else null end as `orgName3`
+                                FROM (
                                     select distinct
-                                    `player_id`
-                                    ,entrysystem_org_id
-                                    ,org_id
-                                    ,org_name
-                                    ,0 as `org_index`
+                                        `player_id`
+                                        ,entrysystem_org_id
+                                        ,org_id
+                                        ,org_name
+                                        ,0 as `org_index`
                                     from player
                                     where 1=1
-                                    and entrysystem_org_id = :entrysystem_id_1
-                                    union select distinct
-                                    `player_id`
-                                    ,entrysystem_org_id
-                                    ,org_id
-                                    ,org_name
-                                    ,ROW_NUMBER() OVER (PARTITION BY `player_id` ORDER BY `entrysystem_org_id`) as `org_index`
+                                        and entrysystem_org_id = :entrysystem_id_1
+                                    union
+                                    select distinct
+                                        `player_id`
+                                        ,entrysystem_org_id
+                                        ,org_id
+                                        ,org_name
+                                        ,ROW_NUMBER() OVER (PARTITION BY `player_id` ORDER BY `entrysystem_org_id`) as `org_index`
                                     from player
                                     where 1=1
-                                    and (entrysystem_org_id <> :entrysystem_id_2 or entrysystem_org_id is null)
+                                        and (entrysystem_org_id <> :entrysystem_id_2 or entrysystem_org_id is null)
                                 )pwo
                             )pwo
                             group by player_id
                         )pwo
-                        left join `t_players` tp
-                        on pwo.player_id = tp.player_id
-                        left join `m_sex` sex
-                        on tp.`sex_id` = sex.`sex_id`
+                        left join `t_players` tp on
+                            pwo.player_id = tp.player_id
+                        left join `m_sex` sex on
+                            tp.`sex_id` = sex.`sex_id`
+                            and sex.`delete_flag` = 0
                         where 1=1
-                        and sex.`delete_flag` = 0
-                        and tp.`delete_flag` = 0
-                        and orgId1 is not null';  //入力した団体IDに所属していない選手を除外する条件
+                            and tp.`delete_flag` = 0
+                            and orgId1 is not null';  //入力した団体IDに所属していない選手を除外する条件
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
         $players = DB::select($sqlString, $conditionValues);
         return $players;
@@ -819,25 +823,145 @@ class T_players extends Model
         $sqlString = 'with player as
                         (
                             SELECT
-                            tp.`player_id`
-                            ,org.entrysystem_org_id
-                            ,org.org_id
-                            ,org.org_name
+                                tp.`player_id`
+                                ,org.entrysystem_org_id
+                                ,org.org_id
+                                ,org.org_name
                             FROM `t_players` tp
-                            left join `t_organization_players` top
-                            on tp.`player_id` = top.`player_id`
-                            left join `t_organizations` org
-                            on top.`org_id` = org.`org_id`
-                            left join `t_race_result_record` rrr
-                            on tp.player_id = rrr.player_id
+                            inner join `t_organization_players` top on
+                                tp.`player_id` = top.`player_id`
+                                and top.`delete_flag` = 0
+                            inner join `t_organizations` org on
+                                top.`org_id` = org.`org_id`
+                                and org.`delete_flag` = 0
+                            left join `t_race_result_record` rrr on
+                                tp.player_id = rrr.player_id
                             where 1=1
-                            and tp.`delete_flag` = 0
-                            and top.`delete_flag` = 0
-                            and org.`delete_flag` = 0
+                                and tp.`delete_flag` = 0
                             #ここにエントリーシステムの団体ID、団体ID、団体名以外の条件を入力#
                             #SearchCondition#
                         )
                         select
+                            tp.photo
+                            ,tp.player_name
+                            ,tp.jara_player_id
+                            ,pwo.player_id
+                            ,sex.sex_id
+                            ,sex.sex
+                            ,pwo.entrysystemOrgId1
+                            ,pwo.orgId1
+                            ,pwo.orgName1
+                            ,pwo.entrysystemOrgId2
+                            ,pwo.orgId2
+                            ,pwo.orgName2
+                            ,pwo.entrysystemOrgId3
+                            ,pwo.orgId3
+                            ,pwo.orgName3
+                        from
+                        (
+                            select
+                                pwo.player_id
+                                ,group_concat(Nullif(entrysystemOrgId1,"")) as `entrysystemOrgId1`
+                                ,group_concat(Nullif(orgId1,"")) as `orgId1`
+                                ,group_concat(Nullif(orgName1,"")) as `orgName1`
+                                ,group_concat(Nullif(entrysystemOrgId2,"")) as `entrysystemOrgId2`
+                                ,group_concat(Nullif(orgId2,"")) as `orgId2`
+                                ,group_concat(Nullif(orgName2,"")) as `orgName2`
+                                ,group_concat(Nullif(entrysystemOrgId3,"")) as `entrysystemOrgId3`
+                                ,group_concat(Nullif(orgId3,"")) as `orgId3`
+                                ,group_concat(Nullif(orgName3,"")) as `orgName3`
+                            FROM (
+                                select
+                                    `player_id`
+                                    ,case `org_index`
+                                        when 0 then `entrysystem_org_id`
+                                        else null end as `entrysystemOrgId1`
+                                    ,case `org_index`
+                                        when 0 then `org_id`
+                                        else null end as `orgId1`
+                                    ,case `org_index`
+                                        when 0 then `org_name`
+                                        else null end as `orgName1`
+                                    ,case `org_index`
+                                        when 1 then `entrysystem_org_id`
+                                        else null end as `entrysystemOrgId2`
+                                    ,case `org_index`
+                                        when 1 then `org_id`
+                                        else null end as `orgId2`
+                                    ,case `org_index`
+                                        when 1 then `org_name`
+                                        else null end as `orgName2`
+                                    ,case `org_index`
+                                        when 2 then `entrysystem_org_id`
+                                        else null end as `entrysystemOrgId3`
+                                    ,case `org_index`
+                                        when 2 then `org_id`
+                                        else null end as `orgId3`
+                                    ,case `org_index`
+                                        when 2 then `org_name`
+                                        else null end as `orgName3`
+                                FROM (
+                                    select distinct
+                                        `player_id`
+                                        ,entrysystem_org_id
+                                        ,org_id
+                                        ,org_name
+                                        ,0 as `org_index`
+                                    from player
+                                    where 1=1
+                                        and org_id = :org_id_1
+                                    union
+                                    select distinct
+                                        `player_id`
+                                        ,entrysystem_org_id
+                                        ,org_id
+                                        ,org_name
+                                        ,ROW_NUMBER() OVER (PARTITION BY `player_id` ORDER BY `org_id`) as `org_index`
+                                    from player
+                                    where 1=1
+                                        and (org_id <> :org_id_2 or org_id is null)
+                                )pwo
+                            )pwo
+                            group by player_id
+                        )pwo
+                        left join `t_players` tp on
+                            pwo.player_id = tp.player_id
+                        left join `m_sex` sex on
+                            tp.`sex_id` = sex.`sex_id`
+                            and sex.`delete_flag` = 0
+                        where 1=1
+                            and tp.`delete_flag` = 0
+                            and orgId1 is not null';  //入力した団体IDに所属していない選手を除外する条件
+        $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
+        $players = DB::select($sqlString, $conditionValues);
+        return $players;
+    }
+
+    //選手検索で団体名の条件込みで検索実行した結果を取得する
+    public function getPlayerSearchResultWithOrgNameCondition($searchCondition, $conditionValues)
+    {
+        $sqlString = 'with player as
+                    (
+                        SELECT
+                            tp.`player_id`
+                            ,org.entrysystem_org_id
+                            ,org.org_id
+                            ,org.org_name
+                        FROM `t_players` tp
+                        inner join `t_organization_players` top on
+                            tp.`player_id` = top.`player_id`
+                            and top.`delete_flag` = 0
+                        inner join `t_organizations` org on
+                            top.`org_id` = org.`org_id`
+                            and org.`delete_flag` = 0
+                        left join `t_race_result_record` rrr on
+                            tp.player_id = rrr.player_id
+                        where 1=1
+                            and tp.`delete_flag` = 0
+                            #ここにエントリーシステムの団体ID、団体ID、団体名以外の条件を入力#
+                            #SearchCondition#
+                    )
+                    select
                         tp.photo
                         ,tp.player_name
                         ,tp.jara_player_id
@@ -853,9 +977,8 @@ class T_players extends Model
                         ,pwo.entrysystemOrgId3
                         ,pwo.orgId3
                         ,pwo.orgName3
-                        from
-                        (
-                            select
+                    from (
+                        select
                             pwo.player_id
                             ,group_concat(Nullif(entrysystemOrgId1,"")) as `entrysystemOrgId1`
                             ,group_concat(Nullif(orgId1,"")) as `orgId1`
@@ -866,213 +989,89 @@ class T_players extends Model
                             ,group_concat(Nullif(entrysystemOrgId3,"")) as `entrysystemOrgId3`
                             ,group_concat(Nullif(orgId3,"")) as `orgId3`
                             ,group_concat(Nullif(orgName3,"")) as `orgName3`
-                            FROM
-                            (
-                                select `player_id`
-                                ,case `org_index`
-                                    when 0 then `entrysystem_org_id`
-                                    else null end as `entrysystemOrgId1`
-                                ,case `org_index`
-                                    when 0 then `org_id`
-                                    else null end as `orgId1`
-                                ,case `org_index`
-                                    when 0 then `org_name`
-                                    else null end as `orgName1`
+                        FROM (
+                            select
+                                `player_id`
                                 ,case `org_index`
                                     when 1 then `entrysystem_org_id`
-                                    else null end as `entrysystemOrgId2`
+                                    else null end as `entrysystemOrgId1`
                                 ,case `org_index`
                                     when 1 then `org_id`
-                                    else null end as `orgId2`
+                                    else null end as `orgId1`
                                 ,case `org_index`
                                     when 1 then `org_name`
-                                    else null end as `orgName2`
+                                    else null end as `orgName1`
                                 ,case `org_index`
                                     when 2 then `entrysystem_org_id`
-                                    else null end as `entrysystemOrgId3`
+                                    else null end as `entrysystemOrgId2`
                                 ,case `org_index`
                                     when 2 then `org_id`
-                                    else null end as `orgId3`
+                                    else null end as `orgId2`
                                 ,case `org_index`
                                     when 2 then `org_name`
+                                    else null end as `orgName2`
+                                ,case `org_index`
+                                    when 3 then `entrysystem_org_id`
+                                    else null end as `entrysystemOrgId3`
+                                ,case `org_index`
+                                    when 3 then `org_id`
+                                    else null end as `orgId3`
+                                ,case `org_index`
+                                    when 3 then `org_name`
                                     else null end as `orgName3`
-                                FROM
-                                (
-                                    select distinct
-                                    `player_id`
-                                    ,entrysystem_org_id
-                                    ,org_id
-                                    ,org_name
-                                    ,0 as `org_index`
-                                    from player
-                                    where 1=1
-                                    and org_id = :org_id_1
-                                    union select distinct
-                                    `player_id`
-                                    ,entrysystem_org_id
-                                    ,org_id
-                                    ,org_name
-                                    ,ROW_NUMBER() OVER (PARTITION BY `player_id` ORDER BY `org_id`) as `org_index`
-                                    from player
-                                    where 1=1
-                                    and (org_id <> :org_id_2 or org_id is null)
-                                )pwo
-                            )pwo
-                            group by player_id
-                        )pwo
-                        left join `t_players` tp
-                        on pwo.player_id = tp.player_id
-                        left join `m_sex` sex
-                        on tp.`sex_id` = sex.`sex_id`
-                        where 1=1
-                        and sex.`delete_flag` = 0
-                        and tp.`delete_flag` = 0
-                        and orgId1 is not null';  //入力した団体IDに所属していない選手を除外する条件
-        $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
-        $players = DB::select($sqlString, $conditionValues);
-        return $players;
-    }
-
-    //選手検索で団体名の条件込みで検索実行した結果を取得する
-    public function getPlayerSearchResultWithOrgNameCondition($searchCondition, $conditionValues)
-    {
-        $sqlString = 'with player as
-                    (
-                        SELECT
-                        tp.`player_id`
-                        ,org.entrysystem_org_id
-                        ,org.org_id
-                        ,org.org_name
-                        FROM `t_players` tp
-                        left join `t_organization_players` top
-                        on tp.`player_id` = top.`player_id`
-                        left join `t_organizations` org
-                        on top.`org_id` = org.`org_id`
-                        left join `t_race_result_record` rrr
-                        on tp.player_id = rrr.player_id
-                        where 1=1
-                        and tp.`delete_flag` = 0
-                        and top.`delete_flag` = 0
-                        and org.`delete_flag` = 0
-                        #ここにエントリーシステムの団体ID、団体ID、団体名以外の条件を入力#
-                        #SearchCondition#
-                    )
-                    select
-                    tp.photo
-                    ,tp.player_name
-                    ,tp.jara_player_id
-                    ,pwo.player_id
-                    ,sex.sex_id
-                    ,sex.sex
-                    ,pwo.entrysystemOrgId1
-                    ,pwo.orgId1
-                    ,pwo.orgName1
-                    ,pwo.entrysystemOrgId2
-                    ,pwo.orgId2
-                    ,pwo.orgName2
-                    ,pwo.entrysystemOrgId3
-                    ,pwo.orgId3
-                    ,pwo.orgName3
-                    from
-                    (
-                        select
-                        pwo.player_id
-                        ,group_concat(Nullif(entrysystemOrgId1,"")) as `entrysystemOrgId1`
-                        ,group_concat(Nullif(orgId1,"")) as `orgId1`
-                        ,group_concat(Nullif(orgName1,"")) as `orgName1`
-                        ,group_concat(Nullif(entrysystemOrgId2,"")) as `entrysystemOrgId2`
-                        ,group_concat(Nullif(orgId2,"")) as `orgId2`
-                        ,group_concat(Nullif(orgName2,"")) as `orgName2`
-                        ,group_concat(Nullif(entrysystemOrgId3,"")) as `entrysystemOrgId3`
-                        ,group_concat(Nullif(orgId3,"")) as `orgId3`
-                        ,group_concat(Nullif(orgName3,"")) as `orgName3`
-                        FROM
-                        (
-                            select `player_id`
-                            ,case `org_index`
-                                when 1 then `entrysystem_org_id`
-                                else null end as `entrysystemOrgId1`
-                            ,case `org_index`
-                                when 1 then `org_id`
-                                else null end as `orgId1`
-                            ,case `org_index`
-                                when 1 then `org_name`
-                                else null end as `orgName1`
-                            ,case `org_index`
-                                when 2 then `entrysystem_org_id`
-                                else null end as `entrysystemOrgId2`
-                            ,case `org_index`
-                                when 2 then `org_id`
-                                else null end as `orgId2`
-                            ,case `org_index`
-                                when 2 then `org_name`
-                                else null end as `orgName2`
-                            ,case `org_index`
-                                when 3 then `entrysystem_org_id`
-                                else null end as `entrysystemOrgId3`
-                            ,case `org_index`
-                                when 3 then `org_id`
-                                else null end as `orgId3`
-                            ,case `org_index`
-                                when 3 then `org_name`
-                                else null end as `orgName3`
-                            FROM
-                            (
+                            FROM (
                                 select
-                                `player_id`
-                                ,`entrysystem_org_id`
-                                ,`org_id`
-                                ,`org_name`
-                                ,ROW_NUMBER() OVER (PARTITION BY `player_id` ORDER BY pwo.`org_index`) as `org_index`
-                                from
-                                (
-                                    select 
                                     `player_id`
-                                    ,entrysystem_org_id
-                                    ,org_id
-                                    ,org_name
-                                    ,ROW_NUMBER() OVER (PARTITION BY `player_id` ORDER BY `org_id`) as `org_index`
-                                    from
-                                    (
-                                        select distinct
+                                    ,`entrysystem_org_id`
+                                    ,`org_id`
+                                    ,`org_name`
+                                    ,ROW_NUMBER() OVER (PARTITION BY `player_id` ORDER BY pwo.`org_index`) as `org_index`
+                                from (
+                                    select 
                                         `player_id`
                                         ,entrysystem_org_id
                                         ,org_id
                                         ,org_name
+                                        ,ROW_NUMBER() OVER (PARTITION BY `player_id` ORDER BY `org_id`) as `org_index`
+                                    from (
+                                        select distinct
+                                            `player_id`
+                                            ,entrysystem_org_id
+                                            ,org_id
+                                            ,org_name
                                         from player
                                         where 1=1
-                                        and org_name like :org_name_1
+                                            and org_name like :org_name_1
                                     )mt
                                     union 
                                     select distinct
-                                    `player_id`
-                                    ,entrysystem_org_id
-                                    ,org_id
-                                    ,org_name
-                                    ,1000 + ROW_NUMBER() OVER (PARTITION BY `player_id` ORDER BY `org_id`) as `org_index`
+                                        `player_id`
+                                        ,entrysystem_org_id
+                                        ,org_id
+                                        ,org_name
+                                        ,1000 + ROW_NUMBER() OVER (PARTITION BY `player_id` ORDER BY `org_id`) as `org_index`
                                     from player
                                     where 1=1
-                                    and (org_name not like :org_name_2 or org_name is null)
-                                    and player_id in
-                                    (
-                                        select distinct `player_id`
-                                        from player
-                                        where 1=1
-                                        and org_name like :org_name_3
-                                    )
+                                        and (org_name not like :org_name_2 or org_name is null)
+                                        and player_id in (
+                                            select distinct `player_id`
+                                            from player
+                                            where 1=1
+                                            and org_name like :org_name_3
+                                        )
                                     order by player_id,org_index
                                 )pwo
                             )pwo
                         )pwo
                         group by player_id
                     )pwo
-                    left join `t_players` tp
-                    on pwo.player_id = tp.player_id
-                    left join `m_sex` sex
-                    on tp.`sex_id` = sex.`sex_id`
+                    left join `t_players` tp on
+                        pwo.player_id = tp.player_id
+                    left join `m_sex` sex on
+                        tp.`sex_id` = sex.`sex_id`
+                        and sex.`delete_flag` = 0
                     where 1=1
-                    and sex.`delete_flag` = 0
-                    and tp.`delete_flag` = 0';
+                        and tp.`delete_flag` = 0';
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
         $players = DB::select($sqlString, $conditionValues);
         return $players;
@@ -1186,10 +1185,10 @@ class T_players extends Model
                         )pwo
                         left join `t_players` tp
                         on pwo.player_id = tp.player_id
-                        left join `m_sex` sex
-                        on tp.`sex_id` = sex.`sex_id`
+                        left join `m_sex` sex on
+                            tp.`sex_id` = sex.`sex_id`
+                            and sex.`delete_flag` = 0
                         where 1=1
-                        and sex.`delete_flag` = 0
                         and tp.`delete_flag` = 0';
         $sqlString = str_replace('#SearchCondition#', $searchCondition, $sqlString);
         $players = DB::select($sqlString, $conditionValues);
