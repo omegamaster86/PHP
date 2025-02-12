@@ -214,6 +214,7 @@ class VolunteerController extends Controller
     //ボランティアCSV読み込み時 20240229 
     public function sendVolunteerCsvData(
         Request $request,
+        T_users $t_users,
         T_volunteers $t_volunteers,
         M_sex $m_sex,
         M_countries $m_countries,
@@ -250,6 +251,13 @@ class VolunteerController extends Controller
                 //次の行を処理する
                 if ($rowData["result"] == "連携不可") {
                     continue;
+                }
+                //ユーザーID
+                $user_list = $t_users->getUserDataFromUserId($rowData["userId"]["value"]);
+                if (!isset($user_list) || empty($user_list)) {
+                    $rowData["result"] = "登録不可データ";
+                    $rowData["checked"] = false;
+                    $rowData["userId"]["isError"] = true;
                 }
                 //性別            
                 if (isset($rowData['sexId']['key']) && empty($rowData['sexId']['value'])) {
