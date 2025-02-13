@@ -1,38 +1,24 @@
-import React, { useState, useCallback, forwardRef, useImperativeHandle } from 'react';
+import {
+  CsvDownloadProps,
+  CsvUploadProps,
+  FileHandler,
+} from '@/app/(Pages)/(App)/(Volunteer)/volunteerBulkRegister/shared/csv';
+import { CustomButton } from '@/app/components';
+import CustomInputLabel from '@/app/components/InputLabel';
+import { downloadFile } from '@/app/utils/file';
+import CustomTextField from '@mui/material/TextField';
+import Papa from 'papaparse';
+import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
 import type { FileRejection } from 'react-dropzone';
 import { useDropzone } from 'react-dropzone';
-import Papa from 'papaparse';
-import CustomInputLabel from '@/app/components/InputLabel';
-import CustomTextField from '@mui/material/TextField';
-import { CustomButton } from '../../../../components';
 
 interface Props {
   csvUploadProps: CsvUploadProps;
   csvDownloadProps: CsvDownloadProps;
 }
 
-// CSVアップロードのプロパティの型定義
-interface CsvUploadProps {
-  label: string; // ラベル
-  readonly: boolean; // 読み取り専用かどうか
-  csvUpload: (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => void; // CSVアップロード時のコールバック
-  resetActivationFlg: () => void; // アクティベーションフラグのリセット
-}
-// CSVダウンロードのプロパティの型定義
-interface CsvDownloadProps {
-  data: any[];
-  header: any[];
-  filename: string;
-  isOrgSelected: boolean;
-  label: string;
-}
-// Handlerの型定義
-interface Handler {
-  clearFile(): void;
-}
-
 // FileUploaderコンポーネント
-const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) {
+const CsvHandler = forwardRef<FileHandler, Props>(function FileUploader(props, ref) {
   const [currentShowFile, setcurrentShowFile] = useState<{ file: File; isUploaded: boolean }>();
   const [dispError, setDispError] = useState<boolean>(false);
   useImperativeHandle(ref, () => {
@@ -124,12 +110,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
 
   // ダウンロード処理を行う関数
   const handleDownload = () => {
-    if (props.csvDownloadProps.isOrgSelected === false) {
-      setDispError(true);
-      return;
-    } else {
-      setDispError(false);
-    }
     if (props.csvDownloadProps.data.length === 0) {
       alert('ダウンロードするデータがありません。');
       return;
@@ -143,28 +123,13 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
       const bom = new Uint8Array([0xef, 0xbb, 0xbf]); //UTF-8を指定
       const blob = new Blob([bom, csvContent], { type: 'text/csv' });
 
-      // BlobからURLを生成
-      const url = window.URL.createObjectURL(blob);
-
-      // ダウンロード用のリンクを作成してクリック
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = props.csvDownloadProps.filename;
-      document.body.appendChild(a);
-      a.click();
-
-      // ダウンロード後にURLを解放
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      downloadFile(blob, props.csvDownloadProps.filename);
     } catch (error) {
       console.error('CSV Download Error:', error);
       alert('CSVのダウンロード中にエラーが発生しました。もう一度試してください。');
     }
   };
 
-  {
-    /* ファイルアップロードのテキストボックスとボタンの表示 */
-  }
   return (
     <>
       <div className='flex flex-col gap-[10px] w-full'>
@@ -184,7 +149,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
                         placeholder={'ここにファイルをドラッグ＆ドロップしてアップロード'}
                         value={currentShowFile?.isUploaded ? currentShowFile?.file.name : ''}
                         className='w-[450px] h-12'
-                      ></CustomTextField>
+                      />
                       <CustomButton
                         onClick={() => {
                           // TODO: ファイル参照処理

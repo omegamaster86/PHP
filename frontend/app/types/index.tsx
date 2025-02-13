@@ -13,7 +13,6 @@ interface Country {
   country_code: string;
 }
 
-// Jsonの型定義
 interface PrefectureResponse {
   id: number;
   name: string;
@@ -25,7 +24,6 @@ interface Prefecture {
   pref_code_jis: string;
 }
 
-// Jsonの型定義
 interface SexResponse {
   id: number;
   name: string;
@@ -34,6 +32,26 @@ interface SexResponse {
 interface Sex {
   sex_id: number;
   sex: string;
+}
+
+interface ClothesSize {
+  clothes_size_id: number;
+  clothes_size: string;
+}
+
+interface Qualification {
+  qual_id: number;
+  qual_name: string;
+}
+
+interface Language {
+  lang_id: number;
+  lang_name: string;
+}
+
+interface LanguageProficiency {
+  lang_pro_id: number;
+  lang_pro_name: string;
 }
 
 // 出漕結果情報一覧
@@ -836,6 +854,7 @@ export type {
   CheckRace,
   CheckRaceResultRecord,
   CheckRaceResultRecordDeleted,
+  ClothesSize,
   CoachingHistory,
   CoachRefereeRefResponse,
   CoachRefereeResponse,
@@ -851,6 +870,8 @@ export type {
   ICoachQualification,
   IRefereeQualification,
   LangResponse,
+  Language,
+  LanguageProficiency,
   MasterResponse,
   MyOrgsHostedTournament,
   MyPageCoachRefereeResponse,
@@ -877,6 +898,7 @@ export type {
   Prefecture,
   PrefectureResponse,
   QualHoldResponse,
+  Qualification,
   Race,
   RaceResultRecordsResponse,
   RaceTable,

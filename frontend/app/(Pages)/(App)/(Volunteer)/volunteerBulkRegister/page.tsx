@@ -1,220 +1,47 @@
 // ボランティア一括登録
 'use client';
 
+import {
+  canRegisterText,
+  CsvDownloadProps,
+  CsvTableRow,
+  CsvUploadProps,
+  FileHandler,
+  MasterData,
+} from '@/app/(Pages)/(App)/(Volunteer)/volunteerBulkRegister/shared/csv';
 import { CustomButton, CustomTitle, ErrorBox } from '@/app/components';
+import { JAPAN_COUNTRY_ID } from '@/app/constants';
 import axios from '@/app/lib/axios';
-import { UserResponse } from '@/app/types';
+import {
+  ClothesSize,
+  Country,
+  Language,
+  LanguageProficiency,
+  Prefecture,
+  Qualification,
+  Sex,
+  UserResponse,
+} from '@/app/types';
 import Validator from '@/app/utils/validator';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import CsvHandler from './CsvHandler';
 import CsvTable from './CsvTable';
 
-interface MasterData {
-  id: number;
-  name: string;
-}
-
-interface CsvData {
-  id: number; // ID
-  checked: boolean; // 選択
-  result: string; // 読み込み結果
-  userId: {
-    value: string;
-    isError: boolean;
-  }; // ユーザーID
-  volunteerName: {
-    value: string;
-    isError: boolean;
-  }; // 氏名
-  dateOfBirth: {
-    value: string;
-    isError: boolean;
-  }; // 生年月日
-  sexId: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // 性別
-  residenceCountryId: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // 居住国
-  residencePrefectureId: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // 居住都道府県
-  mailaddress: {
-    value: string;
-    isError: boolean;
-  }; // メールアドレス
-  telephoneNumber: {
-    value: string;
-    isError: boolean;
-  }; // 電話番号
-  clothesSizeId: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // 服サイズ
-  disTypeId1: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // PR1
-  disTypeId2: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // PR2
-  disTypeId3: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // PR3
-  qualId1: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // 保有資格1
-  qualId2: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // 保有資格2
-  qualId3: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // 保有資格3
-  qualId4: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // 保有資格4
-  qualId5: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // 保有資格5
-  langId1: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // 使用言語1
-  langProId1: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // 言語レベル1
-  langId2: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // 使用言語2
-  langProId2: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // 言語レベル2
-  langId3: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // 使用言語3
-  langProId3: {
-    key: string;
-    value: string;
-    isError: boolean;
-  }; // 言語レベル3
-  dayOfWeek1: {
-    value: string;
-    isError: boolean;
-  }; // 日曜日
-  dayOfWeek2: {
-    value: string;
-    isError: boolean;
-  }; // 月曜日
-  dayOfWeek3: {
-    value: string;
-    isError: boolean;
-  }; // 火曜日
-  dayOfWeek4: {
-    value: string;
-    isError: boolean;
-  }; // 水曜日
-  dayOfWeek5: {
-    value: string;
-    isError: boolean;
-  }; // 木曜日
-  dayOfWeek6: {
-    value: string;
-    isError: boolean;
-  }; // 金曜日
-  dayOfWeek7: {
-    value: string;
-    isError: boolean;
-  }; // 土曜日
-  timeZone1: {
-    value: string;
-    isError: boolean;
-  }; // 早朝
-  timeZone2: {
-    value: string;
-    isError: boolean;
-  }; // 午前
-  timeZone3: {
-    value: string;
-    isError: boolean;
-  }; // 午後
-  timeZone4: {
-    value: string;
-    isError: boolean;
-  }; // 夜
-}
-
-// CSVアップロードのプロパティの型定義
-interface CsvUploadProps {
-  label: string; // ラベル
-  readonly: boolean; // 読み取り専用かどうか
-  csvUpload: (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => void; // CSVアップロード時のコールバック
-  resetActivationFlg: () => void; // アクティベーションフラグのリセット
-}
-// CSVダウンロードのプロパティの型定義
-interface CsvDownloadProps {
-  data: any[];
-  header: any[];
-  filename: string;
-  isOrgSelected: boolean;
-  label: string;
-}
-
-// ファイル関連のアクションを扱うためのインターフェース
-interface FileHandler {
-  clearFile(): void;
-}
-
 export default function VolunteerBulkRegister() {
-  const [errorMessage, setErrorMessage] = useState([] as string[]);
-  // フック
   const router = useRouter();
   const fileUploaderRef = useRef<FileHandler>(null);
-  // ステート変数
+
   const [csvFileData, setCsvFileData] = useState<{
     content: Array<Array<string>>;
     isSet: boolean;
   }>({ content: [], isSet: false });
-  const [activationFlg, setActivationFlg] = useState<boolean>(false);
-  // CSVファイルのアップロードを処理する関数
-  const handleCsvUpload = (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => {
-    setCsvFileData(newCsvData);
-  };
-  const [dialogDisplayFlg, setDialogDisplayFlg] = useState<boolean>(false);
-  const [displayLinkButtonFlg, setDisplayLinkButtonFlg] = useState<boolean>(false);
-  const [csvData, setCsvData] = useState<CsvData[]>([]);
-  const [csvFileErrorMessage, setCsvFileErrorMessage] = useState([] as string[]);
+  const [errorMessage, setErrorMessage] = useState<string[]>([]);
+  const [activationFlg, setActivationFlg] = useState(false);
+  const [dialogDisplayFlg, setDialogDisplayFlg] = useState(false);
+  const [displayLinkButtonFlg, setDisplayLinkButtonFlg] = useState(false);
+  const [csvData, setCsvData] = useState<CsvTableRow[]>([]);
+  const [csvFileErrorMessage, setCsvFileErrorMessage] = useState<string[]>([]);
   const [country, setCountry] = useState<MasterData[]>([]);
   const [prefecture, setPrefecture] = useState<MasterData[]>([]);
   const [sex, setSex] = useState<MasterData[]>([]);
@@ -222,8 +49,13 @@ export default function VolunteerBulkRegister() {
   const [qualHold, setQualHold] = useState<MasterData[]>([]);
   const [language, setLanguage] = useState<MasterData[]>([]);
   const [languageLevel, setLanguageLevel] = useState<MasterData[]>([]);
-  const [visibilityFlg, setVisibilityFlg] = useState<boolean>(false); //CSVテーブルの表示切替フラグ 20240406
-  const [validFlag, setValidFlag] = useState(false); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
+  const [visibilityFlg, setVisibilityFlg] = useState(false); //CSVテーブルの表示切替フラグ
+  const [validFlag, setValidFlag] = useState(false); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする）
+
+  // CSVファイルのアップロードを処理する関数
+  const handleCsvUpload = (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => {
+    setCsvFileData(newCsvData);
+  };
 
   //ユーザIDに紐づいた情報の取得 20240418
   useEffect(() => {
@@ -238,13 +70,11 @@ export default function VolunteerBulkRegister() {
             playerInf.data.result[0].is_administrator == 1 ||
             playerInf.data.result[0].is_jara == 1
           ) {
-            setValidFlag(true); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
+            setValidFlag(true); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする）
           } else {
-            //console.log('ユーザ種別不正');
             router.push('/volunteerSearch');
           }
         } else {
-          //console.log('ユーザ情報なし');
           router.push('/volunteerSearch');
         }
       } catch (error: any) {}
@@ -254,67 +84,60 @@ export default function VolunteerBulkRegister() {
 
   useEffect(() => {
     const fetchMasterData = async () => {
-      // マスターデータの取得
       try {
         const csrf = () => axios.get('/sanctum/csrf-cookie');
         await csrf();
-        const countryResponse = await axios.get('api/getCountries');
-        const countryList = countryResponse.data.map(
-          ({ country_id, country_name }: { country_id: number; country_name: string }) => ({
-            id: country_id,
-            name: country_name,
-          }),
-        );
+
+        const [
+          countryResponse,
+          prefectureResponse,
+          sexResponse,
+          clothesSizeMaster,
+          qualHold,
+          lang,
+          langLevel,
+        ] = await Promise.all([
+          axios.get<Country[]>('api/getCountries'),
+          axios.get<Prefecture[]>('api/getPrefectures'),
+          axios.get<Sex[]>('api/getSexList'),
+          axios.get<ClothesSize[]>('api/getClothesSize'),
+          axios.get<Qualification[]>('api/getQualifications'),
+          axios.get<Language[]>('api/getLanguages'),
+          axios.get<LanguageProficiency[]>('api/getLanguageProficiency'),
+        ]);
+
+        const countryList = countryResponse.data.map(({ country_id, country_name }) => ({
+          id: country_id,
+          name: country_name,
+        }));
         setCountry(countryList);
-        const prefectureResponse = await axios.get('api/getPrefectures');
-        const stateList = prefectureResponse.data.map(
-          ({ pref_id, pref_name }: { pref_id: number; pref_name: string }) => ({
-            id: pref_id,
-            name: pref_name,
-          }),
-        );
+        const stateList = prefectureResponse.data.map(({ pref_id, pref_name }) => ({
+          id: pref_id,
+          name: pref_name,
+        }));
         setPrefecture(stateList);
         // 性別マスタ
-        const sexResponse = await axios.get('api/getSexList');
-        const sexList = sexResponse.data.map(
-          ({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }),
-        );
+        const sexList = sexResponse.data.map(({ sex_id, sex }) => ({ id: sex_id, name: sex }));
         setSex(sexList);
         // 服サイズマスタ
-        const clothesSizeMaster = await axios.get('api/getClothesSize');
         const clothesSizeMasterList = clothesSizeMaster.data.map(
-          ({
-            clothes_size_id,
-            clothes_size,
-          }: {
-            clothes_size_id: number;
-            clothes_size: string;
-          }) => ({ id: clothes_size_id, name: clothes_size }),
+          ({ clothes_size_id, clothes_size }) => ({ id: clothes_size_id, name: clothes_size }),
         );
         setClothesSize(clothesSizeMasterList);
-        const qualHold = await axios.get('api/getQualifications');
-        const qualHoldList = qualHold.data.map(
-          ({ qual_id, qual_name }: { qual_id: number; qual_name: string }) => ({
-            id: qual_id,
-            name: qual_name,
-          }),
-        );
+        const qualHoldList = qualHold.data.map(({ qual_id, qual_name }) => ({
+          id: qual_id,
+          name: qual_name,
+        }));
         setQualHold(qualHoldList);
-        const lang = await axios.get('api/getLanguages');
-        const langList = lang.data.map(
-          ({ lang_id, lang_name }: { lang_id: number; lang_name: string }) => ({
-            id: lang_id,
-            name: lang_name,
-          }),
-        );
+        const langList = lang.data.map(({ lang_id, lang_name }) => ({
+          id: lang_id,
+          name: lang_name,
+        }));
         setLanguage(langList);
-        const langLevel = await axios.get('api/getLanguageProficiency');
-        const langLevelList = langLevel.data.map(
-          ({ lang_pro_id, lang_pro_name }: { lang_pro_id: number; lang_pro_name: string }) => ({
-            id: lang_pro_id,
-            name: lang_pro_name,
-          }),
-        );
+        const langLevelList = langLevel.data.map(({ lang_pro_id, lang_pro_name }) => ({
+          id: lang_pro_id,
+          name: lang_pro_name,
+        }));
         setLanguageLevel(langLevelList);
       } catch (error) {
         console.error(`マスターデータの取得に失敗しました: ${error}`);
@@ -434,9 +257,9 @@ export default function VolunteerBulkRegister() {
 
   //居住地のバリデーションチェックで日本以外かつ都道府県ありをチェックできるように条件を修正 20240412
   const validateCountryIsNotJapanAndPref = (cntKey: string, prefKey: string) => {
-    if (cntKey != '112' && prefKey != '') {
+    if (cntKey != JAPAN_COUNTRY_ID && prefKey != '') {
       return true; //日本以外かつ都道府県あり
-    } else if (cntKey == '112' && (prefKey == '' || prefKey == undefined || prefKey == null)) {
+    } else if (cntKey == JAPAN_COUNTRY_ID && !prefKey) {
       return true; //日本かつ都道府県なし
     } else {
       return false;
@@ -449,7 +272,7 @@ export default function VolunteerBulkRegister() {
    * @param index 行番号
    * @returns CSVの行データ
    **/
-  const getJsonRow = async (row: Array<string>, index: number) => {
+  const getJsonRow = (row: Array<string>, index: number): CsvTableRow => {
     // 必須項目は入力が空の場合、エラーとする。
     // 空ではない場合、バリデーションを実行し、エラーがある場合はエラーとする。
 
@@ -463,396 +286,379 @@ export default function VolunteerBulkRegister() {
         id: index,
         checked: false,
         result: '無効データ',
-        userId: { value: '-', isError: true },
-        volunteerName: { value: '-', isError: true },
-        dateOfBirth: { value: '-', isError: true },
-        sexId: { key: '-', value: '-', isError: true },
-        residenceCountryId: { key: '-', value: '-', isError: true },
-        residencePrefectureId: { key: '-', value: '-', isError: true },
-        mailaddress: { value: '-', isError: true },
-        telephoneNumber: { value: '-', isError: true },
-        clothesSizeId: { key: '-', value: '-', isError: true },
-        disTypeId1: { key: '-', value: '-', isError: true },
-        disTypeId2: { key: '-', value: '-', isError: true },
-        disTypeId3: { key: '-', value: '-', isError: true },
-        qualId1: { key: '-', value: '-', isError: true },
-        qualId2: { key: '-', value: '-', isError: true },
-        qualId3: { key: '-', value: '-', isError: true },
-        qualId4: { key: '-', value: '-', isError: true },
-        qualId5: { key: '-', value: '-', isError: true },
-        langId1: { key: '-', value: '-', isError: true },
-        langProId1: { key: '-', value: '-', isError: true },
-        langId2: { key: '-', value: '-', isError: true },
-        langProId2: { key: '-', value: '-', isError: true },
-        langId3: { key: '-', value: '-', isError: true },
-        langProId3: { key: '-', value: '-', isError: true },
-        dayOfWeek1: { value: '-', isError: true },
-        dayOfWeek2: { value: '-', isError: true },
-        dayOfWeek3: { value: '-', isError: true },
-        dayOfWeek4: { value: '-', isError: true },
-        dayOfWeek5: { value: '-', isError: true },
-        dayOfWeek6: { value: '-', isError: true },
-        dayOfWeek7: { value: '-', isError: true },
-        timeZone1: { value: '-', isError: true },
-        timeZone2: { value: '-', isError: true },
-        timeZone3: { value: '-', isError: true },
-        timeZone4: { value: '-', isError: true },
+        userId: { value: '-', error: false },
+        volunteerName: { value: '-', error: false },
+        dateOfBirth: { value: '-', error: false },
+        sexId: { key: '-', value: '-', error: false },
+        residenceCountryId: { key: '-', value: '-', error: false },
+        residencePrefectureId: { key: '-', value: '-', error: false },
+        mailaddress: { value: '-', error: false },
+        telephoneNumber: { value: '-', error: false },
+        clothesSizeId: { key: '-', value: '-', error: false },
+        disTypeId1: { key: '-', value: '-', error: false },
+        disTypeId2: { key: '-', value: '-', error: false },
+        disTypeId3: { key: '-', value: '-', error: false },
+        qualId1: { key: '-', value: '-', error: false },
+        qualId2: { key: '-', value: '-', error: false },
+        qualId3: { key: '-', value: '-', error: false },
+        qualId4: { key: '-', value: '-', error: false },
+        qualId5: { key: '-', value: '-', error: false },
+        langId1: { key: '-', value: '-', error: false },
+        langProId1: { key: '-', value: '-', error: false },
+        langId2: { key: '-', value: '-', error: false },
+        langProId2: { key: '-', value: '-', error: false },
+        langId3: { key: '-', value: '-', error: false },
+        langProId3: { key: '-', value: '-', error: false },
+        dayOfWeek1: { value: '-', error: false },
+        dayOfWeek2: { value: '-', error: false },
+        dayOfWeek3: { value: '-', error: false },
+        dayOfWeek4: { value: '-', error: false },
+        dayOfWeek5: { value: '-', error: false },
+        dayOfWeek6: { value: '-', error: false },
+        dayOfWeek7: { value: '-', error: false },
+        timeZone1: { value: '-', error: false },
+        timeZone2: { value: '-', error: false },
+        timeZone3: { value: '-', error: false },
+        timeZone4: { value: '-', error: false },
       };
     } else {
+      const foundSex = sex.find((item) => item.id === Number(row[3]));
+      const foundCountry = country.find((item) => item.id === Number(row[4]));
+      const foundPref = prefecture.find((item) => item.id === Number(row[5]));
+      const foundClothesSize = clothesSize.find((item) => item.id === Number(row[8]));
+
+      const foundLang1 = language.find((item) => item.id === Number(row[17]));
+      const foundLangPro1 = languageLevel.find((item) => item.id === Number(row[18]));
+      const foundLang2 = language.find((item) => item.id === Number(row[19]));
+      const foundLangPro2 = languageLevel.find((item) => item.id === Number(row[20]));
+      const foundLang3 = language.find((item) => item.id === Number(row[21]));
+      const foundLangPro3 = languageLevel.find((item) => item.id === Number(row[22]));
+
+      const foundQual1 = qualHold.find((item) => item.id === Number(row[12]));
+      const foundQual2 = qualHold.find((item) => item.id === Number(row[13]));
+      const foundQual3 = qualHold.find((item) => item.id === Number(row[14]));
+      const foundQual4 = qualHold.find((item) => item.id === Number(row[15]));
+      const foundQual5 = qualHold.find((item) => item.id === Number(row[16]));
+
+      const userIdError = validateRequired(row[0]) ? 'ユーザーIDは必須項目です。' : false;
+      const volunteerNameError =
+        validateRequired(row[1]) || validateVolunteerName(row[1]) ? '氏名は必須項目です。' : false;
+      const dateOfBirthError =
+        validateRequired(row[2]) || validateYmdFormat(row[2]) ? '生年月日は必須項目です。' : false;
+      const sexIdError = validateRequired(row[3]) || !foundSex ? '性別は必須項目です。' : false;
+      const residenceCountryIdError =
+        validateRequired(row[4]) || !foundCountry ? '居住国は必須項目です。' : false;
+      const residencePrefectureIdError =
+        validateCountryIsNotJapanAndPref(row[4], row[5]) ||
+        (row[4] == JAPAN_COUNTRY_ID && !foundPref)
+          ? '居住都道府県は必須項目です。'
+          : false;
+      const mailaddressError =
+        !validateRequired(row[6]) && validateEmailFormat(row[6])
+          ? 'メールアドレスの形式が正しくありません。'
+          : false;
+      const telephoneNumberError =
+        !validateRequired(row[7]) && validateNumber(row[7], 15)
+          ? '電話番号の形式が正しくありません。'
+          : false;
+      const clothesSizeIdError =
+        validateRequired(row[8]) || !foundClothesSize ? '服サイズは必須項目です。' : false;
+
+      const disTypeId1Error =
+        !validateRequired(row[9]) && validateZeroOrOne(row[9])
+          ? 'PR1は0もしくは1で記入してください。'
+          : false;
+      const disTypeId2Error =
+        !validateRequired(row[10]) && validateZeroOrOne(row[10])
+          ? 'PR2は0もしくは1で記入してください。'
+          : false;
+      const disTypeId3Error =
+        !validateRequired(row[11]) && validateZeroOrOne(row[11])
+          ? 'PR3は0もしくは1で記入してください。'
+          : false;
+
+      const qualId1Error =
+        !validateRequired(row[12]) && !foundQual1 ? '資格1が不正な値です。' : false;
+      const qualId2Error =
+        !validateRequired(row[13]) && !foundQual2 ? '資格2が不正な値です。' : false;
+      const qualId3Error =
+        !validateRequired(row[14]) && !foundQual3 ? '資格3が不正な値です。' : false;
+      const qualId4Error =
+        !validateRequired(row[15]) && !foundQual4 ? '資格4が不正な値です。' : false;
+      const qualId5Error =
+        !validateRequired(row[16]) && !foundQual5 ? '資格5が不正な値です。' : false;
+
+      const langId1Error =
+        !validateRequired(row[17]) && !foundLang1 ? '言語1が不正な値です。' : false;
+      const langProId1Error =
+        !validateRequired(row[18]) && !foundLangPro1 ? '言語1のレベルが不正な値です。' : false;
+      const langId2Error =
+        !validateRequired(row[19]) && !foundLang2 ? '言語2が不正な値です。' : false;
+      const langProId2Error =
+        !validateRequired(row[20]) && !foundLangPro2 ? '言語2のレベルが不正な値です。' : false;
+      const langId3Error =
+        !validateRequired(row[21]) && !foundLang3 ? '言語3が不正な値です。' : false;
+      const langProId3Error =
+        !validateRequired(row[22]) && !foundLangPro3 ? '言語3のレベルが不正な値です。' : false;
+
+      const dayOfWeek1Error =
+        !validateRequired(row[23]) && validateZeroOrOne(row[23])
+          ? '日は0もしくは1で記入してください。'
+          : false;
+      const dayOfWeek2Error =
+        !validateRequired(row[24]) && validateZeroOrOne(row[24])
+          ? '月は0もしくは1で記入してください。'
+          : false;
+      const dayOfWeek3Error =
+        !validateRequired(row[25]) && validateZeroOrOne(row[25])
+          ? '火は0もしくは1で記入してください。'
+          : false;
+      const dayOfWeek4Error =
+        !validateRequired(row[26]) && validateZeroOrOne(row[26])
+          ? '水は0もしくは1で記入してください。'
+          : false;
+      const dayOfWeek5Error =
+        !validateRequired(row[27]) && validateZeroOrOne(row[27])
+          ? '木は0もしくは1で記入してください。'
+          : false;
+      const dayOfWeek6Error =
+        !validateRequired(row[28]) && validateZeroOrOne(row[28])
+          ? '金は0もしくは1で記入してください。'
+          : false;
+      const dayOfWeek7Error =
+        !validateRequired(row[29]) && validateZeroOrOne(row[29])
+          ? '土は0もしくは1で記入してください。'
+          : false;
+
+      const timeZone1Error =
+        !validateRequired(row[30]) && validateZeroOrOne(row[30])
+          ? '早朝は0もしくは1で記入してください。'
+          : false;
+      const timeZone2Error =
+        !validateRequired(row[31]) && validateZeroOrOne(row[31])
+          ? '午前は0もしくは1で記入してください。'
+          : false;
+      const timeZone3Error =
+        !validateRequired(row[32]) && validateZeroOrOne(row[32])
+          ? '午後は0もしくは1で記入してください。'
+          : false;
+      const timeZone4Error =
+        !validateRequired(row[33]) && validateZeroOrOne(row[33])
+          ? '夜は0もしくは1で記入してください。'
+          : false;
+
+      const hasError = [
+        userIdError,
+        volunteerNameError,
+        dateOfBirthError,
+        sexIdError,
+        residenceCountryIdError,
+        residencePrefectureIdError,
+        mailaddressError,
+        telephoneNumberError,
+        clothesSizeIdError,
+        disTypeId1Error,
+        disTypeId2Error,
+        disTypeId3Error,
+        qualId1Error,
+        qualId2Error,
+        qualId3Error,
+        qualId4Error,
+        qualId5Error,
+        langId1Error,
+        langProId1Error,
+        langId2Error,
+        langProId2Error,
+        langId3Error,
+        langProId3Error,
+        dayOfWeek1Error,
+        dayOfWeek2Error,
+        dayOfWeek3Error,
+        dayOfWeek4Error,
+        dayOfWeek5Error,
+        dayOfWeek6Error,
+        dayOfWeek7Error,
+        timeZone1Error,
+        timeZone2Error,
+        timeZone3Error,
+        timeZone4Error,
+      ].some((error) => error !== false);
+
       return {
         id: index,
-        checked: (await handleResult(row)) === '登録可能データ' ? true : false,
-        result: await handleResult(row),
+        checked: !hasError,
+        result: hasError ? '登録不可データ' : canRegisterText,
         // 必須項目
         userId: {
           value: row[0],
-          isError: validateRequired(row[0]) ? true : validateNumber(row[0], 7),
+          error: userIdError,
         },
         // 必須項目
         volunteerName: {
           value: row[1],
-          isError: validateRequired(row[1]) ? true : validateVolunteerName(row[1]),
+          error: volunteerNameError,
         },
         // 必須項目
         dateOfBirth: {
           value: row[2],
-          isError: validateRequired(row[2]) ? true : validateYmdFormat(row[2]),
+          error: dateOfBirthError,
         },
         // 必須項目
         sexId: {
           key: row[3],
-          value: sex.find((item) => item.id === Number(row[3]))?.name || row[3],
-          isError: validateRequired(row[3])
-            ? true
-            : validateNumber(row[3], 2) ||
-              sex.filter((item) => item.id === Number(row[3])).length !== 1,
+          value: foundSex?.name || row[3],
+          error: sexIdError,
         },
         // 必須項目
         residenceCountryId: {
           key: row[4],
-          value: country.find((item) => item.id === Number(row[4]))?.name || row[4],
-          isError: validateRequired(row[4])
-            ? true
-            : validateNumber(row[4], 3) ||
-              country.filter((item) => item.id === Number(row[4])).length !== 1,
+          value: foundCountry?.name || row[4],
+          error: residenceCountryIdError,
         },
         residencePrefectureId: {
           key: row[5],
-          value: prefecture.find((item) => item.id === Number(row[5]))?.name || row[5],
-          isError: validateCountryIsNotJapanAndPref(row[4], row[5])
-            ? true
-            : validateNumber(row[5], 2) ||
-              (row[4] == '112' &&
-                prefecture.filter((item) => item.id === Number(row[5])).length !== 1),
+          value: foundPref?.name || row[5],
+          error: residencePrefectureIdError,
         },
         mailaddress: {
           value: row[6],
-          isError: !validateRequired(row[6]) && validateEmailFormat(row[6]),
+          error: mailaddressError,
         },
         telephoneNumber: {
           value: row[7],
-          isError: !validateRequired(row[7]) && validateNumber(row[7], 15),
+          error: telephoneNumberError,
         },
         // 必須項目
         clothesSizeId: {
           key: row[8],
-          value: clothesSize.find((item) => item.id === Number(row[8]))?.name || row[8],
-          isError: validateRequired(row[8])
-            ? true
-            : validateNumber(row[8], 1) ||
-              clothesSize.filter((item) => item.id === Number(row[8])).length !== 1,
+          value: foundClothesSize?.name || row[8],
+          error: clothesSizeIdError,
         },
         disTypeId1: {
           key: row[9],
           value: row[9] === '1' ? '◯' : '',
-          isError: !validateRequired(row[9]) && validateZeroOrOne(row[9]),
+          error: disTypeId1Error,
         },
         disTypeId2: {
           key: row[10],
           value: row[10] === '1' ? '◯' : '',
-          isError: !validateRequired(row[10]) && validateZeroOrOne(row[10]),
+          error: disTypeId2Error,
         },
         disTypeId3: {
           key: row[11],
           value: row[11] === '1' ? '◯' : '',
-          isError: !validateRequired(row[11]) && validateZeroOrOne(row[11]),
+          error: disTypeId3Error,
         },
         qualId1: {
           key: row[12],
-          value: qualHold.find((item) => item.id === Number(row[12]))?.name || row[12],
-          isError:
-            !validateRequired(row[12]) &&
-            (validateNumber(row[12], 3) ||
-              qualHold.filter((item) => item.id === Number(row[12])).length !== 1),
+          value: foundQual1?.name || row[12],
+          error: qualId1Error,
         },
         qualId2: {
           key: row[13],
-          value: qualHold.find((item) => item.id === Number(row[13]))?.name || row[13],
-          isError:
-            !validateRequired(row[13]) &&
-            (validateNumber(row[13], 3) ||
-              qualHold.filter((item) => item.id === Number(row[13])).length !== 1),
+          value: foundQual2?.name || row[13],
+          error: qualId2Error,
         },
         qualId3: {
           key: row[14],
-          value: qualHold.find((item) => item.id === Number(row[14]))?.name || row[14],
-          isError:
-            !validateRequired(row[14]) &&
-            (validateNumber(row[14], 3) ||
-              qualHold.filter((item) => item.id === Number(row[14])).length !== 1),
+          value: foundQual3?.name || row[14],
+          error: qualId3Error,
         },
         qualId4: {
           key: row[15],
-          value: qualHold.find((item) => item.id === Number(row[15]))?.name,
-          isError:
-            !validateRequired(row[15]) &&
-            (validateNumber(row[15], 3) ||
-              qualHold.filter((item) => item.id === Number(row[15])).length !== 1),
+          value: foundQual4?.name || row[15],
+          error: qualId4Error,
         },
         qualId5: {
           key: row[16],
-          value: qualHold.find((item) => item.id === Number(row[16]))?.name,
-          isError:
-            !validateRequired(row[16]) &&
-            (validateNumber(row[16], 3) ||
-              qualHold.filter((item) => item.id === Number(row[16])).length !== 1),
+          value: foundQual5?.name || row[16],
+          error: qualId5Error,
         },
         langId1: {
           key: row[17],
-          value: language.find((item) => item.id === Number(row[17]))?.name,
-          isError:
-            !validateRequired(row[17]) &&
-            (validateNumber(row[17], 3) ||
-              language.filter((item) => item.id === Number(row[17])).length !== 1),
+          value: foundLang1?.name || row[17],
+          error: langId1Error,
         },
         langProId1: {
           key: row[18],
-          value: languageLevel.find((item) => item.id === Number(row[18]))?.name,
-          isError:
-            !validateRequired(row[18]) &&
-            (validateNumber(row[18], 3) ||
-              languageLevel.filter((item) => item.id === Number(row[18])).length !== 1),
+          value: foundLangPro1?.name || row[18],
+          error: langProId1Error,
         },
         langId2: {
           key: row[19],
-          value: language.find((item) => item.id === Number(row[19]))?.name,
-          isError:
-            !validateRequired(row[19]) &&
-            (validateNumber(row[19], 3) ||
-              language.filter((item) => item.id === Number(row[19])).length !== 1),
+          value: foundLang2?.name || row[19],
+          error: langId2Error,
         },
         langProId2: {
           key: row[20],
-          value: languageLevel.find((item) => item.id === Number(row[20]))?.name,
-          isError:
-            !validateRequired(row[20]) &&
-            (validateNumber(row[20], 3) ||
-              languageLevel.filter((item) => item.id === Number(row[20])).length !== 1),
+          value: foundLangPro2?.name || row[20],
+          error: langProId2Error,
         },
         langId3: {
           key: row[21],
-          value: language.find((item) => item.id === Number(row[21]))?.name,
-          isError:
-            !validateRequired(row[21]) &&
-            (validateNumber(row[21], 3) ||
-              language.filter((item) => item.id === Number(row[21])).length !== 1),
+          value: foundLang3?.name || row[21],
+          error: langId3Error,
         },
         langProId3: {
           key: row[22],
-          value: languageLevel.find((item) => item.id === Number(row[22]))?.name,
-          isError:
-            !validateRequired(row[22]) &&
-            (validateNumber(row[22], 3) ||
-              languageLevel.filter((item) => item.id === Number(row[22])).length !== 1),
+          value: foundLangPro3?.name || row[22],
+          error: langProId3Error,
         },
         dayOfWeek1: {
           value: row[23] === '1' ? '◯' : '',
-          isError: !validateRequired(row[23]) && validateZeroOrOne(row[23]),
+          error: dayOfWeek1Error,
         },
         dayOfWeek2: {
           value: row[24] === '1' ? '◯' : '',
-          isError: !validateRequired(row[24]) && validateZeroOrOne(row[24]),
+          error: dayOfWeek2Error,
         },
         dayOfWeek3: {
           value: row[25] === '1' ? '◯' : '',
-          isError: !validateRequired(row[25]) && validateZeroOrOne(row[25]),
+          error: dayOfWeek3Error,
         },
         dayOfWeek4: {
           value: row[26] === '1' ? '◯' : '',
-          isError: !validateRequired(row[26]) && validateZeroOrOne(row[26]),
+          error: dayOfWeek4Error,
         },
         dayOfWeek5: {
           value: row[27] === '1' ? '◯' : '',
-          isError: !validateRequired(row[27]) && validateZeroOrOne(row[27]),
+          error: dayOfWeek5Error,
         },
         dayOfWeek6: {
           value: row[28] === '1' ? '◯' : '',
-          isError: !validateRequired(row[28]) && validateZeroOrOne(row[28]),
+          error: dayOfWeek6Error,
         },
         dayOfWeek7: {
           value: row[29] === '1' ? '◯' : '',
-          isError: !validateRequired(row[29]) && validateZeroOrOne(row[29]),
+          error: dayOfWeek7Error,
         },
         timeZone1: {
           value: row[30] === '1' ? '◯' : '',
-          isError: !validateRequired(row[30]) && validateZeroOrOne(row[30]),
+          error: timeZone1Error,
         },
         timeZone2: {
           value: row[31] === '1' ? '◯' : '',
-          isError: !validateRequired(row[31]) && validateZeroOrOne(row[31]),
+          error: timeZone2Error,
         },
         timeZone3: {
           value: row[32] === '1' ? '◯' : '',
-          isError: !validateRequired(row[32]) && validateZeroOrOne(row[32]),
+          error: timeZone3Error,
         },
         timeZone4: {
           value: row[33] === '1' ? '◯' : '',
-          isError: !validateRequired(row[33]) && validateZeroOrOne(row[33]),
+          error: timeZone4Error,
         },
       };
     }
   };
 
-  /**
-   * CSV行に対しバリデーションを実行し、resultの文字列を返す関数
-   * @param row
-   * @returns
-   */
-  const handleResult = async (row: string[]) => {
-    // TODO: システムチェックの実装
-    const result =
-      row.length !== 34
-        ? '無効データ'
-        : // 氏名の形式(全半角文字50文字以内であることを確認)
-          (validateRequired(row[0]) ? true : validateNumber(row[0], 7)) ||
-            // 生年月日日付の形式かどうかを判定する
-            (validateRequired(row[1]) ? true : validateVolunteerName(row[1])) ||
-            // 性別の形式かどうかを判定する
-            (validateRequired(row[2]) ? true : validateYmdFormat(row[2])) ||
-            // 居住国の形式かどうかを判定する
-            (validateRequired(row[4])
-              ? true
-              : validateNumber(row[4], 3) ||
-                country.filter((item) => item.id === Number(row[4])).length !== 1) ||
-            // 居住都道府県の形式かどうかを判定する
-            // 居住国が日本=112の時のみ、居住都道府県の形式をチェックする
-            (validateCountryIsNotJapanAndPref(row[4], row[5])
-              ? true
-              : validateNumber(row[5], 2) ||
-                (row[4] == '112' &&
-                  prefecture.filter((item) => item.id === Number(row[5])).length !== 1)) ||
-            // 性別の形式かどうかを判定する
-            (validateRequired(row[3])
-              ? true
-              : validateNumber(row[3], 2) ||
-                sex.filter((item) => item.id === Number(row[3])).length !== 1) ||
-            // メールアドレスの形式かどうかを判定する
-            (validateRequired(row[6]) ? false : validateEmailFormat(row[6])) ||
-            // 電話番号の形式かどうかを判定する
-            (validateRequired(row[7]) ? false : validateNumber(row[7], 15)) ||
-            // 服サイズの形式かどうかを判定する
-            (validateRequired(row[8])
-              ? true
-              : validateNumber(row[8], 1) ||
-                clothesSize.filter((item) => item.id === Number(row[8])).length !== 1) ||
-            // PR1の形式かどうかを判定する
-            (validateRequired(row[9]) ? false : validateZeroOrOne(row[9])) ||
-            // PR2の形式かどうかを判定する
-            (validateRequired(row[10]) ? false : validateZeroOrOne(row[10])) ||
-            // PR3の形式かどうかを判定する
-            (validateRequired(row[11]) ? false : validateZeroOrOne(row[11])) ||
-            // 保有資格1の形式かどうかを判定する
-            (validateRequired(row[12])
-              ? false
-              : validateNumber(row[12], 3) ||
-                qualHold.filter((item) => item.id === Number(row[12])).length !== 1) ||
-            // 保有資格2の形式かどうかを判定する
-            (validateRequired(row[13])
-              ? false
-              : validateNumber(row[13], 3) ||
-                qualHold.filter((item) => item.id === Number(row[13])).length !== 1) ||
-            // 保有資格3の形式かどうかを判定する
-            (validateRequired(row[14])
-              ? false
-              : validateNumber(row[14], 3) ||
-                qualHold.filter((item) => item.id === Number(row[14])).length !== 1) ||
-            // 保有資格4の形式かどうかを判定する
-            (validateRequired(row[15])
-              ? false
-              : validateNumber(row[15], 3) ||
-                qualHold.filter((item) => item.id === Number(row[15])).length !== 1) ||
-            // 保有資格5の形式かどうかを判定する
-            (validateRequired(row[16])
-              ? false
-              : validateNumber(row[16], 3) ||
-                qualHold.filter((item) => item.id === Number(row[16])).length !== 1) ||
-            // 使用言語1の形式かどうかを判定する
-            (validateRequired(row[17])
-              ? false
-              : validateNumber(row[17], 3) ||
-                language.filter((item) => item.id === Number(row[17])).length !== 1) ||
-            // 使用言語1のレベルの形式かどうかを判定する
-            (validateRequired(row[18])
-              ? false
-              : validateNumber(row[18], 3) ||
-                languageLevel.filter((item) => item.id === Number(row[18])).length !== 1) ||
-            // 使用言語2の形式かどうかを判定する
-            (validateRequired(row[19])
-              ? false
-              : validateNumber(row[19], 3) ||
-                language.filter((item) => item.id === Number(row[19])).length !== 1) ||
-            // 使用言語2のレベルの形式かどうかを判定する
-            (validateRequired(row[20])
-              ? false
-              : validateNumber(row[20], 3) ||
-                languageLevel.filter((item) => item.id === Number(row[20])).length !== 1) ||
-            // 使用言語3の形式かどうかを判定する
-            (validateRequired(row[21])
-              ? false
-              : validateNumber(row[21], 3) ||
-                language.filter((item) => item.id === Number(row[21])).length !== 1) ||
-            // 使用言語3のレベルの形式かどうかを判定する
-            (validateRequired(row[22])
-              ? false
-              : validateNumber(row[22], 3) ||
-                languageLevel.filter((item) => item.id === Number(row[22])).length !== 1) ||
-            // 曜日1の形式かどうかを判定する
-            (validateRequired(row[23]) ? false : validateZeroOrOne(row[23])) ||
-            // 曜日2の形式かどうかを判定する
-            (validateRequired(row[24]) ? false : validateZeroOrOne(row[24])) ||
-            // 曜日3の形式かどうかを判定する
-            (validateRequired(row[25]) ? false : validateZeroOrOne(row[25])) ||
-            // 曜日4の形式かどうかを判定する
-            (validateRequired(row[26]) ? false : validateZeroOrOne(row[26])) ||
-            // 曜日5の形式かどうかを判定する
-            (validateRequired(row[27]) ? false : validateZeroOrOne(row[27])) ||
-            // 曜日6の形式かどうかを判定する
-            (validateRequired(row[28]) ? false : validateZeroOrOne(row[28])) ||
-            // 曜日7の形式かどうかを判定する
-            (validateRequired(row[29]) ? false : validateZeroOrOne(row[29])) ||
-            // 時間帯1の形式かどうかを判定する
-            (validateRequired(row[30]) ? false : validateZeroOrOne(row[30])) ||
-            // 時間帯2の形式かどうかを判定する
-            (validateRequired(row[31]) ? false : validateZeroOrOne(row[31])) ||
-            // 時間帯3の形式かどうかを判定する
-            (validateRequired(row[32]) ? false : validateZeroOrOne(row[32])) ||
-            // 時間帯4の形式かどうかを判定する
-            (validateRequired(row[33]) ? false : validateZeroOrOne(row[33]))
-          ? '登録不可データ'
-          : '登録可能データ';
-
-    // どの項目がエラーになっているかをコンソールに出力
-
-    return result;
-  };
-
   // CSVアップロードのプロパティ
-  const csvUploadProps = {
+  const csvUploadProps: CsvUploadProps = {
     label: '読み込みCSVファイル',
     readonly: activationFlg,
     csvUpload: handleCsvUpload,
     resetActivationFlg: resetActivationFlg,
-  } as CsvUploadProps;
+  };
 
   //読み込むボタン押下時 20240228
   const sendCsvData = async () => {
@@ -861,46 +667,34 @@ export default function VolunteerBulkRegister() {
     const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
     const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
 
-    var array = Array() as CsvData[];
-    Promise.all(
-      // EOF（末尾の改行）対策でフィルターを行う
-      csvFileData.content
-        ?.filter(function (x) {
-          // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
-          return x.length > 0 && x.some((y) => y.length > 0);
-        })
-        .slice(isHeaderMatch ? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
-        .map((row, index) => getJsonRow(row, index)),
-    ).then((results) => {
-      array = results as CsvData[];
-    });
+    // EOF（末尾の改行）対策でフィルターを行う
+    const sendData = csvFileData.content
+      ?.filter((x) => {
+        // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
+        return x.length > 0 && x.some((y) => y.length > 0);
+      })
+      .slice(isHeaderMatch ? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
+      .map((row, index) => getJsonRow(row, index));
+
     const csrf = () => axios.get('/sanctum/csrf-cookie');
     await csrf();
-    await axios
-      .post('api/sendVolunteerCsvData', array)
-      .then((res) => {
-        var contentData = res.data.result as CsvData[];
 
-        setActivationFlg(true);
-        if (dialogDisplayFlg) {
-          if (
-            !window.confirm('読み込み結果に表示されているデータはクリアされます。よろしいですか？')
-          ) {
-            setActivationFlg(false);
-            return;
-          }
-        }
-        setCsvData(contentData as CsvData[]);
-        setDialogDisplayFlg(true);
+    const res = await axios.post<{ result: CsvTableRow[] }>('api/sendVolunteerCsvData', sendData);
+    const contentData = res.data.result;
+    setActivationFlg(true);
+    if (dialogDisplayFlg) {
+      if (!window.confirm('読み込み結果に表示されているデータはクリアされます。よろしいですか？')) {
         setActivationFlg(false);
-        setVisibilityFlg(true); //CSVテーブルの表示切替フラグ 20240406
-        setDialogDisplayFlg(true);
-        setDisplayLinkButtonFlg(true);
-        performValidation();
-      })
-      .catch((error) => {
-        //console.log(error);
-      });
+        return;
+      }
+    }
+    setCsvData(contentData);
+    setDialogDisplayFlg(true);
+    setActivationFlg(false);
+    setVisibilityFlg(true); //CSVテーブルの表示切替フラグ 20240406
+    setDialogDisplayFlg(true);
+    setDisplayLinkButtonFlg(true);
+    performValidation();
   };
 
   //登録ボタン押下時 20240307
@@ -917,7 +711,7 @@ export default function VolunteerBulkRegister() {
       });
   };
 
-  const csvDownloadProps = {
+  const csvDownloadProps: CsvDownloadProps = {
     header: [
       { label: 'ユーザーID', key: 'userId' },
       { label: '氏名', key: 'volunteerName' },
@@ -957,7 +751,7 @@ export default function VolunteerBulkRegister() {
     data: [{}],
     filename: 'ボランティア一括登録.csv',
     label: 'CSVフォーマット出力',
-  } as CsvDownloadProps;
+  };
 
   if (!validFlag) return null;
 
