@@ -1169,10 +1169,6 @@ class TournamentController extends Controller
             $target_race_id = $reqData['race_id'];
             $race_result = $tRace->getRaceFromRaceId($target_race_id); //レース情報を取得
 
-            if (empty($race_result)) {
-                abort(404, 'レース情報が存在しません。');
-            }
-
             //出漕時点情報を取得
             $record_result = $t_raceResultRecord->getRaceResultRecordOnRowingPoint($target_race_id);
             //laptimeをSS.msからMM:SS.msに変換

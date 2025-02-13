@@ -21,6 +21,25 @@ import { Race, RaceResultRecordsResponse } from '@/app/types';
 import axios from '@/app/lib/axios';
 import { formatDate } from '@/app/utils/dateUtil';
 
+const raceInfoInitialValue: Race = {
+  id: 0,
+  checked: false,
+  race_id: '',
+  entrysystem_race_id: '',
+  tourn_id: 0,
+  race_number: '',
+  event_id: '',
+  event_name: '',
+  otherEventName: '',
+  race_name: '',
+  race_class_id: '',
+  race_class_name: '',
+  otherRaceClassName: '',
+  by_group: '',
+  range: '',
+  start_date_time: '',
+};
+
 // レース結果登録（参照・削除）画面のメインコンポーネント
 export default function TournamentResultRef() {
   const router = useRouter();
@@ -34,7 +53,7 @@ export default function TournamentResultRef() {
   const [raceId, setRaceId] = useState<string | null>(param.get('raceId')); // レースID
 
   // レース基本情報のモデル
-  const [raceInfo, setRaceInfo] = useState<Race>({} as Race);
+  const [raceInfo, setRaceInfo] = useState<Race>(raceInfoInitialValue);
 
   // 出漕結果記録テーブルのモデル
   const [raceResultRecords, setRaceResultRecords] = useState<RaceResultRecordsResponse[]>([]);
@@ -47,7 +66,10 @@ export default function TournamentResultRef() {
         };
         const raceResponse = await axios.post('api/getRaceDataRaceId', sendData);
 
-        setRaceInfo(raceResponse.data.race_result[0]);
+        const race = raceResponse.data.race_result[0];
+        if (race) {
+          setRaceInfo(raceResponse.data.race_result[0]);
+        }
 
         setRaceResultRecords(raceResponse.data.record_result);
       } catch (error: any) {
@@ -56,6 +78,12 @@ export default function TournamentResultRef() {
     };
     fetch();
   }, []);
+
+  if (mode === 'delete' && raceInfo.race_id === '') {
+    return (
+      <ErrorBox errorText={['当該レースの結果は、ほかのユーザーによって削除されています。']} />
+    );
+  }
 
   return (
     <>
@@ -70,17 +98,17 @@ export default function TournamentResultRef() {
               {/* レースID */}
               <div className='flex flex-col gap-1'>
                 <Label label='レースID' textSize='small' isBold />
-                {<p className='text-secondaryText disable'>{raceInfo.race_id || ''}</p>}
+                {<p className='text-secondaryText disable'>{raceInfo.race_id}</p>}
               </div>
               {/* レース名 */}
               <div className='flex flex-col gap-1'>
                 <Label label='レース名' textSize='small' isBold />
-                <p className='text-secondaryText disable'>{raceInfo.race_name || ''}</p>
+                <p className='text-secondaryText disable'>{raceInfo.race_name}</p>
               </div>
               {/* レースNo */}
               <div className='flex flex-col gap-1'>
                 <Label label='レースNo' textSize='small' isBold />
-                {<p className='text-secondaryText disable'>{raceInfo.race_number || ''}</p>}
+                {<p className='text-secondaryText disable'>{raceInfo.race_number}</p>}
               </div>
               {/* 種目 */}
               <div className='flex flex-col gap-1'>
@@ -105,7 +133,7 @@ export default function TournamentResultRef() {
               {/* 組別 */}
               <div className='flex flex-col gap-1'>
                 <Label label='組別' textSize='small' isBold />
-                {<p className='text-secondaryText disable'>{raceInfo.by_group || ''}</p>}
+                {<p className='text-secondaryText disable'>{raceInfo.by_group}</p>}
               </div>
               {/* 距離 */}
               <div className='flex flex-col gap-1'>
@@ -467,15 +495,17 @@ export default function TournamentResultRef() {
             削除
           </CustomButton>
         ) : (
-          <CustomButton
-            buttonType='primary'
-            onClick={() => {
-              router.push('/tournamentResult?mode=update&raceId=' + raceInfo.race_id);
-            }}
-            className='w-[170px]'
-          >
-            レース情報を更新
-          </CustomButton>
+          raceInfo.race_id && (
+            <CustomButton
+              buttonType='primary'
+              onClick={() => {
+                router.push('/tournamentResult?mode=update&raceId=' + raceInfo.race_id);
+              }}
+              className='w-[170px]'
+            >
+              レース情報を更新
+            </CustomButton>
+          )
         )}
       </div>
     </>
