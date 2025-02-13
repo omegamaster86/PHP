@@ -216,8 +216,6 @@ export default function AddPlayerSearch() {
   useEffect(() => {
     const getTeam = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const sendId = { org_id: orgId };
         const teamResponse = await axios.post('api/getOrgData', sendId);
         setTeamData(teamResponse.data.result);

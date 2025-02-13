@@ -87,8 +87,6 @@ export default function VolunteerInformationRef() {
 
   //ボランティア情報削除関数 20240315
   const dataDelete = async () => {
-    const csrf = () => axios.get('/sanctum/csrf-cookie');
-    await csrf();
     await axios
       .post('api/deleteVolunteer', volunteer_id)
       .then((res) => {
@@ -102,9 +100,6 @@ export default function VolunteerInformationRef() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
-
         const userTypeInfo = await axios.get('api/getIDsAssociatedWithUser');
         setUserIdType(userTypeInfo.data.result[0]); //ユーザIDに紐づいた情報
 

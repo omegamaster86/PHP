@@ -85,8 +85,6 @@ export default function TournamentEntryBulkRegister() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const response = await axios.get<{ result: UserResponse }>('api/user');
         if (Object.keys(response.data.result).length > 0) {
           const playerInf = await axios.get('api/getIDsAssociatedWithUser');
@@ -218,8 +216,6 @@ export default function TournamentEntryBulkRegister() {
     const fetchData = async () => {
       try {
         const sendVal = { event_start_year: formData?.eventYear };
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const TournamentsResponse = await axios.post('api/tournamentEntryYearSearch', sendVal);
         const TournamentsResponseList = TournamentsResponse.data.result.map(
           ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
@@ -238,8 +234,6 @@ export default function TournamentEntryBulkRegister() {
   const handleSearchTournament = async (name: string, eventYearVal: string) => {
     try {
       const sendVal = { event_start_year: eventYearVal };
-      const csrf = () => axios.get('/sanctum/csrf-cookie');
-      await csrf();
       const tournamentResponse = await axios.post('api/tournamentEntryYearSearch', sendVal);
 
       //該当の開催年に紐づく大会が存在する場合、リストの最初の大会を表示させる 20240514
@@ -445,8 +439,6 @@ export default function TournamentEntryBulkRegister() {
         tournData: formData,
         csvDataList: element,
       };
-      const csrf = () => axios.get('/sanctum/csrf-cookie');
-      await csrf();
       const response = await axios.post('api/sendTournamentEntryCsvData', sendTournData);
       const data = response.data.result as CsvData[];
       setCsvData([]);

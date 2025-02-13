@@ -61,8 +61,6 @@ export default function VolunteerBulkRegister() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const response = await axios.get<{ result: UserResponse }>('api/user');
         if (Object.keys(response.data.result).length > 0) {
           const playerInf = await axios.get('api/getIDsAssociatedWithUser');
@@ -85,9 +83,6 @@ export default function VolunteerBulkRegister() {
   useEffect(() => {
     const fetchMasterData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
-
         const [
           countryResponse,
           prefectureResponse,
@@ -676,9 +671,6 @@ export default function VolunteerBulkRegister() {
       .slice(isHeaderMatch ? 1 : 0) // ヘッダー行が一致する場合は1行目をスキップ
       .map((row, index) => getJsonRow(row, index));
 
-    const csrf = () => axios.get('/sanctum/csrf-cookie');
-    await csrf();
-
     const res = await axios.post<{ result: CsvTableRow[] }>('api/sendVolunteerCsvData', sendData);
     const contentData = res.data.result;
     setActivationFlg(true);
@@ -699,8 +691,6 @@ export default function VolunteerBulkRegister() {
 
   //登録ボタン押下時 20240307
   const registerCsvData = async () => {
-    const csrf = () => axios.get('/sanctum/csrf-cookie');
-    await csrf();
     await axios
       .post('api/registerVolunteerCsvData', csvData)
       .then((res) => {

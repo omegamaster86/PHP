@@ -164,8 +164,6 @@ export default function TeamSearch() {
    */
   const handleSearch = async () => {
     formData.residenceCountryId = '112'; //仕様変更により、日本の固定値を代入 20240223
-    const csrf = () => axios.get('/sanctum/csrf-cookie');
-    await csrf();
     axios
       .post('api/orgSearch', formData)
       .then((response) => {
@@ -210,9 +208,6 @@ export default function TeamSearch() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
-
         const orgType = await axios.get<OrgType[]>('api/getOrganizationTypeData');
         const orgTypeList = orgType.data.map(({ org_type_id, org_type }) => ({
           id: org_type_id,

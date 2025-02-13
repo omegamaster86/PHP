@@ -113,8 +113,6 @@ export default function TournamentResultInfomationBulkRegister() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const response = await axios.get<{ result: UserResponse }>('api/user');
         if (Object.keys(response.data.result).length > 0) {
           const playerInf = await axios.get('api/getIDsAssociatedWithUser');
@@ -277,8 +275,6 @@ export default function TournamentResultInfomationBulkRegister() {
     const fetchData = async () => {
       try {
         const sendVal = { event_start_year: formData?.eventYear };
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const TournamentsResponse = await axios.post('api/tournamentEntryYearSearch', sendVal);
         const TournamentsResponseList = TournamentsResponse.data.result.map(
           ({
@@ -307,8 +303,6 @@ export default function TournamentResultInfomationBulkRegister() {
     // 大会IDが入力されている場合
     if (formData.tournId != 0 && formData.tournId != null && formData.tournId != undefined) {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const tornSearchVal = { tourn_id: formData.tournId };
         const tournamentResponse = await axios.post('api/getTournamentInfoData', tornSearchVal);
         if (
@@ -346,8 +340,6 @@ export default function TournamentResultInfomationBulkRegister() {
     } else {
       try {
         var eventYearVal = { event_start_year: formData.eventYear };
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const tournamentResponse = await axios.post('api/tournamentEntryYearSearch', eventYearVal);
         // 大会情報が取得できなかった場合
         if (tournamentResponse.data === undefined || tournamentResponse.data === null) {
@@ -612,8 +604,6 @@ export default function TournamentResultInfomationBulkRegister() {
         tournData: formData,
         csvDataList: row,
       };
-      const csrf = () => axios.get('/sanctum/csrf-cookie');
-      await csrf();
       const response = await axios.post('api/sendTournamentResultCsvData', sendTournData);
       setCsvData(response.data.result.csvDataList);
     } catch (error) {
@@ -629,8 +619,6 @@ export default function TournamentResultInfomationBulkRegister() {
       tournData: formData,
       csvDataList: csvData,
     };
-    const csrf = () => axios.get('/sanctum/csrf-cookie');
-    await csrf();
     await axios
       .post('api/registerTournamentResultCsvData', sendTournData)
       .then((res) => {

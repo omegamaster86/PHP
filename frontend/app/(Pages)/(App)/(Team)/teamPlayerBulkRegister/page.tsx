@@ -79,8 +79,6 @@ export default function TeamPlayerBulkRegister() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const response = await axios.get<{ result: UserResponse }>('api/user');
         if (Object.keys(response.data.result).length > 0) {
           const playerInf = await axios.get('api/getIDsAssociatedWithUser');
@@ -187,8 +185,6 @@ export default function TeamPlayerBulkRegister() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         if (isOrgNameActive == false) {
           const orgSearchId = { org_id };
           const org = await axios.post('api/getOrgData', orgSearchId);
@@ -313,8 +309,6 @@ export default function TeamPlayerBulkRegister() {
         setActivationFlg(false);
         return;
       }
-      const csrf = () => axios.get('/sanctum/csrf-cookie');
-      await csrf();
       const response = await axios.post('api/sendOrgCsvData', sendData);
       setCsvData(response.data.result);
       setActivationFlg(false);
@@ -330,8 +324,6 @@ export default function TeamPlayerBulkRegister() {
       targetOrgData,
       csvDataList: csvData,
     };
-    const csrf = () => axios.get('/sanctum/csrf-cookie');
-    await csrf();
     await axios
       .post('api/registerOrgCsvData', sendData)
       .then((res) => {

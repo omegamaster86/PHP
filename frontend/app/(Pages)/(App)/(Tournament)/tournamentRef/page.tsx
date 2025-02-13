@@ -576,7 +576,6 @@ export default function TournamentRef() {
           </div>
         </div>
       </div>
-      {/* TODO: DPTに仕様を確認すること。 */}
       <div className='text-lg mb-4'>
         <div className='mb-4'>
           <div className='flex justify-between items-center'>
@@ -930,8 +929,6 @@ export default function TournamentRef() {
                   tableData: tableData, //選手の出漕結果情報
                 };
                 const isOk = window.confirm('大会情報を削除します。よろしいですか？');
-                const csrf = () => axios.get('/sanctum/csrf-cookie');
-                await csrf();
                 if (isOk) {
                   // TODO: 削除確認画面でOKボタンが押された場合、テーブルの当該項目に削除フラグを立てる処理の置き換え
                   axios

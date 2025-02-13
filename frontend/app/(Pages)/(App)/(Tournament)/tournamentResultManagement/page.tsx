@@ -181,8 +181,6 @@ export default function TournamentResultManagement() {
 
   const handleSearch = async () => {
     try {
-      const csrf = () => axios.get('/sanctum/csrf-cookie');
-      await csrf();
       const response = await axios.post('api/searchRaceData', searchCond);
       setSearchResponse(response.data.result);
       setSelectedByGroupList([]);
@@ -203,8 +201,6 @@ export default function TournamentResultManagement() {
         searchCond?.eventYear != undefined
       ) {
         const sendVal = { event_start_year: searchCond?.eventYear };
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const tournamentResponse = await axios.post('api/tournamentEntryYearSearch', sendVal);
         const TournamentsResponseList = tournamentResponse.data.result.map(
           ({ tourn_id, tourn_name }: { tourn_id: number; tourn_name: string }) => ({
@@ -226,8 +222,6 @@ export default function TournamentResultManagement() {
       getTournamentList();
 
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const eventResponse = await axios.get('api/getEvents'); //イベント(種目)マスター取得
         const eventResponseList = eventResponse.data.map(
           ({ event_id, event_name }: { event_id: number; event_name: string }) => ({
