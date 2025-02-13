@@ -48,6 +48,77 @@ const initialRaceInfo = {
   startDateTime: '',
 };
 
+const raceResultRecordInitialValue: UpdatedRaceResultRecordsResponse = {
+  race_result_record_id: 0,
+  tourn_id: 0,
+  tourn_name: '',
+  official: 0,
+  eventStartDate: '',
+  org_name: '',
+  org_id: '',
+  race_number: 0,
+  event_name: '',
+  race_name: '',
+  race_id: '',
+  by_group: '',
+  crew_name: '',
+  rank: 0,
+  laptime_500m: 0,
+  laptime_1000m: 0,
+  laptime_1500m: 0,
+  laptime_2000m: 0,
+  final_time: 0,
+  bNo: 0,
+  race_result_notes: '',
+  remarkId: 0,
+  stroke_rate_avg: 0,
+  stroke_rat_500m: 0,
+  stroke_rat_1000m: 0,
+  stroke_rat_1500m: 0,
+  stroke_rat_2000m: 0,
+  heart_rate_avg: 0,
+  heart_rate_500m: 0,
+  heart_rate_1000m: 0,
+  heart_rate_1500m: 0,
+  heart_rate_2000m: 0,
+  attendance: 0,
+  player_height: 0,
+  player_weight: 0,
+  seat_number: 0,
+  seat_name: '',
+  race_result_record_name: '',
+  registered_time: '',
+  start_datetime: '',
+  wind_speed_2000m_point: null,
+  wind_direction_2000m_point: null,
+  twentyHundredmWindDirectionName: null,
+  wind_speed_1000m_point: null,
+  wind_direction_1000m_point: null,
+  tenHundredmWindDirectionName: null,
+  venue_name: '',
+  range: 0,
+  order: 0,
+  weatherId: 0,
+  weatherName: '',
+  startDateTime: '',
+  deleteFlg: false,
+  crewPlayer: [],
+  lane_number: 0,
+  errorText: '',
+  laptimeErrorText: '',
+  strokeRateErrorText: '',
+  finalHeartRate: 0,
+  player_id: '',
+  player_name: '',
+  sex: 0,
+  event_id: 0,
+  orgNameErrorText: '',
+  crewNameErrorText: '',
+  laneNumberErrorText: '',
+  rankErrorText: '',
+  isAdded: false,
+};
+
 const tournamentResultMode = ['create', 'update', 'confirm'];
 
 // レース結果管理画面のメインコンポーネント
@@ -79,7 +150,7 @@ export default function TournamentResult() {
 
   // 出漕結果記録情報のモデル（出漕時点情報）
   const [raceResultRecordResponse, setRaceResultRecordResponse] =
-    useState<UpdatedRaceResultRecordsResponse>({} as UpdatedRaceResultRecordsResponse);
+    useState<UpdatedRaceResultRecordsResponse>(raceResultRecordInitialValue);
 
   // 出漕結果記録情報（レース結果情報）のモデル
   const [raceResultRecords, setRaceResultRecords] = useState<UpdatedRaceResultRecordsResponse[]>([
@@ -987,6 +1058,13 @@ export default function TournamentResult() {
         // 出漕結果記録情報の取得
         const recordResults = raceResponse.data.record_result;
 
+        // NOTE: レース結果情報が存在しない場合、更新モードで開き直す。
+        if (recordResults.length === 0) {
+          const url = `/tournamentResult?mode=create&tournId=${race.tourn_id}&eventId=${race.event_id}`;
+          router.replace(url);
+          return;
+        }
+
         setRaceResultRecordResponse(recordResults[0]);
 
         // 10件以上は表示できないため、エラーメッセージを表示する
@@ -1006,7 +1084,7 @@ export default function TournamentResult() {
     if (mode == 'update') {
       fetchRaceInfoForUpdate();
     }
-  }, []);
+  }, [param]);
 
   // レース情報の取得
   useEffect(() => {
@@ -1093,7 +1171,7 @@ export default function TournamentResult() {
       }
     };
     fetchRaceInfo();
-  }, [raceInfo.race_id]);
+  }, [raceInfo.race_id, param]);
 
   if (!tournamentResultMode.includes(mode)) return null;
 
@@ -2247,7 +2325,7 @@ export default function TournamentResult() {
                   );
                 });
 
-                router.push('/tournamentResult?mode=confirm&prevMode=create');
+                router.push(`/tournamentResult?mode=confirm&prevMode=create&raceId=${raceId}`);
               } else if (mode === 'update') {
                 //追加行でない(更新行)かつ、選手情報すべてに削除チェックがされている場合、「このレース結果情報を削除する」にチェックを入れる 20240516
                 for (let index = 0; index < raceResultRecords.length; index++) {
