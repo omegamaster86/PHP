@@ -69,8 +69,6 @@ export default function PlayerInformationLinking() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const response = await axios.get<{ result: UserResponse }>('api/user');
         if (Object.keys(response.data.result).length > 0) {
           const playerInf = await axios.get('api/getIDsAssociatedWithUser');
@@ -189,8 +187,6 @@ export default function PlayerInformationLinking() {
       });
     var element = array as CsvData[];
     setActivationFlg(true);
-    const csrf = () => axios.get('/sanctum/csrf-cookie');
-    await csrf();
     await axios
       .post('api/sendCsvData', element)
       .then((res) => {
@@ -254,8 +250,6 @@ export default function PlayerInformationLinking() {
 
   //連携ボタン押下時 20240228
   const registerCsvData = async () => {
-    const csrf = () => axios.get('/sanctum/csrf-cookie');
-    await csrf();
     await axios
       .post('api/registerCsvData', csvData)
       .then((res) => {

@@ -135,8 +135,6 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
       const senddata = {
         tourn_id: tournData.tournId,
       };
-      const csrf = () => axios.get('/sanctum/csrf-cookie');
-      await csrf();
       const response = await axios.post('api/getCsvFormatRaceData', senddata);
 
       const header = props.csvDownloadProps.header.map((h) => h.label).join(',');

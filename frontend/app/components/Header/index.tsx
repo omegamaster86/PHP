@@ -125,16 +125,12 @@ const Header: FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const response = await axios.get<{ result: UserResponse }>('api/user');
         //ユーザ情報が存在し、仮パスワードフラグが0の場合ヘッダーメニューを表示 20240403
         if (Object.keys(response.data.result).length > 0) {
           if (response.data.result.temp_password_flag == 0) {
             setHeaderMenuFlag(1);
           }
-          const csrf = () => axios.get('/sanctum/csrf-cookie');
-          await csrf();
           const playerInf = await axios.get('api/getIDsAssociatedWithUser');
           setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
         } else {

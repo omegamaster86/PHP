@@ -337,8 +337,6 @@ export default function TeamPlayer() {
                   target_org_id: teamData.org_id,
                   formData: formData,
                 };
-                const csrf = () => axios.get('/sanctum/csrf-cookie');
-                await csrf();
                 axios.post('api/updateOrgPlayerData', sendData).then((response) => {
                   router.push('/teamRef?orgId=' + teamData.org_id); //変更後は、該当の団体参照画面に遷移する 20240401
                 });

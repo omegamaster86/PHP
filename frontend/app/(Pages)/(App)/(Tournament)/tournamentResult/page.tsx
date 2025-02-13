@@ -183,8 +183,6 @@ export default function TournamentResult() {
    * @param value
    */
   const handleCrewPlayerIdChange = async (index: number, crewIndex: number, value: string) => {
-    const csrf = () => axios.get('/sanctum/csrf-cookie');
-    await csrf();
     const sendId = { player_id: value };
     const playerSearch = await axios.post('api/getCrewPlayerInfo', sendId);
 
@@ -810,8 +808,6 @@ export default function TournamentResult() {
      */
     const fetchMaster = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const sendData = {
           tourn_id: tournId,
           event_id: eventId,
@@ -1136,8 +1132,6 @@ export default function TournamentResult() {
                     const sendData = {
                       race_id: e as string,
                     };
-                    const csrf = () => axios.get('/sanctum/csrf-cookie');
-                    await csrf();
                     const response = await axios.post('api/getRaceDataRaceId', sendData);
                     const data = response.data.race_result;
                     if (data.length == 0) {
@@ -1186,8 +1180,6 @@ export default function TournamentResult() {
                         const sendData = {
                           race_id: newTarget?.id,
                         };
-                        const csrf = () => axios.get('/sanctum/csrf-cookie');
-                        await csrf();
                         const response = await axios.post('api/getRaceDataRaceId', sendData);
                         const data = response.data.race_result;
                         if (data.length == 0) {
@@ -2292,8 +2284,6 @@ export default function TournamentResult() {
                     raceResultRecordResponse: raceResultRecordResponse,
                     raceResultRecords: raceResultRecords,
                   };
-                  const csrf = () => axios.get('/sanctum/csrf-cookie');
-                  await csrf();
                   const raceResponse = await axios.post(
                     'api/registerRaceResultRecordForRegisterConfirm',
                     sendData,
@@ -2310,8 +2300,6 @@ export default function TournamentResult() {
                     raceResultRecordResponse: raceResultRecordResponse,
                     raceResultRecords: raceResultRecords,
                   };
-                  const csrf = () => axios.get('/sanctum/csrf-cookie');
-                  await csrf();
                   const raceResponse = await axios.post(
                     'api/updateRaceResultRecordForUpdateConfirm',
                     sendData,

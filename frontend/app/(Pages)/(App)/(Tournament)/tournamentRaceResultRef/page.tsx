@@ -86,8 +86,6 @@ export default function TournamentRaceResultRef() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const response = await axios.post('api/getTournRaceResultRecords', race_id); //残件対象項目
         //クルー情報を取得するためのパラメータをセット
         setSearchCrewInfo(response.data.result);
@@ -216,8 +214,6 @@ export default function TournamentRaceResultRef() {
         break;
       }
     }
-    const csrf = () => axios.get('/sanctum/csrf-cookie');
-    await csrf();
     await axios
       .post('api/getCrewData', searchCrewInfo[index])
       .then((response) => {
@@ -253,7 +249,7 @@ export default function TournamentRaceResultRef() {
 
   return (
     <>
-      <div className='flex flex-col gap-[30px] max-w-5xl m-auto'>
+      <div className='flex flex-col gap-[30px]'>
         <CustomTitle displayBack>レース結果参照</CustomTitle>
         <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
         <div className='flex flex-col gap-[20px] bg-primary-900 p-4'>
@@ -263,7 +259,7 @@ export default function TournamentRaceResultRef() {
             textColor='white'
             textSize='h3'
           />
-          <div className='flex flex-col sm:flex-row sm:gap-3 items-center'>
+          <div className='flex gap-3 items-center'>
             <Label label='大会名' textColor='gray' textSize='caption1' />
             {raceResultRecordsData.length > 0 && (
               <Link
@@ -300,7 +296,7 @@ export default function TournamentRaceResultRef() {
         {/* 選手情報表示 */}
         <div className='text-lg mb-4'>
           {/* 出漕結果情報一覧テーブル表示 */}
-          <div className='overflow-y-auto'>
+          <div className='overflow-auto'>
             <CustomTable>
               {/* テーブルヘッダー */}
               <CustomThead>

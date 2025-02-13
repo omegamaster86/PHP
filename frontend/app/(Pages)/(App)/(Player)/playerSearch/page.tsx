@@ -134,8 +134,6 @@ export default function PlayerSearch() {
    */
   const handleSearch = async () => {
     try {
-      const csrf = () => axios.get('/sanctum/csrf-cookie');
-      await csrf();
       const response = await axios.post('api/playerSearch', searchCond);
       const data = response.data.result;
       if (data.length > 100) {
@@ -213,11 +211,7 @@ export default function PlayerSearch() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 仮のURL（繋ぎ込み時に変更すること）
         // 性別
-        // const sexResponse = await axios.get<SexResponse[]>('http://localhost:3100/sex');
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const sexResponse = await axios.get('api/getSexList');
         const sexList = sexResponse.data.map(
           ({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }),

@@ -400,8 +400,6 @@ export default function VolunteerSearch() {
    * 検索結果をstateにセットする
    */
   const handleSearch = async () => {
-    const csrf = () => axios.get('/sanctum/csrf-cookie');
-    await csrf();
     axios
       .post('api/volunteerSearch', searchCond)
       .then((response) => {
@@ -417,8 +415,6 @@ export default function VolunteerSearch() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const sexResponse = await axios.get('api/getSexList');
         const sexList = sexResponse.data.map(
           ({ sex_id, sex }: { sex_id: number; sex: string }) => ({ id: sex_id, name: sex }),

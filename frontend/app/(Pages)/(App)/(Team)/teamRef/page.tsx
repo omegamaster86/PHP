@@ -119,8 +119,6 @@ export default function TeamRef() {
     const fetchData = async () => {
       try {
         // 主催大会
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const response = await axios.post('api/getOrgData', org_id); //団体情報取得
         setFormData(response.data.result);
         const hostTournamentsResponse = await axios.post('api/getTournamentInfoData_org', org_id);
@@ -284,8 +282,6 @@ export default function TeamRef() {
             buttonType='primary'
             onClick={async () => {
               const isOk = window.confirm('団体情報を削除します。よろしいですか？');
-              const csrf = () => axios.get('/sanctum/csrf-cookie');
-              await csrf();
               if (!isOk) return;
               axios
                 .post('api/deleteOrgData', org_id)

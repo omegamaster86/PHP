@@ -45,8 +45,6 @@ export default function TournamentResultRef() {
         const sendData = {
           race_id: raceId,
         };
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const raceResponse = await axios.post('api/getRaceDataRaceId', sendData);
 
         setRaceInfo(raceResponse.data.race_result[0]);
@@ -449,8 +447,6 @@ export default function TournamentResultRef() {
                   raceInfo: raceInfo,
                   raceResultRecords: raceResultRecords,
                 };
-                const csrf = () => axios.get('/sanctum/csrf-cookie');
-                await csrf();
                 const response = await axios.post('api/deleteRaceResultRecordData', deleteSendData); //削除処理 20240520
                 if (response.data?.errMessage) {
                   setErrorText([response.data?.errMessage]);

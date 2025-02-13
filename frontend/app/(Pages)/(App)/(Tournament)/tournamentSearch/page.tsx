@@ -193,8 +193,6 @@ export default function TournamentSearch() {
 
   const handleSearch = async () => {
     try {
-      const csrf = () => axios.get('/sanctum/csrf-cookie');
-      await csrf();
       const response = await axios.post('api/searchTournament', searchCond);
       if (response.data.result.length > 100) {
         window.alert('検索結果が100件を超えました、上位100件を表示しています。');
@@ -218,8 +216,6 @@ export default function TournamentSearch() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csrf = () => axios.get('/sanctum/csrf-cookie');
-        await csrf();
         const tourTypeResponse = await axios.get('api/getApprovalType');
         const tourTypeList = tourTypeResponse.data.map(
           ({
