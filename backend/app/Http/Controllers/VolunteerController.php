@@ -277,10 +277,11 @@ class VolunteerController extends Controller
                     }
                     //検索で見つからなかったら入力値(ID)を表示してその項目をエラーとする
                     else {
+                        $errorMessage = "性別が見つかりません。";
                         $rowData["sexId"]["value"] = $rowData["sexId"]["key"];
                         $rowData["result"] = "登録不可データ";
                         $rowData["checked"] = false;
-                        $rowData["sexId"]["isError"] = true;
+                        $rowData["sexId"]["error"] = $errorMessage;
                     }
                 }
                 //居住地（国）
@@ -292,10 +293,11 @@ class VolunteerController extends Controller
                     }
                     //検索で見つからなかったら入力値を表示してその項目をエラーとする
                     else {
+                        $errorMessage = "居住地（国）が見つかりません。";
                         $rowData["residenceCountryId"]["value"] = $rowData["residenceCountryId"]["key"];
                         $rowData["result"] = "登録不可データ";
                         $rowData["checked"] = false;
-                        $rowData["residenceCountryId"]["isError"] = true;
+                        $rowData["residenceCountryId"]["error"] = $errorMessage;
                     }
                 }
                 //居住地（都道府県）
@@ -307,10 +309,11 @@ class VolunteerController extends Controller
                     }
                     //検索で見つからなかったら入力値を表示してその項目をエラーとする
                     else {
+                        $errorMessage = "居住地（都道府県）が見つかりません。";
                         $rowData["residencePrefectureId"]["value"] = $rowData["residencePrefectureId"]["key"];
                         $rowData["result"] = "登録不可データ";
                         $rowData["checked"] = false;
-                        $rowData["residencePrefectureId"]["isError"] = true;
+                        $rowData["residencePrefectureId"]["error"] = $errorMessage;
                     }
                 }
                 //服のサイズ
@@ -322,10 +325,11 @@ class VolunteerController extends Controller
                     }
                     //検索で見つからなかったら入力値を表示してその項目をエラーとする
                     else {
+                        $errorMessage = "服のサイズが見つかりません。";
                         $rowData["clothesSizeId"]["value"] = $rowData["clothesSizeId"]["key"];
                         $rowData["result"] = "登録不可データ";
                         $rowData["checked"] = false;
-                        $rowData["clothesSizeId"]["isError"] = true;
+                        $rowData["clothesSizeId"]["error"] = $errorMessage;
                     }
                 }
                 //資格            
@@ -339,10 +343,11 @@ class VolunteerController extends Controller
                         }
                         //検索で見つからなかったら入力値を表示してその項目をエラーとする
                         else {
+                            $errorMessage = "資格が見つかりません。";
                             $rowData["qualId" . $i]["value"] = $rowData["qualId" . $i]["key"];
                             $rowData["result"] = "登録不可データ";
                             $rowData["checked"] = false;
-                            $rowData["qualId" . $i]["isError"] = true;
+                            $rowData["qualId" . $i]["error"] = $errorMessage;
                         }
                     }
                 }
@@ -357,10 +362,11 @@ class VolunteerController extends Controller
                         }
                         //検索で見つからなかったら入力値を表示してその項目をエラーとする
                         else {
+                            $errorMessage = "言語が見つかりません。";
                             $rowData["langId" . $i]["value"] = $rowData["langId" . $i]["key"];
                             $rowData["result"] = "登録不可データ";
                             $rowData["checked"] = false;
-                            $rowData["langId" . $i]["isError"] = true;
+                            $rowData["langId" . $i]["error"] = $errorMessage;
                         }
                     }
                 }
@@ -375,10 +381,11 @@ class VolunteerController extends Controller
                         }
                         //検索で見つからなかったら入力値を表示してその項目をエラーとする
                         else {
+                            $errorMessage = "言語レベルが見つかりません。";
                             $rowData["langProId" . $i]["value"] = $rowData["langProId" . $i]["key"];
                             $rowData["result"] = "登録不可データ";
                             $rowData["checked"] = false;
-                            $rowData["langProId" . $i]["isError"] = true;
+                            $rowData["langProId" . $i]["error"] = $errorMessage;
                         }
                     }
                 }
@@ -388,9 +395,10 @@ class VolunteerController extends Controller
                     //「ボランティアテーブル」をファイルに記載されているユーザーIDで検索
                     $user_id = $rowData["userId"]["value"];
                     if (in_array($user_id, array_column($volunteer_list, 'user_id'))) {
+                        $errorMessage = "ユーザーIDが重複しています。";
                         $rowData["result"] = "重複データ";
                         $rowData["checked"] = false;
-                        $rowData["userId"]["isError"] = true;
+                        $rowData["userId"]["error"] = $errorMessage;
                     }
                 }
             }
