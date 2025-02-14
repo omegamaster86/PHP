@@ -296,6 +296,11 @@ interface RaceType {
   race_class_name: string;
 }
 
+interface PasswordChange {
+  message: string;
+  tempPasswordFlag: number;
+}
+
 // ユーザー情報
 interface UserResponse {
   user_id: string; // ユーザーID
@@ -893,6 +898,7 @@ export type {
   OrgClassResponse,
   OrgType,
   OrgTypeResponse,
+  PasswordChange,
   Player,
   PlayerInformationResponse,
   Prefecture,

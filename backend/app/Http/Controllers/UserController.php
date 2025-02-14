@@ -117,19 +117,25 @@ class UserController extends Controller
             if (Hash::check($request->currentPassword, Auth::user()->password)) {
                 DB::beginTransaction();
                 try {
+                    $tempPasswordFlag = 0;
                     DB::update(
                         'update t_users set password = ?, expiry_time_of_temp_password = ?, temp_password_flag = ?, updated_time =?, updated_user_id = ?  where user_id = ?',
-                        [Hash::make($request->newPassword), NULL, 0, now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id, Auth::user()->user_id]
+                        [Hash::make($request->newPassword), NULL, $tempPasswordFlag, now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id, Auth::user()->user_id]
                     );
 
                     DB::commit();
+                    return response()->json([
+                        'result' => [
+                            'message' => 'パスワードを変更しました',
+                            'tempPasswordFlag' => $tempPasswordFlag
+                        ]
+                    ]);
                 } catch (\Throwable $e) {
                     Log::error($e);
                     DB::rollBack();
 
                     abort(500, $database_system_error);
                 }
-                return response()->json(['result_message' => 'パスワードを変更しました', 'temp_password_flag' => Auth::user()->temp_password_flag]); //送信データ(debug用)とDBの結果を返す
             } else {
                 abort(400, $previous_password_not_matched);
             }

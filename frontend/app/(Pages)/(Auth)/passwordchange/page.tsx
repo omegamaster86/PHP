@@ -1,12 +1,14 @@
 // パスワード変更画面
 
 'use client';
+
 import CustomButton from '@/app/components/CustomButton';
 import CustomPasswordField from '@/app/components/CustomPasswordField';
 import CustomTitle from '@/app/components/CustomTitle';
 import ErrorBox from '@/app/components/ErrorBox';
 import { useAuth } from '@/app/hooks/auth';
 import axios from '@/app/lib/axios';
+import { PasswordChange } from '@/app/types';
 import Validator from '@/app/utils/validator';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import { useRouter } from 'next/navigation';
@@ -22,7 +24,7 @@ export default function Passwordchange() {
   const [confirmNewPasswordErrorMessages, setConfirmNewPasswordErrorMessages] = useState(
     [] as string[],
   );
-  const { user, logout } = useAuth({ middleware: 'auth' });
+  const { user, logout, refetchUser } = useAuth({ middleware: 'auth' });
 
   const router = useRouter();
 
@@ -138,16 +140,18 @@ export default function Passwordchange() {
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
             axios
-              .post('api/user/password-change', requestBody)
+              .post<{ result: PasswordChange }>('api/user/password-change', requestBody)
               .then(async (response) => {
-                window.alert(response?.data.result_message);
+                window.alert(response?.data.result.message);
                 await csrf();
-                await axios.get('api/user');
-                if (response?.data.temp_password_flag == 0) {
-                  router.push('/mypage/top'); //本登録済みのユーザは大会検索画面に遷移させる 20240408
-                } else {
-                  router.push('userInformation?mode=update'); //仮登録状態のユーザはユーザ情報更新画面に遷移させる
+                await refetchUser();
+
+                if (user?.temp_password_flag === 1) {
+                  router.push('userInformation?mode=update'); //仮登録状態のユーザはユーザ情報更新画面に遷移
+                  return;
                 }
+
+                router.push('/mypage/top'); //本登録済みのユーザはマイページトップ画面に遷移
               })
               .catch((error) => {
                 setErrorText([error.response?.data?.message]);
