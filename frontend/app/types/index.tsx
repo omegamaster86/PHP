@@ -509,6 +509,7 @@ interface Player {
 // クルー
 interface CrewResponse {
   player_id: number; // 選手ID
+  playerDeleteFlag: boolean; // t_players.delete_flag
   seat_id: number; // シート番号（出漕時点）
   seat_name: string; //シート名
   seat_addr_name: string; //シート略称
