@@ -283,43 +283,38 @@ export default function PlayerInformationLinking() {
       <ErrorBox errorText={errorText} />
       {/* 読み込みCSVファイルの表示 */}
       <div className='flex flex-col gap-[20px]'>
-        <div className='flex flex-row justify-start'>
-          <CsvHandler
-            csvUploadProps={csvUploadProps}
-            csvDownloadProps={csvDownloadProps}
-            ref={fileUploaderRef}
-          ></CsvHandler>
-        </div>
+        <CsvHandler
+          csvUploadProps={csvUploadProps}
+          csvDownloadProps={csvDownloadProps}
+          ref={fileUploaderRef}
+        ></CsvHandler>
         {/* CSVフォーマット出力の表示 */}
-        <div className='flex flex-col gap-[20px]'>
+        <div className='flex flex-col items-center gap-[20px]'>
           {/* 読み込みボタンの表示 */}
-          <div className='flex flex-col gap-[4px] items-center'>
-            {/* 表示する文言はDPT様にて実装予定 */}
-            <p className='mb-1 text-systemErrorText'>
-              【読み込み方法】
-              <br />
-              ① 「CSVフォーマット出力」ボタンをクリックしフォーマットをダウンロード
-              <br />
-              ② CSVファイルを編集
-              <br />
-              ③
-              「読み込みCSVファイル」の参照ボタンからCSVファイルを選択、もしくはCSVファイルを直接ドラッグ＆ドロップしてアップロード
-              <br />
-              ④ 「読み込む」ボタンをクリック
-              <br />
-              ⑤ CSVファイルの読み取り結果を画面下部で確認
-              <br />
-              ※この段階では、まだCSVファイルの内容はシステムに登録されません。
-            </p>
-            <CustomButton
-              buttonType='primary'
-              onClick={() => {
-                sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
-              }}
-            >
-              読み込む
-            </CustomButton>
-          </div>
+          <p className='mb-1 text-systemErrorText'>
+            【読み込み方法】
+            <br />
+            ① 「CSVフォーマット出力」ボタンをクリックしフォーマットをダウンロード
+            <br />
+            ② CSVファイルを編集
+            <br />
+            ③
+            「読み込みCSVファイル」の参照ボタンからCSVファイルを選択、もしくはCSVファイルを直接ドラッグ＆ドロップしてアップロード
+            <br />
+            ④ 「読み込む」ボタンをクリック
+            <br />
+            ⑤ CSVファイルの読み取り結果を画面下部で確認
+            <br />
+            ※この段階では、まだCSVファイルの内容はシステムに登録されません。
+          </p>
+          <CustomButton
+            buttonType='primary'
+            onClick={() => {
+              sendCsvData(); //読み込んだcsvファイルの判定をするためにバックエンド側に渡す 20240229
+            }}
+          >
+            読み込む
+          </CustomButton>
         </div>
         {/* エラーメッセージの表示 */}
         <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
@@ -355,7 +350,7 @@ export default function PlayerInformationLinking() {
       </div>
       {/* ボタンの表示 */}
       {!activationFlg && (
-        <div className='flex flex-row gap-[4px]'>
+        <div className='self-center'>
           <CustomButton
             buttonType='secondary'
             onClick={() => {
