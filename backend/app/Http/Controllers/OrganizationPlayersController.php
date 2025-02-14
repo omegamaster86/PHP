@@ -155,6 +155,10 @@ class OrganizationPlayersController extends Controller
             if ($reqData[$rowIndex]['result'] != '登録可能') {
                 continue;
             }
+            if(isset($jara_player_code) && (!preg_match('/^[0-9]+$/', $jara_player_code) || mb_strlen($jara_player_code) != 12)) {
+                $this->assignInvalidRowdata('無効データ（不正JARA選手コード）', $reqData[$rowIndex]);
+                continue;
+            }
 
             //取り込み可能かをチェックする
             //入力組み合わせ１

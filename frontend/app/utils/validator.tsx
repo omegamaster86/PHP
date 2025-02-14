@@ -407,8 +407,6 @@ const validatePlayerIdFormat = (playerId: string) => {
  * @example
  * validateJaraPlayerCodeFormat('1234567890') // ''
  * validateJaraPlayerCodeFormat('1234567890a') // 'JARA選手コードに使用できる文字は以下になります。使用可能文字: 数字(0-9)'
- * validateJaraPlayerCodeFormat('1234567890!') // 'JARA選手コードに使用できる文字は以下になります。使用可能文字: 数字(0-9)'
- * validateJaraPlayerCodeFormat('1234567890あ') // 'JARA選手コードに使用できる文字は以下になります。使用可能文字: 数字(0-9)'
  */
 const validateJaraPlayerCodeFormat = (jara_player_id: string) => {
   if (jara_player_id === '' || jara_player_id === undefined || jara_player_id === null) {
@@ -416,10 +414,9 @@ const validateJaraPlayerCodeFormat = (jara_player_id: string) => {
   }
   let errorMessage = '';
   // 12桁の数字のみ許容する。
-  const playerIdRegex = new RegExp('^[0-9]{1,12}$');
+  const playerIdRegex = new RegExp('^[0-9]{12}$');
   if (!playerIdRegex.test(jara_player_id)) {
-    errorMessage =
-      'JARA選手コードに使用できる文字は以下になります。使用可能文字: 12桁以内の半角数字 (0-9)';
+    errorMessage = 'JARA選手コードは12桁の半角数字を入力してください。';
     return errorMessage;
   }
   return errorMessage;

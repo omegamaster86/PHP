@@ -35,9 +35,9 @@ class PlayerInfoAlignmentController extends Controller
                 $reqData[$rowIndex]["checked"] = false;
                 continue;
             } else {
-                //既存選手IDが半角数字かつ12桁以内であることを判定
-                if (!preg_match('/^[0-9]+$/', $old_player_id) or mb_strlen($old_player_id) > 12) {
-                    //Log::debug("csvの既存選手IDが半角数字かつ12桁以内です.");
+                //既存選手IDが半角数字かつ12桁であることを判定
+                if (!preg_match('/^[0-9]+$/', $old_player_id) or mb_strlen($old_player_id) != 12) {
+                    //Log::debug("csvの既存選手IDが半角数字かつ12桁ではありません.");
                     $reqData[$rowIndex]["link"] = "連携不可";
                     $reqData[$rowIndex]["message"] = "無効なデータ";
                     $reqData[$rowIndex]["checked"] = false;
