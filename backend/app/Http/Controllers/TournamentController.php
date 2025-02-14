@@ -708,9 +708,9 @@ class TournamentController extends Controller
                         //選手体重
                         $insert_values["player_weight"] = isset($player["weight"]) ? $player["weight"] : null;
                         //シート番号
-                        $insert_values["seat_number"] = isset($player["sheetNameId"]) ? $player["sheetNameId"] : null;
+                        $insert_values["seat_number"] = isset($player["seatNameId"]) ? $player["seatNameId"] : null;
                         //シート名
-                        $insert_values["seat_name"] = isset($player["sheetName"]) ? $player["sheetName"] : null;
+                        $insert_values["seat_name"] = isset($player["seatName"]) ? $player["seatName"] : null;
                         //心拍数(平均)
                         $insert_values["heart_rate_avg"] = isset($player["heartRateAvg"]) ? $player["heartRateAvg"] : null;
                         //500m心拍数
@@ -901,9 +901,9 @@ class TournamentController extends Controller
                             //選手体重
                             $weight = isset($player["weight"]) ? $player["weight"] : null;
                             //シート番号
-                            $seat_name_id = isset($player["sheetNameId"]) ? $player["sheetNameId"] : null;
+                            $seat_name_id = isset($player["seatNameId"]) ? $player["seatNameId"] : null;
                             //シート名
-                            $seat_name = isset($player["sheetName"]) ? $player["sheetName"] : null;
+                            $seat_name = isset($player["seatName"]) ? $player["seatName"] : null;
                             //心拍数(平均)
                             $heart_rate_avg = isset($player["heartRateAvg"]) ? $player["heartRateAvg"] : null;
                             //500m心拍数
@@ -1279,12 +1279,12 @@ class TournamentController extends Controller
     }
 
     //レース結果管理　種目IDを条件に対象の種目に対応するシート位置を取得する 20240514
-    public function getEventSheetPosForEventID(Request $request, M_events $m_events)
+    public function getEventSeatPosForEventID(Request $request, M_events $m_events)
     {
-        Log::debug(sprintf("getEventSheetPosForEventID start"));
+        Log::debug(sprintf("getEventSeatPosForEventID start"));
         $reqData = $request->all();
-        $result = $m_events->getEventSheetPosForEventID($reqData['event_id']); //レース情報を取得
-        Log::debug(sprintf("getEventSheetPosForEventID end"));
+        $result = $m_events->getEventSeatPosForEventID($reqData['event_id']); //レース情報を取得
+        Log::debug(sprintf("getEventSeatPosForEventID end"));
         return response()->json(['result' => $result]); //DBの結果を返す
     }
 

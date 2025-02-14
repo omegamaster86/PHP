@@ -144,7 +144,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('sendTournamentResultCsvData', [TournamentInfoAlignmentController::class, 'sendTournamentResultCsvData']); //レース結果一括 読み込むボタン押下
     Route::post('registerTournamentResultCsvData', [TournamentInfoAlignmentController::class, 'registerTournamentResultCsvData']); //レース結果一括 登録ボタン押下
     Route::post('checkOrgManager', [TournamentController::class, 'checkOrgManager']); //大会情報参照画面 主催団体管理者の判別
-    Route::post('getEventSheetPosForEventID', [TournamentController::class, 'getEventSheetPosForEventID']); //種目IDを条件に対象の種目に対応するシート位置を取得する
+    Route::post('getEventSeatPosForEventID', [TournamentController::class, 'getEventSeatPosForEventID']); //種目IDを条件に対象の種目に対応するシート位置を取得する
     Route::get('getMyOrgsHostedTournaments', [TournamentController::class, 'getMyOrgsHostedTournaments']); // 自分が、選手もしくはスタッフとして所属している団体(複数)でその団体が主催している大会を取得
     Route::patch('tournamentFollowed', [TournamentController::class, 'tournamentFollowed']); //大会フォロー (大会参照画面)
     Route::get('getTournaments', [TournamentController::class, 'getTournaments']); // 削除されていない全ての大会情報を取得

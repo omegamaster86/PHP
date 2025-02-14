@@ -52,8 +52,8 @@ const CsvTable = ({
       row.orgIdError,
       row.orgNameError,
       row.crewNameError,
-      row.mSheetNumberError,
-      row.sheetNameError,
+      row.mSeatNumberError,
+      row.seatNameError,
       row.userIdError,
       row.playerNameError,
     ].filter((x) => typeof x === 'string' && !!x);
@@ -169,11 +169,11 @@ const CsvTable = ({
                 <CustomTd textType={textType} className={checkError(row.crewNameError)}>
                   {row.crewName}
                 </CustomTd>
-                <CustomTd textType={textType} className={checkError(row.mSheetNumberError)}>
-                  {row.mSheetNumber}
+                <CustomTd textType={textType} className={checkError(row.mSeatNumberError)}>
+                  {row.mSeatNumber}
                 </CustomTd>
-                <CustomTd textType={textType} className={checkError(row.sheetNameError)}>
-                  {row.sheetName}
+                <CustomTd textType={textType} className={checkError(row.seatNameError)}>
+                  {row.seatName}
                 </CustomTd>
                 <CustomTd textType={textType} className={checkError(row.userIdError)}>
                   {row.userId}

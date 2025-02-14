@@ -83,10 +83,10 @@ interface CsvData {
   playerHeightError: string | false; // 選手身長エラーの有無
   playerWeight: string; // 選手体重
   playerWeightError: string | false; // 選手体重エラーの有無
-  mSheetNumber: string; // シート番号ID
-  mSheetNumberError: string | false; // シート番号IDエラーの有無
-  sheetName: string; // シート番号
-  sheetNameError: string | false; // シート番号エラーの有無
+  mSeatNumber: string; // シート番号ID
+  mSeatNumberError: string | false; // シート番号IDエラーの有無
+  seatName: string; // シート番号
+  seatNameError: string | false; // シート番号エラーの有無
   raceResultRecordName: string; // 出漕結果記録名
   raceResultRecordNameError: string | false; // 出漕結果記録名エラーの有無
   startDatetime: string; // 発艇日時

@@ -136,8 +136,8 @@ interface CrewPlayer {
   sex: string; // 性別
   height?: number; // 身長
   weight?: number; // 体重
-  sheetName: string; // シート番号
-  sheetNameId?: number; // シート番号
+  seatName: string; // シート番号
+  seatNameId?: number; // シート番号
   entrysystemRaceId: string; // エントリーシステムの団体ID
   orgId1: string; // 団体ID1
   orgName1: string; // 所属団体名1

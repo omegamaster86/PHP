@@ -160,7 +160,11 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           csvContent += response.data.result[index].tourn_id + ','; //大会ID
           csvContent += response.data.tournResult.tourn_name + ','; //大会名
           csvContent += response.data.result[index].event_id + ','; //種目ID
-          csvContent += response.data.result[index].event_name + ','; //種目名
+          if (response.data.result[index].event_id == 999) {
+            csvContent += response.data.result[index].otherEventName + ',';
+          } else {
+            csvContent += response.data.result[index].event_name + ',';
+          }
           csvContent += response.data.result[index].race_class_id + ','; //レース区分ID
           if (response.data.result[index].race_class_id == 999) {
             csvContent += response.data.result[index].otherRaceClassName + ','; //レース区分名
