@@ -28,10 +28,28 @@ class M_seat_number extends Model
             from
                 m_seat_number 
             where
-                delete_flag = ?
+                delete_flag = 0
             order by display_order
+            '
+        );
+        return $result;
+    }
+
+    // シートIDからシートを取得する。
+    public function getSeatFromSeatId($seatId)
+    {
+        $result = DB::select(
+            '
+            select
+                seat_id
+                , seat_name
+            from
+                m_seat_number 
+            where
+                delete_flag = 0
+                and seat_id = ?
             ',
-            [0]
+            [$seatId]
         );
         return $result;
     }

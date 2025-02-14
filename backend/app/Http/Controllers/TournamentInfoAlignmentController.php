@@ -177,7 +177,8 @@ class TournamentInfoAlignmentController extends Controller
         T_races $t_races,
         T_organizations $t_organizations,
         T_players $t_players,
-        M_events $m_events
+        M_events $m_events,
+        M_seat_number $m_seat_number
     ) {
         Log::debug(sprintf("registerTournamentEntryCsvData start"));
         $inputData = $request->all();
@@ -223,6 +224,9 @@ class TournamentInfoAlignmentController extends Controller
                     } else {
                         $event_name = $event[0]->event_name;                      //種目名
                     }
+                    $seatId = $inputData['csvDataList'][$rowIndex]["mSeatNumber"]; //シートID
+                    $seat = $m_seat_number->getSeatFromSeatId($seatId);
+                    $seatName = $seat[0]->seat_name; //シート名
                     $range = $target_race[0]->range;                          //距離
                     $start_datetime = $target_race[0]->start_date_time;       //発艇日時
 
@@ -277,6 +281,8 @@ class TournamentInfoAlignmentController extends Controller
                             $update_values["event_id"] = $event_id;
                             $update_values["event_name"] = $event_name;
                             $update_values["range"] = $range;
+                            $update_values["seat_number"] = $seatId;
+                            $update_values["seat_name"] = $seatName;
                             $update_values["start_datetime"] = $start_datetime;
                             $update_values["updated_time"] = $current_datetime;
                             $update_values["updated_user_id"] = $user_id;
@@ -307,6 +313,8 @@ class TournamentInfoAlignmentController extends Controller
                         $insert_values["event_id"] = $event_id;
                         $insert_values["event_name"] = $event_name;
                         $insert_values["range"] = $range;
+                        $insert_values["seat_number"] = $seatId;
+                        $insert_values["seat_name"] = $seatName;
                         $insert_values["start_datetime"] = $start_datetime;
                         $insert_values["current_datetime"] = $current_datetime;
                         $insert_values["user_id"] = $user_id;

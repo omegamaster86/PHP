@@ -19,7 +19,6 @@ interface CsvData {
   byGroupError: string | false; // 組別エラーの有無
   raceNumber: string; // レースNo
   raceNumberError: string | false; // レースNoエラーの有無
-  startDatetime: string; // 発艇日時
   orgId: string; // 団体ID
   orgIdError: string | false; // 団体IDエラーの有無
   orgName: string; // 団体名

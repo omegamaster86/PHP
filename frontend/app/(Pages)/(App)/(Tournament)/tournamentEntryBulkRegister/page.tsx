@@ -323,7 +323,6 @@ export default function TournamentEntryBulkRegister() {
               byGroupError: false,
               raceNumber: '-',
               raceNumberError: false,
-              startDatetime: '-',
               orgId: '-',
               orgIdError: false,
               orgName: '-',
@@ -416,7 +415,6 @@ export default function TournamentEntryBulkRegister() {
               byGroupError: byGroupError || byGroupRangeError,
               raceNumber: row[9],
               raceNumberError,
-              startDatetime: row[10],
               orgId: row[11],
               orgIdError,
               orgName: row[12],
@@ -448,6 +446,7 @@ export default function TournamentEntryBulkRegister() {
         resList.push(response.data.result.csvDataList[index].loadingResult);
       }
       loadingResultList = resList.filter(Boolean); //リスト内のnullを削除して渡す
+      console.log(response.data.result.csvDataList);
       setCsvData(response.data.result.csvDataList);
       setDialogDisplayFlg(true);
       displayRegisterButton(true);
@@ -692,7 +691,6 @@ export default function TournamentEntryBulkRegister() {
               'レース名',
               '組別',
               'レースNo',
-              '発艇日時',
               '団体ID',
               '団体名',
               'クルー名',

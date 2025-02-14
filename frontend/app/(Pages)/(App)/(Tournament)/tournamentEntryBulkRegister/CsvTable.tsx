@@ -159,7 +159,6 @@ const CsvTable = ({
                 <CustomTd textType={textType} className={checkError(row.raceNumberError)}>
                   {row.raceNumber}
                 </CustomTd>
-                <CustomTd textType={textType}>{row.startDatetime}</CustomTd>
                 <CustomTd textType={textType} className={checkError(row.orgIdError)}>
                   {row.orgId}
                 </CustomTd>
