@@ -195,8 +195,8 @@ export default function TournamentEntryBulkRegister() {
       { label: '団体ID', key: 'orgId' },
       { label: '団体名', key: 'orgName' },
       { label: 'クルー名', key: 'crewName' },
-      { label: 'シート番号ID', key: 'mSheetNumber' },
-      { label: 'シート番号', key: 'sheetName' },
+      { label: 'シート番号ID', key: 'mSeatNumber' },
+      { label: 'シート番号', key: 'seatName' },
       { label: '選手ID', key: 'userId' },
       { label: '選手名', key: 'playerName' },
     ],
@@ -330,10 +330,10 @@ export default function TournamentEntryBulkRegister() {
               orgNameError: false,
               crewName: '-',
               crewNameError: false,
-              mSheetNumber: '-',
-              mSheetNumberError: false,
-              sheetName: '-',
-              sheetNameError: false,
+              mSeatNumber: '-',
+              mSeatNumberError: false,
+              seatName: '-',
+              seatNameError: false,
               userId: '-',
               userIdError: false,
               playerName: '-',
@@ -350,10 +350,10 @@ export default function TournamentEntryBulkRegister() {
             const orgIdError = checkRequired(row[11]) ? '団体IDは必須入力です。' : false;
             const orgNameError = checkRequired(row[12]) ? '団体名は必須入力です。' : false;
             const crewNameError = checkRequired(row[13]) ? 'クルー名は必須入力です。' : false;
-            const mSheetNumberError = checkRequired(row[14])
+            const mSeatNumberError = checkRequired(row[14])
               ? 'シート番号IDは必須入力です。'
               : false;
-            const sheetNameError = checkRequired(row[15]) ? 'シート番号は必須入力です。' : false;
+            const seatNameError = checkRequired(row[15]) ? 'シート番号は必須入力です。' : false;
             const userIdError = checkRequired(row[16]) ? '選手IDは必須入力です。' : false;
             const playerNameError = checkRequired(row[17]) ? '選手名は必須入力です。' : false;
 
@@ -369,8 +369,8 @@ export default function TournamentEntryBulkRegister() {
               crewNameError ||
               byGroupError ||
               eventIdError ||
-              mSheetNumberError ||
-              sheetNameError;
+              mSeatNumberError ||
+              seatNameError;
 
             //データ型チェック（入力値範囲チェック）入力項目のいずれかがエラーの場合エラーとする
             const byGroupRangeError = checkStringLegnth(row[8], 255)
@@ -382,7 +382,7 @@ export default function TournamentEntryBulkRegister() {
             const crewNameRangeError = checkStringLegnth(row[13], 255)
               ? 'クルー名は255文字以内で入力してください。'
               : false;
-            const sheetNameRangeError = checkStringLegnth(row[15], 255)
+            const seatNameRangeError = checkStringLegnth(row[15], 255)
               ? 'シート番号は255文字以内で入力してください。'
               : false;
             const playerNameRangeError = checkStringLegnth(row[17], 100)
@@ -394,7 +394,7 @@ export default function TournamentEntryBulkRegister() {
               orgNameRangeError ||
               crewNameRangeError ||
               byGroupRangeError ||
-              sheetNameRangeError;
+              seatNameRangeError;
 
             return {
               id: rowIndex,
@@ -423,10 +423,10 @@ export default function TournamentEntryBulkRegister() {
               orgNameError: orgNameError || orgNameRangeError,
               crewName: row[13],
               crewNameError: crewNameError || crewNameRangeError,
-              mSheetNumber: row[14],
-              mSheetNumberError,
-              sheetName: row[15],
-              sheetNameError: sheetNameError || sheetNameRangeError,
+              mSeatNumber: row[14],
+              mSeatNumberError,
+              seatName: row[15],
+              seatNameError: seatNameError || seatNameRangeError,
               userId: row[16],
               userIdError,
               playerName: row[17],

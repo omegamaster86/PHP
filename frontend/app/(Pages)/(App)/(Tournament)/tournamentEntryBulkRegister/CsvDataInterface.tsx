@@ -26,10 +26,10 @@ interface CsvData {
   orgNameError: string | false; // 団体名エラーの有無
   crewName: string; // クルー名
   crewNameError: string | false; // クルー名エラーの有無
-  mSheetNumber: string; // シート番号ID
-  mSheetNumberError: string | false; // シート番号IDエラーの有無
-  sheetName: string; // シート番号
-  sheetNameError: string | false; // シート番号エラーの有無
+  mSeatNumber: string; // シート番号ID
+  mSeatNumberError: string | false; // シート番号IDエラーの有無
+  seatName: string; // シート番号
+  seatNameError: string | false; // シート番号エラーの有無
   userId: string; // 選手ID
   userIdError: string | false; // 選手IDエラーの有無
   playerName: string; // 選手名

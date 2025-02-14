@@ -76,8 +76,8 @@ const CsvTable = ({
       row.attendanceError,
       row.playerHeightError,
       row.playerWeightError,
-      row.mSheetNumberError,
-      row.sheetNameError,
+      row.mSeatNumberError,
+      row.seatNameError,
       row.raceResultRecordNameError,
       row.startDatetimeError,
       row.weatherError,
@@ -311,11 +311,11 @@ const CsvTable = ({
                 <CustomTd textType={textType} className={checkError(row.playerWeightError)}>
                   {row.playerWeight}
                 </CustomTd>
-                <CustomTd textType={textType} className={checkError(row.mSheetNumberError)}>
-                  {row.mSheetNumber}
+                <CustomTd textType={textType} className={checkError(row.mSeatNumberError)}>
+                  {row.mSeatNumber}
                 </CustomTd>
-                <CustomTd textType={textType} className={checkError(row.sheetNameError)}>
-                  {row.sheetName}
+                <CustomTd textType={textType} className={checkError(row.seatNameError)}>
+                  {row.seatName}
                 </CustomTd>
                 <CustomTd textType={textType} className={checkError(row.raceResultRecordNameError)}>
                   {row.raceResultRecordName}

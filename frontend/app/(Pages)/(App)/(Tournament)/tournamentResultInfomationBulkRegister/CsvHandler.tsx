@@ -206,7 +206,11 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           csvContent += ','; //クルー名
           csvContent += response.data.result[index].by_group + ','; //組別
           csvContent += response.data.result[index].event_id + ','; //種目ID
-          csvContent += response.data.result[index].event_name + ','; //種目名
+          if (response.data.result[index].event_id == 999) {
+            csvContent += response.data.result[index].otherEventName + ',';
+          } else {
+            csvContent += response.data.result[index].event_name + ',';
+          }
           csvContent += response.data.result[index].range + ','; //距離
           csvContent += ','; //順位
           csvContent += ','; //500mlapタイム

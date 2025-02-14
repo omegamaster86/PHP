@@ -830,8 +830,8 @@ class T_raceResultRecord extends Model
                                                 ,ply.height
                                                 ,ply.weight
                                                 ,rrr.race_result_record_id
-                                                ,rrr.seat_number as sheetNameId
-                                                ,seat.seat_name as sheetName
+                                                ,rrr.seat_number as seatNameId
+                                                ,seat.seat_name as seatName
                                                 ,rrr.heart_rate_500m as fiveHundredmHeartRate
                                                 ,rrr.heart_rate_1000m as tenHundredmHeartRate
                                                 ,rrr.heart_rate_1500m as fifteenHundredmHeartRate

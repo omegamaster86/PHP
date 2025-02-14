@@ -425,7 +425,7 @@ export default function TournamentResultRef() {
                         <CustomTd>{item.sex}</CustomTd>
                         <CustomTd>{item.height}</CustomTd>
                         <CustomTd>{item.weight}</CustomTd>
-                        <CustomTd>{item.sheetName}</CustomTd>
+                        <CustomTd>{item.seatName}</CustomTd>
                         <CustomTd>{item.fiveHundredmHeartRate}</CustomTd>
                         <CustomTd>{item.tenHundredmHeartRate}</CustomTd>
                         <CustomTd>{item.fifteenHundredmHeartRate}</CustomTd>

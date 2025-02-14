@@ -143,7 +143,7 @@ export default function TournamentResult() {
   // レース結果備考（マスタ）の取得
   const [remarkOptions, setRemarkOptions] = useState<MasterResponse[]>([]);
   // シート番号（マスタ）の取得
-  const [sheetNameIdOptions, setSheetNameIdOptions] = useState<MasterResponse[]>([]);
+  const [seatNameIdOptions, setSeatNameIdOptions] = useState<MasterResponse[]>([]);
 
   // レース基本情報のモデル
   const [raceInfo, setRaceInfo] = useState<RaceTable>(initialRaceInfo);
@@ -272,7 +272,7 @@ export default function TournamentResult() {
       handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'sex', ''); //性別
       handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'height', ''); //身長
       handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'weight', ''); //体重
-      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'sheetName', ''); //シート番号
+      handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'seatName', ''); //シート番号
       handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'fiveHundredmHeartRate', ''); //500m
       handleRaceResultRecordsCrewPlayerChangebyIndex(index, crewIndex, 'tenHundredmHeartRate', ''); //1000m
       handleRaceResultRecordsCrewPlayerChangebyIndex(
@@ -669,9 +669,7 @@ export default function TournamentResult() {
                 player.playerName != '') ||
               (player.height != undefined && player.height != null) ||
               (player.weight != undefined && player.weight != null) ||
-              (player.sheetName != undefined &&
-                player.sheetName != null &&
-                player.sheetName != '') ||
+              (player.seatName != undefined && player.seatName != null && player.seatName != '') ||
               (player.fiveHundredmHeartRate != undefined && player.fiveHundredmHeartRate != null) ||
               (player.tenHundredmHeartRate != undefined && player.tenHundredmHeartRate != null) ||
               (player.fifteenHundredmHeartRate != undefined &&
@@ -720,13 +718,13 @@ export default function TournamentResult() {
             }
 
             //シート番号 空欄チェック 重複チェック
-            if (!player.sheetNameId) {
+            if (!player.seatNameId) {
               errorTextData += 'シート番号を選択してください。';
-            } else if (player.sheetName) {
+            } else if (player.seatName) {
               for (let index = 0; index < record?.crewPlayer.length; index++) {
                 if (
                   index != j &&
-                  record?.crewPlayer[index].sheetName == player.sheetName &&
+                  record?.crewPlayer[index].seatName == player.seatName &&
                   record?.crewPlayer[index].deleteFlg != true
                 ) {
                   errorTextData += 'シート番号が重複しています。';
@@ -796,13 +794,13 @@ export default function TournamentResult() {
             }
 
             //シート番号 空欄チェック 重複チェック
-            if (!player.sheetNameId) {
+            if (!player.seatNameId) {
               errorTextData += 'シート番号を選択してください。';
-            } else if (player.sheetName) {
+            } else if (player.seatName) {
               for (let index = 0; index < record?.crewPlayer.length; index++) {
                 if (
                   index != j &&
-                  record?.crewPlayer[index].sheetName == player.sheetName &&
+                  record?.crewPlayer[index].seatName == player.seatName &&
                   record?.crewPlayer[index].deleteFlg != true
                 ) {
                   errorTextData += 'シート番号が重複しています。';
@@ -853,9 +851,9 @@ export default function TournamentResult() {
           player.height != undefined &&
           player.weight != null &&
           player.weight != undefined &&
-          player.sheetName != '' &&
-          player.sheetName != null &&
-          player.sheetName != undefined
+          player.seatName != '' &&
+          player.seatName != null &&
+          player.seatName != undefined
         ) {
           count++;
         }
@@ -961,7 +959,7 @@ export default function TournamentResult() {
         }
 
         // 種目に対応したシート位置（マスタ）の取得 20240514
-        const response6 = await axios.post('api/getEventSheetPosForEventID', sendData);
+        const response6 = await axios.post('api/getEventSeatPosForEventID', sendData);
 
         const response7 = await axios.get('api/getSeatNumber');
         const seatNumberList = response7.data.map(
@@ -993,7 +991,7 @@ export default function TournamentResult() {
             return e;
           }
         });
-        setSheetNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする 20240514
+        setSeatNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする 20240514
       } catch (error: any) {
         setErrorText([error.message]);
       }
@@ -1017,7 +1015,7 @@ export default function TournamentResult() {
         setRaceInfo(race);
 
         // 種目に対応したシート位置（マスタ）の取得
-        const seatPositionResponse = await axios.post('api/getEventSheetPosForEventID', {
+        const seatPositionResponse = await axios.post('api/getEventSeatPosForEventID', {
           event_id: eventId || race.event_id,
         });
         const seatPosition = seatPositionResponse.data.result[0];
@@ -1053,7 +1051,7 @@ export default function TournamentResult() {
             return seatNumber;
           }
         });
-        setSheetNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする
+        setSeatNameIdOptions(newSeatNumberArray); //フィルタ後のリストをセットする
 
         // 出漕結果記録情報の取得
         const recordResults = raceResponse.data.record_result;
@@ -1137,8 +1135,8 @@ export default function TournamentResult() {
                     sex: '',
                     height: undefined,
                     weight: undefined,
-                    sheetName: '',
-                    sheetNameId: undefined,
+                    seatName: '',
+                    seatNameId: undefined,
                     entrysystemRaceId: '',
                     orgId1: '',
                     orgName1: '',
@@ -2125,13 +2123,13 @@ export default function TournamentResult() {
                       </CustomTd>
                       <CustomTd>
                         <CustomDropdown
-                          id='sheetName'
+                          id='seatName'
                           value={
                             mode === 'confirm'
-                              ? player?.sheetName
-                              : player?.sheetNameId?.toString() || ''
+                              ? player?.seatName
+                              : player?.seatNameId?.toString() || ''
                           }
-                          options={sheetNameIdOptions.map((item) => ({
+                          options={seatNameIdOptions.map((item) => ({
                             key: item.id,
                             value: item.name,
                           }))}
@@ -2139,14 +2137,14 @@ export default function TournamentResult() {
                             handleRaceResultRecordsCrewPlayerChangebyIndex(
                               index,
                               crewIndex,
-                              'sheetNameId',
+                              'seatNameId',
                               e,
                             );
                             handleRaceResultRecordsCrewPlayerChangebyIndex(
                               index,
                               crewIndex,
-                              'sheetName',
-                              sheetNameIdOptions.find((item) => item.id === Number(e))?.name || '',
+                              'seatName',
+                              seatNameIdOptions.find((item) => item.id === Number(e))?.name || '',
                             );
                           }}
                           readonly={mode === 'confirm'}

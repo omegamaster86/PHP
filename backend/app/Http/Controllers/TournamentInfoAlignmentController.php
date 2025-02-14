@@ -108,16 +108,16 @@ class TournamentInfoAlignmentController extends Controller
                 continue;
             }
             //シート番号
-            $seat_number = $inputData['csvDataList'][$rowIndex]['mSheetNumber'];
-            $seat_name = $inputData['csvDataList'][$rowIndex]['sheetName'];
+            $seat_number = $inputData['csvDataList'][$rowIndex]['mSeatNumber'];
+            $seat_name = $inputData['csvDataList'][$rowIndex]['seatName'];
             $seat_count_array = $m_seat_number->getSeatNumberCountFromCsvData($seat_number, $seat_name);
             $seat_count = $seat_count_array[0]->{"count"};
             if ($seat_count != 1) {
                 $errorMessage = "シート番号ID、シート番号の組み合わせが不正です。";
                 $inputData['csvDataList'][$rowIndex]['checked'] = false;
                 $inputData['csvDataList'][$rowIndex]['loadingResult'] = "登録情報と不一致あり";
-                $inputData['csvDataList'][$rowIndex]['mSheetNumberError'] = $errorMessage;
-                $inputData['csvDataList'][$rowIndex]['sheetNameError'] = "";
+                $inputData['csvDataList'][$rowIndex]['mSeatNumberError'] = $errorMessage;
+                $inputData['csvDataList'][$rowIndex]['seatNameError'] = "";
                 continue;
             }
             //選手名
@@ -205,7 +205,11 @@ class TournamentInfoAlignmentController extends Controller
                     $race_number = $inputData['csvDataList'][$rowIndex]["raceNumber"];         //レースNo.
                     $race_name = $target_race[0]->race_name;                  //レース名
                     $race_class_id = $inputData['csvDataList'][$rowIndex]["raceTypeId"];       //レース区分ID
-                    $race_class_name = $target_race[0]->race_class_name;         //レース区分名
+                    if ($race_class_id == "999") {
+                        $race_class_name = $inputData['csvDataList'][$rowIndex]["raceTypeName"];
+                    } else {
+                        $race_class_name = $target_race[0]->race_class_name;
+                    }
                     $org_id = $inputData['csvDataList'][$rowIndex]["orgId"];                   //団体ID
                     $target_organization = $t_organizations->getOrganization($org_id, $user_id);  //対象の団体データを取得
                     $entrysystem_org_id = $target_organization->entrysystem_org_id;   //エントリー団体ID
@@ -214,7 +218,11 @@ class TournamentInfoAlignmentController extends Controller
                     $by_group = $inputData['csvDataList'][$rowIndex]["byGroup"];               //組別
                     $event_id = $inputData['csvDataList'][$rowIndex]["eventId"];               //種目ID
                     $event = $m_events->getEventForEventID($event_id);        //種目マスタから対象の種目情報を取得
-                    $event_name = $event[0]->event_name;                      //種目名
+                    if ($event_id == "999") {
+                        $event_name = $inputData['csvDataList'][$rowIndex]["eventName"];         //種目名
+                    } else {
+                        $event_name = $event[0]->event_name;                      //種目名
+                    }
                     $range = $target_race[0]->range;                          //距離
                     $start_datetime = $target_race[0]->start_date_time;       //発艇日時
 
@@ -724,19 +732,19 @@ class TournamentInfoAlignmentController extends Controller
                     $this->checkDecimal($target_row['playerWeight'], "3.2", $checkResult, $target_row['playerWeightError'], $errorMessage);
                 }
                 // シート番号ID
-                if (!isset($target_row['mSheetNumber'])) {
+                if (!isset($target_row['mSeatNumber'])) {
                     $errorMessage = "シート番号IDは必須入力です。";
                     $checkResult = false;
-                    $target_row['mSheetNumberError'] = $errorMessage;
+                    $target_row['mSeatNumberError'] = $errorMessage;
                 }
                 // シート番号
-                if (isset($target_row['sheetName'])) {
+                if (isset($target_row['seatName'])) {
                     $errorMessage = "シート番号は255文字以内で入力してください。";
-                    $this->checkWithinByte($target_row['sheetName'], 255, $checkResult, $target_row['sheetNameError'], $errorMessage);
+                    $this->checkWithinByte($target_row['seatName'], 255, $checkResult, $target_row['seatNameError'], $errorMessage);
                 } else {
                     $errorMessage = "シート番号は必須入力です。";
                     $checkResult = false;
-                    $target_row['sheetNameError'] = $errorMessage;
+                    $target_row['seatNameError'] = $errorMessage;
                 }
                 // 出漕結果記録名
                 if (isset($target_row['raceResultRecordName'])) {
@@ -1191,8 +1199,8 @@ class TournamentInfoAlignmentController extends Controller
                         $race_result_array['attendance'] = $target_row['attendance'];                                       //立会有無
                         $race_result_array['player_height'] = $race_data[0]->{'height'};                                      //選手身長
                         $race_result_array['player_weight'] = $race_data[0]->{'weight'};                                      //選手体重
-                        $race_result_array['seat_number'] = $target_row['mSheetNumber'];                                    //シート番号ID
-                        $race_result_array['seat_name'] = $target_row['sheetName'];                                         //シート名
+                        $race_result_array['seat_number'] = $target_row['mSeatNumber'];                                    //シート番号ID
+                        $race_result_array['seat_name'] = $target_row['seatName'];                                         //シート名
                         $race_result_array['race_result_record_name'] = $target_row['raceResultRecordName'];                //出漕結果記録名
                         $race_result_array['start_datetime'] = $target_row['startDatetime'];                                //発艇日時
                         $race_result_array['weather'] = $target_row['weather'];                                             //天候
@@ -1315,8 +1323,8 @@ class TournamentInfoAlignmentController extends Controller
                         $race_result_array['heart_rate_2000m'] = $target_row['twentyHundredmHeartRate'];                        //2000m心拍数
                         $race_result_array['official'] = isset($target_row['official']) ? $target_row['official'] : $is_target_tournament_official; //公式・非公式
                         $race_result_array['attendance'] = $target_row['attendance'];                                           //立会有無
-                        $race_result_array['seat_number'] = $target_row['mSheetNumber'];                                        //シート番号ID
-                        $race_result_array['seat_name'] = $target_row['sheetName'];                                             //シート番号
+                        $race_result_array['seat_number'] = $target_row['mSeatNumber'];                                        //シート番号ID
+                        $race_result_array['seat_name'] = $target_row['seatName'];                                             //シート番号
                         $race_result_array['race_result_record_name'] = $target_row['raceResultRecordName'];                    //出漕結果記録名
                         $race_result_array['start_datetime'] = $target_row['startDatetime'];                                    //発艇日時
                         $race_result_array['weather'] = $target_row['weather'];                                                 //天候
@@ -1356,12 +1364,12 @@ class TournamentInfoAlignmentController extends Controller
         //種目IDが999(その他)の場合のみ条件に入れる
         if ($read_record['eventId'] == 999) {
             $search_values['event_name'] = $read_record['eventName'];           //種目名
-            $replace_condition_string = "and event_name = :event_name\r\n";
+            $replace_condition_string .= "and event_name = :event_name\r\n";
         }
         //レース区分IDが999(その他)の場合のみ条件に入れる
         if ($read_record['raceTypeId'] == 999) {
             $search_values['race_class_name'] = $read_record['raceTypeName'];           //レース区分名
-            $replace_condition_string = "and race_class_name = :race_class_name\r\n";
+            $replace_condition_string .= "and race_class_name = :race_class_name\r\n";
         }
         return $replace_condition_string;
     }
