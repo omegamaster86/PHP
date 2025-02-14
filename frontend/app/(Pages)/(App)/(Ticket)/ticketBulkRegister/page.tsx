@@ -15,6 +15,7 @@ import {
   FileHandler,
 } from '@/app/(Pages)/(App)/(Ticket)/shared/csv';
 import { CustomButton, CustomDropdown, CustomTitle, ErrorBox } from '@/app/components';
+import { useUserType } from '@/app/hooks/useUserType';
 import { fetcher } from '@/app/lib/swr';
 import { TeketSalesHistoryRequest, TournamentOption } from '@/app/types';
 import { TEMPLATE_URL } from '@/app/utils/imageUrl';
@@ -46,6 +47,17 @@ const sendMutateRequest = (
 export default function TicketBulkRegister() {
   const router = useRouter();
   const fileUploaderRef = useRef<FileHandler>(null);
+  useUserType({
+    onSuccess: (userType) => {
+      const hasAuthority =
+        userType.isAdministrator || userType.isJara || userType.isPrefBoatOfficer;
+
+      if (!hasAuthority) {
+        router.replace('/mypage/top');
+      }
+    },
+  });
+
   const [tournId, setTournId] = useState(0);
   const [csvFileData, setCsvFileData] = useState<CsvFileData>({
     content: [],

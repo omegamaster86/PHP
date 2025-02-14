@@ -14,14 +14,7 @@ type UserType = {
   isAudience: boolean; // 一般ユーザ
 };
 
-export const useUserType = (): UserType | null => {
-  const { data } = useSWR({ url: 'api/getIDsAssociatedWithUser' }, fetcher<UserIdType[]>);
-  const result: UserIdType | undefined = data?.result[0];
-
-  if (!result) {
-    return null;
-  }
-
+const toUserType = (result: UserIdType): UserType => {
   const userType: UserType = {
     playerId: result.player_id,
     volunteerId: result.volunteer_id,
@@ -33,6 +26,31 @@ export const useUserType = (): UserType | null => {
     isVolunteer: Number(result.is_volunteer) === 1,
     isAudience: Number(result.is_audience) === 1,
   };
+
+  return userType;
+};
+
+type UseUserTypeParams = {
+  onSuccess?: (data: UserType) => void;
+};
+
+export const useUserType = (params?: UseUserTypeParams): UserType | null => {
+  const { data } = useSWR({ url: 'api/getIDsAssociatedWithUser' }, fetcher<UserIdType[]>, {
+    onSuccess: (successData) => {
+      const result: UserIdType | undefined = successData.result?.[0];
+      if (result && params?.onSuccess) {
+        const userType = toUserType(result);
+        params.onSuccess(userType);
+      }
+    },
+  });
+  const result: UserIdType | undefined = data?.result?.[0];
+
+  if (!result) {
+    return null;
+  }
+
+  const userType = toUserType(result);
 
   return userType;
 };
