@@ -665,27 +665,29 @@ class T_raceResultRecord extends Model
     {
         //DB::enableQueryLog();
         $crews = DB::select(
-            'select
-                            rrr.`player_id`
-                            ,msn.`seat_id`
-                            ,msn.`seat_name`
-                            ,msn.`seat_addr_name`
-                            ,rrr.`player_name`
-                            ,rrr.`player_height`
-                            ,rrr.`player_weight`
-                            ,msn.`display_order` as `order`
-                            from `t_race_result_record` rrr
-                            left join `m_seat_number` msn
-                            on rrr.seat_number = msn.seat_id
-                            INNER JOIN `t_players`
-                            on rrr.player_id = `t_players`.player_id and `t_players`.`delete_flag` = 0
-                            where 1=1
-                            and rrr.`delete_flag` = 0
-                            and msn.`delete_flag` = 0
-                            and rrr.race_id = :race_id
-                            and rrr.crew_name = :crew_name
-                            and rrr.org_id = :org_id
-                            order by msn.`display_order`',
+            'SELECT
+                rrr.`player_id`
+                ,tp.`delete_flag` AS playerDeleteFlag
+                ,msn.`seat_id`
+                ,msn.`seat_name`
+                ,msn.`seat_addr_name`
+                ,rrr.`player_name`
+                ,rrr.`player_height`
+                ,rrr.`player_weight`
+                ,msn.`display_order` AS `order`
+            FROM `t_race_result_record` rrr
+            INNER JOIN `m_seat_number` msn ON
+                msn.seat_id = rrr.seat_number
+                AND msn.`delete_flag` = 0
+            LEFT OUTER JOIN `t_players` tp ON
+                # NOTE: 削除された選手も表示する。
+                tp.player_id = rrr.player_id
+            WHERE 1=1
+                AND rrr.`delete_flag` = 0
+                AND rrr.race_id = :race_id
+                AND rrr.crew_name = :crew_name
+                AND rrr.org_id = :org_id
+            ORDER BY msn.`display_order`',
             $values
         );
         return $crews;

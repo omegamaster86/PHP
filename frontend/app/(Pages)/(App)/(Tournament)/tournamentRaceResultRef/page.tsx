@@ -229,6 +229,9 @@ export default function TournamentRaceResultRef() {
           } else if (response.data.result[index].seat_name == 'スカル') {
             response.data.result[index].seat_name = 'X（スカル）';
           }
+
+          response.data.result[index].playerDeleteFlag =
+            response.data.result[index].playerDeleteFlag === 1;
         }
         setCrewRecordsData(response.data.result);
       })
@@ -550,13 +553,17 @@ export default function TournamentRaceResultRef() {
                     <CustomTr key={index}>
                       <CustomTd>{row.seat_name}</CustomTd>
                       <CustomTd>
-                        <Link
-                          href={`/playerInformationRef?playerId=${row.player_id}`}
-                          rel='noopener noreferrer'
-                          target='_blank'
-                        >
-                          {row.player_name}
-                        </Link>
+                        {row.playerDeleteFlag ? (
+                          row.player_name
+                        ) : (
+                          <Link
+                            href={`/playerInformationRef?playerId=${row.player_id}`}
+                            rel='noopener noreferrer'
+                            target='_blank'
+                          >
+                            {row.player_name}
+                          </Link>
+                        )}
                       </CustomTd>
                       <CustomTd>{row.player_height}</CustomTd>
                       <CustomTd>{row.player_weight}</CustomTd>
