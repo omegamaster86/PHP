@@ -14,7 +14,11 @@ export const useAuth = ({
   const router = useRouter();
   const pathname = usePathname();
 
-  const { data, error, mutate } = useSWR('api/user', () =>
+  const {
+    data,
+    error,
+    mutate: refetchUser,
+  } = useSWR('api/user', () =>
     axios
       .get<{ result: UserResponse }>('api/user')
       .then((res) => res.data)
@@ -33,7 +37,7 @@ export const useAuth = ({
     try {
       await csrf();
       await axios.post('api/login', data);
-      mutate();
+      refetchUser();
     } catch (error) {
       throw error;
     }
@@ -45,7 +49,7 @@ export const useAuth = ({
       } else {
         try {
           await axios.post('api/logout').then(() => {
-            mutate();
+            refetchUser();
             window.history.replaceState(null, '', '/login');
           });
         } catch (error) {
@@ -88,5 +92,6 @@ export const useAuth = ({
     user,
     login,
     logout,
+    refetchUser,
   };
 };
