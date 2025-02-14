@@ -33,6 +33,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { PLAYER_IMAGE_URL } from '../../../../utils/imageUrl'; //For importing image url from a single source of truth
 import { CustomPlayerAvatar } from '@/app/components/CustomPlayerAvatar';
+import Divider from '@mui/material/Divider';
 
 type PlayerFormData = PlayerInformationResponse;
 
@@ -680,7 +681,7 @@ export default function PlayerInformation() {
       </CustomTitle>
       {/* エラーメッセージの表示 */}
       <ErrorBox errorText={errorMessage} />
-      <div className='flex flex-col justify-start'>
+      <div>
         {/* TODO: tooltipの表示内容は仕様が決まり次第置き換える */}
         {/* 写真 */}
         <InputLabel
@@ -722,22 +723,19 @@ export default function PlayerInformation() {
             </div>
           )}
           {mode === 'confirm' && (
-            <div className='relative'>
-              <CustomPlayerAvatar
-                alt='選手画像'
-                fileName={currentShowFile?.preview ?? formData.photo}
-                isPreview={!!currentShowFile?.preview}
-                sx={{
-                  width: 200,
-                  height: 200,
-                  fontSize: 14,
-                }}
-              />
-            </div>
+            <CustomPlayerAvatar
+              alt='選手画像'
+              fileName={currentShowFile?.preview ?? formData.photo}
+              isPreview={!!currentShowFile?.preview}
+              sx={{
+                width: 200,
+                height: 200,
+                fontSize: 14,
+              }}
+            />
           )}
         </div>
       </div>
-
       {/* 選手ID */}
       {(mode === 'update' || prevMode === 'update') && (
         <CustomTextField
@@ -749,34 +747,31 @@ export default function PlayerInformation() {
           onChange={(e) => handleInputChange('player_id', e.target.value)}
         />
       )}
-      <div className='flex flex-col justify-start'>
-        {/* JARA選手コード */}
-        <CustomTextField
-          label='JARA選手コード'
-          displayHelp={mode !== 'confirm'}
-          isError={jaraPlayerCodeErrorMessage.length > 0}
-          placeHolder='123456789012'
-          readonly={mode === 'confirm'}
-          errorMessages={jaraPlayerCodeErrorMessage}
-          value={formData.jara_player_id?.toString()}
-          onChange={(e) => handleInputChange('jara_player_id', e.target.value)}
-          toolTipText='日本ローイング協会より発行された、12桁の選手コードを入力してください。' //はてなボタン用
-          maxLength={12}
-        />
-      </div>
-      <div className='flex flex-col justify-start'>
-        {/* 選手名 */}
-        <CustomTextField
-          label='選手名'
-          isError={playerNameErrorMessage.length > 0}
-          required={mode !== 'confirm'}
-          displayHelp={mode !== 'confirm'}
-          errorMessages={playerNameErrorMessage}
-          placeHolder='山田太郎'
-          readonly={mode === 'confirm'}
-          value={formData.player_name}
-          onChange={(e) => handleInputChange('player_name', e.target.value)}
-          toolTipText={`<span style="display: block;">文字制限</span>
+      {/* JARA選手コード */}
+      <CustomTextField
+        label='JARA選手コード'
+        displayHelp={mode !== 'confirm'}
+        isError={jaraPlayerCodeErrorMessage.length > 0}
+        placeHolder='123456789012'
+        readonly={mode === 'confirm'}
+        errorMessages={jaraPlayerCodeErrorMessage}
+        value={formData.jara_player_id?.toString()}
+        onChange={(e) => handleInputChange('jara_player_id', e.target.value)}
+        toolTipText='日本ローイング協会より発行された、12桁の選手コードを入力してください。' //はてなボタン用
+        maxLength={12}
+      />
+      {/* 選手名 */}
+      <CustomTextField
+        label='選手名'
+        isError={playerNameErrorMessage.length > 0}
+        required={mode !== 'confirm'}
+        displayHelp={mode !== 'confirm'}
+        errorMessages={playerNameErrorMessage}
+        placeHolder='山田太郎'
+        readonly={mode === 'confirm'}
+        value={formData.player_name}
+        onChange={(e) => handleInputChange('player_name', e.target.value)}
+        toolTipText={`<span style="display: block;">文字制限</span>
             <span style="display: block;">最大文字数：32文字（全半角区別なし）</span>
             <span style="display: block;">利用可能文字：</span>
             <span style="display: block;">日本語</span>
@@ -784,9 +779,8 @@ export default function PlayerInformation() {
             <span style="display: block;">英小文字：[a-z]（26 文字）</span>
             <span style="display: block;">数字：[0-9]（10 文字）</span>
             <span style="display: block;">記号：-,_</span>`}
-        />
-      </div>
-      <div className='flex flex-col justify-start'>
+      />
+      <div>
         {/* 生年月日 */}
         <InputLabel
           label='生年月日'
@@ -805,64 +799,58 @@ export default function PlayerInformation() {
           errorMessages={dateOfBirthErrorMessage}
         />
       </div>
-      <div className='flex flex-col justify-start'>
-        {/* 性別 */}
-        <CustomDropdown
-          id='sex'
-          label='性別'
-          required={mode !== 'confirm'}
-          displayHelp={mode !== 'confirm'}
-          toolTipText='大会に登録する性別を選んでください。'
-          readonly={mode === 'confirm'}
-          options={sex.map((item) => ({ key: item.id, value: item.name }))}
-          value={mode !== 'confirm' ? formData.sex_id?.toString() || '' : formData.sexName}
-          errorMessages={sexErrorMessage}
-          isError={sexErrorMessage.length > 0}
-          placeHolder='未選択'
-          onChange={(e) => {
-            handleInputChange('sex_id', e);
-            handleInputChange('sexName', sex.find((item) => item.id === Number(e))?.name || '');
-          }}
-          className='rounded w-[300px] '
-        />
-      </div>
-      <div className='flex flex-col justify-start'>
-        {/* 身長 */}
-        <CustomTextField
-          label='身長'
-          readonly={mode === 'confirm'}
-          required={mode !== 'confirm'}
-          displayHelp={mode !== 'confirm'}
-          isError={heightErrorMessage.length > 0}
-          errorMessages={heightErrorMessage}
-          type='number'
-          isDecimal={true}
-          placeHolder='180.00'
-          inputAdorment='cm'
-          value={formData.height?.toString()}
-          onChange={(e) => handleInputChange('height', e.target.value)}
-          toolTipText='現在の身長を半角数字で入力してください。' //はてなボタン用
-        />
-      </div>
-      <div className='flex flex-col justify-start'>
-        {/* 体重 */}
-        <CustomTextField
-          label='体重'
-          readonly={mode === 'confirm'}
-          isError={weightErrorMessage.length > 0}
-          required={mode !== 'confirm'}
-          displayHelp={mode !== 'confirm'}
-          placeHolder='80.00'
-          errorMessages={weightErrorMessage}
-          type='number'
-          isDecimal={true}
-          inputAdorment='kg'
-          value={formData.weight?.toString()}
-          onChange={(e) => handleInputChange('weight', e.target.value)}
-          toolTipText='現在の体重を半角数字で入力してください。' //はてなボタン用
-        />
-      </div>
-      <div className='flex flex-col justify-start'>
+      {/* 性別 */}
+      <CustomDropdown
+        id='sex'
+        label='性別'
+        required={mode !== 'confirm'}
+        displayHelp={mode !== 'confirm'}
+        toolTipText='大会に登録する性別を選んでください。'
+        readonly={mode === 'confirm'}
+        options={sex.map((item) => ({ key: item.id, value: item.name }))}
+        value={mode !== 'confirm' ? formData.sex_id?.toString() || '' : formData.sexName}
+        errorMessages={sexErrorMessage}
+        isError={sexErrorMessage.length > 0}
+        placeHolder='未選択'
+        onChange={(e) => {
+          handleInputChange('sex_id', e);
+          handleInputChange('sexName', sex.find((item) => item.id === Number(e))?.name || '');
+        }}
+        className='rounded'
+      />
+      {/* 身長 */}
+      <CustomTextField
+        label='身長'
+        readonly={mode === 'confirm'}
+        required={mode !== 'confirm'}
+        displayHelp={mode !== 'confirm'}
+        isError={heightErrorMessage.length > 0}
+        errorMessages={heightErrorMessage}
+        type='number'
+        isDecimal={true}
+        placeHolder='180.00'
+        inputAdorment='cm'
+        value={formData.height?.toString()}
+        onChange={(e) => handleInputChange('height', e.target.value)}
+        toolTipText='現在の身長を半角数字で入力してください。' //はてなボタン用
+      />
+      {/* 体重 */}
+      <CustomTextField
+        label='体重'
+        readonly={mode === 'confirm'}
+        isError={weightErrorMessage.length > 0}
+        required={mode !== 'confirm'}
+        displayHelp={mode !== 'confirm'}
+        placeHolder='80.00'
+        errorMessages={weightErrorMessage}
+        type='number'
+        isDecimal={true}
+        inputAdorment='kg'
+        value={formData.weight?.toString()}
+        onChange={(e) => handleInputChange('weight', e.target.value)}
+        toolTipText='現在の体重を半角数字で入力してください。' //はてなボタン用
+      />
+      <div>
         {/* サイド情報 */}
         <InputLabel
           label='サイド情報'
@@ -870,7 +858,7 @@ export default function PlayerInformation() {
           displayHelp={mode !== 'confirm'}
           toolTipText='経験のあるサイドを選択してください。' //はてなボタン用
         />
-        <div className='flex justify-start flex-col gap-[4px] my-1'>
+        <div className='flex flex-col gap-[4px] my-1'>
           <OriginalCheckbox
             id='checkbox-S'
             readonly={mode === 'confirm'}
@@ -947,8 +935,8 @@ export default function PlayerInformation() {
         {/* エラーメッセージ */}
         <p className='text-caption1 text-systemErrorText'>{sideInfoErrorMessage}</p>
       </div>
-      <div className='flex flex-row justify-start gap-[100px]'>
-        <div className='flex flex-col justify-start'>
+      <div className='flex flex-col justify-start gap-7 md:flex-row md:gap-[100px]'>
+        <div>
           {/* 出身地（国） */}
           <CustomDropdown
             id='birthCountry'
@@ -973,7 +961,7 @@ export default function PlayerInformation() {
                 countries.find((item) => item.id === Number(e))?.name || '',
               );
             }}
-            className='rounded w-[300px] '
+            className='rounded md:w-[300px]'
           />
         </div>
         {/* 国コードが日本の場合のみ、都道府県の入力欄を表示する */}
@@ -1002,13 +990,13 @@ export default function PlayerInformation() {
                   prefectures.find((item) => item.id === Number(e))?.name || '',
                 );
               }}
-              className='rounded w-[300px] '
+              className='rounded md:w-[300px] '
             />
           </div>
         )}
       </div>
-      <div className='flex flex-row justify-start gap-[100px]'>
-        <div className='flex flex-col justify-start'>
+      <div className='flex flex-col justify-start gap-7 md:flex-row md:gap-[100px]'>
+        <div>
           {/* 居住地（国） */}
           <CustomDropdown
             id='residenceCountry'
@@ -1032,12 +1020,12 @@ export default function PlayerInformation() {
               );
             }}
             errorMessages={residenceCountryNameErrorMessage}
-            className='rounded w-[300px] '
+            className='rounded md:w-[300px] '
           />
         </div>
         {/* 国コードが日本の場合のみ、都道府県の入力欄を表示する */}
         {formData.residence_country == 112 && (
-          <div className='flex flex-col justify-start'>
+          <div>
             {/* 居住地（都道府県） */}
             <CustomDropdown
               id='residencePrefecture'
@@ -1060,12 +1048,13 @@ export default function PlayerInformation() {
                 );
               }}
               errorMessages={residencePrefectureErrorMessage}
-              className='rounded w-[300px] '
+              className='rounded md:w-[300px] '
             />
           </div>
         )}
       </div>
-      <div className='flex flex-row justify-center gap-[16px] my-[30px]'>
+      <Divider className='h-[1px] bg-border' />
+      <div className='flex flex-col md:flex-row justify-center items-center gap-[16px] my-[30px]'>
         {/* 戻るボタン */}
         <CustomButton
           onClick={async () => {
