@@ -254,6 +254,8 @@ class T_raceResultRecord extends Model
                         `event_id`, 
                         `event_name`, 
                         `range`, 
+                        `seat_number`,
+                        `seat_name`,
                         `start_datetime`, 
                         `registered_time`, 
                         `registered_user_id`, 
@@ -261,7 +263,7 @@ class T_raceResultRecord extends Model
                         `updated_user_id`, 
                         `delete_flag`
                     )VALUES
-                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
             [
                 $raceResultRecordResponse["player_id"],
                 $raceResultRecordResponse["jara_player_id"],
@@ -283,6 +285,8 @@ class T_raceResultRecord extends Model
                 $raceResultRecordResponse["event_id"],
                 $raceResultRecordResponse["event_name"],
                 $raceResultRecordResponse["range"],
+                $raceResultRecordResponse["seat_number"],
+                $raceResultRecordResponse["seat_name"],
                 $raceResultRecordResponse["start_datetime"],
                 $raceResultRecordResponse["current_datetime"],
                 $raceResultRecordResponse["user_id"],
@@ -321,6 +325,8 @@ class T_raceResultRecord extends Model
                     ,`event_id` = :event_id
                     ,`event_name` = :event_name
                     ,`range` = :range
+                    ,`seat_number` = :seat_number
+                    ,`seat_name` = :seat_name
                     ,`start_datetime` = :start_datetime
                     ,`updated_time` = :updated_time
                     ,`updated_user_id` = :updated_user_id
