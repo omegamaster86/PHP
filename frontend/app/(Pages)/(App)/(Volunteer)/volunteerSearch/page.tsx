@@ -17,6 +17,7 @@ import {
   InputLabel,
   OriginalCheckbox,
 } from '@/app/components/';
+import { JAPAN_COUNTRY_CODE } from '@/app/constants';
 import axios from '@/app/lib/axios';
 import {
   CountryResponse,
@@ -160,10 +161,45 @@ export default function VolunteerSearch() {
   const volunteerCountrySort = () => {
     if (volunteerCountrySortFlag) {
       setVolunteerCountrySortFlag(false);
-      searchResponse.sort((a, b) => ('' + a.residence_country).localeCompare(b.residence_country));
+      searchResponse.sort((a, b) => {
+        const aIsJapan = a.residence_country_code === JAPAN_COUNTRY_CODE;
+        const bIsJapan = b.residence_country_code === JAPAN_COUNTRY_CODE;
+
+        // 1. 日本以外の国を先にする
+        if (!aIsJapan && bIsJapan) return -1;
+        if (aIsJapan && !bIsJapan) return 1;
+
+        // 2. 日本以外の国なら、国コードの昇順でソート
+        if (!aIsJapan && !bIsJapan) {
+          return (Number(a.residence_country_code) || 0) - (Number(b.residence_country_code) || 0);
+        }
+
+        // 3. 日本の都道府県の場合、JISコードの昇順でソート
+        return (
+          (Number(a.residence_prefecture_code_jis) || 0) -
+          (Number(b.residence_prefecture_code_jis) || 0)
+        );
+      });
     } else {
       setVolunteerCountrySortFlag(true);
-      searchResponse.sort((a, b) => ('' + b.residence_country).localeCompare(a.residence_country));
+      searchResponse.sort((a, b) => {
+        const aIsJapan = a.residence_country_code === JAPAN_COUNTRY_CODE;
+        const bIsJapan = b.residence_country_code === JAPAN_COUNTRY_CODE;
+        // 1. 日本を先にする
+        if (aIsJapan && !bIsJapan) return -1;
+        if (!aIsJapan && bIsJapan) return 1;
+
+        // 2. 日本（JP）の場合、JISコードの降順でソート
+        if (aIsJapan && bIsJapan) {
+          return (
+            (Number(b.residence_prefecture_code_jis) || 0) -
+            (Number(a.residence_prefecture_code_jis) || 0)
+          );
+        }
+
+        // 3. 日本以外の国の場合、国コードの降順でソート
+        return (Number(b.residence_country_code) || 0) - (Number(a.residence_country_code) || 0);
+      });
     }
   };
   //性別のソート用
@@ -400,15 +436,11 @@ export default function VolunteerSearch() {
    * 検索結果をstateにセットする
    */
   const handleSearch = async () => {
-    axios
-      .post('api/volunteerSearch', searchCond)
-      .then((response) => {
-        setSearchResponse(response.data.result as VolunteerResponse[]);
-      })
-      .catch((error) => {
-        // TODO: エラー処理
-        // alert(error);
-      });
+    const res = await axios.post<{ result: VolunteerResponse[] }>(
+      'api/volunteerSearch',
+      searchCond,
+    );
+    setSearchResponse(res.data.result);
   };
 
   // データ取得

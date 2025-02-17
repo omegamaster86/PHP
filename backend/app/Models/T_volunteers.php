@@ -34,13 +34,14 @@ class T_volunteers extends Model
     public function getVolunteers($volunteer_id)
     {
         $volunteers = DB::select(
-            '
-            select
+            'SELECT
                 `t_volunteers`.`volunteer_id`,
                 `t_volunteers`.`user_id`,
                 `t_volunteers`.`volunteer_name`,
-                `t_volunteers`.`residence_country`, 
+                `t_volunteers`.`residence_country`,                 
+                `m_countries`.`country_code` as residence_country_code,
                 `t_volunteers`.`residence_prefecture`,
+                `m_prefectures`.`pref_code_jis` as residence_prefecture_code_jis,
                 `t_volunteers`.`sex`,
                 `t_volunteers`.`date_of_birth`,
                 `t_volunteers`.`telephone_number`, 
@@ -87,17 +88,19 @@ class T_volunteers extends Model
         $SupportableDisabilityJoinType,
         $conditionValue
     ) {
-        $sqlString = 'select distinct
+        $sqlString = 'SELECT distinct
                     `t_volunteers`.`volunteer_id`
                     ,`t_volunteers`.`volunteer_name`
                     ,`t_volunteers`.`date_of_birth`
                     ,`t_volunteers`.`clothes_size`
                     ,`m_countries`.`country_name` as residence_country
+                    ,`m_countries`.`country_code` as residence_country_code
                     ,`m_prefectures`.`pref_name` as residence_prefecture
+                    ,`m_prefectures`.`pref_code_jis` as residence_prefecture_code_jis
                     ,CASE
                         WHEN `t_volunteers`.`residence_country` = 112 then `m_prefectures`.`pref_name`
                         else `m_countries`.`country_name`
-                        end as residence
+                    end as residence
                     ,`m_sex`.`sex`
                     ,TIMESTAMPDIFF(YEAR, `t_volunteers`.`date_of_birth`, CURDATE()) AS age
                     ,CASE
@@ -186,7 +189,10 @@ class T_volunteers extends Model
                     where 1=1
                     and t_volunteers.delete_flag = 0
                     and m_countries.delete_flag = 0
-                    and m_prefectures.delete_flag = 0
+                    and (
+                        m_countries.country_code != 392 
+                        OR (m_countries.country_code = 392 AND m_prefectures.delete_flag = 0)
+                    )
                     and m_sex.delete_flag = 0
                     and t_users.delete_flag = 0                    
                     and t_volunteer_availables.delete_flag = 0

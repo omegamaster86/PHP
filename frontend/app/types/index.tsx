@@ -394,7 +394,9 @@ interface VolunteerResponse {
   volunteer_id: string; // ボランティアID
   volunteer_name: string; // 氏名
   residence_country: string; // 居住地（国）
+  residence_country_code: string | null; // 居住地（国）コード
   residence_prefecture: string; // 居住地（都道府県）
+  residence_prefecture_code_jis: string | null; // 居住地（都道府県）コード
   sex: string; // 性別 #置き換え作業未対応
   date_of_birth: string; // 生年月日
   telephone_number: string; // 電話番号
