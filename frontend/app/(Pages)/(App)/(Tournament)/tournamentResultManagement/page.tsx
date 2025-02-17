@@ -1,33 +1,31 @@
 // 機能名: レース結果管理画面
 'use client';
 
-// Reactおよび関連モジュールのインポート
-import { useState, useEffect, ChangeEvent, FocusEvent, useRef, MouseEvent } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import axios from '@/app/lib/axios';
-// コンポーネントのインポート
 import {
-  CustomTitle,
-  ErrorBox,
-  CustomTextField,
-  InputLabel,
   CustomButton,
   CustomTable,
-  CustomThead,
-  CustomTh,
-  CustomTr,
   CustomTbody,
   CustomTd,
-  Label,
+  CustomTextField,
+  CustomTh,
+  CustomThead,
+  CustomTitle,
+  CustomTr,
   CustomYearPicker,
+  ErrorBox,
+  InputLabel,
+  Label,
 } from '@/app/components/';
+import { useUserType } from '@/app/hooks/useUserType';
+import axios from '@/app/lib/axios';
 import { EventResponse, Race, RaceTypeResponse, TournamentResponse } from '@/app/types';
-import SearchIcon from '@mui/icons-material/Search';
 import Validator from '@/app/utils/validator';
-import Divider from '@mui/material/Divider';
-import { Autocomplete, Chip, TextField } from '@mui/material';
-
 import FilterListIcon from '@mui/icons-material/FilterList';
+import SearchIcon from '@mui/icons-material/Search';
+import { Autocomplete, Chip, TextField } from '@mui/material';
+import Divider from '@mui/material/Divider';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ChangeEvent, FocusEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 
 // 検索条件フォームの型定義
 // 検索条件
@@ -51,9 +49,22 @@ interface ByGroupList {
 }
 
 export default function TournamentResultManagement() {
-  // フック
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  useUserType({
+    onSuccess: (userType) => {
+      const hasAuthority =
+        userType.isAdministrator ||
+        userType.isJara ||
+        userType.isPrefBoatOfficer ||
+        userType.isOrganizationManager;
+
+      if (!hasAuthority) {
+        router.replace('/tournamentSearch');
+      }
+    },
+  });
 
   const prevScreen = searchParams.get('prevScreen') ?? 'default';
   const [tournamentList, setTournamentList] = useState<TournamentResponse[]>([]);
