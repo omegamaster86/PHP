@@ -1,26 +1,28 @@
 // 機能名: ボランティア情報参照画面・ボランティア情報削除画面
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { TitleSideButton } from '@/app/(Pages)/(App)/_components/TitleSideButton';
 import {
-  ErrorBox,
-  CustomTitle,
-  InputLabel,
   CustomButton,
   CustomTextField,
+  CustomTitle,
+  ErrorBox,
+  InputLabel,
   OriginalCheckbox,
 } from '@/app/components';
 import axios from '@/app/lib/axios';
+import { UserIdType, VolunteerResponse } from '@/app/types';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { VolunteerResponse, UserIdType } from '@/app/types';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const volunteerInitialState: VolunteerResponse = {
   volunteer_id: '',
   volunteer_name: '',
   residence_country: '',
+  residence_country_code: '',
   residence_prefecture: '',
+  residence_prefecture_code_jis: '',
   sex: '',
   date_of_birth: '',
   telephone_number: '',
@@ -145,7 +147,9 @@ export default function VolunteerInformationRef() {
           volunteer_id: volunteerResponse.data.result.volunteer_id, // ボランティアID
           volunteer_name: volunteerResponse.data.result.volunteer_name, // 氏名
           residence_country: volunteerResponse.data.result.country_name, // 居住地（国）
+          residence_country_code: volunteerResponse.data.result.country_code, // 居住地（国コード）
           residence_prefecture: volunteerResponse.data.result.pref_name, // 居住地（都道府県）
+          residence_prefecture_code_jis: volunteerResponse.data.result.pref_code_jis, // 居住地（都道府県コード）
           sex: volunteerResponse.data.result.master_sex_type, // 性別
           date_of_birth: volunteerResponse.data.result.date_of_birth, // 生年月日
           telephone_number: volunteerResponse.data.result.telephone_number, // 電話番号
