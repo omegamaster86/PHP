@@ -1,5 +1,6 @@
 // 機能名: 選手情報登録・更新・入力確認
 'use client';
+
 import {
   CustomButton,
   CustomDatePicker,
@@ -11,6 +12,8 @@ import {
   InputLabel,
   OriginalCheckbox,
 } from '@/app/components';
+import { CustomPlayerAvatar } from '@/app/components/CustomPlayerAvatar';
+import { useUserType } from '@/app/hooks/useUserType';
 import axios from '@/app/lib/axios';
 import {
   Country,
@@ -21,6 +24,7 @@ import {
   Sex,
   SexResponse,
 } from '@/app/types';
+import { PLAYER_IMAGE_URL } from '@/app/utils/imageUrl';
 import {
   getSessionStorage,
   getStorageKey,
@@ -29,11 +33,9 @@ import {
 } from '@/app/utils/sessionStorage';
 import Validator from '@/app/utils/validator';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import Divider from '@mui/material/Divider';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
-import { PLAYER_IMAGE_URL } from '../../../../utils/imageUrl'; //For importing image url from a single source of truth
-import { CustomPlayerAvatar } from '@/app/components/CustomPlayerAvatar';
-import Divider from '@mui/material/Divider';
 
 type PlayerFormData = PlayerInformationResponse;
 
@@ -64,6 +66,31 @@ export default function PlayerInformation() {
     default:
       break;
   }
+
+  useUserType({
+    onSuccess: (userType) => {
+      if (mode === 'create') {
+        const hasAuthority =
+          !userType.isPlayer &&
+          (userType.isJara ||
+            userType.isPrefBoatOfficer ||
+            userType.isOrganizationManager ||
+            userType.isVolunteer ||
+            userType.isAudience);
+
+        if (!hasAuthority) {
+          router.replace('/playerSearch');
+        }
+      }
+
+      if (mode === 'update') {
+        const hasAuthority = userType.isPlayer && playerId && userType.playerId === playerId;
+        if (!hasAuthority) {
+          router.replace('/mypage/profile');
+        }
+      }
+    },
+  });
 
   // フォームの入力値を管理する関数
   const handleInputChange = (name: string, value: string) => {
