@@ -10,7 +10,6 @@ import {
   TeamResponse,
   Tournament,
   UserIdType,
-  UserResponse,
 } from '@/app/types';
 import { ROLE } from '@/app/utils/consts';
 import { Tab, Tabs } from '@mui/material';
@@ -139,8 +138,9 @@ export default function TeamRef() {
 
         const responseData = await axios.get('api/getOrganizationForOrgManagement'); //団体データ取得
         setTeamdata(responseData.data.result);
-      } catch (error) {
-        setErrorMessage(['API取得エラー:' + (error as Error).message]);
+      } catch (error: any) {
+        const errorMessage = error?.response?.data?.message || `API取得エラー: ${error.message}`;
+        setErrorMessage([errorMessage]);
       }
     };
     fetchData();
