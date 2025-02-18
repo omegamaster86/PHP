@@ -18,6 +18,7 @@ import { CustomPlayerAvatar } from '@/app/components/CustomPlayerAvatar';
 import FollowButton from '@/app/components/FollowButton';
 import { RoundedBadge } from '@/app/components/RoundedBadge';
 import { useAuth } from '@/app/hooks/auth';
+import { useUserType } from '@/app/hooks/useUserType';
 import axios from '@/app/lib/axios';
 import { PlayerInformationResponse, RaceResultRecordsResponse } from '@/app/types';
 import AddIcon from '@mui/icons-material/Add';
@@ -101,14 +102,27 @@ export default function PlayerInformationRef() {
       break;
   }
 
+  const isDeleteMode = mode === 'delete';
+
   // 選手IDを取得
   const playerId: number = parseInt(
     searchParams.get('playerId') || searchParams.get('player_id') || '',
+    10,
   );
 
   if (!playerId) {
     router.push('/mypage/top');
   }
+
+  useUserType({
+    onSuccess: (userType) => {
+      const hasAuthority = userType.isPlayer && playerId && userType.playerId === playerId;
+
+      if (isDeleteMode && !hasAuthority) {
+        router.push('/playerSearch');
+      }
+    },
+  });
 
   // タブ切り替え用のステート
   const [activeTab, setActiveTab] = useState<number>(0);
