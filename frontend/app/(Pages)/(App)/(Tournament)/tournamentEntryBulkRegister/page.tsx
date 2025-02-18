@@ -475,11 +475,11 @@ export default function TournamentEntryBulkRegister() {
         setErrorMessage([
           '他のユーザーによりレース結果が登録されたレースが有ります。当該レースのエントリー情報は更新することは出来ません。',
         ]);
-        return true;
+        return false;
       }
-      return false;
+      return true;
     } catch (error) {
-      setErrorMessage(['API取得エラー:' + (error as Error).message]);
+      setErrorMessage(['大会エントリー一括登録に失敗しました：' + (error as Error).message]);
     }
   };
 
@@ -728,8 +728,8 @@ export default function TournamentEntryBulkRegister() {
                   if (csvData.find((row) => row.checked)?.id === undefined) {
                     window.alert('1件以上選択してください。');
                   } else {
-                    const errorFlg = await checkRaceResultRecords(); //バックエンド側にCSVデータを送信 データ登録用
-                    if (!errorFlg) {
+                    const isSuccess = await checkRaceResultRecords(); //バックエンド側にCSVデータを送信 データ登録用
+                    if (isSuccess) {
                       window.alert('レース結果の登録が完了しました。');
                       setActivationFlg(false);
                       setDialogDisplayFlg(false);
