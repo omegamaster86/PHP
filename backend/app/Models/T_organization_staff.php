@@ -231,30 +231,28 @@ class T_organization_staff extends Model
     }
 
     //ユーザーが大会の主催団体に所属しているスタッフかを判定する
-    public function getIsOrgManager($tourn_id, $org_id, $user_id)
+    public function getIsOrgManager($tournId, $userId)
     {
-        $is_org_manager = DB::select(
-            "select 
-                                        case count(*)
-                                            when 0 then 0
-                                            else 1
-                                            end as 'is_org_manager'
-                                        from `t_organization_staff` staff
-                                        join `t_tournaments` tour
-                                        on staff.org_id = tour.sponsor_org_id
-                                        where 1=1
-                                        and tour.delete_flag = 0
-                                        and staff.delete_flag = 0 
-                                        and tourn_id = :tourn_id
-                                        and staff.org_id = :org_id
-                                        and user_id = :user_id",
+        $isOrgManager = DB::selectOne(
+            "SELECT
+                CASE COUNT(*)
+                    WHEN 0 THEN 0
+                    ELSE 1
+                END AS 'isOrgManager'
+                FROM `t_organization_staff` staff
+                INNER JOIN `t_tournaments` tourn
+                ON staff.org_id = tourn.sponsor_org_id
+                WHERE 1=1
+                AND tourn.delete_flag = 0
+                AND staff.delete_flag = 0 
+                AND tourn.tourn_id = :tourn_id
+                AND staff.user_id = :user_id",
             [
-                "tourn_id" => $tourn_id,
-                "org_id" => $org_id,
-                "user_id" => $user_id
+                "tourn_id" => $tournId,
+                "user_id" => $userId
             ]
         );
         //主催団体管理者であれば1、そうでなければ0を返す
-        return $is_org_manager;
+        return $isOrgManager;
     }
 }

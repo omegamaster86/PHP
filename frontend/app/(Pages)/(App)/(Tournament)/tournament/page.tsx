@@ -26,6 +26,8 @@ import PdfFileUploader from './pdfFileUploader';
 
 import {
   ApprovalType,
+  CheckOrgManager,
+  CheckOrgManagerRequest,
   Event,
   EventResponse,
   Race,
@@ -33,11 +35,12 @@ import {
   RaceTypeResponse,
   Tournament,
   TourTypeResponse,
-  UserIdType,
   Venue,
   VenueResponse,
 } from '@/app/types';
 
+import { useUserType } from '@/app/hooks/useUserType';
+import { fetcher } from '@/app/lib/swr';
 import {
   getSessionStorage,
   getStorageKey,
@@ -46,6 +49,18 @@ import {
 } from '@/app/utils/sessionStorage';
 import Validator from '@/app/utils/validator';
 import TextField from '@mui/material/TextField';
+import useSWRMutation from 'swr/mutation';
+
+const sendCheckOrgManagerRequest = async (
+  url: string,
+  trigger: { arg: CheckOrgManagerRequest },
+) => {
+  return fetcher<CheckOrgManager>({
+    url,
+    method: 'POST',
+    data: trigger.arg,
+  });
+};
 
 // ファイル関連のアクションを扱うためのインターフェース
 interface FileHandler {
@@ -58,16 +73,17 @@ type TournamentFormData = {
 };
 
 export default function Tournaments() {
-  // フック
   const router = useRouter();
   const fileUploaderRef = useRef<FileHandler>(null);
-
-  const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
+  const checkOrgManagerMutation = useSWRMutation('api/checkOrgManager', sendCheckOrgManagerRequest);
 
   // クエリパラメータを取得する
   const searchParams = useSearchParams();
   // modeの値を取得 update, create
   const mode = searchParams.get('mode');
+  const isCreateMode = mode === 'create';
+  const isUpdateMode = mode === 'update';
+
   if (mode == null) {
     router.push('/tournament?mode=create');
   }
@@ -77,6 +93,36 @@ export default function Tournaments() {
 
   const [tourn_id, setTournId] = useState<{ tourn_id: string }>({
     tourn_id: tournId,
+  });
+
+  useUserType({
+    onSuccess: async (userType) => {
+      if (isCreateMode) {
+        const hasAuthority =
+          userType.isAdministrator ||
+          userType.isJara ||
+          userType.isPrefBoatOfficer ||
+          userType.isOrganizationManager;
+
+        if (!hasAuthority) {
+          router.replace('/tournamentSearch');
+        }
+      }
+
+      if (isUpdateMode) {
+        const sendData: CheckOrgManagerRequest = {
+          tournId: Number(tournId),
+        };
+        const res = await checkOrgManagerMutation.trigger(sendData);
+        const { isOrgManager } = res.result;
+
+        const hasAuthority = userType?.isAdministrator || isOrgManager;
+
+        if (!hasAuthority) {
+          router.replace('/tournamentSearch');
+        }
+      }
+    },
   });
 
   // フォームデータを管理する状態
@@ -527,17 +573,6 @@ export default function Tournaments() {
     }
   };
 
-  //選手IDに紐づいた情報の取得 20240221
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const playerInf = await axios.get('api/getIDsAssociatedWithUser');
-        setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
-      } catch (error: any) {}
-    };
-    fetchData();
-  }, []);
-
   // データ取得
   useEffect(() => {
     const restoreFormData = () => {
@@ -601,15 +636,18 @@ export default function Tournaments() {
 
       // 更新モードの時に、大会情報を取得する
       if (mode === 'update') {
-        const [tournamentRes, racesRes] = await Promise.all([
-          axios.post<{ result: Tournament }>('api/getTournamentInfoData', tourn_id),
-          axios.post<{ result: Race[] }>('api/getRaceData', tourn_id),
-        ]);
+        try {
+          const [tournamentRes, racesRes] = await Promise.all([
+            axios.post<{ result: Tournament }>('api/getTournamentInfoData', tourn_id),
+            axios.post<{ result: Race[] }>('api/getRaceData', tourn_id),
+          ]);
 
-        setTournamentFormData(tournamentRes.data.result);
-        setTableData(racesRes.data.result);
-
-        restoreFormData();
+          setTournamentFormData(tournamentRes.data.result);
+          setTableData(racesRes.data.result);
+          restoreFormData();
+        } catch (error) {
+          setErrorMessages(['大会情報の取得に失敗しました。']);
+        }
       } else if (mode === 'create') {
         setTournamentFormData((prevFormData) => ({
           ...prevFormData,
@@ -1133,24 +1171,18 @@ export default function Tournaments() {
       </div>
       {/* エントリーシステムの大会ID */}
       <div className='flex flex-col justify-start'>
-        {/* システム管理者 JARA職員 団体管理者 の場合、入力欄を表示する */}
-        {(userIdType.is_administrator == 1 ||
-          userIdType.is_jara == 1 ||
-          userIdType.is_pref_boat_officer == 1 ||
-          userIdType.is_organization_manager == 1) && (
-          <CustomTextField
-            label='エントリーシステムの大会ID'
-            isError={entrysystemTournIdErrorMessage.length > 0}
-            errorMessages={entrysystemTournIdErrorMessage}
-            readonly={mode === 'confirm'}
-            displayHelp={mode !== 'confirm'}
-            value={tournamentFormData.entrysystem_tourn_id}
-            onChange={(e) => handleInputChangeTournament('entrysystem_tourn_id', e.target.value)}
-            toolTipText='大会エントリーシステムに発番される大会ID
+        <CustomTextField
+          label='エントリーシステムの大会ID'
+          isError={entrysystemTournIdErrorMessage.length > 0}
+          errorMessages={entrysystemTournIdErrorMessage}
+          readonly={mode === 'confirm'}
+          displayHelp={mode !== 'confirm'}
+          value={tournamentFormData.entrysystem_tourn_id}
+          onChange={(e) => handleInputChangeTournament('entrysystem_tourn_id', e.target.value)}
+          toolTipText='大会エントリーシステムに発番される大会ID
               この大会IDについては、日本ローイング協会にお問い合わせください。' //はてなボタン用
-            maxLength={8}
-          />
-        )}
+          maxLength={8}
+        />
       </div>
       <div className='flex flex-col justify-start gap-[8px]'>
         {/* 大会名 */}

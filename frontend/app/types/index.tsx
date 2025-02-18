@@ -630,6 +630,7 @@ interface CheckRaceResultRecord {
 
 // ユーザIDに紐づいた情報 20240222
 interface UserIdType {
+  user_id: number; // ユーザID
   player_id: number | null; // 選手ID
   volunteer_id: number | null; // ボランティアID
   is_administrator: number; // 管理者
@@ -857,8 +858,18 @@ interface DonationRequest {
   }[];
 }
 
+interface CheckOrgManagerRequest {
+  tournId: number;
+}
+
+interface CheckOrgManager {
+  isOrgManager: boolean;
+}
+
 export type {
   ApprovalType,
+  CheckOrgManager,
+  CheckOrgManagerRequest,
   CheckRace,
   CheckRaceResultRecord,
   CheckRaceResultRecordDeleted,
