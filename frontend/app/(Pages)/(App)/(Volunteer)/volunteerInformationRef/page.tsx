@@ -10,6 +10,7 @@ import {
   InputLabel,
   OriginalCheckbox,
 } from '@/app/components';
+import { useUserType } from '@/app/hooks/useUserType';
 import axios from '@/app/lib/axios';
 import { UserIdType, VolunteerResponse } from '@/app/types';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -55,6 +56,17 @@ export default function VolunteerInformationRef() {
 
   // ボランティアIDを取得
   const volunteerId = searchParams.get('volunteer_id')?.toString() || '';
+
+  useUserType({
+    onSuccess: (userType) => {
+      const hasAuthority =
+        userType.isAdministrator || userType.isJara || userType.isPrefBoatOfficer;
+
+      if (!hasAuthority) {
+        router.replace('/mypage/top');
+      }
+    },
+  });
 
   /**
    * @param binaryString
