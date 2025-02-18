@@ -488,7 +488,7 @@ class T_tournaments extends Model
                     OR tournaments.`isPurchased` = 1
                 )
             ORDER BY tournaments.`event_start_date` DESC',
-            [$userId, $userId, $playerId, $userId, $tournType]
+            [$userId, $tournType, $userId, $playerId, $userId]
         );
         return $tournaments;
     }
