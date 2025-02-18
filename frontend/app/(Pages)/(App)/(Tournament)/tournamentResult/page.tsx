@@ -18,6 +18,7 @@ import {
   Label,
   OriginalCheckbox,
 } from '@/app/components';
+import { useUserType } from '@/app/hooks/useUserType';
 import axios from '@/app/lib/axios';
 import { CrewPlayer, MasterResponse, RaceResultRecordsResponse, RaceTable } from '@/app/types';
 import Validator from '@/app/utils/validator';
@@ -169,6 +170,20 @@ export default function TournamentResult() {
   const tournId = param.get('tournId'); // 大会ID
   const eventId = param.get('eventId'); // 種目ID
   const prevMode = param.get('prevMode'); // 遷移元画面のモード
+
+  useUserType({
+    onSuccess: (userType) => {
+      const hasAuthority =
+        userType.isAdministrator ||
+        userType.isJara ||
+        userType.isPrefBoatOfficer ||
+        userType.isOrganizationManager;
+
+      if (!hasAuthority) {
+        router.replace(`/tournamentRaceResultRef?raceId=${raceId}`);
+      }
+    },
+  });
 
   /**
    * レース情報の入力値を管理する関数
