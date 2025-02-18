@@ -29,8 +29,8 @@ interface CsvData {
   mSeatNumberError: string | false; // シート番号IDエラーの有無
   seatName: string; // シート番号
   seatNameError: string | false; // シート番号エラーの有無
-  userId: string; // 選手ID
-  userIdError: string | false; // 選手IDエラーの有無
+  playerId: string; // 選手ID
+  playerIdError: string | false; // 選手IDエラーの有無
   playerName: string; // 選手名
   playerNameError: string | false; // 選手名エラーの有無
 }

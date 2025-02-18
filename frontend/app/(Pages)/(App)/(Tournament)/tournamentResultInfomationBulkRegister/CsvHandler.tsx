@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, forwardRef, useImperativeHandle, Key } from 'react';
+import React, { useState, useCallback, forwardRef, useImperativeHandle } from 'react';
 import type { FileRejection } from 'react-dropzone';
 import { useDropzone } from 'react-dropzone';
 import Papa from 'papaparse';
@@ -177,7 +177,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
         for (let index = 0; index < response.data.result.length; index++) {
           csvContent += response.data.result[index].tourn_id + ','; //大会ID
           if (response.data.tournResult.tournTypeName == '公式') {
-            csvContent += response.data.tournResult.entrysystem_tourn_id + ','; //エントリー大会ID
+            csvContent += `${response.data.tournResult.entrysystem_tourn_id ?? ''},`; //エントリー大会ID
           } else {
             csvContent += ','; //エントリー大会ID
           }
@@ -187,7 +187,7 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
           csvContent += ','; //選手名
           csvContent += response.data.result[index].race_id + ','; //レースID
           if (response.data.tournResult.tournTypeName == '公式') {
-            csvContent += response.data.tournResult.entrysystem_tourn_id + ','; //エントリー大会ID
+            csvContent += `${response.data.result[index].entrysystem_race_id ?? ''},`; //エントリーレースID
           } else {
             csvContent += ','; //エントリーレースID
           }

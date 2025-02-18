@@ -58,6 +58,59 @@ interface FileHandler {
   clearFile(): void;
 }
 
+const CSV_HEADER = [
+  { label: '大会ID', key: 'tournId' },
+  { label: 'エントリー大会ID', key: 'entrysystemTournId' },
+  { label: '大会名', key: 'tournName' },
+  { label: '選手ID', key: 'playerId' },
+  { label: 'JARA選手コード', key: 'jaraPlayerId' },
+  { label: '選手名', key: 'playerName' },
+  { label: 'レースID', key: 'raceId' },
+  { label: 'エントリーレースID', key: 'entrysystemRaceId' },
+  { label: 'レースNo', key: 'raceNumber' },
+  { label: 'レース名', key: 'raceName' },
+  { label: 'レース区分ID', key: 'raceTypeId' },
+  { label: 'レース区分名', key: 'raceTypeName' },
+  { label: '団体ID', key: 'orgId' },
+  { label: 'エントリー団体コード', key: 'entrysystemOrgId' },
+  { label: '団体名', key: 'orgName' },
+  { label: 'クルー名', key: 'crewName' },
+  { label: '組別', key: 'byGroup' },
+  { label: '種目ID', key: 'eventId' },
+  { label: '種目名', key: 'eventName' },
+  { label: '距離', key: 'range' },
+  { label: '順位', key: 'rank' },
+  { label: '500mlapタイム', key: 'fiveHundredmLaptime' },
+  { label: '1000mlapタイム', key: 'tenHundredmLaptime' },
+  { label: '1500mlapタイム', key: 'fifteenHundredmLaptime' },
+  { label: '2000mlapタイム', key: 'twentyHundredmLaptime' },
+  { label: '最終タイム', key: 'finalTime' },
+  { label: 'ストロークレート（平均）', key: 'strokeRateAvg' },
+  { label: '500mストロークレート', key: 'fiveHundredmStrokeRat' },
+  { label: '1000mストロークレート', key: 'tenHundredmStrokeRat' },
+  { label: '1500mストロークレート', key: 'fifteenHundredmStrokeRat' },
+  { label: '2000mストロークレート', key: 'twentyHundredmStrokeRat' },
+  { label: '心拍数（平均）', key: 'heartRateAvg' },
+  { label: '500m心拍数', key: 'fiveHundredmHeartRate' },
+  { label: '1000m心拍数', key: 'tenHundredmHeartRate' },
+  { label: '1500m心拍数', key: 'fifteenHundredmHeartRate' },
+  { label: '2000m心拍数', key: 'twentyHundredmHeartRate' },
+  { label: '公式／非公式', key: 'official' },
+  { label: '立ち合い有無', key: 'attendance' },
+  { label: '選手身長', key: 'playerHeight' },
+  { label: '選手体重', key: 'playerWeight' },
+  { label: 'シート番号ID', key: 'mSeatNumber' },
+  { label: 'シート番号', key: 'seatName' },
+  { label: '出漕結果記録名', key: 'raceResultRecordName' },
+  { label: '発艇日時', key: 'startDatetime' },
+  { label: '天候', key: 'weather' },
+  { label: '2000m地点風速', key: 'windSpeedTwentyHundredmPoint' },
+  { label: '2000m地点風向', key: 'windDirectionTwentyHundredmPoint' },
+  { label: '1000m地点風速', key: 'windSpeedTenHundredmPoint' },
+  { label: '1000m地点風向', key: 'windDirectionTenHundredmPoint' },
+  { label: '備考', key: 'remark' },
+];
+
 // 選手情報連携のメインコンポーネント
 export default function TournamentResultInfomationBulkRegister() {
   // フック
@@ -96,12 +149,6 @@ export default function TournamentResultInfomationBulkRegister() {
     tournName: prevScreen === 'tournamentRef' && tournName ? tournName : '',
   });
   const [tournamentList, setTournamentList] = useState<TournResponse[]>([]);
-  // 大会情報参照画面から遷移してきた場合は、falseを設定
-  const [displayFlg, setDisplayFlg] = useState<boolean>(
-    prevScreen === 'tournamentRef' ? true : false,
-  );
-  // TODO: ユーザーの権限を取得する処理をuseEffectに記述すること
-  const [userType, setUserType] = useState('');
 
   const [tournIdActivFlag, setTournIdActivFlag] = useState<boolean>(false); //true:変更できない false:変更できる
   const [tournStartYearActivFlag, setTournStartYearActivFlag] = useState<boolean>(false); //true:変更できない false:変更できる
@@ -206,58 +253,7 @@ export default function TournamentResultInfomationBulkRegister() {
 
   // CSVダウンロードのプロパティ
   const [csvDownloadProps, setCsvDownloadProps] = useState<CsvDownloadProps>({
-    header: [
-      { label: '大会ID', key: 'tournId' },
-      { label: 'エントリー大会ID', key: 'entrysystemTournId' },
-      { label: '大会名', key: 'tournName' },
-      { label: '選手ID', key: 'userId' },
-      { label: 'JARA選手コード', key: 'jaraPlayerId' },
-      { label: '選手名', key: 'playerName' },
-      { label: 'レースID', key: 'raceId' },
-      { label: 'エントリーレースID', key: 'entrysystemRaceId' },
-      { label: 'レースNo', key: 'raceNumber' },
-      { label: 'レース名', key: 'raceName' },
-      { label: 'レース区分ID', key: 'raceTypeId' },
-      { label: 'レース区分名', key: 'raceTypeName' },
-      { label: '団体ID', key: 'orgId' },
-      { label: 'エントリー団体コード', key: 'entrysystemOrgId' },
-      { label: '団体名', key: 'orgName' },
-      { label: 'クルー名', key: 'crewName' },
-      { label: '組別', key: 'byGroup' },
-      { label: '種目ID', key: 'eventId' },
-      { label: '種目名', key: 'eventName' },
-      { label: '距離', key: 'range' },
-      { label: '順位', key: 'rank' },
-      { label: '500mlapタイム', key: 'fiveHundredmLaptime' },
-      { label: '1000mlapタイム', key: 'tenHundredmLaptime' },
-      { label: '1500mlapタイム', key: 'fifteenHundredmLaptime' },
-      { label: '2000mlapタイム', key: 'twentyHundredmLaptime' },
-      { label: '最終タイム', key: 'finalTime' },
-      { label: 'ストロークレート（平均）', key: 'strokeRateAvg' },
-      { label: '500mストロークレート', key: 'fiveHundredmStrokeRat' },
-      { label: '1000mストロークレート', key: 'tenHundredmStrokeRat' },
-      { label: '1500mストロークレート', key: 'fifteenHundredmStrokeRat' },
-      { label: '2000mストロークレート', key: 'twentyHundredmStrokeRat' },
-      { label: '心拍数（平均）', key: 'heartRateAvg' },
-      { label: '500m心拍数', key: 'fiveHundredmHeartRate' },
-      { label: '1000m心拍数', key: 'tenHundredmHeartRate' },
-      { label: '1500m心拍数', key: 'fifteenHundredmHeartRate' },
-      { label: '2000m心拍数', key: 'twentyHundredmHeartRate' },
-      { label: '公式／非公式', key: 'official' },
-      { label: '立ち合い有無', key: 'attendance' },
-      { label: '選手身長', key: 'playerHeight' },
-      { label: '選手体重', key: 'playerWeight' },
-      { label: 'シート番号ID', key: 'mSeatNumber' },
-      { label: 'シート番号', key: 'seatName' },
-      { label: '出漕結果記録名', key: 'raceResultRecordName' },
-      { label: '発艇日時', key: 'startDatetime' },
-      { label: '天候', key: 'weather' },
-      { label: '2000m地点風速', key: 'windSpeedTwentyHundredmPoint' },
-      { label: '2000m地点風向', key: 'windDirectionTwentyHundredmPoint' },
-      { label: '1000m地点風速', key: 'windSpeedTenHundredmPoint' },
-      { label: '1000m地点風向', key: 'windDirectionTenHundredmPoint' },
-      { label: '備考', key: 'remark' },
-    ],
+    header: CSV_HEADER,
     data: [],
     filename: '',
     label: 'CSVフォーマット出力',
@@ -378,7 +374,7 @@ export default function TournamentResultInfomationBulkRegister() {
   const maxLength = 5;
 
   const getJsonRow = async (row: string[], index: number) => {
-    const expectedColumnCount = 51; // 期待する列数
+    const expectedColumnCount = CSV_HEADER.length; // 期待する列数
 
     if (row.length !== expectedColumnCount) {
       // 列数が期待する列数と異なる場合
@@ -388,105 +384,105 @@ export default function TournamentResultInfomationBulkRegister() {
         checked: false,
         loadingResult: '無効データ',
         tournId: '-',
-        tournIdError: true,
+        tournIdError: false,
         entrysystemTournId: '-',
-        entrysystemTournIdError: true,
+        entrysystemTournIdError: false,
         tournName: '-',
-        tournNameError: true,
-        userId: '-',
-        userIdError: true,
+        tournNameError: false,
+        playerId: '-',
+        playerIdError: false,
         jaraPlayerId: '-',
-        jaraPlayerIdError: true,
+        jaraPlayerIdError: false,
         playerName: '-',
-        playerNameError: true,
+        playerNameError: false,
         raceId: '-',
-        raceIdError: true,
+        raceIdError: false,
         entrysystemRaceId: '-',
-        entrysystemRaceIdError: true,
+        entrysystemRaceIdError: false,
         raceNumber: '-',
-        raceNumberError: true,
+        raceNumberError: false,
         raceName: '-',
-        raceNameError: true,
+        raceNameError: false,
         raceTypeId: '-',
-        raceTypeIdError: true,
+        raceTypeIdError: false,
         raceTypeName: '-',
-        raceTypeNameError: true,
+        raceTypeNameError: false,
         orgId: '-',
-        orgIdError: true,
+        orgIdError: false,
         entrysystemOrgId: '-',
-        entrysystemOrgIdError: true,
+        entrysystemOrgIdError: false,
         orgName: '-',
-        orgNameError: true,
+        orgNameError: false,
         crewName: '-',
-        crewNameError: true,
+        crewNameError: false,
         byGroup: '-',
-        byGroupError: true,
+        byGroupError: false,
         eventId: '-',
-        eventIdError: true,
+        eventIdError: false,
         eventName: '-',
-        eventNameError: true,
+        eventNameError: false,
         range: '-',
-        rangeError: true,
+        rangeError: false,
         rank: '-',
-        rankError: true,
+        rankError: false,
         fiveHundredmLaptime: '-',
-        fiveHundredmLaptimeError: true,
+        fiveHundredmLaptimeError: false,
         tenHundredmLaptime: '-',
-        tenHundredmLaptimeError: true,
+        tenHundredmLaptimeError: false,
         fifteenHundredmLaptime: '-',
-        fifteenHundredmLaptimeError: true,
+        fifteenHundredmLaptimeError: false,
         twentyHundredmLaptime: '-',
-        twentyHundredmLaptimeError: true,
+        twentyHundredmLaptimeError: false,
         finalTime: '-',
-        finalTimeError: true,
+        finalTimeError: false,
         strokeRateAvg: '-',
-        strokeRateAvgError: true,
+        strokeRateAvgError: false,
         fiveHundredmStrokeRat: '-',
-        fiveHundredmStrokeRatError: true,
+        fiveHundredmStrokeRatError: false,
         tenHundredmStrokeRat: '-',
-        tenHundredmStrokeRatError: true,
+        tenHundredmStrokeRatError: false,
         fifteenHundredmStrokeRat: '-',
-        fifteenHundredmStrokeRatError: true,
+        fifteenHundredmStrokeRatError: false,
         twentyHundredmStrokeRat: '-',
-        twentyHundredmStrokeRatError: true,
+        twentyHundredmStrokeRatError: false,
         heartRateAvg: '-',
-        heartRateAvgError: true,
+        heartRateAvgError: false,
         fiveHundredmHeartRate: '-',
-        fiveHundredmHeartRateError: true,
+        fiveHundredmHeartRateError: false,
         tenHundredmHeartRate: '-',
-        tenHundredmHeartRateError: true,
+        tenHundredmHeartRateError: false,
         fifteenHundredmHeartRate: '-',
-        fifteenHundredmHeartRateError: true,
+        fifteenHundredmHeartRateError: false,
         twentyHundredmHeartRate: '-',
-        twentyHundredmHeartRateError: true,
+        twentyHundredmHeartRateError: false,
         official: '-',
-        officialError: true,
+        officialError: false,
         attendance: '-',
-        attendanceError: true,
+        attendanceError: false,
         playerHeight: '-',
-        playerHeightError: true,
+        playerHeightError: false,
         playerWeight: '-',
-        playerWeightError: true,
+        playerWeightError: false,
         mSeatNumber: '-',
-        mSeatNumberError: true,
+        mSeatNumberError: false,
         seatName: '-',
-        seatNameError: true,
+        seatNameError: false,
         raceResultRecordName: '-',
-        raceResultRecordNameError: true,
+        raceResultRecordNameError: false,
         startDatetime: '-',
-        startDatetimeError: true,
+        startDatetimeError: false,
         weather: '-',
-        weatherError: true,
+        weatherError: false,
         windSpeedTwentyHundredmPoint: '-',
-        windSpeedTwentyHundredmPointError: true,
+        windSpeedTwentyHundredmPointError: false,
         windDirectionTwentyHundredmPoint: '-',
-        windDirectionTwentyHundredmPointError: true,
+        windDirectionTwentyHundredmPointError: false,
         windSpeedTenHundredmPoint: '-',
-        windSpeedTenHundredmPointError: true,
+        windSpeedTenHundredmPointError: false,
         windDirectionTenHundredmPoint: '-',
-        windDirectionTenHundredmPointError: true,
+        windDirectionTenHundredmPointError: false,
         remark: '-',
-        remarkError: true,
+        remarkError: false,
       };
     } else {
       return {
@@ -499,8 +495,8 @@ export default function TournamentResultInfomationBulkRegister() {
         entrysystemTournIdError: false,
         tournName: row[2],
         tournNameError: false,
-        userId: row[3],
-        userIdError: false,
+        playerId: row[3],
+        playerIdError: false,
         jaraPlayerId: row[4],
         jaraPlayerIdError: false,
         playerName: row[5],
@@ -622,10 +618,16 @@ export default function TournamentResultInfomationBulkRegister() {
     await axios
       .post('api/registerTournamentResultCsvData', sendTournData)
       .then((res) => {
-        //console.log(res.data.result);
+        setCsvData([]);
+        setCsvFileData({ content: [], isSet: false });
+        fileUploaderRef?.current?.clearFile();
+        window.alert('レース結果の登録が完了しました。');
+        setActivationFlg(false);
+        setDialogDisplayFlg(false);
+        setDisplayRegisterButtonFlg(false);
       })
       .catch((error) => {
-        //console.log(error);
+        setErrorMessage(['大会エントリー一括登録に失敗しました：' + (error as Error).message]);
       });
   };
 
@@ -962,14 +964,7 @@ export default function TournamentResultInfomationBulkRegister() {
                 if (csvData.find((row) => row.checked)?.id === undefined) {
                   window.alert('1件以上選択してください。');
                 } else {
-                  registerCsvData(); //バックエンド側にデータを渡す 20240302
-                  setCsvData([]);
-                  setCsvFileData({ content: [], isSet: false });
-                  fileUploaderRef?.current?.clearFile();
-                  window.alert('レース結果の登録が完了しました。');
-                  setActivationFlg(false);
-                  setDialogDisplayFlg(false);
-                  setDisplayRegisterButtonFlg(false);
+                  const isSuccess = registerCsvData(); //バックエンド側にデータを渡す 20240302
                 }
                 setActivationFlg(false);
               }}
