@@ -36,6 +36,11 @@ class OrganizationController extends Controller
         $result = $request->all();
         $userId = Auth::user()->user_id;
         $tOrg = $tOrganizations->getOrganization($result['org_id'], $userId);
+
+        if (empty($tOrg)) {
+            abort(404, "団体情報が見つかりませんでした。");
+        }
+
         Log::debug(sprintf("getOrgData end"));
         return response()->json(['result' => $tOrg]); //DBの結果を返す
     }
