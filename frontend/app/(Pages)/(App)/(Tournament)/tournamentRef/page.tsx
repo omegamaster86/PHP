@@ -20,7 +20,7 @@ import {
   Label,
 } from '@/app/components';
 import FollowButton from '@/app/components/FollowButton';
-import { Race, Tournament, UserIdType } from '@/app/types';
+import { CheckOrgManager, CheckOrgManagerRequest, Race, Tournament, UserIdType } from '@/app/types';
 import { ROLE } from '@/app/utils/consts';
 import { TOURNAMENT_PDF_URL } from '@/app/utils/imageUrl';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -283,7 +283,7 @@ export default function TournamentRef() {
   const isApiFetched = useRef(false);
 
   //20240401 該当の団体管理者かどうかを判別するためのフラグ
-  const [orgManagerFlag, setOrgManagerFlag] = useState(0);
+  const [orgManagerFlag, setOrgManagerFlag] = useState<boolean>(false);
 
   // エラーハンドリング用のステート
   const [errors, setErrors] = useState<string[]>([]);
@@ -312,12 +312,14 @@ export default function TournamentRef() {
           const playerInf = await axios.get('api/getIDsAssociatedWithUser');
           setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
 
-          const sendData = {
-            userInfo: playerInf.data.result[0],
-            tournInfo: tournamentResponse.data.result,
+          const sendData: CheckOrgManagerRequest = {
+            tournId: Number(tournId),
           };
-          const resData = await axios.post('api/checkOrgManager', sendData); //大会情報参照画面 主催団体管理者の判別 20240402
-          setOrgManagerFlag(resData.data.result);
+          const resData = await axios.post<{ result: CheckOrgManager }>(
+            'api/checkOrgManager',
+            sendData,
+          ); //大会情報参照画面 主催団体管理者の判別 20240402
+          setOrgManagerFlag(resData.data.result.isOrgManager);
 
           //種目をフィルターできるようにする 20240509
           const eventNameArray = raceResponse.data.result.map((item: any) => item.event_name);
@@ -429,7 +431,7 @@ export default function TournamentRef() {
         {/* 画面名 */}
         <CustomTitle displayBack>{mode === 'delete' ? '大会情報削除' : '大会情報'}</CustomTitle>
         <div className='flex items-center gap-2'>
-          {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag == 1) && (
+          {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag) && (
             <TitleSideButton
               href={{
                 pathname: '/tournament',
@@ -439,7 +441,7 @@ export default function TournamentRef() {
               text='大会情報更新'
             />
           )}
-          {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag == 1) && (
+          {mode !== 'delete' && (userIdType.is_administrator == 1 || orgManagerFlag) && (
             <TitleSideButton
               href={{
                 pathname: '/tournamentRef',

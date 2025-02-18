@@ -1214,17 +1214,21 @@ class TournamentController extends Controller
     }
 
     //大会情報参照画面用 主催団体管理者の判別 20240402
-    public function checkOrgManager(Request $request, T_organization_staff $t_organization_staff)
+    public function checkOrgManager(Request $request, T_organization_staff $tOrganizationStaff)
     {
         Log::debug(sprintf("checkOrgManager start"));
-        $reqData = $request->all();
-        $target_tourn_id = $reqData['tournInfo']['tourn_id'];
-        $target_org_id = $reqData['tournInfo']['sponsor_org_id'];
-        $target_user_id = $reqData['userInfo']['user_id'];
-        $is_org_manager = $t_organization_staff->getIsOrgManager($target_tourn_id, $target_org_id, $target_user_id);
+        $reqData = $request->only(['tournId']);
+        $targetTournId = $reqData['tournId'];
+        $targetUserId = Auth::user()->user_id;
+
+        $isOrgManager = $tOrganizationStaff->getIsOrgManager($targetTournId, $targetUserId);
+
+        $result = [
+            'isOrgManager' => (bool)$isOrgManager->{'isOrgManager'}
+        ];
+
         Log::debug(sprintf("checkOrgManager end"));
-        //主催団体管理者であれば1、そうでなければ0を返す
-        return response()->json(['result' => $is_org_manager[0]->{'is_org_manager'}]); //DBの結果を返す
+        return response()->json(['result' => $result]);
     }
 
     //種目IDを受け取り、種目テーブルから人数を取得する

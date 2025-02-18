@@ -3,6 +3,7 @@ import { UserIdType } from '@/app/types';
 import useSWR from 'swr';
 
 type UserType = {
+  userId: number; // ユーザID
   playerId: number | null; // 選手ID
   volunteerId: number | null; // ボランティアID
   isAdministrator: boolean; // 管理者
@@ -16,6 +17,7 @@ type UserType = {
 
 const toUserType = (result: UserIdType): UserType => {
   const userType: UserType = {
+    userId: result.user_id,
     playerId: result.player_id,
     volunteerId: result.volunteer_id,
     isAdministrator: Number(result.is_administrator) === 1,
