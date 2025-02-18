@@ -252,9 +252,9 @@ export default function VolunteerBulkRegister() {
 
   //居住地のバリデーションチェックで日本以外かつ都道府県ありをチェックできるように条件を修正 20240412
   const validateCountryIsNotJapanAndPref = (cntKey: string, prefKey: string) => {
-    if (cntKey != JAPAN_COUNTRY_ID && prefKey != '') {
+    if (cntKey != `${JAPAN_COUNTRY_ID}` && prefKey != '') {
       return true; //日本以外かつ都道府県あり
-    } else if (cntKey == JAPAN_COUNTRY_ID && !prefKey) {
+    } else if (cntKey == `${JAPAN_COUNTRY_ID}` && !prefKey) {
       return true; //日本かつ都道府県なし
     } else {
       return false;
@@ -345,7 +345,7 @@ export default function VolunteerBulkRegister() {
         validateRequired(row[4]) || !foundCountry ? '居住国は必須項目です。' : false;
       const residencePrefectureIdError =
         validateCountryIsNotJapanAndPref(row[4], row[5]) ||
-        (row[4] == JAPAN_COUNTRY_ID && !foundPref)
+        (row[4] == `${JAPAN_COUNTRY_ID}` && !foundPref)
           ? '居住都道府県は必須項目です。'
           : false;
       const mailaddressError =

@@ -17,7 +17,8 @@ import {
   InputLabel,
   OriginalCheckbox,
 } from '@/app/components/';
-import { JAPAN_COUNTRY_CODE } from '@/app/constants';
+import { JAPAN_COUNTRY_CODE, JAPAN_COUNTRY_ID } from '@/app/constants';
+import { useUserType } from '@/app/hooks/useUserType';
 import axios from '@/app/lib/axios';
 import {
   CountryResponse,
@@ -93,11 +94,21 @@ interface SearchCond {
   timeZone?: string; // 参加しやすい時間帯
 }
 
-const JAPAN_COUNTRY_ID = 112; //居住地 日本国選択時
 const OTHERS_QUAL_ID = 99; //保有資格 その他選択時
 
 export default function VolunteerSearch() {
   const router = useRouter();
+
+  useUserType({
+    onSuccess: (userType) => {
+      const hasAuthority =
+        userType.isAdministrator || userType.isJara || userType.isPrefBoatOfficer;
+
+      if (!hasAuthority) {
+        router.replace('/mypage/top');
+      }
+    },
+  });
 
   // 検索条件の初期値
   const initialSearchCond = () => {
