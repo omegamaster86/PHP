@@ -197,7 +197,7 @@ export default function TournamentEntryBulkRegister() {
       { label: 'クルー名', key: 'crewName' },
       { label: 'シート番号ID', key: 'mSeatNumber' },
       { label: 'シート番号', key: 'seatName' },
-      { label: '選手ID', key: 'userId' },
+      { label: '選手ID', key: 'playerId' },
       { label: '選手名', key: 'playerName' },
     ],
     data: [],
@@ -333,8 +333,8 @@ export default function TournamentEntryBulkRegister() {
               mSeatNumberError: false,
               seatName: '-',
               seatNameError: false,
-              userId: '-',
-              userIdError: false,
+              playerId: '-',
+              playerIdError: false,
               playerName: '-',
               playerNameError: false,
             };
@@ -353,12 +353,12 @@ export default function TournamentEntryBulkRegister() {
               ? 'シート番号IDは必須入力です。'
               : false;
             const seatNameError = checkRequired(row[15]) ? 'シート番号は必須入力です。' : false;
-            const userIdError = checkRequired(row[16]) ? '選手IDは必須入力です。' : false;
+            const playerIdError = checkRequired(row[16]) ? '選手IDは必須入力です。' : false;
             const playerNameError = checkRequired(row[17]) ? '選手名は必須入力です。' : false;
 
             const error =
               tournIdError ||
-              userIdError ||
+              playerIdError ||
               playerNameError ||
               raceIdError ||
               raceNumberError ||
@@ -425,8 +425,8 @@ export default function TournamentEntryBulkRegister() {
               mSeatNumberError,
               seatName: row[15],
               seatNameError: seatNameError || seatNameRangeError,
-              userId: row[16],
-              userIdError,
+              playerId: row[16],
+              playerIdError,
               playerName: row[17],
               playerNameError: playerNameError || playerNameRangeError,
             };

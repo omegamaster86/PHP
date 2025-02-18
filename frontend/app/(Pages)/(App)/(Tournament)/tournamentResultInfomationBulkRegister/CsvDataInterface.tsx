@@ -9,8 +9,8 @@ interface CsvData {
   entrysystemTournIdError: string | false; // エントリーシステム大会IDエラーの有無
   tournName: string; // 大会名
   tournNameError: string | false; // 大会名エラーの有無
-  userId: string; // 選手ID
-  userIdError: string | false; // 選手IDエラーの有無
+  playerId: string; // 選手ID
+  playerIdError: string | false; // 選手IDエラーの有無
   jaraPlayerId: string; // JARA選手コード
   jaraPlayerIdError: string | false; // JARA選手コードエラーの有無
   playerName: string; // 選手名

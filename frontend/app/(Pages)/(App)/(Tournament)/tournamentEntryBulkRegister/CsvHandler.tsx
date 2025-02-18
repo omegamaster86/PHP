@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, forwardRef, useImperativeHandle, Key } from 'react';
+import React, { useState, useCallback, forwardRef, useImperativeHandle } from 'react';
 import type { FileRejection } from 'react-dropzone';
 import { useDropzone } from 'react-dropzone';
 import Papa from 'papaparse';

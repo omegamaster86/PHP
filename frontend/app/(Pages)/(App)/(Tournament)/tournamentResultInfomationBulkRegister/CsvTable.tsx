@@ -39,7 +39,7 @@ const CsvTable = ({
       row.tournIdError,
       row.entrysystemTournIdError,
       row.tournNameError,
-      row.userIdError,
+      row.playerIdError,
       row.jaraPlayerIdError,
       row.playerNameError,
       row.raceIdError,
@@ -176,8 +176,8 @@ const CsvTable = ({
                 <CustomTd textType={textType} className={checkError(row.tournNameError)}>
                   {row.tournName}
                 </CustomTd>
-                <CustomTd textType={textType} className={checkError(row.userIdError)}>
-                  {row.userId}
+                <CustomTd textType={textType} className={checkError(row.playerIdError)}>
+                  {row.playerId}
                 </CustomTd>
                 <CustomTd textType={textType} className={checkError(row.jaraPlayerIdError)}>
                   {row.jaraPlayerId}
