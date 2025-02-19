@@ -56,7 +56,7 @@ export default function NotificationsSentList() {
     currentId ? fetcher<NotificationInfoData> : null,
     {
       onError: (err) => {
-        router.back();
+        router.replace('/notifications/sent');
       },
     },
   );
