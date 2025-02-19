@@ -13,6 +13,7 @@ import {
   ErrorBox,
   OriginalCheckbox,
 } from '@/app/components';
+import { useUserType } from '@/app/hooks/useUserType';
 import axios from '@/app/lib/axios';
 import { TeamPlayerInformationResponse, TeamResponse } from '@/app/types';
 import Link from 'next/link';
@@ -34,6 +35,23 @@ export default function TeamPlayer() {
   const [errorMessage, setErrorMessage] = useState([] as string[]);
   const mode = useSearchParams().get('mode');
   const orgId = useSearchParams().get('org_id')?.toString() || '';
+
+  useUserType({
+    onSuccess: async (userType) => {
+      const sendData = {
+        org_id: orgId,
+      };
+      const teamResponse = await axios.post<{ result: TeamResponse }>('api/getOrgData', sendData);
+      setTeamData(teamResponse.data.result);
+
+      const isStaff = teamResponse.data.result.isStaff;
+      const hasAuthority = userType.isAdministrator || (userType.isOrganizationManager && isStaff);
+
+      if (!hasAuthority) {
+        router.push('/teamSearch');
+      }
+    },
+  });
 
   useEffect(() => {
     // modeの値を取得 create
@@ -111,9 +129,6 @@ export default function TeamPlayer() {
             setFormData(searchRes);
           }
         }
-
-        const teamResponse = await axios.post('api/getOrgData', sendId);
-        setTeamData(teamResponse.data.result);
       } catch (error) {
         //console.log(error);
       }
