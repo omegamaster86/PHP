@@ -9,7 +9,7 @@ import { fetcher } from '@/app/lib/swr';
 import { NotificationInfoData, NotificationUpdateFormInput, SelectOption } from '@/app/types';
 import { getSessionStorage, getStorageKey } from '@/app/utils/sessionStorage';
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import useSWR from 'swr';
@@ -23,8 +23,9 @@ type Props = {
 export const Update: React.FC<Props> = (props) => {
   const { tournaments, qualifications } = props;
 
-  const userType = useUserType();
+  const router = useRouter();
   const searchParams = useSearchParams();
+  const userType = useUserType();
 
   const notificationId = Number(searchParams.get('id'));
   const source = searchParams.get('source') as 'confirm' | null;
@@ -44,7 +45,12 @@ export const Update: React.FC<Props> = (props) => {
       },
     },
     notificationId ? fetcher<NotificationInfoData> : null,
-    { suspense: true },
+    {
+      suspense: true,
+      onError: (err) => {
+        router.replace('/notifications/sent');
+      },
+    },
   );
 
   const defaultValues: Partial<NotificationUpdateFormInput> = {
