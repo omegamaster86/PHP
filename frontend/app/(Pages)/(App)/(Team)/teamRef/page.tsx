@@ -2,6 +2,7 @@
 'use client';
 
 import { CustomButton, CustomTitle, ErrorBox, Label } from '@/app/components';
+import { useUserType } from '@/app/hooks/useUserType';
 import axios from '@/app/lib/axios';
 import {
   Organization,
@@ -45,6 +46,8 @@ export default function TeamRef() {
       break;
   }
 
+  const isDeleteMode = mode === 'delete';
+
   const orgId =
     searchParams.get('orgId')?.toString() ||
     searchParams.get('org_id')?.toString() ||
@@ -60,6 +63,19 @@ export default function TeamRef() {
   }
   const [org_id, setOrgId] = useState<any>({
     org_id: orgId,
+  });
+
+  useUserType({
+    onSuccess: async (userType) => {
+      const response = await axios.post<{ result: Organization }>('api/getOrgData', org_id); //団体情報取得
+      setFormData(response.data.result);
+
+      const isStaff = response.data.result.isStaff;
+      const hasAuthority = userType.isOrganizationManager && isStaff;
+      if (isDeleteMode && !hasAuthority) {
+        router.replace('/teamSearch');
+      }
+    },
   });
 
   /**
@@ -118,8 +134,6 @@ export default function TeamRef() {
     const fetchData = async () => {
       try {
         // 主催大会
-        const response = await axios.post('api/getOrgData', org_id); //団体情報取得
-        setFormData(response.data.result);
         const hostTournamentsResponse = await axios.post('api/getTournamentInfoData_org', org_id);
         setHostTournaments(hostTournamentsResponse.data.result);
         const entTournamentsResponse = await axios.post(
