@@ -301,37 +301,29 @@ export default function TournamentResultInfomationBulkRegister() {
       try {
         const tornSearchVal = { tourn_id: formData.tournId };
         const tournamentResponse = await axios.post('api/getTournamentInfoData', tornSearchVal);
-        if (
-          tournamentResponse.data.result === undefined ||
-          tournamentResponse.data.result === null
-        ) {
-          setTournIdErrorMessage(['入力された大会IDの大会は、存在しませんでした。']);
-          return;
-        } else {
-          // 大会情報が取得できた場合
-          setFormData((prevFormData) => ({
-            ...prevFormData,
+
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          tournId: tournamentResponse.data.result.tourn_id,
+          eventYear: tournamentResponse.data.result.event_start_date,
+          tournName: tournamentResponse.data.result.tourn_name,
+        }));
+        // 大会IDを入力して大会情報が取得できた場合、csvフォーマット出力用に値をセットする 20240419
+        setCsvDownloadProps((prevProps) => ({
+          ...prevProps,
+          filename: tournamentResponse.data.result.tourn_name,
+          formData: {
             tournId: tournamentResponse.data.result.tourn_id,
             eventYear: tournamentResponse.data.result.event_start_date,
             tournName: tournamentResponse.data.result.tourn_name,
-          }));
-          // 大会IDを入力して大会情報が取得できた場合、csvフォーマット出力用に値をセットする 20240419
-          setCsvDownloadProps((prevProps) => ({
-            ...prevProps,
-            filename: tournamentResponse.data.result.tourn_name,
-            formData: {
-              tournId: tournamentResponse.data.result.tourn_id,
-              eventYear: tournamentResponse.data.result.event_start_date,
-              tournName: tournamentResponse.data.result.tourn_name,
-            },
-          }));
-          setTournIdActivFlag(true); //true:変更できない false:変更できる
-          setTournStartYearActivFlag(true); //true:変更できない false:変更できる
-          setTournNameActivFlag(false); //true:変更できない false:変更できる
-          setReadButtonActivFlag(false); //true:変更できない false:変更できる
-        }
-      } catch (error) {
-        setErrorMessage(['API取得エラー:' + (error as Error).message]);
+          },
+        }));
+        setTournIdActivFlag(true); //true:変更できない false:変更できる
+        setTournStartYearActivFlag(true); //true:変更できない false:変更できる
+        setTournNameActivFlag(false); //true:変更できない false:変更できる
+        setReadButtonActivFlag(false); //true:変更できない false:変更できる
+      } catch (error: any) {
+        setTournIdErrorMessage([error?.response?.data.message]);
       }
     } else {
       try {
