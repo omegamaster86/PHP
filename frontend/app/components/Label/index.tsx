@@ -20,7 +20,7 @@ export default function Label({
           : textColor === 'gray'
             ? 'text-gray-40'
             : textColor === 'red'
-              ? 'text-red'
+              ? 'text-systemErrorText'
               : 'text-primaryText'
     }
     ${
