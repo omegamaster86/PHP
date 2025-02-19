@@ -1,11 +1,6 @@
 // 機能名: 大会情報参照画面・大会情報削除画面
 'use client';
 
-// Reactおよび関連モジュールのインポート
-import axios from '@/app/lib/axios';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
-// コンポーネントのインポート
 import { TitleSideButton } from '@/app/(Pages)/(App)/_components/TitleSideButton';
 import {
   CustomButton,
@@ -20,6 +15,9 @@ import {
   Label,
 } from '@/app/components';
 import FollowButton from '@/app/components/FollowButton';
+import { useUserType } from '@/app/hooks/useUserType';
+import axios from '@/app/lib/axios';
+import { fetcher } from '@/app/lib/swr';
 import { CheckOrgManager, CheckOrgManagerRequest, Race, Tournament, UserIdType } from '@/app/types';
 import { ROLE } from '@/app/utils/consts';
 import { TOURNAMENT_PDF_URL } from '@/app/utils/imageUrl';
@@ -30,6 +28,20 @@ import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { Autocomplete, Chip, TextField } from '@mui/material';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
+import useSWRMutation from 'swr/mutation';
+
+const sendCheckOrgManagerRequest = async (
+  url: string,
+  trigger: { arg: CheckOrgManagerRequest },
+) => {
+  return fetcher<CheckOrgManager>({
+    url,
+    method: 'POST',
+    data: trigger.arg,
+  });
+};
 
 //種目フィルター用
 interface EventNameList {
@@ -49,11 +61,10 @@ interface RangeList {
 
 // 大会情報参照画面
 export default function TournamentRef() {
-  // フック
   const router = useRouter();
-
-  // クエリパラメータを取得する
   const searchParams = useSearchParams();
+  const checkOrgManagerMutation = useSWRMutation('api/checkOrgManager', sendCheckOrgManagerRequest);
+
   // modeの値を取得
   const mode = searchParams.get('mode');
   switch (mode) {
@@ -62,8 +73,26 @@ export default function TournamentRef() {
     default:
       break;
   }
-
+  const isDeleteMode = mode === 'delete';
   const tournId = searchParams.get('tournId')?.toString();
+
+  useUserType({
+    onSuccess: async (userType) => {
+      if (isDeleteMode) {
+        const sendData: CheckOrgManagerRequest = {
+          tournId: Number(tournId),
+        };
+        const res = await checkOrgManagerMutation.trigger(sendData);
+        const { isOrgManager } = res.result;
+
+        const hasAuthority = userType?.isAdministrator || isOrgManager;
+
+        if (!hasAuthority) {
+          router.replace('/tournamentSearch');
+        }
+      }
+    },
+  });
 
   // フォームデータを管理する状態
   const [tableData, setTableData] = useState<Race[]>([]);
