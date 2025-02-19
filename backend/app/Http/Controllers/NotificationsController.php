@@ -11,6 +11,7 @@ use App\Models\T_notified_coach_qualifications;
 use App\Models\T_notified_referee_qualifications;
 use App\Models\T_notification_recipients;
 use App\Mail\NotificationMail;
+use App\Models\T_users;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -126,7 +127,8 @@ class NotificationsController extends Controller
         T_notifications $tNotifications,
         T_notified_coach_qualifications $tNotifiedCoachQualifications,
         T_notified_referee_qualifications $tNotifiedRefereeQualifications,
-        T_notification_recipients $tNotificationRecipients
+        T_notification_recipients $tNotificationRecipients,
+        T_users $tUsers
     ) {
         Log::debug(sprintf("insertNotification start"));
 
@@ -134,10 +136,30 @@ class NotificationsController extends Controller
             DB::beginTransaction();
 
             $req = $request->all();
-            $req["notificationData"]["senderId"] = Auth::user()->user_id;
+            $userId = Auth::user()->user_id;
+            $notificationDestinationTypeId = $req["notificationData"]["notificationDestinationTypeId"];
+
+            $userType = $tUsers->getIDsAssociatedWithUser($userId);
+            $firstOfUserType = reset($userType);
+            if (empty($firstOfUserType)) {
+                abort(403, '権限がありません。');
+            }
+            if ($notificationDestinationTypeId == 1 && $firstOfUserType->is_player == 0) {
+                abort(403, '権限がありません。');
+            }
+            if ($notificationDestinationTypeId == 2 && $firstOfUserType->is_organization_manager == 0) {
+                abort(403, '権限がありません。');
+            }
+            if ($notificationDestinationTypeId == 3 && $firstOfUserType->is_jara == 0) {
+                abort(403, '権限がありません。');
+            }
+            if ($notificationDestinationTypeId == 4 && $firstOfUserType->is_jara == 0) {
+                abort(403, '権限がありません。');
+            }
+
+            $req["notificationData"]["senderId"] = $userId;
             $req["notificationData"]["sentTime"] = now()->format('Y-m-d H:i:s.u');
             $insertId = $tNotifications->insertNotificationData($req["notificationData"]); //通知情報の登録 20241118
-
             //指導者資格の追加
             if (!empty($req["coachQualificationsData"])) {
                 for ($i = 0; $i < count($req['coachQualificationsData']); $i++) {
@@ -184,6 +206,8 @@ class NotificationsController extends Controller
             }
 
             DB::commit();
+        } catch (HttpException $e) {
+            throw $e;
         } catch (\Throwable $e) {
             Log::error($e);
             DB::rollBack();
@@ -196,7 +220,8 @@ class NotificationsController extends Controller
     //通知情報の更新 20241119
     public function updateNotification(
         Request $request,
-        T_notifications $tNotifications
+        T_notifications $tNotifications,
+        T_users $tUsers
     ) {
         Log::debug(sprintf("updateNotification start"));
 
@@ -209,7 +234,26 @@ class NotificationsController extends Controller
 
             $targetNotification = $tNotifications->getNotificationInfoData($notificationId);
             $targetSenderId = $targetNotification->senderId;
+            $targetNotificationDestinationTypeId = $targetNotification->notificationDestinationTypeId;
             if (empty($targetSenderId) || $targetSenderId !== $userId) {
+                abort(403, '編集権限がありません。');
+            }
+
+            $userType = $tUsers->getIDsAssociatedWithUser($userId);
+            $firstOfUserType = reset($userType);
+            if (empty($firstOfUserType)) {
+                abort(403, '編集権限がありません。');
+            }
+            if ($targetNotificationDestinationTypeId == 1 && $firstOfUserType->is_player == 0) {
+                abort(403, '編集権限がありません。');
+            }
+            if ($targetNotificationDestinationTypeId == 2 && $firstOfUserType->is_organization_manager == 0) {
+                abort(403, '編集権限がありません。');
+            }
+            if ($targetNotificationDestinationTypeId == 3 && $firstOfUserType->is_jara == 0) {
+                abort(403, '編集権限がありません。');
+            }
+            if ($targetNotificationDestinationTypeId == 4 && $firstOfUserType->is_jara == 0) {
                 abort(403, '編集権限がありません。');
             }
 
