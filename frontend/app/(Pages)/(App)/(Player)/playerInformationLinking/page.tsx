@@ -253,10 +253,17 @@ export default function PlayerInformationLinking() {
     await axios
       .post('api/registerCsvData', csvData)
       .then((res) => {
-        //console.log(res.data);
+        setCsvData([]);
+        setCsvFileData({ content: [], isSet: false });
+        fileUploaderRef?.current?.clearFile();
+        window.alert('連携を完了しました。');
+        setActivationFlg(false);
+        setDialogDisplayFlg(false);
+        setDisplayLinkButtonFlg(false);
+        setActivationFlg(false);
       })
       .catch((error) => {
-        //console.log(error);
+        setErrorText(['選手情報連携に失敗しました：' + (error as Error).message]);
       });
   };
 
@@ -373,14 +380,6 @@ export default function PlayerInformationLinking() {
                   return;
                 }
                 registerCsvData(); //読み込んだCSVデータをDBに連携する
-                setCsvData([]);
-                setCsvFileData({ content: [], isSet: false });
-                fileUploaderRef?.current?.clearFile();
-                window.alert('連携を完了しました。');
-                setActivationFlg(false);
-                setDialogDisplayFlg(false);
-                setDisplayLinkButtonFlg(false);
-                setActivationFlg(false);
               }}
             >
               連携

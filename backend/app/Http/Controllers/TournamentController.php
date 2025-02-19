@@ -1224,7 +1224,7 @@ class TournamentController extends Controller
         $isOrgManager = $tOrganizationStaff->getIsOrgManager($targetTournId, $targetUserId);
 
         $result = [
-            'isOrgManager' => (bool)$isOrgManager->{'isOrgManager'}
+            'isOrgManager' => (bool)$isOrgManager['isOrgManager']
         ];
 
         Log::debug(sprintf("checkOrgManager end"));
