@@ -17,6 +17,7 @@ import {
   InputLabel,
   OriginalCheckbox,
 } from '@/app/components';
+import { useUserType } from '@/app/hooks/useUserType';
 import axios from '@/app/lib/axios';
 import {
   OrgClass,
@@ -85,6 +86,7 @@ export default function Team() {
   const mode = (searchParams.get('mode') || 'create') as TeamMode;
   const prevMode = searchParams.get('prevMode');
   const source = searchParams.get('source') as 'confirm' | null;
+  const isUpdateMode = mode === 'update';
 
   const [prefectureOptions, setPrefectureOptions] = useState<PrefResponse[]>([]);
   const [orgClassOptions, setOrgClassOptions] = useState<OrgClassResponse[]>([]);
@@ -112,6 +114,57 @@ export default function Team() {
   const orgIdParam = searchParams.get('org_id')?.toString() || '';
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const orgId = useMemo(() => orgIdParam, []);
+
+  useUserType({
+    onSuccess: async (userType) => {
+      if (isUpdateMode) {
+        const sendData = {
+          org_id: orgId,
+        };
+        const organizationDataList = await axios.post<{ result: Organization }>(
+          'api/getOrgData',
+          sendData,
+        );
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          ...{
+            org_id: organizationDataList.data.result.org_id,
+            isStaff: !!organizationDataList.data.result.isStaff,
+            org_name: organizationDataList.data.result.org_name,
+            entrysystem_org_id: organizationDataList.data.result.entrysystem_org_id,
+            orgTypName: organizationDataList.data.result.orgTypeName,
+            founding_year: organizationDataList.data.result.founding_year,
+            post_code: organizationDataList.data.result.post_code,
+            location_country: organizationDataList.data.result.location_country,
+            locationCountry: organizationDataList.data.result.locationCountry,
+            location_prefecture: organizationDataList.data.result.location_prefecture,
+            locationPrefectureName: organizationDataList.data.result.locationPrefectureName,
+            address1: organizationDataList.data.result.address1,
+            address2: organizationDataList.data.result.address2,
+            org_class: organizationDataList.data.result.org_class,
+            orgClassName: organizationDataList.data.result.orgClassName,
+            jara_org_type: organizationDataList.data.result.jara_org_type,
+            jaraOrgTypeName: organizationDataList.data.result.jaraOrgTypeName,
+            jara_org_reg_trail: organizationDataList.data.result.jara_org_reg_trail,
+            pref_org_type: organizationDataList.data.result.pref_org_type,
+            prefOrgTypeName: organizationDataList.data.result.prefOrgTypeName,
+            pref_org_reg_trail: organizationDataList.data.result.pref_org_reg_trail,
+          },
+        }));
+
+        const { isStaff } = organizationDataList.data.result;
+        const hasAuthority =
+          userType.isAdministrator ||
+          userType.isJara ||
+          userType.isPrefBoatOfficer ||
+          (userType.isOrganizationManager && isStaff);
+
+        if (!hasAuthority) {
+          router.replace('/teamSearch');
+        }
+      }
+    },
+  });
 
   const storageKey =
     mode === 'update'
@@ -218,33 +271,6 @@ export default function Team() {
         setOrgTypeOptions(orgTypeList);
         if (mode === 'update') {
           const sendId = { org_id: orgId };
-          const organizationDataList = await axios.post('api/getOrgData', sendId);
-          setFormData((prevFormData) => ({
-            ...prevFormData,
-            ...{
-              org_id: organizationDataList.data.result.org_id,
-              isStaff: organizationDataList.data.result.isStaff === 1,
-              org_name: organizationDataList.data.result.org_name,
-              entrysystem_org_id: organizationDataList.data.result.entrysystem_org_id,
-              orgTypName: organizationDataList.data.result.orgTypeName,
-              founding_year: organizationDataList.data.result.founding_year,
-              post_code: organizationDataList.data.result.post_code,
-              location_country: organizationDataList.data.result.location_country,
-              locationCountry: organizationDataList.data.result.locationCountry,
-              location_prefecture: organizationDataList.data.result.location_prefecture,
-              locationPrefectureName: organizationDataList.data.result.locationPrefectureName,
-              address1: organizationDataList.data.result.address1,
-              address2: organizationDataList.data.result.address2,
-              org_class: organizationDataList.data.result.org_class,
-              orgClassName: organizationDataList.data.result.orgClassName,
-              jara_org_type: organizationDataList.data.result.jara_org_type,
-              jaraOrgTypeName: organizationDataList.data.result.jaraOrgTypeName,
-              jara_org_reg_trail: organizationDataList.data.result.jara_org_reg_trail,
-              pref_org_type: organizationDataList.data.result.pref_org_type,
-              prefOrgTypeName: organizationDataList.data.result.prefOrgTypeName,
-              pref_org_reg_trail: organizationDataList.data.result.pref_org_reg_trail,
-            },
-          }));
           const staff = await axios.post('api/getOrgStaffData', sendId);
           setTableData(staff.data.result);
 
@@ -298,7 +324,8 @@ export default function Team() {
         const playerInf = await axios.get('api/getIDsAssociatedWithUser');
         setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
       } catch (error: any) {
-        setErrorMessage(['API取得エラー:' + error.message]);
+        const errorMessage = error.response?.data?.message || `API取得エラー: ${error.message}`;
+        setErrorMessage([errorMessage]);
       }
     };
     fetchData();
