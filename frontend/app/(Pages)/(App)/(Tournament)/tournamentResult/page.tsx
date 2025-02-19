@@ -126,7 +126,7 @@ const tournamentResultMode = ['create', 'update', 'confirm'];
 export default function TournamentResult() {
   const router = useRouter();
 
-  const [errorText, setErrorText] = useState([] as string[]);
+  const [errorText, setErrorText] = useState<string[]>([]);
   const [raceIdErrorText, setRaceIdErrorText] = useState(''); //レースID
   const [raceNameErrorText, setRaceNameErrorText] = useState(''); //レース名
   const [startDateTimeErrorText, setStartDateTimeErrorText] = useState(''); //発艇日時
@@ -166,7 +166,7 @@ export default function TournamentResult() {
   // 遷移元画面からのパラメータ取得
   const param = useSearchParams();
   const mode = param.get('mode') || '';
-  const [raceId, setRaceId] = useState<string | null>(param.get('raceId')); // レースID
+  const raceId = param.get('raceId');
   const tournId = param.get('tournId'); // 大会ID
   const eventId = param.get('eventId'); // 種目ID
   const prevMode = param.get('prevMode'); // 遷移元画面のモード
@@ -489,6 +489,7 @@ export default function TournamentResult() {
       //所属団体 空欄チェック
       if (!validateCheckList[index].org_id) {
         validateCheckList[index].orgNameErrorText = '所属団体を選択してください。';
+        errorCount++;
       } else {
         validateCheckList[index].orgNameErrorText = '';
       }
@@ -496,6 +497,7 @@ export default function TournamentResult() {
       //クルー名　空欄チェック
       if (!validateCheckList[index].crew_name) {
         validateCheckList[index].crewNameErrorText = 'クルー名を入力してください。';
+        errorCount++;
       } else {
         validateCheckList[index].crewNameErrorText = '';
       }
@@ -507,6 +509,7 @@ export default function TournamentResult() {
       ) {
         validateCheckList[index].laneNumberErrorText =
           '出漕レーンNoは半角数字で、99までの数値を入力してください。';
+        errorCount++;
       } else {
         validateCheckList[index].laneNumberErrorText = '';
       }
@@ -514,12 +517,14 @@ export default function TournamentResult() {
       //順位 空欄チェック 入力値チェック
       if (!validateCheckList[index].rank) {
         validateCheckList[index].rankErrorText = '順位を入力してください';
+        errorCount++;
       } else if (
         validateCheckList[index].rank &&
         !/^\d{1,2}$/.test(validateCheckList[index]?.rank.toString())
       ) {
         validateCheckList[index].rankErrorText =
           '順位は半角数字で、99までの数値を入力してください。';
+        errorCount++;
       } else {
         validateCheckList[index].rankErrorText = '';
       }
@@ -1103,7 +1108,7 @@ export default function TournamentResult() {
   useEffect(() => {
     const fetchRaceInfo = async () => {
       try {
-        var data = null;
+        let data = [];
         // レース情報の取得
         if (raceId != '' && raceId != null && raceId != undefined) {
           const sendData = {
@@ -1122,7 +1127,10 @@ export default function TournamentResult() {
 
         if (
           (eventId != '' && eventId != null && eventId != undefined) ||
-          (data[0].event_id != '' && data[0].event_id != null && data[0].event_id != undefined)
+          (data.length > 0 &&
+            data[0].event_id != '' &&
+            data[0].event_id != null &&
+            data[0].event_id != undefined)
         ) {
           // 種目マスタに紐づく選手の人数 (バックエンドからの取得方法不明のためDummy)
           // TODO: 種目マスタに紐づく選手の人数を取得する
@@ -1988,290 +1996,301 @@ export default function TournamentResult() {
                 </CustomButton>
               )}
             </div>
-            <CustomTable>
-              <CustomThead>
-                <CustomTr>
-                  <CustomTh rowSpan={2}>
-                    <p>削除</p>
-                  </CustomTh>
-                  <CustomTh rowSpan={2} className='w-[110px]'>
-                    <p>選手ID</p>
-                  </CustomTh>
-                  <CustomTh rowSpan={2} className='w-[160px]'>
-                    <p>選手名</p>
-                  </CustomTh>
-                  <CustomTh rowSpan={2}>
-                    <p>性別</p>
-                  </CustomTh>
-                  <CustomTh rowSpan={2} className='w-[120px]'>
-                    <p>身長</p>
-                  </CustomTh>
-                  <CustomTh rowSpan={2} className='w-[120px]'>
-                    <p>体重</p>
-                  </CustomTh>
-                  <CustomTh rowSpan={2} className='w-[130px]'>
-                    <p>シート番号</p>
-                  </CustomTh>
-                  <CustomTh rowSpan={1} colSpan={5}>
-                    <p>心拍数(回/分)</p>
-                  </CustomTh>
-                  <CustomTh rowSpan={1}>
-                    <p>エルゴ</p>
-                  </CustomTh>
-                </CustomTr>
-                <CustomTr>
-                  <CustomTh className='w-[90px]'>
-                    <p>500m</p>
-                  </CustomTh>
-                  <CustomTh className='w-[90px]'>
-                    <p>1000m</p>
-                  </CustomTh>
-                  <CustomTh className='w-[90px]'>
-                    <p>1500m</p>
-                  </CustomTh>
-                  <CustomTh className='w-[90px]'>
-                    <p>2000m</p>
-                  </CustomTh>
-                  <CustomTh className='w-[90px]'>
-                    <p>平均</p>
-                  </CustomTh>
-                  <CustomTh>
-                    <p>
-                      立ち会い
-                      <br />
-                      有無
-                    </p>
-                  </CustomTh>
-                </CustomTr>
-              </CustomThead>
-              <CustomTbody deleteMode={mode === 'confirm' && item.deleteFlg}>
-                {item?.crewPlayer?.map((player, crewIndex) => (
-                  <>
-                    <CustomTr key={crewIndex}>
-                      <CustomTd>
-                        <div className='flex justify-center'>
-                          <OriginalCheckbox
-                            id={'deleteFlg' + index + crewIndex}
-                            value='deleteFlg'
-                            checked={player.deleteFlg}
-                            onChange={(e) => {
-                              handleRaceResultRecordsCrewPlayerChangeBooleanbyIndex(
-                                index,
-                                crewIndex,
-                                'deleteFlg',
-                                e.target.checked,
-                              );
+            <div className='overflow-x-auto'>
+              <CustomTable>
+                <CustomThead>
+                  <CustomTr>
+                    <CustomTh rowSpan={2}>
+                      <p>削除</p>
+                    </CustomTh>
+                    <CustomTh rowSpan={2}>
+                      <p>選手ID</p>
+                    </CustomTh>
+                    <CustomTh rowSpan={2}>
+                      <p>選手名</p>
+                    </CustomTh>
+                    <CustomTh rowSpan={2}>
+                      <p>性別</p>
+                    </CustomTh>
+                    <CustomTh rowSpan={2}>
+                      <p>身長</p>
+                    </CustomTh>
+                    <CustomTh rowSpan={2}>
+                      <p>体重</p>
+                    </CustomTh>
+                    <CustomTh rowSpan={2}>
+                      <p>シート番号</p>
+                    </CustomTh>
+                    <CustomTh rowSpan={1} colSpan={5}>
+                      <p>心拍数(回/分)</p>
+                    </CustomTh>
+                    <CustomTh rowSpan={1}>
+                      <p>エルゴ</p>
+                    </CustomTh>
+                  </CustomTr>
+                  <CustomTr>
+                    <CustomTh>
+                      <p>500m</p>
+                    </CustomTh>
+                    <CustomTh>
+                      <p>1000m</p>
+                    </CustomTh>
+                    <CustomTh>
+                      <p>1500m</p>
+                    </CustomTh>
+                    <CustomTh>
+                      <p>2000m</p>
+                    </CustomTh>
+                    <CustomTh>
+                      <p>平均</p>
+                    </CustomTh>
+                    <CustomTh>
+                      <p>
+                        立ち会い
+                        <br />
+                        有無
+                      </p>
+                    </CustomTh>
+                  </CustomTr>
+                </CustomThead>
+                <CustomTbody deleteMode={mode === 'confirm' && item.deleteFlg}>
+                  {item?.crewPlayer?.map((player, crewIndex) => (
+                    <>
+                      <CustomTr key={crewIndex}>
+                        <CustomTd>
+                          <div className='flex justify-center'>
+                            <OriginalCheckbox
+                              id={'deleteFlg' + index + crewIndex}
+                              value='deleteFlg'
+                              checked={player.deleteFlg}
+                              onChange={(e) => {
+                                handleRaceResultRecordsCrewPlayerChangeBooleanbyIndex(
+                                  index,
+                                  crewIndex,
+                                  'deleteFlg',
+                                  e.target.checked,
+                                );
+                              }}
+                              readonly={mode === 'confirm'}
+                            />
+                          </div>
+                        </CustomTd>
+                        <CustomTd>
+                          <CustomTextField
+                            value={player.playerId || ''}
+                            onBlur={async (e) => {
+                              // 検索して選手情報を取得する
+                              handleCrewPlayerIdChange(index, crewIndex, e.target.value);
                             }}
-                            readonly={mode === 'confirm'}
-                          />
-                        </div>
-                      </CustomTd>
-                      <CustomTd>
-                        <CustomTextField
-                          value={player.playerId || ''}
-                          onBlur={async (e) => {
-                            // 検索して選手情報を取得する
-                            handleCrewPlayerIdChange(index, crewIndex, e.target.value);
-                          }}
-                          onChange={(e) => {
-                            // 入力が完了してから実行する
-                            handleRaceResultRecordsCrewPlayerChangebyIndex(
-                              index,
-                              crewIndex,
-                              'playerId',
-                              e.target.value,
-                            );
-                          }}
-                          readonly={
-                            (mode == 'update' && player.addonLineFlg != true) || mode === 'confirm'
-                          }
-                        />
-                      </CustomTd>
-                      <CustomTd>
-                        <CustomTextField
-                          value={player.playerName || ''}
-                          onChange={(e) => {
-                            handleRaceResultRecordsCrewPlayerChangebyIndex(
-                              index,
-                              crewIndex,
-                              'playerName',
-                              e.target.value,
-                            );
-                          }}
-                          readonly={
-                            (mode == 'update' && player.addonLineFlg != true) || mode === 'confirm'
-                          }
-                        />
-                      </CustomTd>
-                      <CustomTd>
-                        <CustomTextField value={player.sex || ''} readonly></CustomTextField>
-                      </CustomTd>
-                      <CustomTd>
-                        <CustomTextField
-                          value={player.height?.toString() || ''}
-                          onChange={(e) => {
-                            handleRaceResultRecordsCrewPlayerChangebyIndex(
-                              index,
-                              crewIndex,
-                              'height',
-                              e.target.value,
-                            );
-                          }}
-                          type='number'
-                          readonly={mode === 'confirm'}
-                        />
-                      </CustomTd>
-                      <CustomTd>
-                        <CustomTextField
-                          value={player.weight?.toString() || ''}
-                          onChange={(e) => {
-                            handleRaceResultRecordsCrewPlayerChangebyIndex(
-                              index,
-                              crewIndex,
-                              'weight',
-                              e.target.value,
-                            );
-                          }}
-                          type='number'
-                          readonly={mode === 'confirm'}
-                        />
-                      </CustomTd>
-                      <CustomTd>
-                        <CustomDropdown
-                          id='seatName'
-                          value={
-                            mode === 'confirm'
-                              ? player?.seatName
-                              : player?.seatNameId?.toString() || ''
-                          }
-                          options={seatNameIdOptions.map((item) => ({
-                            key: item.id,
-                            value: item.name,
-                          }))}
-                          onChange={(e) => {
-                            handleRaceResultRecordsCrewPlayerChangebyIndex(
-                              index,
-                              crewIndex,
-                              'seatNameId',
-                              e,
-                            );
-                            handleRaceResultRecordsCrewPlayerChangebyIndex(
-                              index,
-                              crewIndex,
-                              'seatName',
-                              seatNameIdOptions.find((item) => item.id === Number(e))?.name || '',
-                            );
-                          }}
-                          readonly={mode === 'confirm'}
-                        />
-                      </CustomTd>
-                      <CustomTd>
-                        <CustomTextField
-                          value={player.fiveHundredmHeartRate?.toString() || ''}
-                          onChange={(e) => {
-                            handleRaceResultRecordsCrewPlayerChangebyIndex(
-                              index,
-                              crewIndex,
-                              'fiveHundredmHeartRate',
-                              e.target.value,
-                            );
-                          }}
-                          type='number'
-                          readonly={mode === 'confirm'}
-                        />
-                      </CustomTd>
-                      <CustomTd>
-                        <CustomTextField
-                          value={player.tenHundredmHeartRate?.toString() || ''}
-                          onChange={(e) => {
-                            handleRaceResultRecordsCrewPlayerChangebyIndex(
-                              index,
-                              crewIndex,
-                              'tenHundredmHeartRate',
-                              e.target.value,
-                            );
-                          }}
-                          type='number'
-                          readonly={mode === 'confirm'}
-                        />
-                      </CustomTd>
-                      <CustomTd>
-                        <CustomTextField
-                          value={player.fifteenHundredmHeartRate?.toString() || ''}
-                          onChange={(e) => {
-                            handleRaceResultRecordsCrewPlayerChangebyIndex(
-                              index,
-                              crewIndex,
-                              'fifteenHundredmHeartRate',
-                              e.target.value,
-                            );
-                          }}
-                          type='number'
-                          readonly={mode === 'confirm'}
-                        />
-                      </CustomTd>
-                      <CustomTd>
-                        <CustomTextField
-                          value={player.twentyHundredmHeartRate?.toString() || ''}
-                          onChange={(e) => {
-                            handleRaceResultRecordsCrewPlayerChangebyIndex(
-                              index,
-                              crewIndex,
-                              'twentyHundredmHeartRate',
-                              e.target.value,
-                            );
-                          }}
-                          type='number'
-                          readonly={mode === 'confirm'}
-                        />
-                      </CustomTd>
-                      <CustomTd>
-                        <CustomTextField
-                          value={player.heartRateAvg?.toString() || ''}
-                          onChange={(e) => {
-                            handleRaceResultRecordsCrewPlayerChangebyIndex(
-                              index,
-                              crewIndex,
-                              'heartRateAvg',
-                              e.target.value,
-                            );
-                          }}
-                          type='number'
-                          readonly={mode === 'confirm'}
-                        />
-                      </CustomTd>
-                      <CustomTd>
-                        <div className='flex justify-center'>
-                          <OriginalCheckbox
-                            id={'ergo' + index + crewIndex}
-                            value='ergo'
-                            checked={player.attendance ? true : false}
-                            onChange={(e: any) => {
+                            onChange={(e) => {
+                              // 入力が完了してから実行する
                               handleRaceResultRecordsCrewPlayerChangebyIndex(
                                 index,
                                 crewIndex,
-                                'attendance',
-                                e.target.checked,
+                                'playerId',
+                                e.target.value,
+                              );
+                            }}
+                            readonly={
+                              (mode == 'update' && player.addonLineFlg != true) ||
+                              mode === 'confirm'
+                            }
+                          />
+                        </CustomTd>
+                        <CustomTd>
+                          <CustomTextField
+                            value={player.playerName || ''}
+                            onChange={(e) => {
+                              handleRaceResultRecordsCrewPlayerChangebyIndex(
+                                index,
+                                crewIndex,
+                                'playerName',
+                                e.target.value,
+                              );
+                            }}
+                            readonly={
+                              (mode == 'update' && player.addonLineFlg != true) ||
+                              mode === 'confirm'
+                            }
+                          />
+                        </CustomTd>
+                        <CustomTd>
+                          <CustomTextField value={player.sex || ''} readonly></CustomTextField>
+                        </CustomTd>
+                        <CustomTd>
+                          <CustomTextField
+                            value={player.height?.toString() || ''}
+                            onChange={(e) => {
+                              handleRaceResultRecordsCrewPlayerChangebyIndex(
+                                index,
+                                crewIndex,
+                                'height',
+                                e.target.value,
+                              );
+                            }}
+                            type='number'
+                            readonly={mode === 'confirm'}
+                            widthClassName='w-[120px]'
+                          />
+                        </CustomTd>
+                        <CustomTd>
+                          <CustomTextField
+                            value={player.weight?.toString() || ''}
+                            onChange={(e) => {
+                              handleRaceResultRecordsCrewPlayerChangebyIndex(
+                                index,
+                                crewIndex,
+                                'weight',
+                                e.target.value,
+                              );
+                            }}
+                            type='number'
+                            readonly={mode === 'confirm'}
+                            widthClassName='w-[120px]'
+                          />
+                        </CustomTd>
+                        <CustomTd>
+                          <CustomDropdown
+                            id='seatName'
+                            value={
+                              mode === 'confirm'
+                                ? player?.seatName
+                                : player?.seatNameId?.toString() || ''
+                            }
+                            options={seatNameIdOptions.map((item) => ({
+                              key: item.id,
+                              value: item.name,
+                            }))}
+                            onChange={(e) => {
+                              handleRaceResultRecordsCrewPlayerChangebyIndex(
+                                index,
+                                crewIndex,
+                                'seatNameId',
+                                e,
+                              );
+                              handleRaceResultRecordsCrewPlayerChangebyIndex(
+                                index,
+                                crewIndex,
+                                'seatName',
+                                seatNameIdOptions.find((item) => item.id === Number(e))?.name || '',
                               );
                             }}
                             readonly={mode === 'confirm'}
                           />
-                        </div>
-                      </CustomTd>
-                    </CustomTr>
-                    {player.errorText && (
-                      <CustomTr>
-                        <CustomTh colSpan={13}>
-                          <div className='text-systemErrorText text-small leading-loose'>
-                            {player.errorText ? [player.errorText] : []}{' '}
+                        </CustomTd>
+                        <CustomTd>
+                          <CustomTextField
+                            value={player.fiveHundredmHeartRate?.toString() || ''}
+                            onChange={(e) => {
+                              handleRaceResultRecordsCrewPlayerChangebyIndex(
+                                index,
+                                crewIndex,
+                                'fiveHundredmHeartRate',
+                                e.target.value,
+                              );
+                            }}
+                            type='number'
+                            readonly={mode === 'confirm'}
+                            widthClassName='w-[80px]'
+                          />
+                        </CustomTd>
+                        <CustomTd>
+                          <CustomTextField
+                            value={player.tenHundredmHeartRate?.toString() || ''}
+                            onChange={(e) => {
+                              handleRaceResultRecordsCrewPlayerChangebyIndex(
+                                index,
+                                crewIndex,
+                                'tenHundredmHeartRate',
+                                e.target.value,
+                              );
+                            }}
+                            type='number'
+                            readonly={mode === 'confirm'}
+                            widthClassName='w-[80px]'
+                          />
+                        </CustomTd>
+                        <CustomTd>
+                          <CustomTextField
+                            value={player.fifteenHundredmHeartRate?.toString() || ''}
+                            onChange={(e) => {
+                              handleRaceResultRecordsCrewPlayerChangebyIndex(
+                                index,
+                                crewIndex,
+                                'fifteenHundredmHeartRate',
+                                e.target.value,
+                              );
+                            }}
+                            type='number'
+                            readonly={mode === 'confirm'}
+                            widthClassName='w-[80px]'
+                          />
+                        </CustomTd>
+                        <CustomTd>
+                          <CustomTextField
+                            value={player.twentyHundredmHeartRate?.toString() || ''}
+                            onChange={(e) => {
+                              handleRaceResultRecordsCrewPlayerChangebyIndex(
+                                index,
+                                crewIndex,
+                                'twentyHundredmHeartRate',
+                                e.target.value,
+                              );
+                            }}
+                            type='number'
+                            readonly={mode === 'confirm'}
+                            widthClassName='w-[80px]'
+                          />
+                        </CustomTd>
+                        <CustomTd>
+                          <CustomTextField
+                            value={player.heartRateAvg?.toString() || ''}
+                            onChange={(e) => {
+                              handleRaceResultRecordsCrewPlayerChangebyIndex(
+                                index,
+                                crewIndex,
+                                'heartRateAvg',
+                                e.target.value,
+                              );
+                            }}
+                            type='number'
+                            readonly={mode === 'confirm'}
+                            widthClassName='w-[80px]'
+                          />
+                        </CustomTd>
+                        <CustomTd>
+                          <div className='flex justify-center'>
+                            <OriginalCheckbox
+                              id={'ergo' + index + crewIndex}
+                              value='ergo'
+                              checked={player.attendance ? true : false}
+                              onChange={(e: any) => {
+                                handleRaceResultRecordsCrewPlayerChangebyIndex(
+                                  index,
+                                  crewIndex,
+                                  'attendance',
+                                  e.target.checked,
+                                );
+                              }}
+                              readonly={mode === 'confirm'}
+                            />
                           </div>
-                        </CustomTh>
+                        </CustomTd>
                       </CustomTr>
-                    )}
-                  </>
-                ))}
-              </CustomTbody>
-            </CustomTable>
+                      {player.errorText && (
+                        <CustomTr>
+                          <CustomTh colSpan={13}>
+                            <div className='text-systemErrorText text-small leading-loose'>
+                              {player.errorText ? [player.errorText] : []}{' '}
+                            </div>
+                          </CustomTh>
+                        </CustomTr>
+                      )}
+                    </>
+                  ))}
+                </CustomTbody>
+              </CustomTable>
+            </div>
           </div>
         </div>
       ))}
@@ -2317,89 +2336,92 @@ export default function TournamentResult() {
               clearError(); //エラーメッセージのクリア
               errorCount = validateRaceResultRecords(); // バリデーション
             }
-            if (errorCount == 0) {
-              clearError(); //エラーメッセージのクリア
-              if (mode === 'create') {
-                //追加行でない(更新行)かつ、選手情報すべてに削除チェックがされている場合、「このレース結果情報を削除する」にチェックを入れる 20240516
-                for (let index = 0; index < raceResultRecords.length; index++) {
-                  if (
-                    !raceResultRecords[index]?.isAdded &&
-                    raceResultRecords[index]?.crewPlayer?.every((player) => player.deleteFlg)
-                  ) {
-                    raceResultRecords[index].deleteFlg = true;
-                  }
-                }
-                //「追加行かつ、選手情報すべてに削除チェックがされている項目」以外を表示 20240516
-                setRaceResultRecords((prevFormData) => {
-                  const newFormData = [...prevFormData];
-                  return newFormData.filter(
-                    (item) =>
-                      !(item?.isAdded && item?.crewPlayer?.every((player) => player.deleteFlg)),
-                  );
-                });
 
-                router.push(`/tournamentResult?mode=confirm&prevMode=create&raceId=${raceId}`);
-              } else if (mode === 'update') {
-                //追加行でない(更新行)かつ、選手情報すべてに削除チェックがされている場合、「このレース結果情報を削除する」にチェックを入れる 20240516
-                for (let index = 0; index < raceResultRecords.length; index++) {
-                  if (
-                    !raceResultRecords[index]?.isAdded &&
-                    raceResultRecords[index]?.crewPlayer?.every((player) => player.deleteFlg)
-                  ) {
-                    raceResultRecords[index].deleteFlg = true;
-                  }
-                }
-                //「追加行かつ、選手情報すべてに削除チェックがされている項目」以外を表示 20240516
-                setRaceResultRecords((prevFormData) => {
-                  const newFormData = [...prevFormData];
-                  return newFormData.filter(
-                    (item) =>
-                      !(item?.isAdded && item?.crewPlayer?.every((player) => player.deleteFlg)),
-                  );
-                });
+            if (errorCount > 0) return;
 
-                router.push('/tournamentResult?mode=confirm&prevMode=update');
-              } else if (mode === 'confirm') {
-                //登録・更新する前に選手名についている「*」を消す 20240514
-                for (let index = 0; index < raceResultRecords.length; index++) {
-                  for (let j = 0; j < raceResultRecords[index]?.crewPlayer.length; j++) {
-                    raceResultRecords[index].crewPlayer[j].playerName = raceResultRecords[
-                      index
-                    ]?.crewPlayer[j].playerName.replace('*', '');
-                  }
+            clearError(); //エラーメッセージのクリア
+            if (mode === 'create') {
+              //追加行でない(更新行)かつ、選手情報すべてに削除チェックがされている場合、「このレース結果情報を削除する」にチェックを入れる 20240516
+              for (let index = 0; index < raceResultRecords.length; index++) {
+                if (
+                  !raceResultRecords[index]?.isAdded &&
+                  raceResultRecords[index]?.crewPlayer?.every((player) => player.deleteFlg)
+                ) {
+                  raceResultRecords[index].deleteFlg = true;
                 }
-                if (prevMode == 'create') {
-                  //登録確認画面からバックエンド側にデータを送る 20240405
-                  const sendData = {
-                    raceInfo: raceInfo,
-                    raceResultRecordResponse: raceResultRecordResponse,
-                    raceResultRecords: raceResultRecords,
-                  };
-                  const raceResponse = await axios.post(
-                    'api/registerRaceResultRecordForRegisterConfirm',
-                    sendData,
-                  );
-                  if (!raceResponse.data?.errMessage) {
-                    router.push('/tournamentResultRef?raceId=' + raceInfo.race_id);
-                  } else {
-                    setErrorText([raceResponse.data?.errMessage]);
-                  }
-                } else if (prevMode == 'update') {
-                  //更新確認画面からバックエンド側にデータを送る 20240405
-                  const sendData = {
-                    raceInfo: raceInfo,
-                    raceResultRecordResponse: raceResultRecordResponse,
-                    raceResultRecords: raceResultRecords,
-                  };
-                  const raceResponse = await axios.post(
-                    'api/updateRaceResultRecordForUpdateConfirm',
-                    sendData,
-                  );
-                  if (!raceResponse.data?.errMessage) {
-                    router.push('/tournamentResultRef?raceId=' + raceInfo.race_id);
-                  } else {
-                    setErrorText([raceResponse.data?.errMessage]);
-                  }
+              }
+              //「追加行かつ、選手情報すべてに削除チェックがされている項目」以外を表示 20240516
+              setRaceResultRecords((prevFormData) => {
+                const newFormData = [...prevFormData];
+                return newFormData.filter(
+                  (item) =>
+                    !(item?.isAdded && item?.crewPlayer?.every((player) => player.deleteFlg)),
+                );
+              });
+
+              router.push(
+                `/tournamentResult?mode=confirm&prevMode=create&raceId=${raceInfo.race_id}`,
+              );
+            } else if (mode === 'update') {
+              //追加行でない(更新行)かつ、選手情報すべてに削除チェックがされている場合、「このレース結果情報を削除する」にチェックを入れる 20240516
+              for (let index = 0; index < raceResultRecords.length; index++) {
+                if (
+                  !raceResultRecords[index]?.isAdded &&
+                  raceResultRecords[index]?.crewPlayer?.every((player) => player.deleteFlg)
+                ) {
+                  raceResultRecords[index].deleteFlg = true;
+                }
+              }
+              //「追加行かつ、選手情報すべてに削除チェックがされている項目」以外を表示 20240516
+              setRaceResultRecords((prevFormData) => {
+                const newFormData = [...prevFormData];
+                return newFormData.filter(
+                  (item) =>
+                    !(item?.isAdded && item?.crewPlayer?.every((player) => player.deleteFlg)),
+                );
+              });
+
+              router.push('/tournamentResult?mode=confirm&prevMode=update');
+            } else if (mode === 'confirm') {
+              //登録・更新する前に選手名についている「*」を消す 20240514
+              for (let index = 0; index < raceResultRecords.length; index++) {
+                for (let j = 0; j < raceResultRecords[index]?.crewPlayer.length; j++) {
+                  raceResultRecords[index].crewPlayer[j].playerName = raceResultRecords[
+                    index
+                  ]?.crewPlayer[j].playerName.replace('*', '');
+                }
+              }
+              if (prevMode == 'create') {
+                //登録確認画面からバックエンド側にデータを送る 20240405
+                const sendData = {
+                  raceInfo: raceInfo,
+                  raceResultRecordResponse: raceResultRecordResponse,
+                  raceResultRecords: raceResultRecords,
+                };
+                const raceResponse = await axios.post(
+                  'api/registerRaceResultRecordForRegisterConfirm',
+                  sendData,
+                );
+                if (!raceResponse.data?.errMessage) {
+                  router.push('/tournamentResultRef?raceId=' + raceInfo.race_id);
+                } else {
+                  setErrorText([raceResponse.data?.errMessage]);
+                }
+              } else if (prevMode == 'update') {
+                //更新確認画面からバックエンド側にデータを送る 20240405
+                const sendData = {
+                  raceInfo: raceInfo,
+                  raceResultRecordResponse: raceResultRecordResponse,
+                  raceResultRecords: raceResultRecords,
+                };
+                const raceResponse = await axios.post(
+                  'api/updateRaceResultRecordForUpdateConfirm',
+                  sendData,
+                );
+                if (!raceResponse.data?.errMessage) {
+                  router.push('/tournamentResultRef?raceId=' + raceInfo.race_id);
+                } else {
+                  setErrorText([raceResponse.data?.errMessage]);
                 }
               }
             }
