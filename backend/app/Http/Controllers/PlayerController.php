@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class PlayerController extends Controller
 {
     //選手検索で使用する関数 200240309
-    public function playerSearch(Request $request, T_players $tPlayersData)
+    public function playerSearch(Request $request, T_players $tPlayers)
     {
         Log::debug(sprintf("playerSearch start"));
         $searched_data = $request->all();
@@ -29,16 +29,16 @@ class PlayerController extends Controller
         try {
             if (isset($searched_data['org_id'])) {
                 Log::debug("団体IDの条件が入力されている場合");
-                $search_result = $tPlayersData->getPlayerSearchResultWithOrgIdCondition($replace_condition_string, $search_values_array);
+                $search_result = $tPlayers->getPlayerSearchResultWithOrgIdCondition($replace_condition_string, $search_values_array);
             } else if (isset($searched_data['entrysystem_org_id'])) {
                 Log::debug("エントリーシステムの団体IDの条件が入力されている場合");
-                $search_result = $tPlayersData->getPlayerSearchResultWithEntrySystemIdCondition($replace_condition_string, $search_values_array);
+                $search_result = $tPlayers->getPlayerSearchResultWithEntrySystemIdCondition($replace_condition_string, $search_values_array);
             } else if (isset($searched_data['org_name'])) {
                 Log::debug("団体名の条件が入力されている場合");
-                $search_result = $tPlayersData->getPlayerSearchResultWithOrgNameCondition($replace_condition_string, $search_values_array);
+                $search_result = $tPlayers->getPlayerSearchResultWithOrgNameCondition($replace_condition_string, $search_values_array);
             } else {
                 Log::debug("エントリーシステムの団体ID、団体ID、団体名以外の条件が入力されている場合");
-                $search_result = $tPlayersData->getPlayerSearchResult($replace_condition_string, $search_values_array);
+                $search_result = $tPlayers->getPlayerSearchResult($replace_condition_string, $search_values_array);
             }
             Log::debug(sprintf("playerSearch end"));
             return response()->json(['result' => $search_result]); //送信データ(debug用)とDBの結果を返す
@@ -52,7 +52,7 @@ class PlayerController extends Controller
     //===============================================================================================
 
     //reactからの選手登録 20240131
-    public function storePlayerData(Request $request, T_players $tPlayersData, T_users $t_users)
+    public function storePlayerData(Request $request, T_players $tPlayers, T_users $t_users)
     {
         $random_file_name = Str::random(12);
         //If new picture is uploaded
@@ -77,18 +77,18 @@ class PlayerController extends Controller
 
         //登録するユーザーIDを持つ選手情報の有無を確認
         $target_user_id = Auth::user()->user_id;
-        $target_player_data = $tPlayersData->getPlayerFromUserId($target_user_id);
+        $target_player_data = $tPlayers->getPlayerFromUserId($target_user_id);
         //登録するユーザーIDを持つ選手が未登録なら登録実行
         if (empty($target_player_data)) {
             $reqData = $request->all();
 
-            $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
-            $tPlayersData::$playerInfo['player_name'] = $reqData['player_name']; //選手名
-            $tPlayersData::$playerInfo['date_of_birth'] = $reqData['date_of_birth']; //誕生日
-            $tPlayersData::$playerInfo['height'] = $reqData['height']; //身長
-            $tPlayersData::$playerInfo['weight'] = $reqData['weight']; //体重
-            $tPlayersData::$playerInfo['sex_id'] = $reqData['sex_id']; //性別ID
-            // $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
+            $tPlayers::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
+            $tPlayers::$playerInfo['player_name'] = $reqData['player_name']; //選手名
+            $tPlayers::$playerInfo['date_of_birth'] = $reqData['date_of_birth']; //誕生日
+            $tPlayers::$playerInfo['height'] = $reqData['height']; //身長
+            $tPlayers::$playerInfo['weight'] = $reqData['weight']; //体重
+            $tPlayers::$playerInfo['sex_id'] = $reqData['sex_id']; //性別ID
+            // $tPlayers::$playerInfo['photo'] = $reqData['photo']; //写真
             //サイド情報
             $side_info = null;
             for ($i = 0; $i < 8; $i++) {
@@ -98,25 +98,33 @@ class PlayerController extends Controller
                     $side_info .= "0";
                 }
             }
-            $tPlayersData::$playerInfo['side_info'] = $side_info;
+            $tPlayers::$playerInfo['side_info'] = $side_info;
 
-            $tPlayersData::$playerInfo['birth_country'] = $reqData['birth_country']; //出身地(国)
-            $tPlayersData::$playerInfo['birth_prefecture'] =  $reqData['birth_prefecture']; //出身地(都道府県名)
-            $tPlayersData::$playerInfo['residence_country'] = $reqData['residence_country']; //居住地(国)
-            $tPlayersData::$playerInfo['residence_prefecture'] =  $reqData['residence_prefecture']; //居住地(都道府県)
+            $tPlayers::$playerInfo['birth_country'] = $reqData['birth_country']; //出身地(国)
+            $tPlayers::$playerInfo['birth_prefecture'] =  $reqData['birth_prefecture']; //出身地(都道府県名)
+            $tPlayers::$playerInfo['residence_country'] = $reqData['residence_country']; //居住地(国)
+            $tPlayers::$playerInfo['residence_prefecture'] =  $reqData['residence_prefecture']; //居住地(都道府県)
             //If new picture is uploaded
             if ($request->hasFile('uploadedPhoto')) {
                 $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
-                $tPlayersData::$playerInfo['photo'] = $file_name; //写真
+                $tPlayers::$playerInfo['photo'] = $file_name; //写真
             } else {
                 //If  picture is not uploaded
 
-                $tPlayersData::$playerInfo['photo'] = ''; //写真
+                $tPlayers::$playerInfo['photo'] = ''; //写真
             }
 
             try {
                 DB::beginTransaction();
-                $result = $tPlayersData->insertPlayers($tPlayersData::$playerInfo); //DBに選手を登録 20240131
+
+                $result = null;
+                $nonConnectedPlayer = $tPlayers->findNonConnectedPlayer($tPlayers::$playerInfo['jara_player_id']);
+                if (is_null($nonConnectedPlayer)) {
+                    $result = $tPlayers->insertPlayers($tPlayers::$playerInfo);
+                } else {
+                    // 指定されたJARA選手コードがすでに登録されている場合はそのレコードとユーザーを紐づける。
+                    $result = $tPlayers->connectPlayerAndUser($tPlayers::$playerInfo, $nonConnectedPlayer->player_id);
+                }
 
                 DB::commit();
 
@@ -146,13 +154,13 @@ class PlayerController extends Controller
     }
 
     //react 選手情報更新画面に表示するuserIDに紐づいたデータを送信 20240131
-    public function getUpdatePlayerData(Request $request, T_players $tPlayersData)
+    public function getUpdatePlayerData(Request $request, T_players $tPlayers)
     {
         try {
             Log::debug(sprintf("getUpdatePlayerData start"));
             // $retrieve_player_by_ID = DB::select('select * from t_players where user_id = ?', [Auth::user()->user_id]);
             $reqData = $request->all();
-            $retrieve_player_by_ID = $tPlayersData->getPlayerData($reqData['player_id']); //DBに選手を登録 20240131
+            $retrieve_player_by_ID = $tPlayers->getPlayerData($reqData['player_id']); //DBに選手を登録 20240131
             if (empty($retrieve_player_by_ID)) {
                 abort(404, '選手情報が存在しません。');
             }
@@ -163,7 +171,7 @@ class PlayerController extends Controller
         }
     }
     //reactからの選手登録 20240131
-    public function updatePlayerData(Request $request, T_players $tPlayersData, T_users $t_users)
+    public function updatePlayerData(Request $request, T_players $tPlayers, T_users $t_users)
     {
         $random_file_name = Str::random(12);
         //If new picture is uploaded
@@ -186,13 +194,13 @@ class PlayerController extends Controller
         }
         Log::debug(sprintf("updatePlayerData start"));
         $reqData = $request->all();
-        $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
-        $tPlayersData::$playerInfo['player_name'] = $reqData['player_name']; //選手名
-        $tPlayersData::$playerInfo['date_of_birth'] = $reqData['date_of_birth']; //誕生日
-        $tPlayersData::$playerInfo['height'] = $reqData['height']; //身長
-        $tPlayersData::$playerInfo['weight'] = $reqData['weight']; //体重
-        $tPlayersData::$playerInfo['sex_id'] = $reqData['sex_id']; //性別ID
-        // $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
+        $tPlayers::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
+        $tPlayers::$playerInfo['player_name'] = $reqData['player_name']; //選手名
+        $tPlayers::$playerInfo['date_of_birth'] = $reqData['date_of_birth']; //誕生日
+        $tPlayers::$playerInfo['height'] = $reqData['height']; //身長
+        $tPlayers::$playerInfo['weight'] = $reqData['weight']; //体重
+        $tPlayers::$playerInfo['sex_id'] = $reqData['sex_id']; //性別ID
+        // $tPlayers::$playerInfo['photo'] = $reqData['photo']; //写真
         //サイド情報
         $side_info = null;
         for ($i = 0; $i < 8; $i++) {
@@ -202,17 +210,17 @@ class PlayerController extends Controller
                 $side_info .= "0";
             }
         }
-        $tPlayersData::$playerInfo['side_info'] = $side_info;
+        $tPlayers::$playerInfo['side_info'] = $side_info;
 
-        $tPlayersData::$playerInfo['birth_country'] = $reqData['birth_country']; //出身地(国)
-        $tPlayersData::$playerInfo['birth_prefecture'] =  $reqData['birth_prefecture']; //出身地(都道府県名)
-        $tPlayersData::$playerInfo['residence_country'] = $reqData['residence_country']; //居住地(国)
-        $tPlayersData::$playerInfo['residence_prefecture'] =  $reqData['residence_prefecture']; //居住地(都道府県)
+        $tPlayers::$playerInfo['birth_country'] = $reqData['birth_country']; //出身地(国)
+        $tPlayers::$playerInfo['birth_prefecture'] =  $reqData['birth_prefecture']; //出身地(都道府県名)
+        $tPlayers::$playerInfo['residence_country'] = $reqData['residence_country']; //居住地(国)
+        $tPlayers::$playerInfo['residence_prefecture'] =  $reqData['residence_prefecture']; //居住地(都道府県)
 
         //If new picture is uploaded
         if ($request->hasFile('uploadedPhoto')) {
             $file_name = $random_file_name . '.' . $request->file('uploadedPhoto')->getClientOriginalExtension();
-            $tPlayersData::$playerInfo['photo'] = $file_name; //写真
+            $tPlayers::$playerInfo['photo'] = $file_name; //写真
 
 
             if ($reqData['previousPhotoName'] ?? "") {
@@ -224,9 +232,9 @@ class PlayerController extends Controller
         } else {
             //If  picture is not uploaded
             if ($reqData['photo'] ?? "") {
-                $tPlayersData::$playerInfo['photo'] = $reqData['photo']; //写真
+                $tPlayers::$playerInfo['photo'] = $reqData['photo']; //写真
             } else {
-                $tPlayersData::$playerInfo['photo'] = ''; //写真
+                $tPlayers::$playerInfo['photo'] = ''; //写真
                 if ($reqData['previousPhotoName'] ?? "") {
                     $file_path = public_path() . '/images/players/' . $reqData['previousPhotoName'];
                     if (file_exists($file_path)) {
@@ -238,7 +246,7 @@ class PlayerController extends Controller
 
         DB::beginTransaction();
         try {
-            $result = $tPlayersData->updatePlayerData($tPlayersData::$playerInfo); //DBに選手を更新 20240131
+            $result = $tPlayers->updatePlayerData($tPlayers::$playerInfo); //DBに選手を更新 20240131
 
             $users = $t_users->getIDsAssociatedWithUser(Auth::user()->user_id); //ユーザIDに関連づいたIDの取得
             DB::commit();
@@ -253,12 +261,12 @@ class PlayerController extends Controller
     }
 
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
-    public function getPlayerInfoData(Request $request, T_players $tPlayersData)
+    public function getPlayerInfoData(Request $request, T_players $tPlayers)
     {
         try {
             Log::debug(sprintf("getPlayerInfoData start"));
             $reqData = $request->all();
-            $result = $tPlayersData->getPlayerData($reqData['playerId']);
+            $result = $tPlayers->getPlayerData($reqData['playerId']);
             if (empty($result)) {
                 abort(404, '選手情報が存在しません。');
             }
@@ -310,7 +318,7 @@ class PlayerController extends Controller
     }
 
     //react 選手情報削除画面から受け取ったデータを削除する 20240201
-    public function deletePlayerData(Request $request, T_players $tPlayersData, T_raceResultRecord $tRaceResultRecord, T_users $t_users, T_organization_players $t_org_players)
+    public function deletePlayerData(Request $request, T_players $tPlayers, T_raceResultRecord $tRaceResultRecord, T_users $t_users, T_organization_players $t_org_players)
     {
         $result = "success";
         DB::beginTransaction();
@@ -321,8 +329,8 @@ class PlayerController extends Controller
                 abort(400, "選手情報がないため選手を削除できません。");
             }
 
-            $tPlayersData::$playerInfo['player_id'] = $reqData['playerInformation']['player_id']; //選手ID
-            $tPlayersData->deletePlayerData($tPlayersData::$playerInfo); //該当選手に削除フラグを立てる 20240208
+            $tPlayers::$playerInfo['player_id'] = $reqData['playerInformation']['player_id']; //選手ID
+            $tPlayers->deletePlayerData($tPlayers::$playerInfo); //該当選手に削除フラグを立てる 20240208
 
             // $tRaceResultRecord::$raceResultRecordInfo['player_id'] = $reqData['playerInformation']['player_id']; //選手ID
             // $result = $tRaceResultRecord->deleteRaceResultRecord_playerId($tRaceResultRecord::$raceResultRecordInfo); //該当選手に削除フラグを立てる 20240208
@@ -354,7 +362,7 @@ class PlayerController extends Controller
     }
 
 
-    public function checkJARAPlayerId(Request $request, T_players $tPlayersData)
+    public function checkJARAPlayerId(Request $request, T_players $tPlayers)
     {
         Log::debug(sprintf("checkJARAPlayerId start"));
 
@@ -385,10 +393,8 @@ class PlayerController extends Controller
                 abort(400, "選手IDはすでに登録されています。 複数作成することはできません。");
             }
         }
-        $tPlayersData::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
-        $registered_player = $tPlayersData->checkJARAPlayerId($tPlayersData::$playerInfo);
-
-
+        $tPlayers::$playerInfo['jara_player_id'] = $reqData['jara_player_id']; //JARA選手コード
+        $registered_player = $tPlayers->checkJARAPlayerId($tPlayers::$playerInfo);
 
         if (!empty($registered_player)) {
             if ($registered_player->user_id === NULL or $registered_player->user_id === "") {

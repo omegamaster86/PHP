@@ -327,10 +327,18 @@ export default function TeamPlayerBulkRegister() {
     await axios
       .post('api/registerOrgCsvData', sendData)
       .then((res) => {
-        // router.push('/tournamentSearch'); // 20240222
+        setActivationFlg(true);
+        setCsvData([]);
+        setCsvFileData({ content: [], isSet: false });
+        fileUploaderRef?.current?.clearFile();
+        window.alert('登録を完了しました。');
+        setActivationFlg(false);
+        setDialogDisplayFlg(false);
+        setDisplayLinkButtonFlg(false);
+        setActivationFlg(false);
       })
       .catch((error) => {
-        setErrorMessage([error.response?.data?.message]);
+        setErrorMessage(['団体所属選手一括登録に失敗しました：' + (error as Error).message]);
       });
   };
 
@@ -526,15 +534,6 @@ export default function TeamPlayerBulkRegister() {
                 }
                 if (window.confirm('登録を実施しますか？')) {
                   registerCsvData(); //バックエンド側にデータを渡す 20240302
-                  setActivationFlg(true);
-                  setCsvData([]);
-                  setCsvFileData({ content: [], isSet: false });
-                  fileUploaderRef?.current?.clearFile();
-                  window.alert('登録を完了しました。');
-                  setActivationFlg(false);
-                  setDialogDisplayFlg(false);
-                  setDisplayLinkButtonFlg(false);
-                  setActivationFlg(false);
                 }
               }}
             >

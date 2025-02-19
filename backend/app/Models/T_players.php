@@ -255,13 +255,20 @@ class T_players extends Model
         );
     }
 
-    // jara_player_idで登録されたことありますかどうかチェック
+    // 指定されたjara_player_idが登録されているか確認する
     public function checkJARAPlayerId($playersInfo)
     {
         $result = DB::select(
-            'select `user_id`, `player_id`, `player_name` from `t_players` where `delete_flag` = 0 and `jara_player_id` = ?',
+            'SELECT
+                `user_id`,
+                `player_id`,
+                `player_name`
+            FROM `t_players`
+            WHERE
+                `delete_flag` = 0
+                AND `jara_player_id` = ?',
             [
-                $playersInfo['jara_player_id'] //where条件用
+                $playersInfo['jara_player_id']
             ]
         );
         $registeredPlayer = [];
@@ -269,6 +276,27 @@ class T_players extends Model
             $registeredPlayer = $result[0];
         }
         return $registeredPlayer;
+    }
+
+    // 指定されたjara_player_idが登録されているか確認する
+    public function findNonConnectedPlayer($jaraPlayerId)
+    {
+        $nonConnectedPlayer = DB::selectOne(
+            'SELECT
+                tp.user_id,
+                tp.player_id,
+                tp.player_name
+            FROM `t_players` tp
+            WHERE
+                tp.delete_flag = 0
+                AND tp.user_id IS NULL
+                AND tp.jara_player_id = ?',
+            [
+                $jaraPlayerId
+            ]
+        );
+
+        return $nonConnectedPlayer;
     }
 
     //選手テーブルに挿入する
@@ -392,18 +420,16 @@ class T_players extends Model
                         `registered_time`,
                         `registered_user_id`,
                         `updated_time`,
-                        `updated_user_id`,
-                        `delete_flag`
+                        `updated_user_id`
                     )
                     values (
-                        ? as jara_player_id,
-                        "" as player_name,
-                        "" as photo,
-                        ? as registered_time,
-                        ? as registered_user_id,
-                        ? as updated_time,
-                        ? as updated_user_id,
-                        ? as delete_flag
+                        ?,
+                        "",
+                        "",
+                        ?,
+                        ?,
+                        ?,
+                        ?
                     )',
             [
                 $playerInfo["oldPlayerId"],
@@ -411,7 +437,6 @@ class T_players extends Model
                 $user_id,
                 $current_datetime,
                 $user_id,
-                0
             ]
         );
         $insertId = DB::getPdo()->lastInsertId(); //挿入したIDを取得
@@ -426,6 +451,54 @@ class T_players extends Model
         DB::update(
             'update t_players set jara_player_id = ?, updated_time = ?, updated_user_id = ? where player_id = ?',
             [$playersInfo['oldPlayerId'], now()->format('Y-m-d H:i:s.u'), Auth::user()->user_id, $playersInfo['playerId']]
+        );
+    }
+
+    // "連携待ち"の選手とユーザーを紐づける。
+    public function connectPlayerAndUser($playersInfo, $nonConnectedPlayerId)
+    {
+        $now = now()->format('Y-m-d H:i:s.u');
+        $userId = Auth::user()->user_id;
+
+        DB::enableQueryLog();
+        DB::update(
+            'UPDATE t_players SET
+                user_id = ?,
+                jara_player_id = ?,
+                player_name = ?,
+                date_of_birth = ?,
+                sex_id = ?,
+                height = ?,
+                weight = ?,
+                side_info = ?,
+                birth_country = ?,
+                birth_prefecture = ?,
+                residence_country = ?,
+                residence_prefecture = ?,
+                photo = ?,
+                updated_time = ?,
+                updated_user_id = ?
+            WHERE
+                player_id = ?
+            ',
+            [
+                $userId,
+                $playersInfo['jara_player_id'],
+                $playersInfo['player_name'],
+                $playersInfo['date_of_birth'],
+                $playersInfo['sex_id'],
+                $playersInfo['height'],
+                $playersInfo['weight'],
+                $playersInfo['side_info'],
+                $playersInfo['birth_country'],
+                $playersInfo['birth_prefecture'],
+                $playersInfo['residence_country'],
+                $playersInfo['residence_prefecture'],
+                $playersInfo['photo'],
+                $now,
+                $userId,
+                $nonConnectedPlayerId
+            ]
         );
     }
 
