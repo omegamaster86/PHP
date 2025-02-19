@@ -645,13 +645,13 @@ class T_players extends Model
             FROM `t_players`
             # NOTE: 選手情報連携で"連携待ち"の選手がいる場合を考慮しすべて外部結合する。
             LEFT JOIN `m_sex` ON
-                `m_sex`.`sex_id` = `m_sex`.`sex_id`
+                `m_sex`.`sex_id` = `t_players`.`sex_id`
                 AND  `m_sex`.`delete_flag` = 0
             LEFT JOIN m_countries bir_cont ON
-                bir_cont.country_id = bir_cont.country_id
+                bir_cont.country_id = `t_players`.birth_country
                 AND  bir_cont.`delete_flag` = 0
             LEFT JOIN m_prefectures bir_pref ON
-                bir_pref.pref_id = bir_pref.pref_id
+                bir_pref.pref_id = `t_players`.birth_prefecture
                 AND  bir_pref.`delete_flag` = 0
             LEFT JOIN m_countries res_cont ON
                 res_cont.country_id = `t_players`.residence_country
