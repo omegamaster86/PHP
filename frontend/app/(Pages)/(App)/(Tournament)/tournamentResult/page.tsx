@@ -2095,6 +2095,7 @@ export default function TournamentResult() {
                               (mode == 'update' && player.addonLineFlg != true) ||
                               mode === 'confirm'
                             }
+                            widthClassName='w-[56px]'
                           />
                         </CustomTd>
                         <CustomTd>
@@ -2112,6 +2113,7 @@ export default function TournamentResult() {
                               (mode == 'update' && player.addonLineFlg != true) ||
                               mode === 'confirm'
                             }
+                            widthClassName='w-[120px]'
                           />
                         </CustomTd>
                         <CustomTd>

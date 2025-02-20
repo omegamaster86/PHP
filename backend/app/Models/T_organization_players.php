@@ -122,61 +122,62 @@ class T_organization_players extends Model
     public function getOrgPlayers($orgId)
     {
         Log::debug('getOrgPlayers start.');
-        $sqlString = "
-            select
+        $sqlString =
+            "SELECT
                 top.`player_id`
                 ,tp.`jara_player_id`
                 ,tp.`player_name`
                 ,tp.height
                 ,tp.weight
-                ,bir_cont.`country_name` as `birthCountryName`
-                ,bir_pref.`pref_name` as birthPrefectureName
-                ,res_cont.`country_name` as `residenceCountryName`
-                ,res_pref.`pref_name` as residencePrefectureName
-                ,m_sex.sex as sexName
+                ,tp.photo
+                ,bir_cont.`country_name` AS `birthCountryName`
+                ,bir_pref.`pref_name` AS birthPrefectureName
+                ,res_cont.`country_name` AS `residenceCountryName`
+                ,res_pref.`pref_name` AS residencePrefectureName
+                ,m_sex.sex AS sexName
                 ,CASE
                     when SUBSTRING(tp.`side_info`,8,1) = 1 then 1
                     else 0
-                    end as side_S
+                    end AS side_S
                 ,CASE
                     when SUBSTRING(tp.`side_info`,7,1) = 1 then 1
                     else 0
-                    end as side_B
+                    end AS side_B
                 ,CASE
                     when SUBSTRING(tp.`side_info`,6,1) = 1 then 1
                     else 0
-                    end as side_X
+                    end AS side_X
                 ,CASE
                     when SUBSTRING(tp.`side_info`,5,1) = 1 then 1
                     else 0
-                    end as side_C
-                ,org.org_id as `org_id`
-                ,org.org_name as `org_name`
-            from `t_organization_players` top
-            inner join `t_players` tp on
-                top.`player_id` = tp.`player_id`
-                and tp.`delete_flag` = 0
-            left outer join `m_sex` on
-                tp.`sex_id` = `m_sex`.`sex_id`
-                and m_sex.`delete_flag` = 0
-            left outer join m_countries bir_cont on
-                tp.birth_country = bir_cont.country_id
-                and bir_cont.`delete_flag` = 0
-            left outer join m_prefectures bir_pref on
-                tp.birth_prefecture = bir_pref.pref_id
-                and bir_pref.`delete_flag` = 0
-            left outer join m_countries res_cont on
-                tp.residence_country = res_cont.country_id
-                and res_cont.`delete_flag` = 0
-            left join m_prefectures res_pref on
-                tp.residence_prefecture = res_pref.pref_id
-                and res_pref.`delete_flag` = 0
-            inner join t_organizations org on
-                top.org_id = org.org_id
-                and org.`delete_flag` = 0
-            where 1=1
-            and top.`delete_flag` = 0
-            and top.org_id = :org_id
+                    end AS side_C
+                ,org.org_id AS `org_id`
+                ,org.org_name AS `org_name`
+            FROM `t_organization_players` top
+            INNER JOIN `t_players` tp on
+                tp.`player_id` = top.`player_id`
+                AND tp.`delete_flag` = 0
+            LEFT OUTER JOIN `m_sex` on
+                `m_sex`.`sex_id` = tp.`sex_id`
+                AND m_sex.`delete_flag` = 0
+            LEFT OUTER JOIN m_countries bir_cont on
+                bir_cont.country_id = tp.birth_country
+                AND bir_cont.`delete_flag` = 0
+            LEFT OUTER JOIN m_prefectures bir_pref on
+                bir_pref.pref_id = tp.birth_prefecture
+                AND bir_pref.`delete_flag` = 0
+            LEFT OUTER JOIN m_countries res_cont on
+                res_cont.country_id = tp.residence_country
+                AND res_cont.`delete_flag` = 0
+            LEFT OUTER JOIN m_prefectures res_pref on
+                res_pref.pref_id = tp.residence_prefecture
+                AND res_pref.`delete_flag` = 0
+            INNER JOIN t_organizations org on
+                org.org_id = top.org_id
+                AND org.`delete_flag` = 0
+            WHERE 1=1
+            AND top.`delete_flag` = 0
+            AND top.org_id = :org_id
             ";
         $players = DB::select($sqlString, ['org_id' => $orgId]);
         Log::debug('getOrgPlayers end.');
