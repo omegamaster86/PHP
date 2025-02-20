@@ -1,26 +1,27 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import useSWR from 'swr';
-import { Divider } from '@mui/material';
-import { CoachRefereeRefResponse } from '@/app/types';
-import { formatDate } from '@/app/utils/dateUtil';
 import {
   CustomButton,
-  CustomTitle,
   CustomTable,
-  CustomThead,
-  CustomTr,
-  CustomTh,
   CustomTbody,
   CustomTd,
+  CustomTh,
+  CustomThead,
+  CustomTitle,
+  CustomTr,
+  ErrorBox,
   RoundedBadge,
 } from '@/app/components';
-import { TitleSideButton } from '../../_components/TitleSideButton';
-import EditIcon from '@mui/icons-material/EditOutlined';
 import { useAuth } from '@/app/hooks/auth';
-import { fetcher } from '@/app/lib/swr';
 import { useUserType } from '@/app/hooks/useUserType';
+import { fetcher } from '@/app/lib/swr';
+import { CoachRefereeRefResponse } from '@/app/types';
+import { formatDate } from '@/app/utils/dateUtil';
+import EditIcon from '@mui/icons-material/EditOutlined';
+import { Divider } from '@mui/material';
+import { useRouter, useSearchParams } from 'next/navigation';
+import useSWR from 'swr';
+import { TitleSideButton } from '../../_components/TitleSideButton';
 
 export default function CoachRefereeRef() {
   const router = useRouter();
@@ -32,7 +33,7 @@ export default function CoachRefereeRef() {
 
   const userType = useUserType();
   const userId = Number(searchParams.get('userId') || user?.user_id);
-  const { data } = useSWR(
+  const { data, error } = useSWR(
     userId
       ? {
           url: `api/getCoachRefereeInfoList`,
@@ -41,6 +42,16 @@ export default function CoachRefereeRef() {
       : null,
     fetcher<CoachRefereeRefResponse>,
   );
+
+  if (error) {
+    const errorMessage = error.response?.data?.message || 'エラーが発生しました。';
+    return (
+      <>
+        <CustomTitle displayBack>指導者・審判情報参照</CustomTitle>
+        <ErrorBox errorText={[errorMessage]} />
+      </>
+    );
+  }
 
   if (!data) {
     return null;
