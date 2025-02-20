@@ -26,6 +26,11 @@ class CoachRefereeController extends Controller
         $canShowQualification = substr($userType, -6, 1) == '1' || substr($userType, -5, 1) == '1';
 
         $result = $tUsers->getCoachRefereeInfoData($reqData['userId'], $canShowQualification); //ユーザIDに紐づいた指導者・審判資格を取得する
+
+        if (empty($result->userId)) {
+            abort(404, '指導者・審判情報が見つかりません。');
+        }
+
         $result->coachingHistories = $tOrganizationCoachingHistory->getOrganizationCoachingHistoryData($reqData['userId']); //ユーザIDに紐づいた指導履歴を取得する 20241106
         $result->coachQualificationNames = array_filter(
             explode(",", $result->coachQualificationNames),
