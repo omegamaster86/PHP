@@ -67,14 +67,50 @@ export default function TeamRef() {
 
   useUserType({
     onSuccess: async (userType) => {
-      const response = await axios.post<{ result: Organization }>('api/getOrgData', org_id); //団体情報取得
-      setFormData(response.data.result);
+      const fetchData = async () => {
+        try {
+          // 主催大会
+          const hostTournamentsResponse = await axios.post('api/getTournamentInfoData_org', org_id);
+          setHostTournaments(hostTournamentsResponse.data.result);
+          const entTournamentsResponse = await axios.post(
+            'api/getEntryTournamentsViewForTeamRef',
+            org_id,
+          );
+          setEntTournaments(entTournamentsResponse.data.result);
+          const playersResponse = await axios.post('api/getOrgPlayers', org_id);
+          setPlayers(playersResponse.data.result);
 
-      const isStaff = response.data.result.isStaff;
-      const hasAuthority = userType.isOrganizationManager && isStaff;
-      if (isDeleteMode && !hasAuthority) {
-        router.replace('/teamSearch');
-      }
+          const staffsResponse = await axios.post('api/getOrgStaffData', org_id); //スタッフ情報取得
+          setStaffs(staffsResponse.data.result);
+
+          const playerInf = await axios.get('api/getIDsAssociatedWithUser');
+          setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報
+
+          const responseData = await axios.get('api/getOrganizationForOrgManagement'); //団体データ取得
+          setTeamdata(responseData.data.result);
+        } catch (error: any) {
+          const errorMessage = error?.response?.data?.message || `API取得エラー: ${error.message}`;
+          setErrorMessage([errorMessage]);
+        }
+      };
+
+      await axios
+        .post<{ result: Organization }>('api/getOrgData', org_id)
+        .then((response) => {
+          setFormData(response.data.result);
+
+          const isStaff = response.data.result.isStaff;
+          const hasAuthority = userType.isOrganizationManager && isStaff;
+          if (isDeleteMode && !hasAuthority) {
+            router.replace('/teamSearch');
+          }
+
+          fetchData();
+        })
+        .catch((error) => {
+          const errorMessage = error?.response?.data?.message || `API取得エラー: ${error.message}`;
+          setErrorMessage([errorMessage]);
+        }); //団体情報取得
     },
   });
 
@@ -130,35 +166,9 @@ export default function TeamRef() {
     return false; //ユーザが管理する団体のいずれでもない場合、falseを返す
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // 主催大会
-        const hostTournamentsResponse = await axios.post('api/getTournamentInfoData_org', org_id);
-        setHostTournaments(hostTournamentsResponse.data.result);
-        const entTournamentsResponse = await axios.post(
-          'api/getEntryTournamentsViewForTeamRef',
-          org_id,
-        );
-        setEntTournaments(entTournamentsResponse.data.result);
-        const playersResponse = await axios.post('api/getOrgPlayers', org_id);
-        setPlayers(playersResponse.data.result);
-
-        const staffsResponse = await axios.post('api/getOrgStaffData', org_id); //スタッフ情報取得
-        setStaffs(staffsResponse.data.result);
-
-        const playerInf = await axios.get('api/getIDsAssociatedWithUser');
-        setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報
-
-        const responseData = await axios.get('api/getOrganizationForOrgManagement'); //団体データ取得
-        setTeamdata(responseData.data.result);
-      } catch (error: any) {
-        const errorMessage = error?.response?.data?.message || `API取得エラー: ${error.message}`;
-        setErrorMessage([errorMessage]);
-      }
-    };
-    fetchData();
-  }, []);
+  if (formData.org_id == null) {
+    return <ErrorBox errorText={errorMessage} />;
+  }
 
   return (
     <div className='flex flex-col justify-start gap-[20px]'>
