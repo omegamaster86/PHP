@@ -59,8 +59,13 @@ export default function VolunteerInformationRef() {
 
   useUserType({
     onSuccess: (userType) => {
+      const isMyVolunteerInfo =
+        userType.volunteerId && volunteerId && userType.volunteerId === Number(volunteerId);
       const hasAuthority =
-        userType.isAdministrator || userType.isJara || userType.isPrefBoatOfficer;
+        userType.isAdministrator ||
+        userType.isJara ||
+        userType.isPrefBoatOfficer ||
+        isMyVolunteerInfo;
 
       if (!hasAuthority) {
         router.replace('/mypage/top');
