@@ -38,17 +38,12 @@ interface CsvDownloadProps {
 }
 
 // Handlerの型定義
-interface Handler {
+export interface FileHandler {
   clearFile(): void;
 }
 
-interface Header {
-  key: string;
-  label: string;
-}
-
 // FileUploaderコンポーネント
-const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) {
+const CsvHandler = forwardRef<FileHandler, Props>(function FileUploader(props, ref) {
   const [currentShowFile, setcurrentShowFile] = useState<{ file: File; isUploaded: boolean }>();
   useImperativeHandle(ref, () => {
     return {

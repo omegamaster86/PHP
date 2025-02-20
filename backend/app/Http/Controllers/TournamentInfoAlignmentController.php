@@ -200,6 +200,7 @@ class TournamentInfoAlignmentController extends Controller
                     $target_tournament = $t_tournaments->getTournament($tourn_id);  //対象の大会データを取得
                     $entrysystem_tourn_id = $target_tournament->entrysystem_tourn_id; //エントリー大会ID                    
                     $tourn_name = $target_tournament->tourn_name;             //大会名
+                    $official = $target_tournament->tourn_type; //公式・非公式区分
                     $race_id = $inputData['csvDataList'][$rowIndex]["raceId"];                 //レースID                    
                     $target_race = $t_races->getRaceFromRaceId($race_id);       //対象のレースデータを取得
                     $entrysystem_race_id = $target_race[0]->entrysystem_race_id; //エントリーレースID                    
@@ -281,6 +282,7 @@ class TournamentInfoAlignmentController extends Controller
                             $update_values["event_id"] = $event_id;
                             $update_values["event_name"] = $event_name;
                             $update_values["range"] = $range;
+                            $update_values["official"] = $official;
                             $update_values["seat_number"] = $seatId;
                             $update_values["seat_name"] = $seatName;
                             $update_values["start_datetime"] = $start_datetime;
@@ -313,6 +315,7 @@ class TournamentInfoAlignmentController extends Controller
                         $insert_values["event_id"] = $event_id;
                         $insert_values["event_name"] = $event_name;
                         $insert_values["range"] = $range;
+                        $insert_values["official"] = $official;
                         $insert_values["seat_number"] = $seatId;
                         $insert_values["seat_name"] = $seatName;
                         $insert_values["start_datetime"] = $start_datetime;

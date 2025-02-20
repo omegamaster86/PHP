@@ -19,7 +19,7 @@ import axios from '@/app/lib/axios';
 import { UserResponse } from '@/app/types';
 import { Autocomplete, TextField } from '@mui/material';
 import { CsvData } from './CsvDataInterface';
-import CsvHandler from './CsvHandler';
+import CsvHandler, { FileHandler } from './CsvHandler';
 import CsvTable from './CsvTable';
 
 interface FormData {
@@ -51,11 +51,6 @@ interface CsvDownloadProps {
   tournId: number;
   formData: FormData;
   checkTournName: (flg: boolean) => void;
-}
-
-// ファイル関連のアクションを扱うためのインターフェース
-interface FileHandler {
-  clearFile(): void;
 }
 
 const CSV_HEADER = [
