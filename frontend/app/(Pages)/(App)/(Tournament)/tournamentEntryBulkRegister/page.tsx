@@ -18,7 +18,7 @@ import axios from '@/app/lib/axios';
 import { TournamentResponse, UserResponse } from '@/app/types';
 import { Autocomplete, TextField } from '@mui/material';
 import { CsvData } from './CsvDataInterface';
-import CsvHandler from './CsvHandler';
+import CsvHandler, { FileHandler } from './CsvHandler';
 import CsvTable from './CsvTable';
 import { FormData } from './FormDataInterface';
 
@@ -38,9 +38,6 @@ interface CsvDownloadProps {
   formData: FormData;
   checkTournName: (flg: boolean) => void;
 }
-
-// ファイル関連のアクションを扱うためのインターフェース
-interface FileHandler {}
 
 // 選手情報連携のメインコンポーネント
 export default function TournamentEntryBulkRegister() {
@@ -475,9 +472,15 @@ export default function TournamentEntryBulkRegister() {
         setErrorMessage([
           '他のユーザーによりレース結果が登録されたレースが有ります。当該レースのエントリー情報は更新することは出来ません。',
         ]);
-        return false;
       }
-      return true;
+
+      window.alert('レース結果の登録が完了しました。');
+      setCsvData([]);
+      setCsvFileData({ content: [], isSet: false });
+      fileUploaderRef?.current?.clearFile();
+      setActivationFlg(false);
+      setDialogDisplayFlg(false);
+      setDisplayRegisterButtonFlg(false);
     } catch (error) {
       setErrorMessage(['大会エントリー一括登録に失敗しました：' + (error as Error).message]);
     }
@@ -728,13 +731,7 @@ export default function TournamentEntryBulkRegister() {
                   if (csvData.find((row) => row.checked)?.id === undefined) {
                     window.alert('1件以上選択してください。');
                   } else {
-                    const isSuccess = await checkRaceResultRecords(); //バックエンド側にCSVデータを送信 データ登録用
-                    if (isSuccess) {
-                      window.alert('レース結果の登録が完了しました。');
-                      setActivationFlg(false);
-                      setDialogDisplayFlg(false);
-                      setDisplayRegisterButtonFlg(false);
-                    }
+                    checkRaceResultRecords(); //バックエンド側にCSVデータを送信 データ登録用
                   }
                   setActivationFlg(false);
                 }}

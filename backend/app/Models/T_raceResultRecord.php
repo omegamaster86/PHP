@@ -200,7 +200,7 @@ class T_raceResultRecord extends Model
     public function getMyPageRaceResultRecordInfo($playerId, $official)
     {
         $racesResultRecord = DB::select(
-            'select 
+            'SELECT 
                 `t_races`.`race_id` as `raceId`,
                 `t_race_result_record`.`tourn_name` as `tournName`,
                 `t_race_result_record`.`official`,
@@ -208,17 +208,18 @@ class T_raceResultRecord extends Model
                 `t_race_result_record`.`race_number` as `raceNumber`, 
                 `t_race_result_record`.`race_name` as `raceName`, 
                 `t_race_result_record`.`by_group` as `byGroup`
-                FROM `t_race_result_record`
-                INNER JOIN `t_tournaments` ON
-                    `t_tournaments`.`tourn_id` = `t_race_result_record`.`tourn_id`
-                    AND `t_tournaments`.delete_flag = 0
-                INNER JOIN `t_races` ON
-                    `t_races`.`race_id` = `t_race_result_record`.`race_id`
-                    AND `t_races`.delete_flag = 0
-                where 1=1
-                and `t_race_result_record`.delete_flag = 0
-                and `t_race_result_record`.player_id = ?
-                and `t_race_result_record`.official = ?
+            FROM `t_race_result_record`
+            # 大会、レースが削除されていても出漕結果記録は表示する。
+            LEFT OUTER JOIN `t_tournaments` ON
+                `t_tournaments`.`tourn_id` = `t_race_result_record`.`tourn_id`
+                AND `t_tournaments`.delete_flag = 0
+            LEFT OUTER JOIN `t_races` ON
+                `t_races`.`race_id` = `t_race_result_record`.`race_id`
+                AND `t_races`.delete_flag = 0
+            WHERE 1=1
+                AND `t_race_result_record`.delete_flag = 0
+                AND `t_race_result_record`.player_id = ?
+                AND `t_race_result_record`.official = ?
                 ORDER BY `t_race_result_record`.`start_datetime` DESC',
             [$playerId, $official]
         );
@@ -254,6 +255,7 @@ class T_raceResultRecord extends Model
                         `event_id`, 
                         `event_name`, 
                         `range`, 
+                        `official`, 
                         `seat_number`,
                         `seat_name`,
                         `start_datetime`, 
@@ -263,7 +265,7 @@ class T_raceResultRecord extends Model
                         `updated_user_id`, 
                         `delete_flag`
                     )VALUES
-                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
             [
                 $raceResultRecordResponse["player_id"],
                 $raceResultRecordResponse["jara_player_id"],
@@ -285,6 +287,7 @@ class T_raceResultRecord extends Model
                 $raceResultRecordResponse["event_id"],
                 $raceResultRecordResponse["event_name"],
                 $raceResultRecordResponse["range"],
+                $raceResultRecordResponse["official"],
                 $raceResultRecordResponse["seat_number"],
                 $raceResultRecordResponse["seat_name"],
                 $raceResultRecordResponse["start_datetime"],
@@ -325,6 +328,7 @@ class T_raceResultRecord extends Model
                     ,`event_id` = :event_id
                     ,`event_name` = :event_name
                     ,`range` = :range
+                    ,`official` = :official
                     ,`seat_number` = :seat_number
                     ,`seat_name` = :seat_name
                     ,`start_datetime` = :start_datetime
@@ -825,41 +829,41 @@ class T_raceResultRecord extends Model
     public function getRaceResultRecordList($race_id, $crew_name, $org_id)
     {
         $race_result_record_list = DB::select(
-            "select 
-                                                ply.player_id as playerId
-                                                ,ply.player_name as playerName
-                                                ,msex.sex_id
-                                                ,msex.sex
-                                                ,ply.height
-                                                ,ply.weight
-                                                ,rrr.race_result_record_id
-                                                ,rrr.seat_number as seatNameId
-                                                ,seat.seat_name as seatName
-                                                ,rrr.heart_rate_500m as fiveHundredmHeartRate
-                                                ,rrr.heart_rate_1000m as tenHundredmHeartRate
-                                                ,rrr.heart_rate_1500m as fifteenHundredmHeartRate
-                                                ,rrr.heart_rate_2000m as twentyHundredmHeartRate
-                                                ,rrr.heart_rate_avg as heartRateAvg
-                                                ,rrr.attendance
-                                                ,rrr.org_id
-                                                ,rrr.crew_name
-                                                ,0 as `deleteFlg`
-                                                from `t_race_result_record` rrr
-                                                left join `t_players` ply
-                                                on rrr.player_id = ply.player_id 
-                                                left join `m_sex` msex
-                                                on ply.sex_id = msex.sex_id
-                                                left join `m_seat_number` seat
-                                                on rrr.seat_number = seat.seat_id
-                                                where 1=1
-                                                and rrr.delete_flag = 0
-                                                and ply.delete_flag = 0
-                                                and msex.delete_flag = 0
-                                                and seat.delete_flag = 0
-                                                and race_id = :race_id
-                                                and org_id = :org_id
-                                                and crew_name = :crew_name
-                                                order by seat_number",
+            'SELECT 
+                ply.player_id AS playerId
+                ,rrr.player_name AS playerName
+                ,msex.sex_id
+                ,msex.sex
+                ,rrr.player_height AS height
+                ,rrr.player_weight AS weight
+                ,rrr.race_result_record_id
+                ,rrr.seat_number AS seatNameId
+                ,seat.seat_name AS seatName
+                ,rrr.heart_rate_500m AS fiveHundredmHeartRate
+                ,rrr.heart_rate_1000m AS tenHundredmHeartRate
+                ,rrr.heart_rate_1500m AS fifteenHundredmHeartRate
+                ,rrr.heart_rate_2000m AS twentyHundredmHeartRate
+                ,rrr.heart_rate_avg AS heartRateAvg
+                ,rrr.attendance
+                ,rrr.org_id
+                ,rrr.crew_name
+                ,0 AS `deleteFlg`
+            FROM `t_race_result_record` rrr
+            LEFT JOIN `t_players` ply ON
+                ply.player_id = rrr.player_id
+                AND ply.delete_flag = 0
+            LEFT JOIN `m_sex` msex ON
+                msex.sex_id = ply.sex_id
+                AND msex.delete_flag = 0
+            LEFT JOIN `m_seat_number` seat ON
+                seat.seat_id = rrr.seat_number
+                AND seat.delete_flag = 0
+            WHERE 1=1
+                AND rrr.delete_flag = 0
+                AND rrr.race_id = :race_id
+                AND rrr.org_id = :org_id
+                AND rrr.crew_name = :crew_name
+            ORDER BY seat_number',
             [
                 "race_id" => $race_id,
                 "crew_name" => $crew_name,
