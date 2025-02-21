@@ -271,7 +271,7 @@ export default function TournamentSearch() {
       <ErrorBox errorText={[]} />
       <div className='bg-thinContainerBg p-[20px]'>
         <div className='flex flex-col gap-[16px]'>
-          <div className='flex flex-col sm:flex-row gap-[16px]'>
+          <div className='w-full flex flex-col sm:flex-row gap-[16px]'>
             {/* 大会名 */}
             <CustomTextField
               label='大会名'
@@ -282,6 +282,7 @@ export default function TournamentSearch() {
               value={searchCond.tourn_name}
               className='border-[0.5px] border-solid border-gray-50 rounded'
               onChange={(e) => handleInputChange('tourn_name', e.target.value)}
+              widthClassName='w-full md:w-2/3'
             />
             {/* 大会種別 */}
             <CustomDropdown
@@ -297,9 +298,11 @@ export default function TournamentSearch() {
                 );
               }}
               className='border-[0.5px] border-solid border-gray-50 rounded'
-              widthClassName='sm:w-[200px]'
+              widthClassName='w-full md:w-1/3'
             />
-            {/* 開催場所 */}
+          </div>
+          {/* 開催場所 */}
+          <div className='w-full'>
             <CustomDropdown
               id='venueId'
               label='開催場所'
@@ -314,7 +317,6 @@ export default function TournamentSearch() {
                 );
               }}
               className='border-[0.5px] border-solid border-gray-50 rounded'
-              widthClassName='sm:w-[200px]'
             />
           </div>
           <div className='flex flex-row justify-center sm:justify-start gap-[16px]'>

@@ -658,7 +658,7 @@ export default function TournamentResultInfomationBulkRegister() {
       {/* 大会開催年 */}
       <div className='flex flex-col justify-start gap-[8px]'>
         <InputLabel label='大会開催年（西暦）' required />
-        <div className='flex flex-row justify-start'>
+        <div className='flex flex-row justify-start items-center gap-3'>
           <CustomYearPicker
             placeHolder={'YYYY'}
             readonly={tournStartYearActivFlag}
