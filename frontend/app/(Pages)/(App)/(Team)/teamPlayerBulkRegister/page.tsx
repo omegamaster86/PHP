@@ -352,7 +352,7 @@ export default function TeamPlayerBulkRegister() {
     <>
       <CustomTitle displayBack>団体所属選手一括登録</CustomTitle>
       <ErrorBox errorText={errorMessage} />
-      <div className='flex flex-col gap-[10px] w-[300px]'>
+      <div className='flex flex-col gap-[10px] md:w-[300px]'>
         <CustomDropdown
           id='org'
           label='所属団体名'
@@ -385,7 +385,6 @@ export default function TeamPlayerBulkRegister() {
               orgs.find((item) => item.org_id === Number(e))?.org_name || '',
             );
           }}
-          className='w-[300px]'
           readonly={isOrgNameActive == false} //団体参照画面から遷移した場合は、読み取り専用とする
         />
       </div>
@@ -468,7 +467,7 @@ export default function TeamPlayerBulkRegister() {
         </div>
       )}
       {/* エラーメッセージの表示 */}
-      <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
+      <p className='text-systemErrorText self-center'>{csvFileErrorMessage}</p>
       {/* 読み込み結果の表示 */}
       <div className='flex flex-col items-center'>
         <p className='mb-1 text-systemErrorText'>

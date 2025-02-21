@@ -165,12 +165,12 @@ export default function TeamPlayer() {
         )}
       </div>
       <div>
-        <div className='w-full bg-primary-500 text-white h-[40px] flex justify-center items-center font-bold relative'>
-          <>所属選手</>
+        <div className='w-full bg-primary-500 text-white h-[120px] flex flex-col gap-3 justify-center items-center font-bold relative md:h-[40px] md:flex-row'>
+          <p className='order-1 md:order-2'>所属選手</p>
           {mode !== 'confirm' && (
-            <div className={`absolute left-[10px]`}>
+            <div className='flex gap-4 order-2 md:order-1 md:absolute md:left-[10px]'>
               <CustomButton
-                className='w-[100px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
+                className='w-[100px] h-[30px] text-small text-primary-500 hover:text-primary-300'
                 buttonType='secondary'
                 onClick={() => {
                   formData.length > 0 &&
@@ -182,7 +182,7 @@ export default function TeamPlayer() {
                 全削除
               </CustomButton>
               <CustomButton
-                className='w-[120px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
+                className='w-[120px] h-[30px] text-small text-primary-500 hover:text-primary-300'
                 buttonType='secondary'
                 onClick={() => {
                   formData.length > 0 &&
@@ -196,9 +196,9 @@ export default function TeamPlayer() {
             </div>
           )}
           {mode !== 'confirm' && (
-            <div className={`absolute right-[10px]`}>
+            <div className='order-3 md:absolute md:right-[10px]'>
               <CustomButton
-                className='w-[120px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
+                className='w-[120px] h-[30px] text-small text-primary-500 hover:text-primary-300'
                 buttonType='secondary'
                 onClick={() => {
                   router.push('/addPlayerSearch?org_id=' + orgId);
@@ -209,117 +209,121 @@ export default function TeamPlayer() {
             </div>
           )}
         </div>
-        <CustomTable>
-          <CustomThead>
-            <CustomTr>
-              <CustomTh align='center' rowSpan={2}>
-                種別
-              </CustomTh>
-              <CustomTh align='center' rowSpan={2}>
-                削除
-              </CustomTh>
-              <CustomTh align='center' rowSpan={2}>
-                選手ID
-              </CustomTh>
-              <CustomTh align='center' rowSpan={2}>
-                JARA選手コード
-              </CustomTh>
-              <CustomTh align='center' rowSpan={2}>
-                選手名
-              </CustomTh>
-              <CustomTh align='center' rowSpan={2}>
-                出身地
-              </CustomTh>
-              <CustomTh align='center' rowSpan={2}>
-                居住地
-              </CustomTh>
-              <CustomTh align='center' rowSpan={1} colSpan={4}>
-                サイド情報
-              </CustomTh>
-            </CustomTr>
-            <CustomTr>
-              <CustomTh align='center'>S</CustomTh>
-              <CustomTh align='center'>B</CustomTh>
-              <CustomTh align='center'>X</CustomTh>
-              <CustomTh align='center'>C</CustomTh>
-            </CustomTr>
-          </CustomThead>
-          <CustomTbody>
-            {formData.map((data, index) => (
-              <CustomTr key={index}>
-                <CustomTd align='center'>
-                  <div className={data.type === '追加' ? 'text-secondary-500' : 'text-primaryText'}>
-                    {data.type}
-                  </div>
-                </CustomTd>
-                <CustomTd align='center'>
-                  <OriginalCheckbox
-                    checked={data.deleteFlag ? true : false}
-                    onChange={() => {
-                      handleInputChangeTeamPlayer(data.id, 'deleteFlag', !data.deleteFlag);
-                    }}
-                    readonly={mode === 'confirm'}
-                    id={`delete-${index}`}
-                    value='del'
-                  ></OriginalCheckbox>
-                </CustomTd>
-                <CustomTd align='center'>
-                  <Link
-                    className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                    href={{
-                      pathname: '/playerInformationRef',
-                      query: { player_id: data.player_id },
-                    }}
-                    rel='noopener noreferrer'
-                    target='_blank'
-                  >
-                    {data.player_id}
-                  </Link>
-                </CustomTd>
-                <CustomTd align='center'>
-                  <Link
-                    className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                    href={{
-                      pathname: '/playerInformationRef',
-                      query: { player_id: data.player_id },
-                    }}
-                    rel='noopener noreferrer'
-                    target='_blank'
-                  >
-                    {data.jara_player_id}
-                  </Link>
-                </CustomTd>
-                <CustomTd align='center'>
-                  <Link
-                    className='text-primary-300 cursor-pointer underline hover:text-primary-50'
-                    href={{
-                      pathname: '/playerInformationRef',
-                      query: { player_id: data.player_id },
-                    }}
-                    rel='noopener noreferrer'
-                    target='_blank'
-                  >
-                    {data.player_name}
-                  </Link>
-                </CustomTd>
-                <CustomTd align='center'>
-                  {[data.birthCountryName, data.birthPrefectureName].filter((x) => x).join(' ')}
-                </CustomTd>
-                <CustomTd align='center'>
-                  {[data.residenceCountryName, data.residencePrefectureName]
-                    .filter((x) => x)
-                    .join(' ')}
-                </CustomTd>
-                <CustomTd align='center'>{data.side_info[0] ? '◯' : '×'}</CustomTd>
-                <CustomTd align='center'>{data.side_info[1] ? '◯' : '×'}</CustomTd>
-                <CustomTd align='center'>{data.side_info[2] ? '◯' : '×'}</CustomTd>
-                <CustomTd align='center'>{data.side_info[3] ? '◯' : '×'}</CustomTd>
+        <div className='overflow-x-auto'>
+          <CustomTable>
+            <CustomThead>
+              <CustomTr>
+                <CustomTh align='center' rowSpan={2}>
+                  種別
+                </CustomTh>
+                <CustomTh align='center' rowSpan={2}>
+                  削除
+                </CustomTh>
+                <CustomTh align='center' rowSpan={2}>
+                  選手ID
+                </CustomTh>
+                <CustomTh align='center' rowSpan={2}>
+                  JARA選手コード
+                </CustomTh>
+                <CustomTh align='center' rowSpan={2}>
+                  選手名
+                </CustomTh>
+                <CustomTh align='center' rowSpan={2}>
+                  出身地
+                </CustomTh>
+                <CustomTh align='center' rowSpan={2}>
+                  居住地
+                </CustomTh>
+                <CustomTh align='center' rowSpan={1} colSpan={4}>
+                  サイド情報
+                </CustomTh>
               </CustomTr>
-            ))}
-          </CustomTbody>
-        </CustomTable>
+              <CustomTr>
+                <CustomTh align='center'>S</CustomTh>
+                <CustomTh align='center'>B</CustomTh>
+                <CustomTh align='center'>X</CustomTh>
+                <CustomTh align='center'>C</CustomTh>
+              </CustomTr>
+            </CustomThead>
+            <CustomTbody>
+              {formData.map((data, index) => (
+                <CustomTr key={index}>
+                  <CustomTd align='center'>
+                    <div
+                      className={data.type === '追加' ? 'text-secondary-500' : 'text-primaryText'}
+                    >
+                      {data.type}
+                    </div>
+                  </CustomTd>
+                  <CustomTd align='center'>
+                    <OriginalCheckbox
+                      checked={data.deleteFlag ? true : false}
+                      onChange={() => {
+                        handleInputChangeTeamPlayer(data.id, 'deleteFlag', !data.deleteFlag);
+                      }}
+                      readonly={mode === 'confirm'}
+                      id={`delete-${index}`}
+                      value='del'
+                    ></OriginalCheckbox>
+                  </CustomTd>
+                  <CustomTd align='center'>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/playerInformationRef',
+                        query: { player_id: data.player_id },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {data.player_id}
+                    </Link>
+                  </CustomTd>
+                  <CustomTd align='center'>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/playerInformationRef',
+                        query: { player_id: data.player_id },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {data.jara_player_id}
+                    </Link>
+                  </CustomTd>
+                  <CustomTd align='center'>
+                    <Link
+                      className='text-primary-300 cursor-pointer underline hover:text-primary-50'
+                      href={{
+                        pathname: '/playerInformationRef',
+                        query: { player_id: data.player_id },
+                      }}
+                      rel='noopener noreferrer'
+                      target='_blank'
+                    >
+                      {data.player_name}
+                    </Link>
+                  </CustomTd>
+                  <CustomTd align='center'>
+                    {[data.birthCountryName, data.birthPrefectureName].filter((x) => x).join(' ')}
+                  </CustomTd>
+                  <CustomTd align='center'>
+                    {[data.residenceCountryName, data.residencePrefectureName]
+                      .filter((x) => x)
+                      .join(' ')}
+                  </CustomTd>
+                  <CustomTd align='center'>{data.side_info[0] ? '◯' : '×'}</CustomTd>
+                  <CustomTd align='center'>{data.side_info[1] ? '◯' : '×'}</CustomTd>
+                  <CustomTd align='center'>{data.side_info[2] ? '◯' : '×'}</CustomTd>
+                  <CustomTd align='center'>{data.side_info[3] ? '◯' : '×'}</CustomTd>
+                </CustomTr>
+              ))}
+            </CustomTbody>
+          </CustomTable>
+        </div>
         <div
-          className='flex justify-between w-full gap-[20px] mt-[20px]'
+          className='flex flex-col items-center justify-center gap-[16px] md:flex-row'
           style={{ marginTop: '20px' }}
         >
           <CustomButton
