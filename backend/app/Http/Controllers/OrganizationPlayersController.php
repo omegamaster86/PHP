@@ -71,15 +71,17 @@ class OrganizationPlayersController extends Controller
                 $player_delete_flag = $player['deleteFlag'];
                 //既存、かつ削除にチェックが入っている場合
                 if ($player_type == "既存" && $player_delete_flag == 1) {
-                    $t_organization_players->updateDeleteFlagOrganizationPlayers($player["org_id"], $player["player_id"]);
+                    $t_organization_players->inactivateOrganizationPlayer($player["org_id"], $player["player_id"]);
                 }
                 //追加の場合
                 //追加の場合deleteFlagが空
                 elseif ($player_type == "追加") {
                     $target_player_id = $player['player_id'];
-                    $check_count = $t_organization_players->checkOrganizationPlayerIsExists($target_org_id, $target_player_id);
-                    if ($check_count[0]->count == 0) {
+                    $organizationPlayersCount = $t_organization_players->countOrganizationPlayers($target_org_id, $target_player_id);
+                    if ($organizationPlayersCount == 0) {
                         $t_organization_players->insertOrganizationPlayer($player, $target_org_id);
+                    } else {
+                        $t_organization_players->activateOrganizationPlayer($target_org_id, $target_player_id);
                     }
                 }
             }
@@ -155,7 +157,7 @@ class OrganizationPlayersController extends Controller
             if ($reqData[$rowIndex]['result'] != '登録可能') {
                 continue;
             }
-            if(isset($jara_player_code) && (!preg_match('/^[0-9]+$/', $jara_player_code) || mb_strlen($jara_player_code) != 12)) {
+            if (isset($jara_player_code) && (!preg_match('/^[0-9]+$/', $jara_player_code) || mb_strlen($jara_player_code) != 12)) {
                 $this->assignInvalidRowdata('無効データ（不正JARA選手コード）', $reqData[$rowIndex]);
                 continue;
             }
@@ -639,7 +641,7 @@ class OrganizationPlayersController extends Controller
                 $player_data = $t_players->getPlayersFromPlayerId($player_id);
                 //所属情報を取得できなかった場合
                 if (empty($org_player_info)) {
-                    //Log::debug("所属情報を取得できなかった場合");
+                    // Log::debug("所属情報を取得できなかった場合");
                     $this->assignRowData(
                         $reqData[$rowIndex],
                         $reqData[$rowIndex]['result'],
@@ -1031,7 +1033,12 @@ class OrganizationPlayersController extends Controller
                 $insert_organization_player_data['player_id'] = isset($reqData[$rowIndex]['playerId']) ? $reqData[$rowIndex]['playerId'] : $insert_player_id;
                 //insertを実行して、insertしたレコードのIDを取得
                 try {
-                    $insert_organization_player_id = $t_organization_players->insertOrganizationPlayer($insert_organization_player_data, $input_org_id);
+                    $organizationPlayersCount = $t_organization_players->countOrganizationPlayers($input_org_id, $insert_organization_player_data['player_id']);
+                    if ($organizationPlayersCount == 0) {
+                        $t_organization_players->insertOrganizationPlayer($insert_organization_player_data, $input_org_id);
+                    } else {
+                        $t_organization_players->activateOrganizationPlayer($input_org_id, $insert_organization_player_data['player_id']);
+                    }
                 } catch (\Throwable $e) {
                     DB::rollback();
                     $error_message = "以下の選手の団体所属処理に失敗しました。選手名：" . $target_player_name . "　メールアドレス：" . $target_mailaddress;

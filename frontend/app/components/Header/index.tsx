@@ -261,7 +261,7 @@ const Header: FC = () => {
             userIdType.is_organization_manager == 1,
         },
         {
-          title: '団体選手一括登録',
+          title: '団体所属選手一括登録',
           link: '/teamPlayerBulkRegister',
           show:
             userIdType.is_administrator == 1 ||

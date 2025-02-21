@@ -316,25 +316,25 @@ class T_users extends Authenticatable
     public function getUserDataFromInputCsv($mailaddress)
     {
         $user = DB::select(
-            'select
-                            `user_id`
-                            ,`user_name`
-                            ,`mailaddress`
-                            ,`sex`
-                            ,`date_of_birth`
-                            ,`height`
-                            ,`weight`
-                            ,`user_type`
-                            ,case
-                                when SUBSTR(`user_type`, 6, 1) > 0 then 1
-                                else 0
-                                end as `is_player`
-                            ,`expiry_time_of_temp_password`
-                            ,`temp_password_flag`
-                            FROM `t_users`
-                            where 1=1
-                            and `delete_flag` = 0
-                            and `mailaddress` = :mailaddress',
+            'SELECT
+                `user_id`
+                ,`user_name`
+                ,`mailaddress`
+                ,`sex`
+                ,`date_of_birth`
+                ,`height`
+                ,`weight`
+                ,`user_type`
+                ,CASE
+                    WHEN SUBSTR(`user_type`, 6, 1) > 0 THEN 1
+                    ELSE 0
+                    END AS `is_player`
+                ,`expiry_time_of_temp_password`
+                ,`temp_password_flag`
+            FROM `t_users`
+            WHERE 1=1
+                AND `delete_flag` = 0
+                AND `mailaddress` = :mailaddress',
             ['mailaddress' => $mailaddress]
         );
         return $user;

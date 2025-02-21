@@ -76,24 +76,44 @@ class T_organization_players extends Model
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 
-    //団体所属選手を削除する
-    //delete_flagを1にする
-    public function updateDeleteFlagOrganizationPlayers($org_id, $player_id)
+    // 団体所属選手を論理削除する。
+    public function inactivateOrganizationPlayer($orgId, $playerId)
     {
         DB::update(
-            'update `t_organization_players`
-                    set `delete_flag` = 1
-                    ,updated_time = ?
-                    ,updated_user_id = ?
-                    where 1=1
-                    and `delete_flag` = 0
-                    and `org_id` = ?
-                    and `player_id` = ?',
+            'UPDATE `t_organization_players` SET
+                `delete_flag` = 1,
+                updated_time = ?,
+                updated_user_id = ?
+            WHERE 1=1
+                AND `delete_flag` = 0
+                AND `org_id` = ?
+                AND `player_id` = ?',
             [
                 now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
-                $org_id,
-                $player_id
+                $orgId,
+                $playerId
+            ]
+        );
+    }
+
+    // 論理削除されたレコードをactivateする。
+    public function activateOrganizationPlayer($orgId, $playerId)
+    {
+        DB::update(
+            'UPDATE `t_organization_players` SET
+                `delete_flag` = 0,
+                updated_time = ?,
+                updated_user_id = ?
+            WHERE 1=1
+                AND `delete_flag` = 1
+                AND `org_id` = ?
+                AND `player_id` = ?',
+            [
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                $orgId,
+                $playerId
             ]
         );
     }
@@ -447,18 +467,18 @@ class T_organization_players extends Model
     }
 
     //選手IDと団体IDを指定した団体所属選手が存在するかを確認する
-    public function checkOrganizationPlayerIsExists($org_id, $player_id)
+    public function countOrganizationPlayers($orgId, $playerId)
     {
-        $check_count = DB::select(
-            'select count(*) as count
-                                    from `t_organization_players`
-                                    where 1=1
-                                    and delete_flag = 0
-                                    and org_id = :org_id
-                                    and player_id= :player_id',
-            ['org_id' => $org_id, 'player_id' => $player_id]
+        $result = DB::select(
+            'SELECT COUNT(*) AS count
+            FROM `t_organization_players`
+            WHERE 1=1
+                # NOTE: Activeなレコードであっても構わずUPDATEすればよいのでdelete_flagは条件に入れない。
+                AND org_id = :org_id
+                AND player_id= :player_id',
+            ['org_id' => $orgId, 'player_id' => $playerId]
         );
-        //select文の返り値は配列型なので0番目を返す
-        return $check_count;
+
+        return $result[0]->count;
     }
 }
