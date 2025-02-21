@@ -870,7 +870,8 @@ export default function TournamentResult() {
           count++;
         }
       });
-      if (count != playerCount) {
+      // NOTE: 種目「その他」（playerCountが0）の場合は人数制限なし
+      if (playerCount > 0 && playerCount != count) {
         handleRaceResultRecordsInputChangebyIndex(
           index,
           'errorText',
