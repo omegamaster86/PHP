@@ -1170,89 +1170,83 @@ export default function Tournaments() {
         />
       </div>
       {/* エントリーシステムの大会ID */}
-      <div className='flex flex-col justify-start'>
-        <CustomTextField
-          label='エントリーシステムの大会ID'
-          isError={entrysystemTournIdErrorMessage.length > 0}
-          errorMessages={entrysystemTournIdErrorMessage}
-          readonly={mode === 'confirm'}
-          displayHelp={mode !== 'confirm'}
-          value={tournamentFormData.entrysystem_tourn_id}
-          onChange={(e) => handleInputChangeTournament('entrysystem_tourn_id', e.target.value)}
-          toolTipText='大会エントリーシステムに発番される大会ID
+      <CustomTextField
+        label='エントリーシステムの大会ID'
+        isError={entrysystemTournIdErrorMessage.length > 0}
+        errorMessages={entrysystemTournIdErrorMessage}
+        readonly={mode === 'confirm'}
+        displayHelp={mode !== 'confirm'}
+        value={tournamentFormData.entrysystem_tourn_id}
+        onChange={(e) => handleInputChangeTournament('entrysystem_tourn_id', e.target.value)}
+        toolTipText='大会エントリーシステムに発番される大会ID
               この大会IDについては、日本ローイング協会にお問い合わせください。' //はてなボタン用
-          maxLength={8}
-        />
-      </div>
-      <div className='flex flex-col justify-start gap-[8px]'>
-        {/* 大会名 */}
-        <div className='flex flex-row justify-start gap-[4px]'>
-          <CustomTextField
-            label='大会名'
-            isError={tournNameErrorMessage.length > 0}
-            errorMessages={[]}
-            required={mode !== 'confirm'}
-            displayHelp={mode !== 'confirm'}
-            readonly={mode === 'confirm'}
-            value={tournamentFormData.tourn_name}
-            onChange={(e) => handleInputChangeTournament('tourn_name', e.target.value)}
-            toolTipText='開催する大会名と大会種別（公式/非公式）を選択してください。' //はてなボタン用
-          />
-          {/* 大会種別（公式・非公式） */}
-          <CustomDropdown
-            id='tournType'
-            options={tournType.map((item) => ({ key: item.id, value: item.name }))}
-            value={
-              mode !== 'confirm' ? tournamentFormData.tourn_type : tournamentFormData.tournTypeName
-            }
-            required={mode !== 'confirm'}
-            onChange={(e) => {
-              handleInputChangeTournament('tourn_type', e?.toString());
-              handleInputChangeTournament(
-                'tournTypeName',
-                tournType.find((item) => item.id === Number(e))?.name || '',
-              );
-            }}
-            className='rounded self-end w-[100px] mt-auto'
-            readonly={mode === 'confirm'}
-          />
-        </div>
-        <p className='text-caption1 text-systemErrorText'>
-          {tournNameErrorMessage?.map((message) => {
-            return message;
-          })}
-        </p>
-      </div>
-      {/* 主催団体ID */}
-      <div className='flex flex-col justify-start'>
+        maxLength={8}
+      />
+      {/* 大会名 */}
+      <div className='flex flex-row gap-4'>
         <CustomTextField
-          label='主催団体ID'
-          isError={sponsorOrgIdErrorMessage.length > 0}
-          errorMessages={sponsorOrgIdErrorMessage}
+          label='大会名'
+          isError={tournNameErrorMessage.length > 0}
+          errorMessages={[]}
           required={mode !== 'confirm'}
           displayHelp={mode !== 'confirm'}
           readonly={mode === 'confirm'}
-          value={tournamentFormData.sponsor_org_id}
-          onChange={(e) => handleInputChangeTournament('sponsor_org_id', e.target.value)}
-          toolTipText='団体IDは団体情報参照画面で確認できます。' //はてなボタン用
+          value={tournamentFormData.tourn_name}
+          onChange={(e) => handleInputChangeTournament('tourn_name', e.target.value)}
+          toolTipText='開催する大会名と大会種別（公式/非公式）を選択してください。' //はてなボタン用
+          widthClassName='w-full'
+        />
+        {/* 大会種別（公式・非公式） */}
+        <CustomDropdown
+          id='tournType'
+          options={tournType.map((item) => ({ key: item.id, value: item.name }))}
+          value={
+            mode !== 'confirm' ? tournamentFormData.tourn_type : tournamentFormData.tournTypeName
+          }
+          required={mode !== 'confirm'}
+          onChange={(e) => {
+            handleInputChangeTournament('tourn_type', e?.toString());
+            handleInputChangeTournament(
+              'tournTypeName',
+              tournType.find((item) => item.id === Number(e))?.name || '',
+            );
+          }}
+          className='rounded mt-auto'
+          widthClassName='w-[100px]'
+          readonly={mode === 'confirm'}
         />
       </div>
+      <p className='text-caption1 text-systemErrorText'>
+        {tournNameErrorMessage?.map((message) => {
+          return message;
+        })}
+      </p>
+      {/* 主催団体ID */}
+      <CustomTextField
+        label='主催団体ID'
+        isError={sponsorOrgIdErrorMessage.length > 0}
+        errorMessages={sponsorOrgIdErrorMessage}
+        required={mode !== 'confirm'}
+        displayHelp={mode !== 'confirm'}
+        readonly={mode === 'confirm'}
+        value={tournamentFormData.sponsor_org_id}
+        onChange={(e) => handleInputChangeTournament('sponsor_org_id', e.target.value)}
+        toolTipText='団体IDは団体情報参照画面で確認できます。' //はてなボタン用
+      />
       {/* 主催団体名 */}
       {mode === 'confirm' && (prevMode === 'create' || prevMode === 'update') && (
-        <div className='flex flex-col justify-start'>
-          <CustomTextField
-            label='主催団体名'
-            required={mode !== 'confirm'}
-            displayHelp={mode !== 'confirm'}
-            readonly={mode === 'confirm'}
-            value={tournamentFormData.sponsorOrgName}
-            onChange={(e) => {}}
-          />
-        </div>
+        <CustomTextField
+          label='主催団体名'
+          required={mode !== 'confirm'}
+          displayHelp={mode !== 'confirm'}
+          readonly={mode === 'confirm'}
+          value={tournamentFormData.sponsorOrgName}
+          onChange={(e) => {}}
+        />
       )}
-      <div className='flex flex-row justify-start gap-[4px]'>
+      <div className='flex flex-col gap-7 md:flex-row'>
         {/* 開催開始年月日 */}
-        <div className='flex flex-col justify-start '>
+        <div className='flex flex-col'>
           <InputLabel
             label='開催開始年月日'
             required={mode !== 'confirm'}
@@ -1270,7 +1264,7 @@ export default function Tournaments() {
           />
         </div>
         {/* 開催終了年月日 */}
-        <div className='flex flex-col justify-start'>
+        <div className='flex flex-col'>
           <InputLabel
             label='開催終了年月日'
             required={mode !== 'confirm'}
@@ -1288,7 +1282,7 @@ export default function Tournaments() {
           />
         </div>
       </div>
-      <div className='flex flex-col justify-start gap-[8px]'>
+      <div className='flex flex-col gap-[8px]'>
         {/* 開催場所 */}
         <InputLabel
           label={'開催場所'}
@@ -1296,33 +1290,31 @@ export default function Tournaments() {
           displayHelp={mode !== 'confirm'}
           toolTipText='大会を開催する水域を選択してください。' //はてなボタン用
         ></InputLabel>
-        <div className='flex flex-row justify-start gap-[4px]'>
-          <CustomDropdown
-            id='venue'
-            required={mode !== 'confirm'}
-            options={venue.map((item) => ({ key: item.id, value: item.name }))}
-            value={mode !== 'confirm' ? tournamentFormData.venue_id : tournamentFormData.venue_name}
-            onChange={(e) => {
-              handleInputChangeTournament('venue_id', e?.toString());
-              handleInputChangeTournament(
-                'venue_name',
-                venue.find((item) => item.id === Number(e))?.name || '',
-              );
-            }}
-            className='rounded self-end w-[300px]'
+        <CustomDropdown
+          id='venue'
+          required={mode !== 'confirm'}
+          options={venue.map((item) => ({ key: item.id, value: item.name }))}
+          value={mode !== 'confirm' ? tournamentFormData.venue_id : tournamentFormData.venue_name}
+          onChange={(e) => {
+            handleInputChangeTournament('venue_id', e?.toString());
+            handleInputChangeTournament(
+              'venue_name',
+              venue.find((item) => item.id === Number(e))?.name || '',
+            );
+          }}
+          className='rounded w-full'
+          readonly={mode === 'confirm'}
+        />
+        {/* 開催場所入力欄 */}
+        <div className={`${tournamentFormData.venue_id == '9999' ? '' : 'hidden'} `}>
+          <CustomTextField
+            label=''
+            isError={venueNameErrorMessage.length > 0}
             readonly={mode === 'confirm'}
+            displayHelp={false}
+            value={tournamentFormData.venue_name}
+            onChange={(e) => handleInputChangeTournament('venue_name', e.target.value)}
           />
-          {/* 開催場所入力欄 */}
-          <div className={`${tournamentFormData.venue_id == '9999' ? '' : 'hidden'} `}>
-            <CustomTextField
-              label=''
-              isError={venueNameErrorMessage.length > 0}
-              readonly={mode === 'confirm'}
-              displayHelp={false}
-              value={tournamentFormData.venue_name}
-              onChange={(e) => handleInputChangeTournament('venue_name', e.target.value)}
-            />
-          </div>
         </div>
         <p className='text-caption1 text-systemErrorText'>
           {venueIdErrorMessage.length > 0 &&
@@ -1338,20 +1330,18 @@ export default function Tournaments() {
         </p>
       </div>
       {/* 大会個別URL */}
-      <div className='flex flex-col justify-start'>
-        <CustomTextField
-          label='大会個別URL'
-          isError={tournUrlErrorMessage.length > 0}
-          errorMessages={tournUrlErrorMessage}
-          readonly={mode === 'confirm'}
-          displayHelp={mode !== 'confirm'}
-          value={tournamentFormData.tourn_url}
-          onChange={(e) => handleInputChangeTournament('tourn_url', e.target.value)}
-          toolTipText='大会用のホームページを公開している場合、URLを入力してください。' //はてなボタン用
-        />
-      </div>
+      <CustomTextField
+        label='大会個別URL'
+        isError={tournUrlErrorMessage.length > 0}
+        errorMessages={tournUrlErrorMessage}
+        readonly={mode === 'confirm'}
+        displayHelp={mode !== 'confirm'}
+        value={tournamentFormData.tourn_url}
+        onChange={(e) => handleInputChangeTournament('tourn_url', e.target.value)}
+        toolTipText='大会用のホームページを公開している場合、URLを入力してください。' //はてなボタン用
+      />
       {/* 大会要項PDFファイル */}
-      <div className='flex flex-col justify-start'>
+      <div className='flex flex-col'>
         <PdfFileUploader
           label='大会要項PDFファイル'
           readonly={!displayFlg || mode === 'confirm'}
@@ -1593,7 +1583,7 @@ export default function Tournaments() {
           </div>
         )
       }
-      <div className='flex flex-row justify-center gap-[16px] my-[30px]'>
+      <div className='flex flex-col items-center justify-center gap-[16px] my-[30px] md:flex-row'>
         {/* 戻るボタン */}
         {displayFlg && (
           <CustomButton onClick={() => router.back()} buttonType='secondary'>

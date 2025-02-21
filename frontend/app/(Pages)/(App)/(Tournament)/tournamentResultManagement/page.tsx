@@ -339,142 +339,134 @@ export default function TournamentResultManagement() {
       </div>
       {/* エラーメッセージの表示 */}
       <ErrorBox errorText={[]} />
-      <div className='bg-thinContainerBg p-[20px] flex flex-col gap-[12px]'>
-        <div className='flex flex-col justify-start gap-[16px]'>
-          <div className='flex flex-row justify-start gap-[16px]'>
-            {/* 大会開催年 */}
-            <div className='flex flex-col justify-start gap-[8px]'>
-              <InputLabel label='大会開催年（西暦）' required />
-              <div className='flex flex-row justify-start gap-[4px]'>
-                <CustomYearPicker
-                  placeHolder={'YYYY'}
-                  selectedDate={searchCond?.eventYear}
-                  onChange={(date: Date) => {
-                    handleInputChange('eventYear', date?.toLocaleDateString('ja-JP').slice(0, 4));
-                  }}
-                  onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                    if (
-                      searchCond?.eventYear === '' ||
-                      searchCond?.eventYear === null ||
-                      searchCond?.eventYear === undefined
-                    ) {
-                      handleInputChange('tournName', '');
-                      setMessageDisplay('visible');
-                      setTournamentList([]); //大会開催年が空欄の場合、大会名のリストを空にする 20240420
-                    } else {
-                      getTournamentList();
-                      setMessageDisplay('hidden');
-                    }
-                  }}
-                  isError={eventYearErrorMessage.length > 0}
-                  errorMessages={eventYearErrorMessage}
-                />
-                <Label label='年' />
-              </div>
+      <div className='bg-thinContainerBg p-[20px] gap-[12px]'>
+        <div className='flex flex-col gap-[16px]'>
+          {/* 大会開催年 */}
+          <div className='flex flex-col gap-[8px]'>
+            <InputLabel label='大会開催年（西暦）' required />
+            <div className='w-full flex flex-row items-center gap-[4px]'>
+              <CustomYearPicker
+                placeHolder={'YYYY'}
+                selectedDate={searchCond?.eventYear}
+                onChange={(date: Date) => {
+                  handleInputChange('eventYear', date?.toLocaleDateString('ja-JP').slice(0, 4));
+                }}
+                onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                  if (
+                    searchCond?.eventYear === '' ||
+                    searchCond?.eventYear === null ||
+                    searchCond?.eventYear === undefined
+                  ) {
+                    handleInputChange('tournName', '');
+                    setMessageDisplay('visible');
+                    setTournamentList([]); //大会開催年が空欄の場合、大会名のリストを空にする 20240420
+                  } else {
+                    getTournamentList();
+                    setMessageDisplay('hidden');
+                  }
+                }}
+                isError={eventYearErrorMessage.length > 0}
+                errorMessages={eventYearErrorMessage}
+              />
+              <Label label='年' />
             </div>
           </div>
           {/* 大会名 */}
           <div className='flex flex-col justify-start'>
-            <div className='flex flex-row justify-start gap-[8px]'>
-              <div className='flex flex-col justify-start gap-[8px]'>
-                <InputLabel label='大会名' required />
-                <div>
-                  <Autocomplete
-                    options={tournamentList.map((item) => ({ id: item.id, name: item.name }))}
-                    getOptionLabel={(option) => option.name}
-                    value={{ id: Number(searchCond.tournId), name: searchCond.tournName }}
-                    onChange={(e: ChangeEvent<{}>, newValue) => {
-                      handleInputChange(
-                        'tournId',
-                        newValue ? (newValue as TournamentResponse).id?.toString() : '',
-                      );
-                      handleInputChange(
-                        'tournName',
-                        newValue ? (newValue as TournamentResponse).name : '',
-                      );
-                    }}
-                    renderOption={(props: any, option: TournamentResponse) => {
-                      return (
-                        <li {...props} key={option.id}>
-                          {option.name}
-                        </li>
-                      );
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        key={params.id}
-                        className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                        {...params}
-                        value={searchCond.tournName || ''}
-                      />
-                    )}
-                    className={'w-[500px]'}
-                  />
-                  {tournNameErrorMessage?.map((message: string) => (
-                    <p key={message} className='pt-1 text-caption1 text-systemErrorText'>
-                      {message}
-                    </p>
-                  ))}
-                </div>
-              </div>
-              <div className={`flex flex-col justify-end ${messageDisplay}`}>
-                <Label
-                  label='※「大会開催年」を入力してください。'
-                  textColor='red'
-                  textSize='caption1'
+            <div className='flex flex-col justify-start gap-[8px]'>
+              <InputLabel label='大会名' required />
+              <div>
+                <Autocomplete
+                  options={tournamentList.map((item) => ({ id: item.id, name: item.name }))}
+                  getOptionLabel={(option) => option.name}
+                  value={{ id: Number(searchCond.tournId), name: searchCond.tournName }}
+                  onChange={(e: ChangeEvent<{}>, newValue) => {
+                    handleInputChange(
+                      'tournId',
+                      newValue ? (newValue as TournamentResponse).id?.toString() : '',
+                    );
+                    handleInputChange(
+                      'tournName',
+                      newValue ? (newValue as TournamentResponse).name : '',
+                    );
+                  }}
+                  renderOption={(props: any, option: TournamentResponse) => {
+                    return (
+                      <li {...props} key={option.id}>
+                        {option.name}
+                      </li>
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      key={params.id}
+                      className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                      {...params}
+                      value={searchCond.tournName || ''}
+                    />
+                  )}
+                  className='w-full'
                 />
+                {tournNameErrorMessage?.map((message: string) => (
+                  <p key={message} className='pt-1 text-caption1 text-systemErrorText'>
+                    {message}
+                  </p>
+                ))}
               </div>
             </div>
+            <div className={`flex flex-col justify-end ${messageDisplay}`}>
+              <Label
+                label='※「大会開催年」を入力してください。'
+                textColor='red'
+                textSize='caption1'
+              />
+            </div>
           </div>
-          <div className='flex flex-row justify-start gap-[16px]'>
-            <div className='flex flex-row justify-start gap-[12px]'>
-              {/* 種目 */}
-              <div className='flex flex-col justify-start gap-[8px]'>
-                <InputLabel label='種目' required />
-                <div>
-                  <Autocomplete
-                    options={event.map((item) => ({ id: item.id, name: item.name }))}
-                    getOptionLabel={(option) => option.name}
-                    value={{ id: Number(searchCond?.eventId || 0), name: searchCond?.eventIdName }}
-                    onChange={(e: ChangeEvent<{}>, newValue) => {
-                      handleInputChange(
-                        'eventId',
-                        newValue ? (newValue as EventResponse).id.toString() : '',
-                      );
-                      handleInputChange(
-                        'eventIdName',
-                        newValue ? (newValue as EventResponse).name : '',
-                      );
-                    }}
-                    renderOption={(props: any, option: EventResponse) => {
-                      return (
-                        <li {...props} key={option.id}>
-                          {option.name}
-                        </li>
-                      );
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        key={params.id}
-                        className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                        {...params}
-                        value={searchCond?.tournName || ''}
-                      />
-                    )}
-                    className={'w-[200px]'}
+          {/* 種目 */}
+          <div className='flex flex-col justify-start gap-[8px]'>
+            <InputLabel label='種目' required />
+            <div>
+              <Autocomplete
+                options={event.map((item) => ({ id: item.id, name: item.name }))}
+                getOptionLabel={(option) => option.name}
+                value={{ id: Number(searchCond?.eventId || 0), name: searchCond?.eventIdName }}
+                onChange={(e: ChangeEvent<{}>, newValue) => {
+                  handleInputChange(
+                    'eventId',
+                    newValue ? (newValue as EventResponse).id.toString() : '',
+                  );
+                  handleInputChange(
+                    'eventIdName',
+                    newValue ? (newValue as EventResponse).name : '',
+                  );
+                }}
+                renderOption={(props: any, option: EventResponse) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name}
+                    </li>
+                  );
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    key={params.id}
+                    className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                    {...params}
+                    value={searchCond?.tournName || ''}
                   />
-                  {eventIdErrorMessage?.map((message: string) => (
-                    <p key={message} className='pt-1 text-caption1 text-systemErrorText'>
-                      {message}
-                    </p>
-                  ))}
-                  {eventNameErrorMessage?.map((message: string) => (
-                    <p key={message} className='pt-1 text-caption1 text-systemErrorText'>
-                      {message}
-                    </p>
-                  ))}
-                </div>
-              </div>
+                )}
+                className='w-full'
+              />
+              {eventIdErrorMessage?.map((message: string) => (
+                <p key={message} className='pt-1 text-caption1 text-systemErrorText'>
+                  {message}
+                </p>
+              ))}
+              {eventNameErrorMessage?.map((message: string) => (
+                <p key={message} className='pt-1 text-caption1 text-systemErrorText'>
+                  {message}
+                </p>
+              ))}
             </div>
           </div>
           {/* レース区分 */}
@@ -510,7 +502,7 @@ export default function TournamentResultManagement() {
                     value={searchCond?.tournName || ''}
                   />
                 )}
-                className={'w-[200px]'}
+                className='w-full'
               />
             </div>
           </div>
@@ -521,7 +513,7 @@ export default function TournamentResultManagement() {
               displayHelp={false}
               value={searchCond?.byGroup}
               onChange={(e) => handleInputChange('byGroup', e.target.value)}
-              className='w-[200px]'
+              className='w-full'
             />
           </div>
           {/* レースNo */}
@@ -531,12 +523,12 @@ export default function TournamentResultManagement() {
               displayHelp={false}
               value={searchCond?.raceNo}
               onChange={(e) => handleInputChange('raceNo', e.target.value)}
-              className='w-[150px]'
+              className='w-full'
             />
           </div>
           <Divider />
-          <div className='flex flex-col justify-start'>
-            <div className='flex flex-row justify-center gap-[4px]'>
+          
+            <div className='flex flex-col items-center justify-center gap-4 md:flex-row'>
               <CustomButton
                 buttonType='primary'
                 onClick={() => {
@@ -544,7 +536,7 @@ export default function TournamentResultManagement() {
                     handleSearch();
                   }
                 }}
-                className='flex flex-row justify-center gap-[4px] w-[200px]'
+                className='flex flex-row justify-center gap-[4px]'
               >
                 <SearchIcon />
                 <div>レース結果検索</div>
@@ -565,12 +557,11 @@ export default function TournamentResultManagement() {
                     raceNo: '',
                   } as SearchCond);
                 }}
-                className='w-[200px]'
               >
                 クリア
               </CustomButton>
             </div>
-          </div>
+          
         </div>
       </div>
       {/* レース結果一覧テーブル表示 */}
