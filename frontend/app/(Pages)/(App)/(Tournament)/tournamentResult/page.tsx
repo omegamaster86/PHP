@@ -325,15 +325,6 @@ export default function TournamentResult() {
         return newFormData;
       });
       return;
-    } else {
-      setRaceResultRecords((prevFormData) => {
-        const newFormData = [...prevFormData];
-        newFormData[index].crewPlayer[crewIndex] = {
-          ...newFormData[index]?.crewPlayer[crewIndex],
-          errorText: '',
-        };
-        return newFormData;
-      });
     }
 
     //選手の重複チェック
@@ -369,7 +360,8 @@ export default function TournamentResult() {
         sex: player?.sex || '',
         height: player?.height || '',
         weight: player?.weight || '',
-        deleteFlg: player ? newFormData[index]?.crewPlayer[crewIndex]?.deleteFlg : false,
+        deleteFlg: player ? newFormData[index]?.crewPlayer[crewIndex]?.deleteFlg ?? false : false,
+        errorText: '',
       };
       return newFormData;
     });
