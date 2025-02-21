@@ -576,11 +576,15 @@ class T_users extends Authenticatable
                     END AS "refereeQualificationNames"
                 FROM `t_users`
                 left join `t_held_coach_qualifications` `held_coach_qual`
-                on `t_users`.`user_id` = `held_coach_qual`.`user_id` and `held_coach_qual`.delete_flag = 0 and `held_coach_qual`.`expiry_date` >= CURDATE()
+                on `t_users`.`user_id` = `held_coach_qual`.`user_id` 
+                and `held_coach_qual`.delete_flag = 0 
+                and (`held_coach_qual`.`expiry_date` >= CURDATE() OR `held_coach_qual`.`expiry_date` IS NULL)
                 left join `m_coach_qualifications` `coach_qual`
                 on `held_coach_qual`.`coach_qualification_id` = `coach_qual`.`coach_qualification_id` and `coach_qual`.delete_flag = 0
                 left join `t_held_referee_qualifications` `held_referee_qual`
-                on `t_users`.`user_id` = `held_referee_qual`.`user_id` and `held_referee_qual`.delete_flag = 0 and `held_referee_qual`.`expiry_date` >= CURDATE()
+                on `t_users`.`user_id` = `held_referee_qual`.`user_id` 
+                and `held_referee_qual`.delete_flag = 0
+                and (`held_referee_qual`.`expiry_date` >= CURDATE() OR `held_referee_qual`.`expiry_date` IS NULL)
                 left join `m_referee_qualifications` `referee_qual`
                 on `held_referee_qual`.`referee_qualification_id` = `referee_qual`.`referee_qualification_id` and `referee_qual`.delete_flag = 0
                 where 1=1
