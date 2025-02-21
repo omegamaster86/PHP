@@ -168,64 +168,43 @@ const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) 
     <>
       <div className='flex flex-col gap-[10px] w-full'>
         <CustomInputLabel label={props.csvUploadProps.label}></CustomInputLabel>
-        <div className='flex flex-row gap-[4px]'>
-          {!props.csvUploadProps.readonly && (
-            <div className='flex flex-col gap-[10px] w-full'>
-              <div {...getRootProps()} className=''>
-                <div className=''>
-                  <input {...getInputProps()} />
-                  <p className='text-secondaryText text-sm'>
-                    {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : ''}
-                  </p>
-                  <div className='flex flex-col gap-[10px] w-full'>
-                    <div className='flex flex-row gap-[4px]'>
-                      <CustomTextField
-                        placeholder={'ここにファイルをドラッグ＆ドロップしてアップロード'}
-                        value={currentShowFile?.isUploaded ? currentShowFile?.file.name : ''}
-                        className='w-[450px] h-12'
-                      ></CustomTextField>
-                      <CustomButton
-                        onClick={() => {
-                          // TODO: ファイル参照処理
-                        }}
-                        className='w-[100px] h-[57px]'
-                      >
-                        参照
-                      </CustomButton>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                {isDragAccept ? 'ファイルをアップロードします。' : isDragReject ? 'エラー' : ''}
+        <CustomButton
+          buttonType='primary'
+          disabled={props.csvUploadProps.readonly}
+          onClick={() => {
+            handleDownload();
+          }}
+          className='w-[200px] h-[57px]'
+        >
+          {props.csvDownloadProps.label}
+        </CustomButton>
+        {!props.csvUploadProps.readonly && (
+          <div className='flex flex-col gap-[10px] w-full'>
+            <div {...getRootProps()}>
+              <input {...getInputProps()} />
+              <p className='text-secondaryText text-sm'>
+                {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : ''}
+              </p>
+              <div className='flex flex-row gap-[4px]'>
+                <CustomTextField
+                  placeholder={'ここにファイルをドラッグ＆ドロップしてアップロード'}
+                  value={currentShowFile?.isUploaded ? currentShowFile?.file.name : ''}
+                  className='w-[450px] h-12'
+                ></CustomTextField>
+                <CustomButton className='w-[100px] h-[57px]'>参照</CustomButton>
               </div>
             </div>
-          )}
-          {props.csvUploadProps.readonly && (
-            <div>
-              <p className='h-12 w-[300px] text-secondaryText p-3 disable'>
-                {currentShowFile?.file.name}
-              </p>
-            </div>
-          )}
-          <div className={`flex flex-col gap-[10px]`}>
-            <CustomButton
-              buttonType='primary'
-              disabled={props.csvUploadProps.readonly}
-              onClick={() => {
-                handleDownload();
-              }}
-              className='w-[200px] h-[57px]'
-            >
-              {props.csvDownloadProps.label}
-            </CustomButton>
-            {dispError === true && (
-              <p className={`text-systemErrorText text-sm w-[200px]`}>
-                所属団体名を選択してください。
-              </p>
-            )}
+            {isDragAccept ? 'ファイルをアップロードします。' : isDragReject ? 'エラー' : ''}
           </div>
-        </div>
+        )}
+        {props.csvUploadProps.readonly && (
+          <p className='h-12 w-[300px] text-secondaryText p-3 disable'>
+            {currentShowFile?.file.name}
+          </p>
+        )}
+        {dispError === true && (
+          <p className={`text-systemErrorText text-sm w-[200px]`}>所属団体名を選択してください。</p>
+        )}
       </div>
       {/* ファイルアップロード中の表示 */}
       {currentShowFile && !currentShowFile.isUploaded && (

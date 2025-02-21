@@ -241,10 +241,10 @@ export default function TeamManagement() {
       <CustomTitle displayBack={true}>団体管理</CustomTitle>
       {/* エラー表示１ */}
       <ErrorBox errorText={errorMessage} />
-      <div className=''>
-        <div className='w-full bg-primary-500 text-white h-[40px] flex justify-center items-center'>
-          <div className='font-bold'>管理団体一覧</div>
-        </div>
+      <div className='w-full bg-primary-500 text-white h-[40px] flex justify-center items-center'>
+        <div className='font-bold'>管理団体一覧</div>
+      </div>
+      <div className='overflow-x-auto'>
         <CustomTable>
           <CustomThead>
             <CustomTr>
@@ -403,104 +403,104 @@ export default function TeamManagement() {
               ))}
           </CustomTbody>
         </CustomTable>
-        {/* 団体種別フィルター用のオートコンプリート 20240723 */}
-        {showOrgTypeAutocomplete && (
-          <div
-            ref={orgTypefocusTarget}
-            style={{
-              position: 'absolute',
-              top: `${selectedOrgTypeHeader.position.top - 120}px`,
-              left: `${selectedOrgTypeHeader.position.left}px`,
-              backgroundColor: 'white',
-              borderRadius: '4px',
-              zIndex: 1000,
-              padding: '8px',
-            }}
-            onBlur={() => setShowOrgTypeAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
-          >
-            <Autocomplete
-              id='orgType'
-              multiple
-              options={orgTypeList}
-              filterOptions={(options, { inputValue }) =>
-                options.filter((option) => option.name?.includes(inputValue))
-              }
-              value={selectedOrgTypeList || []}
-              onChange={(e: ChangeEvent<{}>, newValue: OrgTypeList[]) => {
-                setSelectedOrgTypeList(newValue);
-              }}
-              renderOption={(props: any, option: OrgTypeList) => {
-                return (
-                  <li {...props} key={option.id}>
-                    {option.name}
-                  </li>
-                );
-              }}
-              renderTags={(value: OrgTypeList[], getTagProps: any) => {
-                return value.map((option, index) => (
-                  <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
-                ));
-              }}
-              renderInput={(params) => (
-                <TextField
-                  key={params.id}
-                  className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                  {...params}
-                  label={'団体種別'}
-                />
-              )}
-            />
-          </div>
-        )}
-        {showOrgNameAutocomplete && (
-          <div
-            ref={orgNamefocusTarget}
-            style={{
-              position: 'absolute',
-              top: `${selectedOrgNameHeader.position.top - 120}px`,
-              left: `${selectedOrgNameHeader.position.left}px`,
-              backgroundColor: 'white',
-              borderRadius: '4px',
-              zIndex: 1000,
-              padding: '8px',
-            }}
-            onBlur={() => setShowOrgNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
-          >
-            <Autocomplete
-              id='orgName'
-              multiple
-              options={orgNameList}
-              filterOptions={(options, { inputValue }) =>
-                options.filter((option) => option.name?.includes(inputValue))
-              }
-              value={selectedOrgNameList || []}
-              onChange={(e: ChangeEvent<{}>, newValue: OrgNameList[]) => {
-                setSelectedOrgNameList(newValue);
-              }}
-              renderOption={(props: any, option: OrgNameList) => {
-                return (
-                  <li {...props} key={option.id}>
-                    {option.name}
-                  </li>
-                );
-              }}
-              renderTags={(value: OrgNameList[], getTagProps: any) => {
-                return value.map((option, index) => (
-                  <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
-                ));
-              }}
-              renderInput={(params) => (
-                <TextField
-                  key={params.id}
-                  className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
-                  {...params}
-                  label={'団体名'}
-                />
-              )}
-            />
-          </div>
-        )}
       </div>
+      {/* 団体種別フィルター用のオートコンプリート 20240723 */}
+      {showOrgTypeAutocomplete && (
+        <div
+          ref={orgTypefocusTarget}
+          style={{
+            position: 'absolute',
+            top: `${selectedOrgTypeHeader.position.top - 120}px`,
+            left: `${selectedOrgTypeHeader.position.left}px`,
+            backgroundColor: 'white',
+            borderRadius: '4px',
+            zIndex: 1000,
+            padding: '8px',
+          }}
+          onBlur={() => setShowOrgTypeAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
+        >
+          <Autocomplete
+            id='orgType'
+            multiple
+            options={orgTypeList}
+            filterOptions={(options, { inputValue }) =>
+              options.filter((option) => option.name?.includes(inputValue))
+            }
+            value={selectedOrgTypeList || []}
+            onChange={(e: ChangeEvent<{}>, newValue: OrgTypeList[]) => {
+              setSelectedOrgTypeList(newValue);
+            }}
+            renderOption={(props: any, option: OrgTypeList) => {
+              return (
+                <li {...props} key={option.id}>
+                  {option.name}
+                </li>
+              );
+            }}
+            renderTags={(value: OrgTypeList[], getTagProps: any) => {
+              return value.map((option, index) => (
+                <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+              ));
+            }}
+            renderInput={(params) => (
+              <TextField
+                key={params.id}
+                className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                {...params}
+                label={'団体種別'}
+              />
+            )}
+          />
+        </div>
+      )}
+      {showOrgNameAutocomplete && (
+        <div
+          ref={orgNamefocusTarget}
+          style={{
+            position: 'absolute',
+            top: `${selectedOrgNameHeader.position.top - 120}px`,
+            left: `${selectedOrgNameHeader.position.left}px`,
+            backgroundColor: 'white',
+            borderRadius: '4px',
+            zIndex: 1000,
+            padding: '8px',
+          }}
+          onBlur={() => setShowOrgNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240723
+        >
+          <Autocomplete
+            id='orgName'
+            multiple
+            options={orgNameList}
+            filterOptions={(options, { inputValue }) =>
+              options.filter((option) => option.name?.includes(inputValue))
+            }
+            value={selectedOrgNameList || []}
+            onChange={(e: ChangeEvent<{}>, newValue: OrgNameList[]) => {
+              setSelectedOrgNameList(newValue);
+            }}
+            renderOption={(props: any, option: OrgNameList) => {
+              return (
+                <li {...props} key={option.id}>
+                  {option.name}
+                </li>
+              );
+            }}
+            renderTags={(value: OrgNameList[], getTagProps: any) => {
+              return value.map((option, index) => (
+                <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+              ));
+            }}
+            renderInput={(params) => (
+              <TextField
+                key={params.id}
+                className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                {...params}
+                label={'団体名'}
+              />
+            )}
+          />
+        </div>
+      )}
       <div className='flex justify-center items-center gap-[20px] mt-[20px]'>
         {/* 戻るボタン */}
         <CustomButton

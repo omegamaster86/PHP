@@ -522,7 +522,6 @@ export default function Team() {
     create: (
       <CustomButton
         buttonType='primary'
-        className='w-[200px]'
         onClick={async () => {
           if (isValidateError()) {
             setDisableFlag(true);
@@ -566,7 +565,6 @@ export default function Team() {
     update: (
       <CustomButton
         buttonType='primary'
-        className='w-[200px]'
         onClick={async () => {
           if (isValidateError()) {
             setDisableFlag(true);
@@ -610,7 +608,6 @@ export default function Team() {
     confirm: (
       <CustomButton
         buttonType='primary'
-        className='w-[200px]'
         onClick={() => {
           // TODO: APIを叩いて、登録・更新処理を行う
           //空行の削除
@@ -707,14 +704,12 @@ export default function Team() {
     <>
       <div className='flex flex-col justify-start gap-[20px]'>
         <ErrorBox errorText={errorMessage} />
-        <div className='flex flex-row justify-start gap-[20px]'>
-          {/* 画面名 */}
-          <CustomTitle customBack={customBack}>
-            {mode === 'create' && '団体情報登録'}
-            {mode === 'update' && '団体情報更新'}
-            {mode === 'confirm' && '団体情報入力確認'}
-          </CustomTitle>
-        </div>
+        {/* 画面名 */}
+        <CustomTitle customBack={customBack}>
+          {mode === 'create' && '団体情報登録'}
+          {mode === 'update' && '団体情報更新'}
+          {mode === 'confirm' && '団体情報入力確認'}
+        </CustomTitle>
         {/* フォーム */}
         {(mode === 'update' || prevMode === 'update') && (
           // 団体ID
@@ -769,7 +764,7 @@ export default function Team() {
             }}
             readonly={!canEdit}
             isError={foundingYearErrorMessages.length > 0}
-            className='w-[300px]'
+            className='w-full'
           />
         </div>
         <div className='w-full flex flex-col justify-between gap-[8px]'>
@@ -785,7 +780,7 @@ export default function Team() {
                 value={formData.post_code1}
                 onChange={(e) => handleInputChange('post_code1', e.target.value)}
                 isError={addressErrorMessages.length > 0}
-                className='w-[120px]'
+                widthClassName='w-[80px]'
               />
               <div className='h-[40px] self-end'>-</div>
               {/* 郵便番号2 */}
@@ -794,12 +789,12 @@ export default function Team() {
                 value={formData.post_code2}
                 onChange={(e) => handleInputChange('post_code2', e.target.value)}
                 isError={addressErrorMessages.length > 0}
-                className='w-[120px] self-end'
+                widthClassName='w-[100px] self-end'
               />
               {/* 検索 */}
               <CustomButton
                 buttonType='primary'
-                className='w-[80px] self-end'
+                className='w-[80px] h-14 self-end'
                 disabled={disableFlag}
                 onClick={() => {
                   formData.post_code = formData.post_code1 + '-' + formData.post_code2;
@@ -856,7 +851,6 @@ export default function Team() {
                 prefectureOptions.find((prefecture) => prefecture.id === Number(e))?.name || '',
               );
             }}
-            className='w-[300px]'
           />
         </div>
         {/* 市区町村・町字番地 */}
@@ -901,7 +895,6 @@ export default function Team() {
                 orgClassOptions.find((orgClass) => orgClass.id === Number(e))?.name || '',
               );
             }}
-            widthClassName='max-w-[300px]'
           />
         </div>
         {/* JARA団体種別 */}
@@ -1223,12 +1216,8 @@ export default function Team() {
         )
       }
       <Divider />
-      <div className='flex flex-row justify-center gap-[16px]'>
-        <CustomButton
-          buttonType='white-outlined'
-          className='w-[200px]'
-          onClick={() => customBack()}
-        >
+      <div className='flex flex-col items-center justify-center gap-[16px] md:flex-row'>
+        <CustomButton buttonType='white-outlined' onClick={() => customBack()}>
           戻る
         </CustomButton>
         {modeCustomButtons[mode as keyof typeof modeCustomButtons]}
