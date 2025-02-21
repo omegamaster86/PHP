@@ -1,7 +1,7 @@
 'use client';
 
-import NotificationsList from '@/app/components/NotificationsList';
 import { CustomTitle } from '@/app/components';
+import NotificationsList from '@/app/components/NotificationsList';
 
 const page = () => {
   return (

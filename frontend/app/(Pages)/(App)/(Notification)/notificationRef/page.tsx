@@ -27,6 +27,7 @@ export default function NotificationRef() {
   const currentId = Number(searchParams.get('id'));
   const userId = Number(user?.user_id);
   const mode = searchParams.get('mode') as NotificationMode | null;
+  const notificationType = searchParams.get('notificationType') as 'sent' | 'received' | null;
 
   const { trigger } = useSWRMutation('api/deleteNotification', sendDeleteRequest);
   const { data } = useSWR(
@@ -34,12 +35,13 @@ export default function NotificationRef() {
       url: 'api/getNotificationInfoData',
       params: {
         notificationId: currentId,
+        notificationType,
       },
     },
     fetcher<NotificationInfoData>,
     {
       onError: (err) => {
-        router.back();
+        router.replace('/notifications/received');
       },
     },
   );

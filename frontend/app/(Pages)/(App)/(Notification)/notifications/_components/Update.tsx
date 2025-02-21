@@ -42,6 +42,7 @@ export const Update: React.FC<Props> = (props) => {
       url: 'api/getNotificationInfoData',
       params: {
         notificationId,
+        notificationType: 'sent',
       },
     },
     notificationId ? fetcher<NotificationInfoData> : null,
