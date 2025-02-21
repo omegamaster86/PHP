@@ -12,8 +12,8 @@ class T_notifications extends Model
 {
     use HasFactory;
 
-    //通知参照画面用データ取得 20241113
-    public function getNotificationInfoData($notificationId)
+    //通知参照画面用(送信)データ取得
+    public function getSenderNotificationInfoData($notificationId)
     {
         $result = DB::selectOne(
             'SELECT
@@ -71,6 +71,101 @@ class T_notifications extends Model
             and t_notifications.delete_flag = 0',
             [
                 $notificationId
+            ]
+        );
+
+        // toを配列に変換
+        $result->to = array_values(array_filter(explode(',', $result->to), fn($value) => !empty($value)));
+
+        // 指導者資格IDを配列に変換
+        $coachQualIdsStr = $result->coachQualIdsStr;
+        if (empty($coachQualIdsStr)) {
+            $result->coachQualIds = [];
+        } else {
+            $coachQualIdsToArr = explode(',', $coachQualIdsStr);
+            $result->coachQualIds = array_map('intval', $coachQualIdsToArr);
+        }
+
+        // 審判資格IDを配列に変換
+        $refereeQualIdsStr = $result->refereeQualIdsStr;
+        if (empty($refereeQualIdsStr)) {
+            $result->refereeQualIds = [];
+        } else {
+            $refereeQualIdsToArr = explode(',', $refereeQualIdsStr);
+            $result->refereeQualIds = array_map('intval', $refereeQualIdsToArr);
+        }
+
+        // 不要なプロパティを削除
+        unset($result->coachQualIdsStr);
+        unset($result->refereeQualIdsStr);
+
+        return $result;
+    }
+
+    //通知参照画面用(受信)データ取得
+    public function getRecipientNotificationInfoData($userId, $notificationId)
+    {
+        $result = DB::selectOne(
+            'SELECT
+                t_notifications.notification_id as notificationId,
+                MAX(t_notifications.title) as title,
+                t_notifications.notification_destination_type_id as notificationDestinationTypeId,
+                t_notifications.tourn_id as tournId,
+                GROUP_CONCAT(DISTINCT t_notified_coach_qualifications.coach_qualification_id) as coachQualIdsStr,
+                GROUP_CONCAT(DISTINCT t_notified_referee_qualifications.referee_qualification_id) as refereeQualIdsStr,
+                t_players.player_id as playerId,
+                CASE 
+                    WHEN t_notifications.notification_destination_type_id = 1 THEN "フォロワー"
+                    WHEN t_notifications.notification_destination_type_id = 2 THEN CONCAT(MAX(t_tournaments.tourn_name), "フォロワー")
+                    WHEN t_notifications.notification_destination_type_id = 3 THEN CONCAT(
+                        IFNULL(GROUP_CONCAT(DISTINCT CONCAT(m_coach_qualifications.qual_name, "保有者") ORDER BY m_coach_qualifications.display_order), ""),
+                        ",",                 
+                        IFNULL(GROUP_CONCAT(DISTINCT CONCAT(m_referee_qualifications.qual_name, "保有者") ORDER BY m_referee_qualifications.display_order) , "")
+                    )
+                    WHEN t_notifications.notification_destination_type_id = 4 THEN "全ユーザー"
+                    ELSE ""
+                END AS "to",
+                t_users.user_id as senderId,
+                CASE 
+                    WHEN t_notifications.notification_destination_type_id = 1 THEN MAX(t_players.photo)
+                    WHEN t_notifications.notification_destination_type_id = 2 THEN MAX(SUBSTRING(t_organizations.org_name, 1, 1))
+                    WHEN t_notifications.notification_destination_type_id in (3, 4) THEN NULL
+                    ELSE NULL
+                END AS senderIcon,
+                CASE 
+                    WHEN t_notifications.notification_destination_type_id = 1 THEN MAX(t_players.player_name)
+                    WHEN t_notifications.notification_destination_type_id = 2 THEN MAX(t_tournaments.tourn_name)
+                    WHEN t_notifications.notification_destination_type_id in (3, 4) THEN "JARA"
+                    ELSE NULL
+                END AS senderName,
+                DATE_FORMAT(MAX(t_notifications.sent_time), "%Y-%m-%d %H:%i") as sentTime,
+                MAX(t_notifications.body) as body
+            FROM t_notifications
+            INNER JOIN t_notification_recipients
+            ON t_notifications.notification_id = t_notification_recipients.notification_id
+            AND t_notification_recipients.recipient_id = :user_id
+            AND t_notification_recipients.delete_flag = 0
+            left join t_tournaments
+            on t_notifications.tourn_id = t_tournaments.tourn_id and t_tournaments.delete_flag = 0
+            left join t_organizations
+            on t_tournaments.sponsor_org_id = t_organizations.org_id and t_organizations.delete_flag = 0
+            left join t_users
+            on t_notifications.sender_id = t_users.user_id and t_users.delete_flag = 0
+            left join t_players
+            on t_users.user_id = t_players.user_id and t_players.delete_flag = 0
+            left join t_notified_coach_qualifications
+            on t_notifications.notification_id = t_notified_coach_qualifications.notification_id and t_notified_coach_qualifications.delete_flag = 0
+            left join m_coach_qualifications
+            on t_notified_coach_qualifications.coach_qualification_id = m_coach_qualifications.coach_qualification_id and m_coach_qualifications.delete_flag = 0
+            left join t_notified_referee_qualifications
+            on t_notifications.notification_id = t_notified_referee_qualifications.notification_id and t_notified_referee_qualifications.delete_flag = 0
+            left join m_referee_qualifications
+            on t_notified_referee_qualifications.referee_qualification_id = m_referee_qualifications.referee_qualification_id and m_referee_qualifications.delete_flag = 0
+            where t_notifications.notification_id = :notification_id
+            and t_notifications.delete_flag = 0',
+            [
+                'user_id' => $userId,
+                'notification_id' => $notificationId,
             ]
         );
 

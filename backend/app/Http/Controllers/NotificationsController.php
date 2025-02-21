@@ -24,10 +24,25 @@ class NotificationsController extends Controller
         T_notifications $tNotifications
     ) {
         Log::debug(sprintf("getNotificationInfoData start"));
-        $reqData = $request->all();
+        $reqData = $request->only(['notificationId', 'notificationType']);
         $notificationId = $reqData["notificationId"];
+        $notificationType = $reqData["notificationType"];
+        $userId = Auth::user()->user_id;
 
-        $result = $tNotifications->getNotificationInfoData($notificationId); //通知情報を取得 20241112
+        if (empty($notificationId)) {
+            abort(400, '通知IDが指定されていません。');
+        }
+
+        if ($notificationType != 'sent' && $notificationType != 'received') {
+            abort(400, '通知タイプが指定されていません。');
+        }
+
+        if ($notificationType == 'sent') {
+            $result = $tNotifications->getSenderNotificationInfoData($notificationId);
+        }
+        if ($notificationType == 'received') {
+            $result = $tNotifications->getRecipientNotificationInfoData($userId, $notificationId);
+        }
 
         if (empty($result->notificationId)) {
             abort(404, '通知情報が見つかりません。');
@@ -96,7 +111,7 @@ class NotificationsController extends Controller
             $notificationId = $reqData["notificationId"];
             $userId = Auth::user()->user_id;
 
-            $targetNotification = $tNotifications->getNotificationInfoData($notificationId);
+            $targetNotification = $tNotifications->getSenderNotificationInfoData($notificationId);
             $targetSenderId = $targetNotification->senderId;
             if (empty($targetSenderId) || $targetSenderId !== $userId) {
                 abort(403, '削除権限がありません。');
@@ -232,7 +247,7 @@ class NotificationsController extends Controller
             $notificationId = $req['notificationId'];
             $userId = Auth::user()->user_id;
 
-            $targetNotification = $tNotifications->getNotificationInfoData($notificationId);
+            $targetNotification = $tNotifications->getSenderNotificationInfoData($notificationId);
             $targetSenderId = $targetNotification->senderId;
             $targetNotificationDestinationTypeId = $targetNotification->notificationDestinationTypeId;
             if (empty($targetSenderId) || $targetSenderId !== $userId) {

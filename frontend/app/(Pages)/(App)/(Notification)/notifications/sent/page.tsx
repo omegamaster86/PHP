@@ -51,6 +51,7 @@ export default function NotificationsSentList() {
       url: 'api/getNotificationInfoData',
       params: {
         notificationId: currentId,
+        notificationType: 'sent',
       },
     },
     currentId ? fetcher<NotificationInfoData> : null,
@@ -91,7 +92,7 @@ export default function NotificationsSentList() {
     if (isWideScreen) {
       router.push(`/notifications/sent?id=${id}`);
     } else {
-      router.push(`/notificationRef?id=${id}`);
+      router.push(`/notificationRef?id=${id}&notificationType=sent`);
     }
   };
 

@@ -47,7 +47,7 @@ export const NotificationContent: React.FC<Props> = (props) => {
   const editPath = `/notification?mode=update&id=${notificationId}`;
   const deletePath = isWideScreen
     ? `/notifications/sent?mode=delete&id=${notificationId}`
-    : `/notificationRef?mode=delete&id=${notificationId}`;
+    : `/notificationRef?mode=delete&id=${notificationId}&notificationType=sent`;
   const notificationDestinationType = getNotificationDestinationType(notificationDestinationTypeId);
 
   return (

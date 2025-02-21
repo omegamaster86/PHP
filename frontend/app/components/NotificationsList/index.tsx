@@ -41,6 +41,9 @@ export default function NotificationsList() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const swrConfig = useSWRConfig();
+  const pathname = usePathname();
+  const isTopPage = pathname === '/mypage/top';
+  const notificationType = 'received' as const;
 
   const currentId = Number(searchParams.get('id'));
 
@@ -57,12 +60,17 @@ export default function NotificationsList() {
       url: 'api/getNotificationInfoData',
       params: {
         notificationId: currentId,
+        notificationType,
       },
     },
     currentId ? fetcher<NotificationInfoData> : null,
     {
       onError: (err) => {
-        router.back();
+        if (isTopPage) {
+          router.replace(`/mypage/top`);
+        } else {
+          router.replace('/notifications/received');
+        }
       },
     },
   );
@@ -77,9 +85,6 @@ export default function NotificationsList() {
   // 通知IDを指定してる&通知内容がある&通知内容の取得が終わっている
   const isSelected = !!currentId && !!notificationContent && !notificationRes.isLoading;
 
-  const pathname = usePathname();
-  const isTopPage = pathname === '/mypage/top';
-
   const handleClickListItem = (id: number, isRead: boolean) => async () => {
     if (!isRead) {
       await updateIsRead(id);
@@ -89,13 +94,13 @@ export default function NotificationsList() {
       if (isWideScreen) {
         router.push(`/mypage/top?id=${id}`);
       } else {
-        router.push(`/notificationRef?id=${id}`);
+        router.push(`/notificationRef?id=${id}&notificationType=received`);
       }
     } else {
       if (isWideScreen) {
         router.push(`/notifications/received?id=${id}`);
       } else {
-        router.push(`/notificationRef?id=${id}`);
+        router.push(`/notificationRef?id=${id}&notificationType=received`);
       }
     }
   };
