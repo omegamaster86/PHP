@@ -16,11 +16,15 @@ import Validator from '@/app/utils/validator';
 import axios, { type AxiosError } from 'axios';
 import Link from 'next/link';
 import { BeforeLoginFooter } from '@/app/(Pages)/(Auth)/_components/BeforeLoginFooter';
+import { useSWRConfig } from 'swr';
 
 interface Values {
   email: string;
   password: string;
 }
+
+// unreadCountのSWRキャッシュを更新するためのキー
+const unreadCountKey = { url: '/api/unreadCount' };
 
 export default function Login() {
   const [errorText, setErrorText] = useState([] as string[]);
@@ -30,6 +34,7 @@ export default function Login() {
   const [passwordErrorMessages, setPasswordErrorMessages] = useState([] as string[]);
 
   const router = useRouter();
+  const swrConfig = useSWRConfig();
 
   const { login } = useAuth({
     middleware: 'guest',
@@ -39,6 +44,7 @@ export default function Login() {
   const submitForm = async (values: Values): Promise<any> => {
     try {
       await login(values);
+      await swrConfig.mutate(unreadCountKey);
     } catch (error: Error | AxiosError | any) {
       if (!error?.response) {
         setErrorText(['サーバーへの接続に失敗しました。', 'ネットワークを確認してください。']);
