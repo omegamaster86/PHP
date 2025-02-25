@@ -162,18 +162,23 @@ class OrganizationPlayersController extends Controller
                 continue;
             }
 
+            $user_data = $t_users->getUserDataFromMailAddress($mail_address);
+
+            if (empty($user_data)) {
+                $this->assignInvalidRowdata('無効データ（メールアドレスに一致するユーザーが存在しません）', $reqData[$rowIndex]);
+                continue;
+            }
+
+            if (isset($user_id) && $user_data[0]->user_id != $user_id) {
+                $this->assignInvalidRowdata('無効データ（ユーザーIDとメールアドレスが一致しません）', $reqData[$rowIndex]);
+                continue;
+            }
+
             //取り込み可能かをチェックする
             //入力組み合わせ１
             if (isset($user_id) && isset($player_id) && isset($jara_player_code)) {
                 Log::debug("入力組み合わせ１");
                 //ユーザーID、選手ID、JARA選手コードが全て入力されているとき
-                //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
-                //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
-                $user_data = $t_users->getUserDataFromMailAddress($mail_address);
-                if (!in_array($user_id, array_column($user_data, 'user_id'))) {
-                    $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
-                    continue;
-                }
                 //選手データが登録されているか確認
                 $player_data = $t_players->getPlayer($player_id);
                 if (empty($player_data)) {
@@ -259,13 +264,6 @@ class OrganizationPlayersController extends Controller
             elseif (isset($user_id) && isset($player_id) && !isset($jara_player_code)) {
                 Log::debug("入力組み合わせ２");
                 //ユーザーID、選手IDが全て入力されているとき
-                //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
-                //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
-                $user_data = $t_users->getUserDataFromMailAddress($mail_address);
-                if (!in_array($user_id, array_column($user_data, 'user_id'))) {
-                    $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
-                    continue;
-                }
                 //選手データが登録されているか確認
                 $player_data = $t_players->getPlayer($player_id);
                 if (empty($player_data)) {
@@ -342,13 +340,6 @@ class OrganizationPlayersController extends Controller
             elseif (isset($user_id) && !isset($player_id) && isset($jara_player_code)) {
                 Log::debug("入力組み合わせ３");
                 //ユーザーID、JARA選手コードが全て入力されているとき
-                //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
-                //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
-                $user_data = $t_users->getUserDataFromMailAddress($mail_address);
-                if (!in_array($user_id, array_column($user_data, 'user_id'))) {
-                    $this->assignInvalidRowdata('無効データ（メールアドレス不一致）', $reqData[$rowIndex]);
-                    continue;
-                }
                 //JARA選手コードで選手データが登録されているかを確認
                 $player_data = $t_players->getPlayerFromJaraPlayerId($jara_player_code);
                 if (empty($player_data)) {
@@ -426,9 +417,6 @@ class OrganizationPlayersController extends Controller
             elseif (isset($user_id) && !isset($player_id) && !isset($jara_player_code)) {
                 Log::debug("入力組み合わせ４");
                 //ユーザーIDだけが入力されているとき
-                //ファイルに入力されている「メールアドレス」で「ユーザーテーブル」を検索し、
-                //ファイルに入力されている「ユーザーID」と一致するユーザー情報を取得できるか確認
-                $user_data = $t_users->getUserDataFromMailAddress($mail_address);
                 $temp_password_flag = $user_data[0]->temp_password_flag;
                 if ($temp_password_flag == 0) {
                     //Log::debug("本登録の場合");
@@ -788,8 +776,6 @@ class OrganizationPlayersController extends Controller
             else {
                 Log::debug("入力組み合わせ８");
                 //ユーザーID、選手ID、JARA選手コードのいずれも入力されていないとき                        
-                //ファイルに記載されている「メールアドレス」で、「ユーザーテーブル」を検索
-                $user_data = $t_users->getUserDataFromMailAddress($mail_address);
                 if (empty($user_data)) {
                     //Log::debug("ユーザー情報が登録されていない場合");
                     //フロント側のバリデーション結果が「登録可能」でユーザー情報が登録されていない場合、ユーザ未登録データとしてマッピング出来るようにする 20240419
