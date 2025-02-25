@@ -1,38 +1,23 @@
-import React, { useState, useCallback, forwardRef, useImperativeHandle } from 'react';
-import type { FileRejection } from 'react-dropzone';
-import { useDropzone } from 'react-dropzone';
-import Papa from 'papaparse';
+import {
+  CsvDownloadProps,
+  CsvUploadProps,
+  FileHandler,
+} from '@/app/(Pages)/(App)/(Player)/playerInformationLinking/shared/csv';
+import { CustomButton } from '@/app/components';
 import CustomInputLabel from '@/app/components/InputLabel';
 import CustomTextField from '@mui/material/TextField';
-import { CustomButton } from '../../../../components';
+import Papa from 'papaparse';
+import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
+import type { FileRejection } from 'react-dropzone';
+import { useDropzone } from 'react-dropzone';
 
 interface Props {
   csvUploadProps: CsvUploadProps;
   csvDownloadProps: CsvDownloadProps;
 }
 
-// CSVアップロードのプロパティの型定義
-interface CsvUploadProps {
-  label: string; // ラベル
-  readonly: boolean; // 読み取り専用かどうか
-  csvUpload: (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => void; // CSVアップロード時のコールバック
-  resetActivationFlg: () => void; // アクティベーションフラグのリセット
-  setActivationFlg: (flg: boolean) => void; // アクティベーションフラグのセット
-}
-// CSVダウンロードのプロパティの型定義
-interface CsvDownloadProps {
-  data: any[];
-  header: any[];
-  filename: string;
-  label: string;
-}
-// Handlerの型定義
-interface Handler {
-  clearFile(): void;
-}
-
 // FileUploaderコンポーネント
-const CsvHandler = forwardRef<Handler, Props>(function FileUploader(props, ref) {
+const CsvHandler = forwardRef<FileHandler, Props>(function FileUploader(props, ref) {
   const [currentShowFile, setcurrentShowFile] = useState<{ file: File; isUploaded: boolean }>();
   useImperativeHandle(ref, () => {
     return {
