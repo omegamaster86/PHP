@@ -1,22 +1,22 @@
 'use client';
 
-import React, { FormEvent, useEffect, useState } from 'react';
 import { CustomButton, CustomTextField, CustomTitle, ErrorBox, InputLabel } from '@/app/components';
+import { fetcher } from '@/app/lib/swr';
 import {
+  CoachRefereeResponse,
   ICoachQualification,
   IRefereeQualification,
-  CoachRefereeResponse,
-  SelectOption,
   OrganizationListData,
+  SelectOption,
 } from '@/app/types';
+import { setSessionStorage } from '@/app/utils/sessionStorage';
+import { Divider } from '@mui/material';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { FormEvent, useEffect, useState } from 'react';
+import useSWR from 'swr';
 import CoachingHistory from './CoachingHistory';
 import CoachQualification from './CoachQualification';
 import RefereeQualification from './RefereeQualification';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Divider } from '@mui/material';
-import { setSessionStorage } from '@/app/utils/sessionStorage';
-import useSWR from 'swr';
-import { fetcher } from '@/app/lib/swr';
 
 interface UpdateViewProps {
   coachQualifications: SelectOption<number>[];
@@ -201,6 +201,10 @@ const UpdateView: React.FC<UpdateViewProps> = ({
     const refereeDuplicateIds = new Set<number>();
 
     fetchData.coachingHistories.forEach((history, index) => {
+      if (history.isDeleted) {
+        return;
+      }
+
       if (!history.startDate) {
         errors.push(`指導履歴 ${index + 1}番目の開始日を入力してください。`);
       }
@@ -213,6 +217,10 @@ const UpdateView: React.FC<UpdateViewProps> = ({
     });
 
     fetchData.coachQualifications.forEach((qualification, index) => {
+      if (qualification.isDeleted) {
+        return;
+      }
+
       if (qualification.coachQualificationId <= 0) {
         errors.push(`指導者資格${index + 1}番目の資格名を選択してください。`);
       }
@@ -232,6 +240,10 @@ const UpdateView: React.FC<UpdateViewProps> = ({
     }
 
     fetchData.refereeQualifications.forEach((qualification, index) => {
+      if (qualification.isDeleted) {
+        return;
+      }
+
       if (qualification.refereeQualificationId <= 0) {
         errors.push(`審判資格${index + 1}番目の資格名を選択してください。`);
       }
@@ -305,9 +317,7 @@ const UpdateView: React.FC<UpdateViewProps> = ({
                 placeHolder='12345'
                 value={fetchData.jspoId}
                 widthClassName='w-full md:w-[150px]'
-                onChange={(event) =>
-                  setFetchData({ ...fetchData, jspoId: event.target.value })
-                }
+                onChange={(event) => setFetchData({ ...fetchData, jspoId: event.target.value })}
               />
             </div>
           )}
