@@ -445,6 +445,49 @@ class T_players extends Model
         return $insertId; //Insertを実行して、InsertしたレコードのID（主キー）を返す
     }
 
+    // 団体選手一括登録画面にて、ユーザー・選手ともに新規で作成する場合のみ呼び出す。
+    public function insertPlayerForTeamPlayerBulkRegister($playerInfo)
+    {
+        Log::debug("insertPlayerForTeamPlayerBulkRegister start.");
+        $current_datetime = now()->format('Y-m-d H:i:s.u');
+        $user_id = Auth::user()->user_id;
+        DB::insert(
+            'insert into t_players
+                    (
+                        `user_id`,
+                        `jara_player_id`,
+                        `player_name`,
+                        `photo`,
+                        `registered_time`,
+                        `registered_user_id`,
+                        `updated_time`,
+                        `updated_user_id`
+                    )
+                    values (
+                        ?,
+                        ?,
+                        ?,
+                        "",
+                        ?,
+                        ?,
+                        ?,
+                        ?
+                    )',
+            [
+                $playerInfo["user_id"],
+                $playerInfo["jara_player_id"],
+                $playerInfo["player_name"],
+                $current_datetime,
+                $user_id,
+                $current_datetime,
+                $user_id,
+            ]
+        );
+        $insertId = DB::getPdo()->lastInsertId();
+        Log::debug("insertPlayerForTeamPlayerBulkRegister end.");
+        return $insertId;
+    }
+
     //選手連携時の更新
     public function updatePlayers($playersInfo)
     {

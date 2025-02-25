@@ -348,6 +348,7 @@ class T_users extends Authenticatable
                     (
                         user_name, 
                         mailaddress, 
+                        photo,
                         password, 
                         expiry_time_of_temp_password, 
                         temp_password_flag, 
@@ -361,6 +362,7 @@ class T_users extends Authenticatable
                     (
                         :user_name, 
                         :mailaddress, 
+                        "",
                         :password, 
                         :expiry_time_of_temp_password, 
                         :temp_password_flag, 

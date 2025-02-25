@@ -43,7 +43,7 @@ class T_organization_players extends Model
     //登録日時、更新日時は「current_datetime」
     //登録ユーザー、更新ユーザーは「user_id」
     //で指定する
-    public function insertOrganizationPlayer($organizationPlayer, $org_id)
+    public function insertOrganizationPlayer($playerId, $orgId)
     {
         Log::debug('insertOrganizationPlayer start.');
         //DB::enableQueryLog();
@@ -62,8 +62,8 @@ class T_organization_players extends Model
                     )
                     VALUES(?,?,?,?,?,?,?)',
             [
-                $org_id,
-                $organizationPlayer["player_id"],
+                $orgId,
+                $playerId,
                 $current_datetime,
                 $user_id,
                 $current_datetime,
