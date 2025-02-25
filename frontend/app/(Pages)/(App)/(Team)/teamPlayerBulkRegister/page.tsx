@@ -248,15 +248,17 @@ export default function TeamPlayerBulkRegister() {
     //　記号：^[-,_]*$
     //　最大文字数：32文字（全半角区別なし）
 
+    if (row.length !== 5) return 'CSVのフォーマットが不正です。）';
+
     if (row[3] === '' || row[3] === undefined || row[3] === null) {
-      return '無効データ（メールアドレス未設定）';
+      return '無効データ（メールアドレスは必須入力です。）';
     } else if (validateEmailFormat(row[3])) {
-      return '無効データ（メールアドレス不正）';
+      return '無効データ（メールアドレスの形式が不正です。）';
     } else if (row[4] === '' || row[4] === undefined || row[4] === null) {
-      return '無効データ（選手名未設定）';
+      return '無効データ（選手名は必須入力です。）';
     } else if (validatePlayerName(row[4])) {
-      return '無効データ（選手名不正）';
-    } else if (row.length !== 5) return '無効データ';
+      return '無効データ（選手名は全半角文字50文字以内で入力してください。）';
+    }
 
     setDisplayLinkButtonFlg(true);
     return '登録可能';
