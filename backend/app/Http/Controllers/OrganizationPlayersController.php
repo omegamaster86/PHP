@@ -76,12 +76,12 @@ class OrganizationPlayersController extends Controller
                 //追加の場合
                 //追加の場合deleteFlagが空
                 elseif ($player_type == "追加") {
-                    $target_player_id = $player['player_id'];
-                    $organizationPlayersCount = $t_organization_players->countOrganizationPlayers($target_org_id, $target_player_id);
+                    $targetPlayerId = $player['player_id'];
+                    $organizationPlayersCount = $t_organization_players->countOrganizationPlayers($target_org_id, $targetPlayerId);
                     if ($organizationPlayersCount == 0) {
-                        $t_organization_players->insertOrganizationPlayer($player, $target_org_id);
+                        $t_organization_players->insertOrganizationPlayer($targetPlayerId, $target_org_id);
                     } else {
-                        $t_organization_players->activateOrganizationPlayer($target_org_id, $target_player_id);
+                        $t_organization_players->activateOrganizationPlayer($target_org_id, $targetPlayerId);
                     }
                 }
             }
@@ -164,12 +164,7 @@ class OrganizationPlayersController extends Controller
 
             $user_data = $t_users->getUserDataFromMailAddress($mail_address);
 
-            if (empty($user_data)) {
-                $this->assignInvalidRowdata('無効データ（メールアドレスに一致するユーザーが存在しません）', $reqData[$rowIndex]);
-                continue;
-            }
-
-            if (isset($user_id) && $user_data[0]->user_id != $user_id) {
+            if (empty($user_data) && isset($user_id) && $user_data[0]->user_id != $user_id) {
                 $this->assignInvalidRowdata('無効データ（ユーザーIDとメールアドレスが一致しません）', $reqData[$rowIndex]);
                 continue;
             }
@@ -913,71 +908,7 @@ class OrganizationPlayersController extends Controller
                 $target_player_name = $reqData[$rowIndex]['playerName'];
                 $target_mailaddress = $reqData[$rowIndex]['mailaddress'];
                 $target_user_data = $t_users->getUserDataFromInputCsv($target_mailaddress);
-                // if(empty($target_user_data))
-                // {
-                //     //ユーザーが存在しない場合、ユーザーテーブルにinsertして仮登録のメール送信
-                //     // For Generate random password
-                //     $temp_password = Str::random(8);
-                //     //For adding 1day with current time
-                //     $converting_date = date_create($current_datetime);
-                //     date_add($converting_date, date_interval_create_from_date_string("1 day"));
-                //     $newDate = date_format($converting_date, "Y-m-d H:i:s.u");
 
-                //     //ユーザー生成のためのデータを配列に格納
-                //     $hashed_password = Hash::make($temp_password);
-                //     $insert_user_value = [];
-                //     $insert_user_value['user_name'] = $target_player_name;
-                //     $insert_user_value['mailaddress'] = $target_mailaddress;
-                //     $insert_user_value['password'] = $hashed_password;
-                //     $insert_user_value['expiry_time_of_temp_password'] = $newDate;
-                //     $insert_user_value['temp_password_flag'] = 1;
-                //     $insert_user_value['registered_time'] = $current_datetime;
-                //     $insert_user_value['registered_user_id'] = $register_user_id;
-                //     $insert_user_value['updated_time'] = $current_datetime;
-                //     $insert_user_value['updated_user_id'] = $register_user_id;
-
-                //     try
-                //     {
-                //         //insert実行
-                //         $t_users->insertTemporaryUser($insert_user_value);
-                //     }
-                //     catch(\Throwable $e)
-                //     {
-                //         DB::rollback();
-                //         $error_message = "以下の選手のユーザー登録に失敗しました。選手名：".$target_player_name."　メールアドレス：".$target_mailaddress;
-                //         Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-                //         return response()->json($error_message,403);
-                //     }
-                //     //登録したユーザー情報を取得
-                //     $target_user_data = $t_users->getUserDataFromInputCsv($target_mailaddress);
-
-                //     //メール送信
-                //     //For getting current time
-                //     $mail_date = date('Y/m/d H:i');
-                //     //For adding 24hour with current time
-                //     $new_mail_date = date('Y/m/d H:i', strtotime($mail_date . ' + 24 hours'));
-                //     //Getting url information from env file.
-                //     $frontend_url  = config ('env-data.frontend-url');                        
-                //     //Store user information for sending email.
-                //     $mail_data = [
-                //         'user_name' => $target_user_data[0]->{'user_name'},
-                //         'to_mailaddress' => $target_mailaddress,
-                //         'from_mailaddress' => 'xxxxx@jara.or.jp',
-                //         'temporary_password' => $temp_password,
-                //         'temporary_password_expiration_date' => $new_mail_date,
-                //         'login_url'=> $frontend_url.'/login'
-                //     ];
-                //     try {
-                //         //Sending mail to the user
-                //         Mail::to($target_mailaddress)->send(new WelcomeMail($mail_data));
-                //     }
-                //     catch (Exception $e) {
-                //         DB::rollBack();
-                //         $error_message = "以下の選手のメール送信に失敗しました。選手名：".$target_player_name."　メールアドレス：".$target_mailaddress;
-                //         Log::error('Line:' . $e->getLine() . ' message:' . $e->getMessage());
-                //         return response()->json($error_message,403);
-                //     }
-                // }
                 //選手情報が存在しているかチェック
                 //直近に挿入した選手のID
                 $insert_player_id = 0;
@@ -989,7 +920,7 @@ class OrganizationPlayersController extends Controller
                     $insert_player_data = array();
                     $insert_player_data['user_id'] = $target_user_data[0]->{'user_id'};
                     $insert_player_data['jara_player_id'] = isset($reqData[$rowIndex]['jaraPlayerId']) ? $reqData[$rowIndex]['jaraPlayerId'] : null;
-                    $insert_player_data['player_name'] = isset($target_player_name) ? $target_player_name : null;
+                    $insert_player_data['player_name'] = isset($target_player_name) ? $target_player_name : '';
                     $insert_player_data['date_of_birth'] = $target_user_data[0]->{'date_of_birth'};
                     $insert_player_data['sex_id'] = $target_user_data[0]->{'sex'};
                     $insert_player_data['height'] = $target_user_data[0]->{'height'};
@@ -1021,7 +952,7 @@ class OrganizationPlayersController extends Controller
                 try {
                     $organizationPlayersCount = $t_organization_players->countOrganizationPlayers($input_org_id, $insert_organization_player_data['player_id']);
                     if ($organizationPlayersCount == 0) {
-                        $t_organization_players->insertOrganizationPlayer($insert_organization_player_data, $input_org_id);
+                        $t_organization_players->insertOrganizationPlayer($insert_organization_player_data['player_id'], $input_org_id);
                     } else {
                         $t_organization_players->activateOrganizationPlayer($input_org_id, $insert_organization_player_data['player_id']);
                     }
@@ -1114,29 +1045,32 @@ class OrganizationPlayersController extends Controller
                 $target_user_data = $t_users->getUserDataFromInputCsv($target_mailaddress);
 
                 //ユーザーが存在しない場合、ユーザーテーブルにinsertして仮登録のメール送信
-                // For Generate random password
-                $temp_password = Str::random(8);
-                //For adding 1day with current time
-                $converting_date = date_create($current_datetime);
-                date_add($converting_date, date_interval_create_from_date_string("1 day"));
-                $newDate = date_format($converting_date, "Y-m-d H:i:s.u");
-
-                //ユーザー生成のためのデータを配列に格納
-                $hashed_password = Hash::make($temp_password);
-                $insert_user_value = [];
-                $insert_user_value['user_name'] = $target_player_name;
-                $insert_user_value['mailaddress'] = $target_mailaddress;
-                $insert_user_value['password'] = $hashed_password;
-                $insert_user_value['expiry_time_of_temp_password'] = $newDate;
-                $insert_user_value['temp_password_flag'] = 1;
-                $insert_user_value['registered_time'] = $current_datetime;
-                $insert_user_value['registered_user_id'] = $register_user_id;
-                $insert_user_value['updated_time'] = $current_datetime;
-                $insert_user_value['updated_user_id'] = $register_user_id;
-
                 try {
-                    //insert実行
-                    $t_users->insertTemporaryUser($insert_user_value);
+                    $temp_password = Str::random(8);
+                    $converting_date = date_create($current_datetime);
+                    date_add($converting_date, date_interval_create_from_date_string("1 day"));
+                    $newDate = date_format($converting_date, "Y-m-d H:i:s.u");
+
+                    $hashed_password = Hash::make($temp_password);
+                    $newUser = [];
+                    $newUser['user_name'] = $target_player_name;
+                    $newUser['mailaddress'] = $target_mailaddress;
+                    $newUser['password'] = $hashed_password;
+                    $newUser['expiry_time_of_temp_password'] = $newDate;
+                    $newUser['temp_password_flag'] = 1;
+                    $newUser['registered_time'] = $current_datetime;
+                    $newUser['registered_user_id'] = $register_user_id;
+                    $newUser['updated_time'] = $current_datetime;
+                    $newUser['updated_user_id'] = $register_user_id;
+                    $newUserId = $t_users->insertTemporaryUser($newUser);
+
+                    $newPlayer = [];
+                    $newPlayer['user_id'] = $newUserId;
+                    $newPlayer['jara_player_id'] = isset($reqData[$rowIndex]['jaraPlayerId']) ? $reqData[$rowIndex]['jaraPlayerId'] : null;
+                    $newPlayer['player_name'] = isset($target_player_name) ? $target_player_name : '';
+                    $newPlayerId = $t_players->insertPlayerForTeamPlayerBulkRegister($newPlayer);
+
+                    $t_organization_players->insertOrganizationPlayer($newPlayerId, $input_org_id);
                 } catch (\Throwable $e) {
                     DB::rollback();
                     $error_message = "以下の選手のユーザー登録に失敗しました。選手名：" . $target_player_name . "　メールアドレス：" . $target_mailaddress;
