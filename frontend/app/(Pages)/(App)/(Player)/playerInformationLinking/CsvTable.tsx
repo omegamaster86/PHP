@@ -1,24 +1,12 @@
-import React from 'react';
+import { CsvTableRow } from '@/app/(Pages)/(App)/(Player)/playerInformationLinking/shared/csv';
 import CustomButton from '@/app/components/CustomButton';
-import CustomCheckbox from '@/app/components/OriginalCheckbox';
 import CustomTable from '@/app/components/CustomTable/Table';
-import CustomThead from '@/app/components/CustomTable/Thead';
 import CustomTbody from '@/app/components/CustomTable/Tbody';
-import CustomTr from '@/app/components/CustomTable/Tr';
-import CustomTh from '@/app/components/CustomTable/Th';
 import CustomTd from '@/app/components/CustomTable/Td';
-
-// CSVテーブルの各行のデータ型
-interface CsvTableRow {
-  id: number; // ID
-  checked: boolean; // 選択
-  link: string; // 連携
-  playerId: string; // 選手ID
-  oldPlayerId: string; // 既存選手ID
-  playerName: string; // 選手名
-  mailaddress: string; // メールアドレス
-  message: string; // メッセージ
-}
+import CustomTh from '@/app/components/CustomTable/Th';
+import CustomThead from '@/app/components/CustomTable/Thead';
+import CustomTr from '@/app/components/CustomTable/Tr';
+import CustomCheckbox from '@/app/components/OriginalCheckbox';
 
 // CSVテーブルコンポーネント
 const CsvTable = ({
@@ -36,9 +24,27 @@ const CsvTable = ({
   activationFlg: boolean;
   visibilityFlg: boolean; //データが0件の場合でもヘッダーは表示させるためのフラグ 20240412
 }) => {
-  return visibilityFlg == false ? (
-    <div className='text-primaryText'></div>
-  ) : (
+  // エラーの有無を確認して背景色を変更
+  const checkError = (error: string | boolean) => {
+    return error !== false ? 'bg-systemWarningBg' : '';
+  };
+
+  const getErrorMessages = (row: CsvTableRow) => {
+    const errorMessages = [
+      row.playerIdError,
+      row.oldPlayerIdError,
+      row.playerNameError,
+      row.mailaddressError,
+    ].filter((x) => typeof x === 'string' && !!x);
+
+    return errorMessages.join('\n');
+  };
+
+  if (!visibilityFlg) {
+    return <div className='text-primaryText'></div>;
+  }
+
+  return (
     <div className='overflow-auto h-[331px] w-[1000px]'>
       <CustomTable>
         <CustomThead>
@@ -95,44 +101,47 @@ const CsvTable = ({
           </CustomTr>
         </CustomThead>
         <CustomTbody>
-          {content.map((row, rowIndex) => (
-            <CustomTr index={rowIndex} key={rowIndex}>
-              <CustomTd align='center'>
-                <CustomCheckbox
-                  id={`delete-${rowIndex}`}
-                  label={''}
-                  value={`delete-${rowIndex}`}
-                  checked={row.checked}
-                  readonly={row.link === '連携不可'}
-                  onChange={(e) => {
-                    handleInputChange(row.id, 'checked', e.target.checked);
-                    // チェックボックスの変更により連携ボタンの表示を切り替える 20240525
-                    var data = content.map((row) => row.checked.toString());
-                    data[rowIndex] = e.target.checked.toString();
-                    data.includes('true') ? displayLinkButton(true) : displayLinkButton(false);
-                  }}
-                ></CustomCheckbox>
-              </CustomTd>
-              <CustomTd textType={row.link === '連携不可' ? 'error' : 'secondary'}>
-                {row.link}
-              </CustomTd>
-              <CustomTd textType={row.link === '連携不可' ? 'error' : 'secondary'}>
-                {row.playerId}
-              </CustomTd>
-              <CustomTd textType={row.link === '連携不可' ? 'error' : 'secondary'}>
-                {row.oldPlayerId}
-              </CustomTd>
-              <CustomTd textType={row.link === '連携不可' ? 'error' : 'secondary'} newLine={true}>
-                {row.playerName}
-              </CustomTd>
-              <CustomTd textType={row.link === '連携不可' ? 'error' : 'secondary'} newLine={true}>
-                {row.mailaddress}
-              </CustomTd>
-              <CustomTd textType={row.link === '連携不可' ? 'error' : 'secondary'}>
-                {row.message}
-              </CustomTd>
-            </CustomTr>
-          ))}
+          {content.map((row, rowIndex) => {
+            const textType = row.link === '連携不可' ? 'error' : 'secondary';
+            const message = row.message && row.message !== '無効なデータ' ? `${row.message}\n` : '';
+            const errorMessages = `${message}${getErrorMessages(row)}`;
+            return (
+              <CustomTr index={rowIndex} key={rowIndex}>
+                <CustomTd align='center'>
+                  <CustomCheckbox
+                    id={`delete-${rowIndex}`}
+                    label={''}
+                    value={`delete-${rowIndex}`}
+                    checked={row.checked}
+                    readonly={row.link === '連携不可'}
+                    onChange={(e) => {
+                      handleInputChange(row.id, 'checked', e.target.checked);
+                      // チェックボックスの変更により連携ボタンの表示を切り替える 20240525
+                      let data = content.map((row) => row.checked.toString());
+                      data[rowIndex] = e.target.checked.toString();
+                      data.includes('true') ? displayLinkButton(true) : displayLinkButton(false);
+                    }}
+                  />
+                </CustomTd>
+                <CustomTd textType={textType}>{row.link}</CustomTd>
+                <CustomTd textType={textType} className={checkError(row.playerIdError)}>
+                  {row.playerId}
+                </CustomTd>
+                <CustomTd textType={textType} className={checkError(row.oldPlayerIdError)}>
+                  {row.oldPlayerId}
+                </CustomTd>
+                <CustomTd textType={textType} className={checkError(row.playerNameError)} newLine>
+                  {row.playerName}
+                </CustomTd>
+                <CustomTd textType={textType} className={checkError(row.mailaddressError)} newLine>
+                  {row.mailaddress}
+                </CustomTd>
+                <CustomTd textType={textType} className='whitespace-pre-wrap'>
+                  {errorMessages}
+                </CustomTd>
+              </CustomTr>
+            );
+          })}
         </CustomTbody>
       </CustomTable>
     </div>

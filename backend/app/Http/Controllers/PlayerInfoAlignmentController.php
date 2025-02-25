@@ -31,15 +31,17 @@ class PlayerInfoAlignmentController extends Controller
             if (empty($old_player_id)) {
                 //Log::debug("csvの既存選手IDが空です.");
                 $reqData[$rowIndex]["link"] = "連携不可";
-                $reqData[$rowIndex]["message"] = "無効なデータ";
+                $reqData[$rowIndex]["message"] = "";
+                $reqData[$rowIndex]["oldPlayerIdError"] = "JARA選手コードが入力されていません。";
                 $reqData[$rowIndex]["checked"] = false;
                 continue;
             } else {
                 //既存選手IDが半角数字かつ12桁であることを判定
-                if (!preg_match('/^[0-9]+$/', $old_player_id) or mb_strlen($old_player_id) != 12) {
+                if (!preg_match('/^[0-9]{12}$/', $old_player_id)) {
                     //Log::debug("csvの既存選手IDが半角数字かつ12桁ではありません.");
                     $reqData[$rowIndex]["link"] = "連携不可";
-                    $reqData[$rowIndex]["message"] = "無効なデータ";
+                    $reqData[$rowIndex]["message"] = "";
+                    $reqData[$rowIndex]["oldPlayerIdError"] = "JARA選手コードは12桁の半角数字で入力してください。";
                     $reqData[$rowIndex]["checked"] = false;
                     continue;
                 }
@@ -52,7 +54,8 @@ class PlayerInfoAlignmentController extends Controller
             if ($is_duplicate) {
                 //Log::debug("重複データです.");
                 $reqData[$rowIndex]["link"] = "連携不可";
-                $reqData[$rowIndex]["message"] = "読み込みファイル内重複データ";
+                $reqData[$rowIndex]["message"] = "";
+                $reqData[$rowIndex]["oldPlayerIdError"] = "JARA選手コードが重複しています。";
                 $reqData[$rowIndex]["checked"] = false;
                 continue;
             }
@@ -72,7 +75,8 @@ class PlayerInfoAlignmentController extends Controller
                         //⑥
                         //Log::debug("選手テーブルに選手データがありません.");
                         $reqData[$rowIndex]["link"] = "連携不可";
-                        $reqData[$rowIndex]["message"] = "システムに登録されていない選手IDです。";
+                        $reqData[$rowIndex]["message"] = "";
+                        $reqData[$rowIndex]["playerIdError"] = "選手IDが存在しません。";
                         $reqData[$rowIndex]["checked"] = false;
                     } else    //ユーザーIDが登録されている場合
                     {
@@ -83,7 +87,8 @@ class PlayerInfoAlignmentController extends Controller
                                 //当該データに既存選手IDが登録されている
                                 //Log::debug("ユーザーIDが登録済みです.");
                                 $reqData[$rowIndex]["link"] = "連携不可";
-                                $reqData[$rowIndex]["message"] = "既にマッピングされている既存選手IDです。マッピングされてる選手:[" . $player_data[0]->{'player_name'} . "]([" . $player_data[0]->{'player_id'} . "])";
+                                $reqData[$rowIndex]["message"] = "";
+                                $reqData[$rowIndex]["oldPlayerIdError"] = "既にマッピングされているJARA選手コードです。マッピングされてる選手:[" . $player_data[0]->{'player_name'} . "]([" . $player_data[0]->{'player_id'} . "])";
                                 $reqData[$rowIndex]["checked"] = false;
                             } else {
                                 //④
@@ -96,7 +101,8 @@ class PlayerInfoAlignmentController extends Controller
                             //⑤
                             //ユーザーIDが登録されていない
                             $reqData[$rowIndex]["link"] = "連携不可";
-                            $reqData[$rowIndex]["message"] = "使用できない選手IDです。";
+                            $reqData[$rowIndex]["message"] = "";
+                            $reqData[$rowIndex]["playerIdError"] = "使用できない選手IDです。";
                             $reqData[$rowIndex]["checked"] = false;
                         }
                     }
@@ -144,7 +150,8 @@ class PlayerInfoAlignmentController extends Controller
                                     //既存選手IDが登録されている場合
                                     //Log::debug("既存選手IDが登録されている.");
                                     $reqData[$rowIndex]["link"] = "連携不可";
-                                    $reqData[$rowIndex]["message"] = "既にマッピングされている既存選手IDです。マッピングされてる選手:[" . $player_data[0]->player_name . "]([" . $player_data[0]->player_id . "])";
+                                    $reqData[$rowIndex]["message"] = "";
+                                    $reqData[$rowIndex]["mailaddressError"] = "既にマッピングされている既存選手IDです。マッピングされてる選手:[" . $player_data[0]->player_name . "]([" . $player_data[0]->player_id . "])";
                                     $reqData[$rowIndex]["checked"] = false;
                                 }
                             }

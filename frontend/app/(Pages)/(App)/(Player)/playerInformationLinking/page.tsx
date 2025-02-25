@@ -1,57 +1,25 @@
 // 機能名: 選手情報連携
 'use client';
-// ライブラリのインポート
-import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-// 共通コンポーネントのインポート
+
 import CsvHandler from '@/app/(Pages)/(App)/(Player)/playerInformationLinking/CsvHandler';
+import {
+  CsvDownloadProps,
+  CsvTableRow,
+  CsvUploadProps,
+  FileHandler,
+} from '@/app/(Pages)/(App)/(Player)/playerInformationLinking/shared/csv';
 import { CustomButton, CustomTitle, ErrorBox } from '@/app/components';
 import axios from '@/app/lib/axios';
 import { UserResponse } from '@/app/types';
 import Validator from '@/app/utils/validator';
-// ローカルコンポーネントのインポート
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 import CsvTable from './CsvTable';
 
-// CSVデータの型定義
-interface CsvData {
-  id: number; // ID
-  checked: boolean; // 選択
-  link: string; // 連携
-  playerId: string; // 選手ID
-  oldPlayerId: string; // JARA選手コード
-  playerName: string; // 選手名
-  mailaddress: string; // メールアドレス
-  message: string; // メッセージ
-}
-// CSVアップロードのプロパティの型定義
-interface CsvUploadProps {
-  label: string; // ラベル
-  readonly: boolean; // 読み取り専用かどうか
-  csvUpload: (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => void; // CSVアップロード時のコールバック
-  resetActivationFlg: () => void; // アクティベーションフラグのリセット
-  setActivationFlg: (flg: boolean) => void; // アクティベーションフラグのセット
-  loading: boolean;
-}
-// CSVダウンロードのプロパティの型定義
-interface CsvDownloadProps {
-  data: any[];
-  header: any[];
-  filename: string;
-  label: string;
-}
-
-// ファイル関連のアクションを扱うためのインターフェース
-interface FileHandler {
-  clearFile(): void;
-}
-
-// 選手情報連携のメインコンポーネント
 export default function PlayerInformationLinking() {
-  // フック
   const router = useRouter();
   const fileUploaderRef = useRef<FileHandler>(null);
 
-  // ステート変数
   const [csvFileData, setCsvFileData] = useState<{
     content: Array<Array<string>>;
     isSet: boolean;
@@ -59,7 +27,7 @@ export default function PlayerInformationLinking() {
   const [activationFlg, setActivationFlg] = useState<boolean>(false);
   const [errorText, setErrorText] = useState([] as string[]);
   const [csvFileErrorMessage, setCsvFileErrorMessage] = useState([] as string[]);
-  const [csvData, setCsvData] = useState<CsvData[]>([]);
+  const [csvData, setCsvData] = useState<CsvTableRow[]>([]);
   const [dialogDisplayFlg, setDialogDisplayFlg] = useState<boolean>(false);
   const [displayLinkButtonFlg, setDisplayLinkButtonFlg] = useState<boolean>(false);
   const [visibilityFlg, setVisibilityFlg] = useState<boolean>(false); //CSVテーブルの表示切替フラグ 20240412
@@ -122,13 +90,13 @@ export default function PlayerInformationLinking() {
   };
 
   // CSVアップロードのプロパティ
-  const csvUploadProps = {
+  const csvUploadProps: CsvUploadProps = {
     label: '読み込みCSVファイル',
     readonly: activationFlg,
     csvUpload: handleCsvUpload,
     resetActivationFlg: resetActivationFlg,
     setActivationFlg: setActivationFlg,
-  } as CsvUploadProps;
+  };
 
   //読み込むボタン押下時 20240228
   const sendCsvData = async () => {
@@ -138,8 +106,8 @@ export default function PlayerInformationLinking() {
     const expectedColumnCount = 4; // 期待する列数
 
     // ヘッダー行は削除する
-    var array = csvFileData?.content
-      ?.filter(function (x) {
+    const array = csvFileData?.content
+      ?.filter((x) => {
         // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
         return x.length > 0 && x.some((y) => y.length > 0);
       })
@@ -152,60 +120,57 @@ export default function PlayerInformationLinking() {
             checked: false, // 選択
             link: '連携不可', // 連携不可
             oldPlayerId: '-',
+            oldPlayerIdError: false,
             playerId: '-',
+            playerIdError: false,
             mailaddress: '-',
+            mailaddressError: false,
             playerName: '-',
+            playerNameError: false,
             message: '',
           };
         } else {
-          //選手名が空の場合
-          if (value[3] == '' || value[3] == undefined || value[3] == null) {
-            return {
-              id: index, // ID
-              checked: false, // 選択
-              link: '連携不可', // 連携不可
-              oldPlayerId: value[0],
-              playerId: value[1],
-              mailaddress: value[2],
-              playerName: '',
-              message: '無効なデータ',
-            };
-          } else {
-            // 列数が期待する列数と一致する場合
-            return {
-              id: index, // ID
-              checked: false, // 選択
-              link: '', // 連携
-              oldPlayerId: value[0],
-              playerId: value[1],
-              mailaddress: value[2],
-              playerName: value[3],
-              message: '',
-            };
-          }
+          return {
+            id: index, // ID
+            checked: true, // 選択
+            link: '', // 連携
+            oldPlayerId: value[0],
+            oldPlayerIdError: false,
+            playerId: value[1],
+            playerIdError: false,
+            mailaddress: value[2],
+            mailaddressError: false,
+            playerName: value[3],
+            playerNameError: false,
+            message: '',
+          };
         }
       });
-    var element = array as CsvData[];
+    const element = array;
     setActivationFlg(true);
     await axios
-      .post('api/sendCsvData', element)
+      .post<{ result: CsvTableRow[] }>('api/sendCsvData', element)
       .then((res) => {
-        var contentData = res.data.result as CsvData[];
+        const contentData = res.data.result;
 
         if (dialogDisplayFlg) {
           window.confirm('読み込み結果に表示されているデータはクリアされます。よろしいですか？')
             ? (setCsvData([]),
-              contentData.map((row, rowIndex) => {
+              contentData.forEach((row, rowIndex) => {
                 setCsvData((prevData) => [
-                  ...(prevData as CsvData[]),
+                  ...prevData,
                   {
                     id: rowIndex,
                     checked: row.checked,
                     link: row.link,
                     oldPlayerId: row.oldPlayerId,
+                    oldPlayerIdError: row.oldPlayerIdError,
                     playerId: row.playerId,
+                    playerIdError: row.playerIdError,
                     mailaddress: row.mailaddress,
+                    mailaddressError: row.mailaddressError,
                     playerName: row.playerName,
+                    playerNameError: row.playerNameError,
                     message: row.message,
                   },
                 ]);
@@ -217,15 +182,19 @@ export default function PlayerInformationLinking() {
           setCsvData([]);
           contentData.map((row, rowIndex) => {
             setCsvData((prevData) => [
-              ...(prevData as CsvData[]),
+              ...prevData,
               {
                 id: rowIndex,
                 checked: row.checked,
                 link: row.link,
                 oldPlayerId: row.oldPlayerId,
+                oldPlayerIdError: row.oldPlayerIdError,
                 playerId: row.playerId,
+                playerIdError: row.playerIdError,
                 mailaddress: row.mailaddress,
+                mailaddressError: row.mailaddressError,
                 playerName: row.playerName,
+                playerNameError: row.playerNameError,
                 message: row.message,
               },
             ]);
@@ -248,7 +217,7 @@ export default function PlayerInformationLinking() {
       });
   };
 
-  //連携ボタン押下時 20240228
+  //連携ボタン押下時
   const registerCsvData = async () => {
     await axios
       .post('api/registerCsvData', csvData)
@@ -268,7 +237,7 @@ export default function PlayerInformationLinking() {
   };
 
   // CSVダウンロードのプロパティ
-  const csvDownloadProps = {
+  const csvDownloadProps: CsvDownloadProps = {
     header: [
       { label: 'JARA選手コード', key: 'oldPlayerId' },
       { label: '新選手ID', key: 'newPlayerId' },
@@ -278,11 +247,10 @@ export default function PlayerInformationLinking() {
     data: [{}],
     filename: '選手情報連携ファイル.csv',
     label: 'CSVフォーマット出力',
-  } as CsvDownloadProps;
+  };
 
   if (!validFlag) return null;
 
-  // レンダリング
   return (
     <>
       <CustomTitle displayBack>選手情報連携</CustomTitle>
