@@ -195,8 +195,16 @@ class VolunteerController extends Controller
         $volData = $tVolunteer->getVolunteers($reqData['volunteer_id']); //ボランティア情報を取得
         $volInfo = (array)$volData;
 
-        //ログインユーザーに紐づいたボランティア情報の場合、削除処理を実行 20241203
-        if ($volInfo['user_id'] != Auth::user()->user_id) {
+        $userId = Auth::user()->user_id;
+        $userType = Auth::user()->user_type;
+        $isMyVolunteerInfo = $volInfo['user_id'] == $userId;
+        $canDelete =
+            substr($userType, -7, 1) == '1' // 管理者
+            || substr($userType, -6, 1) == '1' // JARA
+            || substr($userType, -5, 1) == '1' // 県ボ
+            || $isMyVolunteerInfo;
+
+        if (!$canDelete) {
             abort(403, '削除権限がありません。');
         }
 
@@ -208,11 +216,11 @@ class VolunteerController extends Controller
 
         //ユーザ種別の更新
         $hoge = array();
-        $hoge['user_id'] = Auth::user()->user_id;
+        $hoge['user_id'] = $userId;
         $hoge['input'] = '00000010'; //選手のユーザ種別を変更する
-        $user_type = (string)Auth::user()->user_type;
+
         //右から2桁目が1のときだけユーザー種別を更新する
-        if (substr($user_type, -2, 1) == '1') {
+        if (substr($userType, -2, 1) == '1') {
             $t_users->updateUserTypeDelete($hoge);
         }
 
