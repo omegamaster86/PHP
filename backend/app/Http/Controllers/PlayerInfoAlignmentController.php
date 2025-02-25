@@ -219,7 +219,17 @@ class PlayerInfoAlignmentController extends Controller
                         $t_players->updatePlayers($reqData[$rowIndex]);
                     } elseif ($link == "連携待ち") {
                         //選手テーブルに連携待ちデータとして読み込んだ情報を登録（挿入）する
-                        $t_players->insertPlayerForPlayerInfoAlignment($reqData[$rowIndex]);
+
+                        $mailaddress = $reqData[$rowIndex]["mailaddress"];
+                        $userId = null;
+                        if (isset($mailaddress)) {
+                            $users = $t_users->getUserDataFromMailAddress($mailaddress);
+                            if (!empty($users)) {
+                                $userId = $users[0]->user_id;
+                            }
+                        }
+                        $jaraPlayerId = $reqData[$rowIndex]['oldPlayerId'];
+                        $t_players->insertPlayerForPlayerInfoAlignment($userId, $jaraPlayerId);
                     }
                 }
             }
