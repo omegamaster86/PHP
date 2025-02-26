@@ -4,7 +4,7 @@
 /public/hot
 /public/storage
 /public/images/*
-!/public/images/jara-icon.png
+!/public/images/jara-icon.jpg
 !/public/templates/*
 /public/pdf/*
 /public/csv/*

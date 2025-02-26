@@ -3,7 +3,7 @@ const PLAYER_IMAGE_URL = [process.env.NEXT_PUBLIC_S3_URL, '/images/players/'].jo
 const TOURNAMENT_PDF_URL = [process.env.NEXT_PUBLIC_S3_URL, '/pdf/tournaments/'].join('');
 const TEMPLATE_URL = [process.env.NEXT_PUBLIC_S3_URL, '/templates/'].join('');
 const NO_IMAGE_URL = [process.env.NEXT_PUBLIC_S3_URL, '/images/no-image.png'].join('');
-const JARA_IMAGE_URL = [process.env.NEXT_PUBLIC_S3_URL, '/images/jara-icon.png'].join('');
+const JARA_IMAGE_URL = [process.env.NEXT_PUBLIC_S3_URL, '/images/jara-icon.jpg'].join('');
 
 export {
   JARA_IMAGE_URL,
