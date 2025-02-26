@@ -38,17 +38,22 @@ export default function TeamPlayer() {
 
   useUserType({
     onSuccess: async (userType) => {
-      const sendData = {
-        org_id: orgId,
-      };
-      const teamResponse = await axios.post<{ result: TeamResponse }>('api/getOrgData', sendData);
-      setTeamData(teamResponse.data.result);
+      try {
+        const sendData = {
+          org_id: orgId,
+        };
+        const teamResponse = await axios.post<{ result: TeamResponse }>('api/getOrgData', sendData);
+        setTeamData(teamResponse.data.result);
 
-      const isStaff = teamResponse.data.result.isStaff;
-      const hasAuthority = userType.isAdministrator || (userType.isOrganizationManager && isStaff);
+        const isStaff = teamResponse.data.result.isStaff;
+        const hasAuthority =
+          userType.isAdministrator || (userType.isOrganizationManager && isStaff);
 
-      if (!hasAuthority) {
-        router.push('/teamSearch');
+        if (!hasAuthority) {
+          router.replace('/teamSearch');
+        }
+      } catch (error) {
+        router.replace('/teamSearch');
       }
     },
   });
