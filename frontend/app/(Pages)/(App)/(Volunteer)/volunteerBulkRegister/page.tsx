@@ -789,7 +789,7 @@ export default function VolunteerBulkRegister() {
         </div>
       )}
       {/* エラーメッセージの表示 */}
-      <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
+      <p className='text-systemErrorText self-center'>{csvFileErrorMessage}</p>
       {/* 読み込み結果の表示 */}
       <div className='flex flex-col items-center'>
         <p className='mb-1 text-systemErrorText'>
@@ -810,7 +810,7 @@ export default function VolunteerBulkRegister() {
           visibilityFlg={visibilityFlg}
         />
       </div>
-      <div className='flex flex-row justify-center gap-[8px]'>
+      <div className='flex flex-col items-center justify-center gap-[8px] md:flex-row'>
         <CustomButton
           buttonType='secondary'
           disabled={activationFlg}
