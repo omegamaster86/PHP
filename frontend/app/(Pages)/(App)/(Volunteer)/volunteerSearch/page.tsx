@@ -552,7 +552,7 @@ export default function VolunteerSearch() {
       <ErrorBox errorText={[]} />
       <Accordion
         defaultExpanded
-        className='w-full bg-gray-50 border-[1px] border-solid border-border rounded-md'
+        className='w-full bg-thinContainerBg border-[1px] border-solid border-border rounded-md'
       >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
@@ -562,7 +562,7 @@ export default function VolunteerSearch() {
           <InputLabel label='検索条件' />
         </AccordionSummary>
         <AccordionDetails>
-          <div className='bg-gray-50 flex flex-col gap-[20px]'>
+          <div className='flex flex-col gap-[20px]'>
             <div>
               {/* ボランティアID */}
               <CustomTextField
@@ -635,7 +635,6 @@ export default function VolunteerSearch() {
                 isError={false}
                 placeHolder='男性'
                 value={searchCond.sex?.toString() || ''}
-                className='w-[210px]'
                 onChange={(e) => {
                   handleInputChange('sex', e);
                   handleInputChange(
@@ -648,21 +647,18 @@ export default function VolunteerSearch() {
             </div>
             {/* 居住地（国） */}
             <div className='flex flex-row justify-start gap-[16px]'>
-              <div className='flex flex-col justify-start gap-[8px]'>
-                <CustomDropdown
-                  id='residenceCountry'
-                  label='居住地'
-                  className='w-[210px]'
-                  placeHolder='東京'
-                  isError={false}
-                  errorMessages={[]}
-                  value={searchCond.residence_country?.toString() || ''}
-                  onChange={(e) => {
-                    handleInputChange('residence_country', e);
-                  }}
-                  options={country.map((item) => ({ key: item.id, value: item.name }))}
-                />
-              </div>
+              <CustomDropdown
+                id='residenceCountry'
+                label='居住地'
+                placeHolder='東京'
+                isError={false}
+                errorMessages={[]}
+                value={searchCond.residence_country?.toString() || ''}
+                onChange={(e) => {
+                  handleInputChange('residence_country', e);
+                }}
+                options={country.map((item) => ({ key: item.id, value: item.name }))}
+              />
               {/* 居住地（都道府県） */}
               {searchCond.residence_country === JAPAN_COUNTRY_ID && (
                 <div className='flex flex-col justify-start gap-[8px]'>

@@ -223,8 +223,7 @@ export default function VolunteerInformationRef() {
           <img src={volunteer.photo} className='w-[200px] h-[200px] rounded-[10px] object-cover' />
         </div>
       </div>
-
-      <div className='flex flex-wrap justify-between gap-[20px]'>
+      <div className='flex flex-wrap gap-[20px]'>
         <div className='flex flex-col gap-[20px] max-w-[400px]'>
           {/* ボランティアID */}
           <CustomTextField
@@ -372,8 +371,8 @@ export default function VolunteerInformationRef() {
       <div className='flex flex-col gap-[20px] '>
         {/* 参加可能曜日 */}
         <div className='text-h3 font-bold my-2'>参加しやすい曜日</div>
+        <p>曜日指定</p>
         <div className='flex flex-row gap-[16px] flex-wrap'>
-          曜日指定
           <OriginalCheckbox
             id='anyday'
             label='祝日は可'
@@ -450,7 +449,7 @@ export default function VolunteerInformationRef() {
         {/* 参加可能時間帯 */}
         <div className='text-h3 font-bold my-2'>参加しやすい時間帯</div>
         <div className='flex flex-col gap-[16px]'>
-          時間帯指定
+          <p>時間帯指定</p>
           <OriginalCheckbox
             id='anytime'
             label='相談可能'

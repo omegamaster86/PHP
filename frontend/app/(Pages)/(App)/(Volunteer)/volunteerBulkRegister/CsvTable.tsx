@@ -80,7 +80,7 @@ const CsvTable = ({
   }
 
   return (
-    <div className='relative overflow-auto h-[331px] w-[800px]'>
+    <div className='relative overflow-x-auto h-[331px] w-full'>
       <div className='bg-primary-40 bg-opacity-30 text-primary-500 py-2 px-4 h-[60px] flex justify-center items-center font-bold relative'>
         読み込み結果
         <div className={`absolute left-[10px]`}>
@@ -111,7 +111,7 @@ const CsvTable = ({
           </CustomButton>
         </div>
       </div>
-      <div className='relative overflow-auto'>
+      <div className='relative overflow-x-auto'>
         <CustomTable>
           <CustomThead>
             <CustomTr>
