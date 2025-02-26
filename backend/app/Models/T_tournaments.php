@@ -307,22 +307,30 @@ class T_tournaments extends Model
     public function getTournamentsFromEntryYear($entry_year)
     {
         $tournaments = DB::select(
-            "select
-                                    `tourn_id`
-                                    ,`tourn_name`
-                                    ,`sponsor_org_id`
-                                    ,`event_start_date`
-                                    ,`event_end_date`
-                                    ,`venue_id`
-                                    ,`venue_name`
-                                    ,`tourn_type`
-                                    ,`tourn_url`
-                                    ,`tourn_info_faile_path`
-                                    ,`entrysystem_tourn_id`
-                                    FROM `t_tournaments`
-                                    WHERE 1=1
-                                    and `t_tournaments`.`delete_flag` = 0
-                                    and DATE_FORMAT(event_start_date, '%Y') = ?",
+            "SELECT
+                `tourn_id`
+                ,`tourn_name`
+                ,`sponsor_org_id`
+                ,`event_start_date`
+                ,`event_end_date`
+                ,`venue_id`
+                ,`venue_name`
+                ,`tourn_type`
+                ,`tourn_url`
+                ,`tourn_info_faile_path`
+                ,`entrysystem_tourn_id`
+            FROM `t_tournaments` tt
+            WHERE 1=1
+                AND tt.`delete_flag` = 0
+                AND DATE_FORMAT(event_start_date, '%Y') = ?
+                AND EXISTS(
+                    SELECT
+                        'x'
+                    FROM `t_organizations` org
+                    WHERE 1=1
+                        AND org.org_id = tt.sponsor_org_id
+                        AND org.delete_flag = 0
+                )",
             [$entry_year]
         );
         return $tournaments;
@@ -333,30 +341,32 @@ class T_tournaments extends Model
     public function getTournamentsFromEntryYearAndUserId($entry_year, $user_id)
     {
         $tournaments = DB::select(
-            "select distinct
-                                    `tourn_id`
-                                    ,`tourn_name`
-                                    ,`sponsor_org_id`
-                                    ,`event_start_date`
-                                    ,`event_end_date`
-                                    ,`venue_id`
-                                    ,`venue_name`
-                                    ,`tourn_type`
-                                    ,`tourn_url`
-                                    ,`tourn_info_faile_path`
-                                    ,`entrysystem_tourn_id`
-                                    FROM `t_tournaments` tour
-                                    left join `t_organizations` org
-                                    on `tour`.sponsor_org_id = org.org_id
-                                    left join `t_organization_staff` staff
-                                    on org.org_id = staff.org_id 
-                                    WHERE 1=1
-                                    and tour.`delete_flag` = 0
-                                    and DATE_FORMAT(event_start_date, '%Y') = ?
-                                    and staff.user_id = ?",
+            "SELECT DISTINCT
+                `tourn_id`
+                ,`tourn_name`
+                ,`sponsor_org_id`
+                ,`event_start_date`
+                ,`event_end_date`
+                ,`venue_id`
+                ,`venue_name`
+                ,`tourn_type`
+                ,`tourn_url`
+                ,`tourn_info_faile_path`
+                ,`entrysystem_tourn_id`
+            FROM `t_tournaments` tour
+            INNER JOIN `t_organizations` org ON
+                org.org_id = `tour`.sponsor_org_id
+                org.delete_flag = 0
+            INNER JOIN `t_organization_staff` staff ON
+                staff.org_id = org.org_id
+                AND staff.`delete_flag` = 0
+                AND staff.user_id = ?
+            WHERE 1=1
+                AND tour.`delete_flag` = 0
+                AND DATE_FORMAT(tour.event_start_date, '%Y') = ?",
             [
-                $entry_year,
-                $user_id
+                $user_id,
+                $entry_year
             ]
         );
         return $tournaments;
