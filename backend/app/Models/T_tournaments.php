@@ -189,38 +189,39 @@ class T_tournaments extends Model
     //出漕結果記録の大会IDから大会情報を取得
     public function getEntryTournaments($tournamentIdCondition)
     {
-        $sqlString = 'select 
-                        `tourn_id`,
-                        `tourn_name`,
-                        `sponsor_org_id`,
-                        `org_name` as `sponsorOrgName`,
-                        `event_start_date`,
-                        `event_end_date`,
-                        `t_tournaments`.`venue_id`,
-                        case `m_venue`.`venue_name`
-                            when "その他" then `t_tournaments`.`venue_name`
-                            else `m_venue`.`venue_name`
-                            end as `venue_name`,
-                        `tourn_type`,
-                        case `tourn_type`
-                            when 0 then "非公式"
-                            when 1 then "公式"
-                            else ""
-                            end as `tournTypeName`,
-                        `tourn_url`,
-                        `tourn_info_faile_path`,
-                        `entrysystem_tourn_id`
-                        from `t_tournaments`
-                        left join `m_venue`
-                        on `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
-                        left join `t_organizations`
-                        on `t_tournaments`.`sponsor_org_id` = `t_organizations`.`org_id`
-                        where 1=1
-                        and `t_tournaments`.`delete_flag` = 0
-                        and `t_organizations`.`delete_flag` = 0
-                        and `m_venue`.`delete_flag` = 0
-                        and `tourn_id` in (#TournamentIdCondition#)
-                        order by event_start_date';
+        $sqlString =
+            'SELECT 
+                `tourn_id`,
+                `tourn_name`,
+                `sponsor_org_id`,
+                `org_name` AS `sponsorOrgName`,
+                `event_start_date`,
+                `event_end_date`,
+                `t_tournaments`.`venue_id`,
+                CASE `m_venue`.`venue_name`
+                    WHEN "その他" THEN `t_tournaments`.`venue_name`
+                    ELSE `m_venue`.`venue_name`
+                    END AS `venue_name`,
+                `tourn_type`,
+                CASE `tourn_type`
+                    WHEN 0 THEN "非公式"
+                    WHEN 1 THEN "公式"
+                    ELSE ""
+                    END AS `tournTypeName`,
+                `tourn_url`,
+                `tourn_info_faile_path`,
+                `entrysystem_tourn_id`
+            FROM `t_tournaments`
+            INNER JOIN `m_venue` ON
+                `m_venue`.`venue_id` = `t_tournaments`.`venue_id`
+                AND `m_venue`.`delete_flag` = 0
+            INNER JOIN `t_organizations` ON
+                `t_organizations`.`org_id` = `t_tournaments`.`sponsor_org_id`
+                AND `t_organizations`.`delete_flag` = 0
+            WHERE 1=1
+                AND `t_tournaments`.`delete_flag` = 0
+                AND `t_tournaments`.`tourn_id` IN (#TournamentIdCondition#)
+            ORDER BY event_start_date';
         $sqlString = str_replace('#TournamentIdCondition#', $tournamentIdCondition, $sqlString);
         $entryTournaments = DB::select($sqlString);
         return $entryTournaments;

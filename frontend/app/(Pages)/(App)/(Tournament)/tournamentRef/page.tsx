@@ -450,7 +450,12 @@ export default function TournamentRef() {
 
   // エラーがある場合はエラーメッセージを表示
   if (tournamentFormData.tourn_id === '') {
-    return <ErrorBox errorText={errors} />;
+    return (
+      <>
+        <CustomTitle displayBack>{mode === 'delete' ? '大会情報削除' : '大会情報'}</CustomTitle>
+        <ErrorBox errorText={errors} />
+      </>
+    );
   }
 
   return (

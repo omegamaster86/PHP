@@ -121,82 +121,87 @@ class T_raceResultRecord extends Model
     //選手IDに紐づいたレース結果情報を取得 20240201
     public function getRaceResultRecord_playerId($playerId)
     {
-        $racesResultRecord = DB::select('SELECT 
-                                        `t_race_result_record`.`race_result_record_id`, 
-                                        `t_race_result_record`.`player_id`, 
-                                        `t_race_result_record`.`jara_player_id`, 
-                                        `t_race_result_record`.`player_name`, 
-                                        `t_race_result_record`.`entrysystem_tourn_id`, 
-                                        `t_race_result_record`.`tourn_id`, 
-                                        `t_race_result_record`.`tourn_name`, 
-                                        `t_race_result_record`.`race_id`, 
-                                        `t_race_result_record`.`entrysystem_race_id`, 
-                                        `t_race_result_record`.`race_number`, 
-                                        `t_race_result_record`.`race_name`, 
-                                        `t_race_result_record`.`org_id`, 
-                                        `t_race_result_record`.`entrysystem_org_id`, 
-                                        `t_race_result_record`.`org_name`, 
-                                        `t_race_result_record`.`crew_name`, 
-                                        `t_race_result_record`.`by_group`, 
-                                        `t_race_result_record`.`event_id`, 
-                                        `t_race_result_record`.`event_name` AS eventName, 
-                                        `t_race_result_record`.`range`, 
-                                        `t_race_result_record`.`rank`, 
-                                        `t_race_result_record`.`laptime_500m`, 
-                                        `t_race_result_record`.`laptime_1000m`, 
-                                        `t_race_result_record`.`laptime_1500m`, 
-                                        `t_race_result_record`.`laptime_2000m`, 
-                                        `t_race_result_record`.`final_time`, 
-                                        `t_race_result_record`.`stroke_rate_avg`, 
-                                        `t_race_result_record`.`stroke_rat_500m`, 
-                                        `t_race_result_record`.`stroke_rat_1000m`, 
-                                        `t_race_result_record`.`stroke_rat_1500m`, 
-                                        `t_race_result_record`.`stroke_rat_2000m`, 
-                                        `t_race_result_record`.`heart_rate_avg`, 
-                                        `t_race_result_record`.`heart_rate_500m`, 
-                                        `t_race_result_record`.`heart_rate_1000m`, 
-                                        `t_race_result_record`.`heart_rate_1500m`, 
-                                        `t_race_result_record`.`heart_rate_2000m`, 
-                                        `t_race_result_record`.`official`, 
-                                        `t_race_result_record`.`attendance`, 
-                                        `t_race_result_record`.`player_height`, 
-                                        `t_race_result_record`.`player_weight`, 
-                                        `t_race_result_record`.`seat_number`, 
-                                        `t_race_result_record`.`seat_name`, 
-                                        `t_race_result_record`.`race_result_record_name`, 
-                                        `t_race_result_record`.`start_datetime`, 
-                                        `t_race_result_record`.`wind_speed_2000m_point`, 
-                                        `t_race_result_record`.`wind_direction_2000m_point`, 
-                                        `mwd2000`.`wind_direction` AS `twentyHundredmWindDirectionName`,                                         
-                                        `t_race_result_record`.`wind_speed_1000m_point`, 
-                                        `t_race_result_record`.`wind_direction_1000m_point`, 
-                                        `mwd1000`.`wind_direction` AS `tenHundredmWindDirectionName`,
-                                        `t_race_result_record`.`race_result_notes`,
-                                        `m_seat_number`.`display_order` AS "order",
-                                        `t_tournaments`.`event_start_date` AS "eventStartDate",
-                                        `m_venue`.`venue_name`,
-                                        `m_events`.`event_name` 
-                                        FROM `t_race_result_record` 
-                                        LEFT JOIN `m_seat_number`
-                                        ON `t_race_result_record`.`seat_number` = `m_seat_number`.`seat_id`
-                                        LEFT JOIN `t_tournaments`
-                                        ON `t_race_result_record`.`tourn_id` = `t_tournaments`.`tourn_id`
-                                        LEFT JOIN `m_venue`
-                                        ON `t_tournaments`.`venue_id` = `m_venue`.`venue_id`
-                                        LEFT JOIN `m_events`
-                                        ON `t_race_result_record`.`event_id` = `m_events`.`event_id`
-                                        LEFT JOIN `m_wind_direction` mwd1000
-                                        ON `t_race_result_record`.`wind_direction_1000m_point` = mwd1000.`wind_direction_id`
-                                        AND `mwd1000`.`delete_flag` = 0
-                                        LEFT JOIN `m_wind_direction` mwd2000
-                                        ON `t_race_result_record`.`wind_direction_2000m_point` = mwd2000.`wind_direction_id`
-                                        AND `mwd2000`.`delete_flag` = 0
-                                        WHERE 1=1
-                                        AND `t_race_result_record`.delete_flag = 0                                        
-                                        AND  `t_tournaments`.`delete_flag` = 0
-                                        AND  `m_seat_number`.`delete_flag` = 0
-                                        AND  `m_venue`.`delete_flag` = 0
-                                        AND `t_race_result_record`.player_id = ?', [$playerId]);
+        $racesResultRecord = DB::select(
+            'SELECT 
+                `t_race_result_record`.`race_result_record_id`, 
+                `t_race_result_record`.`player_id`, 
+                `t_race_result_record`.`jara_player_id`, 
+                `t_race_result_record`.`player_name`, 
+                `t_race_result_record`.`entrysystem_tourn_id`, 
+                `t_race_result_record`.`tourn_id`, 
+                `t_race_result_record`.`tourn_name`, 
+                `t_race_result_record`.`race_id`, 
+                `t_race_result_record`.`entrysystem_race_id`, 
+                `t_race_result_record`.`race_number`, 
+                `t_race_result_record`.`race_name`, 
+                `t_race_result_record`.`org_id`, 
+                `t_race_result_record`.`entrysystem_org_id`, 
+                `t_race_result_record`.`org_name`, 
+                `t_race_result_record`.`crew_name`, 
+                `t_race_result_record`.`by_group`, 
+                `t_race_result_record`.`event_id`, 
+                `t_race_result_record`.`event_name` AS eventName, 
+                `t_race_result_record`.`range`, 
+                `t_race_result_record`.`rank`, 
+                `t_race_result_record`.`laptime_500m`, 
+                `t_race_result_record`.`laptime_1000m`, 
+                `t_race_result_record`.`laptime_1500m`, 
+                `t_race_result_record`.`laptime_2000m`, 
+                `t_race_result_record`.`final_time`, 
+                `t_race_result_record`.`stroke_rate_avg`, 
+                `t_race_result_record`.`stroke_rat_500m`, 
+                `t_race_result_record`.`stroke_rat_1000m`, 
+                `t_race_result_record`.`stroke_rat_1500m`, 
+                `t_race_result_record`.`stroke_rat_2000m`, 
+                `t_race_result_record`.`heart_rate_avg`, 
+                `t_race_result_record`.`heart_rate_500m`, 
+                `t_race_result_record`.`heart_rate_1000m`, 
+                `t_race_result_record`.`heart_rate_1500m`, 
+                `t_race_result_record`.`heart_rate_2000m`, 
+                `t_race_result_record`.`official`, 
+                `t_race_result_record`.`attendance`, 
+                `t_race_result_record`.`player_height`, 
+                `t_race_result_record`.`player_weight`, 
+                `t_race_result_record`.`seat_number`, 
+                `t_race_result_record`.`seat_name`, 
+                `t_race_result_record`.`race_result_record_name`, 
+                `t_race_result_record`.`start_datetime`, 
+                `t_race_result_record`.`wind_speed_2000m_point`, 
+                `t_race_result_record`.`wind_direction_2000m_point`, 
+                `mwd2000`.`wind_direction` AS `twentyHundredmWindDirectionName`,                                         
+                `t_race_result_record`.`wind_speed_1000m_point`, 
+                `t_race_result_record`.`wind_direction_1000m_point`, 
+                `mwd1000`.`wind_direction` AS `tenHundredmWindDirectionName`,
+                `t_race_result_record`.`race_result_notes`,
+                `m_seat_number`.`display_order` AS "order",
+                `t_tournaments`.`event_start_date` AS "eventStartDate",
+                `m_venue`.`venue_name`,
+                `m_events`.`event_name` 
+            FROM `t_race_result_record` 
+            LEFT OUTER JOIN `m_seat_number` ON
+                `m_seat_number`.`seat_id` = `t_race_result_record`.`seat_number`
+                AND `m_seat_number`.`delete_flag` = 0
+            # NOTE: 関連テーブルが削除されたとしてもレース結果は表示するため外部結合する。
+            LEFT OUTER JOIN `t_tournaments` ON
+                `t_tournaments`.`tourn_id` = `t_race_result_record`.`tourn_id`
+                AND `t_tournaments`.`delete_flag` = 0
+            LEFT OUTER JOIN `m_venue` ON
+                `m_venue`.`venue_id` = `t_tournaments`.`venue_id`
+                AND `m_venue`.`delete_flag` = 0
+            LEFT OUTER JOIN `m_events` ON
+                `m_events`.`event_id` = `t_race_result_record`.`event_id`
+                AND `m_events`.`delete_flag` = 0
+            LEFT OUTER JOIN `m_wind_direction` mwd1000 ON
+                mwd1000.`wind_direction_id` = `t_race_result_record`.`wind_direction_1000m_point`
+                AND `mwd1000`.`delete_flag` = 0
+            LEFT OUTER JOIN `m_wind_direction` mwd2000 ON
+                mwd2000.`wind_direction_id` = `t_race_result_record`.`wind_direction_2000m_point`
+                AND `mwd2000`.`delete_flag` = 0
+            WHERE 1=1
+                AND `t_race_result_record`.delete_flag = 0                                        
+                AND `t_race_result_record`.player_id = ?',
+            [$playerId]
+        );
         return $racesResultRecord;
     }
 
@@ -347,10 +352,12 @@ class T_raceResultRecord extends Model
     public function getTournamentIdForResultsRecord($targetOrgId)
     {
         $tournamentIds = DB::select(
-            'select `tourn_id`
-                                        from `t_race_result_record`
-                                        where `delete_flag`=0
-                                        and `org_id`= :org_id',
+            'SELECT
+                `tourn_id`
+            FROM `t_race_result_record`
+            WHERE 1=1
+                AND `delete_flag` = 0
+                AND `org_id` = :org_id',
             $targetOrgId
         );
         return $tournamentIds;
