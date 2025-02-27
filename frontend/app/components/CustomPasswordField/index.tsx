@@ -28,7 +28,7 @@ const CustomPasswordField = ({
 }) => {
   const [passwordShown, setPasswordShown] = useState(false);
   const togglePasswordVisibility = () => {
-    setPasswordShown(!passwordShown);
+    setPasswordShown((previous) => !previous);
   };
   return (
     <div className='flex flex-col gap-[8px]'>
