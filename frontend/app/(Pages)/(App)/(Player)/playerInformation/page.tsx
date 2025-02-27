@@ -709,7 +709,6 @@ export default function PlayerInformation() {
       {/* エラーメッセージの表示 */}
       <ErrorBox errorText={errorMessage} />
       <div>
-        {/* TODO: tooltipの表示内容は仕様が決まり次第置き換える */}
         {/* 写真 */}
         <InputLabel
           label='写真'

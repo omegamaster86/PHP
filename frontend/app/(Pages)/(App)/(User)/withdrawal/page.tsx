@@ -21,7 +21,7 @@ export default function Withdrawal() {
       <CustomTitle displayBack>退会</CustomTitle>
       <p className='text-center lg:text-lg'>退会しますか？</p>
       <Divider className='h-[1px] bg-border' />
-      <div className='flex flex-row justify-center gap-4'>
+      <div className='flex flex-col items-center justify-center gap-4 md:flex-row'>
         <CustomButton
           buttonType='white-outlined'
           onClick={() => {
@@ -34,7 +34,6 @@ export default function Withdrawal() {
         {/* 退会ボタン */}
         <CustomButton
           buttonType='red-outlined'
-          className='w-[200px]'
           onClick={() => {
             const isOk = window.confirm(
               '選手情報やボランティア情報が紐づく場合、該当するデータは削除されずに残りますが、退会しますか？',
