@@ -330,6 +330,15 @@ class T_tournaments extends Model
                     WHERE 1=1
                         AND org.org_id = tt.sponsor_org_id
                         AND org.delete_flag = 0
+                )
+                AND EXISTS (
+                    SELECT
+                        'x'
+                    FROM
+                        t_races tr
+                    WHERE 1=1
+                        AND tr.tourn_id = tt.tourn_id
+                        AND tr.delete_flag = 0
                 )",
             [$entry_year]
         );
@@ -356,14 +365,24 @@ class T_tournaments extends Model
             FROM `t_tournaments` tour
             INNER JOIN `t_organizations` org ON
                 org.org_id = `tour`.sponsor_org_id
-                org.delete_flag = 0
+                AND org.delete_flag = 0
             INNER JOIN `t_organization_staff` staff ON
                 staff.org_id = org.org_id
                 AND staff.`delete_flag` = 0
                 AND staff.user_id = ?
             WHERE 1=1
                 AND tour.`delete_flag` = 0
-                AND DATE_FORMAT(tour.event_start_date, '%Y') = ?",
+                AND DATE_FORMAT(tour.event_start_date, '%Y') = ?
+                AND EXISTS (
+                    SELECT
+                        'x'
+                    FROM
+                        t_races tr
+                    WHERE 1=1
+                        AND tr.tourn_id = tour.tourn_id
+                        AND tr.delete_flag = 0
+                )
+            ",
             [
                 $user_id,
                 $entry_year
