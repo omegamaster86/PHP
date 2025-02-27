@@ -316,6 +316,10 @@ class TournamentController extends Controller
         $reqData = $request->all();
         $result = $tRaceResultRecord->getRaceResultRecord_raceId($reqData['race_id']);
 
+        if (empty($result)) {
+            abort(404, 'レース結果情報が見つかりません。');
+        }
+
         //ラップタイムをsss.msからmm:ss.msに変換 20240423
         for ($result_index = 0; $result_index < count($result); $result_index++) {
             $result[$result_index]->{"laptime_500m"} = $this->convertToTimeFormat($result[$result_index]->{"laptime_500m"});
