@@ -352,15 +352,14 @@ export default function TicketBulkRegister() {
       <CustomTitle displayBack>チケット購入履歴一括登録</CustomTitle>
       <ErrorBox errorText={errorMessages} />
 
-      <div className='flex flex-col gap-[10px] w-[300px]'>
+      <div className='flex flex-col gap-[10px]'>
         <CustomDropdown<number>
           id='tourn'
           label='大会名'
           displayHelp
           value={tournId}
           options={tournamentOptions}
-          onChange={(v) => setTournId(v)}
-          className='w-[300px]'
+          onChange={(v) => setTournId(v)}          
         />
       </div>
 
@@ -398,11 +397,10 @@ export default function TicketBulkRegister() {
         />
       )}
 
-      <div className='flex flex-row justify-center gap-[8px]'>
+      <div className='flex flex-col items-center justify-center gap-2 md:flex-row'>
         <CustomButton buttonType='secondary' onClick={router.back}>
           戻る
         </CustomButton>
-
         <CustomButton buttonType='primary' onClick={register}>
           登録
         </CustomButton>

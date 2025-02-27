@@ -203,7 +203,7 @@ export const Confirm: React.FC<Props> = (props) => {
           </div>
         ))}
 
-        <div className='m-auto flex gap-3'>
+        <div className='m-auto flex flex-col gap-3 md:flex-row'>
           <CustomButton type='button' buttonType='secondary' onClick={() => router.back()}>
             戻る
           </CustomButton>

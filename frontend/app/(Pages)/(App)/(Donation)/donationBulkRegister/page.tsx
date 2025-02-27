@@ -271,7 +271,7 @@ export default function DonationBulkRegister() {
         />
       )}
 
-      <div className='flex flex-row justify-center gap-[8px]'>
+      <div className='flex flex-col items-center justify-center gap-[8px] md:flex-row'>
         <CustomButton buttonType='secondary' onClick={router.back}>
           戻る
         </CustomButton>

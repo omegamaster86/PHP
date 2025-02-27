@@ -110,7 +110,11 @@ const CsvHandler = forwardRef<FileHandler, Props>((props, ref) => {
     <>
       <div className='flex flex-col gap-[10px] w-full'>
         <CustomInputLabel label={csvUploadProps.label} />
-
+        <a href={excelDownloadProps.fileUrl} download>
+          <CustomButton buttonType='primary' disabled={readonly} className='w-[200px] h-[57px]'>
+            {excelDownloadProps.label}
+          </CustomButton>
+        </a>
         <div className='flex flex-row gap-[4px]'>
           {readonly ? (
             <div>
@@ -121,35 +125,22 @@ const CsvHandler = forwardRef<FileHandler, Props>((props, ref) => {
           ) : (
             <div className='flex flex-col gap-[10px] w-full'>
               <div {...getRootProps()}>
-                <div className=''>
-                  <input {...getInputProps()} />
-                  <p className='text-secondaryText text-sm'>
-                    {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : ''}
-                  </p>
-                  <div className='flex flex-col gap-[10px] w-full'>
-                    <div className='flex flex-row gap-[4px]'>
-                      <CustomTextField
-                        placeholder={'ここにファイルをドラッグ＆ドロップしてアップロード'}
-                        value={currentShowFile?.isUploaded ? currentShowFile?.file.name : ''}
-                        className='w-[450px] h-12'
-                      />
-                      <CustomButton className='w-[100px] h-[57px]'>参照</CustomButton>
-                    </div>
-                  </div>
+                <input {...getInputProps()} />
+                <p className='text-secondaryText text-sm'>
+                  {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : ''}
+                </p>
+                <div className='flex flex-row gap-[10px] w-full'>
+                  <CustomTextField
+                    placeholder={'ここにファイルをドラッグ＆ドロップしてアップロード'}
+                    value={currentShowFile?.isUploaded ? currentShowFile?.file.name : ''}
+                    className='w-[450px] h-12'
+                  />
+                  <CustomButton className='w-[100px] h-[57px]'>参照</CustomButton>
                 </div>
               </div>
-              <div>
-                {isDragAccept ? 'ファイルをアップロードします。' : isDragReject ? 'エラー' : ''}
-              </div>
+              {isDragAccept ? 'ファイルをアップロードします。' : isDragReject ? 'エラー' : ''}
             </div>
           )}
-          <div className='flex flex-col gap-[10px]'>
-            <a href={excelDownloadProps.fileUrl} download>
-              <CustomButton buttonType='primary' disabled={readonly} className='w-[200px] h-[57px]'>
-                {excelDownloadProps.label}
-              </CustomButton>
-            </a>
-          </div>
         </div>
       </div>
       {/* ファイルアップロード中の表示 */}

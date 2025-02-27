@@ -110,96 +110,94 @@ const ImageUploader: FC<ImageUploaderProps> = ({
 
   return (
     <>
-      <div>
-        <div {...getRootProps()} className='w-full h-[320px] justify-center flex dropzone'>
-          {currentShowFile?.isUploaded ? (
-            <div className='relative'>
+      <div {...getRootProps()} className='w-full h-[320px] justify-center flex dropzone'>
+        {currentShowFile?.isUploaded ? (
+          <div className='relative'>
+            <button
+              className='absolute rounded bg-transparent hover:bg-transparent text-primaryText h-12 w-[50px] top-1 right-[0px]'
+              onClick={(e) => {
+                // 画像をクリアする
+                e.stopPropagation();
+                setCurrentShowFile(undefined);
+              }}
+            >
+              <CloseIcon />
+            </button>
+            <Avatar
+              alt='プレビュー画像'
+              src={currentShowFile.preview}
+              sx={{ width: 200, height: 200, cursor: 'pointer' }}
+            />
+          </div>
+        ) : initialPhotoUrl && isinitial ? (
+          <div className='relative'>
+            {initialPhoto && (
               <button
-                className='absolute rounded bg-transparent hover:bg-transparent text-primaryText h-12 w-[50px] top-1 right-[0px]'
+                className='absolute rounded bg-transparent hover:opacity-25 hover:bg-containerBg text-primaryText h-12 w-[50px] top-1 right-[0px]'
                 onClick={(e) => {
                   // 画像をクリアする
                   e.stopPropagation();
-                  setCurrentShowFile(undefined);
+                  setFormData((prevFormData: any) => ({
+                    ...prevFormData,
+                    uploadedPhotoName: '',
+                    uploadedPhoto: undefined,
+                    photo: '',
+                  })) as void;
+                  setInitialPhoto('');
                 }}
               >
                 <CloseIcon />
               </button>
+            )}
+            {initialPhoto ? (
               <Avatar
                 alt='プレビュー画像'
-                src={currentShowFile.preview}
+                src={initialPhoto}
                 sx={{ width: 200, height: 200, cursor: 'pointer' }}
               />
-            </div>
-          ) : initialPhotoUrl && isinitial ? (
-            <div className='relative'>
-              {initialPhoto && (
+            ) : (
+              <div className='w-[320px] h-[320px] bg-containerBg m-auto mt-auto justify-center flex items-center flex-col gap-[10px]'>
+                <input {...getInputProps()} />
+                <UploadFileIcon className='text-primaryText' />
+                <p className='text-secondaryText border-secondaryText text-sm'>ファイルを選択</p>
+                <p className='text-secondaryText text-sm'>
+                  {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : 'or'}
+                </p>
                 <button
-                  className='absolute rounded bg-transparent hover:opacity-25 hover:bg-containerBg text-primaryText h-12 w-[50px] top-1 right-[0px]'
-                  onClick={(e) => {
-                    // 画像をクリアする
-                    e.stopPropagation();
-                    setFormData((prevFormData: any) => ({
-                      ...prevFormData,
-                      uploadedPhotoName: '',
-                      uploadedPhoto: undefined,
-                      photo: '',
-                    })) as void;
-                    setInitialPhoto('');
-                  }}
+                  className='py-2.5 px-5 text-small font-medium text-gray-900 focus:outline-none border border-dashed border-secondaryText hover:bg-containerBg focus:z-10 focus:ring-4 focus:ring-primary-50'
+                  disabled={isDragReject}
+                  type='button'
                 >
-                  <CloseIcon />
+                  {isDragAccept
+                    ? 'ファイルをアップロードします。'
+                    : isDragReject
+                      ? 'エラー'
+                      : 'アップロード'}
                 </button>
-              )}
-              {initialPhoto ? (
-                <Avatar
-                  alt='プレビュー画像'
-                  src={initialPhoto}
-                  sx={{ width: 200, height: 200, cursor: 'pointer' }}
-                />
-              ) : (
-                <div className='w-[320px] h-[320px] bg-containerBg m-auto mt-auto justify-center flex items-center flex-col gap-[10px]'>
-                  <input {...getInputProps()} />
-                  <UploadFileIcon className='text-primaryText' />
-                  <p className='text-secondaryText border-secondaryText text-sm'>ファイルを選択</p>
-                  <p className='text-secondaryText text-sm'>
-                    {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : 'or'}
-                  </p>
-                  <button
-                    className='py-2.5 px-5 text-small font-medium text-gray-900 focus:outline-none border border-dashed border-secondaryText hover:bg-containerBg focus:z-10 focus:ring-4 focus:ring-primary-50'
-                    disabled={isDragReject}
-                    type='button'
-                  >
-                    {isDragAccept
-                      ? 'ファイルをアップロードします。'
-                      : isDragReject
-                        ? 'エラー'
-                        : 'アップロード'}
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className='w-full h-[320px] bg-containerBg m-auto mt-auto justify-center flex items-center flex-col gap-[10px]'>
-              <input {...getInputProps()} />
-              <UploadFileIcon className='text-primaryText' />
-              <p className='text-secondaryText border-secondaryText text-sm'>ファイルを選択</p>
-              <p className='text-secondaryText text-sm'>
-                {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : 'or'}
-              </p>
-              <button
-                className='py-2.5 px-5 text-small font-medium text-gray-900 focus:outline-none border border-dashed border-secondaryText hover:bg-containerBg focus:z-10 focus:ring-4 focus:ring-primary-50'
-                disabled={isDragReject}
-                type='button'
-              >
-                {isDragAccept
-                  ? 'ファイルをアップロードします。'
-                  : isDragReject
-                    ? 'エラー'
-                    : 'アップロード'}
-              </button>
-            </div>
-          )}
-        </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className='w-full h-[320px] bg-containerBg m-auto mt-auto justify-center flex items-center flex-col gap-[10px]'>
+            <input {...getInputProps()} />
+            <UploadFileIcon className='text-primaryText' />
+            <p className='text-secondaryText border-secondaryText text-sm'>ファイルを選択</p>
+            <p className='text-secondaryText text-sm'>
+              {isDragReject ? 'このファイル形式のアップロードは許可されていません。' : 'or'}
+            </p>
+            <button
+              className='py-2.5 px-5 text-small font-medium text-gray-900 focus:outline-none border border-dashed border-secondaryText hover:bg-containerBg focus:z-10 focus:ring-4 focus:ring-primary-50'
+              disabled={isDragReject}
+              type='button'
+            >
+              {isDragAccept
+                ? 'ファイルをアップロードします。'
+                : isDragReject
+                  ? 'エラー'
+                  : 'アップロード'}
+            </button>
+          </div>
+        )}
       </div>
       {currentShowFile && (
         <aside>

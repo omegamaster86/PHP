@@ -440,23 +440,25 @@ export default function UserInformationUpdate() {
             {mode === 'confirm' && 'ユーザー情報確認'}
           </CustomTitle>
         </div>
-        <div className='flex flex-col justify-start gap-[10px]'>
-          {/* 写真 */}
-          <InputLabel
-            displayHelp={mode !== 'confirm'}
-            label='写真'
-            toolTipText={`<span style="display: block;">登録可能な画像ファイルの種類は以下になります。</span>
+        {/* 写真 */}
+        <InputLabel
+          displayHelp={mode !== 'confirm'}
+          label='写真'
+          toolTipText={`<span style="display: block;">登録可能な画像ファイルの種類は以下になります。</span>
           <span style="display: block;">jpg</span>
           <span style="display: block;">jpeg</span>
           <span style="display: block;">png</span>`}
-          />
+        />
+        <div className='flex flex-row justify-start gap-[4px]'>
           {mode === 'update' && (
-            <ImageUploader
-              currentShowFile={currentShowFile}
-              setCurrentShowFile={setCurrentShowFile}
-              setFormData={setFormData}
-              initialPhotoUrl={formData?.photo ? `${USER_IMAGE_URL}${formData.photo}` : ''}
-            />
+            <div>
+              <ImageUploader
+                currentShowFile={currentShowFile}
+                setCurrentShowFile={setCurrentShowFile}
+                setFormData={setFormData}
+                initialPhotoUrl={formData?.photo ? `${USER_IMAGE_URL}${formData.photo}` : ''}
+              />
+            </div>
           )}
           {/* 写真 */}
           {mode === 'confirm' && (
