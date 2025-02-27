@@ -164,7 +164,7 @@ class OrganizationPlayersController extends Controller
 
             $user_data = $t_users->getUserDataFromMailAddress($mail_address);
 
-            if (empty($user_data) && isset($user_id) && $user_data[0]->user_id != $user_id) {
+            if (isset($user_id) && (empty($user_data) || $user_data[0]->user_id != $user_id)) {
                 $this->assignInvalidRowdata('無効データ（ユーザーIDとメールアドレスが一致しません）', $reqData[$rowIndex]);
                 continue;
             }
