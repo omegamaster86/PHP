@@ -1,7 +1,7 @@
 // 機能名: ユーザー情報更新画面・入力確認画面
 'use client';
 
-import { NO_IMAGE_URL, USER_IMAGE_URL } from '../../../../utils/imageUrl'; //For importing image url from a single source of truth
+import { USER_IMAGE_URL } from '../../../../utils/imageUrl'; //For importing image url from a single source of truth
 
 import axios from '@/app/lib/axios';
 import {
@@ -34,13 +34,13 @@ import {
   ImageUploader,
   InputLabel,
 } from '@/app/components';
+import { CustomUserAvatar } from '@/app/components/CustomUserAvatar';
 import {
   getSessionStorage,
   getStorageKey,
   removeSessionStorage,
   setSessionStorage,
 } from '@/app/utils/sessionStorage';
-import { CustomUserAvatar } from '@/app/components/CustomUserAvatar';
 
 type UserFormData = UserResponse;
 
@@ -286,13 +286,13 @@ export default function UserInformationUpdate() {
             Validator.validateRequired(formData?.residenceCountryName, '居住地'),
           ]);
 
-          let livingPrefectureError = [];
+          let livingPrefectureError: string[] = [];
 
           if (formData?.residenceCountryName === '日本国 （jpn）') {
             livingPrefectureError = Validator.getErrorMessages([
-              Validator.validateRequired(formData?.residencePrefectureName, '居住地'),
+              Validator.validateRequired(formData?.residencePrefectureName, '都道府県'),
             ]);
-            setLivingPrefectureErrorMessages(livingPrefectureError as string[]);
+            setLivingPrefectureErrorMessages(livingPrefectureError);
           }
 
           setUserNameErrorMessages(userNameError as string[]);
