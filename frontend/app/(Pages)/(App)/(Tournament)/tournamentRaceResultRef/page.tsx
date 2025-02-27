@@ -44,10 +44,7 @@ interface ByGroupList {
 
 export default function TournamentRaceResultRef() {
   // エラーハンドリング用のステート
-  const [error, setError] = useState({
-    isError: false,
-    errorMessage: '',
-  });
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
 
   // クエリパラメータを取得する
   const searchParams = useSearchParams();
@@ -90,9 +87,7 @@ export default function TournamentRaceResultRef() {
         //クルー情報を取得するためのパラメータをセット
         setSearchCrewInfo(response.data.result);
         setResultRecordsData(response.data.result);
-        response.data.length === 0
-          ? setError({ isError: true, errorMessage: 'エントリー情報がありません。' })
-          : null;
+
         const raceNamesArray = response.data.result.map((item: any) => item.race_name); //残件対応項目
         const uniqueRaceNamesSet = new Set(raceNamesArray);
         const uniqueRaceNamesArray = Array.from(uniqueRaceNamesSet);
@@ -114,7 +109,8 @@ export default function TournamentRaceResultRef() {
           })),
         );
       } catch (error: any) {
-        setError({ isError: true, errorMessage: 'API取得エラー:' + error.message });
+        const errorMessage = error.response?.data?.message || `API取得エラー: ${error.message}`;
+        setErrorMessages([errorMessage]);
       }
     };
     fetchData();
@@ -250,11 +246,20 @@ export default function TournamentRaceResultRef() {
     setOpen(false);
   };
 
+  if (raceResultRecordsData.length === 0) {
+    return (
+      <>
+        <CustomTitle displayBack>レース結果参照</CustomTitle>
+        <ErrorBox errorText={errorMessages} />
+      </>
+    );
+  }
+
   return (
     <>
       <div className='flex flex-col gap-[30px]'>
         <CustomTitle displayBack>レース結果参照</CustomTitle>
-        <ErrorBox errorText={error.isError ? [error.errorMessage] : []} />
+        <ErrorBox errorText={errorMessages} />
         <div className='flex flex-col gap-[20px] bg-primary-900 p-4'>
           {/* 種目名 */}
           <Label

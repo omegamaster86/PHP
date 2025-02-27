@@ -65,52 +65,56 @@ class T_raceResultRecord extends Model
     //レースIDに紐づいたレース結果情報を取得
     public function getRaceResultRecord_raceId($raceId)
     {
-        $racesResultRecord = DB::select('select distinct
-                                        `t_race_result_record`.`race_id`, 
-                                        `t_race_result_record`.`race_number`, 
-                                        `t_race_result_record`.`race_name`, 
-                                        `t_race_result_record`.`crew_name`, 
-                                        `t_race_result_record`.`by_group`, 
-                                        `t_race_result_record`.`event_id`, 
-                                        `t_race_result_record`.`event_name`,
-                                        `t_race_result_record`.`rank`, 
-                                        `t_race_result_record`.`laptime_500m`, 
-                                        `t_race_result_record`.`laptime_1000m`, 
-                                        `t_race_result_record`.`laptime_1500m`, 
-                                        `t_race_result_record`.`laptime_2000m`, 
-                                        `t_race_result_record`.`final_time`, 
-                                        `t_race_result_record`.`stroke_rate_avg`, 
-                                        `t_race_result_record`.`stroke_rat_500m`, 
-                                        `t_race_result_record`.`stroke_rat_1000m`, 
-                                        `t_race_result_record`.`stroke_rat_1500m`, 
-                                        `t_race_result_record`.`stroke_rat_2000m`, 
-                                        `t_race_result_record`.`official`, 
-                                        `t_race_result_record`.`start_datetime`, 
-                                        `t_race_result_record`.`wind_speed_2000m_point`, 
-                                        wd2000p.`wind_direction` as wind_direction_2000m_point, 
-                                        `t_race_result_record`.`wind_speed_1000m_point`, 
-                                        wd1000p.`wind_direction` as wind_direction_1000m_point, 
-                                        `t_race_result_record`.`race_result_notes`,
-                                        `t_tournaments`.`tourn_id`,
-                                        `t_tournaments`.`tourn_name`,
-                                        `t_race_result_record`.range,
-                                        `m_venue`.venue_name,
-                                        `t_race_result_record`.org_id
-                                        FROM `t_race_result_record` 
-                                        left join `t_tournaments`
-                                        on `t_race_result_record`.`tourn_id` = `t_tournaments`.`tourn_id`
-                                        left join `m_wind_direction` wd2000p
-                                        on `t_race_result_record`.`wind_direction_2000m_point` = wd2000p.`wind_direction_id`
-                                        and  wd2000p.`delete_flag` = 0
-                                        left join `m_wind_direction` wd1000p
-                                        on `t_race_result_record`.`wind_direction_1000m_point` = wd1000p.`wind_direction_id`
-                                        and  wd1000p.`delete_flag` = 0
-                                        left join `m_venue`
-                                        on `t_tournaments`.venue_id = `m_venue`.venue_id
-                                        where 1=1
-                                        and `t_race_result_record`.delete_flag = 0                                        
-                                        and  `t_tournaments`.`delete_flag` = 0
-                                        and `t_race_result_record`.race_id = ?', [$raceId]);
+        $racesResultRecord = DB::select(
+            'SELECT DISTINCT
+                `t_race_result_record`.`race_id`, 
+                `t_race_result_record`.`race_number`, 
+                `t_race_result_record`.`race_name`, 
+                `t_race_result_record`.`crew_name`, 
+                `t_race_result_record`.`by_group`, 
+                `t_race_result_record`.`event_id`, 
+                `t_race_result_record`.`event_name`,
+                `t_race_result_record`.`rank`, 
+                `t_race_result_record`.`laptime_500m`, 
+                `t_race_result_record`.`laptime_1000m`, 
+                `t_race_result_record`.`laptime_1500m`, 
+                `t_race_result_record`.`laptime_2000m`, 
+                `t_race_result_record`.`final_time`, 
+                `t_race_result_record`.`stroke_rate_avg`, 
+                `t_race_result_record`.`stroke_rat_500m`, 
+                `t_race_result_record`.`stroke_rat_1000m`, 
+                `t_race_result_record`.`stroke_rat_1500m`, 
+                `t_race_result_record`.`stroke_rat_2000m`, 
+                `t_race_result_record`.`official`, 
+                `t_race_result_record`.`start_datetime`, 
+                `t_race_result_record`.`wind_speed_2000m_point`, 
+                wd2000p.`wind_direction` AS wind_direction_2000m_point, 
+                `t_race_result_record`.`wind_speed_1000m_point`, 
+                wd1000p.`wind_direction` AS wind_direction_1000m_point, 
+                `t_race_result_record`.`race_result_notes`,
+                `t_tournaments`.`tourn_id`,
+                `t_tournaments`.`tourn_name`,
+                `t_race_result_record`.range,
+                `m_venue`.venue_name,
+                `t_race_result_record`.org_id
+            FROM `t_race_result_record` 
+            INNER JOIN `t_tournaments` ON
+                `t_tournaments`.`tourn_id` = `t_race_result_record`.`tourn_id`
+                AND `t_tournaments`.`delete_flag` = 0
+            LEFT OUTER JOIN `m_wind_direction` wd2000p ON
+                wd2000p.`wind_direction_id` = `t_race_result_record`.`wind_direction_2000m_point`
+                AND wd2000p.`delete_flag` = 0
+            LEFT OUTER JOIN `m_wind_direction` wd1000p ON
+                wd1000p.`wind_direction_id` = `t_race_result_record`.`wind_direction_1000m_point`
+                AND wd1000p.`delete_flag` = 0
+            LEFT OUTER JOIN `m_venue` ON
+                `m_venue`.venue_id = `t_tournaments`.venue_id
+                AND `m_venue`.`delete_flag` = 0
+            WHERE 1=1
+                AND `t_race_result_record`.delete_flag = 0                                        
+                AND `t_race_result_record`.race_id = ?',
+            [$raceId]
+        );
         return $racesResultRecord;
     }
 
