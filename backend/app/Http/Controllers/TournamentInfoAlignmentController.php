@@ -663,28 +663,28 @@ class TournamentInfoAlignmentController extends Controller
                 }
                 // ストロークレート（平均）
                 if (isset($target_row['strokeRateAvg'])) {
-                    $errorMessage = "ストロークレート（平均）は3桁以内の整数で入力してください。";
-                    $this->checkInteger($target_row['strokeRateAvg'], 3, $checkResult, $target_row['strokeRateAvgError'], $errorMessage);
+                    $errorMessage = "ストロークレート（平均）は99以下の整数で入力してください。";
+                    $this->checkInteger($target_row['strokeRateAvg'], 2, $checkResult, $target_row['strokeRateAvgError'], $errorMessage);
                 }
                 // 500mストロークレート
                 if (isset($target_row['fiveHundredmStrokeRat'])) {
-                    $errorMessage = "500mストロークレートは3桁以内の整数で入力してください。";
-                    $this->checkInteger($target_row['fiveHundredmStrokeRat'], 3, $checkResult, $target_row['fiveHundredmStrokeRatError'], $errorMessage);
+                    $errorMessage = "500mストロークレートは99以下の整数で入力してください。";
+                    $this->checkInteger($target_row['fiveHundredmStrokeRat'], 2, $checkResult, $target_row['fiveHundredmStrokeRatError'], $errorMessage);
                 }
                 // 1000mストロークレート
                 if (isset($target_row['tenHundredmStrokeRat'])) {
-                    $errorMessage = "1000mストロークレートは3桁以内の整数で入力してください。";
-                    $this->checkInteger($target_row['tenHundredmStrokeRat'], 3, $checkResult, $target_row['tenHundredmStrokeRatError'], $errorMessage);
+                    $errorMessage = "1000mストロークレートは99以下の整数で入力してください。";
+                    $this->checkInteger($target_row['tenHundredmStrokeRat'], 2, $checkResult, $target_row['tenHundredmStrokeRatError'], $errorMessage);
                 }
                 // 1500mストロークレート
                 if (isset($target_row['fifteenHundredmStrokeRat'])) {
-                    $errorMessage = "1500mストロークレートは3桁以内の整数で入力してください。";
-                    $this->checkInteger($target_row['fifteenHundredmStrokeRat'], 3, $checkResult, $target_row['fifteenHundredmStrokeRatError'], $errorMessage);
+                    $errorMessage = "1500mストロークレートは99以下の整数で入力してください。";
+                    $this->checkInteger($target_row['fifteenHundredmStrokeRat'], 2, $checkResult, $target_row['fifteenHundredmStrokeRatError'], $errorMessage);
                 }
                 // 2000mストロークレート
                 if (isset($target_row['twentyHundredmStrokeRat'])) {
-                    $errorMessage = "2000mストロークレートは3桁以内の整数で入力してください。";
-                    $this->checkInteger($target_row['twentyHundredmStrokeRat'], 3, $checkResult, $target_row['twentyHundredmStrokeRatError'], $errorMessage);
+                    $errorMessage = "2000mストロークレートは99以下の整数で入力してください。";
+                    $this->checkInteger($target_row['twentyHundredmStrokeRat'], 2, $checkResult, $target_row['twentyHundredmStrokeRatError'], $errorMessage);
                 }
                 // 心拍数（平均）
                 if (isset($target_row['heartRateAvg'])) {
