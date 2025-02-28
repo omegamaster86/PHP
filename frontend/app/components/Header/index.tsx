@@ -22,6 +22,8 @@ import Logo from '../Logo';
 import MenuButton from '../MenuButton';
 import './Header.css';
 
+const headerRoutesForTempPassword = ['/passwordchange'];
+
 type MenuItemChild = {
   title: string;
   link: string;
@@ -54,7 +56,7 @@ const Header: FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [drawerOpen, setDrawerOpenOpen] = useState(false);
   const [clickIndex, setClickIndex] = useState(0);
-  const [headerMenuFlag, setHeaderMenuFlag] = useState(0);
+  const [showHeaderMenu, setShowHeaderMenu] = useState(false);
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報
 
   const open = Boolean(anchorEl);
@@ -128,12 +130,15 @@ const Header: FC = () => {
         //ユーザ情報が存在し、仮パスワードフラグが0の場合ヘッダーメニューを表示 20240403
         if (Object.keys(response.data.result).length > 0) {
           if (response.data.result.temp_password_flag == 0) {
-            setHeaderMenuFlag(1);
+            setShowHeaderMenu(true);
+          } else {
+            const showHeader = headerRoutesForTempPassword.includes(page);
+            setShowHeaderMenu(showHeader);
           }
           const playerInf = await axios.get('api/getIDsAssociatedWithUser');
           setUserIdType(playerInf.data.result[0]); //ユーザIDに紐づいた情報 20240222
         } else {
-          setHeaderMenuFlag(0);
+          setShowHeaderMenu(false);
         }
       } catch (error: any) {}
     };
@@ -460,27 +465,29 @@ const Header: FC = () => {
       </div>
       <header className='bg-primary-500 h-[60px] w-full flex justify-between px-[20px]'>
         <Logo />
-        <div className='right-content'>
-          {/* スマホの場合は表示 */}
-          <div className='flex justify-center items-center h-full md:hidden'>
-            <IconButton onClick={toggleDrawer(true)}>
-              <MenuOutlined
-                sx={{
-                  color: 'white',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              />
-            </IconButton>
-            <Drawer open={drawerOpen} onClose={toggleDrawer(false)} anchor='right'>
-              {DrawerList}
-            </Drawer>
+        {showHeaderMenu && (
+          <div className='right-content'>
+            {/* スマホの場合は表示 */}
+            <div className='flex justify-center items-center h-full md:hidden'>
+              <IconButton onClick={toggleDrawer(true)}>
+                <MenuOutlined
+                  sx={{
+                    color: 'white',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                />
+              </IconButton>
+              <Drawer open={drawerOpen} onClose={toggleDrawer(false)} anchor='right'>
+                {DrawerList}
+              </Drawer>
+            </div>
           </div>
-        </div>
+        )}
       </header>
 
-      {headerMenuFlag == 1 ? (
+      {showHeaderMenu ? (
         // スマホの場合は非表示
         <div className='w-full hidden md:block'>
           <div className='flex flex-row justify-start items-center h-[50px] gap-[40px] px-[104px] text-small text-secondaryText'>
