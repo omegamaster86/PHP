@@ -274,6 +274,7 @@ export default function TeamRef() {
           hostTournaments={hostTournaments}
           mode={mode}
           userIdType={userIdType}
+          orgId={formData.org_id}
           checkOrgManage={checkOrgManage}
         />
       )}
