@@ -93,6 +93,7 @@ export default function Team() {
   const [orgTypeOptions, setOrgTypeOptions] = useState<OrgTypeResponse[]>([]);
   const [disableFlag, setDisableFlag] = useState<boolean>(false);
   const [addStaffDisplayFlg, setAddStaffDisplayFlg] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
 
   const [errorMessage, setErrorMessage] = useState([] as string[]);
@@ -608,10 +609,15 @@ export default function Team() {
     confirm: (
       <CustomButton
         buttonType='primary'
-        onClick={() => {
+        onClick={async () => {
+          if (isSubmitting) {
+            return;
+          }
+          setIsSubmitting(true);
+
           // TODO: APIを叩いて、登録・更新処理を行う
           //空行の削除
-          const staffList = tableData.filter(function (x) {
+          const staffList = tableData.filter((x) => {
             return !(x.delete_flag == true && (x.user_id == '' || x.user_name == ''));
           });
           //送信データの作成
@@ -626,7 +632,7 @@ export default function Team() {
 
           if (prevMode === 'create') {
             const storeOrgData = async () => {
-              axios
+              await axios
                 .post('api/storeOrgData', sendData)
                 .then((response) => {
                   if (
@@ -649,10 +655,10 @@ export default function Team() {
                   // ]);
                 });
             };
-            storeOrgData();
+            await storeOrgData();
           } else {
             const updateOrgData = async () => {
-              axios
+              await axios
                 .post('api/updateOrgData', sendData)
                 .then((response) => {
                   if (
@@ -674,8 +680,10 @@ export default function Team() {
                   ]);
                 });
             };
-            updateOrgData();
+            await updateOrgData();
           }
+
+          setIsSubmitting(false);
         }}
       >
         {prevMode === 'create' && '登録'}

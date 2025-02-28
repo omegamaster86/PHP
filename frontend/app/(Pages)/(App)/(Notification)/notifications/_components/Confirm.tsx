@@ -126,6 +126,10 @@ export const Confirm: React.FC<Props> = (props) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (createMutation.isMutating || updateMutation.isMutating) {
+      return;
+    }
+
     if (formData.type === 'create') {
       const reqData: CreateNotificationRequest = {
         notificationData: {

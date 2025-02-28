@@ -149,8 +149,9 @@ export default function TournamentResultInfomationBulkRegister() {
   const [tournStartYearActivFlag, setTournStartYearActivFlag] = useState<boolean>(false); //true:変更できない false:変更できる
   const [tournNameActivFlag, setTournNameActivFlag] = useState<boolean>(false); //true:変更できない false:変更できる
   const [readButtonActivFlag, setReadButtonActivFlag] = useState<boolean>(true); //true:変更できない false:変更できる
-
   const [validFlag, setValidFlag] = useState(false); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   //ユーザIDに紐づいた情報の取得 20240418
   useEffect(() => {
     const fetchData = async () => {
@@ -598,6 +599,11 @@ export default function TournamentResultInfomationBulkRegister() {
 
   //連携ボタン押下時 20240302
   const registerCsvData = async () => {
+    if (isSubmitting) {
+      return;
+    }
+    setIsSubmitting(true);
+
     const sendTournData = {
       tournData: formData,
       csvDataList: csvData,
@@ -616,6 +622,8 @@ export default function TournamentResultInfomationBulkRegister() {
       .catch((error) => {
         setErrorMessage(['大会エントリー一括登録に失敗しました：' + (error as Error).message]);
       });
+
+    setIsSubmitting(false);
   };
 
   if (!validFlag) return null;

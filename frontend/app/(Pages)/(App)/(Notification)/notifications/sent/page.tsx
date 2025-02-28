@@ -38,7 +38,7 @@ export default function NotificationsSentList() {
   const mode = searchParams.get('mode') as NotificationMode | null;
   const { user } = useAuth({ middleware: 'auth' });
 
-  const { trigger } = useSWRMutation('api/deleteNotification', sendDeleteRequest);
+  const { trigger, isMutating } = useSWRMutation('api/deleteNotification', sendDeleteRequest);
   const { data } = useSWR(
     {
       url: 'api/getSenderNotificationsList',
@@ -75,6 +75,10 @@ export default function NotificationsSentList() {
   const isDeleteMode = mode === 'delete';
 
   const handleDelete = (id: number) => {
+    if (isMutating) {
+      return;
+    }
+
     const ok = window.confirm('この通知を削除します。よろしいですか？');
     if (ok) {
       trigger(

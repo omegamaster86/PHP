@@ -126,6 +126,8 @@ const tournamentResultMode = ['create', 'update', 'confirm'];
 export default function TournamentResult() {
   const router = useRouter();
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [errorText, setErrorText] = useState<string[]>([]);
   const [raceIdErrorText, setRaceIdErrorText] = useState(''); //レースID
   const [raceNameErrorText, setRaceNameErrorText] = useState(''); //レース名
@@ -2335,6 +2337,12 @@ export default function TournamentResult() {
             if (errorCount > 0) return;
 
             clearError(); //エラーメッセージのクリア
+
+            if (isSubmitting) {
+              return;
+            }
+            setIsSubmitting(true);
+
             if (mode === 'create') {
               //追加行でない(更新行)かつ、選手情報すべてに削除チェックがされている場合、「このレース結果情報を削除する」にチェックを入れる 20240516
               for (let index = 0; index < raceResultRecords.length; index++) {
@@ -2420,6 +2428,8 @@ export default function TournamentResult() {
                 }
               }
             }
+
+            setIsSubmitting(false);
           }}
           className='w-[170px]'
         >

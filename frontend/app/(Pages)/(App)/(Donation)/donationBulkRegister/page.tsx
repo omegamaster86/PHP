@@ -131,6 +131,10 @@ export default function DonationBulkRegister() {
   };
 
   const register = async () => {
+    if (mutation.isMutating) {
+      return;
+    }
+
     if (!csvValidateResults.length) {
       window.alert('データが読み込まれていません。');
       return;

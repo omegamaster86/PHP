@@ -204,6 +204,10 @@ export default function TicketBulkRegister() {
   };
 
   const register = async () => {
+    if (mutation.isMutating) {
+      return;
+    }
+
     if (!tournId) {
       window.alert('大会名を選択してください。');
       return;

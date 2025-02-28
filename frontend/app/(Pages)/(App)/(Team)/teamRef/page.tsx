@@ -15,7 +15,7 @@ import {
 import { ROLE } from '@/app/utils/consts';
 import { Tab, Tabs } from '@mui/material';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { SyntheticEvent, useState } from 'react';
 import { BelongPlayer } from './_components/BelongPlayer';
 import { BelongStaff } from './_components/BelongStaff';
 import { EntryTournament } from './_components/EntryTournament';
@@ -31,6 +31,7 @@ export default function TeamRef() {
   const [value, setValue] = useState(0);
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
   const [teamdata, setTeamdata] = useState([] as TeamResponse[]); //該当ユーザが管理する団体情報の取得 20240415
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // ページ全体のエラーハンドリング用のステート
   let isError = false;
@@ -305,12 +306,21 @@ export default function TeamRef() {
           <CustomButton
             buttonType='primary'
             onClick={async () => {
+              if (isSubmitting) {
+                return;
+              }
+              setIsSubmitting(true);
+
               const isOk = window.confirm('団体情報を削除します。よろしいですか？');
-              if (!isOk) return;
-              axios
+              if (!isOk) {
+                setIsSubmitting(false);
+                return;
+              }
+
+              await axios
                 .post('api/deleteOrgData', org_id)
                 .then((res) => {
-                  // TODO: 削除成功時の処理S
+                  // TODO: 削除成功時の処理
                   router.back();
                 })
                 .catch((error) => {
@@ -320,6 +330,8 @@ export default function TeamRef() {
                   ]);
                   // TODO: 削除失敗時の処理
                 });
+
+              setIsSubmitting(false);
             }}
           >
             削除

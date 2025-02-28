@@ -51,6 +51,7 @@ export default function VolunteerBulkRegister() {
   const [languageLevel, setLanguageLevel] = useState<MasterData[]>([]);
   const [visibilityFlg, setVisibilityFlg] = useState(false); //CSVテーブルの表示切替フラグ
   const [validFlag, setValidFlag] = useState(false); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする）
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // CSVファイルのアップロードを処理する関数
   const handleCsvUpload = (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => {
@@ -691,14 +692,17 @@ export default function VolunteerBulkRegister() {
 
   //登録ボタン押下時 20240307
   const registerCsvData = async () => {
-    await axios
-      .post('api/registerVolunteerCsvData', csvData)
-      .then((res) => {
-        // router.push('/tournamentSearch'); // 20240222
-      })
-      .catch((error) => {
-        //console.log(error);
-      });
+    if (isSubmitting) {
+      return;
+    }
+    setIsSubmitting(true);
+
+    try {
+      await axios.post('api/registerVolunteerCsvData', csvData);
+    } catch (error) {
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const csvDownloadProps: CsvDownloadProps = {

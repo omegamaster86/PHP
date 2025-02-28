@@ -24,6 +24,7 @@ export default function Passwordchange() {
   const [confirmNewPasswordErrorMessages, setConfirmNewPasswordErrorMessages] = useState(
     [] as string[],
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { user, logout, refetchUser } = useAuth({ middleware: 'auth' });
 
   const router = useRouter();
@@ -95,6 +96,11 @@ export default function Passwordchange() {
           buttonType='primary'
           className='flex-1'
           onClick={async () => {
+            if (isSubmitting) {
+              return;
+            }
+            setIsSubmitting(true);
+
             // バリデーション
             const currentPasswordErrorMessages = Validator.getErrorMessages([
               Validator.validateRequired(currentPassword, '旧パスワード'),
@@ -130,6 +136,7 @@ export default function Passwordchange() {
               newPasswordErrorMessages.length > 0 ||
               confirmPasswordErrorMessages.length > 0
             ) {
+              setIsSubmitting(false);
               return;
             }
             const requestBody = {
@@ -139,7 +146,7 @@ export default function Passwordchange() {
             };
             const csrf = () => axios.get('/sanctum/csrf-cookie');
             await csrf();
-            axios
+            await axios
               .post<{ result: PasswordChange }>('api/user/password-change', requestBody)
               .then(async (response) => {
                 window.alert(response?.data.result.message);
@@ -156,6 +163,8 @@ export default function Passwordchange() {
               .catch((error) => {
                 setErrorText([error.response?.data?.message]);
               });
+
+            setIsSubmitting(false);
           }}
         >
           変更

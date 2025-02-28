@@ -2188,16 +2188,17 @@ export default function PlayerInformationRef() {
           <CustomButton
             buttonType='primary'
             className={`w-[280px] m-auto ${displayFlg ? '' : 'hidden'}`}
-            onClick={() => {
+            onClick={async () => {
               setDisplayFlg(false);
-              window.confirm('選手情報を削除します。よろしいですか？')
-                ? //okを押したら下の処理を実行 キャンセルを押したらflagをtrueにしてそのまま
-                  (dataDelete(),
-                  setDisplayFlg(true),
-                  window.alert('選手情報の削除が完了しました。'),
-                  router.push('/playerSearch'))
-                : //router.push('/myPage') : setDisplayFlg(true)
-                  setDisplayFlg(true);
+              const ok = window.confirm('選手情報を削除します。よろしいですか？');
+              if (ok) {
+                await dataDelete();
+                setDisplayFlg(true);
+                window.alert('選手情報の削除が完了しました。');
+                router.push('/playerSearch');
+              } else {
+                setDisplayFlg(true);
+              }
             }}
           >
             削除

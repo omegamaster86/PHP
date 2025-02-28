@@ -33,6 +33,7 @@ export default function TeamPlayer() {
   const [formData, setFormData] = useState<TeamPlayerInformationResponse[]>([]);
   const [tmpFormData, setTmpFormData] = useState<TeamPlayerInformationResponse[]>([]);
   const [errorMessage, setErrorMessage] = useState([] as string[]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const mode = useSearchParams().get('mode');
   const orgId = useSearchParams().get('org_id')?.toString() || '';
 
@@ -356,14 +357,22 @@ export default function TeamPlayer() {
             <CustomButton
               buttonType='primary'
               onClick={async () => {
-                // TODO: 反映処理　残件対応項目
-                const sendData = {
-                  target_org_id: teamData.org_id,
-                  formData: formData,
-                };
-                axios.post('api/updateOrgPlayerData', sendData).then((response) => {
+                if (isSubmitting) {
+                  return;
+                }
+                setIsSubmitting(true);
+
+                try {
+                  // TODO: 反映処理　残件対応項目
+                  const sendData = {
+                    target_org_id: teamData.org_id,
+                    formData: formData,
+                  };
+                  await axios.post('api/updateOrgPlayerData', sendData);
                   router.push('/teamRef?orgId=' + teamData.org_id); //変更後は、該当の団体参照画面に遷移する 20240401
-                });
+                } catch (error) {}
+
+                setIsSubmitting(false);
               }}
             >
               反映

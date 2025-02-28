@@ -119,6 +119,8 @@ export default function TournamentRef() {
     followerCount: 0,
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // レース結果情報のデータステート
   //種目
   const [eventNameList, setEventNameList] = useState([] as EventNameList[]);
@@ -958,6 +960,11 @@ export default function TournamentRef() {
             <CustomButton
               buttonType='primary'
               onClick={async () => {
+                if (isSubmitting) {
+                  return;
+                }
+                setIsSubmitting(true);
+
                 // TODO: 削除ボタン押下イベントの実装
                 //追加対象のデータをまとめて送信する 20240202
                 const sendFormData = {
@@ -967,7 +974,7 @@ export default function TournamentRef() {
                 const isOk = window.confirm('大会情報を削除します。よろしいですか？');
                 if (isOk) {
                   // TODO: 削除確認画面でOKボタンが押された場合、テーブルの当該項目に削除フラグを立てる処理の置き換え
-                  axios
+                  await axios
                     .post('api/deleteTournamentData', sendFormData) //大会情報の削除 20240202
                     .then((response) => {
                       // TODO: 削除完了時の処理の置き換え
@@ -980,9 +987,10 @@ export default function TournamentRef() {
                         '大会情報の削除に失敗しました。ユーザーサポートにお問い合わせください。',
                       ]);
                       window.scrollTo(0, 0);
-                      return;
                     });
                 }
+
+                setIsSubmitting(false);
               }}
             >
               削除

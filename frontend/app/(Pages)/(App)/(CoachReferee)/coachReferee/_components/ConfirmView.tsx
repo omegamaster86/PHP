@@ -1,13 +1,13 @@
+import { CustomButton, CustomTitle } from '@/app/components';
+import { fetcher } from '@/app/lib/swr';
+import { CoachRefereeResponse, OrganizationListData, SelectOption } from '@/app/types';
+import { Divider } from '@mui/material';
+import { useRouter } from 'next/navigation';
 import React from 'react';
+import useSWRMutation from 'swr/mutation';
 import ConfirmCoachingHistory from './ConfirmCoachingHistory';
 import ConfirmCoachQualification from './ConfirmCoachQualification';
 import ConfirmRefereeQualification from './ConfirmRefereeQualification';
-import { CustomButton, CustomTitle } from '@/app/components';
-import { useRouter } from 'next/navigation';
-import { Divider } from '@mui/material';
-import { CoachRefereeResponse, SelectOption, OrganizationListData } from '@/app/types';
-import useSWRMutation from 'swr/mutation';
-import { fetcher } from '@/app/lib/swr';
 
 interface Props {
   coachQualifications: SelectOption<number>[];
@@ -42,6 +42,10 @@ const ConfirmView: React.FC<Props> = ({
   }
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (resisterMutation.isMutating) {
+      return;
+    }
 
     const reqData: CoachRefereeResponse = {
       ...parsedData,
