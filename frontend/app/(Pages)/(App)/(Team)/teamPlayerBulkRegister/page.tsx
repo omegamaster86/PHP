@@ -250,9 +250,7 @@ export default function TeamPlayerBulkRegister() {
 
     if (row.length !== 5) return 'CSVのフォーマットが不正です。）';
 
-    if (row[3] === '' || row[3] === undefined || row[3] === null) {
-      return '無効データ（メールアドレスは必須入力です。）';
-    } else if (validateEmailFormat(row[3])) {
+    if (validateEmailFormat(row[3])) {
       return '無効データ（メールアドレスの形式が不正です。）';
     } else if (row[4] === '' || row[4] === undefined || row[4] === null) {
       return '無効データ（選手名は必須入力です。）';
