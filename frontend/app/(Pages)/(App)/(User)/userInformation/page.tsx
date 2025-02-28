@@ -114,6 +114,7 @@ export default function UserInformationUpdate() {
   const [emailConfirmErrorMessages, setEmailConfirmErrorMessages] = useState([] as string[]);
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [authNumber, setAuthNumber] = useState('' as string);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const storageKey = getStorageKey({ pageName: 'userInformation', type: 'update', id: 0 });
 
@@ -325,14 +326,18 @@ export default function UserInformationUpdate() {
       <CustomButton
         buttonType='primary'
         onClick={async () => {
-          // TODO: 更新処理
+          if (isSubmitting) {
+            return;
+          }
+          setIsSubmitting(true);
+
           if (isMailChanged === 'true') {
             if (isNumberVerified) {
               const updateUser = async () => {
                 const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
 
-                axios
+                await axios
                   .post('api/updateUserData', formData, {
                     //ファイルを送るため
                     headers: {
@@ -349,7 +354,7 @@ export default function UserInformationUpdate() {
                     setErrorMessage([error.response?.data?.message]);
                   });
               };
-              updateUser();
+              await updateUser();
             } else {
               const isOK = window.confirm(
                 'メールアドレスが変更されている為、表示されているメールアドレス宛に6桁の認証番号が送られます。メール本文に記載されている認証番号を入力してください。※認証番号の有効期限は30分間です。',
@@ -357,7 +362,7 @@ export default function UserInformationUpdate() {
               if (isOK) {
                 const csrf = () => axios.get('/sanctum/csrf-cookie');
                 await csrf();
-                axios
+                await axios
                   .post('api/user/sent-certification-number', {
                     user_name: formData?.user_name,
                     mailaddress: formData?.mailaddress,
@@ -377,7 +382,7 @@ export default function UserInformationUpdate() {
               const csrf = () => axios.get('/sanctum/csrf-cookie');
               await csrf();
 
-              axios
+              await axios
                 .post('api/updateUserData', formData, {
                   //ファイルを送るため
                   headers: {
@@ -395,8 +400,10 @@ export default function UserInformationUpdate() {
                   setErrorMessage([error.response?.data?.message]);
                 });
             };
-            updateUser();
+            await updateUser();
           }
+
+          setIsSubmitting(false);
         }}
       >
         更新

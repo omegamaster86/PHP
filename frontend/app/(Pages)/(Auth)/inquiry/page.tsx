@@ -1,22 +1,22 @@
 // 問い合わせ画面
 'use client';
 
-import { Fragment, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import {
   CustomButton,
-  ErrorBox,
-  CustomTitle,
   CustomTextField,
-  OriginalCheckbox,
-  Label,
+  CustomTitle,
+  ErrorBox,
   InputLabel,
+  Label,
+  OriginalCheckbox,
 } from '@/app/components';
-import Validator from '@/app/utils/validator';
-import axios from '@/app/lib/axios';
-import { TextareaAutosize } from '@mui/material';
-import type { UserResponse } from '@/app/types';
 import { useAuth } from '@/app/hooks/auth';
+import axios from '@/app/lib/axios';
+import type { UserResponse } from '@/app/types';
+import Validator from '@/app/utils/validator';
+import { TextareaAutosize } from '@mui/material';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Fragment, useEffect, useState } from 'react';
 
 export default function Inquiry() {
   const router = useRouter();
@@ -61,6 +61,8 @@ export default function Inquiry() {
   const [emailErrorMessages, setEmailErrorMessages] = useState([] as string[]);
   const [inquiryErrorMessages, setInquiryErrorMessages] = useState([] as string[]);
   const [consentErrorMessages, setConsentErrorMessages] = useState([] as string[]);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // モードに応じたボタンの設定
   const modeCustomButtons = {
@@ -116,6 +118,11 @@ export default function Inquiry() {
         className='flex-1'
         buttonType='primary'
         onClick={async () => {
+          if (isSubmitting) {
+            return;
+          }
+          setIsSubmitting(true);
+
           // 送信処理
           const requestBody = {
             ...user,
@@ -123,17 +130,21 @@ export default function Inquiry() {
           };
           const csrf = () => axios.get('/sanctum/csrf-cookie');
           await csrf();
-          axios
+          await axios
             .post('api/contact-us', requestBody)
             .then((response) => {
-              {
-                window.alert('メールの送信が完了しました');
-                isLogIn ? router.push('/mypage/top') : router.push('/login');
+              window.alert('メールの送信が完了しました');
+              if (isLogIn) {
+                router.push('/mypage/top');
+              } else {
+                router.push('/login');
               }
             })
             .catch((error) => {
               setErrorMessage(['メール送信に失敗しました。', 'もう一度送信してください。']);
             });
+
+          setIsSubmitting(false);
         }}
       >
         送信

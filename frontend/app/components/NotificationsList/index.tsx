@@ -106,6 +106,10 @@ export default function NotificationsList() {
   };
 
   const updateIsRead = async (id: number) => {
+    if (updateReadStatus.isMutating) {
+      return;
+    }
+
     const newNotifications = notifications.map((n) => {
       if (n.notificationId === id) {
         return { ...n, isRead: 1 };

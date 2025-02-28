@@ -73,10 +73,9 @@ export default function TournamentEntryBulkRegister() {
   const [displayFlg, setDisplayFlg] = useState<boolean>(
     prevScreen === 'tournamentRef' ? true : false,
   );
-  // TODO: ユーザーの権限を取得する処理をuseEffectに記述すること
-  const [userType, setUserType] = useState('');
 
   const [validFlag, setValidFlag] = useState(false); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   //ユーザIDに紐づいた情報の取得 20240418
   useEffect(() => {
@@ -292,8 +291,8 @@ export default function TournamentEntryBulkRegister() {
         '大会ID,大会名,種目ID,種目名,レース区分ID,レース区分,レースID,レース名,組別,レースNo,発艇日時,団体ID,団体名,クルー名,シート番号ID,シート番号,選手ID,選手名'; // 指定のヘッダー文字列
       const header = csvFileData?.content?.[0]?.join(','); // 1行目を,で結合
       const isHeaderMatch = header === specifiedHeader; // ヘッダーが指定の文字列と一致するか確認
-      var array = csvFileData?.content
-        ?.filter(function (x) {
+      const array = csvFileData?.content
+        ?.filter((x) => {
           // 1列以上のデータを抽出. 空行を除外するが、何らかの文字が入っている場合は抽出する
           return x.length > 0 && x.some((y) => y.length > 0);
         })
@@ -429,7 +428,7 @@ export default function TournamentEntryBulkRegister() {
             };
           }
         });
-      var element = array as CsvData[];
+      const element = array as CsvData[];
       const sendTournData = {
         tournData: formData,
         csvDataList: element,
@@ -453,6 +452,11 @@ export default function TournamentEntryBulkRegister() {
   };
 
   const checkRaceResultRecords = async () => {
+    if (isSubmitting) {
+      return;
+    }
+    setIsSubmitting(true);
+
     try {
       const sendTournData = {
         tournData: formData,
@@ -484,11 +488,12 @@ export default function TournamentEntryBulkRegister() {
     } catch (error) {
       setErrorMessage(['大会エントリー一括登録に失敗しました：' + (error as Error).message]);
     }
+
+    setIsSubmitting(false);
   };
 
   if (!validFlag) return null;
 
-  // レンダリング
   return (
     <>
       <CustomTitle displayBack>大会エントリー一括登録</CustomTitle>

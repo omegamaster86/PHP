@@ -43,6 +43,8 @@ export default function VolunteerInformationRef() {
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20241216
   const [volunteer, setVolunteer] = useState<VolunteerResponse>(volunteerInitialState);
   const [errorMessage, setErrorMessage] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode'); // なし(参照), deleteの2モード
@@ -511,13 +513,20 @@ export default function VolunteerInformationRef() {
           <CustomButton
             buttonType='primary'
             className='text-secondaryText text-normal h-12 mr-1 mb-6'
-            onClick={() => {
-              window.confirm('ボランティア情報を削除します。よろしいですか？')
-                ? //okを押したら下の処理を実行 キャンセルを押したらflagをtrueにしてそのまま
-                  (dataDelete(),
-                  window.alert('ボランティア情報の削除が完了しました。'),
-                  router.push('/volunteerSearch')) //大会検索画面に遷移する 20240222
-                : '';
+            onClick={async () => {
+              if (isSubmitting) {
+                return;
+              }
+              setIsSubmitting(true);
+
+              const ok = window.confirm('ボランティア情報を削除します。よろしいですか？');
+              if (ok) {
+                await dataDelete();
+                window.alert('ボランティア情報の削除が完了しました。');
+                router.push('/volunteerSearch'); //大会検索画面に遷移する
+              }
+
+              setIsSubmitting(false);
             }}
           >
             削除

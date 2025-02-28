@@ -1,18 +1,18 @@
 // ユーザー登録画面
 'use client';
 
-import { useState } from 'react';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { useRouter } from 'next/navigation';
 import {
   CustomButton,
-  ErrorBox,
-  CustomTitle,
   CustomTextField,
+  CustomTitle,
+  ErrorBox,
   OriginalCheckbox,
 } from '@/app/components';
-import Validator from '@/app/utils/validator';
 import axios from '@/app/lib/axios';
+import Validator from '@/app/utils/validator';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function Signup() {
   const [errorText, setErrorText] = useState([] as string[]);
@@ -23,7 +23,9 @@ export default function Signup() {
   const [email, setEmail] = useState('');
   const [confirmEmail, setConfirmEmail] = useState('');
   const [checked, setChecked] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+
   return (
     <main className='flex flex-col items-center justify-start gap-[40px] my-[100px] m-auto px-2 max-w-md'>
       {/* 画面名 */}
@@ -123,6 +125,11 @@ export default function Signup() {
           <CustomButton
             buttonType='primary'
             onClick={async () => {
+              if (isSubmitting) {
+                return;
+              }
+              setIsSubmitting(true);
+
               // エラーがあればエラーメッセージを表示
               const userNameError = Validator.getErrorMessages([
                 Validator.validateRequired(userName, 'ユーザー名'),
@@ -158,16 +165,18 @@ export default function Signup() {
                 emailError.length > 0 ||
                 emailConfirmError.length > 0
               ) {
+                setIsSubmitting(false);
                 return;
               }
               if (window.confirm('入力した内容でユーザーの仮登録を行います。') == false) {
+                setIsSubmitting(false);
                 return; //キャンセルボタンが押された場合、以降の処理を行わない 20240522
               }
 
               const csrf = () => axios.get('/sanctum/csrf-cookie');
               await csrf();
               // 仮登録処理
-              axios
+              await axios
                 .post('api/signup', {
                   userName,
                   email,
@@ -181,6 +190,8 @@ export default function Signup() {
                 .catch((error) => {
                   setErrorText([error.response?.data?.message]);
                 });
+
+              setIsSubmitting(false);
             }}
           >
             仮登録

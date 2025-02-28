@@ -1,24 +1,24 @@
 // レース結果登録（参照・削除）画面
 'use client';
 // ライブラリのインポート
-import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 // 共通コンポーネントのインポート
 import {
-  CustomTitle,
   CustomButton,
+  CustomTable,
+  CustomTbody,
+  CustomTd,
+  CustomTh,
+  CustomThead,
+  CustomTitle,
+  CustomTr,
   ErrorBox,
   Label,
-  CustomTable,
-  CustomThead,
-  CustomTr,
-  CustomTh,
-  CustomTbody,
   OriginalCheckbox,
-  CustomTd,
 } from '@/app/components';
-import { Race, RaceResultRecordsResponse } from '@/app/types';
 import axios from '@/app/lib/axios';
+import { Race, RaceResultRecordsResponse } from '@/app/types';
 import { formatDate } from '@/app/utils/dateUtil';
 
 const raceInfoInitialValue: Race = {
@@ -44,6 +44,7 @@ const raceInfoInitialValue: Race = {
 export default function TournamentResultRef() {
   const router = useRouter();
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorText, setErrorText] = useState([] as string[]);
 
   // 遷移元画面からのパラメータ取得
@@ -466,8 +467,14 @@ export default function TournamentResultRef() {
           <CustomButton
             buttonType='primary'
             onClick={async () => {
+              if (isSubmitting) {
+                return;
+              }
+              setIsSubmitting(true);
+
               try {
                 if (!window.confirm('削除しますか？')) {
+                  setIsSubmitting(false);
                   return; //キャンセルを押下された場合、何もしない 20240520
                 }
 
@@ -489,6 +496,8 @@ export default function TournamentResultRef() {
               } catch (error: any) {
                 setErrorText([error.message]);
               }
+
+              setIsSubmitting(false);
             }}
             className='w-[170px]'
           >

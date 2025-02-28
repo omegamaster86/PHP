@@ -13,6 +13,7 @@ export default function Withdrawal() {
   const router = useRouter();
   const { logout } = useAuth({ middleware: 'auth' });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState([] as string[]);
 
   return (
@@ -35,6 +36,11 @@ export default function Withdrawal() {
         <CustomButton
           buttonType='red-outlined'
           onClick={() => {
+            if (isSubmitting) {
+              return;
+            }
+            setIsSubmitting(true);
+
             const isOk = window.confirm(
               '選手情報やボランティア情報が紐づく場合、該当するデータは削除されずに残りますが、退会しますか？',
             );
@@ -51,6 +57,8 @@ export default function Withdrawal() {
               };
               deleteUser();
             }
+
+            setIsSubmitting(false);
           }}
         >
           退会

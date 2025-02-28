@@ -160,6 +160,7 @@ export default function PlayerInformation() {
     preview?: string;
   }>();
   const [errorMessage, setErrorMessage] = useState([] as string[]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const storageKey =
     mode === 'update'
@@ -560,6 +561,12 @@ export default function PlayerInformation() {
             setErrorMessage(['データが空です。もう一度必須項目を入力してください']);
             return;
           }
+
+          if (isSubmitting) {
+            return;
+          }
+          setIsSubmitting(true);
+
           if (prevMode == 'update') {
             // jara_player_id登録されているかどうかチェック
             await axios
@@ -567,7 +574,7 @@ export default function PlayerInformation() {
                 jara_player_id: formData.jara_player_id,
                 mode: 'update_confirm',
               })
-              .then((response) => {
+              .then(async (response) => {
                 if (formData.birth_country != 112) {
                   //出身地が日本以外の場合、都道府県に関連したデータを削除する
                   formData.birth_prefecture = null;
@@ -591,7 +598,7 @@ export default function PlayerInformation() {
                   (formData as any)[key] = (formData as any)[key] ?? '';
                 });
                 setErrorMessage([]);
-                axios
+                await axios
                   .post('api/updatePlayerData', formData, {
                     headers: { 'content-type': 'multipart/form-data' },
                   })
@@ -619,7 +626,7 @@ export default function PlayerInformation() {
                 jara_player_id: formData.jara_player_id,
                 mode: 'create_confirm',
               })
-              .then((response) => {
+              .then(async (response) => {
                 if (formData.birth_country != 112) {
                   //出身地が日本以外の場合、都道府県に関連したデータを削除する
                   formData.birth_prefecture = null;
@@ -643,7 +650,7 @@ export default function PlayerInformation() {
                   (formData as any)[key] = (formData as any)[key] ?? '';
                 });
                 setErrorMessage([]);
-                axios
+                await axios
                   .post('api/storePlayerData', formData, {
                     headers: { 'content-type': 'multipart/form-data' },
                   })
@@ -672,6 +679,8 @@ export default function PlayerInformation() {
                 setErrorMessage([error.response?.data?.message]);
               });
           }
+
+          setIsSubmitting(false);
         }}
       >
         {prevMode === 'update' && '更新'}

@@ -1,19 +1,13 @@
 // 機能名: パスワード再発行
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import {
-  CustomButton,
-  CustomTextField,
-  CustomPasswordField,
-  ErrorBox,
-  CustomTitle,
-} from '@/app/components';
-import Validator from '@/app/utils/validator';
-import axios from '@/app/lib/axios';
-import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import { BeforeLoginFooter } from '@/app/(Pages)/(Auth)/_components/BeforeLoginFooter';
+import { CustomButton, CustomTextField, CustomTitle, ErrorBox } from '@/app/components';
+import axios from '@/app/lib/axios';
+import Validator from '@/app/utils/validator';
+import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function ForgotPassword() {
   const [errorText, setErrorText] = useState([] as string[]);
@@ -22,6 +16,7 @@ export default function ForgotPassword() {
   const [emailConfirm, setEmailConfirm] = useState('');
   const [emailErrorMessages, setEmailErrorMessages] = useState([] as string[]);
   const [emailConfirmErrorMessages, setEmailConfirmErrorMessages] = useState([] as string[]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const router = useRouter();
 
@@ -97,7 +92,12 @@ export default function ForgotPassword() {
             <CustomButton
               buttonType='primary'
               className='flex-1'
-              onClick={() => {
+              onClick={async () => {
+                if (isSubmitting) {
+                  return;
+                }
+                setIsSubmitting(true);
+
                 const emailErrorMessages = Validator.getErrorMessages([
                   Validator.validateRequired(email, 'メールアドレス'),
                   Validator.validateEmailFormat(email),
@@ -114,7 +114,7 @@ export default function ForgotPassword() {
                   const forgotPassword = async () => {
                     const csrf = () => axios.get('/sanctum/csrf-cookie');
                     await csrf();
-                    axios
+                    await axios
                       .post('api/password-reset', {
                         mailaddress: email,
                       })
@@ -133,8 +133,10 @@ export default function ForgotPassword() {
                         setErrorText([...err?.response?.data]);
                       });
                   };
-                  forgotPassword();
+                  await forgotPassword();
                 }
+
+                setIsSubmitting(false);
               }}
             >
               送信

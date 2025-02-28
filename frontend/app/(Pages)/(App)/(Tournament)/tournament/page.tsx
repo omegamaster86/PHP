@@ -697,14 +697,14 @@ export default function Tournaments() {
                 mode: prevMode,
                 race_data: tableData,
               })
-              .then((response) => {
+              .then(async (response) => {
                 const storeTournamentInfo = async () => {
                   //nullのパラメータを空のパラメータに置き換える
                   Object.keys(registerData.tournamentFormData).forEach((key) => {
                     (registerData.tournamentFormData as any)[key] =
                       (registerData.tournamentFormData as any)[key] ?? '';
                   });
-                  axios
+                  await axios
                     .post('api/storeTournamentInfoData', registerData, {
                       headers: {
                         'content-type': 'multipart/form-data',
@@ -748,7 +748,7 @@ export default function Tournaments() {
                       setDisplayFlg(true);
                     });
                 };
-                storeTournamentInfo();
+                await storeTournamentInfo();
               })
               .catch((error) => {
                 error?.response?.data?.response_entrysystem_tourn_id &&
@@ -793,14 +793,14 @@ export default function Tournaments() {
                 mode: prevMode,
                 race_data: tableData,
               })
-              .then((response) => {
+              .then(async (response) => {
                 const updateTournamentInfo = async () => {
                   //nullのパラメータを空のパラメータに置き換える
                   Object.keys(registerData.tournamentFormData).forEach((key) => {
                     (registerData.tournamentFormData as any)[key] =
                       (registerData.tournamentFormData as any)[key] ?? '';
                   });
-                  axios
+                  await axios
                     .post('api/updateTournamentInfoData', registerData, {
                       headers: {
                         'content-type': 'multipart/form-data',
@@ -846,7 +846,7 @@ export default function Tournaments() {
                       setDisplayFlg(true);
                     });
                 };
-                updateTournamentInfo();
+                await updateTournamentInfo();
               })
               .catch((error) => {
                 error?.response?.data?.response_entrysystem_tourn_id &&
