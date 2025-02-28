@@ -552,7 +552,7 @@ export default function VolunteerSearch() {
       <ErrorBox errorText={[]} />
       <Accordion
         defaultExpanded
-        className='w-full bg-thinContainerBg border-[1px] border-solid border-border rounded-md'
+        className='w-full border-[1px] border-solid border-border rounded-md'
       >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
@@ -562,7 +562,7 @@ export default function VolunteerSearch() {
           <InputLabel label='検索条件' />
         </AccordionSummary>
         <AccordionDetails>
-          <div className='flex flex-col gap-[20px]'>
+          <div className='flex flex-col gap-[20px] bg-thinContainerBg'>
             <div>
               {/* ボランティアID */}
               <CustomTextField
