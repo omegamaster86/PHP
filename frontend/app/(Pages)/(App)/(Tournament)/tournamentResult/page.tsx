@@ -2277,7 +2277,7 @@ export default function TournamentResult() {
                       {player.errorText && (
                         <CustomTr>
                           <CustomTh colSpan={13}>
-                            <div className='text-systemErrorText text-small leading-loose'>
+                            <div className='flex justify-start text-systemErrorText text-small leading-loose'>
                               {player.errorText ? [player.errorText] : []}{' '}
                             </div>
                           </CustomTh>
