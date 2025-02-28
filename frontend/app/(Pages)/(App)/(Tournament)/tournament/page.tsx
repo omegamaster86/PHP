@@ -88,6 +88,7 @@ export default function Tournaments() {
     router.push('/tournament?mode=create');
   }
   const tournId = searchParams.get('tourn_id')?.toString() || '';
+  const orgId = searchParams.get('orgId')?.toString() || '';
   const prevMode = searchParams.get('prevMode')?.toString() || 'confirm';
   const source = searchParams.get('source') as 'confirm' | null;
 
@@ -657,7 +658,7 @@ export default function Tournaments() {
             tourn_name: '',
             tourn_type: '0',
             tournTypeName: '非公式',
-            sponsor_org_id: '',
+            sponsor_org_id: orgId,
             sponsorOrgName: '',
             event_start_date: new Date().toLocaleDateString('ja-JP'),
             event_end_date: new Date().toLocaleDateString('ja-JP'),

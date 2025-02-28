@@ -1,15 +1,15 @@
-import React from 'react';
-import Link from 'next/link';
-import { useRouter } from "next/navigation";
 import {
+  CustomButton,
   CustomTable,
-  CustomThead,
-  CustomTh,
-  CustomTr,
   CustomTbody,
   CustomTd,
-  CustomButton,
+  CustomTh,
+  CustomThead,
+  CustomTr,
 } from '@/app/components';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 
 interface Tournament {
   tournTypeName: string;
@@ -30,6 +30,7 @@ interface Props {
   hostTournaments: Tournament[];
   mode: string | null;
   userIdType: UserIdType;
+  orgId: string;
   checkOrgManage: () => boolean;
 }
 
@@ -37,6 +38,7 @@ export const SponsoredTournament: React.FC<Props> = ({
   hostTournaments,
   mode,
   userIdType,
+  orgId,
   checkOrgManage,
 }) => {
   const router = useRouter();
@@ -53,7 +55,7 @@ export const SponsoredTournament: React.FC<Props> = ({
                 className='w-[100px] h-[30px] p-[0px] text-small text-primary-500 hover:text-primary-300'
                 buttonType='secondary'
                 onClick={() => {
-                  router.push('/tournament?mode=create');
+                  router.push(`/tournament?mode=create&orgId=${orgId}`);
                 }}
               >
                 大会登録
