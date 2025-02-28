@@ -407,7 +407,7 @@ class T_players extends Model
     }
 
     //選手連携画面で選手登録を行うためのメソッド
-    public function insertPlayerForPlayerInfoAlignment($userId, $jaraPlayerId)
+    public function insertPlayerForPlayerInfoAlignment($userId, $jaraPlayerId, $playerName)
     {
         Log::debug("insertPlayerForPlayerInfoAlignment start.");
         $current_datetime = now()->format('Y-m-d H:i:s.u');
@@ -427,7 +427,7 @@ class T_players extends Model
                     values (
                         ?,
                         ?,
-                        "",
+                        ?,
                         "",
                         ?,
                         ?,
@@ -437,6 +437,7 @@ class T_players extends Model
             [
                 $userId,
                 $jaraPlayerId,
+                $playerName,
                 $current_datetime,
                 $user_id,
                 $current_datetime,
