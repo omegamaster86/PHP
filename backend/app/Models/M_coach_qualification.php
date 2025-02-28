@@ -10,15 +10,14 @@ class M_coach_qualification extends Model
     public function getCoachQualifications()
     {
         $result = DB::select(
-            '
-            select
-                coach_qualification_id as `key`, 
-                qual_name as `value`
-            from
+            'SELECT
+                coach_qualification_id AS `key`, 
+                qual_name AS `value`
+            FROM
                 m_coach_qualifications 
-            where
+            WHERE
                 delete_flag = 0
-            order by display_order
+            ORDER BY display_order
             ',
         );
 

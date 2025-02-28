@@ -19,91 +19,95 @@ class T_organization_staff extends Model
     public function getOrganizationStaffFromOrgId($orgId, $canShowQualification)
     {
         $orgStaffs = DB::select(
-            'select
+            'SELECT
                 `org_id`
                 ,`user_id`
                 ,`user_name`
-                , case
-                    when ? then `jspo_id`
-                    else null
-                    end as `jspo_id`
-                , case
-                    when ? then `coach_qual_name`
-                    else ""
-                    end as `coachQualificationNames`
-                , case
-                    when ? then `referee_qual_name`
-                    else ""
-                    end as `refereeQualificationNames`
-                ,case
-                    when instr(`staff_type_array`,"1") > 0 then 1
-                    else 0
-                    end as `is_director`
-                ,case
-                    when instr(`staff_type_array`,"2") > 0 then 1
-                    else 0
-                    end as `is_head`
-                ,case
-                    when instr(`staff_type_array`,"3") > 0 then 1
-                    else 0
-                    end as `is_coach`
-                ,case
-                    when instr(`staff_type_array`,"4") > 0 then 1
-                    else 0
-                    end as `is_manager`
-                ,case
-                    when instr(`staff_type_array`,"5") > 0 then 1
-                    else 0
-                    end as `is_acting_director`
+                , CASE
+                    WHEN ? THEN `jspo_id`
+                    ELSE NULL
+                    END AS `jspo_id`
+                , CASE
+                    WHEN ? THEN `coach_qual_name`
+                    ELSE ""
+                    END AS `coachQualificationNames`
+                , CASE
+                    WHEN ? THEN `referee_qual_name`
+                    ELSE ""
+                    END AS `refereeQualificationNames`
+                , CASE
+                    WHEN INSTR(`staff_type_array`,"1") > 0 THEN 1
+                    ELSE 0
+                    END AS `is_director`
+                , CASE
+                    WHEN INSTR(`staff_type_array`,"2") > 0 THEN 1
+                    ELSE 0
+                    END AS `is_head`
+                , CASE
+                    WHEN INSTR(`staff_type_array`,"3") > 0 THEN 1
+                    ELSE 0
+                    END as `is_coach`
+                , CASE
+                    WHEN INSTR(`staff_type_array`,"4") > 0 THEN 1
+                    ELSE 0
+                    END AS `is_manager`
+                , CASE
+                    WHEN INSTR(`staff_type_array`,"5") > 0 THEN 1
+                    ELSE 0
+                    END AS `is_acting_director`
                 ,`enable`
-            from
+            FROM
             (
                 SELECT 
                 `staff`.`org_id`
                 ,`user`.`user_id`
                 ,`user`.`jspo_id`
-                ,case
-                    when `user`.`user_name` is null then "該当ユーザー無し"
-                    else `user`.`user_name`
-                    end as `user_name`
-                ,GROUP_CONCAT(distinct(`coach_qual`.`qual_name`) order by `coach_qual`.`display_order`) AS "coach_qual_name"
-                ,GROUP_CONCAT(distinct(`referee_qual`.`qual_name`) order by `referee_qual`.`display_order`) AS "referee_qual_name"
-                ,GROUP_CONCAT(`staff_type_id` order by `staff_type_id`) AS "staff_type_array"
-                ,case
-                    when `user`.`user_id` is null then false
-                    when `user`.`temp_password_flag` = 1 then false
-                    when `user`.`delete_flag` = 1 then false
-                    else true
-                    end as `enable`
-                from `t_organization_staff` `staff`
-                left join `t_users` `user` on
-                    `staff`.`user_id` = `user`.`user_id`
-                left join `t_held_coach_qualifications` `held_coach_qual` on
-                    `user`.`user_id` = `held_coach_qual`.`user_id`
-                    and `held_coach_qual`.`delete_flag` = 0
-                    and (
+                ,CASE
+                    WHEN `user`.`user_name` IS NULL THEN "該当ユーザー無し"
+                    ELSE `user`.`user_name`
+                    END AS `user_name`
+                ,GROUP_CONCAT(DISTINCT(`coach_qual`.`qual_name`) ORDER BY `coach_qual`.`display_order`) AS "coach_qual_name"
+                ,GROUP_CONCAT(DISTINCT(`referee_qual`.`qual_name`) ORDER BY `referee_qual`.`display_order`) AS "referee_qual_name"
+                ,GROUP_CONCAT(`staff_type_id` ORDER BY `staff_type_id`) AS "staff_type_array"
+                ,CASE
+                    WHEN `user`.`user_id` IS NULL THEN false
+                    WHEN `user`.`temp_password_flag` = 1 THEN false
+                    WHEN `user`.`delete_flag` = 1 THEN false
+                    ELSE true
+                    END AS `enable`
+                FROM `t_organization_staff` `staff`
+                INNER JOIN `t_users` `user` ON
+                    `user`.`user_id` = `staff`.`user_id`
+                    AND `user`.`delete_flag` = 0
+                LEFT JOIN `t_held_coach_qualifications` `held_coach_qual` ON
+                    `held_coach_qual`.`user_id` = `user`.`user_id`
+                    AND `held_coach_qual`.`delete_flag` = 0
+                    AND (
                         `held_coach_qual`.`expiry_date` IS NULL
                         OR `held_coach_qual`.`expiry_date` >= CURDATE()
                     )
-                left join `m_coach_qualifications` `coach_qual` on
-                    `held_coach_qual`.`coach_qualification_id` = `coach_qual`.`coach_qualification_id`
-                    and `coach_qual`.`delete_flag` = 0
-                left join `t_held_referee_qualifications` `held_referee_qual`
-                    on `user`.`user_id` = `held_referee_qual`.`user_id`
-                    and `held_referee_qual`.`delete_flag` = 0
-                    and (
+                LEFT JOIN `m_coach_qualifications` `coach_qual` ON
+                    `coach_qual`.`coach_qualification_id` = `held_coach_qual`.`coach_qualification_id`
+                    AND `coach_qual`.`delete_flag` = 0
+                LEFT JOIN `t_held_referee_qualifications` `held_referee_qual` ON
+                    `held_referee_qual`.`user_id` = `user`.`user_id`
+                    AND `held_referee_qual`.`delete_flag` = 0
+                    AND (
                         `held_referee_qual`.`expiry_date` IS NULL
                         OR `held_referee_qual`.`expiry_date` >= CURDATE()
                     )
-                left join `m_referee_qualifications` `referee_qual` on
-                    `held_referee_qual`.`referee_qualification_id` = `referee_qual`.`referee_qualification_id`
-                    and `referee_qual`.`delete_flag` = 0
-                where 
+                LEFT JOIN `m_referee_qualifications` `referee_qual` ON
+                    `referee_qual`.`referee_qualification_id` = `held_referee_qual`.`referee_qualification_id`
+                    AND `referee_qual`.`delete_flag` = 0
+                WHERE 
                     `staff`.`delete_flag` = 0
-                    and `user`.`delete_flag` = 0
-                    and `staff`.`org_id` = ?
-                group by `staff`.`org_id`, `staff`.`user_id`,`user`.`user_name`,`user`.`jspo_id`
-            ) as `staff`',
+                    AND `staff`.`org_id` = ?
+                GROUP BY
+                    `staff`.`org_id`,
+                    `staff`.`user_id`,
+                    `user`.`user_name`,
+                    `user`.`jspo_id`
+            ) AS `staff`',
             [
                 $canShowQualification,
                 $canShowQualification,

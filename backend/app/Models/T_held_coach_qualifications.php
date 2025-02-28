@@ -16,19 +16,20 @@ class T_held_coach_qualifications extends Model
     {
         $result = DB::select(
             'SELECT
-                `held_coach_qualification_id` as `heldCoachQualificationId`,
-                `qual_name`as `qualName`,
-                `acquisition_date`as `acquisitionDate`,
-                `expiry_date`as `expiryDate`,
-                `coach_qual`.`coach_qualification_id` as `coachQualificationId`
-                FROM `t_held_coach_qualifications` `held_coach_qual`
-                left join `m_coach_qualifications` `coach_qual`
-                on `held_coach_qual`.`coach_qualification_id` = `coach_qual`.`coach_qualification_id` 
-                and `coach_qual`.delete_flag = 0
-                where 1=1
-                and `held_coach_qual`.delete_flag = 0
-                and `held_coach_qual`.user_id = ?
-                order by `acquisition_date` DESC',
+                `held_coach_qualification_id` AS `heldCoachQualificationId`,
+                `qual_name` AS `qualName`,
+                `acquisition_date` AS `acquisitionDate`,
+                `expiry_date` AS `expiryDate`,
+                `coach_qual`.`coach_qualification_id` AS `coachQualificationId`
+            FROM `t_held_coach_qualifications` `held_coach_qual`
+            INNER JOIN `m_coach_qualifications` `coach_qual` ON
+                `coach_qual`.`coach_qualification_id` = `held_coach_qual`.`coach_qualification_id`
+                AND `coach_qual`.delete_flag = 0
+            WHERE 1=1
+                AND `held_coach_qual`.delete_flag = 0
+                AND `held_coach_qual`.user_id = ?
+            ORDER BY
+                `coach_qual`.display_order',
             [
                 Auth::user()->user_id
             ]
@@ -40,17 +41,16 @@ class T_held_coach_qualifications extends Model
     public function insertHeldCoachQualificationsData($coachQualificationData)
     {
         DB::insert(
-            'insert into `t_held_coach_qualifications`
-                    set
-                    `user_id` = ?,
-                    `coach_qualification_id` = ?,
-                    `acquisition_date` = ?,
-                    `expiry_date` = ?,
-                    `registered_time` = ?,
-                    `registered_user_id` = ?,
-                    `updated_time` = ?,
-                    `updated_user_id` = ?,
-                    `delete_flag` = 0',
+            'INSERT INTO `t_held_coach_qualifications` SET
+                `user_id` = ?,
+                `coach_qualification_id` = ?,
+                `acquisition_date` = ?,
+                `expiry_date` = ?,
+                `registered_time` = ?,
+                `registered_user_id` = ?,
+                `updated_time` = ?,
+                `updated_user_id` = ?,
+                `delete_flag` = 0',
             [
                 Auth::user()->user_id,
                 $coachQualificationData['coachQualificationId'],
@@ -68,16 +68,15 @@ class T_held_coach_qualifications extends Model
     public function updateHeldCoachQualificationsData($coachQualificationData)
     {
         DB::update(
-            'update `t_held_coach_qualifications`
-                    set
-                    `coach_qualification_id` = ?,
-                    `acquisition_date` = ?,
-                    `expiry_date` = ?,
-                    `updated_time` = ?,
-                    `updated_user_id` = ?,
-                    `delete_flag` = ?
-                    where 1=1
-                    and held_coach_qualification_id = ?',
+            'UPDATE `t_held_coach_qualifications` SET
+                `coach_qualification_id` = ?,
+                `acquisition_date` = ?,
+                `expiry_date` = ?,
+                `updated_time` = ?,
+                `updated_user_id` = ?,
+                `delete_flag` = ?
+            WHERE 1=1
+                AND held_coach_qualification_id = ?',
             [
                 $coachQualificationData['coachQualificationId'],
                 $coachQualificationData['acquisitionDate'],
@@ -95,16 +94,18 @@ class T_held_coach_qualifications extends Model
     {
         $result = DB::select(
             'SELECT
-                `held_coach_qualification_id` as `heldCoachQualificationId`,
-                `qual_name`as `qualName`,
-                `expiry_date` as `expiryDate`
-                FROM `t_held_coach_qualifications` `held_coach_qual`
-                left join `m_coach_qualifications` `coach_qual`
-                on `held_coach_qual`.`coach_qualification_id` = `coach_qual`.`coach_qualification_id` 
-                and `coach_qual`.delete_flag = 0
-                where 1=1
-                and `held_coach_qual`.delete_flag = 0
-                and `held_coach_qual`.user_id = ?',
+                thcq.`held_coach_qualification_id` AS `heldCoachQualificationId`,
+                mcq.`qual_name` AS `qualName`,
+                thcq.`expiry_date` AS `expiryDate`
+            FROM `t_held_coach_qualifications` thcq
+            INNER JOIN `m_coach_qualifications` mcq ON
+                mcq.`coach_qualification_id` = thcq.`coach_qualification_id`
+                AND mcq.delete_flag = 0
+            WHERE 1=1
+                AND thcq.delete_flag = 0
+                AND thcq.user_id = ?
+            ORDER BY
+                mcq.display_order',
             [
                 Auth::user()->user_id
             ]

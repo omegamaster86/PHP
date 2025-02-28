@@ -14,9 +14,11 @@ class MRefereeQualificationsSeeder extends Seeder
     {
         DB::statement("
             INSERT INTO m_referee_qualifications (referee_qualification_id, qual_name, display_order, registered_time, registered_user_id, updated_time, updated_user_id, delete_flag) VALUES 
-            (1, '審判資格1', 1, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
-            (2, '審判資格2', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
-            (3, '審判資格3', 3, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0)
+            (1, '名誉審判員', 1, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (2, '参与審判員', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (3, 'A級審判員', 3, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (4, 'B級審判員', 4, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (5, 'C級審判員', 5, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0)
             ;
             ");
     }
