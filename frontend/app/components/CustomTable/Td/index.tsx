@@ -9,21 +9,19 @@ const CustomTd = ({
   align,
   textType,
   className,
-  newLine,
 }: {
   children: ReactNode;
   transitionDest?: string;
   align?: AlignType;
   textType?: 'primary' | 'secondary' | 'error' | 'warning';
   className?: string;
-  newLine?: boolean;
 }) => {
   // Next.jsのRouterを利用
   const router = useRouter();
 
   return transitionDest === undefined ? (
     <td
-      className={`py-2 px-1 border border-gray-20 text-caption1
+      className={`py-2 px-1 border border-gray-20 text-caption1 break-all whitespace-normal
       ${
         textType === 'primary'
           ? 'text-primary-300'
@@ -35,7 +33,6 @@ const CustomTd = ({
                 ? 'text-systemWarningText'
                 : 'text-primaryText'
       }
-      ${newLine ? 'break-all whitespace-normal' : 'whitespace-nowrap'}
       ${className}
       `}
       align={align}
