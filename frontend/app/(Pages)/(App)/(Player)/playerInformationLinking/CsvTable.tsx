@@ -130,15 +130,13 @@ const CsvTable = ({
                 <CustomTd textType={textType} className={checkError(row.oldPlayerIdError)}>
                   {row.oldPlayerId}
                 </CustomTd>
-                <CustomTd textType={textType} className={checkError(row.playerNameError)} newLine>
+                <CustomTd textType={textType} className={checkError(row.playerNameError)}>
                   {row.playerName}
                 </CustomTd>
-                <CustomTd textType={textType} className={checkError(row.mailaddressError)} newLine>
+                <CustomTd textType={textType} className={checkError(row.mailaddressError)}>
                   {row.mailaddress}
                 </CustomTd>
-                <CustomTd textType={textType} className='whitespace-pre-wrap'>
-                  {errorMessages}
-                </CustomTd>
+                <CustomTd textType={textType}>{errorMessages}</CustomTd>
               </CustomTr>
             );
           })}
