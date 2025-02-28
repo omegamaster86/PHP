@@ -16,19 +16,20 @@ class T_held_referee_qualifications extends Model
     {
         $result = DB::select(
             'SELECT
-                `held_referee_qualification_id` as `heldRefereeQualificationId`,
-                `qual_name`as `qualName`,
-                `acquisition_date`as `acquisitionDate`,
-                `expiry_date` as `expiryDate`,
-                `referee_qual`.`referee_qualification_id` as `refereeQualificationId`
-                FROM `t_held_referee_qualifications` `held_referee_qual`
-                left join `m_referee_qualifications` `referee_qual`
-                on `held_referee_qual`.`referee_qualification_id` = `referee_qual`.`referee_qualification_id` 
-                and `referee_qual`.delete_flag = 0
-                where 1=1
-                and `held_referee_qual`.delete_flag = 0
-                and `held_referee_qual`.user_id = ?
-                order by `acquisition_date` DESC',
+                `held_referee_qualification_id` AS `heldRefereeQualificationId`,
+                `qual_name` AS `qualName`,
+                `acquisition_date` AS `acquisitionDate`,
+                `expiry_date` AS `expiryDate`,
+                `referee_qual`.`referee_qualification_id` AS `refereeQualificationId`
+            FROM `t_held_referee_qualifications` `held_referee_qual`
+            INNER JOIN `m_referee_qualifications` `referee_qual` ON
+                `referee_qual`.`referee_qualification_id` = `held_referee_qual`.`referee_qualification_id`
+                AND `referee_qual`.delete_flag = 0
+            WHERE 1=1
+                AND `held_referee_qual`.delete_flag = 0
+                AND `held_referee_qual`.user_id = ?
+            ORDER BY
+                `referee_qual`.display_order',
             [
                 Auth::user()->user_id
             ]
@@ -40,17 +41,16 @@ class T_held_referee_qualifications extends Model
     public function insertHeldRefereeQualificationsData($refereeQualificationData)
     {
         DB::insert(
-            'insert into `t_held_referee_qualifications`
-                    set
-                    `user_id` = ?,
-                    `referee_qualification_id` = ?,
-                    `acquisition_date` = ?,
-                    `expiry_date` = ?,
-                    `registered_time` = ?,
-                    `registered_user_id` = ?,
-                    `updated_time` = ?,
-                    `updated_user_id` = ?,
-                    `delete_flag` = 0',
+            'INSERT INTO `t_held_referee_qualifications` SET
+                `user_id` = ?,
+                `referee_qualification_id` = ?,
+                `acquisition_date` = ?,
+                `expiry_date` = ?,
+                `registered_time` = ?,
+                `registered_user_id` = ?,
+                `updated_time` = ?,
+                `updated_user_id` = ?,
+                `delete_flag` = 0',
             [
                 Auth::user()->user_id,
                 $refereeQualificationData['refereeQualificationId'],
@@ -68,16 +68,15 @@ class T_held_referee_qualifications extends Model
     public function updateHeldRefereeQualificationsData($refereeQualificationData)
     {
         DB::update(
-            'update `t_held_referee_qualifications`
-                    set 
-                    `referee_qualification_id` = ?,
-                    `acquisition_date` = ?,
-                    `expiry_date` = ?,
-                    `updated_time` = ?,
-                    `updated_user_id` = ?,
-                    `delete_flag` = ?
-                    where 1=1
-                    and `held_referee_qualification_id` = ?',
+            'UPDATE `t_held_referee_qualifications` SET 
+                `referee_qualification_id` = ?,
+                `acquisition_date` = ?,
+                `expiry_date` = ?,
+                `updated_time` = ?,
+                `updated_user_id` = ?,
+                `delete_flag` = ?
+            WHERE 1=1
+                AND `held_referee_qualification_id` = ?',
             [
                 $refereeQualificationData['refereeQualificationId'],
                 $refereeQualificationData['acquisitionDate'],
@@ -95,16 +94,18 @@ class T_held_referee_qualifications extends Model
     {
         $result = DB::select(
             'SELECT
-                `held_referee_qualification_id` as `heldRefereeQualificationId`,
-                `qual_name`as `qualName`,
-                `expiry_date` as `expiryDate`
-                FROM `t_held_referee_qualifications` `held_referee_qual`
-                left join `m_referee_qualifications` `referee_qual`
-                on `held_referee_qual`.`referee_qualification_id` = `referee_qual`.`referee_qualification_id` 
-                and `referee_qual`.delete_flag = 0
-                where 1=1
-                and `held_referee_qual`.delete_flag = 0
-                and `held_referee_qual`.user_id = ?',
+                thrq.`held_referee_qualification_id` AS `heldRefereeQualificationId`,
+                mrq.`qual_name` AS `qualName`,
+                thrq.`expiry_date` AS `expiryDate`
+            FROM `t_held_referee_qualifications` thrq
+            INNER JOIN `m_referee_qualifications` mrq ON
+                mrq.`referee_qualification_id` = thrq.`referee_qualification_id`
+                AND mrq.delete_flag = 0
+            WHERE 1=1
+                    AND thrq.delete_flag = 0
+                    AND thrq.user_id = ?
+            ORDER BY
+                mrq.display_order',
             [
                 Auth::user()->user_id
             ]
