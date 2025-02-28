@@ -325,7 +325,7 @@ export default function PlayerInformationLinking() {
       </div>
       {/* ボタンの表示 */}
       {!activationFlg && (
-        <div className='self-center'>
+        <div className='self-center flex flex-col md:flex-row gap-2'>
           <CustomButton
             buttonType='secondary'
             onClick={() => {
