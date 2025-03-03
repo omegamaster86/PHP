@@ -346,7 +346,6 @@ export default function TournamentResultManagement() {
             <InputLabel label='大会開催年（西暦）' required />
             <div className='w-full flex flex-row items-center gap-[4px]'>
               <CustomYearPicker
-                placeHolder={'YYYY'}
                 selectedDate={searchCond?.eventYear}
                 onChange={(date: Date) => {
                   handleInputChange('eventYear', date?.toLocaleDateString('ja-JP').slice(0, 4));
@@ -365,11 +364,12 @@ export default function TournamentResultManagement() {
                     setMessageDisplay('hidden');
                   }
                 }}
-                isError={eventYearErrorMessage.length > 0}
-                errorMessages={eventYearErrorMessage}
               />
               <Label label='年' />
             </div>
+            {eventYearErrorMessage.length > 0 && (
+              <p className='text-systemErrorText text-xs'>{eventYearErrorMessage}</p>
+            )}
           </div>
           {/* 大会名 */}
           <div className='flex flex-col justify-start'>
@@ -414,7 +414,7 @@ export default function TournamentResultManagement() {
                 ))}
               </div>
             </div>
-            <div className={`flex flex-col justify-end ${messageDisplay}`}>
+            <div className={`flex flex-col ${messageDisplay}`}>
               <Label
                 label='※「大会開催年」を入力してください。'
                 textColor='red'
@@ -527,41 +527,40 @@ export default function TournamentResultManagement() {
             />
           </div>
           <Divider />
-          
-            <div className='flex flex-col items-center justify-center gap-4 md:flex-row'>
-              <CustomButton
-                buttonType='primary'
-                onClick={() => {
-                  if (!performValidation()) {
-                    handleSearch();
-                  }
-                }}
-                className='flex flex-row justify-center gap-[4px]'
-              >
-                <SearchIcon />
-                <div>レース結果検索</div>
-              </CustomButton>
-              <CustomButton
-                buttonType='secondary'
-                onClick={() => {
-                  setSearchCond({
-                    eventYear: '',
-                    tournId: '',
-                    tournName: '',
-                    eventId: '',
-                    eventIdName: '',
-                    eventName: '',
-                    raceTypeId: '',
-                    raceTypeName: '',
-                    byGroup: '',
-                    raceNo: '',
-                  } as SearchCond);
-                }}
-              >
-                クリア
-              </CustomButton>
-            </div>
-          
+
+          <div className='flex flex-col items-center justify-center gap-4 md:flex-row'>
+            <CustomButton
+              buttonType='primary'
+              onClick={() => {
+                if (!performValidation()) {
+                  handleSearch();
+                }
+              }}
+              className='flex flex-row justify-center gap-[4px]'
+            >
+              <SearchIcon />
+              <div>レース結果検索</div>
+            </CustomButton>
+            <CustomButton
+              buttonType='secondary'
+              onClick={() => {
+                setSearchCond({
+                  eventYear: '',
+                  tournId: '',
+                  tournName: '',
+                  eventId: '',
+                  eventIdName: '',
+                  eventName: '',
+                  raceTypeId: '',
+                  raceTypeName: '',
+                  byGroup: '',
+                  raceNo: '',
+                } as SearchCond);
+              }}
+            >
+              クリア
+            </CustomButton>
+          </div>
         </div>
       </div>
       {/* レース結果一覧テーブル表示 */}
