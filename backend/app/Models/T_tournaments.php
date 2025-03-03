@@ -331,15 +331,6 @@ class T_tournaments extends Model
                     WHERE 1=1
                         AND org.org_id = tt.sponsor_org_id
                         AND org.delete_flag = 0
-                )
-                AND EXISTS (
-                    SELECT
-                        'x'
-                    FROM
-                        t_races tr
-                    WHERE 1=1
-                        AND tr.tourn_id = tt.tourn_id
-                        AND tr.delete_flag = 0
                 )",
             [$entry_year]
         );
@@ -374,15 +365,6 @@ class T_tournaments extends Model
             WHERE 1=1
                 AND tour.`delete_flag` = 0
                 AND DATE_FORMAT(tour.event_start_date, '%Y') = ?
-                AND EXISTS (
-                    SELECT
-                        'x'
-                    FROM
-                        t_races tr
-                    WHERE 1=1
-                        AND tr.tourn_id = tour.tourn_id
-                        AND tr.delete_flag = 0
-                )
             ",
             [
                 $user_id,
