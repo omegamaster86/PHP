@@ -154,39 +154,39 @@ class T_players extends Model
     public function getPlayerProfileInfo($user_id)
     {
         $result = DB::select(
-            'select
-                                `player_name` as `playerName`
-                                ,`player_id` as `playerId`
-                                ,`jara_player_id` as `jaraPlayerId`
-                                ,`date_of_birth` as `dateOfBirth`
-                                ,`height`
-                                ,`weight`
-                                ,`side_info` as `sideInfoString`
-                                ,bir_cont.`country_name` as `birthCountryName`
-                                ,bir_pref.`pref_name` as `birthPrefectureName`
-                                ,res_cont.`country_name` as `residenceCountryName`
-                                ,res_pref.`pref_name` as `residencePrefectureName`
-                                ,`photo`
-                                ,`m_sex`.`sex`
-                                FROM `t_players`
-                                INNER JOIN `m_sex` ON
-                                    `t_players`.`sex_id`=`m_sex`.`sex_id`
-                                    AND `m_sex`.`delete_flag` = 0
-                                INNER JOIN m_countries bir_cont ON
-                                    `t_players`.birth_country = bir_cont.country_id
-                                    AND  bir_cont.`delete_flag` = 0
-                                LEFT OUTER JOIN m_prefectures bir_pref ON
-                                    `t_players`.birth_prefecture = bir_pref.pref_id
-                                    AND  bir_pref.`delete_flag` = 0
-                                INNER JOIN m_countries res_cont ON
-                                    `t_players`.residence_country = res_cont.country_id
-                                    AND  res_cont.`delete_flag` = 0
-                                LEFT OUTER JOIN m_prefectures res_pref ON
-                                    `t_players`.residence_prefecture = res_pref.pref_id
-                                    AND  res_pref.`delete_flag` = 0
-                                WHERE 1=1
-                                AND `t_players`.delete_flag = 0
-                                AND `t_players`.user_id = ?',
+            'SELECT
+                `player_name` AS `playerName`
+                ,`player_id` AS `playerId`
+                ,`jara_player_id` AS `jaraPlayerId`
+                ,`date_of_birth` AS `dateOfBirth`
+                ,`height`
+                ,`weight`
+                ,`side_info` AS `sideInfoString`
+                ,bir_cont.`country_name` AS `birthCountryName`
+                ,bir_pref.`pref_name` AS `birthPrefectureName`
+                ,res_cont.`country_name` AS `residenceCountryName`
+                ,res_pref.`pref_name` AS `residencePrefectureName`
+                ,`photo`
+                ,`m_sex`.`sex`
+            FROM `t_players`
+            LEFT OUTER JOIN `m_sex` ON
+                `m_sex`.`sex_id` = `t_players`.`sex_id`
+                AND `m_sex`.`delete_flag` = 0
+            LEFT OUTER JOIN m_countries bir_cont ON
+                bir_cont.country_id = `t_players`.birth_country
+                AND  bir_cont.`delete_flag` = 0
+            LEFT OUTER JOIN m_prefectures bir_pref ON
+                bir_pref.pref_id = `t_players`.birth_prefecture
+                AND  bir_pref.`delete_flag` = 0
+            LEFT OUTER JOIN m_countries res_cont ON
+                res_cont.country_id = `t_players`.residence_country
+                AND  res_cont.`delete_flag` = 0
+            LEFT OUTER JOIN m_prefectures res_pref ON
+                res_pref.pref_id = `t_players`.residence_prefecture
+                AND  res_pref.`delete_flag` = 0
+            WHERE 1=1
+                AND `t_players`.delete_flag = 0
+                AND `t_players`.user_id = ?',
             [$user_id]
         );
 
