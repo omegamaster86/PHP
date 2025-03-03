@@ -156,6 +156,8 @@ export default function TeamManagement() {
           const playerInf = await axios.get('api/getIDsAssociatedWithUser');
           if (
             playerInf.data.result[0].is_administrator == 1 ||
+            playerInf.data.result[0].is_jara == 1 ||
+            playerInf.data.result[0].is_pref_boat_officer == 1 ||
             playerInf.data.result[0].is_organization_manager == 1
           ) {
             setValidFlag(true); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
@@ -379,7 +381,7 @@ export default function TeamManagement() {
                           router.push('/team?mode=update&org_id=' + row.org_id.toString());
                         }}
                         buttonType='white-outlined'
-                        className='w-[60px] text-small h-[40px] p-[0px] border-transparent'
+                        className='w-[60px] text-nowrap text-small h-[40px] p-[0px] border-transparent'
                       >
                         <EditOutlined className='text-secondaryText text-normal mr-[2px]'></EditOutlined>
                         更新
