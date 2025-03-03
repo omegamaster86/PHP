@@ -1027,6 +1027,12 @@ export default function TournamentResult() {
 
         const race = raceResponse.data.race_result[0];
         race.startDateTime = race.start_date_time; //バックエンド側のキーをフロント側のキーに入れ直す 20240410
+
+        if (['update', 'confirm'].includes(mode) && race.race_id === '') {
+          setErrorText(['レース情報が削除されているため更新できません。']);
+          return;
+        }
+
         setRaceInfo(race);
 
         // 種目に対応したシート位置（マスタ）の取得
@@ -1113,6 +1119,12 @@ export default function TournamentResult() {
           const response = await axios.post('api/getRaceDataRaceId', sendData);
 
           data = response.data.race_result;
+
+          if (['update', 'confirm'].includes(mode) && data.length === 0) {
+            setErrorText(['レース情報が削除されているため更新できません。']);
+            return;
+          }
+
           data[0].startDateTime = data[0].start_date_time; //バックエンド側のキーをフロント側のキーに入れ直す 20240422
           // 遷移元からイベントIDが取得できる時だけ、遷移元からのイベントIDをセットする。セットされていない時は、レース情報からイベントIDをセットする。
           setRaceInfo({
@@ -1199,7 +1211,7 @@ export default function TournamentResult() {
         <CustomTitle>
           レース結果{mode === 'create' ? '登録' : mode === 'update' ? '更新' : '入力確認'}
         </CustomTitle>
-        <ErrorBox errorText={['レース情報が削除されているため更新できません。']} />
+        <ErrorBox errorText={errorText} />
       </>
     );
   }
@@ -2004,56 +2016,28 @@ export default function TournamentResult() {
               <CustomTable>
                 <CustomThead>
                   <CustomTr>
-                    <CustomTh rowSpan={2}>
-                      <p>削除</p>
-                    </CustomTh>
-                    <CustomTh rowSpan={2}>
-                      <p>選手ID</p>
-                    </CustomTh>
-                    <CustomTh rowSpan={2}>
-                      <p>選手名</p>
-                    </CustomTh>
-                    <CustomTh rowSpan={2}>
-                      <p>性別</p>
-                    </CustomTh>
-                    <CustomTh rowSpan={2}>
-                      <p>身長</p>
-                    </CustomTh>
-                    <CustomTh rowSpan={2}>
-                      <p>体重</p>
-                    </CustomTh>
-                    <CustomTh rowSpan={2}>
-                      <p>シート番号</p>
-                    </CustomTh>
+                    <CustomTh rowSpan={2}>削除</CustomTh>
+                    <CustomTh rowSpan={2}>選手ID</CustomTh>
+                    <CustomTh rowSpan={2}>選手名</CustomTh>
+                    <CustomTh rowSpan={2}>性別</CustomTh>
+                    <CustomTh rowSpan={2}>身長</CustomTh>
+                    <CustomTh rowSpan={2}>体重</CustomTh>
+                    <CustomTh rowSpan={2}>シート番号</CustomTh>
                     <CustomTh rowSpan={1} colSpan={5}>
-                      <p>心拍数(回/分)</p>
+                      心拍数(回/分)
                     </CustomTh>
-                    <CustomTh rowSpan={1}>
-                      <p>エルゴ</p>
-                    </CustomTh>
+                    <CustomTh rowSpan={1}>エルゴ</CustomTh>
                   </CustomTr>
                   <CustomTr>
+                    <CustomTh>500m</CustomTh>
+                    <CustomTh>1000m</CustomTh>
+                    <CustomTh>1500m</CustomTh>
+                    <CustomTh>2000m</CustomTh>
+                    <CustomTh>平均</CustomTh>
                     <CustomTh>
-                      <p>500m</p>
-                    </CustomTh>
-                    <CustomTh>
-                      <p>1000m</p>
-                    </CustomTh>
-                    <CustomTh>
-                      <p>1500m</p>
-                    </CustomTh>
-                    <CustomTh>
-                      <p>2000m</p>
-                    </CustomTh>
-                    <CustomTh>
-                      <p>平均</p>
-                    </CustomTh>
-                    <CustomTh>
-                      <p>
-                        立ち会い
-                        <br />
-                        有無
-                      </p>
+                      立ち会い
+                      <br />
+                      有無
                     </CustomTh>
                   </CustomTr>
                 </CustomThead>
@@ -2102,7 +2086,7 @@ export default function TournamentResult() {
                             widthClassName='w-[56px]'
                           />
                         </CustomTd>
-                        <CustomTd>
+                        <CustomTd newLine>
                           <CustomTextField
                             value={player.playerName || ''}
                             onChange={(e) => {
