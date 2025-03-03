@@ -1091,7 +1091,8 @@ export default function TournamentResult() {
           scrollTo(0, 0);
         }
       } catch (error: any) {
-        setErrorText([error.response?.data?.message]);
+        const errorMessage = error.response?.data?.message || `API取得エラー: ${error.message}`;
+        setErrorText([errorMessage]);
       }
     };
     if (mode == 'update') {
@@ -1183,7 +1184,8 @@ export default function TournamentResult() {
           }
         }
       } catch (error: any) {
-        setErrorText([error.response?.data?.message]);
+        const errorMessage = error.response?.data?.message || `API取得エラー: ${error.message}`;
+        setErrorText([errorMessage]);
       }
     };
     fetchRaceInfo();
@@ -1192,7 +1194,14 @@ export default function TournamentResult() {
   if (!tournamentResultMode.includes(mode)) return null;
 
   if (['update', 'confirm'].includes(mode) && raceInfo.race_id === '') {
-    return <ErrorBox errorText={errorText} />;
+    return (
+      <>
+        <CustomTitle>
+          レース結果{mode === 'create' ? '登録' : mode === 'update' ? '更新' : '入力確認'}
+        </CustomTitle>
+        <ErrorBox errorText={['レース情報が削除されているため更新できません。']} />
+      </>
+    );
   }
 
   return (

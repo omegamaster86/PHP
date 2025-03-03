@@ -169,6 +169,7 @@ class T_players extends Model
                 ,`photo`
                 ,`m_sex`.`sex`
             FROM `t_players`
+            # NOTE: 選手情報連携で"連携待ち"の選手がいる場合を考慮しすべて外部結合する。
             LEFT OUTER JOIN `m_sex` ON
                 `m_sex`.`sex_id` = `t_players`.`sex_id`
                 AND `m_sex`.`delete_flag` = 0
