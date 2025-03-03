@@ -164,8 +164,10 @@ class OrganizationPlayersController extends Controller
 
             // 入力組み合わせ5以外のパターンはメールアドレス必須
             if (isset($user_id) || !isset($player_id) || !isset($jara_player_code)) {
-                $this->assignInvalidRowdata('無効データ（"連携待ち"の選手でない場合、メールアドレスは必須入力です）', $reqData[$rowIndex]);
-                continue;
+                if (!isset($mail_address)) {
+                    $this->assignInvalidRowdata('無効データ（"連携待ち"の選手でない場合、メールアドレスは必須入力です）', $reqData[$rowIndex]);
+                    continue;
+                }
             }
 
             $user_data = $t_users->getUserDataFromMailAddress($mail_address);
