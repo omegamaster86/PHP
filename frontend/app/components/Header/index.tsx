@@ -254,16 +254,16 @@ const Header: FC = () => {
         {
           title: '団体管理',
           link: '/teamManagement',
-          show: userIdType.is_administrator == 1 || userIdType.is_organization_manager == 1,
-        },
-        {
-          title: '団体登録',
-          link: '/team?mode=create',
           show:
             userIdType.is_administrator == 1 ||
             userIdType.is_jara == 1 ||
             userIdType.is_pref_boat_officer == 1 ||
             userIdType.is_organization_manager == 1,
+        },
+        {
+          title: '団体登録',
+          link: '/team?mode=create',
+          show: true,
         },
         {
           title: '団体所属選手一括登録',
