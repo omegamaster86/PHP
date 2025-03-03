@@ -455,21 +455,23 @@ class T_organizations extends Model
         return $organizations;
     }
 
-    //interfaceのTeamResponseを取得する 20240410
     public function getAllOrganizations()
     {
-        $organizations = DB::select("select distinct
-                                    case
-                                        when org.jara_org_type = 0 and org.pref_org_type = 0 then '任意'
-                                        else '正規'
-                                        end as `teamTyp`
-                                    ,org.entrysystem_org_id
-                                    ,org.org_id
-                                    ,org.org_name
-                                    from `t_organizations` org
-                                    where 1=1
-                                    and org.delete_flag = 0
-                                    order by org.org_id");
+        $organizations = DB::select(
+            "SELECT DISTINCT
+                CASE
+                    WHEN org.jara_org_type = 0 AND org.pref_org_type = 0 THEN '任意'
+                    ELSE '正規'
+                    END AS `teamTyp`
+                ,org.entrysystem_org_id
+                ,org.org_id
+                ,org.org_name
+            FROM `t_organizations` org
+            WHERE 1=1
+                AND org.delete_flag = 0
+            ORDER BY org.org_id
+            "
+        );
         return $organizations;
     }
 

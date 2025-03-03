@@ -1,3 +1,4 @@
+import { clsx } from 'clsx';
 import { useRouter } from 'next/navigation';
 import { ReactNode } from 'react';
 
@@ -9,20 +10,22 @@ const CustomTd = ({
   align,
   textType,
   className,
+  newLine,
 }: {
   children: ReactNode;
   transitionDest?: string;
   align?: AlignType;
   textType?: 'primary' | 'secondary' | 'error' | 'warning';
   className?: string;
+  newLine?: boolean;
 }) => {
   // Next.jsのRouterを利用
   const router = useRouter();
 
   return transitionDest === undefined ? (
     <td
-      className={`py-2 px-1 border border-gray-20 text-caption1 break-all whitespace-normal
-      ${
+      className={clsx(
+        'py-2 px-1 border border-gray-20 text-caption1 break-all',
         textType === 'primary'
           ? 'text-primary-300'
           : textType === 'secondary'
@@ -31,10 +34,11 @@ const CustomTd = ({
               ? 'text-systemErrorText'
               : textType === 'warning'
                 ? 'text-systemWarningText'
-                : 'text-primaryText'
-      }
-      ${className}
-      `}
+                : 'text-primaryText',
+        newLine ? 'break-all whitespace-normal' : 'whitespace-nowrap',
+
+        className,
+      )}
       align={align}
     >
       {children}
