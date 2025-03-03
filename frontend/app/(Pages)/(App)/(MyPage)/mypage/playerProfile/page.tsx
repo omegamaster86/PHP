@@ -52,7 +52,7 @@ export default function PlayerProfile() {
     },
     {
       label: '身長',
-      value: `${user.height}cm`,
+      value: user.height ? `${user.height}cm` : null,
     },
   ];
 
@@ -63,7 +63,7 @@ export default function PlayerProfile() {
     },
     {
       label: '体重',
-      value: `${user.weight}kg`,
+      value: user.weight ? `${user.weight}kg` : null,
     },
   ];
 
