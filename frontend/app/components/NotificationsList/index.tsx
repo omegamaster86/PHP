@@ -135,48 +135,46 @@ export default function NotificationsList() {
   };
 
   return (
-    <>
-      <div className='flex'>
-        <div className='flex flex-col w-full md:max-w-xs border-r border-r-gray-50'>
-          {hasNotifications ? (
-            infiniteList.map((n) => (
-              <Button
-                key={n.notificationId}
-                onClick={handleClickListItem(n.notificationId, Boolean(n.isRead))}
-              >
-                <ListItem notification={n} isSelected={currentId === n.notificationId} />
-              </Button>
-            ))
-          ) : (
-            <div className='flex justify-center items-center w-full'>
-              <p>{noDataMessage}</p>
-            </div>
-          )}
+    <div className='flex max-h-[calc(100vh-(3.75rem+1rem+1.5rem*1.5+1.75rem+1rem))] md:max-h-[calc(100vh-(3.75rem+3rem+3rem+1.5rem*1.5+1.75rem+3rem))] lg:max-h-[calc(100vh-(3.75rem+3rem+3rem+2.25rem*1.5+1.75rem+3rem))]'>
+      <div className='flex flex-col w-full overflow-y-auto md:max-w-xs border-r border-r-gray-50'>
+        {hasNotifications ? (
+          infiniteList.map((n) => (
+            <Button
+              key={n.notificationId}
+              onClick={handleClickListItem(n.notificationId, Boolean(n.isRead))}
+            >
+              <ListItem notification={n} isSelected={currentId === n.notificationId} />
+            </Button>
+          ))
+        ) : (
+          <div className='flex justify-center items-center w-full'>
+            <p>{noDataMessage}</p>
+          </div>
+        )}
 
-          {!isLastPage && (
-            <div className='flex justify-center my-4'>
-              <CustomButton buttonType='primary-outlined' className='w-28' onClick={fetchMore}>
-                もっと見る
-              </CustomButton>
-            </div>
-          )}
-        </div>
-
-        {/* スマホの場合は非表示 */}
-        <div className='hidden md:block w-full'>
-          {isSelected ? (
-            <NotificationContent
-              type='received'
-              notificationContent={notificationContent}
-              isWideScreen={isWideScreen}
-            />
-          ) : (
-            <div className='flex justify-center items-center w-full'>
-              <p>{notSelectedMessage}</p>
-            </div>
-          )}
-        </div>
+        {!isLastPage && (
+          <div className='flex justify-center my-4'>
+            <CustomButton buttonType='primary-outlined' className='w-28' onClick={fetchMore}>
+              もっと見る
+            </CustomButton>
+          </div>
+        )}
       </div>
-    </>
+
+      {/* スマホの場合は非表示 */}
+      <div className='hidden md:block w-full overflow-y-auto'>
+        {isSelected ? (
+          <NotificationContent
+            type='received'
+            notificationContent={notificationContent}
+            isWideScreen={isWideScreen}
+          />
+        ) : (
+          <div className='flex justify-center items-center w-full'>
+            <p>{notSelectedMessage}</p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

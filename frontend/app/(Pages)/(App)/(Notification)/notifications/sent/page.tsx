@@ -105,8 +105,8 @@ export default function NotificationsSentList() {
       <div className='mb-5'>
         <CustomTitle displayBack>{title}</CustomTitle>
       </div>
-      <div className='flex'>
-        <div className='flex flex-col w-full md:max-w-xs border-r border-r-gray-50'>
+      <div className='flex max-h-[calc(100vh-(3.75rem+1rem+1.5rem*1.5+1.25rem+1rem))] md:max-h-[calc(100vh-(3.75rem+3rem+3rem+1.5rem*1.5+1.25rem+3rem))] lg:max-h-[calc(100vh-(3.75rem+3rem+3rem+2.25rem*1.5+1.25rem+3rem))]'>
+        <div className='flex flex-col overflow-y-auto w-full md:max-w-xs border-r border-r-gray-50'>
           {hasNotifications ? (
             infiniteList.map((n) => (
               <Button key={n.notificationId} onClick={handleClickListItem(n.notificationId)}>
@@ -129,7 +129,7 @@ export default function NotificationsSentList() {
         </div>
 
         {/* スマホの場合は非表示 */}
-        <div className='hidden md:block w-full'>
+        <div className='hidden md:block overflow-y-auto w-full'>
           {isSelected ? (
             <NotificationContent
               type='sent'
