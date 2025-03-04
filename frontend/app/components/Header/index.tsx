@@ -463,7 +463,7 @@ const Header: FC = () => {
           </Menu>
         )}
       </div>
-      <header className='bg-primary-500 h-[60px] w-full flex justify-between px-[20px]'>
+      <header className='bg-primary-500 h-[3.75rem] w-full flex justify-between px-[20px]'>
         <Logo />
         {showHeaderMenu && (
           <div className='right-content'>
@@ -490,7 +490,7 @@ const Header: FC = () => {
       {showHeaderMenu ? (
         // スマホの場合は非表示
         <div className='w-full hidden md:block'>
-          <div className='flex flex-row justify-start items-center h-[50px] gap-[40px] px-[104px] text-small text-secondaryText'>
+          <div className='flex flex-row justify-start items-center h-12 gap-[40px] px-[104px] text-small text-secondaryText'>
             <div className='flex flex-row justify-between w-full'>
               {/* メニュー左側 */}
               <div className='flex flex-row'>
