@@ -198,6 +198,9 @@ export default function TournamentResultManagement() {
 
       const height = response.data.length * 73 + 100 < 830 ? response.data.length * 73 + 100 : 830;
       setTableHeight('h-[' + height + 'px]');
+      if (response.data.result.length === 0) {
+        setErrorMessage(['検索結果が0件です。']);
+      }
     } catch (error) {
       setErrorMessage([...(errorMessage as string[]), 'API取得エラー:' + (error as Error).message]);
     }
@@ -563,6 +566,7 @@ export default function TournamentResultManagement() {
           </div>
         </div>
       </div>
+      <p className=' text-systemErrorText self-center'>{errorMessage}</p>
       {/* レース結果一覧テーブル表示 */}
       <div className='overflow-auto'>
         <CustomTable>
