@@ -50,6 +50,7 @@ import {
 import Validator from '@/app/utils/validator';
 import TextField from '@mui/material/TextField';
 import useSWRMutation from 'swr/mutation';
+import { formatDate } from '@/app/utils/dateUtil';
 
 const sendCheckOrgManagerRequest = async (
   url: string,
@@ -972,30 +973,6 @@ export default function Tournaments() {
     </CustomButton>
   );
 
-  // 日付をYYYY/MM/DDの形式に変換する
-  const formatDate = (dt: Date | null | undefined) => {
-    if (!dt) {
-      return '';
-    }
-    const y = dt.getFullYear();
-    const m = ('00' + (dt.getMonth() + 1)).slice(-2);
-    const d = ('00' + dt.getDate()).slice(-2);
-    return y + '/' + m + '/' + d;
-  };
-
-  // 日付をYYYY/MM/DD HH:MMの形式に変換する
-  const formatDateTime = (dt: Date | null | undefined) => {
-    if (!dt) {
-      return '';
-    }
-    const y = dt.getFullYear();
-    const m = ('00' + (dt.getMonth() + 1)).slice(-2);
-    const d = ('00' + dt.getDate()).slice(-2);
-    const hh = ('00' + dt.getHours()).slice(-2);
-    const mm = ('00' + dt.getMinutes()).slice(-2);
-    return y + '/' + m + '/' + d + ' ' + hh + ':' + mm;
-  };
-
   // テーブルの明細行を作成する関数
   const raceRowComp = (row: Race) => {
     return (
@@ -1124,7 +1101,7 @@ export default function Tournaments() {
               handleInputChangeRace(
                 row.id,
                 'start_date_time',
-                formatDateTime(e as unknown as Date),
+                formatDate(e as unknown as string, 'yyyy/MM/dd HH:mm'),
               );
             }}
             className='!w-[200px] text-base'
@@ -1257,7 +1234,7 @@ export default function Tournaments() {
           <CustomDatePicker
             selectedDate={tournamentFormData.event_start_date}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              handleInputChangeTournament('event_start_date', formatDate(e as unknown as Date));
+              handleInputChangeTournament('event_start_date', formatDate(e as unknown as string, 'yyyy/MM/dd'));
             }}
             readonly={mode === 'confirm'}
             isError={eventStartDateErrorMessage.length > 0}
@@ -1275,7 +1252,7 @@ export default function Tournaments() {
           <CustomDatePicker
             selectedDate={tournamentFormData.event_end_date}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              handleInputChangeTournament('event_end_date', formatDate(e as unknown as Date));
+              handleInputChangeTournament('event_end_date', formatDate(e as unknown as string, 'yyyy/MM/dd'));
             }}
             readonly={mode === 'confirm'}
             isError={eventEndDateErrorMessage.length > 0}

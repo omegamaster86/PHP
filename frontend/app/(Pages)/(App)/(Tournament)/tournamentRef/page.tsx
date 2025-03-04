@@ -31,6 +31,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import useSWRMutation from 'swr/mutation';
+import { formatDate } from '@/app/utils/dateUtil';
 
 const sendCheckOrgManagerRequest = async (
   url: string,
@@ -537,7 +538,7 @@ export default function TournamentRef() {
                     {/* 開催開始年月日 */}
                     <div className='text-gray-40 text-sm w-[100px]'>開催開始年月日</div>
                     <Label
-                      label={tournamentFormData.event_start_date}
+                      label={formatDate(tournamentFormData.event_start_date, 'yyyy/MM/dd')}
                       textColor='white'
                       textSize='small'
                     ></Label>
@@ -546,7 +547,7 @@ export default function TournamentRef() {
                     {/* 開催終了年月日 */}
                     <div className='text-gray-40 text-sm w-[100px]'>開催終了年月日</div>
                     <Label
-                      label={tournamentFormData.event_end_date}
+                      label={formatDate(tournamentFormData.event_end_date, 'yyyy/MM/dd')}
                       textColor='white'
                       textSize='small'
                     ></Label>
@@ -784,7 +785,7 @@ export default function TournamentRef() {
                     {/* 距離 */}
                     <CustomTd>{row.range}</CustomTd>
                     {/* 発艇日時 */}
-                    <CustomTd>{row.start_date_time.substring(0, 16)}</CustomTd>
+                    <CustomTd>{formatDate(row.start_date_time,'yyyy/MM/dd HH:mm')}</CustomTd>
                   </CustomTr>
                 ))}
             </CustomTbody>

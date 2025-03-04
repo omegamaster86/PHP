@@ -16,6 +16,7 @@ import { UserIdType, VolunteerResponse } from '@/app/types';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { formatDate } from '@/app/utils/dateUtil';
 
 const volunteerInitialState: VolunteerResponse = {
   volunteer_id: '',
@@ -246,7 +247,7 @@ export default function VolunteerInformationRef() {
           {/* 生年月日 */}
           <CustomTextField
             label='生年月日'
-            value={volunteer.date_of_birth}
+            value={formatDate(volunteer.date_of_birth, 'yyyy/MM/dd')}
             readonly
             displayHelp={false}
             onChange={(e) => {}}

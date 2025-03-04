@@ -30,6 +30,7 @@ import Divider from '@mui/material/Divider';
 // モデルのインポート
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import { formatDate } from '@/app/utils/dateUtil';
 
 // 検索条件フォームの型定義
 // 検索条件
@@ -243,14 +244,6 @@ export default function TournamentSearch() {
     fetchData();
   }, []);
 
-  // 日付をYYYY/MM/DDの形式に変換する
-  const formatDate = (dt: Date) => {
-    const y = dt.getFullYear();
-    const m = ('00' + (dt.getMonth() + 1)).slice(-2);
-    const d = ('00' + dt.getDate()).slice(-2);
-    return y + '/' + m + '/' + d;
-  };
-
   /**
    * データを10件ずつ増やす関数
    * @description
@@ -328,7 +321,10 @@ export default function TournamentSearch() {
                   placeHolder={'YYYY/MM/DD'}
                   selectedDate={searchCond.event_start_date}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    handleInputChange('event_start_date', formatDate(e as unknown as Date));
+                    handleInputChange(
+                      'event_start_date',
+                      formatDate(e as unknown as string, 'yyyy/MM/dd'),
+                    );
                   }}
                 />
                 <p className='flex flex-col justify-center text-center '>～</p>
@@ -336,7 +332,10 @@ export default function TournamentSearch() {
                   placeHolder={'YYYY/MM/DD'}
                   selectedDate={searchCond.event_end_date}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    handleInputChange('event_end_date', formatDate(e as unknown as Date));
+                    handleInputChange(
+                      'event_end_date',
+                      formatDate(e as unknown as string, 'yyyy/MM/dd'),
+                    );
                   }}
                 />
               </div>
@@ -525,9 +524,9 @@ export default function TournamentSearch() {
                   </Link>
                 </CustomTd>
                 {/* 開催開始日 */}
-                <CustomTd>{row.event_start_date}</CustomTd>
+                <CustomTd>{formatDate(row.event_start_date, 'yyyy/MM/dd')}</CustomTd>
                 {/* 開催終了日 */}
-                <CustomTd>{row.event_end_date}</CustomTd>
+                <CustomTd>{formatDate(row.event_end_date, 'yyyy/MM/dd')}</CustomTd>
                 {/* 開催場所 */}
                 <CustomTd>{row.venue_name}</CustomTd>
                 {/* 主催団体ID */}

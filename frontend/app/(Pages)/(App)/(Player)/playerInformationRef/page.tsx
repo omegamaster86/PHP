@@ -28,6 +28,7 @@ import { Autocomplete, Chip, TextField } from '@mui/material';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
+import { formatDate } from '@/app/utils/dateUtil';
 
 //種目フィルター用
 interface EventNameList {
@@ -1180,7 +1181,7 @@ export default function PlayerInformationRef() {
                       {/* 生年月日 */}
                       <div className='text-gray-40 text-caption1'>生年月日&nbsp;&nbsp;</div>
                       <Label
-                        label={playerInformation.date_of_birth ?? ''}
+                        label={formatDate(playerInformation.date_of_birth, 'yyyy/MM/dd') ?? ''}
                         textColor='white'
                         textSize='caption1'
                       ></Label>
@@ -1737,7 +1738,7 @@ export default function PlayerInformationRef() {
                     {/* 公式／非公式 */}
                     <CustomTd>{row.official === 0 ? '非公式' : '公式'}</CustomTd>
                     {/* 開催日 */}
-                    <CustomTd>{row.eventStartDate}</CustomTd>
+                    <CustomTd>{formatDate(row.eventStartDate, 'yyyy/MM/dd')}</CustomTd>
                     {/* 所属団体 */}
                     <CustomTd>
                       <Link
@@ -1807,7 +1808,7 @@ export default function PlayerInformationRef() {
                     {/* 出漕結果記録名 */}
                     <CustomTd>{row.race_result_record_name}</CustomTd>
                     {/* 発艇日時 */}
-                    <CustomTd>{row.start_datetime.substring(0, 16)}</CustomTd>
+                    <CustomTd>{formatDate(row.start_datetime, 'yyyy/MM/dd HH:mm')}</CustomTd>
                     {/* 2000m地点風速 */}
                     <CustomTd>{row.wind_speed_2000m_point}</CustomTd>
                     {/* 2000m地点風向 */}

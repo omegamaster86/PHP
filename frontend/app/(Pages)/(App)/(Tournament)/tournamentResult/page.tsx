@@ -27,6 +27,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, useEffect, useState } from 'react';
+import { formatDate } from '@/app/utils/dateUtil';
 
 interface UpdatedRaceResultRecordsResponse extends RaceResultRecordsResponse {
   isAdded: boolean;
@@ -1377,7 +1378,7 @@ export default function TournamentResult() {
               />
               <CustomTextField
                 label='発艇予定日時'
-                value={raceInfo?.startDateTime?.substring(0, 16) || ''}
+                value={formatDate(raceInfo?.startDateTime, 'yyyy/MM/dd HH:mm')}
                 displayHelp={false}
                 readonly
               />
@@ -1424,7 +1425,7 @@ export default function TournamentResult() {
               )}
             </div>
             {mode !== 'confirm' && (
-              <p className='mt-auto text-secondaryText'>※例) 2021/12/31 12:34</p>
+              <p className='mt-auto text-secondaryText'>※例 2021/12/31 12:34</p>
             )}
           </div>
           <div className='flex flex-row justify-left gap-[80px] item-center'>
