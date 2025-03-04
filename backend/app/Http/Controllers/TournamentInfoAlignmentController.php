@@ -1179,7 +1179,7 @@ class TournamentInfoAlignmentController extends Controller
                     $race_result_array['wind_direction_2000m_point'] = $target_row['windDirectionTwentyHundredmPoint']; //2000m地点風向
                     $race_result_array['wind_speed_1000m_point'] = $target_row['windSpeedTenHundredmPoint'];            //1000m地点風速
                     $race_result_array['wind_direction_1000m_point'] = $target_row['windDirectionTenHundredmPoint'];    //1000m地点風向
-                    $race_result_array['race_result_notes'] = $target_row['remark'];                                    //備考
+                    $race_result_array['race_result_notes_id'] = $target_row['remark'];                                    //備考
                     $race_result_array['updated_time'] = $current_datetime; //更新日時
                     $race_result_array['user_id'] = $register_user_id; //更新ユーザーID
                     //検索条件
@@ -1313,7 +1313,7 @@ class TournamentInfoAlignmentController extends Controller
                     $race_result_array['wind_direction_2000m_point'] = $target_row['windDirectionTwentyHundredmPoint'];     //2000m地点風向
                     $race_result_array['wind_speed_1000m_point'] = $target_row['windSpeedTenHundredmPoint'];                //1000m地点風速
                     $race_result_array['wind_direction_1000m_point'] = $target_row['windDirectionTenHundredmPoint'];        //1000m地点風向
-                    $race_result_array['race_result_notes'] = $target_row['remark'];                                        //備考
+                    $race_result_array['race_result_notes_id'] = $target_row['remark'];                                        //備考
                     //その他データを格納
                     $race_result_array['registered_time'] = $current_datetime;
                     $race_result_array['registered_user_id'] = $register_user_id;

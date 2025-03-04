@@ -91,7 +91,7 @@ class T_raceResultRecord extends Model
                 wd2000p.`wind_direction` AS wind_direction_2000m_point, 
                 `t_race_result_record`.`wind_speed_1000m_point`, 
                 wd1000p.`wind_direction` AS wind_direction_1000m_point, 
-                `t_race_result_record`.`race_result_notes`,
+                mrrn.race_result_notes,
                 `t_tournaments`.`tourn_id`,
                 `t_tournaments`.`tourn_name`,
                 `t_race_result_record`.range,
@@ -110,6 +110,9 @@ class T_raceResultRecord extends Model
             LEFT OUTER JOIN `m_venue` ON
                 `m_venue`.venue_id = `t_tournaments`.venue_id
                 AND `m_venue`.`delete_flag` = 0
+            LEFT OUTER JOIN `m_race_result_notes` mrrn ON
+                mrrn.race_result_notes_id = `t_race_result_record`.race_result_notes_id
+                AND mrrn.`delete_flag` = 0
             WHERE 1=1
                 AND `t_race_result_record`.delete_flag = 0                                        
                 AND `t_race_result_record`.race_id = ?',
@@ -172,7 +175,7 @@ class T_raceResultRecord extends Model
                 `t_race_result_record`.`wind_speed_1000m_point`, 
                 `t_race_result_record`.`wind_direction_1000m_point`, 
                 `mwd1000`.`wind_direction` AS `tenHundredmWindDirectionName`,
-                `t_race_result_record`.`race_result_notes`,
+                mrrn.race_result_notes,
                 `m_seat_number`.`display_order` AS "order",
                 `t_tournaments`.`event_start_date` AS "eventStartDate",
                 `m_venue`.`venue_name`,
@@ -197,6 +200,9 @@ class T_raceResultRecord extends Model
             LEFT OUTER JOIN `m_wind_direction` mwd2000 ON
                 mwd2000.`wind_direction_id` = `t_race_result_record`.`wind_direction_2000m_point`
                 AND `mwd2000`.`delete_flag` = 0
+            LEFT OUTER JOIN `m_race_result_notes` mrrn ON
+                mrrn.race_result_notes_id = `t_race_result_record`.race_result_notes_id
+                AND mrrn.`delete_flag` = 0
             WHERE 1=1
                 AND `t_race_result_record`.delete_flag = 0                                        
                 AND `t_race_result_record`.player_id = ?',
@@ -538,7 +544,7 @@ class T_raceResultRecord extends Model
                             `wind_direction_2000m_point` = :wind_direction_2000m_point,
                             `wind_speed_1000m_point` = :wind_speed_1000m_point,
                             `wind_direction_1000m_point` = :wind_direction_1000m_point,
-                            `race_result_notes` = :race_result_notes,
+                            `race_result_notes_id` = :race_result_notes_id,
                             `updated_time`= :updated_time,
                             `updated_user_id`= :user_id
                             WHERE 1=1
@@ -602,7 +608,7 @@ class T_raceResultRecord extends Model
                 `wind_direction_2000m_point`, 
                 `wind_speed_1000m_point`, 
                 `wind_direction_1000m_point`,
-                `race_result_notes`, 
+                `race_result_notes_id`, 
                 `registered_time`,
                 `registered_user_id`, 
                 `updated_time`, 
@@ -657,7 +663,7 @@ class T_raceResultRecord extends Model
                 :wind_direction_2000m_point, 
                 :wind_speed_1000m_point, 
                 :wind_direction_1000m_point,
-                :race_result_notes, 
+                :race_result_notes_id, 
                 :registered_time,
                 :registered_user_id, 
                 :updated_time, 
@@ -780,54 +786,57 @@ class T_raceResultRecord extends Model
     {
         Log::debug("getRaceResultRecordOnRowingPoint start.");
         $race_result_record = DB::select(
-            "select distinct
-                                            rrr.race_id
-                                            ,mwt.`weather_name` as weatherName
-                                            ,rrr.`range`                        #距離
-                                            ,rrr.`start_datetime` as `startDateTime` #発艇日時
-                                            ,rrr.`weather`  as `weatherId`      #天候
-                                            ,rrr.`wind_direction_1000m_point`   #1000m地点風向
-                                            ,wd1000p.`wind_direction` as tenHundredmWindDirectionName
-                                            ,rrr.`wind_speed_1000m_point`       #1000m地点風速
-                                            ,rrr.`wind_direction_2000m_point`   #2000m地点風向
-                                            ,wd2000p.`wind_direction` as twentyHundredmWindDirectionName
-                                            ,rrr.`wind_speed_2000m_point`       #2000m地点風速
-                                            #,case
-                                            #    when rrr.`org_id` is null then rrr.`org_id`
-                                            #    else rrr.`org_name`
-                                            #    end as `org_name`             #所属団体
-                                            ,rrr.`crew_name`                  #クルー名
-                                            ,rrr.`lane_number`                #出漕レーンNo.
-                                            ,rrr.`rank`                       #順位
-                                            ,rrr.`laptime_500m`               #500mラップタイム
-                                            ,rrr.`laptime_1000m`              #1000mラップタイム
-                                            ,rrr.`laptime_1500m`              #1500mラップタイム
-                                            ,rrr.`laptime_2000m`              #2000mラップタイム
-                                            ,rrr.`final_time`                 #最終タイム
-                                            ,rrr.`race_result_notes`          #備考
-                                            ,rrr.`stroke_rat_500m`            #500mストロークレート
-                                            ,rrr.`stroke_rat_1000m`           #1000mストロークレート
-                                            ,rrr.`stroke_rat_1500m`           #1500mストロークレート
-                                            ,rrr.`stroke_rat_2000m`           #2000mストロークレート
-                                            ,rrr.`stroke_rate_avg`            #ストロークレート(平均)
-                                            ,rrr.org_id
-                                            ,org.org_name
-                                            from `t_race_result_record` rrr
-                                            left join `m_weather_type` mwt
-                                            on rrr.`weather` = mwt.`weather_id`
-                                            and mwt.`delete_flag` = 0
-                                            inner join `t_organizations` org
-                                            on rrr.org_id = org.org_id
-                                            and org.`delete_flag` = 0
-                                            left join `m_wind_direction` wd2000p
-                                            on rrr.`wind_direction_2000m_point` = wd2000p.`wind_direction_id`
-                                            and wd2000p.`delete_flag` = 0
-                                            left join `m_wind_direction` wd1000p
-                                            on rrr.`wind_direction_1000m_point` = wd1000p.`wind_direction_id`
-                                            and wd1000p.`delete_flag` = 0
-                                            where 1=1
-                                            and rrr.`delete_flag` = 0
-                                            and race_id = :race_id",
+            "SELECT DISTINCT
+                rrr.race_id
+                ,mwt.`weather_name` AS weatherName
+                ,rrr.`range`                        #距離
+                ,rrr.`start_datetime` AS `startDateTime` #発艇日時
+                ,rrr.`weather`  AS `weatherId`      #天候
+                ,rrr.`wind_direction_1000m_point`   #1000m地点風向
+                ,wd1000p.`wind_direction` AS tenHundredmWindDirectionName
+                ,rrr.`wind_speed_1000m_point`       #1000m地点風速
+                ,rrr.`wind_direction_2000m_point`   #2000m地点風向
+                ,wd2000p.`wind_direction` AS twentyHundredmWindDirectionName
+                ,rrr.`wind_speed_2000m_point`       #2000m地点風速
+                #,CASE
+                #    WHEN rrr.`org_id` IS NULL THEN rrr.`org_id`
+                #    ELSE rrr.`org_name`
+                #    END AS `org_name`             #所属団体
+                ,rrr.`crew_name`                  #クルー名
+                ,rrr.`lane_number`                #出漕レーンNo.
+                ,rrr.`rank`                       #順位
+                ,rrr.`laptime_500m`               #500mラップタイム
+                ,rrr.`laptime_1000m`              #1000mラップタイム
+                ,rrr.`laptime_1500m`              #1500mラップタイム
+                ,rrr.`laptime_2000m`              #2000mラップタイム
+                ,rrr.`final_time`                 #最終タイム
+                ,mrrn.`race_result_notes`         #備考
+                ,rrr.`stroke_rat_500m`            #500mストロークレート
+                ,rrr.`stroke_rat_1000m`           #1000mストロークレート
+                ,rrr.`stroke_rat_1500m`           #1500mストロークレート
+                ,rrr.`stroke_rat_2000m`           #2000mストロークレート
+                ,rrr.`stroke_rate_avg`            #ストロークレート(平均)
+                ,rrr.org_id
+                ,org.org_name
+            FROM `t_race_result_record` rrr
+            INNER JOIN `t_organizations` org ON
+                org.org_id = rrr.org_id
+                AND org.`delete_flag` = 0
+            LEFT OUTER JOIN `m_weather_type` mwt ON
+                mwt.`weather_id` = rrr.`weather`
+                AND mwt.`delete_flag` = 0
+            LEFT OUTER JOIN `m_wind_direction` wd2000p ON
+                wd2000p.`wind_direction_id` = rrr.`wind_direction_2000m_point`
+                AND wd2000p.`delete_flag` = 0
+            LEFT OUTER JOIN `m_wind_direction` wd1000p ON
+                wd1000p.`wind_direction_id` = rrr.`wind_direction_1000m_point`
+                AND wd1000p.`delete_flag` = 0
+            LEFT OUTER JOIN `m_race_result_notes` mrrn ON
+                mrrn.race_result_notes_id = rrr.race_result_notes_id
+                AND mrrn.`delete_flag` = 0
+            WHERE 1=1
+                AND rrr.`delete_flag` = 0
+                AND rrr.race_id = :race_id",
             ["race_id" => $race_id]
         );
         Log::debug("getRaceResultRecordOnRowingPoint end.");
@@ -940,7 +949,7 @@ class T_raceResultRecord extends Model
                         , `wind_direction_2000m_point`
                         , `wind_speed_1000m_point`
                         , `wind_direction_1000m_point`
-                        , `race_result_notes`
+                        , `race_result_notes_id`
                         , `registered_time`
                         , `registered_user_id`
                         , `updated_time`
@@ -998,7 +1007,7 @@ class T_raceResultRecord extends Model
                         , :wind_direction_2000m_point
                         , :wind_speed_1000m_point
                         , :wind_direction_1000m_point
-                        , :race_result_notes
+                        , :race_result_notes_id
                         , :registered_time
                         , :registered_user_id
                         , :updated_time
@@ -1051,7 +1060,7 @@ class T_raceResultRecord extends Model
                         , `wind_direction_2000m_point` = :wind_direction_2000m_point
                         , `wind_speed_1000m_point` = :wind_speed_1000m_point
                         , `wind_direction_1000m_point` = :wind_direction_1000m_point
-                        , `race_result_notes` = :race_result_notes
+                        , `race_result_notes_id` = :race_result_notes_id
                         , `updated_time` = :updated_time
                         , `updated_user_id` = :updated_user_id
                         WHERE 1=1
