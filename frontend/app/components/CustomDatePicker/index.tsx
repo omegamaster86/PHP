@@ -2,6 +2,7 @@ import { cn } from '@/app/utils/cn';
 import ja from 'date-fns/locale/ja';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { formatDate } from '@/app/utils/dateUtil';
 
 // 日本語ロケールの登録
 registerLocale('ja', ja);
@@ -35,7 +36,7 @@ const CustomDatePicker = ({
 }) => {
   return (
     <>
-      {readonly && <p className='text-secondaryText disable'>{selectedDate}</p>}
+      {readonly && <p className='text-secondaryText disable'>{formatDate(selectedDate, 'yyyy/MM/dd')}</p>}
       {!readonly && (
         <DatePicker
           id={id}

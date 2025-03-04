@@ -10,6 +10,7 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React from 'react';
+import { formatDate } from '@/app/utils/dateUtil';
 
 interface Tournament {
   tournTypeName: string;
@@ -94,7 +95,7 @@ export const SponsoredTournament: React.FC<Props> = ({
                 </CustomTd>
                 {/* 開催期間 */}
                 <CustomTd>
-                  {row.event_start_date} ~ {row.event_end_date}
+                  {formatDate(row.event_start_date, 'yyyy/MM/dd')} ~ {formatDate(row.event_end_date, 'yyyy/MM/dd')}
                 </CustomTd>
                 {/* 開催場所 */}
                 <CustomTd>{row.venue_name}</CustomTd>

@@ -191,14 +191,6 @@ export default function AddPlayerSearch() {
     }));
   };
 
-  // 日付をYYYY/MM/DDの形式に変換する
-  const formatDate = (dt: Date) => {
-    const y = dt.getFullYear();
-    const m = ('00' + (dt.getMonth() + 1)).slice(-2);
-    const d = ('00' + dt.getDate()).slice(-2);
-    return y + '/' + m + '/' + d;
-  };
-
   /**
    * 入力フォームの変更時の処理
    * @param name

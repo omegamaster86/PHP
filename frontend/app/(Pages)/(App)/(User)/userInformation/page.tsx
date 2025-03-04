@@ -22,6 +22,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Divider from '@mui/material/Divider';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, useEffect, useState } from 'react';
+import { formatDate } from '@/app/utils/dateUtil';
 
 import {
   CustomButton,
@@ -411,18 +412,6 @@ export default function UserInformationUpdate() {
     ),
   };
 
-  // 日付をYYYY/MM/DDの形式に変換する
-  const formatDate = (dt: Date | null | undefined) => {
-    if (!dt) {
-      return '';
-    }
-
-    const y = dt.getFullYear();
-    const m = ('00' + (dt.getMonth() + 1)).slice(-2);
-    const d = ('00' + dt.getDate()).slice(-2);
-    return y + '/' + m + '/' + d;
-  };
-
   const customBack = () => {
     if (mode === 'confirm') {
       router.push(`/userInformation?mode=update&source=confirm`);
@@ -632,9 +621,9 @@ export default function UserInformationUpdate() {
           />
           <CustomDatePicker
             readonly={mode === 'confirm'}
-            selectedDate={formData?.date_of_birth}
+            selectedDate={formatDate(formData.date_of_birth, 'yyyy/MM/dd')}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              handleInputChange('date_of_birth', formatDate(e as unknown as Date));
+              handleInputChange('date_of_birth', formatDate(e as unknown as string, 'yyyy/MM/dd'));
             }}
             maxDate={new Date()}
             errorMessages={dateOfBirthErrorMessages}

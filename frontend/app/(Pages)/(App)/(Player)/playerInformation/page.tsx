@@ -36,6 +36,7 @@ import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import Divider from '@mui/material/Divider';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { formatDate } from '@/app/utils/dateUtil';
 
 type PlayerFormData = PlayerInformationResponse;
 
@@ -98,18 +99,6 @@ export default function PlayerInformation() {
       ...prevFormData,
       [name]: value,
     }));
-  };
-
-  // 日付をYYYY/MM/DDの形式に変換する
-  const formatDate = (dt: Date | null | undefined) => {
-    if (!dt) {
-      return '';
-    }
-
-    const y = dt.getFullYear();
-    const m = ('00' + (dt.getMonth() + 1)).slice(-2);
-    const d = ('00' + dt.getDate()).slice(-2);
-    return y + '/' + m + '/' + d;
   };
 
   const [formData, setFormData] = useState<PlayerFormData>({
@@ -825,7 +814,7 @@ export default function PlayerInformation() {
         />
         <CustomDatePicker
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
-            handleInputChange('date_of_birth', formatDate(e as unknown as Date));
+            handleInputChange('date_of_birth', formatDate(e as unknown as string, 'yyyy/MM/dd'));
           }}
           readonly={mode === 'confirm'}
           selectedDate={formData.date_of_birth}

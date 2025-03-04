@@ -44,6 +44,7 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, useEffect, useState } from 'react';
+import { formatDate } from '@/app/utils/dateUtil';
 
 // 検索条件
 interface SearchCond {
@@ -304,12 +305,6 @@ export default function VolunteerSearch() {
    * 日付をフォーマットする関数
    * Date型を引数にとり、yyyy/MM/ddの形式で返す
    */
-  const formatDate = (dt: Date) => {
-    const y = dt.getFullYear();
-    const m = ('00' + (dt.getMonth() + 1)).slice(-2);
-    const d = ('00' + dt.getDate()).slice(-2);
-    return y + '/' + m + '/' + d;
-  };
 
   /**
    * 時間帯のチェックボックスの値を取得する関数
@@ -605,7 +600,7 @@ export default function VolunteerSearch() {
                     id='date_of_birth_start'
                     selectedDate={searchCond.date_of_birth_start?.toString() || ''}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      handleInputChange('date_of_birth_start', formatDate(e as unknown as Date));
+                      handleInputChange('date_of_birth_start', formatDate(e as unknown as string, 'yyyy/MM/dd'));
                     }}
                     errorMessages={startDateExistsErrorMessages}
                     className='w-[210px] border-[1px] border-solid border-border rounded-md bg-white h-[56px]'
@@ -616,7 +611,7 @@ export default function VolunteerSearch() {
                     id='date_of_birth_end'
                     selectedDate={searchCond.date_of_birth_end?.toString() || ''}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      handleInputChange('date_of_birth_end', formatDate(e as unknown as Date));
+                      handleInputChange('date_of_birth_end', formatDate(e as unknown as string, 'yyyy/MM/dd'));
                     }}
                     errorMessages={endDateExistsErrorMessages}
                     className='w-[210px] border-[1px] border-solid border-border rounded-md bg-white h-[56px]'

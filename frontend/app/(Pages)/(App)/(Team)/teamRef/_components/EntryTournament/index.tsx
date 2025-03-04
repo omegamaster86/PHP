@@ -8,6 +8,7 @@ import {
   CustomTbody,
   CustomTd,
 } from '@/app/components';
+import { formatDate } from '@/app/utils/dateUtil';
 
 interface Tournament {
   tournTypeName: string;
@@ -60,7 +61,7 @@ export const EntryTournament: React.FC<Props> = ({ entTournaments }) => {
                 </CustomTd>
                 {/* 開催期間 */}
                 <CustomTd>
-                  {row.event_start_date} ~ {row.event_end_date}
+                  {formatDate(row.event_start_date, 'yyyy/MM/dd')} ~ {formatDate(row.event_end_date, 'yyyy/MM/dd')}
                 </CustomTd>
                 {/* 開催場所 */}
                 <CustomTd>{row.venue_name}</CustomTd>

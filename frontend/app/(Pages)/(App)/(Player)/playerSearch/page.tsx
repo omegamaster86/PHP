@@ -30,8 +30,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import Label from '@/app/components/Label';
-import { NO_IMAGE_URL, PLAYER_IMAGE_URL } from '@/app/utils/imageUrl';
 import { CustomPlayerAvatar } from '@/app/components/CustomPlayerAvatar';
+import { formatDate } from '@/app/utils/dateUtil';
 
 // 検索条件フォームの型定義
 // 検索条件
@@ -236,14 +236,6 @@ export default function PlayerSearch() {
     fetchData();
   }, []);
 
-  // 日付をYYYY/MM/DDの形式に変換する
-  const formatDate = (dt: Date) => {
-    const y = dt.getFullYear();
-    const m = ('00' + (dt.getMonth() + 1)).slice(-2);
-    const d = ('00' + dt.getDate()).slice(-2);
-    return y + '/' + m + '/' + d;
-  };
-
   /**
    * チェックボックスの変更時の処理
    * @description
@@ -394,7 +386,7 @@ export default function PlayerSearch() {
                     placeHolder={new Date().toLocaleDateString('ja-JP')}
                     selectedDate={searchCond.startDateOfBirth}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      handleInputChange('startDateOfBirth', formatDate(e as unknown as Date));
+                      handleInputChange('startDateOfBirth', formatDate(e as unknown as string, 'yyyy/MM/dd'));
                     }}
                   />
                   <p className='flex flex-col justify-center items-center text-center'>～</p>
@@ -403,7 +395,7 @@ export default function PlayerSearch() {
                     placeHolder={new Date().toLocaleDateString('ja-JP')}
                     selectedDate={searchCond.endDateOfBirth}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      handleInputChange('endDateOfBirth', formatDate(e as unknown as Date));
+                      handleInputChange('endDateOfBirth', formatDate(e as unknown as string, 'yyyy/MM/dd'));
                     }}
                   />
                 </div>
