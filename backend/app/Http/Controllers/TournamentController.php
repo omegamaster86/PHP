@@ -661,7 +661,7 @@ class TournamentController extends Controller
                 //2000mストロークレート
                 $insert_values["stroke_rat_2000m"] = isset($target_result["stroke_rat_2000m"]) ? $target_result["stroke_rat_2000m"] : null;
                 //備考
-                $insert_values["race_result_notes"] = isset($target_result["remark"]) ? $target_result["remark"] : null;
+                $insert_values["race_result_notes_id"] = isset($target_result["remarkId"]) ? $target_result["remarkId"] : null;
                 //登録日時
                 $insert_values["registered_time"] = $current_datetime;
                 //登録ユーザーID
@@ -863,7 +863,7 @@ class TournamentController extends Controller
                     //2000mストロークレート
                     $stroke_rat_2000m = isset($target_result["stroke_rat_2000m"]) ? $target_result["stroke_rat_2000m"] : null;
                     //備考
-                    $race_result_notes = isset($target_result["remark"]) ? $target_result["remark"] : null;
+                    $race_result_notes_id = isset($target_result["remarkId"]) ? $target_result["remarkId"] : null;
 
                     //選手情報を取得
                     foreach ($crew_player as $player) {
@@ -1046,7 +1046,7 @@ class TournamentController extends Controller
                                 //1000m地点風向
                                 $insert_values_array["wind_direction_1000m_point"] = $wind_direction_1000m_point;
                                 //備考
-                                $insert_values_array["race_result_notes"] = $race_result_notes;
+                                $insert_values_array["race_result_notes_id"] = $race_result_notes_id;
                                 //登録日時
                                 $insert_values_array["registered_time"] = $current_datetime;
                                 //登録ユーザーID
@@ -1114,7 +1114,7 @@ class TournamentController extends Controller
                                 //2000mストロークレート                    
                                 $update_values_array["stroke_rat_2000m"] = $stroke_rat_2000m;
                                 //備考
-                                $update_values_array["race_result_notes"] = $race_result_notes;
+                                $update_values_array["race_result_notes_id"] = $race_result_notes_id;
                                 //選手ID
                                 $update_values_array["player_id"] = $player_id;
                                 //jara選手コード                                
