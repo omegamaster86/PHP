@@ -92,7 +92,7 @@ export default function NotificationsList() {
 
     if (isTopPage) {
       if (isWideScreen) {
-        router.push(`/mypage/top?id=${id}`);
+        router.push(`/mypage/top?id=${id}`, { scroll: false });
       } else {
         router.push(`/notificationRef?id=${id}&notificationType=received`);
       }
@@ -143,7 +143,11 @@ export default function NotificationsList() {
               key={n.notificationId}
               onClick={handleClickListItem(n.notificationId, Boolean(n.isRead))}
             >
-              <ListItem notification={n} isSelected={currentId === n.notificationId} />
+              <ListItem
+                notification={n}
+                isSelected={currentId === n.notificationId}
+                isWideScreen={isWideScreen}
+              />
             </Button>
           ))
         ) : (

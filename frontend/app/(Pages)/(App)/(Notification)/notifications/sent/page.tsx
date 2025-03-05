@@ -110,7 +110,11 @@ export default function NotificationsSentList() {
           {hasNotifications ? (
             infiniteList.map((n) => (
               <Button key={n.notificationId} onClick={handleClickListItem(n.notificationId)}>
-                <ListItem notification={n} isSelected={currentId === n.notificationId} />
+                <ListItem
+                  notification={n}
+                  isSelected={currentId === n.notificationId}
+                  isWideScreen={isWideScreen}
+                />
               </Button>
             ))
           ) : (
