@@ -7,10 +7,11 @@ import { formatDate } from '@/app/utils/dateUtil';
 type Props = {
   notification: NotificationListData;
   isSelected: boolean;
+  isWideScreen: boolean;
 };
 
 export const ListItem: React.FC<Props> = (props) => {
-  const { notification, isSelected } = props;
+  const { notification, isSelected, isWideScreen } = props;
   const { title, sentTime, senderName, senderIcon, notificationDestinationTypeId, isRead } =
     notification;
   const notificationDestinationType = getNotificationDestinationType(notificationDestinationTypeId);
@@ -19,8 +20,8 @@ export const ListItem: React.FC<Props> = (props) => {
     <div
       className={cn(
         'flex items-center gap-4 p-4',
-        !isSelected && isRead && 'opacity-50',
-        isSelected && 'border-r-2 border-r-primary-500 md:bg-primary-40',
+        isRead && 'opacity-50',
+        isSelected && isWideScreen && 'border-r-2 border-r-primary-500 md:bg-primary-40',
       )}
     >
       <div className='flex flex-col gap-4 w-full'>
