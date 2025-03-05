@@ -155,7 +155,7 @@ export default function TournamentResultManagement() {
   //組別のフィルター実装　20240719
   const [selectedByGroupHeader, setSelectedByGroupHeader] = useState({
     value: '',
-    position: { top: 0, left: 0 },
+    position: { top: 0, right: 0 },
   });
 
   //組別のフィルター実装　20240719
@@ -165,10 +165,10 @@ export default function TournamentResultManagement() {
       value,
       position: {
         top: headerPosition.bottom + window.scrollY,
-        left: headerPosition.left + window.scrollX,
+        right: headerPosition.right + window.scrollX,
       },
     });
-    setShowByGroupAutocomplete(!showByGroupAutocomplete);
+    setShowByGroupAutocomplete((prev) => !prev);
   };
 
   const [messageDisplay, setMessageDisplay] = useState(
@@ -635,22 +635,25 @@ export default function TournamentResultManagement() {
               <CustomTh>レース区分</CustomTh>
               <CustomTh>
                 <div className='flex flex-row items-center gap-[10px]'>
-                  <div
+                  <button
+                    type='button'
                     className='underline'
                     style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                     onClick={() => groupSort()}
                   >
                     組別
-                  </div>
-                  <div
+                  </button>
+                  <button
+                    type='button'
                     style={{
                       cursor: 'pointer',
                       color: selectedByGroupList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
                     }}
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={(event) => handleByGroupHeaderClick('組別', event as any)}
                   >
                     <FilterListIcon />
-                  </div>
+                  </button>
                 </div>
               </CustomTh>
             </CustomTr>
@@ -737,18 +740,19 @@ export default function TournamentResultManagement() {
             style={{
               position: 'absolute',
               top: `${selectedByGroupHeader.position.top - 120}px`,
-              left: `${selectedByGroupHeader.position.left}px`,
+              right: `max(0px, calc(100vw - ${selectedByGroupHeader.position.right}px - 300px))`,
               backgroundColor: 'white',
               borderRadius: '4px',
               zIndex: 1000,
               padding: '8px',
             }}
-            onBlur={() => setShowByGroupAutocomplete(false)} //フォーカスが外れたら非表示にする 20240719
+            onBlur={() => setShowByGroupAutocomplete(false)} //フォーカスが外れたら非表示にする
           >
             <Autocomplete
               id='byGroup'
               multiple
               options={byGroupList}
+              sx={{ width: 300 }}
               filterOptions={(options, { inputValue }) =>
                 options.filter((option) => option.name.includes(inputValue))
               }

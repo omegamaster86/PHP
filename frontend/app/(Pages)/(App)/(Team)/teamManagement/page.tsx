@@ -102,12 +102,12 @@ export default function TeamManagement() {
   //団体種別
   const [selectedOrgTypeHeader, setSelectedOrgTypeHeader] = useState({
     value: '',
-    position: { top: 0, left: 0 },
+    position: { top: 0, right: 0 },
   });
   //団体名
   const [selectedOrgNameHeader, setSelectedOrgNameHeader] = useState({
     value: '',
-    position: { top: 0, left: 0 },
+    position: { top: 0, right: 0 },
   });
 
   /**
@@ -122,11 +122,10 @@ export default function TeamManagement() {
       value,
       position: {
         top: headerPosition.bottom + window.scrollY,
-        left: headerPosition.left + window.scrollX,
+        right: headerPosition.left + window.scrollX,
       },
     });
-    setShowOrgTypeAutocomplete(!showOrgTypeAutocomplete);
-    setShowOrgNameAutocomplete(false);
+    setShowOrgTypeAutocomplete((prev) => !prev);
   };
   /**
    * 団体名ヘッダークリック時の処理
@@ -140,11 +139,10 @@ export default function TeamManagement() {
       value,
       position: {
         top: headerPosition.bottom + window.scrollY,
-        left: headerPosition.left + window.scrollX,
+        right: headerPosition.right + window.scrollX,
       },
     });
-    setShowOrgNameAutocomplete(!showOrgNameAutocomplete);
-    setShowOrgTypeAutocomplete(false);
+    setShowOrgNameAutocomplete((prev) => !prev);
   };
 
   //ユーザIDに紐づいた情報の取得 20240418
@@ -259,15 +257,17 @@ export default function TeamManagement() {
                   >
                     団体種別
                   </div>
-                  <div
+                  <button
+                    type='button'
                     style={{
                       cursor: 'pointer',
                       color: selectedOrgTypeList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
                     }}
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={(event) => handleOrgTypeHeaderClick('団体種別', event as any)}
                   >
                     <FilterListIcon />
-                  </div>
+                  </button>
                 </div>
               </CustomTh>
               <CustomTh align='left'>
@@ -297,15 +297,17 @@ export default function TeamManagement() {
                   >
                     団体名
                   </div>
-                  <div
+                  <button
+                    type='button'
                     style={{
                       cursor: 'pointer',
                       color: selectedOrgNameList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
                     }}
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={(event) => handleOrgNameHeaderClick('団体名', event as any)}
                   >
                     <FilterListIcon />
-                  </div>
+                  </button>
                 </div>
               </CustomTh>
               <CustomTh align='left'>操作</CustomTh>
@@ -413,7 +415,7 @@ export default function TeamManagement() {
           style={{
             position: 'absolute',
             top: `${selectedOrgTypeHeader.position.top - 120}px`,
-            left: `${selectedOrgTypeHeader.position.left}px`,
+            right: `max(0px, calc(100vw - ${selectedOrgTypeHeader.position.right}px - 300px))`,
             backgroundColor: 'white',
             borderRadius: '4px',
             zIndex: 1000,
@@ -425,6 +427,7 @@ export default function TeamManagement() {
             id='orgType'
             multiple
             options={orgTypeList}
+            sx={{ width: 300 }}
             filterOptions={(options, { inputValue }) =>
               options.filter((option) => option.name?.includes(inputValue))
             }
@@ -461,7 +464,7 @@ export default function TeamManagement() {
           style={{
             position: 'absolute',
             top: `${selectedOrgNameHeader.position.top - 120}px`,
-            left: `${selectedOrgNameHeader.position.left}px`,
+            right: `max(0px, calc(100vw - ${selectedOrgNameHeader.position.right}px - 300px))`,
             backgroundColor: 'white',
             borderRadius: '4px',
             zIndex: 1000,
@@ -473,6 +476,7 @@ export default function TeamManagement() {
             id='orgName'
             multiple
             options={orgNameList}
+            sx={{ width: 300 }}
             filterOptions={(options, { inputValue }) =>
               options.filter((option) => option.name?.includes(inputValue))
             }

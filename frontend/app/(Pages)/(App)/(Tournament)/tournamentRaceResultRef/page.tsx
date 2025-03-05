@@ -2,7 +2,7 @@
 'use client';
 
 // Reactおよび関連モジュールのインポート
-import React, { useState, useEffect, ChangeEvent, Fragment, MouseEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, Fragment, MouseEvent, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/app/lib/axios';
 // コンポーネントのインポート
@@ -42,6 +42,13 @@ interface ByGroupList {
   name: string;
 }
 
+//クルー情報取得用 20240216
+interface SearchCrewList {
+  race_id: number; //レースID
+  crew_name: string; //クルー名
+  org_id: number; //団体ID
+}
+
 export default function TournamentRaceResultRef() {
   // エラーハンドリング用のステート
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
@@ -68,12 +75,9 @@ export default function TournamentRaceResultRef() {
   const [byGroupList, setByGroupList] = useState([] as ByGroupList[]);
   const [selectedByGroupList, setSelectedByGroupList] = useState([] as ByGroupList[]);
 
-  //クルー情報取得用 20240216
-  interface SearchCrewList {
-    race_id: number; //レースID
-    crew_name: string; //クルー名
-    org_id: number; //団体ID
-  }
+  const raceNameFilterInputRef = useRef(null);
+  const byGroupFilterInputRef = useRef(null);
+
   const [searchCrewInfo, setSearchCrewInfo] = useState([] as SearchCrewList[]);
 
   // Next.jsのRouterを利用
@@ -148,12 +152,38 @@ export default function TournamentRaceResultRef() {
   // ヘッダーの位置を取得するためのステート
   const [selectedRaceNameHeader, setSelectedRaceNameHeader] = useState({
     value: '',
-    position: { top: 0, left: 0 },
+    position: { top: 0, right: 0 },
   });
   const [selectedByGroupHeader, setSelectedByGroupHeader] = useState({
     value: '',
-    position: { top: 0, left: 0 },
+    position: { top: 0, right: 0 },
   });
+
+  useEffect(() => {
+    if (showRaceNameAutocomplete) {
+      if (raceNameFilterInputRef.current != null) {
+        const target = raceNameFilterInputRef.current as HTMLDivElement;
+        (
+          target.childNodes[0].childNodes[0].childNodes[1].childNodes[
+            selectedRaceNameList.length
+          ] as HTMLElement
+        ).focus();
+      }
+    }
+  }, [showRaceNameAutocomplete]);
+
+  useEffect(() => {
+    if (showByGroupAutocomplete) {
+      if (byGroupFilterInputRef.current != null) {
+        const target = byGroupFilterInputRef.current as HTMLDivElement;
+        (
+          target.childNodes[0].childNodes[0].childNodes[1].childNodes[
+            selectedRaceNameList.length
+          ] as HTMLElement
+        ).focus();
+      }
+    }
+  }, [showByGroupAutocomplete]);
 
   /**
    * レース名ヘッダークリック時の処理
@@ -167,11 +197,10 @@ export default function TournamentRaceResultRef() {
       value,
       position: {
         top: headerPosition.bottom + window.scrollY,
-        left: headerPosition.left + window.scrollX,
+        right: headerPosition.right + window.scrollX,
       },
     });
-    setShowRaceNameAutocomplete(!showRaceNameAutocomplete);
-    setShowByGroupAutocomplete(false);
+    setShowRaceNameAutocomplete((prev) => !prev);
   };
 
   /**
@@ -186,11 +215,10 @@ export default function TournamentRaceResultRef() {
       value,
       position: {
         top: headerPosition.bottom + window.scrollY,
-        left: headerPosition.left + window.scrollX,
+        right: headerPosition.right + window.scrollX,
       },
     });
-    setShowByGroupAutocomplete(!showByGroupAutocomplete);
-    setShowRaceNameAutocomplete(false);
+    setShowByGroupAutocomplete((prev) => !prev);
   };
 
   /**
@@ -314,20 +342,34 @@ export default function TournamentRaceResultRef() {
                       <CustomTh align='center' key={index}>
                         <div className='flex flex-row items-center gap-[10px]'>
                           {header}
-                          {/* 残件対応項目 */}
-                          <div onClick={(event) => handleRaceNameHeaderClick(header, event as any)}>
+                          <button
+                            type='button'
+                            style={{
+                              cursor: 'pointer',
+                              color: selectedRaceNameList.length > 0 ? '#F44336' : '#001D74',
+                            }}
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={(event) => handleRaceNameHeaderClick(header, event as any)}
+                          >
                             <FilterListIcon />
-                          </div>
+                          </button>
                         </div>
                       </CustomTh>
                     ) : header === '組別' ? (
                       <CustomTh align='center' key={index}>
                         <div className='flex flex-row items-center gap-[10px]'>
                           {header}
-                          {/* 残件対応項目 */}
-                          <div onClick={(event) => handleByGroupHeaderClick(header, event as any)}>
+                          <button
+                            type='button'
+                            style={{
+                              cursor: 'pointer',
+                              color: selectedByGroupList.length > 0 ? '#F44336' : '#001D74',
+                            }}
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={(event) => handleByGroupHeaderClick(header, event as any)}
+                          >
                             <FilterListIcon />
-                          </div>
+                          </button>
                         </div>
                       </CustomTh>
                     ) : (
@@ -425,19 +467,22 @@ export default function TournamentRaceResultRef() {
             {/* レース名フィルター用のオートコンプリート */}
             {showRaceNameAutocomplete && (
               <div
+                ref={raceNameFilterInputRef}
                 style={{
                   position: 'absolute',
                   top: `${selectedRaceNameHeader.position.top - 120}px`,
-                  left: `${selectedRaceNameHeader.position.left}px`,
+                  right: `max(0px, calc(100vw - ${selectedRaceNameHeader.position.right}px - 300px))`,
                   backgroundColor: 'white',
                   borderRadius: '4px',
                   zIndex: 1000,
                   padding: '8px',
                 }}
+                onBlur={() => setShowRaceNameAutocomplete(false)} // フォーカスが外れたら非表示にする
               >
                 <Autocomplete
                   id='raceName'
                   multiple
+                  sx={{ width: 300 }}
                   options={raceNameList}
                   filterOptions={(options, { inputValue }) =>
                     options.filter((option) => option.name.includes(inputValue))
@@ -472,19 +517,22 @@ export default function TournamentRaceResultRef() {
             {/* 組別フィルター用のオートコンプリート */}
             {showByGroupAutocomplete && (
               <div
+                ref={byGroupFilterInputRef}
                 style={{
                   position: 'absolute',
                   top: `${selectedByGroupHeader.position.top - 120}px`,
-                  left: `${selectedByGroupHeader.position.left}px`,
+                  right: `max(0px, calc(100vw - ${selectedByGroupHeader.position.right}px - 300px))`,
                   backgroundColor: 'white',
                   borderRadius: '4px',
                   zIndex: 1000,
                   padding: '8px',
                 }}
+                onBlur={() => setShowByGroupAutocomplete(false)} // フォーカスが外れたら非表示にする
               >
                 <Autocomplete
                   id='byGroup'
                   multiple
+                  sx={{ width: 300 }}
                   options={byGroupList}
                   filterOptions={(options, { inputValue }) =>
                     options.filter((option) => option.name.includes(inputValue))

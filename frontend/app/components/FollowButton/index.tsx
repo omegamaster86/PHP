@@ -27,10 +27,11 @@ const FollowButton = ({
           <Icon className=' text-white h-4' />
           <p className='text-white text-2xs font-bold'>フォロー中</p>
           <div className=' bg-white rounded-full shrink-0 h-4 min-w-4 grid place-content-center'>
-            <p className='text-2xs font-bold text-primary-500 px-2'>{followedCount.toLocaleString()}</p>
+            <p className='text-2xs font-bold text-primary-500 px-2'>
+              {followedCount.toLocaleString()}
+            </p>
           </div>
         </>
-        
       ) : (
         <>
           <Icon className='text-primary-500 h-4' />

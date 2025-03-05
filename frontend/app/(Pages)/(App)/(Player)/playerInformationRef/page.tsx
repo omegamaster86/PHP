@@ -601,37 +601,37 @@ export default function PlayerInformationRef() {
   //種目
   const [selectedEventNameHeader, setSelectedEventNameHeader] = useState({
     value: '',
-    position: { top: 0, left: 0 },
+    position: { top: 0, right: 0 },
   });
   //レース名のフィルター実装　20240723
   const [selectedRaceNameHeader, setSelectedRaceNameHeader] = useState({
     value: '',
-    position: { top: 0, left: 0 },
+    position: { top: 0, right: 0 },
   });
   //組別
   const [selectedByGroupHeader, setSelectedByGroupHeader] = useState({
     value: '',
-    position: { top: 0, left: 0 },
+    position: { top: 0, right: 0 },
   });
   //クルー名
   const [selectedCrewNameHeader, setSelectedCrewNameHeader] = useState({
     value: '',
-    position: { top: 0, left: 0 },
+    position: { top: 0, right: 0 },
   });
   //順位
   const [selectedRankHeader, setSelectedRankHeader] = useState({
     value: '',
-    position: { top: 0, left: 0 },
+    position: { top: 0, right: 0 },
   });
   //立ち会い
   const [selectedAttendanceHeader, setSelectedAttendanceHeader] = useState({
     value: '',
-    position: { top: 0, left: 0 },
+    position: { top: 0, right: 0 },
   });
   //シート番号
   const [selectedSeatNameHeader, setSelectedSeatNameHeader] = useState({
     value: '',
-    position: { top: 0, left: 0 },
+    position: { top: 0, right: 0 },
   });
 
   /**
@@ -649,17 +649,12 @@ export default function PlayerInformationRef() {
       value,
       position: {
         top: headerPosition.bottom + window.scrollY,
-        left: headerPosition.left + window.scrollX,
+        right: headerPosition.right + window.scrollX,
       },
     });
-    setShowEventNameAutocomplete(!showEventNameAutocomplete);
-    setShowRaceNameAutocomplete(false);
-    setShowByGroupAutocomplete(false);
-    setShowCrewNameAutocomplete(false);
-    setShowRankAutocomplete(false);
-    setShowSeatNameAutocomplete(false);
-    setShowAttendanceAutocomplete(false);
+    setShowEventNameAutocomplete((prev) => !prev);
   };
+
   /**
    * レース名ヘッダークリック時の処理
    * @param value
@@ -672,17 +667,12 @@ export default function PlayerInformationRef() {
       value,
       position: {
         top: headerPosition.bottom + window.scrollY,
-        left: headerPosition.left + window.scrollX,
+        right: headerPosition.right + window.scrollX,
       },
     });
-    setShowRaceNameAutocomplete(!showRaceNameAutocomplete);
-    setShowEventNameAutocomplete(false);
-    setShowByGroupAutocomplete(false);
-    setShowCrewNameAutocomplete(false);
-    setShowRankAutocomplete(false);
-    setShowSeatNameAutocomplete(false);
-    setShowAttendanceAutocomplete(false);
+    setShowRaceNameAutocomplete((prev) => !prev);
   };
+
   /**
    * 組別ヘッダークリック時の処理
    * @param value
@@ -695,17 +685,12 @@ export default function PlayerInformationRef() {
       value,
       position: {
         top: headerPosition.bottom + window.scrollY,
-        left: headerPosition.left + window.scrollX,
+        right: headerPosition.right + window.scrollX,
       },
     });
-    setShowByGroupAutocomplete(!showByGroupAutocomplete);
-    setShowEventNameAutocomplete(false);
-    setShowRaceNameAutocomplete(false);
-    setShowCrewNameAutocomplete(false);
-    setShowRankAutocomplete(false);
-    setShowSeatNameAutocomplete(false);
-    setShowAttendanceAutocomplete(false);
+    setShowByGroupAutocomplete((prev) => !prev);
   };
+
   /**
    * クルー名ヘッダークリック時の処理
    * @param value
@@ -718,17 +703,12 @@ export default function PlayerInformationRef() {
       value,
       position: {
         top: headerPosition.bottom + window.scrollY,
-        left: headerPosition.left + window.scrollX,
+        right: headerPosition.right + window.scrollX,
       },
     });
-    setShowCrewNameAutocomplete(!showCrewNameAutocomplete);
-    setShowEventNameAutocomplete(false);
-    setShowRaceNameAutocomplete(false);
-    setShowByGroupAutocomplete(false);
-    setShowRankAutocomplete(false);
-    setShowSeatNameAutocomplete(false);
-    setShowAttendanceAutocomplete(false);
+    setShowCrewNameAutocomplete((prev) => !prev);
   };
+
   /**
    * 順位ヘッダークリック時の処理
    * @param value
@@ -741,17 +721,12 @@ export default function PlayerInformationRef() {
       value,
       position: {
         top: headerPosition.bottom + window.scrollY,
-        left: headerPosition.left + window.scrollX,
+        right: headerPosition.right + window.scrollX,
       },
     });
-    setShowRankAutocomplete(!showRankAutocomplete);
-    setShowEventNameAutocomplete(false);
-    setShowRaceNameAutocomplete(false);
-    setShowByGroupAutocomplete(false);
-    setShowCrewNameAutocomplete(false);
-    setShowSeatNameAutocomplete(false);
-    setShowAttendanceAutocomplete(false);
+    setShowRankAutocomplete((prev) => !prev);
   };
+
   /**
    *シート番号ヘッダークリック時の処理
    * @param value
@@ -764,17 +739,12 @@ export default function PlayerInformationRef() {
       value,
       position: {
         top: headerPosition.bottom + window.scrollY,
-        left: headerPosition.left + window.scrollX,
+        right: headerPosition.right + window.scrollX,
       },
     });
-    setShowSeatNameAutocomplete(!showSeatNameAutocomplete);
-    setShowEventNameAutocomplete(false);
-    setShowRaceNameAutocomplete(false);
-    setShowByGroupAutocomplete(false);
-    setShowCrewNameAutocomplete(false);
-    setShowRankAutocomplete(false);
-    setShowAttendanceAutocomplete(false);
+    setShowSeatNameAutocomplete((prev) => !prev);
   };
+
   /**
    *シート番号ヘッダークリック時の処理
    * @param value
@@ -790,16 +760,10 @@ export default function PlayerInformationRef() {
       value,
       position: {
         top: headerPosition.bottom + window.scrollY,
-        left: headerPosition.left + window.scrollX,
+        right: headerPosition.right + window.scrollX,
       },
     });
-    setShowAttendanceAutocomplete(!showAttendanceAutocomplete);
-    setShowEventNameAutocomplete(false);
-    setShowRaceNameAutocomplete(false);
-    setShowByGroupAutocomplete(false);
-    setShowCrewNameAutocomplete(false);
-    setShowRankAutocomplete(false);
-    setShowSeatNameAutocomplete(false);
+    setShowAttendanceAutocomplete((prev) => !prev);
   };
 
   //選手情報削除関数 20240201
@@ -1390,15 +1354,17 @@ export default function PlayerInformationRef() {
                         >
                           {header}
                         </div>
-                        <div
+                        <button
+                          type='button'
                           style={{
                             cursor: 'pointer',
                             color: selectedEventNameList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
                           }}
+                          onMouseDown={(e) => e.preventDefault()}
                           onClick={(event) => handleEventNameHeaderClick('種目', event as any)}
                         >
                           <FilterListIcon />
-                        </div>
+                        </button>
                       </div>
                     )}
                     {header === 'レース名' && (
@@ -1410,15 +1376,17 @@ export default function PlayerInformationRef() {
                         >
                           {header}
                         </div>
-                        <div
+                        <button
+                          type='button'
                           style={{
                             cursor: 'pointer',
                             color: selectedRaceNameList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
                           }}
+                          onMouseDown={(e) => e.preventDefault()}
                           onClick={(event) => handleRaceNameHeaderClick('レース名', event as any)}
                         >
                           <FilterListIcon />
-                        </div>
+                        </button>
                       </div>
                     )}
                     {header === '組別' && (
@@ -1430,15 +1398,17 @@ export default function PlayerInformationRef() {
                         >
                           {header}
                         </div>
-                        <div
+                        <button
+                          type='button'
                           style={{
                             cursor: 'pointer',
                             color: selectedByGroupList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
                           }}
+                          onMouseDown={(e) => e.preventDefault()}
                           onClick={(event) => handleByGroupHeaderClick('組別', event as any)}
                         >
                           <FilterListIcon />
-                        </div>
+                        </button>
                       </div>
                     )}
                     {header === 'クルー名' && (
@@ -1450,15 +1420,17 @@ export default function PlayerInformationRef() {
                         >
                           {header}
                         </div>
-                        <div
+                        <button
+                          type='button'
                           style={{
                             cursor: 'pointer',
                             color: selectedCrewNameList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
                           }}
+                          onMouseDown={(e) => e.preventDefault()}
                           onClick={(event) => handleCrewNameHeaderClick('クルー名', event as any)}
                         >
                           <FilterListIcon />
-                        </div>
+                        </button>
                       </div>
                     )}
                     {header === '順位' && (
@@ -1470,15 +1442,17 @@ export default function PlayerInformationRef() {
                         >
                           {header}
                         </div>
-                        <div
+                        <button
+                          type='button'
                           style={{
                             cursor: 'pointer',
                             color: selectedRankList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
                           }}
+                          onMouseDown={(e) => e.preventDefault()}
                           onClick={(event) => handleRankHeaderClick('順位', event as any)}
                         >
                           <FilterListIcon />
-                        </div>
+                        </button>
                       </div>
                     )}
                     {header === '500mlapタイム' && (
@@ -1619,15 +1593,17 @@ export default function PlayerInformationRef() {
                     {header === '立ち合い有無' && (
                       <div className='flex flex-row items-center gap-[10px]'>
                         <div>{header}</div>
-                        <div
+                        <button
+                          type='button'
                           style={{
                             cursor: 'pointer',
                             color: selectedAttendanceList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
                           }}
+                          onMouseDown={(e) => e.preventDefault()}
                           onClick={(event) => handleAttendanceHeaderClick('立ち会い', event as any)}
                         >
                           <FilterListIcon />
-                        </div>
+                        </button>
                       </div>
                     )}
                     {header === '選手身長（出漕時点）' && header}
@@ -1641,17 +1617,19 @@ export default function PlayerInformationRef() {
                         >
                           {header}
                         </div>
-                        <div
+                        <button
+                          type='button'
                           style={{
                             cursor: 'pointer',
                             color: selectedSeatNameList.length > 0 ? '#F44336' : '#001D74',
                           }}
+                          onMouseDown={(e) => e.preventDefault()}
                           onClick={(event) =>
                             handleSeatNameHeaderClick('シート番号（出漕時点）', event as any)
                           }
                         >
                           <FilterListIcon />
-                        </div>
+                        </button>
                       </div>
                     )}
                     {header === '出漕結果記録名' && header}
@@ -1828,7 +1806,7 @@ export default function PlayerInformationRef() {
               style={{
                 position: 'absolute',
                 top: `${selectedEventNameHeader.position.top - 120}px`,
-                left: `${selectedEventNameHeader.position.left}px`,
+                right: `max(0px, calc(100vw - ${selectedEventNameHeader.position.right}px - 300px))`,
                 backgroundColor: 'white',
                 borderRadius: '4px',
                 zIndex: 1000,
@@ -1839,6 +1817,7 @@ export default function PlayerInformationRef() {
               <Autocomplete
                 id='eventName'
                 multiple
+                sx={{ width: 300 }}
                 options={eventNameList}
                 filterOptions={(options, { inputValue }) =>
                   options.filter((option) => option.name?.includes(inputValue))
@@ -1877,7 +1856,7 @@ export default function PlayerInformationRef() {
               style={{
                 position: 'absolute',
                 top: `${selectedRaceNameHeader.position.top - 120}px`,
-                left: `${selectedRaceNameHeader.position.left}px`,
+                right: `max(0px, calc(100vw - ${selectedRaceNameHeader.position.right}px - 300px))`,
                 backgroundColor: 'white',
                 borderRadius: '4px',
                 zIndex: 1000,
@@ -1888,6 +1867,7 @@ export default function PlayerInformationRef() {
               <Autocomplete
                 id='raceName'
                 multiple
+                sx={{ width: 300 }}
                 options={raceNameList}
                 filterOptions={(options, { inputValue }) =>
                   options.filter((option) => option.name?.includes(inputValue))
@@ -1926,7 +1906,7 @@ export default function PlayerInformationRef() {
               style={{
                 position: 'absolute',
                 top: `${selectedByGroupHeader.position.top - 120}px`,
-                left: `${selectedByGroupHeader.position.left}px`,
+                right: `max(0px, calc(100vw - ${selectedByGroupHeader.position.right}px - 300px))`,
                 backgroundColor: 'white',
                 borderRadius: '4px',
                 zIndex: 1000,
@@ -1937,6 +1917,7 @@ export default function PlayerInformationRef() {
               <Autocomplete
                 id='byGroup'
                 multiple
+                sx={{ width: 300 }}
                 options={byGroupList}
                 filterOptions={(options, { inputValue }) =>
                   options.filter((option) => option.name?.includes(inputValue))
@@ -1975,7 +1956,7 @@ export default function PlayerInformationRef() {
               style={{
                 position: 'absolute',
                 top: `${selectedCrewNameHeader.position.top - 120}px`,
-                left: `${selectedCrewNameHeader.position.left}px`,
+                right: `max(0px, calc(100vw - ${selectedCrewNameHeader.position.right}px - 300px))`,
                 backgroundColor: 'white',
                 borderRadius: '4px',
                 zIndex: 1000,
@@ -1986,6 +1967,7 @@ export default function PlayerInformationRef() {
               <Autocomplete
                 id='crewName'
                 multiple
+                sx={{ width: 300 }}
                 options={crewNameList}
                 filterOptions={(options, { inputValue }) =>
                   options.filter((option) => option.name?.includes(inputValue))
@@ -2024,7 +2006,7 @@ export default function PlayerInformationRef() {
               style={{
                 position: 'absolute',
                 top: `${selectedRankHeader.position.top - 120}px`,
-                left: `${selectedRankHeader.position.left}px`,
+                right: `max(0px, calc(100vw - ${selectedRankHeader.position.right}px - 300px))`,
                 backgroundColor: 'white',
                 borderRadius: '4px',
                 zIndex: 1000,
@@ -2035,6 +2017,7 @@ export default function PlayerInformationRef() {
               <Autocomplete
                 id='rank'
                 multiple
+                sx={{ width: 300 }}
                 options={rankList}
                 filterOptions={(options, { inputValue }) =>
                   options.filter((option) => option.name.toString().includes(inputValue.toString()))
@@ -2073,7 +2056,7 @@ export default function PlayerInformationRef() {
               style={{
                 position: 'absolute',
                 top: `${selectedAttendanceHeader.position.top - 120}px`,
-                left: `${selectedAttendanceHeader.position.left}px`,
+                right: `max(0px, calc(100vw - ${selectedAttendanceHeader.position.right}px - 300px))`,
                 backgroundColor: 'white',
                 borderRadius: '4px',
                 zIndex: 1000,
@@ -2084,6 +2067,7 @@ export default function PlayerInformationRef() {
               <Autocomplete
                 id='attendance'
                 multiple
+                sx={{ width: 300 }}
                 options={attendanceList}
                 filterOptions={(options, { inputValue }) =>
                   options.filter(
@@ -2128,7 +2112,7 @@ export default function PlayerInformationRef() {
               style={{
                 position: 'absolute',
                 top: `${selectedSeatNameHeader.position.top - 120}px`,
-                left: `${selectedSeatNameHeader.position.left}px`,
+                right: `max(0px, calc(100vw - ${selectedSeatNameHeader.position.right}px - 300px))`,
                 backgroundColor: 'white',
                 borderRadius: '4px',
                 zIndex: 1000,
@@ -2139,6 +2123,7 @@ export default function PlayerInformationRef() {
               <Autocomplete
                 id='seatName'
                 multiple
+                sx={{ width: 300 }}
                 options={seatNameList}
                 filterOptions={(options, { inputValue }) =>
                   options.filter((option) => option.name?.includes(inputValue))
