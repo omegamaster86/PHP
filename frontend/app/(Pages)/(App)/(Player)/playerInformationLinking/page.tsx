@@ -294,34 +294,32 @@ export default function PlayerInformationLinking() {
         {/* エラーメッセージの表示 */}
         <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
         {/* 読み込み結果の表示 */}
-        <div className='flex flex-col items-center'>
-          <p className='mb-1 text-systemErrorText'>
-            【登録方法】
-            <br />
-            ① 「読み込む」ボタンの下にCSVファイルを読み込んだ結果が表示されます。
-            <br />
-            　※連携の意味
-            <br />
-            　連携可能：本システムに登録されている選手と連携可能なデータです。
-            <br />
-            　連携待ち：当該選手が本システムに登録されていないため、新規で選手を登録します。
-            <br />
-            　連携不可：本システムに取り込めないデータです。エラー内容を確認してください。
-            <br />
-            ② 読み込むデータの「選択」にチェックを入れてください。
-            <br />
-            　※「全選択」で、エラー以外の全てのデータを選択状態にできます。
-            <br />③ 「登録」をクリックすると「選択」にチェックが入っているデータが登録されます。
-          </p>
-          <CsvTable
-            content={csvData}
-            header={['連携', '選手ID', 'JARA選手コード', '選手名', 'メールアドレス', 'エラー内容']}
-            handleInputChange={handleInputChange}
-            displayLinkButton={displayLinkButton}
-            activationFlg={activationFlg}
-            visibilityFlg={visibilityFlg}
-          />
-        </div>
+        <p className='mb-1 text-systemErrorText'>
+          【登録方法】
+          <br />
+          ① 「読み込む」ボタンの下にCSVファイルを読み込んだ結果が表示されます。
+          <br />
+          　※連携の意味
+          <br />
+          　連携可能：本システムに登録されている選手と連携可能なデータです。
+          <br />
+          　連携待ち：当該選手が本システムに登録されていないため、新規で選手を登録します。
+          <br />
+          　連携不可：本システムに取り込めないデータです。エラー内容を確認してください。
+          <br />
+          ② 読み込むデータの「選択」にチェックを入れてください。
+          <br />
+          　※「全選択」で、エラー以外の全てのデータを選択状態にできます。
+          <br />③ 「登録」をクリックすると「選択」にチェックが入っているデータが登録されます。
+        </p>
+        <CsvTable
+          content={csvData}
+          header={['連携', '選手ID', 'JARA選手コード', '選手名', 'メールアドレス', 'エラー内容']}
+          handleInputChange={handleInputChange}
+          displayLinkButton={displayLinkButton}
+          activationFlg={activationFlg}
+          visibilityFlg={visibilityFlg}
+        />
       </div>
       {/* ボタンの表示 */}
       {!activationFlg && (

@@ -674,45 +674,43 @@ export default function TournamentEntryBulkRegister() {
           <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
         </div>
         {/* 読み込み結果の表示 */}
-        <div className='flex flex-col items-center'>
-          <p className='mb-1 text-red'>
-            【登録方法】
-            <br />
-            ① 「読み込む」ボタンの下にCSVファイルを読み込んだ結果が表示されます。
-            <br />
-            ② 読み込むデータの「選択」にチェックを入れてください。
-            <br />
-            　※「全選択」で、エラー以外の全てのデータを選択状態にできます。
-            <br />③ 「登録」をクリックすると「選択」にチェックが入っているデータが登録されます。
-          </p>
-          <CsvTable
-            content={csvData.sort((a, b) => a.id - b.id)}
-            header={[
-              '読み込み結果',
-              '大会ID',
-              '大会名',
-              '種目ID',
-              '種目名',
-              'レース区分ID',
-              'レース区分名',
-              'レースID',
-              'レース名',
-              '組別',
-              'レースNo',
-              '団体ID',
-              '団体名',
-              'クルー名',
-              'シート番号ID',
-              'シート番号',
-              '選手ID',
-              '選手名',
-            ]}
-            handleInputChange={handleTableInputChange}
-            displayRegisterButton={displayRegisterButton}
-            activationFlg={activationFlg}
-            visibilityFlg={visibilityFlg}
-          />
-        </div>
+        <p className='mb-1 text-red'>
+          【登録方法】
+          <br />
+          ① 「読み込む」ボタンの下にCSVファイルを読み込んだ結果が表示されます。
+          <br />
+          ② 読み込むデータの「選択」にチェックを入れてください。
+          <br />
+          　※「全選択」で、エラー以外の全てのデータを選択状態にできます。
+          <br />③ 「登録」をクリックすると「選択」にチェックが入っているデータが登録されます。
+        </p>
+        <CsvTable
+          content={csvData.sort((a, b) => a.id - b.id)}
+          header={[
+            '読み込み結果',
+            '大会ID',
+            '大会名',
+            '種目ID',
+            '種目名',
+            'レース区分ID',
+            'レース区分名',
+            'レースID',
+            'レース名',
+            '組別',
+            'レースNo',
+            '団体ID',
+            '団体名',
+            'クルー名',
+            'シート番号ID',
+            'シート番号',
+            '選手ID',
+            '選手名',
+          ]}
+          handleInputChange={handleTableInputChange}
+          displayRegisterButton={displayRegisterButton}
+          activationFlg={activationFlg}
+          visibilityFlg={visibilityFlg}
+        />
       </div>
       {/* ボタンの表示 */}
       {!activationFlg && (
