@@ -469,50 +469,48 @@ export default function TeamPlayerBulkRegister() {
       {/* エラーメッセージの表示 */}
       <p className='text-systemErrorText self-center'>{csvFileErrorMessage}</p>
       {/* 読み込み結果の表示 */}
-      <div className='flex flex-col items-center'>
-        <p className='mb-1 text-systemErrorText'>
-          【登録方法】
-          <br />
-          ① 「読み込む」ボタンの下にCSVファイルを読み込んだ結果が表示されます。
-          <br />
-          ② 読み込むデータの「選択」にチェックを入れてください。
-          <br />
-          　※「全選択」で、エラー以外の全てのデータを選択状態にできます。
-          <br />③ 「登録」をクリックすると「選択」にチェックが入っているデータが登録されます。
-          <br />
-          　所属選手として登録された選手には、本システムより通知メールが送信されます。
-          <br />
-          <br />
-          ※読み込み結果に「ユーザー未登録」と表示された選手には、ユーザー仮登録の通知メールが送信されます。
-          <br />
-          本システムへのユーザー登録と選手登録が完了後、下記手順により当該選手を団体と紐づけてください。
-          <br />
-          [手順]
-          <br />
-          団体メニュー＞「団体管理」＞当該団体のリンク＞団体情報参照画面へ遷移
-          <br />
-          所属選手タブの「所属選手編集」をクリック
-        </p>
-        <CsvTable
-          content={csvData}
-          header={[
-            '読み込み結果',
-            'ユーザーID',
-            '選手ID',
-            'JARA選手コード',
-            '選手名',
-            'メールアドレス',
-            '所属団体ID',
-            '所属団体名',
-            '出身地',
-            '居住地',
-          ]}
-          handleInputChange={handleInputChange}
-          displayLinkButton={displayLinkButton}
-          activationFlg={activationFlg}
-          visibilityFlg={visibilityFlg}
-        />
-      </div>
+      <p className='mb-1 text-systemErrorText'>
+        【登録方法】
+        <br />
+        ① 「読み込む」ボタンの下にCSVファイルを読み込んだ結果が表示されます。
+        <br />
+        ② 読み込むデータの「選択」にチェックを入れてください。
+        <br />
+        　※「全選択」で、エラー以外の全てのデータを選択状態にできます。
+        <br />③ 「登録」をクリックすると「選択」にチェックが入っているデータが登録されます。
+        <br />
+        　所属選手として登録された選手には、本システムより通知メールが送信されます。
+        <br />
+        <br />
+        ※読み込み結果に「ユーザー未登録」と表示された選手には、ユーザー仮登録の通知メールが送信されます。
+        <br />
+        本システムへのユーザー登録と選手登録が完了後、下記手順により当該選手を団体と紐づけてください。
+        <br />
+        [手順]
+        <br />
+        団体メニュー＞「団体管理」＞当該団体のリンク＞団体情報参照画面へ遷移
+        <br />
+        所属選手タブの「所属選手編集」をクリック
+      </p>
+      <CsvTable
+        content={csvData}
+        header={[
+          '読み込み結果',
+          'ユーザーID',
+          '選手ID',
+          'JARA選手コード',
+          '選手名',
+          'メールアドレス',
+          '所属団体ID',
+          '所属団体名',
+          '出身地',
+          '居住地',
+        ]}
+        handleInputChange={handleInputChange}
+        displayLinkButton={displayLinkButton}
+        activationFlg={activationFlg}
+        visibilityFlg={visibilityFlg}
+      />
       {!activationFlg && (
         <div className='flex flex-row justify-center gap-[8px]'>
           <CustomButton

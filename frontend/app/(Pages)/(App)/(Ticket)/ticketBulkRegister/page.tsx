@@ -363,7 +363,7 @@ export default function TicketBulkRegister() {
           displayHelp
           value={tournId}
           options={tournamentOptions}
-          onChange={(v) => setTournId(v)}          
+          onChange={(v) => setTournId(v)}
         />
       </div>
 
@@ -388,11 +388,10 @@ export default function TicketBulkRegister() {
       </div>
 
       {/* 読み込み結果の表示 */}
-      <div className='flex flex-col items-center'>
-        <p className='mb-1 text-systemErrorText'>
-          <HowToRegister />
-        </p>
-      </div>
+      <p className='mb-1 text-systemErrorText'>
+        <HowToRegister />
+      </p>
+
       {!!csvValidateResults.length && (
         <CsvTable
           content={csvValidateResults}

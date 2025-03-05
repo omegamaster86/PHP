@@ -867,78 +867,76 @@ export default function TournamentResultInfomationBulkRegister() {
           <p className='text-caption1 text-systemErrorText'>{csvFileErrorMessage}</p>
         </div>
         {/* 読み込み結果の表示 */}
-        <div className='flex flex-col items-center'>
-          <p className='mb-1 text-systemErrorText'>
-            【登録方法】
-            <br />
-            ① 「読み込む」ボタンの下にCSVファイルを読み込んだ結果が表示されます。
-            <br />
-            ② 読み込むデータの「選択」にチェックを入れてください。
-            <br />
-            　※「全選択」で、エラー以外の全てのデータを選択状態にできます。
-            <br />③ 「登録」をクリックすると「選択」にチェックが入っているデータが登録されます。
-          </p>
-          <CsvTable
-            content={csvData.sort((a, b) => a.id - b.id)}
-            header={[
-              '読み込み結果',
-              '大会ID',
-              'エントリー大会ID',
-              '大会名',
-              '選手ID',
-              'JARA選手コード',
-              '選手名',
-              'レースID',
-              'エントリーレースID',
-              'レースNo',
-              'レース名',
-              'レース区分ID',
-              'レース区分名',
-              '団体ID',
-              'エントリー団体コード',
-              '団体名',
-              'クルー名',
-              '組別',
-              '種目ID',
-              '種目名',
-              '距離',
-              '順位',
-              '500mlapタイム',
-              '1000mlapタイム',
-              '1500mlapタイム',
-              '2000mlapタイム',
-              '最終タイム',
-              'ストロークレート（平均）',
-              '500mストロークレート',
-              '1000mストロークレート',
-              '1500mストロークレート',
-              '2000mストロークレート',
-              '心拍数（平均）',
-              '500m心拍数',
-              '1000m心拍数',
-              '1500m心拍数',
-              '2000m心拍数',
-              '公式／非公式',
-              '立ち合い有無',
-              '選手身長',
-              '選手体重',
-              'シート番号ID',
-              'シート番号',
-              '出漕結果記録名',
-              '発艇日時',
-              '天候',
-              '2000m地点風速',
-              '2000m地点風向',
-              '1000m地点風速',
-              '1000m地点風向',
-              '備考',
-            ]}
-            handleInputChange={handleTableInputChange}
-            displayRegisterButton={displayRegisterButton}
-            activationFlg={activationFlg}
-            visibilityFlg={visibilityFlg}
-          />
-        </div>
+        <p className='mb-1 text-systemErrorText'>
+          【登録方法】
+          <br />
+          ① 「読み込む」ボタンの下にCSVファイルを読み込んだ結果が表示されます。
+          <br />
+          ② 読み込むデータの「選択」にチェックを入れてください。
+          <br />
+          　※「全選択」で、エラー以外の全てのデータを選択状態にできます。
+          <br />③ 「登録」をクリックすると「選択」にチェックが入っているデータが登録されます。
+        </p>
+        <CsvTable
+          content={csvData.sort((a, b) => a.id - b.id)}
+          header={[
+            '読み込み結果',
+            '大会ID',
+            'エントリー大会ID',
+            '大会名',
+            '選手ID',
+            'JARA選手コード',
+            '選手名',
+            'レースID',
+            'エントリーレースID',
+            'レースNo',
+            'レース名',
+            'レース区分ID',
+            'レース区分名',
+            '団体ID',
+            'エントリー団体コード',
+            '団体名',
+            'クルー名',
+            '組別',
+            '種目ID',
+            '種目名',
+            '距離',
+            '順位',
+            '500mlapタイム',
+            '1000mlapタイム',
+            '1500mlapタイム',
+            '2000mlapタイム',
+            '最終タイム',
+            'ストロークレート（平均）',
+            '500mストロークレート',
+            '1000mストロークレート',
+            '1500mストロークレート',
+            '2000mストロークレート',
+            '心拍数（平均）',
+            '500m心拍数',
+            '1000m心拍数',
+            '1500m心拍数',
+            '2000m心拍数',
+            '公式／非公式',
+            '立ち合い有無',
+            '選手身長',
+            '選手体重',
+            'シート番号ID',
+            'シート番号',
+            '出漕結果記録名',
+            '発艇日時',
+            '天候',
+            '2000m地点風速',
+            '2000m地点風向',
+            '1000m地点風速',
+            '1000m地点風向',
+            '備考',
+          ]}
+          handleInputChange={handleTableInputChange}
+          displayRegisterButton={displayRegisterButton}
+          activationFlg={activationFlg}
+          visibilityFlg={visibilityFlg}
+        />
       </div>
       {/* ボタンの表示 */}
       {!activationFlg && (
