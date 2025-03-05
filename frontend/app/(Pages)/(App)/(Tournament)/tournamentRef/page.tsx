@@ -145,17 +145,17 @@ export default function TournamentRef() {
   //種目
   const [selectedEventNameHeader, setSelectedEventNameHeader] = useState({
     value: '',
-    position: { top: 0, left: 0 },
+    position: { top: 0, right: 0 },
   });
   //組別
   const [selectedByGroupHeader, setSelectedByGroupHeader] = useState({
     value: '',
-    position: { top: 0, left: 0 },
+    position: { top: 0, right: 0 },
   });
   //発艇日時
   const [selectedRangeHeader, setSelectedRangeHeader] = useState({
     value: '',
-    position: { top: 0, left: 0 },
+    position: { top: 0, right: 0 },
   });
 
   /**
@@ -173,13 +173,12 @@ export default function TournamentRef() {
       value,
       position: {
         top: headerPosition.bottom + window.scrollY,
-        left: headerPosition.left + window.scrollX,
+        right: headerPosition.right + window.scrollX,
       },
     });
-    setShowEventNameAutocomplete(!showEventNameAutocomplete);
-    setShowByGroupAutocomplete(false);
-    setShowRangeAutocomplete(false);
+    setShowEventNameAutocomplete((prev) => !prev);
   };
+
   /**
    * 組別ヘッダークリック時の処理
    * @param value
@@ -192,13 +191,12 @@ export default function TournamentRef() {
       value,
       position: {
         top: headerPosition.bottom + window.scrollY,
-        left: headerPosition.left + window.scrollX,
+        right: headerPosition.right + window.scrollX,
       },
     });
-    setShowEventNameAutocomplete(false);
-    setShowByGroupAutocomplete(!showByGroupAutocomplete);
-    setShowRangeAutocomplete(false);
+    setShowByGroupAutocomplete((prev) => !prev);
   };
+
   /**
    * 発艇日時ヘッダークリック時の処理
    * @param value
@@ -211,12 +209,10 @@ export default function TournamentRef() {
       value,
       position: {
         top: headerPosition.bottom + window.scrollY,
-        left: headerPosition.left + window.scrollX,
+        right: headerPosition.right + window.scrollX,
       },
     });
-    setShowEventNameAutocomplete(false);
-    setShowByGroupAutocomplete(false);
-    setShowRangeAutocomplete(!showRangeAutocomplete);
+    setShowRangeAutocomplete((prev) => !prev);
   };
 
   // レースIDのソート用　20240731
@@ -655,62 +651,71 @@ export default function TournamentRef() {
                 </CustomTh>
                 <CustomTh align='left'>
                   <div className='flex flex-row items-center gap-[10px]'>
-                    <div
+                    <button
+                      type='button'
                       className='underline'
                       style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                       onClick={() => eventNameSort()}
                     >
                       種目
-                    </div>
-                    <div
+                    </button>
+                    <button
+                      type='button'
                       style={{
                         cursor: 'pointer',
                         color: selectedEventNameList.length > 0 ? '#F44336' : '#001D74',
                       }}
+                      onMouseDown={(e) => e.preventDefault()}
                       onClick={(event) => handleEventNameHeaderClick('種目', event as any)}
                     >
                       <FilterListIcon />
-                    </div>
+                    </button>
                   </div>
                 </CustomTh>
                 <CustomTh align='left'>
                   <div className='flex flex-row items-center gap-[10px]'>
-                    <div
+                    <button
+                      type='button'
                       className='underline'
                       style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                       onClick={() => byGroupSort()}
                     >
                       組別
-                    </div>
-                    <div
+                    </button>
+                    <button
+                      type='button'
                       style={{
                         cursor: 'pointer',
                         color: selectedByGroupList.length > 0 ? '#F44336' : '#001D74',
                       }}
+                      onMouseDown={(e) => e.preventDefault()}
                       onClick={(event) => handleByGroupHeaderClick('組別', event as any)}
                     >
                       <FilterListIcon />
-                    </div>
+                    </button>
                   </div>
                 </CustomTh>
                 <CustomTh align='left'>
                   <div className='flex flex-row items-center gap-[10px]'>
-                    <div
+                    <button
+                      type='button'
                       className='underline'
                       style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
                       onClick={() => rangeSort()}
                     >
                       距離
-                    </div>
-                    <div
+                    </button>
+                    <button
+                      type='button'
                       style={{
                         cursor: 'pointer',
                         color: selectedRangeList.length > 0 ? '#F44336' : '#001D74',
                       }}
+                      onMouseDown={(e) => e.preventDefault()}
                       onClick={(event) => handleRangeHeaderClick('距離', event as any)}
                     >
                       <FilterListIcon />
-                    </div>
+                    </button>
                   </div>
                 </CustomTh>
                 <CustomTh align='left'>
@@ -785,7 +790,7 @@ export default function TournamentRef() {
                     {/* 距離 */}
                     <CustomTd>{row.range}</CustomTd>
                     {/* 発艇日時 */}
-                    <CustomTd>{formatDate(row.start_date_time,'yyyy/MM/dd HH:mm')}</CustomTd>
+                    <CustomTd>{formatDate(row.start_date_time, 'yyyy/MM/dd HH:mm')}</CustomTd>
                   </CustomTr>
                 ))}
             </CustomTbody>
@@ -798,17 +803,23 @@ export default function TournamentRef() {
             style={{
               position: 'absolute',
               top: `${selectedEventNameHeader.position.top - 120}px`,
-              left: `${selectedEventNameHeader.position.left}px`,
+              right: `max(0px, calc(100vw - ${selectedEventNameHeader.position.right}px - 300px))`,
               backgroundColor: 'white',
               borderRadius: '4px',
               zIndex: 1000,
               padding: '8px',
             }}
-            onBlur={() => setShowEventNameAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
+            onBlur={
+              //フォーカスが外れたら非表示にする
+              () => {
+                setShowEventNameAutocomplete(false);
+              }
+            }
           >
             <Autocomplete
               id='eventName'
               multiple
+              sx={{ width: 300 }}
               options={eventNameList}
               filterOptions={(options, { inputValue }) =>
                 options.filter((option) => option.name.includes(inputValue))
@@ -847,18 +858,22 @@ export default function TournamentRef() {
             style={{
               position: 'absolute',
               top: `${selectedByGroupHeader.position.top - 120}px`,
-              left: `${selectedByGroupHeader.position.left}px`,
+              right: `max(0px, calc(100vw - ${selectedByGroupHeader.position.right}px - 300px))`,
               backgroundColor: 'white',
               borderRadius: '4px',
               zIndex: 1000,
               padding: '8px',
             }}
-            onBlur={() => setShowByGroupAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
+            onBlur={
+              //フォーカスが外れたら非表示にする
+              () => setShowByGroupAutocomplete(false)
+            }
           >
             <Autocomplete
               id='byGroup'
               multiple
               options={byGroupList}
+              sx={{ width: 300 }}
               filterOptions={(options, { inputValue }) =>
                 options.filter((option) => option.name.includes(inputValue))
               }
@@ -896,18 +911,22 @@ export default function TournamentRef() {
             style={{
               position: 'absolute',
               top: `${selectedRangeHeader.position.top - 120}px`,
-              left: `${selectedRangeHeader.position.left}px`,
+              right: `max(0px, calc(100vw - ${selectedRangeHeader.position.right}px - 300px))`,
               backgroundColor: 'white',
               borderRadius: '4px',
               zIndex: 1000,
               padding: '8px',
             }}
-            onBlur={() => setShowRangeAutocomplete(false)} //フォーカスが外れたら非表示にする 20240518
+            onBlur={
+              //フォーカスが外れたら非表示にする
+              () => setShowRangeAutocomplete(false)
+            }
           >
             <Autocomplete
               id='range'
               multiple
               options={rangeList}
+              sx={{ width: 300 }}
               filterOptions={(options, { inputValue }) =>
                 options.filter((option) => option.name?.toString().includes(inputValue?.toString()))
               }
