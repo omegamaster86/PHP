@@ -507,7 +507,7 @@ export default function TeamManagement() {
         {/* 戻るボタン */}
         <CustomButton
           buttonType='white-outlined'
-          className='w-[120px] text-small'
+          className='text-small'
           onClick={() => {
             router.back();
           }}
