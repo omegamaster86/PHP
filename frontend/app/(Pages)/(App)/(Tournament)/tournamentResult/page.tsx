@@ -2293,13 +2293,12 @@ export default function TournamentResult() {
           </div>
         </div>
       ))}
-      <div className='flex flex-row justify-center gap-[80px] mt-[20px]'>
+      <div className='flex flex-row justify-center gap-4 mt-[20px]'>
         <CustomButton
           buttonType='secondary'
           onClick={() => {
             router.back();
           }}
-          className='w-[170px]'
         >
           戻る
         </CustomButton>
@@ -2433,7 +2432,6 @@ export default function TournamentResult() {
 
             setIsSubmitting(false);
           }}
-          className='w-[170px]'
         >
           {prevMode === 'create' ? '登録' : prevMode === 'update' ? '更新' : '確認'}
         </CustomButton>
