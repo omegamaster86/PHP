@@ -537,6 +537,7 @@ export default function TournamentResultManagement() {
               onClick={() => {
                 if (!performValidation()) {
                   handleSearch();
+                  setErrorMessage([]);
                 }
               }}
               className='flex flex-row justify-center gap-[4px]'
