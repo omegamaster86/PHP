@@ -625,4 +625,23 @@ class T_users extends Authenticatable
             ]
         );
     }
+
+    // 選手権限を付与する。
+    public function updateUserTypeForPlayer($userId)
+    {
+        DB::update(
+            'UPDATE `t_users` SET 
+                # 下3桁目を1に更新する。
+                `user_type` = CONCAT(SUBSTRING(`user_type`, 1, 5), "1", SUBSTRING(`user_type`, 7, 2)),
+                `updated_time`= ?,
+                `updated_user_id`= ?
+            where 1=1
+                and `user_id` = ?',
+            [
+                now()->format('Y-m-d H:i:s.u'),
+                Auth::user()->user_id,
+                $userId
+            ]
+        );
+    }
 }

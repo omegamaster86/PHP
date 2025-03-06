@@ -231,6 +231,9 @@ class PlayerInfoAlignmentController extends Controller
                         $jaraPlayerId = $reqData[$rowIndex]['oldPlayerId'];
                         $playerName = $reqData[$rowIndex]['playerName'];
                         $t_players->insertPlayerForPlayerInfoAlignment($userId, $jaraPlayerId, $playerName);
+                        if (isset($userId)) {
+                            $t_users->updateUserTypeForPlayer($userId);
+                        }
                     }
                 }
             }
