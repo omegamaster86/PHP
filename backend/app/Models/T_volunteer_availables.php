@@ -26,7 +26,23 @@ class T_volunteer_availables extends Model
 
     public function getVolunteerAvailables($vlntrId)
     {
-        $volunteers = DB::select('select `available_id`, `volunteer_id`, `day_of_week`, `time_zone`, `registered_time`, `registered_user_id`, `updated_time`, `updated_user_id`, `delete_flag` FROM `t_volunteer_availables` where delete_flag=0 and volunteer_id = ?', [$vlntrId]);
+        $volunteers = DB::select(
+            'SELECT
+                `available_id`,
+                `volunteer_id`,
+                `day_of_week`,
+                `time_zone`,
+                `registered_time`,
+                `registered_user_id`,
+                `updated_time`,
+                `updated_user_id`,
+                `delete_flag`
+            FROM `t_volunteer_availables`
+            WHERE
+                delete_flag = 0
+                AND volunteer_id = ?',
+            [$vlntrId]
+        );
         //1つの団体IDを取得するため0番目だけを返す
         $targetTrn = null;
         if (!empty($volunteers)) {

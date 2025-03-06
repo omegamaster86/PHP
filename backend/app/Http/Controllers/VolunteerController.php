@@ -172,13 +172,6 @@ class VolunteerController extends Controller
         }
     }
 
-    //ボランティア情報を取得する
-    public function getVolunteerResponse(Request $request, T_volunteers $t_volunteers)
-    {
-        $volunteerResponse = $t_volunteers->getVolunteerResponse($request); //ボランティアIDに基づいたボランティア情報を取得
-        return response()->json(['result' => $volunteerResponse]); //DBの結果を返す
-    }
-
     //ボランティア削除 20240315
     public function deleteVolunteer(
         Request $request,
