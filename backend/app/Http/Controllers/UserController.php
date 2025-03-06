@@ -245,6 +245,15 @@ class UserController extends Controller
         $result = $t_users->getUserData(Auth::user()->user_id); //ユーザ情報の取得
         return response()->json(['result' => $result]); //DBの結果を返す
     }
+    public function getUserName(Request $request)
+    {
+        $result = DB::select('SELECT user_name FROM t_users where user_id = ? and delete_flag = 0', [$request->user_id]);
+        if (empty($result)) {
+            return response()->json(['error' => '該当ユーザーなし'], 400);
+        }
+        return response()->json(['result' => $result[0]->user_name]);
+    }
+    
 
     //react 選手情報参照画面に表示するuserIDに紐づいたデータを送信 20240131
     public function updateUserData(Request $request, T_users $t_users)

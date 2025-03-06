@@ -69,6 +69,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('user/password-change', [UserController::class, 'storePasswordChange']); //パスワード変更
     Route::post('user/sent-certification-number', [UserController::class, 'sentCertificationNumber']); //承認番号送信
     Route::post('user/verify-certification-number', [UserController::class, 'verifyCertificationNumber']); // 承認番号確認
+    Route::post('getUserName', [UserController::class, 'getUserName']);
 
     // 共通項目
     Route::get('getApprovalType', [M_approval_type::class, 'getApprovalType']); //大会種別マスター取得
