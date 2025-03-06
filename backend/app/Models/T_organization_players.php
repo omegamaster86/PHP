@@ -196,8 +196,8 @@ class T_organization_players extends Model
                 org.org_id = top.org_id
                 AND org.`delete_flag` = 0
             WHERE 1=1
-            AND top.`delete_flag` = 0
-            AND top.org_id = :org_id
+                AND top.`delete_flag` = 0
+                AND top.org_id = :org_id
             ";
         $players = DB::select($sqlString, ['org_id' => $orgId]);
         Log::debug('getOrgPlayers end.');
@@ -209,8 +209,8 @@ class T_organization_players extends Model
     {
         DB::enableQueryLog();
         Log::debug('getOrgPlayersForAddPlayerSearch start.');
-        $sqlString = '
-            select
+        $sqlString =
+            'SELECT
                 player_id
                 , jara_player_id
                 , player_name
@@ -234,8 +234,8 @@ class T_organization_players extends Model
                 , side_C
                 , players.org_id
                 , org.org_name 
-            from ( 
-                select
+            FROM ( 
+                SELECT
                     tp.player_id AS player_id
                     , jara_player_id
                     , player_name
@@ -258,8 +258,8 @@ class T_organization_players extends Model
                     , side_X
                     , side_C
                     , MAX(top.org_id) AS org_id 
-                from ( 
-                    select
+                FROM ( 
+                    SELECT
                         p.player_id
                         , p.jara_player_id
                         , p.player_name
@@ -279,79 +279,79 @@ class T_organization_players extends Model
                         , res_pref.`pref_name` as residencePrefectureName
                         , p.side_info
                         , CASE 
-                            when SUBSTRING(p.side_info, 8, 1) = 1 
-                                then 1 
-                            else 0 
-                            end as side_S
+                            WHEN SUBSTRING(p.side_info, 8, 1) = 1 
+                                THEN 1 
+                            ELSE 0 
+                            END AS side_S
                         , CASE 
-                            when SUBSTRING(p.side_info, 7, 1) = 1 
-                                then 1 
-                            else 0 
-                            end as side_B
+                            WHEN SUBSTRING(p.side_info, 7, 1) = 1 
+                                THEN 1 
+                            ELSE 0 
+                            END AS side_B
                         , CASE 
-                            when SUBSTRING(p.side_info, 6, 1) = 1 
-                                then 1 
-                            else 0 
-                            end as side_X
+                            WHEN SUBSTRING(p.side_info, 6, 1) = 1 
+                                THEN 1 
+                            ELSE 0 
+                            END AS side_X
                         , CASE 
-                            when SUBSTRING(p.`side_info`, 5, 1) = 1 
-                                then 1 
-                            else 0 
-                            end as side_C 
-                    from
+                            WHEN SUBSTRING(p.`side_info`, 5, 1) = 1 
+                                THEN 1 
+                            ELSE 0 
+                            END AS side_C 
+                    FROM
                         t_players p 
                     LEFT OUTER JOIN m_sex ms ON
                         p.sex_id = ms.sex_id
-                        and `ms`.`delete_flag` = 0
+                        AND `ms`.`delete_flag` = 0
                     LEFT OUTER JOIN m_countries bir_cont ON
                         p.birth_country = bir_cont.country_id
-                        and bir_cont.`delete_flag` = 0
+                        AND bir_cont.`delete_flag` = 0
                     LEFT OUTER JOIN m_prefectures bir_pref ON
                         p.birth_prefecture = bir_pref.pref_id
-                        and bir_pref.`delete_flag` = 0
+                        AND bir_pref.`delete_flag` = 0
                     LEFT OUTER JOIN m_countries res_cont ON
                         p.residence_country = res_cont.country_id
-                        and res_cont.`delete_flag` = 0
+                        AND res_cont.`delete_flag` = 0
                     LEFT OUTER JOIN m_prefectures res_pref ON
                         p.residence_prefecture = res_pref.pref_id
-                        and res_pref.`delete_flag` = 0
+                        AND res_pref.`delete_flag` = 0
                     where
                         1 = 1 
-                        and p.`delete_flag` = 0 
+                        AND p.`delete_flag` = 0 
                 ) tp 
-                LEFT JOIN ( 
-                    select
+                LEFT OUTER JOIN ( 
+                    SELECT
                         player_id
                         , org_p.org_id
                         , torg.entrysystem_org_id
                         , torg.org_name 
-                    from
+                    FROM
                         t_organization_players org_p 
-                    LEFT JOIN t_organizations torg ON
+                    LEFT OUTER JOIN t_organizations torg ON
                         org_p.org_id = torg.org_id 
                         AND torg.delete_flag = 0 
-                    where
+                    WHERE
                         org_p.delete_flag = 0
                 ) top ON tp.player_id = top.player_id 
-                LEFT JOIN ( 
-                    select
+                LEFT OUTER JOIN ( 
+                    SELECT
                         trrr.player_id
                         , tourn.tourn_name
                         , trrr.event_id 
-                    from
+                    FROM
                         t_race_result_record trrr 
-                    LEFT JOIN t_tournaments tourn ON
+                    LEFT OUTER JOIN t_tournaments tourn ON
                         trrr.tourn_id = tourn.tourn_id 
-                    where
+                    WHERE
                         trrr.delete_flag = 0
                 ) tr ON tp.player_id = tr.player_id 
-                where
+                WHERE
                     1 = 1
                     #ReplaceConditionString# 
                 GROUP BY
                     player_id
             ) players 
-            LEFT JOIN t_organizations org on
+            LEFT OUTER JOIN t_organizations org on
                 players.org_id = org.org_id
             ';
         $sqlString = str_replace("#ReplaceConditionString#", $condition, $sqlString);
@@ -417,50 +417,16 @@ class T_organization_players extends Model
     public function getOrganizationPlayersInfoFromJaraPlayerId($jara_player_id)
     {
         $org_players_info = DB::select(
-            'select 
-                                        `org_player_id` as `id`
-                                        ,op.player_id
-                                        ,op.org_id
-                                        ,tp.jara_player_id
-                                        ,tp.player_name
-                                        ,tp.date_of_birth
-                                        ,sex.`sex` as `sexName`
-                                        ,tp.`sex_id`
-                                        ,tp.height
-                                        ,tp.weight
-                                        ,tp.side_info
-                                        ,bir_cont.`country_name` as `birthCountryName`
-                                        ,`birth_country`
-                                        ,bir_pref.`pref_name` as `birthPrefectureName`
-                                        ,`birth_prefecture`
-                                        ,res_cont.`country_name` as `residenceCountryName`
-                                        ,`residence_country`
-                                        ,res_pref.`pref_name` as `residencePrefectureName`
-                                        ,`residence_prefecture`
-                                        ,tp.photo
-                                        ,tp.delete_flag
-                                        from `t_organization_players` op
-                                        left join `t_players` tp
-                                        on op.player_id = tp.player_id
-                                        left join `m_sex` sex
-                                        on tp.sex_id = sex.sex_id
-                                        left join m_countries bir_cont
-                                        on tp.birth_country = bir_cont.country_id
-                                        left join m_prefectures bir_pref
-                                        on tp.birth_prefecture = bir_pref.pref_id
-                                        left join m_countries res_cont
-                                        on tp.residence_country = res_cont.country_id
-                                        left join m_prefectures res_pref
-                                        on tp.residence_prefecture = res_pref.pref_id
-                                        where 1=1
-                                        and op.`delete_flag` = 0
-                                        and  tp.`delete_flag` = 0
-                                        and  sex.`delete_flag` = 0
-                                        and  bir_cont.`delete_flag` = 0
-                                        and  bir_pref.`delete_flag` = 0
-                                        and  res_cont.`delete_flag` = 0
-                                        and  res_pref.`delete_flag` = 0
-                                        and tp.`jara_player_id` = ?',
+            'SELECT 
+                op.org_id
+            FROM `t_organization_players` op
+            INNER JOIN `t_players` tp ON
+                tp.player_id = op.player_id
+                AND tp.`delete_flag` = 0
+                AND tp.`jara_player_id` = ?
+            WHERE 1=1
+                AND op.`delete_flag` = 0
+            ',
             [$jara_player_id]
         );
         return $org_players_info;

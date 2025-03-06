@@ -32,12 +32,14 @@ class M_prefectures extends Model
     public function getPrefectures()
     {
         $prefectures = DB::select(
-            'select pref_id
-                                        ,pref_code_jis
-                                        ,pref_name
-                                        from m_prefectures
-                                        where delete_flag=0
-                                        order by display_order'
+            'SELECT
+                pref_id
+                ,pref_code_jis
+                ,pref_name
+            FROM m_prefectures
+            WHERE
+                delete_flag = 0
+            ORDER BY display_order'
         );
         return $prefectures;
     }

@@ -39,9 +39,9 @@ class T_volunteers extends Model
                 `t_volunteers`.`user_id`,
                 `t_volunteers`.`volunteer_name`,
                 `t_volunteers`.`residence_country`,                 
-                `m_countries`.`country_code` as residence_country_code,
+                `m_countries`.`country_code` AS residence_country_code,
                 `t_volunteers`.`residence_prefecture`,
-                `m_prefectures`.`pref_code_jis` as residence_prefecture_code_jis,
+                `m_prefectures`.`pref_code_jis` AS residence_prefecture_code_jis,
                 `t_volunteers`.`sex`,
                 `t_volunteers`.`date_of_birth`,
                 `t_volunteers`.`telephone_number`, 
@@ -55,20 +55,24 @@ class T_volunteers extends Model
                 `t_volunteers`.`delete_flag`, 
                 `m_countries`.`country_name`,
                 `m_prefectures`.`pref_name`,
-                `m_sex`.`sex` as `master_sex_type`,
-                `m_clothes_size`.`clothes_size` as `master_clothes_size`
+                `m_sex`.`sex` AS `master_sex_type`,
+                `m_clothes_size`.`clothes_size` AS `master_clothes_size`
             FROM `t_volunteers` 
-            left join `m_countries`
-            on `t_volunteers`.`residence_country` = `m_countries`.`country_id`
-            left join `m_prefectures`
-            on `t_volunteers`.`residence_prefecture` = `m_prefectures`.`pref_id`
-            left join `m_sex`
-            on `t_volunteers`.`sex` = `m_sex`.`sex_id`
-            left join `m_clothes_size`
-            on `t_volunteers`.`clothes_size` = `m_clothes_size`.`clothes_size_id`
-            where
-                `t_volunteers`.delete_flag=0
-                and `t_volunteers`.volunteer_id = ?',
+            LEFT OUTER JOIN `m_countries` on
+                `m_countries`.`country_id` = `t_volunteers`.`residence_country`
+                AND `m_countries`.delete_flag = 0
+            LEFT OUTER JOIN `m_prefectures` on
+                `m_prefectures`.`pref_id` = `t_volunteers`.`residence_prefecture`
+                AND `m_prefectures`.delete_flag = 0
+            LEFT OUTER JOIN `m_sex` on
+                `m_sex`.`sex_id` = `t_volunteers`.`sex`
+                AND `m_sex`.delete_flag = 0
+            LEFT OUTER JOIN `m_clothes_size` on
+                `m_clothes_size`.`clothes_size_id` = `t_volunteers`.`clothes_size`
+                AND `m_clothes_size`.delete_flag = 0
+            WHERE
+                `t_volunteers`.delete_flag = 0
+                AND `t_volunteers`.volunteer_id = ?',
             [$volunteer_id]
         );
         //1つの団体IDを取得するため0番目だけを返す
@@ -88,116 +92,116 @@ class T_volunteers extends Model
         $SupportableDisabilityJoinType,
         $conditionValue
     ) {
-        $sqlString = 'SELECT distinct
-                    `t_volunteers`.`volunteer_id`
-                    ,`t_volunteers`.`volunteer_name`
-                    ,`t_volunteers`.`date_of_birth`
-                    ,`t_volunteers`.`clothes_size`
-                    ,`m_countries`.`country_name` as residence_country
-                    ,`m_countries`.`country_code` as residence_country_code
-                    ,`m_prefectures`.`pref_name` as residence_prefecture
-                    ,`m_prefectures`.`pref_code_jis` as residence_prefecture_code_jis
-                    ,CASE
-                        WHEN `t_volunteers`.`residence_country` = 112 then `m_prefectures`.`pref_name`
-                        else `m_countries`.`country_name`
-                    end as residence
-                    ,`m_sex`.`sex`
-                    ,TIMESTAMPDIFF(YEAR, `t_volunteers`.`date_of_birth`, CURDATE()) AS age
-                    ,CASE
-                        WHEN instr(`dis_type_id_array`,"1") > 0 THEN 1
-                        ELSE 0
-                        END as is_pr1
-                    ,CASE
-                        WHEN instr(`dis_type_id_array`,"2") > 0 THEN 1
-                        ELSE 0
-                        END as is_pr2
-                    ,CASE
-                        WHEN instr(`dis_type_id_array`,"3") > 0 THEN 1
-                        ELSE 0
-                        END as is_pr3
-                    ,v_lang.LANGUAGE_1
-                    ,v_lang.LANGUAGE_2
-                    ,v_lang.LANGUAGE_3
-                    ,t_volunteers.telephone_number
-                    ,CASE
-                        WHEN t_volunteers.users_email_flag = 1 then t_users.mailaddress
-                        ELSE t_volunteers.mailaddress
-                        end as mailaddress
-                    FROM t_volunteers
-                    #SupportableDisabilityJoinType#
-                    (
-                        select vol.volunteer_id
-                        ,GROUP_CONCAT(v_sup.dis_type_id) as dis_type_id_array
-                        from t_volunteers vol
-                        left join t_volunteer_supportable_disability v_sup
-                        on vol.volunteer_id = v_sup.volunteer_id
-                        where vol.delete_flag = 0
-                        and v_sup.delete_flag = 0
-                        group by vol.volunteer_id
-                        #SupportableDisabilityCondition#
-                    )v_type
-                    on t_volunteers.volunteer_id = v_type.volunteer_id
-                    left join m_countries
-                    on t_volunteers.residence_country = m_countries.country_id
-                    left join m_prefectures
-                    on t_volunteers.residence_prefecture = m_prefectures.pref_id
-                    left join m_sex
-                    on t_volunteers.sex = m_sex.sex_id
-                    left join t_users
-                    on t_volunteers.user_id = t_users.user_id
-                    #langJoinType#
-                    (
-                        select volunteer_id
-                        ,group_concat(Nullif(LANGUAGE_1,"")) as `LANGUAGE_1`
-                        ,group_concat(Nullif(LANGUAGE_2,"")) as `LANGUAGE_2`
-                        ,group_concat(Nullif(LANGUAGE_3,"")) as `LANGUAGE_3`
-                        FROM
-                        (
-                            select volunteer_id
-                            ,CASE `lang_index`
-                                WHEN 1 THEN `lang_name`
-                                ELSE NULL END AS LANGUAGE_1
-                            ,CASE `lang_index`
-                                WHEN 2 THEN `lang_name`
-                                ELSE NULL END AS LANGUAGE_2
-                            ,CASE `lang_index`
-                                WHEN 3 THEN `lang_name`
-                                ELSE NULL END AS LANGUAGE_3
-                            from
-                            (
-                                select vol.`volunteer_id`
-                                ,vpro.`lang_id`
-                                ,lang.`lang_name`
-                                ,ROW_NUMBER() OVER (PARTITION BY vol.`volunteer_id` ORDER BY vpro.`lang_id`) as `lang_index`
-                                from t_volunteers vol
-                                left join t_volunteer_language_proficiency vpro
-                                on vol.volunteer_id = vpro.volunteer_id
-                                left join m_languages lang
-                                on vpro.lang_id = lang.lang_id
-                                where 1=1
-                                and vol.delete_flag = 0
-                                and vpro.delete_flag = 0
-                                and lang.delete_flag = 0
-                                #languageCondition#
-                            )v_lang
-                        )v_lang
-                        group by volunteer_id
-                    )v_lang
-                    on `t_volunteers`.`volunteer_id` = `v_lang`.`volunteer_id`
-                    left join t_volunteer_availables
-                    on t_volunteers.volunteer_id = t_volunteer_availables.volunteer_id
-                    where 1=1
-                    and t_volunteers.delete_flag = 0
-                    and m_countries.delete_flag = 0
-                    and (
-                        m_countries.country_code != 392 
-                        OR (m_countries.country_code = 392 AND m_prefectures.delete_flag = 0)
-                    )
-                    and m_sex.delete_flag = 0
-                    and t_users.delete_flag = 0                    
-                    and t_volunteer_availables.delete_flag = 0
-                    #Condition#
-                    ';
+        $sqlString =
+            'SELECT DISTINCT
+                `t_volunteers`.`volunteer_id`
+                ,`t_volunteers`.`volunteer_name`
+                ,`t_volunteers`.`date_of_birth`
+                ,`t_volunteers`.`clothes_size`
+                ,`m_countries`.`country_name` AS residence_country
+                ,`m_countries`.`country_code` AS residence_country_code
+                ,`m_prefectures`.`pref_name` AS residence_prefecture
+                ,`m_prefectures`.`pref_code_jis` AS residence_prefecture_code_jis
+                ,CASE
+                    WHEN `t_volunteers`.`residence_country` = 112 then `m_prefectures`.`pref_name`
+                    else `m_countries`.`country_name`
+                END AS residence
+                ,`m_sex`.`sex`
+                ,TIMESTAMPDIFF(YEAR, `t_volunteers`.`date_of_birth`, CURDATE()) AS age
+                ,CASE
+                    WHEN instr(`dis_type_id_array`,"1") > 0 THEN 1
+                    ELSE 0
+                    END AS is_pr1
+                ,CASE
+                    WHEN instr(`dis_type_id_array`,"2") > 0 THEN 1
+                    ELSE 0
+                    END AS is_pr2
+                ,CASE
+                    WHEN instr(`dis_type_id_array`,"3") > 0 THEN 1
+                    ELSE 0
+                    END AS is_pr3
+                ,v_lang.LANGUAGE_1
+                ,v_lang.LANGUAGE_2
+                ,v_lang.LANGUAGE_3
+                ,t_volunteers.telephone_number
+                ,CASE
+                    WHEN t_volunteers.users_email_flag = 1 then t_users.mailaddress
+                    ELSE t_volunteers.mailaddress
+                    END AS mailaddress
+            FROM t_volunteers
+            #SupportableDisabilityJoinType#
+            (
+                SELECT vol.volunteer_id
+                    ,GROUP_CONCAT(v_sup.dis_type_id) AS dis_type_id_array
+                FROM t_volunteers vol
+                LEFT join t_volunteer_supportable_disability v_sup ON
+                    v_sup.volunteer_id = vol.volunteer_id
+                    AND v_sup.delete_flag = 0
+                WHERE
+                    vol.delete_flag = 0
+                GROUP by vol.volunteer_id
+                #SupportableDisabilityCondition#
+            ) v_type ON
+                v_type.volunteer_id = t_volunteers.volunteer_id
+            INNER JOIN m_countries ON
+                m_countries.country_id = t_volunteers.residence_country
+                AND m_countries.delete_flag = 0
+            LEFT OUTER JOIN m_prefectures ON
+                m_prefectures.pref_id = t_volunteers.residence_prefecture
+                AND m_prefectures.delete_flag = 0
+            INNER JOIN m_sex ON
+                m_sex.sex_id = t_volunteers.sex
+                AND m_sex.delete_flag = 0
+            INNER JOIN t_users ON
+                t_users.user_id = t_volunteers.user_id
+                AND t_users.delete_flag = 0                    
+            #langJoinType#
+            (
+                SELECT
+                    volunteer_id
+                    ,group_concat(Nullif(LANGUAGE_1,"")) AS `LANGUAGE_1`
+                    ,group_concat(Nullif(LANGUAGE_2,"")) AS `LANGUAGE_2`
+                    ,group_concat(Nullif(LANGUAGE_3,"")) AS `LANGUAGE_3`
+                FROM (
+                    SELECT
+                        volunteer_id
+                        ,CASE `lang_index`
+                            WHEN 1 THEN `lang_name`
+                            ELSE NULL END AS LANGUAGE_1
+                        ,CASE `lang_index`
+                            WHEN 2 THEN `lang_name`
+                            ELSE NULL END AS LANGUAGE_2
+                        ,CASE `lang_index`
+                            WHEN 3 THEN `lang_name`
+                            ELSE NULL END AS LANGUAGE_3
+                    FROM (
+                        SELECT
+                            vol.`volunteer_id`
+                            ,vpro.`lang_id`
+                            ,lang.`lang_name`
+                            ,ROW_NUMBER() OVER (PARTITION BY vol.`volunteer_id` ORDER BY vpro.`lang_id`) AS `lang_index`
+                        FROM t_volunteers vol
+                        INNER JOIN t_volunteer_language_proficiency vpro ON
+                            vpro.volunteer_id = vol.volunteer_id
+                            AND vpro.delete_flag = 0
+                        INNER JOIN m_languages lang ON
+                            lang.lang_id = vpro.lang_id
+                            AND lang.delete_flag = 0
+                        WHERE 1=1
+                            AND vol.delete_flag = 0
+                        #languageCondition#
+                    ) v_lang
+                ) v_lang
+                GROUP BY volunteer_id
+            ) v_lang ON
+                `v_lang`.`volunteer_id` = `t_volunteers`.`volunteer_id`
+            INNER JOIN t_volunteer_availables ON
+                t_volunteer_availables.volunteer_id = t_volunteers.volunteer_id
+                AND t_volunteer_availables.delete_flag = 0
+            WHERE 1=1
+                AND t_volunteers.delete_flag = 0
+                #Condition#
+            ';
         $sqlString = str_replace("#SupportableDisabilityCondition#", $supportableDisabilityCondition, $sqlString);
         $sqlString = str_replace("#languageCondition#", $languageCondition, $sqlString);
         $sqlString = str_replace("#Condition#", $condition, $sqlString);
@@ -273,139 +277,6 @@ class T_volunteers extends Model
         return $insertId;
     }
 
-    //volunteer_idを条件として、
-    //interfaceのVolunteerResponseに合うデータを取得する
-    public function getVolunteerResponse($volunteer_id)
-    {
-        $volunteer = DB::select(
-            "select
-                                vol.volunteer_id    as `vol_id`
-                                ,CONCAT('V',lpad(vol.volunteer_id, 7, '0'))   as `volunteer_id`
-                                ,vol.`volunteer_name`
-                                ,vol.residence_country      as `residence_country_id`
-                                ,con.country_name           as `residence_country`
-                                ,vol.residence_prefecture   as `residence_prefecture_id`
-                                ,pref.pref_name             as `residence_prefecture`
-                                ,vol.sex                    as `sex_id`
-                                ,sex.sex
-                                ,vol.`date_of_birth`
-                                ,vol.`telephone_number`
-                                ,case vol.users_email_flag
-                                    when 1 then users.mailaddress
-                                    else vol.mailaddress
-                                    end                     as `mailaddress`
-                                ,vol.clothes_size           as `clothes_size_id`
-                                ,clt.clothes_size
-                                ,v_sup.dis_type_id
-                                ,qual.qualHold
-                                ,lang.lang_name as `language`
-                                ,lang.lang_pro_name as `language_proficiency`
-                                ,vav.day_of_week
-                                ,vav.time_zone
-                                ,users.photo
-                                from t_volunteers vol
-                                join t_users users
-                                on vol.user_id = users.user_id
-                                left join `m_sex` sex
-                                on vol.sex = sex.sex_id
-                                left join `m_countries` con
-                                on vol.residence_country= con.country_id
-                                left join `m_prefectures` pref
-                                on vol.residence_prefecture = pref.pref_id
-                                left join `m_clothes_size` clt
-                                on vol.clothes_size = clt.clothes_size_id
-                                left join `t_volunteer_availables` vav
-                                on vol.volunteer_id = vav.volunteer_id
-                                left join
-                                (
-                                    select volunteer_id
-                                    ,GROUP_CONCAT(dis_type_name order by dis_type_id) as dis_type_id
-                                    from
-                                    (
-                                        select
-                                        vol.volunteer_id
-                                        ,v_sup.dis_type_id
-                                        ,dist.dis_type_name
-                                        from t_volunteers vol
-                                        left join t_volunteer_supportable_disability v_sup
-                                        on vol.volunteer_id = v_sup.volunteer_id
-                                        left join m_disability_type dist
-                                        on v_sup.dis_type_id = dist.dis_type_id
-                                        where 1=1
-                                        and vol.delete_flag = 0
-                                        and v_sup.delete_flag = 0
-                                        and dist.delete_flag = 0
-                                    )t
-                                    group by volunteer_id
-                                )v_sup
-                                on vol.volunteer_id = v_sup.volunteer_id
-                                left join
-                                (
-                                    select
-                                    volunteer_id
-                                    ,GROUP_CONCAT(qual_name order by qual_id,qual_hold_id) as qualHold
-                                    from
-                                    (
-                                        select
-                                        tq.qual_hold_id
-                                        ,tq.volunteer_id
-                                        ,tq.qual_id
-                                        ,case tq.qual_id
-                                            when 99 then tq.others_qual
-                                            else qual.qual_name
-                                            end as `qual_name`
-                                        FROM t_volunteer_qualifications_hold tq
-                                        left join m_volunteer_qualifications qual
-                                        on tq.qual_id = qual.qual_id
-                                        where 1=1
-                                        and tq.delete_flag = 0
-                                        and qual.delete_flag = 0
-                                    )t
-                                    group by volunteer_id
-                                )qual
-                                on vol.volunteer_id = qual.volunteer_id
-                                left join
-                                (
-                                    select
-                                    volunteer_id
-                                    ,GROUP_CONCAT(lang_name order by lang_id) as lang_name
-                                    ,GROUP_CONCAT(lang_pro_name order by lang_id) as lang_pro_name
-                                    from
-                                    (
-                                        select
-                                        vlp.lang_pro_id
-                                        ,vlp.volunteer_id
-                                        ,vlp.lang_id
-                                        ,lang.lang_name
-                                        ,vlp.lang_pro
-                                        ,mlp.lang_pro_name
-                                        FROM t_volunteer_language_proficiency vlp
-                                        left join m_languages lang
-                                        on vlp.lang_id = lang.lang_id
-                                        left join m_language_proficiency mlp
-                                        on vlp.lang_pro = mlp.lang_pro_id
-                                        where 1=1
-                                        and vlp.delete_flag = 0
-                                        and lang.delete_flag = 0
-                                        and mlp.delete_flag = 0
-                                    )t
-                                    group by volunteer_id
-                                )lang
-                                on vol.volunteer_id = lang.volunteer_id
-                                where 1=1
-                                and vol.delete_flag = 0
-                                and users.delete_flag = 0
-                                and sex.delete_flag = 0
-                                and con.delete_flag = 0
-                                and pref.delete_flag = 0
-                                and clt.delete_flag = 0
-                                and vav.delete_flag = 0
-                                and vol.volunteer_id = :volunteer_id",
-            $volunteer_id
-        );
-        return $volunteer;
-    }
-
     //ボランティア削除
     //delete_flagを1にする
     public function updateDeleteFlag($volunteer_id)
@@ -429,37 +300,40 @@ class T_volunteers extends Model
     //マイページ ボランティア情報用 ユーザIDに紐づいたボランティア情報を取得 20241017
     public function getVolunteerInfoFromUserId($user_id)
     {
-        $volunteers = DB::select('select
-        `t_volunteers`.`volunteer_id`, 
-        `t_volunteers`.`volunteer_name` as `volunteerName`,
-        `t_volunteers`.`date_of_birth` as `dateOfBirth`,
-        `t_volunteers`.`telephone_number` as `telephoneNumber`, 
-        `t_volunteers`.`mailaddress`,  
-        `m_countries`.`country_name` as `countryName`,
-        `m_prefectures`.`pref_name` as `prefName`, 
-        `m_sex`.`sex`, 
-        `m_clothes_size`.`clothes_size` as `clothesSize`,
-        `t_volunteer_availables`.`day_of_week` as `dayOfWeekStr`,
-        `t_volunteer_availables`.`time_zone` as `timeZoneStr`
-        FROM `t_volunteers` 
-        left join `t_volunteer_availables`
-        on `t_volunteers`.`volunteer_id` = `t_volunteer_availables`.`volunteer_id`
-        and `t_volunteer_availables`.delete_flag = 0
-        left join `m_countries`
-        on `t_volunteers`.`residence_country` = `m_countries`.`country_id`
-        left join `m_prefectures`
-        on `t_volunteers`.`residence_prefecture` = `m_prefectures`.`pref_id`
-        left join `m_sex`
-        on `t_volunteers`.`sex` = `m_sex`.`sex_id`
-        left join `m_clothes_size`
-        on `t_volunteers`.`clothes_size` = `m_clothes_size`.`clothes_size_id`
-        where 1=1
-        and `t_volunteers`.delete_flag = 0 
-        and `m_countries`.delete_flag = 0 
-        and (`m_countries`.`country_code` != 392 or `m_prefectures`.delete_flag = 0)
-        and `m_sex`.delete_flag = 0 
-        and `m_clothes_size`.delete_flag = 0 
-        and `t_volunteers`.user_id = ?', [$user_id]);
+        $volunteers = DB::select(
+            'SELECT
+                `t_volunteers`.`volunteer_id`, 
+                `t_volunteers`.`volunteer_name` AS `volunteerName`,
+                `t_volunteers`.`date_of_birth` AS `dateOfBirth`,
+                `t_volunteers`.`telephone_number` AS `telephoneNumber`, 
+                `t_volunteers`.`mailaddress`,  
+                `m_countries`.`country_name` AS `countryName`,
+                `m_prefectures`.`pref_name` AS `prefName`, 
+                `m_sex`.`sex`, 
+                `m_clothes_size`.`clothes_size` AS `clothesSize`,
+                `t_volunteer_availables`.`day_of_week` AS `dayOfWeekStr`,
+                `t_volunteer_availables`.`time_zone` AS `timeZoneStr`
+            FROM `t_volunteers` 
+            INNER JOIN `t_volunteer_availables` ON
+                `t_volunteer_availables`.`volunteer_id` = `t_volunteers`.`volunteer_id`
+                AND `t_volunteer_availables`.delete_flag = 0
+            INNER JOIN `m_countries` ON
+                `m_countries`.`country_id` = `t_volunteers`.`residence_country`
+                AND `m_countries`.delete_flag = 0 
+            LEFT OUTER JOIN `m_prefectures` ON
+                `m_prefectures`.`pref_id` = `t_volunteers`.`residence_prefecture`
+                AND `m_prefectures`.delete_flag = 0
+            INNER JOIN `m_sex` ON
+                `m_sex`.`sex_id` = `t_volunteers`.`sex`
+                AND `m_sex`.delete_flag = 0 
+            INNER JOIN `m_clothes_size` ON
+                `m_clothes_size`.`clothes_size_id` = `t_volunteers`.`clothes_size`
+                AND `m_clothes_size`.delete_flag = 0 
+            WHERE 1=1
+                AND `t_volunteers`.delete_flag = 0 
+                AND `t_volunteers`.user_id = ?',
+            [$user_id]
+        );
 
         return $volunteers;
     }

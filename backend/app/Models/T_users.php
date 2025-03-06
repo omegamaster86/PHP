@@ -71,64 +71,67 @@ class T_users extends Authenticatable
                         is_player,
                         is_volunteer,
                         is_audience)
-                ) as `userTypeName`
-                FROM
-                (
-                    SELECT user.`user_id`,
+                ) AS `userTypeName`
+            FROM (
+                SELECT
+                    user.`user_id`,
                     user.`user_name`,
                     user.`mailaddress`,
                     user.`sex`,
-                    sex.sex as `sexName`,
+                    sex.sex AS `sexName`,
                     user.`residence_country`,
-                    coun.country_name as `residenceCountryName`,
+                    coun.country_name AS `residenceCountryName`,
                     user.`residence_prefecture`,
-                    pref.pref_name as `residencePrefectureName`,
+                    pref.pref_name AS `residencePrefectureName`,
                     user.`date_of_birth`,
                     user.`height`,
                     user.`weight`,
                     user.`user_type`,
                     user.`photo`,
                     user.`temp_password_flag`,
-                    case 
-                        when SUBSTR(user.`user_type`,2,1) = 1 then "管理者・"
-                        else ""
-                    end as `is_administrator`,
-                    case 
-                        when SUBSTR(user.`user_type`,3,1) = 1 then "JARA・"
-                        else ""
-                    end as `is_jara`,
-                    case 
-                        when SUBSTR(user.`user_type`,4,1) = 1 then "県ボ職員・"
-                        else ""
-                    end as `is_pref_boat_officer`,
-                    case 
-                        when SUBSTR(user.`user_type`,5,1) = 1 then "団体管理者・"
-                        else ""
-                    end as `is_organization_manager`,
-                    case 
-                        when SUBSTR(user.`user_type`,6,1) = 1 then "選手・"
-                        else ""
-                    end as `is_player`,
-                    case 
-                        when SUBSTR(user.`user_type`,7,1) = 1 then "ボランティア・"
-                        else ""
-                    end as `is_volunteer`,
-                    case 
-                        when SUBSTR(user.`user_type`,8,1) = 1 then "一般ユーザー（観客）"
-                        else ""
-                    end as `is_audience`
-                    FROM `t_users` user
-                    -- NOTE: ユーザー仮登録時には性別、居住地、生年月日が未入力のため、LEFT OUTER JOIN
-                    LEFT OUTER JOIN `m_sex` sex
-                    on user.sex = sex.sex_id and sex.delete_flag = 0
-                    LEFT OUTER JOIN m_countries coun
-                    on user.residence_country = coun.country_id and coun.delete_flag = 0
-                    LEFT OUTER JOIN m_prefectures pref
-                    on user.residence_prefecture = pref.pref_id and pref.delete_flag = 0
-                    WHERE 1=1
-                    and user.delete_flag = 0
-                    and user_id = ?
-                ) user',
+                    CASE 
+                        WHEN SUBSTR(user.`user_type`,2,1) = 1 THEN "管理者・"
+                        ELSE ""
+                    END AS `is_administrator`,
+                    CASE 
+                        WHEN SUBSTR(user.`user_type`,3,1) = 1 THEN "JARA・"
+                        ELSE ""
+                    END AS `is_jara`,
+                    CASE 
+                        WHEN SUBSTR(user.`user_type`,4,1) = 1 THEN "県ボ職員・"
+                        ELSE ""
+                    END AS `is_pref_boat_officer`,
+                    CASE 
+                        WHEN SUBSTR(user.`user_type`,5,1) = 1 THEN "団体管理者・"
+                        ELSE ""
+                    END AS `is_organization_manager`,
+                    CASE 
+                        WHEN SUBSTR(user.`user_type`,6,1) = 1 THEN "選手・"
+                        ELSE ""
+                    END AS `is_player`,
+                    CASE 
+                        WHEN SUBSTR(user.`user_type`,7,1) = 1 THEN "ボランティア・"
+                        ELSE ""
+                    END AS `is_volunteer`,
+                    CASE 
+                        WHEN SUBSTR(user.`user_type`,8,1) = 1 THEN "一般ユーザー（観客）"
+                        ELSE ""
+                    END AS `is_audience`
+                FROM `t_users` user
+                -- NOTE: ユーザー仮登録時には性別、居住地、生年月日が未入力のため、LEFT OUTER JOIN
+                LEFT OUTER JOIN `m_sex` sex ON
+                    sex.sex_id = user.sex
+                    AND sex.delete_flag = 0
+                LEFT OUTER JOIN m_countries coun ON
+                    coun.country_id = user.residence_country
+                    AND coun.delete_flag = 0
+                LEFT OUTER JOIN m_prefectures pref ON
+                    pref.pref_id = user.residence_prefecture
+                    AND pref.delete_flag = 0
+                WHERE 1=1
+                    AND user.delete_flag = 0
+                    AND user_id = ?
+            ) user',
             [$targetUserId]
         );
         if (isset($users[0])) {
@@ -525,31 +528,34 @@ class T_users extends Authenticatable
     //マイページ プロフィール情報を取得する 20241023
     public function getUserProfileInfo($userId)
     {
-        $users = DB::select('select 
-                    `t_users`.`user_id` as `userId`, 
-                    `t_users`.`user_name` as `userName`, 
-                    `t_users`.`mailaddress`, 
-                    `t_users`.`user_type` as `userTypeString`,
-                    `t_users`.`date_of_birth` as `dateOfBirth`,
-                    `t_users`.`height`, 
-                    `t_users`.`weight`, 
-                    `t_users`.`photo`, 
-                    `m_countries`.`country_name` as `countryName`, 
-                    `m_prefectures`.`pref_name` as `prefName`, 
-                    `m_sex`.`sex`
-                    from `t_users`
-                    left join `m_sex`
-                    on `t_users`.`sex` = `m_sex`.`sex_id`
-                    and `m_sex`.`delete_flag` = 0
-                    left join `m_countries`
-                    on `t_users`.`residence_country` = `m_countries`.`country_id`
-                    and `m_countries`.delete_flag = 0
-                    left join `m_prefectures`
-                    on `t_users`.`residence_prefecture` = `m_prefectures`.`pref_id`
-                    and `m_prefectures`.delete_flag = 0
-                    where 1=1
-                    and `t_users`.`delete_flag` = 0
-                    and `user_id` = ?', [$userId]);
+        $users = DB::select(
+            'SELECT 
+                `t_users`.`user_id` AS `userId`, 
+                `t_users`.`user_name` AS `userName`, 
+                `t_users`.`mailaddress`, 
+                `t_users`.`user_type` AS `userTypeString`,
+                `t_users`.`date_of_birth` AS `dateOfBirth`,
+                `t_users`.`height`, 
+                `t_users`.`weight`, 
+                `t_users`.`photo`, 
+                `m_countries`.`country_name` AS `countryName`, 
+                `m_prefectures`.`pref_name` AS `prefName`, 
+                `m_sex`.`sex`
+            FROM `t_users`
+            LEFT OUTER JOIN `m_sex` ON
+                `m_sex`.`sex_id` = `t_users`.`sex`
+                AND `m_sex`.`delete_flag` = 0
+            LEFT OUTER JOIN `m_countries` ON
+                `m_countries`.`country_id` = `t_users`.`residence_country`
+                AND `m_countries`.delete_flag = 0
+            LEFT OUTER JOIN `m_prefectures` ON
+                `m_prefectures`.`pref_id` = `t_users`.`residence_prefecture`
+                AND `m_prefectures`.delete_flag = 0
+            WHERE 1=1
+                AND `t_users`.`delete_flag` = 0
+                AND `user_id` = ?',
+            [$userId]
+        );
         $targetTrn = null;
         if (!empty($users)) {
             $targetTrn = $users[0];
@@ -562,12 +568,12 @@ class T_users extends Authenticatable
     {
         $users = DB::select(
             'SELECT 
-                `t_users`.user_id as `userId`,
-                `t_users`.user_name as `userName`,
+                `t_users`.user_id AS `userId`,
+                `t_users`.user_name AS `userName`,
                 CASE
                     WHEN ? THEN `t_users`.jspo_id
                     ELSE NULL
-                    END as `jspoId`,
+                    END AS `jspoId`,
                 CASE
                     WHEN ? THEN GROUP_CONCAT(distinct(`coach_qual`.`qual_name`) order by `coach_qual`.`display_order`)
                     ELSE ""

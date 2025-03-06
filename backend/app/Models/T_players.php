@@ -38,41 +38,41 @@ class T_players extends Model
     public function getPlayerData($player_id)
     {
         $result = DB::select(
-            'select
+            'SELECT
                 `player_id`
                 , `user_id`
                 , `jara_player_id`
                 , `player_name`
                 , `date_of_birth`
-                , COALESCE(`m_sex`.`sex`, "") as `sex_name`
+                , COALESCE(`m_sex`.`sex`, "") AS `sex_name`
                 , `t_players`.`sex_id`
                 , `height`
                 , `weight`
                 , `side_info`
-                , COALESCE(bir_cont.`country_name`, "") as `birthCountryName`
+                , COALESCE(bir_cont.`country_name`, "") AS `birthCountryName`
                 , `birth_country`
-                , COALESCE(bir_pref.`pref_name`, "") as `birthPrefectureName`
+                , COALESCE(bir_pref.`pref_name`, "") AS `birthPrefectureName`
                 , `birth_prefecture`
-                , COALESCE(res_cont.`country_name`, "") as `residenceCountryName`
+                , COALESCE(res_cont.`country_name`, "") AS `residenceCountryName`
                 , `residence_country`
-                , COALESCE(res_pref.`pref_name`, "") as `residencePrefectureName`
+                , COALESCE(res_pref.`pref_name`, "") AS `residencePrefectureName`
                 , `residence_prefecture`
-                , COALESCE(`photo`, "") as `photo`
+                , COALESCE(`photo`, "") AS `photo`
             FROM `t_players`
             # NOTE: 選手情報連携で"連携待ち"の選手がいる場合を考慮しすべて外部結合する。
             LEFT OUTER JOIN `m_sex` ON
                 `m_sex`.`sex_id` = `t_players`.`sex_id`
                 AND `m_sex`.`delete_flag` = 0
-            LEFT JOIN m_countries bir_cont ON
+            LEFT OUTER JOIN m_countries bir_cont ON
                 bir_cont.country_id = `t_players`.birth_country
                 AND bir_cont.`delete_flag` = 0
-            LEFT JOIN m_prefectures bir_pref ON
+            LEFT OUTER JOIN m_prefectures bir_pref ON
                 bir_pref.pref_id = `t_players`.birth_prefecture
                 AND bir_pref.`delete_flag` = 0
-            LEFT JOIN m_countries res_cont ON
+            LEFT OUTER JOIN m_countries res_cont ON
                 res_cont.country_id = `t_players`.residence_country
                 AND res_cont.`delete_flag` = 0
-            LEFT JOIN m_prefectures res_pref ON
+            LEFT OUTER JOIN m_prefectures res_pref ON
                 res_pref.pref_id = `t_players`.residence_prefecture
                 AND res_pref.`delete_flag` = 0
             WHERE 1=1
@@ -584,19 +584,19 @@ class T_players extends Model
                 ,`m_sex`.`sex` AS `sex_name`
             FROM `t_players`
             # NOTE: 選手情報連携で"連携待ち"の選手がいる場合を考慮しすべて外部結合する。
-            LEFT JOIN `m_sex` ON
+            LEFT OUTER JOIN `m_sex` ON
                 `m_sex`.`sex_id` = `t_players`.`sex_id`
                 AND  `m_sex`.`delete_flag` = 0
-            LEFT JOIN m_countries bir_cont ON
+            LEFT OUTER JOIN m_countries bir_cont ON
                 bir_cont.country_id = `t_players`.birth_country
                 AND  bir_cont.`delete_flag` = 0
-            LEFT JOIN m_prefectures bir_pref ON
+            LEFT OUTER JOIN m_prefectures bir_pref ON
                 bir_pref.pref_id = `t_players`.birth_prefecture
                 AND  bir_pref.`delete_flag` = 0
-            LEFT JOIN m_countries res_cont ON
+            LEFT OUTER JOIN m_countries res_cont ON
                 res_cont.country_id = `t_players`.residence_country
                 AND  res_cont.`delete_flag` = 0
-            LEFT JOIN m_prefectures res_pref ON
+            LEFT OUTER JOIN m_prefectures res_pref ON
                 res_pref.pref_id = `t_players`.residence_prefecture
                 AND  res_pref.`delete_flag` = 0
             WHERE 1=1
@@ -641,19 +641,19 @@ class T_players extends Model
                 ,`m_sex`.`sex` AS `sex_name`
             FROM `t_players`
             # NOTE: 選手情報連携で"連携待ち"の選手がいる場合を考慮しすべて外部結合する。
-            LEFT JOIN `m_sex` ON
+            LEFT OUTER JOIN `m_sex` ON
                 `t_players`.`sex_id`=`m_sex`.`sex_id`
                 AND  `m_sex`.`delete_flag` = 0
-            LEFT JOIN m_countries bir_cont ON
+            LEFT OUTER JOIN m_countries bir_cont ON
                 bir_cont.country_id = `t_players`.birth_country
                 AND  bir_cont.`delete_flag` = 0
-            LEFT JOIN m_prefectures bir_pref ON
+            LEFT OUTER JOIN m_prefectures bir_pref ON
                 bir_pref.pref_id = `t_players`.birth_prefecture
                 AND  bir_pref.`delete_flag` = 0
-            LEFT JOIN m_countries res_cont ON
+            LEFT OUTER JOIN m_countries res_cont ON
                 res_cont.country_id = `t_players`.residence_country
                 AND  res_cont.`delete_flag` = 0
-            LEFT JOIN m_prefectures res_pref ON
+            LEFT OUTER JOIN m_prefectures res_pref ON
                 res_pref.pref_id = `t_players`.residence_prefecture
                 AND  res_pref.`delete_flag` = 0
             WHERE 1=1
@@ -695,19 +695,19 @@ class T_players extends Model
                 ,`m_sex`.`sex` AS `sex_name`
             FROM `t_players`
             # NOTE: 選手情報連携で"連携待ち"の選手がいる場合を考慮しすべて外部結合する。
-            LEFT JOIN `m_sex` ON
+            LEFT OUTER JOIN `m_sex` ON
                 `m_sex`.`sex_id` = `t_players`.`sex_id`
                 AND  `m_sex`.`delete_flag` = 0
-            LEFT JOIN m_countries bir_cont ON
+            LEFT OUTER JOIN m_countries bir_cont ON
                 bir_cont.country_id = `t_players`.birth_country
                 AND  bir_cont.`delete_flag` = 0
-            LEFT JOIN m_prefectures bir_pref ON
+            LEFT OUTER JOIN m_prefectures bir_pref ON
                 bir_pref.pref_id = `t_players`.birth_prefecture
                 AND  bir_pref.`delete_flag` = 0
-            LEFT JOIN m_countries res_cont ON
+            LEFT OUTER JOIN m_countries res_cont ON
                 res_cont.country_id = `t_players`.residence_country
                 AND  res_cont.`delete_flag` = 0
-            LEFT JOIN m_prefectures res_pref ON
+            LEFT OUTER JOIN m_prefectures res_pref ON
                 res_pref.pref_id = `t_players`.residence_prefecture
                 AND  res_pref.`delete_flag` = 0
             WHERE 1=1
@@ -750,19 +750,19 @@ class T_players extends Model
                 ,`m_sex`.`sex` AS `sex_name`
             FROM `t_players`
             # NOTE: 選手情報連携で"連携待ち"の選手がいる場合を考慮しすべて外部結合する。
-            LEFT JOIN `m_sex` ON
+            LEFT OUTER JOIN `m_sex` ON
                 `m_sex`.`sex_id` = `t_players`.`sex_id`
                 AND  `m_sex`.`delete_flag` = 0
-            LEFT JOIN m_countries bir_cont ON
+            LEFT OUTER JOIN m_countries bir_cont ON
                 bir_cont.country_id = `t_players`.birth_country
                 AND  bir_cont.`delete_flag` = 0
-            LEFT JOIN m_prefectures bir_pref ON
+            LEFT OUTER JOIN m_prefectures bir_pref ON
                 bir_pref.pref_id = `t_players`.birth_prefecture
                 AND  bir_pref.`delete_flag` = 0
-            LEFT JOIN m_countries res_cont ON
+            LEFT OUTER JOIN m_countries res_cont ON
                 res_cont.country_id = `t_players`.residence_country
                 AND  res_cont.`delete_flag` = 0
-            LEFT JOIN m_prefectures res_pref ON
+            LEFT OUTER JOIN m_prefectures res_pref ON
                 res_pref.pref_id = `t_players`.residence_prefecture
                 AND  res_pref.`delete_flag` = 0
             WHERE 1=1
@@ -805,19 +805,19 @@ class T_players extends Model
                 ,`m_sex`.`sex` AS `sex_name`
             FROM `t_players`
             # NOTE: 選手情報連携で"連携待ち"の選手がいる場合を考慮しすべて外部結合する。
-            LEFT JOIN `m_sex` ON    
+            LEFT OUTER JOIN `m_sex` ON    
                 `m_sex`.`sex_id` = `t_players`.`sex_id`
                 AND  `m_sex`.`delete_flag` = 0
-            LEFT JOIN m_countries bir_cont ON
+            LEFT OUTER JOIN m_countries bir_cont ON
                 bir_cont.country_id = `t_players`.birth_country
                 AND  bir_cont.`delete_flag` = 0
-            LEFT JOIN m_prefectures bir_pref ON
+            LEFT OUTER JOIN m_prefectures bir_pref ON
                 bir_pref.pref_id = `t_players`.birth_prefecture
                 AND  bir_pref.`delete_flag` = 0
-            LEFT JOIN m_countries res_cont ON
+            LEFT OUTER JOIN m_countries res_cont ON
                 res_cont.country_id = `t_players`.residence_country
                 AND  res_cont.`delete_flag` = 0
-            LEFT JOIN m_prefectures res_pref ON
+            LEFT OUTER JOIN m_prefectures res_pref ON
                 res_pref.pref_id = `t_players`.residence_prefecture
                 AND  res_pref.`delete_flag` = 0
             WHERE 1=1
