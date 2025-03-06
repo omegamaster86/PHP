@@ -1027,12 +1027,13 @@ export default function TournamentResult() {
         const raceResponse = await axios.post('api/getRaceDataRaceId', { race_id: raceId });
 
         const race = raceResponse.data.race_result[0];
-        race.startDateTime = race.start_date_time; //バックエンド側のキーをフロント側のキーに入れ直す 20240410
 
-        if (['update', 'confirm'].includes(mode) && race.race_id === '') {
+        if (['update', 'confirm'].includes(mode) && typeof race === 'undefined') {
           setErrorText(['レース情報が削除されているため更新できません。']);
           return;
         }
+
+        race.startDateTime = race.start_date_time; //バックエンド側のキーをフロント側のキーに入れ直す 20240410
 
         setRaceInfo(race);
 
