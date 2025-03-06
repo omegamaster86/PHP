@@ -518,6 +518,33 @@ export default function Team() {
     }
   };
 
+  const getUserName = async (rowId: number, userId: string) => {
+    try {
+      const response = await axios.post('api/getUserName', { user_id: userId });
+      setTableData((prevRows) => {
+        const newRows = [...prevRows];
+        const row = newRows.find((row) => row.id === rowId);
+        if (row) {
+          row.user_name = response.data.result;
+          row.isUserFound = true;
+          row.delete_flag = false;
+        }
+        return newRows;
+      });      
+    } catch (error) {
+      setTableData((prevRows) => {
+        const newRows = [...prevRows];
+        const row = newRows.find((row) => row.id === rowId);
+        if (row) {
+          row.user_name = '該当ユーザーなし'
+          row.isUserFound = false; 
+          row.delete_flag = true;
+        }
+        return newRows;
+      });
+    }
+  };  
+  
   // 確認
   const modeCustomButtons = {
     create: (
@@ -1082,7 +1109,7 @@ export default function Team() {
                     <OriginalCheckbox
                       id='delete_flag'
                       value='delete'
-                      checked={data.isUserFound ? data.delete_flag : true}
+                      checked={data.delete_flag}
                       readonly={!data.isUserFound}
                       onChange={() => {
                         handleInputChangeStaff(data.id, 'delete_flag', !data.delete_flag);
@@ -1093,23 +1120,18 @@ export default function Team() {
                 {/** ユーザーID */}
                 <CustomTd align='center'>
                   <CustomTextField
-                    displayHelp={false}
-                    required={false}
                     value={data.user_id}
                     className='border-transparent'
                     readonly={!canEdit}
-                    disabled={!data.isUserFound}
+                    onBlur={() => getUserName(data.id, data.user_id)}
                     onChange={(e) => handleInputChangeStaff(data.id, 'user_id', e.target.value)}
                   />
                 </CustomTd>
                 {/** ユーザー名 */}
                 <CustomTd align='center'>
                   <CustomTextField
-                    displayHelp={false}
-                    required={false}
-                    value={data.isUserFound ? data.user_name : '該当ユーザーなし'}
-                    disabled={!data.isUserFound}
-                    readonly={true}
+                    value={data.user_name}
+                    readonly
                     className={data.isUserFound ? '' : 'text-systemErrorText'}
                     onChange={(e) => handleInputChangeStaff(data.id, 'user_name', e.target.value)}
                   />
