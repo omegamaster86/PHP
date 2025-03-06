@@ -170,79 +170,72 @@ class UserController extends Controller
 
         include('Auth/ErrorMessages/ErrorMessages.php');
 
-        if (!empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 0', [$request->mailaddress]))) {
-            // For Generate random password
-            $password = Str::random(8);
-            // //For getting current time
-            // $date = date('Y-m-d H:i:s');
-            // //For adding 30 minutes with current time
-            // $new_date = date('Y-m-d H:i:s', strtotime($date . ' + 30 minutes'));
+        if (empty(DB::select('SELECT user_id FROM t_users where mailaddress = ? and delete_flag = 0', [$request->mailaddress]))) {
+            return response(200);
+        } 
+        // For Generate random password
+        $password = Str::random(8);
+        // //For getting current time
+        // $date = date('Y-m-d H:i:s');
+        // //For adding 30 minutes with current time
+        // $new_date = date('Y-m-d H:i:s', strtotime($date . ' + 30 minutes'));
 
-            //For getting current time
-            $date = now()->format('Y-m-d H:i:s.u');
+        //For getting current time
+        $date = now()->format('Y-m-d H:i:s.u');
 
-            //For adding 1day with current time
-            $converting_date = date_create($date);
-            date_add($converting_date, date_interval_create_from_date_string("30 minutes"));
-            $new_date = date_format($converting_date, "Y-m-d H:i:s.u");
+        //For adding 1day with current time
+        $converting_date = date_create($date);
+        date_add($converting_date, date_interval_create_from_date_string("30 minutes"));
+        $new_date = date_format($converting_date, "Y-m-d H:i:s.u");
 
-            //For converting date format from H:i:s to H:i 
-            $mail_date  = date("Y/m/d H:i", strtotime($new_date));
+        //For converting date format from H:i:s to H:i 
+        $mail_date  = date("Y/m/d H:i", strtotime($new_date));
 
-            //Getting url information from env file.
-            $frontend_url  = config('env-data.frontend-url');
+        //Getting url information from env file.
+        $frontend_url  = config('env-data.frontend-url');
 
-            // Insert new password info in the database.(t_user table)
+        // Insert new password info in the database.(t_user table)
 
-            $find_user_id = DB::select('SELECT user_id,user_name FROM t_users where mailaddress = ? and delete_flag = 0', [$request->mailaddress]);
-            $user_id = $find_user_id[0]->user_id;
-            $user_name = $find_user_id[0]->user_name;
+        $find_user_id = DB::select('SELECT user_id,user_name FROM t_users where mailaddress = ? and delete_flag = 0', [$request->mailaddress]);
+        $user_id = $find_user_id[0]->user_id;
+        $user_name = $find_user_id[0]->user_name;
 
-            DB::beginTransaction();
-            try {
-                $hashed_password = Hash::make($password);
-                DB::update('update t_users set password = ? ,  expiry_time_of_temp_password = ?, temp_password_flag = ?, updated_time = ?, updated_user_id = ? where mailaddress = ? and delete_flag = 0 ', [$hashed_password,  $new_date, '1', now()->format('Y-m-d H:i:s.u'), $user_id, $request->mailaddress]);
+        DB::beginTransaction();
+        try {
+            $hashed_password = Hash::make($password);
+            DB::update('update t_users set password = ? ,  expiry_time_of_temp_password = ?, temp_password_flag = ?, updated_time = ?, updated_user_id = ? where mailaddress = ? and delete_flag = 0 ', [$hashed_password,  $new_date, '1', now()->format('Y-m-d H:i:s.u'), $user_id, $request->mailaddress]);
+            DB::commit();
+        } catch (\Throwable $e) {
+            Log::error($e);
+            DB::rollBack();
 
-                DB::commit();
-            } catch (\Throwable $e) {
-                Log::error($e);
-                DB::rollBack();
-
-                abort(500, $registration_failed);
-            }
-
-
-
-            //Store user information for sending email.
-            $mail_data = [
-                'user_name' => $user_name,
-                'mailaddress' => $request->mailaddress,
-                'temporary_password' => $password,
-                'temporary_password_expiration_date' => $mail_date,
-                'login_url' => $frontend_url . '/login'
-            ];
-
-
-            //Sending mail to the user
-
-            try {
-                Mail::to($request->get('mailaddress'))->send(new PasswordResetMail($mail_data));
-            } catch (\Throwable $e) {
-                //Store error message in the user_password_reset log file.
-                Log::error($e);
-                //Display error message to the client
-                abort(500, $registration_failed);
-            }
-
-
-            // $page_status = "仮パスワードを記載したメールアドレスを送信しました。<br/>送信されたメールに記載されたパスワードを使用して、パスワードの再設定を行ってください。";
-            //Redirect to password-reset page with success status.
-            // return redirect('password-reset')->with(['status' => $page_status]);
-            return response()->json("パスワード再発行の件、完了しました。", 200);
-        } else {
-            abort(400, $mailaddress_not_registered);
+            abort(500, $registration_failed);
         }
 
+        //Store user information for sending email.
+        $mail_data = [
+            'user_name' => $user_name,
+            'mailaddress' => $request->mailaddress,
+            'temporary_password' => $password,
+            'temporary_password_expiration_date' => $mail_date,
+            'login_url' => $frontend_url . '/login'
+        ];
+
+        //Sending mail to the user
+        try {
+            Mail::to($request->get('mailaddress'))->send(new PasswordResetMail($mail_data));
+        } catch (\Throwable $e) {
+            //Store error message in the user_password_reset log file.
+            Log::error($e);
+            //Display error message to the client
+            abort(500, $registration_failed);
+        }
+
+        // $page_status = "仮パスワードを記載したメールアドレスを送信しました。<br/>送信されたメールに記載されたパスワードを使用して、パスワードの再設定を行ってください。";
+        //Redirect to password-reset page with success status.
+        // return redirect('password-reset')->with(['status' => $page_status]);
+        return response()->json("パスワード再発行の件、完了しました。", 200);
+        
         Log::debug(sprintf("storePasswordReset end"));
     }
 
