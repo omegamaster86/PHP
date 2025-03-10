@@ -216,7 +216,7 @@ class T_raceResultRecord extends Model
     {
         $racesResultRecord = DB::select(
             'SELECT 
-                `t_races`.`race_id` as `raceId`,
+                `t_race_result_record`.`race_id` as `raceId`,
                 `t_race_result_record`.`tourn_name` as `tournName`,
                 `t_race_result_record`.`official`,
                 `t_race_result_record`.`start_datetime` as `startDateTime`, 
