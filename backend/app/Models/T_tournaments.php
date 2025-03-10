@@ -438,6 +438,7 @@ class T_tournaments extends Model
                 tournaments.`tourn_name` AS `tournName`,
                 tournaments.`tourn_type` AS `tournType`,
                 tournaments.`event_start_date` AS `eventStartDate`,
+                tournaments.`venue_id` AS `venueId`,
                 tournaments.`venue_name` AS `venueName`,
                 tournaments.`sponsor_org_name` AS `sponsorOrgName`,
                 tournaments.`isPurchased` AS `isPurchased`
@@ -447,7 +448,8 @@ class T_tournaments extends Model
                     `t_tournaments`.`tourn_name` AS `tourn_name`,
                     `t_tournaments`.`tourn_type` AS `tourn_type`,
                     `t_tournaments`.`event_start_date` AS `event_start_date`,
-                    `m_venue`.`venue_name` AS `venue_name`,
+                    `t_tournaments`.`venue_id` AS `venue_id`,
+                    `t_tournaments`.`venue_name`,
                     `t_organizations`.`org_name` AS `sponsor_org_name`,
                     CASE
                         WHEN COUNT(`t_ticket_purchase_histories`.`tourn_id`) > 0 THEN 1

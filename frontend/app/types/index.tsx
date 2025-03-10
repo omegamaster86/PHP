@@ -102,6 +102,7 @@ interface RaceResultRecordsResponse {
   wind_speed_1000m_point: number | null; // 1000m地点風速
   wind_direction_1000m_point: number | null; // 1000m地点風向ID
   tenHundredmWindDirectionName: string | null; // 1000m地点風向名
+  venue_id: number;
   venue_name: string; // 開催場所
   range: number; // 距離
   order: number; // 順番
@@ -189,7 +190,7 @@ interface Tournament {
   sponsorOrgName: string; // 主催団体名 #置き換え作業対応不要
   event_start_date: string; // 開催日
   event_end_date: string; // 終了日
-  venue_id: string; // 開催場所ID
+  venue_id: number; // 開催場所ID
   venue_name: string; // 開催場所名
   tourn_url: string; // 大会URL
   tourn_info_faile_path: string; // 大会情報ファイルパス
@@ -653,6 +654,7 @@ interface MyPageTournamentInfoData {
   tournName: string; // 大会名
   tournType: TournType; // 公式／非公式
   eventStartDate: string; // 開催日
+  venueId: number;
   venueName: string; //開催場所
   sponsorOrgName: string; // 主催団体名
   isPurchased: boolean; // 購入済みかどうか

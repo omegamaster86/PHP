@@ -35,7 +35,11 @@ const TournamentCardContent: React.FC<Props> = (props) => {
         </div>
         <div className='flex items-center gap-2'>
           <LocationOnOutlined sx={{ width: 20, height: 20 }} />
-          <p>{cardItem.venueName}</p>
+          <p>
+            {cardItem.venueId === 9999
+              ? `その他 ${cardItem.venueName}`
+              : cardItem.venueName}
+          </p>
         </div>
 
         <div>

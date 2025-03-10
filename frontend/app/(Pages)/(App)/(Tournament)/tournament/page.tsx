@@ -141,7 +141,7 @@ export default function Tournaments() {
     sponsorOrgName: '',
     event_start_date: new Date().toLocaleDateString('ja-JP'),
     event_end_date: new Date().toLocaleDateString('ja-JP'),
-    venue_id: '',
+    venue_id: 0,
     venue_name: '',
     tourn_url: '',
     tourn_info_faile_path: '',
@@ -258,7 +258,7 @@ export default function Tournaments() {
       ),
     ]);
     const venueNameError =
-      tournamentFormData.venue_id === '9999'
+      tournamentFormData.venue_id === 9999
         ? Validator.getErrorMessages([
             Validator.validateRequired(
               tournamentFormData.venue_name,
@@ -663,7 +663,7 @@ export default function Tournaments() {
             sponsorOrgName: '',
             event_start_date: new Date().toLocaleDateString('ja-JP'),
             event_end_date: new Date().toLocaleDateString('ja-JP'),
-            venue_id: '',
+            venue_id: 0,
             venue_name: '',
             tourn_url: '',
             tourn_info_faile_path: '',
@@ -1125,6 +1125,19 @@ export default function Tournaments() {
     }
   };
 
+  const getVenueValue = () => {
+    if (mode !== 'confirm') {
+      return tournamentFormData.venue_id;
+    } else {
+      if (tournamentFormData.venue_id === 9999) {
+        return `その他 ${tournamentFormData.venue_name}`;
+      } else {
+        return tournamentFormData.venue_name;
+      }
+    }
+  };
+  
+
   return (
     <>
       <CustomTitle customBack={customBack}>
@@ -1234,7 +1247,10 @@ export default function Tournaments() {
           <CustomDatePicker
             selectedDate={tournamentFormData.event_start_date}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              handleInputChangeTournament('event_start_date', formatDate(e as unknown as string, 'yyyy/MM/dd'));
+              handleInputChangeTournament(
+                'event_start_date',
+                formatDate(e as unknown as string, 'yyyy/MM/dd'),
+              );
             }}
             readonly={mode === 'confirm'}
             isError={eventStartDateErrorMessage.length > 0}
@@ -1252,7 +1268,10 @@ export default function Tournaments() {
           <CustomDatePicker
             selectedDate={tournamentFormData.event_end_date}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              handleInputChangeTournament('event_end_date', formatDate(e as unknown as string, 'yyyy/MM/dd'));
+              handleInputChangeTournament(
+                'event_end_date',
+                formatDate(e as unknown as string, 'yyyy/MM/dd'),
+              );
             }}
             readonly={mode === 'confirm'}
             isError={eventEndDateErrorMessage.length > 0}
@@ -1272,7 +1291,7 @@ export default function Tournaments() {
           id='venue'
           required={mode !== 'confirm'}
           options={venue.map((item) => ({ key: item.id, value: item.name }))}
-          value={mode !== 'confirm' ? tournamentFormData.venue_id : tournamentFormData.venue_name}
+          value={getVenueValue()}
           onChange={(e) => {
             handleInputChangeTournament('venue_id', e?.toString());
             handleInputChangeTournament(
@@ -1284,7 +1303,7 @@ export default function Tournaments() {
           readonly={mode === 'confirm'}
         />
         {/* 開催場所入力欄 */}
-        <div className={`${tournamentFormData.venue_id == '9999' ? '' : 'hidden'} `}>
+        {mode !== 'confirm' && tournamentFormData.venue_id == 9999 && (
           <CustomTextField
             label=''
             isError={venueNameErrorMessage.length > 0}
@@ -1293,7 +1312,7 @@ export default function Tournaments() {
             value={tournamentFormData.venue_name}
             onChange={(e) => handleInputChangeTournament('venue_name', e.target.value)}
           />
-        </div>
+        )}
         <p className='text-caption1 text-systemErrorText'>
           {venueIdErrorMessage.length > 0 &&
             venueIdErrorMessage?.map((message) => {

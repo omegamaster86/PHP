@@ -43,7 +43,7 @@ interface SearchCond {
   tournTypeName: string;
   event_start_date: string;
   event_end_date: string;
-  venue_id: string;
+  venue_id: number;
   venue_name: string;
   sponsor_org_id: string;
   sponsorOrgName: string;
@@ -76,7 +76,7 @@ export default function TournamentSearch() {
     tournTypeName: '',
     event_start_date: '',
     event_end_date: '',
-    venue_id: '',
+    venue_id: 0,
     venue_name: '',
     sponsor_org_id: '',
     sponsorOrgName: '',
@@ -172,7 +172,7 @@ export default function TournamentSearch() {
   };
 
   // フォームの入力値を管理する関数
-  const handleInputChange = (name: string, value: string) => {
+  const handleInputChange = (name: string, value: string | number) => {
     setSearchCond((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -306,7 +306,7 @@ export default function TournamentSearch() {
                 handleInputChange('venue_id', e);
                 handleInputChange(
                   'venue_name',
-                  venue.find((item) => item.id.toString() === e)?.name || '',
+                  venue.find((item) => item.id === e)?.name || '',
                 );
               }}
               className='border-[0.5px] border-solid border-gray-50 rounded'
@@ -436,7 +436,7 @@ export default function TournamentSearch() {
                   tournTypeName: '',
                   event_start_date: '',
                   event_end_date: '',
-                  venue_id: '',
+                  venue_id: 0,
                   venue_name: '',
                   sponsor_org_id: '',
                   sponsorOrgName: '',
@@ -528,7 +528,9 @@ export default function TournamentSearch() {
                 {/* 開催終了日 */}
                 <CustomTd>{formatDate(row.event_end_date, 'yyyy/MM/dd')}</CustomTd>
                 {/* 開催場所 */}
-                <CustomTd>{row.venue_name}</CustomTd>
+                <CustomTd>
+                  {row.venue_id === 9999 ? `その他 ${row.venue_name}` : row.venue_name}
+                </CustomTd>
                 {/* 主催団体ID */}
                 <CustomTd>
                   <Link

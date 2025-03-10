@@ -109,7 +109,7 @@ export default function TournamentRef() {
     sponsorOrgName: '',
     event_start_date: '',
     event_end_date: '',
-    venue_id: '',
+    venue_id: 0,
     venue_name: '',
     tourn_url: '',
     tourn_info_faile_path: '',
@@ -554,10 +554,14 @@ export default function TournamentRef() {
                 {/* 開催場所 */}
                 <div className='text-gray-40 text-sm w-[100px]'>開催場所</div>
                 <Label
-                  label={tournamentFormData.venue_name}
+                  label={
+                    tournamentFormData.venue_id === 9999
+                      ? `その他 ${tournamentFormData.venue_name}`
+                      : tournamentFormData.venue_name
+                  }
                   textColor='white'
                   textSize='small'
-                ></Label>
+                />
               </div>
             </div>
           </div>
