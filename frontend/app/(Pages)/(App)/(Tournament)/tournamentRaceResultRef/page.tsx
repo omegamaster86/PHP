@@ -291,7 +291,11 @@ export default function TournamentRaceResultRef() {
         <div className='flex flex-col gap-[20px] bg-primary-900 p-4'>
           {/* 種目名 */}
           <Label
-            label={raceResultRecordsData.at(0)?.event_name ?? ''}
+            label={
+              raceResultRecordsData.at(0)?.event_id === 999
+                ? `その他 ${raceResultRecordsData.at(0)?.event_name} `
+                : raceResultRecordsData.at(0)?.event_name ?? ''
+            }
             textColor='white'
             textSize='h3'
           />
@@ -312,7 +316,11 @@ export default function TournamentRaceResultRef() {
             <Label label='開催場所' textColor='gray' textSize='caption1' />
             {raceResultRecordsData.length > 0 && (
               <Label
-                label={raceResultRecordsData.at(0)?.venue_name as string}
+                label={
+                  raceResultRecordsData.at(0)?.venue_id === 9999
+                    ? `その他 ${raceResultRecordsData.at(0)?.venue_name}`
+                    : raceResultRecordsData.at(0)?.venue_name ?? ''
+                }
                 textColor='white'
                 textSize='caption1'
               />

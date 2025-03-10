@@ -95,7 +95,8 @@ class T_raceResultRecord extends Model
                 `t_tournaments`.`tourn_id`,
                 `t_tournaments`.`tourn_name`,
                 `t_race_result_record`.range,
-                `m_venue`.venue_name,
+                `t_tournaments`.`venue_id` AS `venue_id`,
+                `t_tournaments`.`venue_name`,
                 `t_race_result_record`.org_id
             FROM `t_race_result_record` 
             INNER JOIN `t_tournaments` ON

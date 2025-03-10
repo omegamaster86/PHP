@@ -97,6 +97,7 @@ const raceResultRecordInitialValue: UpdatedRaceResultRecordsResponse = {
   wind_speed_1000m_point: null,
   wind_direction_1000m_point: null,
   tenHundredmWindDirectionName: null,
+  venue_id: 0,
   venue_name: '',
   range: 0,
   order: 0,
