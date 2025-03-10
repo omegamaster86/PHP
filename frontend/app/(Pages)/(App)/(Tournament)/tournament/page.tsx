@@ -1172,7 +1172,7 @@ export default function Tournaments() {
           value={tournamentFormData.tourn_name}
           onChange={(e) => handleInputChangeTournament('tourn_name', e.target.value)}
           toolTipText='開催する大会名と大会種別（公式/非公式）を選択してください。' //はてなボタン用
-          widthClassName='w-full'
+          widthClassName={ mode !== 'confirm' ? 'w-full' : ''}
         />
         {/* 大会種別（公式・非公式） */}
         <CustomDropdown
