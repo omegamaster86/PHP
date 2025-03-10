@@ -18,18 +18,20 @@ class MRaceClassSeeder extends Seeder
             (2, 'タイムトライアル', 'TimeTrial', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
             (3, '予備レース', 'Preliminary', 3, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
             (11, '敗復', 'Repechage', 4, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
-            (21, '準決', 'Semi-Final', 5, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
-            (31, '決勝A', 'FinalA', 6, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
-            (32, '決勝B', 'FinalB', 7, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
-            (33, '決勝C', 'FinalC', 8, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
-            (34, '決勝D', 'FinalD', 9, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
-            (35, '決勝E', 'FinalE', 10, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
-            (36, '決勝F', 'FinalF', 11, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
-            (41, '決勝I', 'Final 1', 12, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
-            (42, '決勝II', 'Final 2', 13, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
-            (98, '再レース', 'Re Row', 14, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
-            (99, 'OpenTrial', 'OpenTrial', 15, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
-            (999, 'その他', 'Others', 16, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0)
+            (20, '準々決勝', 'Quarterfinal', 5, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (30, '準決勝', 'Semi-Final', 6, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (40, '決勝', 'Final', 7, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (41, '決勝A', 'FinalA', 8, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (42, '決勝B', 'FinalB', 9, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (43, '決勝C', 'FinalC', 10, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (44, '決勝D', 'FinalD', 11, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (45, '決勝E', 'FinalE', 12, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (46, '決勝F', 'FinalF', 13, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (51, '決勝I', 'Final 1', 14, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (52, '決勝II', 'Final 2', 15, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (98, '再レース', 'Re Row', 16, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (99, 'OpenTrial', 'OpenTrial', 17, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (999, 'その他', 'Others', 18, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0)
             ;
             ");
     }

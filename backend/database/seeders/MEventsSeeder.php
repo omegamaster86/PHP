@@ -62,7 +62,7 @@ class MEventsSeeder extends Seeder
             (632, '男子コースタルクアッド', 'CM4x+', 'M', 5, 1, 1, 1, 0, 0, 0, 0, 1, 1, 46, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
             (641, '女子コースタルクフォア', 'CW4+', 'W', 5, 1, 1, 1, 0, 0, 0, 0, 1, 1, 47, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
             (642, '男子コースタルクフォア', 'CM4+', 'M', 5, 1, 1, 1, 0, 0, 0, 0, 1, 1, 48, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
-            (999, 'その他', 'OTHERS', 'MIX', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0)
+            (999, 'その他', 'OTHERS', 'MIX', 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 49, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0)
             ;
             ");
     }
