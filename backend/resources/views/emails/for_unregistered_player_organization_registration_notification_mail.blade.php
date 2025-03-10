@@ -24,26 +24,26 @@
     <p>
         ※本メールはシステムから自動送信されています。<br /><br />
 
-        {{$unregistered_player_mail_data['player_name']}} 様
-        ({{$unregistered_player_mail_data['to_mailaddress']}})
+        {{$unregistered_player_mail_data['player_name']}} 様<br />
+        ({{$unregistered_player_mail_data['to_mailaddress']}})<br />
 
-        {{$unregistered_player_mail_data['manager_type']}}の管理者により、団体の所属選手として登録されました。
-        選手情報は、ユーザー情報を元に作成しています。
-        システムにログインし、「選手情報更新」から選手情報の更新を行ってください。
-        【確認が必要な情報】
-        　　選手名
-        　　生年月日
-        　　性別
-        　　身長
-        　　体重
-        　　サイド情報
-        　　出身地
-        　　居住地
+        {{$unregistered_player_mail_data['manager_type']}}の管理者により、団体の所属選手として登録されました。<br />
+        選手情報は、ユーザー情報を元に作成しています。<br />
+        システムにログインし、「選手情報更新」から選手情報の更新を行ってください。<br />
+        【確認が必要な情報】<br />
+        　　選手名<br />
+        　　生年月日<br />
+        　　性別<br />
+        　　身長<br />
+        　　体重<br />
+        　　サイド情報<br />
+        　　出身地<br />
+        　　居住地<br />
 
 
-        ※ このメールは送信専用です。返信できませんのでご注意ください。
-        ※ このメールに心当たりがない場合、お手数ですが管理者までお問い合わせください。
-        　問い合わせ：{{$unregistered_player_mail_data['inquiry_url']}}
+        ※ このメールは送信専用です。返信できませんのでご注意ください。<br />
+        ※ このメールに心当たりがない場合、お手数ですが管理者までお問い合わせください。<br />
+        　問い合わせ：{{$unregistered_player_mail_data['inquiry_url']}}<br />
 
         ====================================<br />
         日本ローイング協会<br />
