@@ -24,14 +24,14 @@
     <p>
         ※本メールはシステムから自動送信されています。<br /><br />
 
-        {{$registered_player_mail_data['player_name']}} 様
-        {{$registered_player_mail_data['to_mailaddress']}}
+        {{$registered_player_mail_data['player_name']}} 様<br />
+        {{$registered_player_mail_data['to_mailaddress']}}<br />
 
-        {{$registered_player_mail_data['manager_type']}}の管理者により、団体の所属選手として登録されました。
+        {{$registered_player_mail_data['manager_type']}}の管理者により、団体の所属選手として登録されました。<br />
 
-        ※ このメールは送信専用です。返信できませんのでご注意ください。
-        ※ このメールに心当たりがない場合、お手数ですが管理者までお問い合わせください。
-        　　問い合わせ：{{$registered_player_mail_data['inquiry_url']}}
+        ※ このメールは送信専用です。返信できませんのでご注意ください。<br />
+        ※ このメールに心当たりがない場合、お手数ですが管理者までお問い合わせください。<br />
+        　　問い合わせ：{{$registered_player_mail_data['inquiry_url']}}<br />
 
 
         ====================================<br />
