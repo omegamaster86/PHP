@@ -1350,7 +1350,7 @@ class TournamentController extends Controller
             $condition .= " and `t_tournaments`.`tourn_type` = :tourn_type"; //大会種別
             $bindingParams["tourn_type"] = $searchInfo['tourn_type'];
         }
-        if (isset($searchInfo['venue_id'])) {
+        if ($searchInfo['venue_id'] > 0) {
             $condition .= " and `t_tournaments`.`venue_id` = :venue_id"; //開催場所
             $bindingParams["venue_id"] = $searchInfo['venue_id'];
         }
