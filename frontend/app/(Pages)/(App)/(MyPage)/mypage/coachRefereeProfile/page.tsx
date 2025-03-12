@@ -25,18 +25,26 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { formatDate } from '@/app/utils/dateUtil';
 import { addMonths, isAfter, isEqual } from 'date-fns';
 
+const coachMonthOffset = 9;
+const refereeMonthOffset = 12;
+
 type Qualification = {
   expiryDate: string | null;
   label: string;
 };
 
-  const QualificationItem: React.FC<{ item: Qualification }> = ({ item }) => {
+type QualificationItemProps = {
+  item: Qualification;
+  monthOffset: number;
+};
+
+const QualificationItem: React.FC<QualificationItemProps> = ({ item, monthOffset }) => {
   const expiryDate = item.expiryDate ? new Date(item.expiryDate) : null;
 
-  const isWithinTwoMonths = (expiryDate: Date): boolean => {
+  const isWithinPeriod = (expiry: Date): boolean => {
     const today = new Date();
-    const twoMonthsBeforeExpiry = addMonths(expiryDate, -2);
-    return isAfter(today, twoMonthsBeforeExpiry) || isEqual(today, twoMonthsBeforeExpiry);
+    const isWithinMonths = addMonths(expiry, -monthOffset);
+    return isAfter(today, isWithinMonths) || isEqual(today, isWithinMonths);
   };
 
   const qualificationToolTipText = (item: Qualification): string => {
@@ -50,7 +58,7 @@ type Qualification = {
     <ToolTip toolTipText={toolTipText}>
       <div className='relative'>
         <RoundedBadge label={item.label} isValid={expiryDate ? expiryDate > new Date() : true} />
-        {expiryDate && isWithinTwoMonths(expiryDate) && (
+        {expiryDate && isWithinPeriod(expiryDate) && (
           <WarningAmberIcon className='text-systemWarningText text-lg bg-white -translate-y-1/2 absolute -right-3' />
         )}
       </div>
@@ -159,6 +167,7 @@ export default function CoachRefereeProfile() {
                   label: qualification.qualName,
                   expiryDate: qualification.expiryDate,
                 }}
+                monthOffset={coachMonthOffset}
               />
             ))
           ) : (
@@ -182,6 +191,7 @@ export default function CoachRefereeProfile() {
                   label: qualification.qualName,
                   expiryDate: qualification.expiryDate,
                 }}
+                monthOffset={refereeMonthOffset}
               />
             ))
           ) : (
