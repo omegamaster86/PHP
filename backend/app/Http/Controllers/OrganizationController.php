@@ -205,6 +205,21 @@ class OrganizationController extends Controller
         }
     }
 
+    public function getCanRegisterPlayerOrganizations(T_organizations $tOrganization)
+    {
+        Log::debug(sprintf("getCanRegisterPlayerOrganizations start"));
+        $userId = Auth::user()->user_id;
+        $userType = Auth::user()->user_type;
+
+        // 管理者/JARA権限を持たないユーザーの場合は、スタッフとして所属する団体のみ取得
+        $isOnlyStaff = substr($userType, 1, 1) == '0' && substr($userType, 2, 1) == '0';
+
+        $organizations = $tOrganization->getCanRegisterPlayerOrganizations($userId, $isOnlyStaff);
+
+        Log::debug(sprintf("getCanRegisterPlayerOrganizations end"));
+        return response()->json(['result' => $organizations]);
+    }
+
     //userIDに紐づいたデータを送信 20240131
     public function getOrganizationForOrgManagement(T_organizations $tOrganization)
     {

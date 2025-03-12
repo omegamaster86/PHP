@@ -113,6 +113,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     // 団体関連
     Route::post('deleteOrgData', [OrganizationController::class, 'deleteOrgData']); //団体削除
+    Route::get('getCanRegisterPlayerOrganizations', [OrganizationController::class, 'getCanRegisterPlayerOrganizations']); // 選手登録可能な団体一覧を取得
     Route::post('getEntryTournamentsViewForTeamRef', [OrganizationController::class, 'getEntryTournamentsViewForTeamRef']); //エントリー大会
     Route::get('getOrganizationForOrgManagement', [OrganizationController::class, 'getOrganizationForOrgManagement']); //団体管理画面用に団体情報を取得
     Route::get('getOrganizationListData', [OrganizationController::class, 'getOrganizationListData']); //団体所属選手一括登録画面用に団体情報を取得

@@ -3,7 +3,7 @@
 
 import { CustomButton, CustomDropdown, CustomTitle, ErrorBox } from '@/app/components';
 import axios from '@/app/lib/axios';
-import { Org, UserResponse } from '@/app/types';
+import { UserResponse } from '@/app/types';
 import Validator from '@/app/utils/validator';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -29,6 +29,7 @@ interface CsvData {
   residenceCountryId: number; //居住地国ID
   residencePrefectureId: number; //居住地都道府県ID
 }
+
 // CSVアップロードのプロパティの型定義
 interface CsvUploadProps {
   label: string; // ラベル
@@ -36,6 +37,7 @@ interface CsvUploadProps {
   csvUpload: (newCsvData: { content: Array<Array<string>>; isSet: boolean }) => void; // CSVアップロード時のコールバック
   resetActivationFlg: () => void; // アクティベーションフラグのリセット
 }
+
 // CSVダウンロードのプロパティの型定義
 interface CsvDownloadProps {
   data: any[];
@@ -50,6 +52,11 @@ interface FileHandler {
   clearFile(): void;
 }
 
+interface Organization {
+  org_id: number;
+  org_name: string;
+}
+
 export default function TeamPlayerBulkRegister() {
   const [errorMessage, setErrorMessage] = useState([] as string[]);
 
@@ -59,8 +66,8 @@ export default function TeamPlayerBulkRegister() {
 
   const org_id = searchParams.get('org_id')?.toString() || '';
 
-  const [orgs, setOrgs] = useState([] as Org[]);
-  const [orgData, setOrg] = useState({} as Org);
+  const [orgs, setOrgs] = useState<Organization[]>([]);
+  const [orgData, setOrg] = useState<Organization>({ org_id: 0, org_name: '' });
   // ステート変数
   const [csvFileData, setCsvFileData] = useState<{
     content: Array<Array<string>>;
@@ -194,23 +201,11 @@ export default function TeamPlayerBulkRegister() {
             targetOrgName: org.data.result.org_name,
           });
         } else {
-          const playerInf = await axios.get('api/getIDsAssociatedWithUser');
-          const userIdInfo = playerInf.data.result[0];
-          if (
-            userIdInfo.is_administrator == '0' &&
-            userIdInfo.is_jara == '0' &&
-            userIdInfo.is_pref_boat_officer == '0'
-          ) {
-            //団体管理者の権限だけが1の場合
-            const responseData = await axios.get('api/getOrganizationForOrgManagement'); //ログインユーザーが管理している団体データの取得
-            setOrgs(responseData.data.result);
-          } else {
-            const responseData = await axios.get('api/getOrganizationListData'); //すべての団体データの取得
-            setOrgs(responseData.data.result);
-          }
+          const responseData = await axios.get('api/getCanRegisterPlayerOrganizations');
+          setOrgs(responseData.data.result);
         }
       } catch (error) {
-        //console.log(error);
+        setErrorMessage(['API取得エラー:' + (error as Error).message]);
       }
     };
     fetchData();
