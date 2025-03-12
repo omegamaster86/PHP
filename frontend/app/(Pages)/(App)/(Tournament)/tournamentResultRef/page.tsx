@@ -230,9 +230,9 @@ export default function TournamentResultRef() {
               </div>
             </div>
             <div className='flex flex-col gap-[20px] border border-solid border-gray-300 p-[20px]'>
-              <div className='flex flex-row justify-between gap-[80px] w-[800px]'>
+              <div className='flex flex-row justify-between gap-[80px] '>
                 <div className='flex flex-col justify-between gap-3'>
-                  <div className='flex flex-row justify-left gap-[80px] item-center'>
+                  <div className='flex flex-col gap-4 item-center md:flex-row md:gap-10'>
                     <div className='flex flex-col gap-1'>
                       <Label label='所属団体' textSize='small' isBold />
                       <p className='text-secondaryText disable'>{item?.org_name || ''}</p>
@@ -245,8 +245,6 @@ export default function TournamentResultRef() {
                       <Label label='出漕レーンNo' textSize='small' isBold />
                       <p className='text-secondaryText disable'>{item?.lane_number || ''}</p>
                     </div>
-                  </div>
-                  <div className='flex flex-row justify-left gap-[80px] item-center'>
                     <div className='flex flex-col gap-1'>
                       <Label label='順位' textSize='small' isBold />
                       <p className='text-secondaryText disable'>{item?.rank || ''}</p>
@@ -258,45 +256,31 @@ export default function TournamentResultRef() {
                 <div className='border-t border-r border-l border-solid border-gray-300 bg-secondary-50 p-[8px]'>
                   <Label label='ラップタイム' />
                 </div>
-                <div className='flex flex-col gap-[20px] border border-solid border-gray-300 p-[20px]'>
-                  <div>
-                    <div className='flex flex-row justify-between gap-[80px] w-[800px]'>
-                      <div className='flex flex-col justify-between gap-[1px]'>
-                        <div className='flex flex-row justify-left item-center gap-[60px]'>
-                          <div className='flex flex-col gap-1'>
-                            <Label label='500m' textSize='small' isBold />
-                            <p className='text-secondaryText disable'>{item?.laptime_500m || ''}</p>
-                          </div>
-                          <div className='flex flex-col gap-1'>
-                            <Label label='1000m' textSize='small' isBold />
-                            <p className='text-secondaryText disable'>
-                              {item?.laptime_1000m || ''}
-                            </p>
-                          </div>
-                          <div className='flex flex-col gap-1'>
-                            <Label label='1500m' textSize='small' isBold />
-                            <p className='text-secondaryText disable'>
-                              {item?.laptime_1500m || ''}
-                            </p>
-                          </div>
-                          <div className='flex flex-col gap-1'>
-                            <Label label='2000m' textSize='small' isBold />
-                            <p className='text-secondaryText disable'>
-                              {item?.laptime_2000m || ''}
-                            </p>
-                          </div>
-                          <div className='flex flex-col gap-1'>
-                            <Label label='最終' textSize='small' isBold />
-                            <p className='text-secondaryText disable'>{item?.final_time || ''}</p>
-                          </div>
-                          <div className='flex flex-col gap-1'>
-                            <Label label='備考' textSize='small' isBold />
-                            <p className='text-secondaryText disable'>
-                              {item?.race_result_notes || ''}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                <div className='flex flex-col gap-[20px] border border-solid border-gray-300 p-[20px] overflow-x-auto'>
+                  <div className='flex flex-row justify-left item-center gap-[60px] w-[800px]'>
+                    <div className='flex flex-col gap-1'>
+                      <Label label='500m' textSize='small' isBold />
+                      <p className='text-secondaryText disable'>{item?.laptime_500m || ''}</p>
+                    </div>
+                    <div className='flex flex-col gap-1'>
+                      <Label label='1000m' textSize='small' isBold />
+                      <p className='text-secondaryText disable'>{item?.laptime_1000m || ''}</p>
+                    </div>
+                    <div className='flex flex-col gap-1'>
+                      <Label label='1500m' textSize='small' isBold />
+                      <p className='text-secondaryText disable'>{item?.laptime_1500m || ''}</p>
+                    </div>
+                    <div className='flex flex-col gap-1'>
+                      <Label label='2000m' textSize='small' isBold />
+                      <p className='text-secondaryText disable'>{item?.laptime_2000m || ''}</p>
+                    </div>
+                    <div className='flex flex-col gap-1'>
+                      <Label label='最終' textSize='small' isBold />
+                      <p className='text-secondaryText disable'>{item?.final_time || ''}</p>
+                    </div>
+                    <div className='flex flex-col gap-1'>
+                      <Label label='備考' textSize='small' isBold />
+                      <p className='text-secondaryText disable'>{item?.race_result_notes || ''}</p>
                     </div>
                   </div>
                 </div>
@@ -305,43 +289,37 @@ export default function TournamentResultRef() {
                 <div className='border-t border-r border-l border-solid border-gray-300 bg-primary-50 p-[8px]'>
                   <Label label='ストロークレート' />
                 </div>
-                <div className='flex flex-col gap-[20px] border border-solid border-gray-300 p-[20px]'>
-                  <div>
-                    <div className='flex flex-row justify-between gap-[80px] w-[800px]'>
-                      <div className='flex flex-col justify-between gap-[1px]'>
-                        <div className='flex flex-row justify-left item-center gap-[80px]'>
-                          <div className='flex flex-col gap-1'>
-                            <Label label='500m' textSize='small' isBold />
-                            <p className='text-secondaryText disable'>
-                              {item?.stroke_rat_500m ? item?.stroke_rat_500m + '回/分' : ''}
-                            </p>
-                          </div>
-                          <div className='flex flex-col gap-1'>
-                            <Label label='1000m' textSize='small' isBold />
-                            <p className='text-secondaryText disable'>
-                              {item?.stroke_rat_1000m ? item?.stroke_rat_1000m + '回/分' : ''}
-                            </p>
-                          </div>
-                          <div className='flex flex-col gap-1'>
-                            <Label label='1500m' textSize='small' isBold />
-                            <p className='text-secondaryText disable'>
-                              {item?.stroke_rat_1500m ? item?.stroke_rat_1500m + '回/分' : ''}
-                            </p>
-                          </div>
-                          <div className='flex flex-col gap-1'>
-                            <Label label='2000m' textSize='small' isBold />
-                            <p className='text-secondaryText disable'>
-                              {item?.stroke_rat_2000m ? item?.stroke_rat_2000m + '回/分' : ''}
-                            </p>
-                          </div>
-                          <div className='flex flex-col gap-1'>
-                            <Label label='平均' textSize='small' isBold />
-                            <p className='text-secondaryText disable'>
-                              {item?.stroke_rate_avg ? item?.stroke_rate_avg + '回/分' : ''}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                <div className='flex flex-col gap-[20px] border border-solid border-gray-300 p-[20px] overflow-x-auto'>
+                  <div className='flex flex-row justify-left item-center gap-[80px] w-[800px]'>
+                    <div className='flex flex-col gap-1'>
+                      <Label label='500m' textSize='small' isBold />
+                      <p className='text-secondaryText disable'>
+                        {item?.stroke_rat_500m ? item?.stroke_rat_500m + '回/分' : ''}
+                      </p>
+                    </div>
+                    <div className='flex flex-col gap-1'>
+                      <Label label='1000m' textSize='small' isBold />
+                      <p className='text-secondaryText disable'>
+                        {item?.stroke_rat_1000m ? item?.stroke_rat_1000m + '回/分' : ''}
+                      </p>
+                    </div>
+                    <div className='flex flex-col gap-1'>
+                      <Label label='1500m' textSize='small' isBold />
+                      <p className='text-secondaryText disable'>
+                        {item?.stroke_rat_1500m ? item?.stroke_rat_1500m + '回/分' : ''}
+                      </p>
+                    </div>
+                    <div className='flex flex-col gap-1'>
+                      <Label label='2000m' textSize='small' isBold />
+                      <p className='text-secondaryText disable'>
+                        {item?.stroke_rat_2000m ? item?.stroke_rat_2000m + '回/分' : ''}
+                      </p>
+                    </div>
+                    <div className='flex flex-col gap-1'>
+                      <Label label='平均' textSize='small' isBold />
+                      <p className='text-secondaryText disable'>
+                        {item?.stroke_rate_avg ? item?.stroke_rate_avg + '回/分' : ''}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -351,115 +329,116 @@ export default function TournamentResultRef() {
                 <div className='w-full bg-primary-500 h-[40px] flex justify-center items-center font-bold relative'>
                   <div className='font-bold text-white'>選手情報</div>
                 </div>
-                <CustomTable>
-                  <CustomThead>
-                    <CustomTr>
-                      <CustomTh rowSpan={2}>
-                        <p>削除</p>
-                      </CustomTh>
-                      <CustomTh rowSpan={2}>
-                        <p>選手ID</p>
-                      </CustomTh>
-                      <CustomTh rowSpan={2}>
-                        <p>選手名</p>
-                      </CustomTh>
-                      <CustomTh rowSpan={2}>
-                        <p>性別</p>
-                      </CustomTh>
-                      <CustomTh rowSpan={2}>
-                        <p>身長</p>
-                      </CustomTh>
-                      <CustomTh rowSpan={2}>
-                        <p>体重</p>
-                      </CustomTh>
-                      <CustomTh rowSpan={2}>
-                        <p>シート番号</p>
-                      </CustomTh>
-                      <CustomTh rowSpan={1} colSpan={5}>
-                        <p>心拍数(回/分)</p>
-                      </CustomTh>
-                      <CustomTh rowSpan={1}>
-                        <p>エルゴ</p>
-                      </CustomTh>
-                    </CustomTr>
-                    <CustomTr>
-                      <CustomTh>
-                        <p>500m</p>
-                      </CustomTh>
-                      <CustomTh>
-                        <p>1000m</p>
-                      </CustomTh>
-                      <CustomTh>
-                        <p>1500m</p>
-                      </CustomTh>
-                      <CustomTh>
-                        <p>2000m</p>
-                      </CustomTh>
-                      <CustomTh>
-                        <p>平均</p>
-                      </CustomTh>
-                      <CustomTh>
-                        <p>
-                          立ち会い
-                          <br />
-                          有無
-                        </p>
-                      </CustomTh>
-                    </CustomTr>
-                  </CustomThead>
-                  <CustomTbody>
-                    {item.crewPlayer.map((item, index) => (
-                      <CustomTr key={index}>
-                        <CustomTd>
-                          <div className='flex justify-center'>
-                            <OriginalCheckbox
-                              id={''}
-                              value={''}
-                              readonly
-                              checked={false}
-                              onChange={() => {}}
-                            />
-                          </div>
-                        </CustomTd>
-                        <CustomTd>{item.playerId}</CustomTd>
-                        <CustomTd>{item.playerName}</CustomTd>
-                        <CustomTd>{item.sex}</CustomTd>
-                        <CustomTd>{item.height}</CustomTd>
-                        <CustomTd>{item.weight}</CustomTd>
-                        <CustomTd>{item.seatName}</CustomTd>
-                        <CustomTd>{item.fiveHundredmHeartRate}</CustomTd>
-                        <CustomTd>{item.tenHundredmHeartRate}</CustomTd>
-                        <CustomTd>{item.fifteenHundredmHeartRate}</CustomTd>
-                        <CustomTd>{item.twentyHundredmHeartRate}</CustomTd>
-                        <CustomTd>{item.heartRateAvg}</CustomTd>
-                        <CustomTd>
-                          <div className='flex justify-center'>
-                            <OriginalCheckbox
-                              id={'ergo' + index}
-                              value='ergo'
-                              checked={item.attendance ? true : false}
-                              onChange={(e: any) => {}}
-                              readonly
-                            />
-                          </div>
-                        </CustomTd>
+                <div className='overflow-x-auto'>
+                  <CustomTable>
+                    <CustomThead>
+                      <CustomTr>
+                        <CustomTh rowSpan={2}>
+                          <p>削除</p>
+                        </CustomTh>
+                        <CustomTh rowSpan={2}>
+                          <p>選手ID</p>
+                        </CustomTh>
+                        <CustomTh rowSpan={2}>
+                          <p>選手名</p>
+                        </CustomTh>
+                        <CustomTh rowSpan={2}>
+                          <p>性別</p>
+                        </CustomTh>
+                        <CustomTh rowSpan={2}>
+                          <p>身長</p>
+                        </CustomTh>
+                        <CustomTh rowSpan={2}>
+                          <p>体重</p>
+                        </CustomTh>
+                        <CustomTh rowSpan={2}>
+                          <p>シート番号</p>
+                        </CustomTh>
+                        <CustomTh rowSpan={1} colSpan={5}>
+                          <p>心拍数(回/分)</p>
+                        </CustomTh>
+                        <CustomTh rowSpan={1}>
+                          <p>エルゴ</p>
+                        </CustomTh>
                       </CustomTr>
-                    ))}
-                  </CustomTbody>
-                </CustomTable>
+                      <CustomTr>
+                        <CustomTh>
+                          <p>500m</p>
+                        </CustomTh>
+                        <CustomTh>
+                          <p>1000m</p>
+                        </CustomTh>
+                        <CustomTh>
+                          <p>1500m</p>
+                        </CustomTh>
+                        <CustomTh>
+                          <p>2000m</p>
+                        </CustomTh>
+                        <CustomTh>
+                          <p>平均</p>
+                        </CustomTh>
+                        <CustomTh>
+                          <p>
+                            立ち会い
+                            <br />
+                            有無
+                          </p>
+                        </CustomTh>
+                      </CustomTr>
+                    </CustomThead>
+                    <CustomTbody>
+                      {item.crewPlayer.map((item, index) => (
+                        <CustomTr key={index}>
+                          <CustomTd>
+                            <div className='flex justify-center'>
+                              <OriginalCheckbox
+                                id={''}
+                                value={''}
+                                readonly
+                                checked={false}
+                                onChange={() => {}}
+                              />
+                            </div>
+                          </CustomTd>
+                          <CustomTd>{item.playerId}</CustomTd>
+                          <CustomTd>{item.playerName}</CustomTd>
+                          <CustomTd>{item.sex}</CustomTd>
+                          <CustomTd>{item.height}</CustomTd>
+                          <CustomTd>{item.weight}</CustomTd>
+                          <CustomTd>{item.seatName}</CustomTd>
+                          <CustomTd>{item.fiveHundredmHeartRate}</CustomTd>
+                          <CustomTd>{item.tenHundredmHeartRate}</CustomTd>
+                          <CustomTd>{item.fifteenHundredmHeartRate}</CustomTd>
+                          <CustomTd>{item.twentyHundredmHeartRate}</CustomTd>
+                          <CustomTd>{item.heartRateAvg}</CustomTd>
+                          <CustomTd>
+                            <div className='flex justify-center'>
+                              <OriginalCheckbox
+                                id={'ergo' + index}
+                                value='ergo'
+                                checked={item.attendance ? true : false}
+                                onChange={(e: any) => {}}
+                                readonly
+                              />
+                            </div>
+                          </CustomTd>
+                        </CustomTr>
+                      ))}
+                    </CustomTbody>
+                  </CustomTable>
+                </div>
               </div>
             </div>
           </div>
         </div>
       ))}
 
-      <div className='flex flex-row justify-center gap-[80px] mt-[20px]'>
+      <div className='flex flex-col items-center justify-center gap-4 mt-5 md:flex-row'>
         <CustomButton
           buttonType='secondary'
           onClick={() => {
             router.push('/tournamentResultManagement');
           }}
-          className='w-[170px]'
         >
           戻る
         </CustomButton>
@@ -499,7 +478,6 @@ export default function TournamentResultRef() {
 
               setIsSubmitting(false);
             }}
-            className='w-[170px]'
           >
             削除
           </CustomButton>
@@ -510,7 +488,6 @@ export default function TournamentResultRef() {
               onClick={() => {
                 router.push('/tournamentResult?mode=update&raceId=' + raceInfo.race_id);
               }}
-              className='w-[170px]'
             >
               レース情報を更新
             </CustomButton>
