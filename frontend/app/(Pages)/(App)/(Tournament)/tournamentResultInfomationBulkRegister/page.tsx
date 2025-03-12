@@ -295,8 +295,9 @@ export default function TournamentResultInfomationBulkRegister() {
     // 大会IDが入力されている場合
     if (formData.tournId != 0 && formData.tournId != null && formData.tournId != undefined) {
       try {
-        const tornSearchVal = { tourn_id: formData.tournId };
-        const tournamentResponse = await axios.post('api/getTournamentInfoData', tornSearchVal);
+        const tournamentResponse = await axios.get('api/getRaceResultEditableTournamentById', {
+          params: { tourn_id: formData.tournId },
+        });
 
         setFormData((prevFormData) => ({
           ...prevFormData,
@@ -318,6 +319,7 @@ export default function TournamentResultInfomationBulkRegister() {
         setTournStartYearActivFlag(true); //true:変更できない false:変更できる
         setTournNameActivFlag(false); //true:変更できない false:変更できる
         setReadButtonActivFlag(false); //true:変更できない false:変更できる
+        setTournIdErrorMessage([]);
       } catch (error: any) {
         setTournIdErrorMessage([error?.response?.data.message]);
       }

@@ -22,6 +22,26 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class TournamentController extends Controller
 {
+    // レース結果編集可能な大会情報を取得
+    public function getRaceResultEditableTournamentById(Request $request, T_tournaments $TTournaments)
+    {
+        Log::debug(sprintf("getRaceResultEditableTournamentById start"));
+
+        $reqData = $request->only(['tourn_id']);
+        $userType = Auth::user()->user_type;
+
+        // 管理者/JARA権限を持たないユーザーの場合は、スタッフとして所属する団体が主催する大会のみ取得
+        $isOnlyStaff = substr($userType, 1, 1) == '0' && substr($userType, 2, 1) == '0';
+
+        $result = $TTournaments->getRaceResultEditableTournamentById($reqData['tourn_id'], $isOnlyStaff);
+        if (empty($result)) {
+            abort(404, '存在しない、または編集権限がない大会です。');
+        }
+
+        Log::debug(sprintf("getRaceResultEditableTournamentById end"));
+        return response()->json(['result' => $result]);
+    }
+
     public function searchTournament(Request $request, T_tournaments $tTournaments, M_venue $venueData)
     {
         Log::debug(sprintf("searchTournament start"));
