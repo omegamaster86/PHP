@@ -337,6 +337,46 @@ class T_tournaments extends Model
         return $tournaments;
     }
 
+    public function getRaceResultEditableTournamentById($tournId, $isOnlyStaff)
+    {
+        $tournaments = DB::select(
+            "SELECT
+                tt.tourn_id AS tourn_id,
+                tt.tourn_name AS tourn_name,
+                tt.event_start_date AS event_start_date
+            FROM t_tournaments tt
+            WHERE 1=1
+                AND tt.delete_flag = 0
+                AND tt.tourn_id = ?
+                AND (
+                    ? = 0
+                    OR EXISTS (
+                        SELECT
+                            'x'
+                        FROM `t_organizations` `to`
+                        INNER JOIN `t_organization_staff` staff ON
+                            staff.org_id = to.org_id
+                            AND staff.user_id = ?
+                            AND staff.delete_flag = 0
+                        WHERE 1=1
+                            AND to.org_id = tt.sponsor_org_id
+                            AND to.delete_flag = 0
+                    )
+                )",
+            [
+                $tournId,
+                $isOnlyStaff,
+                Auth::user()->user_id
+            ]
+        );
+
+        if (empty($tournaments)) {
+            return null;
+        }
+
+        return $tournaments[0];
+    }
+
     //開催年とユーザーIDを条件に大会情報を取得する
     //団体管理者用
     public function getTournamentsFromEntryYearAndUserId($entry_year, $user_id)

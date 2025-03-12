@@ -23,19 +23,13 @@ class TournamentInfoAlignmentController extends Controller
         $reqData = $request->all();
         $event_start_year = $reqData["event_start_year"];
         $user_type = Auth::user()->user_type;
-        //ログインユーザーの種別が団体管理者のみの場合、
-        //ログインユーザーの所属団体が主催した大会だけを表示する
-        if (
-            $user_type == '00001001'
-            || $user_type == '00001011'
-            || $user_type == '00001101'
-            || $user_type == '00001111'
-        ) {
-            $tournaments = $t_tournaments->getTournamentsFromEntryYearAndUserId($event_start_year, Auth::user()->user_id);
-        }
-        //そうでなければ開催年に該当する大会を表示する
-        else {
+
+        if (substr($user_type, 1, 1) == '1' || substr($user_type, 2, 1) == '1') {
+            // 管理者/JARA権限を持つユーザーならば、開催年に該当する大会をすべて表示する。
             $tournaments = $t_tournaments->getTournamentsFromEntryYear($event_start_year);
+        } else {
+            // ユーザーがスタッフとして所属する団体が主催した大会だけを表示する。
+            $tournaments = $t_tournaments->getTournamentsFromEntryYearAndUserId($event_start_year, Auth::user()->user_id);
         }
         Log::debug(sprintf("tournamentEntryYearSearch end."));
         return response()->json(['result' => $tournaments]); //DBの結果を返す
