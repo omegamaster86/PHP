@@ -398,6 +398,34 @@ class T_organizations extends Model
         return $organizations;
     }
 
+    public function getCanRegisterPlayerOrganizations($userId, $isOnlyStaff)
+    {
+        $organizations = DB::select(
+            "SELECT
+                `to`.org_id AS org_id,
+                `to`.org_name AS org_name
+            FROM `t_organizations` `to`
+            WHERE 1=1
+                AND to.delete_flag = 0
+                AND (
+                    :is_only_staff = 0
+                    OR EXISTS (
+                        SELECT
+                            'x'
+                        FROM `t_organization_staff` tos
+                        WHERE 1=1
+                            AND tos.org_id = to.org_id
+                            AND tos.user_id = :user_id
+                            AND tos.delete_flag = 0
+                    )
+                )
+            ",
+            ['user_id' => $userId, 'is_only_staff' => $isOnlyStaff]
+        );
+
+        return $organizations;
+    }
+
     //ユーザーIDを条件にinterfaceのTeamResponseを取得する
     public function getManagementOrganizations($userId, $canEdit)
     {
