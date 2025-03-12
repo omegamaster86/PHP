@@ -1068,6 +1068,8 @@ class OrganizationPlayersController extends Controller
                     $newPlayerId = $t_players->insertPlayerForTeamPlayerBulkRegister($newPlayer);
 
                     $t_organization_players->insertOrganizationPlayer($newPlayerId, $input_org_id);
+
+                    $t_users->updateUserTypeForPlayer($newUserId);
                 } catch (\Throwable $e) {
                     DB::rollback();
                     $error_message = "以下の選手のユーザー登録に失敗しました。選手名：" . $target_player_name . "　メールアドレス：" . $target_mailaddress;
