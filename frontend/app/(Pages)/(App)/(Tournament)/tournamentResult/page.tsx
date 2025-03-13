@@ -1943,7 +1943,11 @@ export default function TournamentResult() {
                 )}
               </div>
             </div>
-            <div className='w-full bg-primary-500 h-[140px] flex flex-col gap-3 justify-center items-center font-bold md:h-10 md:justify-between md:flex-row md:px-4'>
+            <div
+              className={`w-full bg-primary-500 flex flex-col gap-3 justify-center items-center font-bold md:justify-between md:flex-row md:px-4 md:h-10 ${
+                mode === 'confirm' ? 'h-10' : 'h-36'
+              }`}
+            >
               <div className='order-2 left-[20px] gap-[8px] flex md:order-1'>
                 {mode !== 'confirm' && (
                   <CustomButton
@@ -1987,7 +1991,7 @@ export default function TournamentResult() {
                 )}
               </div>
 
-              <div className='order-1 font-bold text-white'>選手情報</div>
+              <div className={`font-bold text-white ${mode === 'confirm' ? 'order-2' : 'order-1'}`}>選手情報</div>
               <div className='order-3 self-center'>
                 {mode !== 'confirm' && (
                   <CustomButton
