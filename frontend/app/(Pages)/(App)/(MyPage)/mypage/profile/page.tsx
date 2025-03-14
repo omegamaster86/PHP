@@ -86,7 +86,7 @@ export default function Profile() {
 
         <div className='md:max-w-lg'>
           <div className='my-4 flex flex-col gap-2'>
-            <div className='flex w-full justify-between'>
+            <div className='flex w-full items-center justify-between'>
               <h3 className='text-2xl font-bold'>{profile.userName}</h3>
               {/* スマホの場合は非表示 */}
               <div className='hidden md:block'>{EditButton}</div>

@@ -99,7 +99,7 @@ class T_raceResultRecord extends Model
                 `t_tournaments`.`venue_name`,
                 `t_race_result_record`.org_id
             FROM `t_race_result_record` 
-            INNER JOIN `t_tournaments` ON
+            LEFT OUTER JOIN `t_tournaments` ON
                 `t_tournaments`.`tourn_id` = `t_race_result_record`.`tourn_id`
                 AND `t_tournaments`.`delete_flag` = 0
             LEFT OUTER JOIN `m_wind_direction` wd2000p ON
