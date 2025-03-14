@@ -85,7 +85,7 @@ const CsvTable = ({
       row.windDirectionTwentyHundredmPointError,
       row.windSpeedTenHundredmPointError,
       row.windDirectionTenHundredmPointError,
-      row.remarkError,
+      row.raceResultNoteError,
     ].filter((x) => !!x);
 
     return errorMessages.join('\n');
@@ -350,8 +350,8 @@ const CsvTable = ({
                 >
                   {row.windDirectionTenHundredmPoint}
                 </CustomTd>
-                <CustomTd textType={textType} className={checkError(row.remarkError)}>
-                  {row.remark}
+                <CustomTd textType={textType} className={checkError(row.raceResultNoteError)}>
+                  {row.raceResultNote}
                 </CustomTd>
               </CustomTr>
             );

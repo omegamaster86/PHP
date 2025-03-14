@@ -101,8 +101,8 @@ interface CsvData {
   windSpeedTenHundredmPointError: string | false; // 1000m地点風速エラーの有無
   windDirectionTenHundredmPoint: string; // 1000m地点風向
   windDirectionTenHundredmPointError: string | false; // 1000m地点風向エラーの有無
-  remark: string; // 備考
-  remarkError: string | false; // 備考エラーの有無
+  raceResultNote: string; // 備考
+  raceResultNoteError: string | false; // 備考エラーの有無
 }
 
 export type { CsvData };

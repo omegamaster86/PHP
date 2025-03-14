@@ -21,7 +21,6 @@ class DatabaseSeeder extends Seeder
         $this->call(MOrganizationTypeSeeder::class);
         $this->call(MPrefecturesSeeder::class);
         $this->call(MRaceClassSeeder::class);
-        $this->call(MRaceResultNotesSeeder::class);
         $this->call(MRefereeQualificationsSeeder::class);
         $this->call(MSeatNumberSeeder::class);
         $this->call(MSexSeeder::class);

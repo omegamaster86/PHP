@@ -36,7 +36,6 @@ use App\Models\M_language_proficiency;
 use App\Models\M_clothes_size;
 use App\Models\M_weather_type;
 use App\Models\M_wind_direction;
-use App\Models\M_race_result_notes;
 use App\Models\M_seat_number;
 use App\Models\T_organizations;
 
@@ -87,7 +86,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('getPrefectures', [M_prefectures::class, 'getPrefectures']); //都道府県マスター取得
     Route::get('getQualifications', [M_volunteer_qualifications::class, 'getQualifications']); //資格マスタ
     Route::get('getRaceClass', [M_race_class::class, 'getRaceClass']); //レースクラスマスター取得
-    Route::get('getRaceResultNotes', [M_race_result_notes::class, 'getRaceResultNotes']); // 備考（マスタ）
     Route::get('getRefereeQualifications', [CommonController::class, 'getRefereeQualifications']); //ドロップダウンで使用する審判資格名を取得
     Route::get('getSeatNumber', [M_seat_number::class, 'getSeatNumber']); // シート番号（マスタ）
     Route::get('getSexList', [M_sex::class, 'getSexList']); //性別マスター取得

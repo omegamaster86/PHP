@@ -76,8 +76,7 @@ interface RaceResultRecordsResponse {
   laptime_2000m: number; // 2000mラップタイム
   final_time: number; // 最終タイム
   bNo: number; // B.No
-  race_result_notes: string; // 備考
-  remarkId: number; // 備考ID
+  race_result_note: string; // 備考
   stroke_rate_avg: number; // ストロークレート（平均）
   stroke_rat_500m: number; // 500mlapストロークレート
   stroke_rat_1000m: number; // 1000mlapストロークレート
@@ -167,7 +166,7 @@ interface CrewPlayer {
   stroke_rat_2000m?: number; // 2000mlapストロークレート
   stroke_rate_avg?: number; // ストロークレート（平均）
   final_time?: number; // 最終タイム
-  race_result_notes?: string; // 備考
+  race_result_note: string; // 備考
 }
 
 // 団体情報

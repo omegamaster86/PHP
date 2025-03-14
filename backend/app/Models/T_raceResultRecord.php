@@ -91,7 +91,7 @@ class T_raceResultRecord extends Model
                 wd2000p.`wind_direction` AS wind_direction_2000m_point, 
                 `t_race_result_record`.`wind_speed_1000m_point`, 
                 wd1000p.`wind_direction` AS wind_direction_1000m_point, 
-                mrrn.race_result_notes,
+                `t_race_result_record`.`race_result_note`, 
                 `t_tournaments`.`tourn_id`,
                 `t_tournaments`.`tourn_name`,
                 `t_race_result_record`.range,
@@ -111,9 +111,6 @@ class T_raceResultRecord extends Model
             LEFT OUTER JOIN `m_venue` ON
                 `m_venue`.venue_id = `t_tournaments`.venue_id
                 AND `m_venue`.`delete_flag` = 0
-            LEFT OUTER JOIN `m_race_result_notes` mrrn ON
-                mrrn.race_result_notes_id = `t_race_result_record`.race_result_notes_id
-                AND mrrn.`delete_flag` = 0
             WHERE 1=1
                 AND `t_race_result_record`.delete_flag = 0                                        
                 AND `t_race_result_record`.race_id = ?',
@@ -176,7 +173,7 @@ class T_raceResultRecord extends Model
                 `t_race_result_record`.`wind_speed_1000m_point`, 
                 `t_race_result_record`.`wind_direction_1000m_point`, 
                 `mwd1000`.`wind_direction` AS `tenHundredmWindDirectionName`,
-                mrrn.race_result_notes,
+                `t_race_result_record`.`race_result_note`, 
                 `m_seat_number`.`display_order` AS "order",
                 `t_tournaments`.`event_start_date` AS "eventStartDate",
                 `m_venue`.`venue_name`,
@@ -201,9 +198,6 @@ class T_raceResultRecord extends Model
             LEFT OUTER JOIN `m_wind_direction` mwd2000 ON
                 mwd2000.`wind_direction_id` = `t_race_result_record`.`wind_direction_2000m_point`
                 AND `mwd2000`.`delete_flag` = 0
-            LEFT OUTER JOIN `m_race_result_notes` mrrn ON
-                mrrn.race_result_notes_id = `t_race_result_record`.race_result_notes_id
-                AND mrrn.`delete_flag` = 0
             WHERE 1=1
                 AND `t_race_result_record`.delete_flag = 0                                        
                 AND `t_race_result_record`.player_id = ?',
@@ -545,7 +539,7 @@ class T_raceResultRecord extends Model
                             `wind_direction_2000m_point` = :wind_direction_2000m_point,
                             `wind_speed_1000m_point` = :wind_speed_1000m_point,
                             `wind_direction_1000m_point` = :wind_direction_1000m_point,
-                            `race_result_notes_id` = :race_result_notes_id,
+                            `race_result_note` = :race_result_note,
                             `updated_time`= :updated_time,
                             `updated_user_id`= :user_id
                             WHERE 1=1
@@ -609,7 +603,7 @@ class T_raceResultRecord extends Model
                 `wind_direction_2000m_point`, 
                 `wind_speed_1000m_point`, 
                 `wind_direction_1000m_point`,
-                `race_result_notes_id`, 
+                `race_result_note`, 
                 `registered_time`,
                 `registered_user_id`, 
                 `updated_time`, 
@@ -664,7 +658,7 @@ class T_raceResultRecord extends Model
                 :wind_direction_2000m_point, 
                 :wind_speed_1000m_point, 
                 :wind_direction_1000m_point,
-                :race_result_notes_id, 
+                :race_result_note, 
                 :registered_time,
                 :registered_user_id, 
                 :updated_time, 
@@ -811,7 +805,7 @@ class T_raceResultRecord extends Model
                 ,rrr.`laptime_1500m`              #1500mラップタイム
                 ,rrr.`laptime_2000m`              #2000mラップタイム
                 ,rrr.`final_time`                 #最終タイム
-                ,mrrn.`race_result_notes`         #備考
+                ,rrr.`race_result_note`           #備考
                 ,rrr.`stroke_rat_500m`            #500mストロークレート
                 ,rrr.`stroke_rat_1000m`           #1000mストロークレート
                 ,rrr.`stroke_rat_1500m`           #1500mストロークレート
@@ -832,9 +826,6 @@ class T_raceResultRecord extends Model
             LEFT OUTER JOIN `m_wind_direction` wd1000p ON
                 wd1000p.`wind_direction_id` = rrr.`wind_direction_1000m_point`
                 AND wd1000p.`delete_flag` = 0
-            LEFT OUTER JOIN `m_race_result_notes` mrrn ON
-                mrrn.race_result_notes_id = rrr.race_result_notes_id
-                AND mrrn.`delete_flag` = 0
             WHERE 1=1
                 AND rrr.`delete_flag` = 0
                 AND rrr.race_id = :race_id",
@@ -950,7 +941,7 @@ class T_raceResultRecord extends Model
                         , `wind_direction_2000m_point`
                         , `wind_speed_1000m_point`
                         , `wind_direction_1000m_point`
-                        , `race_result_notes_id`
+                        , `race_result_note`
                         , `registered_time`
                         , `registered_user_id`
                         , `updated_time`
@@ -1008,7 +999,7 @@ class T_raceResultRecord extends Model
                         , :wind_direction_2000m_point
                         , :wind_speed_1000m_point
                         , :wind_direction_1000m_point
-                        , :race_result_notes_id
+                        , :race_result_note
                         , :registered_time
                         , :registered_user_id
                         , :updated_time
@@ -1061,7 +1052,7 @@ class T_raceResultRecord extends Model
                         , `wind_direction_2000m_point` = :wind_direction_2000m_point
                         , `wind_speed_1000m_point` = :wind_speed_1000m_point
                         , `wind_direction_1000m_point` = :wind_direction_1000m_point
-                        , `race_result_notes_id` = :race_result_notes_id
+                        , `race_result_note` = :race_result_note
                         , `updated_time` = :updated_time
                         , `updated_user_id` = :updated_user_id
                         WHERE 1=1

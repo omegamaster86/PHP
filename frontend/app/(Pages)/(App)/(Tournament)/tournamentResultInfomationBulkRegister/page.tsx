@@ -103,7 +103,7 @@ const CSV_HEADER = [
   { label: '2000m地点風向', key: 'windDirectionTwentyHundredmPoint' },
   { label: '1000m地点風速', key: 'windSpeedTenHundredmPoint' },
   { label: '1000m地点風向', key: 'windDirectionTenHundredmPoint' },
-  { label: '備考', key: 'remark' },
+  { label: '備考', key: 'raceResultNote' },
 ];
 
 // 選手情報連携のメインコンポーネント
@@ -471,8 +471,8 @@ export default function TournamentResultInfomationBulkRegister() {
         windSpeedTenHundredmPointError: false,
         windDirectionTenHundredmPoint: '-',
         windDirectionTenHundredmPointError: false,
-        remark: '-',
-        remarkError: false,
+        raceResultNote: '-',
+        raceResultNoteError: false,
       };
     } else {
       return {
@@ -577,8 +577,8 @@ export default function TournamentResultInfomationBulkRegister() {
         windSpeedTenHundredmPointError: false,
         windDirectionTenHundredmPoint: row[48],
         windDirectionTenHundredmPointError: false,
-        remark: row[49],
-        remarkError: false,
+        raceResultNote: row[49],
+        raceResultNoteError: false,
       };
     }
   };

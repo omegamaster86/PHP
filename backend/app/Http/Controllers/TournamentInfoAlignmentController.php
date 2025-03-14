@@ -795,9 +795,9 @@ class TournamentInfoAlignmentController extends Controller
                     $this->checkWithinByte($target_row['windDirectionTenHundredmPoint'], 255, $checkResult, $target_row['windDirectionTenHundredmPointError'], $errorMessage);
                 }
                 // 備考
-                if (isset($target_row['remark'])) {
+                if (isset($target_row['raceResultNote'])) {
                     $errorMessage = "備考は255文字以内で入力してください。";
-                    $this->checkWithinByte($target_row['remark'], 255, $checkResult, $target_row['remarkError'], $errorMessage);
+                    $this->checkWithinByte($target_row['raceResultNote'], 255, $checkResult, $target_row['raceResultNoteError'], $errorMessage);
                 }
                 //大会ID情報
                 if ($checkResult == true) {
@@ -1173,7 +1173,7 @@ class TournamentInfoAlignmentController extends Controller
                     $race_result_array['wind_direction_2000m_point'] = $target_row['windDirectionTwentyHundredmPoint']; //2000m地点風向
                     $race_result_array['wind_speed_1000m_point'] = $target_row['windSpeedTenHundredmPoint'];            //1000m地点風速
                     $race_result_array['wind_direction_1000m_point'] = $target_row['windDirectionTenHundredmPoint'];    //1000m地点風向
-                    $race_result_array['race_result_notes_id'] = $target_row['remark'];                                    //備考
+                    $race_result_array['race_result_note'] = isset($target_row['race_result_note']) ? $target_row['race_result_note'] : ''; // 備考
                     $race_result_array['updated_time'] = $current_datetime; //更新日時
                     $race_result_array['user_id'] = $register_user_id; //更新ユーザーID
                     //検索条件
@@ -1307,7 +1307,7 @@ class TournamentInfoAlignmentController extends Controller
                     $race_result_array['wind_direction_2000m_point'] = $target_row['windDirectionTwentyHundredmPoint'];     //2000m地点風向
                     $race_result_array['wind_speed_1000m_point'] = $target_row['windSpeedTenHundredmPoint'];                //1000m地点風速
                     $race_result_array['wind_direction_1000m_point'] = $target_row['windDirectionTenHundredmPoint'];        //1000m地点風向
-                    $race_result_array['race_result_notes_id'] = $target_row['remark'];                                        //備考
+                    $race_result_array['race_result_note'] = isset($target_row['race_result_note']) ? $target_row['race_result_note'] : ''; // 備考
                     //その他データを格納
                     $race_result_array['registered_time'] = $current_datetime;
                     $race_result_array['registered_user_id'] = $register_user_id;
