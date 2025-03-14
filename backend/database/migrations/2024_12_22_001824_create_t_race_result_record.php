@@ -64,7 +64,7 @@ return new class extends Migration
             `wind_direction_2000m_point` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
             `wind_speed_1000m_point` double DEFAULT NULL,
             `wind_direction_1000m_point` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-            `race_result_notes_id` int DEFAULT NULL,
+            `race_result_note` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '',
             `registered_time` timestamp(6) NOT NULL,
             `registered_user_id` int NOT NULL,
             `updated_time` timestamp(6) NOT NULL,

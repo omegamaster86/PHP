@@ -71,8 +71,7 @@ const raceResultRecordInitialValue: UpdatedRaceResultRecordsResponse = {
   laptime_2000m: 0,
   final_time: 0,
   bNo: 0,
-  race_result_notes: '',
-  remarkId: 0,
+  race_result_note: '',
   stroke_rate_avg: 0,
   stroke_rat_500m: 0,
   stroke_rat_1000m: 0,
@@ -145,8 +144,6 @@ export default function TournamentResult() {
   const [weatherOptions, setWeatherOptions] = useState<MasterResponse[]>([]);
   // 風向き（マスタ）の取得
   const [windDirectionOptions, setWindDirectionOptions] = useState<MasterResponse[]>([]);
-  // レース結果備考（マスタ）の取得
-  const [remarkOptions, setRemarkOptions] = useState<MasterResponse[]>([]);
   // シート番号（マスタ）の取得
   const [seatNameIdOptions, setSeatNameIdOptions] = useState<MasterResponse[]>([]);
 
@@ -936,18 +933,6 @@ export default function TournamentResult() {
           }) => ({ id: wind_direction_id, name: wind_direction }),
         );
         setWindDirectionOptions(windDirectionList);
-
-        const response5 = await axios.get('api/getRaceResultNotes');
-        const raceResultNoteList = response5.data.map(
-          ({
-            race_result_notes_id,
-            race_result_notes,
-          }: {
-            race_result_notes_id: number;
-            race_result_notes: string;
-          }) => ({ id: race_result_notes_id, name: race_result_notes }),
-        );
-        setRemarkOptions(raceResultNoteList);
       } catch (error: any) {
         setErrorText([error.message]);
       }
@@ -1785,63 +1770,18 @@ export default function TournamentResult() {
                       readonly={mode === 'confirm'}
                     />
                     <div className='flex flex-col gap-[8px]'>
-                      {mode === 'confirm' ? (
-                        <CustomTextField label='備考' value={item.race_result_notes} readonly />
-                      ) : (
-                        <>
-                          <InputLabel label='備考' />
-                          <Autocomplete
-                            options={remarkOptions.map((item) => ({
-                              id: item.id,
-                              name: item.name,
-                            }))}
-                            getOptionLabel={(option) =>
-                              typeof option === 'string' ? option : option?.name || ''
-                            }
-                            value={{ id: item.remarkId, name: item.race_result_notes }}
-                            onChange={(e: ChangeEvent<{}>, newValue) => {
-                              handleRaceResultRecordsInputChangebyIndex(
-                                index,
-                                'remarkId',
-                                newValue ? (newValue as MasterResponse).id?.toString() : '',
-                              );
-                              handleRaceResultRecordsInputChangebyIndex(
-                                index,
-                                'race_result_notes',
-                                newValue ? (newValue as MasterResponse).name : '',
-                              );
-                            }}
-                            onInputChange={(e, newValue) => {
-                              handleRaceResultRecordsInputChangebyIndex(
-                                index,
-                                'race_result_notes',
-                                newValue || '',
-                              );
-                            }}
-                            renderOption={(props, option) => {
-                              return (
-                                <li {...props} key={option.id}>
-                                  {option.name}
-                                </li>
-                              );
-                            }}
-                            renderInput={(params) => (
-                              <TextField
-                                key={params.id}
-                                className={`border-[1px] border-solid border-gray-50 rounded-md ${
-                                  mode === 'confirm' && item.deleteFlg ? 'bg-gray-500' : 'bg-white'
-                                } my-1`}
-                                {...params}
-                                value={item.race_result_notes || ''}
-                              />
-                            )}
-                            freeSolo
-                            className='w-[210px]'
-                            readOnly={mode === 'confirm'}
-                            disabled={mode === 'confirm'}
-                          />
-                        </>
-                      )}
+                      <CustomTextField
+                        label='備考'
+                        value={item.race_result_note}
+                        readonly={mode === 'confirm'}
+                        onChange={(e) => {
+                          handleRaceResultRecordsInputChangebyIndex(
+                            index,
+                            'race_result_note',
+                            e.target.value,
+                          );
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -1991,7 +1931,9 @@ export default function TournamentResult() {
                 )}
               </div>
 
-              <div className={`font-bold text-white ${mode === 'confirm' ? 'order-2' : 'order-1'}`}>選手情報</div>
+              <div className={`font-bold text-white ${mode === 'confirm' ? 'order-2' : 'order-1'}`}>
+                選手情報
+              </div>
               <div className='order-3 self-center'>
                 {mode !== 'confirm' && (
                   <CustomButton

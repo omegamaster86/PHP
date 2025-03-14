@@ -447,7 +447,7 @@ export default function TournamentRaceResultRef() {
                       {/* 最終タイム */}
                       <CustomTd>{row.final_time}</CustomTd>
                       {/* 備考 */}
-                      <CustomTd>{row.race_result_notes}</CustomTd>
+                      <CustomTd>{row.race_result_note}</CustomTd>
                       {/* ストローク（平均） */}
                       <CustomTd>{row.stroke_rate_avg}</CustomTd>
                       {/* 500mlapストローク */}

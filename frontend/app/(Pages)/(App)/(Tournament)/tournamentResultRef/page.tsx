@@ -280,7 +280,7 @@ export default function TournamentResultRef() {
                     </div>
                     <div className='flex flex-col gap-1'>
                       <Label label='備考' textSize='small' isBold />
-                      <p className='text-secondaryText disable'>{item?.race_result_notes || ''}</p>
+                      <p className='text-secondaryText disable'>{item?.race_result_note}</p>
                     </div>
                   </div>
                 </div>
