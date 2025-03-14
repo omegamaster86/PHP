@@ -1172,6 +1172,7 @@ export default function TournamentResult() {
                     deleteFlg: false,
                     addonLineFlg: false,
                     errorText: '',
+                    race_result_note: '',
                   })),
                 );
               }
