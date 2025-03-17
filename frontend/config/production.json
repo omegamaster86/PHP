@@ -1,4 +1,5 @@
 {
   "NEXT_PUBLIC_BACKEND_URL": "http://XXXX",
-  "NEXT_PUBLIC_S3_URL": "http://XXXX"
+  "NEXT_PUBLIC_S3_URL": "http://XXXX",
+  "MAIL_FROM_ADDRESS": "pf.info@pf.jara.or.jp"
 }

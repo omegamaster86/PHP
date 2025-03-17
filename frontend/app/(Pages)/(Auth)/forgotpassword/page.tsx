@@ -70,14 +70,14 @@ export default function ForgotPassword() {
             />
           </div>
           {/* 説明文 */}
-          <div className='flex flex-col gap-[8px] bg-systemWarningBg border-systemWarningText border-solid border-[1px] p-2 justify-center break-words bg-opacity-40'>
+          <div className='flex items-center gap-2 bg-systemWarningBg border-systemWarningText border-solid border-[1px] p-2 justify-center break-words bg-opacity-40'>
             <WarningAmberOutlinedIcon className='text-systemWarningText text-h3' />
-            <div className='flex flex-col gap-[8px] text-primaryText text-caption2 text-center'>
-              {/* FIXME:文言決まり次第修正 */}
+            <p className='text-primaryText text-caption2 text-center'>
               登録済みメールアドレスに仮パスワードを記載したメールが送付されます。
               <br />
-              @xxxxからのメールが受信できるように受信設定をしてください。
-            </div>
+              {process.env.MAIL_FROM_ADDRESS}
+              からのメールが受信できるように受信設定をしてください。
+            </p>
           </div>
           <div className='flex flex-col sm:flex-row items-center gap-4'>
             <CustomButton
