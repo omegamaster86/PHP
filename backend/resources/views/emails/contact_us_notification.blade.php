@@ -29,7 +29,7 @@
 
         --------------------<br />
         [お問い合わせ内容]<br />
-        {{$mail_data['content']}}<br />
+        {!! nl2br(e($mail_data['content'])) !!}<br />
         @if($mail_data['user_id'])
         [User ID]　:　{{$mail_data['user_id']}}<br />
         @endif
