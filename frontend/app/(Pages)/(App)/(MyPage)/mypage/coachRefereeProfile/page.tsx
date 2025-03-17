@@ -79,7 +79,6 @@ export default function CoachRefereeProfile() {
     fetcher<MyPageCoachRefereeResponse>,
     {
       onSuccess: (data) => {
-        // FIXME リンク先のURLを修正する(結合時)
         if (!data.result) {
           router.push('/mypage/profile');
         }

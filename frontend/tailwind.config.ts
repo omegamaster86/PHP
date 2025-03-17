@@ -90,7 +90,7 @@ const config: Config = {
       systemErrorBg: '#FFEEEE',
       systemWarningText: '#ECD86C',
       systemWarningBg: '#FFF7CA',
-      systemLinkText: '#FF4D4F',
+      systemLinkText: '#0000EE',
     },
   },
   plugins: [],

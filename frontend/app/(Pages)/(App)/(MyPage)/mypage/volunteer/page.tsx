@@ -6,6 +6,7 @@ import EmptyScreen from '@/app/components/EmptyScreen';
 import { fetcher } from '@/app/lib/swr';
 import { MyPageVolunteerInfoData } from '@/app/types';
 import { formatDate } from '@/app/utils/dateUtil';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 
@@ -143,8 +144,13 @@ export default function Volunteer() {
         ))}
       </div>
 
-      {/* FIXME: メールアドレスを変更する。 */}
-      <p className='my-8'>※登録内容の変更を希望する場合は***@**.jpまでご連絡ください。</p>
+      <p className='my-8'>
+        ※登録内容の変更をご希望の場合は
+        <Link href='/inquiry' className='text-systemLinkText hover:opacity-70'>
+          お問い合わせページ
+        </Link>
+        より連絡ください。
+      </p>
     </main>
   );
 }
