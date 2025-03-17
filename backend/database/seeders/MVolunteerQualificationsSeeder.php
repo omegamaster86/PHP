@@ -13,7 +13,10 @@ class MVolunteerQualificationsSeeder extends Seeder
     public function run(): void
     {
         DB::statement("
-            SELECT 1;
+            INSERT INTO m_volunteer_qualifications (qual_id, qual_name, display_order, registered_time, registered_user_id, updated_time, updated_user_id, delete_flag) VALUES
+            (1, '小型船舶免許', 1, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (2, '普通自動車運転免許', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0)
+            ;
             ");
     }
 }
