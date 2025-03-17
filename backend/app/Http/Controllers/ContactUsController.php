@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ContactUsMail;
+use App\Mail\ContactUsMailForAdmin;
 use Illuminate\Support\Facades\Log;
 
 class ContactUsController extends Controller
@@ -26,6 +27,7 @@ class ContactUsController extends Controller
         //Sending mail to the user
         try {
             Mail::to($request->get('mailaddress'))->send(new ContactUsMail($mail_data));
+            Mail::to(env('INQUIRY_MAIL_ADDRESS', 'hello@example.com'))->send(new ContactUsMailForAdmin($mail_data));
         } catch (\Throwable $e) {
             Log::error($e);
             Log::debug(sprintf("contact-us end"));

@@ -22,7 +22,6 @@ class MVenueSeeder extends Seeder
             (6, '日本', '岡山県', '百間川漕艇場', 6, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
             (7, '日本', '沖縄県大宜味村', '塩屋湾特設ボート場', 7, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
             (8, '日本', '岩手県花巻市', '田瀬湖ボートコース', 8, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
-            (9, '日本', '岐阜県', '川辺漕艇場', 9, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
             (10, '日本', '岐阜県', '木曽三川公園コース', 10, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
             (11, '日本', '岐阜県海津市', '長良川ボートコース', 11, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
             (12, '日本', '岐阜県海津市', '長良川国際ボートコース', 12, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
