@@ -44,6 +44,11 @@ const sendCheckOrgManagerRequest = async (
   });
 };
 
+//レース名フィルター用
+interface RaceNameList {
+  id: number;
+  name: string;
+}
 //種目フィルター用
 interface EventNameList {
   id: number;
@@ -123,25 +128,35 @@ export default function TournamentRef() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // レース結果情報のデータステート
+  //レース名
+  const [raceNameList, setRaceNameList] = useState<RaceNameList[]>([]);
+  const [selectedRaceNameList, setSelectedRaceNameList] = useState<RaceNameList[]>([]);
   //種目
-  const [eventNameList, setEventNameList] = useState([] as EventNameList[]);
-  const [selectedEventNameList, setSelectedEventNameList] = useState([] as EventNameList[]);
+  const [eventNameList, setEventNameList] = useState<EventNameList[]>([]);
+  const [selectedEventNameList, setSelectedEventNameList] = useState<EventNameList[]>([]);
   //組別
-  const [byGroupList, setByGroupList] = useState([] as ByGroupList[]);
-  const [selectedByGroupList, setSelectedByGroupList] = useState([] as ByGroupList[]);
+  const [byGroupList, setByGroupList] = useState<ByGroupList[]>([]);
+  const [selectedByGroupList, setSelectedByGroupList] = useState<ByGroupList[]>([]);
   //距離
-  const [rangeList, setRangeList] = useState([] as RangeList[]);
-  const [selectedRangeList, setSelectedRangeList] = useState([] as RangeList[]);
+  const [rangeList, setRangeList] = useState<RangeList[]>([]);
+  const [selectedRangeList, setSelectedRangeList] = useState<RangeList[]>([]);
 
   // フィルター用のステート 20240508
   const [showEventNameAutocomplete, setShowEventNameAutocomplete] = useState(false);
+  const [showRaceNameAutocomplete, setShowRaceNameAutocomplete] = useState(false);
   const [showByGroupAutocomplete, setShowByGroupAutocomplete] = useState(false);
   const [showRangeAutocomplete, setShowRangeAutocomplete] = useState(false);
-  const eventNamefocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240518
-  const byGroupfocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240518
-  const rangefocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240518
+  const raceNamefocusTarget = useRef(null);
+  const eventNamefocusTarget = useRef(null);
+  const byGroupfocusTarget = useRef(null);
+  const rangefocusTarget = useRef(null);
 
   // ヘッダーの位置を取得するためのステート
+  //レース名
+  const [selectedRaceNameHeader, setSelectedRaceNameHeader] = useState({
+    value: '',
+    position: { top: 0, right: 0 },
+  });
   //種目
   const [selectedEventNameHeader, setSelectedEventNameHeader] = useState({
     value: '',
@@ -164,6 +179,18 @@ export default function TournamentRef() {
    * @param event
    * ヘッダーの位置を取得し、オートコンプリートを表示する
    */
+  const handleRaceNameHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
+    const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
+    setSelectedRaceNameHeader({
+      value,
+      position: {
+        top: headerPosition.bottom + window.scrollY,
+        right: headerPosition.right + window.scrollX,
+      },
+    });
+    setShowRaceNameAutocomplete((prev) => !prev);
+  };
+
   const handleEventNameHeaderClick = (
     value: string,
     event: MouseEvent<HTMLElement, MouseEvent>,
@@ -349,6 +376,16 @@ export default function TournamentRef() {
           ); //大会情報参照画面 主催団体管理者の判別 20240402
           setOrgManagerFlag(resData.data.result.isOrgManager);
 
+          //レース名をフィルターできるようにする
+          const raceNameArray = raceResponse.data.result.map((item: any) => item.race_name);
+          const uniqueRaceNameSet = new Set(raceNameArray);
+          const uniqueRaceNameArray = Array.from(uniqueRaceNameSet);
+          setRaceNameList(
+            uniqueRaceNameArray.map((item: any, index: any) => ({
+              id: index,
+              name: item,
+            })),
+          );
           //種目をフィルターできるようにする 20240509
           const eventNameArray = raceResponse.data.result.map((item: any) => item.event_name);
           const uniqueEventNameSet = new Set(eventNameArray);
@@ -396,6 +433,16 @@ export default function TournamentRef() {
   }, []);
 
   useEffect(() => {
+    if (showRaceNameAutocomplete) {
+      if (raceNamefocusTarget.current != null) {
+        var target = raceNamefocusTarget.current as HTMLDivElement;
+        (
+          target.childNodes[0].childNodes[0].childNodes[1].childNodes[
+            selectedRaceNameList.length
+          ] as HTMLElement
+        ).focus();
+      }
+    }
     if (showEventNameAutocomplete) {
       if (eventNamefocusTarget.current != null) {
         var target = eventNamefocusTarget.current as HTMLDivElement;
@@ -426,7 +473,12 @@ export default function TournamentRef() {
         ).focus();
       }
     }
-  }, [showEventNameAutocomplete, showByGroupAutocomplete, showRangeAutocomplete]);
+  }, [
+    showRaceNameAutocomplete,
+    showEventNameAutocomplete,
+    showByGroupAutocomplete,
+    showRangeAutocomplete,
+  ]);
 
   const handleFollowToggle = () => {
     axios
@@ -617,9 +669,7 @@ export default function TournamentRef() {
       </div>
       <div className='text-lg mb-4'>
         <div className='mb-4'>
-          <div className='flex justify-between items-center'>
-            <div className='text-2xl lg:text-4xl font-bold'>開催レース</div>
-          </div>
+          <div className='text-2xl lg:text-4xl font-bold'>開催レース</div>
         </div>
         {/* レース一覧テーブル表示 */}
         <div className='overflow-auto'>
@@ -636,12 +686,26 @@ export default function TournamentRef() {
                   </div>
                 </CustomTh>
                 <CustomTh align='left'>
-                  <div
-                    className='underline'
-                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                    onClick={() => raceNameSort()}
-                  >
-                    レース名
+                  <div className='flex flex-row items-center gap-[10px]'>
+                    <button
+                      type='button'
+                      className='underline'
+                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
+                      onClick={() => raceNameSort()}
+                    >
+                      レース名
+                    </button>
+                    <button
+                      type='button'
+                      style={{
+                        cursor: 'pointer',
+                        color: selectedRaceNameList.length > 0 ? '#F44336' : '#001D74',
+                      }}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={(event) => handleRaceNameHeaderClick('レース名', event as any)}
+                    >
+                      <FilterListIcon />
+                    </button>
                   </div>
                 </CustomTh>
                 <CustomTh align='left'>
@@ -736,6 +800,13 @@ export default function TournamentRef() {
             <CustomTbody>
               {tableData
                 .filter((row, index) => {
+                  if (selectedRaceNameList.length > 0) {
+                    return selectedRaceNameList.some((item) => item.name === row.race_name);
+                  } else {
+                    return true;
+                  }
+                })
+                .filter((row, index) => {
                   if (selectedEventNameList.length > 0) {
                     return selectedEventNameList.some((item) => item.name === row.event_name);
                   } else {
@@ -800,6 +871,61 @@ export default function TournamentRef() {
             </CustomTbody>
           </CustomTable>
         </div>
+        {/* レース名フィルター用のオートコンプリート 20240509 */}
+        {showRaceNameAutocomplete && (
+          <div
+            ref={raceNamefocusTarget}
+            style={{
+              position: 'absolute',
+              top: `${selectedRaceNameHeader.position.top - 120}px`,
+              right: `max(0px, calc(100vw - ${selectedRaceNameHeader.position.right}px - 300px))`,
+              backgroundColor: 'white',
+              borderRadius: '4px',
+              zIndex: 1000,
+              padding: '8px',
+            }}
+            onBlur={
+              //フォーカスが外れたら非表示にする
+              () => {
+                setShowRaceNameAutocomplete(false);
+              }
+            }
+          >
+            <Autocomplete
+              id='raveName'
+              multiple
+              sx={{ width: 300 }}
+              options={raceNameList}
+              filterOptions={(options, { inputValue }) =>
+                options.filter((option) => option.name.includes(inputValue))
+              }
+              value={selectedRaceNameList || []}
+              onChange={(e: ChangeEvent<{}>, newValue: RaceNameList[]) => {
+                setSelectedRaceNameList(newValue);
+              }}
+              renderOption={(props: any, option: RaceNameList) => {
+                return (
+                  <li {...props} key={option.id}>
+                    {option.name}
+                  </li>
+                );
+              }}
+              renderTags={(value: RaceNameList[], getTagProps: any) => {
+                return value.map((option, index) => (
+                  <Chip {...getTagProps({ index })} key={option.id} label={option.name} />
+                ));
+              }}
+              renderInput={(params) => (
+                <TextField
+                  key={params.id}
+                  className='border-[1px] border-solid border-gray-50 rounded-md bg-white my-1'
+                  {...params}
+                  label={'レース名'}
+                />
+              )}
+            />
+          </div>
+        )}
         {/* 種目フィルター用のオートコンプリート 20240509 */}
         {showEventNameAutocomplete && (
           <div
