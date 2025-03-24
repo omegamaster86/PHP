@@ -25,13 +25,14 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EditIcon from '@mui/icons-material/EditOutlined';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import { Autocomplete, Chip, TextField } from '@mui/material';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import useSWRMutation from 'swr/mutation';
 import { formatDate } from '@/app/utils/dateUtil';
+import { useSort } from '@/app/hooks/useSort';
+import { SortableHeader } from '@/app/components/SortableHeader';
 
 const sendCheckOrgManagerRequest = async (
   url: string,
@@ -173,28 +174,11 @@ export default function TournamentRef() {
     position: { top: 0, right: 0 },
   });
 
-  /**
-   * 種目ヘッダークリック時の処理
-   * @param value
-   * @param event
-   * ヘッダーの位置を取得し、オートコンプリートを表示する
-   */
-  const handleRaceNameHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
-    const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
-    setSelectedRaceNameHeader({
-      value,
-      position: {
-        top: headerPosition.bottom + window.scrollY,
-        right: headerPosition.right + window.scrollX,
-      },
-    });
-    setShowRaceNameAutocomplete((prev) => !prev);
-  };
-
-  const handleEventNameHeaderClick = (
-    value: string,
-    event: MouseEvent<HTMLElement, MouseEvent>,
-  ) => {
+  const { sortState, handleSort } = useSort<Race>({
+    currentData: tableData,
+    onSort: setTableData,
+  });
+  const handleEventNameHeaderClick = (value: string, event: React.MouseEvent<HTMLElement>) => {
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedEventNameHeader({
       value,
@@ -206,13 +190,7 @@ export default function TournamentRef() {
     setShowEventNameAutocomplete((prev) => !prev);
   };
 
-  /**
-   * 組別ヘッダークリック時の処理
-   * @param value
-   * @param event
-   * ヘッダーの位置を取得し、オートコンプリートを表示する
-   */
-  const handleByGroupHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleByGroupHeaderClick = (value: string, event: React.MouseEvent<HTMLElement>) => {
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedByGroupHeader({
       value,
@@ -224,13 +202,7 @@ export default function TournamentRef() {
     setShowByGroupAutocomplete((prev) => !prev);
   };
 
-  /**
-   * 発艇日時ヘッダークリック時の処理
-   * @param value
-   * @param event
-   * ヘッダーの位置を取得し、オートコンプリートを表示する
-   */
-  const handleRangeHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleRangeHeaderClick = (value: string, event: React.MouseEvent<HTMLElement>) => {
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedRangeHeader({
       value,
@@ -242,96 +214,22 @@ export default function TournamentRef() {
     setShowRangeAutocomplete((prev) => !prev);
   };
 
-  // レースIDのソート用　20240731
-  const [raceIdSortFlag, setRaceIdSortFlag] = useState(false);
-  const raceIdSort = () => {
-    if (raceIdSortFlag) {
-      setRaceIdSortFlag(false);
-      tableData.sort((a, b) => Number(a.race_id) - Number(b.race_id));
-    } else {
-      setRaceIdSortFlag(true);
-      tableData.sort((a, b) => Number(b.race_id) - Number(a.race_id));
-    }
-  };
-  // レース名のソート用　20240731
-  const [raceNameSortFlag, setRaceNameSortFlag] = useState(false);
-  const raceNameSort = () => {
-    if (raceNameSortFlag) {
-      setRaceNameSortFlag(false);
-      tableData.sort((a, b) => ('' + a.race_name).localeCompare(b.race_name));
-    } else {
-      setRaceNameSortFlag(true);
-      tableData.sort((a, b) => ('' + b.race_name).localeCompare(a.race_name));
-    }
-  };
-
-  // レースNoのソート用　20240731
-  const [raceNumberSortFlag, setRaceNumberSortFlag] = useState(false);
-  const raceNumberSort = () => {
-    if (raceNumberSortFlag) {
-      setRaceNumberSortFlag(false);
-      tableData.sort((a, b) => Number(a.race_number) - Number(b.race_number));
-    } else {
-      setRaceNumberSortFlag(true);
-      tableData.sort((a, b) => Number(b.race_number) - Number(a.race_number));
-    }
-  };
-  // 種目のソート用　20240731
-  const [eventNameSortFlag, setEventNameSortFlag] = useState(false);
-  const eventNameSort = () => {
-    if (eventNameSortFlag) {
-      setEventNameSortFlag(false);
-      tableData.sort((a, b) => ('' + a.event_name).localeCompare(b.event_name));
-    } else {
-      setEventNameSortFlag(true);
-      tableData.sort((a, b) => ('' + b.event_name).localeCompare(a.event_name));
-    }
-  };
-  // 組別のソート用　20240731
-  const [byGroupSortFlag, setByGroupSortFlag] = useState(false);
-  const byGroupSort = () => {
-    if (byGroupSortFlag) {
-      setByGroupSortFlag(false);
-      tableData.sort((a, b) => ('' + a.by_group).localeCompare(b.by_group));
-    } else {
-      setByGroupSortFlag(true);
-      tableData.sort((a, b) => ('' + b.by_group).localeCompare(a.by_group));
-    }
-  };
-
-  // 距離のソート用　20240731
-  const [rangeSortFlag, setRangeSortFlag] = useState(false);
-  const rangeSort = () => {
-    if (rangeSortFlag) {
-      setRangeSortFlag(false);
-      tableData.sort((a, b) => Number(a.range) - Number(b.range));
-    } else {
-      setRangeSortFlag(true);
-      tableData.sort((a, b) => Number(b.range) - Number(a.range));
-    }
-  };
-
-  // 発艇日時のソート用
-  // ソート用のステート 20240518
-  const [startDateTimeSortFlag, setStartDateTimeSortFlag] = useState(false);
-  const startDateTimeSort = () => {
-    if (startDateTimeSortFlag) {
-      setStartDateTimeSortFlag(false);
-      tableData.sort(
+  const sortFunctions = {
+    raceId: () => handleSort('raceId', (a, b) => Number(a.race_id) - Number(b.race_id)),
+    raceName: () => handleSort('raceName', (a, b) => ('' + a.race_name).localeCompare(b.race_name)),
+    raceNumber: () =>
+      handleSort('raceNumber', (a, b) => Number(a.race_number) - Number(b.race_number)),
+    eventName: () =>
+      handleSort('eventName', (a, b) => ('' + a.event_name).localeCompare(b.event_name)),
+    byGroup: () => handleSort('byGroup', (a, b) => ('' + a.by_group).localeCompare(b.by_group)),
+    range: () => handleSort('range', (a, b) => Number(a.range) - Number(b.range)),
+    startDateTime: () =>
+      handleSort(
+        'startDateTime',
         (a, b) =>
-          //ハイフン、スペース、コロンを空文字に変換してnumber型にキャストして大小比較する 20240518
           Number(a.start_date_time.replace(/[- :]/g, '')) -
           Number(b.start_date_time.replace(/[- :]/g, '')),
-      );
-    } else {
-      setStartDateTimeSortFlag(true);
-      tableData.sort(
-        (a, b) =>
-          //ハイフン、スペース、コロンを空文字に変換してnumber型にキャストして大小比較する 20240518
-          Number(b.start_date_time.replace(/[- :]/g, '')) -
-          Number(a.start_date_time.replace(/[- :]/g, '')),
-      );
-    }
+      ),
   };
 
   // APIの呼び出し実績の有無を管理する状態
@@ -677,123 +575,73 @@ export default function TournamentRef() {
             <CustomThead>
               <CustomTr>
                 <CustomTh align='left'>
-                  <div
-                    className='underline'
-                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                    onClick={() => raceIdSort()}
-                  >
-                    レースID
-                  </div>
+                  <SortableHeader
+                    column='raceId'
+                    label='レースID'
+                    sortState={sortState}
+                    onSort={sortFunctions.raceId}
+                  />
                 </CustomTh>
                 <CustomTh align='left'>
-                  <div className='flex flex-row items-center gap-[10px]'>
-                    <button
-                      type='button'
-                      className='underline'
-                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                      onClick={() => raceNameSort()}
-                    >
-                      レース名
-                    </button>
-                    <button
-                      type='button'
-                      style={{
-                        cursor: 'pointer',
-                        color: selectedRaceNameList.length > 0 ? '#F44336' : '#001D74',
-                      }}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={(event) => handleRaceNameHeaderClick('レース名', event as any)}
-                    >
-                      <FilterListIcon />
-                    </button>
-                  </div>
+                  <SortableHeader
+                    column='raceName'
+                    label='レース名'
+                    sortState={sortState}
+                    onSort={sortFunctions.raceName}
+                  />
                 </CustomTh>
                 <CustomTh align='left'>
-                  <div
-                    className='underline'
-                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                    onClick={() => raceNumberSort()}
-                  >
-                    レースNo.
-                  </div>
+                  <SortableHeader
+                    column='raceNumber'
+                    label='レースNo.'
+                    sortState={sortState}
+                    onSort={sortFunctions.raceNumber}
+                  />
                 </CustomTh>
                 <CustomTh align='left'>
-                  <div className='flex flex-row items-center gap-[10px]'>
-                    <button
-                      type='button'
-                      className='underline'
-                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                      onClick={() => eventNameSort()}
-                    >
-                      種目
-                    </button>
-                    <button
-                      type='button'
-                      style={{
-                        cursor: 'pointer',
-                        color: selectedEventNameList.length > 0 ? '#F44336' : '#001D74',
-                      }}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={(event) => handleEventNameHeaderClick('種目', event as any)}
-                    >
-                      <FilterListIcon />
-                    </button>
-                  </div>
+                  <SortableHeader
+                    column='eventName'
+                    label='種目'
+                    sortState={sortState}
+                    onSort={sortFunctions.eventName}
+                    hasFilter
+                    isFiltered={selectedEventNameList.length > 0}
+                    onFilter={(event) => handleEventNameHeaderClick('種目', event)}
+                  />
                 </CustomTh>
                 <CustomTh align='left'>
-                  <div className='flex flex-row items-center gap-[10px]'>
-                    <button
-                      type='button'
-                      className='underline'
-                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                      onClick={() => byGroupSort()}
-                    >
-                      組別
-                    </button>
-                    <button
-                      type='button'
-                      style={{
-                        cursor: 'pointer',
-                        color: selectedByGroupList.length > 0 ? '#F44336' : '#001D74',
-                      }}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={(event) => handleByGroupHeaderClick('組別', event as any)}
-                    >
-                      <FilterListIcon />
-                    </button>
-                  </div>
+                  <SortableHeader
+                    column='byGroup'
+                    label='組別'
+                    sortState={sortState}
+                    onSort={sortFunctions.byGroup}
+                    hasFilter
+                    isFiltered={selectedByGroupList.length > 0}
+                    onFilter={(event) =>
+                      handleByGroupHeaderClick('組別', event)
+                    }
+                  />
                 </CustomTh>
                 <CustomTh align='left'>
-                  <div className='flex flex-row items-center gap-[10px]'>
-                    <button
-                      type='button'
-                      className='underline'
-                      style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                      onClick={() => rangeSort()}
-                    >
-                      距離
-                    </button>
-                    <button
-                      type='button'
-                      style={{
-                        cursor: 'pointer',
-                        color: selectedRangeList.length > 0 ? '#F44336' : '#001D74',
-                      }}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={(event) => handleRangeHeaderClick('距離', event as any)}
-                    >
-                      <FilterListIcon />
-                    </button>
-                  </div>
+                  <SortableHeader
+                    column='range'
+                    label='距離'
+                    sortState={sortState}
+                    onSort={sortFunctions.range}
+                    hasFilter
+                    isFiltered={selectedRangeList.length > 0}
+                    onFilter={(event) =>
+                      handleRangeHeaderClick('距離', event)
+                    }
+                  />
                 </CustomTh>
                 <CustomTh align='left'>
-                  <div
-                    className='underline'
-                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                    onClick={() => startDateTimeSort()}
-                  >
-                    発艇日時
-                  </div>
+                  <SortableHeader
+                    column='startDateTime'
+                    label='発艇日時'
+                    sortState={sortState}
+                    onSort={sortFunctions.startDateTime}
+                  />
                 </CustomTh>
               </CustomTr>
             </CustomThead>
