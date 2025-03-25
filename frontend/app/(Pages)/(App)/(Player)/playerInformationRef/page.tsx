@@ -1707,8 +1707,6 @@ export default function PlayerInformationRef() {
                           pathname: '/tournamentRef',
                           query: { tournId: row.tourn_id },
                         }}
-                        rel='noopener noreferrer'
-                        target='_blank'
                       >
                         {row.tourn_name}
                       </Link>
@@ -1725,8 +1723,6 @@ export default function PlayerInformationRef() {
                           pathname: '/teamRef',
                           query: { orgId: row.org_id },
                         }}
-                        rel='noopener noreferrer'
-                        target='_blank'
                       >
                         {row.org_name}
                       </Link>

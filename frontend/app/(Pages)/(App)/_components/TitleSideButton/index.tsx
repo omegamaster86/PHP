@@ -13,7 +13,6 @@ interface Props {
   text: string;
   textClassName?: string;
   className?: string;
-  external?: boolean;
 }
 
 export const TitleSideButton: React.FC<Props> = ({
@@ -22,12 +21,10 @@ export const TitleSideButton: React.FC<Props> = ({
   text = '',
   className,
   textClassName,
-  external = true,
 }) => {
   return (
     <Link
       href={href}
-      target={external ? '_blank' : undefined}
       className={cn(
         'text-primary-500 border border-primary-500 p-2 flex gap-1 items-center',
         className,

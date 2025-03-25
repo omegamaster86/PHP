@@ -603,8 +603,6 @@ export default function PlayerSearch() {
                       pathname: '/playerInformationRef',
                       query: { playerId: row.player_id },
                     }}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.player_name}
                   </Link>
@@ -617,8 +615,6 @@ export default function PlayerSearch() {
                       pathname: '/playerInformationRef',
                       query: { playerId: row.player_id },
                     }}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.jara_player_id}
                   </Link>
@@ -630,9 +626,7 @@ export default function PlayerSearch() {
                     href={{
                       pathname: '/playerInformationRef',
                       query: { playerId: row.player_id },
-                    }}
-                    rel='noopener noreferrer'
-                    target='_blank'
+                    }} 
                   >
                     {row.player_id}
                   </Link>
@@ -647,8 +641,6 @@ export default function PlayerSearch() {
                       pathname: '/teamRef',
                       query: { orgId: row.orgId1 },
                     }}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.entrysystemOrgId1}
                   </Link>
@@ -661,8 +653,6 @@ export default function PlayerSearch() {
                       pathname: '/teamRef',
                       query: { orgId: row.orgId1 },
                     }}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.orgId1}
                   </Link>
@@ -675,8 +665,6 @@ export default function PlayerSearch() {
                       pathname: '/teamRef',
                       query: { orgId: row.orgId1 },
                     }}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.orgName1}
                   </Link>
@@ -689,8 +677,6 @@ export default function PlayerSearch() {
                       pathname: '/teamRef',
                       query: { orgId: row.orgId2 },
                     }}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.entrysystemOrgId2}
                   </Link>
@@ -703,8 +689,6 @@ export default function PlayerSearch() {
                       pathname: '/teamRef',
                       query: { orgId: row.orgId2 },
                     }}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.orgId2}
                   </Link>
@@ -717,8 +701,6 @@ export default function PlayerSearch() {
                       pathname: '/teamRef',
                       query: { orgId: row.orgId2 },
                     }}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.orgName2}
                   </Link>
@@ -731,8 +713,6 @@ export default function PlayerSearch() {
                       pathname: '/teamRef',
                       query: { orgId: row.orgId3 },
                     }}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.entrysystemOrgId3}
                   </Link>
@@ -745,8 +725,6 @@ export default function PlayerSearch() {
                       pathname: '/teamRef',
                       query: { orgId: row.orgId3 },
                     }}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.orgId3}
                   </Link>
@@ -759,8 +737,6 @@ export default function PlayerSearch() {
                       pathname: '/teamRef',
                       query: { orgId: row.orgId3 },
                     }}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.orgName3}
                   </Link>

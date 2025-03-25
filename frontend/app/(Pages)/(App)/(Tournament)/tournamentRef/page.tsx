@@ -455,7 +455,6 @@ export default function TournamentRef() {
                 href={`${TOURNAMENT_PDF_URL}${tournamentFormData.tourn_info_faile_path}`}
                 download
                 className='text-normal text-white hover:text-primary-100 hover:bg-transparent hover:border-none border border-white p-2'
-                target='_blank'
               >
                 <FileDownloadOutlinedIcon className='text-[16px] mr-2 hover:text-primary-100 '></FileDownloadOutlinedIcon>
                 大会要項ダウンロード

@@ -304,8 +304,6 @@ export default function TournamentRaceResultRef() {
             {raceResultRecordsData.length > 0 && (
               <Link
                 href={`/tournamentRef?tournId=${raceResultRecordsData.at(0)?.tourn_id}`}
-                rel='noopener noreferrer'
-                target='_blank'
                 color='#ffffff'
               >
                 {raceResultRecordsData.at(0)?.tourn_name as string}
@@ -619,8 +617,6 @@ export default function TournamentRaceResultRef() {
                         ) : (
                           <Link
                             href={`/playerInformationRef?playerId=${row.player_id}`}
-                            rel='noopener noreferrer'
-                            target='_blank'
                           >
                             {row.player_name}
                           </Link>

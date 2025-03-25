@@ -66,8 +66,6 @@ export const BelongStaff: React.FC<Props> = ({ staffs }) => {
                   <Link
                     className='text-primary-300 underline hover:text-primary-50'
                     href={`/coachRefereeRef?userId=${row.user_id}`}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.user_id}
                   </Link>
@@ -76,8 +74,6 @@ export const BelongStaff: React.FC<Props> = ({ staffs }) => {
                   <Link
                     className='text-primary-300 underline hover:text-primary-50'
                     href={`/coachRefereeRef?userId=${row.user_id}`}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.user_name}
                   </Link>

@@ -279,8 +279,6 @@ export default function TeamPlayer() {
                         pathname: '/playerInformationRef',
                         query: { player_id: data.player_id },
                       }}
-                      rel='noopener noreferrer'
-                      target='_blank'
                     >
                       {data.player_id}
                     </Link>
@@ -292,8 +290,6 @@ export default function TeamPlayer() {
                         pathname: '/playerInformationRef',
                         query: { player_id: data.player_id },
                       }}
-                      rel='noopener noreferrer'
-                      target='_blank'
                     >
                       {data.jara_player_id}
                     </Link>
@@ -305,8 +301,6 @@ export default function TeamPlayer() {
                         pathname: '/playerInformationRef',
                         query: { player_id: data.player_id },
                       }}
-                      rel='noopener noreferrer'
-                      target='_blank'
                     >
                       {data.player_name}
                     </Link>

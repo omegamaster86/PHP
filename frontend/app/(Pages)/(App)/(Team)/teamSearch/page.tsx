@@ -501,8 +501,6 @@ export default function TeamSearch() {
                       pathname: '/teamRef',
                       query: { orgId: org.org_id },
                     }}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {org.org_id}
                   </Link>
@@ -515,8 +513,6 @@ export default function TeamSearch() {
                       pathname: '/teamRef',
                       query: { orgId: org.org_id },
                     }}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {org.org_name}
                   </Link>

@@ -63,14 +63,12 @@ export const NotificationContent: React.FC<Props> = (props) => {
             <TitleSideButton
               text='編集'
               href={editPath}
-              external={false}
               icon={EditOutlined}
               className='sm:w-20'
             />
             <TitleSideButton
               text='削除'
               href={deletePath}
-              external={false}
               icon={DeleteOutlined}
               className='sm:w-20'
             />
