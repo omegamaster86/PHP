@@ -53,7 +53,6 @@ export const EntryTournament: React.FC<Props> = ({ entTournaments }) => {
                       pathname: '/tournamentRef',
                       query: { tournId: row.tourn_id?.toString() },
                     }}
-                    target='_blank'
                     className='text-primary-300 underline hover:text-primary-50'
                   >
                     {row.tourn_name}

@@ -517,8 +517,6 @@ export default function TournamentSearch() {
                       query: { tournId: row.tourn_id },
                     }}
                     className='text-primary-300 underline hover:text-primary-50 cursor-pointer'
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.tourn_name}
                   </Link>
@@ -539,8 +537,6 @@ export default function TournamentSearch() {
                       query: { sponsor_org_id: row.sponsor_org_id },
                     }}
                     className='text-primary-300 underline hover:text-primary-50 cursor-pointer'
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.sponsor_org_id}
                   </Link>
@@ -553,8 +549,6 @@ export default function TournamentSearch() {
                       query: { sponsor_org_id: row.sponsor_org_id },
                     }}
                     className='text-primary-300 underline hover:text-primary-50 cursor-pointer'
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.sponsorOrgName}
                   </Link>

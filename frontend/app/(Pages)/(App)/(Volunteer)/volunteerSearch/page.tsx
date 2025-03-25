@@ -1342,8 +1342,6 @@ export default function VolunteerSearch() {
                       pathname: '/volunteerInformationRef',
                       query: { volunteer_id: row.volunteer_id },
                     }}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.volunteer_id}
                   </Link>
@@ -1355,8 +1353,6 @@ export default function VolunteerSearch() {
                       pathname: '/volunteerInformationRef',
                       query: { volunteer_id: row.volunteer_id },
                     }}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {row.volunteer_name}
                   </Link>

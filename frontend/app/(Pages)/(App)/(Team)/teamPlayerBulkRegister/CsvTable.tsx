@@ -137,7 +137,6 @@ const CsvTable = ({
                 <Link
                   href={row.playerId ? `/playerInformationRef?player_id=${row.playerId}` : ``}
                   className='text-primary-500'
-                  target='_blank'
                 >
                   {row.playerId}
                 </Link>
@@ -146,7 +145,6 @@ const CsvTable = ({
                 <Link
                   href={row.playerId ? `/playerInformationRef?player_id=${row.playerId}` : ``}
                   className='text-primary-500'
-                  target='_blank'
                 >
                   {row.jaraPlayerId}
                 </Link>
@@ -161,7 +159,6 @@ const CsvTable = ({
                 <Link
                   href={row.teamId ? `/teamRef?orgId=${row.teamId}` : ``}
                   className='text-primary-500'
-                  target='_blank'
                 >
                   {row.teamId}
                 </Link>
@@ -170,7 +167,6 @@ const CsvTable = ({
                 <Link
                   href={row.teamId ? `/teamRef?orgId=${row.teamId}` : ``}
                   className='text-primary-500'
-                  target='_blank'
                 >
                   {row.teamName}
                 </Link>

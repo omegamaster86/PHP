@@ -564,8 +564,6 @@ export default function AddPlayerSearch() {
                   <Link
                     className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                     href={'/playerInformationRef?player_id=' + data.player_id}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {data.player_id}
                   </Link>
@@ -574,8 +572,6 @@ export default function AddPlayerSearch() {
                   <Link
                     className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                     href={'/playerInformationRef?player_id=' + data.player_id}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {data.jara_player_id}
                   </Link>
@@ -584,8 +580,6 @@ export default function AddPlayerSearch() {
                   <Link
                     className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                     href={'/playerInformationRef?player_id=' + data.player_id}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {data.player_name}
                   </Link>
@@ -607,8 +601,6 @@ export default function AddPlayerSearch() {
                   <Link
                     className='text-primary-300 cursor-pointer underline hover:text-primary-50'
                     href={'/teamRef?org_id=' + data.orgId}
-                    rel='noopener noreferrer'
-                    target='_blank'
                   >
                     {data.org_name}
                   </Link>

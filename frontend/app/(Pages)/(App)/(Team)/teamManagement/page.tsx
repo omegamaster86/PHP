@@ -341,8 +341,6 @@ export default function TeamManagement() {
                         pathname: '/teamRef',
                         query: { org_id: row.org_id.toString() },
                       }}
-                      rel='noopener noreferrer'
-                      target='_blank'
                     >
                       {row.entrysystem_org_id}
                     </Link>
@@ -355,8 +353,6 @@ export default function TeamManagement() {
                         pathname: '/teamRef',
                         query: { org_id: row.org_id.toString() },
                       }}
-                      rel='noopener noreferrer'
-                      target='_blank'
                     >
                       {row.org_id}
                     </Link>
@@ -369,8 +365,6 @@ export default function TeamManagement() {
                         pathname: '/teamRef',
                         query: { org_id: row.org_id.toString() },
                       }}
-                      rel='noopener noreferrer'
-                      target='_blank'
                     >
                       {row.org_name}
                     </Link>
