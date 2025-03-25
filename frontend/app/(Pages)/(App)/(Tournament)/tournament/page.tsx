@@ -252,18 +252,12 @@ export default function Tournaments() {
       ]);
     }
     const venueIdError = Validator.getErrorMessages([
-      Validator.validateRequired(
-        tournamentFormData.venue_id,
-        '開催場所を選択するか、入力欄に開催場所',
-      ),
+      Validator.validateRequired(tournamentFormData.venue_id, '開催場所'),
     ]);
     const venueNameError =
       tournamentFormData.venue_id === 9999
         ? Validator.getErrorMessages([
-            Validator.validateRequired(
-              tournamentFormData.venue_name,
-              '開催場所を選択するか、入力欄に開催場所',
-            ),
+            Validator.validateRequired(tournamentFormData.venue_name, '開催場所'),
           ])
         : [];
 
@@ -1136,7 +1130,6 @@ export default function Tournaments() {
       }
     }
   };
-  
 
   return (
     <>
@@ -1185,7 +1178,7 @@ export default function Tournaments() {
           value={tournamentFormData.tourn_name}
           onChange={(e) => handleInputChangeTournament('tourn_name', e.target.value)}
           toolTipText='開催する大会名と大会種別（公式/非公式）を選択してください。' //はてなボタン用
-          widthClassName={ mode !== 'confirm' ? 'w-full' : ''}
+          widthClassName={mode !== 'confirm' ? 'w-full' : ''}
         />
         {/* 大会種別（公式・非公式） */}
         <CustomDropdown
