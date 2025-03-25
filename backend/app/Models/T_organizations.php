@@ -207,6 +207,46 @@ class T_organizations extends Model
         Log::debug('updateOrganization end.');
     }
 
+    // ユーザー権限に従って、選択可能な団体を取得する。
+    public function getSelectableOrganization($orgId, $userId, $isOnlyStaff)
+    {
+        $organization = DB::select(
+            "SELECT
+                `to`.org_id AS org_id,
+                `to`.org_name AS org_name,
+                CASE
+                    WHEN `to`.jara_org_type = 1 AND `to`.pref_org_type = 1 THEN 'JARA・県ボ'
+                    WHEN `to`.jara_org_type = 1 THEN 'JARA'
+                    WHEN `to`.pref_org_type = 1 THEN '県ボ'
+                    ELSE '任意'
+                END AS `orgTypeName`
+            FROM `t_organizations` `to`
+            WHERE 1=1
+                AND `to`.org_id = :org_id
+                AND `to`.delete_flag = 0
+                AND (
+                    :isOnlyStaff = 0
+                    OR EXISTS (
+                        SELECT
+                            'x'
+                        FROM `t_organization_staff` tos
+                        WHERE 1 = 1
+                            AND tos.org_id = `to`.org_id
+                            AND tos.user_id = :user_id
+                            AND tos.delete_flag = 0
+                    )
+                )
+            ",
+            ['org_id' => $orgId, 'user_id' => $userId, 'isOnlyStaff' => $isOnlyStaff]
+        );
+
+        $targetOrg = null;
+        if (!empty($organization)) {
+            $targetOrg = $organization[0];
+        }
+        return $targetOrg;
+    }
+
     //団体更新する際に、既に団体が削除されていないかを判定する 20240527
     public function orgDataDeleteCheck($org_id)
     {

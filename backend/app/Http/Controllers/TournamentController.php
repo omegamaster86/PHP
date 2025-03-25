@@ -458,6 +458,7 @@ class TournamentController extends Controller
         $mode = $reqData["mode"];   //入力モード
         $entrysystem_tourn_id = $reqData["entrysystem_tourn_id"];
         $userId = Auth::user()->user_id;
+        $userType = Auth::user()->user_type;
 
         //大会登録の場合、tourn_idは登録時点で存在しないため、条件分岐を追加 20240408
         if ($mode == "update" && isset($reqData["tourn_id"])) {
@@ -481,24 +482,27 @@ class TournamentController extends Controller
                 return response()->json(["response_entrysystem_tourn_id" => $errMessage], 403);
             }
         }
-        //主催団体ID
-        $sponsor_org_id = $reqData["sponsor_org_id"];
-        $target_organization = $t_organizations->getOrganization($sponsor_org_id, $userId);
+
         //主催団体IDに該当する団体が取得できなければエラーとする
-        if (empty($target_organization)) {
+        $sponsorOrgId = $reqData["sponsor_org_id"];
+        // 管理者/JARA権限を持たないユーザーの場合は、スタッフとして所属する団体のみ指定可能
+        $isOnlyStaff = substr($userType, 1, 1) == '0' && substr($userType, 2, 1) == '0';
+        $targetOrganization = $t_organizations->getSelectableOrganization($sponsorOrgId, $userId, $isOnlyStaff);
+        if (empty($targetOrganization)) {
             Log::debug("主催団体IDに該当する団体が存在しない.");
-            $errMessage = "[主催団体ID " . $sponsor_org_id . "]の団体は、既にシステムより削除されているか、本登録されていない団体IDが入力されています。";
+            $errMessage = "システムから削除されているか、使用権限のない団体IDが入力されています。";
             return response()->json(["response_org_id" => $errMessage], 403);
         } else {
-            $reqData["org_name"] = $target_organization->org_name;
+            $reqData["org_name"] = $targetOrganization->org_name;
         }
+
         //大会種別を確認する
         //JARA、県ボのどちらかが正式なら正式
         $tourn_type = $reqData["tourn_type"];
         //大会種別=公式、かつ団体種別=任意はエラーとする
-        $org_type_name = $target_organization->orgTypeName;
+        $org_type_name = $targetOrganization->orgTypeName;
         if ($tourn_type == 1 && $org_type_name == "任意") {
-            $errMessage = "[団体ID " . $sponsor_org_id . "]：[団体名 " . $target_organization->org_name . "]は、任意団体の為、公式大会を主催することはできません。";
+            $errMessage = "[団体ID " . $sponsorOrgId . "]：[団体名 " . $targetOrganization->org_name . "]は、任意団体の為、公式大会を主催することはできません。";
             return response()->json(["response_org_id" => $errMessage], 403);
         }
         //エントリーシステムレースID
