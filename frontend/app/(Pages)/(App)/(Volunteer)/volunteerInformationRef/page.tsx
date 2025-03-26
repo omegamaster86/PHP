@@ -180,6 +180,9 @@ export default function VolunteerInformationRef() {
           clothes_size: volunteerResponse.data.result.master_clothes_size, // 服のサイズ
           personality: volunteerResponse.data.result.personality, // 性格
           dis_type_id: volunteerResponse.data.volSupDisData, // 障碍タイプ
+          is_pr1: volunteerResponse.data.is_pr1, // PR1
+          is_pr2: volunteerResponse.data.is_pr2, // PR2
+          is_pr3: volunteerResponse.data.is_pr3, // PR3
           qualHold: volunteerResponse.data.volQualData, // 保有資格
           language: volLangProDataList, // 言語
           language_proficiency: '', //残件対応項目
