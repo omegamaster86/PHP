@@ -17,7 +17,7 @@ import {
   InputLabel,
   OriginalCheckbox,
 } from '@/app/components/';
-import { JAPAN_COUNTRY_CODE, JAPAN_COUNTRY_ID } from '@/app/constants';
+import { JAPAN_COUNTRY_ID } from '@/app/constants';
 import { useUserType } from '@/app/hooks/useUserType';
 import axios from '@/app/lib/axios';
 import {
@@ -43,8 +43,10 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { formatDate } from '@/app/utils/dateUtil';
+import { SortableHeader } from '@/app/components/SortableHeader';
+import { useSort } from '@/app/hooks/useSort';
 
 // 検索条件
 interface SearchCond {
@@ -97,6 +99,28 @@ interface SearchCond {
 
 const OTHERS_QUAL_ID = 99; //保有資格 その他選択時
 
+const createSortFunctions = (
+  handleSort: (key: string, compareFn: (a: any, b: any) => number) => void,
+) => ({
+  volunteerId: () =>
+    handleSort('volunteer_id', (a, b) => Number(a.volunteer_id) - Number(b.volunteer_id)),
+  volunteerName: () =>
+    handleSort('volunteer_name', (a, b) => a.volunteer_name.localeCompare(b.volunteer_name)),
+  volunteerCountry: () =>
+    handleSort('residence_country', (a, b) =>
+      a.residence_country.localeCompare(b.residence_country),
+    ),
+  sex: () => handleSort('sex', (a, b) => a.sex.localeCompare(b.sex)),
+  age: () =>
+    handleSort(
+      'date_of_birth',
+      (a, b) => new Date(a.date_of_birth).getTime() - new Date(b.date_of_birth).getTime(),
+    ),
+  pr1: () => handleSort('is_pr1', (a, b) => Number(a.is_pr1) - Number(b.is_pr1)),
+  pr2: () => handleSort('is_pr2', (a, b) => Number(a.is_pr2) - Number(b.is_pr2)),
+  pr3: () => handleSort('is_pr3', (a, b) => Number(a.is_pr3) - Number(b.is_pr3)),
+});
+
 export default function VolunteerSearch() {
   const router = useRouter();
 
@@ -145,138 +169,6 @@ export default function VolunteerSearch() {
 
   const [startDateExistsErrorMessages, setStartDateExistsErrorMessages] = useState<string[]>([]);
   const [endDateExistsErrorMessages, setEndDateExistsErrorMessages] = useState<string[]>([]);
-
-  // ボランティアIDのソート用
-  const [volunteerIdSortFlag, setVolunteerIdSortFlag] = useState(false);
-  const volunteerIdSort = () => {
-    if (volunteerIdSortFlag) {
-      setVolunteerIdSortFlag(false);
-      searchResponse.sort((a, b) => Number(a.volunteer_id) - Number(b.volunteer_id));
-    } else {
-      setVolunteerIdSortFlag(true);
-      searchResponse.sort((a, b) => Number(b.volunteer_id) - Number(a.volunteer_id));
-    }
-  };
-  //氏名のソート用
-  const [volunteerNameSortFlag, setVolunteerNameSortFlag] = useState(false);
-  const volunteerNameSort = () => {
-    if (volunteerNameSortFlag) {
-      setVolunteerNameSortFlag(false);
-      searchResponse.sort((a, b) => ('' + a.volunteer_name).localeCompare(b.volunteer_name));
-    } else {
-      setVolunteerNameSortFlag(true);
-      searchResponse.sort((a, b) => ('' + b.volunteer_name).localeCompare(a.volunteer_name));
-    }
-  };
-  //居住地のソート用
-  const [volunteerCountrySortFlag, setVolunteerCountrySortFlag] = useState(false);
-  const volunteerCountrySort = () => {
-    if (volunteerCountrySortFlag) {
-      setVolunteerCountrySortFlag(false);
-      searchResponse.sort((a, b) => {
-        const aIsJapan = a.residence_country_code === JAPAN_COUNTRY_CODE;
-        const bIsJapan = b.residence_country_code === JAPAN_COUNTRY_CODE;
-
-        // 1. 日本以外の国を先にする
-        if (!aIsJapan && bIsJapan) return -1;
-        if (aIsJapan && !bIsJapan) return 1;
-
-        // 2. 日本以外の国なら、国コードの昇順でソート
-        if (!aIsJapan && !bIsJapan) {
-          return (Number(a.residence_country_code) || 0) - (Number(b.residence_country_code) || 0);
-        }
-
-        // 3. 日本の都道府県の場合、JISコードの昇順でソート
-        return (
-          (Number(a.residence_prefecture_code_jis) || 0) -
-          (Number(b.residence_prefecture_code_jis) || 0)
-        );
-      });
-    } else {
-      setVolunteerCountrySortFlag(true);
-      searchResponse.sort((a, b) => {
-        const aIsJapan = a.residence_country_code === JAPAN_COUNTRY_CODE;
-        const bIsJapan = b.residence_country_code === JAPAN_COUNTRY_CODE;
-        // 1. 日本を先にする
-        if (aIsJapan && !bIsJapan) return -1;
-        if (!aIsJapan && bIsJapan) return 1;
-
-        // 2. 日本（JP）の場合、JISコードの降順でソート
-        if (aIsJapan && bIsJapan) {
-          return (
-            (Number(b.residence_prefecture_code_jis) || 0) -
-            (Number(a.residence_prefecture_code_jis) || 0)
-          );
-        }
-
-        // 3. 日本以外の国の場合、国コードの降順でソート
-        return (Number(b.residence_country_code) || 0) - (Number(a.residence_country_code) || 0);
-      });
-    }
-  };
-  //性別のソート用
-  const [sexSortFlag, setSexSortFlag] = useState(false);
-  const sexSort = () => {
-    if (sexSortFlag) {
-      setSexSortFlag(false);
-      searchResponse.sort((a, b) => ('' + a.sex).localeCompare(b.sex));
-    } else {
-      setSexSortFlag(true);
-      searchResponse.sort((a, b) => ('' + b.sex).localeCompare(a.sex));
-    }
-  };
-  //年齢のソート用
-  const [ageSortFlag, setAgeSortFlag] = useState(false);
-  const ageSort = () => {
-    if (ageSortFlag) {
-      setAgeSortFlag(false);
-      searchResponse.sort(
-        (a, b) =>
-          Number(calculateAgeFromBirthday(a.date_of_birth)) -
-          Number(calculateAgeFromBirthday(b.date_of_birth)),
-      );
-    } else {
-      setAgeSortFlag(true);
-      searchResponse.sort(
-        (a, b) =>
-          Number(calculateAgeFromBirthday(b.date_of_birth)) -
-          Number(calculateAgeFromBirthday(a.date_of_birth)),
-      );
-    }
-  };
-  //補助が可能な障碍タイプ （PR1）のソート用
-  const [PR1SortFlag, setPR1SortFlag] = useState(false);
-  const PR1Sort = () => {
-    if (PR1SortFlag) {
-      setPR1SortFlag(false);
-      searchResponse.sort((a, b) => Number(a.dis_type_id?.[0]) - Number(b.dis_type_id?.[0]));
-    } else {
-      setPR1SortFlag(true);
-      searchResponse.sort((a, b) => Number(b.dis_type_id?.[0]) - Number(a.dis_type_id?.[0]));
-    }
-  };
-  //補助が可能な障碍タイプ （PR2）のソート用
-  const [PR2SortFlag, setPR2SortFlag] = useState(false);
-  const PR2Sort = () => {
-    if (PR2SortFlag) {
-      setPR2SortFlag(false);
-      searchResponse.sort((a, b) => Number(a.dis_type_id?.[1]) - Number(b.dis_type_id?.[1]));
-    } else {
-      setPR2SortFlag(true);
-      searchResponse.sort((a, b) => Number(b.dis_type_id?.[1]) - Number(a.dis_type_id?.[1]));
-    }
-  };
-  //補助が可能な障碍タイプ （PR3）のソート用
-  const [PR3SortFlag, setPR3SortFlag] = useState(false);
-  const PR3Sort = () => {
-    if (PR3SortFlag) {
-      setPR3SortFlag(false);
-      searchResponse.sort((a, b) => Number(a.dis_type_id?.[2]) - Number(b.dis_type_id?.[2]));
-    } else {
-      setPR3SortFlag(true);
-      searchResponse.sort((a, b) => Number(b.dis_type_id?.[2]) - Number(a.dis_type_id?.[2]));
-    }
-  };
 
   /**
    * 年齢を計算する関数
@@ -540,6 +432,16 @@ export default function VolunteerSearch() {
     }
   }, [searchCond.qualHold]);
 
+  const { sortState, handleSort } = useSort<VolunteerResponse>({
+    currentData: searchResponse,
+    onSort: setSearchResponse,
+  });
+
+  const sortFunctions = useMemo(
+    () => createSortFunctions(handleSort),
+    [handleSort]
+  );
+
   return (
     <>
       <CustomTitle displayBack>ボランティア検索</CustomTitle>
@@ -600,7 +502,10 @@ export default function VolunteerSearch() {
                     id='date_of_birth_start'
                     selectedDate={searchCond.date_of_birth_start?.toString() || ''}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      handleInputChange('date_of_birth_start', formatDate(e as unknown as string, 'yyyy/MM/dd'));
+                      handleInputChange(
+                        'date_of_birth_start',
+                        formatDate(e.target.value, 'yyyy/MM/dd'),
+                      );
                     }}
                     errorMessages={startDateExistsErrorMessages}
                     className='w-[210px] border-[1px] border-solid border-border rounded-md bg-white h-[56px]'
@@ -611,7 +516,10 @@ export default function VolunteerSearch() {
                     id='date_of_birth_end'
                     selectedDate={searchCond.date_of_birth_end?.toString() || ''}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      handleInputChange('date_of_birth_end', formatDate(e as unknown as string, 'yyyy/MM/dd'));
+                      handleInputChange(
+                        'date_of_birth_end',
+                        formatDate(e.target.value, 'yyyy/MM/dd'),
+                      );
                     }}
                     errorMessages={endDateExistsErrorMessages}
                     className='w-[210px] border-[1px] border-solid border-border rounded-md bg-white h-[56px]'
@@ -977,7 +885,7 @@ export default function VolunteerSearch() {
                   checked={
                     getBoolFromIndex(searchCond.dayOfWeek ? searchCond.dayOfWeek : '', 7) || false
                   }
-                  onChange={(e) => {
+                  onChange={() => {
                     handleCheckboxChange(
                       'dayOfWeek',
                       searchCond.dayOfWeek ? searchCond.dayOfWeek : '',
@@ -992,7 +900,7 @@ export default function VolunteerSearch() {
                   checked={
                     getBoolFromIndex(searchCond.dayOfWeek ? searchCond.dayOfWeek : '', 0) || false
                   }
-                  onChange={(e) => {
+                  onChange={() => {
                     handleCheckboxChange(
                       'dayOfWeek',
                       searchCond.dayOfWeek ? searchCond.dayOfWeek : '',
@@ -1007,7 +915,7 @@ export default function VolunteerSearch() {
                   checked={
                     getBoolFromIndex(searchCond.dayOfWeek ? searchCond.dayOfWeek : '', 1) || false
                   }
-                  onChange={(e) => {
+                  onChange={() => {
                     handleCheckboxChange(
                       'dayOfWeek',
                       searchCond.dayOfWeek ? searchCond.dayOfWeek : '',
@@ -1022,7 +930,7 @@ export default function VolunteerSearch() {
                   checked={
                     getBoolFromIndex(searchCond.dayOfWeek ? searchCond.dayOfWeek : '', 2) || false
                   }
-                  onChange={(e) => {
+                  onChange={() => {
                     handleCheckboxChange(
                       'dayOfWeek',
                       searchCond.dayOfWeek ? searchCond.dayOfWeek : '',
@@ -1037,7 +945,7 @@ export default function VolunteerSearch() {
                   checked={
                     getBoolFromIndex(searchCond.dayOfWeek ? searchCond.dayOfWeek : '', 3) || false
                   }
-                  onChange={(e) => {
+                  onChange={() => {
                     handleCheckboxChange(
                       'dayOfWeek',
                       searchCond.dayOfWeek ? searchCond.dayOfWeek : '',
@@ -1052,7 +960,7 @@ export default function VolunteerSearch() {
                   checked={
                     getBoolFromIndex(searchCond.dayOfWeek ? searchCond.dayOfWeek : '', 4) || false
                   }
-                  onChange={(e) => {
+                  onChange={() => {
                     handleCheckboxChange(
                       'dayOfWeek',
                       searchCond.dayOfWeek ? searchCond.dayOfWeek : '',
@@ -1067,7 +975,7 @@ export default function VolunteerSearch() {
                   checked={
                     getBoolFromIndex(searchCond.dayOfWeek ? searchCond.dayOfWeek : '', 5) || false
                   }
-                  onChange={(e) => {
+                  onChange={() => {
                     handleCheckboxChange(
                       'dayOfWeek',
                       searchCond.dayOfWeek ? searchCond.dayOfWeek : '',
@@ -1082,7 +990,7 @@ export default function VolunteerSearch() {
                   checked={
                     getBoolFromIndex(searchCond.dayOfWeek ? searchCond.dayOfWeek : '', 6) || false
                   }
-                  onChange={(e) => {
+                  onChange={() => {
                     handleCheckboxChange(
                       'dayOfWeek',
                       searchCond.dayOfWeek ? searchCond.dayOfWeek : '',
@@ -1097,7 +1005,7 @@ export default function VolunteerSearch() {
                   checked={
                     getBoolFromIndex(searchCond.dayOfWeek ? searchCond.dayOfWeek : '', 8) || false
                   }
-                  onChange={(e) => {
+                  onChange={() => {
                     handleCheckboxChange(
                       'dayOfWeek',
                       searchCond.dayOfWeek ? searchCond.dayOfWeek : '',
@@ -1118,7 +1026,7 @@ export default function VolunteerSearch() {
                   checked={
                     getTimeZoneBool(searchCond.timeZone ? searchCond.timeZone : '', 7) || false
                   }
-                  onChange={(e) => {
+                  onChange={() => {
                     handleCheckboxChange(
                       'timeZone',
                       searchCond.timeZone ? searchCond.timeZone : '',
@@ -1133,7 +1041,7 @@ export default function VolunteerSearch() {
                   checked={
                     getTimeZoneBool(searchCond.timeZone ? searchCond.timeZone : '', 0) || false
                   }
-                  onChange={(e) => {
+                  onChange={() => {
                     handleCheckboxChange(
                       'timeZone',
                       searchCond.timeZone ? searchCond.timeZone : '',
@@ -1148,7 +1056,7 @@ export default function VolunteerSearch() {
                   checked={
                     getTimeZoneBool(searchCond.timeZone ? searchCond.timeZone : '', 1) || false
                   }
-                  onChange={(e) => {
+                  onChange={() => {
                     handleCheckboxChange(
                       'timeZone',
                       searchCond.timeZone ? searchCond.timeZone : '',
@@ -1163,7 +1071,7 @@ export default function VolunteerSearch() {
                   checked={
                     getTimeZoneBool(searchCond.timeZone ? searchCond.timeZone : '', 2) || false
                   }
-                  onChange={(e) => {
+                  onChange={() => {
                     handleCheckboxChange(
                       'timeZone',
                       searchCond.timeZone ? searchCond.timeZone : '',
@@ -1178,7 +1086,7 @@ export default function VolunteerSearch() {
                   checked={
                     getTimeZoneBool(searchCond.timeZone ? searchCond.timeZone : '', 3) || false
                   }
-                  onChange={(e) => {
+                  onChange={() => {
                     handleCheckboxChange(
                       'timeZone',
                       searchCond.timeZone ? searchCond.timeZone : '',
@@ -1249,49 +1157,44 @@ export default function VolunteerSearch() {
           <CustomThead>
             <CustomTr>
               <CustomTh rowSpan={2}>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => volunteerIdSort()}
-                >
-                  ボランティアID
-                </div>
+                <SortableHeader
+                  column='volunteer_id'
+                  label='ボランティアID'
+                  sortState={sortState}
+                  onSort={sortFunctions.volunteerId}
+                />
               </CustomTh>
               <CustomTh rowSpan={2}>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => volunteerNameSort()}
-                >
-                  氏名
-                </div>
+                <SortableHeader
+                  column='volunteer_name'
+                  label='氏名'
+                  sortState={sortState}
+                  onSort={sortFunctions.volunteerName}
+                />
               </CustomTh>
               <CustomTh rowSpan={2}>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => volunteerCountrySort()}
-                >
-                  居住地
-                </div>
+                <SortableHeader
+                  column='residence_country'
+                  label='居住地'
+                  sortState={sortState}
+                  onSort={sortFunctions.volunteerCountry}
+                />
               </CustomTh>
               <CustomTh rowSpan={2}>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => sexSort()}
-                >
-                  性別
-                </div>
+                <SortableHeader
+                  column='sex'
+                  label='性別'
+                  sortState={sortState}
+                  onSort={sortFunctions.sex}
+                />
               </CustomTh>
               <CustomTh rowSpan={2}>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => ageSort()}
-                >
-                  年齢
-                </div>
+                <SortableHeader
+                  column='date_of_birth'
+                  label='年齢'
+                  sortState={sortState}
+                  onSort={sortFunctions.age}
+                />
               </CustomTh>
               <CustomTh rowSpan={1} colSpan={3}>
                 補助が可能な障碍タイプ
@@ -1304,31 +1207,28 @@ export default function VolunteerSearch() {
             </CustomTr>
             <CustomTr>
               <CustomTh>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => PR1Sort()}
-                >
-                  PR1
-                </div>
+                <SortableHeader
+                  column='is_pr1'
+                  label='PR1'
+                  sortState={sortState}
+                  onSort={sortFunctions.pr1}
+                />
               </CustomTh>
               <CustomTh>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => PR2Sort()}
-                >
-                  PR2
-                </div>
+                <SortableHeader
+                  column='is_pr2'
+                  label='PR2'
+                  sortState={sortState}
+                  onSort={sortFunctions.pr2}
+                />
               </CustomTh>
               <CustomTh>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => PR3Sort()}
-                >
-                  PR3
-                </div>
+                <SortableHeader
+                  column='is_pr3'
+                  label='PR3'
+                  sortState={sortState}
+                  onSort={sortFunctions.pr3}
+                />
               </CustomTh>
             </CustomTr>
           </CustomThead>
@@ -1364,9 +1264,9 @@ export default function VolunteerSearch() {
                 </CustomTd>
                 <CustomTd>{row.sex}</CustomTd>
                 <CustomTd>{calculateAgeFromBirthday(row.date_of_birth)}</CustomTd>
-                <CustomTd>{row.dis_type_id?.[0] ? '◯' : '×'}</CustomTd>
-                <CustomTd>{row.dis_type_id?.[1] ? '◯' : '×'}</CustomTd>
-                <CustomTd>{row.dis_type_id?.[2] ? '◯' : '×'}</CustomTd>
+                <CustomTd>{row.is_pr1 ? '◯' : '×'}</CustomTd>
+                <CustomTd>{row.is_pr2 ? '◯' : '×'}</CustomTd>
+                <CustomTd>{row.is_pr3 ? '◯' : '×'}</CustomTd>
                 <CustomTd>{row.language?.[0]}</CustomTd>
                 <CustomTd>{row.language?.[1]}</CustomTd>
                 <CustomTd>{row.language?.[2]}</CustomTd>

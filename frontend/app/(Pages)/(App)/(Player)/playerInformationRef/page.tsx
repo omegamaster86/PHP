@@ -22,13 +22,14 @@ import { useUserType } from '@/app/hooks/useUserType';
 import axios from '@/app/lib/axios';
 import { PlayerInformationResponse, RaceResultRecordsResponse } from '@/app/types';
 import AddIcon from '@mui/icons-material/Add';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import RowingIcon from '@mui/icons-material/Rowing';
 import { Autocomplete, Chip, TextField } from '@mui/material';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { formatDate } from '@/app/utils/dateUtil';
+import { SortableHeader } from '@/app/components/SortableHeader';
+import { useSort } from '@/app/hooks/useSort';
 
 //種目フィルター用
 interface EventNameList {
@@ -87,6 +88,112 @@ const playerInformationInitialValue: PlayerInformationResponse = {
   residence_prefecture: null,
   photo: '',
 };
+
+const createSortFunctions = (
+  handleSort: (key: string, compareFn: (a: any, b: any) => number) => void,
+  parseTimeToSeconds: (timeString: string) => number,
+) => ({
+  tournamentName: () =>
+    handleSort('tourn_name', (a, b) => a.tourn_name.localeCompare(b.tourn_name)),
+  eventStartDate: () =>
+    handleSort(
+      'eventStartDate',
+      (a, b) => new Date(a.eventStartDate).getTime() - new Date(b.eventStartDate).getTime(),
+    ),
+  orgName: () =>
+    handleSort('org_name', (a, b) => {
+      if (!a.org_name) return 1;
+      if (!b.org_name) return -1;
+      return a.org_name.localeCompare(b.org_name);
+    }),
+  raceName: () => handleSort('race_name', (a, b) => a.race_name.localeCompare(b.race_name)),
+  eventName: () => handleSort('event_name', (a, b) => a.event_name.localeCompare(b.event_name)),
+  raceNumber: () =>
+    handleSort('race_number', (a, b) => Number(a.race_number) - Number(b.race_number)),
+  byGroup: () => handleSort('by_group', (a, b) => a.by_group.localeCompare(b.by_group)),
+  crewName: () => handleSort('crew_name', (a, b) => a.crew_name.localeCompare(b.crew_name)),
+  rank: () => handleSort('rank', (a, b) => Number(a.rank) - Number(b.rank)),
+  lapTime500m: () =>
+    handleSort('laptime_500m', (a, b) => {
+      if (!a.laptime_500m) return 1;
+      if (!b.laptime_500m) return -1;
+      const timeA = parseTimeToSeconds(String(a.laptime_500m));
+      const timeB = parseTimeToSeconds(String(b.laptime_500m));
+      return timeA - timeB;
+    }),
+  lapTime1000m: () =>
+    handleSort('laptime_1000m', (a, b) => {
+      if (!a.laptime_1000m) return 1;
+      if (!b.laptime_1000m) return -1;
+      const timeA = parseTimeToSeconds(String(a.laptime_1000m));
+      const timeB = parseTimeToSeconds(String(b.laptime_1000m));
+      return timeA - timeB;
+    }),
+  lapTime1500m: () =>
+    handleSort('laptime_1500m', (a, b) => {
+      if (!a.laptime_1500m) return 1;
+      if (!b.laptime_1500m) return -1;
+      const timeA = parseTimeToSeconds(String(a.laptime_1500m));
+      const timeB = parseTimeToSeconds(String(b.laptime_1500m));
+      return timeA - timeB;
+    }),
+  lapTime2000m: () =>
+    handleSort('laptime_2000m', (a, b) => {
+      if (!a.laptime_2000m) return 1;
+      if (!b.laptime_2000m) return -1;
+      const timeA = parseTimeToSeconds(String(a.laptime_2000m));
+      const timeB = parseTimeToSeconds(String(b.laptime_2000m));
+      return timeA - timeB;
+    }),
+  lapTimeFinal: () =>
+    handleSort('final_time', (a, b) => {
+      if (!a.final_time) return 1;
+      if (!b.final_time) return -1;
+      const timeA = parseTimeToSeconds(String(a.final_time));
+      const timeB = parseTimeToSeconds(String(b.final_time));
+      return timeA - timeB;
+    }),
+  averageHeartRate: () =>
+    handleSort('stroke_rate_avg', (a, b) => Number(a.stroke_rate_avg) - Number(b.stroke_rate_avg)),
+  strokeRate500m: () =>
+    handleSort('stroke_rate_500m', (a, b) => Number(a.stroke_rat_500m) - Number(b.stroke_rat_500m)),
+  strokeRate1000m: () =>
+    handleSort(
+      'stroke_rate_1000m',
+      (a, b) => Number(a.stroke_rat_1000m) - Number(b.stroke_rat_1000m),
+    ),
+  strokeRate1500m: () =>
+    handleSort(
+      'stroke_rate_1500m',
+      (a, b) => Number(a.stroke_rat_1500m) - Number(b.stroke_rat_1500m),
+    ),
+  strokeRate2000m: () =>
+    handleSort(
+      'stroke_rate_2000m',
+      (a, b) => Number(a.stroke_rat_2000m) - Number(b.stroke_rat_2000m),
+    ),
+  heartRateAvg: () =>
+    handleSort('heart_rate_avg', (a, b) => Number(a.heart_rate_avg) - Number(b.heart_rate_avg)),
+  heartRate500m: () =>
+    handleSort('heart_rate_500m', (a, b) => Number(a.heart_rate_500m) - Number(b.heart_rate_500m)),
+  heartRate1000m: () =>
+    handleSort(
+      'heart_rate_1000m',
+      (a, b) => Number(a.heart_rate_1000m) - Number(b.heart_rate_1000m),
+    ),
+  heartRate1500m: () =>
+    handleSort(
+      'heart_rate_1500m',
+      (a, b) => Number(a.heart_rate_1500m) - Number(b.heart_rate_1500m),
+    ),
+  heartRate2000m: () =>
+    handleSort(
+      'heart_rate_2000m',
+      (a, b) => Number(a.heart_rate_2000m) - Number(b.heart_rate_2000m),
+    ),
+  attendance: () => handleSort('attendance', (a, b) => Number(a.attendance) - Number(b.attendance)),
+  seatName: () => handleSort('seat_name', (a, b) => a.seat_name.localeCompare(b.seat_name)),
+});
 
 // 選手情報参照画面
 export default function PlayerInformationRef() {
@@ -162,407 +269,10 @@ export default function PlayerInformationRef() {
     raceResultRecordsData: raceResultRecordsData, //選手の出漕結果情報
   });
 
-  // 大会名のソート用　20240718
-  const [tournNameSortFlag, setTournNameSortFlag] = useState(false);
-  const tournNameSort = () => {
-    if (tournNameSortFlag) {
-      setTournNameSortFlag(false);
-      raceResultRecordsData.sort((a, b) => ('' + a.tourn_name).localeCompare(b.tourn_name));
-    } else {
-      setTournNameSortFlag(true);
-      raceResultRecordsData.sort((a, b) => ('' + b.tourn_name).localeCompare(a.tourn_name));
-    }
-  };
-  // 開催日 のソート用　20240722
-  const [eventStartDateSortFlag, seteventStartDateSortFlag] = useState(false);
-  const eventStartDateSort = () => {
-    if (eventStartDateSortFlag) {
-      seteventStartDateSortFlag(false);
-      raceResultRecordsData.sort((a, b) => ('' + a.eventStartDate).localeCompare(b.eventStartDate));
-    } else {
-      seteventStartDateSortFlag(true);
-      raceResultRecordsData.sort((a, b) => ('' + b.eventStartDate).localeCompare(a.eventStartDate));
-    }
-  };
-  // 団体名 のソート用　20240722
-  const [orgNameSortFlag, setOrgNameSortFlag] = useState(false);
-  const orgNameSort = () => {
-    if (orgNameSortFlag) {
-      setOrgNameSortFlag(false);
-      raceResultRecordsData.sort((a, b) => ('' + a.org_name).localeCompare(b.org_name));
-    } else {
-      setOrgNameSortFlag(true);
-      raceResultRecordsData.sort((a, b) => ('' + b.org_name).localeCompare(a.org_name));
-    }
-  };
-  // レースNo のソート用　20240722
-  const [raceNumberSortFlag, setRaceNumberSortFlag] = useState(false);
-  const raceNumberSort = () => {
-    if (raceNumberSortFlag) {
-      setRaceNumberSortFlag(false);
-      raceResultRecordsData.sort((a, b) => Number(a.race_number) - Number(b.race_number));
-    } else {
-      setRaceNumberSortFlag(true);
-      raceResultRecordsData.sort((a, b) => Number(b.race_number) - Number(a.race_number));
-    }
-  };
-  // 種目のソート用　20240722
-  const [eventNameSortFlag, setEventNameSortFlag] = useState(false);
-  const eventNameSort = () => {
-    if (eventNameSortFlag) {
-      setEventNameSortFlag(false);
-      raceResultRecordsData.sort((a, b) => ('' + a.event_name).localeCompare(b.event_name));
-    } else {
-      setEventNameSortFlag(true);
-      raceResultRecordsData.sort((a, b) => ('' + b.event_name).localeCompare(a.event_name));
-    }
-  };
-  //レース名のソート用　20240722
-  const [raceNameSortFlag, setRaceNameSortFlag] = useState(false);
-  const raceNameSort = () => {
-    if (raceNameSortFlag) {
-      setRaceNameSortFlag(false);
-      raceResultRecordsData.sort((a, b) => ('' + a.race_name).localeCompare(b.race_name));
-    } else {
-      setRaceNameSortFlag(true);
-      raceResultRecordsData.sort((a, b) => ('' + b.race_name).localeCompare(a.race_name));
-    }
-  };
-  //組別のソート用　20240722
-  const [byGroupSortFlag, setByGroupSortFlag] = useState(false);
-  const bygroupSort = () => {
-    if (byGroupSortFlag) {
-      setByGroupSortFlag(false);
-      raceResultRecordsData.sort((a, b) => ('' + a.by_group).localeCompare(b.by_group));
-    } else {
-      setByGroupSortFlag(true);
-      raceResultRecordsData.sort((a, b) => ('' + b.by_group).localeCompare(a.by_group));
-    }
-  };
-  //クルー名のソート用　20240722
-  const [crewNameSortFlag, setCrewNameSortFlag] = useState(false);
-  const crewNameSort = () => {
-    if (crewNameSortFlag) {
-      setCrewNameSortFlag(false);
-      raceResultRecordsData.sort((a, b) => ('' + a.crew_name).localeCompare(b.crew_name));
-    } else {
-      setCrewNameSortFlag(true);
-      raceResultRecordsData.sort((a, b) => ('' + b.crew_name).localeCompare(a.crew_name));
-    }
-  };
-  //順位のソート用　20240722
-  const [rankSortFlag, setRankSortFlag] = useState(false);
-  const rankSort = () => {
-    if (rankSortFlag) {
-      setRankSortFlag(false);
-      raceResultRecordsData.sort((a, b) => Number(a.rank) - Number(b.rank));
-    } else {
-      setRankSortFlag(true);
-      raceResultRecordsData.sort((a, b) => Number(b.rank) - Number(a.rank));
-    }
-  };
-  //500mlapタイムのソート用　20240722
-  const [lapTime500mSortFlag, setLapTime500mSortFlag] = useState(false);
-  const lapTime500mSort = () => {
-    if (lapTime500mSortFlag) {
-      setLapTime500mSortFlag(false);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(a.laptime_500m.toString().replace(/[.:]/g, '')) -
-          Number(b.laptime_500m.toString().replace(/[.:]/g, '')),
-      );
-    } else {
-      setLapTime500mSortFlag(true);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(b.laptime_500m.toString().replace(/[.:]/g, '')) -
-          Number(a.laptime_500m.toString().replace(/[.:]/g, '')),
-      );
-    }
-  };
-  //1000mlapタイムのソート用　20240722
-  const [lapTime1000mSortFlag, setLapTime1000mSortFlag] = useState(false);
-  const lapTime1000mSort = () => {
-    if (lapTime1000mSortFlag) {
-      setLapTime1000mSortFlag(false);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(a.laptime_1000m.toString().replace(/[.:]/g, '')) -
-          Number(b.laptime_1000m.toString().replace(/[.:]/g, '')),
-      );
-    } else {
-      setLapTime1000mSortFlag(true);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(b.laptime_1000m.toString().replace(/[.:]/g, '')) -
-          Number(a.laptime_1000m.toString().replace(/[.:]/g, '')),
-      );
-    }
-  };
-  //1500mlapタイムのソート用　20240722
-  const [lapTime1500mSortFlag, setLapTime1500mSortFlag] = useState(false);
-  const lapTime1500mSort = () => {
-    if (lapTime1500mSortFlag) {
-      setLapTime1500mSortFlag(false);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(a.laptime_1500m.toString().replace(/[.:]/g, '')) -
-          Number(b.laptime_1500m.toString().replace(/[.:]/g, '')),
-      );
-    } else {
-      setLapTime1500mSortFlag(true);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(b.laptime_1500m.toString().replace(/[.:]/g, '')) -
-          Number(a.laptime_1500m.toString().replace(/[.:]/g, '')),
-      );
-    }
-  };
-  //2000mlapタイムのソート用　20240722
-  const [lapTime2000mSortFlag, setLapTime2000mSortFlag] = useState(false);
-  const lapTime2000mSort = () => {
-    if (lapTime2000mSortFlag) {
-      setLapTime2000mSortFlag(false);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(a.laptime_2000m.toString().replace(/[.:]/g, '')) -
-          Number(b.laptime_2000m.toString().replace(/[.:]/g, '')),
-      );
-    } else {
-      setLapTime2000mSortFlag(true);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(b.laptime_2000m.toString().replace(/[.:]/g, '')) -
-          Number(a.laptime_2000m.toString().replace(/[.:]/g, '')),
-      );
-    }
-  };
-  //最終lapタイムのソート用　20240722
-  const [lapTimeFinalSortFlag, setLapTimeFinalSortFlag] = useState(false);
-  const lapTimeFinalSort = () => {
-    if (lapTimeFinalSortFlag) {
-      setLapTimeFinalSortFlag(false);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(a.final_time.toString().replace(/[.:]/g, '')) -
-          Number(b.final_time.toString().replace(/[.:]/g, '')),
-      );
-    } else {
-      setLapTimeFinalSortFlag(true);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(b.final_time.toString().replace(/[.:]/g, '')) -
-          Number(a.final_time.toString().replace(/[.:]/g, '')),
-      );
-    }
-  };
-  //ストロークレート（平均）のソート用　20240722
-  const [averageStrokeRateSortFlag, setAverageStrokeRateSortFlag] = useState(false);
-  const averageHeartRateSort = () => {
-    if (averageStrokeRateSortFlag) {
-      setAverageStrokeRateSortFlag(false);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(a.stroke_rate_avg.toString().replace(/[.:]/g, '')) -
-          Number(b.stroke_rate_avg.toString().replace(/[.:]/g, '')),
-      );
-    } else {
-      setAverageStrokeRateSortFlag(true);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(b.stroke_rate_avg.toString().replace(/[.:]/g, '')) -
-          Number(a.stroke_rate_avg.toString().replace(/[.:]/g, '')),
-      );
-    }
-  };
-
-  //500mlapストロークレートのソート用　20240722
-  const [strokeRate500mSortFlag, setStrokeRate500mSortFlag] = useState(false);
-  const strokeRate500mSort = () => {
-    if (strokeRate500mSortFlag) {
-      setStrokeRate500mSortFlag(false);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(a.stroke_rat_500m.toString().replace(/[.:]/g, '')) -
-          Number(b.stroke_rat_500m.toString().replace(/[.:]/g, '')),
-      );
-    } else {
-      setStrokeRate500mSortFlag(true);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(b.stroke_rat_500m.toString().replace(/[.:]/g, '')) -
-          Number(a.stroke_rat_500m.toString().replace(/[.:]/g, '')),
-      );
-    }
-  };
-  //1000mlapストロークレートのソート用　20240722
-  const [strokeRate1000mSortFlag, setStrokeRate1000mSortFlag] = useState(false);
-  const strokeRate1000mSort = () => {
-    if (strokeRate1000mSortFlag) {
-      setStrokeRate1000mSortFlag(false);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(a.stroke_rat_1000m.toString().replace(/[.:]/g, '')) -
-          Number(b.stroke_rat_1000m.toString().replace(/[.:]/g, '')),
-      );
-    } else {
-      setStrokeRate1000mSortFlag(true);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(b.stroke_rat_1000m.toString().replace(/[.:]/g, '')) -
-          Number(a.stroke_rat_1000m.toString().replace(/[.:]/g, '')),
-      );
-    }
-  };
-  //1500mlapストロークレートのソート用　20240722
-  const [strokeRate1500mSortFlag, setStrokeRate1500mSortFlag] = useState(false);
-  const strokeRate1500mSort = () => {
-    if (strokeRate1500mSortFlag) {
-      setStrokeRate1500mSortFlag(false);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(a.stroke_rat_1500m.toString().replace(/[.:]/g, '')) -
-          Number(b.stroke_rat_1500m.toString().replace(/[.:]/g, '')),
-      );
-    } else {
-      setStrokeRate1500mSortFlag(true);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(b.stroke_rat_1500m.toString().replace(/[.:]/g, '')) -
-          Number(a.stroke_rat_1500m.toString().replace(/[.:]/g, '')),
-      );
-    }
-  };
-  //2000mlapストロークレートのソート用　20240722
-  const [strokeRate2000mSortFlag, setStrokeRate2000mSortFlag] = useState(false);
-  const strokeRate2000mSort = () => {
-    if (strokeRate2000mSortFlag) {
-      setStrokeRate2000mSortFlag(false);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(a.stroke_rat_2000m.toString().replace(/[.:]/g, '')) -
-          Number(b.stroke_rat_2000m.toString().replace(/[.:]/g, '')),
-      );
-    } else {
-      setStrokeRate2000mSortFlag(true);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(b.stroke_rat_2000m.toString().replace(/[.:]/g, '')) -
-          Number(a.stroke_rat_2000m.toString().replace(/[.:]/g, '')),
-      );
-    }
-  };
-  //lap心拍数/分（平均）のソート用　20240722
-  const [heartRateAvgSortFlag, setHeartRateAvgSortFlag] = useState(false);
-  const heartRateAvgSort = () => {
-    if (heartRateAvgSortFlag) {
-      setHeartRateAvgSortFlag(false);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(a.heart_rate_avg.toString().replace(/[.:]/g, '')) -
-          Number(b.heart_rate_avg.toString().replace(/[.:]/g, '')),
-      );
-    } else {
-      setHeartRateAvgSortFlag(true);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(b.heart_rate_avg.toString().replace(/[.:]/g, '')) -
-          Number(a.heart_rate_avg.toString().replace(/[.:]/g, '')),
-      );
-    }
-  };
-  //500mlap心拍数/分のソート用　20240722
-  const [heartRate500mSortFlag, setHeartRate500mSortFlag] = useState(false);
-  const heartRate500mSort = () => {
-    if (heartRate500mSortFlag) {
-      setHeartRate500mSortFlag(false);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(a.heart_rate_500m.toString().replace(/[.:]/g, '')) -
-          Number(b.heart_rate_500m.toString().replace(/[.:]/g, '')),
-      );
-    } else {
-      setHeartRate500mSortFlag(true);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(b.heart_rate_500m.toString().replace(/[.:]/g, '')) -
-          Number(a.heart_rate_500m.toString().replace(/[.:]/g, '')),
-      );
-    }
-  };
-  //1000mlap心拍数/分のソート用　20240722
-  const [heartRate1000mSortFlag, setHeartRate1000mSortFlag] = useState(false);
-  const heartRate1000mSort = () => {
-    if (heartRate1000mSortFlag) {
-      setHeartRate1000mSortFlag(false);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(a.heart_rate_1000m.toString().replace(/[.:]/g, '')) -
-          Number(b.heart_rate_1000m.toString().replace(/[.:]/g, '')),
-      );
-    } else {
-      setHeartRate1000mSortFlag(true);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(b.heart_rate_1000m.toString().replace(/[.:]/g, '')) -
-          Number(a.heart_rate_1000m.toString().replace(/[.:]/g, '')),
-      );
-    }
-  };
-  //1500mlap心拍数/分のソート用　20240722
-  const [heartRate1500mSortFlag, setHeartRate1500mSortFlag] = useState(false);
-  const heartRate1500mSort = () => {
-    if (heartRate1500mSortFlag) {
-      setHeartRate1500mSortFlag(false);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(a.heart_rate_1500m.toString().replace(/[.:]/g, '')) -
-          Number(b.heart_rate_1500m.toString().replace(/[.:]/g, '')),
-      );
-    } else {
-      setHeartRate1500mSortFlag(true);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(b.heart_rate_1500m.toString().replace(/[.:]/g, '')) -
-          Number(a.heart_rate_1500m.toString().replace(/[.:]/g, '')),
-      );
-    }
-  };
-  //2000mlap心拍数/分のソート用　20240722
-  const [heartRate2000mSortFlag, setHeartRate2000mSortFlag] = useState(false);
-  const heartRate2000mSort = () => {
-    if (heartRate2000mSortFlag) {
-      setHeartRate2000mSortFlag(false);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(a.heart_rate_2000m.toString().replace(/[.:]/g, '')) -
-          Number(b.heart_rate_2000m.toString().replace(/[.:]/g, '')),
-      );
-    } else {
-      setHeartRate2000mSortFlag(true);
-      raceResultRecordsData.sort(
-        (a, b) =>
-          Number(b.heart_rate_2000m.toString().replace(/[.:]/g, '')) -
-          Number(a.heart_rate_2000m.toString().replace(/[.:]/g, '')),
-      );
-    }
-  };
-  //シート番号（出漕時点）のソート用　20240723
-  const [seatNameSortFlag, setSeatNameSortFlag] = useState(false);
-  const seatNameSort = () => {
-    if (seatNameSortFlag) {
-      setSeatNameSortFlag(false);
-      raceResultRecordsData.sort((a, b) => Number(a.seat_number) - Number(b.seat_number));
-    } else {
-      setSeatNameSortFlag(true);
-      raceResultRecordsData.sort((a, b) => Number(b.seat_number) - Number(a.seat_number));
-    }
-  };
-
   //種目
   const [eventNameList, setEventNameList] = useState([] as EventNameList[]);
   const [selectedEventNameList, setSelectedEventNameList] = useState([] as EventNameList[]);
-  //レース名のフィルター実装　20240723
+  //レース名フィルター用
   const [raceNameList, setRaceNameList] = useState([] as RaceNameList[]);
   const [selectedRaceNameList, setSelectedRaceNameList] = useState([] as RaceNameList[]);
   //組別
@@ -640,10 +350,7 @@ export default function PlayerInformationRef() {
    * @param event
    * ヘッダーの位置を取得し、オートコンプリートを表示する
    */
-  const handleEventNameHeaderClick = (
-    value: string,
-    event: MouseEvent<HTMLElement, MouseEvent>,
-  ) => {
+  const handleEventNameHeaderClick = (value: string, event: React.MouseEvent<HTMLElement>) => {
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedEventNameHeader({
       value,
@@ -661,7 +368,7 @@ export default function PlayerInformationRef() {
    * @param event
    * ヘッダーの位置を取得し、オートコンプリートを表示する
    */
-  const handleRaceNameHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleRaceNameHeaderClick = (value: string, event: MouseEvent<HTMLElement>) => {
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedRaceNameHeader({
       value,
@@ -679,7 +386,7 @@ export default function PlayerInformationRef() {
    * @param event
    * ヘッダーの位置を取得し、オートコンプリートを表示する
    */
-  const handleByGroupHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleByGroupHeaderClick = (value: string, event: MouseEvent<HTMLElement>) => {
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedByGroupHeader({
       value,
@@ -697,7 +404,7 @@ export default function PlayerInformationRef() {
    * @param event
    * ヘッダーの位置を取得し、オートコンプリートを表示する
    */
-  const handleCrewNameHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleCrewNameHeaderClick = (value: string, event: MouseEvent<HTMLElement>) => {
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedCrewNameHeader({
       value,
@@ -715,7 +422,7 @@ export default function PlayerInformationRef() {
    * @param event
    * ヘッダーの位置を取得し、オートコンプリートを表示する
    */
-  const handleRankHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleRankHeaderClick = (value: string, event: MouseEvent<HTMLElement>) => {
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedRankHeader({
       value,
@@ -733,7 +440,7 @@ export default function PlayerInformationRef() {
    * @param event
    * ヘッダーの位置を取得し、オートコンプリートを表示する
    */
-  const handleSeatNameHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleSeatNameHeaderClick = (value: string, event: MouseEvent<HTMLElement>) => {
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedSeatNameHeader({
       value,
@@ -751,10 +458,7 @@ export default function PlayerInformationRef() {
    * @param event
    * ヘッダーの位置を取得し、オートコンプリートを表示する
    */
-  const handleAttendanceHeaderClick = (
-    value: string,
-    event: MouseEvent<HTMLElement, MouseEvent>,
-  ) => {
+  const handleAttendanceHeaderClick = (value: string, event: MouseEvent<HTMLElement>) => {
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedAttendanceHeader({
       value,
@@ -772,9 +476,7 @@ export default function PlayerInformationRef() {
     deleteData.raceResultRecordsData = raceResultRecordsData;
     await axios
       .post('api/deletePlayerData', deleteData)
-      .then((res) => {
-        //console.log(res.data);
-      })
+      .then((res) => {})
       .catch((error) => {
         setErrors([error.response?.data?.message]);
       });
@@ -852,12 +554,12 @@ export default function PlayerInformationRef() {
   };
 
   // フィルターのリストを制御する
-  const [filteredArray, setFilteredArray] = useState([] as RaceResultRecordsResponse[]);
+  const [filteredArray, setFilteredArray] = useState<RaceResultRecordsResponse[]>([]);
 
   // フィルターのリストを制御する
   useEffect(() => {
     setFilteredArray(
-      raceResultRecordsData.filter((row, index) => {
+      raceResultRecordsData.filter((row) => {
         //公式・非公式の場合
         if (activeTab === 2) {
           return row.official === 1;
@@ -872,77 +574,92 @@ export default function PlayerInformationRef() {
 
   useEffect(() => {
     //種目をフィルターできるようにする 20240724
-    const eventNameArray = filteredArray.map((item: any) => item.event_name);
+    const eventNameArray = filteredArray.map((item) => item.event_name);
     const uniqueEventNameSet = new Set(eventNameArray);
     const uniqueEventNameArray = Array.from(uniqueEventNameSet);
     setEventNameList(
-      uniqueEventNameArray.map((item: any, index: any) => ({
+      uniqueEventNameArray.map((item, index) => ({
         id: index,
         name: item,
       })),
     );
 
     //レースno.をフィルターできるようにする 20240718
-    const raceNumberArray = filteredArray.map((item: any) => item.race_name);
+    const raceNumberArray = filteredArray.map((item) => item.race_name);
     const uniqueRaceNumberSet = new Set(raceNumberArray);
     const uniqueRaceNumberArray = Array.from(uniqueRaceNumberSet);
     setRaceNameList(
-      uniqueRaceNumberArray.map((item: any, index: any) => ({
+      uniqueRaceNumberArray.map((item, index) => ({
         id: index,
         name: item,
       })),
     );
     //組別をフィルターできるようにする 20240724
-    const byGroupsArray = filteredArray.map((item: any) => item.by_group);
+    const byGroupsArray = filteredArray.map((item) => item.by_group);
     const uniqueByGroupsSet = new Set(byGroupsArray);
     const uniqueByGroupsArray = Array.from(uniqueByGroupsSet);
     setByGroupList(
-      uniqueByGroupsArray.map((item: any, index: any) => ({
+      uniqueByGroupsArray.map((item, index) => ({
         id: index,
         name: item,
       })),
     );
     //クルー名をフィルターできるようにする 20240724
-    const crewNameArray = filteredArray.map((item: any) => item.crew_name);
+    const crewNameArray = filteredArray.map((item) => item.crew_name);
     const uniqueCrewNameSet = new Set(crewNameArray);
     const uniqueCrewNameArray = Array.from(uniqueCrewNameSet);
     setCrewNameList(
-      uniqueCrewNameArray.map((item: any, index: any) => ({
+      uniqueCrewNameArray.map((item, index) => ({
         id: index,
         name: item,
       })),
     );
     //順位をフィルターできるようにする 20240724
-    const rankArray = filteredArray.map((item: any) => item.rank);
+    const rankArray = filteredArray.map((item) => item.rank);
     const uniqueRankSet = new Set(rankArray);
     const uniqueRankArray = Array.from(uniqueRankSet);
     setRankList(
-      uniqueRankArray.map((item: any, index: any) => ({
+      uniqueRankArray.map((item, index) => ({
         id: index,
         name: item,
       })),
     );
     //立ち会いをフィルターできるようにする 20240724
-    const attendanceArray = filteredArray.map((item: any) => item.attendance);
+    const attendanceArray = filteredArray.map((item) => item.attendance);
     const uniqueAttendanceSet = new Set(attendanceArray);
     const uniqueAttendanceArray = Array.from(uniqueAttendanceSet);
     setAttendanceList(
-      uniqueAttendanceArray.map((item: any, index: any) => ({
+      uniqueAttendanceArray.map((item, index) => ({
         id: index,
         name: item,
       })),
     );
     //順位をフィルターできるようにする 20240724
-    const seatNameArray = filteredArray.map((item: any) => item.seat_name);
+    const seatNameArray = filteredArray.map((item) => item.seat_name);
     const uniqueSeatNameSet = new Set(seatNameArray);
     const uniqueSeatNameArray = Array.from(uniqueSeatNameSet);
     setSeatNameList(
-      uniqueSeatNameArray.map((item: any, index: any) => ({
+      uniqueSeatNameArray.map((item, index) => ({
         id: index,
         name: item,
       })),
     );
-  }, [filteredArray]);
+  }, [filteredArray, raceResultRecordsData]);
+
+  const { sortState, handleSort } = useSort<RaceResultRecordsResponse>({
+    currentData: filteredArray,
+    onSort: setFilteredArray,
+  });
+
+  const parseTimeToSeconds = (timeString: string): number => {
+    const [minutes, seconds] = timeString.split(':').map(Number);
+    return minutes * 60 + seconds;
+  };
+
+  const sortFunctions = useMemo(
+    () => createSortFunctions(handleSort, parseTimeToSeconds),
+    [handleSort],
+  );
 
   useEffect(() => {
     if (showEventNameAutocomplete) {
@@ -1025,43 +742,6 @@ export default function PlayerInformationRef() {
     showSeatNameAutocomplete,
   ]);
 
-  const headerArray = [
-    '大会名',
-    '公式／非公式',
-    '開催日',
-    '所属団体',
-    'レースNo.',
-    '種目',
-    'レース名',
-    '組別',
-    'クルー名',
-    '順位',
-    '500mlapタイム',
-    '1000mlapタイム',
-    '1500mlapタイム',
-    '2000mlapタイム',
-    '最終lapタイム',
-    'ストロークレート（平均）',
-    '500mlapストロークレート',
-    '1000mlapストロークレート',
-    '1500mlapストロークレート',
-    '2000mlapストロークレート',
-    '心拍数/分（平均）',
-    '500mlap心拍数/分',
-    '1000mlap心拍数/分',
-    '1500mlap心拍数/分',
-    '2000mlap心拍数/分',
-    '立ち合い有無',
-    '選手身長（出漕時点）',
-    '選手体重（出漕時点）',
-    'シート番号（出漕時点）',
-    '出漕結果記録名',
-    '発艇日時',
-    '2000m地点風速',
-    '2000m地点風向',
-    '1000m地点風速',
-    '1000m地点風向',
-  ];
   const { user } = useAuth({
     middleware: 'auth',
   });
@@ -1303,348 +983,251 @@ export default function PlayerInformationRef() {
         <div className='overflow-auto h-[auto]'>
           {/* 出漕結果情報一覧テーブル表示 */}
           <CustomTable>
-            {/* テーブルヘッダー */}
             <CustomThead>
               <CustomTr>
-                {headerArray.map((header, index) => (
-                  <CustomTh align='left' key={index}>
-                    {header === '大会名' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => tournNameSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === '公式／非公式' && header}
-                    {header === '開催日' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => eventStartDateSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === '所属団体' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => orgNameSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === 'レースNo.' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => raceNumberSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === '種目' && (
-                      <div className='flex flex-row items-center gap-[10px]'>
-                        <div
-                          className='underline'
-                          style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                          onClick={() => eventNameSort()}
-                        >
-                          {header}
-                        </div>
-                        <button
-                          type='button'
-                          style={{
-                            cursor: 'pointer',
-                            color: selectedEventNameList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
-                          }}
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={(event) => handleEventNameHeaderClick('種目', event as any)}
-                        >
-                          <FilterListIcon />
-                        </button>
-                      </div>
-                    )}
-                    {header === 'レース名' && (
-                      <div className='flex flex-row items-center gap-[10px]'>
-                        <div
-                          className='underline'
-                          style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                          onClick={() => raceNameSort()}
-                        >
-                          {header}
-                        </div>
-                        <button
-                          type='button'
-                          style={{
-                            cursor: 'pointer',
-                            color: selectedRaceNameList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
-                          }}
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={(event) => handleRaceNameHeaderClick('レース名', event as any)}
-                        >
-                          <FilterListIcon />
-                        </button>
-                      </div>
-                    )}
-                    {header === '組別' && (
-                      <div className='flex flex-row items-center gap-[10px]'>
-                        <div
-                          className='underline'
-                          style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                          onClick={() => bygroupSort()}
-                        >
-                          {header}
-                        </div>
-                        <button
-                          type='button'
-                          style={{
-                            cursor: 'pointer',
-                            color: selectedByGroupList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
-                          }}
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={(event) => handleByGroupHeaderClick('組別', event as any)}
-                        >
-                          <FilterListIcon />
-                        </button>
-                      </div>
-                    )}
-                    {header === 'クルー名' && (
-                      <div className='flex flex-row items-center gap-[10px]'>
-                        <div
-                          className='underline'
-                          style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                          onClick={() => crewNameSort()}
-                        >
-                          {header}
-                        </div>
-                        <button
-                          type='button'
-                          style={{
-                            cursor: 'pointer',
-                            color: selectedCrewNameList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
-                          }}
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={(event) => handleCrewNameHeaderClick('クルー名', event as any)}
-                        >
-                          <FilterListIcon />
-                        </button>
-                      </div>
-                    )}
-                    {header === '順位' && (
-                      <div className='flex flex-row items-center gap-[10px]'>
-                        <div
-                          className='underline'
-                          style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                          onClick={() => rankSort()}
-                        >
-                          {header}
-                        </div>
-                        <button
-                          type='button'
-                          style={{
-                            cursor: 'pointer',
-                            color: selectedRankList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
-                          }}
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={(event) => handleRankHeaderClick('順位', event as any)}
-                        >
-                          <FilterListIcon />
-                        </button>
-                      </div>
-                    )}
-                    {header === '500mlapタイム' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => lapTime500mSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === '1000mlapタイム' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => lapTime1000mSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === '1500mlapタイム' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => lapTime1500mSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === '2000mlapタイム' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => lapTime2000mSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === '最終lapタイム' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => lapTimeFinalSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === 'ストロークレート（平均）' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => averageHeartRateSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === '500mlapストロークレート' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => strokeRate500mSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === '1000mlapストロークレート' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => strokeRate1000mSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === '1500mlapストロークレート' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => strokeRate1500mSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === '2000mlapストロークレート' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => strokeRate2000mSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === '心拍数/分（平均）' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => heartRateAvgSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === '500mlap心拍数/分' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => heartRate500mSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === '1000mlap心拍数/分' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => heartRate1000mSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === '1500mlap心拍数/分' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => heartRate1500mSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === '2000mlap心拍数/分' && (
-                      <div
-                        className='underline'
-                        style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                        onClick={() => heartRate2000mSort()}
-                      >
-                        {header}
-                      </div>
-                    )}
-                    {header === '立ち合い有無' && (
-                      <div className='flex flex-row items-center gap-[10px]'>
-                        <div>{header}</div>
-                        <button
-                          type='button'
-                          style={{
-                            cursor: 'pointer',
-                            color: selectedAttendanceList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
-                          }}
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={(event) => handleAttendanceHeaderClick('立ち会い', event as any)}
-                        >
-                          <FilterListIcon />
-                        </button>
-                      </div>
-                    )}
-                    {header === '選手身長（出漕時点）' && header}
-                    {header === '選手体重（出漕時点）' && header}
-                    {header === 'シート番号（出漕時点）' && (
-                      <div className='flex flex-row items-center gap-[10px]'>
-                        <div
-                          className='underline'
-                          style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                          onClick={() => seatNameSort()}
-                        >
-                          {header}
-                        </div>
-                        <button
-                          type='button'
-                          style={{
-                            cursor: 'pointer',
-                            color: selectedSeatNameList.length > 0 ? '#F44336' : '#001D74',
-                          }}
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={(event) =>
-                            handleSeatNameHeaderClick('シート番号（出漕時点）', event as any)
-                          }
-                        >
-                          <FilterListIcon />
-                        </button>
-                      </div>
-                    )}
-                    {header === '出漕結果記録名' && header}
-                    {header === '発艇日時' && header}
-                    {header === '2000m地点風速' && header}
-                    {header === '2000m地点風向' && header}
-                    {header === '1000m地点風速' && header}
-                    {header === '1000m地点風向' && header}
-                  </CustomTh>
-                ))}
+                <CustomTh align='left'>
+                  <SortableHeader
+                    column='tourn_name'
+                    label='大会名'
+                    sortState={sortState}
+                    onSort={sortFunctions.tournamentName}
+                  />
+                </CustomTh>
+                <CustomTh>公式／非公式</CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='eventStartDate'
+                    label='開催日'
+                    sortState={sortState}
+                    onSort={sortFunctions.eventStartDate}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='org_name'
+                    label='所属団体'
+                    sortState={sortState}
+                    onSort={sortFunctions.orgName}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='race_number'
+                    label='レースNo.'
+                    sortState={sortState}
+                    onSort={sortFunctions.raceNumber}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='event_name'
+                    label='種目'
+                    sortState={sortState}
+                    onSort={sortFunctions.eventName}
+                    hasFilter
+                    isFiltered={selectedEventNameList.length > 0}
+                    onFilter={(event) => handleEventNameHeaderClick('種目', event)}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='race_name'
+                    label='レース名'
+                    sortState={sortState}
+                    onSort={sortFunctions.raceName}
+                    hasFilter
+                    isFiltered={selectedRaceNameList.length > 0}
+                    onFilter={(event) => handleRaceNameHeaderClick('レース名', event)}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='by_group'
+                    label='組別'
+                    sortState={sortState}
+                    onSort={sortFunctions.byGroup}
+                    hasFilter
+                    isFiltered={selectedByGroupList.length > 0}
+                    onFilter={(event) => handleByGroupHeaderClick('組別', event)}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='crew_name'
+                    label='クルー名'
+                    sortState={sortState}
+                    onSort={sortFunctions.crewName}
+                    hasFilter
+                    isFiltered={selectedCrewNameList.length > 0}
+                    onFilter={(event) => handleCrewNameHeaderClick('クルー名', event)}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='rank'
+                    label='順位'
+                    sortState={sortState}
+                    onSort={sortFunctions.rank}
+                    hasFilter
+                    isFiltered={selectedRankList.length > 0}
+                    onFilter={(event) => handleRankHeaderClick('順位', event)}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='laptime_500m'
+                    label='500mlapタイム'
+                    sortState={sortState}
+                    onSort={sortFunctions.lapTime500m}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='laptime_1000m'
+                    label='1000mlapタイム'
+                    sortState={sortState}
+                    onSort={sortFunctions.lapTime1000m}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='laptime_1500m'
+                    label='1500mlapタイム'
+                    sortState={sortState}
+                    onSort={sortFunctions.lapTime1500m}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='laptime_2000m'
+                    label='2000mlapタイム'
+                    sortState={sortState}
+                    onSort={sortFunctions.lapTime2000m}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='final_time'
+                    label='最終lapタイム'
+                    sortState={sortState}
+                    onSort={sortFunctions.lapTimeFinal}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='stroke_rate_avg'
+                    label='ストロークレート（平均）'
+                    sortState={sortState}
+                    onSort={sortFunctions.averageHeartRate}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='stroke_rate_500m'
+                    label='500mlapストロークレート'
+                    sortState={sortState}
+                    onSort={sortFunctions.strokeRate500m}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='stroke_rate_1000m'
+                    label='1000mlapストロークレート'
+                    sortState={sortState}
+                    onSort={sortFunctions.strokeRate1000m}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='stroke_rate_1500m'
+                    label='1500mlapストロークレート'
+                    sortState={sortState}
+                    onSort={sortFunctions.strokeRate1500m}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='stroke_rate_2000m'
+                    label='2000mlapストロークレート'
+                    sortState={sortState}
+                    onSort={sortFunctions.strokeRate2000m}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='heart_rate_avg'
+                    label='心拍数/分（平均）'
+                    sortState={sortState}
+                    onSort={sortFunctions.heartRateAvg}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='heart_rate_500m'
+                    label='500mlap心拍数/分'
+                    sortState={sortState}
+                    onSort={sortFunctions.heartRate500m}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='heart_rate_1000m'
+                    label='1000mlap心拍数/分'
+                    sortState={sortState}
+                    onSort={sortFunctions.heartRate1000m}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='heart_rate_1500m'
+                    label='1500mlap心拍数/分'
+                    sortState={sortState}
+                    onSort={sortFunctions.heartRate1500m}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='heart_rate_2000m'
+                    label='2000mlap心拍数/分'
+                    sortState={sortState}
+                    onSort={sortFunctions.heartRate2000m}
+                  />
+                </CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='attendance'
+                    label='立ち合い有無'
+                    sortState={sortState}
+                    onSort={sortFunctions.attendance}
+                    hasFilter
+                    isFiltered={selectedAttendanceList.length > 0}
+                    onFilter={(event) => handleAttendanceHeaderClick('立ち合い有無', event)}
+                  />
+                </CustomTh>
+                <CustomTh>選手身長（出漕時点）</CustomTh>
+                <CustomTh>選手体重（出漕時点）</CustomTh>
+                <CustomTh>
+                  <SortableHeader
+                    column='seat_name'
+                    label='シート番号（出漕時点）'
+                    sortState={sortState}
+                    onSort={sortFunctions.seatName}
+                    hasFilter
+                    isFiltered={selectedSeatNameList.length > 0}
+                    onFilter={(event) => handleSeatNameHeaderClick('シート番号（出漕時点）', event)}
+                  />
+                </CustomTh>
+                <CustomTh>出漕結果記録名</CustomTh>
+                <CustomTh>発艇日時</CustomTh>
+                <CustomTh>1000m地点風速</CustomTh>
+                <CustomTh>1000m地点風向</CustomTh>
+                <CustomTh>2000m地点風速</CustomTh>
+                <CustomTh>2000m地点風向</CustomTh>
               </CustomTr>
             </CustomThead>
             {/* テーブルボディー */}
             <CustomTbody>
-              {raceResultRecordsData
+              {filteredArray
                 .filter((row) => {
                   if (selectedEventNameList.length > 0) {
                     return selectedEventNameList.some((item) => item.name === row.event_name);
@@ -1680,14 +1263,14 @@ export default function PlayerInformationRef() {
                     return true;
                   }
                 })
-                .filter((row, index) => {
+                .filter((row) => {
                   if (selectedAttendanceList.length > 0) {
                     return selectedAttendanceList.some((item) => item.name === row.attendance);
                   } else {
                     return true;
                   }
                 })
-                .filter((row, index) => {
+                .filter((row) => {
                   if (selectedSeatNameList.length > 0) {
                     return selectedSeatNameList.some((item) => item.name === row.seat_name);
                   } else {
@@ -1783,14 +1366,14 @@ export default function PlayerInformationRef() {
                     <CustomTd>{row.race_result_record_name}</CustomTd>
                     {/* 発艇日時 */}
                     <CustomTd>{formatDate(row.start_datetime, 'yyyy/MM/dd HH:mm')}</CustomTd>
-                    {/* 2000m地点風速 */}
-                    <CustomTd>{row.wind_speed_2000m_point}</CustomTd>
-                    {/* 2000m地点風向 */}
-                    <CustomTd>{row.twentyHundredmWindDirectionName}</CustomTd>
                     {/* 1000m地点風速 */}
                     <CustomTd>{row.wind_speed_1000m_point}</CustomTd>
                     {/* 1000m地点風向 */}
                     <CustomTd>{row.tenHundredmWindDirectionName}</CustomTd>
+                    {/* 2000m地点風速 */}
+                    <CustomTd>{row.wind_speed_2000m_point}</CustomTd>
+                    {/* 2000m地点風向 */}
+                    <CustomTd>{row.twentyHundredmWindDirectionName}</CustomTd>
                   </CustomTr>
                 ))}
             </CustomTbody>
