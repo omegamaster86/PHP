@@ -2,7 +2,7 @@
 'use client';
 
 // Reactおよび関連モジュールのインポート
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from '@/app/lib/axios';
 // コンポーネントのインポート
@@ -31,6 +31,8 @@ import Divider from '@mui/material/Divider';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { formatDate } from '@/app/utils/dateUtil';
+import { SortableHeader } from '@/app/components/SortableHeader';
+import { useSort } from '@/app/hooks/useSort';
 
 // 検索条件フォームの型定義
 // 検索条件
@@ -63,6 +65,27 @@ interface VenueResponse {
   name: string;
 }
 
+const createSortFunctions = (
+  handleSort: (key: string, compareFn: (a: any, b: any) => number) => void,
+) => ({
+  tourn_name: () =>
+    handleSort('tourn_name', (a, b) => ('' + a.tourn_name).localeCompare(b.tourn_name)),
+  event_start_date: () =>
+    handleSort('event_start_date', (a, b) =>
+      Number(a.event_start_date.replace(/[- :]/g, '')) -
+      Number(b.event_start_date.replace(/[- :]/g, '')),
+    ),
+  event_end_date: () =>
+    handleSort('event_end_date', (a, b) =>
+      Number(a.event_end_date.replace(/[- :]/g, '')) -
+      Number(b.event_end_date.replace(/[- :]/g, '')),
+    ),
+  sponsor_org_id: () =>
+    handleSort('sponsor_org_id', (a, b) => Number(a.sponsor_org_id) - Number(b.sponsor_org_id)),
+  sponsorOrgName: () =>
+    handleSort('sponsorOrgName', (a, b) => ('' + a.sponsorOrgName).localeCompare(b.sponsorOrgName)),
+});
+
 export default function TournamentSearch() {
   const router = useRouter();
 
@@ -87,90 +110,6 @@ export default function TournamentSearch() {
   const [visibleData, setVisibleData] = useState<Tournament[]>([]); // 表示するデータ
   const [visibleItems, setVisibleItems] = useState(10); // 表示するデータの数
 
-  // 大会名のソート用 20240707
-  const [tournamentNameSortFlag, setTournamentNameSortFlag] = useState(false);
-  const tournamentNameSort = () => {
-    if (tournamentNameSortFlag) {
-      setTournamentNameSortFlag(false);
-      visibleData.sort((a: any | number | bigint, b: any | number | bigint) =>
-        ('' + a.tourn_name).localeCompare(b.tourn_name),
-      );
-    } else {
-      setTournamentNameSortFlag(true);
-      visibleData.sort((a: any | number | bigint, b: any | number | bigint) =>
-        ('' + b.tourn_name).localeCompare(a.tourn_name),
-      );
-    }
-  };
-  // 開催開始日のソート用 20240707
-  const [startDateSortFlag, setStartDateSortFlag] = useState(false);
-  const startDateSort = () => {
-    if (startDateSortFlag) {
-      setStartDateSortFlag(false);
-      visibleData.sort(
-        (a: any | number | bigint, b: any | number | bigint) =>
-          Number(a.event_start_date.replace(/[- :]/g, '')) -
-          Number(b.event_start_date.replace(/[- :]/g, '')),
-      );
-    } else {
-      setStartDateSortFlag(true);
-      visibleData.sort(
-        (a: any | number | bigint, b: any | number | bigint) =>
-          Number(b.event_start_date.replace(/[- :]/g, '')) -
-          Number(a.event_start_date.replace(/[- :]/g, '')),
-      );
-    }
-  };
-  // 開催終了日のソート用 20240707
-  const [endDateSortFlag, setEndDateSortFlag] = useState(false);
-  const endtDateSort = () => {
-    if (endDateSortFlag) {
-      setEndDateSortFlag(false);
-      visibleData.sort(
-        (a: any | number | bigint, b: any | number | bigint) =>
-          Number(a.event_end_date.replace(/[- :]/g, '')) -
-          Number(b.event_end_date.replace(/[- :]/g, '')),
-      );
-    } else {
-      setEndDateSortFlag(true);
-      visibleData.sort(
-        (a: any | number | bigint, b: any | number | bigint) =>
-          Number(b.event_end_date.replace(/[- :]/g, '')) -
-          Number(a.event_end_date.replace(/[- :]/g, '')),
-      );
-    }
-  };
-  // 主催団体IDのソート用 20240707
-  const [sponsorOrgIdFlag, setsponsorOrgIdFlag] = useState(false);
-  const sponsorOrgIdSort = () => {
-    if (sponsorOrgIdFlag) {
-      setsponsorOrgIdFlag(false);
-      visibleData.sort(
-        (a: any | number | bigint, b: any | number | bigint) => a.sponsor_org_id - b.sponsor_org_id,
-      );
-    } else {
-      setsponsorOrgIdFlag(true);
-      visibleData.sort(
-        (a: any | number | bigint, b: any | number | bigint) => b.sponsor_org_id - a.sponsor_org_id,
-      );
-    }
-  };
-  // 主催団体名のソート用 20240707
-  const [sponsorOrgNameFlag, setSponsorOrgNameFlag] = useState(false);
-  const sponsorOrgNameSort = () => {
-    if (sponsorOrgNameFlag) {
-      setSponsorOrgNameFlag(false);
-      visibleData.sort((a: any | number | bigint, b: any | number | bigint) =>
-        ('' + a.sponsorOrgName).localeCompare(b.sponsorOrgName),
-      );
-    } else {
-      setSponsorOrgNameFlag(true);
-      visibleData.sort((a: any | number | bigint, b: any | number | bigint) =>
-        ('' + b.sponsorOrgName).localeCompare(a.sponsorOrgName),
-      );
-    }
-  };
-
   // フォームの入力値を管理する関数
   const handleInputChange = (name: string, value: string | number) => {
     setSearchCond((prevFormData) => ({
@@ -182,15 +121,6 @@ export default function TournamentSearch() {
   const toggleAccordion = () => {
     setIsOpen(!isOpen);
   };
-
-  function getNonEmptyProperties(obj: SearchCond): { key: string; value: any }[] {
-    return Object.entries(obj)
-      .filter(([key, value]) => value !== null && value !== undefined && value !== '')
-      .map(([key, value]) => ({
-        key,
-        value,
-      }));
-  }
 
   const handleSearch = async () => {
     try {
@@ -256,6 +186,16 @@ export default function TournamentSearch() {
     setVisibleItems((prevCount) => prevCount + 10);
   };
 
+  const { sortState, handleSort } = useSort<Tournament>({
+    currentData: visibleData,
+    onSort: setVisibleData,
+  });
+
+  const sortFunctions = useMemo(
+    () => createSortFunctions(handleSort),
+    [handleSort]
+  );
+
   // レンダリング
   return (
     <>
@@ -304,10 +244,7 @@ export default function TournamentSearch() {
               value={searchCond.venue_id}
               onChange={(e) => {
                 handleInputChange('venue_id', e);
-                handleInputChange(
-                  'venue_name',
-                  venue.find((item) => item.id === e)?.name || '',
-                );
+                handleInputChange('venue_name', venue.find((item) => item.id === e)?.name || '');
               }}
               className='border-[0.5px] border-solid border-gray-50 rounded'
             />
@@ -456,50 +393,45 @@ export default function TournamentSearch() {
             <CustomTr>
               <CustomTh align='left'>大会種別</CustomTh>
               <CustomTh align='left'>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => tournamentNameSort()}
-                >
-                  大会名
-                </div>
+                <SortableHeader
+                  column='tourn_name'
+                  label='大会名'
+                  sortState={sortState}
+                  onSort={sortFunctions.tourn_name}
+                />
               </CustomTh>
               <CustomTh align='left'>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => startDateSort()}
-                >
-                  開催開始日
-                </div>
+                <SortableHeader
+                  column='event_start_date'
+                  label='開催開始日'
+                  sortState={sortState}
+                  onSort={sortFunctions.event_start_date}
+                />
               </CustomTh>
               <CustomTh align='left'>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => endtDateSort()}
-                >
-                  開催終了日
-                </div>
+                <SortableHeader
+                  column='event_end_date'
+                  label='開催終了日'
+                  sortState={sortState}
+                  onSort={sortFunctions.event_end_date}
+                />
               </CustomTh>
               <CustomTh align='left'>開催場所</CustomTh>
               <CustomTh align='left'>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => sponsorOrgIdSort()}
-                >
-                  主催団体ID
-                </div>
+                <SortableHeader
+                  column='sponsor_org_id'
+                  label='主催団体ID'
+                  sortState={sortState}
+                  onSort={sortFunctions.sponsor_org_id}
+                />
               </CustomTh>
               <CustomTh align='left'>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => sponsorOrgNameSort()}
-                >
-                  主催団体名
-                </div>
+                <SortableHeader
+                  column='sponsorOrgName'
+                  label='主催団体名'
+                  sortState={sortState}
+                  onSort={sortFunctions.sponsorOrgName}
+                />
               </CustomTh>
             </CustomTr>
           </CustomThead>

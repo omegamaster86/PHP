@@ -16,16 +16,17 @@ import {
   InputLabel,
   Label,
 } from '@/app/components/';
+import { SortableHeader } from '@/app/components/SortableHeader';
+import { useSort } from '@/app/hooks/useSort';
 import { useUserType } from '@/app/hooks/useUserType';
 import axios from '@/app/lib/axios';
 import { EventResponse, Race, RaceTypeResponse, TournamentResponse } from '@/app/types';
 import Validator from '@/app/utils/validator';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
 import { Autocomplete, Chip, TextField } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ChangeEvent, FocusEvent, MouseEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, FocusEvent, MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 
 // 検索条件フォームの型定義
 // 検索条件
@@ -47,6 +48,15 @@ interface ByGroupList {
   id: number;
   name: string;
 }
+
+const createSortFunctions = (
+  handleSort: (key: string, compareFn: (a: any, b: any) => number) => void,
+) => ({
+  raceId: () => handleSort('race_id', (a, b) => Number(a.race_id) - Number(b.race_id)),
+  raceName: () => handleSort('race_name', (a, b) => a.race_name.localeCompare(b.race_name)),
+  raceNo: () => handleSort('race_number', (a, b) => Number(a.race_number) - Number(b.race_number)),
+  byGroup: () => handleSort('by_group', (a, b) => a.by_group.localeCompare(b.by_group)),
+});
 
 export default function TournamentResultManagement() {
   const router = useRouter();
@@ -99,51 +109,6 @@ export default function TournamentResultManagement() {
   const [eventNameErrorMessage, setEventNameErrorMessage] = useState([] as string[]);
   const [tableHeight, setTableHeight] = useState(''); // デフォルトの行の高さを設定
 
-  // 組別のソート用　20240718
-  const [groupSortFlag, setGroupSortFlag] = useState(false);
-  const groupSort = () => {
-    if (groupSortFlag) {
-      setGroupSortFlag(false);
-      searchResponse.sort((a, b) => ('' + a.by_group).localeCompare(b.by_group));
-    } else {
-      setGroupSortFlag(true);
-      searchResponse.sort((a, b) => ('' + b.by_group).localeCompare(a.by_group));
-    }
-  };
-  // レースIDのソート用　20240718
-  const [raceIdSortFlag, setRaceIdSortFlag] = useState(false);
-  const raceIdSort = () => {
-    if (raceIdSortFlag) {
-      setRaceIdSortFlag(false);
-      searchResponse.sort((a, b) => ('' + a.race_id).localeCompare(b.race_id));
-    } else {
-      setRaceIdSortFlag(true);
-      searchResponse.sort((a, b) => ('' + b.race_id).localeCompare(a.race_id));
-    }
-  };
-  // レース名のソート用　20240718
-  const [raceNameSortFlag, setRaceNameSortFlag] = useState(false);
-  const raceNameSort = () => {
-    if (raceNameSortFlag) {
-      setRaceNameSortFlag(false);
-      searchResponse.sort((a, b) => ('' + a.race_name).localeCompare(b.race_name));
-    } else {
-      setRaceNameSortFlag(true);
-      searchResponse.sort((a, b) => ('' + b.race_name).localeCompare(a.race_name));
-    }
-  };
-  // レースNoのソート用　20240718
-  const [raceNoSortFlag, setRaceNoSortFlag] = useState(false);
-  const raceNoSort = () => {
-    if (raceNoSortFlag) {
-      setRaceNoSortFlag(false);
-      searchResponse.sort((a, b) => ('' + a.race_number).localeCompare(b.race_number));
-    } else {
-      setRaceNoSortFlag(true);
-      searchResponse.sort((a, b) => ('' + b.race_number).localeCompare(a.race_number));
-    }
-  };
-
   const [showByGroupAutocomplete, setShowByGroupAutocomplete] = useState(false); //組別のフィルター実装　20240719
 
   const byGroupfocusTarget = useRef(null); //フィルターにフォーカスを当てる際に使用 20240719
@@ -159,7 +124,7 @@ export default function TournamentResultManagement() {
   });
 
   //組別のフィルター実装　20240719
-  const handleByGroupHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleByGroupHeaderClick = (value: string, event: MouseEvent<HTMLElement>) => {
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedByGroupHeader({
       value,
@@ -170,6 +135,15 @@ export default function TournamentResultManagement() {
     });
     setShowByGroupAutocomplete((prev) => !prev);
   };
+  const { sortState, handleSort } = useSort<Race>({
+    currentData: searchResponse,
+    onSort: setSearchResponse,
+  });
+
+  const sortFunctions = useMemo(
+    () => createSortFunctions(handleSort),
+    [handleSort]
+  );
 
   const [messageDisplay, setMessageDisplay] = useState(
     prevScreen !== 'tournamentResult' ||
@@ -606,55 +580,40 @@ export default function TournamentResultManagement() {
             <CustomTr>
               <CustomTh>操作</CustomTh>
               <CustomTh>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => raceIdSort()}
-                >
-                  レースID
-                </div>
+                <SortableHeader
+                  column='race_id'
+                  label='レースID'
+                  sortState={sortState}
+                  onSort={sortFunctions.raceId}
+                />
               </CustomTh>
               <CustomTh>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => raceNameSort()}
-                >
-                  レース名
-                </div>
+                <SortableHeader
+                  column='race_name'
+                  label='レース名'
+                  sortState={sortState}
+                  onSort={sortFunctions.raceName}
+                />
               </CustomTh>
               <CustomTh>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => raceNoSort()}
-                >
-                  レースNo
-                </div>
+                <SortableHeader
+                  column='race_number'
+                  label='レースNo'
+                  sortState={sortState}
+                  onSort={sortFunctions.raceNo}
+                />
               </CustomTh>
               <CustomTh>レース区分</CustomTh>
               <CustomTh>
-                <div className='flex flex-row items-center gap-[10px]'>
-                  <button
-                    type='button'
-                    className='underline'
-                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                    onClick={() => groupSort()}
-                  >
-                    組別
-                  </button>
-                  <button
-                    type='button'
-                    style={{
-                      cursor: 'pointer',
-                      color: selectedByGroupList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
-                    }}
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={(event) => handleByGroupHeaderClick('組別', event as any)}
-                  >
-                    <FilterListIcon />
-                  </button>
-                </div>
+                <SortableHeader
+                  column='by_group'
+                  label='組別'
+                  sortState={sortState}
+                  onSort={sortFunctions.byGroup}
+                  hasFilter
+                  isFiltered={selectedByGroupList.length > 0}
+                  onFilter={(event) => handleByGroupHeaderClick('組別', event)}
+                />
               </CustomTh>
             </CustomTr>
           </CustomThead>

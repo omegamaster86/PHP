@@ -2,7 +2,7 @@
 'use client';
 
 // Reactおよび関連モジュールのインポート
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from '@/app/lib/axios';
 // コンポーネントのインポート
@@ -32,6 +32,8 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import Label from '@/app/components/Label';
 import { CustomPlayerAvatar } from '@/app/components/CustomPlayerAvatar';
 import { formatDate } from '@/app/utils/dateUtil';
+import { SortableHeader } from '@/app/components/SortableHeader';
+import { useSort } from '@/app/hooks/useSort';
 
 // 検索条件フォームの型定義
 // 検索条件
@@ -60,6 +62,17 @@ interface SearchCond {
     C: boolean;
   };
 }
+
+const createSortFunctions = (
+  handleSort: (key: string, compareFn: (a: any, b: any) => number) => void,
+) => ({
+  playerName: () =>
+    handleSort('player_name', (a, b) => ('' + a.player_name).localeCompare(b.player_name)),
+  jaraPlayerId: () =>
+    handleSort('jara_player_id', (a, b) => Number(a.jara_player_id) - Number(b.jara_player_id)),
+  playerId: () => handleSort('player_id', (a, b) => Number(a.player_id) - Number(b.player_id)),
+  sex: () => handleSort('sex', (a, b) => ('' + a.sex).localeCompare(b.sex)),
+});
 
 export default function PlayerSearch() {
   // フック
@@ -114,16 +127,7 @@ export default function PlayerSearch() {
    * @returns
    * @param obj
    * @description
-   * valueがnull, undefined, 空文字でないプロパティを取得する
    */
-  function getNonEmptyProperties(obj: SearchCond): { key: string; value: any }[] {
-    return Object.entries(obj)
-      .filter(([key, value]) => value !== null && value !== undefined && value !== '')
-      .map(([key, value]) => ({
-        key,
-        value,
-      }));
-  }
 
   /**
    * 検索ボタン押下時の処理
@@ -148,8 +152,6 @@ export default function PlayerSearch() {
       setErrorMessage(['API取得エラー:' + (error as Error).message]);
     }
   };
-  // ログインユーザーの種別
-  const [userType, setUserType] = useState<number>(1);
 
   const [sponsorOrgIdErrorMessage, setSponsorOrgIdErrorMessage] = useState([] as string[]);
 
@@ -158,53 +160,6 @@ export default function PlayerSearch() {
   const [sex, setSex] = useState<SexResponse[]>([]);
   const [event, setEvent] = useState<EventResponse[]>([]);
   const [errorMessage, setErrorMessage] = useState([] as string[]);
-
-  // 選手名のソート用　20240719
-  const [playerNameSortFlag, setPlayerNameSortFlag] = useState(false);
-  const playerNameSort = () => {
-    if (playerNameSortFlag) {
-      setPlayerNameSortFlag(false);
-      visibleData.sort((a, b) => ('' + a.player_name).localeCompare(b.player_name));
-    } else {
-      setPlayerNameSortFlag(true);
-      visibleData.sort((a, b) => ('' + b.player_name).localeCompare(a.player_name));
-    }
-  };
-  // JARA選手コードのソート用　20240719
-  const [jaraPlayerIdSortFlag, setJaraPlayerIdSortFlag] = useState(false);
-
-  const jaraPlayerIdSort = () => {
-    if (jaraPlayerIdSortFlag) {
-      setJaraPlayerIdSortFlag(false);
-      visibleData.sort((a, b) => Number(a.jara_player_id) - Number(b.jara_player_id));
-    } else {
-      setJaraPlayerIdSortFlag(true);
-      visibleData.sort((a, b) => Number(b.jara_player_id) - Number(a.jara_player_id));
-    }
-  };
-  // 選手IDのソート用　20240719
-  const [playerIdSortFlag, setPlayerIdSortFlag] = useState(false);
-  const playerIdSort = () => {
-    if (playerIdSortFlag) {
-      setPlayerIdSortFlag(false);
-      visibleData.sort((a, b) => Number(a.player_id) - Number(b.player_id));
-    } else {
-      setPlayerIdSortFlag(true);
-      visibleData.sort((a, b) => Number(b.player_id) - Number(a.player_id));
-    }
-  };
-  // 性別のソート用　20240719
-  const [sexSortFlag, setSexSortFlag] = useState(false);
-  const sexSort = () => {
-    if (playerIdSortFlag) {
-      setPlayerIdSortFlag(false);
-      visibleData.sort((a, b) => ('' + a.sex).localeCompare(b.sex));
-    } else {
-      setPlayerIdSortFlag(true);
-      visibleData.sort((a, b) => ('' + b.sex).localeCompare(a.sex));
-    }
-  };
-
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
 
   // データ取得
@@ -261,6 +216,13 @@ export default function PlayerSearch() {
   const toggleAccordion = () => {
     setIsOpen(!isOpen);
   };
+
+  const { sortState, handleSort } = useSort<Player>({
+    currentData: visibleData,
+    onSort: setVisibleData,
+  });
+
+  const sortFunctions = useMemo(() => createSortFunctions(handleSort), [handleSort]);
 
   /**
    * データを10件ずつ増やす関数
@@ -386,7 +348,10 @@ export default function PlayerSearch() {
                     placeHolder={new Date().toLocaleDateString('ja-JP')}
                     selectedDate={searchCond.startDateOfBirth}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      handleInputChange('startDateOfBirth', formatDate(e as unknown as string, 'yyyy/MM/dd'));
+                      handleInputChange(
+                        'startDateOfBirth',
+                        formatDate(e as unknown as string, 'yyyy/MM/dd'),
+                      );
                     }}
                   />
                   <p className='flex flex-col justify-center items-center text-center'>～</p>
@@ -395,7 +360,10 @@ export default function PlayerSearch() {
                     placeHolder={new Date().toLocaleDateString('ja-JP')}
                     selectedDate={searchCond.endDateOfBirth}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      handleInputChange('endDateOfBirth', formatDate(e as unknown as string, 'yyyy/MM/dd'));
+                      handleInputChange(
+                        'endDateOfBirth',
+                        formatDate(e as unknown as string, 'yyyy/MM/dd'),
+                      );
                     }}
                   />
                 </div>
@@ -533,40 +501,36 @@ export default function PlayerSearch() {
             <CustomTr>
               <CustomTh>選手画像</CustomTh>
               <CustomTh>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => playerNameSort()}
-                >
-                  選手名
-                </div>
+                <SortableHeader
+                  column='player_name'
+                  label='選手名'
+                  sortState={sortState}
+                  onSort={sortFunctions.playerName}
+                />
               </CustomTh>
               <CustomTh>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => jaraPlayerIdSort()}
-                >
-                  JARA選手コード
-                </div>
+                <SortableHeader
+                  column='jara_player_id'
+                  label='JARA選手コード'
+                  sortState={sortState}
+                  onSort={sortFunctions.jaraPlayerId}
+                />
               </CustomTh>
               <CustomTh>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => playerIdSort()}
-                >
-                  選手ID
-                </div>
+                <SortableHeader
+                  column='player_id'
+                  label='選手ID'
+                  sortState={sortState}
+                  onSort={sortFunctions.playerId}
+                />
               </CustomTh>
               <CustomTh>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => sexSort()}
-                >
-                  性別
-                </div>
+                <SortableHeader
+                  column='sex'
+                  label='性別'
+                  sortState={sortState}
+                  onSort={sortFunctions.sex}
+                />
               </CustomTh>
               <CustomTh>エントリーシステムの団体ID1</CustomTh>
               <CustomTh>団体ID1</CustomTh>

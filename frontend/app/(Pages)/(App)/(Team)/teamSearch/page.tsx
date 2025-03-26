@@ -15,6 +15,8 @@ import {
   ErrorBox,
   InputLabel,
 } from '@/app/components';
+import { SortableHeader } from '@/app/components/SortableHeader';
+import { useSort } from '@/app/hooks/useSort';
 import axios from '@/app/lib/axios';
 import {
   Org,
@@ -34,7 +36,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Divider } from '@mui/material';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 interface SearchCond {
   entrySystemId: string;
@@ -51,6 +53,24 @@ interface SearchCond {
   residencePrefectureId: string;
   residencePrefectureName: string;
 }
+
+const createSortFunctions = (
+  handleSort: (key: string, compareFn: (a: any, b: any) => number) => void,
+) => ({
+  entrySystemId: () =>
+    handleSort('entrySystemId', (a, b) => a.entrysystem_org_id - b.entrysystem_org_id),
+  orgId: () => handleSort('orgId', (a, b) => a.org_id - b.org_id),
+  orgName: () => handleSort('orgName', (a, b) => a.org_name.localeCompare(b.org_name)),
+  foundingYear: () =>
+    handleSort('foundingYear', (a, b) => {
+      if (a.founding_year === null) return 1;
+      if (b.founding_year === null) return -1;
+      return a.founding_year - b.founding_year;
+    }),
+  orgType: () => handleSort('orgType', (a, b) => a.orgTypeName.localeCompare(b.orgTypeName)),
+  orgClassName: () =>
+    handleSort('orgClassName', (a, b) => a.orgClassName.localeCompare(b.orgClassName)),
+});
 
 export default function TeamSearch() {
   const router = useRouter();
@@ -85,75 +105,6 @@ export default function TeamSearch() {
   const [visibleItems, setVisibleItems] = useState(10); // 表示するデータの数
   const [userIdType, setUserIdType] = useState({} as UserIdType); //ユーザIDに紐づいた情報 20240222
 
-  // エントリーシステムIDのソート用　20240724
-  const [entrySystemIdSortFlag, setEntrySystemIdSortFlag] = useState(false);
-  const entrySystemIdSort = () => {
-    if (entrySystemIdSortFlag) {
-      setEntrySystemIdSortFlag(false);
-      visibleData.sort((a, b) => Number(a.entrysystem_org_id) - Number(b.entrysystem_org_id));
-    } else {
-      setEntrySystemIdSortFlag(true);
-      visibleData.sort((a, b) => Number(b.entrysystem_org_id) - Number(a.entrysystem_org_id));
-    }
-  };
-  // 団体IDのソート用　20240724
-  const [orgIdSortFlag, setOrgIdSortFlag] = useState(false);
-  const orgIdSort = () => {
-    if (orgIdSortFlag) {
-      setOrgIdSortFlag(false);
-      visibleData.sort((a, b) => Number(a.org_id) - Number(b.org_id));
-    } else {
-      setOrgIdSortFlag(true);
-      visibleData.sort((a, b) => Number(b.org_id) - Number(a.org_id));
-    }
-  };
-  // 団体名のソート用　20240724
-  const [orgNameSortFlag, setOrgNameSortFlag] = useState(false);
-  const orgNameSort = () => {
-    if (orgNameSortFlag) {
-      setOrgNameSortFlag(false);
-      visibleData.sort((a, b) => ('' + a.org_name).localeCompare(b.org_name));
-    } else {
-      setOrgNameSortFlag(true);
-      visibleData.sort((a, b) => ('' + b.org_name).localeCompare(a.org_name));
-    }
-  };
-
-  // 創立年のソート用　20240724
-  const [foundingYearSortFlag, setFoundingYearSortFlag] = useState(false);
-  const foundingYearSort = () => {
-    setFoundingYearSortFlag((previous) => !previous);
-    visibleData.sort((a, b) => {
-      if (a.founding_year === null) return 1;
-      if (b.founding_year === null) return -1;
-      return foundingYearSortFlag
-        ? a.founding_year - b.founding_year
-        : b.founding_year - a.founding_year;
-    });
-  };
-
-  // 団体種別のソート用　20240724
-  const [orgTypeSortFlag, setOrgTypeSortFlag] = useState(false);
-  const orgTypeSort = () => {
-    if (orgTypeSortFlag) {
-      setOrgTypeSortFlag(false);
-      visibleData.sort((a, b) => ('' + a.orgTypeName).localeCompare(b.orgTypeName));
-    } else {
-      setOrgTypeSortFlag(true);
-      visibleData.sort((a, b) => ('' + b.orgTypeName).localeCompare(a.orgTypeName));
-    }
-  };
-  // 団体区分のソート用　20240724
-  const [orgClassNameSortFlag, setOrgClassNameSortFlag] = useState(false);
-  const orgClassNameSort = () => {
-    if (orgClassNameSortFlag) {
-      setOrgClassNameSortFlag(false);
-      visibleData.sort((a, b) => ('' + a.orgClassName).localeCompare(b.orgClassName));
-    } else {
-      setOrgClassNameSortFlag(true);
-      visibleData.sort((a, b) => ('' + b.orgClassName).localeCompare(a.orgClassName));
-    }
-  };
   /**
    * 検索ボタン押下時の処理
    * @returns
@@ -252,6 +203,13 @@ export default function TeamSearch() {
     setVisibleData(newData);
     setVisibleItems((prevCount) => prevCount + 10);
   };
+
+  const { sortState, handleSort } = useSort<Org>({
+    currentData: visibleData,
+    onSort: setVisibleData,
+  });
+
+  const sortFunctions = useMemo(() => createSortFunctions(handleSort), [handleSort]);
 
   return (
     <>
@@ -433,58 +391,52 @@ export default function TeamSearch() {
           <CustomThead>
             <CustomTr>
               <CustomTh>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => entrySystemIdSort()}
-                >
-                  エントリーシステムID
-                </div>
+                <SortableHeader
+                  column='entrySystemId'
+                  label='エントリーシステムID'
+                  sortState={sortState}
+                  onSort={sortFunctions.entrySystemId}
+                />
               </CustomTh>
               <CustomTh>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => orgIdSort()}
-                >
-                  団体ID
-                </div>
+                <SortableHeader
+                  column='orgId'
+                  label='団体ID'
+                  sortState={sortState}
+                  onSort={sortFunctions.orgId}
+                />
               </CustomTh>
               <CustomTh>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => orgNameSort()}
-                >
-                  団体名
-                </div>
+                <SortableHeader
+                  column='orgName'
+                  label='団体名'
+                  sortState={sortState}
+                  onSort={sortFunctions.orgName}
+                />
               </CustomTh>
               <CustomTh>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => foundingYearSort()}
-                >
-                  創立年
-                </div>
+                <SortableHeader
+                  column='foundingYear'
+                  label='創立年'
+                  sortState={sortState}
+                  onSort={sortFunctions.foundingYear}
+                />
               </CustomTh>
               <CustomTh>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => orgTypeSort()}
-                >
-                  団体種別
-                </div>
+                <SortableHeader
+                  column='orgType'
+                  label='団体種別'
+                  sortState={sortState}
+                  onSort={sortFunctions.orgType}
+                />
               </CustomTh>
               <CustomTh>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => orgClassNameSort()}
-                >
-                  団体区分
-                </div>
+                <SortableHeader
+                  column='orgClassName'
+                  label='団体区分'
+                  sortState={sortState}
+                  onSort={sortFunctions.orgClassName}
+                />
               </CustomTh>
             </CustomTr>
           </CustomThead>

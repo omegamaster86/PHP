@@ -16,10 +16,10 @@ import { TeamResponse, UserResponse } from '@/app/types';
 import { DeleteOutline, EditOutlined } from '@mui/icons-material';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
-
-import FilterListIcon from '@mui/icons-material/FilterList';
+import { ChangeEvent, MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Autocomplete, Chip, TextField } from '@mui/material';
+import { useSort } from '@/app/hooks/useSort';
+import { SortableHeader } from '@/app/components/SortableHeader';
 
 //団体種別フィルター用
 interface OrgTypeList {
@@ -32,58 +32,24 @@ interface OrgNameList {
   name: string;
 }
 
+const createSortFunctions = (
+  handleSort: (key: string, compareFn: (a: any, b: any) => number) => void,
+) => ({
+  teamTyp: () => handleSort('teamTyp', (a, b) => a.teamTyp.localeCompare(b.teamTyp)),
+  entrySystemId: () =>
+    handleSort(
+      'entrysystem_org_id',
+      (a, b) => Number(a.entrysystem_org_id) - Number(b.entrysystem_org_id),
+    ),
+  orgId: () => handleSort('org_id', (a, b) => Number(a.org_id) - Number(b.org_id)),
+  orgName: () => handleSort('org_name', (a, b) => a.org_name.localeCompare(b.org_name)),
+});
+
 export default function TeamManagement() {
   const [errorMessage, setErrorMessage] = useState([] as string[]);
   const [team, setTeam] = useState([] as TeamResponse[]);
   const router = useRouter();
   const [validFlag, setValidFlag] = useState(false); //URL直打ち対策（ユーザ種別が不正なユーザが遷移できないようにする） 20240418
-
-  // 団体種別のソート用　20240724
-  const [orgTypeSortFlag, setOrgTypeSortFlag] = useState(false);
-  const orgTypeSort = () => {
-    if (orgTypeSortFlag) {
-      setOrgTypeSortFlag(false);
-      team.sort((a, b) => ('' + a.teamTyp).localeCompare(b.teamTyp));
-    } else {
-      setOrgTypeSortFlag(true);
-      team.sort((a, b) => ('' + b.teamTyp).localeCompare(a.teamTyp));
-    }
-  };
-
-  // エントリーシステムIDのソート用　20240724
-  const [entrySystemIdSortFlag, setEntrySystemIdSortFlag] = useState(false);
-  const entrySystemIdSort = () => {
-    if (entrySystemIdSortFlag) {
-      setEntrySystemIdSortFlag(false);
-      team.sort((a, b) => Number(a.entrysystem_org_id) - Number(b.entrysystem_org_id));
-    } else {
-      setEntrySystemIdSortFlag(true);
-      team.sort((a, b) => Number(b.entrysystem_org_id) - Number(a.entrysystem_org_id));
-    }
-  };
-
-  // 団体IDのソート用　20240724
-  const [orgIdSortFlag, setOrgIdSortFlag] = useState(false);
-  const orgIdSort = () => {
-    if (orgIdSortFlag) {
-      setOrgIdSortFlag(false);
-      team.sort((a, b) => Number(a.org_id) - Number(b.org_id));
-    } else {
-      setOrgIdSortFlag(true);
-      team.sort((a, b) => Number(b.org_id) - Number(a.org_id));
-    }
-  };
-  // 団体名のソート用　20240724
-  const [orgNameSortFlag, setOrgNameSortFlag] = useState(false);
-  const orgNameSort = () => {
-    if (orgNameSortFlag) {
-      setOrgNameSortFlag(false);
-      team.sort((a, b) => ('' + a.org_name).localeCompare(b.org_name));
-    } else {
-      setOrgNameSortFlag(true);
-      team.sort((a, b) => ('' + b.org_name).localeCompare(a.org_name));
-    }
-  };
 
   //団体種別
   const [orgTypeList, setOrgTypeList] = useState([] as OrgTypeList[]);
@@ -116,7 +82,7 @@ export default function TeamManagement() {
    * @param event
    * ヘッダーの位置を取得し、オートコンプリートを表示する
    */
-  const handleOrgTypeHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleOrgTypeHeaderClick = (value: string, event: MouseEvent<HTMLElement>) => {
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedOrgTypeHeader({
       value,
@@ -133,7 +99,7 @@ export default function TeamManagement() {
    * @param event
    * ヘッダーの位置を取得し、オートコンプリートを表示する
    */
-  const handleOrgNameHeaderClick = (value: string, event: MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleOrgNameHeaderClick = (value: string, event: MouseEvent<HTMLElement>) => {
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedOrgNameHeader({
       value,
@@ -234,6 +200,13 @@ export default function TeamManagement() {
     }
   }, [showOrgTypeAutocomplete, showOrgNameAutocomplete]);
 
+  const { sortState, handleSort } = useSort<TeamResponse>({
+    currentData: team,
+    onSort: setTeam,
+  });
+
+  const sortFunctions = useMemo(() => createSortFunctions(handleSort), [handleSort]);
+
   if (!validFlag) return null;
 
   return (
@@ -249,88 +222,64 @@ export default function TeamManagement() {
           <CustomThead>
             <CustomTr>
               <CustomTh align='left'>
-                <div className='flex flex-row items-center gap-[10px]'>
-                  <div
-                    className='underline'
-                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                    onClick={() => orgTypeSort()}
-                  >
-                    団体種別
-                  </div>
-                  <button
-                    type='button'
-                    style={{
-                      cursor: 'pointer',
-                      color: selectedOrgTypeList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
-                    }}
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={(event) => handleOrgTypeHeaderClick('団体種別', event as any)}
-                  >
-                    <FilterListIcon />
-                  </button>
-                </div>
+                <SortableHeader
+                  column='teamTyp'
+                  label='団体種別'
+                  sortState={sortState}
+                  onSort={sortFunctions.teamTyp}
+                  hasFilter
+                  isFiltered={selectedOrgTypeList.length > 0}
+                  onFilter={(event) => handleOrgTypeHeaderClick('団体種別', event)}
+                />
               </CustomTh>
               <CustomTh align='left'>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => entrySystemIdSort()}
-                >
-                  エントリーシステムの団体ID
-                </div>
+                <SortableHeader
+                  column='entrysystem_org_id'
+                  label='エントリーシステムの団体ID'
+                  sortState={sortState}
+                  onSort={sortFunctions.entrySystemId}
+                />
               </CustomTh>
               <CustomTh align='left'>
-                <div
-                  className='underline'
-                  style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                  onClick={() => orgIdSort()}
-                >
-                  団体ID
-                </div>
+                <SortableHeader
+                  column='org_id'
+                  label='団体ID'
+                  sortState={sortState}
+                  onSort={sortFunctions.orgId}
+                />
               </CustomTh>
               <CustomTh align='left'>
-                <div className='flex flex-row items-center gap-[10px]'>
-                  <div
-                    className='underline'
-                    style={{ cursor: 'pointer', textDecorationThickness: '3px' }}
-                    onClick={() => orgNameSort()}
-                  >
-                    団体名
-                  </div>
-                  <button
-                    type='button'
-                    style={{
-                      cursor: 'pointer',
-                      color: selectedOrgNameList.length > 0 ? '#F44336' : '#001D74', //フィルター実行後の色の変更
-                    }}
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={(event) => handleOrgNameHeaderClick('団体名', event as any)}
-                  >
-                    <FilterListIcon />
-                  </button>
-                </div>
+                <SortableHeader
+                  column='org_name'
+                  label='団体名'
+                  sortState={sortState}
+                  onSort={sortFunctions.orgName}
+                  hasFilter
+                  isFiltered={selectedOrgNameList.length > 0}
+                  onFilter={(event) => handleOrgNameHeaderClick('団体名', event)}
+                />
               </CustomTh>
               <CustomTh align='left'>操作</CustomTh>
             </CustomTr>
           </CustomThead>
           <CustomTbody>
             {team
-              .filter((row, index) => {
+              .filter((row) => {
                 if (selectedOrgTypeList.length > 0) {
                   return selectedOrgTypeList.some((item) => item.name === row.teamTyp);
                 } else {
                   return true;
                 }
               })
-              .filter((row, index) => {
+              .filter((row) => {
                 if (selectedOrgNameList.length > 0) {
                   return selectedOrgNameList.some((item) => item.name === row.org_name);
                 } else {
                   return true;
                 }
               })
-              .map((row, index) => (
-                <CustomTr key={index}>
+              .map((row) => (
+                <CustomTr key={row.org_id}>
                   {/* 団体種別 */}
                   <CustomTd>{row.teamTyp}</CustomTd>
                   {/* エントリーシステムの団体ID */}

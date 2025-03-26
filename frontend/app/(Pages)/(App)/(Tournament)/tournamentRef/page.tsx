@@ -28,7 +28,7 @@ import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import { Autocomplete, Chip, TextField } from '@mui/material';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import useSWRMutation from 'swr/mutation';
 import { formatDate } from '@/app/utils/dateUtil';
 import { useSort } from '@/app/hooks/useSort';
@@ -65,6 +65,26 @@ interface RangeList {
   id: number;
   name: string;
 }
+
+const createSortFunctions = (
+  handleSort: (key: string, compareFn: (a: any, b: any) => number) => void,
+) => ({
+  raceId: () => handleSort('raceId', (a, b) => Number(a.race_id) - Number(b.race_id)),
+  raceName: () => handleSort('raceName', (a, b) => ('' + a.race_name).localeCompare(b.race_name)),
+  raceNumber: () =>
+    handleSort('raceNumber', (a, b) => Number(a.race_number) - Number(b.race_number)),
+  eventName: () =>
+    handleSort('eventName', (a, b) => ('' + a.event_name).localeCompare(b.event_name)),
+  byGroup: () => handleSort('byGroup', (a, b) => ('' + a.by_group).localeCompare(b.by_group)),
+  range: () => handleSort('range', (a, b) => Number(a.range) - Number(b.range)),
+  startDateTime: () =>
+    handleSort(
+      'startDateTime',
+      (a, b) =>
+        Number(a.start_date_time.replace(/[- :]/g, '')) -
+        Number(b.start_date_time.replace(/[- :]/g, '')),
+    ),
+});
 
 // 大会情報参照画面
 export default function TournamentRef() {
@@ -178,6 +198,12 @@ export default function TournamentRef() {
     currentData: tableData,
     onSort: setTableData,
   });
+
+  const sortFunctions = useMemo(
+    () => createSortFunctions(handleSort),
+    [handleSort]
+  );
+
   const handleEventNameHeaderClick = (value: string, event: React.MouseEvent<HTMLElement>) => {
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
     setSelectedEventNameHeader({
@@ -212,24 +238,6 @@ export default function TournamentRef() {
       },
     });
     setShowRangeAutocomplete((prev) => !prev);
-  };
-
-  const sortFunctions = {
-    raceId: () => handleSort('raceId', (a, b) => Number(a.race_id) - Number(b.race_id)),
-    raceName: () => handleSort('raceName', (a, b) => ('' + a.race_name).localeCompare(b.race_name)),
-    raceNumber: () =>
-      handleSort('raceNumber', (a, b) => Number(a.race_number) - Number(b.race_number)),
-    eventName: () =>
-      handleSort('eventName', (a, b) => ('' + a.event_name).localeCompare(b.event_name)),
-    byGroup: () => handleSort('byGroup', (a, b) => ('' + a.by_group).localeCompare(b.by_group)),
-    range: () => handleSort('range', (a, b) => Number(a.range) - Number(b.range)),
-    startDateTime: () =>
-      handleSort(
-        'startDateTime',
-        (a, b) =>
-          Number(a.start_date_time.replace(/[- :]/g, '')) -
-          Number(b.start_date_time.replace(/[- :]/g, '')),
-      ),
   };
 
   // APIの呼び出し実績の有無を管理する状態
@@ -616,9 +624,7 @@ export default function TournamentRef() {
                     onSort={sortFunctions.byGroup}
                     hasFilter
                     isFiltered={selectedByGroupList.length > 0}
-                    onFilter={(event) =>
-                      handleByGroupHeaderClick('組別', event)
-                    }
+                    onFilter={(event) => handleByGroupHeaderClick('組別', event)}
                   />
                 </CustomTh>
                 <CustomTh align='left'>
@@ -629,9 +635,7 @@ export default function TournamentRef() {
                     onSort={sortFunctions.range}
                     hasFilter
                     isFiltered={selectedRangeList.length > 0}
-                    onFilter={(event) =>
-                      handleRangeHeaderClick('距離', event)
-                    }
+                    onFilter={(event) => handleRangeHeaderClick('距離', event)}
                   />
                 </CustomTh>
                 <CustomTh align='left'>

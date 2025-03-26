@@ -404,6 +404,9 @@ interface VolunteerResponse {
   clothes_size: string; // 服のサイズ
   personality: string; // 性格 #置き換え作業未対応
   dis_type_id: string[]; // 障碍タイプ
+  is_pr1: number; // PR1
+  is_pr2: number; // PR2
+  is_pr3: number; // PR3
   qualHold: string[]; // 保有資格 #置き換え作業未対応
   language: any; // 言語 #置き換え作業未対応
   language_proficiency: any; //言語レベル
