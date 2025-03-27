@@ -41,6 +41,8 @@ export default function TeamPlayer() {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (orgId === '') return;
+
       try {
         const sendData = {
           org_id: orgId,

@@ -120,6 +120,8 @@ export default function Team() {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!orgId) return;
+
       if (isUpdateMode) {
         const sendData = {
           org_id: orgId,

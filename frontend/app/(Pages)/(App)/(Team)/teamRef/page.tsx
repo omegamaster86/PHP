@@ -71,6 +71,8 @@ export default function TeamRef() {
   useEffect(() => {
     const fetchTeam = async () => {
       const fetchData = async () => {
+        if (!org_id) return;
+
         try {
           // 主催大会
           const hostTournamentsResponse = await axios.post('api/getTournamentInfoData_org', org_id);
@@ -96,6 +98,8 @@ export default function TeamRef() {
           setErrorMessage([errorMessage]);
         }
       };
+
+      if (!org_id) return;
 
       await axios
         .post<{ result: Organization }>('api/getOrgData', org_id)
