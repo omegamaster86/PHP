@@ -87,13 +87,13 @@ const MyPageLayout: NextPage<Props> = (props) => {
       title: '選手プロフィール',
       link: '/mypage/playerProfile',
       active: routerStatuses.playerProfile,
-      show: userType?.isPlayer ?? false,
+      show: userType.isPlayer,
     },
     {
       title: 'ボランティア',
       link: '/mypage/volunteer',
       active: routerStatuses.volunteer,
-      show: userType?.isVolunteer ?? false,
+      show: userType.isVolunteer,
     },
     {
       title: 'プロフィール',

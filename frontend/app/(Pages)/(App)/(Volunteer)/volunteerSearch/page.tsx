@@ -124,16 +124,11 @@ const createSortFunctions = (
 export default function VolunteerSearch() {
   const router = useRouter();
 
-  useUserType({
-    onSuccess: (userType) => {
-      const hasAuthority =
-        userType.isAdministrator || userType.isJara || userType.isPrefBoatOfficer;
-
-      if (!hasAuthority) {
-        router.replace('/mypage/top');
-      }
-    },
-  });
+  const userType = useUserType();
+  const hasAuthority = userType.isAdministrator || userType.isJara || userType.isPrefBoatOfficer;
+  if (!hasAuthority) {
+    router.replace('/mypage/top');
+  }
 
   // 検索条件の初期値
   const initialSearchCond = () => {
@@ -437,10 +432,7 @@ export default function VolunteerSearch() {
     onSort: setSearchResponse,
   });
 
-  const sortFunctions = useMemo(
-    () => createSortFunctions(handleSort),
-    [handleSort]
-  );
+  const sortFunctions = useMemo(() => createSortFunctions(handleSort), [handleSort]);
 
   return (
     <>

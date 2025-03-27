@@ -20,7 +20,7 @@ import { fetcher } from '@/app/lib/swr';
 import { DonationRequest } from '@/app/types';
 import Validator from '@/app/utils/validator';
 import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useSWRMutation from 'swr/mutation';
 
 const sendMutateRequest = (
@@ -44,16 +44,12 @@ export default function DonationBulkRegister() {
   const router = useRouter();
   const fileUploaderRef = useRef<FileHandler>(null);
   const mutation = useSWRMutation('api/insertDonationHistory', sendMutateRequest);
-  useUserType({
-    onSuccess: (userType) => {
-      const hasAuthority =
-        userType.isAdministrator || userType.isJara || userType.isPrefBoatOfficer;
+  const userType = useUserType();
 
-      if (!hasAuthority) {
-        router.replace('/mypage/top');
-      }
-    },
-  });
+  const hasAuthority = userType.isAdministrator || userType.isJara || userType.isPrefBoatOfficer;
+  if (!hasAuthority) {
+    router.replace('/mypage/top');
+  }
 
   const [csvFileData, setCsvFileData] = useState<CsvFileData>({ content: [], isSet: false });
   const [errorMessages, setErrorMessages] = useState<string[]>([]);

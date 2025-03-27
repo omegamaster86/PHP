@@ -37,8 +37,10 @@ export default function TeamPlayer() {
   const mode = useSearchParams().get('mode');
   const orgId = useSearchParams().get('org_id')?.toString() || '';
 
-  useUserType({
-    onSuccess: async (userType) => {
+  const userType = useUserType();
+
+  useEffect(() => {
+    const fetchData = async () => {
       try {
         const sendData = {
           org_id: orgId,
@@ -56,8 +58,10 @@ export default function TeamPlayer() {
       } catch (error) {
         router.replace('/teamSearch');
       }
-    },
-  });
+    };
+
+    fetchData();
+  }, [userType, orgId]);
 
   useEffect(() => {
     // modeの値を取得 create

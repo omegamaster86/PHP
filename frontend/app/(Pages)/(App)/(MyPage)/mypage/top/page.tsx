@@ -29,7 +29,7 @@ const TopPage = () => {
         <YourInformation title={'出場した大会'} number={summaryCount.result.raceCount} />
         <div className='w-[1px] bg-border'></div>
         <YourInformation title={'選手フォロー数'} number={summaryCount.result.followPlayerCount} />
-        {userType?.isPlayer && (
+        {userType.isPlayer && (
           <>
             <div className='w-[1px] bg-border'></div>
             <YourInformation

@@ -103,8 +103,10 @@ export default function TournamentRef() {
   const isDeleteMode = mode === 'delete';
   const tournId = searchParams.get('tournId')?.toString();
 
-  useUserType({
-    onSuccess: async (userType) => {
+  const userType = useUserType();
+
+  useEffect(() => {
+    const fetchData = async () => {
       if (isDeleteMode) {
         const sendData: CheckOrgManagerRequest = {
           tournId: Number(tournId),
@@ -118,8 +120,10 @@ export default function TournamentRef() {
           router.replace('/tournamentSearch');
         }
       }
-    },
-  });
+    };
+
+    fetchData();
+  }, [tournId, userType, isDeleteMode]);
 
   // フォームデータを管理する状態
   const [tableData, setTableData] = useState<Race[]>([]);
@@ -199,10 +203,7 @@ export default function TournamentRef() {
     onSort: setTableData,
   });
 
-  const sortFunctions = useMemo(
-    () => createSortFunctions(handleSort),
-    [handleSort]
-  );
+  const sortFunctions = useMemo(() => createSortFunctions(handleSort), [handleSort]);
 
   const handleEventNameHeaderClick = (value: string, event: React.MouseEvent<HTMLElement>) => {
     const headerPosition = (event.target as HTMLElement).getBoundingClientRect();
