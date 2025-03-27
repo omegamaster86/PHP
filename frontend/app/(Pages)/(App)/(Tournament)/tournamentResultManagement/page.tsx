@@ -62,19 +62,15 @@ export default function TournamentResultManagement() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  useUserType({
-    onSuccess: (userType) => {
-      const hasAuthority =
-        userType.isAdministrator ||
-        userType.isJara ||
-        userType.isPrefBoatOfficer ||
-        userType.isOrganizationManager;
-
-      if (!hasAuthority) {
-        router.replace('/tournamentSearch');
-      }
-    },
-  });
+  const userType = useUserType();
+  const hasAuthority =
+    userType.isAdministrator ||
+    userType.isJara ||
+    userType.isPrefBoatOfficer ||
+    userType.isOrganizationManager;
+  if (!hasAuthority) {
+    router.replace('/tournamentSearch');
+  }
 
   const prevScreen = searchParams.get('prevScreen') ?? 'default';
   const [tournamentList, setTournamentList] = useState<TournamentResponse[]>([]);
@@ -140,10 +136,7 @@ export default function TournamentResultManagement() {
     onSort: setSearchResponse,
   });
 
-  const sortFunctions = useMemo(
-    () => createSortFunctions(handleSort),
-    [handleSort]
-  );
+  const sortFunctions = useMemo(() => createSortFunctions(handleSort), [handleSort]);
 
   const [messageDisplay, setMessageDisplay] = useState(
     prevScreen !== 'tournamentResult' ||

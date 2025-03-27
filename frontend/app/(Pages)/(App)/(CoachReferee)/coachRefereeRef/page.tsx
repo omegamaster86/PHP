@@ -115,7 +115,7 @@ export default function CoachRefereeRef() {
             <span>指導履歴はありません。</span>
           )}
         </div>
-        {(userType?.isPrefBoatOfficer || userType?.isJara) && (
+        {(userType.isPrefBoatOfficer || userType.isJara) && (
           <>
             <h3 className='mb-3'>指導者資格</h3>
             <div className='flex gap-3 mb-3'>

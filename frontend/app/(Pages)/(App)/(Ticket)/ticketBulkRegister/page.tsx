@@ -47,16 +47,12 @@ const sendMutateRequest = (
 export default function TicketBulkRegister() {
   const router = useRouter();
   const fileUploaderRef = useRef<FileHandler>(null);
-  useUserType({
-    onSuccess: (userType) => {
-      const hasAuthority =
-        userType.isAdministrator || userType.isJara || userType.isPrefBoatOfficer;
 
-      if (!hasAuthority) {
-        router.replace('/mypage/top');
-      }
-    },
-  });
+  const userType = useUserType();
+  const hasAuthority = userType.isAdministrator || userType.isJara || userType.isPrefBoatOfficer;
+  if (!hasAuthority) {
+    router.replace('/mypage/top');
+  }
 
   const [tournId, setTournId] = useState(0);
   const [csvFileData, setCsvFileData] = useState<CsvFileData>({

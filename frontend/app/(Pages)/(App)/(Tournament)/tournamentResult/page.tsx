@@ -172,19 +172,15 @@ export default function TournamentResult() {
   const eventId = param.get('eventId'); // 種目ID
   const prevMode = param.get('prevMode'); // 遷移元画面のモード
 
-  useUserType({
-    onSuccess: (userType) => {
-      const hasAuthority =
-        userType.isAdministrator ||
-        userType.isJara ||
-        userType.isPrefBoatOfficer ||
-        userType.isOrganizationManager;
-
-      if (!hasAuthority) {
-        router.replace(`/tournamentRaceResultRef?raceId=${raceId}`);
-      }
-    },
-  });
+  const userType = useUserType();
+  const hasAuthority =
+    userType.isAdministrator ||
+    userType.isJara ||
+    userType.isPrefBoatOfficer ||
+    userType.isOrganizationManager;
+  if (!hasAuthority) {
+    router.replace(`/tournamentRaceResultRef?raceId=${raceId}`);
+  }
 
   /**
    * レース情報の入力値を管理する関数

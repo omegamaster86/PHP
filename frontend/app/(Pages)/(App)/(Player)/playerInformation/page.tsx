@@ -68,30 +68,28 @@ export default function PlayerInformation() {
       break;
   }
 
-  useUserType({
-    onSuccess: (userType) => {
-      if (mode === 'create') {
-        const hasAuthority =
-          !userType.isPlayer &&
-          (userType.isJara ||
-            userType.isPrefBoatOfficer ||
-            userType.isOrganizationManager ||
-            userType.isVolunteer ||
-            userType.isAudience);
+  const userType = useUserType();
 
-        if (!hasAuthority) {
-          router.replace('/playerSearch');
-        }
-      }
+  if (mode === 'create') {
+    const hasAuthority =
+      !userType.isPlayer &&
+      (userType.isJara ||
+        userType.isPrefBoatOfficer ||
+        userType.isOrganizationManager ||
+        userType.isVolunteer ||
+        userType.isAudience);
 
-      if (mode === 'update') {
-        const hasAuthority = userType.isPlayer && playerId && userType.playerId === playerId;
-        if (!hasAuthority) {
-          router.replace('/mypage/profile');
-        }
-      }
-    },
-  });
+    if (!hasAuthority) {
+      router.replace('/playerSearch');
+    }
+  }
+
+  if (mode === 'update') {
+    const hasAuthority = userType.isPlayer && playerId && userType.playerId === playerId;
+    if (!hasAuthority) {
+      router.replace('/mypage/profile');
+    }
+  }
 
   // フォームの入力値を管理する関数
   const handleInputChange = (name: string, value: string) => {

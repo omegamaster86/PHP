@@ -120,17 +120,17 @@ export const Update: React.FC<Props> = (props) => {
     {
       label: '大会をフォローしているユーザー',
       value: 'tournFollower',
-      show: userType?.isOrganizationManager,
+      show: userType.isOrganizationManager,
     },
     {
       label: '有資格者',
       value: 'qualifiedUser',
-      show: userType?.isJara,
+      show: userType.isJara,
     },
     {
       label: '全ユーザー',
       value: 'allUser',
-      show: userType?.isJara,
+      show: userType.isJara,
     },
   ] as const;
 

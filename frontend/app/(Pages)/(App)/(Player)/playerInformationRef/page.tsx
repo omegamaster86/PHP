@@ -227,15 +227,12 @@ export default function PlayerInformationRef() {
     router.push('/mypage/top');
   }
 
-  useUserType({
-    onSuccess: (userType) => {
-      const hasAuthority = userType.isPlayer && playerId && userType.playerId === playerId;
+  const userType = useUserType();
 
-      if (isDeleteMode && !hasAuthority) {
-        router.push('/playerSearch');
-      }
-    },
-  });
+  const hasAuthority = userType.isPlayer && playerId && userType.playerId === playerId;
+  if (isDeleteMode && !hasAuthority) {
+    router.push('/playerSearch');
+  }
 
   // タブ切り替え用のステート
   const [activeTab, setActiveTab] = useState<number>(0);

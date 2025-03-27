@@ -116,8 +116,10 @@ export default function Team() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const orgId = useMemo(() => orgIdParam, []);
 
-  useUserType({
-    onSuccess: async (userType) => {
+  const userType = useUserType();
+
+  useEffect(() => {
+    const fetchData = async () => {
       if (isUpdateMode) {
         const sendData = {
           org_id: orgId,
@@ -164,8 +166,10 @@ export default function Team() {
           router.replace('/teamSearch');
         }
       }
-    },
-  });
+    };
+
+    fetchData();
+  }, [userType, orgId, isUpdateMode]);
 
   const storageKey =
     mode === 'update'
@@ -530,21 +534,21 @@ export default function Team() {
           row.delete_flag = false;
         }
         return newRows;
-      });      
+      });
     } catch (error) {
       setTableData((prevRows) => {
         const newRows = [...prevRows];
         const row = newRows.find((row) => row.id === rowId);
         if (row) {
-          row.user_name = '該当ユーザーなし'
-          row.isUserFound = false; 
+          row.user_name = '該当ユーザーなし';
+          row.isUserFound = false;
           row.delete_flag = true;
         }
         return newRows;
       });
     }
-  };  
-  
+  };
+
   // 確認
   const modeCustomButtons = {
     create: (

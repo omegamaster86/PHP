@@ -15,7 +15,7 @@ import {
 import { ROLE } from '@/app/utils/consts';
 import { Tab, Tabs } from '@mui/material';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { SyntheticEvent, useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import { BelongPlayer } from './_components/BelongPlayer';
 import { BelongStaff } from './_components/BelongStaff';
 import { EntryTournament } from './_components/EntryTournament';
@@ -66,8 +66,10 @@ export default function TeamRef() {
     org_id: orgId,
   });
 
-  useUserType({
-    onSuccess: async (userType) => {
+  const userType = useUserType();
+
+  useEffect(() => {
+    const fetchTeam = async () => {
       const fetchData = async () => {
         try {
           // 主催大会
@@ -112,8 +114,10 @@ export default function TeamRef() {
           const errorMessage = error?.response?.data?.message || `API取得エラー: ${error.message}`;
           setErrorMessage([errorMessage]);
         }); //団体情報取得
-    },
-  });
+    };
+
+    fetchTeam();
+  }, [userType, orgId]);
 
   /**
    * タブの切り替え

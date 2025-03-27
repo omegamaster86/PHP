@@ -18,7 +18,7 @@ interface Props {
 
 export const BelongStaff: React.FC<Props> = ({ staffs }) => {
   const userType = useUserType();
-  const showPermission = userType?.isPrefBoatOfficer || userType?.isJara;
+  const showPermission = userType.isPrefBoatOfficer || userType.isJara;
 
   return (
     <>

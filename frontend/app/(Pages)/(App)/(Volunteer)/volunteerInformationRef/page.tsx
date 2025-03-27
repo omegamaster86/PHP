@@ -63,21 +63,14 @@ export default function VolunteerInformationRef() {
   // ボランティアIDを取得
   const volunteerId = searchParams.get('volunteer_id')?.toString() || '';
 
-  useUserType({
-    onSuccess: (userType) => {
-      const isMyVolunteerInfo =
-        userType.volunteerId && volunteerId && userType.volunteerId === Number(volunteerId);
-      const hasAuthority =
-        userType.isAdministrator ||
-        userType.isJara ||
-        userType.isPrefBoatOfficer ||
-        isMyVolunteerInfo;
-
-      if (!hasAuthority) {
-        router.replace('/mypage/top');
-      }
-    },
-  });
+  const userType = useUserType();
+  const isMyVolunteerInfo =
+    userType.volunteerId && volunteerId && userType.volunteerId === Number(volunteerId);
+  const hasAuthority =
+    userType.isAdministrator || userType.isJara || userType.isPrefBoatOfficer || isMyVolunteerInfo;
+  if (!hasAuthority) {
+    router.replace('/mypage/top');
+  }
 
   /**
    * @param binaryString

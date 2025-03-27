@@ -33,7 +33,7 @@ import {
   Race,
   RaceType,
   RaceTypeResponse,
-  Tournament,
+  Tournament as TournamentType,
   TourTypeResponse,
   Venue,
   VenueResponse,
@@ -69,11 +69,11 @@ interface FileHandler {
 }
 
 type TournamentFormData = {
-  tournamentFormData: Tournament;
+  tournamentFormData: TournamentType;
   tableData: Race[];
 };
 
-export default function Tournaments() {
+export default function Tournament() {
   const router = useRouter();
   const fileUploaderRef = useRef<FileHandler>(null);
   const checkOrgManagerMutation = useSWRMutation('api/checkOrgManager', sendCheckOrgManagerRequest);
@@ -97,8 +97,10 @@ export default function Tournaments() {
     tourn_id: tournId,
   });
 
-  useUserType({
-    onSuccess: async (userType) => {
+  const userType = useUserType();
+
+  useEffect(() => {
+    const fetchData = async () => {
       if (isCreateMode) {
         const hasAuthority =
           userType.isAdministrator ||
@@ -124,14 +126,16 @@ export default function Tournaments() {
           router.replace('/tournamentSearch');
         }
       }
-    },
-  });
+    };
+
+    fetchData();
+  }, [isCreateMode, isUpdateMode, tournId, userType]);
 
   // フォームデータを管理する状態
   const [tableData, setTableData] = useState<Race[]>([]);
 
   //大会情報 20240202
-  const [tournamentFormData, setTournamentFormData] = useState<Tournament>({
+  const [tournamentFormData, setTournamentFormData] = useState<TournamentType>({
     tourn_id: tournId,
     entrysystem_tourn_id: '',
     tourn_name: '',
@@ -634,7 +638,7 @@ export default function Tournaments() {
       if (mode === 'update') {
         try {
           const [tournamentRes, racesRes] = await Promise.all([
-            axios.post<{ result: Tournament }>('api/getTournamentInfoData', tourn_id),
+            axios.post<{ result: TournamentType }>('api/getTournamentInfoData', tourn_id),
             axios.post<{ result: Race[] }>('api/getRaceData', tourn_id),
           ]);
 
@@ -708,7 +712,7 @@ export default function Tournaments() {
                     })
                     .then((response) => {
                       // TODO: 処理成功時の処理
-                      setTournamentFormData({} as Tournament);
+                      setTournamentFormData({} as TournamentType);
                       setTableData([
                         {
                           id: 0,
@@ -804,7 +808,7 @@ export default function Tournaments() {
                     })
                     .then((response) => {
                       // TODO: 処理成功時の処理
-                      setTournamentFormData({} as Tournament);
+                      setTournamentFormData({} as TournamentType);
                       setTableData([
                         {
                           id: 0,
