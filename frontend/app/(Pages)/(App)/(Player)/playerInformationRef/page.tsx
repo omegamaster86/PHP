@@ -112,11 +112,12 @@ const createSortFunctions = (
     handleSort('race_number', (a, b) => Number(a.race_number) - Number(b.race_number)),
   byGroup: () => handleSort('by_group', (a, b) => a.by_group.localeCompare(b.by_group)),
   crewName: () => handleSort('crew_name', (a, b) => a.crew_name.localeCompare(b.crew_name)),
-  rank: () => handleSort('rank', (a, b) => {
-    if (!a.rank) return 1;
-    if (!b.rank) return -1;
-    return Number(a.rank) - Number(b.rank);
-  }),
+  rank: () =>
+    handleSort('rank', (a, b) => {
+      if (!a.rank) return 1;
+      if (!b.rank) return -1;
+      return Number(a.rank) - Number(b.rank);
+    }),
   lapTime500m: () =>
     handleSort('laptime_500m', (a, b) => {
       if (!a.laptime_500m) return 1;
@@ -619,7 +620,7 @@ export default function PlayerInformationRef() {
       })),
     );
     //順位をフィルターできるようにする 20240724
-    const rankArray = filteredArray.map((item) => item.rank);
+    const rankArray = filteredArray.map((item) => item.rank).filter((rank) => rank != null);
     const uniqueRankSet = new Set(rankArray);
     const uniqueRankArray = Array.from(uniqueRankSet);
     setRankList(
@@ -1603,7 +1604,10 @@ export default function PlayerInformationRef() {
                 sx={{ width: 300 }}
                 options={rankList}
                 filterOptions={(options, { inputValue }) =>
-                  options.filter((option) => option.name.toString().includes(inputValue.toString()))
+                  options.filter(
+                    (option) =>
+                      option.name != null && option.name.toString().includes(inputValue.toString()),
+                  )
                 }
                 value={selectedRankList || []}
                 onChange={(e: ChangeEvent<{}>, newValue: RankList[]) => {
