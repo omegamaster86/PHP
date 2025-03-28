@@ -7,7 +7,7 @@ const MenuButton: React.FC<Props> = (props) => {
 
   const className = `${
     active ? 'border-b-[2px] rounded-none border-solid border-primary-500 text-primary-500' : ''
-  } flex justify-center items-center h-[49px] min-w-[100px] cursor-pointer ${
+  } flex justify-center items-center h-[49px] cursor-pointer ${
     props.className ?? ''
   }`;
 

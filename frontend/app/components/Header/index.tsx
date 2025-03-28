@@ -6,6 +6,7 @@ import type { NotificationUnreadCount, UserIdType, UserResponse } from '@/app/ty
 import { CloseOutlined, MailOutline, MenuOutlined, PersonOutlined } from '@mui/icons-material';
 import {
   Badge,
+  Divider,
   Drawer,
   IconButton,
   List,
@@ -41,6 +42,7 @@ type MenuItem = {
   active: boolean;
   show: boolean;
   items?: MenuItemChild[];
+  action?: () => void;
 };
 
 const Header: FC = () => {
@@ -69,7 +71,7 @@ const Header: FC = () => {
     setClickIndex(clickIndex); //メニューのカテゴリのindexが入る（大会、選手、団体、ボランティア、その他）
   };
 
-  const toggleDrawer = (newOpen: boolean) => () => {
+  const toggleDrawer = (newOpen: boolean): void => {
     setDrawerOpenOpen(newOpen);
   };
 
@@ -104,7 +106,11 @@ const Header: FC = () => {
         break;
       case '/ticketBulkRegister':
       case '/donationBulkRegister':
+        setCurrentIndex(7);
+        break;
       case '/userInformation':
+      case '/passwordchange':
+      case '/withdrawal':
         setCurrentIndex(6);
         break;
       default:
@@ -157,6 +163,9 @@ const Header: FC = () => {
           title: '大会検索',
           link: '/tournamentSearch',
           show: true,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: 'レース結果管理',
@@ -166,6 +175,9 @@ const Header: FC = () => {
             userIdType.is_jara == 1 ||
             userIdType.is_pref_boat_officer == 1 ||
             userIdType.is_organization_manager == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: '大会登録',
@@ -175,6 +187,9 @@ const Header: FC = () => {
             userIdType.is_jara == 1 ||
             userIdType.is_pref_boat_officer == 1 ||
             userIdType.is_organization_manager == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: 'レース結果情報一括登録',
@@ -184,6 +199,9 @@ const Header: FC = () => {
             userIdType.is_jara == 1 ||
             userIdType.is_pref_boat_officer == 1 ||
             userIdType.is_organization_manager == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: '大会エントリー一括登録',
@@ -193,6 +211,9 @@ const Header: FC = () => {
             userIdType.is_jara == 1 ||
             userIdType.is_pref_boat_officer == 1 ||
             userIdType.is_organization_manager == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
       ],
     },
@@ -206,6 +227,9 @@ const Header: FC = () => {
           title: '選手検索',
           link: '/playerSearch',
           show: true,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: '選手登録',
@@ -217,26 +241,41 @@ const Header: FC = () => {
               userIdType.is_organization_manager == 1 ||
               userIdType.is_volunteer == 1 ||
               userIdType.is_audience == 1),
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: '選手情報更新',
           link: '/playerInformation?mode=update&player_id=' + userIdType.player_id,
           show: userIdType.is_player == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: '選手情報参照',
           link: '/playerInformationRef?player_id=' + userIdType.player_id,
           show: userIdType.is_player == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: '選手情報削除',
           link: '/playerInformationRef?mode=delete&player_id=' + userIdType.player_id,
           show: userIdType.is_player == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: '選手情報連携',
           link: '/playerInformationLinking',
           show: userIdType.is_administrator == 1 || userIdType.is_jara == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
       ],
     },
@@ -250,6 +289,9 @@ const Header: FC = () => {
           title: '団体検索',
           link: '/teamSearch',
           show: true,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: '団体管理',
@@ -259,11 +301,17 @@ const Header: FC = () => {
             userIdType.is_jara == 1 ||
             userIdType.is_pref_boat_officer == 1 ||
             userIdType.is_organization_manager == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: '団体登録',
           link: '/team?mode=create',
           show: true,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: '団体所属選手一括登録',
@@ -273,6 +321,9 @@ const Header: FC = () => {
             userIdType.is_jara == 1 ||
             userIdType.is_pref_boat_officer == 1 ||
             userIdType.is_organization_manager == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
       ],
     },
@@ -289,16 +340,25 @@ const Header: FC = () => {
             userIdType.is_administrator == 1 ||
             userIdType.is_jara == 1 ||
             userIdType.is_pref_boat_officer == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: 'ボランティア情報参照',
           link: '/volunteerInformationRef?volunteer_id=' + userIdType.volunteer_id,
           show: userIdType.is_volunteer == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: 'ボランティア一括登録',
           link: '/volunteerBulkRegister',
           show: userIdType.is_administrator == 1 || userIdType.is_jara == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
       ],
     },
@@ -313,16 +373,25 @@ const Header: FC = () => {
           link: '/notification?mode=create',
           active: page === '/notification',
           show: true,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: '受信通知一覧',
           link: '/notifications/received',
           show: true,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: '送信通知一覧',
           link: '/notifications/sent',
           show: true,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
       ],
     },
@@ -332,38 +401,31 @@ const Header: FC = () => {
       link: '/mypage/top',
       show: true,
       active: currentIndex === 5,
+      action: () => {
+        toggleDrawer(false);
+      },
     },
     {
-      title: 'その他',
+      title: 'アカウント',
       index: 6,
       active: currentIndex === 6,
       show: true,
       items: [
         {
-          title: 'チケット購入履歴一括登録',
-          link: '/ticketBulkRegister',
-          show:
-            userIdType.is_administrator == 1 ||
-            userIdType.is_jara == 1 ||
-            userIdType.is_pref_boat_officer == 1,
-        },
-        {
-          title: '寄付履歴一括登録',
-          link: '/donationBulkRegister',
-          show:
-            userIdType.is_administrator == 1 ||
-            userIdType.is_jara == 1 ||
-            userIdType.is_pref_boat_officer == 1,
-        },
-        {
           title: 'ユーザー情報更新',
           link: '/userInformation?mode=update',
           show: userIdType.is_audience == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: 'パスワード変更',
           link: '/passwordchange',
           show: userIdType.is_audience == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
         {
           title: 'ログアウト',
@@ -377,6 +439,39 @@ const Header: FC = () => {
           title: '退会',
           link: '/withdrawal',
           show: userIdType.is_audience == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
+        },
+      ],
+    },
+    {
+      title: 'その他',
+      index: 7,
+      active: currentIndex === 7,
+      show: true,
+      items: [
+        {
+          title: 'チケット購入履歴一括登録',
+          link: '/ticketBulkRegister',
+          show:
+            userIdType.is_administrator == 1 ||
+            userIdType.is_jara == 1 ||
+            userIdType.is_pref_boat_officer == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
+        },
+        {
+          title: '寄付履歴一括登録',
+          link: '/donationBulkRegister',
+          show:
+            userIdType.is_administrator == 1 ||
+            userIdType.is_jara == 1 ||
+            userIdType.is_pref_boat_officer == 1,
+          action: () => {
+            toggleDrawer(false);
+          },
         },
       ],
     },
@@ -386,7 +481,7 @@ const Header: FC = () => {
     <List sx={{ minWidth: '280px', paddingX: '8px' }}>
       <ListItem
         component='button'
-        onClick={toggleDrawer(false)}
+        onClick={() => toggleDrawer(false)}
         sx={{ justifyContent: 'flex-end' }}
       >
         <ListItemIcon sx={{ justifyContent: 'flex-end' }}>
@@ -413,7 +508,7 @@ const Header: FC = () => {
               item={{
                 title: item.title,
                 link: item.link,
-                action: toggleDrawer(false),
+                action: item.action,
                 active: item.active,
                 items: filteredChildren.map((x) => ({
                   title: x.title,
@@ -469,7 +564,7 @@ const Header: FC = () => {
           <div className='right-content'>
             {/* スマホの場合は表示 */}
             <div className='flex justify-center items-center h-full md:hidden'>
-              <IconButton onClick={toggleDrawer(true)}>
+              <IconButton onClick={() => toggleDrawer(true)}>
                 <MenuOutlined
                   sx={{
                     color: 'white',
@@ -479,7 +574,7 @@ const Header: FC = () => {
                   }}
                 />
               </IconButton>
-              <Drawer open={drawerOpen} onClose={toggleDrawer(false)} anchor='right'>
+              <Drawer open={drawerOpen} onClose={() => toggleDrawer(false)} anchor='right'>
                 {DrawerList}
               </Drawer>
             </div>
@@ -490,10 +585,10 @@ const Header: FC = () => {
       {showHeaderMenu ? (
         // スマホの場合は非表示
         <div className='w-full hidden md:block'>
-          <div className='flex flex-row justify-start items-center h-12 gap-[40px] px-[104px] text-small text-secondaryText'>
+          <div className='flex flex-row justify-start items-center h-12 gap-[40px] text-small text-secondaryText px-[104px] md:px-8 lg:px-[104px]'>
             <div className='flex flex-row justify-between w-full'>
               {/* メニュー左側 */}
-              <div className='flex flex-row'>
+              <div className='flex flex-row gap-8'>
                 <div>
                   <MenuButton active={currentIndex === 0} onClick={(e) => handleClick(e, 0)}>
                     大会情報
@@ -523,13 +618,18 @@ const Header: FC = () => {
                 )}
                 <div>
                   <MenuButton active={currentIndex === 6} onClick={(e) => handleClick(e, 6)}>
+                    アカウント
+                  </MenuButton>
+                </div>
+                <div>
+                  <MenuButton active={currentIndex === 7} onClick={(e) => handleClick(e, 7)}>
                     その他
                   </MenuButton>
                 </div>
               </div>
 
               {/* メニュー右側 */}
-              <div className='flex'>
+              <div className='flex gap-4'>
                 <MenuButton
                   active={currentIndex === 4}
                   onClick={(e) => {
@@ -573,6 +673,7 @@ const Header: FC = () => {
               </div>
             </div>
           </div>
+          <Divider className='h-[1px] bg-[#F6F6F6]' />
         </div>
       ) : (
         ''
