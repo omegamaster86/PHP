@@ -26,7 +26,6 @@ const MyPageLayout: NextPage<Props> = (props) => {
     fetcher<MyPageProfileInfoData>,
   );
   const userType = useUserType();
-
   const user: MyPageSideBarUser = {
     name: profile?.result.userName ?? '',
     tags: profile?.result.userType.filter((x) => !!x.isEnable).map((x) => x.userTypeName) ?? [],
