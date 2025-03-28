@@ -49,6 +49,11 @@ class OrganizationPlayersController extends Controller
             } else {
                 array_push($side_info, 0);
             }
+            if ($players[$i]->side_Coastal == 1) {
+                array_push($side_info, 1);
+            } else {
+                array_push($side_info, 0);
+            }
             $players[$i]->side_info = $side_info;
             $players[$i]->id = ($i + 1);
         }
@@ -121,6 +126,11 @@ class OrganizationPlayersController extends Controller
                 array_push($side_info, 0);
             }
             if ($players[$i]->side_C == 1) {
+                array_push($side_info, 1);
+            } else {
+                array_push($side_info, 0);
+            }
+            if ($players[$i]->side_Coastal == 1) {
                 array_push($side_info, 1);
             } else {
                 array_push($side_info, 0);
@@ -1167,23 +1177,23 @@ class OrganizationPlayersController extends Controller
             $side_info_list = array();
             //S(ストロークサイド)
             if ($searchInfo['sideInfo']['S'] == true) {
-                // $condition .= "and SUBSTRING(tp.`side_info`,8,1) = 1\r\n";
                 array_push($side_info_list, "SUBSTRING(tp.`side_info`,8,1) = 1\r\n");
             }
             //B(バウサイド)
             if ($searchInfo['sideInfo']['B'] == true) {
-                // $condition .= "and SUBSTRING(tp.`side_info`,7,1) = 1\r\n";
                 array_push($side_info_list, "SUBSTRING(tp.`side_info`,7,1) = 1\r\n");
             }
             //X(スカルサイド)
             if ($searchInfo['sideInfo']['X'] == true) {
-                // $condition .= "and SUBSTRING(tp.`side_info`,6,1) = 1\r\n";
                 array_push($side_info_list, "SUBSTRING(tp.`side_info`,6,1) = 1\r\n");
             }
             //C(コックスサイド)
             if ($searchInfo['sideInfo']['C'] == true) {
-                // $condition .= "and SUBSTRING(tp.`side_info`,5,1) = 1\r\n";
                 array_push($side_info_list, "SUBSTRING(tp.`side_info`,5,1) = 1\r\n");
+            }
+            //コースタル
+            if ($searchInfo['sideInfo']['Coastal'] == true) {
+                array_push($side_info_list, "SUBSTRING(tp.`side_info`,4,1) = 1\r\n");
             }
 
             //サイド情報のいずれかにチェックがされている場合or条件で条件式を生成する 20240521

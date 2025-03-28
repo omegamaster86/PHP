@@ -246,7 +246,7 @@ export default function TeamPlayer() {
                 <CustomTh align='center' rowSpan={2}>
                   居住地
                 </CustomTh>
-                <CustomTh align='center' rowSpan={1} colSpan={4}>
+                <CustomTh align='center' rowSpan={1} colSpan={5}>
                   サイド情報
                 </CustomTh>
               </CustomTr>
@@ -255,6 +255,7 @@ export default function TeamPlayer() {
                 <CustomTh align='center'>B</CustomTh>
                 <CustomTh align='center'>X</CustomTh>
                 <CustomTh align='center'>C</CustomTh>
+                <CustomTh align='center'>コースタル</CustomTh>
               </CustomTr>
             </CustomThead>
             <CustomTbody>
@@ -323,6 +324,7 @@ export default function TeamPlayer() {
                   <CustomTd align='center'>{data.side_info[1] ? '◯' : '×'}</CustomTd>
                   <CustomTd align='center'>{data.side_info[2] ? '◯' : '×'}</CustomTd>
                   <CustomTd align='center'>{data.side_info[3] ? '◯' : '×'}</CustomTd>
+                  <CustomTd align='center'>{data.side_info[4] ? '◯' : '×'}</CustomTd>
                 </CustomTr>
               ))}
             </CustomTbody>

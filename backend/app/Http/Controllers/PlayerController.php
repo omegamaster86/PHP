@@ -540,8 +540,11 @@ class PlayerController extends Controller
         if ($searchInfo['side_info']['X'] == true) {
             $condition .= "and SUBSTRING(tp.`side_info`,6,1) = 1\r\n";
         }
-        if ($searchInfo['side_info']['X'] == true) {
+        if ($searchInfo['side_info']['C'] == true) {
             $condition .= "and SUBSTRING(tp.`side_info`,5,1) = 1\r\n";
+        }
+        if ($searchInfo['side_info']['Coastal'] == true) {
+            $condition .= "and SUBSTRING(tp.`side_info`,4,1) = 1\r\n";
         }
         //出漕大会名
         if (isset($searchInfo['race_class_name'])) {

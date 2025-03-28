@@ -117,7 +117,7 @@ export default function PlayerInformation() {
     residence_prefecture: 13,
     residencePrefectureName: '東京',
     date_of_birth: '',
-    side_info: [false, false, false, false],
+    side_info: [false, false, false, false, false],
     photo: '',
   });
 
@@ -298,8 +298,8 @@ export default function PlayerInformation() {
           .then(async (response) => {
             //サイド情報のデータ変換
             var data = response.data.result.side_info.split('');
-            data.splice(0, 4); //サイド情報の先頭４つ分の不要なデータを削除
-            for (let i = 0; i < 4; i++) {
+            data.splice(0, 3); //サイド情報の先頭3つ分の不要なデータを削除
+            for (let i = 0; i < 5; i++) {
               if (data[i] == '1') {
                 data[i] = true;
               } else {
@@ -364,7 +364,7 @@ export default function PlayerInformation() {
           residence_prefecture: 13,
           residencePrefectureName: '東京',
           date_of_birth: '',
-          side_info: [false, false, false, false],
+          side_info: [false, false, false, false, false],
           photo: '',
         },
       }));
@@ -578,7 +578,7 @@ export default function PlayerInformation() {
                   tmpArray.push(formData.side_info[index]);
                 }
                 formData.side_info = tmpArray;
-                formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
+                formData.side_info.unshift(false, false, false); //先頭を000で埋める
 
                 //nullのパラメータを空のパラメータに置き換える
                 Object.keys(formData).forEach((key) => {
@@ -630,7 +630,7 @@ export default function PlayerInformation() {
                   tmpArray.push(formData.side_info[index]);
                 }
                 formData.side_info = tmpArray;
-                formData.side_info.unshift(false, false, false, false); //先頭を0000で埋める
+                formData.side_info.unshift(false, false, false); //先頭を000で埋める
 
                 //nullのパラメータを空のパラメータに置き換える
                 Object.keys(formData).forEach((key) => {
@@ -895,6 +895,7 @@ export default function PlayerInformation() {
                   prevFormData.side_info[1],
                   prevFormData.side_info[2],
                   prevFormData.side_info[3],
+                  prevFormData.side_info[4],
                 ],
               }))
             }
@@ -913,6 +914,7 @@ export default function PlayerInformation() {
                   !prevFormData.side_info[1],
                   prevFormData.side_info[2],
                   prevFormData.side_info[3],
+                  prevFormData.side_info[4],
                 ],
               }))
             }
@@ -931,6 +933,7 @@ export default function PlayerInformation() {
                   prevFormData.side_info[1],
                   !prevFormData.side_info[2],
                   prevFormData.side_info[3],
+                  prevFormData.side_info[4],
                 ],
               }))
             }
@@ -949,6 +952,26 @@ export default function PlayerInformation() {
                   prevFormData.side_info[1],
                   prevFormData.side_info[2],
                   !prevFormData.side_info[3],
+                  prevFormData.side_info[4],
+                ],
+              }))
+            }
+          />
+          <OriginalCheckbox
+            id='checkbox-Coastal'
+            label=': コースタル'
+            readonly={mode === 'confirm'}
+            value='Coastal'
+            checked={formData.side_info?.at(4) as boolean}
+            onChange={() =>
+              setFormData((prevFormData) => ({
+                ...prevFormData,
+                side_info: [
+                  prevFormData.side_info[0],
+                  prevFormData.side_info[1],
+                  prevFormData.side_info[2],
+                  prevFormData.side_info[3],
+                  !prevFormData.side_info[4],
                 ],
               }))
             }

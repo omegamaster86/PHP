@@ -14,21 +14,26 @@ class M_side_info extends Model
     public function getMyPageSideInfo($side)
     {
         $result = DB::select(
-            'select 
-            CONCAT(abbr_name, "(", side_name, ")") as sideName,
-            case 
-                when side_code = 8 then ?
-                when side_code = 4 then ?
-                when side_code = 2 then ?
-                when side_code = 1 then ?
-                else null
-            end as isEnable
-            from m_side_info 
-            where 1=1
-            and delete_flag = 0
-            and side_code IN (8, 4, 2, 1)
-            order by display_order',
+            "SELECT 
+                CASE
+                    WHEN abbr_name = '' THEN side_name
+                    ELSE CONCAT(abbr_name, '(', side_name, ')')
+                END AS sideName,
+                CASE 
+                    WHEN side_code = 16 THEN ?
+                    WHEN side_code = 8 THEN ?
+                    WHEN side_code = 4 THEN ?
+                    WHEN side_code = 2 THEN ?
+                    WHEN side_code = 1 THEN ?
+                    ELSE NULL
+                END AS isEnable
+            FROM m_side_info 
+            WHERE 1=1
+                AND delete_flag = 0
+                AND side_code IN (16, 8, 4, 2, 1)
+            ORDER BY display_order",
             [
+                intval(substr($side, 3, 1)),
                 intval(substr($side, 4, 1)),
                 intval(substr($side, 5, 1)),
                 intval(substr($side, 6, 1)),

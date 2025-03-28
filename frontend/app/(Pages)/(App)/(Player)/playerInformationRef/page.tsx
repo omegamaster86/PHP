@@ -492,11 +492,11 @@ export default function PlayerInformationRef() {
           playerId,
         });
         //サイド情報のデータ変換
-        const sideList = new Array<boolean>(4).fill(false);
+        const sideList = new Array<boolean>(5).fill(false);
         const sideInfo: string | null = playerInf.data.result.side_info;
         if (sideInfo) {
-          for (let i = 0; i < 4; i++) {
-            sideList[i] = sideInfo.charAt(i + 4) === '1';
+          for (let i = 0; i < 5; i++) {
+            sideList[i] = sideInfo.charAt(i + 3) === '1';
           }
         }
         setPlayerInformation({
@@ -916,17 +916,18 @@ export default function PlayerInformationRef() {
               <div className='flex flex-row flex-wrap justify-start gap-[10px]'>
                 <RoundedBadge
                   label='S（ストロークサイド）'
-                  isValid={!!playerInformation.side_info?.at(3)}
+                  isValid={!!playerInformation.side_info?.at(4)}
                 />
                 <RoundedBadge
                   label='B（バウサイド）'
-                  isValid={!!playerInformation.side_info?.at(2)}
+                  isValid={!!playerInformation.side_info?.at(3)}
                 />
-                <RoundedBadge label='X（スカル）' isValid={!!playerInformation.side_info?.at(1)} />
+                <RoundedBadge label='X（スカル）' isValid={!!playerInformation.side_info?.at(2)} />
                 <RoundedBadge
                   label='C（コックス）'
-                  isValid={!!playerInformation.side_info?.at(0)}
+                  isValid={!!playerInformation.side_info?.at(1)}
                 />
+                <RoundedBadge label='コースタル' isValid={!!playerInformation.side_info?.at(0)} />
               </div>
             </div>
           </div>
