@@ -11,7 +11,6 @@ import {
   OriginalCheckbox,
   CustomButton,
 } from '@/app/components';
-import { PLAYER_IMAGE_URL, NO_IMAGE_URL } from '@/app/utils/imageUrl';
 import { CustomPlayerAvatar } from '@/app/components/CustomPlayerAvatar';
 
 interface Player {
@@ -107,7 +106,7 @@ export const BelongPlayer: React.FC<Props> = ({
               <CustomTh align='center' rowSpan={2}>
                 体重
               </CustomTh>
-              <CustomTh align='center' rowSpan={1} colSpan={4}>
+              <CustomTh align='center' rowSpan={1} colSpan={5}>
                 サイド情報
               </CustomTh>
             </CustomTr>
@@ -116,6 +115,7 @@ export const BelongPlayer: React.FC<Props> = ({
               <CustomTh align='center'>B</CustomTh>
               <CustomTh align='center'>X</CustomTh>
               <CustomTh align='center'>C</CustomTh>
+              <CustomTh align='center'>コースタル</CustomTh>
             </CustomTr>
           </CustomThead>
           <CustomTbody>
@@ -194,6 +194,15 @@ export const BelongPlayer: React.FC<Props> = ({
                     value='C'
                     onChange={() => {}}
                     checked={row.side_info[3]}
+                    readonly={true}
+                  ></OriginalCheckbox>
+                </CustomTd>
+                <CustomTd>
+                  <OriginalCheckbox
+                    id='sideInfoCoastal'
+                    value='Coastal'
+                    onChange={() => {}}
+                    checked={row.side_info[4]}
                     readonly={true}
                   ></OriginalCheckbox>
                 </CustomTd>

@@ -171,6 +171,10 @@ class T_organization_players extends Model
                     when SUBSTRING(tp.`side_info`,5,1) = 1 then 1
                     else 0
                     end AS side_C
+                ,CASE
+                    when SUBSTRING(tp.`side_info`,4,1) = 1 then 1
+                    else 0
+                    end AS side_Coastal
                 ,org.org_id AS `org_id`
                 ,org.org_name AS `org_name`
             FROM `t_organization_players` top
@@ -232,6 +236,7 @@ class T_organization_players extends Model
                 , side_B
                 , side_X
                 , side_C
+                , side_Coastal
                 , players.org_id
                 , org.org_name 
             FROM ( 
@@ -257,6 +262,7 @@ class T_organization_players extends Model
                     , side_B
                     , side_X
                     , side_C
+                    , side_Coastal
                     , MAX(top.org_id) AS org_id 
                 FROM ( 
                     SELECT
@@ -298,6 +304,11 @@ class T_organization_players extends Model
                                 THEN 1 
                             ELSE 0 
                             END AS side_C 
+                        , CASE 
+                            WHEN SUBSTRING(p.`side_info`, 4, 1) = 1 
+                                THEN 1 
+                            ELSE 0 
+                            END AS side_Coastal
                     FROM
                         t_players p 
                     LEFT OUTER JOIN m_sex ms ON

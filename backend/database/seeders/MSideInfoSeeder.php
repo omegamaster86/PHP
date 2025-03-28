@@ -19,7 +19,7 @@ class MSideInfoSeeder extends Seeder
             (3, 'バウサイド', 'B', 2, 3, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
             (4, 'スカル', 'X', 4, 4, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
             (5, 'コックス', 'C', 8, 5, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
-            (6, '予備', '', 16, 6, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
+            (6, 'コースタル', '', 16, 6, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
             (7, '予備', '', 32, 7, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
             (8, '予備', '', 64, 8, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0),
             (9, '予備', '', 128, 9, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, 0)

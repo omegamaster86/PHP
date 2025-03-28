@@ -53,7 +53,7 @@ interface SearchCond {
     B: boolean;
     X: boolean;
     C: boolean;
-    N1: boolean;
+    Coastal: boolean;
     N2: boolean;
     N3: boolean;
     N4: boolean;
@@ -95,7 +95,7 @@ export default function AddPlayerSearch() {
       B: false,
       X: false,
       C: false,
-      N1: false,
+      Coastal: false,
       N2: false,
       N3: false,
       N4: false,
@@ -349,8 +349,6 @@ export default function AddPlayerSearch() {
                   checked={searchCond.sideInfo.B}
                   onChange={handleCheckboxChange}
                 />
-              </div>
-              <div className='flex justify-start flex-col gap-[4px] my-1'>
                 <OriginalCheckbox
                   id='checkbox-X'
                   label=': X (スカル)'
@@ -363,6 +361,13 @@ export default function AddPlayerSearch() {
                   label=': C (コックス)'
                   value='C'
                   checked={searchCond.sideInfo.C}
+                  onChange={handleCheckboxChange}
+                />
+                <OriginalCheckbox
+                  id='checkbox-Coastal'
+                  label=': コースタル'
+                  value='Coastal'
+                  checked={searchCond.sideInfo.Coastal}
                   onChange={handleCheckboxChange}
                 />
               </div>
@@ -478,7 +483,7 @@ export default function AddPlayerSearch() {
                     B: false,
                     X: false,
                     C: false,
-                    N1: false,
+                    Coastal: false,
                     N2: false,
                     N3: false,
                     N4: false,
@@ -530,7 +535,7 @@ export default function AddPlayerSearch() {
               <CustomTh rowSpan={2}>性別</CustomTh>
               <CustomTh rowSpan={2}>出身地</CustomTh>
               <CustomTh rowSpan={2}>居住地</CustomTh>
-              <CustomTh colSpan={4}>サイド情報</CustomTh>
+              <CustomTh colSpan={5}>サイド情報</CustomTh>
               <CustomTh rowSpan={2}>所属団体</CustomTh>
             </CustomTr>
             <CustomTr>
@@ -538,6 +543,7 @@ export default function AddPlayerSearch() {
               <CustomTh>B</CustomTh>
               <CustomTh>X</CustomTh>
               <CustomTh>C</CustomTh>
+              <CustomTh>コースタル</CustomTh>
             </CustomTr>
           </CustomThead>
           {/* 大会一覧テーブル明細表示 */}
@@ -593,10 +599,11 @@ export default function AddPlayerSearch() {
                     .filter((x) => x)
                     .join(' ')}
                 </CustomTd>
-                <CustomTd>{data.side_info[0] ? '○' : '×'}</CustomTd>
-                <CustomTd>{data.side_info[1] ? '○' : '×'}</CustomTd>
-                <CustomTd>{data.side_info[2] ? '○' : '×'}</CustomTd>
-                <CustomTd>{data.side_info[3] ? '○' : '×'}</CustomTd>
+                <CustomTd align='center'>{data.side_info[0] ? '◯' : '×'}</CustomTd>
+                <CustomTd align='center'>{data.side_info[1] ? '◯' : '×'}</CustomTd>
+                <CustomTd align='center'>{data.side_info[2] ? '◯' : '×'}</CustomTd>
+                <CustomTd align='center'>{data.side_info[3] ? '◯' : '×'}</CustomTd>
+                <CustomTd align='center'>{data.side_info[4] ? '◯' : '×'}</CustomTd>
                 <CustomTd>
                   <Link
                     className='text-primary-300 cursor-pointer underline hover:text-primary-50'

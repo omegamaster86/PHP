@@ -55,7 +55,7 @@ interface SearchCond {
     N1: boolean;
     N2: boolean;
     N3: boolean;
-    N4: boolean;
+    Coastal: boolean;
     S: boolean;
     B: boolean;
     X: boolean;
@@ -97,7 +97,7 @@ export default function PlayerSearch() {
       N1: false,
       N2: false,
       N3: false,
-      N4: false,
+      Coastal: false,
       S: false,
       B: false,
       X: false,
@@ -303,6 +303,13 @@ export default function PlayerSearch() {
                 checked={searchCond.side_info.C}
                 onChange={handleCheckboxChange}
               />
+              <OriginalCheckbox
+                id='checkbox-Coastal'
+                label=': コースタル'
+                value='Coastal'
+                checked={searchCond.side_info.Coastal}
+                onChange={handleCheckboxChange}
+              />
             </div>
           </div>
         </div>
@@ -345,7 +352,6 @@ export default function PlayerSearch() {
                 <div className='flex flex-row gap-[8px]'>
                   {/* 生年月日（開始年） */}
                   <CustomDatePicker
-                    placeHolder={new Date().toLocaleDateString('ja-JP')}
                     selectedDate={searchCond.startDateOfBirth}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
                       handleInputChange(
@@ -357,7 +363,6 @@ export default function PlayerSearch() {
                   <p className='flex flex-col justify-center items-center text-center'>～</p>
                   {/* 生年月日（終了年） */}
                   <CustomDatePicker
-                    placeHolder={new Date().toLocaleDateString('ja-JP')}
                     selectedDate={searchCond.endDateOfBirth}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
                       handleInputChange(
@@ -478,7 +483,7 @@ export default function PlayerSearch() {
                     N1: false,
                     N2: false,
                     N3: false,
-                    N4: false,
+                    Coastal: false,
                     S: false,
                     B: false,
                     X: false,
@@ -590,7 +595,7 @@ export default function PlayerSearch() {
                     href={{
                       pathname: '/playerInformationRef',
                       query: { playerId: row.player_id },
-                    }} 
+                    }}
                   >
                     {row.player_id}
                   </Link>
