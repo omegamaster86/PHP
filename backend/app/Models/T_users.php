@@ -571,9 +571,9 @@ class T_users extends Authenticatable
                 `t_users`.user_id AS `userId`,
                 `t_users`.user_name AS `userName`,
                 CASE
-                    WHEN ? THEN `t_users`.jspo_id
+                    WHEN ? THEN `t_users`.jspo_number
                     ELSE NULL
-                    END AS `jspoId`,
+                    END AS `jspoNumber`,
                 CASE
                     WHEN ? THEN GROUP_CONCAT(distinct(`coach_qual`.`qual_name`) order by `coach_qual`.`display_order`)
                     ELSE ""
@@ -612,19 +612,19 @@ class T_users extends Authenticatable
         return $targetTrn;
     }
 
-    //JSPO IDの更新 20241108
-    public function updateJspoId($jspoId)
+    // MyJSPO No.の更新
+    public function updateJspoNumber($jspoNumber)
     {
         DB::update(
             'update `t_users`
                     SET 
-                    `jspo_id` = ?,
+                    `jspo_number` = ?,
                     `updated_time`= ?,
                     `updated_user_id`= ?
                     where 1=1
                     and `user_id` = ?',
             [
-                $jspoId,
+                $jspoNumber,
                 now()->format('Y-m-d H:i:s.u'),
                 Auth::user()->user_id,
                 Auth::user()->user_id

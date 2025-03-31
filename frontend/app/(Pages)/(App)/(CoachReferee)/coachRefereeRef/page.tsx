@@ -119,8 +119,8 @@ export default function CoachRefereeRef() {
           <>
             <h3 className='mb-3'>指導者資格</h3>
             <div className='flex gap-3 mb-3'>
-              <span>JSPO ID</span>
-              {data.result.jspoId ? <span>{data.result.jspoId}</span> : <span>未登録</span>}
+              <span>MyJSPO No.</span>
+              {data.result.jspoNumber ? <span>{data.result.jspoNumber}</span> : <span>未登録</span>}
             </div>
             <div className='flex gap-3 mb-7 flex-wrap'>
               {data.result.coachQualificationNames.length > 0 ? (

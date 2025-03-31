@@ -319,9 +319,6 @@ export default function Team() {
               delete_flag: false,
               staff_type_id: [],
               isUserFound: true, //新規登録時は便宜的にtrue
-              jspo_id: 0,
-              coachQualificationNames: [],
-              refereeQualificationNames: [],
             },
           ]);
         }
@@ -478,9 +475,6 @@ export default function Team() {
             delete_flag: false,
             staff_type_id: [],
             isUserFound: true, //新規登録時は便宜的にtrue
-            jspo_id: 0,
-            coachQualificationNames: [],
-            refereeQualificationNames: [],
           },
         ]);
       }}

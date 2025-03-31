@@ -49,7 +49,7 @@ const ConfirmView: React.FC<Props> = ({
 
     const reqData: CoachRefereeResponse = {
       ...parsedData,
-      jspoId: parsedData.jspoId,
+      jspoNumber: parsedData.jspoNumber,
       coachingHistories: parsedData.coachingHistories?.map((history: any) => ({
         ...history,
       })),

@@ -330,7 +330,7 @@ interface CoachRefereeRefResponse {
   userName: string; // ユーザー名
   coachQualificationNames: string[]; //指導者資格
   refereeQualificationNames: string[]; //審判資格
-  jspoId: string; //JSPO ID
+  jspoNumber: string; // MyJSPO No.
   coachingHistories: (CoachingHistory & {
     orgName: string;
     staffTypeName: string;
@@ -357,7 +357,7 @@ interface IRefereeQualification {
 
 interface MyPageCoachRefereeResponse {
   userName: string;
-  jspoId: string;
+  jspoNumber: string;
   coachingHistories: (CoachingHistory & {
     orgName: string;
     staffTypeName: string;
@@ -371,7 +371,7 @@ interface MyPageCoachRefereeResponse {
 }
 
 interface CoachRefereeResponse {
-  jspoId: string;
+  jspoNumber: string;
   coachingHistories: (CoachingHistory & {
     isEndDateUndefined: boolean;
   })[];
@@ -564,7 +564,7 @@ interface Staff {
 interface StaffRef extends Staff {
   coachQualificationNames: string[]; //指導者資格
   refereeQualificationNames: string[]; //審判資格
-  jspo_id: string; // JSPO ID
+  jspo_number: string; // MyJSPO No.
 }
 
 //団体所属選手情報

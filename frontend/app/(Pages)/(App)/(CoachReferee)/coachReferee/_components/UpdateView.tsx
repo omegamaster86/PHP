@@ -68,7 +68,7 @@ const UpdateView: React.FC<UpdateViewProps> = ({
   };
 
   const [fetchData, setFetchData] = useState<CoachRefereeResponse>({
-    jspoId: coachRefereeInfoList.jspoId,
+    jspoNumber: coachRefereeInfoList.jspoNumber,
     coachingHistories: coachRefereeInfoList.coachingHistories,
     coachQualifications: coachRefereeInfoList.coachQualifications,
     refereeQualifications: coachRefereeInfoList.refereeQualifications,
@@ -235,8 +235,8 @@ const UpdateView: React.FC<UpdateViewProps> = ({
       }
     });
 
-    if (fetchData.coachQualifications.length > 0 && !fetchData.jspoId) {
-      errors.push('指導者資格がある場合は、JSPO IDを入力してください。');
+    if (fetchData.coachQualifications.length > 0 && !fetchData.jspoNumber) {
+      errors.push('指導者資格がある場合は、MyJSPO No.を入力してください。');
     }
 
     fetchData.refereeQualifications.forEach((qualification, index) => {
@@ -312,12 +312,12 @@ const UpdateView: React.FC<UpdateViewProps> = ({
           </div>
           {fetchData.coachQualifications.length > 0 && (
             <div className='flex flex-col gap-4 mb-2'>
-              <InputLabel label='JSPO ID' required />
+              <InputLabel label='MyJSPO No.' required />
               <CustomTextField
                 placeHolder='12345'
-                value={fetchData.jspoId}
+                value={fetchData.jspoNumber}
                 widthClassName='w-full md:w-[150px]'
-                onChange={(event) => setFetchData({ ...fetchData, jspoId: event.target.value })}
+                onChange={(event) => setFetchData({ ...fetchData, jspoNumber: event.target.value })}
               />
             </div>
           )}
