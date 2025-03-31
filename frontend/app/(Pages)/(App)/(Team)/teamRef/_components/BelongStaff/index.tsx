@@ -52,7 +52,7 @@ export const BelongStaff: React.FC<Props> = ({ staffs }) => {
               <CustomTh align='center'>管理代理</CustomTh>
               {showPermission && (
                 <>
-                  <CustomTh align='center'>JSPO ID</CustomTh>
+                  <CustomTh align='center'>MyJSPO No.</CustomTh>
                   <CustomTh align='center'>指導者</CustomTh>
                   <CustomTh align='center'>審判</CustomTh>
                 </>
@@ -125,7 +125,7 @@ export const BelongStaff: React.FC<Props> = ({ staffs }) => {
                 </CustomTd>
                 {showPermission && (
                   <>
-                    <CustomTd>{row.jspo_id}</CustomTd>
+                    <CustomTd>{row.jspo_number}</CustomTd>
                     <CustomTd>{row.coachQualificationNames.join(', ')}</CustomTd>
                     <CustomTd>{row.refereeQualificationNames.join(', ')}</CustomTd>
                   </>

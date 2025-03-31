@@ -30,7 +30,7 @@ const ConfirmRefereeQualification: React.FC<Props> = ({
             <tr className='border-b border-b-border'>
               <th>資格名</th>
               <th>取得日</th>
-              <th>有効期限</th>
+              <th>有効期限日</th>
               <th>削除</th>
             </tr>
           </thead>

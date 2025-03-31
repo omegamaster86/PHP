@@ -65,7 +65,7 @@ class CoachRefereeController extends Controller
         );
 
         $result = [
-            'jspoId' => Auth::user()->jspo_id,
+            'jspoNumber' => Auth::user()->jspo_number,
             'coachingHistories' => $coachingHistories,
             'coachQualifications' => $coachQualifications,
             'refereeQualifications' => $refereeQualifications
@@ -106,7 +106,7 @@ class CoachRefereeController extends Controller
                 abort(400, '審判資格の中で資格名が重複しています。');
             }
 
-            $tUsers->updateJspoId($reqData['jspoId']); //JSPO IDの更新
+            $tUsers->updateJspoNumber($reqData['jspoNumber']);
 
             //指導履歴の追加・更新
             for ($i = 0; $i < count($reqData['coachingHistories']); $i++) {
@@ -175,7 +175,7 @@ class CoachRefereeController extends Controller
 
         $result = ([
             'userName' => Auth::user()->user_name,
-            'jspoId' => Auth::user()->jspo_id,
+            'jspoNumber' => Auth::user()->jspo_number,
             'coachingHistories' => $tOrganizationCoachingHistory->getOrganizationCoachingHistoryDataForProfile(),
             'coachQualifications' => $tHeldCoachQualifications->getHeldCoachQualificationsDataForProfile(),
             'refereeQualifications' => $tHeldRefereeQualifications->getHeldRefereeQualificationsDataForProfile()

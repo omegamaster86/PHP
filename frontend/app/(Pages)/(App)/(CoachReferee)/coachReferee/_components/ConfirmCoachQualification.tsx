@@ -26,13 +26,13 @@ const ConfirmCoachQualification: React.FC<Props> = ({ coachQualificationOptions,
         <table className='table-fixed mb-5'>
           <thead className='[&_th]:pb-2'>
             <tr className='border-b border-b-border'>
-              <th className='text-left text-xs md:text-sm font-normal'>JSPO ID</th>
+              <th className='text-left text-xs md:text-sm font-normal'>MyJSPO No.</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td className='w-52 pr-2 pt-2 text-xs md:text-sm font-normal'>
-                {parsedData?.jspoId}
+                {parsedData?.jspoNumber}
               </td>
             </tr>
           </tbody>
@@ -42,7 +42,7 @@ const ConfirmCoachQualification: React.FC<Props> = ({ coachQualificationOptions,
             <tr className='border-b border-b-border'>
               <th>資格名</th>
               <th>取得日</th>
-              <th>有効期限</th>
+              <th>有効期限日</th>
               <th>削除</th>
             </tr>
           </thead>

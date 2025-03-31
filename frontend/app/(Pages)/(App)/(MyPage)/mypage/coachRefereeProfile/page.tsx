@@ -154,8 +154,8 @@ export default function CoachRefereeProfile() {
           />
         </div>
         <div className='flex gap-3 mb-3'>
-          <span>JSPO ID</span>
-          {data.result.jspoId ? <span>{data.result.jspoId}</span> : <span>未登録</span>}
+          <span>MyJSPO No.</span>
+          {data.result.jspoNumber ? <span>{data.result.jspoNumber}</span> : <span>未登録</span>}
         </div>
         <div className='flex flex-wrap gap-3 mb-7'>
           {profile.coachQualifications.length > 0 ? (

@@ -24,9 +24,9 @@ class T_organization_staff extends Model
                 ,`user_id`
                 ,`user_name`
                 , CASE
-                    WHEN ? THEN `jspo_id`
+                    WHEN ? THEN `jspo_number`
                     ELSE NULL
-                    END AS `jspo_id`
+                    END AS `jspo_number`
                 , CASE
                     WHEN ? THEN `coach_qual_name`
                     ELSE ""
@@ -61,7 +61,7 @@ class T_organization_staff extends Model
                 SELECT 
                 `staff`.`org_id`
                 ,`user`.`user_id`
-                ,`user`.`jspo_id`
+                ,`user`.`jspo_number`
                 ,CASE
                     WHEN `user`.`user_name` IS NULL THEN "該当ユーザー無し"
                     ELSE `user`.`user_name`
@@ -106,7 +106,7 @@ class T_organization_staff extends Model
                     `staff`.`org_id`,
                     `staff`.`user_id`,
                     `user`.`user_name`,
-                    `user`.`jspo_id`
+                    `user`.`jspo_number`
             ) AS `staff`',
             [
                 $canShowQualification,
