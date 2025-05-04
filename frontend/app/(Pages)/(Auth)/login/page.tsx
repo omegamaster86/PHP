@@ -101,40 +101,7 @@ export default function Login() {
               setEmailErrorMessages(emailErrorMessages);
               setPasswordErrorMessages(passwordErrorMessages);
               if (emailErrorMessages.length > 0 || passwordErrorMessages.length > 0) {
-                // TODO: バリデーションエラー時の処理を実装
               } else {
-                // TODO: ログイン処理
-                // let isPasswordTemporary = true;
-                // if (isPasswordTemporary) {
-                //   // TODO: ログイン処理を実装
-                //   const requestBody = {};
-                //   axios
-                //     .post('http://localhost:8000/', requestBody)
-                //     .then((response) => {
-                //       // TODO: 成功時の処理を実装
-                //       //console.log(response);
-                //       router.push('/passwordchange');
-                //     })
-                //     .catch((error) => {
-                //       // TODO: エラー処理を実装
-                //       //console.log(error);
-                //     });
-                // } else {
-                //   // TODO: ログイン処理を実装
-                //   const requestBody = {};
-                //   axios
-                //     .post('http://localhost:8000/', requestBody)
-                //     .then((response) => {
-                //       // TODO: 成功時の処理を実装
-                //       //console.log(response);
-                //       router.push('/mypage');
-                //     })
-                //     .catch((error) => {
-                //       // TODO: エラー処理を実装
-                //       //console.log(error);
-                //     });
-                // }
-
                 submitForm({
                   email,
                   password,
