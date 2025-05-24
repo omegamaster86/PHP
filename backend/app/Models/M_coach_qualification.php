@@ -20,7 +20,6 @@ class M_coach_qualification extends Model
             ORDER BY display_order
             ',
         );
-
         return $result;
     }
 }
