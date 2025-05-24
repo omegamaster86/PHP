@@ -9,17 +9,16 @@ use Illuminate\Support\Facades\DB;
 class M_clothes_size extends Model
 {
     use HasFactory;
-
-    //服のサイズマスターを取得
     public function getClothesSize()
     {
-        $clothes_size = DB::select('select
-                                    clothes_size_id,
-                                    clothes_size                                    
-                                    from `m_clothes_size`
-                                    where delete_flag = ?
-                                    order by display_order'
-                                ,[0]);
+        $clothes_size = DB::select(
+            'select
+                clothes_size_id,
+                clothes_size                                    
+                from `m_clothes_size`
+                where delete_flag = ?
+                order by display_order'
+            ,[0]);
         return $clothes_size;
     }
 }
