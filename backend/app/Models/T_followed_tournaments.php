@@ -16,12 +16,12 @@ class T_followed_tournaments extends Model
     {
         $result = DB::select(
             'select
-                    `followed_tourn_id`
-                    ,`delete_flag`
-                    FROM `t_followed_tournaments`
-                    where 1=1
-                    and `user_id` = ?
-                    and `tourn_id` = ?',
+                `followed_tourn_id`
+                ,`delete_flag`
+            FROM `t_followed_tournaments`
+            where 1=1
+                and `user_id` = ?
+                and `tourn_id` = ?',
             [
                 Auth::user()->user_id,
                 $tournId
