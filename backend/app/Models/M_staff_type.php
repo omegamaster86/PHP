@@ -18,14 +18,12 @@ class M_staff_type extends Model
     public function getStaffTypes()
     {
         $staff_types = DB::select(
-            '
-            select 
+            'select 
             staff_type_id as `key`,
             staff_type_name as `value`
             from m_staff_type
             where delete_flag=0
-            order by display_order
-            '
+            order by display_order'
         );
         return $staff_types;
     }
