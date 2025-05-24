@@ -14,8 +14,7 @@ class M_seat_number extends Model
     public function getSeatNumber()
     {
         $result = DB::select(
-            '
-            select
+            'select
                 seat_id
                 , seat_name
                 , seat_addr_name
@@ -29,8 +28,7 @@ class M_seat_number extends Model
                 m_seat_number 
             where
                 delete_flag = 0
-            order by display_order
-            '
+            order by display_order'
         );
         return $result;
     }
