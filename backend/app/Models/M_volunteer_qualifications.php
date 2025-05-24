@@ -12,11 +12,12 @@ class M_volunteer_qualifications extends Model
 
     public function getQualifications()
     {
-        $qualifications =  DB::select('select
-                                        qual_id,
-                                        qual_name
-                                        from `m_volunteer_qualifications`
-                                        where delete_flag = ?'
+        $qualifications =  DB::select(
+            'select
+                qual_id,
+                qual_name
+            from `m_volunteer_qualifications`
+            where delete_flag = ?'
                                         ,[0]);
         return $qualifications;
     }
