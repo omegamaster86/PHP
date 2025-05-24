@@ -13,14 +13,14 @@ class M_languages extends Model
     public function getLanguages()
     {
         $languages = DB::select(
-                                    'select
-                                    lang_id
-                                    ,lang_name
-                                    from m_languages
-                                    where delete_flag = ?
-                                    order by display_order'
-                                    ,[0]
-                                );
+            'select
+            lang_id
+            ,lang_name
+            from m_languages
+            where delete_flag = ?
+            order by display_order'
+            ,[0]
+        );
         return $languages;
     }
 }
