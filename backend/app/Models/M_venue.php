@@ -17,7 +17,14 @@ class M_venue extends Model
     //水域マスタを取得
     public function getVenueList()
     {
-        $venueList = DB::select('select `venue_id`, `venue_name` from `m_venue` where `delete_flag`=0 order by `display_order`');
+        $venueList = DB::select(
+            'select
+                `venue_id`,
+                `venue_name`
+            from
+                `m_venue`
+            where
+                `delete_flag`=0 order by `display_order`');
         return $venueList;
     }
 }
