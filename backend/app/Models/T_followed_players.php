@@ -16,12 +16,12 @@ class T_followed_players extends Model
     {
         $result = DB::select(
             'select
-                    `followed_player_id`
-                    ,`delete_flag`
-                    FROM `t_followed_players`
-                    where 1=1
-                    and `user_id` = ?
-                    and `player_id` = ?',
+                `followed_player_id`
+                ,`delete_flag`
+            FROM `t_followed_players`
+            where 1=1
+            and `user_id` = ?
+            and `player_id` = ?',
             [
                 Auth::user()->user_id, 
                 $playerId
